@@ -1,0 +1,12 @@
+[
+  {
+    "modid": "quarryplus",
+    "name": "QuarryPlus",
+    "description": "This mod add advanced quarry and more.",
+    "version": "1.0.0",
+    "mcversion": "1.11.2",
+    "url": "https://github.com/yogpstop/QuarryPlus",
+    "authors": [ "yogpstop" ],
+    "dependencies": [ "BuildCraft|Builders", "BuildCraft|Core", "BuildCraft|Energy", "BuildCraft|Factory", "BuildCraft|Silicon", "BuildCraft|Transport" ]
+  }
+]

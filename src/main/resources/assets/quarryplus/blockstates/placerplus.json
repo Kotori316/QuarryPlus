@@ -1,0 +1,46 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "cube",
+    "textures": {
+      "particle": "quarryplus:blocks/plusstone_side",
+      "down": "quarryplus:blocks/plusstone_top",
+      "up": "quarryplus:blocks/placer_front_vertical",
+      "north": "quarryplus:blocks/placer_front_horizontal",
+      "east": "quarryplus:blocks/plusstone_side",
+      "south": "quarryplus:blocks/plusstone_side",
+      "west": "quarryplus:blocks/plusstone_side"
+    }
+  },
+  "variants": {
+    "powered": {
+      "true": {
+      },
+      "false": {
+      }
+    },
+    "facing": {
+      "north": {
+        "transform": "forge:default-block"
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      },
+      "east": {
+        "y": 90
+      },
+      "up": {
+        "x": 270
+      },
+      "down": {
+        "x": 90
+      }
+    }
+  },
+  "inventory": [
+    {}
+  ]
+}

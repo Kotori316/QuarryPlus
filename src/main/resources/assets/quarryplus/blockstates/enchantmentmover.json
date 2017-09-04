@@ -1,0 +1,23 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "cube",
+    "textures": {
+      "particle": "quarryplus:blocks/mover_top",
+      "down": "quarryplus:blocks/mover_bottom",
+      "up": "quarryplus:blocks/mover_top",
+      "north": "quarryplus:blocks/mover_side",
+      "east": "quarryplus:blocks/mover_side",
+      "south": "quarryplus:blocks/mover_side",
+      "west": "quarryplus:blocks/mover_side"
+    }
+  },
+  "variants": {
+    "normal": [
+      {}
+    ],
+    "inventory": [
+      {}
+    ]
+  }
+}

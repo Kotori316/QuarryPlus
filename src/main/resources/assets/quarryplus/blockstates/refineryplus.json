@@ -1,0 +1,36 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "cube_all",
+    "textures": {
+      "all": "quarryplus:blocks/refinerydummy"
+    },
+    "uvlock": true,
+    "transform": "forge:default-block"
+  },
+  "variants": {
+    "facing": {
+      "north": {
+        "transform": "forge:default-block"
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      },
+      "east": {
+        "y": 90
+      },
+      "up": {
+        "x": 270
+      },
+      "down": {
+        "x": 90
+      }
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}

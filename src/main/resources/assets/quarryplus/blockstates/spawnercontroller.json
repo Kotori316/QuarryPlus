@@ -1,0 +1,25 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "cube_all",
+    "textures": {
+      "all": "quarryplus:blocks/spawnctl"
+    },
+    "uvlock": true,
+    "transform": "forge:default-block"
+  },
+  "variants": {
+    "normal": [
+      {}
+    ],
+    "acting": {
+      "true": {
+      },
+      "false": {
+      }
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}

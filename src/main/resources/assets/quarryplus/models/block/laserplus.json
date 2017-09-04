@@ -1,0 +1,36 @@
+{
+  "__comment": "Model generated using MrCrayfish's Model Creator (http://mrcrayfish.com/modelcreator/)",
+  "textures": {
+    "0": "quarryplus:blocks/laser_top",
+    "1": "quarryplus:blocks/laser_side",
+    "2": "quarryplus:blocks/laser_bottom"
+  },
+  "elements": [
+    {
+      "name": "Cube",
+      "from": [ 0.0, 0.0, 12.0 ],
+      "to": [ 16.0, 16.0, 16.0 ],
+      "faces": {
+        "north": {"texture": "#0", "uv": [ 0.0, 0.0, 16.0, 16.0 ]},
+        "east": {"texture": "#1", "uv": [ 12.0, 0.0, 16.0, 16.0 ]},
+        "south": {"texture": "#2", "uv": [ 0.0, 0.0, 16.0, 16.0 ]},
+        "west": {"texture": "#1", "uv": [ 12.0, 0.0, 16.0, 16.0 ]},
+        "up": {"texture": "#1", "uv": [ 12.0, 0.0, 16.0, 16.0 ], "rotation": 90},
+        "down": {"texture": "#1", "uv": [ 12.0, 0.0, 16.0, 16.0 ], "rotation": 90}
+      }
+    },
+    {
+      "name": "Cube1",
+      "from": [ 5.0, 5.0, 2.0 ],
+      "to": [ 11.0, 11.0, 12.0 ],
+      "faces": {
+        "north": {"texture": "#0", "uv": [ 5.0, 5.0, 11.0, 11.0 ]},
+        "east": {"texture": "#1", "uv": [ 2.0, 5.0, 12.0, 11.0 ]},
+        "south": {"texture": "#0", "uv": [ 5.0, 5.0, 11.0, 11.0 ], "cullface": "south"},
+        "west": {"texture": "#1", "uv": [ 2.0, 5.0, 12.0, 11.0 ]},
+        "up": {"texture": "#1", "uv": [ 2.0, 4.0, 12.0, 12.0 ], "rotation": 90},
+        "down": {"texture": "#1", "uv": [ 2.0, 4.0, 12.0, 12.0 ], "rotation": 90}
+      }
+    }
+  ]
+}

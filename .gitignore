@@ -1,0 +1,13 @@
+/run
+# idea
+out
+*.ipr
+*.iws
+*.iml
+
+# gradle
+build
+.gradle
+gradle.properties
+
+FILES
