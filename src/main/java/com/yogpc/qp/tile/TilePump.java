@@ -465,7 +465,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
             this.px = -1;
         } while (--this.py >= this.cy);
         if (count > 0
-                && PowerManager.useEnergyP(tbpp, this.unbreaking, count, this.px == -1 ? count : 0))
+                && PowerManager.useEnergyPump(tbpp, this.unbreaking, count, this.px == -1 ? count : 0))
             if (this.px == -1) {
                 int bx;
                 for (bx = 0; bx < this.block_side_x; bx++)

@@ -57,16 +57,7 @@ object WorkbenchRecipes {
     def getRecipeMap: Map[ItemDamage, WorkbenchRecipes] = recipes.toMap
 
     def getRecipeFromResult(stack: ItemStack): java.util.Optional[WorkbenchRecipes] = {
-        import scala.language.implicitConversions
-        implicit def toJavaOption[T](o: Option[T]): java.util.Optional[T] = {
-            o match {
-                case Some(e) => java.util.Optional.ofNullable(e) //Some(null)
-                case None => java.util.Optional.empty()
-            }
-        }
-
-        if (stack.isEmpty) return None
-
+        if (stack.isEmpty) return java.util.Optional.empty()
         recipes.get(stack)
     }
 

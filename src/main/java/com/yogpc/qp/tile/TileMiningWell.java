@@ -39,7 +39,7 @@ public class TileMiningWell extends TileBasic implements ITickable {
                 this.pump = null;
         }
         if (this.working)
-            PowerManager.configureW(this, this.efficiency, this.unbreaking, pmp);
+            PowerManager.configureMiningWell(this, this.efficiency, this.unbreaking, pmp);
         else
             PowerManager.configure0(this);
     }
@@ -65,6 +65,7 @@ public class TileMiningWell extends TileBasic implements ITickable {
         return working;
     }
 
+    @SuppressWarnings("ConstantConditions")
     private boolean S_checkTarget(final int depth) {
         if (depth < 1) {
             G_destroy();

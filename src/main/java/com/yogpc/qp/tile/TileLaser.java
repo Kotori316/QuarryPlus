@@ -49,7 +49,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile {
     private long from = 38669;
 
     public TileLaser() {
-        PowerManager.configureL(this, this.efficiency, this.unbreaking);
+        PowerManager.configureLaser(this, this.efficiency, this.unbreaking);
     }
 
     @Override
@@ -81,7 +81,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile {
                                     + (getWorld().rand.nextFloat() - 0.5) / 5F;
                 }
 
-            final double power = PowerManager.useEnergyL(this, this.unbreaking, this.fortune, this.silktouch, this.efficiency);
+            final double power = PowerManager.useEnergyLaser(this, this.unbreaking, this.fortune, this.silktouch, this.efficiency);
             for (final Object lt : this.laserTargets)
                 ILaserTargetHelper.receiveLaserEnergy(lt, 10 * power / this.laserTargets.size());
             pushPower(10 * power / this.laserTargets.size());
@@ -207,7 +207,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile {
         this.efficiency = nbttc.getByte("efficiency");
         this.unbreaking = nbttc.getByte("unbreaking");
         this.silktouch = nbttc.getBoolean("silktouch");
-        PowerManager.configureL(this, this.efficiency, this.unbreaking);
+        PowerManager.configureLaser(this, this.efficiency, this.unbreaking);
         this.pa = nbttc.getDouble("pa");
         final NBTTagList nbttl = nbttc.getTagList("lasers", 10);
         if (this.lasers == null || this.lasers.length != nbttl.tagCount())
@@ -282,7 +282,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile {
 
     @Override
     public void G_reinit() {
-        PowerManager.configureL(this, this.efficiency, this.unbreaking);
+        PowerManager.configureLaser(this, this.efficiency, this.unbreaking);
     }
 
     @Override

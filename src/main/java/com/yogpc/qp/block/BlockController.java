@@ -68,6 +68,7 @@ public class BlockController extends Block implements IDismantleable {
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+        if (playerIn.getHeldItem(hand).getItem() == QuarryPlusI.debugItem) return true;
         if (!playerIn.isSneaking()) {
 //            playerIn.openGui(QuarryPlus.getInstance(), QuarryPlusI.guiIDController, worldIn, pos.getX(), pos.getY(), pos.getZ());
             if (!worldIn.isRemote) {

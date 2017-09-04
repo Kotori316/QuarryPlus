@@ -57,7 +57,7 @@ public class TileRefinery extends APowerTile implements IFluidHandler, IEnchanta
 
     @Override
     public void G_reinit() {
-        PowerManager.configureR(this, this.efficiency, this.unbreaking);
+        PowerManager.configureRefinery(this, this.efficiency, this.unbreaking);
         this.buf = (int) (Fluid.BUCKET_VOLUME * 4 * Math.pow(1.3, this.fortune));
     }
 
@@ -82,7 +82,7 @@ public class TileRefinery extends APowerTile implements IFluidHandler, IEnchanta
         this.animationSpeed = nbttc.getFloat("animationSpeed");
         this.animationStage = nbttc.getInteger("animationStage");
         this.buf = (int) (Fluid.BUCKET_VOLUME * 4 * Math.pow(1.3, this.fortune));
-        PowerManager.configureR(this, this.efficiency, this.unbreaking);
+        PowerManager.configureRefinery(this, this.efficiency, this.unbreaking);
     }
 
     @Override
@@ -128,7 +128,7 @@ public class TileRefinery extends APowerTile implements IFluidHandler, IEnchanta
         if (this.rem_time > 0)
             this.rem_time--;
         if (this.rem_time > 0
-                || !PowerManager.useEnergyR(this, this.rem_energy, this.unbreaking, this.efficiency)) {
+                || !PowerManager.useEnergyRefinery(this, this.rem_energy, this.unbreaking, this.efficiency)) {
             decreaseAnimation();
             return;
         }

@@ -272,7 +272,7 @@ public class TileQuarry extends TileBasic {
 
     private boolean S_makeFrame() {
         this.digged = true;
-        if (!PowerManager.useEnergyF(this, this.unbreaking))
+        if (!PowerManager.useEnergyFrameBuild(this, this.unbreaking))
             return false;
         getWorld().setBlockState(new BlockPos(this.targetX, this.targetY, this.targetZ), QuarryPlusI.blockFrame.getDefaultState());
         S_setNextTarget();
@@ -402,7 +402,7 @@ public class TileQuarry extends TileBasic {
         final double y = this.targetY + 1 - this.headPosY;
         final double z = this.targetZ - this.headPosZ;
         final double distance = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2));
-        final double blocks = PowerManager.useEnergyH(this, distance, this.unbreaking);
+        final double blocks = PowerManager.useEnergyQuarryHead(this, distance, this.unbreaking);
         if (blocks * 2 >= distance) {
             this.headPosX = this.targetX;
             this.headPosY = this.targetY + 1;
@@ -553,9 +553,9 @@ public class TileQuarry extends TileBasic {
         if (this.now == NONE)
             PowerManager.configure0(this);
         else if (this.now == MAKEFRAME)
-            PowerManager.configureF(this, this.efficiency, this.unbreaking, pmp);
+            PowerManager.configureFrameBuild(this, this.efficiency, this.unbreaking, pmp);
         else
-            PowerManager.configureB(this, this.efficiency, this.unbreaking, pmp);
+            PowerManager.configureQuarryWork(this, this.efficiency, this.unbreaking, pmp);
     }
 
     @Override

@@ -19,227 +19,172 @@ import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 
+@SuppressWarnings("ClassWithTooManyFields")
 public class PowerManager {
-    private static double B_CF, B_CS, W_CF, W_CS;
-    private static double B_BP, B_CE, B_CU, B_XR, B_MS;// Quarry:BreakBlock
-    private static double F_BP, F_CE, F_CU, F_XR, F_MS;// Quarry:MakeFrame
-    private static double W_BP, W_CE, W_CU, W_XR, W_MS;// MiningWell
-    private static double L_BP, L_CE, L_CU, L_XR, L_MS, L_CF, L_CS;// Laser
-    private static double R_CE, R_CU, R_XR, R_MS;// Refinery
-    private static double PF_BP, PF_CU;// Pump:Frame
-    private static double PL_BP, PL_CU;// Pump:Liquid
-    private static double H_BP, H_CU;// Quarry:MoveHead
+    private static double QuarryWork_CF, QuarryWork_CS, MiningWell_CF, MiningWell_CS;
+    private static double QuarryWork_BP, QuarryWork_CE, QuarryWork_CU, QuarryWork_XR, QuarryWork_MS;// Quarry:BreakBlock
+    private static double FrameBuild_BP, FrameBuild_CE, FrameBuild_CU, FrameBuild_XR, FrameBuild_MS;// Quarry:MakeFrame
+    private static double MiningWell_BP, MiningWell_CE, MiningWell_CU, MiningWell_XR, MiningWell_MS;// MiningWell
+    private static double Laser_BP, Laser_CE, Laser_CU, Laser_XR, Laser_MS, Laser_CF, Laser_CS;// Laser
+    private static double Refinery_CE, Refinery_CU, Refinery_XR, Refinery_MS;// Refinery
+    private static double PumpFrame_BP, PumpFrame_CU;// Pump:Frame
+    private static double PumpDrain_BP, PumpDrain_CU;// Pump:Liquid
+    private static double MoveHead_BP, MoveHead_CU;// Quarry:MoveHead
+
+    private static final int length = (Configuration.CATEGORY_GENERAL + Configuration.CATEGORY_SPLITTER).length();
 
     private static double get(final ConfigCategory c, final String name, final double def) {
         if (c.containsKey(name)) {
             Property prop = c.get(name);
             if (prop.getType() == null) {
                 prop = new Property(prop.getName(), prop.getString(), Property.Type.DOUBLE);
+                prop.setComment(c.getQualifiedName().substring(length) + Configuration.CATEGORY_SPLITTER + name);
+                prop.setMinValue(0d).setMaxValue(2e9);
                 c.put(name, prop);
             }
             return prop.getDouble(def);
         }
         final Property prop = new Property(name, Double.toString(def), Property.Type.DOUBLE);
+        prop.setComment(c.getQualifiedName().substring(length) + Configuration.CATEGORY_SPLITTER + name);
+        prop.setMinValue(0d).setMaxValue(2e9);
         c.put(name, prop);
         return prop.getDouble(def);
     }
 
     static void loadConfiguration(final Configuration cg) throws RuntimeException {
+        ConfigCategory powersetting = cg.getCategory(Configuration.CATEGORY_GENERAL + Configuration.CATEGORY_SPLITTER + "PowerSetting");
+        powersetting.setComment("Quarry PowerSetting (min = 0, Max = 2,000,000,000 = 2 billion)");
         final String cn = Configuration.CATEGORY_GENERAL + Configuration.CATEGORY_SPLITTER + "PowerSetting" + Configuration.CATEGORY_SPLITTER;
 
         String cn2 = cn + "Quarry" + Configuration.CATEGORY_SPLITTER;
         ConfigCategory c = cg.getCategory(cn2 + "BreakBlock");
-        B_BP = get(c, "BasePower", 40);
-        B_CE = get(c, "EfficiencyCoefficient", 1.3);
-        B_CU = get(c, "UnbreakingCoefficient", 1);
-        B_CF = get(c, "FortuneCoefficient", 1.3);
-        B_CS = get(c, "SilktouchCoefficient", 2);
-        B_XR = get(c, "BaseMaxRecieve", 300);
-        B_MS = get(c, "BaseMaxStored", 15000);
+//        c.setComment("Quarry BreakBlock");
+        QuarryWork_BP = get(c, "BasePower", 40);
+        QuarryWork_CE = get(c, "EfficiencyCoefficient", 1.3);
+        QuarryWork_CU = get(c, "UnbreakingCoefficient", 1);
+        QuarryWork_CF = get(c, "FortuneCoefficient", 1.3);
+        QuarryWork_CS = get(c, "SilktouchCoefficient", 2);
+        QuarryWork_XR = get(c, "BaseMaxRecieve", 300);
+        QuarryWork_MS = get(c, "BaseMaxStored", 15000);
 
-        c = cg.getCategory(cn2 + "BreakBlock" +
-                Configuration.CATEGORY_SPLITTER + "MoveHead");
-        H_BP = get(c, "BasePower", 200);
-        H_CU = get(c, "UnbreakingCoefficient", 1);
+        c = cg.getCategory(cn2 + "BreakBlock" + Configuration.CATEGORY_SPLITTER + "MoveHead");
+        MoveHead_BP = get(c, "BasePower", 200);
+        MoveHead_CU = get(c, "UnbreakingCoefficient", 1);
 
         c = cg.getCategory(cn2 + "MakeFrame");
-        F_BP = get(c, "BasePower", 25);
-        F_CE = get(c, "EfficiencyCoefficient", 1.3);
-        F_CU = get(c, "UnbreakingCoefficient", 1);
-        F_XR = get(c, "BaseMaxRecieve", 100);
-        F_MS = get(c, "BaseMaxStored", 15000);
+        FrameBuild_BP = get(c, "BasePower", 25);
+        FrameBuild_CE = get(c, "EfficiencyCoefficient", 1.3);
+        FrameBuild_CU = get(c, "UnbreakingCoefficient", 1);
+        FrameBuild_XR = get(c, "BaseMaxRecieve", 100);
+        FrameBuild_MS = get(c, "BaseMaxStored", 15000);
 
         cn2 = cn + "Pump" + Configuration.CATEGORY_SPLITTER;
         c = cg.getCategory(cn2 + "DrainLiquid");
-        PL_BP = get(c, "BasePower", 10);
-        PL_CU = get(c, "UnbreakingCoefficient", 1);
+        PumpDrain_BP = get(c, "BasePower", 10);
+        PumpDrain_CU = get(c, "UnbreakingCoefficient", 1);
 
         c = cg.getCategory(cn2 + "MakeFrame");
-        PF_BP = get(c, "BasePower", 25);
-        PF_CU = get(c, "UnbreakingCoefficient", 1);
+        PumpFrame_BP = get(c, "BasePower", 25);
+        PumpFrame_CU = get(c, "UnbreakingCoefficient", 1);
 
         c = cg.getCategory(cn + "MiningWell");
-        W_BP = get(c, "BasePower", 40);
-        W_CE = get(c, "EfficiencyCoefficient", 1.3);
-        W_CU = get(c, "UnbreakingCoefficient", 1);
-        W_CF = get(c, "FortuneCoefficient", 1.3);
-        W_CS = get(c, "SilktouchCoefficient", 2);
-        W_XR = get(c, "BaseMaxRecieve", 100);
-        W_MS = get(c, "BaseMaxStored", 1000);
+        MiningWell_BP = get(c, "BasePower", 40);
+        MiningWell_CE = get(c, "EfficiencyCoefficient", 1.3);
+        MiningWell_CU = get(c, "UnbreakingCoefficient", 1);
+        MiningWell_CF = get(c, "FortuneCoefficient", 1.3);
+        MiningWell_CS = get(c, "SilktouchCoefficient", 2);
+        MiningWell_XR = get(c, "BaseMaxRecieve", 100);
+        MiningWell_MS = get(c, "BaseMaxStored", 1000);
 
         c = cg.getCategory(cn + "Laser");
-        L_BP = get(c, "BasePower", 4);
-        L_CE = get(c, "EfficiencyCoefficient", 2);
-        L_CU = get(c, "UnbreakingCoefficient", 0.1);
-        L_CF = get(c, "FortuneCoefficient", 1.05);
-        L_CS = get(c, "SilktouchCoefficient", 1.1);
-        L_XR = get(c, "BaseMaxRecieve", 100);
-        L_MS = get(c, "BaseMaxStored", 1000);
+        Laser_BP = get(c, "BasePower", 4);
+        Laser_CE = get(c, "EfficiencyCoefficient", 2);
+        Laser_CU = get(c, "UnbreakingCoefficient", 0.1);
+        Laser_CF = get(c, "FortuneCoefficient", 1.05);
+        Laser_CS = get(c, "SilktouchCoefficient", 1.1);
+        Laser_XR = get(c, "BaseMaxRecieve", 100);
+        Laser_MS = get(c, "BaseMaxStored", 1000);
 
         c = cg.getCategory(cn + "Refinery");
-        R_CE = get(c, "EfficiencyCoefficient", 1.3);
-        R_CU = get(c, "UnbreakingCoefficient", 1);
-        R_XR = get(c, "BaseMaxRecieve", 100);
-        R_MS = get(c, "BaseMaxStored", 1000);
+        Refinery_CE = get(c, "EfficiencyCoefficient", 1.3);
+        Refinery_CU = get(c, "UnbreakingCoefficient", 1);
+        Refinery_XR = get(c, "BaseMaxRecieve", 100);
+        Refinery_MS = get(c, "BaseMaxStored", 1000);
 
-        final StringBuilder sb = new StringBuilder();
-
-        if (B_BP < 0)
-            sb.append("general.PowerSetting.Quarry.BreakBlock.BasePower value is bad.\n");
-        if (B_CE < 0)
-            sb.append("general.PowerSetting.Quarry.BreakBlock.EfficiencyCoefficient value is bad.\n");
-        if (B_CU < 0)
-            sb.append("general.PowerSetting.Quarry.BreakBlock.UnbreakingCoefficient value is bad.\n");
-        if (B_CF < 0)
-            sb.append("general.PowerSetting.Quarry.BreakBlock.FortuneCoefficient value is bad.\n");
-        if (B_CS < 0)
-            sb.append("general.PowerSetting.Quarry.BreakBlock.SilktouchCoefficient value is bad.\n");
-        if (B_MS <= 0)
-            sb.append("general.PowerSetting.Quarry.BreakBlock.BaseMaxStored value is bad.\n");
-
-        if (H_BP < 0)
-            sb.append("general.PowerSetting.Quarry.BreakBlock.MoveHead.BasePower value is bad.\n");
-        if (H_CU < 0)
-            sb.append("general.PowerSetting.Quarry.BreakBlock.MoveHead.UnbreakingCoefficient value is bad.\n");
-
-        if (F_BP < 0)
-            sb.append("general.PowerSetting.Quarry.MakeFrame.BasePower value is bad.\n");
-        if (F_CE < 0)
-            sb.append("general.PowerSetting.Quarry.MakeFrame.EfficiencyCoefficient value is bad.\n");
-        if (F_CU < 0)
-            sb.append("general.PowerSetting.Quarry.MakeFrame.UnbreakingCoefficient value is bad.\n");
-        if (F_MS <= 0)
-            sb.append("general.PowerSetting.Quarry.MakeFrame.BaseMaxStored value is bad.\n");
-
-        if (PL_BP < 0)
-            sb.append("general.PowerSetting.Pump.DrainLiquid.BasePower value is bad.\n");
-        if (PL_CU < 0)
-            sb.append("general.PowerSetting.Pump.DrainLiquid.UnbreakingCoefficient value is bad.\n");
-
-        if (PF_BP < 0)
-            sb.append("general.PowerSetting.Pump.MakeFrame.BasePower value is bad.\n");
-        if (PF_CU < 0)
-            sb.append("general.PowerSetting.Pump.MakeFrame.UnbreakingCoefficient value is bad.\n");
-
-        if (W_BP < 0)
-            sb.append("general.PowerSetting.MiningWell.BasePower value is bad.\n");
-        if (W_CE < 0)
-            sb.append("general.PowerSetting.MiningWell.EfficiencyCoefficient value is bad.\n");
-        if (W_CU < 0)
-            sb.append("general.PowerSetting.MiningWell.UnbreakingCoefficient value is bad.\n");
-        if (W_CF < 0)
-            sb.append("general.PowerSetting.MiningWell.FortuneCoefficient value is bad.\n");
-        if (W_CS < 0)
-            sb.append("general.PowerSetting.MiningWell.SilktouchCoefficient value is bad.\n");
-        if (W_MS <= 0)
-            sb.append("general.PowerSetting.MiningWell.BaseMaxStored value is bad.\n");
-
-        if (L_BP < 0)
-            sb.append("general.PowerSetting.Laser.BasePower value is bad.\n");
-        if (L_CE < 0)
-            sb.append("general.PowerSetting.Laser.EfficiencyCoefficient value is bad.\n");
-        if (L_CU < 0)
-            sb.append("general.PowerSetting.Laser.UnbreakingCoefficient value is bad.\n");
-        if (L_CF < 0)
-            sb.append("general.PowerSetting.Laser.FortuneCoefficient value is bad.\n");
-        if (L_CS < 0)
-            sb.append("general.PowerSetting.Laser.SilktouchCoefficient value is bad.\n");
-        if (L_MS <= 0)
-            sb.append("general.PowerSetting.Laser.BaseMaxStored value is bad.\n");
-
-        if (R_CE < 0)
-            sb.append("general.PowerSetting.Refinery.EfficiencyCoefficient value is bad.\n");
-        if (R_CU < 0)
-            sb.append("general.PowerSetting.Refinery.UnbreakingCoefficient value is bad.\n");
-        if (R_MS <= 0)
-            sb.append("general.PowerSetting.Refinery.BaseMaxStored value is bad.\n");
-
-        if (sb.length() != 0)
-            throw new RuntimeException(sb.toString());
     }
 
     public static void configure0(final APowerTile pp) {
         pp.configure(0, pp.getMaxStored());
     }
 
-    private static void configure(final APowerTile pp, final double CE, final byte E, final byte U,
+    private static void configure(final APowerTile pp, final double CE, final byte effciencyLevel, final byte unbreakingLevel,
                                   final double CU, final double XR, final double MS, final byte pump) {
-        pp.configure(XR * Math.pow(CE, E) / (U * CU + 1), MS * Math.pow(CE, E) / (U * CU + 1)
-                + (pump > 0 ? 65536 * PL_BP / (pump * PL_CU + 1) + 1020 * PF_BP / (pump * PF_CU + 1) : 0));
+        pp.configure(XR * Math.pow(CE, effciencyLevel) / (unbreakingLevel * CU + 1),
+                MS * Math.pow(CE, effciencyLevel) / (unbreakingLevel * CU + 1)
+                        + (pump > 0 ? 65536 * PumpDrain_BP / (pump * PumpDrain_CU + 1) + 1020 * PumpFrame_BP / (pump * PumpFrame_CU + 1) : 0));
     }
 
-    private static void configure15(final APowerTile pp, final double CE, final byte E, final byte U,
+    //What???
+    /*private static void configure15(final APowerTile pp, final double CE, final byte effciencyLevel, final byte unbreakingLevel,
                                     final double CU, final double XR, final double MS, final byte pump) {
-        pp.configure(XR * Math.pow(CE, E) / (U * CU + 1), MS * Math.pow(CE, E) / (U * CU + 1)
-                + (pump > 0 ? 65536 * PL_BP / (pump * PL_CU + 1) + 1020 * PF_BP / (pump * PF_CU + 1) : 0));
+        pp.configure(XR * Math.pow(CE, effciencyLevel) / (unbreakingLevel * CU + 1),
+                MS * Math.pow(CE, effciencyLevel) / (unbreakingLevel * CU + 1)
+                + (pump > 0 ? 65536 * PumpDrain_BP / (pump * PumpDrain_CU + 1) + 1020 * PumpFrame_BP / (pump * PumpFrame_CU + 1) : 0));
+    }*/
+
+    public static void configureQuarryWork(final APowerTile pp, final byte effciencyLevel, final byte unbreakingLevel, final byte pump) {
+        configure(pp, QuarryWork_CE, effciencyLevel, unbreakingLevel, QuarryWork_CU, QuarryWork_XR, QuarryWork_MS, pump);
     }
 
-    public static void configureB(final APowerTile pp, final byte E, final byte U, final byte pump) {
-        configure15(pp, B_CE, E, U, B_CU, B_XR, B_MS, pump);
+    public static void configureMiningWell(final APowerTile pp, final byte effciencyLevel, final byte unbreakingLevel, final byte pump) {
+        configure(pp, MiningWell_CE, effciencyLevel, unbreakingLevel, MiningWell_CU, MiningWell_XR, MiningWell_MS, pump);
     }
 
-    public static void configureW(final APowerTile pp, final byte E, final byte U, final byte pump) {
-        configure15(pp, W_CE, E, U, W_CU, W_XR, W_MS, pump);
+    public static void configureLaser(final APowerTile pp, final byte effciencyLevel, final byte unbreakingLevel) {
+        configure(pp, Laser_CE, effciencyLevel, unbreakingLevel, Laser_CU, Laser_XR, Laser_MS, (byte) 0);
     }
 
-    public static void configureL(final APowerTile pp, final byte E, final byte U) {
-        configure(pp, L_CE, E, U, L_CU, L_XR, L_MS, (byte) 0);
+    public static void configureFrameBuild(final APowerTile pp, final byte effciencyLevel, final byte unbreakingLevel, final byte pump) {
+        configure(pp, FrameBuild_CE, effciencyLevel, unbreakingLevel, FrameBuild_CU, FrameBuild_XR, FrameBuild_MS, pump);
     }
 
-    public static void configureF(final APowerTile pp, final byte E, final byte U, final byte pump) {
-        configure(pp, F_CE, E, U, F_CU, F_XR, F_MS, pump);
+    public static void configureRefinery(final APowerTile pp, final byte effciencyLevel, final byte unbreakingLevel) {
+        configure(pp, Refinery_CE, effciencyLevel, unbreakingLevel, Refinery_CU, Refinery_XR, Refinery_MS, (byte) 0);
     }
 
-    public static void configureR(final APowerTile pp, final byte E, final byte U) {
-        configure(pp, R_CE, E, U, R_CU, R_XR, R_MS, (byte) 0);
-    }
-
-    public static boolean useEnergyB(final APowerTile pp, final float H, final byte SF, final byte U) {
+    /**
+     * @param pp          power tile
+     * @param hardness    block hardness
+     * @param enchantMode no ench -> 0, silktouch -> -1, fortune -> fortune level
+     * @param unbreaking  unbreaking level
+     * @return Whether the tile used energy.
+     */
+    public static boolean useEnergyBreak(final APowerTile pp, final float hardness, final byte enchantMode, final byte unbreaking) {
         double BP, CU, CSP;
         if (pp instanceof TileMiningWell) {
-            BP = W_BP;
-            CU = W_CU;
-            if (SF < 0)
-                CSP = W_CS;
+            BP = MiningWell_BP;
+            CU = MiningWell_CU;
+            if (enchantMode < 0)
+                CSP = MiningWell_CS;
             else
-                CSP = Math.pow(W_CF, SF);
+                CSP = Math.pow(MiningWell_CF, enchantMode);
         } else {
-            BP = B_BP;
-            CU = B_CU;
-            if (SF < 0)
-                CSP = B_CS;
+            BP = QuarryWork_BP;
+            CU = QuarryWork_CU;
+            if (enchantMode < 0)
+                CSP = QuarryWork_CS;
             else
-                CSP = Math.pow(B_CF, SF);
+                CSP = Math.pow(QuarryWork_CF, enchantMode);
         }
-        final double pw = BP * H * CSP / (U * CU + 1);
+        final double pw = BP * hardness * CSP / (unbreaking * CU + 1);
         if (pp.useEnergy(pw, pw, false) != pw)
             return false;
         pp.useEnergy(pw, pw, true);
         return true;
     }
 
-    public static boolean useEnergyP(final APowerTile pp, final byte U, final long liquids, final long frames) {
-        final double pw = PL_BP * liquids / (U * PL_CU + 1) + PF_BP * frames / (U * PF_CU + 1);
+    public static boolean useEnergyPump(final APowerTile pp, final byte U, final long liquids, final long frames) {
+        final double pw = PumpDrain_BP * liquids / (U * PumpDrain_CU + 1) + PumpFrame_BP * frames / (U * PumpFrame_CU + 1);
         if (pp.useEnergy(pw, pw, false) != pw)
             return false;
         pp.useEnergy(pw, pw, true);
@@ -254,27 +199,27 @@ public class PowerManager {
         return true;
     }
 
-    public static boolean useEnergyF(final APowerTile pp, final byte U) {
-        return useEnergy(pp, F_BP, U, F_CU, (byte) 0, 1);
+    public static boolean useEnergyFrameBuild(final APowerTile pp, final byte U) {
+        return useEnergy(pp, FrameBuild_BP, U, FrameBuild_CU, (byte) 0, 1);
     }
 
-    public static boolean useEnergyR(final APowerTile pp, final double BP, final byte U, final byte E) {
-        return useEnergy(pp, BP, U, R_CU, E, R_CE);
+    public static boolean useEnergyRefinery(final APowerTile pp, final double BP, final byte U, final byte E) {
+        return useEnergy(pp, BP, U, Refinery_CU, E, Refinery_CE);
     }
 
-    public static double useEnergyH(final APowerTile pp, final double dist, final byte U) {
-        double pw = Math.min(2 + pp.getStoredEnergy() / 500, (dist - 0.1) * H_BP / (U * H_CU + 1));
+    public static double useEnergyQuarryHead(final APowerTile pp, final double dist, final byte U) {
+        double pw = Math.min(2 + pp.getStoredEnergy() / 500, (dist - 0.1) * MoveHead_BP / (U * MoveHead_CU + 1));
         pw = pp.useEnergy(0, pw, true);
-        return pw * (U * H_CU + 1) / H_BP + 0.1;
+        return pw * (U * MoveHead_CU + 1) / MoveHead_BP + 0.1;
     }
 
-    public static double useEnergyL(final APowerTile pp, final byte U, final byte F, final boolean S, final byte E) {
-        double pw = L_BP * Math.pow(L_CF, F) * Math.pow(L_CE, E) / (U * L_CU + 1);
+    public static double useEnergyLaser(final APowerTile pp, final byte U, final byte F, final boolean S, final byte E) {
+        double pw = Laser_BP * Math.pow(Laser_CF, F) * Math.pow(Laser_CE, E) / (U * Laser_CU + 1);
         if (S)
-            pw *= L_CS;
+            pw *= Laser_CS;
         pw = pp.useEnergy(0, pw, true);
         if (S)
-            pw = pw / L_CS;
-        return pw * (U * L_CU + 1) / Math.pow(L_CF, F);
+            pw = pw / Laser_CS;
+        return pw * (U * Laser_CU + 1) / Math.pow(Laser_CF, F);
     }
 }

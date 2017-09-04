@@ -161,6 +161,7 @@ public class BlockPlacer extends ADismCBlock {
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack stack = playerIn.getHeldItem(hand);
+        if (stack.getItem() == QuarryPlusI.debugItem) return true;
         if (BuildCraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
             state.cycleProperty(FACING);
         } else if (!playerIn.isSneaking()) {
