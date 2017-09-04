@@ -43,7 +43,8 @@ object Config {
     val DisableSpawnerController_key = "DisableSpawnerController"
     val SpawnerControllerEntityBlackList_key = "SpawnerControllerEntityBlackList"
     val RecipeDifficulty_key = "RecipeDifficulty"
-    val PlacerOnlyPlaceFront = "PlacerOnlyPlaceFront"
+    val PlacerOnlyPlaceFront_key = "PlacerOnlyPlaceFront"
+    val DEBUG_key = "DEBUG"
 
     class Content {
 
@@ -54,10 +55,10 @@ object Config {
           .getStringList.map(new ResourceLocation(_)).toList.asJava
         val RD = configuration.get(Configuration.CATEGORY_GENERAL, "RecipeDifficulty", 2)
         RD.setComment("Default is 2.0")
-        val placerOnlyPlaceFront = configuration.get(Configuration.CATEGORY_GENERAL, PlacerOnlyPlaceFront, false).getBoolean
+        val placerOnlyPlaceFront = configuration.get(Configuration.CATEGORY_GENERAL, PlacerOnlyPlaceFront_key, false).getBoolean
         WorkbenchRecipes.difficulty = RD.getDouble(2.0)
         PowerManager.loadConfiguration(configuration)
-        val debug = configuration.getBoolean("DEBUG", Configuration.CATEGORY_GENERAL, true, "DEBUG")
+        val debug = configuration.getBoolean(DEBUG_key, Configuration.CATEGORY_GENERAL, true, DEBUG_key)
 
         if (configuration.hasChanged)
             configuration.save()
