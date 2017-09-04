@@ -60,6 +60,11 @@ public class TileMiningWell extends TileBasic implements ITickable {
         }
     }
 
+    @Override
+    protected boolean isWorking() {
+        return working;
+    }
+
     private boolean S_checkTarget(final int depth) {
         if (depth < 1) {
             G_destroy();

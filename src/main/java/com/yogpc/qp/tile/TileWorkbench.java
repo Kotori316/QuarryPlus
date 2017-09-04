@@ -39,11 +39,19 @@ public class TileWorkbench extends APowerTile implements IInventory, IInventoryC
                     if (!inserted.isEmpty()) {
                         InventoryHelper.spawnItemStack(getWorld(), getPos().getX(), getPos().getY(), getPos().getZ(), stack);
                     }
-                    currentRecipe = Optional.empty();
+                    recipes.inputsJ().forEach(v1 ->
+                            inventory.stream().filter(v1::isItemEqual).findFirst().ifPresent(stack1 -> stack1.shrink(v1.getCount()))
+                    );
+                    setCurrentRecipe(-1);
                     markDirty();
                 }
             }
         }
+    }
+
+    @Override
+    protected boolean isWorking() {
+        return currentRecipe.isPresent();
     }
 
     @Override
@@ -121,7 +129,9 @@ public class TileWorkbench extends APowerTile implements IInventory, IInventoryC
         for (int i = 0; i < recipesList.size(); i++) {
             setInventorySlotContents(27 + i, recipesList.get(i).output().toStack(1));
         }
-        configure(250, currentRecipe.map(WorkbenchRecipes::energy).orElse(0d));
+        if (getRecipeIndex() == -1) {
+            setCurrentRecipe(-1);
+        }
     }
 
     @Override
@@ -164,6 +174,15 @@ public class TileWorkbench extends APowerTile implements IInventory, IInventoryC
     @Override
     public boolean hasCustomName() {
         return false;
+    }
+
+    public void setCurrentRecipe(int recipeIndex) {
+        if (recipeIndex >= 0 && recipesList.size() > recipeIndex) {
+            this.currentRecipe = Optional.of(recipesList.get(recipeIndex));
+        } else {
+            this.currentRecipe = Optional.empty();
+        }
+        configure(250, currentRecipe.map(WorkbenchRecipes::energy).orElse(0d));
     }
 
     @SideOnly(Side.CLIENT)

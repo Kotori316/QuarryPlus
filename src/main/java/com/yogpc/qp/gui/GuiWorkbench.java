@@ -31,7 +31,6 @@ public class GuiWorkbench extends GuiContainer {
                     Minecraft.getMinecraft().renderEngine, false);
         }
 
-        //TODO working correctly?
         @Override
         public int drawStringWithShadow(String text, float x, float y, int color) {
             int l = this.p.getStringWidth(text);
@@ -67,7 +66,10 @@ public class GuiWorkbench extends GuiContainer {
 
         @Override
         public void renderItemOverlayIntoGUI(FontRenderer fr, ItemStack stack, int xPosition, int yPosition, @Nullable String text) {
-            super.renderItemOverlayIntoGUI(myfont.setParent(fr), stack, xPosition, yPosition, text);
+            if (stack.getCount() > 64)
+                super.renderItemOverlayIntoGUI(myfont.setParent(fr), stack, xPosition, yPosition, text);
+            else
+                Minecraft.getMinecraft().getRenderItem().renderItemOverlayIntoGUI(fr, stack, xPosition, yPosition, text);
         }
 
     }

@@ -250,6 +250,11 @@ public class TileLaser extends APowerTile implements IEnchantableTile {
     }
 
     @Override
+    protected boolean isWorking() {
+        return false;
+    }
+
+    @Override
     public Map<Integer, Byte> getEnchantments() {
         final Map<Integer, Byte> ret = new HashMap<>();
         if (this.efficiency > 0)

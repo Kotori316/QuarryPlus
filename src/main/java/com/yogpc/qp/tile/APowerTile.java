@@ -46,7 +46,8 @@ public abstract class APowerTile extends APacketTile implements IEnergyReceiver,
     public void update() {
         postLoadEvent();
         this.all += this.got;
-        debug.tick(got);
+        if (!getWorld().isRemote && isWorking())
+            debug.tick(got);
         this.got = 0;
     }
 
@@ -87,6 +88,8 @@ public abstract class APowerTile extends APacketTile implements IEnergyReceiver,
             this.ic2ok = false;
         }
     }
+
+    protected abstract boolean isWorking();
 
     @Optional.Method(modid = QuarryPlus.Optionals.IC2_modID)
     public final void ic2load() {

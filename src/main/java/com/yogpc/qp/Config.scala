@@ -25,6 +25,8 @@ object Config {
 
     def sync(): Unit = {
         mContent = new Content
+        QuarryPlusI.blockBreaker.setTickRandomly(!mContent.placerOnlyPlaceFront)
+        QuarryPlusI.blockPlacer.setTickRandomly(!mContent.placerOnlyPlaceFront)
     }
 
     def setConfigFile(file: File): Unit = {
@@ -47,7 +49,6 @@ object Config {
     val DEBUG_key = "DEBUG"
 
     class Content {
-
         import scala.collection.JavaConverters._
 
         val disableController = configuration.get(Configuration.CATEGORY_GENERAL, "DisableSpawnerController", false).setRequiresMcRestart(true).getBoolean
@@ -55,8 +56,8 @@ object Config {
           .getStringList.map(new ResourceLocation(_)).toList.asJava
         val RD = configuration.get(Configuration.CATEGORY_GENERAL, "RecipeDifficulty", 2)
         RD.setComment("Default is 2.0")
-        val placerOnlyPlaceFront = configuration.get(Configuration.CATEGORY_GENERAL, PlacerOnlyPlaceFront_key, false).getBoolean
         WorkbenchRecipes.difficulty = RD.getDouble(2.0)
+        val placerOnlyPlaceFront = configuration.get(Configuration.CATEGORY_GENERAL, PlacerOnlyPlaceFront_key, false).getBoolean
         PowerManager.loadConfiguration(configuration)
         val debug = configuration.getBoolean(DEBUG_key, Configuration.CATEGORY_GENERAL, true, DEBUG_key)
 

@@ -484,6 +484,11 @@ public class TileQuarry extends TileBasic {
     }
 
     @Override
+    protected boolean isWorking() {
+        return now != NONE;
+    }
+
+    @Override
     public void readFromNBT(final NBTTagCompound nbttc) {
         super.readFromNBT(nbttc);
         this.xMin = nbttc.getInteger("xMin");

@@ -142,6 +142,11 @@ public class TileRefinery extends APowerTile implements IFluidHandler, IEnchanta
 //        RefineryRecipeHelper.get(this);
     }
 
+    @Override
+    protected boolean isWorking() {
+        return false;
+    }
+
     public int getAnimationStage() {
         return this.animationStage;
     }

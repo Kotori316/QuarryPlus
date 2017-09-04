@@ -48,7 +48,7 @@ public class BlockPlacer extends ADismCBlock {
         super(Material.ROCK, QuarryPlus.Names.placer);
         setHardness(3.5F);
         setSoundType(SoundType.STONE);
-        setTickRandomly(true);
+        //Random tick setting is Config.
         setDefaultState(blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(POWERED, false));
     }
 

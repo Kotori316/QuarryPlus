@@ -5,12 +5,15 @@ import net.minecraft.item.ItemStack
 import net.minecraftforge.items.ItemHandlerHelper
 import net.minecraftforge.oredict.OreDictionary
 
+import scala.collection.JavaConverters._
 import scala.collection.mutable
 
 class WorkbenchRecipes(val output: ItemDamage, val energy: Double, in: ItemStack*) {
     val size: Int = in.size
 
     def inputs = in.map(i => ItemHandlerHelper.copyStackWithSize(i, amount(i.getCount))).filterNot(_.isEmpty)
+
+    def inputsJ() = inputs.asJava
 
     val amount: (Int => Int) = p => Math.floor(WorkbenchRecipes.difficulty * p / 50).toInt
 
@@ -46,7 +49,6 @@ object WorkbenchRecipes {
     def removeRecipe(output: ItemDamage): Unit = recipes.remove(output)
 
     def getRecipe(inputs: java.util.List[ItemStack]): java.util.List[WorkbenchRecipes] = {
-        import scala.collection.JavaConverters._
         recipes.filter { case (_, workRecipe) =>
             workRecipe.inputs.forall(i => inputs.asScala.exists(t => OreDictionary.itemMatches(i, t, false) && t.getCount >= i.getCount))
         }.values.toList.asJava
