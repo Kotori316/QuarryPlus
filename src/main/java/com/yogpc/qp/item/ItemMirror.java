@@ -34,12 +34,13 @@ public class ItemMirror extends ItemFood {
                 if (player.dimension != 0) {
                     player.changeDimension(0);
                 }
-            } else if (!player.world.provider.canRespawnHere())
+            } else if (!player.world.provider.canRespawnHere()) {
                 if (stack.getItemDamage() == 1) {
                     player.changeDimension(player.world.provider.getRespawnDimension((EntityPlayerMP) player));
                 } else {
                     return;
                 }
+            }
             BlockPos c = player.getBedLocation(player.dimension);
             if (c != null)
                 c = EntityPlayer.getBedSpawnLocation(player.world, c, player.isSpawnForced(player.dimension));
