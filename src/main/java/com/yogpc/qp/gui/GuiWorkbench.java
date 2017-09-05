@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.block.model.ModelManager;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -64,6 +65,16 @@ public class GuiWorkbench extends GuiContainer {
             super(textureManager, modelManager, itemColors);
         }
 
+        boolean t = true;
+
+        @Override
+        public void renderItemAndEffectIntoGUI(@Nullable EntityLivingBase livingBase, ItemStack stack, int xPosition, int yPosition) {
+            if (t)
+                Minecraft.getMinecraft().getRenderItem().renderItemAndEffectIntoGUI(livingBase, stack, xPosition, yPosition);
+            else
+                super.renderItemAndEffectIntoGUI(livingBase, stack, xPosition, yPosition);
+        }
+
         @Override
         public void renderItemOverlayIntoGUI(FontRenderer fr, ItemStack stack, int xPosition, int yPosition, @Nullable String text) {
             if (stack.getCount() > 64)
@@ -71,7 +82,6 @@ public class GuiWorkbench extends GuiContainer {
             else
                 Minecraft.getMinecraft().getRenderItem().renderItemOverlayIntoGUI(fr, stack, xPosition, yPosition, text);
         }
-
     }
 
     private static final RenderItem myitem = new MyRenderItem(Minecraft.getMinecraft().getTextureManager(), Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getModelManager(), Minecraft.getMinecraft().getItemColors());

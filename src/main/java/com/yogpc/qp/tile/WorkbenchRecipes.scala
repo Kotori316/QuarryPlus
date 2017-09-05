@@ -58,7 +58,7 @@ object WorkbenchRecipes {
 
     def getRecipeFromResult(stack: ItemStack): java.util.Optional[WorkbenchRecipes] = {
         if (stack.isEmpty) return java.util.Optional.empty()
-        recipes.get(stack)
+        recipes.get(ItemDamage(stack)).asJava
     }
 
     protected trait EnergyUnit {

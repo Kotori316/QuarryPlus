@@ -262,9 +262,16 @@ public class TileMarker extends APacketTile implements IAreaProvider, ITickable 
         }
     }
 
+    /**
+     * Show when marker is redstone-powered.
+     * The guide of placing marker.
+     */
     public static class Laser {
         public final World w;
         final int x, y, z;
+        /**
+         * index 0=x , 1=y , 2=z
+         */
         private final EntityLaser[] lasers = new EntityLaser[3];
 
         public Laser(World w, BlockPos pos, Link link) {
@@ -277,6 +284,7 @@ public class TileMarker extends APacketTile implements IAreaProvider, ITickable 
             this.y = py;
             this.z = pz;
             this.w = pw;
+            //TODO check the size. c=0.1? too small?
             if (l == null || l.xn == l.xx)
                 this.lasers[0] = new EntityLaser(pw, px - MAX_SIZE + a, py + b, pz + b, MAX_SIZE * 2, c, c, EntityLaser.BLUE_LASER);
             if (l == null || l.yn == l.yx)
@@ -304,14 +312,6 @@ public class TileMarker extends APacketTile implements IAreaProvider, ITickable 
 
         @Override
         public boolean equals(final Object o) {
-            if (o instanceof BlockIndex) {
-                final BlockIndex bi = (BlockIndex) o;
-                return bi.x == this.x && bi.y == this.y && bi.z == this.z && bi.w == this.w;
-            }
-            if (o instanceof TileEntity) {
-                final TileEntity te = (TileEntity) o;
-                return te.getPos().equals(new BlockPos(x, y, z)) && this.w == te.getWorld();
-            }
             if (!(o instanceof Laser))
                 return false;
             final Laser l = (Laser) o;
@@ -330,6 +330,9 @@ public class TileMarker extends APacketTile implements IAreaProvider, ITickable 
         }
     }
 
+    /**
+     * Link with other markers.
+     */
     public static class Link {
         public int xx, xn, yx, yn, zx, zn;
         private final EntityLaser[] lasers = new EntityLaser[12];

@@ -189,7 +189,7 @@ public class BlockMarker extends Block implements ITileEntityProvider {//BlockCo
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        if (playerIn.getHeldItem(hand).getItem() == QuarryPlusI.debugItem) return true;
+        if (playerIn.getHeldItem(hand).getItem() == QuarryPlusI.debugItem) return false;
         if (!worldIn.isRemote) {
             Item item = playerIn.getHeldItem(hand).getItem();
             TileMarker marker = (TileMarker) worldIn.getTileEntity(pos);

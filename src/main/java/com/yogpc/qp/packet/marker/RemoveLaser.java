@@ -42,7 +42,7 @@ public class RemoveLaser implements IMessage {
     public IMessage onRecieve(IMessage message, MessageContext ctx) {
         World world = Minecraft.getMinecraft().world;
         if (world.provider.getDimension() == dimensionId) {
-            int i = TileMarker.laserList.indexOf(new TileMarker.BlockIndex(world, pos.getX(), pos.getY(), pos.getZ()));
+            int i = TileMarker.LASER_INDEX.indexOf(new TileMarker.BlockIndex(world, pos.getX(), pos.getY(), pos.getZ()));
             if (i >= 0) {
                 TileMarker.laserList.get(i).destructor();
             }

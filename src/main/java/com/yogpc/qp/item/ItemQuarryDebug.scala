@@ -25,31 +25,35 @@ class ItemQuarryDebug extends Item {
                 case laser: TileLaser =>
                     if (!worldIn.isRemote) {
                         player.sendStatusMessage(new TextComponentTranslation("tile.laserplus.name"), false)
+                        player.sendStatusMessage(new TextComponentString(s"Tile Pos : x=${tile.getPos.getX}, y=${tile.getPos.getY}, z=${tile.getPos.getZ}"), false)
                         player.sendStatusMessage(energyToString(laser), false)
                     }
-
                     EnumActionResult.SUCCESS
                 case marker: TileMarker =>
                     if (!worldIn.isRemote) {
                         player.sendStatusMessage(new TextComponentTranslation("tile.markerplus.name"), false)
-                        player.sendStatusMessage(new TextComponentString("Link" + marker.link), false)
-                        player.sendStatusMessage(new TextComponentString("Laser" + marker.laser), false)
+                        player.sendStatusMessage(new TextComponentString(s"Tile Pos : x=${tile.getPos.getX}, y=${tile.getPos.getY}, z=${tile.getPos.getZ}"), false)
+                        player.sendStatusMessage(new TextComponentString("Link : " + marker.link), false)
+                        player.sendStatusMessage(new TextComponentString("Laser : " + marker.laser), false)
                     }
                     EnumActionResult.SUCCESS
                 case miningwell: TileMiningWell =>
                     if (!worldIn.isRemote) {
                         player.sendStatusMessage(new TextComponentTranslation("tile.miningwellplus.name"), false)
+                        player.sendStatusMessage(new TextComponentString(s"Tile Pos : x=${tile.getPos.getX}, y=${tile.getPos.getY}, z=${tile.getPos.getZ}"), false)
                         player.sendStatusMessage(energyToString(miningwell), false)
                     }
                     EnumActionResult.SUCCESS
                 case placer: TilePlacer =>
                     if (!worldIn.isRemote) {
                         player.sendStatusMessage(new TextComponentTranslation(placer.getName), false)
+                        player.sendStatusMessage(new TextComponentString(s"Tile Pos : x=${tile.getPos.getX}, y=${tile.getPos.getY}, z=${tile.getPos.getZ}"), false)
                     }
                     EnumActionResult.SUCCESS
                 case pump: TilePump =>
                     if (!worldIn.isRemote) {
                         player.sendStatusMessage(new TextComponentTranslation("tile.pumpplus.name"), false)
+                        player.sendStatusMessage(new TextComponentString(s"Tile Pos : x=${tile.getPos.getX}, y=${tile.getPos.getY}, z=${tile.getPos.getZ}"), false)
                         player.sendStatusMessage(new TextComponentString("Connection :" + pump.connectTo), false)
                         EnumFacing.VALUES.foreach(facing => {
                             val l = pump.mapping get facing
@@ -61,12 +65,14 @@ class ItemQuarryDebug extends Item {
                 case quarry: TileQuarry =>
                     if (!worldIn.isRemote) {
                         player.sendStatusMessage(new TextComponentTranslation(quarry.getName), false)
+                        player.sendStatusMessage(new TextComponentString(s"Tile Pos : x=${tile.getPos.getX}, y=${tile.getPos.getY}, z=${tile.getPos.getZ}"), false)
                         player.sendStatusMessage(energyToString(quarry), false)
                     }
                     EnumActionResult.SUCCESS
                 case workbench: TileWorkbench =>
                     if (!worldIn.isRemote) {
                         player.sendStatusMessage(new TextComponentTranslation(workbench.getName), false)
+                        player.sendStatusMessage(new TextComponentString(s"Tile Pos : x=${tile.getPos.getX}, y=${tile.getPos.getY}, z=${tile.getPos.getZ}"), false)
                         player.sendStatusMessage(energyToString(workbench), false)
                         player.sendStatusMessage(new TextComponentString(workbench.currentRecipe.scalaMap(_.toString).getOrElse("No recipe.")), false)
                     }
@@ -74,9 +80,10 @@ class ItemQuarryDebug extends Item {
                 case _ => super.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ)
 
             }
+        } else {
+            player.sendStatusMessage(new TextComponentString("QuarryPlus debug is not enabled"), true)
+            super.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ)
         }
-        player.sendStatusMessage(new TextComponentString("QuarryPlus debug is not enabled"), true)
-        super.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ)
     }
 
     private def energyToString(tile: APowerTile): ITextComponent = {

@@ -82,7 +82,7 @@ public class PacketHandler {
     }
 
     /**
-     * To setver
+     * To server
      */
     public static void sendToServer(IMessage message) {
         wrapper.sendToServer(message);

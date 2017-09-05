@@ -18,7 +18,7 @@ class WorkBenchRecipeWrapper(recipe: WorkbenchRecipes) extends BlankRecipeWrappe
             in add t
             inputs add in
         })
-        outputs add recipe.output
+        outputs add recipe.output.toStack()
 
         ingredients.setInputLists(classOf[ItemStack], inputs)
         ingredients.setOutputs(classOf[ItemStack], outputs)
