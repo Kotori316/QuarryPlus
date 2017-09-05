@@ -38,7 +38,8 @@ public class LinkUpdate implements IMessage {
     public IMessage onRecieve(IMessage message, MessageContext ctx) {
         TileMarker marker = (TileMarker) Minecraft.getMinecraft().world.getTileEntity(pos);
         assert marker != null;
-        marker.G_updateSignal();
+//        marker.G_updateSignal();
+        marker.laser = new TileMarker.Laser(marker.getWorld(), marker.getPos(), marker.link);
         return null;
     }
 }

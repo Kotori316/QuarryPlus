@@ -1,10 +1,15 @@
 package com.yogpc.qp.render;
 
 import com.yogpc.qp.entity.EntityLaser;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -19,7 +24,59 @@ public class RenderEntityLaser extends Render<EntityLaser> {
     protected ResourceLocation getEntityTexture(EntityLaser entity) {
         return TextureMap.LOCATION_BLOCKS_TEXTURE;
     }
-/*
+
+    @Override
+    public void doRender(EntityLaser entity, double posX, double posY, double posZ, float entityYaw, float partialTicks) {
+        super.doRender(entity, posX, posY, posZ, entityYaw, partialTicks);
+        AxisAlignedBB boundingBox = entity.getEntityBoundingBox();
+        double x = posX - entity.lastTickPosX;
+        double y = posY - entity.lastTickPosY;
+        double z = posZ - entity.lastTickPosZ;
+
+        EntityLaser.LaserType laser = entity.texture;
+        doRender(boundingBox, x, y, z, laser);
+    }
+
+    private static void doRender(AxisAlignedBB boundingBox, double x, double y, double z, EntityLaser.LaserType laser) {
+        Tessellator tessellator = Tessellator.getInstance();
+        VertexBuffer vertexbuffer = tessellator.getBuffer();
+
+        GlStateManager.pushMatrix();
+        GlStateManager.disableTexture2D();
+        GlStateManager.color(laser.getr(), laser.getg(), laser.getb(), laser.geta());
+        vertexbuffer.setTranslation(x, y, z);
+        vertexbuffer.begin(7, DefaultVertexFormats.POSITION_NORMAL);
+        vertexbuffer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.minZ).normal(0.0F, 0.0F, -1.0F).endVertex();
+        vertexbuffer.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.minZ).normal(0.0F, 0.0F, -1.0F).endVertex();
+        vertexbuffer.pos(boundingBox.maxX, boundingBox.minY, boundingBox.minZ).normal(0.0F, 0.0F, -1.0F).endVertex();
+        vertexbuffer.pos(boundingBox.minX, boundingBox.minY, boundingBox.minZ).normal(0.0F, 0.0F, -1.0F).endVertex();
+        vertexbuffer.pos(boundingBox.minX, boundingBox.minY, boundingBox.maxZ).normal(0.0F, 0.0F, 1.0F).endVertex();
+        vertexbuffer.pos(boundingBox.maxX, boundingBox.minY, boundingBox.maxZ).normal(0.0F, 0.0F, 1.0F).endVertex();
+        vertexbuffer.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ).normal(0.0F, 0.0F, 1.0F).endVertex();
+        vertexbuffer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.maxZ).normal(0.0F, 0.0F, 1.0F).endVertex();
+        vertexbuffer.pos(boundingBox.minX, boundingBox.minY, boundingBox.minZ).normal(0.0F, -1.0F, 0.0F).endVertex();
+        vertexbuffer.pos(boundingBox.maxX, boundingBox.minY, boundingBox.minZ).normal(0.0F, -1.0F, 0.0F).endVertex();
+        vertexbuffer.pos(boundingBox.maxX, boundingBox.minY, boundingBox.maxZ).normal(0.0F, -1.0F, 0.0F).endVertex();
+        vertexbuffer.pos(boundingBox.minX, boundingBox.minY, boundingBox.maxZ).normal(0.0F, -1.0F, 0.0F).endVertex();
+        vertexbuffer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.maxZ).normal(0.0F, 1.0F, 0.0F).endVertex();
+        vertexbuffer.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ).normal(0.0F, 1.0F, 0.0F).endVertex();
+        vertexbuffer.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.minZ).normal(0.0F, 1.0F, 0.0F).endVertex();
+        vertexbuffer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.minZ).normal(0.0F, 1.0F, 0.0F).endVertex();
+        vertexbuffer.pos(boundingBox.minX, boundingBox.minY, boundingBox.maxZ).normal(-1.0F, 0.0F, 0.0F).endVertex();
+        vertexbuffer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.maxZ).normal(-1.0F, 0.0F, 0.0F).endVertex();
+        vertexbuffer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.minZ).normal(-1.0F, 0.0F, 0.0F).endVertex();
+        vertexbuffer.pos(boundingBox.minX, boundingBox.minY, boundingBox.minZ).normal(-1.0F, 0.0F, 0.0F).endVertex();
+        vertexbuffer.pos(boundingBox.maxX, boundingBox.minY, boundingBox.minZ).normal(1.0F, 0.0F, 0.0F).endVertex();
+        vertexbuffer.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.minZ).normal(1.0F, 0.0F, 0.0F).endVertex();
+        vertexbuffer.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ).normal(1.0F, 0.0F, 0.0F).endVertex();
+        vertexbuffer.pos(boundingBox.maxX, boundingBox.minY, boundingBox.maxZ).normal(1.0F, 0.0F, 0.0F).endVertex();
+        tessellator.draw();
+        vertexbuffer.setTranslation(0.0D, 0.0D, 0.0D);
+        GlStateManager.enableTexture2D();
+        GlStateManager.popMatrix();
+    }
+
+    /*
     @Override
     public void doRender(final EntityLaser e, final double i, final double j, final double k, final float f, final float f1) {
         if (e.isDead)

@@ -1,5 +1,8 @@
 package com.yogpc.qp;
 
+import java.util.Map;
+import java.util.WeakHashMap;
+
 import com.yogpc.qp.entity.EntityLaser;
 import com.yogpc.qp.render.RenderEntityLaser;
 import net.minecraft.client.Minecraft;
@@ -63,7 +66,7 @@ public class ProxyClient extends ProxyCommon {
                     }
         if (this.key != prev) {
             PacketHandler.sendPacketToServer(new YogpstopPacket(this.key));
-            super.setKeys(Minecraft.getMinecraft().player, this.key);
+            this.setKeys(Minecraft.getMinecraft().player, this.key);
         }
     }
 
@@ -72,6 +75,23 @@ public class ProxyClient extends ProxyCommon {
         if (inh instanceof NetHandlerPlayServer)
             return ((NetHandlerPlayServer) inh).playerEntity;
         return Minecraft.getMinecraft().player;
+    }
+
+    private final Map<EntityPlayer, Integer> keys = new WeakHashMap<>();
+
+    @Override
+    public boolean getKey(final EntityPlayer p, final Key k) {
+        return this.keys.containsKey(p) && (this.keys.get(p) & 1 << k.ordinal()) != 0;
+    }
+
+    @Override
+    public int keysToInt(final EntityPlayer p) {
+        return this.keys.getOrDefault(p, 0);
+    }
+
+    @Override
+    public void setKeys(final EntityPlayer p, final int r) {
+        this.keys.put(p, r);
     }
 
     @Override
@@ -95,7 +115,5 @@ public class ProxyClient extends ProxyCommon {
     public void registerTextures() {
         RenderingRegistry.registerEntityRenderingHandler(EntityLaser.class, RenderEntityLaser::new);
 //        ClientRegistry.bindTileEntitySpecialRenderer(TileRefinery.class, RenderRefinery.INSTANCE);
-//        ClientRegistry.bindTileEntitySpecialRenderer(TileQuarry.class, RenderQuarry.INSTANCE);
-//        ClientRegistry.bindTileEntitySpecialRenderer(TileLaser.class, RenderLaser.INSTANCE);
     }
 }

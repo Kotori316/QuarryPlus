@@ -1,5 +1,6 @@
 package com.yogpc.qp.entity;
 
+import com.yogpc.qp.QuarryPlus;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.nbt.NBTTagCompound;
@@ -7,39 +8,46 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 
 public class EntityLaser extends Entity {
-    public static final int DRILL = 0;
-    public static final int DRILL_HEAD = 1;
-    public static final int BLUE_LASER = 2;
-    public static final int RED_LASER = 3;
-
+    public static final String NAME = "quarrylaser";
     public double iSize, jSize, kSize;
-    public final int texture;
+    public final LaserType texture;
+    public final boolean isLink;
 
     @SuppressWarnings("unused")
     public EntityLaser(World worldIn) {
-        this(worldIn, 0, 0, 0, 0, 0, 0, DRILL);
+        this(worldIn, 0, 0, 0, 0, 0, 0, LaserType.DRILL, false);
+        width = 0.1f;
+        height = .1f;
     }
 
     public EntityLaser(final World world, final double x, final double y, final double z,
-                       final double iSize, final double jSize, final double kSize, final int tex) {
+                       final double iSize, final double jSize, final double kSize, final LaserType tex, boolean isLink) {
         super(world);
         this.preventEntitySpawning = false;
         this.noClip = true;
         this.isImmuneToFire = true;
+        this.isLink = isLink;
         this.iSize = iSize;
         this.jSize = jSize;
         this.kSize = kSize;
-        setPositionAndRotation(x, y, z, 0, 0);
         this.motionX = 0.0;
         this.motionY = 0.0;
         this.motionZ = 0.0;
+        setSize(.1f, .1f);
+        setPositionAndRotation(x, y, z, 0, 0);
         this.texture = tex;
+        QuarryPlus.LOGGER.info(String.format("Client = %s Laser spwaned at %s, %s, %s size %s, %s, %s", world.isRemote, x, y, x, iSize, jSize, kSize));
     }
 
     @Override
     public void setPosition(final double x, final double y, final double z) {
         super.setPosition(x, y, z);
-        setEntityBoundingBox(new AxisAlignedBB(this.posX, this.posY, this.posZ, this.posX + this.iSize, this.posY + this.jSize, this.posZ + this.kSize));
+        if (isLink)
+            setEntityBoundingBox(new AxisAlignedBB(this.posX, this.posY, this.posZ, this.posX + this.iSize, this.posY + this.jSize, this.posZ + this.kSize));
+        else
+            setEntityBoundingBox(
+                    new AxisAlignedBB(posX - iSize, posY - jSize, posZ - kSize, posX + iSize, posY + jSize, posZ + kSize)
+            );
     }
 
     @Override
@@ -63,5 +71,47 @@ public class EntityLaser extends Entity {
         data.setDouble("iSize", this.iSize);
         data.setDouble("jSize", this.jSize);
         data.setDouble("kSize", this.kSize);
+    }
+
+    @Override
+    public void setDead() {
+        super.setDead();
+        QuarryPlus.LOGGER.info(world.isRemote + " " + toString() + " " + getEntityBoundingBox());
+    }
+
+    @Override
+    public void onEntityUpdate() {
+        super.onEntityUpdate();
+    }
+
+    public enum LaserType {
+        DRILL(255, 255, 0, 255),
+        DRILL_HEAD(0, 0, 0, 255),
+        BLUE_LASER(0, 0, 255, 255),
+        RED_LASER(255, 0, 0, 255);
+        final int r, g, b, a;
+
+        LaserType(int r, int g, int b, int a) {
+            this.r = r;
+            this.g = g;
+            this.b = b;
+            this.a = a;
+        }
+
+        public float getr() {
+            return r / 255;
+        }
+
+        public float getg() {
+            return g / 255;
+        }
+
+        public float getb() {
+            return b / 255;
+        }
+
+        public float geta() {
+            return a / 255;
+        }
     }
 }
