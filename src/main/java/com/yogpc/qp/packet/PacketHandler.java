@@ -35,7 +35,7 @@ public class PacketHandler {
         //pump
         wrapper.registerMessage(handler, Now.class, 2, Side.CLIENT);
         wrapper.registerMessage(handler, Mappings.All.class, 3, Side.CLIENT);
-        wrapper.registerMessage(handler, Mappings.All.class, 15, Side.SERVER);
+        wrapper.registerMessage(handler, Mappings.Copy.class, 15, Side.SERVER);
         wrapper.registerMessage(handler, Mappings.Update.class, 4, Side.SERVER);
         //enchantment
         wrapper.registerMessage(handler, EnchantmentMessage.class, 5, Side.SERVER);

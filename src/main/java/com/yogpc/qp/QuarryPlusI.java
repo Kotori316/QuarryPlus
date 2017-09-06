@@ -26,7 +26,6 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
@@ -35,8 +34,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class QuarryPlusI {
     public static final QuarryPlusI INSANCE = new QuarryPlusI();
@@ -81,23 +78,6 @@ public class QuarryPlusI {
         for (final TileMarker.Laser l : lb)
             if (l.w == event.getWorld())
                 l.destructor();
-    }
-
-    @SubscribeEvent
-    @SideOnly(Side.CLIENT)
-    public void loadTextures(final TextureStitchEvent.Pre evt) {
-        /*if (evt.getMap().getTextureType() == 0) {
-            final TextureMap map = evt.getMap();
-            RenderEntityLaser.icons = new IIcon[4];
-            RenderEntityLaser.icons[EntityLaser.DRILL] =
-                    map.registerIcon("yogpstop_qp:blockDrillTexture");
-            RenderEntityLaser.icons[EntityLaser.DRILL_HEAD] =
-                    map.registerIcon("yogpstop_qp:blockDrillHeadTexture");
-            RenderEntityLaser.icons[EntityLaser.RED_LASER] =
-                    map.registerIcon("yogpstop_qp:blockRedLaser");
-            RenderEntityLaser.icons[EntityLaser.BLUE_LASER] =
-                    map.registerIcon("yogpstop_qp:blockBlueLaser");
-        }*/
     }
 
     public static void preInit(final FMLPreInitializationEvent event) {

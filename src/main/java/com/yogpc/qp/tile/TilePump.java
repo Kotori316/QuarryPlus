@@ -14,6 +14,7 @@
 package com.yogpc.qp.tile;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -46,6 +47,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
@@ -201,6 +203,22 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         }
     }
 
+    public void setConnectTo(@Nullable EnumFacing connectTo) {
+        this.connectTo = connectTo;
+        IBlockState state = getWorld().getBlockState(getPos());
+        if (connectTo == null && state.getValue(BlockPump.CONNECTED)) {
+            validate();
+            getWorld().setBlockState(getPos(), state.withProperty(BlockPump.CONNECTED, false));
+            validate();
+            getWorld().setTileEntity(getPos(), this);
+        } else if (connectTo != null && !state.getValue(BlockPump.CONNECTED)) {
+            validate();
+            getWorld().setBlockState(getPos(), state.withProperty(BlockPump.CONNECTED, true));
+            validate();
+            getWorld().setTileEntity(getPos(), this);
+        }
+    }
+
     /*
         public void S_recievePacket(final byte id, final byte[] data, final EntityPlayer ep) {
             final ByteArrayDataInput badi = ByteStreams.newDataInput(data);
@@ -279,7 +297,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         }
     }
 
-    public void S_OpenGUI(EnumFacing facing, final EntityPlayer ep) {// BI[Ljava.lang.String;
+    public void S_OpenGUI(EnumFacing facing, final EntityPlayer ep) {
         PacketHandler.sendToClient(Mappings.All.create(this, facing), (EntityPlayerMP) ep);
     }
 
@@ -428,14 +446,15 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
             S_searchLiquid(x, y, z);
         else {
             this.ebses = new ExtendedBlockStorage[this.ebses.length][this.ebses[0].length][];
-            int kx, kz;
-            for (kx = 0; kx < this.ebses.length; kx++)
-                for (kz = 0; kz < this.ebses[0].length; kz++)
-                    this.ebses[kx][kz] =
-                            getWorld().getChunkProvider()
-                                    .getLoadedChunk(kx + (this.xOffset >> 4), kz + (this.zOffset >> 4))
-                                    .getBlockStorageArray();
+            for (int kx = 0; kx < this.ebses.length; kx++) {
+                for (int kz = 0; kz < this.ebses[0].length; kz++) {
+                    this.ebses[kx][kz] = getWorld().getChunkProvider()
+                            .getLoadedChunk(kx + (this.xOffset >> 4), kz + (this.zOffset >> 4))
+                            .getBlockStorageArray();
+                }
+            }
         }
+
         int count = 0;
         IBlockState bb;
         int bz;
@@ -450,22 +469,23 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                                 if (isLiquid(bb, false, null, BlockPos.ORIGIN))
                                     count++;
                             }
-                } else
+                } else {
                     for (bz = 0; bz < this.block_side_z; bz++)
                         if (this.blocks[this.py - this.yOffset][this.px][bz] != 0) {
                             bb = this.ebses[this.px >> 4][bz >> 4][this.py >> 4].get(this.px & 0xF, this.py & 0xF, bz & 0xF);
                             if (isLiquid(bb, true, getWorld(), new BlockPos(this.px + this.xOffset, this.py, bz + this.zOffset)))
                                 count++;
                         }
+                }
                 if (count > 0)
                     break;
             } while (++this.px < this.block_side_x);
             if (count > 0)
                 break;
             this.px = -1;
+
         } while (--this.py >= this.cy);
-        if (count > 0
-                && PowerManager.useEnergyPump(tbpp, this.unbreaking, count, this.px == -1 ? count : 0))
+        if (count > 0 && PowerManager.useEnergyPump(tbpp, this.unbreaking, count, this.px == -1 ? count : 0))
             if (this.px == -1) {
                 int bx;
                 for (bx = 0; bx < this.block_side_x; bx++)
@@ -503,7 +523,6 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
             return Collections.singletonList(new TextComponentTranslation("chat.pumpcontainno"));
         }
     }
-
 
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -607,7 +626,8 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     private void drainBlock(final int bx, final int bz, final IBlockState tb) {
         final IBlockState b = this.ebses[bx >> 4][bz >> 4][this.py >> 4].get(bx & 0xF, this.py & 0xF, bz & 0xF);
         if (isLiquid(b, false, null, BlockPos.ORIGIN)) {
-            IFluidHandler handler = FluidUtil.getFluidHandler(getWorld(), new BlockPos(bx, py, bz), EnumFacing.UP);
+            BlockPos blockPos = new BlockPos(bx + xOffset, py, bz + zOffset);
+            IFluidHandler handler = FluidUtil.getFluidHandler(getWorld(), blockPos, EnumFacing.UP);
             if (handler != null) {
                 FluidStack stack = handler.drain(Fluid.BUCKET_VOLUME, true);
                 if (stack != null) {
@@ -617,8 +637,24 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                     else
                         this.liquids.add(stack);
                 }
-                getWorld().setBlockState(pos, tb);
+                getWorld().setBlockState(blockPos, tb);
             }
+        }
+    }
+
+    public void sendDebugMessage(EntityPlayer player) {
+        player.sendStatusMessage(new TextComponentString("Connection : " + this.connectTo), false);
+        Arrays.asList(EnumFacing.VALUES).forEach(facing ->
+                this.mapping.get(facing).stream()
+                        .reduce((s1, s2) -> s1 + ", " + s2)
+                        .ifPresent(s -> player.sendStatusMessage(
+                                new TextComponentString(facing + " -> " + s), false)
+                        ));
+        if (!liquids.isEmpty()) {
+            player.sendStatusMessage(new TextComponentTranslation("chat.pumpcontain"), false);
+            liquids.stream().map(fluidStack -> fluidStack.getLocalizedName() + fluidStack.amount + "mB").reduce((s, s2) -> s + ", " + s2)
+                    .map(TextComponentString::new)
+                    .ifPresent(s -> player.sendStatusMessage(s, false));
         }
     }
 

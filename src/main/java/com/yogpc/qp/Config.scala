@@ -46,9 +46,11 @@ object Config {
     val SpawnerControllerEntityBlackList_key = "SpawnerControllerEntityBlackList"
     val RecipeDifficulty_key = "RecipeDifficulty"
     val PlacerOnlyPlaceFront_key = "PlacerOnlyPlaceFront"
+    val NoEnergy_key = "NoEnergy"
     val DEBUG_key = "DEBUG"
 
     class Content {
+
         import scala.collection.JavaConverters._
 
         val disableController = configuration.get(Configuration.CATEGORY_GENERAL, "DisableSpawnerController", false).setRequiresMcRestart(true).getBoolean
@@ -58,6 +60,7 @@ object Config {
         RD.setComment("Default is 2.0")
         WorkbenchRecipes.difficulty = RD.getDouble(2.0)
         val placerOnlyPlaceFront = configuration.get(Configuration.CATEGORY_GENERAL, PlacerOnlyPlaceFront_key, false).getBoolean
+        val noEnergy = configuration.getBoolean(NoEnergy_key, Configuration.CATEGORY_GENERAL, false, NoEnergy_key)
         PowerManager.loadConfiguration(configuration)
         val debug = configuration.getBoolean(DEBUG_key, Configuration.CATEGORY_GENERAL, true, DEBUG_key)
 

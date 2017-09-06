@@ -45,6 +45,11 @@ public class TileMiningWell extends TileBasic implements ITickable {
     }
 
     @Override
+    public String getName() {
+        return "tile.miningwellplus.name";
+    }
+
+    @Override
     public void update() {
         super.update();
         if (!getWorld().isRemote) {

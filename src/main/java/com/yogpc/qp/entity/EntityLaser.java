@@ -1,9 +1,11 @@
 package com.yogpc.qp.entity;
 
+import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 
@@ -36,7 +38,8 @@ public class EntityLaser extends Entity {
         setSize(.1f, .1f);
         setPositionAndRotation(x, y, z, 0, 0);
         this.texture = tex;
-        QuarryPlus.LOGGER.info(String.format("Client = %s Laser spwaned at %s, %s, %s size %s, %s, %s", world.isRemote, x, y, x, iSize, jSize, kSize));
+        if (Config.content().debug())
+            QuarryPlus.LOGGER.info(String.format("Client = %s Laser spwaned at %s, %s, %s size %s, %s, %s", world.isRemote, x, y, x, iSize, jSize, kSize));
     }
 
     @Override
@@ -76,7 +79,8 @@ public class EntityLaser extends Entity {
     @Override
     public void setDead() {
         super.setDead();
-        QuarryPlus.LOGGER.info(world.isRemote + " " + toString() + " " + getEntityBoundingBox());
+        if (Config.content().debug())
+            QuarryPlus.LOGGER.info(world.isRemote + " " + toString() + " " + getEntityBoundingBox());
     }
 
     @Override
@@ -84,11 +88,41 @@ public class EntityLaser extends Entity {
         super.onEntityUpdate();
     }
 
+    @Override
+    public boolean writeToNBTOptional(NBTTagCompound compound) {
+        return false;
+    }
+
+    @Override
+    public boolean hasCustomName() {
+        return false;
+    }
+
     public enum LaserType {
-        DRILL(255, 255, 0, 255),
-        DRILL_HEAD(0, 0, 0, 255),
-        BLUE_LASER(0, 0, 255, 255),
-        RED_LASER(255, 0, 0, 255);
+        DRILL(255, 255, 0, 255) {
+            @Override
+            public ResourceLocation location() {
+                return new ResourceLocation(QuarryPlus.modID, "blockdrilltexture");
+            }
+        },
+        DRILL_HEAD(0, 0, 0, 255) {
+            @Override
+            public ResourceLocation location() {
+                return new ResourceLocation(QuarryPlus.modID, "blockdrillheadtexture");
+            }
+        },
+        BLUE_LASER(0, 0, 255, 255) {
+            @Override
+            public ResourceLocation location() {
+                return new ResourceLocation(QuarryPlus.modID, "blockbluelaser");
+            }
+        },
+        RED_LASER(255, 0, 0, 255) {
+            @Override
+            public ResourceLocation location() {
+                return new ResourceLocation(QuarryPlus.modID, "blockredlaser");
+            }
+        };
         final int r, g, b, a;
 
         LaserType(int r, int g, int b, int a) {
@@ -113,5 +147,7 @@ public class EntityLaser extends Entity {
         public float geta() {
             return a / 255;
         }
+
+        public abstract ResourceLocation location();
     }
 }

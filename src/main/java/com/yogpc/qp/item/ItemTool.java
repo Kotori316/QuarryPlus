@@ -42,6 +42,9 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
 
+/**
+ * 0=> statuschecker, 1=> listeditor, 2=> liquidselector
+ */
 public class ItemTool extends Item implements IEnchantableItem {
     /**
      * meta=1

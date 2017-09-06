@@ -14,7 +14,9 @@
 package com.yogpc.qp.tile;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import buildcraft.api.core.IAreaProvider;
 import com.google.common.collect.Sets;
@@ -29,6 +31,7 @@ import com.yogpc.qp.packet.quarry.ModeMessage;
 import com.yogpc.qp.packet.quarry.MoveHead;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -36,6 +39,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.ForgeChunkManager.Type;
@@ -50,21 +55,24 @@ import static com.yogpc.qp.tile.TileQuarry.Mode.NONE;
 import static com.yogpc.qp.tile.TileQuarry.Mode.NOTNEEDBREAK;
 
 public class TileQuarry extends TileBasic {
+    public final boolean bccoreLoaded;
     private int targetX, targetY, targetZ;
     public int xMin, xMax, yMin, yMax = Integer.MIN_VALUE, zMin, zMax;
     public boolean filler;
 
-    /**
-     * TODO Cause {@link NoClassDefFoundError}
-     */
-    private IAreaProvider areaProvider = null;
+    private Object areaProvider = null;
+
+    public TileQuarry() {
+        bccoreLoaded = ModAPIManager.INSTANCE.hasAPI(QuarryPlus.Optionals.BuildCraft_core);
+    }
 
     private void S_updateEntity() {
         if (this.areaProvider != null) {
             if (this.areaProvider instanceof TileMarker)
                 this.cacheItems.addAll(((TileMarker) this.areaProvider).removeFromWorldWithItem());
-            else
-                this.areaProvider.removeFromWorld();
+            else if (bccoreLoaded && areaProvider instanceof IAreaProvider) {
+                ((IAreaProvider) this.areaProvider).removeFromWorld();
+            }
             this.areaProvider = null;
         }
         switch (this.now) {
@@ -153,7 +161,7 @@ public class TileQuarry extends TileBasic {
                     return S_checkTarget();
                 }
                 if (b.getMaterial().isSolid()
-                        && !(b == QuarryPlusI.blockFrame && !b.getValue(BlockFrame.DAMMING))) {
+                        && !(b.getBlock() == QuarryPlusI.blockFrame && !b.getValue(BlockFrame.DAMMING))) {
                     this.now = NOTNEEDBREAK;
                     G_renew_powerConfigure();
                     this.targetX = this.xMin;
@@ -171,7 +179,7 @@ public class TileQuarry extends TileBasic {
                     flag++;
                 if (this.targetZ == this.zMin || this.targetZ == this.zMax)
                     flag++;
-                return flag > 1 && (b != QuarryPlusI.blockFrame || b.getValue(BlockFrame.DAMMING));
+                return flag > 1 && (b.getBlock() != QuarryPlusI.blockFrame || b.getValue(BlockFrame.DAMMING));
             case NONE:
                 break;
         }
@@ -179,7 +187,7 @@ public class TileQuarry extends TileBasic {
     }
 
     private static void sendNowPacket(TileQuarry quarry) {
-        com.yogpc.qp.packet.PacketHandler.sendToAround(ModeMessage.create(quarry), quarry.getWorld(), quarry.getPos());
+        PacketHandler.sendToAround(ModeMessage.create(quarry), quarry.getWorld(), quarry.getPos());
     }
 
     private boolean addX = true;
@@ -190,14 +198,16 @@ public class TileQuarry extends TileBasic {
     private void S_setNextTarget() {
         if (this.now == MAKEFRAME) {
             if (this.changeZ) {
-                if (this.addZ)
+                if (this.addZ) {
                     this.targetZ++;
-                else
+                } else {
                     this.targetZ--;
-            } else if (this.addX)
+                }
+            } else if (this.addX) {
                 this.targetX++;
-            else
+            } else {
                 this.targetX--;
+            }
             if (this.targetX < this.xMin || this.xMax < this.targetX) {
                 this.addX = !this.addX;
                 this.changeZ = true;
@@ -306,86 +316,102 @@ public class TileQuarry extends TileBasic {
     }
 
     private void S_createBox() {
-        //TODO make simply as 1.12
         if (this.yMax != Integer.MIN_VALUE)
             return;
-        int xCoord = getPos().getX();
-        int yCoord = getPos().getY();
-        int zCoord = getPos().getZ();
-        if (!S_checkIAreaProvider(xCoord - 1, yCoord, zCoord))
-            if (!S_checkIAreaProvider(xCoord + 1, yCoord, zCoord))
-                if (!S_checkIAreaProvider(xCoord, yCoord, zCoord - 1))
-                    if (!S_checkIAreaProvider(xCoord, yCoord, zCoord + 1))
-                        if (!S_checkIAreaProvider(xCoord, yCoord - 1, zCoord))
-                            if (!S_checkIAreaProvider(xCoord, yCoord + 1, zCoord)) {
-                                final EnumFacing o = getWorld().getBlockState(getPos()).getValue(BlockQuarry.FACING).getOpposite();
-                                switch (o) {
-                                    case EAST:
-                                        xMin = xCoord + 1;
-                                        zMin = zCoord - 5;
-                                        break;
-                                    case WEST:
-                                        xMin = xCoord - 11;
-                                        zMin = zCoord - 5;
-                                        break;
-                                    case SOUTH:
-                                        xMin = xCoord - 5;
-                                        zMin = zCoord + 1;
-                                        break;
-                                    case DOWN:
-                                    case UP:
-                                    case NORTH:
-                                        xMin = xCoord - 5;
-                                        zMin = zCoord - 11;
-                                        break;
-                                }
-                                yMin = yCoord;
-                                xMax = xMin + 10;
-                                zMax = zMin + 10;
-                                yMax = yCoord + 4;
-                            }
+
+        EnumFacing facing = getWorld().getBlockState(getPos()).getValue(BlockQuarry.FACING).getOpposite();
+        if (bccoreLoaded) {
+            Optional<IAreaProvider> marker = Stream.of(pos.offset(facing), pos.offset(facing.rotateYCCW()), pos.offset(facing.rotateY()))
+                    .map(getWorld()::getTileEntity)
+                    .filter(t -> t instanceof IAreaProvider)
+                    .map(t -> (IAreaProvider) t).findFirst();
+            if (marker.isPresent()) {
+                IAreaProvider provider = marker.get();
+                if (provider.min().getX() == provider.max().getX() || provider.min().getZ() == provider.max().getZ()) {
+                    setDefaultRange(getPos(), facing);
+                } else {
+                    this.xMin = provider.min().getX();
+                    this.yMin = provider.min().getY();
+                    this.zMin = provider.min().getZ();
+                    this.xMax = provider.max().getX();
+                    this.yMax = provider.max().getY();
+                    this.zMax = provider.max().getZ();
+
+                    if (getPos().getX() >= this.xMin && getPos().getX() <= this.xMax && getPos().getY() >= this.yMin
+                            && getPos().getY() <= this.yMax && getPos().getZ() >= this.zMin && getPos().getZ() <= this.zMax) {
+                        this.yMax = Integer.MIN_VALUE;
+                        setDefaultRange(getPos(), facing);
+                        return;
+                    }
+                    if (this.xMax - this.xMin < 2 || this.zMax - this.zMin < 2) {
+                        this.yMax = Integer.MIN_VALUE;
+                        setDefaultRange(getPos(), facing);
+                        return;
+                    }
+                    if (this.yMax - this.yMin < 2)
+                        this.yMax = this.yMin + 3;
+                }
+            } else {
+                setDefaultRange(getPos(), facing);
+            }
+        } else {
+            Optional<TileMarker> marker = Stream.of(pos.offset(facing), pos.offset(facing.rotateYCCW()), pos.offset(facing.rotateY()))
+                    .map(getWorld()::getTileEntity)
+                    .filter(t -> t instanceof TileMarker)
+                    .map(t -> (TileMarker) t).findFirst();
+            if (marker.isPresent()) {
+                TileMarker tileMarker = marker.get();
+                if (tileMarker.link == null) {
+                    setDefaultRange(getPos(), facing);
+                } else {
+                    this.xMin = tileMarker.min().getX();
+                    this.yMin = tileMarker.min().getY();
+                    this.zMin = tileMarker.min().getZ();
+                    this.xMax = tileMarker.max().getX();
+                    this.yMax = tileMarker.max().getY();
+                    this.zMax = tileMarker.max().getZ();
+                    if (getPos().getX() >= this.xMin && getPos().getX() <= this.xMax && getPos().getY() >= this.yMin
+                            && getPos().getY() <= this.yMax && getPos().getZ() >= this.zMin && getPos().getZ() <= this.zMax) {
+                        this.yMax = Integer.MIN_VALUE;
+                        setDefaultRange(getPos(), facing);
+                        return;
+                    }
+                    if (this.xMax - this.xMin < 2 || this.zMax - this.zMin < 2) {
+                        this.yMax = Integer.MIN_VALUE;
+                        setDefaultRange(getPos(), facing);
+                        return;
+                    }
+                    if (this.yMax - this.yMin < 2)
+                        this.yMax = this.yMin + 3;
+                }
+            } else {
+                setDefaultRange(getPos(), facing);
+            }
+        }
+
     }
 
-    private boolean S_checkIAreaProvider(final int x, final int y, final int z) {
-        //TODO make simply as 1.12
-        final TileEntity te = getWorld().getTileEntity(new BlockPos(x, y, z));
-        if (ModAPIManager.INSTANCE.hasAPI(QuarryPlus.Optionals.BuildCraft_core) && te instanceof IAreaProvider) {
-            this.areaProvider = (IAreaProvider) te;
-            this.xMin = this.areaProvider.min().getX();
-            this.yMin = this.areaProvider.min().getY();
-            this.zMin = this.areaProvider.min().getZ();
-            this.xMax = this.areaProvider.max().getX();
-            this.yMax = this.areaProvider.max().getY();
-            this.zMax = this.areaProvider.max().getZ();
-            int tmp;
-            if (this.xMin > this.xMax) {
-                tmp = this.xMin;
-                this.xMin = this.xMax;
-                this.xMax = tmp;
-            }
-            if (this.yMin > this.yMax) {
-                tmp = this.yMin;
-                this.yMin = this.yMax;
-                this.yMax = tmp;
-            }
-            if (this.zMin > this.zMax) {
-                tmp = this.zMin;
-                this.zMin = this.zMax;
-                this.zMax = tmp;
-            }
-            if (getPos().getX() >= this.xMin && getPos().getX() <= this.xMax && getPos().getY() >= this.yMin && getPos().getY() <= this.yMax && getPos().getZ() >= this.zMin && getPos().getZ() <= this.zMax) {
-                this.yMax = Integer.MIN_VALUE;
-                return false;
-            }
-            if (this.xMax - this.xMin < 2 || this.zMax - this.zMin < 2) {
-                this.yMax = Integer.MIN_VALUE;
-                return false;
-            }
-            if (this.yMax - this.yMin < 2)
-                this.yMax = this.yMin + 3;
-            return true;
+    public void setDefaultRange(BlockPos pos, EnumFacing facing) {
+        int x = 11;
+        int y = (x - 1) / 2;//5
+        pos = pos.offset(facing);
+        BlockPos pos1 = pos.offset(facing);
+        BlockPos pos2 = pos.offset(facing, x);
+        BlockPos pos3 = pos.offset(facing.rotateY(), y);
+        BlockPos pos4 = pos.offset(facing.rotateYCCW(), y);
+        if (facing.getAxis() == EnumFacing.Axis.X) {
+            xMin = Math.min(pos1.getX(), pos2.getX());
+            xMax = Math.max(pos1.getX(), pos2.getX());
+            zMin = Math.min(pos3.getZ(), pos4.getZ());
+            zMax = Math.max(pos3.getZ(), pos4.getZ());
+        } else if (facing.getAxis() == EnumFacing.Axis.Z) {
+            xMin = Math.min(pos3.getX(), pos4.getX());
+            xMax = Math.max(pos3.getX(), pos4.getX());
+            zMin = Math.min(pos1.getZ(), pos2.getZ());
+            zMax = Math.max(pos1.getZ(), pos2.getZ());
         }
-        return false;
+        yMin = getPos().getY();
+        yMax = getPos().getY() + 3;
     }
 
     private void S_setFirstPos() {
@@ -535,6 +561,11 @@ public class TileQuarry extends TileBasic {
         return super.writeToNBT(nbttc);
     }
 
+    @Override
+    public String getName() {
+        return "tile.quarryplus.name";
+    }
+
     public double headPosX, headPosY, headPosZ;
     private boolean initialized = true;
 
@@ -591,6 +622,15 @@ public class TileQuarry extends TileBasic {
         else z2 = getPos().getZ() + 1;
 
         return new AxisAlignedBB(x1, Double.NEGATIVE_INFINITY, z1, x2, y2, z2);
+    }
+
+    public void sendDebugMessage(EntityPlayer player) {
+        player.sendStatusMessage(new TextComponentString(getStoredEnergy() + " / " + getMaxStored() + " MJ"), false);
+        player.sendStatusMessage(new TextComponentTranslation("chat.currentmode", G_getNow()), false);
+        player.sendStatusMessage(new TextComponentString(String.format("Next target : (%d, %d, %d)", targetX, targetY, targetZ)), false);
+        player.sendStatusMessage(new TextComponentString("X : " + xMin + " to " + xMax), false);
+        player.sendStatusMessage(new TextComponentString("Z : " + zMin + " to " + zMax), false);
+        player.sendStatusMessage(new TextComponentTranslation(filler ? "chat.fillermode" : "chat.quarrymode"), false);
     }
 
     public enum Mode {

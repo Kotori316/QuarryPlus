@@ -20,7 +20,6 @@ import com.yogpc.qp.container.ContainerPlacer;
 import com.yogpc.qp.container.ContainerWorkbench;
 import com.yogpc.qp.tile.TileBasic;
 import com.yogpc.qp.tile.TilePlacer;
-import com.yogpc.qp.tile.TilePump;
 import com.yogpc.qp.tile.TileWorkbench;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Enchantments;
@@ -45,13 +44,6 @@ public class GuiHandler implements IGuiHandler {
                 return new GuiEnchList(Enchantments.SILK_TOUCH, (TileBasic) w.getTileEntity(pos));
             case QuarryPlusI.guiIdPlacer:
                 return new GuiPlacer(p.inventory, (TilePlacer) w.getTileEntity(pos));
-            case QuarryPlusI.guiIdPump:
-            case QuarryPlusI.guiIdPump + 1:
-            case QuarryPlusI.guiIdPump + 2:
-            case QuarryPlusI.guiIdPump + 3:
-            case QuarryPlusI.guiIdPump + 4:
-            case QuarryPlusI.guiIdPump + 5:
-                return new GuiP_List((byte) (ID - QuarryPlusI.guiIdPump), (TilePump) w.getTileEntity(pos));
             case QuarryPlusI.guiIdWorkbench:
                 return new GuiWorkbench(p.inventory, (TileWorkbench) w.getTileEntity(pos));
         }
@@ -66,6 +58,7 @@ public class GuiHandler implements IGuiHandler {
             case QuarryPlusI.guiIdMover:
                 return new ContainerMover(p.inventory, w, x, y, z);
             case QuarryPlusI.guiIdFList:
+                return new ContainerEnchList((TileBasic) w.getTileEntity(pos));
             case QuarryPlusI.guiIdSList:
                 return new ContainerEnchList((TileBasic) w.getTileEntity(pos));
             case QuarryPlusI.guiIdPlacer:

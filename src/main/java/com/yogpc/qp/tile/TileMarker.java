@@ -282,11 +282,12 @@ public class TileMarker extends APacketTile implements IAreaProvider, ITickable 
         }
 
         private Laser(final World pw, final int px, final int py, final int pz, final Link l) {
-            final double c = 0.0625;
+            final double c = 0.05;
             this.x = px;
             this.y = py;
             this.z = pz;
             this.w = pw;
+            //TODO clue?
             if (l == null || l.xn == l.xx) {
                 this.lasers[0] = new EntityLaser(pw, px + 0.5, py + 0.5, pz + 0.5, MAX_SIZE, c, c, EntityLaser.LaserType.BLUE_LASER, false);
             }

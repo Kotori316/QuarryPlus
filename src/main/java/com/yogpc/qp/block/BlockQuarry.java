@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.BuildCraftHelper;
 import com.yogpc.qp.compat.EnchantmentHelper;
 import com.yogpc.qp.item.ItemBlockQuarry;
@@ -82,6 +83,7 @@ public class BlockQuarry extends ADismCBlock {
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack stack = playerIn.getHeldItem(hand);
+        if (stack.getItem() == QuarryPlusI.debugItem) return false;
         if (BuildCraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
             ((TileQuarry) worldIn.getTileEntity(pos)).G_reinit();
             return true;

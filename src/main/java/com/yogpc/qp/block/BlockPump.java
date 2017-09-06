@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.BuildCraftHelper;
 import com.yogpc.qp.compat.EnchantmentHelper;
 import com.yogpc.qp.item.ItemBlockPump;
@@ -114,7 +113,6 @@ public class BlockPump extends ADismCBlock {
                 pump.C_getNames().forEach(playerIn::sendMessage);
             } else if (!worldIn.isRemote && stack.getItemDamage() == 2) {
                 ((TilePump) worldIn.getTileEntity(pos)).S_OpenGUI(facing, playerIn);
-                playerIn.openGui(QuarryPlus.INSTANCE, QuarryPlusI.guiIdPump + facing.getIndex(), worldIn, pos.getX(), pos.getY(), pos.getZ());
             }
             return true;
         }

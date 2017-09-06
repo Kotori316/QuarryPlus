@@ -47,6 +47,11 @@ public class GuiSlotEnchList extends GuiSlot {
     }
 
     @Override
+    protected int getContentHeight() {
+        return this.getSize() * 18;
+    }
+
+    @Override
     protected boolean isSelected(final int var1) {
         return var1 == this.currentore;
     }

@@ -6,7 +6,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -22,7 +21,7 @@ public class RenderEntityLaser extends Render<EntityLaser> {
 
     @Override
     protected ResourceLocation getEntityTexture(EntityLaser entity) {
-        return TextureMap.LOCATION_BLOCKS_TEXTURE;
+        return entity.texture.location();
     }
 
     @Override
@@ -34,6 +33,7 @@ public class RenderEntityLaser extends Render<EntityLaser> {
         double z = posZ - entity.lastTickPosZ;
 
         EntityLaser.LaserType laser = entity.texture;
+        bindEntityTexture(entity);
         doRender(boundingBox, x, y, z, laser);
     }
 
@@ -45,7 +45,7 @@ public class RenderEntityLaser extends Render<EntityLaser> {
         GlStateManager.disableTexture2D();
         GlStateManager.color(laser.getr(), laser.getg(), laser.getb(), laser.geta());
         vertexbuffer.setTranslation(x, y, z);
-        vertexbuffer.begin(7, DefaultVertexFormats.POSITION_NORMAL);
+        vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX_NORMAL);
         vertexbuffer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.minZ).normal(0.0F, 0.0F, -1.0F).endVertex();
         vertexbuffer.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.minZ).normal(0.0F, 0.0F, -1.0F).endVertex();
         vertexbuffer.pos(boundingBox.maxX, boundingBox.minY, boundingBox.minZ).normal(0.0F, 0.0F, -1.0F).endVertex();

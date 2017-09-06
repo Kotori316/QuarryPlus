@@ -25,6 +25,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class GuiP_SelectBlock extends GuiScreenA {
+    private static final int DONE_Id = -1;
+    private static final int CANCEL_Id = -2;
     private GuiP_SlotBlockList blocks;
     private final TilePump tile;
     private final EnumFacing targetid;
@@ -40,19 +42,19 @@ public class GuiP_SelectBlock extends GuiScreenA {
         super.initGui();
         this.blocks = new GuiP_SlotBlockList(this.mc, this.width, this.height, 24, this.height - 32, this,
                 this.tile.mapping.get(targetid));
-        this.buttonList.add(new GuiButton(-1, this.width / 2 - 150, this.height - 26, 140, 20,
+        this.buttonList.add(new GuiButton(DONE_Id, this.width / 2 - 150, this.height - 26, 140, 20,
                 I18n.format("gui.done")));
-        this.buttonList.add(new GuiButton(-2, this.width / 2 + 10, this.height - 26, 140, 20,
+        this.buttonList.add(new GuiButton(CANCEL_Id, this.width / 2 + 10, this.height - 26, 140, 20,
                 I18n.format("gui.cancel")));
     }
 
     @Override
     public void actionPerformed(final GuiButton par1) {
         switch (par1.id) {
-            case -1:
+            case DONE_Id:
                 PacketHandler.sendToServer(Mappings.Update.create(tile, targetid, Mappings.Type.Add, blocks.current));
                 break;
-            case -2:
+            case CANCEL_Id:
                 showParent();
                 break;
         }

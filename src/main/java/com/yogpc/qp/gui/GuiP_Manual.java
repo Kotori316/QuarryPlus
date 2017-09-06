@@ -76,10 +76,11 @@ public class GuiP_Manual extends GuiScreenA implements GuiYesNoCallback {
 
     @Override
     public void confirmClicked(final boolean par1, final int par2) {
-        if (par1)
+        if (par1) {
             PacketHandler.sendToServer(Mappings.Update.create(tile, targetid, Mappings.Type.Add, blockid.getText()));
-        else
-            showParent();
+            tile.mapping.get(targetid).add(blockid.getText());
+        }
+        showParent();
     }
 
     @Override

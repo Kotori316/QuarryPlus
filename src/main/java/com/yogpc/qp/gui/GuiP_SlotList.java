@@ -45,6 +45,11 @@ public class GuiP_SlotList extends GuiSlot {
     }
 
     @Override
+    protected int getContentHeight() {
+        return this.getSize() * 18;
+    }
+
+    @Override
     protected boolean isSelected(final int slotIndex) {
         return slotIndex == this.currentore;
     }

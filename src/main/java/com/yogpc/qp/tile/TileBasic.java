@@ -114,9 +114,11 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     }
 
     boolean S_connect(final EnumFacing fd) {
-        final TileEntity te = this.getWorld().getTileEntity(getPos().offset(fd));
-        if (te instanceof TilePump && this.pump != fd)
-            return false;
+        if (pump != null) {
+            final TileEntity te = this.getWorld().getTileEntity(getPos().offset(pump));
+            if (te instanceof TilePump && this.pump != fd)
+                return false;
+        }
         this.pump = fd;
         G_renew_powerConfigure();
         return true;
@@ -221,7 +223,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
 
     @Override
     @Nonnull
-    public ItemStack getStackInSlot(final int i) {// NOTE better way?
+    public ItemStack getStackInSlot(final int i) {
         return i < 0 || i >= this.cacheItems.size() ? ItemStack.EMPTY : this.cacheItems.get(i);
     }
 

@@ -13,6 +13,8 @@
 
 package com.yogpc.qp.gui;
 
+import com.yogpc.qp.Config;
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.pump.Mappings;
 import com.yogpc.qp.tile.TilePump;
@@ -26,6 +28,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class GuiP_List extends GuiScreenA implements GuiYesNoCallback {
+    private static final byte CHANGE_ID = -4;
+    private static final byte DONE_ID = -1;
+    private static final byte COPY_ID = -5;
+    private static final byte ADDMANUAL_ID = -2;
+    private static final byte ADDFROMLIST_ID = -3;
+
     private GuiP_SlotList oreslot;
     private GuiButton delete, top, up, down, bottom;
     private final TilePump tile;
@@ -40,15 +48,15 @@ public class GuiP_List extends GuiScreenA implements GuiYesNoCallback {
     @Override
     public void initGui() {
         super.initGui();
-        this.buttonList.add(new GuiButton(-4, this.width / 2 - 160, this.height - 26, 100, 20,
+        this.buttonList.add(new GuiButton(CHANGE_ID, this.width / 2 - 160, this.height - 26, 100, 20,
                 I18n.format("pp.change")));
-        this.buttonList.add(new GuiButton(-1, this.width / 2 - 50, this.height - 26, 100, 20,
+        this.buttonList.add(new GuiButton(DONE_ID, this.width / 2 - 50, this.height - 26, 100, 20,
                 I18n.format("gui.done")));
-        this.buttonList.add(new GuiButton(-5, this.width / 2 + 60, this.height - 26, 100, 20,
+        this.buttonList.add(new GuiButton(COPY_ID, this.width / 2 + 60, this.height - 26, 100, 20,
                 I18n.format("pp.copy")));
-        this.buttonList.add(new GuiButton(-2, this.width * 2 / 3 + 10, 45, 100, 20,
+        this.buttonList.add(new GuiButton(ADDMANUAL_ID, this.width * 2 / 3 + 10, 45, 100, 20,
                 I18n.format("tof.addnewore") + "(" + I18n.format("tof.manualinput") + ")"));
-        this.buttonList.add(new GuiButton(-3, this.width * 2 / 3 + 10, 20, 100, 20,
+        this.buttonList.add(new GuiButton(ADDFROMLIST_ID, this.width * 2 / 3 + 10, 20, 100, 20,
                 I18n.format("tof.addnewore") + "(" + I18n.format("tof.fromlist") + ")"));
 
         this.buttonList.add(this.delete =
@@ -72,18 +80,18 @@ public class GuiP_List extends GuiScreenA implements GuiYesNoCallback {
     @Override
     public void actionPerformed(final GuiButton guiButton) {
         switch (guiButton.id) {
-            case -1:
+            case DONE_ID:
                 showParent();
                 break;
-            case -2:
+            case ADDMANUAL_ID:
                 this.mc.displayGuiScreen(new GuiP_Manual(this, this.dir, this.tile));
                 break;
-            case -3:
+            case ADDFROMLIST_ID:
                 this.mc.displayGuiScreen(new GuiP_SelectBlock(this, this.tile, this.dir));
                 break;
-            case -4:
-            case -5:
-                this.mc.displayGuiScreen(new GuiP_SelectSide(this.tile, this, guiButton.id == -5));
+            case CHANGE_ID:
+            case COPY_ID:
+                this.mc.displayGuiScreen(new GuiP_SelectSide(this.tile, this, guiButton.id == COPY_ID));
                 break;
             case 1://Mappings.Type.Remove.getId():
                 String name = this.tile.mapping.get(dir).get(this.oreslot.currentore);
@@ -92,16 +100,18 @@ public class GuiP_List extends GuiScreenA implements GuiYesNoCallback {
                 this.mc.displayGuiScreen(new GuiYesNo(this, I18n.format("tof.deletefluidsure"), name, guiButton.id));
                 break;
             default:
-                PacketHandler.sendToServer(Mappings.Update.create(tile, dir, Mappings.Type.fromID(guiButton.id), this.tile.mapping.get(dir).get(this.oreslot.currentore)));
+                //TODO client change
+                Mappings.Type typeId = Mappings.Type.fromID(guiButton.id);
+                PacketHandler.sendToServer(Mappings.Update.create(tile, dir, typeId, this.tile.mapping.get(dir).get(this.oreslot.currentore)));
                 break;
         }
     }
 
     @Override
-    public void drawScreen(final int i, final int j, final float k) {
+    public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
         drawDefaultBackground();
         if (oreslot != null)
-            this.oreslot.drawScreen(i, j, k);
+            this.oreslot.drawScreen(mouseX, mouseY, partialTicks);
         drawCenteredString(
                 this.fontRendererObj,
                 I18n.format("pp.list.setting")
@@ -113,14 +123,18 @@ public class GuiP_List extends GuiScreenA implements GuiYesNoCallback {
             this.down.enabled = false;
             this.bottom.enabled = false;
         }
-        super.drawScreen(i, j, k);
+        super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
     @Override
     public void confirmClicked(final boolean result, final int id) {
-        if (result)
+        if (result) {
+            if (Config.content().debug()) {
+                QuarryPlus.LOGGER.info("GUIP_LIST callback id = " + id);
+            }
+            //TODO client change
             PacketHandler.sendToServer(Mappings.Update.create(tile, dir, Mappings.Type.fromID(id), this.tile.mapping.get(dir).get(this.oreslot.currentore)));
-        else
-            this.mc.displayGuiScreen(this);
+        }
+        this.mc.displayGuiScreen(this);
     }
 }
