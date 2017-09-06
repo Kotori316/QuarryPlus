@@ -13,6 +13,8 @@
 
 package com.yogpc.qp.gui;
 
+import java.io.IOException;
+
 import com.yogpc.qp.BlockData;
 import com.yogpc.qp.container.ContainerEnchList;
 import com.yogpc.qp.packet.PacketHandler;
@@ -62,6 +64,15 @@ public class GuiEnchList extends GuiContainer implements GuiYesNoCallback {
                 this.width * 2 / 3 + 10, 110, 100, 20, I18n.format("selectServer.delete")));
         this.slot = new GuiSlotEnchList(this.mc, this.width * 3 / 5, this.height - 60, 30, this.height - 30,
                 this, this.target == Enchantments.FORTUNE ? this.tile.fortuneList : this.tile.silktouchList);
+    }
+
+    /**
+     * Handles mouse input.
+     */
+    @Override
+    public void handleMouseInput() throws IOException {
+        super.handleMouseInput();
+        this.slot.handleMouseInput();
     }
 
     @Override

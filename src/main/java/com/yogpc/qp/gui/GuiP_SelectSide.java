@@ -46,17 +46,17 @@ public class GuiP_SelectSide extends GuiScreenA {
     public void initGui() {
         super.initGui();
         this.buttonList.add(new GuiButton(EnumFacing.UP.ordinal(), this.width / 2 - 50,
-                this.height / 2 - 60, 100, 20, I18n.format("FD.UP")));
+                this.height / 2 - 60, 100, 20, I18n.format("FD.up")));
         this.buttonList.add(new GuiButton(EnumFacing.DOWN.ordinal(), this.width / 2 - 50,
-                this.height / 2 + 40, 100, 20, I18n.format("FD.DOWN")));
+                this.height / 2 + 40, 100, 20, I18n.format("FD.down")));
         this.buttonList.add(new GuiButton(EnumFacing.SOUTH.ordinal(), this.width / 2 - 50,
-                this.height / 2 + 15, 100, 20, I18n.format("FD.SOUTH")));
+                this.height / 2 + 15, 100, 20, I18n.format("FD.south")));
         this.buttonList.add(new GuiButton(EnumFacing.NORTH.ordinal(), this.width / 2 - 50,
-                this.height / 2 - 35, 100, 20, I18n.format("FD.NORTH")));
+                this.height / 2 - 35, 100, 20, I18n.format("FD.north")));
         this.buttonList.add(new GuiButton(EnumFacing.EAST.ordinal(), this.width / 2 + 40,
-                this.height / 2 - 10, 100, 20, I18n.format("FD.EAST")));
+                this.height / 2 - 10, 100, 20, I18n.format("FD.east")));
         this.buttonList.add(new GuiButton(EnumFacing.WEST.ordinal(), this.width / 2 - 140,
-                this.height / 2 - 10, 100, 20, I18n.format("FD.WEST")));
+                this.height / 2 - 10, 100, 20, I18n.format("FD.west")));
     }
 
     @Override
@@ -64,7 +64,7 @@ public class GuiP_SelectSide extends GuiScreenA {
         if (this.copy) {
             LinkedList<String> list = tile.mapping.get(EnumFacing.getFront(button.id));
             PacketHandler.sendToServer(Mappings.Copy.create(tile, to, list));
-            //TODO client change
+            tile.mapping.put(to, list);
             showParent();
         } else {
             mc.displayGuiScreen(new GuiP_List((byte) button.id, tile));

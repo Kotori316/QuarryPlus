@@ -119,7 +119,7 @@ public class TileQuarry extends TileBasic {
                 if (this.targetY < this.yMin) {
                     if (this.filler) {
                         G_destroy();
-                        sendNowPacket(this);
+//                        sendNowPacket(this);
                         return true;
                     }
                     this.now = MAKEFRAME;

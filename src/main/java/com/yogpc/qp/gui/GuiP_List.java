@@ -13,6 +13,9 @@
 
 package com.yogpc.qp.gui;
 
+import java.io.IOException;
+import java.util.LinkedList;
+
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.PacketHandler;
@@ -37,6 +40,7 @@ public class GuiP_List extends GuiScreenA implements GuiYesNoCallback {
     private GuiP_SlotList oreslot;
     private GuiButton delete, top, up, down, bottom;
     private final TilePump tile;
+    private boolean inited;
     EnumFacing dir;
 
     public GuiP_List(final byte id, final TilePump tq) {
@@ -48,6 +52,7 @@ public class GuiP_List extends GuiScreenA implements GuiYesNoCallback {
     @Override
     public void initGui() {
         super.initGui();
+        inited = true;
         this.buttonList.add(new GuiButton(CHANGE_ID, this.width / 2 - 160, this.height - 26, 100, 20,
                 I18n.format("pp.change")));
         this.buttonList.add(new GuiButton(DONE_ID, this.width / 2 - 50, this.height - 26, 100, 20,
@@ -59,22 +64,25 @@ public class GuiP_List extends GuiScreenA implements GuiYesNoCallback {
         this.buttonList.add(new GuiButton(ADDFROMLIST_ID, this.width * 2 / 3 + 10, 20, 100, 20,
                 I18n.format("tof.addnewore") + "(" + I18n.format("tof.fromlist") + ")"));
 
-        this.buttonList.add(this.delete =
-                new GuiButton(Mappings.Type.Remove.getId(), this.width * 2 / 3 + 10, 70, 100, 20,
-                        I18n.format("selectServer.delete")));
-        this.buttonList.add(this.top =
-                new GuiButton(Mappings.Type.Top.getId(), this.width * 2 / 3 + 10, 95, 100, 20,
-                        I18n.format("tof.top")));
-        this.buttonList.add(this.up =
-                new GuiButton(Mappings.Type.Up.getId(), this.width * 2 / 3 + 10, 120, 100, 20,
-                        I18n.format("tof.up")));
-        this.buttonList.add(this.down =
-                new GuiButton(Mappings.Type.Down.getId(), this.width * 2 / 3 + 10, 145, 100, 20,
-                        I18n.format("tof.down")));
-        this.buttonList.add(this.bottom =
-                new GuiButton(Mappings.Type.Bottom.getId(), this.width * 2 / 3 + 10, 170, 100, 20,
-                        I18n.format("tof.bottom")));
+        this.delete = new GuiButton(Mappings.Type.Remove.getId(), this.width * 2 / 3 + 10, 70, 100, 20,
+                I18n.format("selectServer.delete"));
+        this.top = new GuiButton(Mappings.Type.Top.getId(), this.width * 2 / 3 + 10, 95, 100, 20,
+                I18n.format("tof.top"));
+        this.up = new GuiButton(Mappings.Type.Up.getId(), this.width * 2 / 3 + 10, 120, 100, 20,
+                I18n.format("tof.up"));
+        this.down = new GuiButton(Mappings.Type.Down.getId(), this.width * 2 / 3 + 10, 145, 100, 20,
+                I18n.format("tof.down"));
+        this.bottom = new GuiButton(Mappings.Type.Bottom.getId(), this.width * 2 / 3 + 10, 170, 100, 20,
+                I18n.format("tof.bottom"));
+        this.buttonList.add(delete);
+        this.buttonList.add(top);
+        this.buttonList.add(up);
+        this.buttonList.add(down);
+        this.buttonList.add(bottom);
         this.oreslot = new GuiP_SlotList(this.mc, this.width * 3 / 5, this.height, 30, this.height - 30, this, this.tile.mapping.get(dir));
+        if (delete == null) {
+            QuarryPlus.LOGGER.error("Why null?@init", new Throwable());
+        }
     }
 
     @Override
@@ -100,9 +108,12 @@ public class GuiP_List extends GuiScreenA implements GuiYesNoCallback {
                 this.mc.displayGuiScreen(new GuiYesNo(this, I18n.format("tof.deletefluidsure"), name, guiButton.id));
                 break;
             default:
-                //TODO client change
                 Mappings.Type typeId = Mappings.Type.fromID(guiButton.id);
-                PacketHandler.sendToServer(Mappings.Update.create(tile, dir, typeId, this.tile.mapping.get(dir).get(this.oreslot.currentore)));
+                String fluidName = this.tile.mapping.get(dir).get(this.oreslot.currentore);
+                PacketHandler.sendToServer(Mappings.Update.create(tile, dir, typeId, fluidName));
+
+                LinkedList<String> list = tile.mapping.get(dir);
+                Mappings.Update.typeAction(list, fluidName, typeId);
                 break;
         }
     }
@@ -112,18 +123,35 @@ public class GuiP_List extends GuiScreenA implements GuiYesNoCallback {
         drawDefaultBackground();
         if (oreslot != null)
             this.oreslot.drawScreen(mouseX, mouseY, partialTicks);
-        drawCenteredString(
-                this.fontRendererObj,
-                I18n.format("pp.list.setting")
-                        + I18n.format("FD." + dir), this.width / 2, 8, 0xFFFFFF);
+        drawCenteredString(this.fontRendererObj,
+                I18n.format("pp.list.setting") + I18n.format("FD." + dir),
+                this.width / 2, 8, 0xFFFFFF);
         if (this.tile.mapping.get(dir).isEmpty()) {
-            this.delete.enabled = false;
-            this.top.enabled = false;
-            this.up.enabled = false;
-            this.down.enabled = false;
-            this.bottom.enabled = false;
+            if (inited) {
+                if (delete == null) {
+                    if (Config.content().debug()) {
+                        QuarryPlus.LOGGER.error("Why null?@drawscreen", new Throwable());
+                        buttonList.forEach(QuarryPlus.LOGGER::error);
+                    }
+                } else {
+                    this.delete.enabled = false;
+                    this.top.enabled = false;
+                    this.up.enabled = false;
+                    this.down.enabled = false;
+                    this.bottom.enabled = false;
+                }
+            }
         }
         super.drawScreen(mouseX, mouseY, partialTicks);
+    }
+
+    /**
+     * Handles mouse input.
+     */
+    @Override
+    public void handleMouseInput() throws IOException {
+        super.handleMouseInput();
+        this.oreslot.handleMouseInput();
     }
 
     @Override
@@ -132,8 +160,11 @@ public class GuiP_List extends GuiScreenA implements GuiYesNoCallback {
             if (Config.content().debug()) {
                 QuarryPlus.LOGGER.info("GUIP_LIST callback id = " + id);
             }
-            //TODO client change
-            PacketHandler.sendToServer(Mappings.Update.create(tile, dir, Mappings.Type.fromID(id), this.tile.mapping.get(dir).get(this.oreslot.currentore)));
+            Mappings.Type typeId = Mappings.Type.fromID(id);
+            String fluidName = this.tile.mapping.get(dir).get(this.oreslot.currentore);
+            PacketHandler.sendToServer(Mappings.Update.create(tile, dir, typeId, fluidName));
+            LinkedList<String> list = tile.mapping.get(dir);
+            Mappings.Update.typeAction(list, fluidName, typeId);
         }
         this.mc.displayGuiScreen(this);
     }

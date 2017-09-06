@@ -57,7 +57,7 @@ public class Now implements IMessage {
         TileEntity entity = Minecraft.getMinecraft().world.getTileEntity(blockPos);
         if (TilePump.class.isInstance(entity)) {
             TilePump pump = (TilePump) entity;
-            pump.connectTo = facing;
+            pump.setConnectTo(facing);
             pump.setWorking(working);
         }
         return null;

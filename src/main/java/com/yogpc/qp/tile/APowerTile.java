@@ -6,6 +6,7 @@ import buildcraft.api.mj.IMjReceiver;
 import buildcraft.api.mj.MjAPI;
 import buildcraft.api.mj.MjCapabilityHelper;
 import cofh.api.energy.IEnergyReceiver;
+import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import ic2.api.energy.event.EnergyTileLoadEvent;
 import ic2.api.energy.event.EnergyTileUnloadEvent;
@@ -31,7 +32,7 @@ public abstract class APowerTile extends APacketTile implements IEnergyReceiver,
     private boolean ic2ok = false;
     private boolean bcLoaded;
     private Object helper;
-    private EnergyDebug debug = new EnergyDebug();
+    private EnergyDebug debug = new EnergyDebug(this);
     public boolean ic2Loaded;
 
     public APowerTile() {
@@ -119,8 +120,14 @@ public abstract class APowerTile extends APacketTile implements IEnergyReceiver,
     /**
      * Energy Unit is MJ.
      * 1MJ = 2.5EU = 10RF
+     *
+     * @return the amount of used energy.
      */
     public final double useEnergy(final double min, final double amount, final boolean real) {
+        if (Config.content().noEnergy()) {
+            debug.useEnergy(amount, !real);
+            return amount;
+        }
         double res = 0;
         if (this.all >= min) {
             if (this.all <= amount) {
@@ -157,6 +164,11 @@ public abstract class APowerTile extends APacketTile implements IEnergyReceiver,
     }
 
     public final void configure(final double maxRecieve, final double maxstored) {
+        if (Config.content().noEnergy()) {
+            maxGot = 0;
+            max = 0;
+            return;
+        }
         this.maxGot = maxRecieve;
         this.max = maxstored;
     }

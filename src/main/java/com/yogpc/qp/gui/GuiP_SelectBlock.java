@@ -13,6 +13,8 @@
 
 package com.yogpc.qp.gui;
 
+import java.io.IOException;
+
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.pump.Mappings;
 import com.yogpc.qp.tile.TilePump;
@@ -31,42 +33,45 @@ public class GuiP_SelectBlock extends GuiScreenA {
     private final TilePump tile;
     private final EnumFacing targetid;
 
-    public GuiP_SelectBlock(final GuiScreen pscr, final TilePump tb, EnumFacing id) {
-        super(pscr);
-        this.tile = tb;
+    public GuiP_SelectBlock(final GuiScreen parent, final TilePump tilePump, EnumFacing id) {
+        super(parent);
+        this.tile = tilePump;
         this.targetid = id;
     }
 
     @Override
     public void initGui() {
         super.initGui();
-        this.blocks = new GuiP_SlotBlockList(this.mc, this.width, this.height, 24, this.height - 32, this,
-                this.tile.mapping.get(targetid));
-        this.buttonList.add(new GuiButton(DONE_Id, this.width / 2 - 150, this.height - 26, 140, 20,
-                I18n.format("gui.done")));
-        this.buttonList.add(new GuiButton(CANCEL_Id, this.width / 2 + 10, this.height - 26, 140, 20,
-                I18n.format("gui.cancel")));
+        this.blocks = new GuiP_SlotBlockList(this.mc, this.width, this.height, 24, this.height - 32, this, this.tile.mapping.get(targetid));
+        this.buttonList.add(new GuiButton(DONE_Id, this.width / 2 - 150, this.height - 26, 140, 20, I18n.format("gui.done")));
+        this.buttonList.add(new GuiButton(CANCEL_Id, this.width / 2 + 10, this.height - 26, 140, 20, I18n.format("gui.cancel")));
     }
 
     @Override
     public void actionPerformed(final GuiButton par1) {
-        switch (par1.id) {
-            case DONE_Id:
-                PacketHandler.sendToServer(Mappings.Update.create(tile, targetid, Mappings.Type.Add, blocks.current));
-                break;
-            case CANCEL_Id:
-                showParent();
-                break;
+        if (par1.id == DONE_Id) {
+            PacketHandler.sendToServer(Mappings.Update.create(tile, targetid, Mappings.Type.Add, blocks.current));
+            tile.mapping.get(targetid).add(blocks.current);
         }
+        showParent();
+    }
+
+    /**
+     * Handles mouse input.
+     */
+    @Override
+    public void handleMouseInput() throws IOException {
+        super.handleMouseInput();
+        this.blocks.handleMouseInput();
     }
 
     @Override
-    public void drawScreen(final int i, final int j, final float k) {
+    public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
         drawDefaultBackground();
-        this.blocks.drawScreen(i, j, k);
+        this.blocks.drawScreen(mouseX, mouseY, partialTicks);
         final String title = I18n.format("tof.selectfluid");
         this.fontRendererObj.drawStringWithShadow(title,
                 (this.width - this.fontRendererObj.getStringWidth(title)) / 2, 8, 0xFFFFFF);
-        super.drawScreen(i, j, k);
+        super.drawScreen(mouseX, mouseY, partialTicks);
     }
 }

@@ -54,6 +54,7 @@ import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidEvent;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
@@ -75,6 +76,16 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     protected byte unbreaking;
     protected byte fortune;
     protected boolean silktouch;
+    private final LinkedList<FluidStack> liquids = new LinkedList<>();
+    public final Map<EnumFacing, LinkedList<String>> mapping = new EnumMap<>(EnumFacing.class);
+    public final Map<EnumFacing, PumpTank> tankMap = new EnumMap<>(EnumFacing.class);
+
+    {
+        for (EnumFacing value : EnumFacing.VALUES) {
+            tankMap.put(value, new PumpTank(value));
+            mapping.put(value, new LinkedList<>());
+        }
+    }
 
     public TileBasic G_connected() {
         if (connectTo != null) {
@@ -82,7 +93,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
             if (te instanceof TileBasic)
                 return (TileBasic) te;
             else {
-                this.connectTo = null;
+                setConnectTo(null);
                 if (!getWorld().isRemote)
                     S_sendNowPacket();
                 return null;
@@ -102,7 +113,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         this.fortune = nbttc.getByte("fortune");
         this.unbreaking = nbttc.getByte("unbreaking");
         if (nbttc.hasKey("connectTo")) {
-            this.connectTo = EnumFacing.getFront(nbttc.getByte("connectTo"));
+            setConnectTo(EnumFacing.getFront(nbttc.getByte("connectTo")));
             preFacing = this.connectTo;
         }
         if (nbttc.getTag("mapping0") instanceof NBTTagList)
@@ -156,9 +167,12 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                 IFluidHandler handler = FluidUtil.getFluidHandler(getWorld(), getPos().offset(facing), facing.getOpposite());
                 if (handler != null && tankMap.containsKey(facing)) {
                     PumpTank tank = tankMap.get(facing);
-                    int fill = handler.fill(tank.drain(Fluid.BUCKET_VOLUME, false), false);
-                    if (fill > 0) {
-                        handler.fill(tank.drain(fill, true), true);
+                    FluidStack resource = tank.drain(Fluid.BUCKET_VOLUME, false);
+                    if (resource != null) {
+                        int fill = handler.fill(resource, false);
+                        if (fill > 0) {
+                            handler.fill(tank.drain(fill, true), true);
+                        }
                     }
                 }
             }
@@ -169,7 +183,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                         S_sendNowPacket();
                         this.initialized = true;
                     } else if (getWorld().isAirBlock(getPos().offset(connectTo))) {
-                        this.connectTo = null;
+                        setConnectTo(null);
                         S_sendNowPacket();
                         this.initialized = true;
                     }
@@ -185,12 +199,12 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
             for (EnumFacing facing : EnumFacing.VALUES) {
                 te = getWorld().getTileEntity(getPos().offset(facing));
                 if (te instanceof TileBasic && ((TileBasic) te).S_connect(facing.getOpposite())) {
-                    this.connectTo = facing;
+                    setConnectTo(facing);
                     S_sendNowPacket();
                     return;
                 }
             }
-            this.connectTo = null;
+            setConnectTo(null);
             S_sendNowPacket();
         }
     }
@@ -205,95 +219,34 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
 
     public void setConnectTo(@Nullable EnumFacing connectTo) {
         this.connectTo = connectTo;
-        IBlockState state = getWorld().getBlockState(getPos());
-        if (connectTo == null && state.getValue(BlockPump.CONNECTED)) {
-            validate();
-            getWorld().setBlockState(getPos(), state.withProperty(BlockPump.CONNECTED, false));
-            validate();
-            getWorld().setTileEntity(getPos(), this);
-        } else if (connectTo != null && !state.getValue(BlockPump.CONNECTED)) {
-            validate();
-            getWorld().setBlockState(getPos(), state.withProperty(BlockPump.CONNECTED, true));
-            validate();
-            getWorld().setTileEntity(getPos(), this);
+        if (hasWorld()) {
+            IBlockState state = getWorld().getBlockState(getPos());
+            if (connectTo == null && state.getValue(BlockPump.CONNECTED)) {
+                validate();
+                getWorld().setBlockState(getPos(), state.withProperty(BlockPump.CONNECTED, false));
+                validate();
+                getWorld().setTileEntity(getPos(), this);
+            } else if (connectTo != null && !state.getValue(BlockPump.CONNECTED)) {
+                validate();
+                getWorld().setBlockState(getPos(), state.withProperty(BlockPump.CONNECTED, true));
+                validate();
+                getWorld().setTileEntity(getPos(), this);
+            }
         }
     }
 
-    /*
-        public void S_recievePacket(final byte id, final byte[] data, final EntityPlayer ep) {
-            final ByteArrayDataInput badi = ByteStreams.newDataInput(data);
-            byte target;
-            int pos;
-            String buf;
-            switch (id) {
-                case PacketHandler.CtS_ADD_MAPPING:// BLjava.lang.String;
-                    target = badi.readByte();
-                    this.mapping[target].add(badi.readUTF());
-                    S_OpenGUI(target, ep);
-                    break;
-                case PacketHandler.CtS_REMOVE_MAPPING:// BLjava.lang.String;
-                    target = badi.readByte();
-                    this.mapping[target].remove(badi.readUTF());
-                    S_OpenGUI(target, ep);
-                    break;
-                case PacketHandler.CtS_UP_MAPPING:// BLjava.lang.String;
-                    target = badi.readByte();
-                    pos = this.mapping[target].indexOf(badi.readUTF());
-                    if (pos > 0) {
-                        buf = this.mapping[target].get(pos);
-                        this.mapping[target].remove(pos);
-                        this.mapping[target].add(pos - 1, buf);
-                    }
-                    S_OpenGUI(target, ep);
-                    break;
-                case PacketHandler.CtS_DOWN_MAPPING:// BLjava.lang.String;
-                    target = badi.readByte();
-                    pos = this.mapping[target].indexOf(badi.readUTF());
-                    if (pos >= 0 && pos + 1 < this.mapping[target].size()) {
-                        buf = this.mapping[target].get(pos);
-                        this.mapping[target].remove(pos);
-                        this.mapping[target].add(pos + 1, buf);
-                    }
-                    S_OpenGUI(target, ep);
-                    break;
-                case PacketHandler.CtS_TOP_MAPPING:// BLjava.lang.String;
-                    target = badi.readByte();
-                    pos = this.mapping[target].indexOf(badi.readUTF());
-                    if (pos >= 0) {
-                        buf = this.mapping[target].get(pos);
-                        this.mapping[target].remove(pos);
-                        this.mapping[target].addFirst(buf);
-                    }
-                    S_OpenGUI(target, ep);
-                    break;
-                case PacketHandler.CtS_BOTTOM_MAPPING:// BLjava.lang.String;
-                    target = badi.readByte();
-                    pos = this.mapping[target].indexOf(badi.readUTF());
-                    if (pos >= 0) {
-                        buf = this.mapping[target].get(pos);
-                        this.mapping[target].remove(pos);
-                        this.mapping[target].addLast(buf);
-                    }
-                    S_OpenGUI(target, ep);
-                    break;
-                case PacketHandler.CtS_RENEW_DIRECTION:
-                    S_OpenGUI(badi.readByte(), ep);
-                    break;
-                case PacketHandler.CtS_COPY_MAPPING:
-                    final byte from = badi.readByte();
-                    target = badi.readByte();
-                    this.mapping[target].clear();
-                    this.mapping[target].addAll(this.mapping[from]);
-                    S_OpenGUI(target, ep);
-                    break;
-            }
-        }
-    */
     public void setWorking(boolean b) {
         if (b) {
             this.cy = this.py = -1;
         } else {
             this.py = Integer.MIN_VALUE;
+        }
+        if (!getWorld().isRemote) {
+            IBlockState state = getWorld().getBlockState(getPos());
+            validate();
+            getWorld().setBlockState(getPos(), state.withProperty(BlockPump.ACTING, b));
+            validate();
+            getWorld().setTileEntity(getPos(), this);
         }
     }
 
@@ -501,30 +454,6 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     }
 
     // ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    private final LinkedList<FluidStack> liquids = new LinkedList<>();
-    public final Map<EnumFacing, LinkedList<String>> mapping = new EnumMap<>(EnumFacing.class);
-    public final Map<EnumFacing, PumpTank> tankMap = new EnumMap<>(EnumFacing.class);
-
-    {
-        for (EnumFacing value : EnumFacing.VALUES) {
-            tankMap.put(value, new PumpTank(value));
-            mapping.put(value, new LinkedList<>());
-        }
-    }
-
-    public List<ITextComponent> C_getNames() {
-        if (!liquids.isEmpty()) {
-            List<ITextComponent> list = new ArrayList<>(liquids.size() + 1);
-            list.add(new TextComponentTranslation("chat.pumpcontain"));
-            liquids.forEach(s -> list.add(new TextComponentTranslation("yog.pump.liquid",
-                    new TextComponentTranslation(s.getFluid().getUnlocalizedName(s)), Integer.toString(s.amount))));
-            return list;
-        } else {
-            return Collections.singletonList(new TextComponentTranslation("chat.pumpcontainno"));
-        }
-    }
-
-    // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * @param state      BlockState
@@ -560,22 +489,26 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
 
         @Override
         public FluidStack drain(FluidStack resource, boolean doDrain) {
-            if (resource == null)
+            if (resource == null || resource.amount <= 0) {
                 return null;
+            }
             final int index = liquids.indexOf(resource);
             if (index == -1)
                 return null;
             final FluidStack fs = liquids.get(index);
             if (fs == null)
                 return null;
-            final FluidStack ret = fs.copy();
-            ret.amount = Math.min(fs.amount, resource.amount);
-            if (doDrain)
+
+            int drained = Math.min(fs.amount, resource.amount);
+            final FluidStack ret = new FluidStack(fs, drained);
+            if (doDrain) {
                 fs.amount -= ret.amount;
-            if (fs.amount <= 0)
-                liquids.remove(fs);
-            if (ret.amount <= 0)
-                return null;
+                if (fs.amount <= 0) {
+                    liquids.remove(fs);
+                }
+                onContentsChanged();
+                FluidEvent.fireEvent(new FluidEvent.FluidDrainingEvent(fs.amount <= 0 ? null : fs, getWorld(), getPos(), this, drained));
+            }
             return ret;
         }
 
@@ -606,7 +539,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         @Override
         public FluidStack drain(int maxDrain, boolean doDrain) {
             if (mapping.get(facing).isEmpty()) {
-                return liquids.isEmpty() ? null : drain(liquids.getFirst(), doDrain);
+                return liquids.isEmpty() ? null : drainI(0, maxDrain, doDrain);
             }
             int index;
             FluidStack fs;
@@ -615,11 +548,26 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                 if (fs != null) {
                     index = liquids.indexOf(fs);
                     if (index != -1) {
-                        return drain(liquids.get(index), doDrain);
+                        return drainI(index, maxDrain, doDrain);
                     }
                 }
             }
             return null;
+        }
+
+        private FluidStack drainI(int index, int maxDrain, boolean doDrain) {
+            FluidStack stack = liquids.get(index);
+            int drained = Math.min(maxDrain, stack.amount);
+            FluidStack ret = new FluidStack(stack, drained);
+            if (doDrain) {
+                stack.amount -= drained;
+                if (stack.amount <= 0) {
+                    liquids.remove(index);
+                }
+                onContentsChanged();
+                FluidEvent.fireEvent(new FluidEvent.FluidDrainingEvent(stack.amount <= 0 ? null : stack, getWorld(), getPos(), this, drained));
+            }
+            return ret;
         }
     }
 
@@ -642,6 +590,18 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         }
     }
 
+    public List<ITextComponent> C_getNames() {
+        if (!liquids.isEmpty()) {
+            List<ITextComponent> list = new ArrayList<>(liquids.size() + 1);
+            list.add(new TextComponentTranslation("chat.pumpcontain"));
+            liquids.forEach(s -> list.add(new TextComponentTranslation("yog.pump.liquid",
+                    new TextComponentTranslation(s.getFluid().getUnlocalizedName(s)), Integer.toString(s.amount))));
+            return list;
+        } else {
+            return Collections.singletonList(new TextComponentTranslation("chat.pumpcontainno"));
+        }
+    }
+
     public void sendDebugMessage(EntityPlayer player) {
         player.sendStatusMessage(new TextComponentString("Connection : " + this.connectTo), false);
         Arrays.asList(EnumFacing.VALUES).forEach(facing ->
@@ -655,6 +615,8 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
             liquids.stream().map(fluidStack -> fluidStack.getLocalizedName() + fluidStack.amount + "mB").reduce((s, s2) -> s + ", " + s2)
                     .map(TextComponentString::new)
                     .ifPresent(s -> player.sendStatusMessage(s, false));
+        } else {
+            player.sendStatusMessage(new TextComponentString("No liquids"), false);
         }
     }
 

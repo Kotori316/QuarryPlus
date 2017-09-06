@@ -85,6 +85,7 @@ class ItemQuarryDebug extends Item {
     }
 
     private def energyToString(tile: APowerTile): ITextComponent = {
-        new TextComponentString(tile.getStoredEnergy + " / " + tile.getMaxStored + " MJ")
+        if (Config.content.noEnergy) new TextComponentString("No Energy Required.")
+        else new TextComponentString(tile.getStoredEnergy + " / " + tile.getMaxStored + " MJ")
     }
 }

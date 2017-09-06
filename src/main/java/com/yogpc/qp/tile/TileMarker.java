@@ -48,7 +48,7 @@ import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.ForgeChunkManager.Type;
 import net.minecraftforge.fml.common.Optional;
 
-@Optional.Interface(iface = "buildcraft.api.core.IAreaProvider", modid = QuarryPlus.Optionals.Buildcraft_modID)
+@Optional.Interface(iface = "buildcraft.api.core.IAreaProvider", modid = QuarryPlus.Optionals.BuildCraft_core)
 public class TileMarker extends APacketTile implements IAreaProvider, ITickable {
     public static final ArrayList<Link> linkList = new ArrayList<>();
     public static final ArrayList<Laser> laserList = new ArrayList<>();

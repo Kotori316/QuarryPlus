@@ -137,7 +137,7 @@ object ItemDamage {
     import scala.language.implicitConversions
 
     implicit class S2D(val stack: ItemStack) extends AnyVal {
-        def toItemDamage(stack: ItemStack): ItemDamage = apply(stack)
+        def toID(stack: ItemStack): ItemDamage = apply(stack)
     }
 
     def listFromArray(array: Array[ItemStack]): List[ItemDamage] = array.filter(s => s != null && !s.isEmpty).map(apply).toList

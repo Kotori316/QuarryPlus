@@ -19,9 +19,16 @@ class WorkbenchRecipes(val output: ItemDamage, val energy: Double, in: ItemStack
 
     override def toString = s"WorkbenchRecipes(output=$output, energy=$energy)"
 
-    override def hashCode(): Int = {
-        val state = Seq(output, energy) ++ in
-        state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+    override def hashCode(): Int = output.hashCode()
+
+    override def equals(obj: scala.Any): Boolean = {
+        if (super.equals(obj)) {
+            return true
+        }
+        obj match {
+            case r: WorkbenchRecipes => output == r.output && energy == r.energy
+            case _ => false
+        }
     }
 }
 

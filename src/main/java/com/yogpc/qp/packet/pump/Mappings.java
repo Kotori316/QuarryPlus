@@ -119,49 +119,57 @@ public class Mappings {
                 TilePump pump = (TilePump) world.getTileEntity(pos);
                 assert pump != null;
                 LinkedList<String> list = pump.mapping.get(facing);
-                int i = list.indexOf(fluidName);
-                switch (type) {
-                    case Add:
-                        list.add(fluidName);
-                        break;
-                    case Remove:
-                        list.remove(fluidName);
-                        break;
-                    case Up:
-                        if (i > -1) {
-                            list.remove(i);
-                            list.add(i - 1, fluidName);
-                        }
-                        break;
-                    case Top:
-                        if (i > -1) {
-                            list.remove(i);
-                            list.addFirst(fluidName);
-                        }
-                        break;
-                    case Down:
-                        if (i > -1) {
-                            list.remove(i);
-                            list.add(i + 1, fluidName);
-                        }
-                        break;
-                    case Bottom:
-                        if (i > -1) {
-                            list.remove(i);
-                            list.addLast(fluidName);
-                        }
-                        break;
-                    case None:
-                        break;
-                }
+                typeAction(list, fluidName, type);
             }
             return null;
         }
+
+        public static void typeAction(LinkedList<String> list, String fluidName, Type type) {
+            int i = list.indexOf(fluidName);
+            switch (type) {
+                case Add:
+                    list.add(fluidName);
+                    break;
+                case Remove:
+                    list.remove(fluidName);
+                    break;
+                case Up:
+                    if (i > -1) {
+                        list.remove(i);
+                        list.add(i - 1, fluidName);
+                    }
+                    break;
+                case Top:
+                    if (i > -1) {
+                        list.remove(i);
+                        list.addFirst(fluidName);
+                    }
+                    break;
+                case Down:
+                    if (i > -1) {
+                        list.remove(i);
+                        list.add(i + 1, fluidName);
+                    }
+                    break;
+                case Bottom:
+                    if (i > -1) {
+                        list.remove(i);
+                        list.addLast(fluidName);
+                    }
+                    break;
+                case None:
+                    break;
+            }
+        }
     }
 
+    /**
+     * To server only.
+     */
     public static class Copy implements IMessage {
 
         BlockPos pos;
+        int dim;
         EnumFacing dest;
         LinkedList<String> list;
 
@@ -170,6 +178,7 @@ public class Mappings {
             copy.dest = dest;
             copy.pos = pump.getPos();
             copy.list = list;
+            copy.dim = pump.getWorld().provider.getDimension();
             return copy;
         }
 
@@ -177,6 +186,7 @@ public class Mappings {
         public void fromBytes(PacketBuffer buffer) throws IOException {
             pos = buffer.readBlockPos();
             dest = buffer.readEnumValue(EnumFacing.class);
+            dim = buffer.readInt();
             int length = buffer.readInt();
             list = new LinkedList<>();
             for (int i = 0; i < length; i++) {
@@ -186,16 +196,19 @@ public class Mappings {
 
         @Override
         public void toBytes(PacketBuffer buffer) {
-            buffer.writeBlockPos(pos).writeEnumValue(dest).writeInt(list.size());
+            buffer.writeBlockPos(pos).writeEnumValue(dest).writeInt(dim).writeInt(list.size());
             list.forEach(buffer::writeString);
         }
 
         @Override
         @SideOnly(Side.CLIENT)
         public IMessage onRecieve(IMessage message, MessageContext ctx) {
-            TilePump pumpC = (TilePump) Minecraft.getMinecraft().world.getTileEntity(pos);
-            assert pumpC != null;
-            pumpC.mapping.put(dest, list);
+            World world = ctx.getServerHandler().playerEntity.world;
+            if (world.provider.getDimension() == dim) {
+                TilePump pump = (TilePump) world.getTileEntity(pos);
+                assert pump != null;
+                pump.mapping.put(dest, list);
+            }
             return null;
         }
     }
