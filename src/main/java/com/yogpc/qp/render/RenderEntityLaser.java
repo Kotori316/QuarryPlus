@@ -28,6 +28,21 @@ public class RenderEntityLaser extends Render<EntityLaser> {
     public void doRender(EntityLaser entity, double posX, double posY, double posZ, float entityYaw, float partialTicks) {
         super.doRender(entity, posX, posY, posZ, entityYaw, partialTicks);
         AxisAlignedBB boundingBox = entity.getEntityBoundingBox();
+        /*if (Loader.isModLoaded(QuarryPlus.Optionals.Buildcraft_modID)) {
+            DetachedRenderer.fromWorldOriginPre(Minecraft.getMinecraft().player, partialTicks);
+            RenderHelper.disableStandardItemLighting();
+            Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+
+            Vec3d start = new Vec3d(boundingBox.minX, boundingBox.minY, boundingBox.minZ);
+            Vec3d end = new Vec3d(boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ);
+            LaserData_BC8 data = new LaserData_BC8(BuildCraftLaserManager.MARKER_VOLUME_SIGNAL, start, end, 1 / 16);
+            LaserRenderer_BC8.renderLaserStatic(data);
+
+            RenderHelper.enableStandardItemLighting();
+            DetachedRenderer.fromWorldOriginPost();
+
+            return;
+        }*/
         double x = posX - entity.lastTickPosX;
         double y = posY - entity.lastTickPosY;
         double z = posZ - entity.lastTickPosZ;
@@ -45,7 +60,7 @@ public class RenderEntityLaser extends Render<EntityLaser> {
         GlStateManager.disableTexture2D();
         GlStateManager.color(laser.getr(), laser.getg(), laser.getb(), laser.geta());
         vertexbuffer.setTranslation(x, y, z);
-        vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX_NORMAL);
+        vertexbuffer.begin(7, DefaultVertexFormats.POSITION_NORMAL);
         vertexbuffer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.minZ).normal(0.0F, 0.0F, -1.0F).endVertex();
         vertexbuffer.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.minZ).normal(0.0F, 0.0F, -1.0F).endVertex();
         vertexbuffer.pos(boundingBox.maxX, boundingBox.minY, boundingBox.minZ).normal(0.0F, 0.0F, -1.0F).endVertex();

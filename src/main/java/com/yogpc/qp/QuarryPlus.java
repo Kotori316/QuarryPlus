@@ -187,6 +187,7 @@ public class QuarryPlus {
         public static final String Buildcraft_tools = "BuildCraftAPI|tools";
         public static final String Buildcraft_recipes = "BuildCraftAPI|recipes";
         public static final String Buildcraft_transport = "BuildCraftAPI|transport";
+        public static final String Buildcraft_tiles = "BuildCraftAPI|tiles";
     }
 
     public static class Names {

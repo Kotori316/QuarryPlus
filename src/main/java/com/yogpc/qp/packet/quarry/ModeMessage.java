@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.tile.TileQuarry;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.network.PacketBuffer;
@@ -20,6 +19,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class ModeMessage implements IMessage {
     int dim;
     BlockPos pos;
+    BlockPos minPos, maxPos;
     TileQuarry.Mode mode;
 
     public static ModeMessage create(TileQuarry quarry) {
@@ -27,19 +27,23 @@ public class ModeMessage implements IMessage {
         message.dim = quarry.getWorld().provider.getDimension();
         message.pos = quarry.getPos();
         message.mode = quarry.G_getNow();
+        message.minPos = quarry.getMinPos();
+        message.maxPos = quarry.getMaxPos();
         return message;
     }
 
     @Override
     public void fromBytes(PacketBuffer buffer) throws IOException {
         pos = buffer.readBlockPos();
+        minPos = buffer.readBlockPos();
+        maxPos = buffer.readBlockPos();
         mode = buffer.readEnumValue(TileQuarry.Mode.class);
         dim = buffer.readInt();
     }
 
     @Override
     public void toBytes(PacketBuffer buffer) {
-        buffer.writeBlockPos(pos).writeEnumValue(mode).writeInt(dim);
+        buffer.writeBlockPos(pos).writeBlockPos(minPos).writeBlockPos(maxPos).writeEnumValue(mode).writeInt(dim);
     }
 
     @Override
@@ -51,9 +55,15 @@ public class ModeMessage implements IMessage {
             if (TileQuarry.class.isInstance(entity)) {
                 TileQuarry quarry = (TileQuarry) entity;
                 quarry.setNow(mode);
+                quarry.xMin = minPos.getX();
+                quarry.yMin = minPos.getY();
+                quarry.zMin = minPos.getZ();
+                quarry.xMax = maxPos.getX();
+                quarry.yMax = maxPos.getY();
+                quarry.zMax = maxPos.getZ();
                 quarry.G_renew_powerConfigure();
-                IBlockState state = world.getBlockState(pos);
-                world.notifyBlockUpdate(pos, state, state, 3);
+//                IBlockState state = world.getBlockState(pos);
+//                world.notifyBlockUpdate(pos, state, state, 3);
             }
         }
         return null;

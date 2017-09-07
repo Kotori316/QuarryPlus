@@ -39,9 +39,9 @@ public class GuiHandler implements IGuiHandler {
             case QuarryPlusI.guiIdMover:
                 return new GuiMover(p, w, x, y, z);
             case QuarryPlusI.guiIdFList:
-                return new GuiEnchList(Enchantments.FORTUNE, (TileBasic) w.getTileEntity(pos));
+                return new GuiEnchList(Enchantments.FORTUNE, (TileBasic) w.getTileEntity(pos), p);
             case QuarryPlusI.guiIdSList:
-                return new GuiEnchList(Enchantments.SILK_TOUCH, (TileBasic) w.getTileEntity(pos));
+                return new GuiEnchList(Enchantments.SILK_TOUCH, (TileBasic) w.getTileEntity(pos), p);
             case QuarryPlusI.guiIdPlacer:
                 return new GuiPlacer(p.inventory, (TilePlacer) w.getTileEntity(pos));
             case QuarryPlusI.guiIdWorkbench:
@@ -58,9 +58,9 @@ public class GuiHandler implements IGuiHandler {
             case QuarryPlusI.guiIdMover:
                 return new ContainerMover(p.inventory, w, x, y, z);
             case QuarryPlusI.guiIdFList:
-                return new ContainerEnchList((TileBasic) w.getTileEntity(pos));
+                return new ContainerEnchList((TileBasic) w.getTileEntity(pos), p);
             case QuarryPlusI.guiIdSList:
-                return new ContainerEnchList((TileBasic) w.getTileEntity(pos));
+                return new ContainerEnchList((TileBasic) w.getTileEntity(pos), p);
             case QuarryPlusI.guiIdPlacer:
                 return new ContainerPlacer(p.inventory, (TilePlacer) w.getTileEntity(pos));
             case QuarryPlusI.guiIdWorkbench:

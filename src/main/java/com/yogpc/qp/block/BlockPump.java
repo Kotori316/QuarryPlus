@@ -19,6 +19,7 @@ import java.util.List;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.BuildCraftHelper;
 import com.yogpc.qp.compat.EnchantmentHelper;
+import com.yogpc.qp.gui.GuiP_List;
 import com.yogpc.qp.item.ItemBlockPump;
 import com.yogpc.qp.item.ItemTool;
 import com.yogpc.qp.tile.IEnchantableTile;
@@ -28,6 +29,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -91,13 +93,14 @@ public class BlockPump extends ADismCBlock {
         EnchantmentHelper.init((IEnchantableTile) worldIn.getTileEntity(pos), stack.getEnchantmentTagList());
     }
 
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings({"deprecation", "ConstantConditions"})
     @Override
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
         super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
         ((TilePump) worldIn.getTileEntity(pos)).G_reinit();
     }
 
+    @SuppressWarnings({"MethodCallSideOnly", "ConstantConditions", "NewExpressionSideOnly"})
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
@@ -111,8 +114,13 @@ public class BlockPump extends ADismCBlock {
                 TilePump pump = (TilePump) worldIn.getTileEntity(pos);
                 EnchantmentHelper.getEnchantmentsChat(pump).forEach(playerIn::sendMessage);
                 pump.C_getNames().forEach(playerIn::sendMessage);
-            } else if (!worldIn.isRemote && stack.getItemDamage() == 2) {
-                ((TilePump) worldIn.getTileEntity(pos)).S_OpenGUI(facing, playerIn);
+            } else if (stack.getItemDamage() == 2) {
+                TilePump pump = (TilePump) worldIn.getTileEntity(pos);
+                if (!worldIn.isRemote) {
+                    pump.S_OpenGUI(facing, playerIn);
+                } else {
+                    Minecraft.getMinecraft().displayGuiScreen(new GuiP_List((byte) facing.ordinal(), pump));
+                }
             }
             return true;
         }

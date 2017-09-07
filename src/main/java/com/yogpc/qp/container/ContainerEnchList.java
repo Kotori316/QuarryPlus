@@ -1,9 +1,5 @@
 package com.yogpc.qp.container;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.yogpc.qp.BlockData;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.enchantment.DiffMessage;
 import com.yogpc.qp.tile.TileBasic;
@@ -17,8 +13,11 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class ContainerEnchList extends Container {
     private final TileBasic tile;
 
-    public ContainerEnchList(final TileBasic tq) {
+    public ContainerEnchList(final TileBasic tq, EntityPlayer player) {
         this.tile = tq;
+        if (!tile.getWorld().isRemote) {
+            PacketHandler.sendToClient(DiffMessage.create(this, tile.fortuneList, tile.silktouchList), ((EntityPlayerMP) player));
+        }
     }
 
     @Override
@@ -26,9 +25,6 @@ public class ContainerEnchList extends Container {
         return ep.getDistanceSqToCenter(tile.getPos()) <= 64.0D;
     }
 
-
-    public List<BlockData> fortuneList = new ArrayList<>();
-    public List<BlockData> silktouchList = new ArrayList<>();
     private byte includeFlag;
 
     private byte getInclude() {
@@ -53,9 +49,12 @@ public class ContainerEnchList extends Container {
     public void addListener(IContainerListener listener) {
         super.addListener(listener);
         listener.sendProgressBarUpdate(this, 0, getInclude());
-        PacketHandler.sendToClient(DiffMessage.create(this, fortuneList, silktouchList), (EntityPlayerMP) listener);
+        PacketHandler.sendToClient(DiffMessage.create(this, tile.fortuneList, tile.silktouchList), (EntityPlayerMP) listener);
     }
 
+    public TileBasic getTile() {
+        return tile;
+    }
 
     @Override
     @SideOnly(Side.CLIENT)

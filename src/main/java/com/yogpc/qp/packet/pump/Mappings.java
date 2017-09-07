@@ -3,7 +3,6 @@ package com.yogpc.qp.packet.pump;
 import java.io.IOException;
 import java.util.LinkedList;
 
-import com.yogpc.qp.gui.GuiP_List;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.tile.TilePump;
 import net.minecraft.client.Minecraft;
@@ -73,7 +72,6 @@ public class Mappings {
             for (EnumFacing facing : EnumFacing.VALUES) {
                 pumpC.mapping.put(facing, lists[facing.ordinal()]);
             }
-            Minecraft.getMinecraft().displayGuiScreen(new GuiP_List((byte) facing.ordinal(), pumpC));
             return null;
         }
     }

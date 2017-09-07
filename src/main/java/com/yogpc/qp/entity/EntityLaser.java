@@ -102,25 +102,25 @@ public class EntityLaser extends Entity {
         DRILL(255, 255, 0, 255) {
             @Override
             public ResourceLocation location() {
-                return new ResourceLocation(QuarryPlus.modID, "blockdrilltexture");
+                return new ResourceLocation(QuarryPlus.modID, "textures/blocks/blockdrilltexture");
             }
         },
         DRILL_HEAD(0, 0, 0, 255) {
             @Override
             public ResourceLocation location() {
-                return new ResourceLocation(QuarryPlus.modID, "blockdrillheadtexture");
+                return new ResourceLocation(QuarryPlus.modID, "textures/blocks/blockdrillheadtexture");
             }
         },
         BLUE_LASER(0, 0, 255, 255) {
             @Override
             public ResourceLocation location() {
-                return new ResourceLocation(QuarryPlus.modID, "blockbluelaser");
+                return new ResourceLocation(QuarryPlus.modID, "textures/blocks/blockbluelaser");
             }
         },
         RED_LASER(255, 0, 0, 255) {
             @Override
             public ResourceLocation location() {
-                return new ResourceLocation(QuarryPlus.modID, "blockredlaser");
+                return new ResourceLocation(QuarryPlus.modID, "textures/blocks/blockredlaser");
             }
         };
         final int r, g, b, a;

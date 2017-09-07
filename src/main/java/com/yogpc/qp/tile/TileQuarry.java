@@ -19,6 +19,8 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import buildcraft.api.core.IAreaProvider;
+import buildcraft.api.tiles.ITileAreaProvider;
+import buildcraft.api.tiles.TilesAPI;
 import com.google.common.collect.Sets;
 import com.yogpc.qp.PowerManager;
 import com.yogpc.qp.QuarryPlus;
@@ -86,7 +88,7 @@ public class TileQuarry extends TileBasic {
                 PacketHandler.sendToAround(MoveHead.create(this), getWorld(), getPos());
                 if (!done)
                     break;
-                this.now = BREAKBLOCK;
+                setNow(BREAKBLOCK);
                 //$FALL-THROUGH$
             case NOTNEEDBREAK:
             case BREAKBLOCK:
@@ -111,7 +113,7 @@ public class TileQuarry extends TileBasic {
             case MOVEHEAD:
                 if (this.targetY < 1) {
                     G_destroy();
-                    sendNowPacket(this);
+                    PacketHandler.sendToAround(ModeMessage.create(this), getWorld(), getPos());
                     return true;
                 }
                 return !(h < 0) && !b.getBlock().isAir(b, getWorld(), target) && (this.pump != null || !TilePump.isLiquid(b, false, getWorld(), target));
@@ -122,14 +124,13 @@ public class TileQuarry extends TileBasic {
 //                        sendNowPacket(this);
                         return true;
                     }
-                    this.now = MAKEFRAME;
+                    setNow(MAKEFRAME);
                     G_renew_powerConfigure();
                     this.targetX = this.xMin;
                     this.targetY = this.yMax;
                     this.targetZ = this.zMin;
                     this.addX = this.addZ = this.digged = true;
                     this.changeZ = false;
-                    sendNowPacket(this);
                     return S_checkTarget();
                 }
                 if (h < 0 || b.getBlock().isAir(b, getWorld(), target))
@@ -150,26 +151,24 @@ public class TileQuarry extends TileBasic {
                 return true;
             case MAKEFRAME:
                 if (this.targetY < this.yMin) {
-                    this.now = MOVEHEAD;
+                    setNow(MOVEHEAD);
                     G_renew_powerConfigure();
                     this.targetX = this.xMin + 1;
                     this.targetY = this.yMin;
                     this.targetZ = this.zMin + 1;
                     this.addX = this.addZ = this.digged = true;
                     this.changeZ = false;
-                    sendNowPacket(this);
                     return S_checkTarget();
                 }
                 if (b.getMaterial().isSolid()
                         && !(b.getBlock() == QuarryPlusI.blockFrame && !b.getValue(BlockFrame.DAMMING))) {
-                    this.now = NOTNEEDBREAK;
+                    setNow(NOTNEEDBREAK);
                     G_renew_powerConfigure();
                     this.targetX = this.xMin;
                     this.targetZ = this.zMin;
                     this.targetY = this.yMax;
                     this.addX = this.addZ = this.digged = true;
                     this.changeZ = false;
-                    sendNowPacket(this);
                     return S_checkTarget();
                 }
                 byte flag = 0;
@@ -184,10 +183,6 @@ public class TileQuarry extends TileBasic {
                 break;
         }
         return true;
-    }
-
-    private static void sendNowPacket(TileQuarry quarry) {
-        PacketHandler.sendToAround(ModeMessage.create(quarry), quarry.getWorld(), quarry.getPos());
     }
 
     private boolean addX = true;
@@ -276,8 +271,7 @@ public class TileQuarry extends TileBasic {
     }
 
     private double S_getDistance(final int x, final int y, final int z) {
-        return Math.sqrt(Math.pow(x - this.headPosX, 2) + Math.pow(y + 1 - this.headPosY, 2)
-                + Math.pow(z - this.headPosZ, 2));
+        return Math.sqrt(Math.pow(x - this.headPosX, 2) + Math.pow(y + 1 - this.headPosY, 2) + Math.pow(z - this.headPosZ, 2));
     }
 
     private boolean S_makeFrame() {
@@ -294,7 +288,7 @@ public class TileQuarry extends TileBasic {
         if (S_breakBlock(this.targetX, this.targetY, this.targetZ)) {
             S_checkDropItem();
             if (this.now == BREAKBLOCK)
-                this.now = MOVEHEAD;
+                setNow(MOVEHEAD);
             S_setNextTarget();
             return true;
         }
@@ -321,12 +315,11 @@ public class TileQuarry extends TileBasic {
 
         EnumFacing facing = getWorld().getBlockState(getPos()).getValue(BlockQuarry.FACING).getOpposite();
         if (bccoreLoaded) {
-            Optional<IAreaProvider> marker = Stream.of(pos.offset(facing), pos.offset(facing.rotateYCCW()), pos.offset(facing.rotateY()))
+            Optional<ITileAreaProvider> marker = Stream.of(pos.offset(facing), pos.offset(facing.rotateYCCW()), pos.offset(facing.rotateY()))
                     .map(getWorld()::getTileEntity)
-                    .filter(t -> t instanceof IAreaProvider)
-                    .map(t -> (IAreaProvider) t).findFirst();
+                    .map(t -> t.getCapability(TilesAPI.CAP_TILE_AREA_PROVIDER, null)).findFirst();
             if (marker.isPresent()) {
-                IAreaProvider provider = marker.get();
+                ITileAreaProvider provider = marker.get();
                 if (provider.min().getX() == provider.max().getX() || provider.min().getZ() == provider.max().getZ()) {
                     setDefaultRange(getPos(), facing);
                 } else {
@@ -350,6 +343,7 @@ public class TileQuarry extends TileBasic {
                     }
                     if (this.yMax - this.yMin < 2)
                         this.yMax = this.yMin + 3;
+                    areaProvider = provider;
                 }
             } else {
                 setDefaultRange(getPos(), facing);
@@ -383,6 +377,7 @@ public class TileQuarry extends TileBasic {
                     }
                     if (this.yMax - this.yMin < 2)
                         this.yMax = this.yMin + 3;
+                    areaProvider = marker;
                 }
             } else {
                 setDefaultRange(getPos(), facing);
@@ -449,15 +444,23 @@ public class TileQuarry extends TileBasic {
 
     public void setNow(Mode now) {
         this.now = now;
+        if (!getWorld().isRemote) {
+            PacketHandler.sendToAround(ModeMessage.create(this), getWorld(), getPos());
+        }
+    }
+
+    public BlockPos getMinPos() {
+        return new BlockPos(xMin, yMin, zMin);
+    }
+
+    public BlockPos getMaxPos() {
+        return new BlockPos(xMax, yMax, zMax);
     }
 
     @Override
     protected void G_destroy() {
-        this.now = NONE;
+        setNow(NONE);
         G_renew_powerConfigure();
-        if (!getWorld().isRemote) {
-            sendNowPacket(this);
-        }
         ForgeChunkManager.releaseTicket(this.chunkTicket);
     }
 
@@ -465,7 +468,7 @@ public class TileQuarry extends TileBasic {
     public void G_reinit() {
         if (this.yMax == Integer.MIN_VALUE && !getWorld().isRemote)
             S_createBox();
-        this.now = NOTNEEDBREAK;
+        setNow(NOTNEEDBREAK);
         G_renew_powerConfigure();
         if (!getWorld().isRemote) {
             S_setFirstPos();

@@ -20,7 +20,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import buildcraft.api.core.IAreaProvider;
+import buildcraft.api.tiles.ITileAreaProvider;
+import buildcraft.api.tiles.TilesAPI;
 import com.google.common.collect.Sets;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
@@ -32,6 +33,7 @@ import com.yogpc.qp.packet.marker.LinkRequest;
 import com.yogpc.qp.packet.marker.LinkUpdate;
 import com.yogpc.qp.packet.marker.RemoveLaser;
 import com.yogpc.qp.packet.marker.RemoveLink;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.inventory.InventoryHelper;
@@ -46,10 +48,12 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.ForgeChunkManager.Type;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Optional;
 
-@Optional.Interface(iface = "buildcraft.api.core.IAreaProvider", modid = QuarryPlus.Optionals.BuildCraft_core)
-public class TileMarker extends APacketTile implements IAreaProvider, ITickable {
+@Optional.Interface(iface = "buildcraft.api.tiles.ITileAreaProvider", modid = QuarryPlus.Optionals.Buildcraft_tiles)
+public class TileMarker extends APacketTile implements ITileAreaProvider, ITickable {
     public static final ArrayList<Link> linkList = new ArrayList<>();
     public static final ArrayList<Laser> laserList = new ArrayList<>();
     public static final IndexOnlyList<Link> LINK_INDEX = new IndexOnlyList<>(linkList);
@@ -241,6 +245,27 @@ public class TileMarker extends APacketTile implements IAreaProvider, ITickable 
     private boolean vlF;
 
     @Override
+    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
+        if (Loader.isModLoaded(QuarryPlus.Optionals.Buildcraft_modID)) {
+            if (capability == TilesAPI.CAP_TILE_AREA_PROVIDER) {
+                return true;
+            }
+        }
+        return super.hasCapability(capability, facing);
+    }
+
+    @Nullable
+    @Override
+    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
+        if (Loader.isModLoaded(QuarryPlus.Optionals.Buildcraft_modID)) {
+            if (capability == TilesAPI.CAP_TILE_AREA_PROVIDER) {
+                return TilesAPI.CAP_TILE_AREA_PROVIDER.cast(this);
+            }
+        }
+        return super.getCapability(capability, facing);
+    }
+
+    @Override
     public void validate() {
         super.validate();
         this.vlF = true;
@@ -251,6 +276,25 @@ public class TileMarker extends APacketTile implements IAreaProvider, ITickable 
         super.invalidate();
         if (getWorld().getBlockState(getPos()).getBlock() != QuarryPlusI.blockMarker)
             G_destroy();
+    }
+
+    @Override
+    @Optional.Method(modid = QuarryPlus.Optionals.BuildCraft_core)
+    public boolean isValidFromLocation(BlockPos pos) {
+        if (link != null) {
+            boolean xFlag = link.xn <= pos.getX() && link.xx <= pos.getX();
+            boolean yFlag = link.yn <= pos.getY() && link.yx <= pos.getY();
+            boolean zFlag = link.zn <= pos.getZ() && link.zx <= pos.getZ();
+            if (xFlag && yFlag && zFlag) {
+                return false;
+            }
+            for (BlockPos p : buildcraft.lib.misc.PositionUtil.getCorners(min(), max())) {
+                if (buildcraft.lib.misc.PositionUtil.isNextTo(p, pos)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public static class BlockIndex {

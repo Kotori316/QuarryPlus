@@ -25,6 +25,7 @@ import net.minecraft.client.gui.GuiYesNoCallback;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Enchantments;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -39,8 +40,8 @@ public class GuiEnchList extends GuiContainer implements GuiYesNoCallback {
     /**
      * @param ench must be either Fortune or Silktouch.
      */
-    public GuiEnchList(Enchantment ench, final TileBasic tq) {
-        super(new ContainerEnchList(tq));
+    public GuiEnchList(Enchantment ench, final TileBasic tq, EntityPlayer player) {
+        super(new ContainerEnchList(tq, player));
         this.target = ench;
         this.tile = tq;
     }
@@ -96,6 +97,12 @@ public class GuiEnchList extends GuiContainer implements GuiYesNoCallback {
         if (result) {
             final BlockData bd = this.slot.target.get(this.slot.currentore);
             PacketHandler.sendToServer(EnchantmentMessage.create(tile, EnchantmentMessage.Type.Remove, target, bd));
+
+            if (target == Enchantments.FORTUNE)
+                tile.fortuneList.remove(bd);
+            else if (target == Enchantments.SILK_TOUCH)
+                tile.silktouchList.remove(bd);
+
         }
         this.mc.displayGuiScreen(this);
     }

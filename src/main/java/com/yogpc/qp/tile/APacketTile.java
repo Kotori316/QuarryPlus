@@ -15,28 +15,25 @@ package com.yogpc.qp.tile;
 
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public abstract class APacketTile extends TileEntity {
-    /*
-    public abstract void S_recievePacket(byte id, byte[] data, EntityPlayer ep);
-
-    public abstract void C_recievePacket(byte id, byte[] data, EntityPlayer ep);
-
-    @Override
-    public final Packet getDescriptionPacket() {
-        final PacketBuffer buf = new PacketBuffer(Unpooled.buffer());
-        buf.writeByte(0);
-        new YogpstopPacket(this).writeData(buf);
-        return new FMLProxyPacket(buf, "QuarryPlus");
-    }*/
 
     @Nullable
     @Override
     public SPacketUpdateTileEntity getUpdatePacket() {
         return new SPacketUpdateTileEntity(getPos(), 0, getUpdateTag());
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
+        super.onDataPacket(net, pkt);
+        readFromNBT(pkt.getNbtCompound());
     }
 
     @Override

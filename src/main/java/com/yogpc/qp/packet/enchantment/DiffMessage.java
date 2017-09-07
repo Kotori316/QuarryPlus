@@ -61,8 +61,10 @@ public class DiffMessage implements IMessage {
         Container container = Minecraft.getMinecraft().player.openContainer;
         if (containerId == container.windowId && container instanceof ContainerEnchList) {
             ContainerEnchList enchList = (ContainerEnchList) container;
-            enchList.fortuneList = fortuneList;
-            enchList.silktouchList = silkList;
+            enchList.getTile().fortuneList.clear();
+            enchList.getTile().fortuneList.addAll(fortuneList);
+            enchList.getTile().silktouchList.clear();
+            enchList.getTile().silktouchList.addAll(silkList);
         }
         return null;
     }
