@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 import com.yogpc.qp.entity.EntityLaser;
+import com.yogpc.qp.entity.LaserType;
 import com.yogpc.qp.render.RenderEntityLaser;
 import com.yogpc.qp.render.RenderMarker;
 import com.yogpc.qp.render.RenderQuarry;
@@ -12,13 +13,16 @@ import com.yogpc.qp.tile.TileQuarry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.NetHandlerPlayServer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
@@ -113,6 +117,16 @@ public class ProxyClient extends ProxyCommon {
     @Override
     public World getClientWorld() {
         return Minecraft.getMinecraft().world;
+    }
+
+    @SubscribeEvent
+    public void loadTextures(final TextureStitchEvent.Pre evt) {
+        RenderEntityLaser.icons = new TextureAtlasSprite[]{
+                evt.getMap().registerSprite(new ResourceLocation(LaserType.RED_LASER.location().toString())),
+                evt.getMap().registerSprite(new ResourceLocation(LaserType.BLUE_LASER.location().toString())),
+                evt.getMap().registerSprite(new ResourceLocation(LaserType.DRILL.location().toString())),
+                evt.getMap().registerSprite(new ResourceLocation(LaserType.DRILL_HEAD.location().toString())),
+        };
     }
 
     @Override

@@ -55,7 +55,7 @@ object Config {
 
         val disableController = configuration.get(Configuration.CATEGORY_GENERAL, "DisableSpawnerController", false).setRequiresMcRestart(true).getBoolean
         val spawnerBlacklist = configuration.get(Configuration.CATEGORY_GENERAL, "SpawnerControllerEntityBlackList", Array.empty[String])
-          .getStringList.map(new ResourceLocation(_)).toList.asJava
+          .getStringList.map(new ResourceLocation(_)).toSet.asJava
         val RD = configuration.get(Configuration.CATEGORY_GENERAL, "RecipeDifficulty", 2)
         RD.setComment("Default is 2.0")
         WorkbenchRecipes.difficulty = RD.getDouble(2.0)

@@ -19,6 +19,7 @@ item.electric_armor.name=改良型電動防具
 item.overworldmirror.name=地上の鏡
 item.dimensionmirror.name=世界の鏡
 item.magicmirror.name=魔法の鏡
+item.quarrydebug.name=改良型状態確認用具(デバッグ用)
 
 gui.removeWater=水を除去
 gui.removeLava=溶岩を除去

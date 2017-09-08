@@ -54,6 +54,7 @@ public class AvailableEntities implements IMessage {
     @Override
     @SideOnly(Side.CLIENT)
     public IMessage onRecieve(IMessage message, MessageContext ctx) {
+        //TODO unsafe?
         Minecraft.getMinecraft().displayGuiScreen(new GuiController(dim, pos.getX(), pos.getY(), pos.getZ(), entities));
         return null;
     }

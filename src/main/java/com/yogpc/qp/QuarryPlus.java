@@ -13,7 +13,9 @@
 
 package com.yogpc.qp;
 
+import com.yogpc.qp.entity.EntityLaser;
 import com.yogpc.qp.gui.GuiFactory;
+import com.yogpc.qp.gui.GuiHandler;
 import com.yogpc.qp.item.ItemTool;
 import com.yogpc.qp.tile.TileBreaker;
 import com.yogpc.qp.tile.TileLaser;
@@ -24,11 +26,17 @@ import com.yogpc.qp.tile.TilePump;
 import com.yogpc.qp.tile.TileQuarry;
 import com.yogpc.qp.tile.TileRefinery;
 import com.yogpc.qp.tile.TileWorkbench;
+import com.yogpc.qp.tile.WorkbenchRecipes;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -36,6 +44,8 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -84,12 +94,26 @@ public class QuarryPlus {
 
     @Mod.EventHandler
     public void preInit(final FMLPreInitializationEvent event) {
-        QuarryPlusI.preInit(event);
+        Config.setConfigFile(event.getSuggestedConfigurationFile());
+        ForgeChunkManager.setForcedChunkLoadingCallback(INSTANCE, new ChunkLoadingHandler());
+        EntityRegistry.registerModEntity(new ResourceLocation(modID, EntityLaser.NAME), EntityLaser.class, EntityLaser.NAME,
+                0, INSTANCE, 16 * 17, 20, false);
+        proxy.registerTextures();
+        MinecraftForge.EVENT_BUS.register(QuarryPlusI.INSANCE);
+        MinecraftForge.EVENT_BUS.register(Loot.instance());
+        MinecraftForge.EVENT_BUS.register(Config.instance());
+        NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, new GuiHandler());
     }
 
     @Mod.EventHandler
     public void init(final FMLInitializationEvent event) {
-        QuarryPlusI.init();
+        com.yogpc.qp.packet.PacketHandler.init();
+        PacketHandler.channels = NetworkRegistry.INSTANCE.newChannel(Mod_Name, new YogpstopPacketCodec(), new PacketHandler());
+        GameRegistry.addRecipe(new ItemStack(workbench, 1),
+                "III", "GDG", "RRR",
+                'D', Blocks.DIAMOND_BLOCK, 'R', Items.REDSTONE,
+                'I', Blocks.IRON_BLOCK, 'G', Blocks.GOLD_BLOCK);
+        WorkbenchRecipes.registerRecipes();
     }
 
     @SubscribeEvent

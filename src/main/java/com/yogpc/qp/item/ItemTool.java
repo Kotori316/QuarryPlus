@@ -14,6 +14,7 @@
 package com.yogpc.qp.item;
 
 import java.util.List;
+import java.util.Map;
 
 import com.yogpc.qp.BlockData;
 import com.yogpc.qp.QuarryPlus;
@@ -21,8 +22,10 @@ import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TileBasic;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Enchantments;
 import net.minecraft.item.Item;
@@ -149,19 +152,29 @@ public class ItemTool extends Item implements IEnchantableItem {
     @Override
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
-        final NBTTagCompound c = stack.getTagCompound();
-        if (c != null && c.hasKey(NAME_key)) {
-            tooltip.add(c.getString(NAME_key));
-            final int meta = c.getInteger(META_key);
-            if (meta != OreDictionary.WILDCARD_VALUE)
-                tooltip.add(Integer.toString(meta));
+        if (stack.getItemDamage() == 1) {
+            final NBTTagCompound c = stack.getTagCompound();
+            if (c != null) {
+                if (c.hasKey(NAME_key)) {
+                    tooltip.add(c.getString(NAME_key));
+                    final int meta = c.getInteger(META_key);
+                    if (meta != OreDictionary.WILDCARD_VALUE)
+                        tooltip.add(Integer.toString(meta));
+                }
+                Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(stack);
+                if (enchantments.getOrDefault(Enchantments.FORTUNE, 0) > 0) {
+                    tooltip.add(I18n.format(Enchantments.FORTUNE.getName()));
+                } else if (enchantments.getOrDefault(Enchantments.SILK_TOUCH, 0) > 0) {
+                    tooltip.add(I18n.format(Enchantments.SILK_TOUCH.getName()));
+                }
+            }
         }
     }
 
     @Override
     public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems) {
         subItems.add((new ItemStack(itemIn, 1, 0)));
-        subItems.add((new ItemStack(itemIn, 1, 1)));
+        subItems.add(getEditorStack());
         subItems.add((new ItemStack(itemIn, 1, 2)));
     }
 
@@ -171,5 +184,13 @@ public class ItemTool extends Item implements IEnchantableItem {
             return false;
         final NBTTagList l = is.getEnchantmentTagList();
         return (l == null || l.tagCount() == 0) && (enchantment == Enchantments.SILK_TOUCH || enchantment == Enchantments.FORTUNE);
+    }
+
+    public ItemStack getEditorStack() {
+        ItemStack stack = new ItemStack(this, 1, 1);
+        NBTTagCompound compound = new NBTTagCompound();
+        compound.setInteger("HideFlags", 1);
+        stack.setTagCompound(compound);
+        return stack;
     }
 }

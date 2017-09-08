@@ -1,11 +1,15 @@
 package com.yogpc.qp;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.oredict.OreDictionary;
 
+@Immutable
 public class BlockData {
     public static final String Name_NBT = "name";
     public static final String Meta_NBT = "meta";
@@ -22,6 +26,7 @@ public class BlockData {
         this.meta = meta;
     }
 
+    @Nonnull
     public static BlockData of(NBTTagCompound compound) {
         if (compound == null) {
             return Invalid;
@@ -40,6 +45,7 @@ public class BlockData {
         return this.name.hashCode();
     }
 
+    @Nullable
     public NBTTagCompound toNBT() {
         NBTTagCompound compound = new NBTTagCompound();
         compound.setString(Name_NBT, name.toString());

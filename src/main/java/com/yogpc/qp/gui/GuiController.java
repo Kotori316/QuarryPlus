@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.controller.SetEntity;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -27,7 +28,6 @@ public class GuiController extends GuiScreen {
         this.yc = y;
         this.zc = z;
         names = list.stream().map(ResourceLocation::toString).collect(Collectors.toList());
-//                list.stream().map(s -> "entity." + s + ".name").map(I18n::format).collect(Collectors.toList());
     }
 
     @Override
@@ -42,7 +42,7 @@ public class GuiController extends GuiScreen {
     public void actionPerformed(final GuiButton par1) {
         switch (par1.id) {
             case -1:
-                com.yogpc.qp.packet.PacketHandler.sendToServer(SetEntity.create(dim, new BlockPos(xc, yc, zc), list.get(slot.selected)));
+                PacketHandler.sendToServer(SetEntity.create(dim, new BlockPos(xc, yc, zc), list.get(slot.selected)));
                 this.mc.player.closeScreen();
                 break;
         }

@@ -19,6 +19,7 @@ item.electric_armor.name=ElectricArmorPlus
 item.overworldmirror.name=OverworldMirror
 item.dimensionmirror.name=DimensionalMirror
 item.magicmirror.name=MagicMirror
+item.quarrydebug.name=QuarryPlus Debug Item
 
 gui.removeWater=RemoveWater
 gui.removeLava=RemoveLava
