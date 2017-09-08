@@ -42,19 +42,19 @@ public class ContainerPlacer extends Container {
     }
 
     @Override
-    public boolean canInteractWith(final EntityPlayer par1EntityPlayer) {
-        return this.tile.isUsableByPlayer(par1EntityPlayer);
+    public boolean canInteractWith(final EntityPlayer playerIn) {
+        return this.tile.isUsableByPlayer(playerIn);
     }
 
     @Override
     @Nonnull
-    public ItemStack transferStackInSlot(final EntityPlayer ep, final int i) {
+    public ItemStack transferStackInSlot(final EntityPlayer playerIn, final int index) {
         ItemStack src = ItemStack.EMPTY;
-        final Slot slot = this.inventorySlots.get(i);
+        final Slot slot = this.inventorySlots.get(index);
         if (slot != null && slot.getHasStack()) {
             final ItemStack remain = slot.getStack();
             src = remain.copy();
-            if (i < 9) {
+            if (index < 9) {
                 if (!mergeItemStack(remain, 9, 45, true))
                     return ItemStack.EMPTY;
             } else if (!mergeItemStack(remain, 0, 9, false))
@@ -65,7 +65,7 @@ public class ContainerPlacer extends Container {
                 slot.onSlotChanged();
             if (remain.getCount() == src.getCount())
                 return ItemStack.EMPTY;
-            slot.onTake(ep, remain);
+            slot.onTake(playerIn, remain);
         }
         return src;
     }

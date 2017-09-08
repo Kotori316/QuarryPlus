@@ -58,6 +58,8 @@ public class ItemTool extends Item implements IEnchantableItem {
      * meta=0
      */
     public static final String statuschecker = "statuschecker";
+    public static final String NAME_key = "Bname";
+    public static final String META_key = "Bmeta";
 
     public ItemTool() {
         setMaxStackSize(1);
@@ -91,11 +93,11 @@ public class ItemTool extends Item implements IEnchantableItem {
             NBTTagCompound c = stack.getTagCompound();
             IBlockState state = worldIn.getBlockState(pos);
             BlockData bd = null;
-            if (c != null && c.hasKey("Bname")) {
-                bd = new BlockData(c.getString("Bname"), c.getInteger("Bmeta"));
+            if (c != null && c.hasKey(NAME_key)) {
+                bd = new BlockData(c.getString(NAME_key), c.getInteger(META_key));
                 if (state.getBlock().isAir(state, worldIn, pos)) {
-                    c.removeTag("Bname");
-                    c.removeTag("Bmeta");
+                    c.removeTag(NAME_key);
+                    c.removeTag(META_key);
                     return EnumActionResult.SUCCESS;
                 }
             }
@@ -105,8 +107,8 @@ public class ItemTool extends Item implements IEnchantableItem {
                 if (c != null && bd != null) {
                     if (!worldIn.isRemote)
                         (f ? tb.fortuneList : tb.silktouchList).add(bd);
-                    c.removeTag("Bname");
-                    c.removeTag("Bmeta");
+                    c.removeTag(NAME_key);
+                    c.removeTag(META_key);
                 } else if (!worldIn.isRemote)
                     player.openGui(QuarryPlus.INSTANCE, f ? QuarryPlusI.guiIdFList : QuarryPlusI.guiIdSList, worldIn, pos.getX(), pos.getY(), pos.getZ());
                 return EnumActionResult.SUCCESS;
@@ -120,11 +122,11 @@ public class ItemTool extends Item implements IEnchantableItem {
                 assert key != null; // Unregistered Block?
                 final String name = key.toString();
                 final int meta = state.getBlock().getMetaFromState(state);
-                if (c.hasKey("Bname") && name.equals(c.getString("Bname")) && meta == c.getInteger("Bmeta"))
-                    c.setInteger("Bmeta", OreDictionary.WILDCARD_VALUE);
+                if (c.hasKey(NAME_key) && name.equals(c.getString(NAME_key)) && meta == c.getInteger(META_key))
+                    c.setInteger(META_key, OreDictionary.WILDCARD_VALUE);
                 else {
-                    c.setString("Bname", name);
-                    c.setInteger("Bmeta", meta);
+                    c.setString(NAME_key, name);
+                    c.setInteger(META_key, meta);
                 }
             }
 
@@ -148,9 +150,9 @@ public class ItemTool extends Item implements IEnchantableItem {
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
         final NBTTagCompound c = stack.getTagCompound();
-        if (c != null && c.hasKey("Bname")) {
-            tooltip.add(c.getString("Bname"));
-            final int meta = c.getInteger("Bmeta");
+        if (c != null && c.hasKey(NAME_key)) {
+            tooltip.add(c.getString(NAME_key));
+            final int meta = c.getInteger(META_key);
             if (meta != OreDictionary.WILDCARD_VALUE)
                 tooltip.add(Integer.toString(meta));
         }
@@ -168,6 +170,6 @@ public class ItemTool extends Item implements IEnchantableItem {
         if (is.getItemDamage() != 1)
             return false;
         final NBTTagList l = is.getEnchantmentTagList();
-        return l == null || l.tagCount() == 0 && (enchantment == Enchantments.SILK_TOUCH || enchantment == Enchantments.FORTUNE);
+        return (l == null || l.tagCount() == 0) && (enchantment == Enchantments.SILK_TOUCH || enchantment == Enchantments.FORTUNE);
     }
 }

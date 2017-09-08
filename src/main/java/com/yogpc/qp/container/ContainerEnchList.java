@@ -40,16 +40,15 @@ public class ContainerEnchList extends Container {
             for (IContainerListener listener : this.listeners)
                 listener.sendProgressBarUpdate(this, 0, this.includeFlag);
         }
-        for (IContainerListener listener : listeners) {
+        /*for (IContainerListener listener : listeners) {
             PacketHandler.sendToClient(DiffMessage.create(this, tile.fortuneList, tile.silktouchList), ((EntityPlayerMP) listener));
-        }
+        }*/
     }
 
     @Override
     public void addListener(IContainerListener listener) {
         super.addListener(listener);
         listener.sendProgressBarUpdate(this, 0, getInclude());
-        PacketHandler.sendToClient(DiffMessage.create(this, tile.fortuneList, tile.silktouchList), (EntityPlayerMP) listener);
     }
 
     public TileBasic getTile() {
@@ -58,10 +57,10 @@ public class ContainerEnchList extends Container {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void updateProgressBar(final int i, final int j) {
+    public void updateProgressBar(final int i, final int data) {
         if (i == 0) {
-            this.tile.fortuneInclude = (j & 2) != 0;
-            this.tile.silktouchInclude = (j & 1) != 0;
+            this.tile.fortuneInclude = (data & 2) != 0;
+            this.tile.silktouchInclude = (data & 1) != 0;
         }
     }
 }

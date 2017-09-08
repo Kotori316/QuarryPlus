@@ -27,6 +27,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.block.BlockMarker;
 import com.yogpc.qp.entity.EntityLaser;
+import com.yogpc.qp.entity.LaserType;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.marker.LinkReply;
 import com.yogpc.qp.packet.marker.LinkRequest;
@@ -333,13 +334,13 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
             this.w = pw;
             //TODO clue?
             if (l == null || l.xn == l.xx) {
-                this.lasers[0] = new EntityLaser(pw, px + 0.5, py + 0.5, pz + 0.5, MAX_SIZE, c, c, EntityLaser.LaserType.BLUE_LASER, false);
+                this.lasers[0] = new EntityLaser(pw, px + 0.5, py + 0.5, pz + 0.5, MAX_SIZE, c, c, LaserType.BLUE_LASER, false);
             }
             if (l == null || l.yn == l.yx) {
-                this.lasers[1] = new EntityLaser(pw, px + .5, py, pz + .5, c, (255 - py), c, EntityLaser.LaserType.BLUE_LASER, false);
+                this.lasers[1] = new EntityLaser(pw, px + .5, py, pz + .5, c, (255 - py), c, LaserType.BLUE_LASER, false);
             }
             if (l == null || l.zn == l.zx) {
-                this.lasers[2] = new EntityLaser(pw, px + 0.5, py + 0.5, pz + 0.5, c, c, MAX_SIZE, EntityLaser.LaserType.BLUE_LASER, false);
+                this.lasers[2] = new EntityLaser(pw, px + 0.5, py + 0.5, pz + 0.5, c, c, MAX_SIZE, LaserType.BLUE_LASER, false);
             }
             for (final EntityLaser eb : this.lasers) {
                 if (eb != null)
@@ -485,27 +486,27 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
             if (this.zn != this.zx)
                 flag |= 4;
             if ((flag & 1) == 1)
-                this.lasers[0] = new EntityLaser(this.w, this.xn + a, this.yn + b, this.zn + b, this.xx - this.xn, c, c, EntityLaser.LaserType.RED_LASER, true);
+                this.lasers[0] = new EntityLaser(this.w, this.xn + a, this.yn + b, this.zn + b, this.xx - this.xn, c, c, LaserType.RED_LASER, true);
             if ((flag & 2) == 2)
-                this.lasers[4] = new EntityLaser(this.w, this.xn + b, this.yn + a, this.zn + b, c, this.yx - this.yn, c, EntityLaser.LaserType.RED_LASER, true);
+                this.lasers[4] = new EntityLaser(this.w, this.xn + b, this.yn + a, this.zn + b, c, this.yx - this.yn, c, LaserType.RED_LASER, true);
             if ((flag & 4) == 4)
-                this.lasers[8] = new EntityLaser(this.w, this.xn + b, this.yn + b, this.zn + a, c, c, this.zx - this.zn, EntityLaser.LaserType.RED_LASER, true);
+                this.lasers[8] = new EntityLaser(this.w, this.xn + b, this.yn + b, this.zn + a, c, c, this.zx - this.zn, LaserType.RED_LASER, true);
             if ((flag & 3) == 3) {
-                this.lasers[2] = new EntityLaser(this.w, this.xn + a, this.yx + b, this.zn + b, this.xx - this.xn, c, c, EntityLaser.LaserType.RED_LASER, true);
-                this.lasers[6] = new EntityLaser(this.w, this.xx + b, this.yn + a, this.zn + b, c, this.yx - this.yn, c, EntityLaser.LaserType.RED_LASER, true);
+                this.lasers[2] = new EntityLaser(this.w, this.xn + a, this.yx + b, this.zn + b, this.xx - this.xn, c, c, LaserType.RED_LASER, true);
+                this.lasers[6] = new EntityLaser(this.w, this.xx + b, this.yn + a, this.zn + b, c, this.yx - this.yn, c, LaserType.RED_LASER, true);
             }
             if ((flag & 5) == 5) {
-                this.lasers[1] = new EntityLaser(this.w, this.xn + a, this.yn + b, this.zx + b, this.xx - this.xn, c, c, EntityLaser.LaserType.RED_LASER, true);
-                this.lasers[9] = new EntityLaser(this.w, this.xx + b, this.yn + b, this.zn + a, c, c, this.zx - this.zn, EntityLaser.LaserType.RED_LASER, true);
+                this.lasers[1] = new EntityLaser(this.w, this.xn + a, this.yn + b, this.zx + b, this.xx - this.xn, c, c, LaserType.RED_LASER, true);
+                this.lasers[9] = new EntityLaser(this.w, this.xx + b, this.yn + b, this.zn + a, c, c, this.zx - this.zn, LaserType.RED_LASER, true);
             }
             if ((flag & 6) == 6) {
-                this.lasers[5] = new EntityLaser(this.w, this.xn + b, this.yn + a, this.zx + b, c, this.yx - this.yn, c, EntityLaser.LaserType.RED_LASER, true);
-                this.lasers[10] = new EntityLaser(this.w, this.xn + b, this.yx + b, this.zn + a, c, c, this.zx - this.zn, EntityLaser.LaserType.RED_LASER, true);
+                this.lasers[5] = new EntityLaser(this.w, this.xn + b, this.yn + a, this.zx + b, c, this.yx - this.yn, c, LaserType.RED_LASER, true);
+                this.lasers[10] = new EntityLaser(this.w, this.xn + b, this.yx + b, this.zn + a, c, c, this.zx - this.zn, LaserType.RED_LASER, true);
             }
             if ((flag & 7) == 7) {
-                this.lasers[3] = new EntityLaser(this.w, this.xn + a, this.yx + b, this.zx + b, this.xx - this.xn, c, c, EntityLaser.LaserType.RED_LASER, true);
-                this.lasers[7] = new EntityLaser(this.w, this.xx + b, this.yn + a, this.zx + b, c, this.yx - this.yn, c, EntityLaser.LaserType.RED_LASER, true);
-                this.lasers[11] = new EntityLaser(this.w, this.xx + b, this.yx + b, this.zn + a, c, c, this.zx - this.zn, EntityLaser.LaserType.RED_LASER, true);
+                this.lasers[3] = new EntityLaser(this.w, this.xn + a, this.yx + b, this.zx + b, this.xx - this.xn, c, c, LaserType.RED_LASER, true);
+                this.lasers[7] = new EntityLaser(this.w, this.xx + b, this.yn + a, this.zx + b, c, this.yx - this.yn, c, LaserType.RED_LASER, true);
+                this.lasers[11] = new EntityLaser(this.w, this.xx + b, this.yx + b, this.zn + a, c, c, this.zx - this.zn, LaserType.RED_LASER, true);
             }
             for (final EntityLaser eb : this.lasers)
                 if (eb != null)

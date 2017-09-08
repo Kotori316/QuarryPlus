@@ -1,11 +1,14 @@
 package com.yogpc.qp.render;
 
 import com.yogpc.qp.entity.EntityLaser;
+import com.yogpc.qp.entity.LaserType;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -15,13 +18,16 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderEntityLaser extends Render<EntityLaser> {
 
+    public static TextureAtlasSprite[] icons;
+
     public RenderEntityLaser(RenderManager renderManager) {
         super(renderManager);
     }
 
     @Override
     protected ResourceLocation getEntityTexture(EntityLaser entity) {
-        return entity.texture.location();
+//        return entity.texture.location();
+        return TextureMap.LOCATION_BLOCKS_TEXTURE;
     }
 
     @Override
@@ -47,12 +53,12 @@ public class RenderEntityLaser extends Render<EntityLaser> {
         double y = posY - entity.lastTickPosY;
         double z = posZ - entity.lastTickPosZ;
 
-        EntityLaser.LaserType laser = entity.texture;
+        LaserType laser = entity.texture;
         bindEntityTexture(entity);
         doRender(boundingBox, x, y, z, laser);
     }
 
-    private static void doRender(AxisAlignedBB boundingBox, double x, double y, double z, EntityLaser.LaserType laser) {
+    private static void doRender(AxisAlignedBB boundingBox, double x, double y, double z, LaserType laser) {
         Tessellator tessellator = Tessellator.getInstance();
         VertexBuffer vertexbuffer = tessellator.getBuffer();
 

@@ -47,15 +47,13 @@ public class ContainerMover extends Container {
         }
     };
     private final World worldObj;
-    private final int posX, posY, posZ;
+    private final BlockPos pos;
     private final LoopList<Tuple> list = new LoopList<>();
     private int avail = 0;
 
     public ContainerMover(final IInventory player, final World w, final int x, final int y, final int z) {
         this.worldObj = w;
-        this.posX = x;
-        this.posY = y;
-        this.posZ = z;
+        pos = new BlockPos(x, y, z);
         int row;
         int col;
         for (col = 0; col < 2; ++col)
@@ -68,21 +66,20 @@ public class ContainerMover extends Container {
     }
 
     @Override
-    public void onContainerClosed(final EntityPlayer ep) {
-        super.onContainerClosed(ep);
-        if (this.worldObj.isRemote)
-            return;
-        for (int var2 = 0; var2 < 2; ++var2) {
-            final ItemStack var3 = this.craftMatrix.removeStackFromSlot(var2);
-            if (!var3.isEmpty())
-                ep.dropItem(var3, false);
+    public void onContainerClosed(final EntityPlayer playerIn) {
+        super.onContainerClosed(playerIn);
+        if (!worldObj.isRemote) {
+            for (int var2 = 0; var2 < 2; ++var2) {
+                final ItemStack var3 = this.craftMatrix.removeStackFromSlot(var2);
+                if (!var3.isEmpty())
+                    playerIn.dropItem(var3, false);
+            }
         }
     }
 
     @Override
-    public boolean canInteractWith(final EntityPlayer var1) {
-        return this.worldObj.getBlockState(new BlockPos(this.posX, this.posY, this.posZ)).getBlock() == QuarryPlusI.blockMover
-                && var1.getDistanceSq(this.posX + 0.5D, this.posY + 0.5D, this.posZ + 0.5D) <= 64.0D;
+    public boolean canInteractWith(final EntityPlayer playerIn) {
+        return this.worldObj.getBlockState(pos).getBlock() == QuarryPlusI.blockMover && playerIn.getDistanceSqToCenter(pos) <= 64.0D;
     }
 
     @Override
@@ -95,6 +92,7 @@ public class ContainerMover extends Container {
             avail = 0;
             list.setList(Collections.emptyList());
         } else {
+            int previousSize = list.size();
             if (!enchTile.isEmpty() && enchTile.getItem() instanceof IEnchantableItem) {
                 IEnchantableItem item = (IEnchantableItem) enchTile.getItem();
                 list.setList(enchantments.entrySet().stream().map(Tuple::new)
@@ -102,7 +100,7 @@ public class ContainerMover extends Container {
             } else {
                 list.setList(enchantments.entrySet().stream().map(Tuple::new).collect(Collectors.toCollection(LinkedList::new)));
             }
-            if (avail > list.size()) {
+            if (avail % (previousSize == 0 ? 1 : previousSize) > list.size()) {
                 avail = 0;
             }
         }
@@ -118,8 +116,8 @@ public class ContainerMover extends Container {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void updateProgressBar(final int i, final int j) {
-        this.avail = j;
+    public void updateProgressBar(final int i, final int data) {
+        this.avail = data;
     }
 
     public void setAvail(D d) {
@@ -135,13 +133,13 @@ public class ContainerMover extends Container {
     }
 
     @Override
-    public ItemStack transferStackInSlot(final EntityPlayer ep, final int i) {
+    public ItemStack transferStackInSlot(final EntityPlayer playerIn, final int index) {
         ItemStack src = ItemStack.EMPTY;
-        final Slot slot = this.inventorySlots.get(i);
+        final Slot slot = this.inventorySlots.get(index);
         if (slot != null && slot.getHasStack()) {
             final ItemStack remain = slot.getStack();
             src = remain.copy();
-            if (i < 2) {
+            if (index < 2) {
                 if (!mergeItemStack(remain, 2, 38, true))
                     return ItemStack.EMPTY;
             } else {
@@ -169,7 +167,7 @@ public class ContainerMover extends Container {
                 slot.onSlotChanged();
             if (remain.getCount() == src.getCount())
                 return ItemStack.EMPTY;
-            slot.onTake(ep, remain);
+            slot.onTake(playerIn, remain);
         }
         return src;
     }
@@ -237,7 +235,7 @@ public class ContainerMover extends Container {
     }
 
     public enum D {
-        UP(1), DOUN(-1);
+        UP(-1), DOUN(+1);
         public final int offset;
 
         D(int offset) {

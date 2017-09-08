@@ -5,10 +5,13 @@ import com.yogpc.qp.QuarryPlus;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 
+/**
+ * TODO remove to change tileentity render.
+ */
+@Deprecated
 public class EntityLaser extends Entity {
     public static final String NAME = "quarrylaser";
     public double iSize, jSize, kSize;
@@ -98,56 +101,4 @@ public class EntityLaser extends Entity {
         return false;
     }
 
-    public enum LaserType {
-        DRILL(255, 255, 0, 255) {
-            @Override
-            public ResourceLocation location() {
-                return new ResourceLocation(QuarryPlus.modID, "textures/blocks/blockdrilltexture");
-            }
-        },
-        DRILL_HEAD(0, 0, 0, 255) {
-            @Override
-            public ResourceLocation location() {
-                return new ResourceLocation(QuarryPlus.modID, "textures/blocks/blockdrillheadtexture");
-            }
-        },
-        BLUE_LASER(0, 0, 255, 255) {
-            @Override
-            public ResourceLocation location() {
-                return new ResourceLocation(QuarryPlus.modID, "textures/blocks/blockbluelaser");
-            }
-        },
-        RED_LASER(255, 0, 0, 255) {
-            @Override
-            public ResourceLocation location() {
-                return new ResourceLocation(QuarryPlus.modID, "textures/blocks/blockredlaser");
-            }
-        };
-        final int r, g, b, a;
-
-        LaserType(int r, int g, int b, int a) {
-            this.r = r;
-            this.g = g;
-            this.b = b;
-            this.a = a;
-        }
-
-        public float getr() {
-            return r / 255;
-        }
-
-        public float getg() {
-            return g / 255;
-        }
-
-        public float getb() {
-            return b / 255;
-        }
-
-        public float geta() {
-            return a / 255;
-        }
-
-        public abstract ResourceLocation location();
-    }
 }
