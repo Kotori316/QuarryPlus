@@ -5,7 +5,9 @@ import java.util.WeakHashMap;
 
 import com.yogpc.qp.entity.EntityLaser;
 import com.yogpc.qp.render.RenderEntityLaser;
+import com.yogpc.qp.render.RenderMarker;
 import com.yogpc.qp.render.RenderQuarry;
+import com.yogpc.qp.tile.TileMarker;
 import com.yogpc.qp.tile.TileQuarry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -117,6 +119,7 @@ public class ProxyClient extends ProxyCommon {
     public void registerTextures() {
         RenderingRegistry.registerEntityRenderingHandler(EntityLaser.class, RenderEntityLaser::new);
         ClientRegistry.bindTileEntitySpecialRenderer(TileQuarry.class, RenderQuarry.INSTANCE);
+        ClientRegistry.bindTileEntitySpecialRenderer(TileMarker.class, new RenderMarker());
 //        ClientRegistry.bindTileEntitySpecialRenderer(TileRefinery.class, RenderRefinery.INSTANCE);
     }
 }

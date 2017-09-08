@@ -7,25 +7,25 @@ public enum LaserType {
     DRILL(255, 255, 0, 255) {
         @Override
         public ResourceLocation location() {
-            return new ResourceLocation(QuarryPlus.modID, "textures/blocks/blockdrilltexture");
+            return new ResourceLocation(QuarryPlus.modID, "blocks/blockdrilltexture");
         }
     },
     DRILL_HEAD(0, 0, 0, 255) {
         @Override
         public ResourceLocation location() {
-            return new ResourceLocation(QuarryPlus.modID, "textures/blocks/blockdrillheadtexture");
+            return new ResourceLocation(QuarryPlus.modID, "blocks/blockdrillheadtexture");
         }
     },
     BLUE_LASER(0, 0, 255, 255) {
         @Override
         public ResourceLocation location() {
-            return new ResourceLocation(QuarryPlus.modID, "textures/blocks/blockbluelaser");
+            return new ResourceLocation(QuarryPlus.modID, "blocks/blockbluelaser");
         }
     },
     RED_LASER(255, 0, 0, 255) {
         @Override
         public ResourceLocation location() {
-            return new ResourceLocation(QuarryPlus.modID, "textures/blocks/blockredlaser");
+            return new ResourceLocation(QuarryPlus.modID, "blocks/blockredlaser");
         }
     };
     final int r, g, b, a;

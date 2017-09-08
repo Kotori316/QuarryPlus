@@ -16,21 +16,24 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  */
 public class LinkUpdate implements IMessage {
     BlockPos pos;
+    boolean b;
 
-    public static LinkUpdate create(TileMarker marker) {
+    public static LinkUpdate create(TileMarker marker, boolean create) {
         LinkUpdate linkUpdate = new LinkUpdate();
         linkUpdate.pos = marker.getPos();
+        linkUpdate.b = create;
         return linkUpdate;
     }
 
     @Override
     public void fromBytes(PacketBuffer buffer) throws IOException {
         pos = buffer.readBlockPos();
+        b = buffer.readBoolean();
     }
 
     @Override
     public void toBytes(PacketBuffer buffer) {
-        buffer.writeBlockPos(pos);
+        buffer.writeBlockPos(pos).writeBoolean(b);
     }
 
     @Override
@@ -38,8 +41,11 @@ public class LinkUpdate implements IMessage {
     public IMessage onRecieve(IMessage message, MessageContext ctx) {
         TileMarker marker = (TileMarker) Minecraft.getMinecraft().world.getTileEntity(pos);
         assert marker != null;
-//        marker.G_updateSignal();
-        marker.laser = new TileMarker.Laser(marker.getWorld(), marker.getPos(), marker.link);
+        if (b) {
+            marker.laser = new TileMarker.Laser(marker.getWorld(), marker.getPos(), marker.link);
+        } else {
+            marker.G_updateSignal();
+        }
         return null;
     }
 }

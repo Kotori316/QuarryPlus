@@ -167,7 +167,12 @@ public class BlockBreaker extends ADismCBlock {
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack stack = playerIn.getHeldItem(hand);
         if (BuildCraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
-            state.cycleProperty(FACING);
+            TileEntity entity = worldIn.getTileEntity(pos);
+            assert entity != null;
+            entity.validate();
+            worldIn.setBlockState(pos, state.cycleProperty(FACING), 3);
+            entity.validate();
+            worldIn.setTileEntity(pos, entity);
             return true;
         }
         if (stack.getItem() instanceof ItemTool && stack.getItemDamage() == 0) {

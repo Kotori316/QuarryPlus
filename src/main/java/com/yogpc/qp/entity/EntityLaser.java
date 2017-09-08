@@ -26,15 +26,15 @@ public class EntityLaser extends Entity {
     }
 
     public EntityLaser(final World world, final double x, final double y, final double z,
-                       final double iSize, final double jSize, final double kSize, final LaserType tex, boolean isLink) {
+                       final double xSize, final double ySize, final double zSize, final LaserType tex, boolean isLink) {
         super(world);
         this.preventEntitySpawning = false;
         this.noClip = true;
         this.isImmuneToFire = true;
         this.isLink = isLink;
-        this.iSize = iSize;
-        this.jSize = jSize;
-        this.kSize = kSize;
+        this.iSize = xSize;
+        this.jSize = ySize;
+        this.kSize = zSize;
         this.motionX = 0.0;
         this.motionY = 0.0;
         this.motionZ = 0.0;
@@ -42,7 +42,7 @@ public class EntityLaser extends Entity {
         setPositionAndRotation(x, y, z, 0, 0);
         this.texture = tex;
         if (Config.content().debug())
-            QuarryPlus.LOGGER.info(String.format("Client = %s Laser spwaned at %s, %s, %s size %s, %s, %s", world.isRemote, x, y, x, iSize, jSize, kSize));
+            QuarryPlus.LOGGER.info(String.format("Client = %s Laser spwaned at %s, %s, %s size %s, %s, %s", world.isRemote, x, y, x, xSize, ySize, zSize));
     }
 
     @Override

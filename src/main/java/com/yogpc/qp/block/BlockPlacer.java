@@ -163,8 +163,17 @@ public class BlockPlacer extends ADismCBlock {
         ItemStack stack = playerIn.getHeldItem(hand);
         if (stack.getItem() == QuarryPlusI.debugItem) return false;
         if (BuildCraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
-            state.cycleProperty(FACING);
+            TileEntity entity = worldIn.getTileEntity(pos);
+            assert entity != null;
+            entity.validate();
+            worldIn.setBlockState(pos, state.cycleProperty(FACING), 3);
+            entity.validate();
+            worldIn.setTileEntity(pos, entity);
+            return true;
         } else if (!playerIn.isSneaking()) {
+            if (Config.content().debug()) {
+                QuarryPlus.LOGGER.info("Placer touched " + hand + " Item : " + stack);
+            }
             playerIn.openGui(QuarryPlus.INSTANCE, QuarryPlusI.guiIdPlacer, worldIn, pos.getX(), pos.getY(), pos.getZ());
             return true;
         }
