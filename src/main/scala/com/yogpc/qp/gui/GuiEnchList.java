@@ -87,7 +87,7 @@ public class GuiEnchList extends GuiContainer implements GuiYesNoCallback {
                         (this.target == Enchantments.FORTUNE ? this.tile.fortuneList : this.tile.silktouchList).get(this.slot.currentore).getLocalizedName(), par1.id));
                 break;
             default: //maybe toggle
-                PacketHandler.sendToServer(EnchantmentMessage.create(tile, EnchantmentMessage.Type.Toggle, target, BlockData.Invalid));
+                PacketHandler.sendToServer(EnchantmentMessage.create(tile, EnchantmentMessage.Type.Toggle, target, BlockData.Invalid()));
                 break;
         }
     }

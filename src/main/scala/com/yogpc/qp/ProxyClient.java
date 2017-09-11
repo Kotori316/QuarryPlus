@@ -130,7 +130,7 @@ public class ProxyClient extends ProxyCommon {
     @Override
     public void registerTextures() {
         ClientRegistry.bindTileEntitySpecialRenderer(TileQuarry.class, RenderQuarry.INSTANCE);
-        ClientRegistry.bindTileEntitySpecialRenderer(TileMarker.class, new RenderMarker());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileMarker.class, RenderMarker.instance());
 //        ClientRegistry.bindTileEntitySpecialRenderer(TileRefinery.class, RenderRefinery.INSTANCE);
     }
 }

@@ -2,13 +2,15 @@ package com.yogpc.qp.item
 
 import com.yogpc.qp.tile.{APowerTile, TileLaser, TileMarker, TileMiningWell, TilePlacer, TilePump, TileQuarry, TileWorkbench}
 import com.yogpc.qp.{Config, QuarryPlus, QuarryPlusI}
+import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.item.Item
+import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.{ITextComponent, TextComponentString, TextComponentTranslation}
-import net.minecraft.util.{EnumActionResult, EnumFacing, EnumHand}
+import net.minecraft.util.{EnumActionResult, EnumFacing, EnumHand, NonNullList}
 import net.minecraft.world.World
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 class ItemQuarryDebug extends Item {
     setUnlocalizedName(QuarryPlus.Names.debug)
@@ -82,6 +84,13 @@ class ItemQuarryDebug extends Item {
                 super.onItemUseFirst(player, worldIn, pos, side, hitX, hitY, hitZ, hand)
             }
         }
+    }
+
+
+    @SideOnly(Side.CLIENT)
+    override def getSubItems(itemIn: Item, tab: CreativeTabs, subItems: NonNullList[ItemStack]) = {
+        if (Config.content.debug)
+            super.getSubItems(itemIn, tab, subItems)
     }
 
     private def tileposToString(tile: TileEntity): ITextComponent = {

@@ -54,7 +54,7 @@ import static com.yogpc.qp.QuarryPlusI.*;
 @Mod(
         modid = QuarryPlus.modID,
         name = QuarryPlus.Mod_Name,
-        version = "0.5.0",
+        version = "0.5.1",
         dependencies = "required-after:buildcraftcore;after:ic2",
         guiFactory = QuarryPlus.Optionals.configFactory
 )
@@ -115,21 +115,19 @@ public class QuarryPlus {
 
     @SubscribeEvent
     public void registerBlocks(RegistryEvent.Register<Block> event) {
-        event.getRegistry().registerAll(
-                blockQuarry,
-                blockMarker,
-                blockMover,
-                blockMiningWell,
-                blockPump,
-                blockRefinery,
-                blockPlacer,
-                blockBreaker,
-                blockLaser,
-                blockPlainPipe,
-                blockFrame,
-                workbench,
-                controller
-        );
+        event.getRegistry().register(blockQuarry);
+        event.getRegistry().register(blockPump);
+        event.getRegistry().register(blockMarker);
+        event.getRegistry().register(blockMover);
+        event.getRegistry().register(blockMiningWell);
+        event.getRegistry().register(blockPlacer);
+        event.getRegistry().register(blockBreaker);
+        event.getRegistry().register(blockPlainPipe);
+        event.getRegistry().register(blockFrame);
+        event.getRegistry().register(workbench);
+        event.getRegistry().register(controller);
+        event.getRegistry().register(blockLaser);
+        event.getRegistry().register(blockRefinery);
         GameRegistry.registerTileEntity(TileWorkbench.class, prefix + QuarryPlus.Names.workbench);
         GameRegistry.registerTileEntity(TileQuarry.class, prefix + QuarryPlus.Names.quarry);
         GameRegistry.registerTileEntity(TileMarker.class, prefix + QuarryPlus.Names.marker);
@@ -143,25 +141,23 @@ public class QuarryPlus {
 
     @SubscribeEvent
     public void registerItems(RegistryEvent.Register<Item> event) {
-        event.getRegistry().registerAll(
-                itemTool,
-//                armor,
-                magicmirror,
-                debugItem,
-                blockBreaker.itemBlock,
-                blockPlacer.itemBlock,
-                blockMarker.itemBlock,
-                blockMiningWell.itemBlock,
-                blockPlainPipe.itemBlock,
-                blockQuarry.itemBlock,
-                blockRefinery.itemBlock,
-                blockPump.itemBlock,
-                workbench.itemBlock,
-                controller.itemBlock,
-                blockMover.itemBlock,
-                blockLaser.itemBlock,
-                blockFrame.itemBlock
-        );
+        event.getRegistry().register(blockQuarry.itemBlock);
+        event.getRegistry().register(blockPump.itemBlock);
+        event.getRegistry().register(blockMarker.itemBlock);
+        event.getRegistry().register(blockMover.itemBlock);
+        event.getRegistry().register(blockMiningWell.itemBlock);
+        event.getRegistry().register(blockPlacer.itemBlock);
+        event.getRegistry().register(blockBreaker.itemBlock);
+        event.getRegistry().register(blockPlainPipe.itemBlock);
+        event.getRegistry().register(blockFrame.itemBlock);
+        event.getRegistry().register(workbench.itemBlock);
+        event.getRegistry().register(controller.itemBlock);
+        event.getRegistry().register(blockLaser.itemBlock);
+        event.getRegistry().register(blockRefinery.itemBlock);
+        event.getRegistry().register(itemTool);
+//         event.getRegistry().register(       armor);
+        event.getRegistry().register(magicmirror);
+        event.getRegistry().register(debugItem);
     }
 
     @SuppressWarnings("ConstantConditions")

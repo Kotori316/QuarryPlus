@@ -183,8 +183,8 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         final NBTTagList nbttl = new NBTTagList();
         for (final BlockData l : target) {
             final NBTTagCompound c = new NBTTagCompound();
-            c.setString("name", l.name.toString());
-            c.setInteger("meta", l.meta);
+            c.setString("name", l.name().toString());
+            c.setInteger("meta", l.meta());
             nbttl.appendTag(c);
         }
         return nbttl;

@@ -40,7 +40,7 @@ class WorkBenchRecipeCategory(guiHelper: IGuiHelper) extends BlankRecipeCategory
     override def drawExtras(minecraft: Minecraft): Unit = {
         super.drawExtras(minecraft)
         if (currentrecipe != null) {
-            minecraft.fontRendererObj.drawString(currentrecipe.getEnergyRequired.toString, 40 - xOff, 90 - yOff, 0x404040)
+            minecraft.fontRendererObj.drawString(currentrecipe.getEnergyRequired.toString + "MJ", 40 - xOff, 90 - yOff, 0x404040)
         }
     }
 

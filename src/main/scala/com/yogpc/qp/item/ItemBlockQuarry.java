@@ -13,6 +13,7 @@
 
 package com.yogpc.qp.item;
 
+import com.yogpc.qp.Config;
 import com.yogpc.qp.block.BlockQuarry;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.Enchantment;
@@ -47,7 +48,7 @@ public class ItemBlockQuarry extends ItemBlock implements IEnchantableItem {
     @SideOnly(Side.CLIENT)
     public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems) {
         super.getSubItems(itemIn, tab, subItems);
-        if ((Boolean) Launch.blackboard.getOrDefault("fml.deobfuscatedEnvironment", Boolean.FALSE)) {
+        if ((Boolean) Launch.blackboard.getOrDefault("fml.deobfuscatedEnvironment", Boolean.FALSE) && Config.content().debug()) {
             ItemStack stack = new ItemStack(Items.DIAMOND_PICKAXE);
             stack.addEnchantment(Enchantments.EFFICIENCY, 5);
             stack.addEnchantment(Enchantments.UNBREAKING, 3);

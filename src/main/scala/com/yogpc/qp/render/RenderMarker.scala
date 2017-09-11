@@ -12,7 +12,9 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.fml.common.Loader
 
-class RenderMarker extends TileEntitySpecialRenderer[TileMarker] {
+object RenderMarker extends TileEntitySpecialRenderer[TileMarker] {
+
+    val instance = this
 
     override def isGlobalRenderer(te: TileMarker): Boolean = true
 

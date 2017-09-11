@@ -62,7 +62,7 @@ object Config {
         val placerOnlyPlaceFront = configuration.get(Configuration.CATEGORY_GENERAL, PlacerOnlyPlaceFront_key, false).getBoolean
         val noEnergy = configuration.getBoolean(NoEnergy_key, Configuration.CATEGORY_GENERAL, false, NoEnergy_key)
         PowerManager.loadConfiguration(configuration)
-        val debug = configuration.getBoolean(DEBUG_key, Configuration.CATEGORY_GENERAL, true, DEBUG_key)
+        val debug = configuration.getBoolean(DEBUG_key, Configuration.CATEGORY_GENERAL, false, DEBUG_key)
 
         if (configuration.hasChanged)
             configuration.save()

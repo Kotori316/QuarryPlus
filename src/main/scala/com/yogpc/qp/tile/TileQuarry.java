@@ -14,6 +14,7 @@
 package com.yogpc.qp.tile;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -316,7 +317,7 @@ public class TileQuarry extends TileBasic {
         EnumFacing facing = getWorld().getBlockState(getPos()).getValue(BlockQuarry.FACING).getOpposite();
         if (bccoreLoaded) {
             Optional<ITileAreaProvider> marker = Stream.of(pos.offset(facing), pos.offset(facing.rotateYCCW()), pos.offset(facing.rotateY()))
-                    .map(getWorld()::getTileEntity)
+                    .map(getWorld()::getTileEntity).filter(Objects::nonNull)
                     .map(t -> t.getCapability(TilesAPI.CAP_TILE_AREA_PROVIDER, null)).findFirst();
             if (marker.isPresent()) {
                 ITileAreaProvider provider = marker.get();

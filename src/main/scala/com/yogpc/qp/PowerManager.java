@@ -39,9 +39,9 @@ public class PowerManager {
             if (prop.getType() == null) {
                 prop = new Property(prop.getName(), prop.getString(), Property.Type.DOUBLE);
                 prop.setComment(c.getQualifiedName().substring(length) + Configuration.CATEGORY_SPLITTER + name);
-                prop.setMinValue(0d).setMaxValue(2e9);
                 c.put(name, prop);
             }
+            prop.setMinValue(0d).setMaxValue(2e9);
             return prop.getDouble(def);
         }
         final Property prop = new Property(name, Double.toString(def), Property.Type.DOUBLE);
