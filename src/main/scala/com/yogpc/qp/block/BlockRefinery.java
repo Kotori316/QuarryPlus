@@ -20,7 +20,6 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.BuildCraftHelper;
 import com.yogpc.qp.compat.EnchantmentHelper;
 import com.yogpc.qp.compat.InvUtils;
-import com.yogpc.qp.item.ItemBlockRefinery;
 import com.yogpc.qp.item.ItemTool;
 import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TileRefinery;
@@ -30,6 +29,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
@@ -47,11 +47,9 @@ import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 public class BlockRefinery extends ADismCBlock {
 
     public BlockRefinery() {
-        super(Material.IRON, QuarryPlus.Names.refinery);
+        super(Material.IRON, QuarryPlus.Names.refinery, ItemBlock::new);
         setHardness(5F);
         setDefaultState(getBlockState().getBaseState().withProperty(FACING, EnumFacing.NORTH));
-        itemBlock = new ItemBlockRefinery(this);
-        itemBlock.setRegistryName(QuarryPlus.modID, QuarryPlus.Names.refinery);
     }
 
     @Override

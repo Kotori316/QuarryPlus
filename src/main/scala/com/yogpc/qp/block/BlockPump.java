@@ -47,11 +47,9 @@ public class BlockPump extends ADismCBlock {
     public static final PropertyBool CONNECTED = PropertyBool.create("connected");
 
     public BlockPump() {
-        super(Material.IRON, QuarryPlus.Names.pump);
+        super(Material.IRON, QuarryPlus.Names.pump, ItemBlockPump::new);
         setHardness(5F);
         setDefaultState(getBlockState().getBaseState().withProperty(ACTING, false).withProperty(CONNECTED, false));
-        itemBlock = new ItemBlockPump(this);
-        itemBlock.setRegistryName(QuarryPlus.modID, QuarryPlus.Names.pump);
     }
 
     @Override

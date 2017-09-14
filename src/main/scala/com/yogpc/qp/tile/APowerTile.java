@@ -30,7 +30,7 @@ import net.minecraftforge.fml.common.Optional;
 public abstract class APowerTile extends APacketTile implements IEnergyReceiver, IEnergySink, ITickable, IEnergyStorage {
     private double all, maxGot, max, got;
     private boolean ic2ok = false;
-    private boolean bcLoaded;
+    public boolean bcLoaded;
     private Object helper;
     private EnergyDebug debug = new EnergyDebug(this);
     public boolean ic2Loaded;

@@ -30,6 +30,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryHelper;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumActionResult;
@@ -46,7 +47,7 @@ import net.minecraftforge.common.util.FakePlayerFactory;
 public class BlockPlacer extends ADismCBlock {
 
     public BlockPlacer() {
-        super(Material.ROCK, QuarryPlus.Names.placer);
+        super(Material.ROCK, QuarryPlus.Names.placer, ItemBlock::new);
         setHardness(3.5F);
         setSoundType(SoundType.STONE);
         //Random tick setting is Config.

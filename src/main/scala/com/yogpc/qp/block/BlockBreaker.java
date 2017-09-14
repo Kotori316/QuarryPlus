@@ -55,13 +55,11 @@ public class BlockBreaker extends ADismCBlock {
     private final ArrayList<ItemStack> drops = new ArrayList<>();
 
     public BlockBreaker() {
-        super(Material.ROCK, QuarryPlus.Names.breaker);
+        super(Material.ROCK, QuarryPlus.Names.breaker, ItemBlockBreaker::new);
         setHardness(3.5F);
         setSoundType(SoundType.STONE);
         setDefaultState(blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(POWERED, false));
         //Random tick setting is Config.
-        itemBlock = new ItemBlockBreaker(this);
-        itemBlock.setRegistryName(QuarryPlus.modID, QuarryPlus.Names.breaker);
     }
 
     @SuppressWarnings("ConstantConditions")

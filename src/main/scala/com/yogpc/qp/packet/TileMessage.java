@@ -2,7 +2,7 @@ package com.yogpc.qp.packet;
 
 import java.io.IOException;
 
-import net.minecraft.client.Minecraft;
+import com.yogpc.qp.QuarryPlus;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
@@ -38,7 +38,7 @@ public class TileMessage implements IMessage {
         BlockPos pos = new BlockPos(compound.getInteger("x"), compound.getInteger("y"), compound.getInteger("z"));
         switch (ctx.side) {
             case CLIENT:
-                World worldClient = Minecraft.getMinecraft().world;
+                World worldClient = QuarryPlus.proxy.getClientWorld();
                 TileEntity entity = worldClient.getTileEntity(pos);
                 if (entity != null) {
                     entity.readFromNBT(compound);

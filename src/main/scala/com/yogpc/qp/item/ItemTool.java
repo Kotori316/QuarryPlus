@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.yogpc.qp.BlockData;
+import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.tile.IEnchantableTile;
@@ -28,8 +29,10 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Enchantments;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
@@ -176,6 +179,21 @@ public class ItemTool extends Item implements IEnchantableItem {
         subItems.add((new ItemStack(itemIn, 1, 0)));
         subItems.add(getEditorStack());
         subItems.add((new ItemStack(itemIn, 1, 2)));
+        if ((Boolean) Launch.blackboard.getOrDefault("fml.deobfuscatedEnvironment", Boolean.FALSE) && Config.content().debug()) {
+            ItemStack stack = new ItemStack(Items.DIAMOND_PICKAXE);
+            stack.addEnchantment(Enchantments.EFFICIENCY, 5);
+            stack.addEnchantment(Enchantments.UNBREAKING, 3);
+            {
+                ItemStack stack1 = stack.copy();
+                stack1.addEnchantment(Enchantments.FORTUNE, 3);
+                subItems.add(stack1);
+            }
+            {
+                ItemStack stack1 = stack.copy();
+                stack1.addEnchantment(Enchantments.SILK_TOUCH, 1);
+                subItems.add(stack1);
+            }
+        }
     }
 
     @Override

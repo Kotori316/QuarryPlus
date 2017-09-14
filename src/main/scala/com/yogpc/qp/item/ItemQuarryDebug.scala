@@ -31,6 +31,7 @@ class ItemQuarryDebug extends Item {
                             player.sendStatusMessage(new TextComponentTranslation("tile.laserplus.name"), false)
                             player.sendStatusMessage(tileposToString(tile), false)
                             player.sendStatusMessage(energyToString(laser), false)
+                            laser.sendDebugMessage(player)
                         }
                         EnumActionResult.SUCCESS
                     case marker: TileMarker =>

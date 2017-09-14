@@ -40,9 +40,11 @@ public final class EnchantmentHelper {
             als.add(new TextComponentTranslation("chat.plusenchantno"));
         else
             als.add(new TextComponentTranslation("chat.plusenchant"));
-        for (final Map.Entry<Integer, Byte> e : enchs.entrySet())
-            als.add(new TextComponentTranslation("chat.indent", new TextComponentTranslation(Enchantment.getEnchantmentByID(e.getKey()).getName()),
-                    new TextComponentTranslation("enchantment.level." + e.getValue())));
+        for (final Map.Entry<Integer, Byte> e : enchs.entrySet()) {
+            Enchantment enchantment = Enchantment.getEnchantmentByID(e.getKey());
+            als.add(new TextComponentTranslation("chat.indent", new TextComponentTranslation(enchantment.getName()),
+                    enchantment.getMaxLevel() != 1 ? new TextComponentTranslation("enchantment.level." + e.getValue()) : ""));
+        }
         return als;
     }
 

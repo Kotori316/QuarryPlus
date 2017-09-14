@@ -54,7 +54,7 @@ import static com.yogpc.qp.QuarryPlusI.*;
 @Mod(
         modid = QuarryPlus.modID,
         name = QuarryPlus.Mod_Name,
-        version = "0.5.1",
+        version = "${version}",
         dependencies = "required-after:buildcraftcore;after:ic2",
         guiFactory = QuarryPlus.Optionals.configFactory
 )
@@ -94,7 +94,7 @@ public class QuarryPlus {
     @Mod.EventHandler
     public void preInit(final FMLPreInitializationEvent event) {
         Config.setConfigFile(event.getSuggestedConfigurationFile());
-        ForgeChunkManager.setForcedChunkLoadingCallback(INSTANCE, new ChunkLoadingHandler());
+        ForgeChunkManager.setForcedChunkLoadingCallback(INSTANCE, ChunkLoadingHandler.instance());
         proxy.registerTextures();
         MinecraftForge.EVENT_BUS.register(QuarryPlusI.INSANCE);
         MinecraftForge.EVENT_BUS.register(Loot.instance());

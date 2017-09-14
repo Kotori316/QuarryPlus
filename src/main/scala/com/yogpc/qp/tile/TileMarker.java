@@ -61,6 +61,12 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
     public static final IndexOnlyList<Laser> LASER_INDEX = new IndexOnlyList<>(laserList);
 
     private static final int MAX_SIZE = 256;
+    private final boolean bcLoaded;
+
+    public TileMarker() {
+        this.bcLoaded = Loader.isModLoaded(QuarryPlus.Optionals.Buildcraft_modID);
+    }
+
     public Link link;
     public Laser laser;
 
@@ -255,7 +261,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
 
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
-        if (Loader.isModLoaded(QuarryPlus.Optionals.Buildcraft_modID)) {
+        if (bcLoaded) {
             if (capability == TilesAPI.CAP_TILE_AREA_PROVIDER) {
                 return true;
             }
@@ -266,7 +272,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
     @Nullable
     @Override
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
-        if (Loader.isModLoaded(QuarryPlus.Optionals.Buildcraft_modID)) {
+        if (bcLoaded) {
             if (capability == TilesAPI.CAP_TILE_AREA_PROVIDER) {
                 return TilesAPI.CAP_TILE_AREA_PROVIDER.cast(this);
             }

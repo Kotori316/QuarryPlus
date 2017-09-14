@@ -18,12 +18,15 @@ import java.util.List;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.EnchantmentHelper;
+import com.yogpc.qp.item.ItemBlockEnchantable;
 import com.yogpc.qp.item.ItemTool;
 import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TileLaser;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -36,18 +39,78 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public class BlockLaser extends ADismCBlock {
+    private static final AxisAlignedBB NORTH_BASE = new AxisAlignedBB(0, 0, 12d / 16d, 1, 1, 1);
+    private static final AxisAlignedBB NORTH_LANCHER = new AxisAlignedBB(5d / 16d, 5d / 16d, 3d / 16d, 11d / 16d, 11d / 16d, 12d / 16d);
+    private static final AxisAlignedBB SOUTH_BASE = new AxisAlignedBB(0, 0, 0, 1, 1, 4d / 16d);
+    private static final AxisAlignedBB SOUTH_LANCHER = new AxisAlignedBB(5d / 16d, 5d / 16d, 4d / 16d, 11d / 16d, 11d / 16d, 13d / 16d);
+
+    private static final AxisAlignedBB EAST_BASE = new AxisAlignedBB(0, 0, 0, 4d / 16d, 1, 1);
+    private static final AxisAlignedBB EAST_LANCHER = new AxisAlignedBB(4d / 16d, 5d / 16d, 5d / 16d, 13d / 16d, 11d / 16d, 11d / 16d);
+    private static final AxisAlignedBB WEST_BASE = new AxisAlignedBB(12d / 16d, 0, 0, 1, 1, 1);
+    private static final AxisAlignedBB WEST_LANCHER = new AxisAlignedBB(3d / 16d, 5d / 16d, 5d / 16d, 12d / 16d, 11d / 16d, 11d / 16d);
+
+    private static final AxisAlignedBB UP_BASE = new AxisAlignedBB(0, 0, 0, 1, 4d / 16d, 1);
+    private static final AxisAlignedBB UP_LANCHER = new AxisAlignedBB(5d / 16d, 4d / 16d, 5d / 16d, 11d / 16d, 13d / 16d, 11d / 16d);
+    private static final AxisAlignedBB DOWN_BASE = new AxisAlignedBB(0, 12d / 16d, 0, 1, 1, 1);
+    private static final AxisAlignedBB DOWN_LANCHER = new AxisAlignedBB(5d / 16d, 3d / 16d, 5d / 16d, 11d / 16d, 12d / 16d, 11d / 16d);
 
     public BlockLaser() {
-        super(Material.IRON, QuarryPlus.Names.laser);
+        super(Material.IRON, QuarryPlus.Names.laser, ItemBlockEnchantable::new);
         setHardness(10F);
         setDefaultState(getBlockState().getBaseState().withProperty(FACING, EnumFacing.UP));
     }
 
-    //TODO make box
+    @Override
+    @SuppressWarnings("deprecation")
+    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox,
+                                      List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean p_185477_7_) {
+        EnumFacing value = state.getValue(FACING);
+        switch (value) {
+            case DOWN:
+                addCollisionBoxToList(pos, entityBox, collidingBoxes, DOWN_BASE);
+                addCollisionBoxToList(pos, entityBox, collidingBoxes, DOWN_LANCHER);
+                break;
+            case UP:
+                addCollisionBoxToList(pos, entityBox, collidingBoxes, UP_BASE);
+                addCollisionBoxToList(pos, entityBox, collidingBoxes, UP_LANCHER);
+                break;
+            case NORTH:
+                addCollisionBoxToList(pos, entityBox, collidingBoxes, NORTH_BASE);
+                addCollisionBoxToList(pos, entityBox, collidingBoxes, NORTH_LANCHER);
+                break;
+            case SOUTH:
+                addCollisionBoxToList(pos, entityBox, collidingBoxes, SOUTH_BASE);
+                addCollisionBoxToList(pos, entityBox, collidingBoxes, SOUTH_LANCHER);
+                break;
+            case WEST:
+                addCollisionBoxToList(pos, entityBox, collidingBoxes, WEST_BASE);
+                addCollisionBoxToList(pos, entityBox, collidingBoxes, WEST_LANCHER);
+                break;
+            case EAST:
+                addCollisionBoxToList(pos, entityBox, collidingBoxes, EAST_BASE);
+                addCollisionBoxToList(pos, entityBox, collidingBoxes, EAST_LANCHER);
+                break;
+        }
+    }
+
     @Override
     @SuppressWarnings("deprecation")
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-        return super.getBoundingBox(state, source, pos);
+        switch (state.getValue(FACING)) {
+            case DOWN:
+                return DOWN_BASE.union(DOWN_LANCHER);
+            case UP:
+                return UP_BASE.union(UP_LANCHER);
+            case NORTH:
+                return NORTH_BASE.union(NORTH_LANCHER);
+            case SOUTH:
+                return SOUTH_BASE.union(SOUTH_LANCHER);
+            case WEST:
+                return WEST_BASE.union(WEST_LANCHER);
+            case EAST:
+                return EAST_BASE.union(EAST_LANCHER);
+        }
+        return super.getBoundingBox(state, source, pos); // unreachable
     }
 
     @Override
@@ -67,12 +130,6 @@ public class BlockLaser extends ADismCBlock {
         return getDefaultState().withProperty(FACING, EnumFacing.getFront(meta));
     }
 
-    /*
-        @Override
-        public int getRenderType() {
-            return QuarryPlusI.laserRenderID;
-        }
-    */
     @Override
     @SuppressWarnings("deprecation")
     public boolean isOpaqueCube(IBlockState state) {

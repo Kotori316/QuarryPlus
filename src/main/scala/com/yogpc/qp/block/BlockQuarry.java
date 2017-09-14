@@ -20,7 +20,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.BuildCraftHelper;
 import com.yogpc.qp.compat.EnchantmentHelper;
 import com.yogpc.qp.compat.InvUtils;
-import com.yogpc.qp.item.ItemBlockQuarry;
+import com.yogpc.qp.item.ItemBlockEnchantable;
 import com.yogpc.qp.item.ItemTool;
 import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TileQuarry;
@@ -45,13 +45,11 @@ import net.minecraft.world.World;
 
 public class BlockQuarry extends ADismCBlock {
     public BlockQuarry() {
-        super(Material.IRON, QuarryPlus.Names.quarry);
+        super(Material.IRON, QuarryPlus.Names.quarry, ItemBlockEnchantable::new);
         setHardness(1.5F);
         setResistance(10F);
         setSoundType(SoundType.STONE);
         setDefaultState(getBlockState().getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(ACTING, false));
-        itemBlock = new ItemBlockQuarry(this);
-        itemBlock.setRegistryName(QuarryPlus.modID, QuarryPlus.Names.quarry);
     }
 
     private final ArrayList<ItemStack> drops = new ArrayList<>();

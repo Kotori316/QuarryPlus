@@ -8,6 +8,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryHelper;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -17,7 +18,7 @@ import net.minecraft.world.World;
 public class BlockWorkbench extends ADismCBlock {
 
     public BlockWorkbench() {
-        super(Material.IRON, QuarryPlus.Names.workbench);
+        super(Material.IRON, QuarryPlus.Names.workbench, ItemBlock::new);
         setHardness(3F);
     }
 

@@ -2,6 +2,7 @@ package com.yogpc.qp.block;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import cofh.api.block.IDismantleable;
 import com.yogpc.qp.QuarryPlus;
@@ -11,6 +12,7 @@ import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryHelper;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -23,8 +25,8 @@ public abstract class ADismCBlock extends QPBlock implements IDismantleable {
     public static final PropertyBool POWERED = PropertyBool.create("powered");
     public static final PropertyBool ACTING = PropertyBool.create("acting");
 
-    protected ADismCBlock(final Material material, String name) {
-        super(material, name);
+    protected ADismCBlock(final Material material, String name, Function<QPBlock, ? extends ItemBlock> generator) {
+        super(material, name, generator);
     }
 
     @Override

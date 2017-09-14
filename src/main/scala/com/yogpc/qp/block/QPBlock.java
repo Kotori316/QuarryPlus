@@ -1,5 +1,7 @@
 package com.yogpc.qp.block;
 
+import java.util.function.Function;
+
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.InvUtils;
@@ -18,14 +20,14 @@ import net.minecraft.world.World;
 
 public abstract class QPBlock extends BlockContainer {
 
-    public ItemBlock itemBlock;
+    public final ItemBlock itemBlock;
 
-    public QPBlock(Material materialIn, String name) {
+    public QPBlock(Material materialIn, String name, Function<QPBlock, ? extends ItemBlock> generator) {
         super(materialIn);
         setUnlocalizedName(name);
         setRegistryName(QuarryPlus.modID, name);
         setCreativeTab(QuarryPlusI.ct);
-        itemBlock = new ItemBlock(this);
+        itemBlock = generator.apply(this);
         itemBlock.setRegistryName(QuarryPlus.modID, name);
     }
 

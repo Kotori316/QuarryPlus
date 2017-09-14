@@ -17,11 +17,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import buildcraft.api.mj.ILaserTarget;
+import buildcraft.api.mj.MjAPI;
 import com.yogpc.qp.PowerManager;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.block.BlockLaser;
-import com.yogpc.qp.compat.ILaserTargetHelper;
+import com.yogpc.qp.packet.PacketHandler;
+import com.yogpc.qp.packet.TileMessage;
+import com.yogpc.qp.packet.laser.LaserMessage;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
@@ -29,16 +37,25 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+/**
+ * The plus machine of {@link buildcraft.silicon.tile.TileLaser}
+ */
 public class TileLaser extends APowerTile implements IEnchantableTile {
-    public static class Position {
-        public double x, y, z;
-    }
+    private int ticks;
 
-    public Position[] lasers;
-    private final List<Object> laserTargets = new ArrayList<>();
+    /**
+     * To target table.
+     */
+    public Vec3d[] lasers;
+    private final boolean bcLoaded;
+    private final List<BlockPos> targets = new ArrayList<>();
 
     protected byte unbreaking;
     protected byte fortune;
@@ -46,65 +63,66 @@ public class TileLaser extends APowerTile implements IEnchantableTile {
     protected boolean silktouch;
     private double pa;
 
-    private long from = 38669;
-
     public TileLaser() {
         PowerManager.configureLaser(this, this.efficiency, this.unbreaking);
+        bcLoaded = Loader.isModLoaded(QuarryPlus.Optionals.Buildcraft_modID);
     }
 
     @Override
     public void update() {
         super.update();
-        return;
-        /*if (!getWorld().isRemote) {
-            if (!isValidTable() && getWorld().getWorldTime() % 100 == this.from % 100)
-                findTable();
+        if (!bcLoaded || getWorld().isRemote)
+            return;
 
-            if (!isValidTable() || getStoredEnergy() == 0) {
-                removeLaser();
-                return;
+        ticks += 1;
+        targets.removeIf(pos1 -> !(getWorld().getTileEntity(pos1) instanceof ILaserTarget));
+
+        if (ticks % (10 + world.rand.nextInt(20)) == 0 || targets.isEmpty()) {
+            findTable();
+        }
+
+        if (ticks % (5 + world.rand.nextInt(10)) == 0 || targets.isEmpty()) {
+            updateLaser();
+            PacketHandler.sendToAround(LaserMessage.create(this), getWorld(), getPos());
+        }
+
+        if (!targets.isEmpty()) {
+            long maxPower = (long) (PowerManager.useEnergyLaser(this, this.unbreaking, this.fortune, this.silktouch, this.efficiency, true) * MjAPI.MJ);
+            List<ILaserTarget> targetList = targets.stream()
+                    .map(getWorld()::getTileEntity)
+                    .map(ILaserTarget.class::cast)
+                    .filter(t -> !t.isInvalidTarget() && t.getRequiredLaserPower() > 0)
+                    .collect(Collectors.toList());
+            if (!targetList.isEmpty()) {
+                long each = maxPower / targetList.size();
+                targetList.forEach(iLaserTarget -> {
+                    long joules = Math.min(each, iLaserTarget.getRequiredLaserPower());
+                    long excess = iLaserTarget.receiveLaserPower(joules);
+                    useEnergy((joules - excess) / MjAPI.MJ, (joules - excess) / MjAPI.MJ, true);
+                });
+                pushPower(each);
             }
+        }
 
-            if (!isValidLaser())
-                for (int i = 0; i < this.lasers.length; i++) {
-                    this.lasers[i] = new Position();
-                    this.from = getWorld().getWorldTime();
-                }
-
-            if (isValidLaser() && getWorld().getWorldTime() % 10 == this.from % 10)
-                for (int i = 0; i < this.laserTargets.size(); i++) {
-                    this.lasers[i].x =
-                            ILaserTargetHelper.getXCoord(this.laserTargets.get(i)) + 0.475
-                                    + (getWorld().rand.nextFloat() - 0.5) / 5F;
-                    this.lasers[i].y = ILaserTargetHelper.getYCoord(this.laserTargets.get(i)) + 9F / 16F;
-                    this.lasers[i].z =
-                            ILaserTargetHelper.getZCoord(this.laserTargets.get(i)) + 0.475
-                                    + (getWorld().rand.nextFloat() - 0.5) / 5F;
-                }
-
-            final double power = PowerManager.useEnergyLaser(this, this.unbreaking, this.fortune, this.silktouch, this.efficiency);
-            for (final Object lt : this.laserTargets)
-                ILaserTargetHelper.receiveLaserEnergy(lt, 10 * power / this.laserTargets.size());
-            pushPower(10 * power / this.laserTargets.size());
-//            if (getWorld().getWorldTime() % 20 == 7)
-//                PacketHandler.sendPacketToAround(new YogpstopPacket(this), getWorld().provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ());
-        }*/
+        if (ticks % 20 == 0 /*&& !getWorld().isRemote*/) {
+            PacketHandler.sendToAround(TileMessage.create(this), getWorld(), getPos());
+        }
     }
 
-    private boolean isValidLaser() {
-        for (final Position laser : this.lasers)
-            if (laser == null)
-                return false;
-        return true;
-    }
-
-    protected boolean isValidTable() {
-        if (this.laserTargets.isEmpty())
-            return false;
-        for (final Object lt : this.laserTargets)
-            if (lt == null || !ILaserTargetHelper.isValid(lt))
-                return false;
-        return true;
+    private void updateLaser() {
+        if (!targets.isEmpty()) {
+            lasers = new Vec3d[targets.size()];
+            for (int i = 0; i < targets.size(); i++) {
+                BlockPos targetPos = targets.get(i);
+                lasers[i] = new Vec3d(targetPos).addVector(
+                        (5 + getWorld().rand.nextInt(6) + 0.5) / 16D,
+                        9 / 16D,
+                        (5 + getWorld().rand.nextInt(6) + 0.5) / 16D
+                );
+            }
+        } else {
+            lasers = new Vec3d[0];
+        }
     }
 
     protected void findTable() {
@@ -140,32 +158,31 @@ public class TileLaser extends APowerTile implements IEnchantableTile {
                 break;
         }
 
-        this.laserTargets.clear();
-
-        for (int x = minX; x <= maxX; ++x)
-            for (int y = minY; y <= maxY; ++y)
-                for (int z = minZ; z <= maxZ; ++z) {
-                    final TileEntity tile = getWorld().getTileEntity(new BlockPos(x, y, z));
-                    if (ILaserTargetHelper.isInstance(tile))
-                        if (ILaserTargetHelper.isValid(tile))
-                            this.laserTargets.add(tile);
+        this.targets.clear();
+        BlockPos.getAllInBoxMutable(new BlockPos(minX, minY, minZ), new BlockPos(maxX, maxY, maxZ)).forEach(mutableBlockPos -> {
+            TileEntity tileEntity = getWorld().getTileEntity(mutableBlockPos);
+            if (ILaserTarget.class.isInstance(tileEntity)) {
+                ILaserTarget target = (ILaserTarget) tileEntity;
+                if (!target.isInvalidTarget() && target.getRequiredLaserPower() > 0) {
+                    targets.add(mutableBlockPos.toImmutable());
                 }
-        if (this.laserTargets.isEmpty())
+            }
+        });
+
+        if (this.targets.isEmpty())
             return;
         if (!this.silktouch) {
-            final Object laserTarget = this.laserTargets.get(getWorld().rand.nextInt(this.laserTargets.size()));
-            this.laserTargets.clear();
-            this.laserTargets.add(laserTarget);
+            BlockPos laserTarget = this.targets.get(getWorld().rand.nextInt(this.targets.size()));
+            this.targets.clear();
+            this.targets.add(laserTarget);
         }
-        this.lasers = new Position[this.laserTargets.size()];
+        lasers = new Vec3d[targets.size()];
     }
 
     protected void removeLaser() {
         if (this.lasers != null)
             for (int i = 0; i < this.lasers.length; i++)
                 this.lasers[i] = null;
-//        if (!getWorld().isRemote)
-//            PacketHandler.sendPacketToAround(new YogpstopPacket(this), getWorld().provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ());
     }
 
     private final double[] tp = new double[100];
@@ -189,7 +206,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile {
             new ResourceLocation(QuarryPlus.modID, "textures/entities/stripes.png")};
 
     public ResourceLocation getTexture() {
-        final double avg = this.pa / 100;
+        final double avg = getAvg();
 
         if (avg <= 1.0)
             return LASER_TEXTURES[0];
@@ -201,6 +218,10 @@ public class TileLaser extends APowerTile implements IEnchantableTile {
             return LASER_TEXTURES[3];
     }
 
+    public double getAvg() {
+        return this.pa / 100;
+    }
+
     @Override
     public void readFromNBT(final NBTTagCompound nbttc) {
         super.readFromNBT(nbttc);
@@ -210,17 +231,13 @@ public class TileLaser extends APowerTile implements IEnchantableTile {
         this.silktouch = nbttc.getBoolean("silktouch");
         PowerManager.configureLaser(this, this.efficiency, this.unbreaking);
         this.pa = nbttc.getDouble("pa");
-        final NBTTagList nbttl = nbttc.getTagList("lasers", 10);
-        if (this.lasers == null || this.lasers.length != nbttl.tagCount())
-            this.lasers = new Position[nbttl.tagCount()];
+        final NBTTagList nbttl = nbttc.getTagList("lasers", Constants.NBT.TAG_COMPOUND);
+        Vec3d[] vec3ds = new Vec3d[nbttl.tagCount()];
         for (int i = 0; i < nbttl.tagCount(); i++) {
-            if (this.lasers[i] == null)
-                this.lasers[i] = new Position();
             final NBTTagCompound lc = nbttl.getCompoundTagAt(i);
-            this.lasers[i].x = lc.getDouble("x");
-            this.lasers[i].y = lc.getDouble("y");
-            this.lasers[i].z = lc.getDouble("z");
+            vec3ds[i] = new Vec3d(lc.getDouble("x"), lc.getDouble("y"), lc.getDouble("z"));
         }
+        this.lasers = vec3ds;
     }
 
     @Override
@@ -232,12 +249,12 @@ public class TileLaser extends APowerTile implements IEnchantableTile {
         nbttc.setDouble("pa", this.pa);
         final NBTTagList nbttl = new NBTTagList();
         if (this.lasers != null)
-            for (final Position l : this.lasers)
+            for (final Vec3d l : this.lasers)
                 if (l != null) {
                     final NBTTagCompound lc = new NBTTagCompound();
-                    lc.setDouble("x", l.x);
-                    lc.setDouble("y", l.y);
-                    lc.setDouble("z", l.z);
+                    lc.setDouble("x", l.xCoord);
+                    lc.setDouble("y", l.yCoord);
+                    lc.setDouble("z", l.zCoord);
                     nbttl.appendTag(lc);
                 }
         nbttc.setTag("lasers", nbttl);
@@ -252,7 +269,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile {
 
     @Override
     protected boolean isWorking() {
-        return false;
+        return !targets.isEmpty();
     }
 
     @Override
@@ -286,6 +303,21 @@ public class TileLaser extends APowerTile implements IEnchantableTile {
         PowerManager.configureLaser(this, this.efficiency, this.unbreaking);
     }
 
+    public void sendDebugMessage(EntityPlayer player) {
+        player.sendStatusMessage(new TextComponentString("Targets"), false);
+        targets.stream()
+                .map(pos1 -> String.format("x=%d, y=%d, z=%d", pos1.getX(), pos1.getY(), pos1.getZ()))
+                .reduce((s, s2) -> s + ", " + s2)
+                .ifPresent(s -> player.sendStatusMessage(new TextComponentString(s), false));
+
+        player.sendStatusMessage(new TextComponentString("Lasers"), false);
+        Stream.of(lasers).filter(Objects::nonNull)
+                .map(pos1 -> String.format("x=%s, y=%s, z=%s", pos1.xCoord, pos1.yCoord, pos1.zCoord))
+                .reduce((s, s2) -> s + ", " + s2)
+                .ifPresent(s -> player.sendStatusMessage(new TextComponentString(s), false));
+
+    }
+
     @Override
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {
@@ -297,21 +329,21 @@ public class TileLaser extends APowerTile implements IEnchantableTile {
         double maxY = getPos().getY() + 1;
         double maxZ = getPos().getZ() + 1;
         if (this.lasers != null)
-            for (final Position p : this.lasers) {
+            for (final Vec3d p : this.lasers) {
                 if (p == null)
                     continue;
-                final double xn = p.x - 0.0625;
+                final double xn = p.xCoord - 0.0625;
                 final double xx = xn + 0.125;
-                final double zn = p.z - 0.0625;
+                final double zn = p.zCoord - 0.0625;
                 final double zx = zn + 0.125;
                 if (xn < minX)
                     minX = xn;
                 if (xx > maxX)
                     maxX = xx;
-                if (p.y < minY)
-                    minY = p.y;
-                if (p.y > maxY)
-                    maxY = p.y;
+                if (p.yCoord < minY)
+                    minY = p.yCoord;
+                if (p.yCoord > maxY)
+                    maxY = p.yCoord;
                 if (zn < minZ)
                     minZ = zn;
                 if (zx > maxZ)

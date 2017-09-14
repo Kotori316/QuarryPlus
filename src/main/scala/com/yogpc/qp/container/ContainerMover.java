@@ -58,9 +58,11 @@ public class ContainerMover extends Container {
         int col;
         for (col = 0; col < 2; ++col)
             addSlotToContainer(new SlotMover(this.craftMatrix, col, 8 + col * 144, 35));
+
         for (row = 0; row < 3; ++row)
             for (col = 0; col < 9; ++col)
                 addSlotToContainer(new Slot(player, col + row * 9 + 9, 8 + col * 18, 84 + row * 18));
+
         for (col = 0; col < 9; ++col)
             addSlotToContainer(new Slot(player, col, 8 + col * 18, 142));
     }

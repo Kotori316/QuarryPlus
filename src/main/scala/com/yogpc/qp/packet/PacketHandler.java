@@ -6,6 +6,7 @@ import com.yogpc.qp.packet.controller.SetEntity;
 import com.yogpc.qp.packet.enchantment.DiffMessage;
 import com.yogpc.qp.packet.enchantment.EnchantmentMessage;
 import com.yogpc.qp.packet.enchantment.MoverMessage;
+import com.yogpc.qp.packet.laser.LaserMessage;
 import com.yogpc.qp.packet.marker.LinkReply;
 import com.yogpc.qp.packet.marker.LinkRequest;
 import com.yogpc.qp.packet.marker.LinkUpdate;
@@ -56,6 +57,8 @@ public class PacketHandler {
         //quarry
         wrapper.registerMessage(handler, ModeMessage.class, 18, Side.CLIENT);
         wrapper.registerMessage(handler, MoveHead.class, 19, Side.CLIENT);
+        //laser
+        wrapper.registerMessage(handler, LaserMessage.class, 20, Side.CLIENT);
     }
 
     /**

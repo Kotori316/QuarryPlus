@@ -19,7 +19,7 @@ import java.util.List;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.BuildCraftHelper;
 import com.yogpc.qp.compat.EnchantmentHelper;
-import com.yogpc.qp.item.ItemBlockMiningwell;
+import com.yogpc.qp.item.ItemBlockEnchantable;
 import com.yogpc.qp.item.ItemTool;
 import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TileMiningWell;
@@ -45,13 +45,11 @@ public class BlockMiningWell extends ADismCBlock {
     private final ArrayList<ItemStack> drops = new ArrayList<>();
 
     public BlockMiningWell() {
-        super(Material.GROUND, QuarryPlus.Names.miningwell);
+        super(Material.GROUND, QuarryPlus.Names.miningwell, ItemBlockEnchantable::new);
         setHardness(1.5F);
         setResistance(10F);
         setSoundType(SoundType.STONE);
         setDefaultState(getBlockState().getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(ACTING, false));
-        itemBlock = new ItemBlockMiningwell(this);
-        itemBlock.setRegistryName(QuarryPlus.modID, QuarryPlus.Names.miningwell);
     }
 
     @Override
