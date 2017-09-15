@@ -61,7 +61,6 @@ object RenderLaser extends TileEntitySpecialRenderer[TileLaser] {
 
             RenderHelper.enableStandardItemLighting()
 
-
         } else if (te != null && te.lasers != null) {
             GL11.glPushMatrix()
             OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240) // TODO lightmap
@@ -70,7 +69,7 @@ object RenderLaser extends TileEntitySpecialRenderer[TileLaser] {
             GL11.glEnable(GL11.GL_CULL_FACE)
             GL11.glEnable(GL11.GL_LIGHTING)
             GL11.glEnable(GL11.GL_BLEND)
-            //            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
             GL11.glTranslated(x - te.getPos.getX, y - te.getPos.getY, z - te.getPos.getZ)
             for (l <- te.lasers) {
                 if (l != null) {
