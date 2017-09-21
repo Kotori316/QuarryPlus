@@ -100,6 +100,6 @@ object WorkbenchRecipes {
         addRecipe(ItemDamage(itemTool, 2), 320000, new ItemStack(IRON_INGOT, 1600), new ItemStack(LAVA_BUCKET, 60), new ItemStack(WATER_BUCKET, 60), new ItemStack(ENDER_PEARL, 3))
         addRecipe(ItemDamage(blockBreaker), 320000, new ItemStack(REDSTONE, 1600), new ItemStack(DIAMOND, 600), new ItemStack(GOLD_INGOT, 800), new ItemStack(IRON_INGOT, 1600), new ItemStack(ENDER_PEARL, 50))
         addRecipe(ItemDamage(blockPlacer), 320000, new ItemStack(REDSTONE, 1600), new ItemStack(DIAMOND, 600), new ItemStack(GOLD_INGOT, 1600), new ItemStack(IRON_INGOT, 800), new ItemStack(ENDER_PEARL, 50))
-        if (false) addRecipe(ItemDamage(blockLaser), 640000, new ItemStack(DIAMOND, 400), new ItemStack(REDSTONE, 4800), new ItemStack(OBSIDIAN, 800), new ItemStack(GLASS, 3600), new ItemStack(GLOWSTONE_DUST, 1600), new ItemStack(GOLD_INGOT, 800), new ItemStack(ENDER_PEARL, 5))
+        addRecipe(ItemDamage(blockLaser), 640000, new ItemStack(DIAMOND, 400), new ItemStack(REDSTONE, 4800), new ItemStack(OBSIDIAN, 800), new ItemStack(GLASS, 3600), new ItemStack(GLOWSTONE_DUST, 1600), new ItemStack(GOLD_INGOT, 800), new ItemStack(ENDER_PEARL, 5))
     }
 }

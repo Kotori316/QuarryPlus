@@ -164,11 +164,6 @@ public abstract class APowerTile extends APacketTile implements IEnergyReceiver,
     }
 
     public final void configure(final double maxRecieve, final double maxstored) {
-        if (Config.content().noEnergy()) {
-            maxGot = 0;
-            max = 0;
-            return;
-        }
         this.maxGot = maxRecieve;
         this.max = maxstored;
     }

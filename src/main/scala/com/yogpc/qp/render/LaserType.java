@@ -29,6 +29,7 @@ public enum LaserType {
         }
     };
     final int r, g, b, a;
+    public final scala.Symbol symbol = scala.Symbol.apply(name());
 
     LaserType(int r, int g, int b, int a) {
         this.r = r;

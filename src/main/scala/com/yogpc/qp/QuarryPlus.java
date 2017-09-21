@@ -16,6 +16,7 @@ package com.yogpc.qp;
 import com.yogpc.qp.gui.GuiFactory;
 import com.yogpc.qp.gui.GuiHandler;
 import com.yogpc.qp.item.ItemTool;
+import com.yogpc.qp.render.Sprites;
 import com.yogpc.qp.tile.TileBreaker;
 import com.yogpc.qp.tile.TileLaser;
 import com.yogpc.qp.tile.TileMarker;
@@ -99,6 +100,8 @@ public class QuarryPlus {
         MinecraftForge.EVENT_BUS.register(QuarryPlusI.INSANCE);
         MinecraftForge.EVENT_BUS.register(Loot.instance());
         MinecraftForge.EVENT_BUS.register(Config.instance());
+        if (event.getSide() == Side.CLIENT)
+            MinecraftForge.EVENT_BUS.register(Sprites.instance());
         NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, new GuiHandler());
     }
 

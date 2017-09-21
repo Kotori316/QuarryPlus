@@ -1,12 +1,11 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "cube_all",
+    "model": "quarryplus:ref",
     "textures": {
-      "all": "quarryplus:blocks/refinerydummy"
-    },
-    "uvlock": true,
-    "transform": "forge:default-block"
+      "texture": "quarryplus:blocks/refine",
+      "particle": "quarryplus:blocks/refine"
+    }
   },
   "variants": {
     "facing": {
@@ -28,9 +27,9 @@
       "down": {
         "x": 90
       }
-    },
-    "inventory": [
-      {}
-    ]
-  }
+    }
+  },
+  "inventory": [
+    {}
+  ]
 }

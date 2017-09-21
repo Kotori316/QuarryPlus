@@ -318,7 +318,7 @@ public class TileQuarry extends TileBasic {
         if (bccoreLoaded) {
             Optional<ITileAreaProvider> marker = Stream.of(pos.offset(facing), pos.offset(facing.rotateYCCW()), pos.offset(facing.rotateY()))
                     .map(getWorld()::getTileEntity).filter(Objects::nonNull)
-                    .map(t -> t.getCapability(TilesAPI.CAP_TILE_AREA_PROVIDER, null)).findFirst();
+                    .map(t -> t.getCapability(TilesAPI.CAP_TILE_AREA_PROVIDER, null)).filter(Objects::nonNull).findFirst();
             if (marker.isPresent()) {
                 ITileAreaProvider provider = marker.get();
                 if (provider.min().getX() == provider.max().getX() || provider.min().getZ() == provider.max().getZ()) {
@@ -447,6 +447,22 @@ public class TileQuarry extends TileBasic {
         this.now = now;
         if (!getWorld().isRemote) {
             PacketHandler.sendToAround(ModeMessage.create(this), getWorld(), getPos());
+            IBlockState state = getWorld().getBlockState(getPos());
+            if (state.getValue(BlockQuarry.ACTING)) {
+                if (now == NONE) {
+                    validate();
+                    getWorld().setBlockState(getPos(), state.withProperty(BlockQuarry.ACTING, false));
+                    validate();
+                    getWorld().setTileEntity(getPos(), this);
+                }
+            } else {
+                if (now != NONE) {
+                    validate();
+                    getWorld().setBlockState(getPos(), state.withProperty(BlockQuarry.ACTING, true));
+                    validate();
+                    getWorld().setTileEntity(getPos(), this);
+                }
+            }
         }
     }
 
@@ -596,7 +612,8 @@ public class TileQuarry extends TileBasic {
     @Override
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {
-
+        return INFINITE_EXTENT_AABB;
+/*
         if (this.yMax == Integer.MIN_VALUE)
             return new AxisAlignedBB(getPos().getX(), Double.NEGATIVE_INFINITY, getPos().getZ(), getPos().getX() + 1, getPos().getY() + 1, getPos().getZ() + 1);
         final double xn = this.xMin + 0.46875;
@@ -625,7 +642,12 @@ public class TileQuarry extends TileBasic {
             z2 = zx;
         else z2 = getPos().getZ() + 1;
 
-        return new AxisAlignedBB(x1, Double.NEGATIVE_INFINITY, z1, x2, y2, z2);
+        return new AxisAlignedBB(x1, Double.NEGATIVE_INFINITY, z1, x2, y2, z2);*/
+    }
+
+    @Override
+    public boolean hasFastRenderer() {
+        return true;
     }
 
     public void sendDebugMessage(EntityPlayer player) {

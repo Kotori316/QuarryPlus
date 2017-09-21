@@ -30,22 +30,22 @@ object RenderLaser extends TileEntitySpecialRenderer[TileLaser] {
         Minecraft.getMinecraft.mcProfiler.startSection("quarryplus")
         Minecraft.getMinecraft.mcProfiler.startSection("laser")
         if (bcLoaded) {
-            val tessellator = Tessellator.getInstance
-            val vertexBuffer = tessellator.getBuffer
-            this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE)
-            RenderHelper.disableStandardItemLighting()
-            GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-            GlStateManager.enableBlend()
-            GlStateManager.disableCull()
-
-            if (Minecraft.isAmbientOcclusionEnabled) GlStateManager.shadeModel(GL11.GL_SMOOTH)
-            else GlStateManager.shadeModel(GL11.GL_FLAT)
-
-            vertexBuffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK)
-
-            vertexBuffer.setTranslation(x - te.getPos.getX, y - te.getPos.getY, z - te.getPos.getZ)
-
             if (te.lasers != null) {
+                val tessellator = Tessellator.getInstance
+                val vertexBuffer = tessellator.getBuffer
+                this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE)
+                RenderHelper.disableStandardItemLighting()
+                GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+                GlStateManager.enableBlend()
+                GlStateManager.disableCull()
+
+                if (Minecraft.isAmbientOcclusionEnabled) GlStateManager.shadeModel(GL11.GL_SMOOTH)
+                else GlStateManager.shadeModel(GL11.GL_FLAT)
+
+                vertexBuffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK)
+
+                vertexBuffer.setTranslation(x - te.getPos.getX, y - te.getPos.getY, z - te.getPos.getZ)
+
                 for (vector <- te.lasers) {
                     val side = te.getWorld.getBlockState(te.getPos).getValue(ADismCBlock.FACING)
                     val offset = new Vec3d(0.5, 0.5, 0.5).add(new Vec3d(side.getDirectionVec).scale(4 / 16D))
@@ -53,14 +53,13 @@ object RenderLaser extends TileEntitySpecialRenderer[TileLaser] {
                     val laser = new LaserData_BC8(BuildCraftLaserManager.POWERS(index), new Vec3d(te.getPos).add(offset), vector, 1 / 16D)
                     LaserRenderer_BC8.renderLaserDynamic(laser, vertexBuffer)
                 }
+
+                vertexBuffer.setTranslation(0, 0, 0)
+
+                tessellator.draw()
+
+                RenderHelper.enableStandardItemLighting()
             }
-
-            vertexBuffer.setTranslation(0, 0, 0)
-
-            tessellator.draw()
-
-            RenderHelper.enableStandardItemLighting()
-
         } else if (te != null && te.lasers != null) {
             GL11.glPushMatrix()
             OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240) // TODO lightmap
