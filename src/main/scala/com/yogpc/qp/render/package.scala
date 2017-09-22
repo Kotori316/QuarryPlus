@@ -8,7 +8,17 @@ package object render {
     implicit class BufferBuilderHelper(val buffer: VertexBuffer) extends AnyVal {
         def pos(vec: Vec3d): VertexBuffer = buffer.pos(vec.xCoord, vec.yCoord, vec.zCoord)
 
+        /**
+          * buffer.color(255, 255, 255, 255)
+          *
+          * @return the buffer
+          */
         def colored(): VertexBuffer = buffer.color(255, 255, 255, 255)
+
+        /**
+          * buffer.lightmap(240, 0).endVertex()
+          */
+        def lightedAndEnd(): Unit = buffer.lightmap(240, 0).endVertex()
     }
 
     implicit class Vec3dHelper(val vec3d: Vec3d) extends AnyVal {

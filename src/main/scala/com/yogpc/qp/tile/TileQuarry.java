@@ -423,7 +423,7 @@ public class TileQuarry extends TileBasic {
         final double x = this.targetX - this.headPosX;
         final double y = this.targetY + 1 - this.headPosY;
         final double z = this.targetZ - this.headPosZ;
-        final double distance = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2));
+        final double distance = Math.sqrt(x * x + y * y + z * z);
         final double blocks = PowerManager.useEnergyQuarryHead(this, distance, this.unbreaking);
         if (blocks * 2 >= distance) {
             this.headPosX = this.targetX;
@@ -654,6 +654,7 @@ public class TileQuarry extends TileBasic {
         player.sendStatusMessage(new TextComponentString(getStoredEnergy() + " / " + getMaxStored() + " MJ"), false);
         player.sendStatusMessage(new TextComponentTranslation("chat.currentmode", G_getNow()), false);
         player.sendStatusMessage(new TextComponentString(String.format("Next target : (%d, %d, %d)", targetX, targetY, targetZ)), false);
+        player.sendStatusMessage(new TextComponentString(String.format("Head Pos : (%s, %s, %s)", headPosX, headPosY, headPosZ)), false);
         player.sendStatusMessage(new TextComponentString("X : " + xMin + " to " + xMax), false);
         player.sendStatusMessage(new TextComponentString("Z : " + zMin + " to " + zMax), false);
         player.sendStatusMessage(new TextComponentTranslation(filler ? "chat.fillermode" : "chat.quarrymode"), false);

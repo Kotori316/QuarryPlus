@@ -190,11 +190,11 @@ object DirectionRenderer {
         //
         //  ┌──────────┐
         //  │ 2      1 │
-        // x│          │
+        // z│          │
         //  │          │
         //  │ 3      4 │
         //  └──────────┘
-        //       z
+        //       x
         override protected val originIndex: Int = 1
         override protected val uVector: EnumFacing = EAST
         override protected val vVector: EnumFacing = SOUTH

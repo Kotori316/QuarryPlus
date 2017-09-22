@@ -260,6 +260,16 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
+    public double getMaxRenderDistanceSquared() {
+        if (laser != null || link != null) {
+            return 256 * 256 * 4;
+        } else {
+            return super.getMaxRenderDistanceSquared();
+        }
+    }
+
+    @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
         if (bcLoaded) {
             if (capability == TilesAPI.CAP_TILE_AREA_PROVIDER) {
@@ -347,16 +357,16 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
             this.w = pw;
             double b = 10d / 16d, c = 6d / 16d;
             if (l == null || l.xn == l.xx) {
-                boxes[0] = new AxisAlignedBB(px + 0.5 - MAX_SIZE, py + 0.5, pz + 0.5, px + c, py + 0.5, pz + 0.5);
-                boxes[3] = new AxisAlignedBB(px + b, py + 0.5, pz + 0.5, px + 0.5 + MAX_SIZE, py + 0.5, pz + 0.5);
+                boxes[0] = new AxisAlignedBB(px + b - MAX_SIZE, py + 0.5, pz + 0.5, px + c, py + 0.5, pz + 0.5);
+                boxes[3] = new AxisAlignedBB(px + b, py + 0.5, pz + 0.5, px + c + MAX_SIZE, py + 0.5, pz + 0.5);
             }
             if (l == null || l.yn == l.yx) {
                 boxes[1] = new AxisAlignedBB(px + 0.5, 0, pz + 0.5, px + 0.5, py - 0.1, pz + 0.5);
                 boxes[4] = new AxisAlignedBB(px + 0.5, py + b, pz + 0.5, px + 0.5, 255, pz + 0.5);
             }
             if (l == null || l.zn == l.zx) {
-                boxes[2] = new AxisAlignedBB(px + 0.5, py + 0.5, pz + 0.5 - MAX_SIZE, px + 0.5, py + 0.5, pz + c);
-                boxes[5] = new AxisAlignedBB(px + 0.5, py + 0.5, pz + b, px + 0.5, py + 0.5, pz + 0.5 + MAX_SIZE);
+                boxes[2] = new AxisAlignedBB(px + 0.5, py + 0.5, pz + b - MAX_SIZE, px + 0.5, py + 0.5, pz + c);
+                boxes[5] = new AxisAlignedBB(px + 0.5, py + 0.5, pz + b, px + 0.5, py + 0.5, pz + c + MAX_SIZE);
             }
             destructor();
             laserList.add(this);

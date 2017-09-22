@@ -23,22 +23,26 @@ public class IndexOnlyList<T> {
     }
 
     public int indexOf(Object o) {
-        for (int i = 0; i < tList.size(); i++) {
-            T item = tList.get(i);
-            if (predicates.stream().anyMatch(tTwoPredicate -> tTwoPredicate.test(item, o))) {
-                return i;
+        synchronized (tList) {
+            for (int i = 0; i < tList.size(); i++) {
+                T item = tList.get(i);
+                if (predicates.stream().anyMatch(tTwoPredicate -> tTwoPredicate.test(item, o))) {
+                    return i;
+                }
             }
+            return defaultIndex;
         }
-        return defaultIndex;
     }
 
     public boolean contains(Object o) {
-        for (T item : tList) {
-            if (predicates.stream().anyMatch(tTwoPredicate -> tTwoPredicate.test(item, o))) {
-                return true;
+        synchronized (tList) {
+            for (T item : tList) {
+                if (predicates.stream().anyMatch(tTwoPredicate -> tTwoPredicate.test(item, o))) {
+                    return true;
+                }
             }
+            return false;
         }
-        return false;
     }
 
     public void addPredicate(TwoPredicate<T> predicate) {
