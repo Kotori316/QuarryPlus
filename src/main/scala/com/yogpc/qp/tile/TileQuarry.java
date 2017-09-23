@@ -297,7 +297,8 @@ public class TileQuarry extends TileBasic {
     }
 
     private void S_checkDropItem() {
-        final AxisAlignedBB axis = new AxisAlignedBB(this.targetX - 4, this.targetY - 4, this.targetZ - 4, this.targetX + 6, this.targetY + 6, this.targetZ + 6);
+        final AxisAlignedBB axis = new AxisAlignedBB(this.targetX - 4, this.targetY - 4, this.targetZ - 4,
+                this.targetX + 6, this.targetY + 6, this.targetZ + 6);
         final List<EntityItem> result = getWorld().getEntitiesWithinAABB(EntityItem.class, axis);
         for (EntityItem entityItem : result) {
             if (entityItem.isDead)
@@ -612,8 +613,6 @@ public class TileQuarry extends TileBasic {
     @Override
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {
-        return INFINITE_EXTENT_AABB;
-/*
         if (this.yMax == Integer.MIN_VALUE)
             return new AxisAlignedBB(getPos().getX(), Double.NEGATIVE_INFINITY, getPos().getZ(), getPos().getX() + 1, getPos().getY() + 1, getPos().getZ() + 1);
         final double xn = this.xMin + 0.46875;
@@ -642,7 +641,19 @@ public class TileQuarry extends TileBasic {
             z2 = zx;
         else z2 = getPos().getZ() + 1;
 
-        return new AxisAlignedBB(x1, Double.NEGATIVE_INFINITY, z1, x2, y2, z2);*/
+        return new AxisAlignedBB(x1, Double.NEGATIVE_INFINITY, z1, x2, y2, z2);
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public double getMaxRenderDistanceSquared() {
+        if ((now == Mode.NOTNEEDBREAK || now == Mode.MAKEFRAME) && yMax != Integer.MIN_VALUE) {
+            return (xMax - xMin) * (xMax - xMin) + 25 + (zMax - zMin) * (zMax - zMin);
+        } else if (now == Mode.BREAKBLOCK || now == Mode.MOVEHEAD) {
+            return (xMax - xMin) * (xMax - xMin) + yMax * yMax + (zMax - zMin) * (zMax - zMin);
+        } else {
+            return super.getMaxRenderDistanceSquared();
+        }
     }
 
     @Override
