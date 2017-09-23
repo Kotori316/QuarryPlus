@@ -1,19 +1,20 @@
 # QuarryPlus
 ===========
 
-**Work for 1.11.2 have NOT finished yet.**
+**Work for 1.12 have NOT finished yet.**
 
 Advanced machines for minecraft.
 Forked from https://github.com/yogpstop/QuarryPlus
 
-Jar files are available on https://github.com/Kotori316/QuarryPlus/releases OR https://drive.google.com/drive/folders/0B5zTU8XQHxjCUF9wUk52VG80WkU?usp=sharing
+Jar files are available on https://github.com/Kotori316/QuarryPlus/releases
 
 **These are nightly builds. These versions will be cleaned up at fixed intervals.**  
 
 Supported API
 -------------
-* BuildCraft API
-* CofhLib API
+* ~~BuildCraft API~~
+* ~~CofhLib API~~ 
+* RedstoneFlux API
 * IC2 API
 * JEI API
 * Forge Energy API (net.minecraftforge.energy.IEnergyStorage)
@@ -24,7 +25,8 @@ Supported API
 
 Build with...
 -------------
-* BuildCraft [MC1.11.2] 7.99.7
-* IC2\_experimental [MC1.11.2] industrialcraft-2-2.7.82-ex111-api.jar
-* CoFHLib [MC1.11.2] CoFHLib-1.11.2-1.8.0.1
-* JEI [MC1.11.2] jei_1.11.2-4.5.1.296.jar
+* ~~BuildCraft [MC1.11.2] 7.99.7~~
+* IC2\_experimental [MC1.12] industrialcraft-2-2.8.26-ex112-api.jar
+* ~~CoFHLib [MC1.11.2] CoFHLib-1.11.2-1.8.0.1~~
+* RedstoneFlux [MC1.12] RedstoneFlux-1.12-2.0.1.2.jar
+* JEI [MC1.12.1] jei_1.12.1-4.7.8.95.jar
