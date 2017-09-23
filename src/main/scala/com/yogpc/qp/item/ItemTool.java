@@ -179,7 +179,7 @@ public class ItemTool extends Item implements IEnchantableItem {
         subItems.add((new ItemStack(itemIn, 1, 0)));
         subItems.add(getEditorStack());
         subItems.add((new ItemStack(itemIn, 1, 2)));
-        if ((Boolean) Launch.blackboard.getOrDefault("fml.deobfuscatedEnvironment", Boolean.FALSE) && Config.content().debug()) {
+        if (Config.content().debug() && (Boolean) Launch.blackboard.getOrDefault("fml.deobfuscatedEnvironment", Boolean.FALSE)) {
             ItemStack stack = new ItemStack(Items.DIAMOND_PICKAXE);
             stack.addEnchantment(Enchantments.EFFICIENCY, 5);
             stack.addEnchantment(Enchantments.UNBREAKING, 3);

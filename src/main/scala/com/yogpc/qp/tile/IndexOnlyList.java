@@ -1,16 +1,15 @@
 package com.yogpc.qp.tile;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 public class IndexOnlyList<T> {
 
-    private final ArrayList<T> tList;
+    private final List<T> tList;
     private final List<TwoPredicate<T>> predicates;
     private final int defaultIndex;
 
-    public IndexOnlyList(ArrayList<T> tList, int defaultIndex) {
+    public IndexOnlyList(List<T> tList, int defaultIndex) {
         this.tList = tList;
         this.defaultIndex = defaultIndex;
         TwoPredicate<T> twoPredicate = Object::equals;
@@ -18,7 +17,7 @@ public class IndexOnlyList<T> {
         predicates.add(twoPredicate);
     }
 
-    public IndexOnlyList(ArrayList<T> tList) {
+    public IndexOnlyList(List<T> tList) {
         this(tList, -1);
     }
 

@@ -84,7 +84,10 @@ public class GuiWorkbench extends GuiContainer {
         }
     }
 
-    private static final RenderItem myitem = new MyRenderItem(Minecraft.getMinecraft().getTextureManager(), Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getModelManager(), Minecraft.getMinecraft().getItemColors());
+    private static final RenderItem myitem = new MyRenderItem(
+            Minecraft.getMinecraft().getTextureManager(),
+            Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getModelManager(),
+            Minecraft.getMinecraft().getItemColors());
 
     private static final ResourceLocation gui = new ResourceLocation(QuarryPlus.modID, "textures/gui/workbench.png");
     private final TileWorkbench tile;

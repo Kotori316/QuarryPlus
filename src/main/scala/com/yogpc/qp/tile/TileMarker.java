@@ -14,6 +14,7 @@
 package com.yogpc.qp.tile;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -55,8 +56,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 @Optional.Interface(iface = "buildcraft.api.tiles.ITileAreaProvider", modid = QuarryPlus.Optionals.Buildcraft_tiles)
 public class TileMarker extends APacketTile implements ITileAreaProvider, ITickable {
-    public static final ArrayList<Link> linkList = new ArrayList<>();
-    public static final ArrayList<Laser> laserList = new ArrayList<>();
+    public static final List<Link> linkList = Collections.synchronizedList(new ArrayList<>());
+    public static final List<Laser> laserList = Collections.synchronizedList(new ArrayList<>());
     public static final IndexOnlyList<Link> LINK_INDEX = new IndexOnlyList<>(linkList);
     public static final IndexOnlyList<Laser> LASER_INDEX = new IndexOnlyList<>(laserList);
 

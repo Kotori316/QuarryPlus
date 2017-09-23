@@ -4,15 +4,18 @@ import com.yogpc.qp.QuarryPlusI
 import com.yogpc.qp.gui.GuiWorkbench
 import com.yogpc.qp.tile.WorkbenchRecipes
 import mezz.jei.api.ingredients.IModIngredientRegistration
-import mezz.jei.api.recipe.{IRecipeCategoryRegistration, IRecipeWrapper, IRecipeWrapperFactory}
+import mezz.jei.api.recipe.{IRecipeCategoryRegistration, IRecipeWrapperFactory}
 import mezz.jei.api.{BlankModPlugin, IJeiRuntime, IModRegistry, ISubtypeRegistry, JEIPlugin}
 import net.minecraft.item.ItemStack
 
 @JEIPlugin
 class QuarryJeiPlugin extends BlankModPlugin {
 
+    //noinspection ConvertExpressionToSAM
     override def register(registry: IModRegistry): Unit = {
-        registry.handleRecipes(classOf[WorkbenchRecipes], f2RWF(new WorkBenchRecipeWrapper(_)), WorkBenchRecipeCategory.UID)
+        registry.handleRecipes(classOf[WorkbenchRecipes], new IRecipeWrapperFactory[WorkbenchRecipes] {
+            override def getRecipeWrapper(recipe: WorkbenchRecipes) = new WorkBenchRecipeWrapper(recipe)
+        }, WorkBenchRecipeCategory.UID)
         registry.addRecipeCatalyst(new ItemStack(QuarryPlusI.workbench), WorkBenchRecipeCategory.UID)
         // 7, 74 => 168, 85
         registry.addRecipeClickArea(classOf[GuiWorkbench], 7, 74, 161, 11, WorkBenchRecipeCategory.UID)
@@ -30,8 +33,4 @@ class QuarryJeiPlugin extends BlankModPlugin {
         registry.addRecipeCategories(new WorkBenchRecipeCategory(registry.getJeiHelpers.getGuiHelper))
     }
 
-    def f2RWF(f: WorkbenchRecipes => IRecipeWrapper): IRecipeWrapperFactory[WorkbenchRecipes] =
-        new IRecipeWrapperFactory[WorkbenchRecipes] {
-            override def getRecipeWrapper(recipe: WorkbenchRecipes): IRecipeWrapper = f(recipe)
-        }
 }
