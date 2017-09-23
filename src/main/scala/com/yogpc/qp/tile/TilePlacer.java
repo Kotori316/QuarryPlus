@@ -1,7 +1,5 @@
 package com.yogpc.qp.tile;
 
-import cofh.api.tileentity.IInventoryConnection;
-import com.yogpc.qp.QuarryPlus;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
@@ -13,13 +11,11 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
-@Optional.Interface(iface = "cofh.api.tileentity.IInventoryConnection", modid = QuarryPlus.Optionals.COFH_tileentity)
-public class TilePlacer extends TileEntity implements IInventory, IInventoryConnection {
+public class TilePlacer extends TileEntity implements IInventory {
 
     private final NonNullList<ItemStack> inventory = NonNullList.withSize(getSizeInventory(), ItemStack.EMPTY);
     private IItemHandler handler = new InvWrapper(this);
@@ -34,12 +30,6 @@ public class TilePlacer extends TileEntity implements IInventory, IInventoryConn
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         ItemStackHelper.saveAllItems(compound, inventory);
         return super.writeToNBT(compound);
-    }
-
-    @Override
-    @Optional.Method(modid = QuarryPlus.Optionals.COFH_tileentity)
-    public ConnectionType canConnectInventory(EnumFacing from) {
-        return ConnectionType.FORCE;
     }
 
     @Override

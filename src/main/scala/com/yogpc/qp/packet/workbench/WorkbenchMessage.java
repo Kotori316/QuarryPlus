@@ -40,7 +40,7 @@ public class WorkbenchMessage implements IMessage {
 
     @Override
     public IMessage onRecieve(IMessage message, MessageContext ctx) {
-        World world = ctx.getServerHandler().playerEntity.getEntityWorld();
+        World world = ctx.getServerHandler().player.getEntityWorld();
         if (world.provider.getDimension() == dim) {
             TileEntity entity = world.getTileEntity(pos);
             if (TileWorkbench.class.isInstance(entity)) {

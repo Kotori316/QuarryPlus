@@ -4,7 +4,7 @@ buildscript {
         maven { url = "http://files.minecraftforge.net/maven" }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
     }
 }
 apply plugin: 'scala'
@@ -14,7 +14,7 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 
 version = getProperty("modversion")
 group = "com.yogpc.qp" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "QuarryPlus-unofficial-1.11.2-alpha"
+archivesBaseName = "QuarryPlus-unofficial-1.12.1-alpha"
 
 sourceCompatibility = targetCompatibility = "1.8" // Need this here so eclipse task generates correctly.
 compileScala {
@@ -24,7 +24,7 @@ compileScala {
 }
 
 minecraft {
-    version = "1.11.2-13.20.1.2386"
+    version = "1.12.1-14.22.1.2480"
     runDir = "run"
 
     // the mappings can be changed at any time, and must be in the following format.
@@ -32,7 +32,7 @@ minecraft {
     // stable_#            stables are built at the discretion of the MCP team.
     // Use non-default mappings at your own risk. they may not always work.
     // simply re-run your setup task after changing the mappings to update your workspace.
-    mappings = "snapshot_20161220"
+    mappings = "snapshot_20170624"
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
     replace "\${version}", project.version
 }
@@ -43,14 +43,16 @@ repositories {
         name = "Progwml6 maven"
         url = "http://dvs1.progwml6.com/files/maven"
     }
+    maven {
+        name = "CoFH Maven"
+        url = "http://maven.covers1624.net"
+    }
 }
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    // compile against the JEI API but do not include it at runtime
-    compileOnly "mezz.jei:jei_1.11.2:4.5.1.296:api"
-    // at runtime, use the full JEI jar
-    runtime "mezz.jei:jei_1.11.2:4.5.1.296"
+    deobfCompile "cofh:RedstoneFlux:1.12-2.0.1.2:universal"
+    deobfCompile "mezz.jei:jei_1.12.1:4.7.8.95"
 }
 
 processResources {

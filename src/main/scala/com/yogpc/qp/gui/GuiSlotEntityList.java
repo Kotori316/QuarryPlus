@@ -42,10 +42,10 @@ public class GuiSlotEntityList extends GuiSlot {
     }
 
     @Override
-    protected void drawSlot(int entryID, int insideLeft, int yPos, int insideSlotHeight, int mouseXIn, int mouseYIn) {
+    protected void drawSlot(int entryID, int insideLeft, int yPos, int insideSlotHeight, int mouseXIn, int mouseYIn, float a) {
         final String name = this.gc.names.get(entryID);
-        Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(name,
-                (this.mc.currentScreen.width - Minecraft.getMinecraft().fontRendererObj.getStringWidth(name)) / 2,
+        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(name,
+                (this.mc.currentScreen.width - Minecraft.getMinecraft().fontRenderer.getStringWidth(name)) / 2,
                 yPos + 2, 0xFFFFFF);
     }
 

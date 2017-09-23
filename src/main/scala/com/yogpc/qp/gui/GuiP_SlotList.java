@@ -60,12 +60,12 @@ public class GuiP_SlotList extends GuiSlot {
     }
 
     @Override
-    protected void drawSlot(int entryID, int insideLeft, int yPos, int insideSlotHeight, int mouseXIn, int mouseYIn) {
+    protected void drawSlot(int entryID, int insideLeft, int yPos, int insideSlotHeight, int mouseXIn, int mouseYIn, float a) {
         String name = this.target.get(entryID);
         if (FluidRegistry.isFluidRegistered(name))
             name = FluidRegistry.getFluid(name).getLocalizedName(FluidRegistry.getFluidStack(name, 0));
-        Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(name,
-                (this.parent.width * 3 / 5 - Minecraft.getMinecraft().fontRendererObj.getStringWidth(name)) / 2,
+        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(name,
+                (this.parent.width * 3 / 5 - Minecraft.getMinecraft().fontRenderer.getStringWidth(name)) / 2,
                 yPos + 2, 0xFFFFFF);
     }
 

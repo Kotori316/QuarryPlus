@@ -47,7 +47,7 @@ public class GuiP_Manual extends GuiScreenA implements GuiYesNoCallback {
                 I18n.format("gui.done")));
         this.buttonList.add(new GuiButton(-2, this.width / 2 + 10, this.height - 26, 140, 20,
                 I18n.format("gui.cancel")));
-        this.blockid = new GuiTextField(0, this.fontRendererObj, this.width / 2 - 50, 50, 100, 20);
+        this.blockid = new GuiTextField(0, this.fontRenderer, this.width / 2 - 50, 50, 100, 20);
         this.blockid.setFocused(true);
     }
 
@@ -99,9 +99,9 @@ public class GuiP_Manual extends GuiScreenA implements GuiYesNoCallback {
     @Override
     public void drawScreen(final int i, final int j, final float k) {
         drawDefaultBackground();
-        drawCenteredString(this.fontRendererObj, I18n.format("tof.selectfluid"), this.width / 2, 8, 0xFFFFFF);
-        this.fontRendererObj.drawStringWithShadow(I18n.format("tof.fluidid"),
-                this.width / 2 - 60 - this.fontRendererObj.getStringWidth(I18n.format("tof.fluidid")), 50, 0xFFFFFF);
+        drawCenteredString(this.fontRenderer, I18n.format("tof.selectfluid"), this.width / 2, 8, 0xFFFFFF);
+        this.fontRenderer.drawStringWithShadow(I18n.format("tof.fluidid"),
+                this.width / 2 - 60 - this.fontRenderer.getStringWidth(I18n.format("tof.fluidid")), 50, 0xFFFFFF);
         this.blockid.drawTextBox();
         super.drawScreen(i, j, k);
     }

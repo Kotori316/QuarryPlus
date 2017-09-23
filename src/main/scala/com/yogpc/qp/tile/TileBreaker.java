@@ -16,8 +16,6 @@ package com.yogpc.qp.tile;
 import java.util.HashMap;
 import java.util.Map;
 
-import cofh.api.tileentity.IInventoryConnection;
-import com.yogpc.qp.QuarryPlus;
 import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -26,13 +24,11 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
-@Optional.Interface(iface = "cofh.api.tileentity.IInventoryConnection", modid = QuarryPlus.Optionals.COFH_tileentity)
-public class TileBreaker extends TileEntity implements IEnchantableTile, IInventory, IInventoryConnection {
+public class TileBreaker extends TileEntity implements IEnchantableTile, IInventory {
     IItemHandler handler = new InvWrapper(this);
     public boolean silktouch = false;
     public byte fortune = 0;
@@ -141,12 +137,6 @@ public class TileBreaker extends TileEntity implements IEnchantableTile, IInvent
 
     @Override
     public void clear() {
-    }
-
-    @Override
-    @Optional.Method(modid = QuarryPlus.Optionals.COFH_tileentity)
-    public ConnectionType canConnectInventory(final EnumFacing arg0) {
-        return ConnectionType.FORCE;
     }
 
     @Override

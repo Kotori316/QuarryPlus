@@ -18,22 +18,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import buildcraft.api.mj.ILaserTarget;
-import buildcraft.api.mj.MjAPI;
 import com.yogpc.qp.PowerManager;
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.block.BlockLaser;
-import com.yogpc.qp.packet.PacketHandler;
-import com.yogpc.qp.packet.TileMessage;
-import com.yogpc.qp.packet.laser.LaserMessage;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -43,6 +34,9 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+/*import buildcraft.api.mj.ILaserTarget;
+import buildcraft.api.mj.MjAPI;*/
 
 /**
  * The plus machine of {@link buildcraft.silicon.tile.TileLaser}
@@ -70,7 +64,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile {
 
     @Override
     public void update() {
-        super.update();
+        /*super.update();
         if (!bcLoaded || getWorld().isRemote)
             return;
 
@@ -102,11 +96,11 @@ public class TileLaser extends APowerTile implements IEnchantableTile {
                 });
                 pushPower(each);
             }
-        }
+        }*/
 
-        if (ticks % 20 == 0 /*&& !getWorld().isRemote*/) {
-            PacketHandler.sendToAround(TileMessage.create(this), getWorld(), getPos());
-        }
+//        if (ticks % 20 == 0 /*&& !getWorld().isRemote*/) {
+//            PacketHandler.sendToAround(TileMessage.create(this), getWorld(), getPos());
+//        }
     }
 
     private void updateLaser() {
@@ -125,7 +119,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile {
         }
     }
 
-    protected void findTable() {
+    protected void findTable() {/*
         removeLaser();
         EnumFacing facing = getWorld().getBlockState(getPos()).getValue(BlockLaser.FACING);
 
@@ -176,7 +170,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile {
             this.targets.clear();
             this.targets.add(laserTarget);
         }
-        lasers = new Vec3d[targets.size()];
+        lasers = new Vec3d[targets.size()];*/
     }
 
     protected void removeLaser() {
@@ -252,9 +246,9 @@ public class TileLaser extends APowerTile implements IEnchantableTile {
             for (final Vec3d l : this.lasers)
                 if (l != null) {
                     final NBTTagCompound lc = new NBTTagCompound();
-                    lc.setDouble("x", l.xCoord);
-                    lc.setDouble("y", l.yCoord);
-                    lc.setDouble("z", l.zCoord);
+                    lc.setDouble("x", l.x);
+                    lc.setDouble("y", l.y);
+                    lc.setDouble("z", l.z);
                     nbttl.appendTag(lc);
                 }
         nbttc.setTag("lasers", nbttl);
@@ -312,7 +306,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile {
 
         player.sendStatusMessage(new TextComponentString("Lasers"), false);
         Stream.of(lasers).filter(Objects::nonNull)
-                .map(pos1 -> String.format("x=%s, y=%s, z=%s", pos1.xCoord, pos1.yCoord, pos1.zCoord))
+                .map(pos1 -> String.format("x=%s, y=%s, z=%s", pos1.x, pos1.y, pos1.z))
                 .reduce((s, s2) -> s + ", " + s2)
                 .ifPresent(s -> player.sendStatusMessage(new TextComponentString(s), false));
 
@@ -332,18 +326,18 @@ public class TileLaser extends APowerTile implements IEnchantableTile {
             for (final Vec3d p : this.lasers) {
                 if (p == null)
                     continue;
-                final double xn = p.xCoord - 0.0625;
+                final double xn = p.x - 0.0625;
                 final double xx = xn + 0.125;
-                final double zn = p.zCoord - 0.0625;
+                final double zn = p.z - 0.0625;
                 final double zx = zn + 0.125;
                 if (xn < minX)
                     minX = xn;
                 if (xx > maxX)
                     maxX = xx;
-                if (p.yCoord < minY)
-                    minY = p.yCoord;
-                if (p.yCoord > maxY)
-                    maxY = p.yCoord;
+                if (p.y < minY)
+                    minY = p.y;
+                if (p.y > maxY)
+                    maxY = p.y;
                 if (zn < minZ)
                     minZ = zn;
                 if (zx > maxZ)

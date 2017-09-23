@@ -54,8 +54,15 @@ public class GuiMover extends GuiContainer {
 
     @Override
     protected void drawGuiContainerForegroundLayer(final int mouseX, final int mouseY) {
-        this.fontRendererObj.drawString(I18n.format("tile.enchantmover.name"), 8, 6, 0x404040);
-        this.fontRendererObj.drawString(I18n.format("container.inventory"), 8, 72, 0x404040);
+        this.fontRenderer.drawString(I18n.format("tile.enchantmover.name"), 8, 6, 0x404040);
+        this.fontRenderer.drawString(I18n.format("container.inventory"), 8, 72, 0x404040);
+    }
+
+    @Override
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        this.drawDefaultBackground();
+        super.drawScreen(mouseX, mouseY, partialTicks);
+        this.renderHoveredToolTip(mouseX, mouseY);
     }
 
     @Override

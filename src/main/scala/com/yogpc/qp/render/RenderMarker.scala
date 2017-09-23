@@ -2,7 +2,7 @@ package com.yogpc.qp.render
 
 import com.yogpc.qp.tile.TileMarker
 import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.VertexBuffer
+import net.minecraft.client.renderer.BufferBuilder
 import net.minecraft.util.math.{AxisAlignedBB, MathHelper, Vec3d}
 import net.minecraftforge.client.model.animation.FastTESR
 
@@ -16,7 +16,7 @@ object RenderMarker extends FastTESR[TileMarker] {
 
     override def isGlobalRenderer(te: TileMarker): Boolean = true
 
-    override def renderTileEntityFast(te: TileMarker, x: Double, y: Double, z: Double, partialTicks: Float, destroyStage: Int, buffer: VertexBuffer): Unit = {
+    override def renderTileEntityFast(te: TileMarker, x: Double, y: Double, z: Double, partialTicks: Float, destroyStage: Int, partial: Float, buffer: BufferBuilder): Unit = {
         Minecraft.getMinecraft.mcProfiler.startSection("quarryplus")
         Minecraft.getMinecraft.mcProfiler.startSection("marker")
 
@@ -54,11 +54,11 @@ object RenderMarker extends FastTESR[TileMarker] {
         Minecraft.getMinecraft.mcProfiler.endSection()
     }
 
-    private def render(box: AxisAlignedBB, buffer: VertexBuffer, minU: Double, minV: Double, maxU: Double, maxV: Double): Unit = {
+    private def render(box: AxisAlignedBB, buffer: BufferBuilder, minU: Double, minV: Double, maxU: Double, maxV: Double): Unit = {
         val subtract = new Vec3d(box.maxX - box.minX, box.maxY - box.minY, box.maxZ - box.minZ)
-        val xFloor = MathHelper.floor(subtract.xCoord * 8d)
-        val yFloor = MathHelper.floor(subtract.yCoord * 8d)
-        val zFloor = MathHelper.floor(subtract.zCoord * 8d)
+        val xFloor = MathHelper.floor(subtract.x * 8d)
+        val yFloor = MathHelper.floor(subtract.y * 8d)
+        val zFloor = MathHelper.floor(subtract.z * 8d)
 
         if (xFloor != 0) {
             val y = box.maxY
@@ -87,7 +87,7 @@ object RenderMarker extends FastTESR[TileMarker] {
                 buffer.pos(box.minX + td, y - d, z + d).colored().tex(maxU, maxV).lightedAndEnd()
                 buffer.pos(box.minX + od, y - d, z + d).colored().tex(minU, maxV).lightedAndEnd()
             }
-            val rest = subtract.xCoord - xFloor.toDouble / 8d
+            val rest = subtract.x - xFloor.toDouble / 8d
             assert(rest < 1, "Marker laser x rest")
             val od = xFloor * d * 2
             val td = od + rest
@@ -138,7 +138,7 @@ object RenderMarker extends FastTESR[TileMarker] {
                 buffer.pos(x - d, box.minY + td, z + d).colored().tex(maxU, maxV).lightedAndEnd()
                 buffer.pos(x - d, box.minY + od, z + d).colored().tex(minU, maxV).lightedAndEnd()
             }
-            val rest = subtract.yCoord - yFloor.toDouble / 8d
+            val rest = subtract.y - yFloor.toDouble / 8d
             assert(rest < 1, "Marker laser y rest")
             val od = yFloor * d * 2
             val td = od + rest
@@ -189,7 +189,7 @@ object RenderMarker extends FastTESR[TileMarker] {
                 buffer.pos(x + d, y - d, box.minZ + td).colored().tex(maxU, maxV).lightedAndEnd()
                 buffer.pos(x + d, y - d, box.minZ + od).colored().tex(minU, maxV).lightedAndEnd()
             }
-            val rest = subtract.zCoord - zFloor.toDouble / 8d
+            val rest = subtract.z - zFloor.toDouble / 8d
             assert(rest < 1, "Marker laser z rest")
             val od = zFloor * d * 2
             val td = od + rest

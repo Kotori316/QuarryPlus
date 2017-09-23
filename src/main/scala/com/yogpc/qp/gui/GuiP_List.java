@@ -123,7 +123,7 @@ public class GuiP_List extends GuiScreenA implements GuiYesNoCallback {
         drawDefaultBackground();
         if (oreslot != null)
             this.oreslot.drawScreen(mouseX, mouseY, partialTicks);
-        drawCenteredString(this.fontRendererObj,
+        drawCenteredString(this.fontRenderer,
                 I18n.format("pp.list.setting") + I18n.format("FD." + dir),
                 this.width / 2, 8, 0xFFFFFF);
         if (this.tile.mapping.get(dir).isEmpty()) {

@@ -43,7 +43,7 @@ public class LaserMessage implements IMessage {
         buffer.writeInt((int) Stream.of(vec3ds).filter(Objects::nonNull).count());
         for (Vec3d vec3d : vec3ds) {
             if (vec3d != null)
-                buffer.writeDouble(vec3d.xCoord).writeDouble(vec3d.yCoord).writeDouble(vec3d.zCoord);
+                buffer.writeDouble(vec3d.x).writeDouble(vec3d.y).writeDouble(vec3d.z);
         }
     }
 

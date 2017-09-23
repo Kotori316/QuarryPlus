@@ -2,7 +2,7 @@ package com.yogpc.qp.render
 
 import com.yogpc.qp.tile.TileQuarry
 import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.VertexBuffer
+import net.minecraft.client.renderer.BufferBuilder
 import net.minecraft.util.math.MathHelper
 import net.minecraftforge.client.model.animation.FastTESR
 
@@ -20,7 +20,7 @@ object RenderQuarry extends FastTESR[TileQuarry] {
     val minusF: (Double, Double) => Double = (double1, double2) => double1 - double2
 
     override def renderTileEntityFast(quarry: TileQuarry, distanceX: Double, distanceY: Double, distanceZ: Double,
-                                      partialTicks: Float, destroyStage: Int, buffer: VertexBuffer) = {
+                                      partialTicks: Float, destroyStage: Int, partial: Float, buffer: BufferBuilder) = {
         val pos = quarry.getPos
 
         Minecraft.getMinecraft.mcProfiler.startSection("quarryplus")

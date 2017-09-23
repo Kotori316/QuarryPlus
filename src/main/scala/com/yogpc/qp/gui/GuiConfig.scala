@@ -17,10 +17,6 @@ class GuiFactory extends IModGuiFactory {
 
     override def hasConfigGui: Boolean = true
 
-    override def getHandlerFor(element: IModGuiFactory.RuntimeOptionCategoryElement) = null
-
-    override def mainConfigGuiClass(): Class[GuiConfig] = classOf[GuiConfig]
-
     override def runtimeGuiCategories() = null
 
     override def initialize(minecraftInstance: Minecraft) = ()

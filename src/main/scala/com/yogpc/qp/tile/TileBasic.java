@@ -21,10 +21,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import cofh.api.tileentity.IInventoryConnection;
 import com.yogpc.qp.BlockData;
 import com.yogpc.qp.PowerManager;
-import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.ReflectionHelper;
 import com.yogpc.qp.compat.InvUtils;
 import javax.annotation.Nonnull;
@@ -38,16 +36,15 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
-@Optional.Interface(iface = "cofh.api.tileentity.IInventoryConnection", modid = QuarryPlus.Optionals.COFH_tileentity)
-public abstract class TileBasic extends APowerTile implements IEnchantableTile, IInventory, IInventoryConnection {
+public abstract class TileBasic extends APowerTile implements IEnchantableTile, IInventory {
     protected EnumFacing pump = null;
 
     public final List<BlockData> fortuneList = new ArrayList<>();
@@ -135,10 +132,14 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         }
         if (this.fortuneList.contains(new BlockData(ForgeRegistries.BLOCKS.getKey(b),
                 state.getBlock().getMetaFromState(state))) == this.fortuneInclude) {
-            list.addAll(b.getDrops(getWorld(), pos, state, this.fortune));
+            NonNullList<ItemStack> nonNullList = NonNullList.create();
+            b.getDrops(nonNullList, getWorld(), pos, state, this.fortune);
+            list.addAll(nonNullList);
             return this.fortune;
         }
-        list.addAll(b.getDrops(getWorld(), pos, state, 0));
+        NonNullList<ItemStack> nonNullList = NonNullList.create();
+        b.getDrops(nonNullList, getWorld(), pos, state, 0);
+        list.addAll(nonNullList);
         return 0;
     }
 
@@ -313,12 +314,6 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     @Override
     public void clear() {
         cacheItems.clear();
-    }
-
-    @Override
-    @Optional.Method(modid = QuarryPlus.Optionals.COFH_tileentity)
-    public ConnectionType canConnectInventory(final EnumFacing arg0) {
-        return ConnectionType.FORCE;
     }
 
     @Override

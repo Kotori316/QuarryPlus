@@ -112,7 +112,7 @@ public class Mappings {
 
         @Override
         public IMessage onRecieve(IMessage message, MessageContext ctx) {
-            World world = ctx.getServerHandler().playerEntity.world;
+            World world = ctx.getServerHandler().player.world;
             if (world.provider.getDimension() == dim) {
                 TilePump pump = (TilePump) world.getTileEntity(pos);
                 assert pump != null;
@@ -201,7 +201,7 @@ public class Mappings {
         @Override
         @SideOnly(Side.CLIENT)
         public IMessage onRecieve(IMessage message, MessageContext ctx) {
-            World world = ctx.getServerHandler().playerEntity.world;
+            World world = ctx.getServerHandler().player.world;
             if (world.provider.getDimension() == dim) {
                 TilePump pump = (TilePump) world.getTileEntity(pos);
                 assert pump != null;

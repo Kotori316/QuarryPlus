@@ -14,7 +14,6 @@
 package com.yogpc.qp.block;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.BuildCraftHelper;
@@ -36,6 +35,7 @@ import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
@@ -85,8 +85,8 @@ public class BlockRefinery extends ADismCBlock {
     }
 
     @Override
-    public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
-        return this.drop;
+    public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+        drops.addAll(this.drop);
     }
 
     @Override

@@ -13,9 +13,6 @@
 
 package com.yogpc.qp.block;
 
-import java.util.ArrayList;
-
-import cofh.api.block.IDismantleable;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.InvUtils;
@@ -24,15 +21,12 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.Optional;
 
-@Optional.Interface(iface = "cofh.api.block.IDismantleable", modid = QuarryPlus.Optionals.COFH_block)
-public class BlockMover extends Block implements IDismantleable {
+public class BlockMover extends Block {
     public final ItemBlock itemBlock;
 
     public BlockMover() {
@@ -56,15 +50,4 @@ public class BlockMover extends Block implements IDismantleable {
         return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
     }
 
-    @Override
-    @Optional.Method(modid = QuarryPlus.Optionals.COFH_block)
-    public ArrayList<ItemStack> dismantleBlock(World world, BlockPos pos, IBlockState state, EntityPlayer player, boolean returnDrops) {
-        return ADismCBlock.dismantle(world, pos, state, returnDrops);
-    }
-
-    @Override
-    @Optional.Method(modid = QuarryPlus.Optionals.COFH_block)
-    public boolean canDismantle(World world, BlockPos pos, IBlockState state, EntityPlayer player) {
-        return true;
-    }
 }

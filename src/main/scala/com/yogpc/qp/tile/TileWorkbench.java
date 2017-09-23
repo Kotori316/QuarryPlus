@@ -4,8 +4,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import cofh.api.tileentity.IInventoryConnection;
-import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.InvUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -13,13 +11,11 @@ import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-@net.minecraftforge.fml.common.Optional.Interface(iface = "cofh.api.tileentity.IInventoryConnection", modid = QuarryPlus.Optionals.COFH_tileentity)
-public class TileWorkbench extends APowerTile implements IInventory, IInventoryConnection {
+public class TileWorkbench extends APowerTile implements IInventory {
     public final NonNullList<ItemStack> inventory = NonNullList.withSize(27, ItemStack.EMPTY);
     public final NonNullList<ItemStack> inventory2 = NonNullList.withSize(18, ItemStack.EMPTY);
     public List<WorkbenchRecipes> recipesList = Collections.emptyList();
@@ -65,12 +61,6 @@ public class TileWorkbench extends APowerTile implements IInventory, IInventoryC
     public NBTTagCompound writeToNBT(NBTTagCompound nbttc) {
         ItemStackHelper.saveAllItems(nbttc, inventory);
         return super.writeToNBT(nbttc);
-    }
-
-    @Override
-    @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.COFH_tileentity)
-    public ConnectionType canConnectInventory(EnumFacing from) {
-        return ConnectionType.FORCE;
     }
 
     @Override

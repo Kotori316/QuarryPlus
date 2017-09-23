@@ -32,7 +32,7 @@ class SlotMover(inv: IInventory, index: Int, xPosition: Int, yPosition: Int) ext
             case 0 =>
                 if (is.getEnchantmentTagList != null) {
                     is.getItem match {
-                        case tool: ItemTool => tool.getToolMaterial == Item.ToolMaterial.DIAMOND
+                        case tool: ItemTool => tool.getToolMaterialName == Item.ToolMaterial.DIAMOND.toString
                         case _: ItemBow => true
                         case _ => false
                     }

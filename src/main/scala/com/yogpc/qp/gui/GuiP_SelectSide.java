@@ -75,7 +75,7 @@ public class GuiP_SelectSide extends GuiScreenA {
     @Override
     public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
         drawDefaultBackground();
-        drawCenteredString(this.fontRendererObj,
+        drawCenteredString(this.fontRenderer,
                 I18n.format(this.copy ? "pp.copy.select" : "pp.set.select"), this.width / 2, 8, 0xFFFFFF);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }

@@ -3,10 +3,8 @@ package com.yogpc.qp;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import com.yogpc.qp.render.RenderLaser;
 import com.yogpc.qp.render.RenderMarker;
 import com.yogpc.qp.render.RenderQuarry;
-import com.yogpc.qp.tile.TileLaser;
 import com.yogpc.qp.tile.TileMarker;
 import com.yogpc.qp.tile.TileQuarry;
 import net.minecraft.client.Minecraft;
@@ -71,7 +69,7 @@ public class ProxyClient extends ProxyCommon {
     @Override
     public EntityPlayer getPacketPlayer(final INetHandler inh) {
         if (inh instanceof NetHandlerPlayServer)
-            return ((NetHandlerPlayServer) inh).playerEntity;
+            return ((NetHandlerPlayServer) inh).player;
         return Minecraft.getMinecraft().player;
     }
 
@@ -113,7 +111,7 @@ public class ProxyClient extends ProxyCommon {
     public void registerTextures() {
         ClientRegistry.bindTileEntitySpecialRenderer(TileQuarry.class, RenderQuarry.instance());
         ClientRegistry.bindTileEntitySpecialRenderer(TileMarker.class, RenderMarker.instance());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileLaser.class, RenderLaser.instance());
+//        ClientRegistry.bindTileEntitySpecialRenderer(TileLaser.class, RenderLaser.instance());
 //        ClientRegistry.bindTileEntitySpecialRenderer(TileRefinery.class, RenderRefinery.INSTANCE);
     }
 }

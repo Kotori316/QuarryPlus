@@ -49,7 +49,7 @@ public class EnchantmentMessage implements IMessage {
 
     @Override
     public IMessage onRecieve(IMessage message, MessageContext ctx) {
-        World world = ctx.getServerHandler().playerEntity.world;
+        World world = ctx.getServerHandler().player.world;
         if (world.provider.getDimension() == dim) {
             TileBasic tile = (TileBasic) world.getTileEntity(pos);
             assert tile != null;

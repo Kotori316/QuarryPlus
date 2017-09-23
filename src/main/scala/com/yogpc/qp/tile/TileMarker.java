@@ -15,14 +15,11 @@ package com.yogpc.qp.tile;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import buildcraft.api.tiles.ITileAreaProvider;
-import buildcraft.api.tiles.TilesAPI;
 import com.google.common.collect.Sets;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
@@ -41,6 +38,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -50,12 +48,11 @@ import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.ForgeChunkManager.Type;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-@Optional.Interface(iface = "buildcraft.api.tiles.ITileAreaProvider", modid = QuarryPlus.Optionals.Buildcraft_tiles)
-public class TileMarker extends APacketTile implements ITileAreaProvider, ITickable {
+//@Optional.Interface(iface = "buildcraft.api.tiles.ITileAreaProvider", modid = QuarryPlus.Optionals.Buildcraft_tiles)
+public class TileMarker extends APacketTile implements /*ITileAreaProvider,*/ ITickable {
     public static final List<Link> linkList = Collections.synchronizedList(new ArrayList<>());
     public static final List<Laser> laserList = Collections.synchronizedList(new ArrayList<>());
     public static final IndexOnlyList<Link> LINK_INDEX = new IndexOnlyList<>(linkList);
@@ -87,17 +84,17 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
         }
     }
 
-    @Override
+    //    @Override
     public BlockPos min() {
         return this.link == null ? getPos() : link.minPos();
     }
 
-    @Override
+    //    @Override
     public BlockPos max() {
         return this.link == null ? getPos() : link.maxPos();
     }
 
-    @Override
+    //    @Override
     public void removeFromWorld() {
         if (this.link == null) {
             QuarryPlusI.blockMarker.dropBlockAsItem(getWorld(), getPos(), getWorld().getBlockState(getPos()), 0);
@@ -113,8 +110,8 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
     public List<ItemStack> removeFromWorldWithItem() {
         if (this.link != null)
             return this.link.removeConnection(true);
-        List<ItemStack> ret = new LinkedList<>();
-        ret.addAll(QuarryPlusI.blockMarker.getDrops(getWorld(), getPos(), getWorld().getBlockState(getPos()), 0));
+        NonNullList<ItemStack> ret = NonNullList.create();
+        QuarryPlusI.blockMarker.getDrops(ret, getWorld(), getPos(), getWorld().getBlockState(getPos()), 0);
         getWorld().setBlockToAir(getPos());
         return ret;
     }
@@ -272,22 +269,22 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
 
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
-        if (bcLoaded) {
+        /*if (bcLoaded) {
             if (capability == TilesAPI.CAP_TILE_AREA_PROVIDER) {
                 return true;
             }
-        }
+        }*/
         return super.hasCapability(capability, facing);
     }
 
     @Nullable
     @Override
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
-        if (bcLoaded) {
+        /*if (bcLoaded) {
             if (capability == TilesAPI.CAP_TILE_AREA_PROVIDER) {
                 return TilesAPI.CAP_TILE_AREA_PROVIDER.cast(this);
             }
-        }
+        }*/
         return super.getCapability(capability, facing);
     }
 
@@ -304,7 +301,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
             G_destroy();
     }
 
-    @Override
+    /*@Override
     @Optional.Method(modid = QuarryPlus.Optionals.BuildCraft_core)
     public boolean isValidFromLocation(BlockPos pos) {
         if (link != null) {
@@ -321,7 +318,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
             }
         }
         return false;
-    }
+    }*/
 
     public static class BlockIndex {
         final World w;
@@ -442,17 +439,19 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
             }
         }
 
-        private ArrayList<ItemStack> removeLink(final int x, final int y, final int z, final boolean bb) {
-            ArrayList<ItemStack> ret = new ArrayList<>();
+        private List<ItemStack> removeLink(final int x, final int y, final int z, final boolean bb) {
+            NonNullList<ItemStack> ret = NonNullList.create();
             BlockPos pos = new BlockPos(x, y, z);
             TileEntity te = this.w.getTileEntity(pos);
             IBlockState state = w.getBlockState(pos);
             if (state.getBlock() instanceof BlockMarker) {
-                if (te instanceof TileMarker)
+                if (te instanceof TileMarker) {
                     ((TileMarker) te).link = null;
-                ret.addAll(state.getBlock().getDrops(this.w, pos, state, 0));
-                if (bb)
+                }
+                state.getBlock().getDrops(ret, this.w, pos, state, 0);
+                if (bb) {
                     this.w.setBlockToAir(pos);
+                }
             }
             return ret;
         }

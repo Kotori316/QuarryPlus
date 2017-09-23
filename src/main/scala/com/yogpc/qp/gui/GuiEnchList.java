@@ -120,7 +120,7 @@ public class GuiEnchList extends GuiContainer implements GuiYesNoCallback {
 
     @Override
     protected void drawGuiContainerForegroundLayer(final int i, final int j) {
-        drawCenteredString(this.fontRendererObj, I18n.format(
+        drawCenteredString(this.fontRenderer, I18n.format(
                 "qp.list.setting", I18n.format(this.target.getName())), this.xSize / 2, 8, 0xFFFFFF);
     }
 

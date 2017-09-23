@@ -1,25 +1,13 @@
 package com.yogpc.qp.block;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Function;
 
-import cofh.api.block.IDismantleable;
-import com.yogpc.qp.QuarryPlus;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.common.Optional;
 
-@Optional.Interface(iface = "cofh.api.block.IDismantleable", modid = QuarryPlus.Optionals.COFH_block)
-public abstract class ADismCBlock extends QPBlock implements IDismantleable {
+public abstract class ADismCBlock extends QPBlock {
 
     public static final PropertyDirection FACING = PropertyDirection.create("facing");
     public static final PropertyBool POWERED = PropertyBool.create("powered");
@@ -29,7 +17,7 @@ public abstract class ADismCBlock extends QPBlock implements IDismantleable {
         super(material, name, generator);
     }
 
-    @Override
+    /*@Override
     @Optional.Method(modid = QuarryPlus.Optionals.COFH_block)
     public ArrayList<ItemStack> dismantleBlock(World world, BlockPos pos, IBlockState state, EntityPlayer player, boolean returnDrops) {
         return dismantle(world, pos, state, returnDrops);
@@ -50,5 +38,5 @@ public abstract class ADismCBlock extends QPBlock implements IDismantleable {
             }
         }
         return new ArrayList<>(drops);
-    }
+    }*/
 }

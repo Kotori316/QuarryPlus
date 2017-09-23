@@ -22,8 +22,10 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TileBasic;
+import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -154,7 +156,7 @@ public class ItemTool extends Item implements IEnchantableItem {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
         if (stack.getItemDamage() == 1) {
             final NBTTagCompound c = stack.getTagCompound();
             if (c != null) {
@@ -175,23 +177,25 @@ public class ItemTool extends Item implements IEnchantableItem {
     }
 
     @Override
-    public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems) {
-        subItems.add((new ItemStack(itemIn, 1, 0)));
-        subItems.add(getEditorStack());
-        subItems.add((new ItemStack(itemIn, 1, 2)));
-        if (Config.content().debug() && (Boolean) Launch.blackboard.getOrDefault("fml.deobfuscatedEnvironment", Boolean.FALSE)) {
-            ItemStack stack = new ItemStack(Items.DIAMOND_PICKAXE);
-            stack.addEnchantment(Enchantments.EFFICIENCY, 5);
-            stack.addEnchantment(Enchantments.UNBREAKING, 3);
-            {
-                ItemStack stack1 = stack.copy();
-                stack1.addEnchantment(Enchantments.FORTUNE, 3);
-                subItems.add(stack1);
-            }
-            {
-                ItemStack stack1 = stack.copy();
-                stack1.addEnchantment(Enchantments.SILK_TOUCH, 1);
-                subItems.add(stack1);
+    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
+        if (isInCreativeTab(tab)) {
+            items.add((new ItemStack(this, 1, 0)));
+            items.add(getEditorStack());
+            items.add((new ItemStack(this, 1, 2)));
+            if (Config.content().debug() && (Boolean) Launch.blackboard.getOrDefault("fml.deobfuscatedEnvironment", Boolean.FALSE)) {
+                ItemStack stack = new ItemStack(Items.DIAMOND_PICKAXE);
+                stack.addEnchantment(Enchantments.EFFICIENCY, 5);
+                stack.addEnchantment(Enchantments.UNBREAKING, 3);
+                {
+                    ItemStack stack1 = stack.copy();
+                    stack1.addEnchantment(Enchantments.FORTUNE, 3);
+                    items.add(stack1);
+                }
+                {
+                    ItemStack stack1 = stack.copy();
+                    stack1.addEnchantment(Enchantments.SILK_TOUCH, 1);
+                    items.add(stack1);
+                }
             }
         }
     }

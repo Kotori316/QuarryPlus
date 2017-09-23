@@ -4,10 +4,10 @@ import java.util.{Collections, ArrayList => AList, List => JList}
 
 import com.yogpc.qp.tile.WorkbenchRecipes
 import mezz.jei.api.ingredients.IIngredients
-import mezz.jei.api.recipe.BlankRecipeWrapper
+import mezz.jei.api.recipe.IRecipeWrapper
 import net.minecraft.item.ItemStack
 
-class WorkBenchRecipeWrapper(recipe: WorkbenchRecipes) extends BlankRecipeWrapper with Ordered[WorkBenchRecipeWrapper] {
+class WorkBenchRecipeWrapper(recipe: WorkbenchRecipes) extends IRecipeWrapper with Ordered[WorkBenchRecipeWrapper] {
 
     override def getIngredients(ingredients: IIngredients): Unit = {
         val inputs = new AList[JList[ItemStack]](recipeSize)

@@ -54,7 +54,7 @@ public class GuiController extends GuiScreen {
         if (slot != null) {
             this.slot.drawScreen(mouseX, mouseY, partialTicks);
         }
-        drawCenteredString(this.fontRendererObj, I18n.format("yog.ctl.setting"), this.width / 2, 8, 0xFFFFFF);
+        drawCenteredString(this.fontRenderer, I18n.format("yog.ctl.setting"), this.width / 2, 8, 0xFFFFFF);
     }
 
     /**

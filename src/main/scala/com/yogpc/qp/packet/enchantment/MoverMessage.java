@@ -40,7 +40,7 @@ public class MoverMessage {
 
         @Override
         public IMessage onRecieve(IMessage message, MessageContext ctx) {
-            Container container = ctx.getServerHandler().playerEntity.openContainer;
+            Container container = ctx.getServerHandler().player.openContainer;
             if (container.windowId == id) {
                 ((ContainerMover) container).moveEnchant();
             }
@@ -79,7 +79,7 @@ public class MoverMessage {
 
         @Override
         public IMessage onRecieve(IMessage message, MessageContext ctx) {
-            Container container = ctx.getServerHandler().playerEntity.openContainer;
+            Container container = ctx.getServerHandler().player.openContainer;
             if (container.windowId == id) {
                 ((ContainerMover) container).setAvail(d);
             }

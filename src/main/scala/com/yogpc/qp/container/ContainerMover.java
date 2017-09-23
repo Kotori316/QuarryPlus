@@ -107,13 +107,13 @@ public class ContainerMover extends Container {
             }
         }
         for (IContainerListener listener : this.listeners)
-            listener.sendProgressBarUpdate(this, 0, this.avail);
+            listener.sendWindowProperty(this, 0, this.avail);
     }
 
     @Override
     public void addListener(IContainerListener listener) {
         super.addListener(listener);
-        listener.sendProgressBarUpdate(this, 0, avail);
+        listener.sendWindowProperty(this, 0, avail);
     }
 
     @Override
@@ -126,7 +126,7 @@ public class ContainerMover extends Container {
         avail += d.offset;
         if (!worldObj.isRemote) {
             for (IContainerListener listener : this.listeners)
-                listener.sendProgressBarUpdate(this, 0, this.avail);
+                listener.sendWindowProperty(this, 0, this.avail);
         }
     }
 

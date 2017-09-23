@@ -70,8 +70,8 @@ public class GuiP_SelectBlock extends GuiScreenA {
         drawDefaultBackground();
         this.blocks.drawScreen(mouseX, mouseY, partialTicks);
         final String title = I18n.format("tof.selectfluid");
-        this.fontRendererObj.drawStringWithShadow(title,
-                (this.width - this.fontRendererObj.getStringWidth(title)) / 2, 8, 0xFFFFFF);
+        this.fontRenderer.drawStringWithShadow(title,
+                (this.width - this.fontRenderer.getStringWidth(title)) / 2, 8, 0xFFFFFF);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 }

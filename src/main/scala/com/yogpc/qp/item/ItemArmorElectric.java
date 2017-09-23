@@ -2,7 +2,7 @@ package com.yogpc.qp.item;
 
 import java.lang.reflect.Field;
 
-import cofh.api.energy.IEnergyContainerItem;
+import cofh.redstoneflux.api.IEnergyContainerItem;
 import com.yogpc.qp.Key;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
@@ -18,7 +18,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.EnumRarity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -36,7 +35,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 
 @Optional.InterfaceList(value = {
-        @Optional.Interface(iface = "cofh.api.energy.IEnergyContainerItem", modid = QuarryPlus.Optionals.COFH_energy),
+        @Optional.Interface(iface = "cofh.redstoneflux.api.IEnergyContainerItem", modid = QuarryPlus.Optionals.RedstoneFlux_modID),
         @Optional.Interface(iface = "ic2.api.item.IElectricItem", modid = QuarryPlus.Optionals.IC2_modID)})
 public class ItemArmorElectric extends ItemArmor implements ISpecialArmor, IElectricItem, IEnergyContainerItem {
 
@@ -141,12 +140,14 @@ public class ItemArmorElectric extends ItemArmor implements ISpecialArmor, IElec
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems) {
-        ItemStack charged = new ItemStack(this, 1);
-        ElectricItemManager.charge(charged, Double.POSITIVE_INFINITY, getMaxCharge(charged));
-        subItems.add(charged);
-        subItems.add(new ItemStack(this, 1, getMaxDamage(charged)));
+    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
+        if (isInCreativeTab(tab)) {
+            ItemStack charged = new ItemStack(this, 1);
+            ElectricItemManager.charge(charged, Double.POSITIVE_INFINITY, getMaxCharge(charged));
+            items.add(charged);
+            items.add(new ItemStack(this, 1, getMaxDamage(charged)));
+        }
+
     }
 
     @Override
@@ -198,25 +199,25 @@ public class ItemArmorElectric extends ItemArmor implements ISpecialArmor, IElec
     //CofhApi IEnergyContainerItem
 
     @Override
-    @Optional.Method(modid = QuarryPlus.Optionals.COFH_energy)
+    @Optional.Method(modid = QuarryPlus.Optionals.RedstoneFlux_modID)
     public int extractEnergy(final ItemStack is, final int am, final boolean sim) {
         return 0;
     }
 
     @Override
-    @Optional.Method(modid = QuarryPlus.Optionals.COFH_energy)
+    @Optional.Method(modid = QuarryPlus.Optionals.RedstoneFlux_modID)
     public int getEnergyStored(final ItemStack is) {
         return (int) (ElectricItemManager.getCharge(is) * 4);
     }
 
     @Override
-    @Optional.Method(modid = QuarryPlus.Optionals.COFH_energy)
+    @Optional.Method(modid = QuarryPlus.Optionals.RedstoneFlux_modID)
     public int getMaxEnergyStored(final ItemStack is) {
         return (int) (getMaxCharge(is) * 4);
     }
 
     @Override
-    @Optional.Method(modid = QuarryPlus.Optionals.COFH_energy)
+    @Optional.Method(modid = QuarryPlus.Optionals.RedstoneFlux_modID)
     public int receiveEnergy(final ItemStack is, final int am, final boolean sim) {
         return (int) (ElectricItemManager.charge(is, Math.min((double) am / 4, getTransferLimit(is)), getMaxCharge(is)) * 4);
     }

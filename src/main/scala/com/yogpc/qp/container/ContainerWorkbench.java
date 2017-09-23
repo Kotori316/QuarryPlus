@@ -78,8 +78,8 @@ public class ContainerWorkbench extends Container {
     @Override
     public void addListener(IContainerListener listener) {
         super.addListener(listener);
-        listener.sendProgressBarUpdate(this, 0, tile.getRecipeIndex());
-        listener.sendProgressBarUpdate(this, 1, (int) tile.getStoredEnergy());
+        listener.sendWindowProperty(this, 0, tile.getRecipeIndex());
+        listener.sendWindowProperty(this, 1, (int) tile.getStoredEnergy());
     }
 
     @Override
@@ -100,8 +100,8 @@ public class ContainerWorkbench extends Container {
     public void detectAndSendChanges() {
         super.detectAndSendChanges();
         for (IContainerListener listener : listeners) {
-            listener.sendProgressBarUpdate(this, 0, tile.getRecipeIndex());
-            listener.sendProgressBarUpdate(this, 1, (int) tile.getStoredEnergy());
+            listener.sendWindowProperty(this, 0, tile.getRecipeIndex());
+            listener.sendWindowProperty(this, 1, (int) tile.getStoredEnergy());
         }
     }
 

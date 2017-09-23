@@ -10,7 +10,6 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.{ITextComponent, TextComponentString, TextComponentTranslation}
 import net.minecraft.util.{EnumActionResult, EnumFacing, EnumHand, NonNullList}
 import net.minecraft.world.World
-import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 class ItemQuarryDebug extends Item {
     setUnlocalizedName(QuarryPlus.Names.debug)
@@ -88,10 +87,8 @@ class ItemQuarryDebug extends Item {
     }
 
 
-    @SideOnly(Side.CLIENT)
-    override def getSubItems(itemIn: Item, tab: CreativeTabs, subItems: NonNullList[ItemStack]) = {
-        if (Config.content.debug)
-            super.getSubItems(itemIn, tab, subItems)
+    override def getSubItems(tab: CreativeTabs, items: NonNullList[ItemStack]): Unit = {
+        if (Config.content.debug) super.getSubItems(tab, items)
     }
 
     private def tileposToString(tile: TileEntity): ITextComponent = {

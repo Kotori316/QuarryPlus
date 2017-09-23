@@ -41,7 +41,7 @@ public class SetEntity implements IMessage {
 
     @Override
     public IMessage onRecieve(IMessage message, MessageContext ctx) {
-        World world = ctx.getServerHandler().playerEntity.world;
+        World world = ctx.getServerHandler().player.world;
         if (world.provider.getDimension() == dim) {
             BlockController.setSpawnerEntity(world, pos, location);
         }

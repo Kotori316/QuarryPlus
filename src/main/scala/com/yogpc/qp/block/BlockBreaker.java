@@ -32,6 +32,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
@@ -42,6 +43,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
@@ -86,7 +88,8 @@ public class BlockBreaker extends ADismCBlock {
             if (tile.silktouch && blockState.getBlock().canSilkHarvest(worldIn, pos1, blockState, player)) {
                 stackList = Collections.singletonList((ItemStack) ReflectionHelper.invoke(TileBasic.createStackedBlock, blockState.getBlock(), blockState));
             } else {
-                stackList = blockState.getBlock().getDrops(worldIn, pos1, blockState, tile.fortune);
+                stackList = NonNullList.create();
+                blockState.getBlock().getDrops((NonNullList<ItemStack>) stackList, worldIn, pos1, blockState, tile.fortune);
             }
             for (final ItemStack is : stackList) {
                 ItemStack inserted = InvUtils.injectToNearTile(worldIn, pos, is);
@@ -111,8 +114,9 @@ public class BlockBreaker extends ADismCBlock {
     }
 
     @Override
-    public boolean isSideSolid(IBlockState base_state, IBlockAccess world, BlockPos pos, EnumFacing side) {
-        return base_state.getValue(FACING) != side;
+    @SuppressWarnings("deprecation")
+    public BlockFaceShape getBlockFaceShape(IBlockAccess p_193383_1_, IBlockState state, BlockPos p_193383_3_, EnumFacing side) {
+        return state.getValue(FACING) != side ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
     }
 
     @SuppressWarnings("deprecation")
@@ -135,8 +139,8 @@ public class BlockBreaker extends ADismCBlock {
     }
 
     @Override
-    public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
-        return drops;
+    public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+        drops.addAll(this.drops);
     }
 
     @Override

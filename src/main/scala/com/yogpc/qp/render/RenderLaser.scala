@@ -1,18 +1,11 @@
 package com.yogpc.qp.render
 
-import buildcraft.core.client.BuildCraftLaserManager
-import buildcraft.lib.client.render.laser.{LaserData_BC8, LaserRenderer_BC8}
 import com.yogpc.qp.QuarryPlus
-import com.yogpc.qp.block.ADismCBlock
 import com.yogpc.qp.tile.TileLaser
-import net.minecraft.client.Minecraft
 import net.minecraft.client.model.{ModelBase, ModelRenderer}
-import net.minecraft.client.renderer.texture.{TextureManager, TextureMap}
+import net.minecraft.client.renderer.texture.TextureManager
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraft.client.renderer.{GlStateManager, OpenGlHelper, RenderHelper, Tessellator}
 import net.minecraft.util.ResourceLocation
-import net.minecraft.util.math.Vec3d
 import net.minecraftforge.fml.common.Loader
 import org.lwjgl.opengl.GL11
 
@@ -26,8 +19,8 @@ object RenderLaser extends TileEntitySpecialRenderer[TileLaser] {
 
     private val bcLoaded = Loader isModLoaded QuarryPlus.Optionals.Buildcraft_modID
 
-    override def renderTileEntityAt(te: TileLaser, x: Double, y: Double, z: Double, partialTicks: Float, destroyStage: Int): Unit = {
-        Minecraft.getMinecraft.mcProfiler.startSection("quarryplus")
+    override def render(te: TileLaser, x: Double, y: Double, z: Double, partialTicks: Float, destroyStage: Int, alpha: Float): Unit = {
+        /*Minecraft.getMinecraft.mcProfiler.startSection("quarryplus")
         Minecraft.getMinecraft.mcProfiler.startSection("laser")
         if (bcLoaded) {
             if (te.lasers != null) {
@@ -86,7 +79,7 @@ object RenderLaser extends TileEntitySpecialRenderer[TileLaser] {
         }
 
         Minecraft.getMinecraft.mcProfiler.endSection()
-        Minecraft.getMinecraft.mcProfiler.endSection()
+        Minecraft.getMinecraft.mcProfiler.endSection()*/
     }
 
     private val model = new ModelBase() {}

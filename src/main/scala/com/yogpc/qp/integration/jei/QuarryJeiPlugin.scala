@@ -5,11 +5,11 @@ import com.yogpc.qp.gui.GuiWorkbench
 import com.yogpc.qp.tile.WorkbenchRecipes
 import mezz.jei.api.ingredients.IModIngredientRegistration
 import mezz.jei.api.recipe.{IRecipeCategoryRegistration, IRecipeWrapperFactory}
-import mezz.jei.api.{BlankModPlugin, IJeiRuntime, IModRegistry, ISubtypeRegistry, JEIPlugin}
+import mezz.jei.api.{IJeiRuntime, IModPlugin, IModRegistry, ISubtypeRegistry, JEIPlugin}
 import net.minecraft.item.ItemStack
 
 @JEIPlugin
-class QuarryJeiPlugin extends BlankModPlugin {
+class QuarryJeiPlugin extends IModPlugin {
 
     //noinspection ConvertExpressionToSAM
     override def register(registry: IModRegistry): Unit = {

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import cofh.api.block.IDismantleable;
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
@@ -22,7 +21,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.EnumFacing;
@@ -39,8 +37,7 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 import static com.yogpc.qp.block.ADismCBlock.ACTING;
 
-@net.minecraftforge.fml.common.Optional.Interface(iface = "cofh.api.block.IDismantleable", modid = QuarryPlus.Optionals.COFH_block)
-public class BlockController extends Block implements IDismantleable {
+public class BlockController extends Block {
     //TODO find real-environment value.
     private static final Field logic_spawnDelay = ReflectionHelper.findField(MobSpawnerBaseLogic.class, "spawnDelay");
     public final ItemBlock itemBlock;
@@ -126,18 +123,6 @@ public class BlockController extends Block implements IDismantleable {
             }
         }
         super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
-    }
-
-    @Override
-    @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.COFH_block)
-    public ArrayList<ItemStack> dismantleBlock(World world, BlockPos pos, IBlockState state, EntityPlayer player, boolean returnDrops) {
-        return ADismCBlock.dismantle(world, pos, state, returnDrops);
-    }
-
-    @Override
-    @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.COFH_block)
-    public boolean canDismantle(World world, BlockPos pos, IBlockState state, EntityPlayer player) {
-        return true;
     }
 
     @SuppressWarnings("deprecation")

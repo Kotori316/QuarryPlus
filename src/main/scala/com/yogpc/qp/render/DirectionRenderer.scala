@@ -1,6 +1,6 @@
 package com.yogpc.qp.render
 
-import net.minecraft.client.renderer.VertexBuffer
+import net.minecraft.client.renderer.BufferBuilder
 import net.minecraft.client.renderer.texture.TextureAtlasSprite
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumFacing._
@@ -23,7 +23,7 @@ abstract sealed class DirectionRenderer(val d: EnumFacing) {
     protected val vVector: EnumFacing
     protected val order: Array[Func]
 
-    def render(pos: Vec3d, buffer: VertexBuffer, scaleX: Double, scaleY: Double, scaleZ: Double, l1: Int, l2: Int, sprite: TextureAtlasSprite): Unit = {
+    def render(pos: Vec3d, buffer: BufferBuilder, scaleX: Double, scaleY: Double, scaleZ: Double, l1: Int, l2: Int, sprite: TextureAtlasSprite): Unit = {
         val max = Math.max(Math.max(scaleX, scaleY), scaleZ)
         render(pos, buffer, scaleX, scaleY, scaleZ, l1, l2,
             sprite.getMinU,
@@ -32,11 +32,16 @@ abstract sealed class DirectionRenderer(val d: EnumFacing) {
             sprite.getInterpolatedV(getVInterpolate(scaleX, scaleY, scaleZ, max)))
     }
 
-    def render(pos: Vec3d, buffer: VertexBuffer, scales: (Double, Double, Double), l1: Int, l2: Int, minU: Double, minV: Double, maxU: Double, maxV: Double): Unit = {
+    def render(pos: Vec3d, buffer: BufferBuilder, scales: (Double, Double, Double), l1: Int, l2: Int, sprite: TextureAtlasSprite): Unit = {
+        render(pos, buffer, scales._1, scales._2, scales._3, l1, l2, sprite)
+    }
+
+
+    def render(pos: Vec3d, buffer: BufferBuilder, scales: (Double, Double, Double), l1: Int, l2: Int, minU: Double, minV: Double, maxU: Double, maxV: Double): Unit = {
         render(pos, buffer, scales._1, scales._2, scales._3, l1, l2, minU, minV, maxU, maxV)
     }
 
-    def render(pos: Vec3d, buffer: VertexBuffer, scaleX: Double, scaleY: Double, scaleZ: Double, l1: Int, l2: Int, minU: Double, minV: Double, maxU: Double, maxV: Double): Unit = {
+    def render(pos: Vec3d, buffer: BufferBuilder, scaleX: Double, scaleY: Double, scaleZ: Double, l1: Int, l2: Int, minU: Double, minV: Double, maxU: Double, maxV: Double): Unit = {
         val vec = offset(pos, scaleX, scaleY, scaleZ)
         buffer.pos(order(0)(vec, scaleX, scaleY, scaleZ)).colored().tex(minU, minV).lightmap(l1, l2).endVertex()
         buffer.pos(order(1)(vec, scaleX, scaleY, scaleZ)).colored().tex(maxU, minV).lightmap(l1, l2).endVertex()
@@ -187,14 +192,14 @@ object DirectionRenderer {
     }
 
     object Top extends DirectionRenderer(UP) {
-        //
+        //      (N)
         //  ┌──────────┐
-        //  │ 2      1 │
-        // z│          │
+        //  │ 1      4 │
+        //  │          │ x
         //  │          │
-        //  │ 3      4 │
+        //  │ 2      3 │
         //  └──────────┘
-        //       x
+        //       z
         override protected val originIndex: Int = 1
         override protected val uVector: EnumFacing = EAST
         override protected val vVector: EnumFacing = SOUTH
@@ -204,12 +209,12 @@ object DirectionRenderer {
     }
 
     object Bottom extends DirectionRenderer(DOWN) {
-        //
+        //      (N)
         //  ┌──────────┐
-        //  │ 2      1 │
-        //  │          │ x
+        //  │ 1      4 │
+        // x│          │
         //  │          │
-        //  │ 3      4 │
+        //  │ 2      3 │
         //  └──────────┘
         //       z
         override protected val originIndex: Int = 2

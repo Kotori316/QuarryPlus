@@ -29,10 +29,7 @@ import com.yogpc.qp.tile.TileWorkbench;
 import com.yogpc.qp.tile.WorkbenchRecipes;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.ForgeChunkManager;
@@ -56,7 +53,7 @@ import static com.yogpc.qp.QuarryPlusI.*;
         modid = QuarryPlus.modID,
         name = QuarryPlus.Mod_Name,
         version = "${version}",
-        dependencies = "required-after:buildcraftcore;after:ic2",
+        dependencies = "after:ic2",
         guiFactory = QuarryPlus.Optionals.configFactory
 )
 public class QuarryPlus {
@@ -84,7 +81,6 @@ public class QuarryPlus {
     }
 
     private QuarryPlus() {
-        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @Mod.InstanceFactory
@@ -97,6 +93,7 @@ public class QuarryPlus {
         Config.setConfigFile(event.getSuggestedConfigurationFile());
         ForgeChunkManager.setForcedChunkLoadingCallback(INSTANCE, ChunkLoadingHandler.instance());
         proxy.registerTextures();
+        MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(QuarryPlusI.INSANCE);
         MinecraftForge.EVENT_BUS.register(Loot.instance());
         MinecraftForge.EVENT_BUS.register(Config.instance());
@@ -109,10 +106,6 @@ public class QuarryPlus {
     public void init(final FMLInitializationEvent event) {
         com.yogpc.qp.packet.PacketHandler.init();
         PacketHandler.channels = NetworkRegistry.INSTANCE.newChannel(Mod_Name, new YogpstopPacketCodec(), new PacketHandler());
-        GameRegistry.addRecipe(new ItemStack(workbench, 1),
-                "III", "GDG", "RRR",
-                'D', Blocks.DIAMOND_BLOCK, 'R', Items.REDSTONE,
-                'I', Blocks.IRON_BLOCK, 'G', Blocks.GOLD_BLOCK);
         WorkbenchRecipes.registerRecipes();
     }
 
@@ -200,6 +193,7 @@ public class QuarryPlus {
         public static final String IC2_modID = "ic2";
         public static final String Buildcraft_modID = "buildcraftcore";
         public static final String COFH_modID = "cofhcore";
+        public static final String RedstoneFlux_modID = "redstoneflux";
         public static final String COFH_block = "cofhapi|block";
         public static final String COFH_energy = "cofhapi|energy";
         public static final String COFH_tileentity = "cofhapi|tileentity";

@@ -36,7 +36,7 @@ public class LinkRequest implements IMessage {
     //TODO not work...
     @Override
     public LinkReply onRecieve(IMessage message, MessageContext ctx) {
-        World world = ctx.getServerHandler().playerEntity.world;
+        World world = ctx.getServerHandler().player.world;
         if (world.provider.getDimension() == dim) {
             TileMarker marker = (TileMarker) world.getTileEntity(pos);
             if (marker != null) {

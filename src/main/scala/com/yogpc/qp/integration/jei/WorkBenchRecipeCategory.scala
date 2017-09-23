@@ -5,11 +5,11 @@ import com.yogpc.qp.{QuarryPlus, QuarryPlusI}
 import mezz.jei.api.IGuiHelper
 import mezz.jei.api.gui.{IDrawable, IRecipeLayout}
 import mezz.jei.api.ingredients.IIngredients
-import mezz.jei.api.recipe.BlankRecipeCategory
+import mezz.jei.api.recipe.IRecipeCategory
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
 
-class WorkBenchRecipeCategory(guiHelper: IGuiHelper) extends BlankRecipeCategory[WorkBenchRecipeWrapper] {
+class WorkBenchRecipeCategory(guiHelper: IGuiHelper) extends IRecipeCategory[WorkBenchRecipeWrapper] {
     //4, 13 => 172, 110
     private val xOff = 4
     private val yOff = 13
@@ -40,7 +40,7 @@ class WorkBenchRecipeCategory(guiHelper: IGuiHelper) extends BlankRecipeCategory
     override def drawExtras(minecraft: Minecraft): Unit = {
         super.drawExtras(minecraft)
         if (currentrecipe != null) {
-            minecraft.fontRendererObj.drawString(currentrecipe.getEnergyRequired.toString + "MJ", 40 - xOff, 90 - yOff, 0x404040)
+            minecraft.fontRenderer.drawString(currentrecipe.getEnergyRequired.toString + "MJ", 40 - xOff, 90 - yOff, 0x404040)
         }
     }
 

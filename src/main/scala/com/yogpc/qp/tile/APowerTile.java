@@ -1,18 +1,12 @@
 package com.yogpc.qp.tile;
 
-import buildcraft.api.mj.IMjConnector;
-import buildcraft.api.mj.IMjReadable;
-import buildcraft.api.mj.IMjReceiver;
-import buildcraft.api.mj.MjAPI;
-import buildcraft.api.mj.MjCapabilityHelper;
-import cofh.api.energy.IEnergyReceiver;
+import cofh.redstoneflux.api.IEnergyReceiver;
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import ic2.api.energy.event.EnergyTileLoadEvent;
 import ic2.api.energy.event.EnergyTileUnloadEvent;
 import ic2.api.energy.tile.IEnergyEmitter;
 import ic2.api.energy.tile.IEnergySink;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -25,7 +19,7 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Optional;
 
 @Optional.InterfaceList(value = {
-        @Optional.Interface(iface = "cofh.api.energy.IEnergyReceiver", modid = QuarryPlus.Optionals.COFH_energy),
+        @Optional.Interface(iface = "cofh.redstoneflux.api.IEnergyReceiver", modid = QuarryPlus.Optionals.RedstoneFlux_modID),
         @Optional.Interface(iface = "ic2.api.energy.tile.IEnergySink", modid = QuarryPlus.Optionals.IC2_modID)})
 public abstract class APowerTile extends APacketTile implements IEnergyReceiver, IEnergySink, ITickable, IEnergyStorage {
     private double all, maxGot, max, got;
@@ -38,9 +32,9 @@ public abstract class APowerTile extends APacketTile implements IEnergyReceiver,
     public APowerTile() {
         bcLoaded = Loader.isModLoaded(QuarryPlus.Optionals.Buildcraft_modID);
         ic2Loaded = Loader.isModLoaded(QuarryPlus.Optionals.IC2_modID);
-        if (bcLoaded) {
+        /*if (bcLoaded) {
             helper = new MjCapabilityHelper(new MjReciever());
-        }
+        }*/
     }
 
     @Override
@@ -203,25 +197,25 @@ public abstract class APowerTile extends APacketTile implements IEnergyReceiver,
      * Energy Unit is RF.
      */
     @Override
-    @Optional.Method(modid = QuarryPlus.Optionals.COFH_energy)
+    @Optional.Method(modid = QuarryPlus.Optionals.RedstoneFlux_modID)
     public int receiveEnergy(EnumFacing from, int maxReceive, boolean simulate) {
         return receiveEnergy(maxReceive, simulate);
     }
 
     @Override
-    @Optional.Method(modid = QuarryPlus.Optionals.COFH_energy)
+    @Optional.Method(modid = QuarryPlus.Optionals.RedstoneFlux_modID)
     public int getEnergyStored(EnumFacing from) {
         return getEnergyStored();
     }
 
     @Override
-    @Optional.Method(modid = QuarryPlus.Optionals.COFH_energy)
+    @Optional.Method(modid = QuarryPlus.Optionals.RedstoneFlux_modID)
     public int getMaxEnergyStored(EnumFacing from) {
         return getMaxEnergyStored();
     }
 
     @Override
-    @Optional.Method(modid = QuarryPlus.Optionals.COFH_energy)
+    @Optional.Method(modid = QuarryPlus.Optionals.RedstoneFlux_modID)
     public boolean canConnectEnergy(EnumFacing from) {
         return canReceive();
     }
@@ -266,6 +260,7 @@ public abstract class APowerTile extends APacketTile implements IEnergyReceiver,
     /**
      * Energy Unit is micro MJ (1000000 micro MJ = 1 MJ = 0.1 RF)
      */
+    /*
     @Optional.InterfaceList({
             @Optional.Interface(iface = "buildcraft.api.mj.IMjReceiver", modid = QuarryPlus.Optionals.Buildcraft_modID),
             @Optional.Interface(iface = "buildcraft.api.mj.IMjReadable", modid = QuarryPlus.Optionals.Buildcraft_modID)})
@@ -296,15 +291,14 @@ public abstract class APowerTile extends APacketTile implements IEnergyReceiver,
         public boolean canConnect(@Nonnull IMjConnector other) {
             return true;
         }
-    }
-
+    }*/
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
-        if (bcLoaded) {
+        /*if (bcLoaded) {
             if (((MjCapabilityHelper) helper).hasCapability(capability, facing)) {
                 return true;
             }
-        }
+        }*/
         return capability == CapabilityEnergy.ENERGY || super.hasCapability(capability, facing);
     }
 
@@ -315,11 +309,11 @@ public abstract class APowerTile extends APacketTile implements IEnergyReceiver,
         if (capability == CapabilityEnergy.ENERGY) {
             return CapabilityEnergy.ENERGY.cast(this);
         } else {
-            if (bcLoaded) {
+            /*if (bcLoaded) {
                 Object o = ((MjCapabilityHelper) helper).getCapability(capability, facing);
                 if (o != null)
                     return (T) o;
-            }
+            }*/
             return super.getCapability(capability, facing);
         }
     }

@@ -1,19 +1,19 @@
 package com.yogpc.qp
 
-import net.minecraft.client.renderer.VertexBuffer
+import net.minecraft.client.renderer.BufferBuilder
 import net.minecraft.util.math.{Vec3d, Vec3i}
 
 package object render {
 
-    implicit class BufferBuilderHelper(val buffer: VertexBuffer) extends AnyVal {
-        def pos(vec: Vec3d): VertexBuffer = buffer.pos(vec.xCoord, vec.yCoord, vec.zCoord)
+    implicit class BufferBuilderHelper(val buffer: BufferBuilder) extends AnyVal {
+        def pos(vec: Vec3d): BufferBuilder = buffer.pos(vec.x, vec.y, vec.z)
 
         /**
           * buffer.color(255, 255, 255, 255)
           *
           * @return the buffer
           */
-        def colored(): VertexBuffer = buffer.color(255, 255, 255, 255)
+        def colored(): BufferBuilder = buffer.color(255, 255, 255, 255)
 
         /**
           * buffer.lightmap(240, 0).endVertex()

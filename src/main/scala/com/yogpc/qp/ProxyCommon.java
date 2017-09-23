@@ -26,7 +26,7 @@ public class ProxyCommon {
 
     public EntityPlayer getPacketPlayer(final INetHandler inh) {
         if (inh instanceof NetHandlerPlayServer)
-            return ((NetHandlerPlayServer) inh).playerEntity;
+            return ((NetHandlerPlayServer) inh).player;
         return null;
     }
 

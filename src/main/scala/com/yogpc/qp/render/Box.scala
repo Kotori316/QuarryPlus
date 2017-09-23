@@ -19,23 +19,23 @@ class Box(start: Vec3d, end: Vec3d, length: Double) {
 object Box {
 
     def apply(startPoint: Vec3d, endPoint: Vec3d, length: Double = 1)(first: Boolean, end: Boolean): Box = {
-        if (startPoint.xCoord == endPoint.xCoord) {
-            if (startPoint.yCoord == endPoint.yCoord) {
+        if (startPoint.x == endPoint.x) {
+            if (startPoint.y == endPoint.y) {
                 return new Box1dZ(startPoint, endPoint, length, first, end)
-            } else if (startPoint.zCoord == endPoint.zCoord) {
+            } else if (startPoint.z == endPoint.z) {
                 return new Box1dY(startPoint, endPoint, length, first, end)
             }
-        } else if (startPoint.yCoord == endPoint.yCoord && startPoint.zCoord == endPoint.zCoord) {
+        } else if (startPoint.y == endPoint.y && startPoint.z == endPoint.z) {
             return new Box1dX(startPoint, endPoint, length, first, end)
         }
         new Box(startPoint, endPoint, length)
     }
 
     private class Box1dX(start: Vec3d, end: Vec3d, length: Double, firstSide: Boolean, endSide: Boolean) extends Box(start, end, length) {
-        val minX = Math.min(start.xCoord, end.xCoord)
-        val maxX = Math.max(start.xCoord, end.xCoord)
-        val y = start.yCoord
-        val z = start.zCoord
+        val minX = Math.min(start.x, end.x)
+        val maxX = Math.max(start.x, end.x)
+        val y = start.y
+        val z = start.z
 
         override def faceList = {
             val vecLength = maxX - minX
@@ -88,10 +88,10 @@ object Box {
     }
 
     private class Box1dY(start: Vec3d, end: Vec3d, length: Double, firstSide: Boolean, endSide: Boolean) extends Box(start, end, length) {
-        val minY = Math.min(start.yCoord, end.yCoord)
-        val maxY = Math.max(start.yCoord, end.yCoord)
-        val x = start.xCoord
-        val z = start.zCoord
+        val minY = Math.min(start.y, end.y)
+        val maxY = Math.max(start.y, end.y)
+        val x = start.x
+        val z = start.z
 
         override def faceList = {
             val vecLength = maxY - minY
@@ -142,10 +142,10 @@ object Box {
     }
 
     private class Box1dZ(start: Vec3d, end: Vec3d, length: Double, firstSide: Boolean, endSide: Boolean) extends Box(start, end, length) {
-        val minZ = Math.min(start.zCoord, end.zCoord)
-        val maxZ = Math.max(start.zCoord, end.zCoord)
-        val x = start.xCoord
-        val y = start.yCoord
+        val minZ = Math.min(start.z, end.z)
+        val maxZ = Math.max(start.z, end.z)
+        val x = start.x
+        val y = start.y
 
         override def faceList = {
             val vecLength = maxZ - minZ

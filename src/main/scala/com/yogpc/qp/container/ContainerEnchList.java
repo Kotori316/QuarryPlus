@@ -38,7 +38,7 @@ public class ContainerEnchList extends Container {
         if (this.includeFlag != ninc) {
             this.includeFlag = ninc;
             for (IContainerListener listener : this.listeners)
-                listener.sendProgressBarUpdate(this, 0, this.includeFlag);
+                listener.sendWindowProperty(this, 0, this.includeFlag);
         }
         /*for (IContainerListener listener : listeners) {
             PacketHandler.sendToClient(DiffMessage.create(this, tile.fortuneList, tile.silktouchList), ((EntityPlayerMP) listener));
@@ -48,7 +48,7 @@ public class ContainerEnchList extends Container {
     @Override
     public void addListener(IContainerListener listener) {
         super.addListener(listener);
-        listener.sendProgressBarUpdate(this, 0, getInclude());
+        listener.sendWindowProperty(this, 0, getInclude());
     }
 
     public TileBasic getTile() {

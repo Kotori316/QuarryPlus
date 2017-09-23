@@ -61,12 +61,11 @@ public class GuiSlotEnchList extends GuiSlot {
     }
 
     @Override
-    protected void drawSlot(int entryID, int insideLeft, int yPos, int insideSlotHeight, int mouseXIn, int mouseYIn) {
+    protected void drawSlot(int entryID, int insideLeft, int yPos, int insideSlotHeight, int mouseXIn, int mouseYIn, float p_192637_7_) {
         final String name = this.target.get(entryID).getLocalizedName();
-        Minecraft.getMinecraft().fontRendererObj
+        Minecraft.getMinecraft().fontRenderer
                 .drawStringWithShadow(name,
-                        (this.parent.width * 3 / 5 - Minecraft.getMinecraft().fontRendererObj.getStringWidth(name)) / 2,
+                        (this.parent.width * 3 / 5 - Minecraft.getMinecraft().fontRenderer.getStringWidth(name)) / 2,
                         yPos + 2, 0xFFFFFF);
     }
-
 }
