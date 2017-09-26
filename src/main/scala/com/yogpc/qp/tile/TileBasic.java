@@ -133,11 +133,13 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         if (this.fortuneList.contains(new BlockData(ForgeRegistries.BLOCKS.getKey(b),
                 state.getBlock().getMetaFromState(state))) == this.fortuneInclude) {
             NonNullList<ItemStack> nonNullList = NonNullList.create();
+            //TODO: check ic2 ore can be mined correctly.
             b.getDrops(nonNullList, getWorld(), pos, state, this.fortune);
             list.addAll(nonNullList);
             return this.fortune;
         }
         NonNullList<ItemStack> nonNullList = NonNullList.create();
+        //TODO: check ic2 ore can be mined correctly.
         b.getDrops(nonNullList, getWorld(), pos, state, 0);
         list.addAll(nonNullList);
         return 0;

@@ -13,15 +13,10 @@
 
 package com.yogpc.qp.tile;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.yogpc.qp.PacketHandler;
 import com.yogpc.qp.PowerManager;
-import com.yogpc.qp.YogpstopPacket;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -162,15 +157,7 @@ public class TileRefinery extends APowerTile implements IFluidHandler, IEnchanta
     }
 
     private void sendNowPacket() {
-        try {
-            final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            final DataOutputStream dos = new DataOutputStream(bos);
-            dos.writeFloat(this.animationSpeed);
-            PacketHandler.sendPacketToAround(new YogpstopPacket(bos.toByteArray(), this,
-                    PacketHandler.StC_NOW), getWorld().provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ());
-        } catch (final IOException e) {
-            throw new RuntimeException(e);
-        }
+        //TODO crate now packet [DATA]???
     }
 
     private void increaseAnimation() {
