@@ -35,7 +35,7 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
 
 /**
- * See {@link buildcraft.factory.tile.TileDistiller_BC8}
+ * See {@link buildcraft.factory.tile.TileDistiller_BC8}, {@link buildcraft.api.recipes.IRefineryRecipeManager}, {@link buildcraft.energy.BCEnergyRecipes}
  * TODO 3tanks UP for gus, down for liquid, side for input
  */
 public class TileRefinery extends APowerTile implements IFluidHandler, IEnchantableTile {
