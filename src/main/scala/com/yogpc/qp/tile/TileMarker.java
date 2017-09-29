@@ -14,6 +14,7 @@
 package com.yogpc.qp.tile;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -29,6 +30,8 @@ import com.yogpc.qp.packet.marker.LinkReply;
 import com.yogpc.qp.packet.marker.LinkRequest;
 import com.yogpc.qp.packet.marker.LinkUpdate;
 import com.yogpc.qp.packet.marker.RemoveLink;
+import com.yogpc.qp.render.Box;
+import com.yogpc.qp.render.RenderMarker;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -342,7 +345,8 @@ public class TileMarker extends APacketTile implements /*ITileAreaProvider,*/ IT
         /**
          * index 0=x , 1=y , 2=z
          */
-        public final AxisAlignedBB[] boxes = new AxisAlignedBB[6];
+        public final AxisAlignedBB[] lineBoxes = new AxisAlignedBB[6];
+        public final Box[] boxes;
 
         public Laser(World w, BlockPos pos, Link link) {
             this(w, pos.getX(), pos.getY(), pos.getZ(), link);
@@ -355,16 +359,24 @@ public class TileMarker extends APacketTile implements /*ITileAreaProvider,*/ IT
             this.w = pw;
             double b = 10d / 16d, c = 6d / 16d;
             if (l == null || l.xn == l.xx) {
-                boxes[0] = new AxisAlignedBB(px + b - MAX_SIZE, py + 0.5, pz + 0.5, px + c, py + 0.5, pz + 0.5);
-                boxes[3] = new AxisAlignedBB(px + b, py + 0.5, pz + 0.5, px + c + MAX_SIZE, py + 0.5, pz + 0.5);
+                lineBoxes[0] = new AxisAlignedBB(px + b - MAX_SIZE, py + 0.5, pz + 0.5, px + c, py + 0.5, pz + 0.5);
+                lineBoxes[3] = new AxisAlignedBB(px + b, py + 0.5, pz + 0.5, px + c + MAX_SIZE, py + 0.5, pz + 0.5);
             }
             if (l == null || l.yn == l.yx) {
-                boxes[1] = new AxisAlignedBB(px + 0.5, 0, pz + 0.5, px + 0.5, py - 0.1, pz + 0.5);
-                boxes[4] = new AxisAlignedBB(px + 0.5, py + b, pz + 0.5, px + 0.5, 255, pz + 0.5);
+                lineBoxes[1] = new AxisAlignedBB(px + 0.5, 0, pz + 0.5, px + 0.5, py - 0.1, pz + 0.5);
+                lineBoxes[4] = new AxisAlignedBB(px + 0.5, py + b, pz + 0.5, px + 0.5, 255, pz + 0.5);
             }
             if (l == null || l.zn == l.zx) {
-                boxes[2] = new AxisAlignedBB(px + 0.5, py + 0.5, pz + b - MAX_SIZE, px + 0.5, py + 0.5, pz + c);
-                boxes[5] = new AxisAlignedBB(px + 0.5, py + 0.5, pz + b, px + 0.5, py + 0.5, pz + c + MAX_SIZE);
+                lineBoxes[2] = new AxisAlignedBB(px + 0.5, py + 0.5, pz + b - MAX_SIZE, px + 0.5, py + 0.5, pz + c);
+                lineBoxes[5] = new AxisAlignedBB(px + 0.5, py + 0.5, pz + b, px + 0.5, py + 0.5, pz + c + MAX_SIZE);
+            }
+            if (pw.isRemote) {
+                boxes = Arrays.stream(lineBoxes).filter(Objects::nonNull)
+                        .map(aabb -> Box.apply(aabb, RenderMarker.d() * 2, RenderMarker.d() * 2, RenderMarker.d() * 2, false, false))
+                        .toArray(Box[]::new);
+            } else {
+                //Server
+                boxes = null;
             }
             destructor();
             laserList.add(this);
@@ -389,7 +401,7 @@ public class TileMarker extends APacketTile implements /*ITileAreaProvider,*/ IT
 
         @Override
         public String toString() {
-            long i = Stream.of(boxes).filter(Objects::nonNull).count();
+            long i = Stream.of(lineBoxes).filter(Objects::nonNull).count();
             return x + " " + y + " " + z + " Lasers : " + i;
         }
     }
@@ -399,7 +411,8 @@ public class TileMarker extends APacketTile implements /*ITileAreaProvider,*/ IT
      */
     public static class Link {
         public int xx, xn, yx, yn, zx, zn;
-        public final AxisAlignedBB[] boxes = new AxisAlignedBB[12];
+        public final AxisAlignedBB[] lineBoxes = new AxisAlignedBB[12];
+        public Box[] boxes;
         public final World w;
 
         Link(World world, BlockPos pos) {
@@ -439,19 +452,17 @@ public class TileMarker extends APacketTile implements /*ITileAreaProvider,*/ IT
             }
         }
 
-        private List<ItemStack> removeLink(final int x, final int y, final int z, final boolean bb) {
-            NonNullList<ItemStack> ret = NonNullList.create();
+        private ArrayList<ItemStack> removeLink(final int x, final int y, final int z, final boolean bb) {
+            ArrayList<ItemStack> ret = new ArrayList<>();
             BlockPos pos = new BlockPos(x, y, z);
             TileEntity te = this.w.getTileEntity(pos);
             IBlockState state = w.getBlockState(pos);
             if (state.getBlock() instanceof BlockMarker) {
-                if (te instanceof TileMarker) {
+                if (te instanceof TileMarker)
                     ((TileMarker) te).link = null;
-                }
-                state.getBlock().getDrops(ret, this.w, pos, state, 0);
-                if (bb) {
+                ret.addAll(state.getBlock().getDrops(this.w, pos, state, 0));
+                if (bb)
                     this.w.setBlockToAir(pos);
-                }
             }
             return ret;
         }
@@ -500,30 +511,37 @@ public class TileMarker extends APacketTile implements /*ITileAreaProvider,*/ IT
             if (this.zn != this.zx)
                 flag |= 4;
             if ((flag & 1) == 1) {//x
-                boxes[0] = new AxisAlignedBB(xn + b, yn + a, zn + a, xx + c, yn + a, zn + a);
+                lineBoxes[0] = new AxisAlignedBB(xn + b, yn + a, zn + a, xx + c, yn + a, zn + a);
             }
             if ((flag & 2) == 2) {//y
-                boxes[4] = new AxisAlignedBB(xn + a, yn + b, zn + a, xn + a, yx + c, zn + a);
+                lineBoxes[4] = new AxisAlignedBB(xn + a, yn + b, zn + a, xn + a, yx + c, zn + a);
             }
             if ((flag & 4) == 4) {//z
-                boxes[8] = new AxisAlignedBB(xn + a, yn + a, zn + b, xn + a, yn + a, zx + c);
+                lineBoxes[8] = new AxisAlignedBB(xn + a, yn + a, zn + b, xn + a, yn + a, zx + c);
             }
             if ((flag & 3) == 3) {//xy
-                boxes[2] = new AxisAlignedBB(xn + b, yx + a, zn + a, xx + c, yx + a, zn + a);
-                boxes[6] = new AxisAlignedBB(xx + a, yn + b, zn + a, xx + a, yx + c, zn + a);
+                lineBoxes[2] = new AxisAlignedBB(xn + b, yx + a, zn + a, xx + c, yx + a, zn + a);
+                lineBoxes[6] = new AxisAlignedBB(xx + a, yn + b, zn + a, xx + a, yx + c, zn + a);
             }
             if ((flag & 5) == 5) {//xz
-                boxes[1] = new AxisAlignedBB(xn + b, yn + a, zx + a, xx + c, yn + a, zx + a);
-                boxes[9] = new AxisAlignedBB(xx + a, yn + a, zn + b, xx + a, yn + a, zx + c);
+                lineBoxes[1] = new AxisAlignedBB(xn + b, yn + a, zx + a, xx + c, yn + a, zx + a);
+                lineBoxes[9] = new AxisAlignedBB(xx + a, yn + a, zn + b, xx + a, yn + a, zx + c);
             }
             if ((flag & 6) == 6) {//yz
-                boxes[5] = new AxisAlignedBB(xn + a, yn + b, zx + a, xn + a, yx + c, zx + a);
-                boxes[10] = new AxisAlignedBB(xn + a, yx + a, zn + b, xn + a, yx + a, zx + c);
+                lineBoxes[5] = new AxisAlignedBB(xn + a, yn + b, zx + a, xn + a, yx + c, zx + a);
+                lineBoxes[10] = new AxisAlignedBB(xn + a, yx + a, zn + b, xn + a, yx + a, zx + c);
             }
             if ((flag & 7) == 7) {//xyz
-                boxes[3] = new AxisAlignedBB(xn + b, yx + a, zx + a, xx + c, yx + a, zx + a);
-                boxes[7] = new AxisAlignedBB(xx + a, yn + b, zx + a, xx + a, yx + c, zx + a);
-                boxes[11] = new AxisAlignedBB(xx + a, yx + a, zn + b, xx + a, yx + a, zx + c);
+                lineBoxes[3] = new AxisAlignedBB(xn + b, yx + a, zx + a, xx + c, yx + a, zx + a);
+                lineBoxes[7] = new AxisAlignedBB(xx + a, yn + b, zx + a, xx + a, yx + c, zx + a);
+                lineBoxes[11] = new AxisAlignedBB(xx + a, yx + a, zn + b, xx + a, yx + a, zx + c);
+            }
+            if (w.isRemote) {
+                boxes = Arrays.stream(lineBoxes).filter(Objects::nonNull)
+                        .map(aabb -> Box.apply(aabb, RenderMarker.d() * 2, RenderMarker.d() * 2, RenderMarker.d() * 2, false, false))
+                        .toArray(Box[]::new);
+            } else {
+                boxes = null;
             }
         }
 
@@ -540,7 +558,7 @@ public class TileMarker extends APacketTile implements /*ITileAreaProvider,*/ IT
 
         @Override
         public String toString() {
-            long i = Stream.of(boxes).filter(Objects::nonNull).count();
+            long i = Stream.of(lineBoxes).filter(Objects::nonNull).count();
             return minPos() + " to " + maxPos() + " Lasers : " + i;
         }
 

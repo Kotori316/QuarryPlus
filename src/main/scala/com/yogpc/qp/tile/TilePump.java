@@ -14,7 +14,6 @@
 package com.yogpc.qp.tile;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -604,12 +603,11 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
 
     public void sendDebugMessage(EntityPlayer player) {
         player.sendStatusMessage(new TextComponentString("Connection : " + this.connectTo), false);
-        Arrays.asList(EnumFacing.VALUES).forEach(facing ->
-                this.mapping.get(facing).stream()
-                        .reduce((s1, s2) -> s1 + ", " + s2)
-                        .ifPresent(s -> player.sendStatusMessage(
-                                new TextComponentString(facing + " -> " + s), false)
-                        ));
+        for (EnumFacing facing : EnumFacing.VALUES) {
+            this.mapping.get(facing).stream()
+                    .reduce((s1, s2) -> s1 + ", " + s2)
+                    .ifPresent(s -> player.sendStatusMessage(new TextComponentString(facing + " -> " + s), false));
+        }
         if (!liquids.isEmpty()) {
             player.sendStatusMessage(new TextComponentTranslation("chat.pumpcontain"), false);
             liquids.stream().map(fluidStack -> fluidStack.getLocalizedName() + fluidStack.amount + "mB").reduce((s, s2) -> s + ", " + s2)

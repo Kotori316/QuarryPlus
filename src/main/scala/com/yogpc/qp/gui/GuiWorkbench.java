@@ -1,7 +1,5 @@
 package com.yogpc.qp.gui;
 
-import java.lang.reflect.Field;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.container.ContainerWorkbench;
 import com.yogpc.qp.tile.TileWorkbench;
@@ -103,8 +101,7 @@ public class GuiWorkbench extends GuiContainer {
     protected void drawGuiContainerForegroundLayer(final int mouseX, final int mouseY) {
         this.fontRenderer.drawString(
                 this.tile.hasCustomName() ? this.tile.getName() : I18n.format(this.tile.getName()), 8, 6, 0x404040);
-        this.fontRenderer.drawString(I18n.format("container.inventory"), 8,
-                this.ySize - 96 + 2, 0x404040);
+        this.fontRenderer.drawString(I18n.format("container.inventory"), 8, this.ySize - 96 + 2, 0x404040);
     }
 
     @Override
@@ -130,30 +127,9 @@ public class GuiWorkbench extends GuiContainer {
         handlePost();
     }
 
-    private static final Field item;
-
-    static {
-        //I don't know whether this works.
-        Field field = null;
-        try {
-            Class<?> clazz = Class.forName("codechicken.nei.guihook.GuiContainerManager");
-            field = clazz.getDeclaredField("drawItems");
-            field.setAccessible(true);
-        } catch (ReflectiveOperationException ignore) {
-        }
-        item = field;
-    }
-
-    private RenderItem nitem, pitem;
+    private RenderItem pitem;
 
     public void handlePre() {
-        if (item != null)
-            try {
-                nitem = (RenderItem) item.get(null);
-                item.set(null, myitem);
-            } catch (final Exception e) {
-                e.printStackTrace();
-            }
         pitem = itemRender;
         itemRender = myitem;
     }
@@ -163,12 +139,5 @@ public class GuiWorkbench extends GuiContainer {
             itemRender = pitem;
             pitem = null;
         }
-        if (nitem != null)
-            try {
-                item.set(null, nitem);
-                nitem = null;
-            } catch (final Exception e) {
-                e.printStackTrace();
-            }
     }
 }
