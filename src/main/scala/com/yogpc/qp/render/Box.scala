@@ -1,6 +1,5 @@
 package com.yogpc.qp.render
 
-import net.minecraft.client.renderer.VertexBuffer
 import net.minecraft.client.renderer.texture.TextureAtlasSprite
 import net.minecraft.util.math.{AxisAlignedBB, MathHelper}
 
@@ -18,7 +17,7 @@ sealed class Box(val startX: Double, val startY: Double, val startZ: Double,
     val offZ = sizeZ / 2
     val maxSize = Math.max(Math.max(sizeX, sizeY), sizeZ)
 
-    def render(buffer: VertexBuffer, sprite: TextureAtlasSprite): Unit = {
+    def render(buffer: BufferBuilder, sprite: TextureAtlasSprite): Unit = {
         val n1X = dx
         val n1Y = Box.normalY(dx, dy, dz)
         val n1Z = dz
@@ -29,7 +28,7 @@ sealed class Box(val startX: Double, val startY: Double, val startZ: Double,
         renderInternal(buffer, sprite, n1X / n1Size / 2, n1Y / n1Size / 2, n1Z / n1Size / 2, n2X / n2Size / 2, n2Z / n2Size / 2)
     }
 
-    protected final def renderInternal(buffer: VertexBuffer, sprite: TextureAtlasSprite,
+    protected final def renderInternal(buffer: BufferBuilder, sprite: TextureAtlasSprite,
                                        n1X: Double, n1Y: Double, n1Z: Double,
                                        n2X: Double, n2Z: Double): Unit = {
         val eX = dx / length * sizeX
@@ -109,7 +108,7 @@ private class BoxX(startX: Double,
   extends Box(startX, y, z, endX, y, z, sizeX, sizeY, sizeZ, firstSide, endSide) {
     override val length: Double = dx
 
-    override def render(buffer: VertexBuffer, sprite: TextureAtlasSprite): Unit = {
+    override def render(buffer: BufferBuilder, sprite: TextureAtlasSprite): Unit = {
         val count = MathHelper.floor(length / sizeX)
         val minU = sprite.getMinU
         val minV = sprite.getMinV
@@ -163,7 +162,7 @@ private class BoxY(startY: Double,
   extends Box(x, startY, z, x, endY, z, sizeX, sizeY, sizeZ, firstSide, endSide) {
     override val length = dy
 
-    override def render(buffer: VertexBuffer, sprite: TextureAtlasSprite): Unit = {
+    override def render(buffer: BufferBuilder, sprite: TextureAtlasSprite): Unit = {
         val count = MathHelper.floor(length / sizeY)
         val minU = sprite.getMinU
         val minV = sprite.getMinV
@@ -218,7 +217,7 @@ private class BoxZ(startZ: Double,
   extends Box(x, y, startZ, x, y, endZ, sizeX, sizeY, sizeZ, firstSide, endSide) {
     override val length = dz
 
-    override def render(buffer: VertexBuffer, sprite: TextureAtlasSprite): Unit = {
+    override def render(buffer: BufferBuilder, sprite: TextureAtlasSprite): Unit = {
         val count = MathHelper.floor(length / sizeZ)
         val minU = sprite.getMinU
         val minV = sprite.getMinV
@@ -271,7 +270,7 @@ private class BoxXZ(startX: Double, startZ: Double, endX: Double, y: Double, end
   extends Box(startX, y, startZ, endX, y, endZ, sizeX, sizeY, sizeZ, firstSide, endSide) {
     override val length = Math.hypot(dx, dz)
 
-    override def render(buffer: VertexBuffer, sprite: TextureAtlasSprite): Unit = {
+    override def render(buffer: BufferBuilder, sprite: TextureAtlasSprite): Unit = {
         val n2Size = Math.hypot(dz, dx)
         renderInternal(buffer, sprite, 0, 0.5, 0, -dz / n2Size / 2, dx / n2Size / 2)
     }
