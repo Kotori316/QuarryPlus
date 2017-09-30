@@ -102,7 +102,9 @@ public class ContainerMover extends Container {
             if (nonEmpty(enchTile) && enchTile.getItem() instanceof IEnchantableItem) {
                 IEnchantableItem item = (IEnchantableItem) enchTile.getItem();
                 list.setList(enchantments.entrySet().stream().map(Tuple::new)
-                        .filter(tuple -> item.canMove(enchTile, tuple.enchantment)).collect(Collectors.toCollection(LinkedList::new)));
+                        .filter(tuple -> item.canMove(enchTile, tuple.enchantment) &&
+                                EnchantmentHelper.getEnchantmentLevel(tuple.enchantment, enchTile) < tuple.enchantment.getMaxLevel())
+                        .collect(Collectors.toCollection(LinkedList::new)));
             } else {
                 list.setList(enchantments.entrySet().stream().map(Tuple::new).collect(Collectors.toCollection(LinkedList::new)));
             }

@@ -73,7 +73,7 @@ public class BlockPlacer extends ADismCBlock {
                 int i = 0;
                 for (; i < tile.getSizeInventory(); i++) {
                     is = tile.getStackInSlot(i);
-                    player.setHeldItem(EnumHand.MAIN_HAND, is);
+                    player.inventory.setInventorySlotContents(player.inventory.currentItem, is);
                     if (VersionUtil.nonEmpty(is)) {
                         if (is.getItem().onItemUseFirst(player, worldIn, pos.offset(facing), facing.getOpposite(), 0.5F, 0.5F, 0.5F, EnumHand.MAIN_HAND) == EnumActionResult.SUCCESS)
                             break;
@@ -116,7 +116,7 @@ public class BlockPlacer extends ADismCBlock {
                             break;
                     }
                 }
-                player.setHeldItem(EnumHand.MAIN_HAND, previous);
+                player.inventory.setInventorySlotContents(player.inventory.currentItem, previous);
                 if (i < tile.getSizeInventory())
                     if (VersionUtil.isEmpty(is)) {
                         tile.setInventorySlotContents(i, VersionUtil.empty());

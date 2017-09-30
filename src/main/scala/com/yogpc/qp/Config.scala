@@ -60,7 +60,7 @@ object Config {
         recipeDifficulty.setComment("Default is 2.0")
         WorkbenchRecipes.difficulty = recipeDifficulty.getDouble(2.0)
 
-        val placerOnlyPlaceFront = configuration.get(Configuration.CATEGORY_GENERAL, PlacerOnlyPlaceFront_key, false).getBoolean
+        val placerOnlyPlaceFront = configuration.get(Configuration.CATEGORY_GENERAL, PlacerOnlyPlaceFront_key, true).getBoolean
         val noEnergy = configuration.getBoolean(NoEnergy_key, Configuration.CATEGORY_GENERAL, false, NoEnergy_key)
         PowerManager.loadConfiguration(configuration)
 

@@ -38,8 +38,7 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import static com.yogpc.qp.block.ADismCBlock.ACTING;
 
 public class BlockController extends Block {
-    //TODO find real-environment value.
-    private static final Field logic_spawnDelay = ReflectionHelper.findField(MobSpawnerBaseLogic.class, "spawnDelay");
+    private static final Field logic_spawnDelay = ReflectionHelper.findField(MobSpawnerBaseLogic.class, "spawnDelay", "field_98286_b");
     public final ItemBlock itemBlock;
 
     public BlockController() {
