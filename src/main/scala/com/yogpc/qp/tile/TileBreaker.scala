@@ -54,8 +54,8 @@ class TileBreaker extends TileEntity with IEnchantableTile with IInventory {
         super.writeToNBT(nbttc)
     }
 
-    override def getEnchantments: util.Map[Integer, Byte] = {
-        val ret = new util.HashMap[Integer, Byte]
+    override def getEnchantments: util.Map[java.lang.Integer, java.lang.Byte] = {
+        val ret = new util.HashMap[java.lang.Integer, java.lang.Byte]
         if (this.fortune > 0) ret.put(FortuneID, this.fortune)
         if (this.silktouch) ret.put(SilktouchID, 1.toByte)
         ret
@@ -71,11 +71,11 @@ class TileBreaker extends TileEntity with IEnchantableTile with IInventory {
 
     override def isEmpty = true
 
-    override def getStackInSlot(i: Int) = ItemStack.EMPTY
+    override def getStackInSlot(i: Int) = com.yogpc.qp.version.VersionUtil.empty()
 
-    override def decrStackSize(i: Int, a: Int) = ItemStack.EMPTY
+    override def decrStackSize(i: Int, a: Int) = com.yogpc.qp.version.VersionUtil.empty()
 
-    override def removeStackFromSlot(index: Int) = ItemStack.EMPTY
+    override def removeStackFromSlot(index: Int) = com.yogpc.qp.version.VersionUtil.empty()
 
     override def setInventorySlotContents(index: Int, stack: ItemStack) = ()
 

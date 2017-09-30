@@ -21,6 +21,7 @@ import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.BuildCraftHelper;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.tile.TilePlacer;
+import com.yogpc.qp.version.VersionUtil;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -68,12 +69,12 @@ public class BlockPlacer extends ADismCBlock {
 
                 final EntityPlayer player = FakePlayerFactory.getMinecraft((WorldServer) worldIn);
                 ItemStack previous = player.getHeldItem(EnumHand.MAIN_HAND);
-                ItemStack is = ItemStack.EMPTY;
+                ItemStack is = com.yogpc.qp.version.VersionUtil.empty();
                 int i = 0;
                 for (; i < tile.getSizeInventory(); i++) {
                     is = tile.getStackInSlot(i);
                     player.setHeldItem(EnumHand.MAIN_HAND, is);
-                    if (!is.isEmpty()) {
+                    if (VersionUtil.nonEmpty(is)) {
                         if (is.getItem().onItemUseFirst(player, worldIn, pos.offset(facing), facing.getOpposite(), 0.5F, 0.5F, 0.5F, EnumHand.MAIN_HAND) == EnumActionResult.SUCCESS)
                             break;
                         //Do you want to use item to non-facing block?
@@ -117,8 +118,8 @@ public class BlockPlacer extends ADismCBlock {
                 }
                 player.setHeldItem(EnumHand.MAIN_HAND, previous);
                 if (i < tile.getSizeInventory())
-                    if (is.isEmpty()) {
-                        tile.setInventorySlotContents(i, ItemStack.EMPTY);
+                    if (VersionUtil.isEmpty(is)) {
+                        tile.setInventorySlotContents(i, VersionUtil.empty());
                     }
             }
         }

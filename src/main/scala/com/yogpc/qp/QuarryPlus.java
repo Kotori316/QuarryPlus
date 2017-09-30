@@ -27,12 +27,14 @@ import com.yogpc.qp.tile.TileQuarry;
 import com.yogpc.qp.tile.TileRefinery;
 import com.yogpc.qp.tile.TileWorkbench;
 import com.yogpc.qp.tile.WorkbenchRecipes;
+import com.yogpc.qp.version.VersionDiff;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.ForgeChunkManager;
+import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -61,11 +63,13 @@ public class QuarryPlus {
     @SidedProxy(clientSide = Optionals.clientProxy, serverSide = Optionals.serverProxy)
     public static ProxyCommon proxy;
     public static final QuarryPlus INSTANCE;
+    public static final VersionDiff DIFF;
 
     public static final String Mod_Name = "QuarryPlus";
     public static final String modID = "quarryplus";
     private static final String prefix = modID + ":";
     public static final Logger LOGGER = LogManager.getLogger(Mod_Name);
+
 
     static {
         if (!Optionals.clientProxy.equals(ProxyClient.class.getName())) {
@@ -78,6 +82,13 @@ public class QuarryPlus {
             throw new AssertionError("GuiFactory name doesn't match!");
         }
         INSTANCE = new QuarryPlus();
+        VersionDiff diff;
+        try {
+            diff = (VersionDiff) Class.forName("com.yogpc.qp.version.Diff" + String.valueOf(ForgeVersion.getMajorVersion() - 2)).newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new AssertionError("VersionDiff doesn't exist!", e);
+        }
+        DIFF = diff;
     }
 
     private QuarryPlus() {
@@ -175,9 +186,9 @@ public class QuarryPlus {
         ModelLoader.setCustomModelResourceLocation(controller.itemBlock, 0, new ModelResourceLocation(controller.getRegistryName(), "inventory"));
         ModelLoader.setCustomModelResourceLocation(blockLaser.itemBlock(), 0, new ModelResourceLocation(blockLaser.getRegistryName(), "inventory"));
 //        ModelLoader.setCustomModelResourceLocation(blockChunkdestoryer.itemBlock, 0, new ModelResourceLocation(blockChunkdestoryer.getRegistryName, "inventory"))
-        ModelLoader.setCustomModelResourceLocation(itemTool, 0, new ModelResourceLocation(prefix + ItemTool.statuschecker, "inventory"));
-        ModelLoader.setCustomModelResourceLocation(itemTool, 1, new ModelResourceLocation(prefix + ItemTool.listeditor, "inventory"));
-        ModelLoader.setCustomModelResourceLocation(itemTool, 2, new ModelResourceLocation(prefix + ItemTool.liquidselector, "inventory"));
+        ModelLoader.setCustomModelResourceLocation(itemTool, 0, new ModelResourceLocation(prefix + ItemTool.statuschecker(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(itemTool, 1, new ModelResourceLocation(prefix + ItemTool.listeditor(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(itemTool, 2, new ModelResourceLocation(prefix + ItemTool.liquidselector(), "inventory"));
         ModelLoader.setCustomModelResourceLocation(magicmirror, 0, new ModelResourceLocation(magicmirror.getRegistryName(), "inventory"));
         ModelLoader.setCustomModelResourceLocation(magicmirror, 1, new ModelResourceLocation(magicmirror.getRegistryName(), "inventory"));
         ModelLoader.setCustomModelResourceLocation(magicmirror, 2, new ModelResourceLocation(magicmirror.getRegistryName(), "inventory"));

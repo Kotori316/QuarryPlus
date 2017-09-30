@@ -3,6 +3,7 @@ package com.yogpc.qp.container;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.enchantment.DiffMessage;
 import com.yogpc.qp.tile.TileBasic;
+import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
@@ -38,7 +39,7 @@ public class ContainerEnchList extends Container {
         if (this.includeFlag != ninc) {
             this.includeFlag = ninc;
             for (IContainerListener listener : this.listeners)
-                listener.sendWindowProperty(this, 0, this.includeFlag);
+                VersionUtil.sendWindowProperty(listener, this, 0, includeFlag);
         }
         /*for (IContainerListener listener : listeners) {
             PacketHandler.sendToClient(DiffMessage.create(this, tile.fortuneList, tile.silktouchList), ((EntityPlayerMP) listener));
@@ -48,7 +49,7 @@ public class ContainerEnchList extends Container {
     @Override
     public void addListener(IContainerListener listener) {
         super.addListener(listener);
-        listener.sendWindowProperty(this, 0, getInclude());
+        VersionUtil.sendWindowProperty(listener, this, 0, getInclude());
     }
 
     public TileBasic getTile() {

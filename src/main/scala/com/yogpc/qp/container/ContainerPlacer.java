@@ -14,6 +14,7 @@
 package com.yogpc.qp.container;
 
 import com.yogpc.qp.tile.TilePlacer;
+import com.yogpc.qp.version.VersionUtil;
 import javax.annotation.Nonnull;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -49,23 +50,23 @@ public class ContainerPlacer extends Container {
     @Override
     @Nonnull
     public ItemStack transferStackInSlot(final EntityPlayer playerIn, final int index) {
-        ItemStack src = ItemStack.EMPTY;
+        ItemStack src = VersionUtil.empty();
         final Slot slot = this.inventorySlots.get(index);
         if (slot != null && slot.getHasStack()) {
             final ItemStack remain = slot.getStack();
             src = remain.copy();
             if (index < 9) {
                 if (!mergeItemStack(remain, 9, 45, true))
-                    return ItemStack.EMPTY;
+                    return VersionUtil.empty();
             } else if (!mergeItemStack(remain, 0, 9, false))
-                return ItemStack.EMPTY;
+                return VersionUtil.empty();
             if (remain.getCount() == 0)
-                slot.putStack(ItemStack.EMPTY);
+                slot.putStack(VersionUtil.empty());
             else
                 slot.onSlotChanged();
             if (remain.getCount() == src.getCount())
-                return ItemStack.EMPTY;
-            slot.onTake(playerIn, remain);
+                return VersionUtil.empty();
+            VersionUtil.onTake(slot, playerIn, remain);
         }
         return src;
     }

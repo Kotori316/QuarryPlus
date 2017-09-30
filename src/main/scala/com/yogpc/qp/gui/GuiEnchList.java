@@ -84,7 +84,7 @@ public class GuiEnchList extends GuiContainer implements GuiYesNoCallback {
                 break;
             case Remove_id:
                 this.mc.displayGuiScreen(new GuiYesNo(this, I18n.format("tof.deleteblocksure"),
-                        (this.target == Enchantments.FORTUNE ? this.tile.fortuneList : this.tile.silktouchList).get(this.slot.currentore).getLocalizedName(), par1.id));
+                        (this.target == Enchantments.FORTUNE ? this.tile.fortuneList : this.tile.silktouchList).get(this.slot.currentore()).getLocalizedName(), par1.id));
                 break;
             default: //maybe toggle
                 PacketHandler.sendToServer(EnchantmentMessage.create(tile, EnchantmentMessage.Type.Toggle, target, BlockData.Invalid()));
@@ -95,7 +95,7 @@ public class GuiEnchList extends GuiContainer implements GuiYesNoCallback {
     @Override
     public void confirmClicked(final boolean result, final int id) {
         if (result) {
-            final BlockData bd = this.slot.target.get(this.slot.currentore);
+            final BlockData bd = this.slot.target().get(this.slot.currentore());
             PacketHandler.sendToServer(EnchantmentMessage.create(tile, EnchantmentMessage.Type.Remove, target, bd));
 
             if (target == Enchantments.FORTUNE)

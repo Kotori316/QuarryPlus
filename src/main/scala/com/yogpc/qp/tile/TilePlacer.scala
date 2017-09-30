@@ -2,6 +2,7 @@ package com.yogpc.qp.tile
 
 import javax.annotation.{Nonnull, Nullable}
 
+import com.yogpc.qp.version.VersionUtil
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.{IInventory, ItemStackHelper}
 import net.minecraft.item.ItemStack
@@ -15,7 +16,7 @@ import net.minecraftforge.items.wrapper.InvWrapper
 import scala.collection.JavaConverters._
 
 class TilePlacer extends TileEntity with IInventory {
-    private val inventory = NonNullList.withSize(getSizeInventory, ItemStack.EMPTY)
+    private val inventory = NonNullList.withSize(getSizeInventory, com.yogpc.qp.version.VersionUtil.empty())
     private val handler = new InvWrapper(this)
 
     override def readFromNBT(compound: NBTTagCompound): Unit = {
@@ -30,7 +31,7 @@ class TilePlacer extends TileEntity with IInventory {
 
     override def getSizeInventory = 9
 
-    override def isEmpty: Boolean = inventory.asScala.forall(_.isEmpty)
+    override def isEmpty: Boolean = inventory.asScala.forall(VersionUtil.isEmpty)
 
     @Nonnull override def getStackInSlot(index: Int): ItemStack = inventory.get(index)
 

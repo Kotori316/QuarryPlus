@@ -25,6 +25,7 @@ import com.yogpc.qp.BlockData;
 import com.yogpc.qp.PowerManager;
 import com.yogpc.qp.ReflectionHelper;
 import com.yogpc.qp.compat.InvUtils;
+import com.yogpc.qp.version.VersionUtil;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -61,7 +62,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         @Nonnull
         @Override
         public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-            return ItemStack.EMPTY;
+            return com.yogpc.qp.version.VersionUtil.empty();
         }
     };
 
@@ -227,21 +228,21 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     @Override
     @Nonnull
     public ItemStack getStackInSlot(final int i) {
-        return i < 0 || i >= this.cacheItems.size() ? ItemStack.EMPTY : this.cacheItems.get(i);
+        return i < 0 || i >= this.cacheItems.size() ? com.yogpc.qp.version.VersionUtil.empty() : this.cacheItems.get(i);
     }
 
     @Override
     @Nonnull
     public ItemStack decrStackSize(final int i, final int a) {
         if (i < 0 || i >= this.cacheItems.size())
-            return ItemStack.EMPTY;
+            return com.yogpc.qp.version.VersionUtil.empty();
         final ItemStack from = this.cacheItems.get(i);
         final ItemStack res = new ItemStack(from.getItem(), Math.min(a, from.getCount()), from.getItemDamage());
         if (from.hasTagCompound())
             //noinspection ConstantConditions
             res.setTagCompound(from.getTagCompound().copy());
         from.shrink(res.getCount());
-        if (from.isEmpty())
+        if (VersionUtil.isEmpty(from))
             this.cacheItems.remove(i);
         return res;
     }
@@ -250,12 +251,12 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     @Override
     @Nonnull
     public ItemStack removeStackFromSlot(int i) {
-        return i < 0 || i >= this.cacheItems.size() ? ItemStack.EMPTY : this.cacheItems.get(i);
+        return i < 0 || i >= this.cacheItems.size() ? com.yogpc.qp.version.VersionUtil.empty() : this.cacheItems.get(i);
     }
 
     @Override
     public void setInventorySlotContents(final int i, final ItemStack is) {
-        if (!is.isEmpty())
+        if (VersionUtil.nonEmpty(is))
             System.err.println("QuarryPlus WARN: call setInventorySlotContents with non null ItemStack.");
         if (i >= 0 && i < this.cacheItems.size())
             this.cacheItems.remove(i);

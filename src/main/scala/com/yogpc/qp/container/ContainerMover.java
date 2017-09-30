@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.item.IEnchantableItem;
+import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
@@ -37,6 +38,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.ItemHandlerHelper;
+
+import static com.yogpc.qp.version.VersionUtil.isEmpty;
+import static com.yogpc.qp.version.VersionUtil.nonEmpty;
 
 public class ContainerMover extends Container {
     public IInventory craftMatrix = new InventoryBasic("Matrix", false, 2) {
@@ -73,7 +77,7 @@ public class ContainerMover extends Container {
         if (!worldObj.isRemote) {
             for (int var2 = 0; var2 < 2; ++var2) {
                 final ItemStack var3 = this.craftMatrix.removeStackFromSlot(var2);
-                if (!var3.isEmpty())
+                if (nonEmpty(var3))
                     playerIn.dropItem(var3, false);
             }
         }
@@ -90,12 +94,12 @@ public class ContainerMover extends Container {
         ItemStack pickaxe = craftMatrix.getStackInSlot(0);
         Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(pickaxe);
         ItemStack enchTile = craftMatrix.getStackInSlot(1);
-        if (enchantments.isEmpty() || enchTile.isEmpty()) {
+        if (enchantments.isEmpty() || isEmpty(enchTile)) {
             avail = 0;
             list.setList(Collections.emptyList());
         } else {
             int previousSize = list.size();
-            if (!enchTile.isEmpty() && enchTile.getItem() instanceof IEnchantableItem) {
+            if (nonEmpty(enchTile) && enchTile.getItem() instanceof IEnchantableItem) {
                 IEnchantableItem item = (IEnchantableItem) enchTile.getItem();
                 list.setList(enchantments.entrySet().stream().map(Tuple::new)
                         .filter(tuple -> item.canMove(enchTile, tuple.enchantment)).collect(Collectors.toCollection(LinkedList::new)));
@@ -107,13 +111,13 @@ public class ContainerMover extends Container {
             }
         }
         for (IContainerListener listener : this.listeners)
-            listener.sendWindowProperty(this, 0, this.avail);
+            VersionUtil.sendWindowProperty(listener, this, 0, this.avail);
     }
 
     @Override
     public void addListener(IContainerListener listener) {
         super.addListener(listener);
-        listener.sendWindowProperty(this, 0, avail);
+        VersionUtil.sendWindowProperty(listener, this, 0, this.avail);
     }
 
     @Override
@@ -126,7 +130,7 @@ public class ContainerMover extends Container {
         avail += d.offset;
         if (!worldObj.isRemote) {
             for (IContainerListener listener : this.listeners)
-                listener.sendWindowProperty(this, 0, this.avail);
+                VersionUtil.sendWindowProperty(listener, this, 0, this.avail);
         }
     }
 
@@ -136,40 +140,40 @@ public class ContainerMover extends Container {
 
     @Override
     public ItemStack transferStackInSlot(final EntityPlayer playerIn, final int index) {
-        ItemStack src = ItemStack.EMPTY;
+        ItemStack src = com.yogpc.qp.version.VersionUtil.empty();
         final Slot slot = this.inventorySlots.get(index);
         if (slot != null && slot.getHasStack()) {
             final ItemStack remain = slot.getStack();
             src = remain.copy();
             if (index < 2) {
                 if (!mergeItemStack(remain, 2, 38, true))
-                    return ItemStack.EMPTY;
+                    return com.yogpc.qp.version.VersionUtil.empty();
             } else {
                 Slot toslot;
                 final ItemStack put = ItemHandlerHelper.copyStackWithSize(remain, 1);
                 boolean changed = false;
                 toslot = this.inventorySlots.get(0);
-                if (/*!changed(true) &&*/ toslot.isItemValid(remain) && toslot.getStack().isEmpty()) {
+                if (/*!changed(true) &&*/ toslot.isItemValid(remain) && isEmpty(toslot.getStack())) {
                     toslot.putStack(put);
                     remain.shrink(1);
                     changed = true;
                 }
                 toslot = this.inventorySlots.get(1);
-                if (!changed && toslot.isItemValid(remain) && toslot.getStack().isEmpty()) {
+                if (!changed && toslot.isItemValid(remain) && isEmpty(toslot.getStack())) {
                     toslot.putStack(put);
                     remain.shrink(1);
                     changed = true;
                 }
                 if (!changed)
-                    return ItemStack.EMPTY;
+                    return com.yogpc.qp.version.VersionUtil.empty();
             }
-            if (remain.isEmpty())
-                slot.putStack(ItemStack.EMPTY);
+            if (isEmpty(remain))
+                slot.putStack(com.yogpc.qp.version.VersionUtil.empty());
             else
                 slot.onSlotChanged();
             if (remain.getCount() == src.getCount())
-                return ItemStack.EMPTY;
-            slot.onTake(playerIn, remain);
+                return com.yogpc.qp.version.VersionUtil.empty();
+            VersionUtil.onTake(slot, playerIn, remain);
         }
         return src;
     }
@@ -177,7 +181,7 @@ public class ContainerMover extends Container {
     public void moveEnchant() {
         Tuple tuple = list.get(avail);
         ItemStack tileItem = craftMatrix.getStackInSlot(1);
-        if (tuple == null || tileItem.isEmpty() || !((IEnchantableItem) tileItem.getItem()).canMove(tileItem, tuple.enchantment)) {
+        if (tuple == null || isEmpty(tileItem) || !((IEnchantableItem) tileItem.getItem()).canMove(tileItem, tuple.enchantment)) {
             return;
         }
         NBTTagList list = tileItem.getEnchantmentTagList();

@@ -157,7 +157,7 @@ class ItemTool extends Item with IEnchantableItem {
         items.add(new ItemStack(this, 1, 0))
         items.add(getEditorStack)
         items.add(new ItemStack(this, 1, 2))
-        if (Config.content.debug && Launch.blackboard.getOrDefault("fml.deobfuscatedEnvironment", false).asInstanceOf[Boolean]) {
+        if (Config.content.debug && Launch.blackboard.getOrDefault("fml.deobfuscatedEnvironment", java.lang.Boolean.FALSE).asInstanceOf[java.lang.Boolean]) {
             val stack = new ItemStack(Items.DIAMOND_PICKAXE)
             stack.addEnchantment(Enchantments.EFFICIENCY, 5)
             stack.addEnchantment(Enchantments.UNBREAKING, 3)
