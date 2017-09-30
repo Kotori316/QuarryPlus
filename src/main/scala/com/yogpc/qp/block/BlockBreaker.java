@@ -28,6 +28,7 @@ import com.yogpc.qp.item.ItemTool;
 import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TileBasic;
 import com.yogpc.qp.tile.TileBreaker;
+import com.yogpc.qp.version.VersionUtil;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -83,14 +84,14 @@ public class BlockBreaker extends ADismCBlock {
             }
             final TileBreaker tile = (TileBreaker) worldIn.getTileEntity(pos);
             List<ItemStack> stackList;
-            if (tile.silktouch && blockState.getBlock().canSilkHarvest(worldIn, pos1, blockState, player)) {
+            if (tile.silktouch() && blockState.getBlock().canSilkHarvest(worldIn, pos1, blockState, player)) {
                 stackList = Collections.singletonList((ItemStack) ReflectionHelper.invoke(TileBasic.createStackedBlock, blockState.getBlock(), blockState));
             } else {
-                stackList = blockState.getBlock().getDrops(worldIn, pos1, blockState, tile.fortune);
+                stackList = blockState.getBlock().getDrops(worldIn, pos1, blockState, tile.fortune());
             }
             for (final ItemStack is : stackList) {
                 ItemStack inserted = InvUtils.injectToNearTile(worldIn, pos, is);
-                if (!inserted.isEmpty()) {
+                if (VersionUtil.nonEmpty(inserted)) {
                     InventoryHelper.spawnItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), is);
                 }
             }

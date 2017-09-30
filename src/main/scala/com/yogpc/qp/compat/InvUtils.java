@@ -21,6 +21,10 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
+import static com.yogpc.qp.version.VersionUtil.empty;
+import static com.yogpc.qp.version.VersionUtil.isEmpty;
+import static com.yogpc.qp.version.VersionUtil.nonEmpty;
+
 public class InvUtils {
 
     /**
@@ -42,8 +46,8 @@ public class InvUtils {
             ItemStack insert = is;
             for (IItemTransactor transactor : transactors) {
                 insert = transactor.insert(is, false, false);
-                if (insert.isEmpty()) {
-                    return ItemStack.EMPTY;
+                if (isEmpty(insert)) {
+                    return empty();
                 }
             }
             return insert;
@@ -62,8 +66,8 @@ public class InvUtils {
             ItemStack insert = is;
             for (IItemHandler handler : handlers) {
                 insert = ItemHandlerHelper.insertItemStacked(handler, is, false);
-                if (insert.isEmpty()) {
-                    return ItemStack.EMPTY;
+                if (isEmpty(insert)) {
+                    return empty();
                 }
             }
             return insert;
@@ -73,7 +77,7 @@ public class InvUtils {
     @SuppressWarnings("ConstantConditions")
     public static boolean isDebugItem(EntityPlayer player, EnumHand hand) {
         ItemStack stack = player.getHeldItem(hand);
-        if (!stack.isEmpty()) {
+        if (nonEmpty(stack)) {
             Item item = stack.getItem();
             return item == quarrydebug || item == meter;
         }

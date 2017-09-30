@@ -7,6 +7,7 @@ import java.util.Optional;
 import cofh.api.tileentity.IInventoryConnection;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.InvUtils;
+import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryHelper;
@@ -20,8 +21,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 @net.minecraftforge.fml.common.Optional.Interface(iface = "cofh.api.tileentity.IInventoryConnection", modid = QuarryPlus.Optionals.COFH_tileentity)
 public class TileWorkbench extends APowerTile implements IInventory, IInventoryConnection {
-    public final NonNullList<ItemStack> inventory = NonNullList.withSize(27, ItemStack.EMPTY);
-    public final NonNullList<ItemStack> inventory2 = NonNullList.withSize(18, ItemStack.EMPTY);
+    public final NonNullList<ItemStack> inventory = NonNullList.withSize(27, com.yogpc.qp.version.VersionUtil.empty());
+    public final NonNullList<ItemStack> inventory2 = NonNullList.withSize(18, com.yogpc.qp.version.VersionUtil.empty());
     public List<WorkbenchRecipes> recipesList = Collections.emptyList();
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     public Optional<WorkbenchRecipes> currentRecipe = Optional.empty();
@@ -36,7 +37,7 @@ public class TileWorkbench extends APowerTile implements IInventory, IInventoryC
                     useEnergy(recipes.energy(), recipes.energy(), true);
                     ItemStack stack = recipes.output().toStack(1);
                     ItemStack inserted = InvUtils.injectToNearTile(getWorld(), getPos(), stack);
-                    if (!inserted.isEmpty()) {
+                    if (VersionUtil.nonEmpty(inserted)) {
                         InventoryHelper.spawnItemStack(getWorld(), getPos().getX(), getPos().getY(), getPos().getZ(), stack);
                     }
                     recipes.inputsJ().forEach(v1 ->
@@ -80,7 +81,7 @@ public class TileWorkbench extends APowerTile implements IInventory, IInventoryC
 
     @Override
     public boolean isEmpty() {
-        return inventory.stream().allMatch(ItemStack::isEmpty);
+        return inventory.stream().allMatch(VersionUtil::isEmpty);
     }
 
     @Override
@@ -127,6 +128,7 @@ public class TileWorkbench extends APowerTile implements IInventory, IInventoryC
     public void markDirty() {
         super.markDirty();
         recipesList = WorkbenchRecipes.getRecipe(inventory);
+        inventory2.clear();
         for (int i = 0; i < recipesList.size(); i++) {
             setInventorySlotContents(27 + i, recipesList.get(i).output().toStack(1));
         }

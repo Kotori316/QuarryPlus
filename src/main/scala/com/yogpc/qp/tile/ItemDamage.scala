@@ -2,6 +2,7 @@ package com.yogpc.qp.tile
 
 import java.util.Objects
 
+import com.yogpc.qp.version.VersionUtil
 import net.minecraft.block.Block
 import net.minecraft.init.Blocks
 import net.minecraft.item.{Item, ItemBlock, ItemStack}
@@ -95,7 +96,7 @@ case object NG extends ItemDamage {
 
     override val toString: String = getClass.getName + " Null item @0"
 
-    override def toStack(amount: Int): ItemStack = ItemStack.EMPTY
+    override def toStack(amount: Int): ItemStack = com.yogpc.qp.version.VersionUtil.empty()
 
     override val itemStackLimit = 0
 }
@@ -104,7 +105,7 @@ object ItemDamage {
     def apply(itemStack: ItemStack): ItemDamage =
         itemStack match {
             case null => NG
-            case _ if itemStack.isEmpty => NG
+            case _ if VersionUtil.isEmpty(itemStack) => NG
             case _ if itemStack.getItem.isInstanceOf[ItemBlock] =>
                 BlockOK(itemStack, itemStack.getItem.asInstanceOf[ItemBlock].getBlock)
             case _ => OK(itemStack)
@@ -140,6 +141,6 @@ object ItemDamage {
         def toID(stack: ItemStack): ItemDamage = apply(stack)
     }
 
-    def listFromArray(array: Array[ItemStack]): List[ItemDamage] = array.filter(s => s != null && !s.isEmpty).map(apply).toList
+    def listFromArray(array: Array[ItemStack]): List[ItemDamage] = array.filter(s => s != null && VersionUtil.nonEmpty(s)).map(apply).toList
 }
 

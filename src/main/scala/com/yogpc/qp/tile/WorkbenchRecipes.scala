@@ -1,6 +1,7 @@
 package com.yogpc.qp.tile
 
 import com.yogpc.qp.Config
+import com.yogpc.qp.version.VersionUtil
 import net.minecraft.item.ItemStack
 import net.minecraftforge.items.ItemHandlerHelper
 import net.minecraftforge.oredict.OreDictionary
@@ -11,7 +12,7 @@ import scala.collection.mutable
 class WorkbenchRecipes(val output: ItemDamage, val energy: Double, in: ItemStack*) {
     val size: Int = in.size
 
-    def inputs = in.map(i => ItemHandlerHelper.copyStackWithSize(i, amount(i.getCount))).filterNot(_.isEmpty)
+    def inputs = in.map(i => ItemHandlerHelper.copyStackWithSize(i, amount(i.getCount))).filter(VersionUtil.nonEmpty)
 
     def inputsJ() = inputs.asJava
 
@@ -64,7 +65,7 @@ object WorkbenchRecipes {
     def getRecipeMap: Map[ItemDamage, WorkbenchRecipes] = recipes.toMap
 
     def getRecipeFromResult(stack: ItemStack): java.util.Optional[WorkbenchRecipes] = {
-        if (stack.isEmpty) return java.util.Optional.empty()
+        if (VersionUtil.isEmpty(stack)) return java.util.Optional.empty()
         recipes.get(ItemDamage(stack)).asJava
     }
 

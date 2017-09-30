@@ -32,6 +32,7 @@ import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.TileMessage;
 import com.yogpc.qp.packet.quarry.ModeMessage;
 import com.yogpc.qp.packet.quarry.MoveHead;
+import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -304,7 +305,7 @@ public class TileQuarry extends TileBasic {
             if (entityItem.isDead)
                 continue;
             final ItemStack drop = entityItem.getEntityItem();
-            if (drop.isEmpty())
+            if (VersionUtil.isEmpty(drop))
                 continue;
             QuarryPlus.proxy.removeEntity(entityItem);
             this.cacheItems.add(drop);

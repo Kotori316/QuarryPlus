@@ -24,7 +24,6 @@
 package com.yogpc.qp.item
 
 import java.util
-import javax.annotation.Nullable
 
 import com.yogpc.qp.tile.{IEnchantableTile, TileBasic}
 import com.yogpc.qp.{BlockData, Config, QuarryPlus, QuarryPlusI}
@@ -137,7 +136,7 @@ class ItemTool extends Item with IEnchantableItem {
         }
 
     @SideOnly(Side.CLIENT)
-    override def addInformation(stack: ItemStack, @Nullable worldIn: World, tooltip: util.List[String], flagIn: ITooltipFlag) =
+    override def addInformation(stack: ItemStack, playerIn: EntityPlayer, tooltip: util.List[String], advanced: Boolean): Unit =
         if (stack.getItemDamage == 1) {
             val c = stack.getTagCompound
             if (c != null) {
@@ -152,11 +151,11 @@ class ItemTool extends Item with IEnchantableItem {
             }
         }
 
-    override def getSubItems(tab: CreativeTabs, items: NonNullList[ItemStack]) = if (isInCreativeTab(tab)) {
-        items.add(new ItemStack(this, 1, 0))
-        items.add(getEditorStack)
-        items.add(new ItemStack(this, 1, 2))
-        if (Config.content.debug && Launch.blackboard.getOrDefault("fml.deobfuscatedEnvironment", false).asInstanceOf[Boolean]) {
+    override def getSubItems(itemIn: Item, tab: CreativeTabs, subItems: NonNullList[ItemStack]): Unit = {
+        subItems.add(new ItemStack(this, 1, 0))
+        subItems.add(getEditorStack)
+        subItems.add(new ItemStack(this, 1, 2))
+        if (Config.content.debug && Launch.blackboard.getOrDefault("fml.deobfuscatedEnvironment", java.lang.Boolean.FALSE).asInstanceOf[java.lang.Boolean]) {
             val stack = new ItemStack(Items.DIAMOND_PICKAXE)
             stack.addEnchantment(Enchantments.EFFICIENCY, 5)
             stack.addEnchantment(Enchantments.UNBREAKING, 3)
@@ -164,12 +163,12 @@ class ItemTool extends Item with IEnchantableItem {
             {
                 val stack1 = stack.copy
                 stack1.addEnchantment(Enchantments.FORTUNE, 3)
-                items.add(stack1)
+                subItems.add(stack1)
             }
             {
                 val stack1 = stack.copy
                 stack1.addEnchantment(Enchantments.SILK_TOUCH, 1)
-                items.add(stack1)
+                subItems.add(stack1)
             }
         }
     }
