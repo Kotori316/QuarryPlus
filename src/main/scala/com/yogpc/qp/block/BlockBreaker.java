@@ -43,6 +43,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
@@ -77,8 +78,10 @@ public class BlockBreaker extends ADismCBlock {
                 return;
             final EntityPlayer player = FakePlayerFactory.getMinecraft((WorldServer) worldIn);
             blockState.getBlock().onBlockHarvested(worldIn, pos1, blockState, player);
+            SoundType type = blockState.getBlock().getSoundType(state, worldIn, pos1, player);
             if (blockState.getBlock().removedByPlayer(blockState, worldIn, pos1, player, true)) {
                 blockState.getBlock().onBlockDestroyedByPlayer(worldIn, pos1, blockState);
+                worldIn.playSound(player, pos1, type.getBreakSound(), SoundCategory.BLOCKS, (type.getVolume() + 1.0F) / 2.0F, type.getPitch() * 0.8F);
             } else {
                 return;
             }
