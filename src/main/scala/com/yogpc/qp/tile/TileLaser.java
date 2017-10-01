@@ -94,7 +94,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile {
                     long excess = iLaserTarget.receiveLaserPower(joules);
                     useEnergy((joules - excess) / MjAPI.MJ, (joules - excess) / MjAPI.MJ, true);
                 });
-                pushPower(each);
+                pushPower(each / MjAPI.MJ);
             }
         }*/
 

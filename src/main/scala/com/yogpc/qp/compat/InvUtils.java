@@ -75,7 +75,6 @@ public class InvUtils {
         }
     }
 
-    @SuppressWarnings("ConstantConditions")
     public static boolean isDebugItem(EntityPlayer player, EnumHand hand) {
         ItemStack stack = player.getHeldItem(hand);
         if (nonEmpty(stack)) {
@@ -86,7 +85,7 @@ public class InvUtils {
     }
 
     @GameRegistry.ObjectHolder(QuarryPlus.Optionals.IC2_modID + ":meter")
-    public static final Item meter = null;
+    public static final Item meter = new Item();
     @GameRegistry.ObjectHolder(QuarryPlus.modID + ":quarrydebug")
-    public static final Item quarrydebug = null;
+    public static final Item quarrydebug = new Item();
 }

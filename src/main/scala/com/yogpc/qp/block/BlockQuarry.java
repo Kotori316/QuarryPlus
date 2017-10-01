@@ -16,11 +16,11 @@ package com.yogpc.qp.block;
 import java.util.ArrayList;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.BuildCraftHelper;
 import com.yogpc.qp.compat.EnchantmentHelper;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.item.ItemBlockEnchantable;
-import com.yogpc.qp.item.ItemTool;
 import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TileQuarry;
 import javax.annotation.Nullable;
@@ -88,7 +88,7 @@ public class BlockQuarry extends ADismCBlock {
         }
         if (!worldIn.isRemote) {
             TileQuarry quarry = (TileQuarry) worldIn.getTileEntity(pos);
-            if (stack.getItem() instanceof ItemTool && stack.getItemDamage() == 0) {
+            if (stack.getItem() == QuarryPlusI.itemTool && stack.getItemDamage() == 0) {
                 EnchantmentHelper.getEnchantmentsChat((IEnchantableTile) worldIn.getTileEntity(pos)).forEach(playerIn::sendMessage);
                 playerIn.sendMessage(new TextComponentTranslation("chat.currentmode",
                         new TextComponentTranslation(quarry.filler ? "chat.fillermode" : "chat.quarrymode")));

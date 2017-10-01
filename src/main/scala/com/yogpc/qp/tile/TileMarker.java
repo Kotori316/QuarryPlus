@@ -58,8 +58,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class TileMarker extends APacketTile implements /*ITileAreaProvider,*/ ITickable {
     public static final List<Link> linkList = Collections.synchronizedList(new ArrayList<>());
     public static final List<Laser> laserList = Collections.synchronizedList(new ArrayList<>());
-    public static final IndexOnlyList<Link> LINK_INDEX = new IndexOnlyList<>(linkList);
-    public static final IndexOnlyList<Laser> LASER_INDEX = new IndexOnlyList<>(laserList);
+    public static final IndexOnlyList<Link> LINK_INDEX = new IndexOnlyList<>(linkList, linkList);
+    public static final IndexOnlyList<Laser> LASER_INDEX = new IndexOnlyList<>(laserList, laserList);
 
     private static final int MAX_SIZE = 256;
     private final boolean bcLoaded;

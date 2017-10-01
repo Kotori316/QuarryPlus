@@ -16,11 +16,11 @@ package com.yogpc.qp.block;
 import java.util.ArrayList;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.BuildCraftHelper;
 import com.yogpc.qp.compat.EnchantmentHelper;
 import com.yogpc.qp.gui.GuiP_List;
 import com.yogpc.qp.item.ItemBlockPump;
-import com.yogpc.qp.item.ItemTool;
 import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TilePump;
 import net.minecraft.block.Block;
@@ -107,7 +107,7 @@ public class BlockPump extends ADismCBlock {
             ((TilePump) worldIn.getTileEntity(pos)).S_changeRange(playerIn);
             return true;
         }
-        if (stack.getItem() instanceof ItemTool) {
+        if (stack.getItem() == QuarryPlusI.itemTool) {
             if (!worldIn.isRemote && stack.getItemDamage() == 0) {
                 TilePump pump = (TilePump) worldIn.getTileEntity(pos);
                 EnchantmentHelper.getEnchantmentsChat(pump).forEach(playerIn::sendMessage);

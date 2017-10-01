@@ -1,6 +1,7 @@
 package com.yogpc.qp.tile
 
 import com.yogpc.qp.Config
+import com.yogpc.qp.item.ItemTool
 import com.yogpc.qp.version.VersionUtil
 import net.minecraft.item.ItemStack
 import net.minecraftforge.items.ItemHandlerHelper
@@ -97,7 +98,7 @@ object WorkbenchRecipes {
         addRecipe(ItemDamage(blockPump), 320000, new ItemStack(IRON_INGOT, 1200), new ItemStack(REDSTONE, 1600), new ItemStack(GLASS, 12800), new ItemStack(CACTUS, 2000), new ItemStack(GOLD_INGOT, 400), new ItemStack(NETHER_STAR, 1), new ItemStack(ENDER_PEARL, 10))
         if (false) addRecipe(ItemDamage(blockRefinery), 640000, new ItemStack(DIAMOND, 900), new ItemStack(GOLD_INGOT, 600), new ItemStack(IRON_INGOT, 600), new ItemStack(GLASS, 3200), new ItemStack(REDSTONE, 800), new ItemStack(ANVIL, 50), new ItemStack(OBSIDIAN, 600), new ItemStack(NETHER_STAR, 1), new ItemStack(ENDER_PEARL, 20))
         addRecipe(ItemDamage(itemTool, 0), 80000, new ItemStack(GOLD_INGOT, 400), new ItemStack(IRON_INGOT, 600), new ItemStack(OBSIDIAN, 100), new ItemStack(DIAMOND, 100), new ItemStack(REDSTONE, 400), new ItemStack(DYE, 100, 4), new ItemStack(ENDER_PEARL, 3))
-        addRecipe(ItemDamage(itemTool.getEditorStack), 160000, new ItemStack(IRON_INGOT, 400), new ItemStack(BOOK, 1600), new ItemStack(FEATHER, 50), new ItemStack(DYE, 400), new ItemStack(DIAMOND, 100), new ItemStack(REDSTONE, 100), new ItemStack(ENDER_PEARL, 3))
+        addRecipe(ItemDamage(ItemTool.getEditorStack), 160000, new ItemStack(IRON_INGOT, 400), new ItemStack(BOOK, 1600), new ItemStack(FEATHER, 50), new ItemStack(DYE, 400), new ItemStack(DIAMOND, 100), new ItemStack(REDSTONE, 100), new ItemStack(ENDER_PEARL, 3))
         addRecipe(ItemDamage(itemTool, 2), 320000, new ItemStack(IRON_INGOT, 1600), new ItemStack(LAVA_BUCKET, 60), new ItemStack(WATER_BUCKET, 60), new ItemStack(ENDER_PEARL, 3))
         addRecipe(ItemDamage(blockBreaker), 320000, new ItemStack(REDSTONE, 1600), new ItemStack(DIAMOND, 600), new ItemStack(GOLD_INGOT, 800), new ItemStack(IRON_INGOT, 1600), new ItemStack(ENDER_PEARL, 50))
         addRecipe(ItemDamage(blockPlacer), 320000, new ItemStack(REDSTONE, 1600), new ItemStack(DIAMOND, 600), new ItemStack(GOLD_INGOT, 1600), new ItemStack(IRON_INGOT, 800), new ItemStack(ENDER_PEARL, 50))

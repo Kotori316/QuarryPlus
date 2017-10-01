@@ -19,12 +19,12 @@ import java.util.List;
 import java.util.Random;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.ReflectionHelper;
 import com.yogpc.qp.compat.BuildCraftHelper;
 import com.yogpc.qp.compat.EnchantmentHelper;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.item.ItemBlockBreaker;
-import com.yogpc.qp.item.ItemTool;
 import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TileBasic;
 import com.yogpc.qp.tile.TileBreaker;
@@ -98,7 +98,7 @@ public class BlockBreaker extends ADismCBlock {
             for (final ItemStack is : stackList) {
                 ItemStack inserted = InvUtils.injectToNearTile(worldIn, pos, is);
                 if (VersionUtil.nonEmpty(inserted)) {
-                    InventoryHelper.spawnItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), is);
+                    InventoryHelper.spawnItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), inserted);
                 }
             }
         }
@@ -181,7 +181,7 @@ public class BlockBreaker extends ADismCBlock {
             worldIn.setTileEntity(pos, entity);
             return true;
         }
-        if (stack.getItem() instanceof ItemTool && stack.getItemDamage() == 0) {
+        if (stack.getItem() == QuarryPlusI.itemTool && stack.getItemDamage() == 0) {
             if (!worldIn.isRemote) {
                 EnchantmentHelper.getEnchantmentsChat((IEnchantableTile) worldIn.getTileEntity(pos)).forEach(playerIn::sendMessage);
             }

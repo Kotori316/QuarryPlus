@@ -41,19 +41,19 @@ public class PowerManager {
                 prop.setComment(c.getQualifiedName().substring(length) + Configuration.CATEGORY_SPLITTER + name);
                 c.put(name, prop);
             }
-            prop.setMinValue(0d).setMaxValue(2e9);
+            prop.setMinValue(0.1d).setMaxValue(2e9);
             return prop.getDouble(def);
         }
         final Property prop = new Property(name, Double.toString(def), Property.Type.DOUBLE);
         prop.setComment(c.getQualifiedName().substring(length) + Configuration.CATEGORY_SPLITTER + name);
-        prop.setMinValue(0d).setMaxValue(2e9);
+        prop.setMinValue(0.1d).setMaxValue(2e9);
         c.put(name, prop);
         return prop.getDouble(def);
     }
 
     static void loadConfiguration(final Configuration cg) throws RuntimeException {
         ConfigCategory powersetting = cg.getCategory(Configuration.CATEGORY_GENERAL + Configuration.CATEGORY_SPLITTER + "PowerSetting");
-        powersetting.setComment("Quarry PowerSetting (min = 0, Max = 2,000,000,000 = 2 billion)");
+        powersetting.setComment("Quarry PowerSetting (min = 0.1, Max = 2,000,000,000 = 2 billion)");
         final String cn = Configuration.CATEGORY_GENERAL + Configuration.CATEGORY_SPLITTER + "PowerSetting" + Configuration.CATEGORY_SPLITTER;
 
         String cn2 = cn + "Quarry" + Configuration.CATEGORY_SPLITTER;
