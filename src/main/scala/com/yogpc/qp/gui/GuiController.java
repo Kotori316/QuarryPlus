@@ -34,9 +34,8 @@ public class GuiController extends GuiScreen {
     @Override
     public void initGui() {
         super.initGui();
+        this.slot = new GuiSlotEntityList(this.mc, this.width, this.height, 30, this.height - 30, this);
         this.buttonList.add(new GuiButton(-1, this.width / 2 - 125, this.height - 26, 250, 20, I18n.format("gui.done")));
-        //TODO change?
-        this.slot = new GuiSlotEntityList(this.mc, this.width, this.height - 60, 30, this.height - 30, this);
     }
 
     @Override
@@ -51,10 +50,10 @@ public class GuiController extends GuiScreen {
 
     @Override
     public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
-        super.drawScreen(mouseX, mouseY, partialTicks);
         if (slot != null) {
             this.slot.drawScreen(mouseX, mouseY, partialTicks);
         }
+        super.drawScreen(mouseX, mouseY, partialTicks);
         drawCenteredString(this.fontRendererObj, I18n.format("yog.ctl.setting"), this.width / 2, 8, 0xFFFFFF);
     }
 
