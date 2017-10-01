@@ -42,7 +42,7 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import net.minecraftforge.oredict.OreDictionary
 
-object ItemTool {
+object ItemTool extends Item with IEnchantableItem {
     /**
       * meta=1
       */
@@ -57,9 +57,8 @@ object ItemTool {
     val statuschecker = "statuschecker"
     val NAME_key = "Bname"
     val META_key = "Bmeta"
-}
+    val item = this
 
-class ItemTool extends Item with IEnchantableItem {
     setMaxStackSize(1)
     setHasSubtypes(true)
     setMaxDamage(0)

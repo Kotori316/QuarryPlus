@@ -3,26 +3,30 @@ package com.yogpc.qp.tile;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 public class IndexOnlyList<T> {
 
     private final List<T> tList;
     private final List<TwoPredicate<T>> predicates;
     private final int defaultIndex;
+    private final Object mutex;
 
-    public IndexOnlyList(List<T> tList, int defaultIndex) {
+    public IndexOnlyList(@Nonnull List<T> tList, int defaultIndex, @Nonnull Object mutex) {
         this.tList = tList;
         this.defaultIndex = defaultIndex;
+        this.mutex = mutex;
         TwoPredicate<T> twoPredicate = Object::equals;
         predicates = new LinkedList<>();
         predicates.add(twoPredicate);
     }
 
-    public IndexOnlyList(List<T> tList) {
-        this(tList, -1);
+    public IndexOnlyList(@Nonnull List<T> tList, @Nonnull Object mutex) {
+        this(tList, -1, mutex);
     }
 
     public int indexOf(Object o) {
-        synchronized (tList) {
+        synchronized (mutex) {
             for (int i = 0; i < tList.size(); i++) {
                 T item = tList.get(i);
                 if (predicates.stream().anyMatch(tTwoPredicate -> tTwoPredicate.test(item, o))) {
@@ -34,7 +38,7 @@ public class IndexOnlyList<T> {
     }
 
     public boolean contains(Object o) {
-        synchronized (tList) {
+        synchronized (mutex) {
             for (T item : tList) {
                 if (predicates.stream().anyMatch(tTwoPredicate -> tTwoPredicate.test(item, o))) {
                     return true;

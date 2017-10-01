@@ -12,7 +12,8 @@ import net.minecraft.util.{EnumActionResult, EnumFacing, EnumHand, NonNullList}
 import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-class ItemQuarryDebug extends Item {
+object ItemQuarryDebug extends Item {
+    val item = this
     setUnlocalizedName(QuarryPlus.Names.debug)
     setRegistryName(QuarryPlus.modID, QuarryPlus.Names.debug)
     setMaxStackSize(1)

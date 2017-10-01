@@ -43,9 +43,9 @@ public class QuarryPlusI {
     public static final BlockFrame blockFrame = new BlockFrame();
     public static final BlockWorkbench workbench = new BlockWorkbench();
     public static final BlockController controller = new BlockController();
-    public static final ItemTool itemTool = new ItemTool();
+    public static final Item itemTool = ItemTool.item();
     public static final Item magicmirror = new ItemMirror();
-    public static final Item debugItem = new ItemQuarryDebug();
+    public static final Item debugItem = ItemQuarryDebug.item();
 //    public static final Item armor = new ItemArmorElectric();
 
     public static final int guiIdWorkbench = 1;
