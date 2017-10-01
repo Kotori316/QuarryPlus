@@ -54,7 +54,7 @@ object Config {
         import scala.collection.JavaConverters._
 
         val disableController = configuration.get(Configuration.CATEGORY_GENERAL, "DisableSpawnerController", false).setRequiresMcRestart(true).getBoolean
-        val spawnerBlacklist = configuration.get(Configuration.CATEGORY_GENERAL, "SpawnerControllerEntityBlackList", Array.empty[String])
+        val spawnerBlacklist = configuration.get(Configuration.CATEGORY_GENERAL, "SpawnerControllerEntityBlackList", Array("minecraft:ender_dragon", "minecraft:wither"))
           .getStringList.map(new ResourceLocation(_)).toSet.asJava
         val recipeDifficulty = configuration.get(Configuration.CATEGORY_GENERAL, "RecipeDifficulty", 2d)
         recipeDifficulty.setComment("Default is 2.0")

@@ -17,10 +17,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.BuildCraftHelper;
 import com.yogpc.qp.compat.EnchantmentHelper;
 import com.yogpc.qp.compat.InvUtils;
-import com.yogpc.qp.item.ItemTool;
 import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TileRefinery;
 import net.minecraft.block.material.Material;
@@ -125,7 +125,7 @@ public class BlockRefinery extends ADismCBlock {
             worldIn.setBlockState(pos, state.withProperty(FACING, state.getValue(FACING).rotateYCCW()));
             return true;
         }
-        if (stack.getItem() instanceof ItemTool && stack.getItemDamage() == 0) {
+        if (stack.getItem() == QuarryPlusI.itemTool && stack.getItemDamage() == 0) {
             if (!worldIn.isRemote) {
                 EnchantmentHelper.getEnchantmentsChat((IEnchantableTile) worldIn.getTileEntity(pos)).forEach(playerIn::sendMessage);
             }

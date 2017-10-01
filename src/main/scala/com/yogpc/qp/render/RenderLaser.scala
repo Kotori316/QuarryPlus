@@ -33,7 +33,7 @@ object RenderLaser extends TileEntitySpecialRenderer[TileLaser] {
         Minecraft.getMinecraft.mcProfiler.startSection("quarryplus")
         Minecraft.getMinecraft.mcProfiler.startSection("laser")
 
-        if (te.lasers != null) {
+        if (te.getAvg > 0.1 && te.lasers != null) {
             val pos = te.getPos
             buffer.setTranslation(x - pos.getX, y - pos.getY, z - pos.getZ)
             for (vector <- te.lasers) {
@@ -52,7 +52,7 @@ object RenderLaser extends TileEntitySpecialRenderer[TileLaser] {
         Minecraft.getMinecraft.mcProfiler.startSection("quarryplus")
         Minecraft.getMinecraft.mcProfiler.startSection("laser")
         if (bcLoaded) {
-            if (te.lasers != null) {
+            if (te.getAvg > 0.1 && te.lasers != null) {
                 val tessellator = Tessellator.getInstance
                 val vertexBuffer = tessellator.getBuffer
                 this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE)

@@ -16,7 +16,6 @@ package com.yogpc.qp.block;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.InvUtils;
-import com.yogpc.qp.item.ItemTool;
 import com.yogpc.qp.tile.TileMarker;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -195,7 +194,7 @@ public class BlockMarker extends Block implements ITileEntityProvider {//BlockCo
             Item item = playerIn.getHeldItem(hand).getItem();
             TileMarker marker = (TileMarker) worldIn.getTileEntity(pos);
             if (marker != null) {
-                if (item instanceof ItemTool && playerIn.getHeldItem(hand).getItemDamage() == 0) {
+                if (item == QuarryPlusI.itemTool && playerIn.getHeldItem(hand).getItemDamage() == 0) {
                     final TileMarker.Link l = marker.link;
                     if (l == null)
                         return true;

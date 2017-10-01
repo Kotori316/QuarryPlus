@@ -1,6 +1,7 @@
 package com.yogpc.qp.gui;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,7 +28,7 @@ public class GuiController extends GuiScreen {
         this.xc = x;
         this.yc = y;
         this.zc = z;
-        names = list.stream().map(ResourceLocation::toString).collect(Collectors.toList());
+        names = list.stream().sorted(Comparator.comparing(ResourceLocation::getResourceDomain)).map(ResourceLocation::toString).collect(Collectors.toList());
     }
 
     @Override
