@@ -56,9 +56,10 @@ object Config {
         val disableController = configuration.get(Configuration.CATEGORY_GENERAL, "DisableSpawnerController", false).setRequiresMcRestart(true).getBoolean
         val spawnerBlacklist = configuration.get(Configuration.CATEGORY_GENERAL, "SpawnerControllerEntityBlackList", Array.empty[String])
           .getStringList.map(new ResourceLocation(_)).toSet.asJava
-        val recipeDifficulty = configuration.get(Configuration.CATEGORY_GENERAL, "RecipeDifficulty", 2)
+        val recipeDifficulty = configuration.get(Configuration.CATEGORY_GENERAL, "RecipeDifficulty", 2d)
         recipeDifficulty.setComment("Default is 2.0")
-        WorkbenchRecipes.difficulty = recipeDifficulty.getDouble(2.0)
+        recipeDifficulty.setMinValue(1d)
+        WorkbenchRecipes.difficulty = recipeDifficulty.getDouble(2d)
 
         val placerOnlyPlaceFront = configuration.get(Configuration.CATEGORY_GENERAL, PlacerOnlyPlaceFront_key, true).getBoolean
         val noEnergy = configuration.getBoolean(NoEnergy_key, Configuration.CATEGORY_GENERAL, false, NoEnergy_key)
