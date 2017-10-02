@@ -157,6 +157,9 @@ public abstract class APowerTile extends APacketTile implements IEnergyReceiver,
     }
 
     private double getEnergy(final double a, final boolean real) {
+        if (Config.content().noEnergy()) {
+            return 0d;
+        }
         final double ret = Math.min(Math.min(this.maxGot - this.got, this.max - this.all - this.got), a);
         if (real)
             this.got += ret;

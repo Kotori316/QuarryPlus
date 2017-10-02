@@ -15,8 +15,10 @@ package com.yogpc.qp.tile;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 import cofh.api.tileentity.IInventoryConnection;
+import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.version.VersionUtil;
@@ -26,8 +28,10 @@ import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -45,7 +49,7 @@ public class TileWorkbench extends APowerTile implements IInventory, IInventoryC
         if (!getWorld().isRemote) {
             if (currentRecipe.isPresent()) {
                 WorkbenchRecipes recipes = currentRecipe.get();
-                if (recipes.energy() <= getStoredEnergy()) {
+                if (recipes.energy() <= getStoredEnergy() || Config.content().noEnergy()) {
                     useEnergy(recipes.energy(), recipes.energy(), true);
                     ItemStack stack = recipes.output().toStack(1);
                     ItemStack inserted = InvUtils.injectToNearTile(getWorld(), getPos(), stack);
@@ -70,13 +74,31 @@ public class TileWorkbench extends APowerTile implements IInventory, IInventoryC
     @Override
     public void readFromNBT(NBTTagCompound nbttc) {
         super.readFromNBT(nbttc);
-        ItemStackHelper.loadAllItems(nbttc, inventory);
+        NBTTagList list = nbttc.getTagList("Items", Constants.NBT.TAG_COMPOUND);
+        IntStream.range(0, list.tagCount()).mapToObj(list::getCompoundTagAt).forEach(nbtTagCompound -> {
+            int j = nbtTagCompound.getByte("Slot") & 255;
+            ItemStack stack = new ItemStack(nbtTagCompound);
+            stack.setCount(nbtTagCompound.getInteger("Count"));
+            inventory.set(j, stack);
+        });
         markDirty();
     }
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound nbttc) {
-        ItemStackHelper.saveAllItems(nbttc, inventory);
+        NBTTagList list = new NBTTagList();
+        for (int i = 0; i < inventory.size(); i++) {
+            ItemStack stack = inventory.get(i);
+            if (VersionUtil.nonEmpty(stack)) {
+                NBTTagCompound nbttagcompound = new NBTTagCompound();
+                nbttagcompound.setByte("Slot", (byte) i);
+                stack.writeToNBT(nbttagcompound);
+                nbttagcompound.removeTag("Count");
+                nbttagcompound.setInteger("Count", stack.getCount());
+                list.appendTag(nbttagcompound);
+            }
+        }
+        nbttc.setTag("Items", list);
         return super.writeToNBT(nbttc);
     }
 
