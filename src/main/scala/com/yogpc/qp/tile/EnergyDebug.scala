@@ -24,11 +24,11 @@ class EnergyDebug(tile: TileEntity) {
                 if (allUsed.nonEmpty) {
                     val usedSum = allUsed.sum
                     QuarryPlus.LOGGER.info(
-                        s"$tilename used $usedSum in $usedTicks ticks (${usedSum / usedTicks} MJ/t), got $gotSum in 100 ticks (${gotSum / 100} MJ/t)"
+                        s"$tilename used $usedSum MJ in $usedTicks ticks (${usedSum / usedTicks} MJ/t), got $gotSum in 100 ticks (${gotSum / 100} MJ/t)"
                     )
                 } else {
                     QuarryPlus.LOGGER.info(
-                        s"$tilename used 0 RF, got $gotSum in 100 ticks (${gotSum / 100} MJ/t)"
+                        s"$tilename used 0 MJ, got $gotSum in 100 ticks (${gotSum / 100} MJ/t)"
                     )
                 }
                 usedTicks = 0

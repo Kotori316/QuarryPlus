@@ -2,13 +2,14 @@ package com.yogpc.qp.tile;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.BiPredicate;
 
 import javax.annotation.Nonnull;
 
 public class IndexOnlyList<T> {
 
     private final List<T> tList;
-    private final List<TwoPredicate<T>> predicates;
+    private final List<BiPredicate<T, Object>> predicates;
     private final int defaultIndex;
     private final Object mutex;
 
@@ -16,9 +17,9 @@ public class IndexOnlyList<T> {
         this.tList = tList;
         this.defaultIndex = defaultIndex;
         this.mutex = mutex;
-        TwoPredicate<T> twoPredicate = Object::equals;
+        BiPredicate<T, Object> equals = Object::equals;
         predicates = new LinkedList<>();
-        predicates.add(twoPredicate);
+        predicates.add(equals);
     }
 
     public IndexOnlyList(@Nonnull List<T> tList, @Nonnull Object mutex) {
@@ -29,7 +30,7 @@ public class IndexOnlyList<T> {
         synchronized (mutex) {
             for (int i = 0; i < tList.size(); i++) {
                 T item = tList.get(i);
-                if (predicates.stream().anyMatch(tTwoPredicate -> tTwoPredicate.test(item, o))) {
+                if (predicates.stream().anyMatch(biPredicate -> biPredicate.test(item, o))) {
                     return i;
                 }
             }
@@ -40,7 +41,7 @@ public class IndexOnlyList<T> {
     public boolean contains(Object o) {
         synchronized (mutex) {
             for (T item : tList) {
-                if (predicates.stream().anyMatch(tTwoPredicate -> tTwoPredicate.test(item, o))) {
+                if (predicates.stream().anyMatch(biPredicate -> biPredicate.test(item, o))) {
                     return true;
                 }
             }
@@ -48,12 +49,7 @@ public class IndexOnlyList<T> {
         }
     }
 
-    public void addPredicate(TwoPredicate<T> predicate) {
+    public void addPredicate(BiPredicate<T, Object> predicate) {
         predicates.add(predicate);
-    }
-
-    @FunctionalInterface
-    public interface TwoPredicate<T> {
-        boolean test(T t, Object r);
     }
 }

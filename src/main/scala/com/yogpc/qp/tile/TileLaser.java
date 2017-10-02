@@ -24,13 +24,11 @@ import com.yogpc.qp.PowerManager;
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -105,15 +103,16 @@ public class TileLaser extends APowerTile implements IEnchantableTile {
 
     private void updateLaser() {
         if (!targets.isEmpty()) {
-            lasers = new Vec3d[targets.size()];
+            Vec3d[] vec3ds = new Vec3d[targets.size()];
             for (int i = 0; i < targets.size(); i++) {
                 BlockPos targetPos = targets.get(i);
-                lasers[i] = new Vec3d(targetPos).addVector(
+                vec3ds[i] = new Vec3d(targetPos).addVector(
                         (5 + getWorld().rand.nextInt(6) + 0.5) / 16D,
                         9 / 16D,
                         (5 + getWorld().rand.nextInt(6) + 0.5) / 16D
                 );
             }
+            lasers = vec3ds;
         } else {
             lasers = new Vec3d[0];
         }
@@ -225,13 +224,6 @@ public class TileLaser extends APowerTile implements IEnchantableTile {
         this.silktouch = nbttc.getBoolean("silktouch");
         PowerManager.configureLaser(this, this.efficiency, this.unbreaking);
         this.pa = nbttc.getDouble("pa");
-        final NBTTagList nbttl = nbttc.getTagList("lasers", Constants.NBT.TAG_COMPOUND);
-        Vec3d[] vec3ds = new Vec3d[nbttl.tagCount()];
-        for (int i = 0; i < nbttl.tagCount(); i++) {
-            final NBTTagCompound lc = nbttl.getCompoundTagAt(i);
-            vec3ds[i] = new Vec3d(lc.getDouble("x"), lc.getDouble("y"), lc.getDouble("z"));
-        }
-        this.lasers = vec3ds;
     }
 
     @Override
@@ -241,17 +233,6 @@ public class TileLaser extends APowerTile implements IEnchantableTile {
         nbttc.setByte("unbreaking", this.unbreaking);
         nbttc.setBoolean("silktouch", this.silktouch);
         nbttc.setDouble("pa", this.pa);
-        final NBTTagList nbttl = new NBTTagList();
-        if (this.lasers != null)
-            for (final Vec3d l : this.lasers)
-                if (l != null) {
-                    final NBTTagCompound lc = new NBTTagCompound();
-                    lc.setDouble("x", l.x);
-                    lc.setDouble("y", l.y);
-                    lc.setDouble("z", l.z);
-                    nbttl.appendTag(lc);
-                }
-        nbttc.setTag("lasers", nbttl);
         return super.writeToNBT(nbttc);
     }
 
@@ -322,7 +303,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile {
         double maxX = getPos().getX() + 1;
         double maxY = getPos().getY() + 1;
         double maxZ = getPos().getZ() + 1;
-        if (this.lasers != null)
+        /*if (this.lasers != null) //neccesary?
             for (final Vec3d p : this.lasers) {
                 if (p == null)
                     continue;
@@ -342,7 +323,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile {
                     minZ = zn;
                 if (zx > maxZ)
                     maxZ = zx;
-            }
+            }*/
         return new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
     }
 }

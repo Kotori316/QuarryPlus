@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.BiPredicate;
 import java.util.stream.Stream;
 
 import com.google.common.collect.Sets;
@@ -578,14 +579,14 @@ public class TileMarker extends APacketTile implements /*ITileAreaProvider,*/ IT
     }
 
     static {
-        IndexOnlyList.TwoPredicate<Link> p1 = (link1, r) -> {
+        BiPredicate<Link, Object> p1 = (link1, r) -> {
             if (r instanceof BlockIndex) {
                 BlockIndex bi = ((BlockIndex) r);
                 return (bi.x == link1.xn || bi.x == link1.xx) && (bi.y == link1.yn || bi.y == link1.yx) && (bi.z == link1.zn || bi.z == link1.zx) && link1.w == bi.w;
             }
             return false;
         };
-        IndexOnlyList.TwoPredicate<Link> p2 = (link1, r) -> {
+        BiPredicate<Link, Object> p2 = (link1, r) -> {
             if (r instanceof TileEntity) {
                 final TileEntity te = (TileEntity) r;
                 return (te.getPos().equals(link1.minPos()) || te.getPos().equals(link1.maxPos())) && link1.w == te.getWorld();
@@ -593,14 +594,14 @@ public class TileMarker extends APacketTile implements /*ITileAreaProvider,*/ IT
             return false;
         };
 
-        IndexOnlyList.TwoPredicate<Laser> p3 = (laser1, r) -> {
+        BiPredicate<Laser, Object> p3 = (laser1, r) -> {
             if (r instanceof BlockIndex) {
                 BlockIndex bi = ((BlockIndex) r);
                 return bi.x == laser1.x && bi.y == laser1.y && bi.z == laser1.z && bi.w == laser1.w;
             }
             return false;
         };
-        IndexOnlyList.TwoPredicate<Laser> p4 = (laser1, r) -> {
+        BiPredicate<Laser, Object> p4 = (laser1, r) -> {
             if (r instanceof TileEntity) {
                 final TileEntity te = (TileEntity) r;
                 return te.getPos().equals(new BlockPos(laser1.x, laser1.y, laser1.z)) && laser1.w == te.getWorld();
