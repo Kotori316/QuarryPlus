@@ -34,6 +34,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.ForgeChunkManager;
@@ -72,6 +73,7 @@ public class QuarryPlus {
     public static final String modID = "quarryplus";
     private static final String prefix = modID + ":";
     public static final Logger LOGGER = LogManager.getLogger(Mod_Name);
+    public boolean inDev;
 
     static {
         if (!Optionals.clientProxy.equals(ProxyClient.class.getName())) {
@@ -113,6 +115,7 @@ public class QuarryPlus {
         if (event.getSide() == Side.CLIENT)
             MinecraftForge.EVENT_BUS.register(Sprites.instance());
         NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, new GuiHandler());
+        inDev = ((Boolean) Launch.blackboard.getOrDefault("fml.deobfuscatedEnvironment", Boolean.FALSE));
     }
 
     @Mod.EventHandler
