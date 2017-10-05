@@ -23,7 +23,7 @@ object ItemQuarryDebug extends Item {
         if (worldIn.isRemote) {
             EnumActionResult.PASS
         } else {
-            if (Config.content.debug) {
+            if (Config.content.debug || QuarryPlus.getInstance().inDev) {
                 val tile = worldIn.getTileEntity(pos)
                 tile match {
                     case laser: TileLaser =>
@@ -75,6 +75,7 @@ object ItemQuarryDebug extends Item {
                             player.sendStatusMessage(tileposToString(tile), false)
                             player.sendStatusMessage(energyToString(workbench), false)
                             player.sendStatusMessage(new TextComponentString(workbench.currentRecipe.scalaMap(_.toString).getOrElse("No recipe.")), false)
+                            player.sendStatusMessage(new TextComponentString("Work mode : " + (if (workbench.workcontinue) "Continue" else "Only once")), false)
                         }
                         EnumActionResult.SUCCESS
                     case _ => super.onItemUseFirst(player, worldIn, pos, side, hitX, hitY, hitZ, hand)

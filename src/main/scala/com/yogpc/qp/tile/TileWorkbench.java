@@ -38,6 +38,7 @@ public class TileWorkbench extends APowerTile implements IInventory {
     public List<WorkbenchRecipes> recipesList = Collections.emptyList();
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     public Optional<WorkbenchRecipes> currentRecipe = Optional.empty();
+    public boolean workcontinue;
 
     @Override
     public void update() {
@@ -55,8 +56,8 @@ public class TileWorkbench extends APowerTile implements IInventory {
                     recipes.inputsJ().forEach(v1 ->
                             inventory.stream().filter(v1::isItemEqual).findFirst().ifPresent(stack1 -> stack1.shrink(v1.getCount()))
                     );
-                    setCurrentRecipe(-1);
                     markDirty();
+                    setCurrentRecipe(workcontinue ? getRecipeIndex() : -1);
                 }
             }
         }
@@ -119,7 +120,7 @@ public class TileWorkbench extends APowerTile implements IInventory {
     @Override
     public ItemStack decrStackSize(int index, int count) {
         if (27 <= index && index < 45)
-            return ItemStackHelper.getAndSplit(inventory, index - 27, count);
+            return ItemStackHelper.getAndSplit(inventory2, index - 27, count);
         return ItemStackHelper.getAndSplit(inventory, index, count);
     }
 
@@ -218,6 +219,6 @@ public class TileWorkbench extends APowerTile implements IInventory {
     }
 
     public int getRecipeIndex() {
-        return currentRecipe.map(workbenchRecipes -> recipesList.indexOf(workbenchRecipes)).orElse(-1);
+        return currentRecipe.map(recipesList::indexOf).orElse(-1);
     }
 }

@@ -35,7 +35,6 @@ import net.minecraft.enchantment.{Enchantment, EnchantmentHelper}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.{Enchantments, Items}
 import net.minecraft.item.{Item, ItemStack}
-import net.minecraft.launchwrapper.Launch
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{EnumActionResult, EnumFacing, EnumHand, NonNullList}
@@ -156,7 +155,7 @@ object ItemTool extends Item with IEnchantableItem {
         items.add(new ItemStack(this, 1, 0))
         items.add(getEditorStack)
         items.add(new ItemStack(this, 1, 2))
-        if (Config.content.debug && Launch.blackboard.getOrDefault("fml.deobfuscatedEnvironment", java.lang.Boolean.FALSE).asInstanceOf[java.lang.Boolean]) {
+        if (Config.content.debug && QuarryPlus.getInstance().inDev) {
             val stack = new ItemStack(Items.DIAMOND_PICKAXE)
             stack.addEnchantment(Enchantments.EFFICIENCY, 5)
             stack.addEnchantment(Enchantments.UNBREAKING, 3)

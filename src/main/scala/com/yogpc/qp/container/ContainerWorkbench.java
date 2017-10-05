@@ -85,6 +85,7 @@ public class ContainerWorkbench extends Container {
         super.addListener(listener);
         VersionUtil.sendWindowProperty(listener, this, 0, tile.getRecipeIndex());
         VersionUtil.sendWindowProperty(listener, this, 1, (int) tile.getStoredEnergy());
+        VersionUtil.sendWindowProperty(listener, this, 2, tile.workcontinue ? 1 : 0);
     }
 
     @Override
@@ -98,6 +99,9 @@ public class ContainerWorkbench extends Container {
             case 1:
                 tile.setStoredEnergy(data);
                 break;
+            case 2:
+                tile.workcontinue = data == 1;
+                break;
         }
     }
 
@@ -107,6 +111,7 @@ public class ContainerWorkbench extends Container {
         for (IContainerListener listener : listeners) {
             VersionUtil.sendWindowProperty(listener, this, 0, tile.getRecipeIndex());
             VersionUtil.sendWindowProperty(listener, this, 1, (int) tile.getStoredEnergy());
+            VersionUtil.sendWindowProperty(listener, this, 2, tile.workcontinue ? 1 : 0);
         }
     }
 
@@ -122,7 +127,15 @@ public class ContainerWorkbench extends Container {
         if (27 <= slotId && slotId < 45 && clickTypeIn == ClickType.PICKUP) {
             int index = slotId - 27;
             if (index < tile.recipesList.size()) {
-                tile.setCurrentRecipe(index);
+                if (dragType == 0) {
+                    if (index == tile.getRecipeIndex()) {
+                        tile.workcontinue = !tile.workcontinue;
+                    } else {
+                        tile.setCurrentRecipe(index);
+                    }
+                } else if (dragType == 1) {
+                    tile.setCurrentRecipe(-1);
+                }
             }
             return empty();
         } else if (0 <= slotId && slotId < 27 && clickTypeIn == ClickType.PICKUP) {
