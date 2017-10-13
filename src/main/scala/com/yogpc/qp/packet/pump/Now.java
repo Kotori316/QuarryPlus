@@ -2,9 +2,9 @@ package com.yogpc.qp.packet.pump;
 
 import java.io.IOException;
 
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.tile.TilePump;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -54,7 +54,7 @@ public class Now implements IMessage {
     @Override
     @SuppressWarnings("MethodCallSideOnly")
     public IMessage onRecieve(IMessage message, MessageContext ctx) {
-        TileEntity entity = Minecraft.getMinecraft().world.getTileEntity(blockPos);
+        TileEntity entity = QuarryPlus.proxy.getPacketWorld(ctx.netHandler).getTileEntity(blockPos);
         if (TilePump.class.isInstance(entity)) {
             TilePump pump = (TilePump) entity;
             pump.setConnectTo(facing);

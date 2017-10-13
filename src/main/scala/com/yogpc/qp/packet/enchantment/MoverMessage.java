@@ -2,6 +2,7 @@ package com.yogpc.qp.packet.enchantment;
 
 import java.io.IOException;
 
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.container.ContainerMover;
 import com.yogpc.qp.container.ContainerMover.D;
 import com.yogpc.qp.packet.IMessage;
@@ -40,7 +41,7 @@ public class MoverMessage {
 
         @Override
         public IMessage onRecieve(IMessage message, MessageContext ctx) {
-            Container container = ctx.getServerHandler().player.openContainer;
+            Container container = QuarryPlus.proxy.getPacketPlayer(ctx.netHandler).openContainer;
             if (container.windowId == id) {
                 ((ContainerMover) container).moveEnchant();
             }
@@ -79,7 +80,7 @@ public class MoverMessage {
 
         @Override
         public IMessage onRecieve(IMessage message, MessageContext ctx) {
-            Container container = ctx.getServerHandler().player.openContainer;
+            Container container = QuarryPlus.proxy.getPacketPlayer(ctx.netHandler).openContainer;
             if (container.windowId == id) {
                 ((ContainerMover) container).setAvail(d);
             }

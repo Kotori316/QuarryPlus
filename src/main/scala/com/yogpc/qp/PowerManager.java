@@ -213,13 +213,18 @@ public class PowerManager {
         return pw * (U * MoveHead_CU + 1) / MoveHead_BP + 0.1;
     }
 
-    public static double useEnergyLaser(final APowerTile pp, final byte U, final byte F, final boolean S, final byte E, boolean simulate) {
+    public static double simurateEnergyLaser(final APowerTile pp, final byte U, final byte F, final boolean S, final byte E) {
         double pw = Laser_BP * Math.pow(Laser_CF, F) * Math.pow(Laser_CE, E) / (U * Laser_CU + 1);
         if (S)
             pw *= Laser_CS;
-        pw = pp.useEnergy(0, pw, !simulate);
+        pw = pp.useEnergy(0, pw, false);
         if (S)
             pw = pw / Laser_CS;
         return pw * (U * Laser_CU + 1) / Math.pow(Laser_CF, F);
+    }
+
+    public static void useEnergyLaser(final APowerTile pp, final double power, final byte U, final byte F, final boolean S, boolean simulate) {
+        double pw = power * Math.pow(Laser_CF, F) * (S ? Laser_CS : 1) / (U * Laser_CU + 1);
+        pp.useEnergy(pw, pw, !simulate);
     }
 }

@@ -88,7 +88,6 @@ object WorkbenchRecipes {
         import net.minecraft.init.Items._
         addRecipe(ItemDamage(magicmirror, 1), 32000, new ItemStack(ENDER_EYE, 400), new ItemStack(magicmirror, 50))
         addRecipe(ItemDamage(magicmirror, 2), 32000, new ItemStack(ENDER_EYE, 400), new ItemStack(magicmirror, 50), new ItemStack(OBSIDIAN, 100), new ItemStack(DIRT, 200), new ItemStack(PLANKS, 200))
-        //        addRecipe(ItemDamage(armor), 128000, new ItemStack(IRON_INGOT, 1600), new ItemStack(COAL, 3200), new ItemStack(GOLD_INGOT, 400), new ItemStack(DIAMOND, 360), new ItemStack(NETHER_STAR, 1), new ItemStack(ENDER_EYE, 25), new ItemStack(GLOWSTONE_DUST, 100), new ItemStack(DYE, 100, 10))
         if (!Config.content.disableController)
             addRecipe(ItemDamage(controller), 1000000, new ItemStack(NETHER_STAR, 50), new ItemStack(ROTTEN_FLESH, 1000), new ItemStack(ARROW, 1000), new ItemStack(BONE, 1000), new ItemStack(GUNPOWDER, 1000), new ItemStack(IRON_INGOT, 2000), new ItemStack(GOLD_INGOT, 1000), new ItemStack(GHAST_TEAR, 250), new ItemStack(MAGMA_CREAM, 500), new ItemStack(BLAZE_ROD, 700), new ItemStack(CARROT, 50), new ItemStack(POTATO, 50))
         addRecipe(ItemDamage(blockMarker), 20000, new ItemStack(REDSTONE, 300), new ItemStack(DYE, 300, 4), new ItemStack(GOLD_INGOT, 175), new ItemStack(IRON_INGOT, 150), new ItemStack(GLOWSTONE_DUST, 50), new ItemStack(ENDER_PEARL, 10))

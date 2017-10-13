@@ -177,16 +177,35 @@ public class TileWorkbench extends APowerTile implements IInventory {
 
     @Override
     public int getField(int id) {
+        switch (id) {
+            case 0:
+                return getRecipeIndex();
+            case 1:
+                return (int) getStoredEnergy();
+            case 2:
+                return workcontinue ? 1 : 0;
+        }
         return 0;
     }
 
     @Override
     public void setField(int id, int value) {
+        switch (id) {
+            case 0:
+                setCurrentRecipe(value);
+                break;
+            case 1:
+                setStoredEnergy(value);
+                break;
+            case 2:
+                workcontinue = value == 1;
+                break;
+        }
     }
 
     @Override
     public int getFieldCount() {
-        return 0;
+        return 3;
     }
 
     @Override

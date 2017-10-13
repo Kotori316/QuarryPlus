@@ -3,9 +3,9 @@ package com.yogpc.qp.packet.pump;
 import java.io.IOException;
 import java.util.LinkedList;
 
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.tile.TilePump;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -66,7 +66,7 @@ public class Mappings {
         @Override
         @SideOnly(Side.CLIENT)
         public IMessage onRecieve(IMessage message, MessageContext ctx) {
-            TilePump pumpC = (TilePump) Minecraft.getMinecraft().world.getTileEntity(pos);
+            TilePump pumpC = (TilePump) QuarryPlus.proxy.getPacketWorld(ctx.netHandler).getTileEntity(pos);
             assert pumpC != null;
             pumpC.mapping.clear();
             for (EnumFacing facing : EnumFacing.VALUES) {
@@ -112,7 +112,7 @@ public class Mappings {
 
         @Override
         public IMessage onRecieve(IMessage message, MessageContext ctx) {
-            World world = ctx.getServerHandler().player.world;
+            World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
             if (world.provider.getDimension() == dim) {
                 TilePump pump = (TilePump) world.getTileEntity(pos);
                 assert pump != null;
@@ -132,25 +132,25 @@ public class Mappings {
                     list.remove(fluidName);
                     break;
                 case Up:
-                    if (i > -1) {
+                    if (i > 0) {
                         list.remove(i);
                         list.add(i - 1, fluidName);
                     }
                     break;
                 case Top:
-                    if (i > -1) {
+                    if (i > 0) {
                         list.remove(i);
                         list.addFirst(fluidName);
                     }
                     break;
                 case Down:
-                    if (i > -1) {
+                    if (i > 0) {
                         list.remove(i);
                         list.add(i + 1, fluidName);
                     }
                     break;
                 case Bottom:
-                    if (i > -1) {
+                    if (i > 0) {
                         list.remove(i);
                         list.addLast(fluidName);
                     }
@@ -201,7 +201,7 @@ public class Mappings {
         @Override
         @SideOnly(Side.CLIENT)
         public IMessage onRecieve(IMessage message, MessageContext ctx) {
-            World world = ctx.getServerHandler().player.world;
+            World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
             if (world.provider.getDimension() == dim) {
                 TilePump pump = (TilePump) world.getTileEntity(pos);
                 assert pump != null;

@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.yogpc.qp.BlockData;
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.container.ContainerEnchList;
 import com.yogpc.qp.packet.IMessage;
-import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.Container;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -58,7 +58,7 @@ public class DiffMessage implements IMessage {
     @Override
     @SideOnly(Side.CLIENT)
     public IMessage onRecieve(IMessage message, MessageContext ctx) {
-        Container container = Minecraft.getMinecraft().player.openContainer;
+        Container container = QuarryPlus.proxy.getPacketPlayer(ctx.netHandler).openContainer;
         if (containerId == container.windowId && container instanceof ContainerEnchList) {
             ContainerEnchList enchList = (ContainerEnchList) container;
             enchList.getTile().fortuneList.clear();
