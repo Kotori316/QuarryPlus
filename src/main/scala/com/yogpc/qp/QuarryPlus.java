@@ -16,6 +16,7 @@ package com.yogpc.qp;
 import com.yogpc.qp.gui.GuiFactory;
 import com.yogpc.qp.gui.GuiHandler;
 import com.yogpc.qp.item.ItemTool;
+import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.render.Sprites;
 import com.yogpc.qp.tile.TileBreaker;
 import com.yogpc.qp.tile.TileLaser;
@@ -120,8 +121,7 @@ public class QuarryPlus {
 
     @Mod.EventHandler
     public void init(final FMLInitializationEvent event) {
-        com.yogpc.qp.packet.PacketHandler.init();
-        PacketHandler.channels = NetworkRegistry.INSTANCE.newChannel(Mod_Name, new YogpstopPacketCodec(), new PacketHandler());
+        PacketHandler.init();
         GameRegistry.addRecipe(new ItemStack(workbench, 1),
                 "III", "GDG", "RRR",
                 'D', Blocks.DIAMOND_BLOCK, 'R', Items.REDSTONE,
@@ -171,7 +171,6 @@ public class QuarryPlus {
         event.getRegistry().register(blockLaser.itemBlock());
         event.getRegistry().register(blockRefinery.itemBlock());
         event.getRegistry().register(itemTool);
-//         event.getRegistry().register(       armor);
         event.getRegistry().register(magicmirror);
         event.getRegistry().register(debugItem);
     }

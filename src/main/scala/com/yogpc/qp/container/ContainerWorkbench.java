@@ -83,36 +83,20 @@ public class ContainerWorkbench extends Container {
     @Override
     public void addListener(IContainerListener listener) {
         super.addListener(listener);
-        VersionUtil.sendWindowProperty(listener, this, 0, tile.getRecipeIndex());
-        VersionUtil.sendWindowProperty(listener, this, 1, (int) tile.getStoredEnergy());
-        VersionUtil.sendWindowProperty(listener, this, 2, tile.workcontinue ? 1 : 0);
+        listener.sendAllWindowProperties(this, tile);
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public void updateProgressBar(int id, int data) {
         super.updateProgressBar(id, data);
-        switch (id) {
-            case 0:
-                tile.setCurrentRecipe(data);
-                break;
-            case 1:
-                tile.setStoredEnergy(data);
-                break;
-            case 2:
-                tile.workcontinue = data == 1;
-                break;
-        }
+        tile.setField(id, data);
     }
 
     @Override
     public void detectAndSendChanges() {
         super.detectAndSendChanges();
-        for (IContainerListener listener : listeners) {
-            VersionUtil.sendWindowProperty(listener, this, 0, tile.getRecipeIndex());
-            VersionUtil.sendWindowProperty(listener, this, 1, (int) tile.getStoredEnergy());
-            VersionUtil.sendWindowProperty(listener, this, 2, tile.workcontinue ? 1 : 0);
-        }
+        listeners.forEach(listener -> listener.sendAllWindowProperties(this, tile));
     }
 
     /**

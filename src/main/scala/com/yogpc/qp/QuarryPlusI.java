@@ -46,7 +46,6 @@ public class QuarryPlusI {
     public static final Item itemTool = ItemTool.item();
     public static final Item magicmirror = new ItemMirror();
     public static final Item debugItem = ItemQuarryDebug.item();
-//    public static final Item armor = new ItemArmorElectric();
 
     public static final int guiIdWorkbench = 1;
     public static final int guiIdMover = 2;

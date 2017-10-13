@@ -49,7 +49,7 @@ public class LaserMessage implements IMessage {
 
     @Override
     public IMessage onRecieve(IMessage message, MessageContext ctx) {
-        World world = QuarryPlus.proxy.getClientWorld();
+        World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
         TileLaser laser = (TileLaser) world.getTileEntity(pos);
         if (laser != null) {
             laser.lasers = vec3ds;

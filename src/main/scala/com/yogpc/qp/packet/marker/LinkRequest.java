@@ -2,6 +2,7 @@ package com.yogpc.qp.packet.marker;
 
 import java.io.IOException;
 
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.tile.TileMarker;
 import net.minecraft.network.PacketBuffer;
@@ -36,7 +37,7 @@ public class LinkRequest implements IMessage {
     //TODO not work...
     @Override
     public LinkReply onRecieve(IMessage message, MessageContext ctx) {
-        World world = ctx.getServerHandler().playerEntity.world;
+        World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
         if (world.provider.getDimension() == dim) {
             TileMarker marker = (TileMarker) world.getTileEntity(pos);
             if (marker != null) {

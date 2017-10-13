@@ -12,28 +12,28 @@
  */
 package com.yogpc.qp.gui
 
-import com.yogpc.qp.BlockData
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.{GuiScreen, GuiSlot}
+import net.minecraft.client.gui.GuiSlot
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 @SideOnly(Side.CLIENT)
-class GuiSlotEnchList(mc: Minecraft, w: Int, h: Int, t: Int, b: Int, val parent: GuiScreen, val target: java.util.List[BlockData]) extends GuiSlot(mc, w, h, t, b, 18) {
-    var currentore = 0
+class GuiSlotEntityList(mc: Minecraft, width: Int, height: Int, topIn: Int, bottomIn: Int, gc: GuiController) extends GuiSlot(mc, width, height, topIn, bottomIn, 18) {
+    var selected = 0
 
-    override protected def getSize: Int = this.target.size
+    override protected def getSize: Int = this.gc.list.size
 
-    override protected def elementClicked(var1: Int, var2: Boolean, var3: Int, var4: Int): Unit = this.currentore = var1
+    override protected def elementClicked(slotIndex: Int, isDoubleClick: Boolean, mouseX: Int, mouseY: Int): Unit = this.selected = slotIndex
 
-    override protected def getContentHeight: Int = this.getSize * 18
-
-    override protected def isSelected(var1: Int): Boolean = var1 == this.currentore
+    override protected def isSelected(slotIndex: Int): Boolean = this.selected == slotIndex
 
     override protected def drawBackground(): Unit = ()
 
+    override protected def getContentHeight: Int = this.getSize * 18
+
     override protected def drawSlot(entryID: Int, insideLeft: Int, yPos: Int, insideSlotHeight: Int, mouseXIn: Int, mouseYIn: Int): Unit = {
-        val name = this.target.get(entryID).getLocalizedName
+        val name = this.gc.names.get(entryID)
         Minecraft.getMinecraft.fontRendererObj.drawStringWithShadow(name,
-            (this.parent.width * 3 / 5 - Minecraft.getMinecraft.fontRendererObj.getStringWidth(name)) / 2, yPos + 2, 0xFFFFFF)
+            (this.mc.currentScreen.width - Minecraft.getMinecraft.fontRendererObj.getStringWidth(name)) / 2,
+            yPos + 2, 0xFFFFFF)
     }
 }

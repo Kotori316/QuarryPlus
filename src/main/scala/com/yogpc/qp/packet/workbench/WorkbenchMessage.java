@@ -2,6 +2,7 @@ package com.yogpc.qp.packet.workbench;
 
 import java.io.IOException;
 
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.tile.TileWorkbench;
 import net.minecraft.network.PacketBuffer;
@@ -40,7 +41,7 @@ public class WorkbenchMessage implements IMessage {
 
     @Override
     public IMessage onRecieve(IMessage message, MessageContext ctx) {
-        World world = ctx.getServerHandler().playerEntity.getEntityWorld();
+        World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
         if (world.provider.getDimension() == dim) {
             TileEntity entity = world.getTileEntity(pos);
             if (TileWorkbench.class.isInstance(entity)) {

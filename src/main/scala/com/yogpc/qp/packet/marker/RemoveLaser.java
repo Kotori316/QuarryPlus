@@ -2,9 +2,9 @@ package com.yogpc.qp.packet.marker;
 
 import java.io.IOException;
 
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.tile.TileMarker;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -40,7 +40,7 @@ public class RemoveLaser implements IMessage {
     @Override
     @SideOnly(Side.CLIENT)
     public IMessage onRecieve(IMessage message, MessageContext ctx) {
-        World world = Minecraft.getMinecraft().world;
+        World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
         if (world.provider.getDimension() == dimensionId) {
             int i = TileMarker.LASER_INDEX.indexOf(new TileMarker.BlockIndex(world, pos.getX(), pos.getY(), pos.getZ()));
             if (i >= 0) {

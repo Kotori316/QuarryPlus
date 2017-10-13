@@ -2,9 +2,9 @@ package com.yogpc.qp.packet.marker;
 
 import java.io.IOException;
 
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.tile.TileMarker;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -42,7 +42,7 @@ public class LinkReply implements IMessage {
     @Override
     @SideOnly(Side.CLIENT)
     public IMessage onRecieve(IMessage message, MessageContext ctx) {
-        TileMarker marker = (TileMarker) Minecraft.getMinecraft().world.getTileEntity(pos);
+        TileMarker marker = (TileMarker) QuarryPlus.proxy.getPacketWorld(ctx.netHandler).getTileEntity(pos);
         assert marker != null;
         if (marker.link != null) {
             marker.link.removeConnection(false);

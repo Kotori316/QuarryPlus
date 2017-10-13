@@ -2,6 +2,7 @@ package com.yogpc.qp.packet.controller;
 
 import java.io.IOException;
 
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.block.BlockController;
 import com.yogpc.qp.packet.IMessage;
 import net.minecraft.network.PacketBuffer;
@@ -41,7 +42,7 @@ public class SetEntity implements IMessage {
 
     @Override
     public IMessage onRecieve(IMessage message, MessageContext ctx) {
-        World world = ctx.getServerHandler().playerEntity.world;
+        World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
         if (world.provider.getDimension() == dim) {
             BlockController.setSpawnerEntity(world, pos, location);
         }
