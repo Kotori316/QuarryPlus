@@ -59,7 +59,7 @@ public class BlockMarker extends Block implements ITileEntityProvider {//BlockCo
         setRegistryName(QuarryPlus.modID, QuarryPlus.Names.marker);
         setCreativeTab(QuarryPlusI.ct);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.UP));
-        this.isBlockContainer = true;
+        this.hasTileEntity = true;
         itemBlock = new ItemBlock(this);
         itemBlock.setRegistryName(QuarryPlus.modID, QuarryPlus.Names.marker);
     }
