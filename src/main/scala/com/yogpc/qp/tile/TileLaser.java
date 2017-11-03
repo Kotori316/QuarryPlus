@@ -27,7 +27,7 @@ import com.yogpc.qp.PowerManager;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.block.BlockLaser;
 import com.yogpc.qp.packet.PacketHandler;
-import com.yogpc.qp.packet.TileMessage;
+import com.yogpc.qp.packet.laser.LaserAverageMessage;
 import com.yogpc.qp.packet.laser.LaserMessage;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -59,7 +59,6 @@ public class TileLaser extends APowerTile implements IEnchantableTile {
     protected byte fortune;
     protected byte efficiency;
     protected boolean silktouch;
-    private double pa;
 
     public TileLaser() {
         PowerManager.configureLaser(this, this.efficiency, this.unbreaking);
@@ -103,7 +102,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile {
         }
 
         if (ticks % 20 == 0 /*&& !getWorld().isRemote*/) {
-            PacketHandler.sendToAround(TileMessage.create(this), getWorld(), getPos());
+            PacketHandler.sendToAround(LaserAverageMessage.create(this), getWorld(), getPos());
         }
     }
 
@@ -185,6 +184,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile {
     }
 
     private final double[] tp = new double[100];
+    public double pa;
     private int pi = 0;
 
     private void pushPower(final double received) {
@@ -229,7 +229,6 @@ public class TileLaser extends APowerTile implements IEnchantableTile {
         this.unbreaking = nbttc.getByte("unbreaking");
         this.silktouch = nbttc.getBoolean("silktouch");
         PowerManager.configureLaser(this, this.efficiency, this.unbreaking);
-        this.pa = nbttc.getDouble("pa");
     }
 
     @Override
@@ -238,7 +237,6 @@ public class TileLaser extends APowerTile implements IEnchantableTile {
         nbttc.setByte("efficiency", this.efficiency);
         nbttc.setByte("unbreaking", this.unbreaking);
         nbttc.setBoolean("silktouch", this.silktouch);
-        nbttc.setDouble("pa", this.pa);
         return super.writeToNBT(nbttc);
     }
 
