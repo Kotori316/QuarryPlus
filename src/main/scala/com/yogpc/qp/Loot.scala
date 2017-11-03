@@ -38,4 +38,15 @@ object Loot {
             event.getTable.addPool(pool)
         }
     }
+
+    /* Test codes
+    /setblock ~ ~ ~ minecraft:chest 0 replace {LootTable:"minecraft:chests/simple_dungeon"}
+    /setblock ~ ~ ~ minecraft:chest 0 replace {LootTable:"minecraft:chests/abandoned_mineshaft"}
+    /setblock ~ ~ ~ minecraft:chest 0 replace {LootTable:"minecraft:chests/desert_pyramid"}
+    /setblock ~ ~ ~ minecraft:chest 0 replace {LootTable:"minecraft:chests/jungle_temple"}
+    /setblock ~ ~ ~ minecraft:chest 0 replace {LootTable:"minecraft:chests/stronghold_corridor"}
+    /setblock ~ ~ ~ minecraft:chest 0 replace {LootTable:"minecraft:chests/stronghold_crossing"}
+    /setblock ~ ~ ~ minecraft:chest 0 replace {LootTable:"minecraft:chests/stronghold_library"}
+    /setblock ~ ~ ~ minecraft:chest 0 replace {LootTable:"minecraft:chests/village_blacksmith"}
+     */
 }

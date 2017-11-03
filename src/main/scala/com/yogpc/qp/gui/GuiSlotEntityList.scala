@@ -30,10 +30,10 @@ class GuiSlotEntityList(mc: Minecraft, width: Int, height: Int, topIn: Int, bott
 
     override protected def getContentHeight: Int = this.getSize * 18
 
-    override protected def drawSlot(entryID: Int, insideLeft: Int, yPos: Int, insideSlotHeight: Int, mouseXIn: Int, mouseYIn: Int): Unit = {
+    override protected def drawSlot(entryID: Int, insideLeft: Int, yPos: Int, insideSlotHeight: Int, mouseXIn: Int, mouseYIn: Int, f: Float): Unit = {
         val name = this.gc.names.get(entryID)
-        Minecraft.getMinecraft.fontRendererObj.drawStringWithShadow(name,
-            (this.mc.currentScreen.width - Minecraft.getMinecraft.fontRendererObj.getStringWidth(name)) / 2,
+        Minecraft.getMinecraft.fontRenderer.drawStringWithShadow(name,
+            (this.mc.currentScreen.width - Minecraft.getMinecraft.fontRenderer.getStringWidth(name)) / 2,
             yPos + 2, 0xFFFFFF)
     }
 }

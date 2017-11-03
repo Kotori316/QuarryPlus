@@ -42,7 +42,7 @@ public class GuiController extends GuiScreen {
     public void actionPerformed(final GuiButton par1) {
         switch (par1.id) {
             case -1:
-                PacketHandler.sendToServer(SetEntity.create(dim, new BlockPos(xc, yc, zc), list.get(slot.selected)));
+                PacketHandler.sendToServer(SetEntity.create(dim, new BlockPos(xc, yc, zc), list.get(slot.selected())));
                 this.mc.player.closeScreen();
                 break;
         }
