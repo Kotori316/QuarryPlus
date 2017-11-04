@@ -453,15 +453,15 @@ public class TileMarker extends APacketTile implements /*ITileAreaProvider,*/ IT
             }
         }
 
-        private ArrayList<ItemStack> removeLink(final int x, final int y, final int z, final boolean bb) {
-            ArrayList<ItemStack> ret = new ArrayList<>();
+        private NonNullList<ItemStack> removeLink(final int x, final int y, final int z, final boolean bb) {
+            NonNullList<ItemStack> ret = NonNullList.create();
             BlockPos pos = new BlockPos(x, y, z);
             TileEntity te = this.w.getTileEntity(pos);
             IBlockState state = w.getBlockState(pos);
             if (state.getBlock() instanceof BlockMarker) {
                 if (te instanceof TileMarker)
                     ((TileMarker) te).link = null;
-                ret.addAll(state.getBlock().getDrops(this.w, pos, state, 0));
+                state.getBlock().getDrops(ret, this.w, pos, state, 0);
                 if (bb)
                     this.w.setBlockToAir(pos);
             }

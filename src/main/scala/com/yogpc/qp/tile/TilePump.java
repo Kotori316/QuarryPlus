@@ -20,7 +20,6 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
@@ -76,8 +75,8 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     protected byte fortune;
     protected boolean silktouch;
     private final LinkedList<FluidStack> liquids = new LinkedList<>();
-    public final Map<EnumFacing, LinkedList<String>> mapping = new EnumMap<>(EnumFacing.class);
-    public final Map<EnumFacing, PumpTank> tankMap = new EnumMap<>(EnumFacing.class);
+    public final EnumMap<EnumFacing, LinkedList<String>> mapping = new EnumMap<>(EnumFacing.class);
+    public final EnumMap<EnumFacing, PumpTank> tankMap = new EnumMap<>(EnumFacing.class);
 
     {
         for (EnumFacing value : EnumFacing.VALUES) {
@@ -163,14 +162,21 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     public void update() {
         if (!getWorld().isRemote) {
             for (EnumFacing facing : EnumFacing.VALUES) {
-                IFluidHandler handler = FluidUtil.getFluidHandler(getWorld(), getPos().offset(facing), facing.getOpposite());
-                if (handler != null && tankMap.containsKey(facing)) {
-                    PumpTank tank = tankMap.get(facing);
-                    FluidStack resource = tank.drain(Fluid.BUCKET_VOLUME, false);
-                    if (resource != null) {
-                        int fill = handler.fill(resource, false);
-                        if (fill > 0) {
-                            handler.fill(tank.drain(fill, true), true);
+                BlockPos offset = getPos().offset(facing);
+                IBlockState state = getWorld().getBlockState(offset);
+                if (state.getBlock().hasTileEntity(state)) {
+                    TileEntity tileEntity = getWorld().getTileEntity(offset);
+                    if (tileEntity != null && tileEntity.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing.getOpposite())) {
+                        IFluidHandler handler = tileEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing.getOpposite());
+                        if (handler != null) {
+                            PumpTank tank = tankMap.get(facing);
+                            FluidStack resource = tank.drain(Fluid.BUCKET_VOLUME, false);
+                            if (resource != null) {
+                                int fill = handler.fill(resource, false);
+                                if (fill > 0) {
+                                    handler.fill(tank.drain(fill, true), true);
+                                }
+                            }
                         }
                     }
                 }
@@ -619,8 +625,8 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     }
 
     @Override
-    public Map<Integer, Byte> getEnchantments() {
-        final Map<Integer, Byte> ret = new HashMap<>();
+    public HashMap<Integer, Byte> getEnchantments() {
+        final HashMap<Integer, Byte> ret = new HashMap<>();
         if (this.fortune > 0)
             ret.put(FortuneID, this.fortune);
         if (this.unbreaking > 0)
@@ -645,11 +651,37 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
     }
 
+    private IFluidHandler tankAll = new IFluidHandler() {
+        @Override
+        public IFluidTankProperties[] getTankProperties() {
+            return TilePump.this.liquids.stream()
+                    .map(fluidStack -> new FluidTankProperties(fluidStack, fluidStack.amount, false, false))
+                    .toArray(IFluidTankProperties[]::new);
+        }
+
+        @Override
+        public int fill(FluidStack resource, boolean doFill) {
+            return 0;
+        }
+
+        @Nullable
+        @Override
+        public FluidStack drain(FluidStack resource, boolean doDrain) {
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public FluidStack drain(int maxDrain, boolean doDrain) {
+            return null;
+        }
+    };
+
     @Nullable
     @Override
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
         if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
-            return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(tankMap.get(facing));
+            return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(facing == null ? tankAll : tankMap.get(facing));
         } else {
             return super.getCapability(capability, facing);
         }
