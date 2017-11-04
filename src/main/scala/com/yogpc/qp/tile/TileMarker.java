@@ -45,6 +45,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -456,8 +457,8 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
             }
         }
 
-        private ArrayList<ItemStack> removeLink(final int x, final int y, final int z, final boolean bb) {
-            ArrayList<ItemStack> ret = new ArrayList<>();
+        private NonNullList<ItemStack> removeLink(final int x, final int y, final int z, final boolean bb) {
+            NonNullList<ItemStack> ret = NonNullList.create();
             BlockPos pos = new BlockPos(x, y, z);
             TileEntity te = this.w.getTileEntity(pos);
             IBlockState state = w.getBlockState(pos);

@@ -181,6 +181,9 @@ public abstract class APowerTile extends APacketTile implements IEnergyReceiver,
     public final void configure(final double maxRecieve, final double maxstored) {
         this.maxGot = maxRecieve;
         this.max = maxstored;
+        if (Config.content().noEnergy()) {
+            this.all = maxstored;
+        }
     }
 
     //ic2 energy api implecation
@@ -209,7 +212,7 @@ public abstract class APowerTile extends APacketTile implements IEnergyReceiver,
     @Override
     @Optional.Method(modid = QuarryPlus.Optionals.IC2_modID)
     public final int getSinkTier() {
-        return 3;
+        return 4;
     }
 
     //cofh(RF) energy api implecation

@@ -144,7 +144,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     }
 
     public static final Method createStackedBlock = ReflectionHelper.getMethod(Block.class,
-            new String[]{"func_149644_j", "getSilkTouchDrop"}, new Class<?>[]{IBlockState.class});
+            new String[]{"func_180643_i", "getSilkTouchDrop"}, new Class<?>[]{IBlockState.class});
 
     @Override
     public void readFromNBT(final NBTTagCompound nbttc) {
