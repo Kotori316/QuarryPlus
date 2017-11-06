@@ -381,7 +381,7 @@ public class TileQuarry extends TileBasic {
                     }
                     if (this.yMax - this.yMin < 2)
                         this.yMax = this.yMin + 3;
-                    areaProvider = marker;
+                    areaProvider = tileMarker;
                 }
             } else {
                 setDefaultRange(getPos(), facing);
