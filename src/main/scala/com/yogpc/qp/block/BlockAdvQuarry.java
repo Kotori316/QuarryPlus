@@ -1,20 +1,19 @@
 package com.yogpc.qp.block;
 
-import java.util.ArrayList;
-
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.BuildCraftHelper;
 import com.yogpc.qp.compat.EnchantmentHelper;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.item.ItemBlockEnchantable;
 import com.yogpc.qp.tile.TileAdvQuarry;
+import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -36,28 +35,26 @@ public class BlockAdvQuarry extends ADismCBlock {
         setDefaultState(getBlockState().getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(ACTING, false));
     }
 
-    private final ArrayList<ItemStack> drop = new ArrayList<>();
+    @Override
+    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
+        return willHarvest || super.removedByPlayer(state, world, pos, player, false);
+    }
 
     @Override
-    public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-        if (!worldIn.isRemote) {
-            TileAdvQuarry tile = (TileAdvQuarry) worldIn.getTileEntity(pos);
-            if (tile != null) {
-                final int count = quantityDropped(state, 0, worldIn.rand);
-                final Item it = getItemDropped(state, worldIn.rand, 0);
-                for (int i = 0; i < count; i++) {
-                    final ItemStack is = new ItemStack(it, 1, damageDropped(state));
-                    EnchantmentHelper.enchantmentToIS(tile, is);
-                    this.drop.add(is);
-                }
-            }
-        }
-        super.breakBlock(worldIn, pos, state);
+    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack) {
+        super.harvestBlock(worldIn, player, pos, state, te, stack);
+        worldIn.setBlockToAir(pos);
     }
 
     @Override
     public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
-        drops.addAll(drop);
+        TileEntity entity = world.getTileEntity(pos);
+        if (TileAdvQuarry.class.isInstance(entity)) {
+            TileAdvQuarry quarry = (TileAdvQuarry) entity;
+            ItemStack stack = new ItemStack(QuarryPlusI.blockChunkdestroyer, 1, 0);
+            EnchantmentHelper.enchantmentToIS(quarry, stack);
+            drops.add(stack);
+        }
     }
 
     @Override
