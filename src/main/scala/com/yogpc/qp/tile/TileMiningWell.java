@@ -23,6 +23,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.chunk.Chunk;
 
 public class TileMiningWell extends TileBasic implements ITickable {
 
@@ -70,14 +71,19 @@ public class TileMiningWell extends TileBasic implements ITickable {
         return working;
     }
 
-    @SuppressWarnings("ConstantConditions")
     private boolean S_checkTarget(final int depth) {
         if (depth < 1) {
             G_destroy();
             return true;
         }
         BlockPos pos = new BlockPos(getPos().getX(), depth, getPos().getZ());
-        final IBlockState b = getWorld().getChunkProvider().getLoadedChunk(pos.getX() >> 4, pos.getZ() >> 4).getBlockState(pos);
+        Chunk loadedChunk = getWorld().getChunkProvider().getLoadedChunk(pos.getX() >> 4, pos.getZ() >> 4);
+        final IBlockState b;
+        if (loadedChunk != null) {
+            b = loadedChunk.getBlockState(pos);
+        } else {
+            b = getWorld().getBlockState(pos);
+        }
         final float h = b.getBlockHardness(getWorld(), pos);
         if (h < 0 || b.getBlock() == QuarryPlusI.blockPlainPipe || b.getBlock().isAir(b, getWorld(), pos)) {
             return false;

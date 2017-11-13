@@ -22,6 +22,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -89,14 +90,14 @@ public class BlockController extends Block {
         getSpawner(world, pos).ifPresent(logic -> {
             if (!Config.content().spawnerBlacklist().contains(name))
                 logic.setEntityId(name);
-            logic.getSpawnerWorld().getTileEntity(logic.getSpawnerPosition()).markDirty();
+            Optional.ofNullable(logic.getSpawnerWorld().getTileEntity(logic.getSpawnerPosition())).ifPresent(TileEntity::markDirty);
             IBlockState state = logic.getSpawnerWorld().getBlockState(logic.getSpawnerPosition());
             logic.getSpawnerWorld().notifyBlockUpdate(logic.getSpawnerPosition(), state, state, 3);
         });
     }
 
-    @SuppressWarnings("deprecation")
     @Override
+    @SuppressWarnings("deprecation")
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
         if (!worldIn.isRemote) {
             boolean r = worldIn.isBlockPowered(pos);
@@ -124,8 +125,8 @@ public class BlockController extends Block {
         super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
+    @SuppressWarnings("deprecation")
     public IBlockState getStateFromMeta(int meta) {
         return getDefaultState().withProperty(ACTING, meta == 1);
     }

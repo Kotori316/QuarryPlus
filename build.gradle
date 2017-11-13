@@ -52,7 +52,7 @@ repositories {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     deobfCompile "cofh:RedstoneFlux:1.12-2.0.1.2:universal"
-    deobfCompile "mezz.jei:jei_1.12.1:4.7.8.95"
+    deobfCompile "mezz.jei:jei_1.12.2:4.8.0.114"
 }
 
 processResources {

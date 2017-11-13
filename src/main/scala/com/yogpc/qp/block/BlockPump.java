@@ -14,6 +14,7 @@
 package com.yogpc.qp.block;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
@@ -33,6 +34,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
@@ -88,37 +90,43 @@ public class BlockPump extends ADismCBlock {
     @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
-        EnchantmentHelper.init((IEnchantableTile) worldIn.getTileEntity(pos), stack.getEnchantmentTagList());
+        TileEntity entity = worldIn.getTileEntity(pos);
+        if (entity != null) {
+            EnchantmentHelper.init((IEnchantableTile) entity, stack.getEnchantmentTagList());
+        }
     }
 
-    @SuppressWarnings({"deprecation", "ConstantConditions"})
+    @SuppressWarnings({"deprecation"})
     @Override
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
         super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
-        ((TilePump) worldIn.getTileEntity(pos)).G_reinit();
+        Optional.ofNullable((TilePump) worldIn.getTileEntity(pos)).ifPresent(TilePump::G_reinit);
     }
 
-    @SuppressWarnings({"MethodCallSideOnly", "ConstantConditions", "NewExpressionSideOnly"})
+    @SuppressWarnings({"MethodCallSideOnly", "NewExpressionSideOnly"})
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack stack = playerIn.getHeldItem(hand);
         if (BuildCraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
-            ((TilePump) worldIn.getTileEntity(pos)).S_changeRange(playerIn);
+            Optional.ofNullable((TilePump) worldIn.getTileEntity(pos)).ifPresent(pump -> pump.S_changeRange(playerIn));
             return true;
         }
         if (stack.getItem() == QuarryPlusI.itemTool) {
             if (!worldIn.isRemote && stack.getItemDamage() == 0) {
                 TilePump pump = (TilePump) worldIn.getTileEntity(pos);
-                EnchantmentHelper.getEnchantmentsChat(pump).forEach(playerIn::sendMessage);
-                pump.C_getNames().forEach(playerIn::sendMessage);
+                if (pump != null) {
+                    EnchantmentHelper.getEnchantmentsChat(pump).forEach(playerIn::sendMessage);
+                    pump.C_getNames().forEach(playerIn::sendMessage);
+                }
             } else if (stack.getItemDamage() == 2) {
                 TilePump pump = (TilePump) worldIn.getTileEntity(pos);
-                if (!worldIn.isRemote) {
-                    pump.S_OpenGUI(facing, playerIn);
-                } else {
-                    Minecraft.getMinecraft().displayGuiScreen(new GuiP_List((byte) facing.ordinal(), pump));
-                }
+                if (pump != null)
+                    if (!worldIn.isRemote) {
+                        pump.S_OpenGUI(facing, playerIn);
+                    } else {
+                        Minecraft.getMinecraft().displayGuiScreen(new GuiP_List((byte) facing.ordinal(), pump));
+                    }
             }
             return true;
         }

@@ -23,6 +23,7 @@ import java.util.Map;
 
 import com.yogpc.qp.BlockData;
 import com.yogpc.qp.PowerManager;
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.ReflectionHelper;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.version.VersionUtil;
@@ -91,11 +92,13 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     protected boolean S_breakBlock(final int x, final int y, final int z) {
         final List<ItemStack> dropped = new LinkedList<>();
         Chunk loadedChunk = getWorld().getChunkProvider().getLoadedChunk(x >> 4, z >> 4);
-        if (loadedChunk == null) {
-            return false;
-        }
-        final IBlockState b = loadedChunk.getBlockState(x & 0xF, y, z & 0xF);
+        final IBlockState b;
         BlockPos pos = new BlockPos(x, y, z);
+        if (loadedChunk == null) {
+            b = getWorld().getBlockState(pos);
+        } else {
+            b = loadedChunk.getBlockState(x & 0xF, y, z & 0xF);
+        }
         if (b.getBlock().isAir(b, getWorld(), pos))
             return true;
         if (pump != null && TilePump.isLiquid(b, false, getWorld(), pos)) {
@@ -261,7 +264,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     @Override
     public void setInventorySlotContents(final int i, final ItemStack is) {
         if (VersionUtil.nonEmpty(is))
-            System.err.println("QuarryPlus WARN: call setInventorySlotContents with non null ItemStack.");
+            QuarryPlus.LOGGER.warn("QuarryPlus WARN: call setInventorySlotContents with non null ItemStack.");
         if (i >= 0 && i < this.cacheItems.size())
             this.cacheItems.remove(i);
     }

@@ -14,6 +14,7 @@
 package com.yogpc.qp.block;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
@@ -125,7 +126,7 @@ public class BlockMiningWell extends ADismCBlock {
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
         super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
         if (!worldIn.isRemote)
-            ((TileMiningWell) worldIn.getTileEntity(pos)).G_renew_powerConfigure();
+            Optional.ofNullable((TileMiningWell) worldIn.getTileEntity(pos)).ifPresent(TileMiningWell::G_renew_powerConfigure);
     }
 
     @Override
@@ -140,8 +141,8 @@ public class BlockMiningWell extends ADismCBlock {
         return facing.getIndex() | (powered ? 8 : 0);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
+    @SuppressWarnings("deprecation")
     public IBlockState getStateFromMeta(int meta) {
         return getDefaultState().withProperty(FACING, EnumFacing.getFront(meta & 7)).withProperty(ACTING, (meta & 8) == 8);
     }

@@ -41,6 +41,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.ForgeChunkManager.Type;
@@ -108,7 +109,13 @@ public class TileQuarry extends TileBasic {
         if (this.targetY > this.yMax)
             this.targetY = this.yMax;
         BlockPos target = new BlockPos(this.targetX, this.targetY, this.targetZ);
-        final IBlockState b = getWorld().getChunkProvider().getLoadedChunk(this.targetX >> 4, this.targetZ >> 4).getBlockState(target);
+        Chunk loadedChunk = getWorld().getChunkProvider().getLoadedChunk(this.targetX >> 4, this.targetZ >> 4);
+        final IBlockState b;
+        if (loadedChunk != null) {
+            b = loadedChunk.getBlockState(target);
+        } else {
+            b = getWorld().getBlockState(target);
+        }
         final float h = b.getBlockHardness(getWorld(), target);
         switch (this.now) {
             case BREAKBLOCK:
