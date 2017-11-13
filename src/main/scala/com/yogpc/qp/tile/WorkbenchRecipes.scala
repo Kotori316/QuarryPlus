@@ -42,7 +42,7 @@ object WorkbenchRecipes {
     def recipeSize: Int = recipes.size
 
     /*
-        addRecipe(ItemDamage(QuarryPlusI.blockChunkdestoryer), 3200000, MJ,
+        addRecipe(ItemDamage(QuarryPlusI.blockChunkdestroyer), 3200000, MJ,
             new ItemStack(QuarryPlusI.blockQuarry, 3), new ItemStack(QuarryPlusI.blockPump, 2), new ItemStack(QuarryPlusI.itemPresetapplier, 1, OreDictionary.WILDCARD_VALUE),
             new ItemStack(QuarryPlusI.blockMarker, 3), new ItemStack(DIAMOND_BLOCK, 8), new ItemStack(EMERALD_BLOCK, 8), new ItemStack(ENDER_EYE, 64))
     */
