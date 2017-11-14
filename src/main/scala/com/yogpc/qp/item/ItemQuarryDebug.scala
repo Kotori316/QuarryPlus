@@ -1,6 +1,6 @@
 package com.yogpc.qp.item
 
-import com.yogpc.qp.tile.{APowerTile, TileLaser, TileMarker, TileMiningWell, TilePlacer, TilePump, TileQuarry, TileWorkbench}
+import com.yogpc.qp.tile.{APowerTile, TileAdvQuarry, TileLaser, TileMarker, TileMiningWell, TilePlacer, TilePump, TileQuarry, TileWorkbench}
 import com.yogpc.qp.{Config, QuarryPlus, QuarryPlusI}
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.player.EntityPlayer
@@ -76,6 +76,13 @@ object ItemQuarryDebug extends Item {
                             player.sendStatusMessage(energyToString(workbench), false)
                             player.sendStatusMessage(new TextComponentString(workbench.currentRecipe.scalaMap(_.toString).getOrElse("No recipe.")), false)
                             player.sendStatusMessage(new TextComponentString("Work mode : " + (if (workbench.workcontinue) "Continue" else "Only once")), false)
+                        }
+                        EnumActionResult.SUCCESS
+                    case chunkDestroyer: TileAdvQuarry =>
+                        if (!worldIn.isRemote) {
+                            player.sendStatusMessage(new TextComponentTranslation(chunkDestroyer.getName), false)
+                            player.sendStatusMessage(tileposToString(tile), false)
+                            chunkDestroyer.sendDebugMessage(player)
                         }
                         EnumActionResult.SUCCESS
                     case _ => super.onItemUseFirst(player, worldIn, pos, side, hitX, hitY, hitZ, hand)

@@ -2,35 +2,69 @@ package com.yogpc.qp.tile
 
 import com.yogpc.qp.QuarryPlus
 import com.yogpc.qp.block.ADismCBlock
-import com.yogpc.qp.tile.TileAdvQuarry.ItemList
+import com.yogpc.qp.compat.InvUtils
+import com.yogpc.qp.tile.TileAdvQuarry.{ItemElement, ItemList}
 import com.yogpc.qp.version.VersionUtil
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.math.ChunkPos
+import net.minecraft.util.math.{BlockPos, ChunkPos}
+import net.minecraft.util.{EnumFacing, ITickable}
 import net.minecraftforge.common.ForgeChunkManager
 import net.minecraftforge.common.ForgeChunkManager.Type
-import net.minecraftforge.items.IItemHandlerModifiable
+import net.minecraftforge.common.capabilities.Capability
+import net.minecraftforge.items.{CapabilityItemHandler, IItemHandlerModifiable}
 
 import scala.collection.JavaConverters._
 
-class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory {
+class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory with ITickable with IDebugSender {
     self =>
     var ench = TileAdvQuarry.defaultEnch
+    var digRange = TileAdvQuarry.defaultRange
+    var target = BlockPos.ORIGIN
     val cacheItems = new ItemList
     val itemHandler = new ItemHandler
     val mode = new Mode
 
     override def update() = {
         super.update()
+        if (!getWorld.isRemote) {
+            //TODO quarry action
+            if (!isEmpty) {
+                var break = false
+                var is = cacheItems.list.remove(0).toStack
+                while (!break) {
+                    val stack = InvUtils.injectToNearTile(getWorld, getPos, is)
+                    if (stack.getCount > 0) {
+                        cacheItems.add(stack)
+                        break = true
+                    }
+                    if (isEmpty) {
+                        break = true
+                    } else {
+                        is = cacheItems.list.remove(0).toStack
+                    }
+                }
+            }
+        }
     }
 
     override protected def isWorking = mode.isWorking
 
     override def G_reinit(): Unit = {
         mode.set(TileAdvQuarry.NOTNEEDBREAK)
-
+        if (!mode.isWorking) {
+            this.configure(0, getMaxStored)
+        } else if (mode.reduceRecieve) {
+            this.configure(ench.maxRecieve / 128, TileAdvQuarry.maxStored)
+        } else {
+            this.configure(ench.maxRecieve, TileAdvQuarry.maxStored)
+        }
+        if (!digRange.defined) {
+            digRange = makeRangeBox()
+            target = new BlockPos(digRange.minX, getPos.getY - 1, digRange.minZ)
+        }
     }
 
     /**
@@ -68,10 +102,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory {
 
     override def getSizeInventory = cacheItems.list.size
 
-    override def removeStackFromSlot(index: Int) =
-        cacheItems.list.remove(index) match {
-            case (i, size) => i.toStack(size)
-        }
+    override def removeStackFromSlot(index: Int) = cacheItems.list.remove(index).toStack
 
     override def isUsableByPlayer(player: EntityPlayer) = getWorld.getTileEntity(getPos) eq this
 
@@ -82,14 +113,25 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory {
     override def isEmpty = cacheItems.list.isEmpty
 
     override def getStackInSlot(index: Int) = {
-        cacheItems.list(index) match {
-            case (i, size) => i.toStack(size)
-        }
+        cacheItems.list(index).toStack
     }
 
     override def hasCustomName = false
 
     override def getName = "tile.chunkdestroyer.name"
+
+    override def sendDebugMessage(player: EntityPlayer) = {}
+
+    override def hasCapability(capability: Capability[_], facing: EnumFacing) = {
+        capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, facing)
+    }
+
+    override def getCapability[T](capability: Capability[T], facing: EnumFacing) = {
+        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+            CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(itemHandler)
+        } else
+            super.getCapability(capability, facing)
+    }
 
     private var chunkTicket: ForgeChunkManager.Ticket = _
 
@@ -110,6 +152,21 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory {
         ForgeChunkManager.forceChunk(ticket, quarryChunk)
     }
 
+    def makeRangeBox() = {
+        val facing = getWorld.getBlockState(getPos).getValue(ADismCBlock.FACING).getOpposite
+        val link = List(getPos.offset(facing), getPos.offset(facing.rotateYCCW), getPos.offset(facing.rotateY)).map(getWorld.getTileEntity(_))
+          .collectFirst { case m: TileMarker if m.link != null =>
+              val poses = (m.min(), m.max())
+              m.removeFromWorldWithItem().asScala.foreach(cacheItems.add)
+              poses
+          }.getOrElse({
+            val chunkPos = new ChunkPos(getPos)
+            val y = getPos.getY
+            (new BlockPos(chunkPos.getXStart, y, chunkPos.getZStart), new BlockPos(chunkPos.getZEnd, y, chunkPos.getZEnd))
+        })
+        new TileAdvQuarry.DigRange(link._1, link._2)
+    }
+
     private class ItemHandler extends IItemHandlerModifiable {
         override def setStackInSlot(slot: Int, stack: ItemStack): Unit = self.setInventorySlotContents(slot, stack)
 
@@ -118,7 +175,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory {
         override def extractItem(slot: Int, amount: Int, simulate: Boolean): ItemStack = {
             if (simulate) {
                 cacheItems.list(slot) match {
-                    case (i, size) => i.toStack(Math.min(amount, Math.min(size, i.itemStackLimit)))
+                    case ItemElement(i, size) => i.toStack(Math.min(amount, Math.min(size, i.itemStackLimit)))
                 }
             } else {
                 self.decrStackSize(slot, amount)
@@ -159,15 +216,22 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory {
         }
 
         def isWorking = mode != NONE
+
+        def reduceRecieve = mode == MAKEFRAME
     }
 
 }
 
 object TileAdvQuarry {
 
+    val maxStored = 30000 * 256
     val defaultEnch = QEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false)
+    val defaultRange: DigRange = NoDefinedRange
+    private val ENERGYLIMIT_LIST = IndexedSeq(5120, 10240, 20480, 40960, 81920, maxStored)
 
     private case class QEnch(efficiency: Byte, unbreaking: Byte, fortune: Byte, silktouch: Boolean) {
+
+        require(efficiency >= 0 && unbreaking >= 0 && fortune >= 0, "Chunk Destroyer Enchantment error")
 
         import IEnchantableTile._
 
@@ -183,39 +247,61 @@ object TileAdvQuarry {
 
         def getMap = Map(EfficiencyID -> efficiency, UnbreakingID -> unbreaking,
             FortuneID -> fortune, SilktouchID -> silktouch.compare(false).toByte)
+
+        val maxRecieve = if (efficiency >= 5) ENERGYLIMIT_LIST(5) else ENERGYLIMIT_LIST(efficiency)
+    }
+
+    private case class DigRange(minX: Double, minY: Double, minZ: Double, maxX: Double, maxY: Double, maxZ: Double) {
+        def this(minPos: BlockPos, maxPos: BlockPos) {
+            this(minPos.getX.toDouble, minPos.getY.toDouble, minPos.getZ.toDouble, maxPos.getX.toDouble, maxPos.getY.toDouble, maxPos.getZ.toDouble)
+        }
+
+        val defined = true
+    }
+
+    private object NoDefinedRange extends DigRange(BlockPos.ORIGIN, BlockPos.ORIGIN) {
+        override val defined: Boolean = false
     }
 
     private class ItemList {
-        val list = scala.collection.mutable.ArrayBuffer.empty[(ItemDamage, Int)]
+        val list = scala.collection.mutable.ArrayBuffer.empty[ItemElement]
 
         def add(itemDamage: ItemDamage, count: Int): Unit = {
-            val i = list.indexWhere(_._1 == itemDamage)
+            val i = list.indexWhere(_.itemDamage == itemDamage)
             if (i > 0) {
-                val e = list(i)._2
+                val e = list(i).count
                 val newCount = e + count
                 if (newCount > 0) {
-                    list.update(i, (itemDamage, newCount))
+                    list.update(i, ItemElement(itemDamage, newCount))
                 } else {
                     list.remove(i)
                 }
             } else {
                 if (count > 0)
-                    list += ((itemDamage, count))
+                    list += ItemElement(itemDamage, count)
             }
+        }
+
+        def add(stack: ItemStack): Unit = {
+            add(ItemDamage(stack), stack.getCount)
         }
 
         def decrease(index: Int, count: Int): ItemStack = {
             val t = list(index)
-            val min = Math.min(count, t._1.itemStackLimit)
-            if (t._2 <= min) {
+            val min = Math.min(count, t.itemDamage.itemStackLimit)
+            if (t.count <= min) {
                 list.remove(index)
-                t._1.toStack(t._2)
+                t.itemDamage.toStack(t.count)
             } else {
-                list(index) = (t._1, t._2 - min)
-                t._1.toStack(min)
+                list(index) = ItemElement(t.itemDamage, t.count - min)
+                t.itemDamage.toStack(min)
             }
         }
 
+    }
+
+    private case class ItemElement(itemDamage: ItemDamage, count: Int) {
+        def toStack = itemDamage.toStack(count)
     }
 
     trait Modes

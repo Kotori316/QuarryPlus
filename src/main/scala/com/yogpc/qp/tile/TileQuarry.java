@@ -59,7 +59,7 @@ import static com.yogpc.qp.tile.TileQuarry.Mode.NOTNEEDBREAK;
 import buildcraft.api.tiles.ITileAreaProvider;
 import buildcraft.api.tiles.TilesAPI;*/
 
-public class TileQuarry extends TileBasic {
+public class TileQuarry extends TileBasic implements IDebugSender {
     public final boolean bccoreLoaded;
     private int targetX, targetY, targetZ;
     public int xMin, xMax, yMin, yMax = Integer.MIN_VALUE, zMin, zMax;
@@ -670,6 +670,7 @@ public class TileQuarry extends TileBasic {
         return true;
     }
 
+    @Override
     public void sendDebugMessage(EntityPlayer player) {
         player.sendStatusMessage(new TextComponentString(getStoredEnergy() + " / " + getMaxStored() + " MJ"), false);
         player.sendStatusMessage(new TextComponentTranslation("chat.currentmode", G_getNow()), false);
