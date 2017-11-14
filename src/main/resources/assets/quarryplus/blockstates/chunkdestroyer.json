@@ -1,0 +1,49 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "cube",
+    "textures": {
+      "particle": "quarryplus:blocks/chunkdestroyer",
+      "down": "quarryplus:blocks/chunkdestroyer",
+      "up": "quarryplus:blocks/chunkdestroyer_top",
+      "north": "quarryplus:blocks/chunkdestroyer_front",
+      "east": "quarryplus:blocks/chunkdestroyer",
+      "south": "quarryplus:blocks/chunkdestroyer",
+      "west": "quarryplus:blocks/chunkdestroyer"
+    }
+  },
+  "variants": {
+    "acting": {
+      "true": {
+        "textures": {
+          "up": "quarryplus:blocks/chunkdestroyer_top_bb"
+        }
+      },
+      "false": {
+      }
+    },
+    "facing": {
+      "north": {
+        "transform": "forge:default-block"
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      },
+      "east": {
+        "y": 90
+      },
+      "up": {
+        "x": 270
+      },
+      "down": {
+        "x": 90
+      }
+    }
+  },
+  "inventory": [
+    {}
+  ]
+}

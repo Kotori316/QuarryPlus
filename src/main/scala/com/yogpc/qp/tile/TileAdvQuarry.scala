@@ -1,6 +1,7 @@
 package com.yogpc.qp.tile
 
 import com.yogpc.qp.QuarryPlus
+import com.yogpc.qp.block.ADismCBlock
 import com.yogpc.qp.tile.TileAdvQuarry.ItemList
 import com.yogpc.qp.version.VersionUtil
 import net.minecraft.entity.player.EntityPlayer
@@ -18,31 +19,17 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory {
     self =>
     var ench = TileAdvQuarry.defaultEnch
     val cacheItems = new ItemList
-    val itemHandler = new IItemHandlerModifiable {
-        override def setStackInSlot(slot: Int, stack: ItemStack): Unit = self.setInventorySlotContents(slot, stack)
+    val itemHandler = new ItemHandler
+    val mode = new Mode
 
-        override def getStackInSlot(slot: Int): ItemStack = self.getStackInSlot(slot)
-
-        override def extractItem(slot: Int, amount: Int, simulate: Boolean): ItemStack = {
-            if (simulate) {
-                cacheItems.list(slot) match {
-                    case (i, size) => i.toStack(Math.min(amount, Math.min(size, i.itemStackLimit)))
-                }
-            } else {
-                self.decrStackSize(slot, amount)
-            }
-        }
-
-        override def getSlotLimit(slot: Int): Int = 1
-
-        override def getSlots: Int = self.getSizeInventory
-
-        override def insertItem(slot: Int, stack: ItemStack, simulate: Boolean): ItemStack = stack
+    override def update() = {
+        super.update()
     }
 
-    override protected def isWorking = false
+    override protected def isWorking = mode.isWorking
 
     override def G_reinit(): Unit = {
+        mode.set(TileAdvQuarry.NOTNEEDBREAK)
 
     }
 
@@ -122,6 +109,58 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory {
         val quarryChunk: ChunkPos = new ChunkPos(getPos)
         ForgeChunkManager.forceChunk(ticket, quarryChunk)
     }
+
+    private class ItemHandler extends IItemHandlerModifiable {
+        override def setStackInSlot(slot: Int, stack: ItemStack): Unit = self.setInventorySlotContents(slot, stack)
+
+        override def getStackInSlot(slot: Int): ItemStack = self.getStackInSlot(slot)
+
+        override def extractItem(slot: Int, amount: Int, simulate: Boolean): ItemStack = {
+            if (simulate) {
+                cacheItems.list(slot) match {
+                    case (i, size) => i.toStack(Math.min(amount, Math.min(size, i.itemStackLimit)))
+                }
+            } else {
+                self.decrStackSize(slot, amount)
+            }
+        }
+
+        override def getSlotLimit(slot: Int): Int = 1
+
+        override def getSlots: Int = self.getSizeInventory
+
+        override def insertItem(slot: Int, stack: ItemStack, simulate: Boolean): ItemStack = stack
+    }
+
+    private class Mode {
+
+        import TileAdvQuarry._
+
+        private var mode: Modes = NONE
+
+        def set(newmode: Modes): Unit = {
+            mode = newmode
+            val state = getWorld.getBlockState(getPos)
+            if (state.getValue(ADismCBlock.ACTING)) {
+                if (newmode == NONE) {
+                    validate()
+                    getWorld.setBlockState(getPos, state.withProperty(ADismCBlock.ACTING, false))
+                    validate()
+                    getWorld.setTileEntity(getPos, self)
+                }
+            } else {
+                if (newmode != NONE) {
+                    validate()
+                    getWorld.setBlockState(getPos, state.withProperty(ADismCBlock.ACTING, true))
+                    validate()
+                    getWorld.setTileEntity(getPos, self)
+                }
+            }
+        }
+
+        def isWorking = mode != NONE
+    }
+
 }
 
 object TileAdvQuarry {
@@ -167,15 +206,26 @@ object TileAdvQuarry {
 
         def decrease(index: Int, count: Int): ItemStack = {
             val t = list(index)
-            if (t._2 <= count) {
+            val min = Math.min(count, t._1.itemStackLimit)
+            if (t._2 <= min) {
                 list.remove(index)
                 t._1.toStack(t._2)
             } else {
-                list(index) = (t._1, t._2 - count)
-                t._1.toStack(count)
+                list(index) = (t._1, t._2 - min)
+                t._1.toStack(min)
             }
         }
 
     }
+
+    trait Modes
+
+    object NONE extends Modes
+
+    object NOTNEEDBREAK extends Modes
+
+    object MAKEFRAME extends Modes
+
+    object BREAKBLOCK extends Modes
 
 }
