@@ -1,13 +1,14 @@
 package com.yogpc.qp.tile
 
-import com.yogpc.qp.QuarryPlus
+import com.yogpc.qp.{PowerManager, QuarryPlus}
 import com.yogpc.qp.tile.TileAdvQuarry.ItemList
 import com.yogpc.qp.version.VersionUtil
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.math.ChunkPos
+import net.minecraft.util.NonNullList
+import net.minecraft.util.math.{BlockPos, ChunkPos}
 import net.minecraftforge.common.ForgeChunkManager
 import net.minecraftforge.common.ForgeChunkManager.Type
 import net.minecraftforge.items.IItemHandlerModifiable
@@ -17,6 +18,7 @@ import scala.collection.JavaConverters._
 class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory {
     self =>
     var ench = TileAdvQuarry.defaultEnch
+    var target = BlockPos.ORIGIN
     val cacheItems = new ItemList
     val itemHandler = new IItemHandlerModifiable {
         override def setStackInSlot(slot: Int, stack: ItemStack): Unit = self.setInventorySlotContents(slot, stack)
@@ -38,6 +40,27 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory {
         override def getSlots: Int = self.getSizeInventory
 
         override def insertItem(slot: Int, stack: ItemStack, simulate: Boolean): ItemStack = stack
+    }
+
+    override def update() = {
+        super.update()
+        if (false /*MAKEFRAME*/ ) {
+            def makeFrame(): Unit = {
+                if (target == getPos) {
+                    target = ???
+                    return
+                } else if (!getWorld.isAirBlock(target)) {
+                    val list = NonNullList.create[ItemStack]()
+                    val state = getWorld.getBlockState(target)
+                }
+
+                if (PowerManager.useEnergyFrameBuild(self, 0 /*unbreaking*/)) {
+
+                }
+            }
+
+            makeFrame()
+        }
     }
 
     override protected def isWorking = false
