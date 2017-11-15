@@ -1,18 +1,19 @@
 package com.yogpc.qp.tile
 
-import com.yogpc.qp.{PowerManager, QuarryPlus}
+import java.lang.{Boolean => JBool, Byte => JByte, Integer => JInt}
+
 import com.yogpc.qp.block.ADismCBlock
-import com.yogpc.qp.compat.InvUtils
-import com.yogpc.qp.tile.TileAdvQuarry.{ItemElement, ItemList}
+import com.yogpc.qp.compat.{INBTReadable, INBTWritable, InvUtils}
+import com.yogpc.qp.tile.TileAdvQuarry.{DigRange, ItemElement, ItemList, QEnch}
 import com.yogpc.qp.version.VersionUtil
+import com.yogpc.qp.{PowerManager, QuarryPlus, QuarryPlusI, ReflectionHelper}
+import net.minecraft.block.properties.PropertyHelper
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.math.{BlockPos, ChunkPos}
-import net.minecraft.util.{EnumFacing, ITickable}
-import net.minecraft.util.NonNullList
-import net.minecraft.util.math.{BlockPos, ChunkPos}
+import net.minecraft.util.{EnumFacing, ITickable, NonNullList}
 import net.minecraftforge.common.ForgeChunkManager
 import net.minecraftforge.common.ForgeChunkManager.Type
 import net.minecraftforge.common.capabilities.Capability
@@ -28,26 +29,52 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
     val cacheItems = new ItemList
     val itemHandler = new ItemHandler
     val mode = new Mode
+    val ACTING: PropertyHelper[JBool] = ADismCBlock.ACTING
 
     override def update() = {
         super.update()
         if (!getWorld.isRemote) {
-            if (false /*MAKEFRAME*/ ) {
+            if (mode is TileAdvQuarry.MAKEFRAME) {
                 def makeFrame(): Unit = {
                     if (target == getPos) {
-                        target = ???
+                        target = nextFrameTarget
                         return
                     } else if (!getWorld.isAirBlock(target)) {
                         val list = NonNullList.create[ItemStack]()
                         val state = getWorld.getBlockState(target)
+
+                        if (ench.silktouch && state.getBlock.canSilkHarvest(getWorld, target, state, null)) {
+                            val energy = PowerManager.calcEnergyBreak(self, state.getBlockHardness(getWorld, target), -1, ench.unbreaking)
+                            if (useEnergy(energy, energy, false) == energy) {
+                                useEnergy(energy, energy, true)
+                                list.add(ReflectionHelper.invoke(TileBasic.createStackedBlock, state.getBlock, state).asInstanceOf[ItemStack])
+                            }
+                        } else {
+                            val energy = PowerManager.calcEnergyBreak(self, state.getBlockHardness(getWorld, target), ench.fortune, ench.unbreaking)
+                            if (useEnergy(energy, energy, false) == energy) {
+                                useEnergy(energy, energy, true)
+                                state.getBlock.getDrops(list, getWorld, target, state, ench.fortune)
+                            }
+                        }
+                        list.asScala.foreach(cacheItems.add)
                     }
 
-                    if (PowerManager.useEnergyFrameBuild(self, 0 /*unbreaking*/)) {
-
+                    if (PowerManager.useEnergyFrameBuild(self, ench.unbreaking)) {
+                        getWorld.setBlockState(target, QuarryPlusI.blockFrame.getDefaultState)
+                        target = nextFrameTarget
                     }
                 }
 
-                makeFrame()
+                def nextFrameTarget: BlockPos = {
+                    ???
+                }
+
+                for (_ <- 0 until 4 if mode is TileAdvQuarry.MAKEFRAME)
+                    makeFrame()
+            } else if (mode is TileAdvQuarry.BREAKBLOCK) {
+
+            } else if (mode is TileAdvQuarry.NOTNEEDBREAK) {
+
             }
             //TODO quarry action
             if (!isEmpty) {
@@ -82,14 +109,28 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
         }
         if (!digRange.defined) {
             digRange = makeRangeBox()
-            target = new BlockPos(digRange.minX, getPos.getY - 1, digRange.minZ)
+            target = new BlockPos(digRange.minX, getPos.getY + 4, digRange.minZ)
         }
+    }
+
+    override def readFromNBT(nbttc: NBTTagCompound) = {
+        ench = QEnch.readFromNBT(nbttc)
+        digRange = DigRange.readFromNBT(nbttc)
+        target = BlockPos.fromLong(nbttc.getLong("NBT_TARGET"))
+        super.readFromNBT(nbttc)
+    }
+
+    override def writeToNBT(nbttc: NBTTagCompound) = {
+        ench.writeToNBT(nbttc)
+        digRange.writeToNBT(nbttc)
+        nbttc.setLong("NBT_TARGET", target.toLong)
+        super.writeToNBT(nbttc)
     }
 
     /**
       * @return Map (Enchantment id, level)
       */
-    override def getEnchantments = ench.getMap.map { case (a, b) => (java.lang.Integer.valueOf(a), java.lang.Byte.valueOf(b)) }.asJava
+    override def getEnchantments = ench.getMap.map { case (a, b) => (JInt.valueOf(a), JByte.valueOf(b)) }.asJava
 
     /**
       * @param id    Enchantment id
@@ -131,9 +172,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
 
     override def isEmpty = cacheItems.list.isEmpty
 
-    override def getStackInSlot(index: Int) = {
-        cacheItems.list(index).toStack
-    }
+    override def getStackInSlot(index: Int) = cacheItems.list(index).toStack
 
     override def hasCustomName = false
 
@@ -186,7 +225,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
         new TileAdvQuarry.DigRange(link._1, link._2)
     }
 
-    private class ItemHandler extends IItemHandlerModifiable {
+    private[TileAdvQuarry] class ItemHandler extends IItemHandlerModifiable {
         override def setStackInSlot(slot: Int, stack: ItemStack): Unit = self.setInventorySlotContents(slot, stack)
 
         override def getStackInSlot(slot: Int): ItemStack = self.getStackInSlot(slot)
@@ -208,7 +247,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
         override def insertItem(slot: Int, stack: ItemStack, simulate: Boolean): ItemStack = stack
     }
 
-    private class Mode {
+    private[TileAdvQuarry] class Mode {
 
         import TileAdvQuarry._
 
@@ -217,26 +256,28 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
         def set(newmode: Modes): Unit = {
             mode = newmode
             val state = getWorld.getBlockState(getPos)
-            if (state.getValue(ADismCBlock.ACTING)) {
+            if (state.getValue(ACTING)) {
                 if (newmode == NONE) {
                     validate()
-                    getWorld.setBlockState(getPos, state.withProperty(ADismCBlock.ACTING, false))
+                    getWorld.setBlockState(getPos, state.withProperty(ACTING, JBool.FALSE))
                     validate()
                     getWorld.setTileEntity(getPos, self)
                 }
             } else {
                 if (newmode != NONE) {
                     validate()
-                    getWorld.setBlockState(getPos, state.withProperty(ADismCBlock.ACTING, true))
+                    getWorld.setBlockState(getPos, state.withProperty(ACTING, JBool.TRUE))
                     validate()
                     getWorld.setTileEntity(getPos, self)
                 }
             }
         }
 
-        def isWorking = mode != NONE
+        def is(modes: Modes): Boolean = mode == modes
 
-        def reduceRecieve = mode == MAKEFRAME
+        def isWorking = !is(NONE)
+
+        def reduceRecieve = is(MAKEFRAME)
     }
 
 }
@@ -247,8 +288,10 @@ object TileAdvQuarry {
     val defaultEnch = QEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false)
     val defaultRange: DigRange = NoDefinedRange
     private val ENERGYLIMIT_LIST = IndexedSeq(5120, 10240, 20480, 40960, 81920, maxStored)
+    private val NBT_QENCH = "nbt_qench"
+    private val NBT_DIGRANGE = "nbt_digrange"
 
-    private case class QEnch(efficiency: Byte, unbreaking: Byte, fortune: Byte, silktouch: Boolean) {
+    private[TileAdvQuarry] case class QEnch(efficiency: Byte, unbreaking: Byte, fortune: Byte, silktouch: Boolean) extends INBTWritable {
 
         require(efficiency >= 0 && unbreaking >= 0 && fortune >= 0, "Chunk Destroyer Enchantment error")
 
@@ -268,21 +311,69 @@ object TileAdvQuarry {
             FortuneID -> fortune, SilktouchID -> silktouch.compare(false).toByte)
 
         val maxRecieve = if (efficiency >= 5) ENERGYLIMIT_LIST(5) else ENERGYLIMIT_LIST(efficiency)
+
+        override def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
+            val t = new NBTTagCompound
+            t.setByte("efficiency", efficiency)
+            t.setByte("unbreaking", unbreaking)
+            t.setByte("fortune", fortune)
+            t.setBoolean("silktouch", silktouch)
+            nbt.setTag(NBT_QENCH, t)
+            nbt
+        }
     }
 
-    private case class DigRange(minX: Double, minY: Double, minZ: Double, maxX: Double, maxY: Double, maxZ: Double) {
+    object QEnch extends INBTReadable[QEnch] {
+        override def readFromNBT(tag: NBTTagCompound): QEnch = {
+            if (tag.hasKey(NBT_QENCH)) {
+                val t = tag.getCompoundTag(NBT_QENCH)
+                QEnch(t.getByte("efficiency"), t.getByte("unbreaking"), t.getByte("fortune"), t.getBoolean("silktouch"))
+            } else
+                defaultEnch
+        }
+    }
+
+    private[TileAdvQuarry] case class DigRange(minX: Double, minY: Double, minZ: Double, maxX: Double, maxY: Double, maxZ: Double) extends INBTWritable {
         def this(minPos: BlockPos, maxPos: BlockPos) {
             this(minPos.getX.toDouble, minPos.getY.toDouble, minPos.getZ.toDouble, maxPos.getX.toDouble, maxPos.getY.toDouble, maxPos.getZ.toDouble)
         }
 
         val defined = true
+
+        override def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
+            val t = new NBTTagCompound
+            t.setBoolean("defined", defined)
+            t.setDouble("minX", minX)
+            t.setDouble("minY", minY)
+            t.setDouble("minZ", minZ)
+            t.setDouble("maxX", maxX)
+            t.setDouble("maxY", maxY)
+            t.setDouble("maxZ", maxZ)
+            nbt.setTag(NBT_DIGRANGE, t)
+            nbt
+        }
+    }
+
+    object DigRange extends INBTReadable[DigRange] {
+        override def readFromNBT(tag: NBTTagCompound): DigRange = {
+            if (tag.hasKey(NBT_DIGRANGE)) {
+                val t = tag.getCompoundTag(NBT_DIGRANGE)
+                if (t.getBoolean("defined")) {
+                    DigRange(t.getDouble("minX"), t.getDouble("minY"), t.getDouble("minZ"),
+                        t.getDouble("maxX"), t.getDouble("maxY"), t.getDouble("maxZ"))
+                } else {
+                    defaultRange
+                }
+            } else
+                defaultRange
+        }
     }
 
     private object NoDefinedRange extends DigRange(BlockPos.ORIGIN, BlockPos.ORIGIN) {
         override val defined: Boolean = false
     }
 
-    private class ItemList {
+    class ItemList {
         val list = scala.collection.mutable.ArrayBuffer.empty[ItemElement]
 
         def add(itemDamage: ItemDamage, count: Int): Unit = {
@@ -319,7 +410,7 @@ object TileAdvQuarry {
 
     }
 
-    private case class ItemElement(itemDamage: ItemDamage, count: Int) {
+    case class ItemElement(itemDamage: ItemDamage, count: Int) {
         def toStack = itemDamage.toStack(count)
     }
 

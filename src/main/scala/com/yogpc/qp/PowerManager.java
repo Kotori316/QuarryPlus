@@ -167,6 +167,13 @@ public class PowerManager {
         return true;
     }
 
+    /**
+     * @param pp          power tile
+     * @param hardness    block hardness
+     * @param enchantMode no ench -> 0, silktouch -> -1, fortune -> fortune level
+     * @param unbreaking  unbreaking level
+     * @return Require energy.
+     */
     public static double calcEnergyBreak(APowerTile pp, float hardness, byte enchantMode, byte unbreaking) {
         double BP, CU, CSP;
         if (pp instanceof TileMiningWell) {
