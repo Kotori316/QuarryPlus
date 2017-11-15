@@ -160,6 +160,14 @@ public class PowerManager {
      * @return Whether the tile used energy.
      */
     public static boolean useEnergyBreak(final APowerTile pp, final float hardness, final byte enchantMode, final byte unbreaking) {
+        final double pw = calcEnergyBreak(pp, hardness, enchantMode, unbreaking);
+        if (pp.useEnergy(pw, pw, false) != pw)
+            return false;
+        pp.useEnergy(pw, pw, true);
+        return true;
+    }
+
+    public static double calcEnergyBreak(APowerTile pp, float hardness, byte enchantMode, byte unbreaking) {
         double BP, CU, CSP;
         if (pp instanceof TileMiningWell) {
             BP = MiningWell_BP;
@@ -176,11 +184,7 @@ public class PowerManager {
             else
                 CSP = Math.pow(QuarryWork_CF, enchantMode);
         }
-        final double pw = BP * hardness * CSP / (unbreaking * CU + 1);
-        if (pp.useEnergy(pw, pw, false) != pw)
-            return false;
-        pp.useEnergy(pw, pw, true);
-        return true;
+        return BP * hardness * CSP / (unbreaking * CU + 1);
     }
 
     public static boolean useEnergyPump(final APowerTile pp, final byte U, final long liquids, final long frames) {

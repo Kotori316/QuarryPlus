@@ -1,6 +1,6 @@
 package com.yogpc.qp.tile
 
-import com.yogpc.qp.QuarryPlus
+import com.yogpc.qp.{PowerManager, QuarryPlus}
 import com.yogpc.qp.block.ADismCBlock
 import com.yogpc.qp.compat.InvUtils
 import com.yogpc.qp.tile.TileAdvQuarry.{ItemElement, ItemList}
@@ -11,6 +11,8 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.math.{BlockPos, ChunkPos}
 import net.minecraft.util.{EnumFacing, ITickable}
+import net.minecraft.util.NonNullList
+import net.minecraft.util.math.{BlockPos, ChunkPos}
 import net.minecraftforge.common.ForgeChunkManager
 import net.minecraftforge.common.ForgeChunkManager.Type
 import net.minecraftforge.common.capabilities.Capability
@@ -30,6 +32,23 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
     override def update() = {
         super.update()
         if (!getWorld.isRemote) {
+            if (false /*MAKEFRAME*/ ) {
+                def makeFrame(): Unit = {
+                    if (target == getPos) {
+                        target = ???
+                        return
+                    } else if (!getWorld.isAirBlock(target)) {
+                        val list = NonNullList.create[ItemStack]()
+                        val state = getWorld.getBlockState(target)
+                    }
+
+                    if (PowerManager.useEnergyFrameBuild(self, 0 /*unbreaking*/)) {
+
+                    }
+                }
+
+                makeFrame()
+            }
             //TODO quarry action
             if (!isEmpty) {
                 var break = false
