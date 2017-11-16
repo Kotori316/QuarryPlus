@@ -13,7 +13,6 @@
 
 package com.yogpc.qp.tile;
 
-import javax.annotation.Nullable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -23,7 +22,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public abstract class APacketTile extends TileEntity {
 
-    @Nullable
     @Override
     public SPacketUpdateTileEntity getUpdatePacket() {
         return new SPacketUpdateTileEntity(getPos(), 0, getUpdateTag());

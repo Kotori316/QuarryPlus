@@ -39,7 +39,7 @@ case class BlockData(name: ResourceLocation, meta: Int) {
     override def equals(o: Any): Boolean = {
         o match {
             case data: BlockData =>
-                name.equals(data.name) &&
+                name == data.name &&
                   (meta == data.meta || meta == OreDictionary.WILDCARD_VALUE || data.meta == OreDictionary.WILDCARD_VALUE)
         }
     }
@@ -64,8 +64,7 @@ case class BlockData(name: ResourceLocation, meta: Int) {
             sb.append(meta)
         }
         sb.append("  ")
-        val value = ForgeRegistries.BLOCKS.getValue(name)
-        sb.append(if (value != null) value.getLocalizedName else name.toString)
+        sb.append(Option(ForgeRegistries.BLOCKS.getValue(name)).map(_.getLocalizedName).getOrElse(name.toString))
         sb.toString
     }
 }

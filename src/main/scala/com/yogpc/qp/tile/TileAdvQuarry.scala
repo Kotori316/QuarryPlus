@@ -26,6 +26,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
     var ench = TileAdvQuarry.defaultEnch
     var digRange = TileAdvQuarry.defaultRange
     var target = BlockPos.ORIGIN
+    var framePoses = List.empty[BlockPos]
     val cacheItems = new ItemList
     val itemHandler = new ItemHandler
     val mode = new Mode
@@ -43,17 +44,24 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
                         val list = NonNullList.create[ItemStack]()
                         val state = getWorld.getBlockState(target)
 
+                        if (state.getBlock == QuarryPlusI.blockFrame) {
+                            target = nextFrameTarget
+                            return
+                        }
+
                         if (ench.silktouch && state.getBlock.canSilkHarvest(getWorld, target, state, null)) {
                             val energy = PowerManager.calcEnergyBreak(self, state.getBlockHardness(getWorld, target), -1, ench.unbreaking)
                             if (useEnergy(energy, energy, false) == energy) {
                                 useEnergy(energy, energy, true)
                                 list.add(ReflectionHelper.invoke(TileBasic.createStackedBlock, state.getBlock, state).asInstanceOf[ItemStack])
+                                getWorld.setBlockToAir(target)
                             }
                         } else {
                             val energy = PowerManager.calcEnergyBreak(self, state.getBlockHardness(getWorld, target), ench.fortune, ench.unbreaking)
                             if (useEnergy(energy, energy, false) == energy) {
                                 useEnergy(energy, energy, true)
                                 state.getBlock.getDrops(list, getWorld, target, state, ench.fortune)
+                                getWorld.setBlockToAir(target)
                             }
                         }
                         list.asScala.foreach(cacheItems.add)
@@ -66,17 +74,23 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
                 }
 
                 def nextFrameTarget: BlockPos = {
-                    ???
+                    framePoses match {
+                        case p :: rest => framePoses = rest
+                            p
+                        case Nil => mode set TileAdvQuarry.BREAKBLOCK
+                            new BlockPos(digRange.minX, getPos.getY, digRange.minZ)
+                    }
                 }
 
-                for (_ <- 0 until 4 if mode is TileAdvQuarry.MAKEFRAME)
-                    makeFrame()
+                for (_ <- 0 until 4)
+                    if (mode is TileAdvQuarry.MAKEFRAME)
+                        makeFrame()
             } else if (mode is TileAdvQuarry.BREAKBLOCK) {
-
+                //TODO implement
             } else if (mode is TileAdvQuarry.NOTNEEDBREAK) {
-
+                if (digRange.defined && framePoses.nonEmpty)
+                    mode set TileAdvQuarry.MAKEFRAME
             }
-            //TODO quarry action
             if (!isEmpty) {
                 var break = false
                 var is = cacheItems.list.remove(0).toStack
@@ -86,7 +100,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
                         cacheItems.add(stack)
                         break = true
                     }
-                    if (isEmpty) {
+                    if (isEmpty || break) {
                         break = true
                     } else {
                         is = cacheItems.list.remove(0).toStack
@@ -103,13 +117,15 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
         if (!mode.isWorking) {
             this.configure(0, getMaxStored)
         } else if (mode.reduceRecieve) {
-            this.configure(ench.maxRecieve / 128, TileAdvQuarry.maxStored)
+            this.configure(ench.maxRecieve / 128, TileAdvQuarry.MAX_STORED)
         } else {
-            this.configure(ench.maxRecieve, TileAdvQuarry.maxStored)
+            this.configure(ench.maxRecieve, TileAdvQuarry.MAX_STORED)
         }
         if (!digRange.defined) {
             digRange = makeRangeBox()
-            target = new BlockPos(digRange.minX, getPos.getY + 4, digRange.minZ)
+            val headtail = TileAdvQuarry.getFramePoses(digRange)
+            target = headtail.head
+            framePoses = headtail.tail
         }
     }
 
@@ -214,13 +230,13 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
         val facing = getWorld.getBlockState(getPos).getValue(ADismCBlock.FACING).getOpposite
         val link = List(getPos.offset(facing), getPos.offset(facing.rotateYCCW), getPos.offset(facing.rotateY)).map(getWorld.getTileEntity(_))
           .collectFirst { case m: TileMarker if m.link != null =>
-              val poses = (m.min(), m.max())
+              val poses = (m.min().add(+1, 0, +1), m.max().add(-1, 0, -1))
               m.removeFromWorldWithItem().asScala.foreach(cacheItems.add)
               poses
           }.getOrElse({
             val chunkPos = new ChunkPos(getPos)
             val y = getPos.getY
-            (new BlockPos(chunkPos.getXStart, y, chunkPos.getZStart), new BlockPos(chunkPos.getZEnd, y, chunkPos.getZEnd))
+            (new BlockPos(chunkPos.getXStart, y, chunkPos.getZStart), new BlockPos(chunkPos.getXEnd, y, chunkPos.getZEnd))
         })
         new TileAdvQuarry.DigRange(link._1, link._2)
     }
@@ -278,18 +294,21 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
         def isWorking = !is(NONE)
 
         def reduceRecieve = is(MAKEFRAME)
+
+        override def toString: String = "ChunkDestroyer mode = " + mode
     }
 
 }
 
 object TileAdvQuarry {
 
-    val maxStored = 30000 * 256
-    val defaultEnch = QEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false)
-    val defaultRange: DigRange = NoDefinedRange
-    private val ENERGYLIMIT_LIST = IndexedSeq(5120, 10240, 20480, 40960, 81920, maxStored)
+    val MAX_STORED = 30000 * 256
+    private val ENERGYLIMIT_LIST = IndexedSeq(5120, 10240, 20480, 40960, 81920, MAX_STORED)
     private val NBT_QENCH = "nbt_qench"
     private val NBT_DIGRANGE = "nbt_digrange"
+
+    val defaultEnch = QEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false)
+    val defaultRange: DigRange = NoDefinedRange
 
     private[TileAdvQuarry] case class QEnch(efficiency: Byte, unbreaking: Byte, fortune: Byte, silktouch: Boolean) extends INBTWritable {
 
@@ -333,9 +352,9 @@ object TileAdvQuarry {
         }
     }
 
-    private[TileAdvQuarry] case class DigRange(minX: Double, minY: Double, minZ: Double, maxX: Double, maxY: Double, maxZ: Double) extends INBTWritable {
+    private[TileAdvQuarry] case class DigRange(minX: Int, minY: Int, minZ: Int, maxX: Int, maxY: Int, maxZ: Int) extends INBTWritable {
         def this(minPos: BlockPos, maxPos: BlockPos) {
-            this(minPos.getX.toDouble, minPos.getY.toDouble, minPos.getZ.toDouble, maxPos.getX.toDouble, maxPos.getY.toDouble, maxPos.getZ.toDouble)
+            this(minPos.getX, minPos.getY, minPos.getZ, maxPos.getX, maxPos.getY, maxPos.getZ)
         }
 
         val defined = true
@@ -343,12 +362,12 @@ object TileAdvQuarry {
         override def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
             val t = new NBTTagCompound
             t.setBoolean("defined", defined)
-            t.setDouble("minX", minX)
-            t.setDouble("minY", minY)
-            t.setDouble("minZ", minZ)
-            t.setDouble("maxX", maxX)
-            t.setDouble("maxY", maxY)
-            t.setDouble("maxZ", maxZ)
+            t.setInteger("minX", minX)
+            t.setInteger("minY", minY)
+            t.setInteger("minZ", minZ)
+            t.setInteger("maxX", maxX)
+            t.setInteger("maxY", maxY)
+            t.setInteger("maxZ", maxZ)
             nbt.setTag(NBT_DIGRANGE, t)
             nbt
         }
@@ -359,8 +378,8 @@ object TileAdvQuarry {
             if (tag.hasKey(NBT_DIGRANGE)) {
                 val t = tag.getCompoundTag(NBT_DIGRANGE)
                 if (t.getBoolean("defined")) {
-                    DigRange(t.getDouble("minX"), t.getDouble("minY"), t.getDouble("minZ"),
-                        t.getDouble("maxX"), t.getDouble("maxY"), t.getDouble("maxZ"))
+                    DigRange(t.getInteger("minX"), t.getInteger("minY"), t.getInteger("minZ"),
+                        t.getInteger("maxX"), t.getInteger("maxY"), t.getInteger("maxZ"))
                 } else {
                     defaultRange
                 }
@@ -378,7 +397,7 @@ object TileAdvQuarry {
 
         def add(itemDamage: ItemDamage, count: Int): Unit = {
             val i = list.indexWhere(_.itemDamage == itemDamage)
-            if (i > 0) {
+            if (i > -1) {
                 val e = list(i).count
                 val newCount = e + count
                 if (newCount > 0) {
@@ -424,4 +443,26 @@ object TileAdvQuarry {
 
     object BREAKBLOCK extends Modes
 
+    def getFramePoses(digRange: DigRange): List[BlockPos] = {
+        val builder = List.newBuilder[BlockPos]
+        for (i <- 0 to 4) {
+            builder += new BlockPos(digRange.minX - 1, digRange.maxY + 4 - i, digRange.minZ - 1)
+            builder += new BlockPos(digRange.minX - 1, digRange.maxY + 4 - i, digRange.maxZ + 1)
+            builder += new BlockPos(digRange.maxX + 1, digRange.maxY + 4 - i, digRange.maxZ + 1)
+            builder += new BlockPos(digRange.maxX + 1, digRange.maxY + 4 - i, digRange.minZ - 1)
+        }
+        for (x <- digRange.minX to digRange.maxX) {
+            builder += new BlockPos(x, digRange.maxY + 4, digRange.minZ - 1)
+            builder += new BlockPos(x, digRange.maxY + 0, digRange.minZ - 1)
+            builder += new BlockPos(x, digRange.maxY + 0, digRange.maxZ + 1)
+            builder += new BlockPos(x, digRange.maxY + 4, digRange.maxZ + 1)
+        }
+        for (z <- digRange.minZ to digRange.maxZ) {
+            builder += new BlockPos(digRange.minX - 1, digRange.maxY + 4, z)
+            builder += new BlockPos(digRange.minX - 1, digRange.maxY + 0, z)
+            builder += new BlockPos(digRange.maxX + 1, digRange.maxY + 0, z)
+            builder += new BlockPos(digRange.maxX + 1, digRange.maxY + 4, z)
+        }
+        builder.result()
+    }
 }
