@@ -20,7 +20,7 @@ sealed abstract class ItemDamage extends Ordered[ItemDamage] {
     def hashCode(): Int
 
     def toStack(amount: Int = 1): ItemStack = {
-        val s = new ItemStack(item, if (amount < 0) 0 else amount, damage)
+        val s = new ItemStack(item, amount, damage)
         if (tag != null) {
             s.setTagCompound(tag.copy())
         }
@@ -57,7 +57,7 @@ case class OK(itemStack: ItemStack) extends ItemDamage {
 
     override def toStack(amount: Int): ItemStack = {
         val a = itemStack.copy()
-        a.setCount(if (amount < 0) 0 else amount)
+        a.setCount(amount)
         a
     }
 

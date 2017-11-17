@@ -194,12 +194,16 @@ public class PowerManager {
         return BP * hardness * CSP / (unbreaking * CU + 1);
     }
 
-    public static boolean useEnergyPump(final APowerTile pp, final byte U, final long liquids, final long frames) {
-        final double pw = PumpDrain_BP * liquids / (U * PumpDrain_CU + 1) + PumpFrame_BP * frames / (U * PumpFrame_CU + 1);
+    public static boolean useEnergyPump(final APowerTile pp, final byte U, final long liquidsCount, final long framesToBuild) {
+        final double pw = calcEnergyPumpDrain(U, liquidsCount, framesToBuild);
         if (pp.useEnergy(pw, pw, false) != pw)
             return false;
         pp.useEnergy(pw, pw, true);
         return true;
+    }
+
+    public static double calcEnergyPumpDrain(byte unbreaking, long liquids, long frames) {
+        return PumpDrain_BP * liquids / (unbreaking * PumpDrain_CU + 1) + PumpFrame_BP * frames / (unbreaking * PumpFrame_CU + 1);
     }
 
     private static boolean useEnergy(final APowerTile pp, final double BP, final byte U, final double CU, final byte E, final double CE) {
