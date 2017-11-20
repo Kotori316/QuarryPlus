@@ -6,6 +6,8 @@ import javax.annotation.Nonnull
 
 import com.yogpc.qp.block.ADismCBlock
 import com.yogpc.qp.compat.{INBTReadable, INBTWritable, InvUtils}
+import com.yogpc.qp.packet.PacketHandler
+import com.yogpc.qp.packet.advquarry.AdvModeMessage
 import com.yogpc.qp.tile.TileAdvQuarry.{DigRange, ItemElement, ItemList, QEnch}
 import com.yogpc.qp.version.VersionUtil
 import com.yogpc.qp.{PowerManager, QuarryPlus, QuarryPlusI, ReflectionHelper}
@@ -17,16 +19,21 @@ import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos, ChunkPos}
+import net.minecraft.util.text.TextComponentString
 import net.minecraft.util.{EnumFacing, ITickable, NonNullList}
 import net.minecraft.world.World
 import net.minecraftforge.common.ForgeChunkManager
 import net.minecraftforge.common.ForgeChunkManager.Type
 import net.minecraftforge.common.capabilities.Capability
-import net.minecraftforge.fluids.{Fluid, FluidRegistry, FluidStack, FluidUtil}
+import net.minecraftforge.fluids.capability.templates.FluidHandlerFluidMap
+import net.minecraftforge.fluids.capability.{FluidTankProperties, IFluidHandler, IFluidTankProperties}
+import net.minecraftforge.fluids.{Fluid, FluidStack, FluidTank, FluidUtil}
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import net.minecraftforge.items.{CapabilityItemHandler, IItemHandlerModifiable}
 import net.minecraftforge.oredict.OreDictionary
 
 import scala.collection.JavaConverters._
+import scala.collection.convert.WrapAsJava
 
 class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory with ITickable with IDebugSender {
     self =>
@@ -38,7 +45,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
     val itemHandler = new ItemHandler
     val mode = new Mode
     val ACTING: PropertyHelper[JBool] = ADismCBlock.ACTING
-    val fluidStacks = scala.collection.mutable.Map.empty[Fluid, FluidStack]
+    val fluidStacks = scala.collection.mutable.Map.empty[Fluid, IFluidHandler]
 
     override def update() = {
         super.update()
@@ -90,6 +97,11 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
                     }
                 }
 
+                if (framePoses.isEmpty) {
+                    val headtail = TileAdvQuarry.getFramePoses(digRange)
+                    target = headtail.head
+                    framePoses = headtail.tail
+                }
                 for (_ <- 0 until 4)
                     if (mode is TileAdvQuarry.MAKEFRAME)
                         makeFrame()
@@ -193,11 +205,15 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
                         destroy.foreach(getWorld.setBlockState(_, Blocks.AIR.getDefaultState, 2))
                         drain.foreach(p => {
                             val handler = Option(FluidUtil.getFluidHandler(getWorld, p, EnumFacing.UP))
-                            val fluid = handler.map(_.getTankProperties.apply(0).getContents).map(_.getFluid).getOrElse(FluidRegistry.WATER)
-                            handler.map(_.drain(Fluid.BUCKET_VOLUME, false)).foreach(s => fluidStacks.get(fluid) match {
-                                case Some(s1) => s1.amount += s.amount
-                                case None => fluidStacks.put(fluid, s)
-                            })
+                            val fluidOp = handler.map(_.getTankProperties.apply(0)).flatMap(p => Option(p.getContents)).map(_.getFluid)
+                            fluidOp match {
+                                case Some(fluid) => handler.map(_.drain(Fluid.BUCKET_VOLUME, false)).foreach(s => fluidStacks.get(fluid) match {
+                                    case Some(tank) => tank.fill(s, true)
+                                    case None => fluidStacks.put(fluid, new FluidTank(s, Int.MaxValue))
+                                })
+                                case None => //QuarryPlus.LOGGER.error(s"Adv Fluid null, ${getWorld.getBlockState(p)}, ${FluidUtil.getFluidHandler(getWorld, p, EnumFacing.UP)}")
+                            }
+
                             getWorld.setBlockState(p, Blocks.AIR.getDefaultState, 2)
                         })
                         list.asScala.foreach(cacheItems.add)
@@ -225,8 +241,9 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
                 }
 
             } else if (mode is TileAdvQuarry.NOTNEEDBREAK) {
-                if (digRange.defined && framePoses.nonEmpty)
-                    mode set TileAdvQuarry.MAKEFRAME
+                if (digRange.defined)
+                    if (getStoredEnergy > getMaxStored * 0.3)
+                        mode set TileAdvQuarry.MAKEFRAME
             }
             if (!isEmpty) {
                 var break = false
@@ -251,6 +268,12 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
 
     override def G_reinit(): Unit = {
         mode.set(TileAdvQuarry.NOTNEEDBREAK)
+        if (!digRange.defined) {
+            digRange = makeRangeBox()
+        }
+    }
+
+    def energyConfigure(): Unit = {
         if (!mode.isWorking) {
             this.configure(0, getMaxStored)
         } else if (mode.reduceRecieve) {
@@ -258,18 +281,13 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
         } else {
             this.configure(ench.maxRecieve, TileAdvQuarry.MAX_STORED)
         }
-        if (!digRange.defined) {
-            digRange = makeRangeBox()
-            val headtail = TileAdvQuarry.getFramePoses(digRange)
-            target = headtail.head
-            framePoses = headtail.tail
-        }
     }
 
     override def readFromNBT(nbttc: NBTTagCompound) = {
         ench = QEnch.readFromNBT(nbttc)
         digRange = DigRange.readFromNBT(nbttc)
         target = BlockPos.fromLong(nbttc.getLong("NBT_TARGET"))
+        mode.readFromNBT(nbttc)
         super.readFromNBT(nbttc)
     }
 
@@ -277,6 +295,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
         ench.writeToNBT(nbttc)
         digRange.writeToNBT(nbttc)
         nbttc.setLong("NBT_TARGET", target.toLong)
+        mode.writeToNBT(nbttc)
         super.writeToNBT(nbttc)
     }
 
@@ -331,7 +350,13 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
 
     override def getName = "tile.chunkdestroyer.name"
 
-    override def sendDebugMessage(player: EntityPlayer) = {}
+    override def sendDebugMessage(player: EntityPlayer) = {
+        player.sendStatusMessage(new TextComponentString("Items to extract = " + cacheItems.list.size), false)
+        player.sendStatusMessage(new TextComponentString("Liquid to extract = " + fluidStacks.size), false)
+        player.sendStatusMessage(new TextComponentString("Next target = " + target.toString), false)
+        player.sendStatusMessage(new TextComponentString("Now mode = " + mode), false)
+        player.sendStatusMessage(new TextComponentString("Dig range = " + digRange), false)
+    }
 
     override def hasCapability(capability: Capability[_], facing: EnumFacing) = {
         capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, facing)
@@ -342,6 +367,20 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
             CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(itemHandler)
         } else
             super.getCapability(capability, facing)
+    }
+
+    override def hasFastRenderer: Boolean = true
+
+    override def getRenderBoundingBox: AxisAlignedBB = {
+        if (digRange.defined) {
+            new AxisAlignedBB(digRange.minX, digRange.minY, digRange.minZ, digRange.maxX, digRange.maxY, digRange.maxZ)
+        } else
+            super.getRenderBoundingBox
+    }
+
+    override def onLoad(): Unit = {
+        super.onLoad()
+        energyConfigure()
     }
 
     private var chunkTicket: ForgeChunkManager.Ticket = _
@@ -385,6 +424,12 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
         mDigRange = digRange
     }
 
+    @SideOnly(Side.CLIENT)
+    def recieveModeMassage(modeTag: NBTTagCompound): Unit = {
+        mode.readFromNBT(modeTag)
+        digRange = DigRange.readFromNBT(modeTag)
+    }
+
     private[TileAdvQuarry] class ItemHandler extends IItemHandlerModifiable {
         override def setStackInSlot(slot: Int, stack: ItemStack): Unit = self.setInventorySlotContents(slot, stack)
 
@@ -407,7 +452,24 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
         override def insertItem(slot: Int, stack: ItemStack, simulate: Boolean): ItemStack = stack
     }
 
-    private[TileAdvQuarry] class Mode {
+    private[TileAdvQuarry] class FluidHandler extends FluidHandlerFluidMap(WrapAsJava.mutableMapAsJavaMap(fluidStacks)) {
+        val emptyProperty = new FluidTankProperties(null, 0, false, false)
+
+        /**
+          * Not fillable.
+          */
+        override def fill(resource: FluidStack, doFill: Boolean): Int = 0
+
+        override def getTankProperties: Array[IFluidTankProperties] = {
+            if (fluidStacks.nonEmpty) {
+                super.getTankProperties
+            } else {
+                Array(emptyProperty)
+            }
+        }
+    }
+
+    private[TileAdvQuarry] class Mode extends INBTWritable with INBTReadable[Mode] {
 
         import TileAdvQuarry._
 
@@ -415,6 +477,10 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
 
         def set(newmode: Modes): Unit = {
             mode = newmode
+            if (!getWorld.isRemote) {
+                energyConfigure()
+                PacketHandler.sendToAround(AdvModeMessage.create(self), getWorld, getPos)
+            }
             val state = getWorld.getBlockState(getPos)
             if (state.getValue(ACTING)) {
                 if (newmode == NONE) {
@@ -440,17 +506,46 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
         def reduceRecieve = is(MAKEFRAME)
 
         override def toString: String = "ChunkDestroyer mode = " + mode
+
+        override def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
+            val tag = new NBTTagCompound
+            tag.setInteger("mode", mode.index)
+            nbt.setTag(NBT_MODE, tag)
+            nbt
+        }
+
+        override def readFromNBT(tag: NBTTagCompound): Mode = {
+            if (tag hasKey NBT_MODE) {
+                val t = tag.getCompoundTag(NBT_MODE)
+                this.mode = t.getInteger("mode") match {
+                    case 0 => NONE
+                    case 1 => NOTNEEDBREAK
+                    case 2 => MAKEFRAME
+                    case 3 => BREAKBLOCK
+                    case _ => throw new RuntimeException("No available mode")
+                }
+            }
+            this
+        }
     }
 
 }
 
 object TileAdvQuarry {
 
-    val MAX_STORED = 30000 * 256
-    val noDigBLOCKS = Set(ItemDamage(Blocks.STONE, OreDictionary.WILDCARD_VALUE))
+    val MAX_STORED = 3000 * 256
+    val noDigBLOCKS = Set(
+        ItemDamage(Blocks.STONE, OreDictionary.WILDCARD_VALUE),
+        ItemDamage(Blocks.COBBLESTONE),
+        ItemDamage(Blocks.DIRT),
+        ItemDamage(Blocks.GRASS),
+        ItemDamage(Blocks.NETHERRACK),
+        ItemDamage(Blocks.SANDSTONE, OreDictionary.WILDCARD_VALUE),
+        ItemDamage(Blocks.RED_SANDSTONE, OreDictionary.WILDCARD_VALUE))
     private val ENERGYLIMIT_LIST = IndexedSeq(5120, 10240, 20480, 40960, 81920, MAX_STORED)
     private val NBT_QENCH = "nbt_qench"
     private val NBT_DIGRANGE = "nbt_digrange"
+    private val NBT_MODE = "nbt_quarrymode"
 
     val defaultEnch = QEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false)
     val defaultRange: DigRange = NoDefinedRange
@@ -506,6 +601,8 @@ object TileAdvQuarry {
 
         val defined = true
 
+        override val toString: String = s"Dig Range from ($minX, $minY, $minZ) to ($maxX, $maxY, $maxZ)"
+
         override def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
             val t = new NBTTagCompound
             t.setBoolean("defined", defined)
@@ -537,6 +634,8 @@ object TileAdvQuarry {
 
     private object NoDefinedRange extends DigRange(BlockPos.ORIGIN, BlockPos.ORIGIN) {
         override val defined: Boolean = false
+
+        override val toString: String = "Dig Range Not Defined"
     }
 
     class ItemList {
@@ -574,6 +673,7 @@ object TileAdvQuarry {
             }
         }
 
+        override def toString: String = "ItemList size = " + list.size
     }
 
     case class ItemElement(itemDamage: ItemDamage, count: Int) {
@@ -582,15 +682,15 @@ object TileAdvQuarry {
         override def toString: String = itemDamage.toString + "x" + count
     }
 
-    sealed trait Modes
+    sealed class Modes(val index: Int)
 
-    case object NONE extends Modes
+    case object NONE extends Modes(0)
 
-    case object NOTNEEDBREAK extends Modes
+    case object NOTNEEDBREAK extends Modes(1)
 
-    case object MAKEFRAME extends Modes
+    case object MAKEFRAME extends Modes(2)
 
-    case object BREAKBLOCK extends Modes
+    case object BREAKBLOCK extends Modes(3)
 
     def getFramePoses(digRange: DigRange): List[BlockPos] = {
         val builder = List.newBuilder[BlockPos]

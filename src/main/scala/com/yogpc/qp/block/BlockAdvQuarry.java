@@ -8,6 +8,7 @@ import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.item.ItemBlockEnchantable;
 import com.yogpc.qp.tile.TileAdvQuarry;
 import javax.annotation.Nullable;
+import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
@@ -67,8 +68,11 @@ public class BlockAdvQuarry extends ADismCBlock {
             if (t != null) {
                 ((TileAdvQuarry) t).G_reinit();
             }
+        } else if (!playerIn.isSneaking()) {
+            playerIn.openGui(QuarryPlus.getInstance(), QuarryPlusI.guiIdAdvQuarry, worldIn, pos.getX(), pos.getY(), pos.getZ());
+            return true;
         }
-        return true;
+        return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
     }
 
     @Override
@@ -100,6 +104,17 @@ public class BlockAdvQuarry extends ADismCBlock {
     @Override
     public IBlockState getStateFromMeta(int meta) {
         return getDefaultState().withProperty(FACING, EnumFacing.getFront(meta & 7)).withProperty(ACTING, (meta & 8) == 8);
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
+        super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
+        if (!worldIn.isRemote) {
+            TileEntity t = worldIn.getTileEntity(pos);
+            if (t != null)
+                ((TileAdvQuarry) t).energyConfigure();
+        }
     }
 
     @Override

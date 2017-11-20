@@ -54,6 +54,7 @@ public class QuarryPlusI {
     public static final int guiIdFList = 3;
     public static final int guiIdSList = 4;
     public static final int guiIdPlacer = 5;
+    public static final int guiIdAdvQuarry = 6;
 
     @SubscribeEvent
     public void onWorldUnload(final WorldEvent.Unload event) {

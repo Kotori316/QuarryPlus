@@ -14,10 +14,12 @@
 package com.yogpc.qp.gui;
 
 import com.yogpc.qp.QuarryPlusI;
+import com.yogpc.qp.container.ContainerAdvQuarry;
 import com.yogpc.qp.container.ContainerEnchList;
 import com.yogpc.qp.container.ContainerMover;
 import com.yogpc.qp.container.ContainerPlacer;
 import com.yogpc.qp.container.ContainerWorkbench;
+import com.yogpc.qp.tile.TileAdvQuarry;
 import com.yogpc.qp.tile.TileBasic;
 import com.yogpc.qp.tile.TilePlacer;
 import com.yogpc.qp.tile.TileWorkbench;
@@ -46,6 +48,8 @@ public class GuiHandler implements IGuiHandler {
                 return new GuiPlacer(p.inventory, (TilePlacer) w.getTileEntity(pos));
             case QuarryPlusI.guiIdWorkbench:
                 return new GuiWorkbench(p.inventory, (TileWorkbench) w.getTileEntity(pos));
+            case QuarryPlusI.guiIdAdvQuarry:
+                return new GuiAdvQuarry((TileAdvQuarry) w.getTileEntity(pos), p);
         }
 
         return null;
@@ -65,6 +69,8 @@ public class GuiHandler implements IGuiHandler {
                 return new ContainerPlacer(p.inventory, (TilePlacer) w.getTileEntity(pos));
             case QuarryPlusI.guiIdWorkbench:
                 return new ContainerWorkbench(p.inventory, (TileWorkbench) w.getTileEntity(pos));
+            case QuarryPlusI.guiIdAdvQuarry:
+                return new ContainerAdvQuarry((TileAdvQuarry) w.getTileEntity(pos), p);
         }
         return null;
     }
