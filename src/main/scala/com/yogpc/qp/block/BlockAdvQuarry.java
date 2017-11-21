@@ -1,5 +1,6 @@
 package com.yogpc.qp.block;
 
+import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.BuildCraftHelper;
@@ -15,6 +16,7 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -68,6 +70,13 @@ public class BlockAdvQuarry extends ADismCBlock {
             if (t != null) {
                 ((TileAdvQuarry) t).G_reinit();
             }
+            return true;
+        } else if (Config.content().noEnergy() && stack.getItem() == Items.STICK) {
+            TileEntity t = worldIn.getTileEntity(pos);
+            if (t != null) {
+                ((TileAdvQuarry) t).stickActivated();
+            }
+            return true;
         } else if (!playerIn.isSneaking()) {
             playerIn.openGui(QuarryPlus.getInstance(), QuarryPlusI.guiIdAdvQuarry, worldIn, pos.getX(), pos.getY(), pos.getZ());
             return true;

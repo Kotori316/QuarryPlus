@@ -10,8 +10,9 @@ import com.yogpc.qp.packet.PacketHandler
 import com.yogpc.qp.packet.advquarry.AdvModeMessage
 import com.yogpc.qp.tile.TileAdvQuarry.{DigRange, ItemElement, ItemList, QEnch}
 import com.yogpc.qp.version.VersionUtil
-import com.yogpc.qp.{PowerManager, QuarryPlus, QuarryPlusI, ReflectionHelper}
+import com.yogpc.qp.{Config, PowerManager, QuarryPlus, QuarryPlusI, ReflectionHelper}
 import net.minecraft.block.properties.PropertyHelper
+import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.item.{EntityItem, EntityXPOrb}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
@@ -30,7 +31,6 @@ import net.minecraftforge.fluids.capability.{FluidTankProperties, IFluidHandler,
 import net.minecraftforge.fluids.{Fluid, FluidStack, FluidTank, FluidUtil}
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import net.minecraftforge.items.{CapabilityItemHandler, IItemHandlerModifiable}
-import net.minecraftforge.oredict.OreDictionary
 
 import scala.collection.JavaConverters._
 import scala.collection.convert.WrapAsJava
@@ -41,11 +41,12 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
     var ench = TileAdvQuarry.defaultEnch
     var target = BlockPos.ORIGIN
     var framePoses = List.empty[BlockPos]
+    val fluidStacks = scala.collection.mutable.Map.empty[Fluid, IFluidHandler]
     val cacheItems = new ItemList
     val itemHandler = new ItemHandler
+    val fluidHandler = new FluidHandler
     val mode = new Mode
     val ACTING: PropertyHelper[JBool] = ADismCBlock.ACTING
-    val fluidStacks = scala.collection.mutable.Map.empty[Fluid, IFluidHandler]
 
     override def update() = {
         super.update()
@@ -142,7 +143,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
                             } else {
                                 val blockHardness = state.getBlockHardness(getWorld, pos)
                                 if (blockHardness != -1 && !blockHardness.isInfinity) {
-                                    if (TileAdvQuarry.noDigBLOCKS.contains(ItemDamage(state.getBlock))) {
+                                    if (TileAdvQuarry.noDigBLOCKS.exists(_.contain(state))) {
                                         requireEnergy += PowerManager.calcEnergyBreak(this, blockHardness, 0, ench.unbreaking)
                                         destroy = pos :: destroy
                                     } else {
@@ -241,7 +242,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
                 }
 
             } else if (mode is TileAdvQuarry.NOTNEEDBREAK) {
-                if (digRange.defined)
+                if (digRange.defined && !Config.content.noEnergy)
                     if (getStoredEnergy > getMaxStored * 0.3)
                         mode set TileAdvQuarry.MAKEFRAME
             }
@@ -424,6 +425,12 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
         mDigRange = digRange
     }
 
+    def stickActivated(): Unit = {
+        if (mode is TileAdvQuarry.NOTNEEDBREAK) {
+            mode set TileAdvQuarry.MAKEFRAME
+        }
+    }
+
     @SideOnly(Side.CLIENT)
     def recieveModeMassage(modeTag: NBTTagCompound): Unit = {
         mode.readFromNBT(modeTag)
@@ -466,6 +473,13 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
             } else {
                 Array(emptyProperty)
             }
+        }
+
+        override def toString: String = {
+            "ChunkDestroyer FluidHandler contents = " + getTankProperties.map { c =>
+                val s = c.getContents
+                (s.getFluid, s.amount)
+            }.mkString(", ")
         }
     }
 
@@ -535,13 +549,13 @@ object TileAdvQuarry {
 
     val MAX_STORED = 3000 * 256
     val noDigBLOCKS = Set(
-        ItemDamage(Blocks.STONE, OreDictionary.WILDCARD_VALUE),
-        ItemDamage(Blocks.COBBLESTONE),
-        ItemDamage(Blocks.DIRT),
-        ItemDamage(Blocks.GRASS),
-        ItemDamage(Blocks.NETHERRACK),
-        ItemDamage(Blocks.SANDSTONE, OreDictionary.WILDCARD_VALUE),
-        ItemDamage(Blocks.RED_SANDSTONE, OreDictionary.WILDCARD_VALUE))
+        BlockWrapper(Blocks.STONE.getDefaultState, ignoreMeta = true),
+        BlockWrapper(Blocks.COBBLESTONE.getDefaultState),
+        BlockWrapper(Blocks.DIRT.getDefaultState, ignoreProperty = true),
+        BlockWrapper(Blocks.GRASS.getDefaultState, ignoreProperty = true),
+        BlockWrapper(Blocks.NETHERRACK.getDefaultState),
+        BlockWrapper(Blocks.SANDSTONE.getDefaultState, ignoreMeta = true),
+        BlockWrapper(Blocks.RED_SANDSTONE.getDefaultState, ignoreMeta = true))
     private val ENERGYLIMIT_LIST = IndexedSeq(5120, 10240, 20480, 40960, 81920, MAX_STORED)
     private val NBT_QENCH = "nbt_qench"
     private val NBT_DIGRANGE = "nbt_digrange"
@@ -680,6 +694,18 @@ object TileAdvQuarry {
         def toStack = itemDamage.toStack(count)
 
         override def toString: String = itemDamage.toString + "x" + count
+    }
+
+    private[TileAdvQuarry] case class BlockWrapper(state: IBlockState, ignoreProperty: Boolean = false, ignoreMeta: Boolean = false) {
+        def contain(that: IBlockState): Boolean = {
+            if (ignoreMeta) {
+                state.getBlock == that.getBlock
+            } else if (ignoreProperty) {
+                state.getBlock.getMetaFromState(state) == that.getBlock.getMetaFromState(that)
+            } else {
+                state == that
+            }
+        }
     }
 
     sealed class Modes(val index: Int)
