@@ -40,6 +40,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
@@ -92,8 +93,11 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
 
     protected boolean S_breakBlock(final int x, final int y, final int z) {
         final List<ItemStack> dropped = new LinkedList<>();
-        //noinspection ConstantConditions
-        final IBlockState b = getWorld().getChunkProvider().getLoadedChunk(x >> 4, z >> 4).getBlockState(x & 0xF, y, z & 0xF);
+        Chunk loadedChunk = getWorld().getChunkProvider().getLoadedChunk(x >> 4, z >> 4);
+        if (loadedChunk == null) {
+            return false;
+        }
+        final IBlockState b = loadedChunk.getBlockState(x & 0xF, y, z & 0xF);
         BlockPos pos = new BlockPos(x, y, z);
         if (b.getBlock().isAir(b, getWorld(), pos))
             return true;
