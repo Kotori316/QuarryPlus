@@ -354,7 +354,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         for (kx = 0; kx < chunk_side_x; kx++)
             for (kz = 0; kz < chunk_side_z; kz++)
                 this.ebses[kx][kz] = getWorld().getChunkProvider()
-                        .getLoadedChunk(kx + (this.xOffset >> 4), kz + (this.zOffset >> 4))
+                        .provideChunk(kx + (this.xOffset >> 4), kz + (this.zOffset >> 4))
                         .getBlockStorageArray();
         S_put(x - this.xOffset, y, z - this.zOffset);
         IBlockState b_c;
@@ -407,7 +407,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
             for (int kx = 0; kx < this.ebses.length; kx++) {
                 for (int kz = 0; kz < this.ebses[0].length; kz++) {
                     this.ebses[kx][kz] = getWorld().getChunkProvider()
-                            .getLoadedChunk(kx + (this.xOffset >> 4), kz + (this.zOffset >> 4))
+                            .provideChunk(kx + (this.xOffset >> 4), kz + (this.zOffset >> 4))
                             .getBlockStorageArray();
                 }
             }
