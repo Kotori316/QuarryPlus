@@ -3,6 +3,7 @@ package com.yogpc.qp.container
 import com.yogpc.qp.packet.PacketHandler
 import com.yogpc.qp.packet.advquarry.AdvModeMessage
 import com.yogpc.qp.tile.TileAdvQuarry
+import com.yogpc.qp.version.VersionUtil
 import net.minecraft.entity.player.{EntityPlayer, EntityPlayerMP}
 import net.minecraft.inventory.{Container, Slot}
 import net.minecraft.item.ItemStack
@@ -22,7 +23,7 @@ class ContainerAdvQuarry(tile: TileAdvQuarry, player: EntityPlayer) extends Cont
         PacketHandler.sendToClient(AdvModeMessage.create(tile), player.asInstanceOf[EntityPlayerMP])
     }
 
-    override def transferStackInSlot(playerIn: EntityPlayer, index: Int): ItemStack = ItemStack.EMPTY
+    override def transferStackInSlot(playerIn: EntityPlayer, index: Int): ItemStack = VersionUtil.empty()
 
     override def canInteractWith(playerIn: EntityPlayer) = tile.isUsableByPlayer(playerIn)
 }
