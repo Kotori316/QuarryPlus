@@ -15,6 +15,7 @@ package com.yogpc.qp.tile
 import javax.annotation.{Nonnull, Nullable}
 
 import com.yogpc.qp.version.VersionUtil
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.ItemStackHelper
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
@@ -26,7 +27,7 @@ import net.minecraftforge.items.wrapper.InvWrapper
 
 import scala.collection.JavaConverters._
 
-class TilePlacer extends TileEntity with HasInventory {
+class TilePlacer extends TileEntity with HasInv {
     private val inventory = NonNullList.withSize(getSizeInventory, com.yogpc.qp.version.VersionUtil.empty())
     private val handler = new InvWrapper(this)
 
@@ -59,6 +60,8 @@ class TilePlacer extends TileEntity with HasInventory {
     override def clear() = inventory.clear()
 
     override def getName = "tile.placerplus.name"
+
+    override def isUsableByPlayer(player: EntityPlayer) = getWorld.getTileEntity(getPos) eq this
 
     override def hasCapability(capability: Capability[_], @Nullable facing: EnumFacing): Boolean =
         (capability eq CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) || super.hasCapability(capability, facing)

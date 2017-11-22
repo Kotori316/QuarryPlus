@@ -34,7 +34,7 @@ import net.minecraftforge.items.{CapabilityItemHandler, IItemHandlerModifiable}
 import scala.collection.JavaConverters._
 import scala.collection.convert.WrapAsJava
 
-class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInventory with ITickable with IDebugSender {
+class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with ITickable with IDebugSender {
     self =>
     private var mDigRange = TileAdvQuarry.defaultRange
     var ench = TileAdvQuarry.defaultEnch
@@ -336,6 +336,8 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInventory w
 
     override def getName = "tile.chunkdestroyer.name"
 
+    override def isUsableByPlayer(player: EntityPlayer) = self.getWorld.getTileEntity(self.getPos) eq this
+
     override def sendDebugMessage(player: EntityPlayer) = {
         if (!Config.content.disableController) {
             player.sendStatusMessage(new TextComponentString("Items to extract = " + cacheItems.list.size), false)
@@ -371,6 +373,12 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInventory w
     override def onLoad(): Unit = {
         super.onLoad()
         energyConfigure()
+    }
+
+    override def onChunkUnload(): Unit = {
+        super.onChunkUnload()
+        mode set TileAdvQuarry.NONE
+        ForgeChunkManager.releaseTicket(this.chunkTicket)
     }
 
     private var chunkTicket: ForgeChunkManager.Ticket = _
@@ -415,6 +423,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInventory w
     }
 
     def stickActivated(): Unit = {
+        //Called when noEnergy is true and block is right clicked with stick (item)
         if (mode is TileAdvQuarry.NOTNEEDBREAK) {
             mode set TileAdvQuarry.MAKEFRAME
         }
@@ -527,7 +536,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInventory w
                     case 1 => NOTNEEDBREAK
                     case 2 => MAKEFRAME
                     case 3 => BREAKBLOCK
-                    case _ => throw new RuntimeException("No available mode")
+                    case _ => throw new IllegalStateException("No available mode")
                 }
             }
             this

@@ -97,6 +97,7 @@ object WorkbenchRecipes {
         addRecipe(ItemDamage(blockBreaker), 320000, new ItemStack(REDSTONE, 1600), new ItemStack(DIAMOND, 600), new ItemStack(GOLD_INGOT, 800), new ItemStack(IRON_INGOT, 1600), new ItemStack(ENDER_PEARL, 50))
         addRecipe(ItemDamage(blockPlacer), 320000, new ItemStack(REDSTONE, 1600), new ItemStack(DIAMOND, 600), new ItemStack(GOLD_INGOT, 1600), new ItemStack(IRON_INGOT, 800), new ItemStack(ENDER_PEARL, 50))
         if (false) addRecipe(ItemDamage(blockLaser), 640000, new ItemStack(DIAMOND, 400), new ItemStack(REDSTONE, 4800), new ItemStack(OBSIDIAN, 800), new ItemStack(GLASS, 3600), new ItemStack(GLOWSTONE_DUST, 1600), new ItemStack(GOLD_INGOT, 800), new ItemStack(ENDER_PEARL, 5))
-        addRecipe(ItemDamage(blockChunkdestroyer), 3200000, new ItemStack(blockQuarry, 75), new ItemStack(blockPump, 50), new ItemStack(itemTool, 1 * 25, 1), new ItemStack(blockMarker, 75), new ItemStack(DIAMOND_BLOCK, 8 * 25), new ItemStack(EMERALD_BLOCK, 8 * 25), new ItemStack(ENDER_EYE, 64 * 25))
+        if (!Config.content.disableChunkDestroyer)
+            addRecipe(ItemDamage(blockChunkdestroyer), 3200000, new ItemStack(blockQuarry, 75), new ItemStack(blockPump, 50), new ItemStack(itemTool, 1 * 25, 1), new ItemStack(blockMarker, 75), new ItemStack(DIAMOND_BLOCK, 8 * 25), new ItemStack(EMERALD_BLOCK, 8 * 25), new ItemStack(ENDER_EYE, 64 * 25))
     }
 }
