@@ -32,7 +32,6 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -47,7 +46,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
-public abstract class TileBasic extends APowerTile implements IEnchantableTile, IInventory {
+public abstract class TileBasic extends APowerTile implements IEnchantableTile, HasInv {
     protected EnumFacing pump = null;
 
     public final List<BlockData> fortuneList = new ArrayList<>();
@@ -275,11 +274,6 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     }
 
     @Override
-    public boolean hasCustomName() {
-        return false;
-    }
-
-    @Override
     public int getInventoryStackLimit() {
         return 0;
     }
@@ -290,30 +284,8 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     }
 
     @Override
-    public void openInventory(EntityPlayer player) {
-    }
-
-    @Override
-    public void closeInventory(EntityPlayer player) {
-    }
-
-    @Override
     public boolean isItemValidForSlot(int index, ItemStack stack) {
         return false;
-    }
-
-    @Override
-    public int getField(int id) {
-        return 0;
-    }
-
-    @Override
-    public void setField(int id, int value) {
-    }
-
-    @Override
-    public int getFieldCount() {
-        return 0;
     }
 
     @Override

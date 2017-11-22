@@ -45,7 +45,7 @@ public class TileMessage implements IMessage {
                 }
                 break;
             case SERVER:
-                TileEntity tileEntity = ctx.getServerHandler().player.world.getTileEntity(pos);
+                TileEntity tileEntity = QuarryPlus.proxy.getPacketWorld(ctx.netHandler).getTileEntity(pos);
                 if (tileEntity != null) {
                     tileEntity.readFromNBT(compound);
                 }

@@ -16,7 +16,6 @@ import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.item.{EntityItem, EntityXPOrb}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
-import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos, ChunkPos}
@@ -35,7 +34,7 @@ import net.minecraftforge.items.{CapabilityItemHandler, IItemHandlerModifiable}
 import scala.collection.JavaConverters._
 import scala.collection.convert.WrapAsJava
 
-class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory with ITickable with IDebugSender {
+class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInventory with ITickable with IDebugSender {
     self =>
     private var mDigRange = TileAdvQuarry.defaultRange
     var ench = TileAdvQuarry.defaultEnch
@@ -50,7 +49,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
 
     override def update() = {
         super.update()
-        if (!getWorld.isRemote) {
+        if (!getWorld.isRemote && !Config.content.disableController) {
             if (mode is TileAdvQuarry.MAKEFRAME) {
                 @inline
                 def makeFrame(): Unit = {
@@ -311,17 +310,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
       */
     override def setEnchantent(id: Short, value: Short) = ench = ench.set(id, value)
 
-    override def getField(id: Int) = 0
-
-    override def getFieldCount = 0
-
-    override def setField(id: Int, value: Int) = ()
-
     override def isItemValidForSlot(index: Int, stack: ItemStack) = false
-
-    override def openInventory(player: EntityPlayer) = ()
-
-    override def closeInventory(player: EntityPlayer) = ()
 
     override def setInventorySlotContents(index: Int, stack: ItemStack) = {
         if (VersionUtil.nonEmpty(stack)) {
@@ -337,8 +326,6 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
 
     override def removeStackFromSlot(index: Int) = cacheItems.list.remove(index).toStack
 
-    override def isUsableByPlayer(player: EntityPlayer) = getWorld.getTileEntity(getPos) eq this
-
     override def getInventoryStackLimit = 1
 
     override def clear() = cacheItems.list.clear()
@@ -347,16 +334,18 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
 
     override def getStackInSlot(index: Int) = cacheItems.list(index).toStack
 
-    override def hasCustomName = false
-
     override def getName = "tile.chunkdestroyer.name"
 
     override def sendDebugMessage(player: EntityPlayer) = {
-        player.sendStatusMessage(new TextComponentString("Items to extract = " + cacheItems.list.size), false)
-        player.sendStatusMessage(new TextComponentString("Liquid to extract = " + fluidStacks.size), false)
-        player.sendStatusMessage(new TextComponentString("Next target = " + target.toString), false)
-        player.sendStatusMessage(new TextComponentString("Now mode = " + mode), false)
-        player.sendStatusMessage(new TextComponentString("Dig range = " + digRange), false)
+        if (!Config.content.disableController) {
+            player.sendStatusMessage(new TextComponentString("Items to extract = " + cacheItems.list.size), false)
+            player.sendStatusMessage(new TextComponentString("Liquid to extract = " + fluidStacks.size), false)
+            player.sendStatusMessage(new TextComponentString("Next target = " + target.toString), false)
+            player.sendStatusMessage(new TextComponentString(mode.toString), false)
+            player.sendStatusMessage(new TextComponentString("Dig range = " + digRange), false)
+        } else {
+            player.sendStatusMessage(new TextComponentString("ChunkDestroyer is disabled."), false)
+        }
     }
 
     override def hasCapability(capability: Capability[_], facing: EnumFacing) = {
@@ -390,7 +379,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
         if (this.chunkTicket != null) return
         this.chunkTicket = ForgeChunkManager.requestTicket(QuarryPlus.INSTANCE, getWorld, Type.NORMAL)
         if (this.chunkTicket == null) return
-        val tag: NBTTagCompound = this.chunkTicket.getModData
+        val tag = this.chunkTicket.getModData
         tag.setInteger("quarryX", getPos.getX)
         tag.setInteger("quarryY", getPos.getY)
         tag.setInteger("quarryZ", getPos.getZ)
@@ -399,7 +388,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
 
     def forceChunkLoading(ticket: ForgeChunkManager.Ticket): Unit = {
         if (this.chunkTicket == null) this.chunkTicket = ticket
-        val quarryChunk: ChunkPos = new ChunkPos(getPos)
+        val quarryChunk = new ChunkPos(getPos)
         ForgeChunkManager.forceChunk(ticket, quarryChunk)
     }
 
@@ -477,8 +466,10 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
 
         override def toString: String = {
             "ChunkDestroyer FluidHandler contents = " + getTankProperties.map { c =>
-                val s = c.getContents
-                (s.getFluid, s.amount)
+                Option(c.getContents) match {
+                    case Some(s) => (s.getFluid.getName, s.amount)
+                    case None => ("No liqud", 0)
+                }
             }.mkString(", ")
         }
     }
@@ -497,14 +488,14 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
             }
             val state = getWorld.getBlockState(getPos)
             if (state.getValue(ACTING)) {
-                if (newmode == NONE) {
+                if (newmode == NONE || newmode == NOTNEEDBREAK) {
                     validate()
                     getWorld.setBlockState(getPos, state.withProperty(ACTING, JBool.FALSE))
                     validate()
                     getWorld.setTileEntity(getPos, self)
                 }
             } else {
-                if (newmode != NONE) {
+                if (newmode != NONE && newmode != NOTNEEDBREAK) {
                     validate()
                     getWorld.setBlockState(getPos, state.withProperty(ACTING, JBool.TRUE))
                     validate()
@@ -547,7 +538,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with IInventory wit
 
 object TileAdvQuarry {
 
-    val MAX_STORED = 3000 * 256
+    val MAX_STORED = 300 * 256
     val noDigBLOCKS = Set(
         BlockWrapper(Blocks.STONE.getDefaultState, ignoreMeta = true),
         BlockWrapper(Blocks.COBBLESTONE.getDefaultState),
@@ -556,7 +547,7 @@ object TileAdvQuarry {
         BlockWrapper(Blocks.NETHERRACK.getDefaultState),
         BlockWrapper(Blocks.SANDSTONE.getDefaultState, ignoreMeta = true),
         BlockWrapper(Blocks.RED_SANDSTONE.getDefaultState, ignoreMeta = true))
-    private val ENERGYLIMIT_LIST = IndexedSeq(5120, 10240, 20480, 40960, 81920, MAX_STORED)
+    private val ENERGYLIMIT_LIST = IndexedSeq(512, 1024, 2048, 4096, 8192, MAX_STORED)
     private val NBT_QENCH = "nbt_qench"
     private val NBT_DIGRANGE = "nbt_digrange"
     private val NBT_MODE = "nbt_quarrymode"
@@ -583,7 +574,7 @@ object TileAdvQuarry {
         def getMap = Map(EfficiencyID -> efficiency, UnbreakingID -> unbreaking,
             FortuneID -> fortune, SilktouchID -> silktouch.compare(false).toByte)
 
-        val maxRecieve = if (efficiency >= 5) ENERGYLIMIT_LIST(5) else ENERGYLIMIT_LIST(efficiency)
+        val maxRecieve = if (efficiency >= 5) ENERGYLIMIT_LIST(5) / 10 else ENERGYLIMIT_LIST(efficiency) / 10
 
         val mode: Byte = if (silktouch) -1 else fortune
 
@@ -604,7 +595,7 @@ object TileAdvQuarry {
                 val t = tag.getCompoundTag(NBT_QENCH)
                 QEnch(t.getByte("efficiency"), t.getByte("unbreaking"), t.getByte("fortune"), t.getBoolean("silktouch"))
             } else
-                defaultEnch
+                QEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false)
         }
     }
 
@@ -639,10 +630,10 @@ object TileAdvQuarry {
                     DigRange(t.getInteger("minX"), t.getInteger("minY"), t.getInteger("minZ"),
                         t.getInteger("maxX"), t.getInteger("maxY"), t.getInteger("maxZ"))
                 } else {
-                    defaultRange
+                    NoDefinedRange
                 }
             } else
-                defaultRange
+                NoDefinedRange
         }
     }
 
@@ -693,7 +684,7 @@ object TileAdvQuarry {
     case class ItemElement(itemDamage: ItemDamage, count: Int) {
         def toStack = itemDamage.toStack(count)
 
-        override def toString: String = itemDamage.toString + "x" + count
+        override def toString: String = itemDamage.toString + " x" + count
     }
 
     private[TileAdvQuarry] case class BlockWrapper(state: IBlockState, ignoreProperty: Boolean = false, ignoreMeta: Boolean = false) {

@@ -51,7 +51,6 @@ import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.ForgeChunkManager.Type;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -63,10 +62,10 @@ public class TileMarker extends APacketTile implements /*ITileAreaProvider,*/ IT
     public static final IndexOnlyList<Laser> LASER_INDEX = new IndexOnlyList<>(laserList, laserList);
 
     private static final int MAX_SIZE = 256;
-    private final boolean bcLoaded;
+//    private final boolean bcLoaded;
 
     public TileMarker() {
-        this.bcLoaded = Loader.isModLoaded(QuarryPlus.Optionals.Buildcraft_modID);
+//        this.bcLoaded = Loader.isModLoaded(QuarryPlus.Optionals.Buildcraft_modID);
     }
 
     public Link link;

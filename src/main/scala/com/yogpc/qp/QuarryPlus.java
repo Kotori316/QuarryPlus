@@ -74,7 +74,6 @@ public class QuarryPlus {
     public static final Logger LOGGER = LogManager.getLogger(Mod_Name);
     public boolean inDev;
 
-
     static {
         if (!Optionals.clientProxy.equals(ProxyClient.class.getName())) {
             throw new AssertionError("Client Proxy name doesn't match!");
@@ -203,7 +202,6 @@ public class QuarryPlus {
 
     @SuppressWarnings("unused")
     public static class Optionals {
-
         public static final String clientProxy = "com.yogpc.qp.ProxyClient";
         public static final String serverProxy = "com.yogpc.qp.ProxyCommon";
         public static final String configFactory = "com.yogpc.qp.gui.GuiFactory";
