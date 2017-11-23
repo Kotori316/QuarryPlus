@@ -1,5 +1,7 @@
 package com.yogpc.qp.block;
 
+import java.util.Optional;
+
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
@@ -14,6 +16,7 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -66,16 +69,17 @@ public class BlockAdvQuarry extends ADismCBlock {
         ItemStack stack = playerIn.getHeldItem(hand);
         if (InvUtils.isDebugItem(playerIn, hand)) return true;
         if (BuildCraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
-            TileEntity t = worldIn.getTileEntity(pos);
-            if (t != null) {
-                ((TileAdvQuarry) t).G_reinit();
-            }
+            if (!worldIn.isRemote)
+                Optional.ofNullable(((TileAdvQuarry) worldIn.getTileEntity(pos))).ifPresent(TileAdvQuarry::G_reinit);
+            return true;
+        } else if (stack.getItem() == QuarryPlusI.itemTool && stack.getItemDamage() == 0) {
+            if (!worldIn.isRemote)
+                Optional.ofNullable(((TileAdvQuarry) worldIn.getTileEntity(pos)))
+                        .map(EnchantmentHelper::getEnchantmentsChat).ifPresent(l -> l.forEach(playerIn::sendMessage));
             return true;
         } else if (Config.content().noEnergy() && stack.getItem() == Items.STICK) {
-            TileEntity t = worldIn.getTileEntity(pos);
-            if (t != null) {
-                ((TileAdvQuarry) t).stickActivated();
-            }
+            if (!worldIn.isRemote)
+                Optional.ofNullable(((TileAdvQuarry) worldIn.getTileEntity(pos))).ifPresent(TileAdvQuarry::stickActivated);
             return true;
         } else if (!playerIn.isSneaking()) {
             playerIn.openGui(QuarryPlus.getInstance(), QuarryPlusI.guiIdAdvQuarry, worldIn, pos.getX(), pos.getY(), pos.getZ());
@@ -90,10 +94,10 @@ public class BlockAdvQuarry extends ADismCBlock {
         if (!worldIn.isRemote) {
             EnumFacing facing = placer.getHorizontalFacing().getOpposite();
             worldIn.setBlockState(pos, state.withProperty(FACING, facing), 2);
-            TileAdvQuarry quarry = (TileAdvQuarry) worldIn.getTileEntity(pos);
-            assert quarry != null;
-            quarry.requestTicket();
-            EnchantmentHelper.init(quarry, stack.getEnchantmentTagList());
+            Optional.ofNullable((TileAdvQuarry) worldIn.getTileEntity(pos)).ifPresent(quarry -> {
+                quarry.requestTicket();
+                EnchantmentHelper.init(quarry, stack.getEnchantmentTagList());
+            });
         }
     }
 
@@ -119,15 +123,19 @@ public class BlockAdvQuarry extends ADismCBlock {
     @SuppressWarnings("deprecation")
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
         super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
-        if (!worldIn.isRemote) {
-            TileEntity t = worldIn.getTileEntity(pos);
-            if (t != null)
-                ((TileAdvQuarry) t).energyConfigure();
-        }
+        if (!worldIn.isRemote)
+            Optional.ofNullable(((TileAdvQuarry) worldIn.getTileEntity(pos))).ifPresent(TileAdvQuarry::energyConfigure);
     }
 
     @Override
     public TileEntity createNewTileEntity(World worldIn, int meta) {
         return new TileAdvQuarry();
+    }
+
+    @Override
+    public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items) {
+        if (!Config.content().disableChunkDestroyer()) {
+            super.getSubBlocks(itemIn, items);
+        }
     }
 }

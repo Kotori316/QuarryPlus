@@ -14,6 +14,7 @@
 package com.yogpc.qp.block;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
@@ -21,7 +22,6 @@ import com.yogpc.qp.compat.BuildCraftHelper;
 import com.yogpc.qp.compat.EnchantmentHelper;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.item.ItemBlockEnchantable;
-import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TileQuarry;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -94,7 +94,7 @@ public class BlockQuarry extends ADismCBlock {
             if (t != null) {
                 TileQuarry quarry = (TileQuarry) t;
                 if (stack.getItem() == QuarryPlusI.itemTool && stack.getItemDamage() == 0) {
-                    EnchantmentHelper.getEnchantmentsChat((IEnchantableTile) worldIn.getTileEntity(pos)).forEach(playerIn::sendMessage);
+                    EnchantmentHelper.getEnchantmentsChat(quarry).forEach(playerIn::sendMessage);
                     playerIn.sendMessage(new TextComponentTranslation("chat.currentmode",
                             new TextComponentTranslation(quarry.filler ? "chat.fillermode" : "chat.quarrymode")));
                 } else {
@@ -113,10 +113,10 @@ public class BlockQuarry extends ADismCBlock {
         if (!worldIn.isRemote) {
             EnumFacing facing = get2dOrientation(placer.posX, placer.posZ, pos.getX(), pos.getZ()).getOpposite();
             worldIn.setBlockState(pos, state.withProperty(FACING, facing), 2);
-            TileQuarry quarry = (TileQuarry) worldIn.getTileEntity(pos);
-            assert quarry != null;
-            quarry.requestTicket();
-            EnchantmentHelper.init(quarry, stack.getEnchantmentTagList());
+            Optional.ofNullable((TileQuarry) worldIn.getTileEntity(pos)).ifPresent(quarry -> {
+                quarry.requestTicket();
+                EnchantmentHelper.init(quarry, stack.getEnchantmentTagList());
+            });
         }
     }
 

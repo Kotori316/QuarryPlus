@@ -48,6 +48,7 @@ object Config {
     val RecipeDifficulty_key = "RecipeDifficulty"
     val PlacerOnlyPlaceFront_key = "PlacerOnlyPlaceFront"
     val NoEnergy_key = "NoEnergy"
+    val RemoveBedrock_Key = "RemoveBedrock"
     val DEBUG_key = "DEBUG"
 
     class Content {
@@ -55,7 +56,7 @@ object Config {
         import scala.collection.JavaConverters._
 
         val disableController = configuration.get(Configuration.CATEGORY_GENERAL, DisableSpawnerController_key, false).setRequiresMcRestart(true).getBoolean
-        val disableChunkDestroyer = configuration.get(Configuration.CATEGORY_GENERAL, DisableChunkDestroyer_key, false).setRequiresMcRestart(true).getBoolean
+        val disableChunkDestroyer = configuration.get(Configuration.CATEGORY_GENERAL, DisableChunkDestroyer_key, true).setRequiresMcRestart(true).getBoolean
         val spawnerBlacklist = configuration.get(Configuration.CATEGORY_GENERAL, SpawnerControllerEntityBlackList_key, Array("minecraft:ender_dragon", "minecraft:wither"))
           .getStringList.map(new ResourceLocation(_)).toSet.asJava
         val recipeDifficulty = configuration.get(Configuration.CATEGORY_GENERAL, RecipeDifficulty_key, 2d)
@@ -67,6 +68,7 @@ object Config {
         val noEnergy = configuration.getBoolean(NoEnergy_key, Configuration.CATEGORY_GENERAL, false, NoEnergy_key)
         PowerManager.loadConfiguration(configuration)
 
+        val removeBedrock = configuration.getBoolean(RemoveBedrock_Key, Configuration.CATEGORY_GENERAL, false, RemoveBedrock_Key)
         val debug = configuration.getBoolean(DEBUG_key, Configuration.CATEGORY_GENERAL, false, DEBUG_key)
 
         if (configuration.hasChanged)

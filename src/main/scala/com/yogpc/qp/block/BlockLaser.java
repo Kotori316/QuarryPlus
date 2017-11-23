@@ -15,6 +15,7 @@ package com.yogpc.qp.block;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
@@ -181,7 +182,7 @@ public class BlockLaser extends ADismCBlock {
     @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
-        EnchantmentHelper.init((IEnchantableTile) worldIn.getTileEntity(pos), stack.getEnchantmentTagList());
+        Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t -> EnchantmentHelper.init(t, stack.getEnchantmentTagList()));
     }
 
     @Override
@@ -190,7 +191,8 @@ public class BlockLaser extends ADismCBlock {
         ItemStack stack = playerIn.getHeldItem(hand);
         if (stack.getItem() == QuarryPlusI.itemTool && stack.getItemDamage() == 0) {
             if (!worldIn.isRemote) {
-                EnchantmentHelper.getEnchantmentsChat((IEnchantableTile) worldIn.getTileEntity(pos)).forEach(playerIn::sendMessage);
+                Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t ->
+                        EnchantmentHelper.getEnchantmentsChat(t).forEach(playerIn::sendMessage));
             }
             return true;
         }
