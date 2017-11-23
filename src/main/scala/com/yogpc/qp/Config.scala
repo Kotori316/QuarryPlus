@@ -48,6 +48,7 @@ object Config {
     val RecipeDifficulty_key = "RecipeDifficulty"
     val PlacerOnlyPlaceFront_key = "PlacerOnlyPlaceFront"
     val NoEnergy_key = "NoEnergy"
+    val RemoveBedrock_Key = "RemoveBedrock"
     val DEBUG_key = "DEBUG"
 
     class Content {
@@ -67,6 +68,7 @@ object Config {
         val noEnergy = configuration.getBoolean(NoEnergy_key, Configuration.CATEGORY_GENERAL, false, NoEnergy_key)
         PowerManager.loadConfiguration(configuration)
 
+        val removeBedrock = configuration.getBoolean(RemoveBedrock_Key, Configuration.CATEGORY_GENERAL, false, RemoveBedrock_Key)
         val debug = configuration.getBoolean(DEBUG_key, Configuration.CATEGORY_GENERAL, false, DEBUG_key)
 
         if (configuration.hasChanged)

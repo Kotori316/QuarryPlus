@@ -16,6 +16,7 @@ package com.yogpc.qp.block;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 import com.yogpc.qp.QuarryPlus;
@@ -110,7 +111,7 @@ public class BlockBreaker extends ADismCBlock {
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         if (!worldIn.isRemote) {
             worldIn.setBlockState(pos, state.withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer)), 2);
-            EnchantmentHelper.init((IEnchantableTile) worldIn.getTileEntity(pos), stack.getEnchantmentTagList());
+            Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t -> EnchantmentHelper.init(t, stack.getEnchantmentTagList()));
         }
     }
 
@@ -145,16 +146,17 @@ public class BlockBreaker extends ADismCBlock {
 
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-        final TileBreaker tile = (TileBreaker) worldIn.getTileEntity(pos);
+        Optional<TileBreaker> tileEntity = Optional.ofNullable((TileBreaker) worldIn.getTileEntity(pos));
         this.drops.clear();
-        final int count = quantityDropped(state, 0, worldIn.rand);
-        ItemStack is;
-        for (int i = 0; i < count; i++) {
-            final Item id1 = getItemDropped(state, worldIn.rand, 0);
-            is = new ItemStack(id1, 1, damageDropped(state));
-            EnchantmentHelper.enchantmentToIS(tile, is);
-            this.drops.add(is);
-        }
+        tileEntity.ifPresent(tile -> {
+            final int count = quantityDropped(state, 0, worldIn.rand);
+            for (int i = 0; i < count; i++) {
+                final Item id1 = getItemDropped(state, worldIn.rand, 0);
+                ItemStack is = new ItemStack(id1, 1, damageDropped(state));
+                EnchantmentHelper.enchantmentToIS(tile, is);
+                this.drops.add(is);
+            }
+        });
         super.breakBlock(worldIn, pos, state);
     }
 
@@ -178,7 +180,8 @@ public class BlockBreaker extends ADismCBlock {
         }
         if (stack.getItem() == QuarryPlusI.itemTool && stack.getItemDamage() == 0) {
             if (!worldIn.isRemote) {
-                EnchantmentHelper.getEnchantmentsChat((IEnchantableTile) worldIn.getTileEntity(pos)).forEach(playerIn::sendMessage);
+                Optional.ofNullable((TileBreaker) worldIn.getTileEntity(pos)).ifPresent(t ->
+                        EnchantmentHelper.getEnchantmentsChat(t).forEach(playerIn::sendMessage));
             }
             return true;
         }

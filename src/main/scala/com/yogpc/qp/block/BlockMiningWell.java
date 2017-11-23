@@ -58,12 +58,13 @@ public class BlockMiningWell extends ADismCBlock {
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack stack = playerIn.getHeldItem(hand);
         if (BuildCraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
-            ((TileMiningWell) worldIn.getTileEntity(pos)).G_reinit();
+            Optional.ofNullable((TileMiningWell) worldIn.getTileEntity(pos)).ifPresent(TileMiningWell::G_reinit);
             return true;
         }
         if (stack.getItem() == QuarryPlusI.itemTool && stack.getItemDamage() == 0) {
             if (!worldIn.isRemote) {
-                EnchantmentHelper.getEnchantmentsChat((IEnchantableTile) worldIn.getTileEntity(pos)).forEach(playerIn::sendMessage);
+                Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t ->
+                        EnchantmentHelper.getEnchantmentsChat(t).forEach(playerIn::sendMessage));
             }
             return true;
         }
@@ -80,7 +81,7 @@ public class BlockMiningWell extends ADismCBlock {
         if (!worldIn.isRemote) {
             EnumFacing facing = get2dOrientation(placer.posX, placer.posZ, pos.getX(), pos.getZ()).getOpposite();
             worldIn.setBlockState(pos, state.withProperty(FACING, facing), 2);
-            EnchantmentHelper.init((IEnchantableTile) worldIn.getTileEntity(pos), stack.getEnchantmentTagList());
+            Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t -> EnchantmentHelper.init(t, stack.getEnchantmentTagList()));
         }
     }
 
