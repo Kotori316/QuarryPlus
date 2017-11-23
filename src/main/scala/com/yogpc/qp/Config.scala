@@ -55,7 +55,7 @@ object Config {
         import scala.collection.JavaConverters._
 
         val disableController = configuration.get(Configuration.CATEGORY_GENERAL, DisableSpawnerController_key, false).setRequiresMcRestart(true).getBoolean
-        val disableChunkDestroyer = configuration.get(Configuration.CATEGORY_GENERAL, DisableChunkDestroyer_key, false).setRequiresMcRestart(true).getBoolean
+        val disableChunkDestroyer = configuration.get(Configuration.CATEGORY_GENERAL, DisableChunkDestroyer_key, true).setRequiresMcRestart(true).getBoolean
         val spawnerBlacklist = configuration.get(Configuration.CATEGORY_GENERAL, SpawnerControllerEntityBlackList_key, Array("minecraft:ender_dragon", "minecraft:wither"))
           .getStringList.map(new ResourceLocation(_)).toSet.asJava
         val recipeDifficulty = configuration.get(Configuration.CATEGORY_GENERAL, RecipeDifficulty_key, 2d)
