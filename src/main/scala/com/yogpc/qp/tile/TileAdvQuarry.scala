@@ -570,9 +570,9 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 
         def is(modes: Modes): Boolean = mode == modes
 
-        def isWorking = !is(NONE)
+        def isWorking: Boolean = !is(NONE)
 
-        def reduceRecieve = is(MAKEFRAME)
+        def reduceRecieve: Boolean = is(MAKEFRAME)
 
         override def toString: String = "ChunkDestroyer mode = " + mode
 
