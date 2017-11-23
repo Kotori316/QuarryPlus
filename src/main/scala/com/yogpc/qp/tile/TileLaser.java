@@ -45,7 +45,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 /**
  * The plus machine of {@link buildcraft.silicon.tile.TileLaser}
  */
-public class TileLaser extends APowerTile implements IEnchantableTile {
+public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSender {
     private int ticks;
 
     /**
@@ -282,6 +282,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile {
         PowerManager.configureLaser(this, this.efficiency, this.unbreaking);
     }
 
+    @Override
     public void sendDebugMessage(EntityPlayer player) {
         player.sendStatusMessage(new TextComponentString("Targets"), false);
         targets.stream()

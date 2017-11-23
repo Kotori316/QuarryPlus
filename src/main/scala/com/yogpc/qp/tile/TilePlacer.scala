@@ -16,7 +16,7 @@ import javax.annotation.{Nonnull, Nullable}
 
 import com.yogpc.qp.version.VersionUtil
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.inventory.{IInventory, ItemStackHelper}
+import net.minecraft.inventory.ItemStackHelper
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.tileentity.TileEntity
@@ -27,7 +27,7 @@ import net.minecraftforge.items.wrapper.InvWrapper
 
 import scala.collection.JavaConverters._
 
-class TilePlacer extends TileEntity with IInventory {
+class TilePlacer extends TileEntity with HasInv {
     private val inventory = NonNullList.withSize(getSizeInventory, com.yogpc.qp.version.VersionUtil.empty())
     private val handler = new InvWrapper(this)
 
@@ -55,25 +55,13 @@ class TilePlacer extends TileEntity with IInventory {
 
     override def getInventoryStackLimit = 64
 
-    override def isUsableByPlayer(player: EntityPlayer): Boolean = (getWorld.getTileEntity(getPos) eq this) && player.getDistanceSqToCenter(getPos) <= 64
-
-    override def openInventory(player: EntityPlayer) = ()
-
-    override def closeInventory(player: EntityPlayer) = ()
-
     override def isItemValidForSlot(index: Int, stack: ItemStack) = true
-
-    override def getField(id: Int) = 0
-
-    override def setField(id: Int, value: Int) = ()
-
-    override def getFieldCount = 0
 
     override def clear() = inventory.clear()
 
     override def getName = "tile.placerplus.name"
 
-    override def hasCustomName = false
+    override def isUsableByPlayer(player: EntityPlayer) = getWorld.getTileEntity(getPos) eq this
 
     override def hasCapability(capability: Capability[_], @Nullable facing: EnumFacing): Boolean =
         (capability eq CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) || super.hasCapability(capability, facing)

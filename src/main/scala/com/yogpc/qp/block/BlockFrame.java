@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Stream;
 
-import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.tile.TilePump;
@@ -100,8 +99,8 @@ public class BlockFrame extends Block {
         if (!world.isRemote && !d) {
             removeNeighboringFrames(world, pos);
         }
-        if (Config.content().debug())
-            QuarryPlus.LOGGER.info("Frame broken at " + pos + (d ? " neighbor Fluid" : ""));
+//        if (Config.content().debug())
+//            QuarryPlus.LOGGER.info("Frame broken at " + pos + (d ? " neighbor Fluid" : ""));
     }
 
     /**

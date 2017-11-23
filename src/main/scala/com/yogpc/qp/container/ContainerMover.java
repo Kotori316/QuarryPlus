@@ -187,7 +187,7 @@ public class ContainerMover extends Container {
             return;
         }
         NBTTagList list = tileItem.getEnchantmentTagList();
-        if (list == null || EnchantmentHelper.getEnchantmentLevel(tuple.enchantment, tileItem) == 0) {
+        if (/*list == null ||*/ EnchantmentHelper.getEnchantmentLevel(tuple.enchantment, tileItem) == 0) {
             //add new enchantment (Level 1)
             tileItem.addEnchantment(tuple.enchantment, 1);
             if (tuple.level == 1) {
@@ -218,7 +218,8 @@ public class ContainerMover extends Container {
 
     private static void downLevel(Enchantment enchantment, ItemStack stack) {
         NBTTagList list = stack.getEnchantmentTagList();
-        if (list != null) {
+        /*if (list != null) */
+        {
             for (int i = 0; i < list.tagCount(); i++) {
                 NBTTagCompound nbt = list.getCompoundTagAt(i);
                 if (Enchantment.getEnchantmentByID(nbt.getShort("id")) == enchantment) {

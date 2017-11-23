@@ -13,14 +13,15 @@ sealed abstract class ItemDamage extends Ordered[ItemDamage] {
     val item: Item
     val damage: Int
     val tag: NBTTagCompound
-    val anyMeta: Boolean = damage == OreDictionary.WILDCARD_VALUE
+
+    def anyMeta: Boolean = damage == OreDictionary.WILDCARD_VALUE
 
     def equals(any: Any): Boolean
 
     def hashCode(): Int
 
     def toStack(amount: Int = 1): ItemStack = {
-        val s = new ItemStack(item, if (amount < 0) 0 else amount, damage)
+        val s = new ItemStack(item, amount, damage)
         if (tag != null) {
             s.setTagCompound(tag.copy())
         }
@@ -53,11 +54,11 @@ case class OK(itemStack: ItemStack) extends ItemDamage {
         }
     }
 
-    override def hashCode(): Int = item.hashCode ^ damage
+    override def hashCode(): Int = item.hashCode
 
     override def toStack(amount: Int): ItemStack = {
         val a = itemStack.copy()
-        a.setCount(if (amount < 0) 0 else amount)
+        a.setCount(amount)
         a
     }
 
@@ -71,7 +72,7 @@ case class BlockOK(itemStack: ItemStack, block: Block) extends ItemDamage {
 
     override def toString: String = block.getUnlocalizedName + "@" + damage
 
-    override def hashCode(): Int = block.hashCode() ^ damage
+    override def hashCode(): Int = block.hashCode()
 
     override def equals(any: Any): Boolean = {
         any match {

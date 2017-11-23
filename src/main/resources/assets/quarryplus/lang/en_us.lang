@@ -1,6 +1,7 @@
 tile.enchantmover.name=EnchantMover
 tile.markerplus.name=Marker Plus
 tile.quarryplus.name=Quarry Plus
+tile.chunkdestroyer.name=Chunk Destroyer
 tile.pumpplus.name=Pump Plus
 tile.miningwellplus.name=MiningWell Plus
 tile.quarryframe.name=QuarryPlus Frame

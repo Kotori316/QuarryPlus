@@ -24,6 +24,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -69,21 +70,23 @@ public class BlockController extends Block implements IDismantleable {
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (InvUtils.isDebugItem(playerIn, hand)) return true;
-        if (!playerIn.isSneaking()) {
+        if (!Config.content().disableController()) {
+            if (!playerIn.isSneaking()) {
 //            playerIn.openGui(QuarryPlus.getInstance(), QuarryPlusI.guiIDController, worldIn, pos.getX(), pos.getY(), pos.getZ());
-            if (!worldIn.isRemote) {
-                List<EntityEntry> entries = new ArrayList<>();
-                for (EntityEntry entity : ForgeRegistries.ENTITIES) {
-                    Class<? extends Entity> entityClass = entity.getEntityClass();
-                    if (entityClass == null || Modifier.isAbstract(entityClass.getModifiers()) || Config.content().spawnerBlacklist().contains(entity.getRegistryName())) {
-                        continue;
+                if (!worldIn.isRemote) {
+                    List<EntityEntry> entries = new ArrayList<>();
+                    for (EntityEntry entity : ForgeRegistries.ENTITIES) {
+                        Class<? extends Entity> entityClass = entity.getEntityClass();
+                        if (entityClass == null || Modifier.isAbstract(entityClass.getModifiers()) || Config.content().spawnerBlacklist().contains(entity.getRegistryName())) {
+                            continue;
+                        }
+                        entries.add(entity);
                     }
-                    entries.add(entity);
+                    PacketHandler.sendToClient(AvailableEntities.create(pos, worldIn.provider.getDimension(), entries), (EntityPlayerMP) playerIn);
                 }
-                PacketHandler.sendToClient(AvailableEntities.create(pos, worldIn.provider.getDimension(), entries), (EntityPlayerMP) playerIn);
-            }
 
-            return true;
+                return true;
+            }
         }
         return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
     }
@@ -92,16 +95,16 @@ public class BlockController extends Block implements IDismantleable {
         getSpawner(world, pos).ifPresent(logic -> {
             if (!Config.content().spawnerBlacklist().contains(name))
                 logic.setEntityId(name);
-            logic.getSpawnerWorld().getTileEntity(logic.getSpawnerPosition()).markDirty();
+            Optional.ofNullable(logic.getSpawnerWorld().getTileEntity(logic.getSpawnerPosition())).ifPresent(TileEntity::markDirty);
             IBlockState state = logic.getSpawnerWorld().getBlockState(logic.getSpawnerPosition());
             logic.getSpawnerWorld().notifyBlockUpdate(logic.getSpawnerPosition(), state, state, 3);
         });
     }
 
-    @SuppressWarnings("deprecation")
     @Override
+    @SuppressWarnings("deprecation")
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
-        if (!worldIn.isRemote) {
+        if (!worldIn.isRemote && !Config.content().disableController()) {
             boolean r = worldIn.isBlockPowered(pos);
             boolean m = state.getValue(ACTING);
             if (r && !m) {

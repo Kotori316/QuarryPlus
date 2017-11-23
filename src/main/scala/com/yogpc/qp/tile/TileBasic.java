@@ -33,7 +33,6 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -49,7 +48,7 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
 @Optional.Interface(iface = "cofh.api.tileentity.IInventoryConnection", modid = QuarryPlus.Optionals.COFH_tileentity)
-public abstract class TileBasic extends APowerTile implements IEnchantableTile, IInventory, IInventoryConnection {
+public abstract class TileBasic extends APowerTile implements IEnchantableTile, HasInv, IInventoryConnection {
     protected EnumFacing pump = null;
 
     public final List<BlockData> fortuneList = new ArrayList<>();
@@ -94,11 +93,13 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     protected boolean S_breakBlock(final int x, final int y, final int z) {
         final List<ItemStack> dropped = new LinkedList<>();
         Chunk loadedChunk = getWorld().getChunkProvider().getLoadedChunk(x >> 4, z >> 4);
-        if (loadedChunk == null) {
-            return false;
-        }
-        final IBlockState b = loadedChunk.getBlockState(x & 0xF, y, z & 0xF);
+        final IBlockState b;
         BlockPos pos = new BlockPos(x, y, z);
+        if (loadedChunk == null) {
+            b = getWorld().getBlockState(pos);
+        } else {
+            b = loadedChunk.getBlockState(x & 0xF, y, z & 0xF);
+        }
         if (b.getBlock().isAir(b, getWorld(), pos))
             return true;
         if (pump != null && TilePump.isLiquid(b, false, getWorld(), pos)) {
@@ -258,7 +259,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     @Override
     public void setInventorySlotContents(final int i, final ItemStack is) {
         if (VersionUtil.nonEmpty(is))
-            System.err.println("QuarryPlus WARN: call setInventorySlotContents with non null ItemStack.");
+            QuarryPlus.LOGGER.warn("QuarryPlus WARN: call setInventorySlotContents with non null ItemStack.");
         if (i >= 0 && i < this.cacheItems.size())
             this.cacheItems.remove(i);
     }
@@ -266,11 +267,6 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     @Override
     public String getName() {
         return "container.yog.basic";
-    }
-
-    @Override
-    public boolean hasCustomName() {
-        return false;
     }
 
     @Override
@@ -284,30 +280,8 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     }
 
     @Override
-    public void openInventory(EntityPlayer player) {
-    }
-
-    @Override
-    public void closeInventory(EntityPlayer player) {
-    }
-
-    @Override
     public boolean isItemValidForSlot(int index, ItemStack stack) {
         return false;
-    }
-
-    @Override
-    public int getField(int id) {
-        return 0;
-    }
-
-    @Override
-    public void setField(int id, int value) {
-    }
-
-    @Override
-    public int getFieldCount() {
-        return 0;
     }
 
     @Override

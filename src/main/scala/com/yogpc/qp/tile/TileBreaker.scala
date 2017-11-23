@@ -18,7 +18,6 @@ import javax.annotation.Nullable
 
 import com.yogpc.qp.tile.IEnchantableTile._
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.tileentity.TileEntity
@@ -27,7 +26,7 @@ import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.items.CapabilityItemHandler
 import net.minecraftforge.items.wrapper.InvWrapper
 
-class TileBreaker extends TileEntity with IEnchantableTile with IInventory {
+class TileBreaker extends TileEntity with IEnchantableTile with HasInv {
     private val handler = new InvWrapper(this)
     var silktouch = false
     var fortune: Byte = 0
@@ -71,25 +70,13 @@ class TileBreaker extends TileEntity with IEnchantableTile with IInventory {
 
     override def getInventoryStackLimit = 0
 
-    override def isUsableByPlayer(player: EntityPlayer) = false
-
-    override def openInventory(player: EntityPlayer) = ()
-
-    override def closeInventory(player: EntityPlayer) = ()
-
     override def isItemValidForSlot(s: Int, stack: ItemStack) = false
-
-    override def getField(id: Int) = 0
-
-    override def setField(id: Int, value: Int) = ()
-
-    override def getFieldCount = 0
 
     override def clear() = ()
 
     override def getName = "tile.breakerplus.name"
 
-    override def hasCustomName = false
+    override def isUsableByPlayer(player: EntityPlayer) = getWorld.getTileEntity(getPos) eq this
 
     override def hasCapability(capability: Capability[_], @Nullable facing: EnumFacing): Boolean =
         (capability eq CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) || super.hasCapability(capability, facing)

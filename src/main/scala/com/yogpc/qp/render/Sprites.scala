@@ -22,6 +22,7 @@ object Sprites {
         map.put('laser_2, event.getMap.registerSprite(new ResourceLocation(QuarryPlus.modID, "entities/laser_2")))
         map.put('laser_3, event.getMap.registerSprite(new ResourceLocation(QuarryPlus.modID, "entities/laser_3")))
         map.put('laser_4, event.getMap.registerSprite(new ResourceLocation(QuarryPlus.modID, "entities/laser_4")))
+        map.put('yellow, event.getMap.registerSprite(new ResourceLocation(QuarryPlus.modID, "entities/yellow")))
         //        map.put('stripes, event.getMap.registerSprite(new ResourceLocation(QuarryPlus.modID, "entities/stripes")))
         map.put('stripes_h, event.getMap.registerSprite(new ResourceLocation(QuarryPlus.modID, "entities/stripes_h")))
         map.put('stripes_v, event.getMap.registerSprite(new ResourceLocation(QuarryPlus.modID, "entities/stripes_v")))

@@ -23,7 +23,6 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
@@ -36,7 +35,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @net.minecraftforge.fml.common.Optional.Interface(iface = "cofh.api.tileentity.IInventoryConnection", modid = QuarryPlus.Optionals.COFH_tileentity)
-public class TileWorkbench extends APowerTile implements IInventory, IInventoryConnection {
+public class TileWorkbench extends APowerTile implements HasInv, IInventoryConnection {
     public final NonNullList<ItemStack> inventory = NonNullList.withSize(27, com.yogpc.qp.version.VersionUtil.empty());
     public final NonNullList<ItemStack> inventory2 = NonNullList.withSize(18, com.yogpc.qp.version.VersionUtil.empty());
     public List<WorkbenchRecipes> recipesList = Collections.emptyList();
@@ -173,14 +172,6 @@ public class TileWorkbench extends APowerTile implements IInventory, IInventoryC
     }
 
     @Override
-    public void openInventory(EntityPlayer player) {
-    }
-
-    @Override
-    public void closeInventory(EntityPlayer player) {
-    }
-
-    @Override
     public boolean isItemValidForSlot(int index, ItemStack stack) {
         return true;
     }
@@ -226,11 +217,6 @@ public class TileWorkbench extends APowerTile implements IInventory, IInventoryC
     @Override
     public String getName() {
         return "tile.workbenchplus.name";
-    }
-
-    @Override
-    public boolean hasCustomName() {
-        return false;
     }
 
     public void setCurrentRecipe(int recipeIndex) {

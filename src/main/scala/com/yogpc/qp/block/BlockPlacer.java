@@ -22,7 +22,6 @@ import com.yogpc.qp.compat.BuildCraftHelper;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.tile.TilePlacer;
 import com.yogpc.qp.version.VersionUtil;
-import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -183,16 +182,16 @@ public class BlockPlacer extends ADismCBlock {
         return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
     }
 
-    @SuppressWarnings("ConstantConditions")
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
         TilePlacer placer = (TilePlacer) worldIn.getTileEntity(pos);
-        InventoryHelper.dropInventoryItems(worldIn, pos, placer);
-        worldIn.updateComparatorOutputLevel(pos, this);
+        if (placer != null) {
+            InventoryHelper.dropInventoryItems(worldIn, pos, placer);
+            worldIn.updateComparatorOutputLevel(pos, this);
+        }
         super.breakBlock(worldIn, pos, state);
     }
 
-    @Nullable
     @Override
     public TilePlacer createNewTileEntity(World worldIn, int meta) {
         return new TilePlacer();

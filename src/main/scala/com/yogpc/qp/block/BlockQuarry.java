@@ -24,7 +24,6 @@ import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.item.ItemBlockEnchantable;
 import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TileQuarry;
-import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -34,6 +33,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
@@ -44,6 +44,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public class BlockQuarry extends ADismCBlock {
+
     public BlockQuarry() {
         super(Material.IRON, QuarryPlus.Names.quarry, ItemBlockEnchantable::new);
         setHardness(1.5F);
@@ -76,26 +77,31 @@ public class BlockQuarry extends ADismCBlock {
         return drops;
     }
 
-    @SuppressWarnings("ConstantConditions")
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack stack = playerIn.getHeldItem(hand);
         if (InvUtils.isDebugItem(playerIn, hand)) return true;
         if (BuildCraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
-            ((TileQuarry) worldIn.getTileEntity(pos)).G_reinit();
+            TileEntity t = worldIn.getTileEntity(pos);
+            if (t != null) {
+                ((TileQuarry) t).G_reinit();
+            }
             return true;
         }
         if (!worldIn.isRemote) {
-            TileQuarry quarry = (TileQuarry) worldIn.getTileEntity(pos);
-            if (stack.getItem() == QuarryPlusI.itemTool && stack.getItemDamage() == 0) {
-                EnchantmentHelper.getEnchantmentsChat((IEnchantableTile) worldIn.getTileEntity(pos)).forEach(playerIn::sendMessage);
-                playerIn.sendMessage(new TextComponentTranslation("chat.currentmode",
-                        new TextComponentTranslation(quarry.filler ? "chat.fillermode" : "chat.quarrymode")));
-            } else {
-                quarry.filler = !quarry.filler;
-                playerIn.sendMessage(new TextComponentTranslation("chat.changemode",
-                        new TextComponentTranslation(quarry.filler ? "chat.fillermode" : "chat.quarrymode")));
+            TileEntity t = worldIn.getTileEntity(pos);
+            if (t != null) {
+                TileQuarry quarry = (TileQuarry) t;
+                if (stack.getItem() == QuarryPlusI.itemTool && stack.getItemDamage() == 0) {
+                    EnchantmentHelper.getEnchantmentsChat((IEnchantableTile) worldIn.getTileEntity(pos)).forEach(playerIn::sendMessage);
+                    playerIn.sendMessage(new TextComponentTranslation("chat.currentmode",
+                            new TextComponentTranslation(quarry.filler ? "chat.fillermode" : "chat.quarrymode")));
+                } else {
+                    quarry.filler = !quarry.filler;
+                    playerIn.sendMessage(new TextComponentTranslation("chat.changemode",
+                            new TextComponentTranslation(quarry.filler ? "chat.fillermode" : "chat.quarrymode")));
+                }
             }
         }
         return true;
@@ -133,8 +139,11 @@ public class BlockQuarry extends ADismCBlock {
     @SuppressWarnings("deprecation")
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
         super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
-        if (!worldIn.isRemote)
-            ((TileQuarry) worldIn.getTileEntity(pos)).G_renew_powerConfigure();
+        if (!worldIn.isRemote) {
+            TileEntity t = worldIn.getTileEntity(pos);
+            if (t != null)
+                ((TileQuarry) t).G_renew_powerConfigure();
+        }
     }
 
     @Override
@@ -142,7 +151,6 @@ public class BlockQuarry extends ADismCBlock {
         return new BlockStateContainer(this, FACING, ACTING);
     }
 
-    @Nullable
     @Override
     public TileQuarry createNewTileEntity(World worldIn, int meta) {
         return new TileQuarry();

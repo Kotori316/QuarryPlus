@@ -63,7 +63,7 @@ import net.minecraftforge.fluids.capability.FluidTankProperties;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
 
-public class TilePump extends APacketTile implements IEnchantableTile, ITickable {
+public class TilePump extends APacketTile implements IEnchantableTile, ITickable, IDebugSender {
     @SuppressWarnings("NullableProblems")
     @Nullable
     public EnumFacing connectTo = null;
@@ -607,6 +607,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         }
     }
 
+    @Override
     public void sendDebugMessage(EntityPlayer player) {
         player.sendStatusMessage(new TextComponentString("Connection : " + this.connectTo), false);
         for (EnumFacing facing : EnumFacing.VALUES) {

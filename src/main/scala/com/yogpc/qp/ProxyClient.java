@@ -1,8 +1,10 @@
 package com.yogpc.qp;
 
+import com.yogpc.qp.render.RenderAdvQuarry;
 import com.yogpc.qp.render.RenderLaser;
 import com.yogpc.qp.render.RenderMarker;
 import com.yogpc.qp.render.RenderQuarry;
+import com.yogpc.qp.tile.TileAdvQuarry;
 import com.yogpc.qp.tile.TileLaser;
 import com.yogpc.qp.tile.TileMarker;
 import com.yogpc.qp.tile.TileQuarry;
@@ -50,6 +52,7 @@ public class ProxyClient extends ProxyCommon {
         ClientRegistry.bindTileEntitySpecialRenderer(TileQuarry.class, RenderQuarry.instance());
         ClientRegistry.bindTileEntitySpecialRenderer(TileMarker.class, RenderMarker.instance());
         ClientRegistry.bindTileEntitySpecialRenderer(TileLaser.class, RenderLaser.instance());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileAdvQuarry.class, RenderAdvQuarry.instance());
 //        ClientRegistry.bindTileEntitySpecialRenderer(TileRefinery.class, RenderRefinery.INSTANCE);
     }
 }

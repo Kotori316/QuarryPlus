@@ -43,6 +43,7 @@ object Config {
     def content = mContent
 
     val DisableSpawnerController_key = "DisableSpawnerController"
+    val DisableChunkDestroyer_key = "DisableChunkDestroyer"
     val SpawnerControllerEntityBlackList_key = "SpawnerControllerEntityBlackList"
     val RecipeDifficulty_key = "RecipeDifficulty"
     val PlacerOnlyPlaceFront_key = "PlacerOnlyPlaceFront"
@@ -53,10 +54,11 @@ object Config {
 
         import scala.collection.JavaConverters._
 
-        val disableController = configuration.get(Configuration.CATEGORY_GENERAL, "DisableSpawnerController", false).setRequiresMcRestart(true).getBoolean
-        val spawnerBlacklist = configuration.get(Configuration.CATEGORY_GENERAL, "SpawnerControllerEntityBlackList", Array("minecraft:ender_dragon", "minecraft:wither"))
+        val disableController = configuration.get(Configuration.CATEGORY_GENERAL, DisableSpawnerController_key, false).setRequiresMcRestart(true).getBoolean
+        val disableChunkDestroyer = configuration.get(Configuration.CATEGORY_GENERAL, DisableChunkDestroyer_key, false).setRequiresMcRestart(true).getBoolean
+        val spawnerBlacklist = configuration.get(Configuration.CATEGORY_GENERAL, SpawnerControllerEntityBlackList_key, Array("minecraft:ender_dragon", "minecraft:wither"))
           .getStringList.map(new ResourceLocation(_)).toSet.asJava
-        val recipeDifficulty = configuration.get(Configuration.CATEGORY_GENERAL, "RecipeDifficulty", 2d)
+        val recipeDifficulty = configuration.get(Configuration.CATEGORY_GENERAL, RecipeDifficulty_key, 2d)
         recipeDifficulty.setComment("Default is 2.0")
         recipeDifficulty.setMinValue(1d)
         WorkbenchRecipes.difficulty = recipeDifficulty.getDouble(2d)

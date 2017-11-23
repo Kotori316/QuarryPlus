@@ -43,7 +43,7 @@ public abstract class APowerTile extends APacketTile implements IEnergyReceiver,
     private double all, maxGot, max, got;
     private boolean ic2ok = false;
     public boolean bcLoaded;
-    private Object helper;
+    private Object helper;//buildcraft capability helper
     private EnergyDebug debug = new EnergyDebug(this);
     public boolean ic2Loaded;
 

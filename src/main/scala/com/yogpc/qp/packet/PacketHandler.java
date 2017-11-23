@@ -1,6 +1,8 @@
 package com.yogpc.qp.packet;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.packet.advquarry.AdvModeMessage;
+import com.yogpc.qp.packet.advquarry.AdvRangeMessage;
 import com.yogpc.qp.packet.controller.AvailableEntities;
 import com.yogpc.qp.packet.controller.SetEntity;
 import com.yogpc.qp.packet.enchantment.DiffMessage;
@@ -61,6 +63,9 @@ public class PacketHandler {
         //laser
         wrapper.registerMessage(handler, LaserMessage.class, 20, Side.CLIENT);
         wrapper.registerMessage(handler, LaserAverageMessage.class, 21, Side.CLIENT);
+        //chunkdestroyer
+        wrapper.registerMessage(handler, AdvModeMessage.class, 22, Side.CLIENT);
+        wrapper.registerMessage(handler, AdvRangeMessage.class, 23, Side.SERVER);
     }
 
     /**

@@ -3,20 +3,20 @@
   "defaults": {
     "model": "cube",
     "textures": {
-      "particle": "quarryplus:blocks/chunkdestoryer",
-      "down": "quarryplus:blocks/chunkdestoryer",
-      "up": "quarryplus:blocks/chunkdestoryer_top",
-      "north": "quarryplus:blocks/chunkdestoryer_front",
-      "east": "quarryplus:blocks/chunkdestoryer",
-      "south": "quarryplus:blocks/chunkdestoryer",
-      "west": "quarryplus:blocks/chunkdestoryer"
+      "particle": "quarryplus:blocks/chunkdestroyer",
+      "down": "quarryplus:blocks/chunkdestroyer",
+      "up": "quarryplus:blocks/chunkdestroyer_top",
+      "north": "quarryplus:blocks/chunkdestroyer_front",
+      "east": "quarryplus:blocks/chunkdestroyer",
+      "south": "quarryplus:blocks/chunkdestroyer",
+      "west": "quarryplus:blocks/chunkdestroyer"
     }
   },
   "variants": {
     "acting": {
       "true": {
         "textures": {
-          "up": "quarryplus:blocks/chunkdestoryer_top_bb"
+          "up": "quarryplus:blocks/chunkdestroyer_top_bb"
         }
       },
       "false": {

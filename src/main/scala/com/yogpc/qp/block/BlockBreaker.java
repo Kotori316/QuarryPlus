@@ -29,7 +29,6 @@ import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TileBasic;
 import com.yogpc.qp.tile.TileBreaker;
 import com.yogpc.qp.version.VersionUtil;
-import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -64,7 +63,6 @@ public class BlockBreaker extends ADismCBlock {
         //Random tick setting is Config.
     }
 
-    @SuppressWarnings("ConstantConditions")
     @Override
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
         super.updateTick(worldIn, pos, state, rand);
@@ -87,15 +85,17 @@ public class BlockBreaker extends ADismCBlock {
             }
             final TileBreaker tile = (TileBreaker) worldIn.getTileEntity(pos);
             List<ItemStack> stackList;
-            if (tile.silktouch() && blockState.getBlock().canSilkHarvest(worldIn, pos1, blockState, player)) {
-                stackList = Collections.singletonList((ItemStack) ReflectionHelper.invoke(TileBasic.createStackedBlock, blockState.getBlock(), blockState));
-            } else {
-                stackList = blockState.getBlock().getDrops(worldIn, pos1, blockState, tile.fortune());
-            }
-            for (final ItemStack is : stackList) {
-                ItemStack inserted = InvUtils.injectToNearTile(worldIn, pos, is);
-                if (VersionUtil.nonEmpty(inserted)) {
-                    InventoryHelper.spawnItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), inserted);
+            if (tile != null) {
+                if (tile.silktouch() && blockState.getBlock().canSilkHarvest(worldIn, pos1, blockState, player)) {
+                    stackList = Collections.singletonList((ItemStack) ReflectionHelper.invoke(TileBasic.createStackedBlock, blockState.getBlock(), blockState));
+                } else {
+                    stackList = blockState.getBlock().getDrops(worldIn, pos1, blockState, tile.fortune());
+                }
+                for (final ItemStack is : stackList) {
+                    ItemStack inserted = InvUtils.injectToNearTile(worldIn, pos, is);
+                    if (VersionUtil.nonEmpty(inserted)) {
+                        InventoryHelper.spawnItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), inserted);
+                    }
                 }
             }
         }
@@ -119,8 +119,8 @@ public class BlockBreaker extends ADismCBlock {
         return base_state.getValue(FACING) != side;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
+    @SuppressWarnings("deprecation")
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
         super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
         boolean flag = worldIn.isBlockPowered(pos);
@@ -158,7 +158,6 @@ public class BlockBreaker extends ADismCBlock {
         super.breakBlock(worldIn, pos, state);
     }
 
-    @Nullable
     @Override
     public TileBreaker createNewTileEntity(World worldIn, int meta) {
         return new TileBreaker();
@@ -193,8 +192,8 @@ public class BlockBreaker extends ADismCBlock {
         return facing.getIndex() | (powered ? 8 : 0);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
+    @SuppressWarnings("deprecation")
     public IBlockState getStateFromMeta(int meta) {
         return getDefaultState().withProperty(FACING, EnumFacing.getFront(meta & 7)).withProperty(POWERED, (meta & 8) == 8);
     }

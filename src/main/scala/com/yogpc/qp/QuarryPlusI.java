@@ -1,5 +1,18 @@
+/*
+ * Copyright (C) 2012,2013 yogpstop This program is free software: you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.yogpc.qp;
 
+import com.yogpc.qp.block.BlockAdvQuarry;
 import com.yogpc.qp.block.BlockBreaker;
 import com.yogpc.qp.block.BlockController;
 import com.yogpc.qp.block.BlockFrame;
@@ -43,6 +56,7 @@ public class QuarryPlusI {
     public static final BlockFrame blockFrame = new BlockFrame();
     public static final BlockWorkbench workbench = new BlockWorkbench();
     public static final BlockController controller = new BlockController();
+    public static final BlockAdvQuarry blockChunkdestroyer = new BlockAdvQuarry();
     public static final Item itemTool = ItemTool.item();
     public static final Item magicmirror = new ItemMirror();
     public static final Item debugItem = ItemQuarryDebug.item();
@@ -52,6 +66,7 @@ public class QuarryPlusI {
     public static final int guiIdFList = 3;
     public static final int guiIdSList = 4;
     public static final int guiIdPlacer = 5;
+    public static final int guiIdAdvQuarry = 6;
 
     @SubscribeEvent
     public void onWorldUnload(final WorldEvent.Unload event) {

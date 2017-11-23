@@ -13,6 +13,8 @@
 
 package com.yogpc.qp.block;
 
+import java.util.Optional;
+
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.InvUtils;
@@ -167,9 +169,9 @@ public class BlockMarker extends Block implements ITileEntityProvider {//BlockCo
     }
 
     @Override
-    @SuppressWarnings({"deprecation", "ConstantConditions"})
+    @SuppressWarnings({"deprecation"})
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
-        ((TileMarker) worldIn.getTileEntity(pos)).G_updateSignal();
+        Optional.ofNullable(((TileMarker) worldIn.getTileEntity(pos))).ifPresent(TileMarker::G_updateSignal);
         dropTorchIfCantStay(state, worldIn, pos);
     }
 
@@ -180,10 +182,9 @@ public class BlockMarker extends Block implements ITileEntityProvider {//BlockCo
     }
 
     @Override
-    @SuppressWarnings("ConstantConditions")
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
-        ((TileMarker) worldIn.getTileEntity(pos)).requestTicket();
+        Optional.ofNullable(((TileMarker) worldIn.getTileEntity(pos))).ifPresent(TileMarker::requestTicket);
     }
 
     @Override
