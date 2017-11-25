@@ -14,6 +14,7 @@ Supported API
 -------------
 * ~~BuildCraft API~~
 * ~~CofhLib API~~ 
+* CoFHCore API
 * RedstoneFlux API
 * IC2 API
 * JEI API
@@ -28,5 +29,6 @@ Build with...
 * ~~BuildCraft [MC1.11.2] 7.99.7~~
 * IC2\_experimental [MC1.12] industrialcraft-2-2.8.26-ex112-api.jar
 * ~~CoFHLib [MC1.11.2] CoFHLib-1.11.2-1.8.0.1~~
+* CoFHCore [MC1.12] CoFHCore-1.12-4.3.6.16.jar
 * RedstoneFlux [MC1.12] RedstoneFlux-1.12-2.0.1.2.jar
-* JEI [MC1.12.1] jei_1.12.1-4.7.8.95.jar
+* JEI [MC1.12.2] jei_1.12.1-4.8.0.114.jar

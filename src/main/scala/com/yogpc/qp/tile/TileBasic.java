@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import cofh.api.tileentity.IInventoryConnection;
 import com.yogpc.qp.BlockData;
 import com.yogpc.qp.PowerManager;
 import com.yogpc.qp.QuarryPlus;
@@ -46,7 +47,8 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
-public abstract class TileBasic extends APowerTile implements IEnchantableTile, HasInv {
+@net.minecraftforge.fml.common.Optional.Interface(iface = "cofh.api.tileentity.IInventoryConnection", modid = QuarryPlus.Optionals.COFH_tileentity)
+public abstract class TileBasic extends APowerTile implements IEnchantableTile, HasInv, IInventoryConnection {
     protected EnumFacing pump = null;
 
     public final List<BlockData> fortuneList = new ArrayList<>();
@@ -140,13 +142,11 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         if (this.fortuneList.contains(new BlockData(ForgeRegistries.BLOCKS.getKey(b),
                 state.getBlock().getMetaFromState(state))) == this.fortuneInclude) {
             NonNullList<ItemStack> nonNullList = NonNullList.create();
-            //TODO: check ic2 ore can be mined correctly.
             b.getDrops(nonNullList, getWorld(), pos, state, this.fortune);
             list.addAll(nonNullList);
             return this.fortune;
         }
         NonNullList<ItemStack> nonNullList = NonNullList.create();
-        //TODO: check ic2 ore can be mined correctly.
         b.getDrops(nonNullList, getWorld(), pos, state, 0);
         list.addAll(nonNullList);
         return 0;
@@ -311,5 +311,11 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         } else {
             return super.getCapability(capability, facing);
         }
+    }
+
+    @Override
+    @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.COFH_tileentity)
+    public ConnectionType canConnectInventory(EnumFacing from) {
+        return ConnectionType.FORCE;
     }
 }

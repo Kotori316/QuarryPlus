@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import cofh.api.block.IDismantleable;
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
@@ -21,6 +22,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityMobSpawner;
@@ -38,7 +40,8 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 import static com.yogpc.qp.block.ADismCBlock.ACTING;
 
-public class BlockController extends Block {
+@net.minecraftforge.fml.common.Optional.Interface(iface = "cofh.api.block.IDismantleable", modid = QuarryPlus.Optionals.COFH_block)
+public class BlockController extends Block implements IDismantleable {
     private static final Field logic_spawnDelay = ReflectionHelper.findField(MobSpawnerBaseLogic.class, "spawnDelay", "field_98286_b");
     public final ItemBlock itemBlock;
 
@@ -136,5 +139,17 @@ public class BlockController extends Block {
     @Override
     public int getMetaFromState(IBlockState state) {
         return state.getValue(ACTING) ? 1 : 0;
+    }
+
+    @Override
+    @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.COFH_block)
+    public ArrayList<ItemStack> dismantleBlock(World world, BlockPos pos, IBlockState state, EntityPlayer player, boolean returnDrops) {
+        return ADismCBlock.dismantle(world, pos, state, returnDrops);
+    }
+
+    @Override
+    @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.COFH_block)
+    public boolean canDismantle(World world, BlockPos pos, IBlockState state, EntityPlayer player) {
+        return true;
     }
 }

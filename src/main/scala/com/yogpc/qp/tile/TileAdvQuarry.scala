@@ -214,7 +214,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                         })
                         if (shear.nonEmpty) {
                             val itemShear = new ItemStack(net.minecraft.init.Items.SHEARS)
-                            EnchantmentHelper.setEnchantments(ench.getMap.map { case (a, b) => (Enchantment.getEnchantmentByID(a), JInt.valueOf(b)) }.asJava, itemShear)
+                            EnchantmentHelper.setEnchantments(ench.getMap.collect { case (a, b) if b > 0 => (Enchantment.getEnchantmentByID(a), JInt.valueOf(b)) }.asJava, itemShear)
                             shear.foreach(p => {
                                 val state = getWorld.getBlockState(p)
                                 val block = state.getBlock.asInstanceOf[Block with IShearable]
@@ -355,7 +355,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
     /**
       * @return Map (Enchantment id, level)
       */
-    override def getEnchantments = ench.getMap.map { case (a, b) => (JInt.valueOf(a), JByte.valueOf(b)) }.asJava
+    override def getEnchantments = ench.getMap.collect { case (a, b) if b > 0 => (JInt.valueOf(a), JByte.valueOf(b)) }.asJava
 
     /**
       * @param id    Enchantment id

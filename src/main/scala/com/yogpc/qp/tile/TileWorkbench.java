@@ -17,7 +17,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
+import cofh.api.tileentity.IInventoryConnection;
 import com.yogpc.qp.Config;
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.entity.player.EntityPlayer;
@@ -26,12 +28,14 @@ import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class TileWorkbench extends APowerTile implements HasInv {
+@net.minecraftforge.fml.common.Optional.Interface(iface = "cofh.api.tileentity.IInventoryConnection", modid = QuarryPlus.Optionals.COFH_tileentity)
+public class TileWorkbench extends APowerTile implements HasInv, IInventoryConnection {
     public final NonNullList<ItemStack> inventory = NonNullList.withSize(27, com.yogpc.qp.version.VersionUtil.empty());
     public final NonNullList<ItemStack> inventory2 = NonNullList.withSize(18, com.yogpc.qp.version.VersionUtil.empty());
     public List<WorkbenchRecipes> recipesList = Collections.emptyList();
@@ -225,5 +229,11 @@ public class TileWorkbench extends APowerTile implements HasInv {
 
     public int getRecipeIndex() {
         return currentRecipe.map(recipesList::indexOf).orElse(-1);
+    }
+
+    @Override
+    @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.COFH_tileentity)
+    public ConnectionType canConnectInventory(EnumFacing from) {
+        return ConnectionType.FORCE;
     }
 }
