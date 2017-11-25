@@ -8,6 +8,7 @@ import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.tile.TileBasic;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.init.Enchantments;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -39,13 +40,13 @@ public class EnchantmentMessage implements IMessage {
         pos = buffer.readBlockPos();
         type = buffer.readEnumValue(Type.class);
         enchantment = Enchantment.getEnchantmentByLocation(buffer.readString(Short.MAX_VALUE));
-        data = BlockData.of(buffer.readCompoundTag());
+        data = BlockData.readFromNBT(buffer.readCompoundTag());
     }
 
     @Override
     @SuppressWarnings("ConstantConditions")
     public void toBytes(PacketBuffer buffer) {
-        buffer.writeBlockPos(pos).writeEnumValue(type).writeString(enchantment.getRegistryName().toString()).writeCompoundTag(data.toNBT());
+        buffer.writeBlockPos(pos).writeEnumValue(type).writeString(enchantment.getRegistryName().toString()).writeCompoundTag(data.writeToNBT(new NBTTagCompound()));
     }
 
     @Override

@@ -1,20 +1,22 @@
 package com.yogpc.qp
 
-import javax.annotation.{Nonnull, Nullable}
-
+import com.yogpc.qp.compat.{INBTReadable, INBTWritable}
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.registry.ForgeRegistries
 import net.minecraftforge.oredict.OreDictionary
 
-object BlockData {
+object BlockData extends INBTReadable[BlockData] {
     val Name_NBT = "name"
     val Meta_NBT = "meta"
+    val BlockData_NBT = "blockdata"
 
-    @Nonnull
-    def of(compound: NBTTagCompound): BlockData = {
-        if (compound == null) Invalid
-        else new BlockData(compound.getString(Name_NBT), compound.getInteger(Meta_NBT))
+    override def readFromNBT(nbt: NBTTagCompound): BlockData = {
+        if (!nbt.hasKey(BlockData_NBT)) Invalid
+        else {
+            val compound = nbt.getCompoundTag(BlockData_NBT)
+            new BlockData(compound.getString(Name_NBT), compound.getInteger(Meta_NBT))
+        }
     }
 
     val Invalid: BlockData = new BlockData("Unknown:Dummy", 0) {
@@ -22,7 +24,7 @@ object BlockData {
 
         override def hashCode = 0
 
-        override def toNBT = null
+        override def writeToNBT(nbt: NBTTagCompound) = nbt
 
         override def toString = "BlockData@Invaild"
 
@@ -30,7 +32,7 @@ object BlockData {
     }
 }
 
-case class BlockData(name: ResourceLocation, meta: Int) {
+case class BlockData(name: ResourceLocation, meta: Int) extends INBTWritable {
 
     def this(resourceName: String, meta: Int) {
         this(new ResourceLocation(resourceName), meta)
@@ -46,12 +48,12 @@ case class BlockData(name: ResourceLocation, meta: Int) {
 
     override def hashCode: Int = this.name.hashCode
 
-    @Nullable
-    def toNBT: NBTTagCompound = {
+    def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
         val compound = new NBTTagCompound
         compound.setString(BlockData.Name_NBT, name.toString)
         compound.setInteger(BlockData.Meta_NBT, meta)
-        compound
+        nbt.setTag(BlockData.BlockData_NBT, compound)
+        nbt
     }
 
     override def toString: String = name + "@" + meta

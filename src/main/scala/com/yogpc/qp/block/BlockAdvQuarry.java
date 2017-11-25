@@ -81,16 +81,16 @@ public class BlockAdvQuarry extends ADismCBlock {
         if (InvUtils.isDebugItem(playerIn, hand)) return true;
         if (BuildCraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
             if (!worldIn.isRemote)
-                Optional.ofNullable(((TileAdvQuarry) worldIn.getTileEntity(pos))).ifPresent(TileAdvQuarry::G_reinit);
+                Optional.ofNullable((TileAdvQuarry) worldIn.getTileEntity(pos)).ifPresent(TileAdvQuarry::G_reinit);
             return true;
         } else if (stack.getItem() == QuarryPlusI.itemTool && stack.getItemDamage() == 0) {
             if (!worldIn.isRemote)
-                Optional.ofNullable(((TileAdvQuarry) worldIn.getTileEntity(pos)))
+                Optional.ofNullable((TileAdvQuarry) worldIn.getTileEntity(pos))
                         .map(EnchantmentHelper::getEnchantmentsChat).ifPresent(l -> l.forEach(playerIn::sendMessage));
             return true;
         } else if (Config.content().noEnergy() && stack.getItem() == Items.STICK) {
             if (!worldIn.isRemote)
-                Optional.ofNullable(((TileAdvQuarry) worldIn.getTileEntity(pos))).ifPresent(TileAdvQuarry::stickActivated);
+                Optional.ofNullable((TileAdvQuarry) worldIn.getTileEntity(pos)).ifPresent(TileAdvQuarry::stickActivated);
             return true;
         } else if (!playerIn.isSneaking()) {
             playerIn.openGui(QuarryPlus.getInstance(), QuarryPlusI.guiIdAdvQuarry, worldIn, pos.getX(), pos.getY(), pos.getZ());
@@ -135,7 +135,7 @@ public class BlockAdvQuarry extends ADismCBlock {
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
         super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
         if (!worldIn.isRemote)
-            Optional.ofNullable(((TileAdvQuarry) worldIn.getTileEntity(pos))).ifPresent(TileAdvQuarry::energyConfigure);
+            Optional.ofNullable((TileAdvQuarry) worldIn.getTileEntity(pos)).ifPresent(TileAdvQuarry::energyConfigure);
     }
 
     @Override
