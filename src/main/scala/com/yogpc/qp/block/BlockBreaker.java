@@ -135,11 +135,12 @@ public class BlockBreaker extends ADismCBlock {
             if (flag)
                 updateTick(worldIn, pos, state, worldIn.rand);
             TileEntity entity = worldIn.getTileEntity(pos);
-            assert entity != null;
-            entity.validate();
-            worldIn.setBlockState(pos, state.withProperty(POWERED, flag), 3);
-            entity.validate();
-            worldIn.setTileEntity(pos, entity);
+            if (entity != null) {
+                entity.validate();
+                worldIn.setBlockState(pos, state.withProperty(POWERED, flag), 3);
+                entity.validate();
+                worldIn.setTileEntity(pos, entity);
+            }
         }
     }
 
@@ -175,11 +176,12 @@ public class BlockBreaker extends ADismCBlock {
         ItemStack stack = playerIn.getHeldItem(hand);
         if (BuildCraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
             TileEntity entity = worldIn.getTileEntity(pos);
-            assert entity != null;
-            entity.validate();
-            worldIn.setBlockState(pos, state.cycleProperty(FACING), 3);
-            entity.validate();
-            worldIn.setTileEntity(pos, entity);
+            if (entity != null) {
+                entity.validate();
+                worldIn.setBlockState(pos, state.cycleProperty(FACING), 3);
+                entity.validate();
+                worldIn.setTileEntity(pos, entity);
+            }
             return true;
         }
         if (stack.getItem() == QuarryPlusI.itemTool && stack.getItemDamage() == 0) {

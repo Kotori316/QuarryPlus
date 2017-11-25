@@ -29,7 +29,7 @@ import net.minecraftforge.common.ForgeChunkManager.Type
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.{ForgeChunkManager, IShearable}
 import net.minecraftforge.fluids.capability.templates.FluidHandlerFluidMap
-import net.minecraftforge.fluids.capability.{FluidTankProperties, IFluidHandler, IFluidTankProperties}
+import net.minecraftforge.fluids.capability.{CapabilityFluidHandler, FluidTankProperties, IFluidHandler, IFluidTankProperties}
 import net.minecraftforge.fluids.{Fluid, FluidStack, FluidTank, FluidUtil}
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import net.minecraftforge.items.{CapabilityItemHandler, IItemHandlerModifiable}
@@ -200,6 +200,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                         }
                     }
 
+                    requireEnergy *= 1.25
                     if (useEnergy(requireEnergy, requireEnergy, false) == requireEnergy) {
                         useEnergy(requireEnergy, requireEnergy, true)
                         dig.foreach(p => {
@@ -221,7 +222,6 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                                 getWorld.setBlockState(p, Blocks.AIR.getDefaultState, 2)
                             })
                         }
-
                         destroy.foreach(getWorld.setBlockState(_, Blocks.AIR.getDefaultState, 2))
                         drain.foreach(p => {
                             val handler = Option(FluidUtil.getFluidHandler(getWorld, p, EnumFacing.UP))
@@ -233,7 +233,6 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                                 })
                                 case None => //QuarryPlus.LOGGER.error(s"Adv Fluid null, ${getWorld.getBlockState(p)}, ${FluidUtil.getFluidHandler(getWorld, p, EnumFacing.UP)}")
                             }
-
                             getWorld.setBlockState(p, Blocks.AIR.getDefaultState, 2)
                         })
                         list.asScala.foreach(cacheItems.add)
@@ -405,12 +404,16 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
     }
 
     override def hasCapability(capability: Capability[_], facing: EnumFacing) = {
-        capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, facing)
+        capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ||
+          (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && Config.content.enableChunkDestroyerFluidHander) ||
+          super.hasCapability(capability, facing)
     }
 
     override def getCapability[T](capability: Capability[T], facing: EnumFacing) = {
         if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
             CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(itemHandler)
+        } else if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && Config.content.enableChunkDestroyerFluidHander) {
+            CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(fluidHandler)
         } else
             super.getCapability(capability, facing)
     }
@@ -419,7 +422,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 
     override def getRenderBoundingBox: AxisAlignedBB = {
         if (digRange.defined) {
-            new AxisAlignedBB(digRange.minX, digRange.minY, digRange.minZ, digRange.maxX, digRange.maxY, digRange.maxZ)
+            digRange.rendrBox
         } else
             super.getRenderBoundingBox
     }
@@ -672,6 +675,8 @@ object TileAdvQuarry {
         val defined = true
 
         def min: BlockPos = new BlockPos(minX, minY, minZ)
+
+        val rendrBox = new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ)
 
         override val toString: String = s"Dig Range from ($minX, $minY, $minZ) to ($maxX, $maxY, $maxZ)"
 

@@ -9,6 +9,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.container.ContainerEnchList;
 import com.yogpc.qp.packet.IMessage;
 import net.minecraft.inventory.Container;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
@@ -40,10 +41,10 @@ public class DiffMessage implements IMessage {
         fortuneList = new ArrayList<>(fS);
         silkList = new ArrayList<>(sS);
         for (int i = 0; i < fS; i++) {
-            fortuneList.add(BlockData.of(buffer.readCompoundTag()));
+            fortuneList.add(BlockData.readFromNBT(buffer.readCompoundTag()));
         }
         for (int i = 0; i < sS; i++) {
-            silkList.add(BlockData.of(buffer.readCompoundTag()));
+            silkList.add(BlockData.readFromNBT(buffer.readCompoundTag()));
         }
     }
 
@@ -51,8 +52,8 @@ public class DiffMessage implements IMessage {
     public void toBytes(PacketBuffer buffer) {
         buffer.writeInt(containerId);
         buffer.writeInt(fortuneList.size()).writeInt(silkList.size());
-        fortuneList.stream().map(BlockData::toNBT).forEach(buffer::writeCompoundTag);
-        silkList.stream().map(BlockData::toNBT).forEach(buffer::writeCompoundTag);
+        fortuneList.stream().map(data -> data.writeToNBT(new NBTTagCompound())).forEach(buffer::writeCompoundTag);
+        silkList.stream().map(data -> data.writeToNBT(new NBTTagCompound())).forEach(buffer::writeCompoundTag);
     }
 
     @Override
