@@ -68,7 +68,11 @@ class EnergyDebug(tile: TileEntity) {
     def maxUsed = mMaxUsed
 
     def energyPerTick: Int = {
-        val allgot = getBuilder.sum
-        (allgot / getBuilder.size).toInt
+        if (useBuilder.isEmpty) {
+            0
+        } else {
+            val allgot = useBuilder.sum
+            (allgot / useBuilder.size).toInt
+        }
     }
 }
