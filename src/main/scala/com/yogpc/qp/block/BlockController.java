@@ -130,18 +130,6 @@ public class BlockController extends Block implements IDismantleable {
         super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
     }
 
-    @Override
-    @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.COFH_block)
-    public ArrayList<ItemStack> dismantleBlock(World world, BlockPos pos, IBlockState state, EntityPlayer player, boolean returnDrops) {
-        return ADismCBlock.dismantle(world, pos, state, returnDrops);
-    }
-
-    @Override
-    @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.COFH_block)
-    public boolean canDismantle(World world, BlockPos pos, IBlockState state, EntityPlayer player) {
-        return true;
-    }
-
     @SuppressWarnings("deprecation")
     @Override
     public IBlockState getStateFromMeta(int meta) {

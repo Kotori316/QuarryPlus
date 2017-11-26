@@ -626,6 +626,11 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     }
 
     @Override
+    public String getName() {
+        return "tile.pumpplus.name";
+    }
+
+    @Override
     public HashMap<Integer, Byte> getEnchantments() {
         final HashMap<Integer, Byte> ret = new HashMap<>();
         if (this.fortune > 0)
