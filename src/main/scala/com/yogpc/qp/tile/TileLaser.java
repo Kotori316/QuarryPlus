@@ -293,6 +293,11 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
     }
 
     @Override
+    public String getName() {
+        return "tile.laserplus.name";
+    }
+
+    @Override
     public boolean hasFastRenderer() {
         return true;
     }

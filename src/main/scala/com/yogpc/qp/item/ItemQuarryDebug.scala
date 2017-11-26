@@ -1,6 +1,6 @@
 package com.yogpc.qp.item
 
-import com.yogpc.qp.tile.{APowerTile, TileAdvQuarry, TileLaser, TileMarker, TileMiningWell, TilePlacer, TilePump, TileQuarry, TileWorkbench}
+import com.yogpc.qp.tile.{APowerTile, IDebugSender, TileMarker, TilePlacer, TilePump}
 import com.yogpc.qp.{Config, QuarryPlus, QuarryPlusI}
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.player.EntityPlayer
@@ -26,12 +26,12 @@ object ItemQuarryDebug extends Item {
             if (Config.content.debug || QuarryPlus.getInstance().inDev) {
                 val tile = worldIn.getTileEntity(pos)
                 tile match {
-                    case laser: TileLaser =>
+                    case plusMachine: APowerTile with IDebugSender =>
                         if (!worldIn.isRemote) {
-                            player.sendStatusMessage(new TextComponentTranslation("tile.laserplus.name"), false)
+                            player.sendStatusMessage(new TextComponentTranslation(plusMachine.getName), false)
                             player.sendStatusMessage(tileposToString(tile), false)
-                            player.sendStatusMessage(energyToString(laser), false)
-                            laser.sendDebugMessage(player)
+                            player.sendStatusMessage(energyToString(plusMachine), false)
+                            plusMachine.sendDebugMessage(player)
                         }
                         EnumActionResult.SUCCESS
                     case marker: TileMarker =>
@@ -42,13 +42,6 @@ object ItemQuarryDebug extends Item {
                             player.sendStatusMessage(new TextComponentString("Laser : " + marker.laser), false)
                         }
                         EnumActionResult.SUCCESS
-                    case miningwell: TileMiningWell =>
-                        if (!worldIn.isRemote) {
-                            player.sendStatusMessage(new TextComponentTranslation(miningwell.getName), false)
-                            player.sendStatusMessage(tileposToString(tile), false)
-                            player.sendStatusMessage(energyToString(miningwell), false)
-                        }
-                        EnumActionResult.SUCCESS
                     case placer: TilePlacer =>
                         if (!worldIn.isRemote) {
                             player.sendStatusMessage(new TextComponentTranslation(placer.getName), false)
@@ -57,36 +50,12 @@ object ItemQuarryDebug extends Item {
                         EnumActionResult.SUCCESS
                     case pump: TilePump =>
                         if (!worldIn.isRemote) {
-                            player.sendStatusMessage(new TextComponentTranslation("tile.pumpplus.name"), false)
+                            player.sendStatusMessage(new TextComponentTranslation(pump.getName), false)
                             player.sendStatusMessage(tileposToString(tile), false)
                             pump.sendDebugMessage(player)
                         }
                         EnumActionResult.SUCCESS
-                    case quarry: TileQuarry =>
-                        if (!worldIn.isRemote) {
-                            player.sendStatusMessage(new TextComponentTranslation(quarry.getName), false)
-                            player.sendStatusMessage(tileposToString(tile), false)
-                            quarry.sendDebugMessage(player)
-                        }
-                        EnumActionResult.SUCCESS
-                    case workbench: TileWorkbench =>
-                        if (!worldIn.isRemote) {
-                            player.sendStatusMessage(new TextComponentTranslation(workbench.getName), false)
-                            player.sendStatusMessage(tileposToString(tile), false)
-                            player.sendStatusMessage(energyToString(workbench), false)
-                            player.sendStatusMessage(new TextComponentString(workbench.currentRecipe.scalaMap(_.toString).getOrElse("No recipe.")), false)
-                            player.sendStatusMessage(new TextComponentString("Work mode : " + (if (workbench.workcontinue) "Continue" else "Only once")), false)
-                        }
-                        EnumActionResult.SUCCESS
-                    case chunkDestroyer: TileAdvQuarry =>
-                        if (!worldIn.isRemote) {
-                            player.sendStatusMessage(new TextComponentTranslation(chunkDestroyer.getName), false)
-                            player.sendStatusMessage(tileposToString(tile), false)
-                            chunkDestroyer.sendDebugMessage(player)
-                        }
-                        EnumActionResult.SUCCESS
                     case _ => super.onItemUseFirst(player, worldIn, pos, side, hitX, hitY, hitZ, hand)
-
                 }
             } else {
                 player.sendStatusMessage(new TextComponentString("QuarryPlus debug is not enabled"), true)

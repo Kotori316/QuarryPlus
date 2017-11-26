@@ -30,12 +30,13 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @net.minecraftforge.fml.common.Optional.Interface(iface = "cofh.api.tileentity.IInventoryConnection", modid = QuarryPlus.Optionals.COFH_tileentity)
-public class TileWorkbench extends APowerTile implements HasInv, IInventoryConnection {
+public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, IInventoryConnection {
     public final NonNullList<ItemStack> inventory = NonNullList.withSize(27, com.yogpc.qp.version.VersionUtil.empty());
     public final NonNullList<ItemStack> inventory2 = NonNullList.withSize(18, com.yogpc.qp.version.VersionUtil.empty());
     public List<WorkbenchRecipes> recipesList = Collections.emptyList();
@@ -206,6 +207,12 @@ public class TileWorkbench extends APowerTile implements HasInv, IInventoryConne
     @Override
     public void clear() {
         inventory.clear();
+    }
+
+    @Override
+    public void sendDebugMessage(EntityPlayer player) {
+        player.sendStatusMessage(new TextComponentString(currentRecipe.map(WorkbenchRecipes::toString).orElse("No recipe.")), false);
+        player.sendStatusMessage(new TextComponentString("Work mode : " + (workcontinue ? "Continue" : "Only once")), false);
     }
 
     @Override

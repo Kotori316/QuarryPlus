@@ -280,7 +280,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                             } else {
                                 false
                             }
-                        }).foreach(p => getWorld.setBlockState(p, Blocks.AIR.getDefaultState, 2))
+                        }).foreach(getWorld.setBlockToAir)
 
                         val x = target.getX + 1
                         if (x > digRange.maxX) {
