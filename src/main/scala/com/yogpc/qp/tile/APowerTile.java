@@ -18,6 +18,7 @@ import buildcraft.api.mj.IMjReceiver;
 import buildcraft.api.mj.MjAPI;
 import buildcraft.api.mj.MjCapabilityHelper;
 import cofh.api.energy.IEnergyReceiver;
+import cofh.api.tileentity.IEnergyInfo;
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import ic2.api.energy.event.EnergyTileLoadEvent;
@@ -38,8 +39,9 @@ import net.minecraftforge.fml.common.Optional;
 
 @Optional.InterfaceList(value = {
         @Optional.Interface(iface = "cofh.api.energy.IEnergyReceiver", modid = QuarryPlus.Optionals.COFH_energy),
+        @Optional.Interface(iface = "cofh.api.tileentity.IEnergyInfo", modid = QuarryPlus.Optionals.COFH_tileentity),
         @Optional.Interface(iface = "ic2.api.energy.tile.IEnergySink", modid = QuarryPlus.Optionals.IC2_modID)})
-public abstract class APowerTile extends APacketTile implements IEnergyReceiver, IEnergySink, ITickable, IEnergyStorage {
+public abstract class APowerTile extends APacketTile implements IEnergyReceiver, IEnergySink, ITickable, IEnergyStorage, IEnergyInfo {
     private double all, maxGot, max, got;
     private boolean ic2ok = false;
     public boolean bcLoaded;
@@ -242,6 +244,35 @@ public abstract class APowerTile extends APacketTile implements IEnergyReceiver,
     @Optional.Method(modid = QuarryPlus.Optionals.COFH_energy)
     public boolean canConnectEnergy(EnumFacing from) {
         return canReceive();
+    }
+
+    /**
+     * Returns energy usage/generation per tick (RF/t).
+     */
+    @Override
+    public int getInfoEnergyPerTick() {
+        return debug.energyPerTick();
+    }
+
+    /**
+     * Returns maximum energy usage/generation per tick (RF/t).
+     */
+    @Override
+    public int getInfoMaxEnergyPerTick() {
+        return debug.maxUsed();
+    }
+
+    /**
+     * Returns energy stored (RF).
+     */
+    @Override
+    public int getInfoEnergyStored() {
+        return getEnergyStored();
+    }
+
+    @Override
+    public int getInfoMaxEnergyStored() {
+        return getMaxEnergyStored();
     }
 
     //Forge energy api implecation

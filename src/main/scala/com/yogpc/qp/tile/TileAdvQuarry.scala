@@ -19,7 +19,7 @@ import net.minecraft.entity.item.{EntityItem, EntityXPOrb}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
-import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
 import net.minecraft.util.math.BlockPos.MutableBlockPos
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos, ChunkPos}
 import net.minecraft.util.text.TextComponentString
@@ -27,6 +27,7 @@ import net.minecraft.util.{EnumFacing, ITickable, NonNullList}
 import net.minecraft.world.World
 import net.minecraftforge.common.ForgeChunkManager.Type
 import net.minecraftforge.common.capabilities.Capability
+import net.minecraftforge.common.util.Constants
 import net.minecraftforge.common.{ForgeChunkManager, IShearable}
 import net.minecraftforge.fluids.capability.templates.FluidHandlerFluidMap
 import net.minecraftforge.fluids.capability.{CapabilityFluidHandler, FluidTankProperties, IFluidHandler, IFluidTankProperties}
@@ -214,7 +215,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                         })
                         if (shear.nonEmpty) {
                             val itemShear = new ItemStack(net.minecraft.init.Items.SHEARS)
-                            EnchantmentHelper.setEnchantments(ench.getMap.map { case (a, b) => (Enchantment.getEnchantmentByID(a), JInt.valueOf(b)) }.asJava, itemShear)
+                            EnchantmentHelper.setEnchantments(ench.getMap.collect { case (a, b) if b > 0 => (Enchantment.getEnchantmentByID(a), JInt.valueOf(b)) }.asJava, itemShear)
                             shear.foreach(p => {
                                 val state = getWorld.getBlockState(p)
                                 val block = state.getBlock.asInstanceOf[Block with IShearable]
@@ -288,7 +289,6 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                                 //Finished.
                                 target = BlockPos.ORIGIN
                                 mode set TileAdvQuarry.NONE
-                                digRange = TileAdvQuarry.defaultRange
                             } else {
                                 target = new BlockPos(digRange.minX, target.getY, z)
                             }
@@ -337,11 +337,20 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
     }
 
     override def readFromNBT(nbttc: NBTTagCompound) = {
+        super.readFromNBT(nbttc)
         ench = QEnch.readFromNBT(nbttc)
         digRange = DigRange.readFromNBT(nbttc)
         target = BlockPos.fromLong(nbttc.getLong("NBT_TARGET"))
         mode.readFromNBT(nbttc)
-        super.readFromNBT(nbttc)
+        cacheItems.readFromNBT(nbttc)
+        val l = nbttc.getTagList("NBT_FLUIDLIST", Constants.NBT.TAG_COMPOUND)
+        Range(0, l.tagCount()).foreach(i => {
+            val tank = new FluidTank(0)
+            CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.readNBT(tank, null, l.get(i))
+            if (tank.getFluid != null) {
+                fluidStacks.put(tank.getFluid.getFluid, tank)
+            }
+        })
     }
 
     override def writeToNBT(nbttc: NBTTagCompound) = {
@@ -349,13 +358,17 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
         digRange.writeToNBT(nbttc)
         nbttc.setLong("NBT_TARGET", target.toLong)
         mode.writeToNBT(nbttc)
+        cacheItems.writeToNBT(nbttc)
+        val l = new NBTTagList
+        fluidStacks.foreach { case (_, tank) => l.appendTag(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.writeNBT(tank, null)) }
+        nbttc.setTag("NBT_FLUIDLIST", l)
         super.writeToNBT(nbttc)
     }
 
     /**
       * @return Map (Enchantment id, level)
       */
-    override def getEnchantments = ench.getMap.map { case (a, b) => (JInt.valueOf(a), JByte.valueOf(b)) }.asJava
+    override def getEnchantments = ench.getMap.collect { case (a, b) if b > 0 => (JInt.valueOf(a), JByte.valueOf(b)) }.asJava
 
     /**
       * @param id    Enchantment id
@@ -397,7 +410,8 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
             player.sendStatusMessage(new TextComponentString("Liquid to extract = " + fluidStacks.size), false)
             player.sendStatusMessage(new TextComponentString("Next target = " + target.toString), false)
             player.sendStatusMessage(new TextComponentString(mode.toString), false)
-            player.sendStatusMessage(new TextComponentString("Dig range = " + digRange), false)
+            player.sendStatusMessage(new TextComponentString(digRange.toString), false)
+            player.sendStatusMessage(new TextComponentString("Resent 5 seconds, used " + getInfoEnergyPerTick + " MJ/t"), false)
         } else {
             player.sendStatusMessage(new TextComponentString("ChunkDestroyer is disabled."), false)
         }
@@ -619,6 +633,8 @@ object TileAdvQuarry {
     private val NBT_QENCH = "nbt_qench"
     private val NBT_DIGRANGE = "nbt_digrange"
     private val NBT_MODE = "nbt_quarrymode"
+    private val NBT_ITEMLIST = "nbt_itemlist"
+    private val NBT_ITEMELEMENTS = "nbt_itemelements"
 
     val defaultEnch = QEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false)
     val defaultRange: DigRange = NoDefinedRange
@@ -715,7 +731,7 @@ object TileAdvQuarry {
         override val toString: String = "Dig Range Not Defined"
     }
 
-    class ItemList {
+    class ItemList extends INBTWritable with INBTReadable[ItemList] {
         val list = scala.collection.mutable.ArrayBuffer.empty[ItemElement]
 
         def add(itemDamage: ItemDamage, count: Int): Unit = {
@@ -751,6 +767,23 @@ object TileAdvQuarry {
         }
 
         override def toString: String = "ItemList size = " + list.size
+
+        override def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
+            val t = new NBTTagCompound
+            val l = new NBTTagList
+            list.map(_.toStack.serializeNBT()).foreach(l.appendTag(_))
+            t.setTag(NBT_ITEMELEMENTS, l)
+            nbt.setTag(NBT_ITEMLIST, t)
+            nbt
+        }
+
+        override def readFromNBT(tag: NBTTagCompound): ItemList = {
+            if (tag.hasKey(NBT_ITEMLIST)) {
+                val l = tag.getCompoundTag(NBT_ITEMLIST).getTagList(NBT_ITEMELEMENTS, Constants.NBT.TAG_COMPOUND)
+                Range(0, l.tagCount()).foreach(i => add(new ItemStack(l.getCompoundTagAt(i))))
+            }
+            this
+        }
     }
 
     case class ItemElement(itemDamage: ItemDamage, count: Int) {

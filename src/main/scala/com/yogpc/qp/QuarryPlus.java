@@ -216,6 +216,7 @@ public class QuarryPlus {
         public static final String Buildcraft_modID = "buildcraftcore";
         public static final String COFH_modID = "cofhcore";
         public static final String COFH_block = "cofhapi|block";
+        public static final String COFH_item = "cofhapi|item";
         public static final String COFH_energy = "cofhapi|energy";
         public static final String COFH_tileentity = "cofhapi|tileentity";
         public static final String BuildCraft_core = "BuildCraftAPI|core";

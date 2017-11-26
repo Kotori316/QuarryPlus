@@ -28,4 +28,6 @@ abstract class QPBlock(materialIn: Material, name: String, generator: Function[Q
     override def onBlockActivated(worldIn: World, pos: BlockPos, state: IBlockState, playerIn: EntityPlayer,
                                   hand: EnumHand, facing: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean =
         InvUtils.isDebugItem(playerIn, hand) || super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ)
+
+    override def rotateBlock(world: World, pos: BlockPos, axis: EnumFacing): Boolean = false
 }

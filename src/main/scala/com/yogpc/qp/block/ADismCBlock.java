@@ -6,6 +6,7 @@ import java.util.function.Function;
 
 import cofh.api.block.IDismantleable;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.QuarryPlusI;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
@@ -38,7 +39,7 @@ public abstract class ADismCBlock extends QPBlock implements IDismantleable {
     @Override
     @Optional.Method(modid = QuarryPlus.Optionals.COFH_block)
     public boolean canDismantle(World world, BlockPos pos, IBlockState state, EntityPlayer player) {
-        return true;
+        return this != QuarryPlusI.blockChunkdestroyer;
     }
 
     public static ArrayList<ItemStack> dismantle(World world, BlockPos pos, IBlockState state, boolean returnDrops) {

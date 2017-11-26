@@ -80,8 +80,15 @@ public class BlockAdvQuarry extends ADismCBlock {
         ItemStack stack = playerIn.getHeldItem(hand);
         if (InvUtils.isDebugItem(playerIn, hand)) return true;
         if (BuildCraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
-            if (!worldIn.isRemote)
-                Optional.ofNullable((TileAdvQuarry) worldIn.getTileEntity(pos)).ifPresent(TileAdvQuarry::G_reinit);
+            if (!worldIn.isRemote) {
+                TileAdvQuarry quarry = (TileAdvQuarry) worldIn.getTileEntity(pos);
+                if (quarry != null) {
+                    quarry.G_reinit();
+                    if (Config.content().noEnergy()) {
+                        quarry.stickActivated();
+                    }
+                }
+            }
             return true;
         } else if (stack.getItem() == QuarryPlusI.itemTool && stack.getItemDamage() == 0) {
             if (!worldIn.isRemote)
