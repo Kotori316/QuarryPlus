@@ -608,21 +608,23 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     }
 
     @Override
-    public void sendDebugMessage(EntityPlayer player) {
-        player.sendStatusMessage(new TextComponentString("Connection : " + this.connectTo), false);
+    public List<ITextComponent> getDebugmessages() {
+        ArrayList<ITextComponent> list = new ArrayList<>();
+        list.add(new TextComponentString("Connection : " + this.connectTo));
         for (EnumFacing facing : EnumFacing.VALUES) {
             this.mapping.get(facing).stream()
-                    .reduce((s1, s2) -> s1 + ", " + s2)
-                    .ifPresent(s -> player.sendStatusMessage(new TextComponentString(facing + " -> " + s), false));
+                    .reduce((s1, s2) -> s1 + ", " + s2).map(TextComponentString::new)
+                    .ifPresent(list::add);
         }
         if (!liquids.isEmpty()) {
-            player.sendStatusMessage(new TextComponentTranslation("chat.pumpcontain"), false);
-            liquids.stream().map(fluidStack -> fluidStack.getLocalizedName() + fluidStack.amount + "mB").reduce((s, s2) -> s + ", " + s2)
-                    .map(TextComponentString::new)
-                    .ifPresent(s -> player.sendStatusMessage(s, false));
+            list.add(new TextComponentTranslation("chat.pumpcontain"));
+            liquids.stream().map(fluidStack -> fluidStack.getLocalizedName() + fluidStack.amount + "mB")
+                    .reduce((s, s2) -> s + ", " + s2).map(TextComponentString::new)
+                    .ifPresent(list::add);
         } else {
-            player.sendStatusMessage(new TextComponentString("No liquids"), false);
+            list.add(new TextComponentString("No liquids"));
         }
+        return list;
     }
 
     @Override

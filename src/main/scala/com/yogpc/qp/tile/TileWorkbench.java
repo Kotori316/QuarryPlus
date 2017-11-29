@@ -12,6 +12,7 @@
  */
 package com.yogpc.qp.tile;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -216,9 +217,9 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
     }
 
     @Override
-    public void sendDebugMessage(EntityPlayer player) {
-        player.sendStatusMessage(new TextComponentString(currentRecipe.map(WorkbenchRecipes::toString).orElse("No recipe.")), false);
-        player.sendStatusMessage(new TextComponentString("Work mode : " + (workcontinue ? "Continue" : "Only once")), false);
+    public List<TextComponentString> getDebugmessages() {
+        return Arrays.asList(new TextComponentString(currentRecipe.map(WorkbenchRecipes::toString).orElse("No recipe.")),
+                new TextComponentString("Work mode : " + (workcontinue ? "Continue" : "Only once")));
     }
 
     @Override

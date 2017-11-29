@@ -40,7 +40,7 @@ import scala.collection.convert.WrapAsJava
 
 class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with ITickable with IDebugSender {
     self =>
-    private var mDigRange = TileAdvQuarry.defaultRange
+    private[this] var mDigRange = TileAdvQuarry.defaultRange
     var ench = TileAdvQuarry.defaultEnch
     var target = BlockPos.ORIGIN
     var framePoses = List.empty[BlockPos]
@@ -280,7 +280,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                             } else {
                                 false
                             }
-                        }).foreach(p => getWorld.setBlockState(p, Blocks.AIR.getDefaultState, 2))
+                        }).foreach(getWorld.setBlockToAir)
 
                         val x = target.getX + 1
                         if (x > digRange.maxX) {
@@ -404,17 +404,16 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 
     override def isUsableByPlayer(player: EntityPlayer) = self.getWorld.getTileEntity(self.getPos) eq this
 
-    override def sendDebugMessage(player: EntityPlayer) = {
-        if (!Config.content.disableController) {
-            player.sendStatusMessage(new TextComponentString("Items to extract = " + cacheItems.list.size), false)
-            player.sendStatusMessage(new TextComponentString("Liquid to extract = " + fluidStacks.size), false)
-            player.sendStatusMessage(new TextComponentString("Next target = " + target.toString), false)
-            player.sendStatusMessage(new TextComponentString(mode.toString), false)
-            player.sendStatusMessage(new TextComponentString(digRange.toString), false)
-            player.sendStatusMessage(new TextComponentString("Resent 5 seconds, used " + getInfoEnergyPerTick + " MJ/t"), false)
-        } else {
-            player.sendStatusMessage(new TextComponentString("ChunkDestroyer is disabled."), false)
-        }
+    override def getDebugmessages = if (!Config.content.disableController) {
+        import scala.collection.JavaConverters._
+        List(new TextComponentString("Items to extract = " + cacheItems.list.size),
+            new TextComponentString("Liquid to extract = " + fluidStacks.size),
+            new TextComponentString("Next target = " + target.toString),
+            new TextComponentString(mode.toString),
+            new TextComponentString(digRange.toString),
+            new TextComponentString("Resent 5 seconds, used " + getInfoEnergyPerTick + " MJ/t")).asJava
+    } else {
+        java.util.Collections.singletonList(new TextComponentString("ChunkDestroyer is disabled."))
     }
 
     override def hasCapability(capability: Capability[_], facing: EnumFacing) = {
@@ -453,7 +452,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
         super.onChunkUnload()
     }
 
-    private var chunkTicket: ForgeChunkManager.Ticket = _
+    private[this] var chunkTicket: ForgeChunkManager.Ticket = _
 
     def requestTicket(): Unit = {
         if (this.chunkTicket != null) return
@@ -559,7 +558,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 
         import TileAdvQuarry._
 
-        private var mode: Modes = NONE
+        private[this] var mode: Modes = NONE
 
         def set(newmode: Modes): Unit = {
             mode = newmode

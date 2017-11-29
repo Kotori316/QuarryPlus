@@ -37,7 +37,7 @@ class EnergyDebug(tile: TileEntity) {
                         s"$tilename used $usedSum MJ in $usedTicks ticks (${usedSum / usedTicks} MJ/t), got $gotSum in 100 ticks (${gotSum / 100} MJ/t)"
                     )
                 } else {
-                    useBuilder.result()
+                    useBuilder.clear()
                     QuarryPlus.LOGGER.info(
                         s"$tilename used 0 MJ, got $gotSum in 100 ticks (${gotSum / 100} MJ/t)"
                     )

@@ -12,15 +12,19 @@
  */
 package com.yogpc.qp.tile;
 
+import java.util.List;
+
 import buildcraft.api.mj.IMjConnector;
 import buildcraft.api.mj.IMjReadable;
 import buildcraft.api.mj.IMjReceiver;
 import buildcraft.api.mj.MjAPI;
 import buildcraft.api.mj.MjCapabilityHelper;
+import buildcraft.api.tiles.IDebuggable;
 import cofh.api.energy.IEnergyReceiver;
 import cofh.api.tileentity.IEnergyInfo;
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.item.ItemQuarryDebug;
 import ic2.api.energy.event.EnergyTileLoadEvent;
 import ic2.api.energy.event.EnergyTileUnloadEvent;
 import ic2.api.energy.tile.IEnergyEmitter;
@@ -30,18 +34,22 @@ import javax.annotation.Nullable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Optional;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @Optional.InterfaceList(value = {
         @Optional.Interface(iface = "cofh.api.energy.IEnergyReceiver", modid = QuarryPlus.Optionals.COFH_energy),
         @Optional.Interface(iface = "cofh.api.tileentity.IEnergyInfo", modid = QuarryPlus.Optionals.COFH_tileentity),
+        @Optional.Interface(iface = "buildcraft.api.tiles.IDebuggable", modid = QuarryPlus.Optionals.Buildcraft_tiles),
         @Optional.Interface(iface = "ic2.api.energy.tile.IEnergySink", modid = QuarryPlus.Optionals.IC2_modID)})
-public abstract class APowerTile extends APacketTile implements IEnergyReceiver, IEnergySink, ITickable, IEnergyStorage, IEnergyInfo {
+public abstract class APowerTile extends APacketTile implements IEnergyReceiver, IEnergySink, ITickable, IEnergyStorage, IEnergyInfo, IDebuggable {
     private double all, maxGot, max, got;
     private boolean ic2ok = false;
     public boolean bcLoaded;
@@ -321,29 +329,52 @@ public abstract class APowerTile extends APacketTile implements IEnergyReceiver,
     private class MjReciever implements IMjReceiver, IMjReadable {
 
         @Override
+        @Optional.Method(modid = QuarryPlus.Optionals.Buildcraft_modID)
         public long getStored() {
             return (long) (APowerTile.this.getStoredEnergy() * MjAPI.MJ);
         }
 
         @Override
+        @Optional.Method(modid = QuarryPlus.Optionals.Buildcraft_modID)
         public long getCapacity() {
             return (long) (APowerTile.this.getMaxStored() * MjAPI.MJ);
         }
 
         @Override
+        @Optional.Method(modid = QuarryPlus.Optionals.Buildcraft_modID)
         public long getPowerRequested() {
             return (long) (Math.min(APowerTile.this.maxGot - APowerTile.this.got,
                     APowerTile.this.getMaxStored() - APowerTile.this.getStoredEnergy() - APowerTile.this.got) * MjAPI.MJ);
         }
 
         @Override
+        @Optional.Method(modid = QuarryPlus.Optionals.Buildcraft_modID)
         public long receivePower(long microJoules, boolean simulate) {
             return (long) (microJoules - APowerTile.this.getEnergy(microJoules / MjAPI.MJ, !simulate) * MjAPI.MJ);
         }
 
         @Override
+        @Optional.Method(modid = QuarryPlus.Optionals.Buildcraft_modID)
         public boolean canConnect(@Nonnull IMjConnector other) {
             return true;
+        }
+    }
+
+    /**
+     * Get the debug information from a tile entity as a list of strings, used for the F3 debug menu. The left and
+     * right parameters correspond to the sides of the F3 screen.
+     *
+     * @param side The side the block was clicked on, may be null if we don't know, or is the "centre" side
+     */
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void getDebugInfo(List<String> left, List<String> right, EnumFacing side) {
+        left.add(getClass().getName());
+        left.add(ItemQuarryDebug.tileposToString(this).getText());
+        left.add(ItemQuarryDebug.energyToString(this).getText());
+        if (IDebugSender.class.isInstance(this)) {
+            IDebugSender sender = (IDebugSender) this;
+            sender.getDebugmessages().stream().map(ITextComponent::getUnformattedComponentText).forEach(left::add);
         }
     }
 

@@ -13,6 +13,7 @@
 
 package com.yogpc.qp.tile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -35,7 +36,6 @@ import com.yogpc.qp.packet.quarry.MoveHead;
 import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -43,6 +43,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.chunk.Chunk;
@@ -670,14 +671,15 @@ public class TileQuarry extends TileBasic implements IDebugSender {
     }
 
     @Override
-    public void sendDebugMessage(EntityPlayer player) {
-        player.sendStatusMessage(new TextComponentString(getStoredEnergy() + " / " + getMaxStored() + " MJ"), false);
-        player.sendStatusMessage(new TextComponentTranslation("chat.currentmode", G_getNow()), false);
-        player.sendStatusMessage(new TextComponentString(String.format("Next target : (%d, %d, %d)", targetX, targetY, targetZ)), false);
-        player.sendStatusMessage(new TextComponentString(String.format("Head Pos : (%s, %s, %s)", headPosX, headPosY, headPosZ)), false);
-        player.sendStatusMessage(new TextComponentString("X : " + xMin + " to " + xMax), false);
-        player.sendStatusMessage(new TextComponentString("Z : " + zMin + " to " + zMax), false);
-        player.sendStatusMessage(new TextComponentTranslation(filler ? "chat.fillermode" : "chat.quarrymode"), false);
+    public List<ITextComponent> getDebugmessages() {
+        ArrayList<ITextComponent> list = new ArrayList<>();
+        list.add(new TextComponentTranslation("chat.currentmode", G_getNow()));
+        list.add(new TextComponentString(String.format("Next target : (%d, %d, %d)", targetX, targetY, targetZ)));
+        list.add(new TextComponentString(String.format("Head Pos : (%s, %s, %s)", headPosX, headPosY, headPosZ)));
+        list.add(new TextComponentString("X : " + xMin + " to " + xMax));
+        list.add(new TextComponentString("Z : " + zMin + " to " + zMax));
+        list.add(new TextComponentTranslation(filler ? "chat.fillermode" : "chat.quarrymode"));
+        return list;
     }
 
     public enum Mode {
