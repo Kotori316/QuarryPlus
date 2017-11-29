@@ -24,7 +24,7 @@ compileScala {
 }
 
 minecraft {
-    version = "1.12.2-14.23.0.2528"
+    version = "1.12.2-14.23.1.2556"
     runDir = "run"
 
     // the mappings can be changed at any time, and must be in the following format.
@@ -47,6 +47,10 @@ repositories {
         name = "CoFH Maven"
         url = "http://maven.covers1624.net"
     }
+    maven {
+        name "BuildCraft"
+        url = "https://mod-buildcraft.com/maven"
+    }
 }
 
 dependencies {
@@ -54,6 +58,7 @@ dependencies {
     deobfCompile "cofh:RedstoneFlux:1.12-2.0.1.2:universal"
     deobfCompile "cofh:CoFHCore:1.12-4.3.6.16:universal"
     deobfCompile "mezz.jei:jei_1.12.2:4.8.0.114"
+    deobfCompile "com.mod-buildcraft:buildcraft:7.99.12"
 }
 
 processResources {

@@ -47,6 +47,8 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -172,7 +174,7 @@ public class BlockBreaker extends ADismCBlock {
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack stack = playerIn.getHeldItem(hand);
-        if (BuildCraftHelper.isWrench(playerIn, stack, pos)) {
+        if (BuildCraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
             TileEntity entity = worldIn.getTileEntity(pos);
             if (entity != null) {
                 entity.validate();

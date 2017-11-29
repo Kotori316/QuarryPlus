@@ -39,6 +39,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -106,7 +108,7 @@ public class BlockPump extends ADismCBlock {
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack stack = playerIn.getHeldItem(hand);
-        if (BuildCraftHelper.isWrench(playerIn, stack, pos)) {
+        if (BuildCraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
             Optional.ofNullable((TilePump) worldIn.getTileEntity(pos)).ifPresent(pump -> pump.S_changeRange(playerIn));
             return true;
         }

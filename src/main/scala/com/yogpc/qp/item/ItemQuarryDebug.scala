@@ -7,7 +7,7 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.text.{ITextComponent, TextComponentString, TextComponentTranslation}
+import net.minecraft.util.text.{TextComponentString, TextComponentTranslation}
 import net.minecraft.util.{EnumActionResult, EnumFacing, EnumHand, NonNullList}
 import net.minecraft.world.World
 
@@ -69,11 +69,11 @@ object ItemQuarryDebug extends Item {
         if (Config.content.debug) super.getSubItems(tab, items)
     }
 
-    private def tileposToString(tile: TileEntity): ITextComponent = {
+    def tileposToString(tile: TileEntity) = {
         new TextComponentString(s"Tile Pos : x=${tile.getPos.getX}, y=${tile.getPos.getY}, z=${tile.getPos.getZ}")
     }
 
-    private def energyToString(tile: APowerTile): ITextComponent = {
+    def energyToString(tile: APowerTile) = {
         if (Config.content.noEnergy) new TextComponentString("No Energy Required.")
         else new TextComponentString(tile.getStoredEnergy + " / " + tile.getMaxStored + " MJ")
     }

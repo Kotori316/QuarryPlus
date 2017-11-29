@@ -18,23 +18,29 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import buildcraft.api.mj.ILaserTarget;
+import buildcraft.api.mj.MjAPI;
 import com.yogpc.qp.PowerManager;
 import com.yogpc.qp.QuarryPlus;
-import net.minecraft.entity.player.EntityPlayer;
+import com.yogpc.qp.block.BlockLaser;
+import com.yogpc.qp.packet.PacketHandler;
+import com.yogpc.qp.packet.laser.LaserAverageMessage;
+import com.yogpc.qp.packet.laser.LaserMessage;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-/*import buildcraft.api.mj.ILaserTarget;
-import buildcraft.api.mj.MjAPI;*/
 
 /**
  * The plus machine of {@link buildcraft.silicon.tile.TileLaser}
@@ -61,7 +67,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
 
     @Override
     public void update() {
-        /*super.update();
+        super.update();
         if (!bcLoaded || getWorld().isRemote)
             return;
 
@@ -93,11 +99,11 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
                 });
                 pushPower(each / MjAPI.MJ);
             }
-        }*/
+        }
 
-//        if (ticks % 20 == 0 /*&& !getWorld().isRemote*/) {
-//            PacketHandler.sendToAround(LaserAverageMessage.create(this), getWorld(), getPos());
-//        }
+        if (ticks % 20 == 0 /*&& !getWorld().isRemote*/) {
+            PacketHandler.sendToAround(LaserAverageMessage.create(this), getWorld(), getPos());
+        }
     }
 
     private void updateLaser() {
@@ -117,7 +123,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
         }
     }
 
-    protected void findTable() {/*
+    protected void findTable() {
         removeLaser();
         EnumFacing facing = getWorld().getBlockState(getPos()).getValue(BlockLaser.FACING);
 
@@ -168,7 +174,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
             this.targets.clear();
             this.targets.add(laserTarget);
         }
-        lasers = new Vec3d[targets.size()];*/
+        lasers = new Vec3d[targets.size()];
     }
 
     protected void removeLaser() {
@@ -277,19 +283,19 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
     }
 
     @Override
-    public void sendDebugMessage(EntityPlayer player) {
-        player.sendStatusMessage(new TextComponentString("Targets"), false);
+    public List<ITextComponent> getDebugmessages() {
+        List<ITextComponent> list = new ArrayList<>();
+        list.add(new TextComponentString("Targets"));
         targets.stream()
                 .map(pos1 -> String.format("x=%d, y=%d, z=%d", pos1.getX(), pos1.getY(), pos1.getZ()))
-                .reduce((s, s2) -> s + ", " + s2)
-                .ifPresent(s -> player.sendStatusMessage(new TextComponentString(s), false));
-
-        player.sendStatusMessage(new TextComponentString("Lasers"), false);
+                .reduce((s, s2) -> s + ", " + s2).map(TextComponentString::new)
+                .ifPresent(list::add);
+        list.add(new TextComponentString("Lasers"));
         Stream.of(lasers).filter(Objects::nonNull)
                 .map(pos1 -> String.format("x=%s, y=%s, z=%s", pos1.x, pos1.y, pos1.z))
-                .reduce((s, s2) -> s + ", " + s2)
-                .ifPresent(s -> player.sendStatusMessage(new TextComponentString(s), false));
-
+                .reduce((s, s2) -> s + ", " + s2).map(TextComponentString::new)
+                .ifPresent(list::add);
+        return list;
     }
 
     @Override

@@ -13,11 +13,16 @@
 
 package com.yogpc.qp.tile;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import buildcraft.api.core.IAreaProvider;
+import buildcraft.api.tiles.ITileAreaProvider;
+import buildcraft.api.tiles.TilesAPI;
 import com.google.common.collect.Sets;
 import com.yogpc.qp.PowerManager;
 import com.yogpc.qp.QuarryPlus;
@@ -31,7 +36,6 @@ import com.yogpc.qp.packet.quarry.MoveHead;
 import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -39,6 +43,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.chunk.Chunk;
@@ -54,10 +59,6 @@ import static com.yogpc.qp.tile.TileQuarry.Mode.MAKEFRAME;
 import static com.yogpc.qp.tile.TileQuarry.Mode.MOVEHEAD;
 import static com.yogpc.qp.tile.TileQuarry.Mode.NONE;
 import static com.yogpc.qp.tile.TileQuarry.Mode.NOTNEEDBREAK;
-
-/*import buildcraft.api.core.IAreaProvider;
-import buildcraft.api.tiles.ITileAreaProvider;
-import buildcraft.api.tiles.TilesAPI;*/
 
 public class TileQuarry extends TileBasic implements IDebugSender {
     public final boolean bccoreLoaded;
@@ -75,9 +76,9 @@ public class TileQuarry extends TileBasic implements IDebugSender {
         if (this.areaProvider != null) {
             if (this.areaProvider instanceof TileMarker)
                 this.cacheItems.addAll(((TileMarker) this.areaProvider).removeFromWorldWithItem());
-            /*else if (bccoreLoaded && areaProvider instanceof IAreaProvider) {
+            else if (bccoreLoaded && areaProvider instanceof IAreaProvider) {
                 ((IAreaProvider) this.areaProvider).removeFromWorld();
-            }*/
+            }
             this.areaProvider = null;
         }
         switch (this.now) {
@@ -324,7 +325,7 @@ public class TileQuarry extends TileBasic implements IDebugSender {
             return;
 
         EnumFacing facing = getWorld().getBlockState(getPos()).getValue(BlockQuarry.FACING).getOpposite();
-        /*if (bccoreLoaded) {
+        if (bccoreLoaded) {
             Optional<ITileAreaProvider> marker = Stream.of(pos.offset(facing), pos.offset(facing.rotateYCCW()), pos.offset(facing.rotateY()))
                     .map(getWorld()::getTileEntity).filter(Objects::nonNull)
                     .map(t -> t.getCapability(TilesAPI.CAP_TILE_AREA_PROVIDER, null)).filter(Objects::nonNull).findFirst();
@@ -358,8 +359,7 @@ public class TileQuarry extends TileBasic implements IDebugSender {
             } else {
                 setDefaultRange(getPos(), facing);
             }
-        } else */
-        {
+        } else {
             Optional<TileMarker> marker = Stream.of(pos.offset(facing), pos.offset(facing.rotateYCCW()), pos.offset(facing.rotateY()))
                     .map(getWorld()::getTileEntity)
                     .filter(t -> t instanceof TileMarker)
@@ -671,14 +671,15 @@ public class TileQuarry extends TileBasic implements IDebugSender {
     }
 
     @Override
-    public void sendDebugMessage(EntityPlayer player) {
-        player.sendStatusMessage(new TextComponentString(getStoredEnergy() + " / " + getMaxStored() + " MJ"), false);
-        player.sendStatusMessage(new TextComponentTranslation("chat.currentmode", G_getNow()), false);
-        player.sendStatusMessage(new TextComponentString(String.format("Next target : (%d, %d, %d)", targetX, targetY, targetZ)), false);
-        player.sendStatusMessage(new TextComponentString(String.format("Head Pos : (%s, %s, %s)", headPosX, headPosY, headPosZ)), false);
-        player.sendStatusMessage(new TextComponentString("X : " + xMin + " to " + xMax), false);
-        player.sendStatusMessage(new TextComponentString("Z : " + zMin + " to " + zMax), false);
-        player.sendStatusMessage(new TextComponentTranslation(filler ? "chat.fillermode" : "chat.quarrymode"), false);
+    public List<ITextComponent> getDebugmessages() {
+        ArrayList<ITextComponent> list = new ArrayList<>();
+        list.add(new TextComponentTranslation("chat.currentmode", G_getNow()));
+        list.add(new TextComponentString(String.format("Next target : (%d, %d, %d)", targetX, targetY, targetZ)));
+        list.add(new TextComponentString(String.format("Head Pos : (%s, %s, %s)", headPosX, headPosY, headPosZ)));
+        list.add(new TextComponentString("X : " + xMin + " to " + xMax));
+        list.add(new TextComponentString("Z : " + zMin + " to " + zMax));
+        list.add(new TextComponentTranslation(filler ? "chat.fillermode" : "chat.quarrymode"));
+        return list;
     }
 
     public enum Mode {
