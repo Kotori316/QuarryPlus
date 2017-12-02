@@ -37,7 +37,7 @@ class WorkbenchRecipes(val output: ItemDamage, val energy: Double, in: ItemStack
 object WorkbenchRecipes {
     var difficulty: Double = 2
 
-    private val recipes = mutable.Map.empty[ItemDamage, WorkbenchRecipes]
+    private[this] val recipes = mutable.Map.empty[ItemDamage, WorkbenchRecipes]
 
     def recipeSize: Int = recipes.size
 

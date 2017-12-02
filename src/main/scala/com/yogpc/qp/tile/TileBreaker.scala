@@ -27,7 +27,7 @@ import net.minecraftforge.items.CapabilityItemHandler
 import net.minecraftforge.items.wrapper.InvWrapper
 
 class TileBreaker extends TileEntity with IEnchantableTile with HasInv {
-    private val handler = new InvWrapper(this)
+    private[this] val handler = new InvWrapper(this)
     var silktouch = false
     var fortune: Byte = 0
 
