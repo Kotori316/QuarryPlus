@@ -28,8 +28,8 @@ import net.minecraftforge.items.wrapper.InvWrapper
 import scala.collection.JavaConverters._
 
 class TilePlacer extends TileEntity with HasInv {
-    private val inventory = NonNullList.withSize(getSizeInventory, com.yogpc.qp.version.VersionUtil.empty())
-    private val handler = new InvWrapper(this)
+    private[this] val inventory = NonNullList.withSize(getSizeInventory, com.yogpc.qp.version.VersionUtil.empty())
+    private[this] val handler = new InvWrapper(this)
 
     override def readFromNBT(compound: NBTTagCompound): Unit = {
         super.readFromNBT(compound)

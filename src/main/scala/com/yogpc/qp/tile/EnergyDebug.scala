@@ -7,13 +7,13 @@ import scala.collection.mutable.ListBuffer
 
 class EnergyDebug(tile: TileEntity) {
 
-    private var count = 0
-    private var lastTick = 0l
-    private var usedTicks = 0
-    private var mMaxUsed = 0
-    private val getBuilder = new ListBuffer[Double]
-    private val useBuilder = new ListBuffer[Double]
-    private val tilename = tile.getClass.getSimpleName
+    private[this] var count = 0
+    private[this] var lastTick = 0l
+    private[this] var usedTicks = 0
+    private[this] var mMaxUsed = 0
+    private[this] val getBuilder = new ListBuffer[Double]
+    private[this] val useBuilder = new ListBuffer[Double]
+    private[this] val tilename = tile.getClass.getSimpleName
 
     def tick(got: Double): Unit = {
         if (true /*Config.content.debug*/ ) {
