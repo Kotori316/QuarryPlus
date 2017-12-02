@@ -22,6 +22,7 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import static com.yogpc.qp.version.VersionUtil.empty;
+import static com.yogpc.qp.version.VersionUtil.getCount;
 import static com.yogpc.qp.version.VersionUtil.isEmpty;
 import static com.yogpc.qp.version.VersionUtil.nonEmpty;
 
@@ -58,7 +59,7 @@ public class InvUtils {
                 TileEntity t = w.getTileEntity(pos.offset(facing));
                 if (t != null) {
                     IItemHandler handler = t.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing.getOpposite());
-                    if (is.getCount() != ItemHandlerHelper.insertItemStacked(handler, is, true).getCount()) {
+                    if (getCount(is) != getCount(ItemHandlerHelper.insertItemStacked(handler, is, true))) {
                         handlers.add(handler);
                     }
                 }

@@ -59,7 +59,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
                         InventoryHelper.spawnItemStack(getWorld(), getPos().getX(), getPos().getY(), getPos().getZ(), stack);
                     }
                     recipes.inputsJ().forEach(v1 ->
-                            inventory.stream().filter(v1::isItemEqual).findFirst().ifPresent(stack1 -> stack1.shrink(v1.getCount()))
+                            inventory.stream().filter(v1::isItemEqual).findFirst().ifPresent(stack1 -> VersionUtil.shrink(stack1, VersionUtil.getCount(v1)))
                     );
                     markDirty();
                     setCurrentRecipe(workcontinue ? getRecipeIndex() : -1);
@@ -79,8 +79,8 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
         NBTTagList list = nbttc.getTagList("Items", Constants.NBT.TAG_COMPOUND);
         IntStream.range(0, list.tagCount()).mapToObj(list::getCompoundTagAt).forEach(nbtTagCompound -> {
             int j = nbtTagCompound.getByte("Slot") & 255;
-            ItemStack stack = new ItemStack(nbtTagCompound);
-            stack.setCount(nbtTagCompound.getInteger("Count"));
+            ItemStack stack = VersionUtil.fromNBTTag(nbtTagCompound);
+            VersionUtil.setCount(stack, nbtTagCompound.getInteger("Count"));
             inventory.set(j, stack);
         });
         markDirty();
@@ -96,7 +96,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
                 nbttagcompound.setByte("Slot", (byte) i);
                 stack.writeToNBT(nbttagcompound);
                 nbttagcompound.removeTag("Count");
-                nbttagcompound.setInteger("Count", stack.getCount());
+                nbttagcompound.setInteger("Count", VersionUtil.getCount(stack));
                 list.appendTag(nbttagcompound);
             }
         }

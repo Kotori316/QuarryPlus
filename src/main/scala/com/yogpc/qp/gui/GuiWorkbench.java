@@ -3,6 +3,7 @@ package com.yogpc.qp.gui;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.container.ContainerWorkbench;
 import com.yogpc.qp.tile.TileWorkbench;
+import com.yogpc.qp.version.VersionUtil;
 import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -75,7 +76,7 @@ public class GuiWorkbench extends GuiContainer {
 
         @Override
         public void renderItemOverlayIntoGUI(FontRenderer fr, ItemStack stack, int xPosition, int yPosition, @Nullable String text) {
-            if (stack.getCount() > 64)
+            if (VersionUtil.getCount(stack) > 64)
                 super.renderItemOverlayIntoGUI(myfont.setParent(fr), stack, xPosition, yPosition, text);
             else
                 Minecraft.getMinecraft().getRenderItem().renderItemOverlayIntoGUI(fr, stack, xPosition, yPosition, text);

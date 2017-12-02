@@ -16,6 +16,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import static com.yogpc.qp.version.VersionUtil.empty;
+import static com.yogpc.qp.version.VersionUtil.getCount;
 import static com.yogpc.qp.version.VersionUtil.isEmpty;
 import static com.yogpc.qp.version.VersionUtil.nonEmpty;
 
@@ -73,7 +74,7 @@ public class ContainerWorkbench extends Container {
                 slot.putStack(empty());
             else
                 slot.onSlotChanged();
-            if (remain.getCount() == src.getCount())
+            if (getCount(remain) == getCount(src))
                 return empty();
             VersionUtil.onTake(slot, playerIn, remain);
         }
@@ -140,7 +141,7 @@ public class ContainerWorkbench extends Container {
                 if (isEmpty(slotStack)) {
                     //put TO workbench.
                     if (nonEmpty(playerStack) && slot.isItemValid(playerStack)) {
-                        int l2 = dragType == 0 ? playerStack.getCount() : 1;
+                        int l2 = dragType == 0 ? getCount(playerStack) : 1;
 
                         if (l2 > slot.getItemStackLimit(playerStack)) {
                             l2 = slot.getItemStackLimit(playerStack);
@@ -156,9 +157,9 @@ public class ContainerWorkbench extends Container {
                         } else {
                             int k2;
                             if (dragType == 0) {
-                                k2 = Math.min(slotStack.getCount(), slotStack.getMaxStackSize());
+                                k2 = Math.min(getCount(slotStack), slotStack.getMaxStackSize());
                             } else {
-                                k2 = Math.min((slotStack.getCount() + 1) / 2, slotStack.getMaxStackSize());
+                                k2 = Math.min((getCount(slotStack) + 1) / 2, slotStack.getMaxStackSize());
                             }
                             inventoryplayer.setItemStack(slot.decrStackSize(k2));
 
@@ -172,10 +173,10 @@ public class ContainerWorkbench extends Container {
                         //put TO workbench.
                         if (slotStack.getItem() == playerStack.getItem() && slotStack.getMetadata() == playerStack.getMetadata()
                                 && ItemStack.areItemStackTagsEqual(slotStack, playerStack)) {
-                            int j2 = dragType == 0 ? playerStack.getCount() : 1;
+                            int j2 = dragType == 0 ? getCount(playerStack) : 1;
 
-                            playerStack.shrink(j2);
-                            slotStack.grow(j2);
+                            VersionUtil.shrink(playerStack, j2);
+                            VersionUtil.grow(slotStack, j2);
                         }
                         //Swiching items. not need!
                         /*else if (playerStack.getCount() <= slot.getItemStackLimit(playerStack)) {
@@ -206,20 +207,20 @@ public class ContainerWorkbench extends Container {
 
                 if (nonEmpty(itemstack) && itemstack.getItem() == stack.getItem() &&
                         (!stack.getHasSubtypes() || stack.getMetadata() == itemstack.getMetadata()) && ItemStack.areItemStackTagsEqual(stack, itemstack)) {
-                    int j = itemstack.getCount() + stack.getCount();
+                    int j = getCount(itemstack) + getCount(stack);
                     int maxSize = slot.getSlotStackLimit();// ignore limit of stack. Math.min(slot.getSlotStackLimit(), stack.getMaxStackSize());
 
                     if (j <= maxSize) {
-                        stack.setCount(0);
-                        itemstack.setCount(j);
+                        VersionUtil.setCount(stack, 0);
+                        VersionUtil.setCount(itemstack, j);
                         slot.onSlotChanged();
                         flag = true;
-                    } else if (itemstack.getCount() < maxSize) {
+                    } else if (getCount(itemstack) < maxSize) {
                         //come?
                         if (Config.content().debug())
                             QuarryPlus.LOGGER.info("ContainerWorkbench#mergeItemStack itemstack.getCount() < maxSize");
-                        stack.shrink(maxSize - itemstack.getCount());
-                        itemstack.setCount(maxSize);
+                        VersionUtil.shrink(stack, maxSize - getCount(itemstack));
+                        VersionUtil.setCount(itemstack, maxSize);
                         slot.onSlotChanged();
                         flag = true;
                     }
@@ -237,7 +238,7 @@ public class ContainerWorkbench extends Container {
                     /* if (stack.getCount() > slot1.getSlotStackLimit()) {
                         slot1.putStack(stack.splitStack(slot1.getSlotStackLimit()));
                     } else */
-                    slot1.putStack(stack.splitStack(stack.getCount()));
+                    slot1.putStack(stack.splitStack(getCount(stack)));
 
                     slot1.onSlotChanged();
                     flag = true;

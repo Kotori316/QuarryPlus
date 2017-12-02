@@ -6,11 +6,32 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 
 public class VersionUtil {
 
     public static ItemStack empty() {
         return QuarryPlus.DIFF.empty();
+    }
+
+    public static ItemStack fromNBTTag(NBTTagCompound compound) {
+        return QuarryPlus.DIFF.fromNBTTag(compound);
+    }
+
+    public static void setCount(ItemStack stack, int newSize) {
+        QuarryPlus.DIFF.setCount(stack, newSize);
+    }
+
+    public static int getCount(ItemStack stack) {
+        return QuarryPlus.DIFF.getCount(stack);
+    }
+
+    public static void shrink(ItemStack stack, int size) {
+        QuarryPlus.DIFF.shrink(stack, size);
+    }
+
+    public static void grow(ItemStack stack, int size) {
+        QuarryPlus.DIFF.grow(stack, size);
     }
 
     public static boolean isEmpty(ItemStack stack) {
