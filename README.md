@@ -13,7 +13,7 @@ Jar files are available on https://github.com/Kotori316/QuarryPlus/releases OR h
 Supported API
 -------------
 * BuildCraft API
-* CofhLib API
+* CoFH Core API
 * IC2 API
 * JEI API
 * Forge Energy API (net.minecraftforge.energy.IEnergyStorage)
@@ -26,5 +26,5 @@ Build with...
 -------------
 * BuildCraft [MC1.11.2] 7.99.7
 * IC2\_experimental [MC1.11.2] industrialcraft-2-2.7.82-ex111-api.jar
-* CoFHLib [MC1.11.2] CoFHLib-1.11.2-1.8.0.1
+* CoFHCore [MC1.11.2] CoFHCore-1.11.2-4.2.8.16-universal.jar
 * JEI [MC1.11.2] jei_1.11.2-4.5.1.296.jar
