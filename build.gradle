@@ -14,7 +14,7 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 
 version = getProperty("modversion")
 group = "com.yogpc.qp" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "QuarryPlus-unofficial-1.12.2-alpha"
+archivesBaseName = "Additional Enchanted Miner-1.12.2"
 
 sourceCompatibility = targetCompatibility = "1.8" // Need this here so eclipse task generates correctly.
 compileScala {
