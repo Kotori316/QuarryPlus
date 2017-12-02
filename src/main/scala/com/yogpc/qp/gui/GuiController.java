@@ -18,17 +18,15 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class GuiController extends GuiScreen {
     private GuiSlotEntityList slot;
-    final List<ResourceLocation> list;
     List<String> names;
     final int dim, xc, yc, zc;
 
     public GuiController(final int d, final int x, final int y, final int z, final List<ResourceLocation> l) {
-        this.list = l;
         this.dim = d;
         this.xc = x;
         this.yc = y;
         this.zc = z;
-        names = list.stream().sorted(Comparator.comparing(ResourceLocation::getResourceDomain)).map(ResourceLocation::toString).collect(Collectors.toList());
+        names = l.stream().sorted(Comparator.comparing(ResourceLocation::getResourceDomain)).map(ResourceLocation::toString).collect(Collectors.toList());
     }
 
     @Override
@@ -42,7 +40,7 @@ public class GuiController extends GuiScreen {
     public void actionPerformed(final GuiButton par1) {
         switch (par1.id) {
             case -1:
-                PacketHandler.sendToServer(SetEntity.create(dim, new BlockPos(xc, yc, zc), list.get(slot.selected())));
+                PacketHandler.sendToServer(SetEntity.create(dim, new BlockPos(xc, yc, zc), names.get(slot.selected())));
                 this.mc.player.closeScreen();
                 break;
         }

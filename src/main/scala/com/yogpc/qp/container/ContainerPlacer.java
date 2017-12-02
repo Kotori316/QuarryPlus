@@ -22,6 +22,8 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
+import static com.yogpc.qp.version.VersionUtil.getCount;
+
 public class ContainerPlacer extends Container {
     private final TilePlacer tile;
 
@@ -60,11 +62,11 @@ public class ContainerPlacer extends Container {
                     return VersionUtil.empty();
             } else if (!mergeItemStack(remain, 0, 9, false))
                 return VersionUtil.empty();
-            if (remain.getCount() == 0)
+            if (getCount(remain) == 0)
                 slot.putStack(VersionUtil.empty());
             else
                 slot.onSlotChanged();
-            if (remain.getCount() == src.getCount())
+            if (getCount(remain) == getCount(src))
                 return VersionUtil.empty();
             VersionUtil.onTake(slot, playerIn, remain);
         }

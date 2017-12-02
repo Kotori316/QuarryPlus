@@ -779,7 +779,7 @@ object TileAdvQuarry {
         override def readFromNBT(tag: NBTTagCompound): ItemList = {
             if (tag.hasKey(NBT_ITEMLIST)) {
                 val l = tag.getCompoundTag(NBT_ITEMLIST).getTagList(NBT_ITEMELEMENTS, Constants.NBT.TAG_COMPOUND)
-                Range(0, l.tagCount()).foreach(i => add(new ItemStack(l.getCompoundTagAt(i))))
+                Range(0, l.tagCount()).foreach(i => add(VersionUtil.fromNBTTag(l.getCompoundTagAt(i))))
             }
             this
         }

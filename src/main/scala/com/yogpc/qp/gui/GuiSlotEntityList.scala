@@ -20,7 +20,7 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 class GuiSlotEntityList(mc: Minecraft, width: Int, height: Int, topIn: Int, bottomIn: Int, gc: GuiController) extends GuiSlot(mc, width, height, topIn, bottomIn, 18) {
     var selected = 0
 
-    override protected def getSize: Int = this.gc.list.size
+    override protected def getSize: Int = this.gc.names.size
 
     override protected def elementClicked(slotIndex: Int, isDoubleClick: Boolean, mouseX: Int, mouseY: Int): Unit = this.selected = slotIndex
 

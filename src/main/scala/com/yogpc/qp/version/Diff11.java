@@ -5,6 +5,7 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 
 public class Diff11 implements VersionDiff {
 
@@ -14,8 +15,23 @@ public class Diff11 implements VersionDiff {
     }
 
     @Override
+    public ItemStack fromNBTTag(NBTTagCompound compound) {
+        return new ItemStack(compound);
+    }
+
+    @Override
     public boolean isEmpty(ItemStack stack) {
         return stack.isEmpty();
+    }
+
+    @Override
+    public int getCount(ItemStack stack) {
+        return stack.getCount();
+    }
+
+    @Override
+    public void setCount(ItemStack stack, int newSize) {
+        stack.setCount(newSize);
     }
 
     @Override
