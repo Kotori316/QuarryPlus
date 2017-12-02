@@ -20,17 +20,16 @@ import java.util.stream.IntStream;
 
 import cofh.api.tileentity.IInventoryConnection;
 import com.yogpc.qp.Config;
+import com.yogpc.qp.NonNullList;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryHelper;
-import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.relauncher.Side;
@@ -59,7 +58,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
                         InventoryHelper.spawnItemStack(getWorld(), getPos().getX(), getPos().getY(), getPos().getZ(), stack);
                     }
                     recipes.inputsJ().forEach(v1 ->
-                            inventory.stream().filter(v1::isItemEqual).findFirst().ifPresent(stack1 -> stack1.shrink(v1.getCount()))
+                            inventory.stream().filter(v1::isItemEqual).findFirst().ifPresent(stack1 -> VersionUtil.shrink(stack1, VersionUtil.getCount(v1)))
                     );
                     markDirty();
                     setCurrentRecipe(workcontinue ? getRecipeIndex() : -1);
@@ -79,8 +78,8 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
         NBTTagList list = nbttc.getTagList("Items", Constants.NBT.TAG_COMPOUND);
         IntStream.range(0, list.tagCount()).mapToObj(list::getCompoundTagAt).forEach(nbtTagCompound -> {
             int j = nbtTagCompound.getByte("Slot") & 255;
-            ItemStack stack = new ItemStack(nbtTagCompound);
-            stack.setCount(nbtTagCompound.getInteger("Count"));
+            ItemStack stack = VersionUtil.fromNBTTag(nbtTagCompound);
+            VersionUtil.setCount(stack, nbtTagCompound.getInteger("Count"));
             inventory.set(j, stack);
         });
         markDirty();
@@ -96,7 +95,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
                 nbttagcompound.setByte("Slot", (byte) i);
                 stack.writeToNBT(nbttagcompound);
                 nbttagcompound.removeTag("Count");
-                nbttagcompound.setInteger("Count", stack.getCount());
+                nbttagcompound.setInteger("Count", VersionUtil.getCount(stack));
                 list.appendTag(nbttagcompound);
             }
         }

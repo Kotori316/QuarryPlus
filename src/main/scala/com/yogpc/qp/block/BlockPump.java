@@ -98,8 +98,8 @@ public class BlockPump extends ADismCBlock {
 
     @SuppressWarnings({"deprecation"})
     @Override
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
-        super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn/*, BlockPos fromPos*/) {
+        super.neighborChanged(state, worldIn, pos, blockIn/*, fromPos*/);
         Optional.ofNullable((TilePump) worldIn.getTileEntity(pos)).ifPresent(TilePump::G_reinit);
     }
 
@@ -112,12 +112,12 @@ public class BlockPump extends ADismCBlock {
             Optional.ofNullable((TilePump) worldIn.getTileEntity(pos)).ifPresent(pump -> pump.S_changeRange(playerIn));
             return true;
         }
-        if (stack.getItem() == QuarryPlusI.itemTool) {
+        if (stack != null && stack.getItem() == QuarryPlusI.itemTool) {
             if (!worldIn.isRemote && stack.getItemDamage() == 0) {
                 TilePump pump = (TilePump) worldIn.getTileEntity(pos);
                 if (pump != null) {
-                    EnchantmentHelper.getEnchantmentsChat(pump).forEach(playerIn::sendMessage);
-                    pump.C_getNames().forEach(playerIn::sendMessage);
+                    EnchantmentHelper.getEnchantmentsChat(pump).forEach(playerIn::addChatComponentMessage);
+                    pump.C_getNames().forEach(playerIn::addChatComponentMessage);
                 }
             } else if (stack.getItemDamage() == 2) {
                 TilePump pump = (TilePump) worldIn.getTileEntity(pos);

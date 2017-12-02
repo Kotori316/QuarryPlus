@@ -12,15 +12,15 @@
  */
 package com.yogpc.qp.tile
 
-import javax.annotation.{Nonnull, Nullable}
+import javax.annotation.Nullable
 
+import com.yogpc.qp.NonNullList
 import com.yogpc.qp.version.VersionUtil
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.inventory.ItemStackHelper
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.tileentity.TileEntity
-import net.minecraft.util.{EnumFacing, NonNullList}
+import net.minecraft.util.EnumFacing
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.items.CapabilityItemHandler
 import net.minecraftforge.items.wrapper.InvWrapper
@@ -45,13 +45,13 @@ class TilePlacer extends TileEntity with HasInv {
 
     override def isEmpty: Boolean = inventory.asScala.forall(VersionUtil.isEmpty)
 
-    @Nonnull override def getStackInSlot(index: Int): ItemStack = inventory.get(index)
+    override def getStackInSlot(index: Int): ItemStack = inventory.get(index)
 
-    @Nonnull override def decrStackSize(index: Int, count: Int): ItemStack = ItemStackHelper.getAndSplit(inventory, index, count)
+    override def decrStackSize(index: Int, count: Int): ItemStack = ItemStackHelper.getAndSplit(inventory, index, count)
 
-    @Nonnull override def removeStackFromSlot(index: Int): ItemStack = ItemStackHelper.getAndRemove(inventory, index)
+    override def removeStackFromSlot(index: Int): ItemStack = ItemStackHelper.getAndRemove(inventory, index)
 
-    override def setInventorySlotContents(index: Int, @Nonnull stack: ItemStack): Unit = inventory.set(index, stack)
+    override def setInventorySlotContents(index: Int, stack: ItemStack): Unit = inventory.set(index, stack)
 
     override def getInventoryStackLimit = 64
 

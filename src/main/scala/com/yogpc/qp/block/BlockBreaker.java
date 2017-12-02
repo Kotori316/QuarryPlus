@@ -31,6 +31,7 @@ import com.yogpc.qp.tile.TileBasic;
 import com.yogpc.qp.tile.TileBreaker;
 import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockPistonBase;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
@@ -110,7 +111,7 @@ public class BlockBreaker extends ADismCBlock {
     @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         if (!worldIn.isRemote) {
-            worldIn.setBlockState(pos, state.withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer)), 2);
+            worldIn.setBlockState(pos, state.withProperty(FACING, BlockPistonBase.getFacingFromEntity(pos, placer)), 2);
             Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t -> EnchantmentHelper.init(t, stack.getEnchantmentTagList()));
         }
     }
@@ -122,8 +123,8 @@ public class BlockBreaker extends ADismCBlock {
 
     @Override
     @SuppressWarnings("deprecation")
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
-        super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn/*, BlockPos fromPos*/) {
+        super.neighborChanged(state, worldIn, pos, blockIn/*, fromPos*/);
         boolean flag = worldIn.isBlockPowered(pos);
 
         if (flag != state.getValue(POWERED)) {
@@ -180,10 +181,10 @@ public class BlockBreaker extends ADismCBlock {
             }
             return true;
         }
-        if (stack.getItem() == QuarryPlusI.itemTool && stack.getItemDamage() == 0) {
+        if (stack != null && stack.getItem() == QuarryPlusI.itemTool && stack.getItemDamage() == 0) {
             if (!worldIn.isRemote) {
                 Optional.ofNullable((TileBreaker) worldIn.getTileEntity(pos)).ifPresent(t ->
-                        EnchantmentHelper.getEnchantmentsChat(t).forEach(playerIn::sendMessage));
+                        EnchantmentHelper.getEnchantmentsChat(t).forEach(playerIn::addChatComponentMessage));
             }
             return true;
         }

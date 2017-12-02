@@ -157,13 +157,13 @@ public class ContainerMover extends Container {
                 toslot = this.inventorySlots.get(0);
                 if (/*!changed(true) &&*/ toslot.isItemValid(remain) && isEmpty(toslot.getStack())) {
                     toslot.putStack(put);
-                    remain.shrink(1);
+                    VersionUtil.shrink(remain, 1);
                     changed = true;
                 }
                 toslot = this.inventorySlots.get(1);
                 if (!changed && toslot.isItemValid(remain) && isEmpty(toslot.getStack())) {
                     toslot.putStack(put);
-                    remain.shrink(1);
+                    VersionUtil.shrink(remain, 1);
                     changed = true;
                 }
                 if (!changed)
@@ -173,7 +173,7 @@ public class ContainerMover extends Container {
                 slot.putStack(com.yogpc.qp.version.VersionUtil.empty());
             else
                 slot.onSlotChanged();
-            if (remain.getCount() == src.getCount())
+            if (VersionUtil.getCount(remain) == VersionUtil.getCount(src))
                 return com.yogpc.qp.version.VersionUtil.empty();
             VersionUtil.onTake(slot, playerIn, remain);
         }

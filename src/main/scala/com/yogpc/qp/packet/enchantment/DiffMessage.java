@@ -41,10 +41,10 @@ public class DiffMessage implements IMessage {
         fortuneList = new ArrayList<>(fS);
         silkList = new ArrayList<>(sS);
         for (int i = 0; i < fS; i++) {
-            fortuneList.add(BlockData.readFromNBT(buffer.readCompoundTag()));
+            fortuneList.add(BlockData.readFromNBT(buffer.readNBTTagCompoundFromBuffer()));
         }
         for (int i = 0; i < sS; i++) {
-            silkList.add(BlockData.readFromNBT(buffer.readCompoundTag()));
+            silkList.add(BlockData.readFromNBT(buffer.readNBTTagCompoundFromBuffer()));
         }
     }
 
@@ -52,8 +52,8 @@ public class DiffMessage implements IMessage {
     public void toBytes(PacketBuffer buffer) {
         buffer.writeInt(containerId);
         buffer.writeInt(fortuneList.size()).writeInt(silkList.size());
-        fortuneList.stream().map(data -> data.writeToNBT(new NBTTagCompound())).forEach(buffer::writeCompoundTag);
-        silkList.stream().map(data -> data.writeToNBT(new NBTTagCompound())).forEach(buffer::writeCompoundTag);
+        fortuneList.stream().map(data -> data.writeToNBT(new NBTTagCompound())).forEach(buffer::writeNBTTagCompoundToBuffer);
+        silkList.stream().map(data -> data.writeToNBT(new NBTTagCompound())).forEach(buffer::writeNBTTagCompoundToBuffer);
     }
 
     @Override

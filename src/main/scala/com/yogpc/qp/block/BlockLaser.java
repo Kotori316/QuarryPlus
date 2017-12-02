@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.EnchantmentHelper;
 import com.yogpc.qp.item.ItemBlockEnchantable;
 import com.yogpc.qp.tile.IEnchantableTile;
@@ -29,11 +28,9 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -64,7 +61,7 @@ public class BlockLaser extends ADismCBlock {
     @Override
     @SuppressWarnings("deprecation")
     public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox,
-                                      List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean p_185477_7_) {
+                                      List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn/*, boolean p_185477_7_*/) {
         EnumFacing value = state.getValue(FACING);
         switch (value) {
             case DOWN:
@@ -148,11 +145,11 @@ public class BlockLaser extends ADismCBlock {
         return new TileLaser();
     }
 
-    @Override
+    /*@Override
     public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing,
                                             float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
         return getDefaultState().withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer));
-    }
+    }*/
 
 
     private final ArrayList<ItemStack> drop = new ArrayList<>();
@@ -184,7 +181,7 @@ public class BlockLaser extends ADismCBlock {
         Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t -> EnchantmentHelper.init(t, stack.getEnchantmentTagList()));
     }
 
-    @Override
+    /*@Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack stack = playerIn.getHeldItem(hand);
@@ -196,5 +193,5 @@ public class BlockLaser extends ADismCBlock {
             return true;
         }
         return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
-    }
+    }*/
 }

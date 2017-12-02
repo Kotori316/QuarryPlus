@@ -3,16 +3,13 @@ package com.yogpc.qp.packet.controller;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.yogpc.qp.gui.GuiController;
 import com.yogpc.qp.packet.IMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -22,12 +19,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class AvailableEntities implements IMessage {
     BlockPos pos;
     int dim;
-    List<ResourceLocation> entities;
+    List<String> entities;
 
-    public static AvailableEntities create(BlockPos pos, int dim, List<EntityEntry> list) {
+    public static AvailableEntities create(BlockPos pos, int dim, List<String> list) {
         AvailableEntities availableEntities = new AvailableEntities();
         availableEntities.pos = pos;
-        availableEntities.entities = list.stream().map(EntityEntry::getRegistryName).collect(Collectors.toList());
+        availableEntities.entities = list;
         availableEntities.dim = dim;
         return availableEntities;
     }
@@ -39,7 +36,7 @@ public class AvailableEntities implements IMessage {
         int i = buffer.readInt();
         entities = new ArrayList<>(i);
         for (int j = 0; j < i; j++) {
-            entities.add(new ResourceLocation(buffer.readString(Short.MAX_VALUE)));
+            entities.add(buffer.readStringFromBuffer(Short.MAX_VALUE));
         }
     }
 
@@ -48,7 +45,7 @@ public class AvailableEntities implements IMessage {
         buffer.writeBlockPos(pos);
         buffer.writeInt(dim);
         buffer.writeInt(entities.size());
-        entities.forEach(resourceLocation -> buffer.writeString(resourceLocation.toString()));
+        entities.forEach(buffer::writeString);
     }
 
     @Override

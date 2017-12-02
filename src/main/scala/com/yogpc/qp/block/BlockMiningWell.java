@@ -61,10 +61,10 @@ public class BlockMiningWell extends ADismCBlock {
             Optional.ofNullable((TileMiningWell) worldIn.getTileEntity(pos)).ifPresent(TileMiningWell::G_reinit);
             return true;
         }
-        if (stack.getItem() == QuarryPlusI.itemTool && stack.getItemDamage() == 0) {
+        if (stack != null && stack.getItem() == QuarryPlusI.itemTool && stack.getItemDamage() == 0) {
             if (!worldIn.isRemote) {
                 Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t ->
-                        EnchantmentHelper.getEnchantmentsChat(t).forEach(playerIn::sendMessage));
+                        EnchantmentHelper.getEnchantmentsChat(t).forEach(playerIn::addChatComponentMessage));
             }
             return true;
         }
@@ -124,8 +124,8 @@ public class BlockMiningWell extends ADismCBlock {
 
     @Override
     @SuppressWarnings("deprecation")
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
-        super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn/*, BlockPos fromPos*/) {
+        super.neighborChanged(state, worldIn, pos, blockIn/*, fromPos*/);
         if (!worldIn.isRemote)
             Optional.ofNullable((TileMiningWell) worldIn.getTileEntity(pos)).ifPresent(TileMiningWell::G_renew_powerConfigure);
     }

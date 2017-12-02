@@ -35,6 +35,7 @@ class GuiError(val parent: GuiScreen, par2Str: String, par3Str: String) extends 
 
     override def updateScreen(): Unit = {
         super.updateScreen()
-        if (!this.mc.player.isEntityAlive || this.mc.player.isDead) this.mc.player.closeScreen()
+        val player = this.mc.thePlayer
+        if (!player.isEntityAlive || player.isDead) player.closeScreen()
     }
 }

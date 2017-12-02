@@ -1,18 +1,16 @@
 package com.yogpc.qp.render
 
-import buildcraft.core.client.BuildCraftLaserManager
-import buildcraft.lib.client.render.laser.{LaserData_BC8, LaserRenderer_BC8}
+/*import buildcraft.core.client.BuildCraftLaserManager
+import buildcraft.lib.client.render.laser.{LaserData_BC8, LaserRenderer_BC8}*/
 import com.yogpc.qp.QuarryPlus
 import com.yogpc.qp.block.ADismCBlock
 import com.yogpc.qp.tile.TileLaser
 import net.minecraft.client.Minecraft
 import net.minecraft.client.model.{ModelBase, ModelRenderer}
-import net.minecraft.client.renderer.texture.{TextureManager, TextureMap}
+import net.minecraft.client.renderer.texture.TextureManager
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraft.client.renderer.{GlStateManager, OpenGlHelper, RenderHelper, Tessellator, VertexBuffer}
+import net.minecraft.client.renderer.{OpenGlHelper, VertexBuffer}
 import net.minecraft.util.ResourceLocation
-import net.minecraft.util.math.Vec3d
 import net.minecraftforge.fml.common.Loader
 import org.lwjgl.opengl.GL11
 
@@ -51,7 +49,7 @@ object RenderLaser extends TileEntitySpecialRenderer[TileLaser] {
     override def renderTileEntityAt(te: TileLaser, x: Double, y: Double, z: Double, partialTicks: Float, destroyStage: Int): Unit = {
         Minecraft.getMinecraft.mcProfiler.startSection("quarryplus")
         Minecraft.getMinecraft.mcProfiler.startSection("laser")
-        if (bcLoaded) {
+        /*if (bcLoaded) {
             if (te.getAvg > 0.1 && te.lasers != null) {
                 val tessellator = Tessellator.getInstance
                 val vertexBuffer = tessellator.getBuffer
@@ -82,7 +80,8 @@ object RenderLaser extends TileEntitySpecialRenderer[TileLaser] {
 
                 RenderHelper.enableStandardItemLighting()
             }
-        } else if (te != null && te.lasers != null) {
+        } else if (te != null && te.lasers != null) */
+        {
             GL11.glPushMatrix()
             OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240) // TODO lightmap
 

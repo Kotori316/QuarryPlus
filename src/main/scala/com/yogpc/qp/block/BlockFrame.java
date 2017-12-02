@@ -111,7 +111,7 @@ public class BlockFrame extends Block {
             BlockPos nPos = pos.offset(dir);
             IBlockState nBlock = world.getBlockState(nPos);
             if (nBlock.getBlock() == this) {
-                neighborChanged(nBlock, world, nPos, QuarryPlusI.blockFrame, nPos);
+                neighborChanged(nBlock, world, nPos, QuarryPlusI.blockFrame/*, nPos*/);
                 if (!world.getBlockState(nPos).getValue(DAMMING))
                     world.setBlockToAir(nPos);
             }
@@ -206,7 +206,7 @@ public class BlockFrame extends Block {
     @Override
     @SuppressWarnings("deprecation")
     public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox,
-                                      List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean p_185477_7_) {
+                                      List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn/*, boolean p_185477_7_*/) {
         state = state.getActualState(worldIn, pos);
         addCollisionBoxToList(pos, entityBox, collidingBoxes, BOX_AABB);
         if (state.getValue(NORTH)) {
@@ -231,8 +231,8 @@ public class BlockFrame extends Block {
 
     @Override
     @SuppressWarnings("deprecation")
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
-        super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn/*, BlockPos fromPos*/) {
+        super.neighborChanged(state, worldIn, pos, blockIn/*, fromPos*/);
         if (state.getValue(DAMMING)) {
             worldIn.setBlockState(pos, state.withProperty(DAMMING,
                     Stream.of(EnumFacing.VALUES).anyMatch(facing -> {

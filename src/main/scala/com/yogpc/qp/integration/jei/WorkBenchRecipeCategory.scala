@@ -44,7 +44,7 @@ class WorkBenchRecipeCategory(guiHelper: IGuiHelper) extends BlankRecipeCategory
         }
     }
 
-    override def getModName: String = QuarryPlus.Mod_Name
+    //    override def getModName: String = QuarryPlus.Mod_Name
 }
 
 object WorkBenchRecipeCategory {

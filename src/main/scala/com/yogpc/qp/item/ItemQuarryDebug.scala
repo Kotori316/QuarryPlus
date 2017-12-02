@@ -1,5 +1,7 @@
 package com.yogpc.qp.item
 
+import java.util
+
 import com.yogpc.qp.tile.{APowerTile, IDebugSender, TileMarker, TilePlacer, TilePump}
 import com.yogpc.qp.{Config, QuarryPlus, QuarryPlusI}
 import net.minecraft.creativetab.CreativeTabs
@@ -7,8 +9,8 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.text.{TextComponentString, TextComponentTranslation}
-import net.minecraft.util.{EnumActionResult, EnumFacing, EnumHand, NonNullList}
+import net.minecraft.util.text.{ITextComponent, TextComponentString, TextComponentTranslation}
+import net.minecraft.util.{EnumActionResult, EnumFacing, EnumHand}
 import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
@@ -19,8 +21,8 @@ object ItemQuarryDebug extends Item {
     setMaxStackSize(1)
     setCreativeTab(QuarryPlusI.ct)
 
-    override def onItemUseFirst(player: EntityPlayer, worldIn: World, pos: BlockPos, side: EnumFacing,
-                                hitX: Float, hitY: Float, hitZ: Float, hand: EnumHand): EnumActionResult = {
+    def onItemUseFirst(player: EntityPlayer, worldIn: World, pos: BlockPos, side: EnumFacing,
+                       hitX: Float, hitY: Float, hitZ: Float, hand: EnumHand): EnumActionResult = {
         if (worldIn.isRemote) {
             EnumActionResult.PASS
         } else {
@@ -56,18 +58,21 @@ object ItemQuarryDebug extends Item {
                             pump.sendDebugMessage(player)
                         }
                         EnumActionResult.SUCCESS
-                    case _ => super.onItemUseFirst(player, worldIn, pos, side, hitX, hitY, hitZ, hand)
+                    case _ => super.onItemUseFirst(player.getHeldItem(hand), player, worldIn, pos, side, hitX, hitY, hitZ, hand)
                 }
             } else {
                 player.sendStatusMessage(new TextComponentString("QuarryPlus debug is not enabled"), true)
-                super.onItemUseFirst(player, worldIn, pos, side, hitX, hitY, hitZ, hand)
+                super.onItemUseFirst(player.getHeldItem(hand), player, worldIn, pos, side, hitX, hitY, hitZ, hand)
             }
         }
     }
 
+    override def onItemUseFirst(stack: ItemStack, player: EntityPlayer, world: World, pos: BlockPos, side: EnumFacing, hitX: Float, hitY: Float, hitZ: Float, hand: EnumHand): EnumActionResult = {
+        onItemUseFirst(player, world, pos, side, hitX, hitY, hitZ, hand)
+    }
 
     @SideOnly(Side.CLIENT)
-    override def getSubItems(itemIn: Item, tab: CreativeTabs, subItems: NonNullList[ItemStack]) = {
+    override def getSubItems(itemIn: Item, tab: CreativeTabs, subItems: util.List[ItemStack]) = {
         if (Config.content.debug)
             super.getSubItems(itemIn, tab, subItems)
     }
@@ -80,4 +85,11 @@ object ItemQuarryDebug extends Item {
         if (Config.content.noEnergy) new TextComponentString("No Energy Required.")
         else new TextComponentString(tile.getStoredEnergy + " / " + tile.getMaxStored + " MJ")
     }
+
+    private[this] implicit class PH(val player: EntityPlayer) extends AnyVal {
+        def sendStatusMessage(t: ITextComponent, actionBar: Boolean): Unit = {
+            player.addChatComponentMessage(t)
+        }
+    }
+
 }

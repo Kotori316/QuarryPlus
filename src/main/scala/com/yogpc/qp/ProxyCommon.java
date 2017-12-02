@@ -20,7 +20,7 @@ public class ProxyCommon {
     }
 
     public void removeEntity(final Entity e) {
-        e.world.removeEntity(e);
+        e.getEntityWorld().removeEntity(e);
     }
 
     public World getClientWorld() {

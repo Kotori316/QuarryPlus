@@ -30,7 +30,7 @@ public class Now implements IMessage {
 
     @Override
     public void fromBytes(PacketBuffer buffer) throws IOException {
-        int i = buffer.readVarInt();
+        int i = buffer.readVarIntFromBuffer();
         if (i == -1) {
             facing = null;
         } else {
@@ -43,9 +43,9 @@ public class Now implements IMessage {
     @Override
     public void toBytes(PacketBuffer buffer) {
         if (facing == null) {
-            buffer.writeVarInt(-1);
+            buffer.writeVarIntToBuffer(-1);
         } else {
-            buffer.writeVarInt(facing.ordinal());
+            buffer.writeVarIntToBuffer(facing.ordinal());
         }
         buffer.writeBoolean(working);
         buffer.writeBlockPos(blockPos);

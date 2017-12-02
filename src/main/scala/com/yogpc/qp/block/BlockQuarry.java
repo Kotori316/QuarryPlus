@@ -93,13 +93,13 @@ public class BlockQuarry extends ADismCBlock {
             TileEntity t = worldIn.getTileEntity(pos);
             if (t != null) {
                 TileQuarry quarry = (TileQuarry) t;
-                if (stack.getItem() == QuarryPlusI.itemTool && stack.getItemDamage() == 0) {
-                    EnchantmentHelper.getEnchantmentsChat(quarry).forEach(playerIn::sendMessage);
-                    playerIn.sendMessage(new TextComponentTranslation("chat.currentmode",
+                if (stack != null && stack.getItem() == QuarryPlusI.itemTool && stack.getItemDamage() == 0) {
+                    EnchantmentHelper.getEnchantmentsChat(quarry).forEach(playerIn::addChatComponentMessage);
+                    playerIn.addChatComponentMessage(new TextComponentTranslation("chat.currentmode",
                             new TextComponentTranslation(quarry.filler ? "chat.fillermode" : "chat.quarrymode")));
                 } else {
                     quarry.filler = !quarry.filler;
-                    playerIn.sendMessage(new TextComponentTranslation("chat.changemode",
+                    playerIn.addChatComponentMessage(new TextComponentTranslation("chat.changemode",
                             new TextComponentTranslation(quarry.filler ? "chat.fillermode" : "chat.quarrymode")));
                 }
             }
@@ -137,8 +137,8 @@ public class BlockQuarry extends ADismCBlock {
 
     @Override
     @SuppressWarnings("deprecation")
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
-        super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn/*, BlockPos fromPos*/) {
+        super.neighborChanged(state, worldIn, pos, blockIn/*, fromPos*/);
         if (!worldIn.isRemote) {
             TileEntity t = worldIn.getTileEntity(pos);
             if (t != null)

@@ -25,7 +25,7 @@ public class ProxyClient extends ProxyCommon {
     public EntityPlayer getPacketPlayer(final INetHandler inh) {
         if (inh instanceof NetHandlerPlayServer)
             return ((NetHandlerPlayServer) inh).playerEntity;
-        return Minecraft.getMinecraft().player;
+        return Minecraft.getMinecraft().thePlayer;
     }
 
     @Override
@@ -37,14 +37,14 @@ public class ProxyClient extends ProxyCommon {
 
     @Override
     public void removeEntity(final Entity e) {
-        e.world.removeEntity(e);
-        if (e.world.isRemote)
-            ((WorldClient) e.world).removeEntityFromWorld(e.getEntityId());
+        e.worldObj.removeEntity(e);
+        if (e.worldObj.isRemote)
+            ((WorldClient) e.worldObj).removeEntityFromWorld(e.getEntityId());
     }
 
     @Override
     public World getClientWorld() {
-        return Minecraft.getMinecraft().world;
+        return Minecraft.getMinecraft().theWorld;
     }
 
     @Override

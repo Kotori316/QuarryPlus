@@ -3,7 +3,6 @@ package com.yogpc.qp
 import java.io.File
 
 import com.yogpc.qp.tile.WorkbenchRecipes
-import net.minecraft.util.ResourceLocation
 import net.minecraftforge.common.config.{ConfigElement, Configuration}
 import net.minecraftforge.fml.client.config.IConfigElement
 import net.minecraftforge.fml.client.event.ConfigChangedEvent
@@ -58,8 +57,8 @@ object Config {
 
         val disableController = configuration.get(Configuration.CATEGORY_GENERAL, DisableSpawnerController_key, false).setRequiresMcRestart(true).getBoolean
         val disableChunkDestroyer = configuration.get(Configuration.CATEGORY_GENERAL, DisableChunkDestroyer_key, true).setRequiresMcRestart(true).getBoolean
-        val spawnerBlacklist = configuration.get(Configuration.CATEGORY_GENERAL, SpawnerControllerEntityBlackList_key, Array("minecraft:ender_dragon", "minecraft:wither"))
-          .getStringList.map(new ResourceLocation(_)).toSet.asJava
+        val spawnerBlacklist = configuration.get(Configuration.CATEGORY_GENERAL, SpawnerControllerEntityBlackList_key, Array("EnderDragon", "WitherBoss"))
+          .getStringList /*.map(new ResourceLocation(_))*/ .toSet.asJava
         val recipeDifficulty = configuration.get(Configuration.CATEGORY_GENERAL, RecipeDifficulty_key, 2d)
         recipeDifficulty.setComment("Default is 2.0")
         recipeDifficulty.setMinValue(1d)

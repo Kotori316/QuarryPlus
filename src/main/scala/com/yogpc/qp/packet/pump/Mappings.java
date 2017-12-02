@@ -48,7 +48,7 @@ public class Mappings {
                 int l = buffer.readInt();
                 LinkedList<String> strings = new LinkedList<>();
                 for (int j = 0; j < l; j++) {
-                    strings.add(buffer.readString(Short.MAX_VALUE));
+                    strings.add(buffer.readStringFromBuffer(Short.MAX_VALUE));
                 }
                 lists[i] = strings;
             }
@@ -102,7 +102,7 @@ public class Mappings {
             pos = buffer.readBlockPos();
             facing = buffer.readEnumValue(EnumFacing.class);
             type = buffer.readEnumValue(Type.class);
-            fluidName = buffer.readString(Short.MAX_VALUE);
+            fluidName = buffer.readStringFromBuffer(Short.MAX_VALUE);
         }
 
         @Override
@@ -188,7 +188,7 @@ public class Mappings {
             int length = buffer.readInt();
             list = new LinkedList<>();
             for (int i = 0; i < length; i++) {
-                list.add(buffer.readString(Short.MAX_VALUE));
+                list.add(buffer.readStringFromBuffer(Short.MAX_VALUE));
             }
         }
 

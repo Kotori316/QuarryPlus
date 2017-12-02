@@ -1,6 +1,6 @@
 package com.yogpc.qp.tile
 
-import com.yogpc.qp.Config
+import com.yogpc.qp.{Config, _}
 import com.yogpc.qp.item.ItemTool
 import com.yogpc.qp.version.VersionUtil
 import net.minecraft.item.ItemStack

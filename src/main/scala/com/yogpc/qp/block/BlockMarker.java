@@ -94,7 +94,7 @@ public class BlockMarker extends Block implements ITileEntityProvider {//BlockCo
     @Nullable
     @Override
     @SuppressWarnings("deprecation")
-    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos) {
+    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, World worldIn, BlockPos pos) {
         return NULL_AABB;
     }
 
@@ -146,7 +146,7 @@ public class BlockMarker extends Block implements ITileEntityProvider {//BlockCo
 
     @Override
     public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing,
-                                            float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
+                                            float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, ItemStack hand) {
         if (canPlaceAt(world, pos, facing))
             return getDefaultState().withProperty(FACING, facing);
         return getDefaultState().withProperty(FACING, EnumFacing.UP);
@@ -170,7 +170,7 @@ public class BlockMarker extends Block implements ITileEntityProvider {//BlockCo
 
     @Override
     @SuppressWarnings({"deprecation"})
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn/*, BlockPos fromPos*/) {
         Optional.ofNullable(((TileMarker) worldIn.getTileEntity(pos))).ifPresent(TileMarker::G_updateSignal);
         dropTorchIfCantStay(state, worldIn, pos);
     }
@@ -189,9 +189,9 @@ public class BlockMarker extends Block implements ITileEntityProvider {//BlockCo
 
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
-                                    EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+                                    EnumHand hand, ItemStack s, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (InvUtils.isDebugItem(playerIn, hand)) return true;
-        if (!worldIn.isRemote) {
+        if (!worldIn.isRemote && s != null) {
             Item item = playerIn.getHeldItem(hand).getItem();
             TileMarker marker = (TileMarker) worldIn.getTileEntity(pos);
             if (marker != null) {
@@ -199,9 +199,9 @@ public class BlockMarker extends Block implements ITileEntityProvider {//BlockCo
                     final TileMarker.Link l = marker.link;
                     if (l == null)
                         return true;
-                    playerIn.sendMessage(new TextComponentTranslation("chat.markerarea"));
+                    playerIn.addChatComponentMessage(new TextComponentTranslation("chat.markerarea"));
                     String sb = "x:" + l.xn + " y:" + l.yn + " z:" + l.zn + " - x:" + l.xx + " y:" + l.yx + " z:" + l.zx;
-                    playerIn.sendMessage(new TextComponentString(sb));// NP coord info
+                    playerIn.addChatComponentMessage(new TextComponentString(sb));// NP coord info
                     return true;
                 } else {
                     marker.S_tryConnection();

@@ -7,10 +7,10 @@ import java.util.stream.Collectors;
 
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.controller.SetEntity;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -18,17 +18,15 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class GuiController extends GuiScreen {
     private GuiSlotEntityList slot;
-    final List<ResourceLocation> list;
     List<String> names;
     final int dim, xc, yc, zc;
 
-    public GuiController(final int d, final int x, final int y, final int z, final List<ResourceLocation> l) {
-        this.list = l;
+    public GuiController(final int d, final int x, final int y, final int z, final List<String> l) {
         this.dim = d;
         this.xc = x;
         this.yc = y;
         this.zc = z;
-        names = list.stream().sorted(Comparator.comparing(ResourceLocation::getResourceDomain)).map(ResourceLocation::toString).collect(Collectors.toList());
+        names = l.stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList());
     }
 
     @Override
@@ -42,8 +40,8 @@ public class GuiController extends GuiScreen {
     public void actionPerformed(final GuiButton par1) {
         switch (par1.id) {
             case -1:
-                PacketHandler.sendToServer(SetEntity.create(dim, new BlockPos(xc, yc, zc), list.get(slot.selected())));
-                this.mc.player.closeScreen();
+                PacketHandler.sendToServer(SetEntity.create(dim, new BlockPos(xc, yc, zc), names.get(slot.selected())));
+                this.mc.thePlayer.closeScreen();
                 break;
         }
     }
@@ -74,8 +72,9 @@ public class GuiController extends GuiScreen {
     @Override
     public void updateScreen() {
         super.updateScreen();
-        if (!this.mc.player.isEntityAlive() || this.mc.player.isDead)
-            this.mc.player.closeScreen();
+        EntityPlayerSP player = this.mc.thePlayer;
+        if (!player.isEntityAlive() || player.isDead)
+            player.closeScreen();
     }
 
     @Override

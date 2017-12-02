@@ -80,7 +80,7 @@ public class GuiEnchList extends GuiContainer implements GuiYesNoCallback {
     public void actionPerformed(final GuiButton par1) {
         switch (par1.id) {
             case -1:
-                this.mc.player.closeScreen();
+                this.mc.thePlayer.closeScreen();
                 break;
             case Remove_id:
                 this.mc.displayGuiScreen(new GuiYesNo(this, I18n.format("tof.deleteblocksure"),

@@ -18,20 +18,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import buildcraft.api.mj.ILaserTarget;
-import buildcraft.api.mj.MjAPI;
 import com.yogpc.qp.PowerManager;
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.block.BlockLaser;
-import com.yogpc.qp.packet.PacketHandler;
-import com.yogpc.qp.packet.laser.LaserAverageMessage;
-import com.yogpc.qp.packet.laser.LaserMessage;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -41,6 +32,9 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+/*import buildcraft.api.mj.ILaserTarget;
+import buildcraft.api.mj.MjAPI;*/
 
 /**
  * The plus machine of {@link buildcraft.silicon.tile.TileLaser}
@@ -66,7 +60,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
     }
 
     @Override
-    public void update() {
+    public void update() {/*
         super.update();
         if (!bcLoaded || getWorld().isRemote)
             return;
@@ -101,82 +95,83 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
             }
         }
 
-        if (ticks % 20 == 0 /*&& !getWorld().isRemote*/) {
+        if (ticks % 20 == 0 /*&& !getWorld().isRemote*//*) {
             PacketHandler.sendToAround(LaserAverageMessage.create(this), getWorld(), getPos());
-        }
+        }*/
     }
 
-    private void updateLaser() {
-        if (!targets.isEmpty()) {
-            Vec3d[] vec3ds = new Vec3d[targets.size()];
-            for (int i = 0; i < targets.size(); i++) {
-                BlockPos targetPos = targets.get(i);
-                vec3ds[i] = new Vec3d(targetPos).addVector(
-                        (5 + getWorld().rand.nextInt(6) + 0.5) / 16D,
-                        9 / 16D,
-                        (5 + getWorld().rand.nextInt(6) + 0.5) / 16D
-                );
-            }
-            lasers = vec3ds;
-        } else {
-            lasers = new Vec3d[0];
-        }
-    }
-
-    protected void findTable() {
-        removeLaser();
-        EnumFacing facing = getWorld().getBlockState(getPos()).getValue(BlockLaser.FACING);
-
-        int minX = getPos().getX() - 5 * (this.fortune + 1);
-        int minY = getPos().getY() - 5 * (this.fortune + 1);
-        int minZ = getPos().getZ() - 5 * (this.fortune + 1);
-        int maxX = getPos().getX() + 5 * (this.fortune + 1);
-        int maxY = getPos().getY() + 5 * (this.fortune + 1);
-        int maxZ = getPos().getZ() + 5 * (this.fortune + 1);
-
-        switch (facing) {
-            case WEST:
-                maxX = getPos().getX();
-                break;
-            case EAST:
-                minX = getPos().getX();
-                break;
-            case DOWN:
-                maxY = getPos().getY();
-                break;
-            case UP:
-                minY = getPos().getY();
-                break;
-            case NORTH:
-                maxZ = getPos().getZ();
-                break;
-            default:
-            case SOUTH:
-                minZ = getPos().getZ();
-                break;
-        }
-
-        this.targets.clear();
-        BlockPos.getAllInBoxMutable(new BlockPos(minX, minY, minZ), new BlockPos(maxX, maxY, maxZ)).forEach(mutableBlockPos -> {
-            TileEntity tileEntity = getWorld().getTileEntity(mutableBlockPos);
-            if (ILaserTarget.class.isInstance(tileEntity)) {
-                ILaserTarget target = (ILaserTarget) tileEntity;
-                if (!target.isInvalidTarget() && target.getRequiredLaserPower() > 0) {
-                    targets.add(mutableBlockPos.toImmutable());
+    /*
+        private void updateLaser() {
+            if (!targets.isEmpty()) {
+                Vec3d[] vec3ds = new Vec3d[targets.size()];
+                for (int i = 0; i < targets.size(); i++) {
+                    BlockPos targetPos = targets.get(i);
+                    vec3ds[i] = new Vec3d(targetPos).addVector(
+                            (5 + getWorld().rand.nextInt(6) + 0.5) / 16D,
+                            9 / 16D,
+                            (5 + getWorld().rand.nextInt(6) + 0.5) / 16D
+                    );
                 }
+                lasers = vec3ds;
+            } else {
+                lasers = new Vec3d[0];
             }
-        });
-
-        if (this.targets.isEmpty())
-            return;
-        if (!this.silktouch) {
-            BlockPos laserTarget = this.targets.get(getWorld().rand.nextInt(this.targets.size()));
-            this.targets.clear();
-            this.targets.add(laserTarget);
         }
-        lasers = new Vec3d[targets.size()];
-    }
 
+        protected void findTable() {
+            removeLaser();
+            EnumFacing facing = getWorld().getBlockState(getPos()).getValue(BlockLaser.FACING);
+
+            int minX = getPos().getX() - 5 * (this.fortune + 1);
+            int minY = getPos().getY() - 5 * (this.fortune + 1);
+            int minZ = getPos().getZ() - 5 * (this.fortune + 1);
+            int maxX = getPos().getX() + 5 * (this.fortune + 1);
+            int maxY = getPos().getY() + 5 * (this.fortune + 1);
+            int maxZ = getPos().getZ() + 5 * (this.fortune + 1);
+
+            switch (facing) {
+                case WEST:
+                    maxX = getPos().getX();
+                    break;
+                case EAST:
+                    minX = getPos().getX();
+                    break;
+                case DOWN:
+                    maxY = getPos().getY();
+                    break;
+                case UP:
+                    minY = getPos().getY();
+                    break;
+                case NORTH:
+                    maxZ = getPos().getZ();
+                    break;
+                default:
+                case SOUTH:
+                    minZ = getPos().getZ();
+                    break;
+            }
+
+            this.targets.clear();
+            BlockPos.getAllInBoxMutable(new BlockPos(minX, minY, minZ), new BlockPos(maxX, maxY, maxZ)).forEach(mutableBlockPos -> {
+                TileEntity tileEntity = getWorld().getTileEntity(mutableBlockPos);
+                if (ILaserTarget.class.isInstance(tileEntity)) {
+                    ILaserTarget target = (ILaserTarget) tileEntity;
+                    if (!target.isInvalidTarget() && target.getRequiredLaserPower() > 0) {
+                        targets.add(mutableBlockPos.toImmutable());
+                    }
+                }
+            });
+
+            if (this.targets.isEmpty())
+                return;
+            if (!this.silktouch) {
+                BlockPos laserTarget = this.targets.get(getWorld().rand.nextInt(this.targets.size()));
+                this.targets.clear();
+                this.targets.add(laserTarget);
+            }
+            lasers = new Vec3d[targets.size()];
+        }
+    */
     protected void removeLaser() {
         if (this.lasers != null)
             for (int i = 0; i < this.lasers.length; i++)

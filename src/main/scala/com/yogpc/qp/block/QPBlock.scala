@@ -9,7 +9,7 @@ import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.EntityLiving
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.item.ItemBlock
+import net.minecraft.item.{ItemBlock, ItemStack}
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{EnumBlockRenderType, EnumFacing, EnumHand}
 import net.minecraft.world.{IBlockAccess, World}
@@ -25,9 +25,14 @@ abstract class QPBlock(materialIn: Material, name: String, generator: Function[Q
 
     override def canCreatureSpawn(state: IBlockState, world: IBlockAccess, pos: BlockPos, spawntype: EntityLiving.SpawnPlacementType) = false
 
+    def onBlockActivated(worldIn: World, pos: BlockPos, state: IBlockState, playerIn: EntityPlayer,
+                         hand: EnumHand, facing: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean =
+        InvUtils.isDebugItem(playerIn, hand) || super.onBlockActivated(worldIn, pos, state, playerIn, hand, playerIn.getHeldItem(hand), facing, hitX, hitY, hitZ)
+
     override def onBlockActivated(worldIn: World, pos: BlockPos, state: IBlockState, playerIn: EntityPlayer,
-                                  hand: EnumHand, facing: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean =
-        InvUtils.isDebugItem(playerIn, hand) || super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ)
+                                  hand: EnumHand, heldItem: ItemStack, side: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean = {
+        onBlockActivated(worldIn, pos, state, playerIn, hand, side, hitX, hitY, hitZ)
+    }
 
     override def rotateBlock(world: World, pos: BlockPos, axis: EnumFacing): Boolean = false
 }

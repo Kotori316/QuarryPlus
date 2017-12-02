@@ -83,7 +83,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         ItemStack is;
         while (null != (is = this.cacheItems.poll())) {
             ItemStack stack = InvUtils.injectToNearTile(getWorld(), getPos(), is);
-            if (stack.getCount() > 0) {
+            if (VersionUtil.getCount(stack) > 0) {
                 this.cacheItems.add(stack);
                 break;
             }
@@ -149,7 +149,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     }
 
     public static final Method createStackedBlock = ReflectionHelper.getMethod(Block.class,
-            new String[]{"func_180643_i", "getSilkTouchDrop"}, new Class<?>[]{IBlockState.class});
+            new String[]{"func_180643_i", "createStackedBlock"}, new Class<?>[]{IBlockState.class});
 
     @Override
     public void readFromNBT(final NBTTagCompound nbttc) {
@@ -239,11 +239,11 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         if (i < 0 || i >= this.cacheItems.size())
             return com.yogpc.qp.version.VersionUtil.empty();
         final ItemStack from = this.cacheItems.get(i);
-        final ItemStack res = new ItemStack(from.getItem(), Math.min(a, from.getCount()), from.getItemDamage());
+        final ItemStack res = new ItemStack(from.getItem(), Math.min(a, VersionUtil.getCount(from)), from.getItemDamage());
         if (from.hasTagCompound())
             //noinspection ConstantConditions
             res.setTagCompound(from.getTagCompound().copy());
-        from.shrink(res.getCount());
+        VersionUtil.shrink(from, VersionUtil.getCount(res));
         if (VersionUtil.isEmpty(from))
             this.cacheItems.remove(i);
         return res;

@@ -7,7 +7,7 @@ import net.minecraft.util.text.ITextComponent;
 
 public interface IDebugSender {
     default void sendDebugMessage(EntityPlayer player) {
-        getDebugmessages().forEach(t -> player.sendStatusMessage(t, false));
+        getDebugmessages().forEach(player::addChatComponentMessage);
     }
 
     String getName();

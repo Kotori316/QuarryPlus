@@ -58,7 +58,7 @@ case class OK(itemStack: ItemStack) extends ItemDamage {
 
     override def toStack(amount: Int): ItemStack = {
         val a = itemStack.copy()
-        a.setCount(amount)
+        VersionUtil.setCount(a, amount)
         a
     }
 

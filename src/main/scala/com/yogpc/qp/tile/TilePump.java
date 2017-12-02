@@ -289,9 +289,9 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         else
             this.range++;
         if (this.quarryRange)
-            ep.sendMessage(new TextComponentTranslation("chat.pump_rtoggle.quarry"));
+            ep.addChatComponentMessage(new TextComponentTranslation("chat.pump_rtoggle.quarry"));
         else
-            ep.sendMessage(new TextComponentTranslation("chat.pump_rtoggle.num", Integer.toString(this.range * 2 + 1)));
+            ep.addChatComponentMessage(new TextComponentTranslation("chat.pump_rtoggle.num", Integer.toString(this.range * 2 + 1)));
         this.fwt = 0;
     }
 

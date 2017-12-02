@@ -1,5 +1,8 @@
 package com.yogpc
 
+import com.yogpc.qp.version.VersionUtil
+import net.minecraft.item.ItemStack
+
 package object qp {
 
     import scala.language.implicitConversions
@@ -31,6 +34,10 @@ package object qp {
 
     implicit class JOS[T](val o: Option[T]) extends AnyVal {
         def asJava: java.util.Optional[T] = toJavaOption(o)
+    }
+
+    implicit class ISHelper(val stack: ItemStack) extends AnyVal {
+        def getCount: Int = VersionUtil.getCount(stack)
     }
 
 }

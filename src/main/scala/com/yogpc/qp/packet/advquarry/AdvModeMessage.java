@@ -37,13 +37,13 @@ public class AdvModeMessage implements IMessage {
     public void fromBytes(PacketBuffer buffer) throws IOException {
         pos = buffer.readBlockPos();
         dim = buffer.readInt();
-        modeNBT = buffer.readCompoundTag();
+        modeNBT = buffer.readNBTTagCompoundFromBuffer();
     }
 
     @Override
     public void toBytes(PacketBuffer buffer) {
         buffer.writeBlockPos(pos).writeInt(dim);
-        buffer.writeCompoundTag(modeNBT);
+        buffer.writeNBTTagCompoundToBuffer(modeNBT);
     }
 
     @Override

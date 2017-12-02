@@ -39,14 +39,14 @@ public class EnchantmentMessage implements IMessage {
     public void fromBytes(PacketBuffer buffer) throws IOException {
         pos = buffer.readBlockPos();
         type = buffer.readEnumValue(Type.class);
-        enchantment = Enchantment.getEnchantmentByLocation(buffer.readString(Short.MAX_VALUE));
-        data = BlockData.readFromNBT(buffer.readCompoundTag());
+        enchantment = Enchantment.getEnchantmentByLocation(buffer.readStringFromBuffer(Short.MAX_VALUE));
+        data = BlockData.readFromNBT(buffer.readNBTTagCompoundFromBuffer());
     }
 
     @Override
     @SuppressWarnings("ConstantConditions")
     public void toBytes(PacketBuffer buffer) {
-        buffer.writeBlockPos(pos).writeEnumValue(type).writeString(enchantment.getRegistryName().toString()).writeCompoundTag(data.writeToNBT(new NBTTagCompound()));
+        buffer.writeBlockPos(pos).writeEnumValue(type).writeString(enchantment.getRegistryName().toString()).writeNBTTagCompoundToBuffer(data.writeToNBT(new NBTTagCompound()));
     }
 
     @Override

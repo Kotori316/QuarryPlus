@@ -35,7 +35,7 @@ import net.minecraft.init.{Enchantments, Items}
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.{EnumActionResult, EnumFacing, EnumHand, NonNullList}
+import net.minecraft.util.{EnumActionResult, EnumFacing, EnumHand}
 import net.minecraft.world.World
 import net.minecraftforge.fml.common.registry.ForgeRegistries
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
@@ -67,8 +67,8 @@ object ItemTool extends Item with IEnchantableItem {
 
     override def isBookEnchantable(itemstack1: ItemStack, itemstack2: ItemStack) = false
 
-    override def onItemUse(player: EntityPlayer, worldIn: World, pos: BlockPos, hand: EnumHand,
-                           facing: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): EnumActionResult = {
+    def onItemUse(player: EntityPlayer, worldIn: World, pos: BlockPos, hand: EnumHand,
+                  facing: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): EnumActionResult = {
         val stack = player.getHeldItem(hand)
         if (stack.getItemDamage == 1) {
             var s = false
@@ -121,7 +121,11 @@ object ItemTool extends Item with IEnchantableItem {
                 }
             }
         }
-        super.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ)
+        super.onItemUse(player.getHeldItem(hand), player, worldIn, pos, hand, facing, hitX, hitY, hitZ)
+    }
+
+    override def onItemUse(stack: ItemStack, playerIn: EntityPlayer, worldIn: World, pos: BlockPos, hand: EnumHand, facing: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): EnumActionResult = {
+        onItemUse(playerIn, worldIn, pos, hand, facing, hitX, hitY, hitZ)
     }
 
     override def getUnlocalizedName(is: ItemStack) =
@@ -149,7 +153,7 @@ object ItemTool extends Item with IEnchantableItem {
             }
         }
 
-    override def getSubItems(itemIn: Item, tab: CreativeTabs, subItems: NonNullList[ItemStack]): Unit = {
+    override def getSubItems(itemIn: Item, tab: CreativeTabs, subItems: java.util.List[ItemStack]): Unit = {
         subItems.add(new ItemStack(this, 1, 0))
         subItems.add(getEditorStack)
         subItems.add(new ItemStack(this, 1, 2))

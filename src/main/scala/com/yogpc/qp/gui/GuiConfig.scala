@@ -13,9 +13,9 @@ class GuiConfig(parent: GuiScreen) extends net.minecraftforge.fml.client.config.
 
 @SideOnly(Side.CLIENT)
 class GuiFactory extends IModGuiFactory {
-    override def createConfigGui(parentScreen: GuiScreen): GuiConfig = new GuiConfig(parentScreen)
+    //    override def createConfigGui(parentScreen: GuiScreen): GuiConfig = new GuiConfig(parentScreen)
 
-    override def hasConfigGui: Boolean = true
+    //    override def hasConfigGui: Boolean = true
 
     override def getHandlerFor(element: IModGuiFactory.RuntimeOptionCategoryElement) = null
 

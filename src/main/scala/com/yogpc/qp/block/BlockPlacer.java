@@ -23,6 +23,7 @@ import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.tile.TilePlacer;
 import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockPistonBase;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
@@ -73,26 +74,26 @@ public class BlockPlacer extends ADismCBlock {
                     is = tile.getStackInSlot(i);
                     player.inventory.setInventorySlotContents(player.inventory.currentItem, is);
                     if (VersionUtil.nonEmpty(is)) {
-                        if (is.getItem().onItemUseFirst(player, worldIn, pos.offset(facing), facing.getOpposite(), 0.5F, 0.5F, 0.5F, EnumHand.MAIN_HAND) == EnumActionResult.SUCCESS)
+                        if (is.getItem().onItemUseFirst(is, player, worldIn, pos.offset(facing), facing.getOpposite(), 0.5F, 0.5F, 0.5F, EnumHand.MAIN_HAND) == EnumActionResult.SUCCESS)
                             break;
                         //Do you want to use item to non-facing block?
                         if (!Config.content().placerOnlyPlaceFront()) {
-                            if (is.getItem().onItemUseFirst(player, worldIn, pos.offset(facing.getOpposite()), facing, 0.5F, 0.5F, 0.5F, EnumHand.MAIN_HAND) == EnumActionResult.SUCCESS)
+                            if (is.getItem().onItemUseFirst(is, player, worldIn, pos.offset(facing.getOpposite()), facing, 0.5F, 0.5F, 0.5F, EnumHand.MAIN_HAND) == EnumActionResult.SUCCESS)
                                 break;
 
-                            if (is.getItem().onItemUseFirst(player, worldIn, pos.offset(facing1), facing1.getOpposite(), 0.5F, 0.5F, 0.5F, EnumHand.MAIN_HAND) == EnumActionResult.SUCCESS)
+                            if (is.getItem().onItemUseFirst(is, player, worldIn, pos.offset(facing1), facing1.getOpposite(), 0.5F, 0.5F, 0.5F, EnumHand.MAIN_HAND) == EnumActionResult.SUCCESS)
                                 break;
-                            if (is.getItem().onItemUseFirst(player, worldIn, pos.offset(facing1.getOpposite()), facing1, 0.5F, 0.5F, 0.5F, EnumHand.MAIN_HAND) == EnumActionResult.SUCCESS)
+                            if (is.getItem().onItemUseFirst(is, player, worldIn, pos.offset(facing1.getOpposite()), facing1, 0.5F, 0.5F, 0.5F, EnumHand.MAIN_HAND) == EnumActionResult.SUCCESS)
                                 break;
 
-                            if (is.getItem().onItemUseFirst(player, worldIn, pos.offset(facing2), facing2.getOpposite(), 0.5F, 0.5F, 0.5F, EnumHand.MAIN_HAND) == EnumActionResult.SUCCESS)
+                            if (is.getItem().onItemUseFirst(is, player, worldIn, pos.offset(facing2), facing2.getOpposite(), 0.5F, 0.5F, 0.5F, EnumHand.MAIN_HAND) == EnumActionResult.SUCCESS)
                                 break;
-                            if (is.getItem().onItemUseFirst(player, worldIn, pos.offset(facing2.getOpposite()), facing2, 0.5F, 0.5F, 0.5F, EnumHand.MAIN_HAND) == EnumActionResult.SUCCESS)
+                            if (is.getItem().onItemUseFirst(is, player, worldIn, pos.offset(facing2.getOpposite()), facing2, 0.5F, 0.5F, 0.5F, EnumHand.MAIN_HAND) == EnumActionResult.SUCCESS)
                                 break;
                         }
                     }
                     final IBlockState k = worldIn.getBlockState(pos.offset(facing));
-                    if (k.getBlock().onBlockActivated(worldIn, pos.offset(facing), k, player, EnumHand.MAIN_HAND, facing.getOpposite(), 0.5F, 0.5F, 0.5F))
+                    if (k.getBlock().onBlockActivated(worldIn, pos.offset(facing), k, player, EnumHand.MAIN_HAND, is, facing.getOpposite(), 0.5F, 0.5F, 0.5F))
                         break;
 
                     if (is.onItemUse(player, worldIn, pos.offset(facing), EnumHand.MAIN_HAND, facing.getOpposite(), 0.5F, 0.5F, 0.5F) == EnumActionResult.SUCCESS)
@@ -131,7 +132,7 @@ public class BlockPlacer extends ADismCBlock {
     @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         if (!worldIn.isRemote) {
-            worldIn.setBlockState(pos, state.withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer)), 2);
+            worldIn.setBlockState(pos, state.withProperty(FACING, BlockPistonBase.getFacingFromEntity(pos, placer)), 2);
         }
     }
 
@@ -142,8 +143,8 @@ public class BlockPlacer extends ADismCBlock {
 
     @SuppressWarnings("deprecation")
     @Override
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
-        super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn/*, BlockPos fromPos*/) {
+        super.neighborChanged(state, worldIn, pos, blockIn/*, fromPos*/);
         boolean flag = worldIn.isBlockPowered(pos);
 
         if (flag != state.getValue(POWERED)) {

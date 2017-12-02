@@ -24,12 +24,12 @@ public class TileMessage implements IMessage {
 
     @Override
     public void fromBytes(PacketBuffer buffer) throws IOException {
-        compound = buffer.readCompoundTag();
+        compound = buffer.readNBTTagCompoundFromBuffer();
     }
 
     @Override
     public void toBytes(PacketBuffer buffer) {
-        buffer.writeCompoundTag(compound);
+        buffer.writeNBTTagCompoundToBuffer(compound);
     }
 
     @SuppressWarnings({"MethodCallSideOnly"})

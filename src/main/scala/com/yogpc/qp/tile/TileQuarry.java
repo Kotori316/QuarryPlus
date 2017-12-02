@@ -15,14 +15,10 @@ package com.yogpc.qp.tile;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import buildcraft.api.core.IAreaProvider;
-import buildcraft.api.tiles.ITileAreaProvider;
-import buildcraft.api.tiles.TilesAPI;
 import com.google.common.collect.Sets;
 import com.yogpc.qp.PowerManager;
 import com.yogpc.qp.QuarryPlus;
@@ -60,6 +56,10 @@ import static com.yogpc.qp.tile.TileQuarry.Mode.MOVEHEAD;
 import static com.yogpc.qp.tile.TileQuarry.Mode.NONE;
 import static com.yogpc.qp.tile.TileQuarry.Mode.NOTNEEDBREAK;
 
+/*import buildcraft.api.core.IAreaProvider;
+import buildcraft.api.tiles.ITileAreaProvider;
+import buildcraft.api.tiles.TilesAPI;*/
+
 public class TileQuarry extends TileBasic implements IDebugSender {
     public final boolean bccoreLoaded;
     private int targetX, targetY, targetZ;
@@ -76,9 +76,9 @@ public class TileQuarry extends TileBasic implements IDebugSender {
         if (this.areaProvider != null) {
             if (this.areaProvider instanceof TileMarker)
                 this.cacheItems.addAll(((TileMarker) this.areaProvider).removeFromWorldWithItem());
-            else if (bccoreLoaded && areaProvider instanceof IAreaProvider) {
+           /* else if (bccoreLoaded && areaProvider instanceof IAreaProvider) {
                 ((IAreaProvider) this.areaProvider).removeFromWorld();
-            }
+            }*/
             this.areaProvider = null;
         }
         switch (this.now) {
@@ -325,7 +325,7 @@ public class TileQuarry extends TileBasic implements IDebugSender {
             return;
 
         EnumFacing facing = getWorld().getBlockState(getPos()).getValue(BlockQuarry.FACING).getOpposite();
-        if (bccoreLoaded) {
+        /*if (bccoreLoaded) {
             Optional<ITileAreaProvider> marker = Stream.of(pos.offset(facing), pos.offset(facing.rotateYCCW()), pos.offset(facing.rotateY()))
                     .map(getWorld()::getTileEntity).filter(Objects::nonNull)
                     .map(t -> t.getCapability(TilesAPI.CAP_TILE_AREA_PROVIDER, null)).filter(Objects::nonNull).findFirst();
@@ -359,7 +359,8 @@ public class TileQuarry extends TileBasic implements IDebugSender {
             } else {
                 setDefaultRange(getPos(), facing);
             }
-        } else {
+        } else*/
+        {
             Optional<TileMarker> marker = Stream.of(pos.offset(facing), pos.offset(facing.rotateYCCW()), pos.offset(facing.rotateY()))
                     .map(getWorld()::getTileEntity)
                     .filter(t -> t instanceof TileMarker)

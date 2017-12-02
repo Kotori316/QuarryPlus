@@ -13,6 +13,7 @@
 
 package com.yogpc.qp.gui;
 
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiYesNoCallback;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -37,7 +38,8 @@ public class GuiYesNo extends net.minecraft.client.gui.GuiYesNo {
     @Override
     public void updateScreen() {
         super.updateScreen();
-        if (!this.mc.player.isEntityAlive() || this.mc.player.isDead)
-            this.mc.player.closeScreen();
+        EntityPlayerSP player = this.mc.thePlayer;
+        if (!player.isEntityAlive() || player.isDead)
+            player.closeScreen();
     }
 }

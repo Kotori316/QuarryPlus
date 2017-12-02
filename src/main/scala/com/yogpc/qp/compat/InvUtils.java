@@ -3,9 +3,6 @@ package com.yogpc.qp.compat;
 import java.util.LinkedList;
 import java.util.List;
 
-import buildcraft.api.inventory.IItemTransactor;
-import buildcraft.lib.inventory.ItemTransactorHelper;
-import buildcraft.lib.inventory.NoSpaceTransactor;
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -15,7 +12,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.ModAPIManager;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -24,6 +20,10 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import static com.yogpc.qp.version.VersionUtil.empty;
 import static com.yogpc.qp.version.VersionUtil.isEmpty;
 import static com.yogpc.qp.version.VersionUtil.nonEmpty;
+
+/*import buildcraft.api.inventory.IItemTransactor;
+import buildcraft.lib.inventory.ItemTransactorHelper;
+import buildcraft.lib.inventory.NoSpaceTransactor;*/
 
 public class InvUtils {
 
@@ -34,7 +34,7 @@ public class InvUtils {
      */
     public static ItemStack injectToNearTile(final World w, BlockPos pos, final ItemStack is) {
         //Buildcraft installed.
-        if (ModAPIManager.INSTANCE.hasAPI(QuarryPlus.Optionals.Buildcraft_transport)) {
+        /*if (ModAPIManager.INSTANCE.hasAPI(QuarryPlus.Optionals.Buildcraft_transport)) {
             List<IItemTransactor> transactors = new LinkedList<>();
             for (EnumFacing facing : EnumFacing.VALUES) {
                 TileEntity t = w.getTileEntity(pos.offset(facing));
@@ -52,13 +52,15 @@ public class InvUtils {
             }
             return insert;
 
-        } else { //Forge ItemHandeler
+        } else*/
+        { //Forge ItemHandeler
             List<IItemHandler> handlers = new LinkedList<>();
             for (EnumFacing facing : EnumFacing.VALUES) {
                 TileEntity t = w.getTileEntity(pos.offset(facing));
                 if (t != null) {
                     IItemHandler handler = t.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing.getOpposite());
-                    if (is.getCount() != ItemHandlerHelper.insertItemStacked(handler, is, true).getCount()) {
+                    ItemStack insertItemStacked = ItemHandlerHelper.insertItemStacked(handler, is, true);
+                    if (isEmpty(insertItemStacked)) {
                         handlers.add(handler);
                     }
                 }

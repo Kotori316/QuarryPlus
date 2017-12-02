@@ -30,4 +30,13 @@ public interface HasInv extends net.minecraft.inventory.IInventory {
     default boolean hasCustomName() {
         return false;
     }
+
+    boolean isUsableByPlayer(EntityPlayer player);
+
+    boolean isEmpty();
+
+    @Override
+    default boolean isUseableByPlayer(EntityPlayer player) {
+        return isUsableByPlayer(player);
+    }
 }

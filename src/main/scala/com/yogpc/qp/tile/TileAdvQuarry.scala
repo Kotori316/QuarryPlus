@@ -10,7 +10,7 @@ import com.yogpc.qp.packet.PacketHandler
 import com.yogpc.qp.packet.advquarry.AdvModeMessage
 import com.yogpc.qp.tile.TileAdvQuarry.{DigRange, ItemElement, ItemList, QEnch}
 import com.yogpc.qp.version.VersionUtil
-import com.yogpc.qp.{Config, PowerManager, QuarryPlus, QuarryPlusI, ReflectionHelper}
+import com.yogpc.qp.{Config, NonNullList, PowerManager, QuarryPlus, QuarryPlusI, ReflectionHelper, _}
 import net.minecraft.block.Block
 import net.minecraft.block.properties.PropertyHelper
 import net.minecraft.block.state.IBlockState
@@ -23,7 +23,7 @@ import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
 import net.minecraft.util.math.BlockPos.MutableBlockPos
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos, ChunkPos}
 import net.minecraft.util.text.TextComponentString
-import net.minecraft.util.{EnumFacing, ITickable, NonNullList}
+import net.minecraft.util.{EnumFacing, ITickable}
 import net.minecraft.world.World
 import net.minecraftforge.common.ForgeChunkManager.Type
 import net.minecraftforge.common.capabilities.Capability
@@ -521,7 +521,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
             }
         }
 
-        override def getSlotLimit(slot: Int): Int = 1
+        //        override def getSlotLimit(slot: Int): Int = 1
 
         override def getSlots: Int = self.getSizeInventory
 
@@ -779,7 +779,7 @@ object TileAdvQuarry {
         override def readFromNBT(tag: NBTTagCompound): ItemList = {
             if (tag.hasKey(NBT_ITEMLIST)) {
                 val l = tag.getCompoundTag(NBT_ITEMLIST).getTagList(NBT_ITEMELEMENTS, Constants.NBT.TAG_COMPOUND)
-                Range(0, l.tagCount()).foreach(i => add(new ItemStack(l.getCompoundTagAt(i))))
+                Range(0, l.tagCount()).foreach(i => add(VersionUtil.fromNBTTag(l.getCompoundTagAt(i))))
             }
             this
         }

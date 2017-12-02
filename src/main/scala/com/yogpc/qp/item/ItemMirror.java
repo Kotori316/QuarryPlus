@@ -12,6 +12,8 @@
  */
 package com.yogpc.qp.item;
 
+import java.util.List;
+
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import net.minecraft.creativetab.CreativeTabs;
@@ -24,7 +26,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -43,22 +44,23 @@ public class ItemMirror extends ItemFood {
     @Override
     protected void onFoodEaten(ItemStack stack, World worldIn, EntityPlayer player) {
         if (player instanceof EntityPlayerMP) {
+            World world = player.getEntityWorld();
             if (stack.getItemDamage() == 2) {
                 if (player.dimension != 0) {
                     player.changeDimension(0);
                 }
-            } else if (!player.world.provider.canRespawnHere()) {
+            } else if (!world.provider.canRespawnHere()) {
                 if (stack.getItemDamage() == 1) {
-                    player.changeDimension(player.world.provider.getRespawnDimension((EntityPlayerMP) player));
+                    player.changeDimension(world.provider.getRespawnDimension((EntityPlayerMP) player));
                 } else {
                     return;
                 }
             }
             BlockPos c = player.getBedLocation(player.dimension);
             if (c != null)
-                c = EntityPlayer.getBedSpawnLocation(player.world, c, player.isSpawnForced(player.dimension));
+                c = EntityPlayer.getBedSpawnLocation(world, c, player.isSpawnForced(player.dimension));
             else
-                c = player.world.provider.getRandomizedSpawnPoint();
+                c = world.provider.getRandomizedSpawnPoint();
             player.setPositionAndUpdate(c.getX() + 0.5D, c.getY() + 0.1D, c.getZ() + 0.5D);
         }
     }
@@ -74,7 +76,7 @@ public class ItemMirror extends ItemFood {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
+    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand handIn) {
         playerIn.setActiveHand(handIn);
         return ActionResult.newResult(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
     }
@@ -92,7 +94,7 @@ public class ItemMirror extends ItemFood {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems) {
+    public void getSubItems(Item itemIn, CreativeTabs tab, List<ItemStack> subItems) {
         subItems.add(new ItemStack(this, 1, 0));
         subItems.add(new ItemStack(this, 1, 1));
         subItems.add(new ItemStack(this, 1, 2));

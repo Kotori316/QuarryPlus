@@ -14,6 +14,7 @@
 package com.yogpc.qp.gui;
 
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -33,8 +34,9 @@ public class GuiScreenA extends GuiScreen {
     @Override
     public void updateScreen() {
         super.updateScreen();
-        if (!this.mc.player.isEntityAlive() || this.mc.player.isDead)
-            this.mc.player.closeScreen();
+        EntityPlayer entity = this.mc.thePlayer;
+        if (!entity.isEntityAlive() || entity.isDead)
+            entity.closeScreen();
     }
 
     protected void showParent() {

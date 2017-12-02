@@ -12,44 +12,38 @@
  */
 package com.yogpc.qp.tile;
 
-import java.util.List;
-
-import buildcraft.api.mj.IMjConnector;
-import buildcraft.api.mj.IMjReadable;
-import buildcraft.api.mj.IMjReceiver;
-import buildcraft.api.mj.MjAPI;
-import buildcraft.api.mj.MjCapabilityHelper;
-import buildcraft.api.tiles.IDebuggable;
 import cofh.api.energy.IEnergyReceiver;
 import cofh.api.tileentity.IEnergyInfo;
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.item.ItemQuarryDebug;
 import ic2.api.energy.event.EnergyTileLoadEvent;
 import ic2.api.energy.event.EnergyTileUnloadEvent;
 import ic2.api.energy.tile.IEnergyEmitter;
 import ic2.api.energy.tile.IEnergySink;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Optional;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+
+/*import buildcraft.api.mj.IMjConnector;
+import buildcraft.api.mj.IMjReadable;
+import buildcraft.api.mj.IMjReceiver;
+import buildcraft.api.mj.MjAPI;
+import buildcraft.api.mj.MjCapabilityHelper;
+import buildcraft.api.tiles.IDebuggable;*/
 
 @Optional.InterfaceList(value = {
         @Optional.Interface(iface = "cofh.api.energy.IEnergyReceiver", modid = QuarryPlus.Optionals.COFH_energy),
         @Optional.Interface(iface = "cofh.api.tileentity.IEnergyInfo", modid = QuarryPlus.Optionals.COFH_tileentity),
         @Optional.Interface(iface = "buildcraft.api.tiles.IDebuggable", modid = QuarryPlus.Optionals.Buildcraft_tiles),
         @Optional.Interface(iface = "ic2.api.energy.tile.IEnergySink", modid = QuarryPlus.Optionals.IC2_modID)})
-public abstract class APowerTile extends APacketTile implements IEnergyReceiver, IEnergySink, ITickable, IEnergyStorage, IEnergyInfo, IDebuggable {
+public abstract class APowerTile extends APacketTile implements IEnergyReceiver, IEnergySink, ITickable, IEnergyStorage, IEnergyInfo/*, IDebuggable*/ {
     private double all, maxGot, max, got;
     private boolean ic2ok = false;
     public boolean bcLoaded;
@@ -60,9 +54,9 @@ public abstract class APowerTile extends APacketTile implements IEnergyReceiver,
     public APowerTile() {
         bcLoaded = Loader.isModLoaded(QuarryPlus.Optionals.Buildcraft_modID);
         ic2Loaded = Loader.isModLoaded(QuarryPlus.Optionals.IC2_modID);
-        if (bcLoaded) {
+        /*if (bcLoaded) {
             helper = new MjCapabilityHelper(new MjReciever());
-        }
+        }*/
     }
 
     @Override
@@ -320,9 +314,9 @@ public abstract class APowerTile extends APacketTile implements IEnergyReceiver,
 
     //Buildcraft MJ energy api implecation
 
-    /**
+    /*
      * Energy Unit is micro MJ (1000000 micro MJ = 1 MJ = 0.1 RF)
-     */
+     *//*
     @Optional.InterfaceList({
             @Optional.Interface(iface = "buildcraft.api.mj.IMjReceiver", modid = QuarryPlus.Optionals.Buildcraft_modID),
             @Optional.Interface(iface = "buildcraft.api.mj.IMjReadable", modid = QuarryPlus.Optionals.Buildcraft_modID)})
@@ -358,14 +352,14 @@ public abstract class APowerTile extends APacketTile implements IEnergyReceiver,
         public boolean canConnect(@Nonnull IMjConnector other) {
             return true;
         }
-    }
+    }*/
 
-    /**
+    /*
      * Get the debug information from a tile entity as a list of strings, used for the F3 debug menu. The left and
      * right parameters correspond to the sides of the F3 screen.
      *
      * @param side The side the block was clicked on, may be null if we don't know, or is the "centre" side
-     */
+     *//*
     @Override
     @SideOnly(Side.CLIENT)
     public void getDebugInfo(List<String> left, List<String> right, EnumFacing side) {
@@ -376,15 +370,15 @@ public abstract class APowerTile extends APacketTile implements IEnergyReceiver,
             IDebugSender sender = (IDebugSender) this;
             sender.getDebugmessages().stream().map(ITextComponent::getUnformattedComponentText).forEach(left::add);
         }
-    }
+    }*/
 
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
-        if (bcLoaded) {
+        /*if (bcLoaded) {
             if (((MjCapabilityHelper) helper).hasCapability(capability, facing)) {
                 return true;
             }
-        }
+        }*/
         return capability == CapabilityEnergy.ENERGY || super.hasCapability(capability, facing);
     }
 
@@ -395,11 +389,11 @@ public abstract class APowerTile extends APacketTile implements IEnergyReceiver,
         if (capability == CapabilityEnergy.ENERGY) {
             return CapabilityEnergy.ENERGY.cast(this);
         } else {
-            if (bcLoaded) {
+            /*if (bcLoaded) {
                 Object o = ((MjCapabilityHelper) helper).getCapability(capability, facing);
                 if (o != null)
                     return (T) o;
-            }
+            }*/
             return super.getCapability(capability, facing);
         }
     }

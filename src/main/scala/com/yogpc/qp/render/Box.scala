@@ -59,7 +59,7 @@ sealed class Box(val startX: Double, val startY: Double, val startZ: Double,
             buffer.pos(e4X, e4Y, e4Z).color(255, 255, 255, 255).tex(sprite.getMinU, sprite.getMaxV).lightmap(240, 0).endVertex()
         }
         val l = Math.sqrt(dx / sizeX * dx / sizeX + dy / sizeY * dy / sizeY + dz / sizeZ * dz / sizeZ)
-        val lengthFloor = MathHelper.floor(l)
+        val lengthFloor = Box.floor(l)
         new Range.Inclusive(0, lengthFloor, 1).foreach(i1 => {
             val i2 = if (i1 == lengthFloor) l else i1 + 1
             buffer.pos(e1X + eX * i2, e1Y + eY * i2, e1Z + eZ * i2).color(255, 255, 255, 255).tex(sprite.getMinU, sprite.getMinV).lightmap(240, 0).endVertex()
@@ -110,7 +110,7 @@ private class BoxX(startX: Double,
     override val length: Double = dx
 
     override def render(buffer: VertexBuffer, sprite: TextureAtlasSprite): Unit = {
-        val count = MathHelper.floor(length / sizeX)
+        val count = Box.floor(length / sizeX)
         val minU = sprite.getMinU
         val minV = sprite.getMinV
         val maXV = sprite.getInterpolatedV(sizeX / maxSize * 16)
@@ -164,7 +164,7 @@ private class BoxY(startY: Double,
     override val length = dy
 
     override def render(buffer: VertexBuffer, sprite: TextureAtlasSprite): Unit = {
-        val count = MathHelper.floor(length / sizeY)
+        val count = Box.floor(length / sizeY)
         val minU = sprite.getMinU
         val minV = sprite.getMinV
 
@@ -219,7 +219,7 @@ private class BoxZ(startZ: Double,
     override val length = dz
 
     override def render(buffer: VertexBuffer, sprite: TextureAtlasSprite): Unit = {
-        val count = MathHelper.floor(length / sizeZ)
+        val count = Box.floor(length / sizeZ)
         val minU = sprite.getMinU
         val minV = sprite.getMinV
         val maXU = sprite.getInterpolatedU(sizeX / maxSize * 16)
@@ -303,5 +303,9 @@ object Box {
 
     protected def normalY(x: Double, y: Double, z: Double): Double = {
         -(x * x + z * z) / y
+    }
+
+    def floor(d: Double): Int = {
+        MathHelper.floor_double(d)
     }
 }

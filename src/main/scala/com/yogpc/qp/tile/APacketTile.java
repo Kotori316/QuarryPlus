@@ -38,4 +38,8 @@ public abstract class APacketTile extends TileEntity {
     public NBTTagCompound getUpdateTag() {
         return writeToNBT(new NBTTagCompound());
     }
+
+    public boolean hasWorld() {
+        return hasWorldObj();
+    }
 }

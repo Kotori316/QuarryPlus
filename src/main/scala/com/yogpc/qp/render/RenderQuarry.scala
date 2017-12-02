@@ -3,7 +3,6 @@ package com.yogpc.qp.render
 import com.yogpc.qp.tile.TileQuarry
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.VertexBuffer
-import net.minecraft.util.math.MathHelper
 import net.minecraftforge.client.model.animation.FastTESR
 
 object RenderQuarry extends FastTESR[TileQuarry] {
@@ -430,12 +429,12 @@ object RenderQuarry extends FastTESR[TileQuarry] {
 
             //positive(East)
             val xp_length = quarry.xMax - quarry.headPosX - d4 * 2
-            val xp_floor = MathHelper.floor(xp_length)
+            val xp_floor = Box.floor(xp_length)
             xLine(plus = true, xp_floor, xp_length)
 
             //negative(West)
             val xn_length = quarry.headPosX - quarry.xMin - d4 * 2
-            val xn_floor = MathHelper.floor(xn_length)
+            val xn_floor = Box.floor(xn_length)
             xLine(plus = false, xn_floor, xn_length)
 
 
@@ -489,11 +488,11 @@ object RenderQuarry extends FastTESR[TileQuarry] {
 
             //positive(South)
             val zp_length = quarry.zMax - quarry.headPosZ - d4 * 2
-            val zp_floor = MathHelper.floor(zp_length)
+            val zp_floor = Box.floor(zp_length)
             zLine(plus = true, zp_floor, zp_length)
             //negative(North)
             val zn_length = quarry.headPosZ - quarry.zMin - d4 * 2
-            val zn_floor = MathHelper.floor(zn_length)
+            val zn_floor = Box.floor(zn_length)
             zLine(plus = false, zn_floor, zn_length)
 
             //render drill
@@ -578,7 +577,7 @@ object RenderQuarry extends FastTESR[TileQuarry] {
             }
 
             val y_length = quarry.yMax - quarry.headPosY - 0.75
-            val y_floor = MathHelper.floor(y_length)
+            val y_floor = Box.floor(y_length)
             buffer.setTranslation(distanceX - pos.getX + .5, distanceY - pos.getY, distanceZ - pos.getZ + .5)
             yLine(y_floor, y_length)
 
