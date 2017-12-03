@@ -16,8 +16,10 @@ import net.minecraftforge.fml.common.ModAPIManager;
 /**
  * Energy Unit is micro MJ (1000000 micro MJ = 1 MJ = 0.1 RF)
  */
-@net.minecraftforge.fml.common.Optional.Interface(iface = "buildcraft.api.mj.IMjReceiver", modid = QuarryPlus.Optionals.BuildCraft_core)
-@net.minecraftforge.fml.common.Optional.Interface(iface = "buildcraft.api.mj.IMjReadable", modid = QuarryPlus.Optionals.BuildCraft_core)
+@net.minecraftforge.fml.common.Optional.InterfaceList({
+        @net.minecraftforge.fml.common.Optional.Interface(iface = "buildcraft.api.mj.IMjReceiver", modid = QuarryPlus.Optionals.BuildCraft_core),
+        @net.minecraftforge.fml.common.Optional.Interface(iface = "buildcraft.api.mj.IMjReadable", modid = QuarryPlus.Optionals.BuildCraft_core)
+})
 public class MjReciever implements IMjReceiver, IMjReadable {
     private final APowerTile tile;
 
