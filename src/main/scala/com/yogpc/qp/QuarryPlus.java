@@ -61,7 +61,7 @@ import static com.yogpc.qp.QuarryPlusI.*;
         modid = QuarryPlus.modID,
         name = QuarryPlus.Mod_Name,
         version = "${version}",
-        dependencies = "required-after:buildcraftcore;after:ic2",
+        dependencies = "after:ic2",//"required-after:buildcraftcore;after:ic2",
         guiFactory = QuarryPlus.Optionals.configFactory
 )
 public class QuarryPlus {
