@@ -6,7 +6,9 @@ import java.util.LinkedList;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.tile.TilePump;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -67,10 +69,13 @@ public class Mappings {
         @SideOnly(Side.CLIENT)
         public IMessage onRecieve(IMessage message, MessageContext ctx) {
             TilePump pumpC = (TilePump) QuarryPlus.proxy.getPacketWorld(ctx.netHandler).getTileEntity(pos);
-            assert pumpC != null;
-            pumpC.mapping.clear();
-            for (EnumFacing facing : EnumFacing.VALUES) {
-                pumpC.mapping.put(facing, lists[facing.ordinal()]);
+            if (pumpC != null) {
+                Minecraft.getMinecraft().addScheduledTask(() -> {
+                    pumpC.mapping.clear();
+                    for (EnumFacing facing : EnumFacing.VALUES) {
+                        pumpC.mapping.put(facing, lists[facing.ordinal()]);
+                    }
+                });
             }
             return null;
         }
@@ -113,11 +118,15 @@ public class Mappings {
         @Override
         public IMessage onRecieve(IMessage message, MessageContext ctx) {
             World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
-            if (world.provider.getDimension() == dim) {
+            MinecraftServer server = world.getMinecraftServer();
+            if (world.provider.getDimension() == dim && server != null) {
                 TilePump pump = (TilePump) world.getTileEntity(pos);
-                assert pump != null;
-                LinkedList<String> list = pump.mapping.get(facing);
-                typeAction(list, fluidName, type);
+                if (pump != null) {
+                    server.addScheduledTask(() -> {
+                        LinkedList<String> list = pump.mapping.get(facing);
+                        typeAction(list, fluidName, type);
+                    });
+                }
             }
             return null;
         }
@@ -202,10 +211,11 @@ public class Mappings {
         @SideOnly(Side.CLIENT)
         public IMessage onRecieve(IMessage message, MessageContext ctx) {
             World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
-            if (world.provider.getDimension() == dim) {
+            MinecraftServer server = world.getMinecraftServer();
+            if (world.provider.getDimension() == dim && server != null) {
                 TilePump pump = (TilePump) world.getTileEntity(pos);
-                assert pump != null;
-                pump.mapping.put(dest, list);
+                if (pump != null)
+                    server.addScheduledTask(() -> pump.mapping.put(dest, list));
             }
             return null;
         }
