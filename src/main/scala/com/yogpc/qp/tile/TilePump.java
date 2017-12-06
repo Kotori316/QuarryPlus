@@ -2,11 +2,11 @@
  * Copyright (C) 2012,2013 yogpstop This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
@@ -23,7 +23,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
+import com.yogpc.qp.Config;
 import com.yogpc.qp.PowerManager;
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.block.BlockPump;
 import com.yogpc.qp.packet.PacketHandler;
@@ -399,6 +401,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
 
     boolean S_removeLiquids(final APowerTile tbpp, final int x, final int y, final int z) {
         S_sendNowPacket();
+        boolean isquarry = tbpp instanceof TileQuarry;
         if (this.cx != x || this.cy != y || this.cz != z || this.py < this.cy
                 || getWorld().getWorldTime() - this.fwt > 200)
             S_searchLiquid(x, y, z);
@@ -448,8 +451,19 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                 int bx;
                 for (bx = 0; bx < this.block_side_x; bx++)
                     for (bz = 0; bz < this.block_side_z; bz++)
-                        if ((this.blocks[this.py - this.yOffset][bx][bz] & 0x40) != 0)
+                        if ((this.blocks[this.py - this.yOffset][bx][bz] & 0x40) != 0) {
                             drainBlock(bx, bz, QuarryPlusI.blockFrame.getDamiingState());
+                            if (isquarry) {
+                                TileQuarry quarry = (TileQuarry) tbpp;
+                                if (Config.content().debug()) {
+                                    if (quarry.xMin <= bx + xOffset && bx + xOffset <= quarry.xMax) {
+                                        QuarryPlus.LOGGER.warn(String.format("Quarry placed frame in dig range. at %d, %d, %d", bx + xOffset, py, bz + zOffset));
+                                    } else if (quarry.zMin <= bz + zOffset && bz + zOffset <= quarry.zMax) {
+                                        QuarryPlus.LOGGER.warn(String.format("Quarry placed frame in dig range. at %d, %d, %d", bx + xOffset, py, bz + zOffset));
+                                    }
+                                }
+                            }
+                        }
             } else
                 for (bz = 0; bz < this.block_side_z; bz++)
                     if (this.blocks[this.py - this.yOffset][this.px][bz] != 0)

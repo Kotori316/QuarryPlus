@@ -88,7 +88,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
             List<ILaserTarget> targetList = targets.stream()
                     .map(getWorld()::getTileEntity)
                     .map(ILaserTarget.class::cast)
-                    .filter(t -> !t.isInvalidTarget() && t.getRequiredLaserPower() > 0)
+                    .filter(t -> !Objects.requireNonNull(t).isInvalidTarget() && t.getRequiredLaserPower() > 0)
                     .collect(Collectors.toList());
             if (!targetList.isEmpty()) {
                 long each = maxPower / targetList.size();

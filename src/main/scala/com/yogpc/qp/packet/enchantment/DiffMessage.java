@@ -8,6 +8,7 @@ import com.yogpc.qp.BlockData;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.container.ContainerEnchList;
 import com.yogpc.qp.packet.IMessage;
+import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.Container;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
@@ -59,14 +60,16 @@ public class DiffMessage implements IMessage {
     @Override
     @SideOnly(Side.CLIENT)
     public IMessage onRecieve(IMessage message, MessageContext ctx) {
-        Container container = QuarryPlus.proxy.getPacketPlayer(ctx.netHandler).openContainer;
-        if (containerId == container.windowId && container instanceof ContainerEnchList) {
-            ContainerEnchList enchList = (ContainerEnchList) container;
-            enchList.getTile().fortuneList.clear();
-            enchList.getTile().fortuneList.addAll(fortuneList);
-            enchList.getTile().silktouchList.clear();
-            enchList.getTile().silktouchList.addAll(silkList);
-        }
+        Minecraft.getMinecraft().addScheduledTask(() -> {
+            Container container = QuarryPlus.proxy.getPacketPlayer(ctx.netHandler).openContainer;
+            if (containerId == container.windowId && container instanceof ContainerEnchList) {
+                ContainerEnchList enchList = (ContainerEnchList) container;
+                enchList.getTile().fortuneList.clear();
+                enchList.getTile().fortuneList.addAll(fortuneList);
+                enchList.getTile().silktouchList.clear();
+                enchList.getTile().silktouchList.addAll(silkList);
+            }
+        });
         return null;
     }
 }

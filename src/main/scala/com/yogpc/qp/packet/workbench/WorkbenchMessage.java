@@ -6,6 +6,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.tile.TileWorkbench;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -42,11 +43,12 @@ public class WorkbenchMessage implements IMessage {
     @Override
     public IMessage onRecieve(IMessage message, MessageContext ctx) {
         World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
-        if (world.provider.getDimension() == dim) {
+        MinecraftServer server = world.getMinecraftServer();
+        if (world.provider.getDimension() == dim && server != null) {
             TileEntity entity = world.getTileEntity(pos);
             if (TileWorkbench.class.isInstance(entity)) {
                 TileWorkbench workbench = (TileWorkbench) entity;
-                workbench.setCurrentRecipe(recipeIndex);
+                server.addScheduledTask(() -> workbench.setCurrentRecipe(recipeIndex));
             }
         }
         return null;

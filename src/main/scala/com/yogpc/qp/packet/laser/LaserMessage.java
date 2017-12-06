@@ -7,11 +7,14 @@ import java.util.stream.Stream;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.tile.TileLaser;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * To client only.
@@ -48,11 +51,12 @@ public class LaserMessage implements IMessage {
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public IMessage onRecieve(IMessage message, MessageContext ctx) {
         World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
         TileLaser laser = (TileLaser) world.getTileEntity(pos);
         if (laser != null) {
-            laser.lasers = vec3ds;
+            Minecraft.getMinecraft().addScheduledTask(() -> laser.lasers = vec3ds);
         }
         return null;
     }
