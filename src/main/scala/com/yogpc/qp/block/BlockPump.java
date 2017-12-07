@@ -2,11 +2,11 @@
  * Copyright (C) 2012,2013 yogpstop This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
@@ -20,7 +20,6 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.BuildCraftHelper;
 import com.yogpc.qp.compat.EnchantmentHelper;
-import com.yogpc.qp.gui.GuiP_List;
 import com.yogpc.qp.item.ItemBlockPump;
 import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TilePump;
@@ -29,7 +28,6 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -103,7 +101,6 @@ public class BlockPump extends ADismCBlock {
         Optional.ofNullable((TilePump) worldIn.getTileEntity(pos)).ifPresent(TilePump::G_reinit);
     }
 
-    @SuppressWarnings({"MethodCallSideOnly", "NewExpressionSideOnly"})
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
@@ -121,12 +118,9 @@ public class BlockPump extends ADismCBlock {
                 }
             } else if (stack.getItemDamage() == 2) {
                 TilePump pump = (TilePump) worldIn.getTileEntity(pos);
-                if (pump != null)
-                    if (!worldIn.isRemote) {
-                        pump.S_OpenGUI(facing, playerIn);
-                    } else {
-                        Minecraft.getMinecraft().displayGuiScreen(new GuiP_List((byte) facing.ordinal(), pump));
-                    }
+                if (pump != null) {
+                    QuarryPlus.proxy.openPumpGui(worldIn, playerIn, facing, pump);
+                }
             }
             return true;
         }
