@@ -11,8 +11,10 @@ import net.minecraft.client.resources.I18n
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.math.ChunkPos
 import net.minecraft.util.{EnumFacing, ResourceLocation}
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import org.lwjgl.opengl.GL11
 
+@SideOnly(Side.CLIENT)
 class GuiAdvQuarry(tile: TileAdvQuarry, player: EntityPlayer) extends GuiContainer(new ContainerAdvQuarry(tile, player)) {
 
     val LOCATION = new ResourceLocation(QuarryPlus.modID, "textures/gui/chunkdestroyer.png")

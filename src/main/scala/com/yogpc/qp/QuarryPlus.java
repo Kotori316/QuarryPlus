@@ -2,11 +2,11 @@
  * Copyright (C) 2012,2013 yogpstop This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
@@ -43,6 +43,7 @@ import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -78,13 +79,13 @@ public class QuarryPlus {
     public boolean inDev;
 
     static {
-        if (!Optionals.clientProxy.equals(ProxyClient.class.getName())) {
+        if (FMLCommonHandler.instance().getSide() == Side.CLIENT && !Optionals.clientProxy.equals(ProxyClient.class.getName())) {
             throw new AssertionError("Client Proxy name doesn't match!");
         }
         if (!Optionals.serverProxy.equals(ProxyCommon.class.getName())) {
             throw new AssertionError("Server Proxy name doesn't match!");
         }
-        if (!Optionals.configFactory.equals(GuiFactory.class.getName())) {
+        if (FMLCommonHandler.instance().getSide() == Side.CLIENT && !Optionals.configFactory.equals(GuiFactory.class.getName())) {
             throw new AssertionError("GuiFactory name doesn't match!");
         }
         INSTANCE = new QuarryPlus();
