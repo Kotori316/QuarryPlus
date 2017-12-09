@@ -1,0 +1,13 @@
+{
+  "homepage": "https://minecraft.curseforge.com/projects/additional-enchanted-miner",
+  "promos": {
+    "1.12.2-recommended": "0.6.8",
+    "1.11.2-recommended": "0.6.8"
+  },
+  "1.12.2": {
+    "0.6.8": "Added Forge version check system."
+  },
+  "1.11.2": {
+    "0.6.8": "Added Forge version check system."
+  }
+}
