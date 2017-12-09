@@ -16,6 +16,7 @@ package com.yogpc.qp.gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
 
 @SideOnly(Side.CLIENT)
 public class GuiScreenA extends GuiScreen {
@@ -45,7 +46,7 @@ public class GuiScreenA extends GuiScreen {
 
     @Override
     protected void keyTyped(final char typedChar, final int keyCode) {
-        if (keyCode == 1)
+        if (keyCode == Keyboard.KEY_ESCAPE)
             showParent();
     }
 }
