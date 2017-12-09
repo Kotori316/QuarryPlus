@@ -60,7 +60,8 @@ import static com.yogpc.qp.QuarryPlusI.*;
         name = QuarryPlus.Mod_Name,
         version = "${version}",
         dependencies = "after:ic2",
-        guiFactory = QuarryPlus.Optionals.configFactory
+        guiFactory = QuarryPlus.Optionals.configFactory,
+        updateJSON = QuarryPlus.Optionals.updateJson
 )
 public class QuarryPlus {
 
@@ -219,6 +220,7 @@ public class QuarryPlus {
         public static final String Buildcraft_recipes = "BuildCraftAPI|recipes";
         public static final String Buildcraft_transport = "BuildCraftAPI|transport";
         public static final String Buildcraft_tiles = "BuildCraftAPI|tiles";
+        public static final String updateJson = "https://raw.githubusercontent.com/Kotori316/QuarryPlus/1.12/update.json";
     }
 
     public static class Names {

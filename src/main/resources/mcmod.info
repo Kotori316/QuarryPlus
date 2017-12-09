@@ -8,6 +8,6 @@
     "url": "https://github.com/Kotori316/QuarryPlus",
     "authors": [ "yogpstop", "Kotori" ],
     "dependencies": [ ],
-    "updateJSON": ""
+    "updateJSON": "https://raw.githubusercontent.com/Kotori316/QuarryPlus/1.12/update.json"
   }
 ]
