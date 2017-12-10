@@ -539,7 +539,9 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 
         override def getTankProperties: Array[IFluidTankProperties] = {
             if (fluidStacks.nonEmpty) {
-                super.getTankProperties
+                fluidStacks.map { case (_, handler) => val s = handler.drain(Int.MaxValue, false)
+                    new FluidTankProperties(s, s.amount, false, true)
+                }.toArray
             } else {
                 Array(emptyProperty)
             }
