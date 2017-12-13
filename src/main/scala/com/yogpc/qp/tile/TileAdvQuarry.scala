@@ -159,7 +159,8 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                                         case _ => requireEnergy += PowerManager.calcEnergyBreak(this, blockHardness, ench.mode, ench.unbreaking)
                                             dig = pos :: dig
                                     }
-                                } else if (Config.content.removeBedrock && (state.getBlock == Blocks.BEDROCK) && ((pos.getY > 0 && pos.getY <= 5) || (pos.getY > 122 && pos.getY < 127))) {
+                                } else if (Config.content.removeBedrock && (state.getBlock == Blocks.BEDROCK) &&
+                                  ((pos.getY > 0 && pos.getY <= 5) || (pos.getY > 122 && pos.getY < 127))) {
                                     requireEnergy += 200
                                     destroy = pos :: destroy
                                 } else if (state.getBlock == Blocks.PORTAL) {
@@ -538,7 +539,9 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 
         override def getTankProperties: Array[IFluidTankProperties] = {
             if (fluidStacks.nonEmpty) {
-                super.getTankProperties
+                fluidStacks.map { case (_, handler) => val s = handler.drain(Int.MaxValue, false)
+                    new FluidTankProperties(s, s.amount, false, true)
+                }.toArray
             } else {
                 Array(emptyProperty)
             }

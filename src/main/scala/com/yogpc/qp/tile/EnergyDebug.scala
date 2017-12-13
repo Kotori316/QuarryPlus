@@ -1,6 +1,6 @@
 package com.yogpc.qp.tile
 
-import com.yogpc.qp.QuarryPlus
+import com.yogpc.qp.{Config, QuarryPlus}
 import net.minecraft.tileentity.TileEntity
 
 import scala.collection.mutable.ListBuffer
@@ -28,19 +28,21 @@ class EnergyDebug(tile: TileEntity) {
 
             if (count >= 100) {
                 count = 0
-                val allGot = getBuilder
-                val allUsed = useBuilder
-                val gotSum = allGot.sum
-                if (allUsed.nonEmpty && usedTicks != 0) {
-                    val usedSum = allUsed.sum
-                    QuarryPlus.LOGGER.info(
-                        s"$tilename used $usedSum MJ in $usedTicks ticks (${usedSum / usedTicks} MJ/t), got $gotSum in 100 ticks (${gotSum / 100} MJ/t)"
-                    )
-                } else {
-                    useBuilder.clear()
-                    QuarryPlus.LOGGER.info(
-                        s"$tilename used 0 MJ, got $gotSum in 100 ticks (${gotSum / 100} MJ/t)"
-                    )
+                if (Config.content.debug) {
+                    val allGot = getBuilder
+                    val allUsed = useBuilder
+                    val gotSum = allGot.sum
+                    if (allUsed.nonEmpty && usedTicks != 0) {
+                        val usedSum = allUsed.sum
+                        QuarryPlus.LOGGER.info(
+                            s"$tilename used $usedSum MJ in $usedTicks ticks (${usedSum / usedTicks} MJ/t), got $gotSum in 100 ticks (${gotSum / 100} MJ/t)"
+                        )
+                    } else {
+                        useBuilder.clear()
+                        QuarryPlus.LOGGER.info(
+                            s"$tilename used 0 MJ, got $gotSum in 100 ticks (${gotSum / 100} MJ/t)"
+                        )
+                    }
                 }
                 usedTicks = 0
             }

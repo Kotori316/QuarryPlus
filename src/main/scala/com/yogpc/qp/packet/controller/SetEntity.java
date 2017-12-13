@@ -1,6 +1,7 @@
 package com.yogpc.qp.packet.controller;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.block.BlockController;
@@ -43,7 +44,8 @@ public class SetEntity implements IMessage {
     public IMessage onRecieve(IMessage message, MessageContext ctx) {
         World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
         if (world.provider.getDimension() == dim) {
-            BlockController.setSpawnerEntity(world, pos, location);
+            Optional.ofNullable(world.getMinecraftServer()).ifPresent(s -> s.addScheduledTask(() ->
+                    BlockController.setSpawnerEntity(world, pos, location)));
         }
         return null;
     }

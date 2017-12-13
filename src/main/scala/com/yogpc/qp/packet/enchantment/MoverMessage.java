@@ -1,6 +1,7 @@
 package com.yogpc.qp.packet.enchantment;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.container.ContainerMover;
@@ -8,6 +9,7 @@ import com.yogpc.qp.container.ContainerMover.D;
 import com.yogpc.qp.packet.IMessage;
 import net.minecraft.inventory.Container;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
@@ -41,10 +43,13 @@ public class MoverMessage {
 
         @Override
         public IMessage onRecieve(IMessage message, MessageContext ctx) {
-            Container container = QuarryPlus.proxy.getPacketPlayer(ctx.netHandler).openContainer;
-            if (container.windowId == id) {
-                ((ContainerMover) container).moveEnchant();
-            }
+            MinecraftServer server = QuarryPlus.proxy.getPacketWorld(ctx.netHandler).getMinecraftServer();
+            Optional.ofNullable(server).ifPresent(s -> s.addScheduledTask(() -> {
+                Container container = QuarryPlus.proxy.getPacketPlayer(ctx.netHandler).openContainer;
+                if (container.windowId == id) {
+                    ((ContainerMover) container).moveEnchant();
+                }
+            }));
             return null;
         }
     }
@@ -80,10 +85,13 @@ public class MoverMessage {
 
         @Override
         public IMessage onRecieve(IMessage message, MessageContext ctx) {
-            Container container = QuarryPlus.proxy.getPacketPlayer(ctx.netHandler).openContainer;
-            if (container.windowId == id) {
-                ((ContainerMover) container).setAvail(d);
-            }
+            MinecraftServer server = QuarryPlus.proxy.getPacketWorld(ctx.netHandler).getMinecraftServer();
+            Optional.ofNullable(server).ifPresent(s -> s.addScheduledTask(() -> {
+                Container container = QuarryPlus.proxy.getPacketPlayer(ctx.netHandler).openContainer;
+                if (container.windowId == id) {
+                    ((ContainerMover) container).setAvail(d);
+                }
+            }));
             return null;
         }
     }

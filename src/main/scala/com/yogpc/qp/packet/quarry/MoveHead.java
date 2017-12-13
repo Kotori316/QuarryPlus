@@ -5,6 +5,7 @@ import java.io.IOException;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.tile.TileQuarry;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -56,9 +57,11 @@ public class MoveHead implements IMessage {
             TileEntity entity = world.getTileEntity(pos);
             if (TileQuarry.class.isInstance(entity)) {
                 TileQuarry quarry = (TileQuarry) entity;
-                quarry.headPosX = headPosX;
-                quarry.headPosY = headPosY;
-                quarry.headPosZ = headPosZ;
+                Minecraft.getMinecraft().addScheduledTask(() -> {
+                    quarry.headPosX = headPosX;
+                    quarry.headPosY = headPosY;
+                    quarry.headPosZ = headPosZ;
+                });
             }
         }
         return null;

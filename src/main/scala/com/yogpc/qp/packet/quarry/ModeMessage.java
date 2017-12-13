@@ -5,6 +5,7 @@ import java.io.IOException;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.tile.TileQuarry;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -54,16 +55,18 @@ public class ModeMessage implements IMessage {
             TileEntity entity = world.getTileEntity(pos);
             if (TileQuarry.class.isInstance(entity)) {
                 TileQuarry quarry = (TileQuarry) entity;
-                quarry.setNow(mode);
-                quarry.xMin = minPos.getX();
-                quarry.yMin = minPos.getY();
-                quarry.zMin = minPos.getZ();
-                quarry.xMax = maxPos.getX();
-                quarry.yMax = maxPos.getY();
-                quarry.zMax = maxPos.getZ();
-                quarry.G_renew_powerConfigure();
+                Minecraft.getMinecraft().addScheduledTask(() -> {
+                    quarry.setNow(mode);
+                    quarry.xMin = minPos.getX();
+                    quarry.yMin = minPos.getY();
+                    quarry.zMin = minPos.getZ();
+                    quarry.xMax = maxPos.getX();
+                    quarry.yMax = maxPos.getY();
+                    quarry.zMax = maxPos.getZ();
+                    quarry.G_renew_powerConfigure();
 //                IBlockState state = world.getBlockState(pos);
 //                world.notifyBlockUpdate(pos, state, state, 3);
+                });
             }
         }
         return null;

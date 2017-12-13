@@ -1,10 +1,25 @@
 package com.yogpc.qp.integration.jei
 
 //import mezz.jei.api.recipe.{IRecipeCategoryRegistration, IRecipeWrapperFactory}
-import mezz.jei.api.{BlankModPlugin, JEIPlugin}
+import com.yogpc.qp.QuarryPlusI
+import com.yogpc.qp.gui.GuiWorkbench
+import mezz.jei.api.{BlankModPlugin, IModRegistry, JEIPlugin}
+import net.minecraft.item.ItemStack
 
 @JEIPlugin
 class QuarryJeiPlugin extends BlankModPlugin {
+    override def register(registry: IModRegistry): Unit = {
+        super.register(registry)
+        val jeiHelpers = registry.getJeiHelpers
+        val guiHelper = jeiHelpers.getGuiHelper
+
+        registry.addRecipeCategories(new WorkBenchRecipeCategory(guiHelper))
+        registry.addRecipeHandlers(new WorkBenchRecipeHandler)
+        registry.addRecipeCategoryCraftingItem(new ItemStack(QuarryPlusI.workbench), WorkBenchRecipeCategory.UID)
+        // 7, 74 => 168, 85
+        registry.addRecipeClickArea(classOf[GuiWorkbench], 7, 74, 161, 11, WorkBenchRecipeCategory.UID)
+        registry.addRecipes(WorkBenchRecipeWrapper.getAll)
+    }
     /*
         //noinspection ConvertExpressionToSAM
         override def register(registry: IModRegistry): Unit = {

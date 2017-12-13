@@ -10,6 +10,7 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.init.Enchantments;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -52,20 +53,24 @@ public class EnchantmentMessage implements IMessage {
     @Override
     public IMessage onRecieve(IMessage message, MessageContext ctx) {
         World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
-        if (world.provider.getDimension() == dim) {
+        MinecraftServer server = world.getMinecraftServer();
+        if (world.provider.getDimension() == dim && server != null) {
             TileBasic tile = (TileBasic) world.getTileEntity(pos);
-            assert tile != null;
-            if (type == Type.Toggle) {
-                if (enchantment == Enchantments.FORTUNE) {
-                    tile.fortuneInclude = !tile.fortuneInclude;
-                } else if (enchantment == Enchantments.SILK_TOUCH) {
-                    tile.silktouchInclude = !tile.silktouchInclude;
-                }
-            } else if (type == Type.Remove) {
-                if (enchantment == Enchantments.FORTUNE)
-                    tile.fortuneList.remove(data);
-                else if (enchantment == Enchantments.SILK_TOUCH)
-                    tile.silktouchList.remove(data);
+            if (tile != null) {
+                server.addScheduledTask(() -> {
+                    if (type == Type.Toggle) {
+                        if (enchantment == Enchantments.FORTUNE) {
+                            tile.fortuneInclude = !tile.fortuneInclude;
+                        } else if (enchantment == Enchantments.SILK_TOUCH) {
+                            tile.silktouchInclude = !tile.silktouchInclude;
+                        }
+                    } else if (type == Type.Remove) {
+                        if (enchantment == Enchantments.FORTUNE)
+                            tile.fortuneList.remove(data);
+                        else if (enchantment == Enchantments.SILK_TOUCH)
+                            tile.silktouchList.remove(data);
+                    }
+                });
             }
         }
         return null;

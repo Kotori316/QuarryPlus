@@ -1,6 +1,7 @@
 package com.yogpc.qp.packet.advquarry;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.INBTWritable;
@@ -52,7 +53,8 @@ public class AdvRangeMessage implements IMessage {
             TileEntity entity = world.getTileEntity(pos);
             if (TileAdvQuarry.class.isInstance(entity)) {
                 TileAdvQuarry quarry = (TileAdvQuarry) entity;
-                quarry.digRange_$eq(TileAdvQuarry.DigRange$.MODULE$.readFromNBT(rangeNBT));
+                Optional.ofNullable(world.getMinecraftServer()).ifPresent(s -> s.addScheduledTask(() ->
+                        quarry.digRange_$eq(TileAdvQuarry.DigRange$.MODULE$.readFromNBT(rangeNBT))));
             }
         }
         return null;

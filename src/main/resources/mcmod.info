@@ -4,9 +4,10 @@
     "name": "QuarryPlus",
     "description": "This mod adds advanced quarry and more. This mod is UNOFFICIAL VERSION.",
     "version": "${version}",
-    "mcversion": "1.11.2",
+    "mcversion": "1.10.2",
     "url": "https://github.com/Kotori316/QuarryPlus",
     "authors": [ "yogpstop", "Kotori" ],
-    "dependencies": [ "BuildCraft|Builders", "BuildCraft|Core", "BuildCraft|Energy", "BuildCraft|Factory", "BuildCraft|Silicon", "BuildCraft|Transport" ]
+    "dependencies": [ "BuildCraft|Builders", "BuildCraft|Core", "BuildCraft|Energy", "BuildCraft|Factory", "BuildCraft|Silicon", "BuildCraft|Transport" ],
+    "updateJSON": "https://raw.githubusercontent.com/Kotori316/QuarryPlus/1.12/update.json"
   }
 ]

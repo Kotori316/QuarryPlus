@@ -29,6 +29,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.ModAPIManager;
 import net.minecraftforge.fml.common.Optional;
 
 /*import buildcraft.api.mj.IMjConnector;
@@ -44,7 +45,7 @@ import buildcraft.api.tiles.IDebuggable;*/
         @Optional.Interface(iface = "buildcraft.api.tiles.IDebuggable", modid = QuarryPlus.Optionals.Buildcraft_tiles),
         @Optional.Interface(iface = "ic2.api.energy.tile.IEnergySink", modid = QuarryPlus.Optionals.IC2_modID)})
 public abstract class APowerTile extends APacketTile implements IEnergyReceiver, IEnergySink, ITickable, IEnergyStorage, IEnergyInfo/*, IDebuggable*/ {
-    private double all, maxGot, max, got;
+    /*package-private*/ double all, maxGot, max, got;
     private boolean ic2ok = false;
     public boolean bcLoaded;
     private Object helper;//buildcraft capability helper
@@ -52,7 +53,7 @@ public abstract class APowerTile extends APacketTile implements IEnergyReceiver,
     public boolean ic2Loaded;
 
     public APowerTile() {
-        bcLoaded = Loader.isModLoaded(QuarryPlus.Optionals.Buildcraft_modID);
+        bcLoaded = ModAPIManager.INSTANCE.hasAPI(QuarryPlus.Optionals.BuildCraft_core);
         ic2Loaded = Loader.isModLoaded(QuarryPlus.Optionals.IC2_modID);
         /*if (bcLoaded) {
             helper = new MjCapabilityHelper(new MjReciever());
@@ -160,7 +161,7 @@ public abstract class APowerTile extends APacketTile implements IEnergyReceiver,
         return res;
     }
 
-    private double getEnergy(final double a, final boolean real) {
+    /*package-private*/ double getEnergy(final double a, final boolean real) {
         if (Config.content().noEnergy()) {
             return 0d;
         }
@@ -375,12 +376,17 @@ public abstract class APowerTile extends APacketTile implements IEnergyReceiver,
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
         /*if (bcLoaded) {
-            if (((MjCapabilityHelper) helper).hasCapability(capability, facing)) {
+            if (hasMJCapability(capability, facing)) {
                 return true;
             }
         }*/
         return capability == CapabilityEnergy.ENERGY || super.hasCapability(capability, facing);
     }
+
+   /*@net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.BuildCraft_core)
+    private boolean hasMJCapability(Capability<?> capability, @Nullable EnumFacing facing) {
+        return ((MjCapabilityHelper) helper).hasCapability(capability, facing);
+    }*/
 
     @SuppressWarnings("unchecked")
     @Nullable
@@ -390,11 +396,16 @@ public abstract class APowerTile extends APacketTile implements IEnergyReceiver,
             return CapabilityEnergy.ENERGY.cast(this);
         } else {
             /*if (bcLoaded) {
-                Object o = ((MjCapabilityHelper) helper).getCapability(capability, facing);
+                Object o = getMjCapability(capability, facing);
                 if (o != null)
                     return (T) o;
             }*/
             return super.getCapability(capability, facing);
         }
     }
+
+    /*@net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.BuildCraft_core)
+    private <T> Object getMjCapability(Capability<T> capability, @Nullable EnumFacing facing) {
+        return ((MjCapabilityHelper) helper).getCapability(capability, facing);
+    }*/
 }
