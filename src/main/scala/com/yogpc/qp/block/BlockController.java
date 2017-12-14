@@ -72,7 +72,7 @@ public class BlockController extends Block implements IDismantleable {
         if (InvUtils.isDebugItem(playerIn, hand)) return true;
         if (!Config.content().disableController()) {
             if (!playerIn.isSneaking()) {
-//            playerIn.openGui(QuarryPlus.getInstance(), QuarryPlusI.guiIDController, worldIn, pos.getX(), pos.getY(), pos.getZ());
+//            playerIn.openGui(QuarryPlus.instance(), QuarryPlusI.guiIDController, worldIn, pos.getX(), pos.getY(), pos.getZ());
                 if (!worldIn.isRemote) {
                     List<EntityEntry> entries = new ArrayList<>();
                     for (EntityEntry entity : ForgeRegistries.ENTITIES) {

@@ -50,7 +50,7 @@ public class BlockMover extends Block implements IDismantleable {
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (InvUtils.isDebugItem(playerIn, hand)) return true;
         if (!playerIn.isSneaking()) {
-            playerIn.openGui(QuarryPlus.getInstance(), QuarryPlusI.guiIdMover, worldIn, pos.getX(), pos.getY(), pos.getZ());
+            playerIn.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdMover, worldIn, pos.getX(), pos.getY(), pos.getZ());
             return true;
         }
         return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
