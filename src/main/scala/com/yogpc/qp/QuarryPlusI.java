@@ -12,6 +12,7 @@
  */
 package com.yogpc.qp;
 
+import com.yogpc.qp.block.BlockAdvPump;
 import com.yogpc.qp.block.BlockAdvQuarry;
 import com.yogpc.qp.block.BlockBreaker;
 import com.yogpc.qp.block.BlockController;
@@ -57,6 +58,7 @@ public class QuarryPlusI {
     public static final BlockWorkbench workbench = new BlockWorkbench();
     public static final BlockController controller = new BlockController();
     public static final BlockAdvQuarry blockChunkdestroyer = new BlockAdvQuarry();
+    public static final BlockAdvPump blockStandalonePump = new BlockAdvPump();
     public static final Item itemTool = ItemTool.item();
     public static final Item magicmirror = new ItemMirror();
     public static final Item debugItem = ItemQuarryDebug.item();
