@@ -10,7 +10,7 @@ public interface IDebugSender {
         getDebugmessages().forEach(t -> player.sendStatusMessage(t, false));
     }
 
-    String getName();
+    String getDebugName();
 
     List<? extends ITextComponent> getDebugmessages();
 }

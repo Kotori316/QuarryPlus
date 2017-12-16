@@ -217,7 +217,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
     }
 
     @Override
-    public String getName() {
+    public String getDebugName() {
         return "tile.workbenchplus.name";
     }
 
@@ -243,5 +243,13 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
     @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.COFH_tileentity)
     public ConnectionType canConnectInventory(EnumFacing from) {
         return ConnectionType.FORCE;
+    }
+
+    /**
+     * Get the name of this object. For players this returns their username
+     */
+    @Override
+    public String getName() {
+        return getDebugName();
     }
 }

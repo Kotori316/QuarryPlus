@@ -393,7 +393,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 
     override def removeStackFromSlot(index: Int) = cacheItems.list.remove(index).toStack
 
-    override def getInventoryStackLimit = 1
+    override val getInventoryStackLimit = 1
 
     override def clear() = cacheItems.list.clear()
 
@@ -401,7 +401,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 
     override def getStackInSlot(index: Int) = cacheItems.list(index).toStack
 
-    override def getName = "tile.chunkdestroyer.name"
+    override val getDebugName = "tile.chunkdestroyer.name"
 
     override def isUsableByPlayer(player: EntityPlayer) = self.getWorld.getTileEntity(self.getPos) eq this
 
@@ -618,6 +618,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
         }
     }
 
+    override def getName = getDebugName
 }
 
 object TileAdvQuarry {
