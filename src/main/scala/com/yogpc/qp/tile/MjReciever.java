@@ -82,7 +82,9 @@ public class MjReciever implements IMjReceiver, IMjReadable {
     @Override
     @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.BuildCraft_core)
     public long receivePower(long microJoules, boolean simulate) {
-        return (long) (microJoules - tile.getEnergy(microJoules / MjAPI.MJ, !simulate) * MjAPI.MJ);
+        if (tile.canReceive())
+            return (long) (microJoules - tile.getEnergy(microJoules / MjAPI.MJ, !simulate) * MjAPI.MJ);
+        else return microJoules;
     }
 
     @Override
