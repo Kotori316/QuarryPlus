@@ -4,6 +4,7 @@ import java.io.File
 
 import com.yogpc.qp.tile.WorkbenchRecipes
 import net.minecraft.util.ResourceLocation
+import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.common.config.{ConfigElement, Configuration}
 import net.minecraftforge.fml.client.config.IConfigElement
 import net.minecraftforge.fml.client.event.ConfigChangedEvent
@@ -31,6 +32,7 @@ object Config {
 
     def setConfigFile(file: File): Unit = {
         this.configuration = new Configuration(file)
+        MinecraftForge.EVENT_BUS.register(Config.instance)
         sync()
     }
 

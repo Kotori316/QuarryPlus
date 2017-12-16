@@ -17,7 +17,6 @@ import com.yogpc.qp.gui.GuiFactory;
 import com.yogpc.qp.gui.GuiHandler;
 import com.yogpc.qp.item.ItemTool;
 import com.yogpc.qp.packet.PacketHandler;
-import com.yogpc.qp.render.Sprites;
 import com.yogpc.qp.tile.TileAdvQuarry;
 import com.yogpc.qp.tile.TileBreaker;
 import com.yogpc.qp.tile.TileLaser;
@@ -100,21 +99,18 @@ public class QuarryPlus {
     }
 
     @Mod.InstanceFactory
-    public static QuarryPlus getInstance() {
+    public static QuarryPlus instance() {
         return INSTANCE;
     }
 
     @Mod.EventHandler
     public void preInit(final FMLPreInitializationEvent event) {
         Config.setConfigFile(event.getSuggestedConfigurationFile());
-        ForgeChunkManager.setForcedChunkLoadingCallback(INSTANCE, ChunkLoadingHandler.instance());
-        proxy.registerTextures();
-        MinecraftForge.EVENT_BUS.register(this);
+        ForgeChunkManager.setForcedChunkLoadingCallback(QuarryPlus.instance(), ChunkLoadingHandler.instance());
+        MinecraftForge.EVENT_BUS.register(QuarryPlus.instance());
         MinecraftForge.EVENT_BUS.register(QuarryPlusI.INSANCE);
         MinecraftForge.EVENT_BUS.register(Loot.instance());
-        MinecraftForge.EVENT_BUS.register(Config.instance());
-        if (event.getSide() == Side.CLIENT)
-            MinecraftForge.EVENT_BUS.register(Sprites.instance());
+        proxy.registerTextures();
         NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, new GuiHandler());
         inDev = ((Boolean) Launch.blackboard.getOrDefault("fml.deobfuscatedEnvironment", Boolean.FALSE));
     }

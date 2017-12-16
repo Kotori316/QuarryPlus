@@ -23,7 +23,7 @@ object ItemQuarryDebug extends Item {
         if (worldIn.isRemote) {
             EnumActionResult.PASS
         } else {
-            if (Config.content.debug || QuarryPlus.getInstance().inDev) {
+            if (Config.content.debug || QuarryPlus.instance.inDev) {
                 val tile = worldIn.getTileEntity(pos)
                 tile match {
                     case plusMachine: APowerTile with IDebugSender =>
