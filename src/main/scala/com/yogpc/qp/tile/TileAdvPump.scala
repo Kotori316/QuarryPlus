@@ -40,6 +40,12 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
 
     override def G_reinit() = {
         configure(128d, 1024d)
+        finished = false
+        queueBuilt = false
+        skip = false
+        target = BlockPos.ORIGIN
+        toDig = Nil
+        paths.clear()
     }
 
     override def update() = {
