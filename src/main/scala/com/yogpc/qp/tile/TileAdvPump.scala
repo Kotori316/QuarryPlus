@@ -6,6 +6,8 @@ import com.yogpc.qp.QuarryPlus
 import com.yogpc.qp.compat.{INBTReadable, INBTWritable}
 import com.yogpc.qp.tile.IEnchantableTile.{EfficiencyID, FortuneID, SilktouchID, UnbreakingID}
 import com.yogpc.qp.tile.TileAdvPump._
+import net.minecraft.block.state.IBlockState
+import net.minecraft.init.Blocks
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.math.{BlockPos, ChunkPos}
 import net.minecraft.util.{EnumFacing, ITickable}
@@ -13,9 +15,10 @@ import net.minecraftforge.common.ForgeChunkManager
 import net.minecraftforge.common.ForgeChunkManager.Type
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.fluids.capability.{CapabilityFluidHandler, FluidTankProperties, IFluidHandler, IFluidTankProperties}
-import net.minecraftforge.fluids.{Fluid, FluidStack}
+import net.minecraftforge.fluids.{Fluid, FluidRegistry, FluidStack, IFluidBlock}
 
 import scala.collection.JavaConverters._
+import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
 /**
@@ -23,9 +26,13 @@ import scala.collection.mutable.ListBuffer
   */
 class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with IDebugSender {
 
+    private[this] var finished = false
+    private[this] var queueBuilt = false
     private[this] var ench = TileAdvPump.defaultEnch
-    var target = BlockPos.ORIGIN
-    val distance = 64
+    private[this] var target: BlockPos = BlockPos.ORIGIN
+    private[this] var toDig: List[BlockPos] = Nil
+    private[this] val paths = mutable.Map.empty[BlockPos, Seq[BlockPos]]
+    private[this] val FACINGS = List(EnumFacing.UP, EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST)
 
     override protected def isWorking = false
 
@@ -35,6 +42,82 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
 
     override def update() = {
         super.update()
+        if (!getWorld.isRemote && !finished) {
+            if (!queueBuilt) {
+                buildWay()
+                queueBuilt = true
+            }
+            if (target == BlockPos.ORIGIN) {
+                nextPos()
+            }
+
+        }
+    }
+
+    def nextPos(): Unit = {
+        toDig match {
+            case next :: rest => toDig = rest
+                if (TilePump.isLiquid(getWorld.getBlockState(next), true, getWorld, next)) {
+                    target = next
+                } else {
+                    nextPos()
+                }
+            case Nil => target = BlockPos.ORIGIN; finished = true
+        }
+    }
+
+    def buildWay(): Unit = {
+        val checked = mutable.Set.empty[BlockPos]
+        val nextPosesToCheck = new ListBuffer[BlockPos]()
+        var fluid = FluidRegistry.WATER
+
+        getWorld.profiler.startSection("Depth")
+        Iterator.iterate(getPos.down())(_.down()).takeWhile(pos => pos.getY > 0 &&
+          (TilePump.isLiquid(getWorld.getBlockState(pos), false, getWorld, pos) || getWorld.isAirBlock(pos))).find(pos =>
+            TilePump.isLiquid(getWorld.getBlockState(pos), false, getWorld, pos)).foreach(pos => {
+            val state = getWorld.getBlockState(pos)
+            checked.add(pos)
+            paths.put(pos, Seq(pos))
+            if (TilePump.isLiquid(state, false, getWorld, pos))
+                toDig = pos :: toDig
+            nextPosesToCheck += pos
+
+            fluid = findFluid(state)
+        })
+
+        getWorld.profiler.endStartSection("Wide")
+        while (nextPosesToCheck.nonEmpty) {
+            val copied = nextPosesToCheck.result()
+            nextPosesToCheck.clear()
+            for (posToCheck <- copied; offset <- FACINGS) {
+                val offsetPos = posToCheck.offset(offset)
+                if (offsetPos.distanceSq(getPos) <= ench.distanceSq) {
+                    if (checked.add(offsetPos)) {
+                        val state = getWorld.getBlockState(offsetPos)
+                        if (findFluid(state) == fluid) {
+                            paths.put(offsetPos, paths(posToCheck) ++ Seq(offsetPos))
+                            nextPosesToCheck += offsetPos
+                            if (TilePump.isLiquid(state, false, getWorld, offsetPos))
+                                toDig = offsetPos :: toDig
+                        }
+                    } //else means the pos has already checked.
+                }
+            }
+        }
+        getWorld.profiler.endSection()
+    }
+
+    private def findFluid(state: IBlockState) = {
+        if (state.getBlock == Blocks.FLOWING_WATER) {
+            FluidRegistry.WATER
+        } else if (state.getBlock == Blocks.FLOWING_LAVA) {
+            FluidRegistry.LAVA
+        } else {
+            state.getBlock match {
+                case fluidBlock: IFluidBlock => FluidRegistry.getFluid(fluidBlock.getFluid.getName)
+                case block => FluidRegistry.lookupFluidForBlock(block)
+            }
+        }
     }
 
     /**
@@ -52,6 +135,18 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
 
     override def getDebugmessages = {
         java.util.Collections.emptyList()
+    }
+
+    override def readFromNBT(nbttc: NBTTagCompound) = {
+        val NBT_POS = "targetpos"
+        super.readFromNBT(nbttc)
+        target = BlockPos.fromLong(nbttc.getLong(NBT_POS))
+    }
+
+    override def writeToNBT(nbttc: NBTTagCompound) = {
+        val NBT_POS = "targetpos"
+        nbttc.setLong(NBT_POS, target.toLong)
+        super.writeToNBT(nbttc)
     }
 
     override def hasCapability(capability: Capability[_], facing: EnumFacing) = {
@@ -146,6 +241,8 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
                 fluidStacks.map(s => new FluidTankProperties(s, s.amount, false, true)).toArray
             }
         }
+
+        def getFluidType = fluidStacks.headOption.map(_.getFluid).orNull
     }
 
 }
@@ -178,6 +275,12 @@ object TileAdvPump {
                 case SilktouchID => this.copy(silktouch = level > 0)
                 case _ => this
             }
+        }
+
+        val distanceSq = fortune match {
+            case 0 | 1 => 64 * 64
+            case 2 => 96 * 96
+            case 3 => 128 * 128
         }
     }
 
