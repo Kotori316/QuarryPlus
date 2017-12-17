@@ -238,7 +238,7 @@ public class BlockFrame extends Block {
                     Stream.of(EnumFacing.VALUES).anyMatch(facing -> {
                         IBlockState blockState = worldIn.getBlockState(pos.offset(facing));
                         return !blockState.isFullCube() && TilePump.isLiquid(blockState, false, worldIn, pos.offset(facing));
-                    })));
+                    })), 2);
         }
     }
 }

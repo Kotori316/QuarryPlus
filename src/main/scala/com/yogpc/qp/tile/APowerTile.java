@@ -43,7 +43,7 @@ import net.minecraftforge.fml.common.Optional;
         @Optional.Interface(iface = "cofh.api.tileentity.IEnergyInfo", modid = QuarryPlus.Optionals.COFH_tileentity),
         @Optional.Interface(iface = "buildcraft.api.tiles.IDebuggable", modid = QuarryPlus.Optionals.Buildcraft_tiles),
         @Optional.Interface(iface = "ic2.api.energy.tile.IEnergySink", modid = QuarryPlus.Optionals.IC2_modID)})
-public abstract class APowerTile extends APacketTile implements IEnergyReceiver, IEnergySink, ITickable, IEnergyStorage, IEnergyInfo, IDebuggable {
+public abstract class APowerTile extends APacketTile implements ITickable, IEnergyStorage, IEnergyInfo, IEnergyReceiver, IEnergySink, IDebuggable {
     /*package-private*/ double all, maxGot, max, got;
     private boolean ic2ok = false;
     public boolean bcLoaded;
