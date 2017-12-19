@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Stream;
 
+import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.tile.TilePump;
@@ -92,22 +93,24 @@ public class BlockFrame extends Block {
 
     @Override
     public void breakBlock(World world, BlockPos pos, IBlockState state) {
-        boolean d = Stream.of(EnumFacing.VALUES).anyMatch(facing -> {
-            IBlockState blockState = world.getBlockState(pos.offset(facing));
-            return !blockState.isFullCube() && TilePump.isLiquid(blockState, false, world, pos.offset(facing));
-        });
-        if (!world.isRemote && !d) {
-            removeNeighboringFrames(world, pos);
-        }
+        if (!Config.content().disableFrameChainBreak()) {
+            boolean d = Stream.of(EnumFacing.VALUES).anyMatch(facing -> {
+                IBlockState blockState = world.getBlockState(pos.offset(facing));
+                return !blockState.isFullCube() && TilePump.isLiquid(blockState, false, world, pos.offset(facing));
+            });
+            if (!world.isRemote && !d) {
+                removeNeighboringFrames(world, pos);
+            }
 //        if (Config.content().debug())
 //            QuarryPlus.LOGGER.info("Frame broken at " + pos + (d ? " neighbor Fluid" : ""));
+        }
     }
 
     /**
      * copied from buildcraft frame.
      */
     public void removeNeighboringFrames(World world, BlockPos pos) {
-        for (EnumFacing dir : EnumFacing.VALUES) {
+        if (!Config.content().disableFrameChainBreak()) for (EnumFacing dir : EnumFacing.VALUES) {
             BlockPos nPos = pos.offset(dir);
             IBlockState nBlock = world.getBlockState(nPos);
             if (nBlock.getBlock() == this) {
@@ -233,7 +236,7 @@ public class BlockFrame extends Block {
     @SuppressWarnings("deprecation")
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
         super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
-        if (state.getValue(DAMMING)) {
+        if (!Config.content().disableFrameChainBreak() && state.getValue(DAMMING)) {
             worldIn.setBlockState(pos, state.withProperty(DAMMING,
                     Stream.of(EnumFacing.VALUES).anyMatch(facing -> {
                         IBlockState blockState = worldIn.getBlockState(pos.offset(facing));

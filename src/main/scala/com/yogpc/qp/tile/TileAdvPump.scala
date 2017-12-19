@@ -1,7 +1,8 @@
 package com.yogpc.qp.tile
 
-import java.lang.{Byte => JByte, Integer => JInt}
+import java.lang.{Boolean => JBool, Byte => JByte, Integer => JInt}
 
+import com.yogpc.qp.block.ADismCBlock
 import com.yogpc.qp.compat.{INBTReadable, INBTWritable}
 import com.yogpc.qp.tile.IEnchantableTile.{EfficiencyID, FortuneID, SilktouchID, UnbreakingID}
 import com.yogpc.qp.tile.TileAdvPump._
@@ -10,6 +11,7 @@ import net.minecraft.block.state.IBlockState
 import net.minecraft.init.Blocks
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.math.{BlockPos, ChunkPos}
+import net.minecraft.util.text.TextComponentString
 import net.minecraft.util.{EnumFacing, ITickable}
 import net.minecraftforge.common.ForgeChunkManager
 import net.minecraftforge.common.ForgeChunkManager.Type
@@ -26,7 +28,7 @@ import scala.collection.mutable.ListBuffer
   */
 class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with IDebugSender {
 
-    private[this] var finished = false
+    private[this] var finished = true
     private[this] var queueBuilt = false
     private[this] var skip = false
     private[this] var ench = TileAdvPump.defaultEnch
@@ -40,7 +42,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
 
     override def G_reinit() = {
         configure(128d, 1024d)
-        finished = false
+        finished = true
         queueBuilt = false
         skip = false
         target = BlockPos.ORIGIN
@@ -50,21 +52,35 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
 
     override def update() = {
         super.update()
-        if (!getWorld.isRemote && !finished) {
-            if (!queueBuilt) {
+        if (!getWorld.isRemote) {
+            if (finished) {
                 buildWay()
-                queueBuilt = true
-            }
-            if (skip) {
-                skip = false
-                nextPos()
-            } else {
-                if (target == BlockPos.ORIGIN) {
-                    buildWay()
-                    nextPos()
+                if (toDig.nonEmpty) {
+                    finished = false
+                    val state = getWorld.getBlockState(getPos)
+                    if (!state.getValue(ADismCBlock.ACTING)) {
+                        validate()
+                        getWorld.setBlockState(getPos, state.withProperty(ADismCBlock.ACTING, JBool.TRUE))
+                        validate()
+                        getWorld.setTileEntity(getPos, this)
+                    }
                 }
-                pump()
-                push()
+            } else {
+                if (!queueBuilt) {
+                    buildWay()
+                    queueBuilt = true
+                }
+                if (skip) {
+                    skip = false
+                    nextPos()
+                } else {
+                    if (target == BlockPos.ORIGIN) {
+                        buildWay()
+                        nextPos()
+                    }
+                    pump()
+                    push()
+                }
             }
         }
     }
@@ -97,7 +113,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
         getWorld.profiler.startSection("Depth")
         Iterator.iterate(getPos.down())(_.down()).takeWhile(pos => pos.getY > 0 && getPos.getY - pos.getY < ench.distance &&
           (TilePump.isLiquid(getWorld.getBlockState(pos), false, getWorld, pos) || getWorld.isAirBlock(pos))).find(pos =>
-            TilePump.isLiquid(getWorld.getBlockState(pos), false, getWorld, pos)).foreach(pos => {
+            !getWorld.isAirBlock(pos)).foreach(pos => {
             val state = getWorld.getBlockState(pos)
             checked.add(pos)
             paths.put(pos, Seq(pos))
@@ -109,6 +125,13 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
         })
         if (nextPosesToCheck.isEmpty) {
             finished = true
+            queueBuilt = false
+            val state = getWorld.getBlockState(getPos)
+            validate()
+            getWorld.setBlockState(getPos, state.withProperty(ADismCBlock.ACTING, JBool.FALSE))
+            validate()
+            getWorld.setTileEntity(getPos, this)
+            getWorld.profiler.endSection()
             return
         }
 
@@ -216,7 +239,12 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
     override def getDebugName = "tile.standalonepump.name"
 
     override def getDebugmessages = {
-        java.util.Collections.emptyList()
+        List("Range = " + ench.distance,
+            "Finished : " + finished,
+            "Ench : " + ench,
+            "FluidType : " + Option(FluidHandler.getFluidType).map(_.getName).getOrElse("None"),
+            "FluidAmount : " + FluidHandler.getAmount,
+            "Pumped : " + FluidHandler.amountPumped).map(new TextComponentString(_)).asJava
     }
 
     override def readFromNBT(nbttc: NBTTagCompound) = {
@@ -272,6 +300,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
     private object FluidHandler extends IFluidHandler {
 
         private[this] val fluidStacks = new ListBuffer[FluidStack]
+        var amountPumped = 0l
 
         override def fill(resource: FluidStack, doFill: Boolean): Int = 0
 
@@ -280,10 +309,16 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
                 case Some(stack) =>
                     val nAmount = stack.amount + resource.amount
                     if (nAmount <= ench.maxAmount) {
-                        if (doFill) stack.amount = nAmount
+                        if (doFill) {
+                            stack.amount = nAmount
+                            amountPumped += resource.amount
+                        }
                         resource.amount
                     } else {
-                        if (doFill) stack.amount = ench.maxAmount
+                        if (doFill) {
+                            stack.amount = ench.maxAmount
+                            amountPumped += nAmount - ench.maxAmount
+                        }
                         nAmount - stack.amount
                     }
                 case None => if (doFill) fluidStacks += resource.copy(); resource.amount

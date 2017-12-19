@@ -13,8 +13,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object Config {
 
     val instance = this
-    private var mContent: Content = _
-    private var configuration: Configuration = _
+    private[this] var mContent: Content = _
+    private[this] var configuration: Configuration = _
 
     @SubscribeEvent
     def onChange(configChangedEvent: ConfigChangedEvent): Unit = {
@@ -46,6 +46,7 @@ object Config {
 
     val DisableSpawnerController_key = "DisableSpawnerController"
     val DisableChunkDestroyer_key = "DisableChunkDestroyer"
+    val DisableFrameChainBreak_key = "FrameChainBreak"
     val EnableChunkDestroyerFluidHander_key = "EnableChunkDestroyerFluidHandler"
     val SpawnerControllerEntityBlackList_key = "SpawnerControllerEntityBlackList"
     val RecipeDifficulty_key = "RecipeDifficulty"
@@ -73,6 +74,7 @@ object Config {
 
         val removeBedrock = configuration.getBoolean(RemoveBedrock_Key, Configuration.CATEGORY_GENERAL, false, RemoveBedrock_Key)
         val enableChunkDestroyerFluidHander = configuration.getBoolean(EnableChunkDestroyerFluidHander_key, Configuration.CATEGORY_GENERAL, false, EnableChunkDestroyerFluidHander_key)
+        val disableFrameChainBreak = configuration.getBoolean(DisableFrameChainBreak_key, Configuration.CATEGORY_GENERAL, false, DisableFrameChainBreak_key)
         val debug = configuration.getBoolean(DEBUG_key, Configuration.CATEGORY_GENERAL, false, DEBUG_key)
 
         if (configuration.hasChanged)

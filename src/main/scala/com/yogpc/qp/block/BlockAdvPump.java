@@ -9,6 +9,7 @@ import com.yogpc.qp.item.ItemBlockEnchantable;
 import com.yogpc.qp.tile.TileAdvPump;
 import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -22,6 +23,7 @@ import net.minecraft.world.World;
 public class BlockAdvPump extends ADismCBlock {
     public BlockAdvPump() {
         super(Material.IRON, QuarryPlus.Names.advpump, ItemBlockEnchantable::new);
+        setDefaultState(getBlockState().getBaseState().withProperty(ACTING, false));
     }
 
     @Override
@@ -61,4 +63,23 @@ public class BlockAdvPump extends ADismCBlock {
     public TileEntity createNewTileEntity(World worldIn, int meta) {
         return new TileAdvPump();
     }
+
+
+    @Override
+    protected BlockStateContainer createBlockState() {
+        return new BlockStateContainer(this, ACTING);
+    }
+
+    @Override
+    public int getMetaFromState(IBlockState state) {
+        boolean powered = state.getValue(ACTING);
+        return (powered ? 8 : 0);
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public IBlockState getStateFromMeta(int meta) {
+        return getDefaultState().withProperty(ACTING, (meta & 8) == 8);
+    }
+
 }
