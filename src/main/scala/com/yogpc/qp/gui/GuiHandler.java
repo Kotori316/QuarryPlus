@@ -14,11 +14,13 @@
 package com.yogpc.qp.gui;
 
 import com.yogpc.qp.QuarryPlusI;
+import com.yogpc.qp.container.ContainerAdvPump;
 import com.yogpc.qp.container.ContainerAdvQuarry;
 import com.yogpc.qp.container.ContainerEnchList;
 import com.yogpc.qp.container.ContainerMover;
 import com.yogpc.qp.container.ContainerPlacer;
 import com.yogpc.qp.container.ContainerWorkbench;
+import com.yogpc.qp.tile.TileAdvPump;
 import com.yogpc.qp.tile.TileAdvQuarry;
 import com.yogpc.qp.tile.TileBasic;
 import com.yogpc.qp.tile.TilePlacer;
@@ -50,6 +52,8 @@ public class GuiHandler implements IGuiHandler {
                 return new GuiWorkbench(p.inventory, (TileWorkbench) w.getTileEntity(pos));
             case QuarryPlusI.guiIdAdvQuarry:
                 return new GuiAdvQuarry((TileAdvQuarry) w.getTileEntity(pos), p);
+            case QuarryPlusI.guiIdAdvPump:
+                return new GuiAdvPump((TileAdvPump) w.getTileEntity(pos), p);
         }
 
         return null;
@@ -71,6 +75,8 @@ public class GuiHandler implements IGuiHandler {
                 return new ContainerWorkbench(p.inventory, (TileWorkbench) w.getTileEntity(pos));
             case QuarryPlusI.guiIdAdvQuarry:
                 return new ContainerAdvQuarry((TileAdvQuarry) w.getTileEntity(pos), p);
+            case QuarryPlusI.guiIdAdvPump:
+                return new ContainerAdvPump((TileAdvPump) w.getTileEntity(pos), p);
         }
         return null;
     }

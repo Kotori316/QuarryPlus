@@ -18,6 +18,7 @@ import net.minecraftforge.common.ForgeChunkManager.Type
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.fluids.capability.{CapabilityFluidHandler, FluidTankProperties, IFluidHandler, IFluidTankProperties}
 import net.minecraftforge.fluids.{Fluid, FluidRegistry, FluidStack, FluidUtil, IFluidBlock}
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
@@ -28,6 +29,7 @@ import scala.collection.mutable.ListBuffer
   */
 class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with IDebugSender {
 
+    var placeFrame = false
     private[this] var finished = true
     private[this] var queueBuilt = false
     private[this] var skip = false
@@ -163,7 +165,8 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
         while (FluidHandler.getAmount <= ench.maxAmount / 2 && !break) {
             val option = paths.get(target)
             if (option.nonEmpty) {
-                if (useEnergy(10d, 10d, true) == 10d) {
+                val energy = ench.getEnergy(placeFrame)
+                if (useEnergy(energy, energy, true) == energy) {
                     val maybeStack = Option(FluidUtil.getFluidHandler(getWorld, target, EnumFacing.UP)).map(_.drain(Fluid.BUCKET_VOLUME, false))
                     if (maybeStack.isDefined && option.get.forall(pos => TilePump.isLiquid(getWorld.getBlockState(pos), false, getWorld, pos) &&
                       (FluidHandler.getFluidType == null || FluidHandler.getFluidType == maybeStack.get.getFluid))) {
@@ -205,11 +208,12 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
 
     def replaceFluidBlock(pos: BlockPos): Unit = {
         FluidUtil.getFluidHandler(getWorld, pos, EnumFacing.UP).drain(Fluid.BUCKET_VOLUME, true)
-        EnumFacing.HORIZONTALS.map(pos.offset).filter(!inRange.contains(_)).foreach(offset => {
-            if (TilePump.isLiquid(getWorld.getBlockState(offset), false, getWorld, offset)) {
-                getWorld.setBlockState(offset, QuarryPlusI.blockFrame.getDamiingState)
-            }
-        })
+        if (placeFrame)
+            EnumFacing.HORIZONTALS.map(pos.offset).filter(!inRange.contains(_)).foreach(offset => {
+                if (TilePump.isLiquid(getWorld.getBlockState(offset), false, getWorld, offset)) {
+                    getWorld.setBlockState(offset, QuarryPlusI.blockFrame.getDamiingState)
+                }
+            })
     }
 
     private def findFluid(state: IBlockState) = {
@@ -249,14 +253,22 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
 
     override def readFromNBT(nbttc: NBTTagCompound) = {
         val NBT_POS = "targetpos"
+        val NBT_FINISHED = "finished"
+        val NBT_PLACEFRAME = "placeFrame"
         super.readFromNBT(nbttc)
         target = BlockPos.fromLong(nbttc.getLong(NBT_POS))
         ench = PEnch.readFromNBT(nbttc)
+        finished = nbttc.getBoolean(NBT_FINISHED)
+        placeFrame = nbttc.getBoolean(NBT_PLACEFRAME)
     }
 
     override def writeToNBT(nbttc: NBTTagCompound) = {
         val NBT_POS = "targetpos"
+        val NBT_FINISHED = "finished"
+        val NBT_PLACEFRAME = "placeFrame"
         nbttc.setLong(NBT_POS, target.toLong)
+        nbttc.setBoolean(NBT_FINISHED, finished)
+        nbttc.setBoolean(NBT_PLACEFRAME, placeFrame)
         ench.writeToNBT(nbttc)
         super.writeToNBT(nbttc)
     }
@@ -295,6 +307,12 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
     override def onChunkUnload(): Unit = {
         ForgeChunkManager.releaseTicket(this.chunkTicket)
         super.onChunkUnload()
+    }
+
+    @SideOnly(Side.CLIENT)
+    def recieveStatusMessage(placeFrame: Boolean, enchNBT: NBTTagCompound): Unit = {
+        this.placeFrame = placeFrame
+        this.ench = PEnch.readFromNBT(enchNBT)
     }
 
     private object FluidHandler extends IFluidHandler {
@@ -380,9 +398,14 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
 object TileAdvPump {
 
     private val NBT_PENCH = "nbt_pench"
+    private[this] val defaultBaseEnergy = Seq(10, 8, 6, 4)
     val defaultEnch = PEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false)
 
     case class PEnch(efficiency: Byte, unbreaking: Byte, fortune: Byte, silktouch: Boolean) extends INBTWritable {
+        require(efficiency >= 0)
+        require(unbreaking >= 0)
+        require(fortune >= 0)
+
         override def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
             val t = new NBTTagCompound
             t.setByte("efficiency", efficiency)
@@ -415,6 +438,10 @@ object TileAdvPump {
         val distanceSq = distance * distance
 
         val maxAmount = 128 * Fluid.BUCKET_VOLUME * (efficiency + 1)
+
+        def getEnergy(placeFrame: Boolean): Double = {
+            defaultBaseEnergy(if (unbreaking >= 3) 3 else unbreaking) * (if (placeFrame) 2.5 else 1)
+        }
     }
 
     object PEnch extends INBTReadable[PEnch] {
