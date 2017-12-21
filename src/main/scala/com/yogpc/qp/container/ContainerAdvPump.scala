@@ -1,8 +1,10 @@
 package com.yogpc.qp.container
 
+import com.yogpc.qp.packet.PacketHandler
+import com.yogpc.qp.packet.advpump.AdvPumpStatusMessage
 import com.yogpc.qp.tile.TileAdvPump
 import com.yogpc.qp.version.VersionUtil
-import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.entity.player.{EntityPlayer, EntityPlayerMP}
 import net.minecraft.inventory.{Container, Slot}
 import net.minecraft.item.ItemStack
 
@@ -18,7 +20,9 @@ class ContainerAdvPump(tile: TileAdvPump, player: EntityPlayer) extends Containe
         this.addSlotToContainer(new Slot(player.inventory, vertical, 8 + vertical * oneBox, 142))
 
     if (!tile.getWorld.isRemote) {
-
+        PacketHandler.sendToClient(
+            AdvPumpStatusMessage.create(tile.getWorld.provider.getDimension, tile.getPos, tile.placeFrame, tile.getUpdateTag),
+            player.asInstanceOf[EntityPlayerMP])
     }
 
     override def transferStackInSlot(playerIn: EntityPlayer, index: Int): ItemStack = VersionUtil.empty()

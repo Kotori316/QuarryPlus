@@ -31,6 +31,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
 
     var placeFrame = false
     private[this] var finished = true
+    private[this] var toStart = Config.content.pumpAutoStart
     private[this] var queueBuilt = false
     private[this] var skip = false
     private[this] var ench = TileAdvPump.defaultEnch
@@ -40,7 +41,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
     private[this] val paths = mutable.Map.empty[BlockPos, Seq[BlockPos]]
     private[this] val FACINGS = List(EnumFacing.UP, EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST)
 
-    override protected def isWorking = !finished
+    override def isWorking = !finished
 
     override def G_reinit() = {
         configure(128d, 1024d)
@@ -55,7 +56,8 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
     override def update() = {
         super.update()
         if (!getWorld.isRemote) {
-            if (finished) {
+            if (finished && toStart) {
+                toStart = false
                 buildWay()
                 if (toDig.nonEmpty) {
                     finished = false
@@ -206,6 +208,15 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
         }
     }
 
+    def start(): Unit = {
+        if (!isWorking)
+            toStart = true
+    }
+
+    def stop(): Unit = {
+        ???
+    }
+
     def replaceFluidBlock(pos: BlockPos): Unit = {
         FluidUtil.getFluidHandler(getWorld, pos, EnumFacing.UP).drain(Fluid.BUCKET_VOLUME, true)
         if (placeFrame)
@@ -310,9 +321,9 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
     }
 
     @SideOnly(Side.CLIENT)
-    def recieveStatusMessage(placeFrame: Boolean, enchNBT: NBTTagCompound): Unit = {
+    def recieveStatusMessage(placeFrame: Boolean, nbt: NBTTagCompound): Unit = {
         this.placeFrame = placeFrame
-        this.ench = PEnch.readFromNBT(enchNBT)
+        this.readFromNBT(nbt)
     }
 
     private object FluidHandler extends IFluidHandler {

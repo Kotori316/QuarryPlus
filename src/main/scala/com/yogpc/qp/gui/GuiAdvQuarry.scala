@@ -81,8 +81,8 @@ class GuiAdvQuarry(tile: TileAdvQuarry, player: EntityPlayer) extends GuiContain
 
     override def drawGuiContainerForegroundLayer(mouseX: Int, mouseY: Int) {
         val s: String = I18n.format("tile.chunkdestroyer.name")
-        this.fontRenderer.drawString(s, this.xSize / 2 - this.fontRenderer.getStringWidth(s) / 2, 6, 4210752)
-        this.fontRenderer.drawString(I18n.format("container.inventory"), 8, this.ySize - 96 + 2, 4210752)
+        this.fontRenderer.drawString(s, this.xSize / 2 - this.fontRenderer.getStringWidth(s) / 2, 6, 0x404040)
+        this.fontRenderer.drawString(I18n.format("container.inventory"), 8, this.ySize - 96 + 2, 0x404040)
         if (range.defined) {
             val chunkPos = new ChunkPos(tile.getPos)
             val north: Double = chunkPos.getZStart - range.minZ

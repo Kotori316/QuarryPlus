@@ -20,14 +20,16 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  */
 public class AdvPumpStatusMessage implements IMessage {
 
+    int dim;
     BlockPos pos;
     boolean placeFrame;
-    NBTTagCompound enchNBT;
+    NBTTagCompound nbtTagCompound;
 
-    public static AdvPumpStatusMessage create(BlockPos pos, boolean placeFrame, NBTTagCompound enchNBT) {
+    public static AdvPumpStatusMessage create(int dim, BlockPos pos, boolean placeFrame, NBTTagCompound nbtTagCompound) {
         AdvPumpStatusMessage message = new AdvPumpStatusMessage();
+        message.dim = dim;
         message.pos = pos;
-        message.enchNBT = enchNBT;
+        message.nbtTagCompound = nbtTagCompound;
         message.placeFrame = placeFrame;
         return message;
     }
@@ -35,25 +37,28 @@ public class AdvPumpStatusMessage implements IMessage {
     @Override
     public void fromBytes(PacketBuffer buffer) throws IOException {
         pos = buffer.readBlockPos();
-        enchNBT = buffer.readCompoundTag();
+        nbtTagCompound = buffer.readCompoundTag();
         placeFrame = buffer.readBoolean();
+        dim = buffer.readInt();
     }
 
     @Override
     public void toBytes(PacketBuffer buffer) {
-        buffer.writeBlockPos(pos).writeCompoundTag(enchNBT).writeBoolean(placeFrame);
+        buffer.writeBlockPos(pos).writeCompoundTag(nbtTagCompound).writeBoolean(placeFrame).writeInt(dim);
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public IMessage onRecieve(IMessage message, MessageContext ctx) {
         World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
-        TileEntity entity = world.getTileEntity(pos);
-        if (entity != null) {
-            Minecraft.getMinecraft().addScheduledTask(() -> {
-                TileAdvPump pump = (TileAdvPump) entity;
-                pump.recieveStatusMessage(placeFrame, enchNBT);
-            });
+        if (world.provider.getDimension() == dim) {
+            TileEntity entity = world.getTileEntity(pos);
+            if (entity != null) {
+                Minecraft.getMinecraft().addScheduledTask(() -> {
+                    TileAdvPump pump = (TileAdvPump) entity;
+                    pump.recieveStatusMessage(placeFrame, nbtTagCompound);
+                });
+            }
         }
         return null;
     }

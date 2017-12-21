@@ -1,6 +1,7 @@
 package com.yogpc.qp.packet;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.packet.advpump.AdvPumpChangeMessage;
 import com.yogpc.qp.packet.advpump.AdvPumpStatusMessage;
 import com.yogpc.qp.packet.advquarry.AdvModeMessage;
 import com.yogpc.qp.packet.advquarry.AdvRangeMessage;
@@ -69,6 +70,7 @@ public class PacketHandler {
         wrapper.registerMessage(handler, AdvRangeMessage.class, 23, Side.SERVER);
         //standalonepump
         wrapper.registerMessage(handler, AdvPumpStatusMessage.class, 24, Side.CLIENT);
+        wrapper.registerMessage(handler, AdvPumpChangeMessage.class, 25, Side.SERVER);
     }
 
     /**

@@ -2,14 +2,18 @@ package com.yogpc.qp.gui
 
 import com.yogpc.qp.QuarryPlus
 import com.yogpc.qp.container.ContainerAdvPump
+import com.yogpc.qp.packet.PacketHandler
+import com.yogpc.qp.packet.advpump.AdvPumpChangeMessage
 import com.yogpc.qp.tile.TileAdvPump
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.resources.I18n
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import org.lwjgl.opengl.GL11
 
+@SideOnly(Side.CLIENT)
 class GuiAdvPump(tile: TileAdvPump, player: EntityPlayer) extends GuiContainer(new ContainerAdvPump(tile, player)) {
 
     val LOCATION = new ResourceLocation(QuarryPlus.modID, "textures/gui/advpump.png")
@@ -21,19 +25,29 @@ class GuiAdvPump(tile: TileAdvPump, player: EntityPlayer) extends GuiContainer(n
     }
 
     override def initGui(): Unit = {
-        this.buttonList.add(new GuiButton(1, 12, 12, 100, 20, "PlaceFrame = " + tile.placeFrame))
+        super.initGui()
+        this.buttonList.add(new GuiButton(1, guiLeft + 12, guiTop + 12, 120, 30, "PlaceFrame = " + tile.placeFrame))
+        this.buttonList.add(new GuiButton(1, guiLeft + 52, guiTop + 12, 120, 30, "Start"))
+        buttonList.get(2).enabled = !tile.isWorking
     }
 
     override def actionPerformed(button: GuiButton): Unit = {
+        super.actionPerformed(button)
         button.id match {
             case 1 => tile.placeFrame = !tile.placeFrame
                 this.buttonList.get(0).displayString = "PlaceFrame = " + tile.placeFrame
+                PacketHandler.sendToServer(AdvPumpChangeMessage.create(tile, AdvPumpChangeMessage.ToStart.UNCHANGED))
+            case 2 => this.buttonList.get(2).enabled = false
+                //TODO check
+                PacketHandler.sendToServer(AdvPumpChangeMessage.create(tile, AdvPumpChangeMessage.ToStart.START))
+            case _ => QuarryPlus.LOGGER.error("AdvPump undefined button")
         }
     }
 
     override def drawGuiContainerForegroundLayer(mouseX: Int, mouseY: Int): Unit = {
         val s: String = I18n.format("tile.standalonepump.name")
-        this.fontRenderer.drawString(s, this.xSize / 2 - this.fontRenderer.getStringWidth(s) / 2, 6, 4210752)
+        this.fontRenderer.drawString(s, this.xSize / 2 - this.fontRenderer.getStringWidth(s) / 2, 6, 0x404040)
+        this.fontRenderer.drawString(I18n.format("container.inventory"), 8, this.ySize - 96 + 2, 0x404040)
     }
 
     override def drawGuiContainerBackgroundLayer(partialTicks: Float, mouseX: Int, mouseY: Int) = {
