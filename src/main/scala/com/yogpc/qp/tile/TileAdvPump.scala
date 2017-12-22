@@ -118,7 +118,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
         paths.clear()
 
         getWorld.profiler.startSection("Depth")
-        Iterator.iterate(getPos.down())(_.down()).takeWhile(pos => pos.getY > 0 && getPos.getY - pos.getY < ench.distance)
+        Iterator.iterate(getPos.down())(_.down()).takeWhile(pos => pos.getY > 0 && ench.inRange(getPos, pos))
           .find(!getWorld.isAirBlock(_)).foreach(pos => {
             val state = getWorld.getBlockState(pos)
             if (TilePump.isLiquid(state, false, getWorld, pos)) {
@@ -149,7 +149,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
             nextPosesToCheck.clear()
             for (posToCheck <- copied; offset <- FACINGS) {
                 val offsetPos = posToCheck.offset(offset)
-                if (offsetPos.distanceSq(getPos) <= ench.distanceSq) {
+                if (ench.inRange(getPos, offsetPos)) {
                     if (checked.add(offsetPos)) {
                         val state = getWorld.getBlockState(offsetPos)
                         if (findFluid(state) == fluid) {
@@ -477,6 +477,16 @@ object TileAdvPump {
 
         def getEnergy(placeFrame: Boolean): Double = {
             defaultBaseEnergy(if (unbreaking >= 3) 3 else unbreaking) * (if (placeFrame) 2.5 else 1)
+        }
+
+        def inRange(tilePos: BlockPos, pos: BlockPos): Boolean = {
+            if (silktouch) {
+                val dx = tilePos.getX - pos.getX
+                val dz = tilePos.getZ - pos.getZ
+                (dx * dx + dz * dz) <= distanceSq
+            } else {
+                tilePos.distanceSq(pos) <= distanceSq
+            }
         }
     }
 
