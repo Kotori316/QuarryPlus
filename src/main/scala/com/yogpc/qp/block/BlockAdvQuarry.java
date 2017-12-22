@@ -100,7 +100,7 @@ public class BlockAdvQuarry extends ADismCBlock {
                 Optional.ofNullable((TileAdvQuarry) worldIn.getTileEntity(pos)).ifPresent(TileAdvQuarry::stickActivated);
             return true;
         } else if (!playerIn.isSneaking()) {
-            playerIn.openGui(QuarryPlus.getInstance(), QuarryPlusI.guiIdAdvQuarry, worldIn, pos.getX(), pos.getY(), pos.getZ());
+            playerIn.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdAdvQuarry, worldIn, pos.getX(), pos.getY(), pos.getZ());
             return true;
         }
         return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);

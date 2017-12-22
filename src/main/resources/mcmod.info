@@ -7,7 +7,7 @@
     "mcversion": "1.11.2",
     "url": "https://github.com/Kotori316/QuarryPlus",
     "authors": [ "yogpstop", "Kotori" ],
-    "dependencies": [ "BuildCraft|Builders", "BuildCraft|Core", "BuildCraft|Energy", "BuildCraft|Factory", "BuildCraft|Silicon", "BuildCraft|Transport" ]
+    "dependencies": [ "BuildCraft|Builders", "BuildCraft|Core", "BuildCraft|Energy", "BuildCraft|Factory", "BuildCraft|Silicon", "BuildCraft|Transport" ],
     "updateJSON": "https://raw.githubusercontent.com/Kotori316/QuarryPlus/1.12/update.json"
   }
 ]

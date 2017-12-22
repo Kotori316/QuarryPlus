@@ -10,13 +10,13 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object Loot {
     val instance = this
 
-    private val NO_FUNCTION = Array.empty[LootFunction]
-    private val NO_CONDITION = Array.empty[LootCondition]
-    private val mirror = new LootEntryItem(
+    private[this] val NO_FUNCTION = Array.empty[LootFunction]
+    private[this] val NO_CONDITION = Array.empty[LootCondition]
+    private[this] val mirror = new LootEntryItem(
         QuarryPlusI.magicmirror, 1, 0, NO_FUNCTION, NO_CONDITION, QuarryPlusI.magicmirror.getRegistryName.toString
     )
-    private val empty = new LootEntryEmpty(4, 0, NO_CONDITION, "EMPTY")
-    private val pool = new LootPool(Array(mirror, empty), NO_CONDITION, new RandomValueRange(1), new RandomValueRange(0), QuarryPlus.Mod_Name)
+    private[this] val empty = new LootEntryEmpty(4, 0, NO_CONDITION, "EMPTY")
+    private[this] val pool = new LootPool(Array(mirror, empty), NO_CONDITION, new RandomValueRange(1), new RandomValueRange(0), QuarryPlus.Mod_Name)
 
     @SubscribeEvent
     def addEntry(event: LootTableLoadEvent): Unit = {

@@ -7,7 +7,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 /**
@@ -32,26 +31,13 @@ public class TileMessage implements IMessage {
         buffer.writeCompoundTag(compound);
     }
 
-    @SuppressWarnings({"MethodCallSideOnly"})
     @Override
     public IMessage onRecieve(IMessage message, MessageContext ctx) {
         BlockPos pos = new BlockPos(compound.getInteger("x"), compound.getInteger("y"), compound.getInteger("z"));
-        switch (ctx.side) {
-            case CLIENT:
-                World worldClient = QuarryPlus.proxy.getClientWorld();
-                TileEntity entity = worldClient.getTileEntity(pos);
-                if (entity != null) {
-                    entity.readFromNBT(compound);
-                }
-                break;
-            case SERVER:
-                TileEntity tileEntity = QuarryPlus.proxy.getPacketWorld(ctx.netHandler).getTileEntity(pos);
-                if (tileEntity != null) {
-                    tileEntity.readFromNBT(compound);
-                }
-                break;
+        TileEntity tileEntity = QuarryPlus.proxy.getPacketWorld(ctx.netHandler).getTileEntity(pos);
+        if (tileEntity != null) {
+            tileEntity.readFromNBT(compound);
         }
-
         return null;
     }
 }

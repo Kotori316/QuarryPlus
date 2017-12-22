@@ -5,6 +5,7 @@ tile.markerplus.name=Marker Plus
 tile.quarryplus.name=Quarry Plus
 tile.chunkdestroyer.name=Chunk Destroyer
 tile.pumpplus.name=Pump Plus
+tile.standalonepump.name=Advanced Pump
 tile.miningwellplus.name=MiningWell Plus
 tile.quarryframe.name=QuarryPlus Frame
 tile.InfMJSrc.name=InfinityMJSource

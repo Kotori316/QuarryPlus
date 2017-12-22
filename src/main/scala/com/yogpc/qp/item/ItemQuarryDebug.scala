@@ -24,12 +24,12 @@ object ItemQuarryDebug extends Item {
         if (worldIn.isRemote) {
             EnumActionResult.PASS
         } else {
-            if (Config.content.debug || QuarryPlus.getInstance().inDev) {
+            if (Config.content.debug || QuarryPlus.instance().inDev) {
                 val tile = worldIn.getTileEntity(pos)
                 tile match {
                     case plusMachine: APowerTile with IDebugSender =>
                         if (!worldIn.isRemote) {
-                            player.sendStatusMessage(new TextComponentTranslation(plusMachine.getName), false)
+                            player.sendStatusMessage(new TextComponentTranslation(plusMachine.getDebugName), false)
                             player.sendStatusMessage(tileposToString(tile), false)
                             player.sendStatusMessage(energyToString(plusMachine), false)
                             plusMachine.sendDebugMessage(player)
@@ -51,7 +51,7 @@ object ItemQuarryDebug extends Item {
                         EnumActionResult.SUCCESS
                     case pump: TilePump =>
                         if (!worldIn.isRemote) {
-                            player.sendStatusMessage(new TextComponentTranslation(pump.getName), false)
+                            player.sendStatusMessage(new TextComponentTranslation(pump.getDebugName), false)
                             player.sendStatusMessage(tileposToString(tile), false)
                             pump.sendDebugMessage(player)
                         }
