@@ -2,6 +2,7 @@ package com.yogpc.qp.block;
 
 import java.util.Optional;
 
+import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.BuildCraftHelper;
@@ -15,6 +16,7 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -44,6 +46,9 @@ public class BlockAdvPump extends ADismCBlock {
                     pump.G_reinit();
                 }
             }
+            return true;
+        } else if (Config.content().debug() && stack.getItem() == Items.STICK) {
+            Optional.ofNullable((TileAdvPump) worldIn.getTileEntity(pos)).ifPresent(tileAdvPump -> tileAdvPump.delete_$eq(!tileAdvPump.delete()));
             return true;
         } else if (stack.getItem() == QuarryPlusI.itemTool && stack.getItemDamage() == 0) {
             if (!worldIn.isRemote)

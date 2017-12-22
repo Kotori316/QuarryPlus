@@ -30,6 +30,7 @@ import scala.collection.mutable.ListBuffer
 class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with IDebugSender {
 
     var placeFrame = true
+    var delete = false
     private[this] var finished = true
     private[this] var toStart = Config.content.pumpAutoStart
     private[this] var queueBuilt = false
@@ -85,9 +86,9 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
                         nextPos()
                     }
                     pump()
-                    push()
                 }
             }
+            push()
         }
     }
 
@@ -167,14 +168,14 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
 
     def pump(): Unit = {
         var break = false
-        while (FluidHandler.getAmount <= ench.maxAmount / 2 && !break) {
+        while (FluidHandler.canPump && !break) {
             val option = paths.get(target)
             if (option.nonEmpty) {
                 val energy = ench.getEnergy(placeFrame)
                 if (useEnergy(energy, energy, true) == energy) {
                     val maybeStack = Option(FluidUtil.getFluidHandler(getWorld, target, EnumFacing.UP)).map(_.drain(Fluid.BUCKET_VOLUME, false))
-                    if (maybeStack.isDefined && option.get.forall(pos => TilePump.isLiquid(getWorld.getBlockState(pos), false, getWorld, pos) &&
-                      (FluidHandler.getFluidType == null || FluidHandler.getFluidType == maybeStack.get.getFluid))) {
+                    if (maybeStack.isDefined && option.get.forall(pos => TilePump.isLiquid(getWorld.getBlockState(pos), false, getWorld, pos) /*&&
+                      (FluidHandler.getFluidType == null || FluidHandler.getFluidType == maybeStack.get.getFluid)*/)) {
                         FluidHandler.fill(maybeStack, doFill = true)
                         replaceFluidBlock(target)
                         nextPos()
@@ -195,6 +196,10 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
     }
 
     def push(): Unit = {
+        if (delete) {
+            FluidHandler.drain(FluidHandler.getAmount, doDrain = true)
+            return
+        }
         val stack = FluidHandler.drain(FluidHandler.getAmount, doDrain = false)
         if (!stack.isEmpty) {
             EnumFacing.VALUES.map(f => (getWorld.getTileEntity(getPos.offset(f)), f))
@@ -203,8 +208,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
                 if (stack.amount > 0) {
                     val used = handler.fill(stack, true)
                     if (used > 0) {
-                        stack.amount -= used
-                        FluidHandler.drain(stack.copy().setAmount(stack.amount), doDrain = true)
+                        FluidHandler.drain(stack.copy().setAmount(used), doDrain = true)
                     }
                 }
             })
@@ -258,27 +262,32 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
             "Ench : " + ench,
             "FluidType : " + Option(FluidHandler.getFluidType).map(_.getName).getOrElse("None"),
             "FluidAmount : " + FluidHandler.getAmount,
-            "Pumped : " + FluidHandler.amountPumped).map(new TextComponentString(_)).asJava
+            "Pumped : " + FluidHandler.amountPumped,
+            "Delete : " + delete).map(new TextComponentString(_)).asJava
     }
 
     override def readFromNBT(nbttc: NBTTagCompound) = {
         val NBT_POS = "targetpos"
         val NBT_FINISHED = "finished"
         val NBT_PLACEFRAME = "placeFrame"
+        val NBT_DELETE = "delete"
         super.readFromNBT(nbttc)
         target = BlockPos.fromLong(nbttc.getLong(NBT_POS))
         ench = PEnch.readFromNBT(nbttc)
         finished = nbttc.getBoolean(NBT_FINISHED)
         placeFrame = nbttc.getBoolean(NBT_PLACEFRAME)
+        delete = nbttc.getBoolean(NBT_DELETE)
     }
 
     override def writeToNBT(nbttc: NBTTagCompound) = {
         val NBT_POS = "targetpos"
         val NBT_FINISHED = "finished"
         val NBT_PLACEFRAME = "placeFrame"
+        val NBT_DELETE = "delete"
         nbttc.setLong(NBT_POS, target.toLong)
         nbttc.setBoolean(NBT_FINISHED, finished)
         nbttc.setBoolean(NBT_PLACEFRAME, placeFrame)
+        nbttc.setBoolean(NBT_DELETE, delete)
         ench.writeToNBT(nbttc)
         super.writeToNBT(nbttc)
     }
@@ -349,7 +358,12 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
                         }
                         nAmount - stack.amount
                     }
-                case None => if (doFill) fluidStacks += resource.copy(); resource.amount
+                case None =>
+                    if (doFill) {
+                        fluidStacks += resource.copy()
+                        amountPumped += resource.amount
+                    }
+                    resource.amount
             }
         }
 
@@ -381,8 +395,9 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
             if (kind.amount >= source.amount) {
                 val extract = source.amount
                 if (doDrain) fluidStacks.remove(fluidStacks.indexOf(kind))
-                kind.setAmount(extract)
-                kind
+                val c = kind.copy()
+                c.setAmount(extract)
+                c
             } else {
                 val nAmount = source.amount - kind.amount
                 if (doDrain) source.setAmount(nAmount)
@@ -408,6 +423,10 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
         def getAmount =
             if (fluidStacks.nonEmpty) fluidStacks.head.amount
             else 0
+
+        def canPump =
+            if (fluidStacks.isEmpty) true
+            else fluidStacks.forall(_.amount <= ench.maxAmount / 2)
     }
 
 }
