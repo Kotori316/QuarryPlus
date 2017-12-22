@@ -7,12 +7,12 @@ import com.yogpc.qp.packet.advquarry.AdvRangeMessage
 import com.yogpc.qp.tile.TileAdvQuarry
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.inventory.GuiContainer
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.resources.I18n
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.math.ChunkPos
 import net.minecraft.util.{EnumFacing, ResourceLocation}
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
-import org.lwjgl.opengl.GL11
 
 @SideOnly(Side.CLIENT)
 class GuiAdvQuarry(tile: TileAdvQuarry, player: EntityPlayer) extends GuiContainer(new ContainerAdvQuarry(tile, player)) {
@@ -28,7 +28,7 @@ class GuiAdvQuarry(tile: TileAdvQuarry, player: EntityPlayer) extends GuiContain
     }
 
     override def drawGuiContainerBackgroundLayer(p_146976_1_ : Float, p_146976_2_ : Int, p_146976_3_ : Int): Unit = {
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F)
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F)
         this.mc.getTextureManager.bindTexture(LOCATION)
         this.drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize)
     }

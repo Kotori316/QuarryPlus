@@ -46,7 +46,7 @@ object Config {
 
     val DisableSpawnerController_key = "DisableSpawnerController"
     val DisableChunkDestroyer_key = "DisableChunkDestroyer"
-    val DisableFrameChainBreak_key = "FrameChainBreak"
+    val DisableFrameChainBreak_key = "DisableFrameChainBreak"
     val EnableChunkDestroyerFluidHander_key = "EnableChunkDestroyerFluidHandler"
     val SpawnerControllerEntityBlackList_key = "SpawnerControllerEntityBlackList"
     val RecipeDifficulty_key = "RecipeDifficulty"

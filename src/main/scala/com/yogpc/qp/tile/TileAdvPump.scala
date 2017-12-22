@@ -29,7 +29,7 @@ import scala.collection.mutable.ListBuffer
   */
 class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with IDebugSender {
 
-    var placeFrame = false
+    var placeFrame = true
     private[this] var finished = true
     private[this] var toStart = Config.content.pumpAutoStart
     private[this] var queueBuilt = false
@@ -38,7 +38,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
     private[this] var target: BlockPos = BlockPos.ORIGIN
     private[this] var toDig: List[BlockPos] = Nil
     private[this] var inRange: Set[BlockPos] = Set.empty
-    private[this] val paths = mutable.Map.empty[BlockPos, Seq[BlockPos]]
+    private[this] val paths = mutable.Map.empty[BlockPos, List[BlockPos]]
     private[this] val FACINGS = List(EnumFacing.UP, EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST)
 
     override def isWorking = !finished
@@ -56,17 +56,19 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
     override def update() = {
         super.update()
         if (!getWorld.isRemote) {
-            if (finished && toStart) {
-                toStart = false
-                buildWay()
-                if (toDig.nonEmpty) {
-                    finished = false
-                    val state = getWorld.getBlockState(getPos)
-                    if (!state.getValue(ADismCBlock.ACTING)) {
-                        validate()
-                        getWorld.setBlockState(getPos, state.withProperty(ADismCBlock.ACTING, JBool.TRUE))
-                        validate()
-                        getWorld.setTileEntity(getPos, this)
+            if (finished) {
+                if (toStart) {
+                    toStart = false
+                    buildWay()
+                    if (toDig.nonEmpty) {
+                        finished = false
+                        val state = getWorld.getBlockState(getPos)
+                        if (!state.getValue(ADismCBlock.ACTING)) {
+                            validate()
+                            getWorld.setBlockState(getPos, state.withProperty(ADismCBlock.ACTING, JBool.TRUE))
+                            validate()
+                            getWorld.setTileEntity(getPos, this)
+                        }
                     }
                 }
             } else {
@@ -115,17 +117,18 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
         paths.clear()
 
         getWorld.profiler.startSection("Depth")
-        Iterator.iterate(getPos.down())(_.down()).takeWhile(pos => pos.getY > 0 && getPos.getY - pos.getY < ench.distance &&
-          (TilePump.isLiquid(getWorld.getBlockState(pos), false, getWorld, pos) || getWorld.isAirBlock(pos))).find(pos =>
-            !getWorld.isAirBlock(pos)).foreach(pos => {
+        Iterator.iterate(getPos.down())(_.down()).takeWhile(pos => pos.getY > 0 && getPos.getY - pos.getY < ench.distance)
+          .find(!getWorld.isAirBlock(_)).foreach(pos => {
             val state = getWorld.getBlockState(pos)
-            checked.add(pos)
-            paths.put(pos, Seq(pos))
-            if (TilePump.isLiquid(state, true, getWorld, pos))
-                toDig = pos :: toDig
-            nextPosesToCheck += pos
+            if (TilePump.isLiquid(state, false, getWorld, pos)) {
+                checked.add(pos)
+                paths.put(pos, List(pos))
+                if (TilePump.isLiquid(state, true, getWorld, pos))
+                    toDig = pos :: toDig
+                nextPosesToCheck += pos
 
-            fluid = findFluid(state)
+                fluid = findFluid(state)
+            }
         })
         if (nextPosesToCheck.isEmpty) {
             finished = true
@@ -149,7 +152,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
                     if (checked.add(offsetPos)) {
                         val state = getWorld.getBlockState(offsetPos)
                         if (findFluid(state) == fluid) {
-                            paths.put(offsetPos, paths(posToCheck) ++ Seq(offsetPos))
+                            paths.put(offsetPos, offsetPos :: paths(posToCheck))
                             nextPosesToCheck += offsetPos
                             if (TilePump.isLiquid(state, true, getWorld, offsetPos))
                                 toDig = offsetPos :: toDig
@@ -211,10 +214,6 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
     def start(): Unit = {
         if (!isWorking)
             toStart = true
-    }
-
-    def stop(): Unit = {
-        ???
     }
 
     def replaceFluidBlock(pos: BlockPos): Unit = {
@@ -399,9 +398,16 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
             }
         }
 
-        def getFluidType = fluidStacks.headOption.map(_.getFluid).orNull
+        def getFluidType =
+            if (fluidStacks.isEmpty) {
+                null
+            } else {
+                fluidStacks.head.getFluid
+            }
 
-        def getAmount = fluidStacks.headOption.map(_.amount).getOrElse(0)
+        def getAmount =
+            if (fluidStacks.nonEmpty) fluidStacks.head.amount
+            else 0
     }
 
 }

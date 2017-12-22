@@ -7,11 +7,11 @@ import com.yogpc.qp.packet.advpump.AdvPumpChangeMessage
 import com.yogpc.qp.tile.TileAdvPump
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.inventory.GuiContainer
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.resources.I18n
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
-import org.lwjgl.opengl.GL11
 
 @SideOnly(Side.CLIENT)
 class GuiAdvPump(tile: TileAdvPump, player: EntityPlayer) extends GuiContainer(new ContainerAdvPump(tile, player)) {
@@ -26,19 +26,18 @@ class GuiAdvPump(tile: TileAdvPump, player: EntityPlayer) extends GuiContainer(n
 
     override def initGui(): Unit = {
         super.initGui()
-        this.buttonList.add(new GuiButton(1, guiLeft + 12, guiTop + 12, 120, 30, "PlaceFrame = " + tile.placeFrame))
-        this.buttonList.add(new GuiButton(1, guiLeft + 52, guiTop + 12, 120, 30, "Start"))
-        buttonList.get(2).enabled = !tile.isWorking
+        this.buttonList.add(new GuiButton(0, guiLeft + 12, guiTop + 22, 120, 20, "PlaceFrame = " + tile.placeFrame))
+        this.buttonList.add(new GuiButton(1, guiLeft + 12, guiTop + 47, 120, 20, "Start"))
+        buttonList.get(1).enabled = !tile.isWorking
     }
 
     override def actionPerformed(button: GuiButton): Unit = {
         super.actionPerformed(button)
         button.id match {
-            case 1 => tile.placeFrame = !tile.placeFrame
+            case 0 => tile.placeFrame = !tile.placeFrame
                 this.buttonList.get(0).displayString = "PlaceFrame = " + tile.placeFrame
                 PacketHandler.sendToServer(AdvPumpChangeMessage.create(tile, AdvPumpChangeMessage.ToStart.UNCHANGED))
-            case 2 => this.buttonList.get(2).enabled = false
-                //TODO check
+            case 1 => this.buttonList.get(button.id).enabled = false
                 PacketHandler.sendToServer(AdvPumpChangeMessage.create(tile, AdvPumpChangeMessage.ToStart.START))
             case _ => QuarryPlus.LOGGER.error("AdvPump undefined button")
         }
@@ -51,7 +50,7 @@ class GuiAdvPump(tile: TileAdvPump, player: EntityPlayer) extends GuiContainer(n
     }
 
     override def drawGuiContainerBackgroundLayer(partialTicks: Float, mouseX: Int, mouseY: Int) = {
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F)
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F)
         this.mc.getTextureManager.bindTexture(LOCATION)
         this.drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize)
     }
