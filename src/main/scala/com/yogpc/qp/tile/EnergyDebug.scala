@@ -51,19 +51,23 @@ class EnergyDebug(tile: TileEntity) {
 
     def useEnergy(amount: Double, simulate: Boolean): Unit = {
         if ( /*Config.content.debug &&*/ !simulate) {
-            if (useBuilder.size < 100) {
-                useBuilder += amount
-            } else {
-                // keep size 100
-                useBuilder.remove(0)
-                useBuilder += amount
-            }
+
             if (mMaxUsed < amount) {
                 mMaxUsed = amount.toInt
             }
             if (lastTick != tile.getWorld.getTotalWorldTime) {
                 lastTick = tile.getWorld.getTotalWorldTime
                 usedTicks += 1
+                if (useBuilder.size < 100) {
+                    useBuilder += amount
+                } else {
+                    // keep size 100
+                    useBuilder.remove(0)
+                    useBuilder += amount
+                }
+            } else {
+                val old = useBuilder.remove(useBuilder.size - 1)
+                useBuilder += amount + old
             }
         }
     }

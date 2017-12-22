@@ -13,8 +13,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object Config {
 
     val instance = this
-    private var mContent: Content = _
-    private var configuration: Configuration = _
+    private[this] var mContent: Content = _
+    private[this] var configuration: Configuration = _
 
     @SubscribeEvent
     def onChange(configChangedEvent: ConfigChangedEvent): Unit = {
@@ -46,12 +46,14 @@ object Config {
 
     val DisableSpawnerController_key = "DisableSpawnerController"
     val DisableChunkDestroyer_key = "DisableChunkDestroyer"
+    val DisableFrameChainBreak_key = "DisableFrameChainBreak"
     val EnableChunkDestroyerFluidHander_key = "EnableChunkDestroyerFluidHandler"
     val SpawnerControllerEntityBlackList_key = "SpawnerControllerEntityBlackList"
     val RecipeDifficulty_key = "RecipeDifficulty"
     val PlacerOnlyPlaceFront_key = "PlacerOnlyPlaceFront"
     val NoEnergy_key = "NoEnergy"
     val RemoveBedrock_Key = "RemoveBedrock"
+    val PumpAutoStart_Key = "PumpAutoStart"
     val DEBUG_key = "DEBUG"
 
     class Content {
@@ -73,6 +75,8 @@ object Config {
 
         val removeBedrock = configuration.getBoolean(RemoveBedrock_Key, Configuration.CATEGORY_GENERAL, false, RemoveBedrock_Key)
         val enableChunkDestroyerFluidHander = configuration.getBoolean(EnableChunkDestroyerFluidHander_key, Configuration.CATEGORY_GENERAL, false, EnableChunkDestroyerFluidHander_key)
+        val disableFrameChainBreak = configuration.getBoolean(DisableFrameChainBreak_key, Configuration.CATEGORY_GENERAL, false, DisableFrameChainBreak_key)
+        val pumpAutoStart = configuration.getBoolean(PumpAutoStart_Key, Configuration.CATEGORY_GENERAL, false, PumpAutoStart_Key)
         val debug = configuration.getBoolean(DEBUG_key, Configuration.CATEGORY_GENERAL, false, DEBUG_key)
 
         if (configuration.hasChanged)
