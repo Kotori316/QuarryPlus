@@ -294,7 +294,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
     }
 
     @Override
-    public String getName() {
+    public String getDebugName() {
         return "tile.laserplus.name";
     }
 

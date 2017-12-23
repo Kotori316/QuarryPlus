@@ -7,12 +7,12 @@ import com.yogpc.qp.packet.advquarry.AdvRangeMessage
 import com.yogpc.qp.tile.TileAdvQuarry
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.inventory.GuiContainer
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.resources.I18n
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.math.ChunkPos
 import net.minecraft.util.{EnumFacing, ResourceLocation}
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
-import org.lwjgl.opengl.GL11
 
 @SideOnly(Side.CLIENT)
 class GuiAdvQuarry(tile: TileAdvQuarry, player: EntityPlayer) extends GuiContainer(new ContainerAdvQuarry(tile, player)) {
@@ -28,7 +28,7 @@ class GuiAdvQuarry(tile: TileAdvQuarry, player: EntityPlayer) extends GuiContain
     }
 
     override def drawGuiContainerBackgroundLayer(p_146976_1_ : Float, p_146976_2_ : Int, p_146976_3_ : Int): Unit = {
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F)
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F)
         this.mc.getTextureManager.bindTexture(LOCATION)
         this.drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize)
     }
@@ -81,8 +81,8 @@ class GuiAdvQuarry(tile: TileAdvQuarry, player: EntityPlayer) extends GuiContain
 
     override def drawGuiContainerForegroundLayer(mouseX: Int, mouseY: Int) {
         val s: String = I18n.format("tile.chunkdestroyer.name")
-        this.fontRendererObj.drawString(s, this.xSize / 2 - this.fontRendererObj.getStringWidth(s) / 2, 6, 4210752)
-        this.fontRendererObj.drawString(I18n.format("container.inventory"), 8, this.ySize - 96 + 2, 4210752)
+        this.fontRendererObj.drawString(s, this.xSize / 2 - this.fontRendererObj.getStringWidth(s) / 2, 6, 0x404040)
+        this.fontRendererObj.drawString(I18n.format("container.inventory"), 8, this.ySize - 96 + 2, 0x404040)
         if (range.defined) {
             val chunkPos = new ChunkPos(tile.getPos)
             val north: Double = chunkPos.getZStart - range.minZ

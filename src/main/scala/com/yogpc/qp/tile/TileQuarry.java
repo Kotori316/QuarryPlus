@@ -593,8 +593,16 @@ public class TileQuarry extends TileBasic implements IDebugSender {
     }
 
     @Override
-    public String getName() {
+    public String getDebugName() {
         return "tile.quarryplus.name";
+    }
+
+    /**
+     * Get the name of this object. For players this returns their username
+     */
+    @Override
+    public String getName() {
+        return getDebugName();
     }
 
     public double headPosX, headPosY, headPosZ;

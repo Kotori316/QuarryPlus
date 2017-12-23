@@ -18,6 +18,7 @@ import com.yogpc.qp.gui.GuiHandler;
 import com.yogpc.qp.item.ItemTool;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.render.Sprites;
+import com.yogpc.qp.tile.TileAdvPump;
 import com.yogpc.qp.tile.TileAdvQuarry;
 import com.yogpc.qp.tile.TileBreaker;
 import com.yogpc.qp.tile.TileLaser;
@@ -104,7 +105,7 @@ public class QuarryPlus {
     }
 
     @Mod.InstanceFactory
-    public static QuarryPlus getInstance() {
+    public static QuarryPlus instance() {
         return INSTANCE;
     }
 
@@ -148,6 +149,7 @@ public class QuarryPlus {
         event.getRegistry().register(blockLaser);
         event.getRegistry().register(blockRefinery);
         event.getRegistry().register(blockChunkdestroyer);
+        event.getRegistry().register(blockStandalonePump);
         GameRegistry.registerTileEntity(TileWorkbench.class, prefix + QuarryPlus.Names.workbench);
         GameRegistry.registerTileEntity(TileQuarry.class, prefix + QuarryPlus.Names.quarry);
         GameRegistry.registerTileEntity(TileMarker.class, prefix + QuarryPlus.Names.marker);
@@ -158,6 +160,7 @@ public class QuarryPlus {
         GameRegistry.registerTileEntity(TileBreaker.class, prefix + QuarryPlus.Names.breaker);
         GameRegistry.registerTileEntity(TileLaser.class, prefix + QuarryPlus.Names.laser);
         GameRegistry.registerTileEntity(TileAdvQuarry.class, prefix + QuarryPlus.Names.advquarry);
+        GameRegistry.registerTileEntity(TileAdvPump.class, prefix + QuarryPlus.Names.advpump);
     }
 
     @SubscribeEvent
@@ -176,6 +179,7 @@ public class QuarryPlus {
         event.getRegistry().register(blockLaser.itemBlock());
         event.getRegistry().register(blockRefinery.itemBlock());
         event.getRegistry().register(blockChunkdestroyer.itemBlock());
+        event.getRegistry().register(blockStandalonePump.itemBlock());
         event.getRegistry().register(itemTool);
         event.getRegistry().register(magicmirror);
         event.getRegistry().register(debugItem);
@@ -200,6 +204,7 @@ public class QuarryPlus {
         ModelLoader.setCustomModelResourceLocation(controller.itemBlock, 0, new ModelResourceLocation(controller.getRegistryName(), "inventory"));
         ModelLoader.setCustomModelResourceLocation(blockLaser.itemBlock(), 0, new ModelResourceLocation(blockLaser.getRegistryName(), "inventory"));
         ModelLoader.setCustomModelResourceLocation(blockChunkdestroyer.itemBlock(), 0, new ModelResourceLocation(blockChunkdestroyer.getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(blockStandalonePump.itemBlock(), 0, new ModelResourceLocation(blockStandalonePump.getRegistryName(), "inventory"));
         ModelLoader.setCustomModelResourceLocation(itemTool, 0, new ModelResourceLocation(prefix + ItemTool.statuschecker(), "inventory"));
         ModelLoader.setCustomModelResourceLocation(itemTool, 1, new ModelResourceLocation(prefix + ItemTool.listeditor(), "inventory"));
         ModelLoader.setCustomModelResourceLocation(itemTool, 2, new ModelResourceLocation(prefix + ItemTool.liquidselector(), "inventory"));
@@ -243,6 +248,7 @@ public class QuarryPlus {
         public static final String controller = "spawnercontroller";
         public static final String mover = "enchantmover";
         public static final String advquarry = "chunkdestroyer";
+        public static final String advpump = "standalonepump";
         public static final String laser = "laserplus";
         public static final String mirror = "magicmirror";
         public static final String tool = "tool";

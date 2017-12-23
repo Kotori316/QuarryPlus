@@ -14,7 +14,7 @@ package com.yogpc.qp
 
 import java.util
 
-import com.yogpc.qp.tile.{TileAdvQuarry, TileMarker, TileQuarry}
+import com.yogpc.qp.tile.{TileAdvPump, TileAdvQuarry, TileMarker, TileQuarry}
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import net.minecraftforge.common.ForgeChunkManager
@@ -33,7 +33,8 @@ object ChunkLoadingHandler extends ForgeChunkManager.OrderedLoadingCallback {
             te match {
                 case quarry: TileQuarry => quarry.forceChunkLoading(ticket)
                 case marker: TileMarker => marker.forceChunkLoading(ticket)
-                case chunkQuaryy: TileAdvQuarry => chunkQuaryy.forceChunkLoading(ticket)
+                case chunkQuarry: TileAdvQuarry => chunkQuarry.forceChunkLoading(ticket)
+                case advPump: TileAdvPump => advPump.forceChunkLoading(ticket)
                 case _ =>
             }
         }
@@ -47,7 +48,7 @@ object ChunkLoadingHandler extends ForgeChunkManager.OrderedLoadingCallback {
             val quarryZ = ticket.getModData.getInteger("quarryZ")
             val state = world.getBlockState(new BlockPos(quarryX, quarryY, quarryZ))
             if (state.getBlock == QuarryPlusI.blockQuarry || state.getBlock == QuarryPlusI.blockMarker
-              || state.getBlock == QuarryPlusI.blockChunkdestroyer)
+              || state.getBlock == QuarryPlusI.blockChunkdestroyer || state.getBlock == QuarryPlusI.blockStandalonePump)
                 validTickets.add(ticket)
         }
         validTickets

@@ -222,7 +222,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
     }
 
     @Override
-    public String getName() {
+    public String getDebugName() {
         return "tile.workbenchplus.name";
     }
 
@@ -242,5 +242,13 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
 
     public int getRecipeIndex() {
         return currentRecipe.map(recipesList::indexOf).orElse(-1);
+    }
+
+    /**
+     * Get the name of this object. For players this returns their username
+     */
+    @Override
+    public String getName() {
+        return getDebugName();
     }
 }

@@ -642,7 +642,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     }
 
     @Override
-    public String getName() {
+    public String getDebugName() {
         return "tile.pumpplus.name";
     }
 

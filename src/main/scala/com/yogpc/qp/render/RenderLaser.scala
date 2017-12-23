@@ -83,7 +83,7 @@ object RenderLaser extends TileEntitySpecialRenderer[TileLaser] {
         } else if (te != null && te.lasers != null) */
         {
             GL11.glPushMatrix()
-            OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240) // TODO lightmap
+            OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240)
 
             GL11.glPushAttrib(GL11.GL_ENABLE_BIT)
             GL11.glEnable(GL11.GL_CULL_FACE)

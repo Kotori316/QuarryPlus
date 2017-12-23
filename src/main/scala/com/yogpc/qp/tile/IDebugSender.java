@@ -10,7 +10,7 @@ public interface IDebugSender {
         getDebugmessages().forEach(player::addChatComponentMessage);
     }
 
-    String getName();
+    String getDebugName();
 
     List<? extends ITextComponent> getDebugmessages();
 }
