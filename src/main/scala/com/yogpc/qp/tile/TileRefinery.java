@@ -13,8 +13,11 @@
 
 package com.yogpc.qp.tile;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import com.yogpc.qp.PowerManager;
 import javax.annotation.Nullable;
@@ -24,6 +27,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.FluidTankProperties;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -33,7 +37,13 @@ import net.minecraftforge.fluids.capability.IFluidTankProperties;
  * See {@link buildcraft.factory.tile.TileDistiller_BC8}, {@link buildcraft.api.recipes.IRefineryRecipeManager}, {@link buildcraft.energy.BCEnergyRecipes}
  * TODO 3tanks UP for gus, down for liquid, side for input
  */
-public class TileRefinery extends APowerTile implements IFluidHandler, IEnchantableTile {
+public class TileRefinery extends APowerTile implements IEnchantableTile {
+    public final DistillerTank horizontalsTank = new DistillerTank();
+    public final DistillerTank upTank = new DistillerTank();
+    public final DistillerTank downTank = new DistillerTank();
+    private List<DistillerTank> tanks = Arrays.asList(horizontalsTank, upTank, downTank);
+    private final AllTanks fluidHandler = new AllTanks();
+
     public FluidStack res;
     public final FluidStack[] src = new FluidStack[2];
     public double rem_energy;
@@ -53,7 +63,7 @@ public class TileRefinery extends APowerTile implements IFluidHandler, IEnchanta
     @Override
     public void G_reinit() {
         PowerManager.configureRefinery(this, this.efficiency, this.unbreaking);
-        this.buf = (int) (Fluid.BUCKET_VOLUME * 4 * Math.pow(1.3, this.fortune));
+        tanks.forEach(distillerTank -> distillerTank.setCapacity((int) (Fluid.BUCKET_VOLUME * 4 * Math.pow(1.3, this.fortune))));
     }
 
     @Override
@@ -200,7 +210,7 @@ public class TileRefinery extends APowerTile implements IFluidHandler, IEnchanta
                     break;
             }
         }
-    */
+
     @Override
     public int fill(final FluidStack resource, final boolean doFill) {
         for (final FluidStack s : this.src) {
@@ -271,7 +281,7 @@ public class TileRefinery extends APowerTile implements IFluidHandler, IEnchanta
             ret[i + 1] = new FluidTankProperties(this.src[i], this.buf);
         return ret;
     }
-
+*/
     @Override
     public Map<Integer, Byte> getEnchantments() {
         final Map<Integer, Byte> ret = new HashMap<>();
@@ -307,9 +317,92 @@ public class TileRefinery extends APowerTile implements IFluidHandler, IEnchanta
     @Override
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
         if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
-            return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(this);
+            IFluidHandler handler;
+            if (facing == null) {
+                handler = fluidHandler;
+            } else if (facing == EnumFacing.DOWN) {
+                handler = downTank;
+            } else if (facing == EnumFacing.UP) {
+                handler = upTank;
+            } else {
+                handler = horizontalsTank;
+            }
+            return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(handler);
         } else {
             return super.getCapability(capability, facing);
+        }
+    }
+
+    private class AllTanks implements IFluidHandler {
+
+        /**
+         * Returns an array of objects which represent the internal tanks.
+         * These objects cannot be used to manipulate the internal tanks.
+         *
+         * @return Properties for the relevant internal tanks.
+         */
+        @Override
+        public IFluidTankProperties[] getTankProperties() {
+            IFluidTankProperties[] array = tanks.stream().flatMap(distillerTank -> Stream.of(distillerTank.getTankProperties())).toArray(IFluidTankProperties[]::new);
+            if (array.length == 0) {
+                return new IFluidTankProperties[]{new FluidTankProperties(null, horizontalsTank.getCapacity(), false, false)};
+            } else {
+                return array;
+            }
+        }
+
+        /**
+         * Fills fluid into internal tanks, distribution is left entirely to the IFluidHandler.
+         *
+         * @param resource FluidStack representing the Fluid and maximum amount of fluid to be filled.
+         * @param doFill   If false, fill will only be simulated.
+         * @return Amount of resource that was (or would have been, if simulated) filled.
+         */
+        @Override
+        public int fill(FluidStack resource, boolean doFill) {
+            return 0;
+        }
+
+        /**
+         * Drains fluid out of internal tanks, distribution is left entirely to the IFluidHandler.
+         *
+         * @param resource FluidStack representing the Fluid and maximum amount of fluid to be drained.
+         * @param doDrain  If false, drain will only be simulated.
+         * @return FluidStack representing the Fluid and amount that was (or would have been, if
+         * simulated) drained.
+         */
+        @Nullable
+        @Override
+        public FluidStack drain(FluidStack resource, boolean doDrain) {
+            return null;
+        }
+
+        /**
+         * Drains fluid out of internal tanks, distribution is left entirely to the IFluidHandler.
+         * <p/>
+         * This method is not Fluid-sensitive.
+         *
+         * @param maxDrain Maximum amount of fluid to drain.
+         * @param doDrain  If false, drain will only be simulated.
+         * @return FluidStack representing the Fluid and amount that was (or would have been, if
+         * simulated) drained.
+         */
+        @Nullable
+        @Override
+        public FluidStack drain(int maxDrain, boolean doDrain) {
+            return null;
+        }
+    }
+
+    private class DistillerTank extends FluidTank {
+
+        public DistillerTank() {
+            super(4 * Fluid.BUCKET_VOLUME);
+        }
+
+        @Override
+        public boolean canFillFluidType(FluidStack fluid) {
+            return super.canFillFluidType(fluid);
         }
     }
 }
