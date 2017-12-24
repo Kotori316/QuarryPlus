@@ -5,7 +5,7 @@ import java.util.Optional;
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
-import com.yogpc.qp.compat.BuildCraftHelper;
+import com.yogpc.qp.compat.BuildcraftHelper;
 import com.yogpc.qp.compat.EnchantmentHelper;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.item.ItemBlockEnchantable;
@@ -68,7 +68,7 @@ public class BlockAdvQuarry extends ADismCBlock {
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack stack = playerIn.getHeldItem(hand);
         if (InvUtils.isDebugItem(playerIn, hand)) return true;
-        if (BuildCraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
+        if (BuildcraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
             if (!worldIn.isRemote) {
                 TileAdvQuarry quarry = (TileAdvQuarry) worldIn.getTileEntity(pos);
                 if (quarry != null) {

@@ -18,18 +18,19 @@ import java.util.Optional;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
-import com.yogpc.qp.compat.BuildCraftHelper;
+import com.yogpc.qp.compat.BuildcraftHelper;
 import com.yogpc.qp.compat.EnchantmentHelper;
 import com.yogpc.qp.compat.InvUtils;
+import com.yogpc.qp.item.ItemBlockRefinery;
 import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TileRefinery;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
@@ -43,6 +44,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.fml.relauncher.Side;
@@ -51,7 +53,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class BlockRefinery extends ADismCBlock {
 
     public BlockRefinery() {
-        super(Material.IRON, QuarryPlus.Names.refinery, ItemBlock::new);
+        super(Material.IRON, QuarryPlus.Names.refinery, ItemBlockRefinery::new);
         setHardness(5F);
         setDefaultState(getBlockState().getBaseState().withProperty(FACING, EnumFacing.NORTH));
     }
@@ -99,22 +101,22 @@ public class BlockRefinery extends ADismCBlock {
     }
 
     @Override
-    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
+    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing,
+                                            float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
         return getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
     }
 
-    private static boolean fill(IFluidHandler handler, EntityPlayer player, EnumHand hand) {
+    private static void fill(TileRefinery refinery, EntityPlayer player, EnumHand hand, EnumFacing facing) {
         ItemStack current = player.getHeldItem(hand);
+        IFluidHandler handler = refinery.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing);
         IFluidHandlerItem handlerItem = FluidUtil.getFluidHandler(current);
-        if (handlerItem != null) {
+        if (handlerItem != null && handler != null) {
             int fill = handler.fill(FluidUtil.getFluidContained(current), false);
             if (fill > 0) {
                 handler.fill(handlerItem.drain(fill, !player.capabilities.isCreativeMode), true);
                 player.setHeldItem(hand, handlerItem.getContainer());
-                return true;
             }
         }
-        return false;
     }
 
     @Override
@@ -122,7 +124,7 @@ public class BlockRefinery extends ADismCBlock {
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack stack = playerIn.getHeldItem(hand);
         if (InvUtils.isDebugItem(playerIn, hand)) return true;
-        if (BuildCraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
+        if (BuildcraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
             worldIn.setBlockState(pos, state.withProperty(FACING, state.getValue(FACING).rotateYCCW()));
             return true;
         }
@@ -132,9 +134,11 @@ public class BlockRefinery extends ADismCBlock {
                         EnchantmentHelper.getEnchantmentsChat(t).forEach(playerIn::sendMessage));
             }
             return true;
-        } else if (!worldIn.isRemote) {
-            if (fill((TileRefinery) worldIn.getTileEntity(pos), playerIn, hand))
-                return true;
+        } else if (FluidUtil.getFluidHandler(stack) != null) {
+            if (!worldIn.isRemote) {
+                fill((TileRefinery) worldIn.getTileEntity(pos), playerIn, hand, facing);
+            }
+            return true;
         }
         return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
     }
@@ -179,5 +183,11 @@ public class BlockRefinery extends ADismCBlock {
     @Override
     public IBlockState getStateFromMeta(int meta) {
         return getDefaultState().withProperty(FACING, EnumFacing.getFront(meta));
+    }
+
+    @Override
+    public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items) {
+        if (bcLoaded())
+            super.getSubBlocks(itemIn, items);
     }
 }

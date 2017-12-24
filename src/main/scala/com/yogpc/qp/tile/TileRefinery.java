@@ -17,12 +17,18 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import buildcraft.api.recipes.BuildcraftRecipeRegistry;
+import buildcraft.api.recipes.IRefineryRecipeManager;
 import com.yogpc.qp.PowerManager;
+import com.yogpc.qp.compat.INBTWritable;
+import com.yogpc.qp.packet.PacketHandler;
+import com.yogpc.qp.packet.TileMessage;
+import com.yogpc.qp.packet.distiller.AnimatonMessage;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.Fluid;
@@ -35,82 +41,63 @@ import net.minecraftforge.fluids.capability.IFluidTankProperties;
 
 /**
  * See {@link buildcraft.factory.tile.TileDistiller_BC8}, {@link buildcraft.api.recipes.IRefineryRecipeManager}, {@link buildcraft.energy.BCEnergyRecipes}
- * TODO 3tanks UP for gus, down for liquid, side for input
  */
 public class TileRefinery extends APowerTile implements IEnchantableTile {
-    public final DistillerTank horizontalsTank = new DistillerTank();
-    public final DistillerTank upTank = new DistillerTank();
-    public final DistillerTank downTank = new DistillerTank();
+    public final DistillerTank horizontalsTank = new DistillerTank("horizontalsTank");
+    public final DistillerTank upTank = new DistillerTank("upTank");
+    public final DistillerTank downTank = new DistillerTank("downTank");
     private List<DistillerTank> tanks = Arrays.asList(horizontalsTank, upTank, downTank);
     private final AllTanks fluidHandler = new AllTanks();
 
-    public FluidStack res;
-    public final FluidStack[] src = new FluidStack[2];
-    public double rem_energy;
-    public long rem_time;
-    public FluidStack cached;
+    public long rem_energy;
+    public FluidStack cacheIn;
+    public FluidStack cachedGas;
+    public FluidStack cachedLiqud;
+    public long cacheEnergy;
 
+    private DEnch ench = DEnch.defaultEnch;
     public float animationSpeed = 1;
     private int animationStage = 0;
 
-    protected byte unbreaking;
-    protected byte fortune;
-    protected boolean silktouch;
-    protected byte efficiency;
-
-    public int buf;
+    public TileRefinery() {
+        horizontalsTank.setCanDrain(false);
+        if (bcLoaded) {
+            horizontalsTank.predicate = fluidStack -> BuildcraftRecipeRegistry.refineryRecipes.getDistillationRegistry().getRecipeForInput(fluidStack) != null;
+        } else {
+            horizontalsTank.predicate = fluidStack -> false;
+        }
+        upTank.setCanFill(false);
+        downTank.setCanFill(false);
+    }
 
     @Override
     public void G_reinit() {
-        PowerManager.configureRefinery(this, this.efficiency, this.unbreaking);
-        tanks.forEach(distillerTank -> distillerTank.setCapacity((int) (Fluid.BUCKET_VOLUME * 4 * Math.pow(1.3, this.fortune))));
+        PowerManager.configureRefinery(this, ench.efficiency, ench.unbreaking);
+        tanks.forEach(distillerTank -> distillerTank.setCapacity(ench.getCapacity()));
     }
 
     @Override
     public void readFromNBT(final NBTTagCompound nbttc) {
         super.readFromNBT(nbttc);
-        this.silktouch = nbttc.getBoolean("silktouch");
-        this.fortune = nbttc.getByte("fortune");
-        this.efficiency = nbttc.getByte("efficiency");
-        this.unbreaking = nbttc.getByte("unbreaking");
-        final NBTTagList srcl = nbttc.getTagList("src", 10);
-        for (int i = 0; i < srcl.tagCount(); ++i) {
-            final NBTTagCompound srct = srcl.getCompoundTagAt(i);
-            final int j = srct.getByte("Slot") & 255;
-            if (j < this.src.length)
-                this.src[j] = FluidStack.loadFluidStackFromNBT(srct);
-        }
-        this.res = FluidStack.loadFluidStackFromNBT(nbttc.getCompoundTag("res"));
-        this.cached = FluidStack.loadFluidStackFromNBT(nbttc.getCompoundTag("cached"));
-        this.rem_energy = nbttc.getDouble("rem_energy");
-        this.rem_time = nbttc.getLong("rem_time");
+        this.ench = DEnch.readFromNBT(nbttc);
+        horizontalsTank.readFromNBT(nbttc);
+        upTank.readFromNBT(nbttc);
+        downTank.readFromNBT(nbttc);
+        updateRecipe();
+        this.rem_energy = nbttc.getLong("rem_energy");
         this.animationSpeed = nbttc.getFloat("animationSpeed");
         this.animationStage = nbttc.getInteger("animationStage");
-        this.buf = (int) (Fluid.BUCKET_VOLUME * 4 * Math.pow(1.3, this.fortune));
-        PowerManager.configureRefinery(this, this.efficiency, this.unbreaking);
+        PowerManager.configureRefinery(this, ench.efficiency, ench.unbreaking);
+        tanks.forEach(distillerTank -> distillerTank.setCapacity(ench.getCapacity()));
     }
 
     @Override
     public NBTTagCompound writeToNBT(final NBTTagCompound nbttc) {
-        nbttc.setBoolean("silktouch", this.silktouch);
-        nbttc.setByte("fortune", this.fortune);
-        nbttc.setByte("efficiency", this.efficiency);
-        nbttc.setByte("unbreaking", this.unbreaking);
-        final NBTTagList srcl = new NBTTagList();
-        for (int i = 0; i < this.src.length; ++i)
-            if (this.src[i] != null) {
-                final NBTTagCompound srct = new NBTTagCompound();
-                srct.setByte("Slot", (byte) i);
-                this.src[i].writeToNBT(srct);
-                srcl.appendTag(srct);
-            }
-        nbttc.setTag("src", srcl);
-        if (this.res != null)
-            nbttc.setTag("res", this.res.writeToNBT(new NBTTagCompound()));
-        if (this.cached != null)
-            nbttc.setTag("cached", this.cached.writeToNBT(new NBTTagCompound()));
-        nbttc.setDouble("rem_energy", this.rem_energy);
-        nbttc.setLong("rem_time", this.rem_time);
+        ench.writeToNBT(nbttc);
+        horizontalsTank.writeToNBT(nbttc);
+        upTank.writeToNBT(nbttc);
+        downTank.writeToNBT(nbttc);
+        nbttc.setLong("rem_energy", this.rem_energy);
         nbttc.setFloat("animationSpeed", this.animationSpeed);
         nbttc.setInteger("animationStage", this.animationStage);
         return super.writeToNBT(nbttc);
@@ -118,38 +105,52 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
 
     @Override
     public void update() {
-        super.update();/*
+        super.update();
         if (getWorld().isRemote) {
             simpleAnimationIterate();
             return;
         }
         if (getWorld().getWorldTime() % 20 == 7)
-            PacketHandler.sendPacketToAround(new YogpstopPacket(this),
-                    getWorld().provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ());
-        if (this.cached == null) {
+            PacketHandler.sendToAround(TileMessage.create(this), getWorld(), getPos());
+        if (this.cachedGas == null || cachedLiqud == null) {
             decreaseAnimation();
             return;
         }
-        if (this.rem_time > 0)
-            this.rem_time--;
-        if (this.rem_time > 0
-                || !PowerManager.useEnergyRefinery(this, this.rem_energy, this.unbreaking, this.efficiency)) {
+        double v = MjReciever.getMJfrommicro(cacheEnergy);
+        if (cacheIn == null || getStoredEnergy() < v ||
+                !PowerManager.useEnergyRefinery(this, v, ench.unbreaking, ench.efficiency)) {
             decreaseAnimation();
-            return;
+        } else {
+            increaseAnimation();
+            horizontalsTank.drainInternal(cacheIn.amount, true);
+            upTank.fillInternal(cachedGas, true);
+            downTank.fillInternal(cachedLiqud, true);
+            this.cacheIn = null;
+            this.cachedGas = null;
+            this.cachedLiqud = null;
+            this.cacheEnergy = 0L;
+            decreaseAnimation();
+            updateRecipe();
         }
-        increaseAnimation();
-        if (this.res == null)
-            this.res = this.cached.copy();
-        else
-            this.res.amount += this.cached.amount;
-        this.cached = null;
-        decreaseAnimation();*/
-//        RefineryRecipeHelper.get(this);
+
     }
 
     @Override
     protected boolean isWorking() {
-        return false;
+        return cacheEnergy > 0;
+    }
+
+    private void updateRecipe() {
+        if (bcLoaded) {
+            IRefineryRecipeManager.IDistillationRecipe recipe =
+                    BuildcraftRecipeRegistry.refineryRecipes.getDistillationRegistry().getRecipeForInput(horizontalsTank.getFluid());
+            if (recipe != null) {
+                cacheIn = recipe.in();
+                cachedLiqud = recipe.outLiquid();
+                cachedGas = recipe.outGas();
+                cacheEnergy = recipe.powerRequired();
+            }
+        }
     }
 
     public int getAnimationStage() {
@@ -167,7 +168,7 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
     }
 
     private void sendNowPacket() {
-        //TODO crate now packet [DATA]???
+        PacketHandler.sendToAround(AnimatonMessage.create(this), getWorld(), getPos());
     }
 
     private void increaseAnimation() {
@@ -200,112 +201,23 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
             sendNowPacket();
     }
 
-    /*
-        @Override
-        public void C_recievePacket(final byte id, final byte[] data, final EntityPlayer ep) {
-            final ByteArrayDataInput badi = ByteStreams.newDataInput(data);
-            switch (id) {
-                case PacketHandler.StC_NOW:
-                    this.animationSpeed = badi.readFloat();
-                    break;
-            }
-        }
-
-    @Override
-    public int fill(final FluidStack resource, final boolean doFill) {
-        for (final FluidStack s : this.src) {
-            if (!resource.isFluidEqual(s))
-                continue;
-            final int ret = Math.min(this.buf - s.amount, resource.amount);
-            if (doFill)
-                s.amount += ret;
-//            RefineryRecipeHelper.get(this);
-            return ret;
-        }
-        for (int i = this.src.length - 1; i >= 0; i--) {
-            if (this.src[i] != null)
-                continue;
-            final int ret = Math.min(this.buf, resource.amount);
-            if (doFill) {
-                this.src[i] = resource.copy();
-                this.src[i].amount = ret;
-            }
-//            RefineryRecipeHelper.get(this);
-            return ret;
-        }
-        return 0;
-    }
-
-    @Override
-    public FluidStack drain(final FluidStack resource, final boolean doDrain) {
-        if (resource == null)
-            return null;
-        if (resource.isFluidEqual(this.res))
-            return drain(resource.amount, doDrain);
-        for (int i = this.src.length - 1; i >= 0; i--) {
-            if (!resource.isFluidEqual(this.src[i]))
-                continue;
-            final FluidStack ret = this.src[i].copy();
-            ret.amount = Math.min(resource.amount, ret.amount);
-            if (doDrain) {
-                this.src[i].amount -= ret.amount;
-                if (this.src[i].amount == 0)
-                    this.src[i] = null;
-            }
-//            RefineryRecipeHelper.get(this);
-            return ret;
-        }
-        return null;
-    }
-
-    @Override
-    public FluidStack drain(final int maxDrain, final boolean doDrain) {
-        if (this.res == null)
-            return null;
-        final FluidStack ret = this.res.copy();
-        ret.amount = Math.min(maxDrain, ret.amount);
-        if (doDrain) {
-            this.res.amount -= ret.amount;
-            if (this.res.amount == 0)
-                this.res = null;
-        }
-//        RefineryRecipeHelper.get(this);
-        return ret;
-    }
-
-    @Override
-    public IFluidTankProperties[] getTankProperties() {
-        final IFluidTankProperties[] ret = new IFluidTankProperties[this.src.length + 1];
-        ret[0] = new FluidTankProperties(this.res, this.buf);
-        for (int i = this.src.length - 1; i >= 0; i--)
-            ret[i + 1] = new FluidTankProperties(this.src[i], this.buf);
-        return ret;
-    }
-*/
     @Override
     public Map<Integer, Byte> getEnchantments() {
         final Map<Integer, Byte> ret = new HashMap<>();
-        if (this.efficiency > 0)
-            ret.put(EfficiencyID, this.efficiency);
-        if (this.fortune > 0)
-            ret.put(FortuneID, this.fortune);
-        if (this.unbreaking > 0)
-            ret.put(UnbreakingID, this.unbreaking);
-        if (this.silktouch)
+        if (ench.efficiency > 0)
+            ret.put(EfficiencyID, ench.efficiency);
+        if (ench.fortune > 0)
+            ret.put(FortuneID, ench.fortune);
+        if (ench.unbreaking > 0)
+            ret.put(UnbreakingID, ench.unbreaking);
+        if (ench.silktouch)
             ret.put(SilktouchID, (byte) 1);
         return ret;
     }
 
     @Override
     public void setEnchantent(final short id, final short val) {
-        if (id == EfficiencyID)
-            this.efficiency = (byte) val;
-        else if (id == FortuneID)
-            this.fortune = (byte) val;
-        else if (id == UnbreakingID)
-            this.unbreaking = (byte) val;
-        else if (id == SilktouchID && val > 0)
-            this.silktouch = true;
+        ench = ench.copy(id, val);
     }
 
     @Override
@@ -395,14 +307,99 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
     }
 
     private class DistillerTank extends FluidTank {
+        private final String name;
+        private Predicate<FluidStack> predicate = fluidStack -> false;
 
-        public DistillerTank() {
+        public DistillerTank(String name) {
             super(4 * Fluid.BUCKET_VOLUME);
+            this.name = name;
+        }
+
+        @Override
+        public int fillInternal(FluidStack resource, boolean doFill) {
+            int i = super.fillInternal(resource, doFill);
+            updateRecipe();
+            return i;
+        }
+
+        @Nullable
+        @Override
+        public FluidStack drainInternal(int maxDrain, boolean doDrain) {
+            FluidStack stack = super.drainInternal(maxDrain, doDrain);
+            updateRecipe();
+            return stack;
+        }
+
+        @Override
+        public DistillerTank readFromNBT(NBTTagCompound nbt) {
+            super.readFromNBT(nbt.getCompoundTag(name));
+            return this;
+        }
+
+        @Override
+        public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
+            NBTTagCompound compound = new NBTTagCompound();
+            super.writeToNBT(compound);
+            nbt.setTag(name, compound);
+            return nbt;
         }
 
         @Override
         public boolean canFillFluidType(FluidStack fluid) {
-            return super.canFillFluidType(fluid);
+            return predicate.test(fluid) && super.canFillFluidType(fluid);
+        }
+    }
+
+    private static class DEnch implements INBTWritable {
+        private static final String NBT_DEnch = "dench";
+        private static final DEnch defaultEnch = new DEnch(0, 0, 0, false);
+        private static final int[] CAPACITIES = {4000, 5200, 6760, 8788};
+        private final byte efficiency;
+        private final byte unbreaking;
+        private final byte fortune;
+        private final boolean silktouch;
+
+        public DEnch(int efficiency, int unbreaking, int fortune, boolean silktouch) {
+            this.efficiency = (byte) efficiency;
+            this.unbreaking = (byte) unbreaking;
+            this.fortune = (byte) fortune;
+            this.silktouch = silktouch;
+        }
+
+        public int getCapacity() {
+            if (fortune >= 3) {
+                return CAPACITIES[3];
+            } else {
+                return CAPACITIES[fortune];
+            }
+        }
+
+        public DEnch copy(short id, short val) {
+            if (id == EfficiencyID) return new DEnch(val, unbreaking, fortune, silktouch);
+            else if (id == FortuneID) return new DEnch(efficiency, unbreaking, val, silktouch);
+            else if (id == UnbreakingID) return new DEnch(efficiency, val, fortune, silktouch);
+            else if (id == SilktouchID) return new DEnch(efficiency, unbreaking, fortune, val > 0);
+            else return this;
+        }
+
+        @Override
+        public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
+            NBTTagCompound t = new NBTTagCompound();
+            t.setByte("efficiency", efficiency);
+            t.setByte("unbreaking", unbreaking);
+            t.setByte("fortune", fortune);
+            t.setBoolean("silktouch", silktouch);
+            nbt.setTag(NBT_DEnch, t);
+            return null;
+        }
+
+        public static DEnch readFromNBT(NBTTagCompound compound) {
+            if (compound.hasKey(NBT_DEnch)) {
+                NBTTagCompound t = compound.getCompoundTag(NBT_DEnch);
+                return new DEnch(t.getByte("efficiency"), t.getByte("unbreaking"), t.getByte("fortune"), t.getBoolean("silktouch"));
+            } else {
+                return defaultEnch;
+            }
         }
     }
 }

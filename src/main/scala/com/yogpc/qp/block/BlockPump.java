@@ -18,7 +18,7 @@ import java.util.Optional;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
-import com.yogpc.qp.compat.BuildCraftHelper;
+import com.yogpc.qp.compat.BuildcraftHelper;
 import com.yogpc.qp.compat.EnchantmentHelper;
 import com.yogpc.qp.item.ItemBlockPump;
 import com.yogpc.qp.tile.IEnchantableTile;
@@ -105,7 +105,7 @@ public class BlockPump extends ADismCBlock {
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack stack = playerIn.getHeldItem(hand);
-        if (BuildCraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
+        if (BuildcraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
             Optional.ofNullable((TilePump) worldIn.getTileEntity(pos)).ifPresent(pump -> pump.S_changeRange(playerIn));
             return true;
         }
