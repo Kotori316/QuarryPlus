@@ -61,7 +61,7 @@ public class BlockMiningWell extends ADismCBlock {
             Optional.ofNullable((TileMiningWell) worldIn.getTileEntity(pos)).ifPresent(TileMiningWell::G_reinit);
             return true;
         }
-        if (stack.getItem() == QuarryPlusI.itemTool && stack.getItemDamage() == 0) {
+        if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == 0) {
             if (!worldIn.isRemote) {
                 Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t ->
                         EnchantmentHelper.getEnchantmentsChat(t).forEach(playerIn::sendMessage));

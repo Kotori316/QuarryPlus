@@ -18,7 +18,7 @@ import net.minecraftforge.fml.common.Loader
 abstract class QPBlock(materialIn: Material, name: String, generator: Function[QPBlock, _ <: ItemBlock]) extends BlockContainer(materialIn) {
     setUnlocalizedName(name)
     setRegistryName(QuarryPlus.modID, name)
-    setCreativeTab(QuarryPlusI.ct)
+    setCreativeTab(QuarryPlusI.creativeTab)
     val itemBlock = generator.apply(this)
     itemBlock.setRegistryName(QuarryPlus.modID, name)
 

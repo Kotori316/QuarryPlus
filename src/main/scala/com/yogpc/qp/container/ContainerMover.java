@@ -85,7 +85,7 @@ public class ContainerMover extends Container {
 
     @Override
     public boolean canInteractWith(final EntityPlayer playerIn) {
-        return this.worldObj.getBlockState(pos).getBlock() == QuarryPlusI.blockMover && playerIn.getDistanceSqToCenter(pos) <= 64.0D;
+        return this.worldObj.getBlockState(pos).getBlock() == QuarryPlusI.blockMover() && playerIn.getDistanceSqToCenter(pos) <= 64.0D;
     }
 
     @Override

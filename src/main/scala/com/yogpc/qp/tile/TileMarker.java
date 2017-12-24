@@ -104,7 +104,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
     @Override
     public void removeFromWorld() {
         if (this.link == null) {
-            QuarryPlusI.blockMarker.dropBlockAsItem(getWorld(), getPos(), getWorld().getBlockState(getPos()), 0);
+            QuarryPlusI.blockMarker().dropBlockAsItem(getWorld(), getPos(), getWorld().getBlockState(getPos()), 0);
             getWorld().setBlockToAir(getPos());
             return;
         }
@@ -118,7 +118,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
         if (this.link != null)
             return this.link.removeConnection(true);
         NonNullList<ItemStack> ret = NonNullList.create();
-        QuarryPlusI.blockMarker.getDrops(ret, getWorld(), getPos(), getWorld().getBlockState(getPos()), 0);
+        QuarryPlusI.blockMarker().getDrops(ret, getWorld(), getPos(), getWorld().getBlockState(getPos()), 0);
         getWorld().setBlockToAir(getPos());
         return ret;
     }
@@ -304,7 +304,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
     @Override
     public void invalidate() {
         super.invalidate();
-        if (getWorld().getBlockState(getPos()).getBlock() != QuarryPlusI.blockMarker)
+        if (getWorld().getBlockState(getPos()).getBlock() != QuarryPlusI.blockMarker())
             G_destroy();
     }
 

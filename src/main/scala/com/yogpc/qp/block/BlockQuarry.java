@@ -90,7 +90,7 @@ public class BlockQuarry extends ADismCBlock {
             TileEntity t = worldIn.getTileEntity(pos);
             if (t != null) {
                 TileQuarry quarry = (TileQuarry) t;
-                if (stack.getItem() == QuarryPlusI.itemTool && stack.getItemDamage() == 0) {
+                if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == 0) {
                     EnchantmentHelper.getEnchantmentsChat(quarry).forEach(playerIn::sendMessage);
                     playerIn.sendMessage(new TextComponentTranslation("chat.currentmode",
                             new TextComponentTranslation(quarry.filler ? "chat.fillermode" : "chat.quarrymode")));

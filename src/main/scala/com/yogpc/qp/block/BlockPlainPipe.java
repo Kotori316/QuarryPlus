@@ -23,7 +23,7 @@ public class BlockPlainPipe extends Block {
 
     public BlockPlainPipe() {
         super(Material.GLASS);
-        setCreativeTab(QuarryPlusI.ct);
+        setCreativeTab(QuarryPlusI.creativeTab());
         setUnlocalizedName(QuarryPlus.Names.plainpipe);
         setRegistryName(QuarryPlus.modID, QuarryPlus.Names.plainpipe);
         itemBlock = new ItemBlock(this);

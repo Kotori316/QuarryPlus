@@ -57,7 +57,7 @@ public class BlockAdvQuarry extends ADismCBlock {
         TileEntity entity = world.getTileEntity(pos);
         if (TileAdvQuarry.class.isInstance(entity)) {
             TileAdvQuarry quarry = (TileAdvQuarry) entity;
-            ItemStack stack = new ItemStack(QuarryPlusI.blockChunkdestroyer, 1, 0);
+            ItemStack stack = new ItemStack(QuarryPlusI.blockChunkdestroyer(), 1, 0);
             EnchantmentHelper.enchantmentToIS(quarry, stack);
             drops.add(stack);
         }
@@ -79,7 +79,7 @@ public class BlockAdvQuarry extends ADismCBlock {
                 }
             }
             return true;
-        } else if (stack.getItem() == QuarryPlusI.itemTool && stack.getItemDamage() == 0) {
+        } else if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == 0) {
             if (!worldIn.isRemote)
                 Optional.ofNullable((TileAdvQuarry) worldIn.getTileEntity(pos))
                         .map(EnchantmentHelper::getEnchantmentsChat).ifPresent(l -> l.forEach(playerIn::sendMessage));
@@ -89,7 +89,7 @@ public class BlockAdvQuarry extends ADismCBlock {
                 Optional.ofNullable((TileAdvQuarry) worldIn.getTileEntity(pos)).ifPresent(TileAdvQuarry::stickActivated);
             return true;
         } else if (!playerIn.isSneaking()) {
-            playerIn.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdAdvQuarry, worldIn, pos.getX(), pos.getY(), pos.getZ());
+            playerIn.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdAdvQuarry(), worldIn, pos.getX(), pos.getY(), pos.getZ());
             return true;
         }
         return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);

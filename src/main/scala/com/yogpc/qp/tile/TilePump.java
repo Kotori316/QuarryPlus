@@ -452,7 +452,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                 for (bx = 0; bx < this.block_side_x; bx++)
                     for (bz = 0; bz < this.block_side_z; bz++)
                         if ((this.blocks[this.py - this.yOffset][bx][bz] & 0x40) != 0) {
-                            drainBlock(bx, bz, QuarryPlusI.blockFrame.getDamiingState());
+                            drainBlock(bx, bz, QuarryPlusI.blockFrame().getDamiingState());
                             if (isquarry) {
                                 TileQuarry quarry = (TileQuarry) tbpp;
                                 if (Config.content().debug()) {

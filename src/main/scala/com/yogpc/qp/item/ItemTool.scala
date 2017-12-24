@@ -63,7 +63,7 @@ object ItemTool extends Item with IEnchantableItem {
     setMaxStackSize(1)
     setHasSubtypes(true)
     setMaxDamage(0)
-    setCreativeTab(QuarryPlusI.ct)
+    setCreativeTab(QuarryPlusI.creativeTab)
     setUnlocalizedName(QuarryPlus.Names.tool)
     setRegistryName(QuarryPlus.modID, QuarryPlus.Names.tool)
 

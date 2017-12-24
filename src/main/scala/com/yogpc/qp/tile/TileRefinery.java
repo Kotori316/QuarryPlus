@@ -122,15 +122,21 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
             decreaseAnimation();
         } else {
             increaseAnimation();
-            horizontalsTank.drainInternal(cacheIn.amount, true);
-            upTank.fillInternal(cachedGas, true);
-            downTank.fillInternal(cachedLiqud, true);
-            this.cacheIn = null;
-            this.cachedGas = null;
-            this.cachedLiqud = null;
-            this.cacheEnergy = 0L;
+            FluidStack inStack = horizontalsTank.drainInternal(cacheIn.amount, false);
+            int gas = upTank.fillInternal(cachedGas, false);
+            int liquid = downTank.fillInternal(cachedLiqud, false);
+
+            if (inStack != null && inStack.amount > 0 && gas > 0 && liquid > 0) {
+                horizontalsTank.drainInternal(cacheIn.amount, true);
+                upTank.fillInternal(cachedGas, true);
+                downTank.fillInternal(cachedLiqud, true);
+                this.cacheIn = null;
+                this.cachedGas = null;
+                this.cachedLiqud = null;
+                this.cacheEnergy = 0L;
+                updateRecipe();
+            }
             decreaseAnimation();
-            updateRecipe();
         }
 
     }
@@ -245,6 +251,11 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
         }
     }
 
+    @Override
+    public boolean hasFastRenderer() {
+        return true;
+    }
+
     private class AllTanks implements IFluidHandler {
 
         /**
@@ -306,7 +317,7 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
         }
     }
 
-    private class DistillerTank extends FluidTank {
+    public class DistillerTank extends FluidTank {
         private final String name;
         private Predicate<FluidStack> predicate = fluidStack -> false;
 
@@ -318,7 +329,7 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
         @Override
         public int fillInternal(FluidStack resource, boolean doFill) {
             int i = super.fillInternal(resource, doFill);
-            updateRecipe();
+            if (doFill) updateRecipe();
             return i;
         }
 
@@ -326,7 +337,7 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
         @Override
         public FluidStack drainInternal(int maxDrain, boolean doDrain) {
             FluidStack stack = super.drainInternal(maxDrain, doDrain);
-            updateRecipe();
+            if (doDrain) updateRecipe();
             return stack;
         }
 
@@ -347,6 +358,25 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
         @Override
         public boolean canFillFluidType(FluidStack fluid) {
             return predicate.test(fluid) && super.canFillFluidType(fluid);
+        }
+
+        @Override
+        public String toString() {
+            String info;
+            if (fluid == null) {
+                info = "None";
+            } else {
+                info = fluid.getFluid().getName() + " : " + fluid.amount;
+            }
+            return name + " " + info;
+        }
+
+        public double getAA(double d) {
+            if (fluid == null) {
+                return 0;
+            }
+            int i = fluid.getFluid().isGaseous() ? 1 : -1;
+            return (double) getFluidAmount() / (double) getCapacity() * d * i;
         }
     }
 
@@ -400,6 +430,11 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
             } else {
                 return defaultEnch;
             }
+        }
+
+        @Override
+        public String toString() {
+            return String.format("DEnch %d, %d, %d, %s", efficiency, unbreaking, fortune, silktouch);
         }
     }
 }
