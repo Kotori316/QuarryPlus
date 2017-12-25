@@ -161,17 +161,17 @@ public class BlockLaser extends ADismCBlock {
 
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-        final TileLaser tile = (TileLaser) worldIn.getTileEntity(pos);
+        Optional<TileLaser> tileEntity = Optional.ofNullable((TileLaser) worldIn.getTileEntity(pos));
         this.drop.clear();
-        if (worldIn.isRemote || tile == null)
-            return;
-        final int count = quantityDropped(state, 0, worldIn.rand);
-        final Item it = getItemDropped(state, worldIn.rand, 0);
-        for (int i = 0; i < count; i++) {
-            final ItemStack is = new ItemStack(it, 1, damageDropped(state));
-            EnchantmentHelper.enchantmentToIS(tile, is);
-            this.drop.add(is);
-        }
+        tileEntity.ifPresent(tile -> {
+            final int count = quantityDropped(state, 0, worldIn.rand);
+            final Item it = getItemDropped(state, worldIn.rand, 0);
+            for (int i = 0; i < count; i++) {
+                final ItemStack is = new ItemStack(it, 1, damageDropped(state));
+                EnchantmentHelper.enchantmentToIS(tile, is);
+                this.drop.add(is);
+            }
+        });
         super.breakBlock(worldIn, pos, state);
     }
 

@@ -151,12 +151,11 @@ public class BlockBreaker extends ADismCBlock {
 
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-        Optional<TileBreaker> tileEntity = Optional.ofNullable((TileBreaker) worldIn.getTileEntity(pos));
         this.drops.clear();
-        tileEntity.ifPresent(tile -> {
+        Optional.ofNullable((TileBreaker) worldIn.getTileEntity(pos)).ifPresent(tile -> {
             final int count = quantityDropped(state, 0, worldIn.rand);
+            final Item id1 = getItemDropped(state, worldIn.rand, 0);
             for (int i = 0; i < count; i++) {
-                final Item id1 = getItemDropped(state, worldIn.rand, 0);
                 ItemStack is = new ItemStack(id1, 1, damageDropped(state));
                 EnchantmentHelper.enchantmentToIS(tile, is);
                 this.drops.add(is);
