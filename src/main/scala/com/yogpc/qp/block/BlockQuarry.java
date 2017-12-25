@@ -57,7 +57,8 @@ public class BlockQuarry extends ADismCBlock {
 
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-        if (!worldIn.isRemote) {
+        this.drops.clear();
+        if (!worldIn.isRemote) { // Always true.
             TileQuarry tile = (TileQuarry) worldIn.getTileEntity(pos);
             if (tile != null) {
                 final int count = quantityDropped(state, 0, worldIn.rand);
