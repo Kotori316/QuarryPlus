@@ -102,6 +102,7 @@ public class BlockMiningWell extends ADismCBlock {
 
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+        this.drops.clear();
         if (!worldIn.isRemote) {
             TileMiningWell tile = (TileMiningWell) worldIn.getTileEntity(pos);
             if (tile != null) {

@@ -67,16 +67,15 @@ public class BlockPump extends ADismCBlock {
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
         this.drop.clear();
-        final TilePump tile = (TilePump) worldIn.getTileEntity(pos);
-        if (worldIn.isRemote || tile == null)
-            return;
-        final int count = quantityDropped(state, 0, worldIn.rand);
-        final Item it = getItemDropped(state, worldIn.rand, 0);
-        for (int i = 0; i < count; i++) {
-            final ItemStack is = new ItemStack(it, 1, damageDropped(state));
-            EnchantmentHelper.enchantmentToIS(tile, is);
-            this.drop.add(is);
-        }
+        Optional.ofNullable((TilePump) worldIn.getTileEntity(pos)).ifPresent(tile -> {
+            final int count = quantityDropped(state, 0, worldIn.rand);
+            final Item it = getItemDropped(state, worldIn.rand, 0);
+            for (int i = 0; i < count; i++) {
+                final ItemStack is = new ItemStack(it, 1, damageDropped(state));
+                EnchantmentHelper.enchantmentToIS(tile, is);
+                this.drop.add(is);
+            }
+        });
         super.breakBlock(worldIn, pos, state);
     }
 

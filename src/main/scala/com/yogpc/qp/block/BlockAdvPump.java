@@ -12,6 +12,7 @@ import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.item.ItemBlockEnchantable;
 import com.yogpc.qp.tile.TileAdvPump;
 import javax.annotation.Nullable;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -32,6 +33,9 @@ import net.minecraft.world.World;
 public class BlockAdvPump extends ADismCBlock {
     public BlockAdvPump() {
         super(Material.IRON, QuarryPlus.Names.advpump, ItemBlockEnchantable::new);
+        setHardness(1.5F);
+        setResistance(10F);
+        setSoundType(SoundType.STONE);
         setDefaultState(getBlockState().getBaseState().withProperty(ACTING, false));
     }
 
