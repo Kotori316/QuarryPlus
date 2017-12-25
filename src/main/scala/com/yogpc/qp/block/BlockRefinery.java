@@ -15,6 +15,7 @@ package com.yogpc.qp.block;
 
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
@@ -22,6 +23,8 @@ import com.yogpc.qp.compat.BuildcraftHelper;
 import com.yogpc.qp.compat.EnchantmentHelper;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.item.ItemBlockRefinery;
+import com.yogpc.qp.packet.PacketHandler;
+import com.yogpc.qp.packet.TileMessage;
 import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TileRefinery;
 import net.minecraft.block.material.Material;
@@ -128,17 +131,22 @@ public class BlockRefinery extends ADismCBlock {
             worldIn.setBlockState(pos, state.withProperty(FACING, state.getValue(FACING).rotateYCCW()));
             return true;
         }
+        Optional<TileRefinery> tileEntity = Optional.ofNullable((TileRefinery) worldIn.getTileEntity(pos));
+        Consumer<TileRefinery> sendPacket = t -> PacketHandler.sendToAround(TileMessage.create(t), worldIn, pos);
         if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == 0) {
             if (!worldIn.isRemote) {
-                Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t ->
-                        EnchantmentHelper.getEnchantmentsChat(t).forEach(playerIn::sendMessage));
+                Consumer<TileRefinery> consumer1 = t -> EnchantmentHelper.getEnchantmentsChat(t).forEach(playerIn::sendMessage);
+                tileEntity.ifPresent(consumer1.andThen(sendPacket));
             }
             return true;
         } else if (FluidUtil.getFluidHandler(stack) != null) {
             if (!worldIn.isRemote) {
-                fill((TileRefinery) worldIn.getTileEntity(pos), playerIn, hand, facing);
+                Consumer<TileRefinery> consumer1 = refinery -> fill(refinery, playerIn, hand, facing);
+                tileEntity.ifPresent(consumer1.andThen(sendPacket));
             }
             return true;
+        } else if (!worldIn.isRemote) {
+            tileEntity.ifPresent(sendPacket);
         }
         return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
     }

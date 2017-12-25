@@ -110,7 +110,7 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
             simpleAnimationIterate();
             return;
         }
-        if (getWorld().getWorldTime() % 20 == 7)
+        if (getWorld().getTotalWorldTime() % 20 == 7)
             PacketHandler.sendToAround(TileMessage.create(this), getWorld(), getPos());
         if (this.cachedGas == null || cachedLiqud == null) {
             decreaseAnimation();
@@ -375,7 +375,7 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
             if (fluid == null) {
                 return 0;
             }
-            int i = fluid.getFluid().isGaseous() ? 1 : -1;
+            int i = fluid.getFluid().isGaseous() ? -1 : 1;
             return (double) getFluidAmount() / (double) getCapacity() * d * i;
         }
     }
