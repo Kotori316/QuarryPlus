@@ -62,10 +62,10 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
 
     protected final LinkedList<ItemStack> cacheItems = new LinkedList<>();
     protected IItemHandler handler = new InvWrapper(this) {
-        @Nonnull
+        @Nullable
         @Override
-        public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-            return com.yogpc.qp.version.VersionUtil.empty();
+        public ItemStack insertItem(int slot, @Nullable ItemStack stack, boolean simulate) {
+            return stack;
         }
     };
 
