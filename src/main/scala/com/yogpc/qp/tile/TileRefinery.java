@@ -24,6 +24,7 @@ import buildcraft.api.recipes.BuildcraftRecipeRegistry;
 import buildcraft.api.recipes.IRefineryRecipeManager;
 import com.yogpc.qp.PowerManager;
 import com.yogpc.qp.compat.INBTWritable;
+import com.yogpc.qp.item.ItemQuarryDebug;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.TileMessage;
 import com.yogpc.qp.packet.distiller.AnimatonMessage;
@@ -38,6 +39,8 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.FluidTankProperties;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * See {@link buildcraft.factory.tile.TileDistiller_BC8}, {@link buildcraft.api.recipes.IRefineryRecipeManager}, {@link buildcraft.energy.BCEnergyRecipes}
@@ -47,7 +50,10 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
     public final DistillerTank upTank = new DistillerTank("upTank");
     public final DistillerTank downTank = new DistillerTank("downTank");
     private List<DistillerTank> tanks = Arrays.asList(horizontalsTank, upTank, downTank);
-    private final AllTanks fluidHandler = new AllTanks();
+    private final IFluidHandler fluidHandler = (IDummyFluidHandler) () -> {
+        IFluidTankProperties[] array = tanks.stream().flatMap(distillerTank -> Stream.of(distillerTank.getTankProperties())).toArray(IFluidTankProperties[]::new);
+        return array.length == 0 ? new IFluidTankProperties[]{new FluidTankProperties(null, horizontalsTank.getCapacity(), false, false)} : array;
+    };
 
     public long rem_energy;
     public FluidStack cacheIn;
@@ -106,6 +112,7 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
     @Override
     public void update() {
         super.update();
+        if (!bcLoaded) return;
         if (getWorld().isRemote) {
             simpleAnimationIterate();
             return;
@@ -256,65 +263,28 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
         return true;
     }
 
-    private class AllTanks implements IFluidHandler {
+    @Override
+    public void getDebugInfo(List<String> left, List<String> right, EnumFacing side) {
+        left.add(getClass().getName());
+        left.add(ItemQuarryDebug.tileposToString(this).getText());
+        left.add(ItemQuarryDebug.energyToString(this).getText());
+        if (cacheIn != null) left.add("InputRecipe : " + cacheIn.getFluid().getName());
+        if (cachedGas != null) left.add("OutGas : " + cachedGas.getFluid().getName());
+        if (cachedLiqud != null) left.add("OutLiquid : " + cachedLiqud.getFluid().getName());
+    }
 
-        /**
-         * Returns an array of objects which represent the internal tanks.
-         * These objects cannot be used to manipulate the internal tanks.
-         *
-         * @return Properties for the relevant internal tanks.
-         */
-        @Override
-        public IFluidTankProperties[] getTankProperties() {
-            IFluidTankProperties[] array = tanks.stream().flatMap(distillerTank -> Stream.of(distillerTank.getTankProperties())).toArray(IFluidTankProperties[]::new);
-            if (array.length == 0) {
-                return new IFluidTankProperties[]{new FluidTankProperties(null, horizontalsTank.getCapacity(), false, false)};
-            } else {
-                return array;
-            }
-        }
+    @Override
+    public void getClientDebugInfo(List<String> left, List<String> right, EnumFacing side) {
+        right.add("AnimationStage : " + animationStage);
+        right.add("AnimationSpeed : " + animationSpeed);
+    }
 
-        /**
-         * Fills fluid into internal tanks, distribution is left entirely to the IFluidHandler.
-         *
-         * @param resource FluidStack representing the Fluid and maximum amount of fluid to be filled.
-         * @param doFill   If false, fill will only be simulated.
-         * @return Amount of resource that was (or would have been, if simulated) filled.
-         */
-        @Override
-        public int fill(FluidStack resource, boolean doFill) {
-            return 0;
-        }
-
-        /**
-         * Drains fluid out of internal tanks, distribution is left entirely to the IFluidHandler.
-         *
-         * @param resource FluidStack representing the Fluid and maximum amount of fluid to be drained.
-         * @param doDrain  If false, drain will only be simulated.
-         * @return FluidStack representing the Fluid and amount that was (or would have been, if
-         * simulated) drained.
-         */
-        @Nullable
-        @Override
-        public FluidStack drain(FluidStack resource, boolean doDrain) {
-            return null;
-        }
-
-        /**
-         * Drains fluid out of internal tanks, distribution is left entirely to the IFluidHandler.
-         * <p/>
-         * This method is not Fluid-sensitive.
-         *
-         * @param maxDrain Maximum amount of fluid to drain.
-         * @param doDrain  If false, drain will only be simulated.
-         * @return FluidStack representing the Fluid and amount that was (or would have been, if
-         * simulated) drained.
-         */
-        @Nullable
-        @Override
-        public FluidStack drain(int maxDrain, boolean doDrain) {
-            return null;
-        }
+    @SideOnly(Side.CLIENT)
+    public Runnable receiveMessage(AnimatonMessage message) {
+        return () -> {
+            animationStage = message.stage;
+            animationSpeed = message.speed;
+        };
     }
 
     public class DistillerTank extends FluidTank {

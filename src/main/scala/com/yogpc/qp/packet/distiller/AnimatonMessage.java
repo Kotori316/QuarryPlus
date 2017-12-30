@@ -18,15 +18,17 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  */
 public class AnimatonMessage implements IMessage {
 
-    int dim;
-    BlockPos pos;
-    float speed;
+    public int dim;
+    public BlockPos pos;
+    public float speed;
+    public int stage;
 
     public static AnimatonMessage create(TileRefinery refinery) {
         AnimatonMessage message = new AnimatonMessage();
         message.pos = refinery.getPos();
         message.dim = refinery.getWorld().provider.getDimension();
         message.speed = refinery.animationSpeed;
+        message.stage = refinery.getAnimationStage();
         return message;
     }
 
@@ -35,11 +37,12 @@ public class AnimatonMessage implements IMessage {
         pos = buffer.readBlockPos();
         dim = buffer.readInt();
         speed = buffer.readFloat();
+        stage = buffer.readInt();
     }
 
     @Override
     public void toBytes(PacketBuffer buffer) {
-        buffer.writeBlockPos(pos).writeInt(dim).writeFloat(speed);
+        buffer.writeBlockPos(pos).writeInt(dim).writeFloat(speed).writeInt(stage);
     }
 
     @Override
@@ -49,7 +52,7 @@ public class AnimatonMessage implements IMessage {
         if (world.provider.getDimension() == dim) {
             TileRefinery refinery = ((TileRefinery) world.getTileEntity(pos));
             if (refinery != null) {
-                Minecraft.getMinecraft().addScheduledTask(() -> refinery.animationSpeed = speed);
+                Minecraft.getMinecraft().addScheduledTask(refinery.receiveMessage(this));
             }
         }
         return null;
