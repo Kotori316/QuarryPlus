@@ -65,7 +65,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         @Nonnull
         @Override
         public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-            return com.yogpc.qp.version.VersionUtil.empty();
+            return stack;
         }
     };
 

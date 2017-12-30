@@ -53,8 +53,11 @@ object WorkbenchRecipes {
     def removeRecipe(output: ItemDamage): Unit = recipes.remove(output)
 
     def getRecipe(inputs: java.util.List[ItemStack]): java.util.List[WorkbenchRecipes] = {
+        val asScala = inputs.asScala
         recipes.filter { case (_, workRecipe) =>
-            workRecipe.inputs.forall(i => inputs.asScala.exists(t => OreDictionary.itemMatches(i, t, false) && t.getCount >= i.getCount))
+            workRecipe.inputs.forall(i => {
+                asScala.exists(t => OreDictionary.itemMatches(i, t, false) && t.getCount >= i.getCount)
+            })
         }.values.toList.asJava
     }
 
