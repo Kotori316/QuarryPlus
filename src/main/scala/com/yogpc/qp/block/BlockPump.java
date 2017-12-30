@@ -108,7 +108,7 @@ public class BlockPump extends ADismCBlock {
             Optional.ofNullable((TilePump) worldIn.getTileEntity(pos)).ifPresent(pump -> pump.S_changeRange(playerIn));
             return true;
         }
-        if (stack != null && stack.getItem() == QuarryPlusI.itemTool) {
+        if (stack != null && stack.getItem() == QuarryPlusI.itemTool()) {
             if (!worldIn.isRemote && stack.getItemDamage() == 0) {
                 TilePump pump = (TilePump) worldIn.getTileEntity(pos);
                 if (pump != null) {

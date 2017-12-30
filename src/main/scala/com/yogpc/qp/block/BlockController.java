@@ -49,7 +49,7 @@ public class BlockController extends Block implements IDismantleable {
         setUnlocalizedName(QuarryPlus.Names.controller);
         setRegistryName(QuarryPlus.modID, QuarryPlus.Names.controller);
         setHardness(1.0f);
-        setCreativeTab(QuarryPlusI.ct);
+        setCreativeTab(QuarryPlusI.creativeTab());
         setDefaultState(getBlockState().getBaseState().withProperty(ACTING, false));
         itemBlock = new ItemBlock(this);
         itemBlock.setRegistryName(QuarryPlus.modID, QuarryPlus.Names.controller);

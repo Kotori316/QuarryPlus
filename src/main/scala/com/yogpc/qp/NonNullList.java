@@ -346,7 +346,7 @@ public class NonNullList<E> extends AbstractList<E> {
      */
     @Override
     public void clear() {
-        if (defaultElement == null || !hasDefault) {
+        if (defaultElement == null && !hasDefault) {
             delegate.clear();
         } else {
             for (int i = 0; i < delegate.size(); ++i) {

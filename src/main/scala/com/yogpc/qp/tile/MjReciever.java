@@ -82,10 +82,15 @@ public class MjReciever /*implements IMjReceiver, IMjReadable*/ {
                 tile.getMaxStored() - tile.getStoredEnergy() - tile.got) * MjAPI.MJ);
     }
 
+    @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.BuildCraft_core)
+    public static double getMJfrommicro(long microJoules) {
+        return microJoules / MjAPI.MJ;
+    }
+
     @Override
     @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.BuildCraft_core)
     public long receivePower(long microJoules, boolean simulate) {
-        return (long) (microJoules - tile.getEnergy(microJoules / MjAPI.MJ, !simulate) * MjAPI.MJ);
+        return (long) (microJoules - tile.getEnergy(getMJfrommicro(microJoules), !simulate) * MjAPI.MJ);
     }
 
     @Override

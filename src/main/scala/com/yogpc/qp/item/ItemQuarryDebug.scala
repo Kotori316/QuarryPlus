@@ -19,7 +19,7 @@ object ItemQuarryDebug extends Item {
     setUnlocalizedName(QuarryPlus.Names.debug)
     setRegistryName(QuarryPlus.modID, QuarryPlus.Names.debug)
     setMaxStackSize(1)
-    setCreativeTab(QuarryPlusI.ct)
+    setCreativeTab(QuarryPlusI.creativeTab)
 
     def onItemUseFirst(player: EntityPlayer, worldIn: World, pos: BlockPos, side: EnumFacing,
                        hitX: Float, hitY: Float, hitZ: Float, hand: EnumHand): EnumActionResult = {

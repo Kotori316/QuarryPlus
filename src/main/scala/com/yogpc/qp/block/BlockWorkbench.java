@@ -42,7 +42,7 @@ public class BlockWorkbench extends ADismCBlock {
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (InvUtils.isDebugItem(playerIn, hand)) return true;
         if (!playerIn.isSneaking()) {
-            playerIn.openGui(QuarryPlus.INSTANCE, QuarryPlusI.guiIdWorkbench, worldIn, pos.getX(), pos.getY(), pos.getZ());
+            playerIn.openGui(QuarryPlus.INSTANCE, QuarryPlusI.guiIdWorkbench(), worldIn, pos.getX(), pos.getY(), pos.getZ());
             return true;
         }
         return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);

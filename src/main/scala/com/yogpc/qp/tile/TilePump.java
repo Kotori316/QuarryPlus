@@ -452,7 +452,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                 for (bx = 0; bx < this.block_side_x; bx++)
                     for (bz = 0; bz < this.block_side_z; bz++)
                         if ((this.blocks[this.py - this.yOffset][bx][bz] & 0x40) != 0) {
-                            drainBlock(bx, bz, QuarryPlusI.blockFrame.getDamiingState());
+                            drainBlock(bx, bz, QuarryPlusI.blockFrame().getDamiingState());
                             if (isquarry) {
                                 TileQuarry quarry = (TileQuarry) tbpp;
                                 if (Config.content().debug()) {
@@ -673,31 +673,9 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
     }
 
-    private IFluidHandler tankAll = new IFluidHandler() {
-        @Override
-        public IFluidTankProperties[] getTankProperties() {
-            return TilePump.this.liquids.stream()
-                    .map(fluidStack -> new FluidTankProperties(fluidStack, fluidStack.amount, false, false))
-                    .toArray(IFluidTankProperties[]::new);
-        }
-
-        @Override
-        public int fill(FluidStack resource, boolean doFill) {
-            return 0;
-        }
-
-        @Nullable
-        @Override
-        public FluidStack drain(FluidStack resource, boolean doDrain) {
-            return null;
-        }
-
-        @Nullable
-        @Override
-        public FluidStack drain(int maxDrain, boolean doDrain) {
-            return null;
-        }
-    };
+    private IFluidHandler tankAll = (IDummyFluidHandler) () -> TilePump.this.liquids.stream()
+            .map(fluidStack -> new FluidTankProperties(fluidStack, fluidStack.amount, false, false))
+            .toArray(IFluidTankProperties[]::new);
 
     @Nullable
     @Override

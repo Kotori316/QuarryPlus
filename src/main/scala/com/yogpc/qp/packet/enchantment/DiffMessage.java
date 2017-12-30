@@ -64,10 +64,10 @@ public class DiffMessage implements IMessage {
             Container container = QuarryPlus.proxy.getPacketPlayer(ctx.netHandler).openContainer;
             if (containerId == container.windowId && container instanceof ContainerEnchList) {
                 ContainerEnchList enchList = (ContainerEnchList) container;
-                enchList.getTile().fortuneList.clear();
-                enchList.getTile().fortuneList.addAll(fortuneList);
-                enchList.getTile().silktouchList.clear();
-                enchList.getTile().silktouchList.addAll(silkList);
+                enchList.tile().fortuneList.clear();
+                enchList.tile().fortuneList.addAll(fortuneList);
+                enchList.tile().silktouchList.clear();
+                enchList.tile().silktouchList.addAll(silkList);
             }
         });
         return null;

@@ -27,5 +27,6 @@ object Sprites {
         map.put('stripes_h, event.getMap.registerSprite(new ResourceLocation(QuarryPlus.modID, "entities/stripes_h")))
         map.put('stripes_v, event.getMap.registerSprite(new ResourceLocation(QuarryPlus.modID, "entities/stripes_v")))
         map.put('stripes_b, event.getMap.registerSprite(new ResourceLocation(QuarryPlus.modID, "entities/stripes_b")))
+        map.put('stripes_refinery, event.getMap.registerSprite(new ResourceLocation(QuarryPlus.modID, "entities/stripes_refinery")))
     }
 }

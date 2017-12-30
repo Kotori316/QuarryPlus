@@ -19,14 +19,15 @@ import java.util.Optional;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.EnchantmentHelper;
+import com.yogpc.qp.item.ItemBlockRefinery;
 import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TileRefinery;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
@@ -43,7 +44,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class BlockRefinery extends ADismCBlock {
 
     public BlockRefinery() {
-        super(Material.IRON, QuarryPlus.Names.refinery, ItemBlock::new);
+        super(Material.IRON, QuarryPlus.Names.refinery, ItemBlockRefinery::new);
         setHardness(5F);
         setDefaultState(getBlockState().getBaseState().withProperty(FACING, EnumFacing.NORTH));
     }
@@ -91,22 +92,22 @@ public class BlockRefinery extends ADismCBlock {
     }
 
    /* @Override
-    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
+    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing,
+                                            float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
         return getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
     }
 
-    private static boolean fill(IFluidHandler handler, EntityPlayer player, EnumHand hand) {
+    private static void fill(TileRefinery refinery, EntityPlayer player, EnumHand hand, EnumFacing facing) {
         ItemStack current = player.getHeldItem(hand);
+        IFluidHandler handler = refinery.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing);
         IFluidHandlerItem handlerItem = FluidUtil.getFluidHandler(current);
-        if (handlerItem != null) {
+        if (handlerItem != null && handler != null) {
             int fill = handler.fill(FluidUtil.getFluidContained(current), false);
             if (fill > 0) {
                 handler.fill(handlerItem.drain(fill, !player.capabilities.isCreativeMode), true);
                 player.setHeldItem(hand, handlerItem.getContainer());
-                return true;
             }
         }
-        return false;
     }
 
     @Override
@@ -118,15 +119,22 @@ public class BlockRefinery extends ADismCBlock {
             worldIn.setBlockState(pos, state.withProperty(FACING, state.getValue(FACING).rotateYCCW()));
             return true;
         }
-        if (stack.getItem() == QuarryPlusI.itemTool && stack.getItemDamage() == 0) {
+        Optional<TileRefinery> tileEntity = Optional.ofNullable((TileRefinery) worldIn.getTileEntity(pos));
+        Consumer<TileRefinery> sendPacket = t -> PacketHandler.sendToAround(TileMessage.create(t), worldIn, pos);
+        if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == 0) {
             if (!worldIn.isRemote) {
-                Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t ->
-                        EnchantmentHelper.getEnchantmentsChat(t).forEach(playerIn::sendMessage));
+                Consumer<TileRefinery> consumer1 = t -> EnchantmentHelper.getEnchantmentsChat(t).forEach(playerIn::sendMessage);
+                tileEntity.ifPresent(consumer1.andThen(sendPacket));
+            }
+            return true;
+        } else if (FluidUtil.getFluidHandler(stack) != null) {
+            if (!worldIn.isRemote) {
+                Consumer<TileRefinery> consumer1 = refinery -> fill(refinery, playerIn, hand, facing);
+                tileEntity.ifPresent(consumer1.andThen(sendPacket));
             }
             return true;
         } else if (!worldIn.isRemote) {
-            if (fill((TileRefinery) worldIn.getTileEntity(pos), playerIn, hand))
-                return true;
+            tileEntity.ifPresent(sendPacket);
         }
         return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
     }*/
@@ -171,5 +179,10 @@ public class BlockRefinery extends ADismCBlock {
     @Override
     public IBlockState getStateFromMeta(int meta) {
         return getDefaultState().withProperty(FACING, EnumFacing.getFront(meta));
+    }
+
+    @Override
+    public void getSubBlocks(Item itemIn, CreativeTabs tab, List<ItemStack> list) {
+//        super.getSubBlocks(itemIn, tab, list);
     }
 }

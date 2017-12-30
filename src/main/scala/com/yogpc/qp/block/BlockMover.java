@@ -38,7 +38,7 @@ public class BlockMover extends Block implements IDismantleable {
     public BlockMover() {
         super(Material.IRON);
         setHardness(1.2F);
-        setCreativeTab(QuarryPlusI.ct);
+        setCreativeTab(QuarryPlusI.creativeTab());
         setUnlocalizedName(QuarryPlus.Names.mover);
         setRegistryName(QuarryPlus.modID, QuarryPlus.Names.mover);
         itemBlock = new ItemBlock(this);
@@ -50,7 +50,7 @@ public class BlockMover extends Block implements IDismantleable {
                                     EnumHand hand, ItemStack s, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (InvUtils.isDebugItem(playerIn, hand)) return true;
         if (!playerIn.isSneaking()) {
-            playerIn.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdMover, worldIn, pos.getX(), pos.getY(), pos.getZ());
+            playerIn.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdMover(), worldIn, pos.getX(), pos.getY(), pos.getZ());
             return true;
         }
         return super.onBlockActivated(worldIn, pos, state, playerIn, hand, s, facing, hitX, hitY, hitZ);
