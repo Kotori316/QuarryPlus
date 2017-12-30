@@ -6,7 +6,7 @@ import java.util.Optional;
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
-import com.yogpc.qp.compat.BuildCraftHelper;
+import com.yogpc.qp.compat.BuildcraftHelper;
 import com.yogpc.qp.compat.EnchantmentHelper;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.item.ItemBlockEnchantable;
@@ -44,7 +44,7 @@ public class BlockAdvPump extends ADismCBlock {
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack stack = playerIn.getHeldItem(hand);
         if (InvUtils.isDebugItem(playerIn, hand)) return true;
-        if (BuildCraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
+        if (BuildcraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
             if (!worldIn.isRemote) {
                 TileAdvPump pump = (TileAdvPump) worldIn.getTileEntity(pos);
                 if (pump != null) {
@@ -55,13 +55,13 @@ public class BlockAdvPump extends ADismCBlock {
         } else if (Config.content().debug() && stack.getItem() == Items.STICK) {
             Optional.ofNullable((TileAdvPump) worldIn.getTileEntity(pos)).ifPresent(tileAdvPump -> tileAdvPump.delete_$eq(!tileAdvPump.delete()));
             return true;
-        } else if (stack.getItem() == QuarryPlusI.itemTool && stack.getItemDamage() == 0) {
+        } else if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == 0) {
             if (!worldIn.isRemote)
                 Optional.ofNullable((TileAdvPump) worldIn.getTileEntity(pos))
                         .map(EnchantmentHelper::getEnchantmentsChat).ifPresent(l -> l.forEach(playerIn::sendMessage));
             return true;
         } else if (!playerIn.isSneaking()) {
-            playerIn.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdAdvPump, worldIn, pos.getX(), pos.getY(), pos.getZ());
+            playerIn.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdAdvPump(), worldIn, pos.getX(), pos.getY(), pos.getZ());
             return true;
         }
         return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
@@ -90,7 +90,7 @@ public class BlockAdvPump extends ADismCBlock {
         TileEntity entity = world.getTileEntity(pos);
         if (TileAdvPump.class.isInstance(entity)) {
             TileAdvPump quarry = (TileAdvPump) entity;
-            ItemStack stack = new ItemStack(QuarryPlusI.blockStandalonePump, 1, 0);
+            ItemStack stack = new ItemStack(QuarryPlusI.blockStandalonePump(), 1, 0);
             EnchantmentHelper.enchantmentToIS(quarry, stack);
             drops.add(stack);
         }

@@ -147,7 +147,7 @@ public class TileQuarry extends TileBasic implements IDebugSender {
                     return false;
                 if (this.pump == null && TilePump.isLiquid(b, false, getWorld(), target))
                     return false;
-                if (b.getBlock() == QuarryPlusI.blockFrame && !b.getValue(BlockFrame.DAMMING)) {
+                if (b.getBlock() == QuarryPlusI.blockFrame() && !b.getValue(BlockFrame.DAMMING)) {
                     byte flag = 0;
                     if (this.targetX == this.xMin || this.targetX == this.xMax)
                         flag++;
@@ -171,7 +171,7 @@ public class TileQuarry extends TileBasic implements IDebugSender {
                     return S_checkTarget();
                 }
                 if (b.getMaterial().isSolid()
-                        && !(b.getBlock() == QuarryPlusI.blockFrame && !b.getValue(BlockFrame.DAMMING))) {
+                        && !(b.getBlock() == QuarryPlusI.blockFrame() && !b.getValue(BlockFrame.DAMMING))) {
                     setNow(NOTNEEDBREAK);
                     G_renew_powerConfigure();
                     this.targetX = this.xMin;
@@ -188,7 +188,7 @@ public class TileQuarry extends TileBasic implements IDebugSender {
                     flag++;
                 if (this.targetZ == this.zMin || this.targetZ == this.zMax)
                     flag++;
-                return flag > 1 && (b.getBlock() != QuarryPlusI.blockFrame || b.getValue(BlockFrame.DAMMING));
+                return flag > 1 && (b.getBlock() != QuarryPlusI.blockFrame() || b.getValue(BlockFrame.DAMMING));
             case NONE:
                 break;
         }
@@ -288,7 +288,7 @@ public class TileQuarry extends TileBasic implements IDebugSender {
         this.digged = true;
         if (!PowerManager.useEnergyFrameBuild(this, this.unbreaking))
             return false;
-        getWorld().setBlockState(new BlockPos(this.targetX, this.targetY, this.targetZ), QuarryPlusI.blockFrame.getDefaultState());
+        getWorld().setBlockState(new BlockPos(this.targetX, this.targetY, this.targetZ), QuarryPlusI.blockFrame().getDefaultState());
         S_setNextTarget();
         return true;
     }

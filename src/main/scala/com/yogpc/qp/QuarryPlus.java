@@ -114,19 +114,19 @@ public class QuarryPlus {
         Config.setConfigFile(event.getSuggestedConfigurationFile());
         ForgeChunkManager.setForcedChunkLoadingCallback(INSTANCE, ChunkLoadingHandler.instance());
         proxy.registerTextures();
-        MinecraftForge.EVENT_BUS.register(QuarryPlusI.INSANCE);
+        MinecraftForge.EVENT_BUS.register(QuarryPlusI.instance());
         MinecraftForge.EVENT_BUS.register(Loot.instance());
         MinecraftForge.EVENT_BUS.register(Config.instance());
         if (event.getSide() == Side.CLIENT)
             MinecraftForge.EVENT_BUS.register(Sprites.instance());
-        NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, new GuiHandler());
+        NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, GuiHandler.instance());
         inDev = ((Boolean) Launch.blackboard.getOrDefault("fml.deobfuscatedEnvironment", Boolean.FALSE));
     }
 
     @Mod.EventHandler
     public void init(final FMLInitializationEvent event) {
         PacketHandler.init();
-        GameRegistry.addRecipe(new ItemStack(workbench, 1),
+        GameRegistry.addRecipe(new ItemStack(workbench(), 1),
                 "III", "GDG", "RRR",
                 'D', Blocks.DIAMOND_BLOCK, 'R', Items.REDSTONE,
                 'I', Blocks.IRON_BLOCK, 'G', Blocks.GOLD_BLOCK);
@@ -135,21 +135,21 @@ public class QuarryPlus {
 
     @SubscribeEvent
     public void registerBlocks(RegistryEvent.Register<Block> event) {
-        event.getRegistry().register(blockQuarry);
-        event.getRegistry().register(blockPump);
-        event.getRegistry().register(blockMarker);
-        event.getRegistry().register(blockMover);
-        event.getRegistry().register(blockMiningWell);
-        event.getRegistry().register(blockPlacer);
-        event.getRegistry().register(blockBreaker);
-        event.getRegistry().register(blockPlainPipe);
-        event.getRegistry().register(blockFrame);
-        event.getRegistry().register(workbench);
-        event.getRegistry().register(controller);
-        event.getRegistry().register(blockLaser);
-        event.getRegistry().register(blockRefinery);
-        event.getRegistry().register(blockChunkdestroyer);
-        event.getRegistry().register(blockStandalonePump);
+        event.getRegistry().register(blockQuarry());
+        event.getRegistry().register(blockPump());
+        event.getRegistry().register(blockMarker());
+        event.getRegistry().register(blockMover());
+        event.getRegistry().register(blockMiningWell());
+        event.getRegistry().register(blockPlacer());
+        event.getRegistry().register(blockBreaker());
+        event.getRegistry().register(blockPlainPipe());
+        event.getRegistry().register(blockFrame());
+        event.getRegistry().register(workbench());
+        event.getRegistry().register(controller());
+        event.getRegistry().register(blockLaser());
+        event.getRegistry().register(blockRefinery());
+        event.getRegistry().register(blockChunkdestroyer());
+        event.getRegistry().register(blockStandalonePump());
         GameRegistry.registerTileEntity(TileWorkbench.class, prefix + QuarryPlus.Names.workbench);
         GameRegistry.registerTileEntity(TileQuarry.class, prefix + QuarryPlus.Names.quarry);
         GameRegistry.registerTileEntity(TileMarker.class, prefix + QuarryPlus.Names.marker);
@@ -165,53 +165,53 @@ public class QuarryPlus {
 
     @SubscribeEvent
     public void registerItems(RegistryEvent.Register<Item> event) {
-        event.getRegistry().register(blockQuarry.itemBlock());
-        event.getRegistry().register(blockPump.itemBlock());
-        event.getRegistry().register(blockMarker.itemBlock);
-        event.getRegistry().register(blockMover.itemBlock);
-        event.getRegistry().register(blockMiningWell.itemBlock());
-        event.getRegistry().register(blockPlacer.itemBlock());
-        event.getRegistry().register(blockBreaker.itemBlock());
-        event.getRegistry().register(blockPlainPipe.itemBlock);
-        event.getRegistry().register(blockFrame.itemBlock);
-        event.getRegistry().register(workbench.itemBlock());
-        event.getRegistry().register(controller.itemBlock);
-        event.getRegistry().register(blockLaser.itemBlock());
-        event.getRegistry().register(blockRefinery.itemBlock());
-        event.getRegistry().register(blockChunkdestroyer.itemBlock());
-        event.getRegistry().register(blockStandalonePump.itemBlock());
-        event.getRegistry().register(itemTool);
-        event.getRegistry().register(magicmirror);
-        event.getRegistry().register(debugItem);
+        event.getRegistry().register(blockQuarry().itemBlock());
+        event.getRegistry().register(blockPump().itemBlock());
+        event.getRegistry().register(blockMarker().itemBlock);
+        event.getRegistry().register(blockMover().itemBlock);
+        event.getRegistry().register(blockMiningWell().itemBlock());
+        event.getRegistry().register(blockPlacer().itemBlock());
+        event.getRegistry().register(blockBreaker().itemBlock());
+        event.getRegistry().register(blockPlainPipe().itemBlock);
+        event.getRegistry().register(blockFrame().itemBlock);
+        event.getRegistry().register(workbench().itemBlock());
+        event.getRegistry().register(controller().itemBlock);
+        event.getRegistry().register(blockLaser().itemBlock());
+        event.getRegistry().register(blockRefinery().itemBlock());
+        event.getRegistry().register(blockChunkdestroyer().itemBlock());
+        event.getRegistry().register(blockStandalonePump().itemBlock());
+        event.getRegistry().register(itemTool());
+        event.getRegistry().register(magicmirror());
+        event.getRegistry().register(debugItem());
     }
 
     @SuppressWarnings("ConstantConditions")
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
     public void registerModels(ModelRegistryEvent event) {
-        ModelLoader.setCustomModelResourceLocation(blockQuarry.itemBlock(), 0, new ModelResourceLocation(blockQuarry.getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(blockFrame.itemBlock, 0, new ModelResourceLocation(blockFrame.getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(blockFrame.itemBlock, 1, new ModelResourceLocation(blockFrame.getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(blockMarker.itemBlock, 0, new ModelResourceLocation(blockMarker.getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(workbench.itemBlock(), 0, new ModelResourceLocation(workbench.getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(blockPump.itemBlock(), 0, new ModelResourceLocation(blockPump.getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(blockMover.itemBlock, 0, new ModelResourceLocation(blockMover.getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(blockBreaker.itemBlock(), 0, new ModelResourceLocation(blockBreaker.getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(blockPlacer.itemBlock(), 0, new ModelResourceLocation(blockPlacer.getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(blockMiningWell.itemBlock(), 0, new ModelResourceLocation(blockMiningWell.getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(blockPlainPipe.itemBlock, 0, new ModelResourceLocation(blockPlainPipe.getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(blockRefinery.itemBlock(), 0, new ModelResourceLocation(blockRefinery.getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(controller.itemBlock, 0, new ModelResourceLocation(controller.getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(blockLaser.itemBlock(), 0, new ModelResourceLocation(blockLaser.getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(blockChunkdestroyer.itemBlock(), 0, new ModelResourceLocation(blockChunkdestroyer.getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(blockStandalonePump.itemBlock(), 0, new ModelResourceLocation(blockStandalonePump.getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(itemTool, 0, new ModelResourceLocation(prefix + ItemTool.statuschecker(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(itemTool, 1, new ModelResourceLocation(prefix + ItemTool.listeditor(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(itemTool, 2, new ModelResourceLocation(prefix + ItemTool.liquidselector(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(magicmirror, 0, new ModelResourceLocation(magicmirror.getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(magicmirror, 1, new ModelResourceLocation(magicmirror.getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(magicmirror, 2, new ModelResourceLocation(magicmirror.getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(debugItem, 0, new ModelResourceLocation(debugItem.getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(blockQuarry().itemBlock(), 0, new ModelResourceLocation(blockQuarry().getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(blockFrame().itemBlock, 0, new ModelResourceLocation(blockFrame().getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(blockFrame().itemBlock, 1, new ModelResourceLocation(blockFrame().getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(blockMarker().itemBlock, 0, new ModelResourceLocation(blockMarker().getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(workbench().itemBlock(), 0, new ModelResourceLocation(workbench().getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(blockPump().itemBlock(), 0, new ModelResourceLocation(blockPump().getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(blockMover().itemBlock, 0, new ModelResourceLocation(blockMover().getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(blockBreaker().itemBlock(), 0, new ModelResourceLocation(blockBreaker().getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(blockPlacer().itemBlock(), 0, new ModelResourceLocation(blockPlacer().getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(blockMiningWell().itemBlock(), 0, new ModelResourceLocation(blockMiningWell().getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(blockPlainPipe().itemBlock, 0, new ModelResourceLocation(blockPlainPipe().getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(blockRefinery().itemBlock(), 0, new ModelResourceLocation(blockRefinery().getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(controller().itemBlock, 0, new ModelResourceLocation(controller().getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(blockLaser().itemBlock(), 0, new ModelResourceLocation(blockLaser().getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(blockChunkdestroyer().itemBlock(), 0, new ModelResourceLocation(blockChunkdestroyer().getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(blockStandalonePump().itemBlock(), 0, new ModelResourceLocation(blockStandalonePump().getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(itemTool(), 0, new ModelResourceLocation(prefix + ItemTool.statuschecker(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(itemTool(), 1, new ModelResourceLocation(prefix + ItemTool.listeditor(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(itemTool(), 2, new ModelResourceLocation(prefix + ItemTool.liquidselector(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(magicmirror(), 0, new ModelResourceLocation(magicmirror().getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(magicmirror(), 1, new ModelResourceLocation(magicmirror().getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(magicmirror(), 2, new ModelResourceLocation(magicmirror().getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(debugItem(), 0, new ModelResourceLocation(debugItem().getRegistryName(), "inventory"));
     }
 
     @SuppressWarnings("unused")

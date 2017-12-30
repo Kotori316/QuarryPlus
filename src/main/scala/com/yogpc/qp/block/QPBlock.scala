@@ -13,13 +13,16 @@ import net.minecraft.item.ItemBlock
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{EnumBlockRenderType, EnumFacing, EnumHand}
 import net.minecraft.world.{IBlockAccess, World}
+import net.minecraftforge.fml.common.Loader
 
 abstract class QPBlock(materialIn: Material, name: String, generator: Function[QPBlock, _ <: ItemBlock]) extends BlockContainer(materialIn) {
     setUnlocalizedName(name)
     setRegistryName(QuarryPlus.modID, name)
-    setCreativeTab(QuarryPlusI.ct)
+    setCreativeTab(QuarryPlusI.creativeTab)
     val itemBlock = generator.apply(this)
     itemBlock.setRegistryName(QuarryPlus.modID, name)
+
+    val bcLoaded: Boolean = Loader.isModLoaded(QuarryPlus.Optionals.Buildcraft_modID)
 
     override def getRenderType(state: IBlockState): EnumBlockRenderType = EnumBlockRenderType.MODEL
 

@@ -64,7 +64,7 @@ public class BlockFrame extends Block {
     public BlockFrame() {
         super(Material.GLASS);
         setHardness(0.5F);
-        setCreativeTab(QuarryPlusI.ct);
+        setCreativeTab(QuarryPlusI.creativeTab());
         setUnlocalizedName(QuarryPlus.Names.frame);
         setRegistryName(QuarryPlus.modID, QuarryPlus.Names.frame);
         this.setDefaultState(this.blockState.getBaseState()
@@ -114,7 +114,7 @@ public class BlockFrame extends Block {
             BlockPos nPos = pos.offset(dir);
             IBlockState nBlock = world.getBlockState(nPos);
             if (nBlock.getBlock() == this) {
-                neighborChanged(nBlock, world, nPos, QuarryPlusI.blockFrame, nPos);
+                neighborChanged(nBlock, world, nPos, this, nPos);
                 if (!world.getBlockState(nPos).getValue(DAMMING))
                     world.setBlockToAir(nPos);
             }

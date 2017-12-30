@@ -58,6 +58,11 @@ public class MjReciever implements IMjReceiver, IMjReadable {
         }
     }
 
+    @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.BuildCraft_core)
+    public static double getMJfrommicro(long microJoules) {
+        return microJoules / MjAPI.MJ;
+    }
+
     public MjReciever(APowerTile tile) {
         this.tile = tile;
     }
@@ -84,7 +89,7 @@ public class MjReciever implements IMjReceiver, IMjReadable {
     @Override
     @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.BuildCraft_core)
     public long receivePower(long microJoules, boolean simulate) {
-        return (long) (microJoules - tile.getEnergy(microJoules / MjAPI.MJ, !simulate) * MjAPI.MJ);
+        return (long) (microJoules - tile.getEnergy(getMJfrommicro(microJoules), !simulate) * MjAPI.MJ);
     }
 
     @Override

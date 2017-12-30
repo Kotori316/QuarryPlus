@@ -59,7 +59,7 @@ public class BlockMarker extends Block implements ITileEntityProvider {//BlockCo
         setLightLevel(0.5F);
         setUnlocalizedName(QuarryPlus.Names.marker);
         setRegistryName(QuarryPlus.modID, QuarryPlus.Names.marker);
-        setCreativeTab(QuarryPlusI.ct);
+        setCreativeTab(QuarryPlusI.creativeTab());
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.UP));
         this.isBlockContainer = true;
         itemBlock = new ItemBlock(this);
@@ -195,7 +195,7 @@ public class BlockMarker extends Block implements ITileEntityProvider {//BlockCo
             Item item = playerIn.getHeldItem(hand).getItem();
             TileMarker marker = (TileMarker) worldIn.getTileEntity(pos);
             if (marker != null) {
-                if (item == QuarryPlusI.itemTool && playerIn.getHeldItem(hand).getItemDamage() == 0) {
+                if (item == QuarryPlusI.itemTool() && playerIn.getHeldItem(hand).getItemDamage() == 0) {
                     final TileMarker.Link l = marker.link;
                     if (l == null)
                         return true;

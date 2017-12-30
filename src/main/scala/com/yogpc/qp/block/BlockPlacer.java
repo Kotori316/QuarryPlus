@@ -18,7 +18,7 @@ import java.util.Random;
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
-import com.yogpc.qp.compat.BuildCraftHelper;
+import com.yogpc.qp.compat.BuildcraftHelper;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.tile.TilePlacer;
 import com.yogpc.qp.version.VersionUtil;
@@ -165,7 +165,7 @@ public class BlockPlacer extends ADismCBlock {
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack stack = playerIn.getHeldItem(hand);
         if (InvUtils.isDebugItem(playerIn, hand)) return true;
-        if (BuildCraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
+        if (BuildcraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
             TileEntity entity = worldIn.getTileEntity(pos);
             if (entity != null) {
                 entity.validate();
@@ -178,7 +178,7 @@ public class BlockPlacer extends ADismCBlock {
             if (Config.content().debug()) {
                 QuarryPlus.LOGGER.info("Placer touched " + hand + " Item : " + stack);
             }
-            playerIn.openGui(QuarryPlus.INSTANCE, QuarryPlusI.guiIdPlacer, worldIn, pos.getX(), pos.getY(), pos.getZ());
+            playerIn.openGui(QuarryPlus.INSTANCE, QuarryPlusI.guiIdPlacer(), worldIn, pos.getX(), pos.getY(), pos.getZ());
             return true;
         }
         return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);

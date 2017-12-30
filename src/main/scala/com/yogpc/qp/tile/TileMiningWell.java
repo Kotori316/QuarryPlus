@@ -57,7 +57,7 @@ public class TileMiningWell extends TileBasic implements ITickable {
             int depth = getPos().getY() - 1;
             while (!S_checkTarget(depth)) {
                 if (this.working)
-                    getWorld().setBlockState(new BlockPos(getPos().getX(), depth, getPos().getZ()), QuarryPlusI.blockPlainPipe.getDefaultState());
+                    getWorld().setBlockState(new BlockPos(getPos().getX(), depth, getPos().getZ()), QuarryPlusI.blockPlainPipe().getDefaultState());
                 depth--;
             }
             if (this.working)
@@ -85,7 +85,7 @@ public class TileMiningWell extends TileBasic implements ITickable {
             b = getWorld().getBlockState(pos);
         }
         final float h = b.getBlockHardness(getWorld(), pos);
-        if (h < 0 || b.getBlock() == QuarryPlusI.blockPlainPipe || b.getBlock().isAir(b, getWorld(), pos)) {
+        if (h < 0 || b.getBlock() == QuarryPlusI.blockPlainPipe() || b.getBlock().isAir(b, getWorld(), pos)) {
             return false;
         }
         if (this.pump == null && b.getMaterial().isLiquid())
@@ -127,7 +127,7 @@ public class TileMiningWell extends TileBasic implements ITickable {
             BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(getPos());
             for (int depth = getPos().getY() - 1; depth > 0; depth--) {
                 pos.setY(depth);
-                if (getWorld().getBlockState(pos).getBlock() != QuarryPlusI.blockPlainPipe)
+                if (getWorld().getBlockState(pos).getBlock() != QuarryPlusI.blockPlainPipe())
                     break;
                 getWorld().setBlockToAir(pos);
             }

@@ -7,6 +7,7 @@ import com.yogpc.qp.packet.advquarry.AdvModeMessage;
 import com.yogpc.qp.packet.advquarry.AdvRangeMessage;
 import com.yogpc.qp.packet.controller.AvailableEntities;
 import com.yogpc.qp.packet.controller.SetEntity;
+import com.yogpc.qp.packet.distiller.AnimatonMessage;
 import com.yogpc.qp.packet.enchantment.DiffMessage;
 import com.yogpc.qp.packet.enchantment.EnchantmentMessage;
 import com.yogpc.qp.packet.enchantment.MoverMessage;
@@ -71,6 +72,8 @@ public class PacketHandler {
         //standalonepump
         wrapper.registerMessage(handler, AdvPumpStatusMessage.class, 24, Side.CLIENT);
         wrapper.registerMessage(handler, AdvPumpChangeMessage.class, 25, Side.SERVER);
+        //distiller
+        wrapper.registerMessage(handler, AnimatonMessage.class, 26, Side.CLIENT);
     }
 
     /**

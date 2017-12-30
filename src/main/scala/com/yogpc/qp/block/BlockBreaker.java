@@ -22,7 +22,7 @@ import java.util.Random;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.ReflectionHelper;
-import com.yogpc.qp.compat.BuildCraftHelper;
+import com.yogpc.qp.compat.BuildcraftHelper;
 import com.yogpc.qp.compat.EnchantmentHelper;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.item.ItemBlockBreaker;
@@ -169,7 +169,7 @@ public class BlockBreaker extends ADismCBlock {
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack stack = playerIn.getHeldItem(hand);
-        if (BuildCraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
+        if (BuildcraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
             TileEntity entity = worldIn.getTileEntity(pos);
             if (entity != null) {
                 entity.validate();
@@ -179,7 +179,7 @@ public class BlockBreaker extends ADismCBlock {
             }
             return true;
         }
-        if (stack.getItem() == QuarryPlusI.itemTool && stack.getItemDamage() == 0) {
+        if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == 0) {
             if (!worldIn.isRemote) {
                 Optional.ofNullable((TileBreaker) worldIn.getTileEntity(pos)).ifPresent(t ->
                         EnchantmentHelper.getEnchantmentsChat(t).forEach(playerIn::sendMessage));

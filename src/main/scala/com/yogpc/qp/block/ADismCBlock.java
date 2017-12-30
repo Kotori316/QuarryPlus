@@ -39,7 +39,7 @@ public abstract class ADismCBlock extends QPBlock implements IDismantleable {
     @Override
     @Optional.Method(modid = QuarryPlus.Optionals.COFH_block)
     public boolean canDismantle(World world, BlockPos pos, IBlockState state, EntityPlayer player) {
-        return this != QuarryPlusI.blockChunkdestroyer;
+        return this != QuarryPlusI.blockChunkdestroyer();
     }
 
     public static ArrayList<ItemStack> dismantle(World world, BlockPos pos, IBlockState state, boolean returnDrops) {
