@@ -33,7 +33,7 @@ public class ItemMirror extends ItemFood {
         setHasSubtypes(true);
         setUnlocalizedName(QuarryPlus.Names.mirror);
         setRegistryName(QuarryPlus.modID, QuarryPlus.Names.mirror);
-        setCreativeTab(QuarryPlusI.ct);
+        setCreativeTab(QuarryPlusI.creativeTab());
         setAlwaysEdible();
     }
 

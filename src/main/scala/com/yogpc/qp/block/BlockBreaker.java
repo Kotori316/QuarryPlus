@@ -22,7 +22,7 @@ import java.util.Random;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.ReflectionHelper;
-import com.yogpc.qp.compat.BuildCraftHelper;
+import com.yogpc.qp.compat.BuildcraftHelper;
 import com.yogpc.qp.compat.EnchantmentHelper;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.item.ItemBlockBreaker;
@@ -151,12 +151,11 @@ public class BlockBreaker extends ADismCBlock {
 
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-        Optional<TileBreaker> tileEntity = Optional.ofNullable((TileBreaker) worldIn.getTileEntity(pos));
         this.drops.clear();
-        tileEntity.ifPresent(tile -> {
+        Optional.ofNullable((TileBreaker) worldIn.getTileEntity(pos)).ifPresent(tile -> {
             final int count = quantityDropped(state, 0, worldIn.rand);
+            final Item id1 = getItemDropped(state, worldIn.rand, 0);
             for (int i = 0; i < count; i++) {
-                final Item id1 = getItemDropped(state, worldIn.rand, 0);
                 ItemStack is = new ItemStack(id1, 1, damageDropped(state));
                 EnchantmentHelper.enchantmentToIS(tile, is);
                 this.drops.add(is);
@@ -174,7 +173,7 @@ public class BlockBreaker extends ADismCBlock {
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack stack = playerIn.getHeldItem(hand);
-        if (BuildCraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
+        if (BuildcraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
             TileEntity entity = worldIn.getTileEntity(pos);
             if (entity != null) {
                 entity.validate();
@@ -184,7 +183,7 @@ public class BlockBreaker extends ADismCBlock {
             }
             return true;
         }
-        if (stack.getItem() == QuarryPlusI.itemTool && stack.getItemDamage() == 0) {
+        if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == 0) {
             if (!worldIn.isRemote) {
                 Optional.ofNullable((TileBreaker) worldIn.getTileEntity(pos)).ifPresent(t ->
                         EnchantmentHelper.getEnchantmentsChat(t).forEach(playerIn::sendMessage));

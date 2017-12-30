@@ -1,12 +1,12 @@
 # QuarryPlus
 ===========
 
-**Work for 1.12 have NOT finished yet.**
-
 Advanced machines for minecraft.
 Forked from https://github.com/yogpstop/QuarryPlus
 
 Jar files are available on https://github.com/Kotori316/QuarryPlus/releases
+
+Minecraft CurseForge - https://minecraft.curseforge.com/projects/additional-enchanted-miner
 
 **These are nightly builds. These versions will be cleaned up at fixed intervals.**  
 

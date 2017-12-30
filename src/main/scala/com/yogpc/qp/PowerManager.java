@@ -41,12 +41,12 @@ public class PowerManager {
                 prop.setComment(c.getQualifiedName().substring(length) + Configuration.CATEGORY_SPLITTER + name);
                 c.put(name, prop);
             }
-            prop.setMinValue(0.1d).setMaxValue(2e9);
+            prop.setMinValue(0.1d).setMaxValue(2e9).setDefaultValue(def);
             return prop.getDouble(def);
         }
         final Property prop = new Property(name, Double.toString(def), Property.Type.DOUBLE);
         prop.setComment(c.getQualifiedName().substring(length) + Configuration.CATEGORY_SPLITTER + name);
-        prop.setMinValue(0.1d).setMaxValue(2e9);
+        prop.setMinValue(0.1d).setMaxValue(2e9).setDefaultValue(def);
         c.put(name, prop);
         return prop.getDouble(def);
     }
@@ -106,9 +106,9 @@ public class PowerManager {
         Laser_MS = get(c, "BaseMaxStored", 1000);
 
         c = cg.getCategory(cn + "Refinery");
-        Refinery_CE = get(c, "EfficiencyCoefficient", 1.3);
+        Refinery_CE = get(c, "EfficiencyCoefficient", 1.2);
         Refinery_CU = get(c, "UnbreakingCoefficient", 1);
-        Refinery_XR = get(c, "BaseMaxRecieve", 100);
+        Refinery_XR = get(c, "BaseMaxRecieve", 6);
         Refinery_MS = get(c, "BaseMaxStored", 1000);
 
     }

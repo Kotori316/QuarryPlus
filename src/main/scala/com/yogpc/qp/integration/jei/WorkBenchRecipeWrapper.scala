@@ -34,7 +34,7 @@ object WorkBenchRecipeWrapper {
 
     def getAll: JList[WorkBenchRecipeWrapper] = {
         val list = new AList[WorkBenchRecipeWrapper]()
-        WorkbenchRecipes.getRecipeMap.map(t => new WorkBenchRecipeWrapper(t._2)).foreach(list.add)
+        WorkbenchRecipes.getRecipeMap.collect { case (_, recipe) if recipe.showInJEI => new WorkBenchRecipeWrapper(recipe) }.foreach(list.add)
         Collections.sort(list)
         list
     }

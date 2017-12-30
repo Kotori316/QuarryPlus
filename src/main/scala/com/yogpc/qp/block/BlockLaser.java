@@ -27,6 +27,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -160,17 +161,17 @@ public class BlockLaser extends ADismCBlock {
 
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-        final TileLaser tile = (TileLaser) worldIn.getTileEntity(pos);
+        Optional<TileLaser> tileEntity = Optional.ofNullable((TileLaser) worldIn.getTileEntity(pos));
         this.drop.clear();
-        if (worldIn.isRemote || tile == null)
-            return;
-        final int count = quantityDropped(state, 0, worldIn.rand);
-        final Item it = getItemDropped(state, worldIn.rand, 0);
-        for (int i = 0; i < count; i++) {
-            final ItemStack is = new ItemStack(it, 1, damageDropped(state));
-            EnchantmentHelper.enchantmentToIS(tile, is);
-            this.drop.add(is);
-        }
+        tileEntity.ifPresent(tile -> {
+            final int count = quantityDropped(state, 0, worldIn.rand);
+            final Item it = getItemDropped(state, worldIn.rand, 0);
+            for (int i = 0; i < count; i++) {
+                final ItemStack is = new ItemStack(it, 1, damageDropped(state));
+                EnchantmentHelper.enchantmentToIS(tile, is);
+                this.drop.add(is);
+            }
+        });
         super.breakBlock(worldIn, pos, state);
     }
 
@@ -189,7 +190,7 @@ public class BlockLaser extends ADismCBlock {
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack stack = playerIn.getHeldItem(hand);
-        if (stack.getItem() == QuarryPlusI.itemTool && stack.getItemDamage() == 0) {
+        if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == 0) {
             if (!worldIn.isRemote) {
                 Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t ->
                         EnchantmentHelper.getEnchantmentsChat(t).forEach(playerIn::sendMessage));
@@ -197,5 +198,11 @@ public class BlockLaser extends ADismCBlock {
             return true;
         }
         return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
+    }
+
+    @Override
+    public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items) {
+        if (bcLoaded())
+            super.getSubBlocks(itemIn, items);
     }
 }

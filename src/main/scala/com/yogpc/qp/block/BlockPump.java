@@ -18,7 +18,7 @@ import java.util.Optional;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
-import com.yogpc.qp.compat.BuildCraftHelper;
+import com.yogpc.qp.compat.BuildcraftHelper;
 import com.yogpc.qp.compat.EnchantmentHelper;
 import com.yogpc.qp.item.ItemBlockPump;
 import com.yogpc.qp.tile.IEnchantableTile;
@@ -67,16 +67,15 @@ public class BlockPump extends ADismCBlock {
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
         this.drop.clear();
-        final TilePump tile = (TilePump) worldIn.getTileEntity(pos);
-        if (worldIn.isRemote || tile == null)
-            return;
-        final int count = quantityDropped(state, 0, worldIn.rand);
-        final Item it = getItemDropped(state, worldIn.rand, 0);
-        for (int i = 0; i < count; i++) {
-            final ItemStack is = new ItemStack(it, 1, damageDropped(state));
-            EnchantmentHelper.enchantmentToIS(tile, is);
-            this.drop.add(is);
-        }
+        Optional.ofNullable((TilePump) worldIn.getTileEntity(pos)).ifPresent(tile -> {
+            final int count = quantityDropped(state, 0, worldIn.rand);
+            final Item it = getItemDropped(state, worldIn.rand, 0);
+            for (int i = 0; i < count; i++) {
+                final ItemStack is = new ItemStack(it, 1, damageDropped(state));
+                EnchantmentHelper.enchantmentToIS(tile, is);
+                this.drop.add(is);
+            }
+        });
         super.breakBlock(worldIn, pos, state);
     }
 
@@ -105,11 +104,11 @@ public class BlockPump extends ADismCBlock {
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack stack = playerIn.getHeldItem(hand);
-        if (BuildCraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
+        if (BuildcraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
             Optional.ofNullable((TilePump) worldIn.getTileEntity(pos)).ifPresent(pump -> pump.S_changeRange(playerIn));
             return true;
         }
-        if (stack.getItem() == QuarryPlusI.itemTool) {
+        if (stack.getItem() == QuarryPlusI.itemTool()) {
             if (!worldIn.isRemote && stack.getItemDamage() == 0) {
                 TilePump pump = (TilePump) worldIn.getTileEntity(pos);
                 if (pump != null) {
