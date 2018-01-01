@@ -53,6 +53,7 @@ object Config {
     val PlacerOnlyPlaceFront_key = "PlacerOnlyPlaceFront"
     val NoEnergy_key = "NoEnergy"
     val RemoveBedrock_Key = "RemoveBedrock"
+    val RemoveOnlySource_Key = "RemoveOnlySource"
     val PumpAutoStart_Key = "PumpAutoStart"
     val DEBUG_key = "DEBUG"
 
@@ -74,6 +75,7 @@ object Config {
         PowerManager.loadConfiguration(configuration)
 
         val removeBedrock = configuration.getBoolean(RemoveBedrock_Key, Configuration.CATEGORY_GENERAL, false, RemoveBedrock_Key)
+        val removeOnlySource = configuration.getBoolean(RemoveOnlySource_Key, Configuration.CATEGORY_GENERAL, false, RemoveOnlySource_Key)
         val enableChunkDestroyerFluidHander = configuration.getBoolean(EnableChunkDestroyerFluidHander_key, Configuration.CATEGORY_GENERAL, false, EnableChunkDestroyerFluidHander_key)
         val disableFrameChainBreak = configuration.getBoolean(DisableFrameChainBreak_key, Configuration.CATEGORY_GENERAL, false, DisableFrameChainBreak_key)
         val pumpAutoStart = configuration.getBoolean(PumpAutoStart_Key, Configuration.CATEGORY_GENERAL, false, PumpAutoStart_Key)

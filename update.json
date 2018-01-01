@@ -1,11 +1,12 @@
 {
   "homepage": "https://minecraft.curseforge.com/projects/additional-enchanted-miner",
   "promos": {
-    "1.12.2-recommended": "0.7.4",
-    "1.11.2-recommended": "0.7.4",
-    "1.10.2-recommended": "0.7.4"
+    "1.12.2-recommended": "0.7.5",
+    "1.11.2-recommended": "0.7.5",
+    "1.10.2-recommended": "0.7.5"
   },
   "1.12.2": {
+    "0.7.5": "Made quarry with pump a little faster. Close #12.",
     "0.7.4": "Added RefineryPlus. Close #7.",
     "0.7.2": "Fixed a problem that QuarryPlus and MiningWellPlus dropped duplicate block. Close #8.",
     "0.7.1": "Improved Advanced Pump.",
@@ -13,12 +14,14 @@
     "0.6.8": "Added Forge version check system."
   },
   "1.11.2": {
+    "0.7.5": "Made quarry with pump a little faster. Close #12.",
     "0.7.4": "Added RefineryPlus. Close #7.",
     "0.7.2": "Fixed a problem that QuarryPlus and MiningWellPlus dropped duplicate block. Close #8.",
     "0.7.1": "Added Advanced Pump.",
     "0.6.8": "Added Forge version check system."
   },
   "1.10.2": {
+    "0.7.5": "Made quarry with pump a little faster. Close #12.",
     "0.7.4": "Added RefineryPlus. Close #7.",
     "0.7.2": "Fixed a problem that QuarryPlus and MiningWellPlus dropped duplicate block. Close #8.",
     "0.7.1": "Added Advanced Pump.",
