@@ -278,7 +278,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     private static final int[] xb = new int[ARRAY_MAX];
     private static final int[] yb = new int[ARRAY_MAX];
     private static final int[] zb = new int[ARRAY_MAX];
-    private static int cp = 0, cg = 0;
+    private static int cp = 0;
     private long fwt;
 
     public void S_changeRange(final EntityPlayer ep) {
@@ -308,6 +308,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
 
     private void S_searchLiquid(final int x, final int y, final int z) {
         this.fwt = getWorld().getWorldTime();
+        int cg;
         cp = cg = 0;
         int chunk_side_x, chunk_side_z;
         this.cx = x;
@@ -434,7 +435,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                     for (bz = 0; bz < this.block_side_z; bz++)
                         if (this.blocks[this.py - this.yOffset][this.px][bz] != 0) {
                             bb = this.ebses[this.px >> 4][bz >> 4][this.py >> 4].get(this.px & 0xF, this.py & 0xF, bz & 0xF);
-                            if (isLiquid(bb, true, getWorld(), new BlockPos(this.px + this.xOffset, this.py, bz + this.zOffset)))
+                            if (isLiquid(bb, Config.content().removeOnlySource(), getWorld(), new BlockPos(this.px + this.xOffset, this.py, bz + this.zOffset)))
                                 count++;
                         }
                 }
