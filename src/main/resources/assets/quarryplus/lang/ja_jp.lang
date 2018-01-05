@@ -3,7 +3,9 @@
 tile.enchantmover.name=エンチャント移動機
 tile.markerplus.name=改良型ランドマーク
 tile.quarryplus.name=改良型露天採掘機
+tile.chunkdestroyer.name=Chunk Destroyer
 tile.pumpplus.name=改良型ポンプ
+tile.standalonepump.name=自立改良型ポンプ
 tile.miningwellplus.name=改良型採掘機
 tile.quarryframe.name=改良型露天採掘機型枠
 tile.InfMJSrc.name=無限電源
@@ -87,5 +89,5 @@ gui.infmjsrc.itv=出力間隔(tick)
 gui.infmjsrc.tickinfo=20 tick = 1 秒
 chat.currentmode=現在%sで動作しています
 chat.quarrymode=クァーリーモード
-chat.fillermode=フィラーモード
+chat.fillermode=フレームモード
 chat.changemode=動作モードを%sに切り替えました

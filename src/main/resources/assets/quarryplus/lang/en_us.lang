@@ -93,5 +93,5 @@ gui.infmjsrc.itv=Interval(tick)
 gui.infmjsrc.tickinfo=20 tick = 1 second
 chat.currentmode=Now, working in %s
 chat.quarrymode=Quarry Mode
-chat.fillermode=Filler Mode
+chat.fillermode=Frame Mode
 chat.changemode=Working mode was changed to %s

@@ -155,7 +155,7 @@ object ItemTool extends Item with IEnchantableItem {
         items.add(new ItemStack(this, 1, 0))
         items.add(getEditorStack)
         items.add(new ItemStack(this, 1, 2))
-        if (Config.content.debug && QuarryPlus.instance.inDev) {
+        if (Config.content.debug /*&& QuarryPlus.instance.inDev*/ ) {
             val stack = new ItemStack(Items.DIAMOND_PICKAXE)
             stack.addEnchantment(Enchantments.EFFICIENCY, 5)
             stack.addEnchantment(Enchantments.UNBREAKING, 3)
