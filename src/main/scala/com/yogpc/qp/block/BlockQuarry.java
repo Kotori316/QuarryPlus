@@ -95,7 +95,7 @@ public class BlockQuarry extends ADismCBlock {
                     EnchantmentHelper.getEnchantmentsChat(quarry).forEach(playerIn::addChatComponentMessage);
                     playerIn.addChatComponentMessage(new TextComponentTranslation("chat.currentmode",
                             new TextComponentTranslation(quarry.filler ? "chat.fillermode" : "chat.quarrymode")));
-                } else {
+                } else if (quarry.G_getNow() == TileQuarry.Mode.NOTNEEDBREAK) {
                     quarry.filler = !quarry.filler;
                     playerIn.addChatComponentMessage(new TextComponentTranslation("chat.changemode",
                             new TextComponentTranslation(quarry.filler ? "chat.fillermode" : "chat.quarrymode")));
@@ -138,9 +138,7 @@ public class BlockQuarry extends ADismCBlock {
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn/*, BlockPos fromPos*/) {
         super.neighborChanged(state, worldIn, pos, blockIn/*, fromPos*/);
         if (!worldIn.isRemote) {
-            TileEntity t = worldIn.getTileEntity(pos);
-            if (t != null)
-                ((TileQuarry) t).G_renew_powerConfigure();
+            Optional.ofNullable((TileQuarry) worldIn.getTileEntity(pos)).ifPresent(TileQuarry::G_renew_powerConfigure);
         }
     }
 

@@ -319,8 +319,8 @@ public class TileMarker extends APacketTile implements /*ITileAreaProvider,*/ IT
             if (xFlag && yFlag && zFlag) {
                 return false;
             }
-            for (BlockPos p : buildcraft.lib.misc.PositionUtil.getCorners(min(), max())) {
-                if (buildcraft.lib.misc.PositionUtil.isNextTo(p, pos)) {
+            for (BlockPos p : PositionUtil.getCorners(min(), max())) {
+                if (PositionUtil.isNextTo(p, pos)) {
                     return true;
                 }
             }
@@ -450,10 +450,11 @@ public class TileMarker extends APacketTile implements /*ITileAreaProvider,*/ IT
 
         private void connect(final TileEntity te) {
             if (te instanceof TileMarker) {
-                if (((TileMarker) te).link != null && ((TileMarker) te).link != this) {
-                    ((TileMarker) te).link.removeConnection(false);
+                TileMarker marker = (TileMarker) te;
+                if (marker.link != null && marker.link != this) {
+                    marker.link.removeConnection(false);
                 }
-                ((TileMarker) te).link = this;
+                marker.link = this;
             }
         }
 
