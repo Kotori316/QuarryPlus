@@ -58,7 +58,7 @@ dependencies {
     deobfCompile "cofh:RedstoneFlux:1.12-2.0.1.2:universal"
     deobfCompile "cofh:CoFHCore:1.12-4.3.6.16:universal"
     deobfCompile "mezz.jei:jei_1.12.2:4.8.0.114"
-    deobfCompile "com.mod-buildcraft:buildcraft:7.99.12"
+    deobfCompile "com.mod-buildcraft:buildcraft:7.99.13"
 }
 
 processResources {

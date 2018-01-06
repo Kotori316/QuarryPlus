@@ -13,6 +13,7 @@
 
 package com.yogpc.qp;
 
+import com.yogpc.qp.compat.BuildcraftHelper;
 import com.yogpc.qp.gui.GuiFactory;
 import com.yogpc.qp.gui.GuiHandler;
 import com.yogpc.qp.item.ItemTool;
@@ -42,6 +43,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.ModAPIManager;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -120,6 +122,8 @@ public class QuarryPlus {
     public void init(final FMLInitializationEvent event) {
         PacketHandler.init();
         WorkbenchRecipes.registerRecipes();
+        if (ModAPIManager.INSTANCE.hasAPI(Optionals.Buildcraft_facades))
+            BuildcraftHelper.disableIC2Facade();
     }
 
     @SubscribeEvent
@@ -221,6 +225,7 @@ public class QuarryPlus {
         public static final String Buildcraft_recipes = "BuildCraftAPI|recipes";
         public static final String Buildcraft_transport = "BuildCraftAPI|transport";
         public static final String Buildcraft_tiles = "BuildCraftAPI|tiles";
+        public static final String Buildcraft_facades = "BuildCraftAPI|facades";
         public static final String updateJson = "https://raw.githubusercontent.com/Kotori316/QuarryPlus/1.12/update.json";
     }
 
