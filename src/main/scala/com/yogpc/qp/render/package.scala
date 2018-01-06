@@ -1,6 +1,7 @@
 package com.yogpc.qp
 
 import net.minecraft.client.renderer.VertexBuffer
+import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.{Vec3d, Vec3i}
 
 package object render {
@@ -29,6 +30,18 @@ package object render {
         def -(o: Vec3d): Vec3d = vec3d subtract o
 
         def -(o: Vec3i): Vec3d = vec3d subtract(o.getX, o.getY, o.getZ)
+    }
+
+    implicit class FacingOffset(val facing: EnumFacing) extends AnyVal {
+        def offsetX(scale: Double) = facing.getFrontOffsetX * scale
+
+        def offsetY(scale: Double) = facing.getFrontOffsetY * scale
+
+        def offsetZ(scale: Double) = facing.getFrontOffsetZ * scale
+
+        def offsetXAbs(scale: Double) = if (facing.getAxis == EnumFacing.Axis.X) scale else 0d
+
+        def offsetZAbs(scale: Double) = if (facing.getAxis == EnumFacing.Axis.Z) scale else 0d
     }
 
 }

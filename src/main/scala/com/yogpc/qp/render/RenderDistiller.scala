@@ -226,16 +226,4 @@ object RenderDistiller extends TileEntitySpecialRenderer[TileRefinery] {
 
     }
 
-    private implicit class FacingOffset(val facing: EnumFacing) extends AnyVal {
-        def offsetX(scale: Double) = facing.getFrontOffsetX * scale
-
-        def offsetY(scale: Double) = facing.getFrontOffsetY * scale
-
-        def offsetZ(scale: Double) = facing.getFrontOffsetZ * scale
-
-        def offsetXAbs(scale: Double) = if (facing.getAxis == EnumFacing.Axis.X) scale else 0d
-
-        def offsetZAbs(scale: Double) = if (facing.getAxis == EnumFacing.Axis.Z) scale else 0d
-    }
-
 }

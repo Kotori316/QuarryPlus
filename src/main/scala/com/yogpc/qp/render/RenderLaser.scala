@@ -39,7 +39,7 @@ object RenderLaser extends TileEntitySpecialRenderer[TileLaser] {
             for (vector <- te.lasers) {
                 val side = te.getWorld.getBlockState(pos).getValue(ADismCBlock.FACING)
                 val index = if (te.getAvg <= 1.5) 0 else if (te.getAvg <= 2.5) 1 else if (te.getAvg <= 3.5) 2 else 3
-                Box.apply(pos.getX + 0.5 + side.getDirectionVec.getX * d4, pos.getY + 0.5 + side.getDirectionVec.getY * d4, pos.getZ + 0.5 + side.getDirectionVec.getZ * d4,
+                Box.apply(pos.getX + 0.5 + side.offsetX(d4), pos.getY + 0.5 + side.offsetY(d4), pos.getZ + 0.5 + side.offsetZ(d4),
                     vector.xCoord, vector.yCoord, vector.zCoord, d, d, d, firstSide = false, endSide = false).render(buffer, textureArray(index))
             }
         }
