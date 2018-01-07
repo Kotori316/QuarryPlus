@@ -7,10 +7,10 @@ import com.yogpc.qp.Config;
 import com.yogpc.qp.NonNullList;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
-import com.yogpc.qp.compat.BuildCraftHelper;
+import com.yogpc.qp.compat.BuildcraftHelper;
 import com.yogpc.qp.compat.EnchantmentHelper;
 import com.yogpc.qp.compat.InvUtils;
-import com.yogpc.qp.item.ItemBlockEnchantable;
+import com.yogpc.qp.item.ItemBlockAdvPump;
 import com.yogpc.qp.tile.TileAdvPump;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -32,7 +32,7 @@ import net.minecraft.world.World;
 
 public class BlockAdvPump extends ADismCBlock {
     public BlockAdvPump() {
-        super(Material.IRON, QuarryPlus.Names.advpump, ItemBlockEnchantable::new);
+        super(Material.IRON, QuarryPlus.Names.advpump, ItemBlockAdvPump::new);
         setHardness(1.5F);
         setResistance(10F);
         setSoundType(SoundType.STONE);
@@ -44,7 +44,7 @@ public class BlockAdvPump extends ADismCBlock {
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack stack = playerIn.getHeldItem(hand);
         if (InvUtils.isDebugItem(playerIn, hand)) return true;
-        if (BuildCraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
+        if (BuildcraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
             if (!worldIn.isRemote) {
                 TileAdvPump pump = (TileAdvPump) worldIn.getTileEntity(pos);
                 if (pump != null) {

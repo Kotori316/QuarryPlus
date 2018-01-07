@@ -15,7 +15,7 @@ class QuarryJeiPlugin extends BlankModPlugin {
 
         registry.addRecipeCategories(new WorkBenchRecipeCategory(guiHelper))
         registry.addRecipeHandlers(new WorkBenchRecipeHandler)
-        registry.addRecipeCategoryCraftingItem(new ItemStack(QuarryPlusI.workbench), WorkBenchRecipeCategory.UID)
+        registry.addRecipeCategoryCraftingItem(new ItemStack(QuarryPlusI.blockWorkbench), WorkBenchRecipeCategory.UID)
         // 7, 74 => 168, 85
         registry.addRecipeClickArea(classOf[GuiWorkbench], 7, 74, 161, 11, WorkBenchRecipeCategory.UID)
         registry.addRecipes(WorkBenchRecipeWrapper.getAll)

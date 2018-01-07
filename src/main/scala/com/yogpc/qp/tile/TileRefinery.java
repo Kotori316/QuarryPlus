@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import com.yogpc.qp.Config;
 import com.yogpc.qp.PowerManager;
 import com.yogpc.qp.compat.INBTWritable;
 import com.yogpc.qp.item.ItemQuarryDebug;
@@ -125,7 +126,7 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
             return;
         }
         double v = 0;//MjReciever.getMJfrommicro(cacheEnergy);
-        if (cacheIn == null || getStoredEnergy() < v ||
+        if (cacheIn == null || (!Config.content().noEnergy() && getStoredEnergy() < v) ||
                 !PowerManager.useEnergyRefinery(this, v, ench.unbreaking, ench.efficiency)) {
             decreaseAnimation();
         } else {
@@ -281,10 +282,10 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
     }
 
     @SideOnly(Side.CLIENT)
-    public Runnable receiveMessage(AnimatonMessage message) {
+    public Runnable receiveMessage(int stage, float speed) {
         return () -> {
-            animationStage = message.stage;
-            animationSpeed = message.speed;
+            animationStage = stage;
+            animationSpeed = speed;
         };
     }
 

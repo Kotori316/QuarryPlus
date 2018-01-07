@@ -1,6 +1,7 @@
 package com.yogpc.qp.compat;
 
 /*import buildcraft.api.tools.IToolWrench;*/
+
 import cofh.api.item.IToolHammer;
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.entity.player.EntityPlayer;
@@ -9,7 +10,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.fml.common.ModAPIManager;
 
-public class BuildCraftHelper {
+public class BuildcraftHelper {
 
     public static boolean isWrench(EntityPlayer player, EnumHand hand, ItemStack wrench, RayTraceResult rayTrace) {
         if (ModAPIManager.INSTANCE.hasAPI(QuarryPlus.Optionals.COFH_item)) {
@@ -31,5 +32,12 @@ public class BuildCraftHelper {
             }
         }*/
         return false;
+    }
+
+    @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.Buildcraft_facades)
+    public static void disableFacade() {
+        /*if (Loader.isModLoaded(QuarryPlus.Optionals.IC2_modID))
+            Optional.ofNullable(ForgeRegistries.BLOCKS.getValue(new ResourceLocation("ic2:te"))).ifPresent(FacadeAPI::disableBlock);
+        QuarryPlusI.blockList().forEach(FacadeAPI::disableBlock);*/
     }
 }

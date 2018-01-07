@@ -9,13 +9,14 @@ import com.yogpc.qp.tile.TileAdvPump._
 import com.yogpc.qp.{Config, QuarryPlus, QuarryPlusI}
 import net.minecraft.block.state.IBlockState
 import net.minecraft.init.Blocks
-import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
 import net.minecraft.util.math.{BlockPos, ChunkPos}
 import net.minecraft.util.text.TextComponentString
 import net.minecraft.util.{EnumFacing, ITickable}
 import net.minecraftforge.common.ForgeChunkManager
 import net.minecraftforge.common.ForgeChunkManager.Type
 import net.minecraftforge.common.capabilities.Capability
+import net.minecraftforge.common.util.Constants.NBT
 import net.minecraftforge.fluids.capability.{CapabilityFluidHandler, FluidTankProperties, IFluidHandler, IFluidTankProperties}
 import net.minecraftforge.fluids.{Fluid, FluidRegistry, FluidStack, FluidUtil, IFluidBlock}
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
@@ -277,6 +278,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
         finished = nbttc.getBoolean(NBT_FINISHED)
         placeFrame = nbttc.getBoolean(NBT_PLACEFRAME)
         delete = nbttc.getBoolean(NBT_DELETE)
+        FluidHandler.readFromNBT(nbttc)
     }
 
     override def writeToNBT(nbttc: NBTTagCompound) = {
@@ -289,6 +291,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
         nbttc.setBoolean(NBT_PLACEFRAME, placeFrame)
         nbttc.setBoolean(NBT_DELETE, delete)
         ench.writeToNBT(nbttc)
+        FluidHandler.writeToNBT(nbttc)
         super.writeToNBT(nbttc)
     }
 
@@ -334,9 +337,12 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
         this.readFromNBT(nbt)
     }
 
-    private object FluidHandler extends IFluidHandler {
+    private object FluidHandler extends IFluidHandler with INBTWritable with INBTReadable[IFluidHandler] {
 
         private[this] val fluidStacks = new ListBuffer[FluidStack]
+        private[this] val NBT_FluidHandler = "FluidHandler"
+        private[this] val NBT_pumped = "amountPumped"
+        private[this] val NBT_liquds = "liquds"
         var amountPumped = 0l
 
         override def fill(resource: FluidStack, doFill: Boolean): Int = 0
@@ -427,6 +433,28 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
         def canPump =
             if (fluidStacks.isEmpty) true
             else fluidStacks.forall(_.amount <= ench.maxAmount / 2)
+
+        override def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
+            val tag = new NBTTagCompound
+            tag.setLong(NBT_pumped, amountPumped)
+            val list = new NBTTagList
+            for (s <- fluidStacks) {
+                list.appendTag(s.writeToNBT(new NBTTagCompound))
+            }
+            tag.setTag(NBT_liquds, list)
+            nbt.setTag(NBT_FluidHandler, tag)
+            nbt
+        }
+
+        override def readFromNBT(nbt: NBTTagCompound): IFluidHandler = {
+            val tag = nbt.getCompoundTag(NBT_FluidHandler)
+            amountPumped = tag.getLong(NBT_pumped)
+            val list = tag.getTagList(NBT_liquds, NBT.TAG_COMPOUND)
+            for (i <- 0 until list.tagCount()) {
+                Option(FluidStack.loadFluidStackFromNBT(list.getCompoundTagAt(i))).foreach(fluidStacks.+=)
+            }
+            this
+        }
     }
 
 }

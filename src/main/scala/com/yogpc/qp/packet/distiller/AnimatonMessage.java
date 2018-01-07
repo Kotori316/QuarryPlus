@@ -52,7 +52,7 @@ public class AnimatonMessage implements IMessage {
         if (world.provider.getDimension() == dim) {
             TileRefinery refinery = ((TileRefinery) world.getTileEntity(pos));
             if (refinery != null) {
-                Minecraft.getMinecraft().addScheduledTask(refinery.receiveMessage(this));
+                Minecraft.getMinecraft().addScheduledTask(refinery.receiveMessage(stage, speed));
             }
         }
         return null;
