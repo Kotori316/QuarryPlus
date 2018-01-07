@@ -11,13 +11,13 @@ import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-/**
-  * To Client only.
-  */
 object AnimatonMessage {
     def create(refinery: TileRefinery): AnimatonMessage = new AnimatonMessage(refinery)
 }
 
+/**
+  * To Client only.
+  */
 class AnimatonMessage(refinery: TileRefinery) extends IMessage {
     var dim = 0
     var pos = BlockPos.ORIGIN
