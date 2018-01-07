@@ -6,6 +6,7 @@ import buildcraft.api.facades.FacadeAPI;
 import buildcraft.api.tools.IToolWrench;
 import cofh.api.item.IToolHammer;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.QuarryPlusI;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
@@ -40,9 +41,9 @@ public class BuildcraftHelper {
     }
 
     @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.Buildcraft_facades)
-    public static void disableIC2Facade() {
+    public static void disableFacade() {
         if (Loader.isModLoaded(QuarryPlus.Optionals.IC2_modID))
             Optional.ofNullable(ForgeRegistries.BLOCKS.getValue(new ResourceLocation("ic2:te"))).ifPresent(FacadeAPI::disableBlock);
-
+        QuarryPlusI.blockList().forEach(FacadeAPI::disableBlock);
     }
 }

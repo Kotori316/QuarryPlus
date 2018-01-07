@@ -16,7 +16,7 @@ class QuarryJeiPlugin extends IModPlugin {
         registry.handleRecipes(classOf[WorkbenchRecipes], new IRecipeWrapperFactory[WorkbenchRecipes] {
             override def getRecipeWrapper(recipe: WorkbenchRecipes) = new WorkBenchRecipeWrapper(recipe)
         }, WorkBenchRecipeCategory.UID)
-        registry.addRecipeCatalyst(new ItemStack(QuarryPlusI.workbench), WorkBenchRecipeCategory.UID)
+        registry.addRecipeCatalyst(new ItemStack(QuarryPlusI.blockWorkbench), WorkBenchRecipeCategory.UID)
         // 7, 74 => 168, 85
         registry.addRecipeClickArea(classOf[GuiWorkbench], 7, 74, 161, 11, WorkBenchRecipeCategory.UID)
         registry.addRecipes(WorkBenchRecipeWrapper.getAll, WorkBenchRecipeCategory.UID)

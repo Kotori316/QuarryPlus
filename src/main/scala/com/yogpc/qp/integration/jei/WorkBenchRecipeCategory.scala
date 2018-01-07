@@ -33,7 +33,7 @@ class WorkBenchRecipeCategory(guiHelper: IGuiHelper) extends IRecipeCategory[Wor
         currentrecipe = recipeWrapper
     }
 
-    override def getTitle: String = QuarryPlusI.workbench.getLocalizedName
+    override def getTitle: String = QuarryPlusI.blockWorkbench.getLocalizedName
 
     override val getUid: String = UID
 

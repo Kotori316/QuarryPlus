@@ -12,30 +12,36 @@
  */
 package com.yogpc.qp
 
+import java.util
+
 import com.yogpc.qp.block._
 import com.yogpc.qp.item.{ItemMirror, ItemQuarryDebug, ItemTool}
 import com.yogpc.qp.tile.TileMarker
+import net.minecraft.block.Block
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
+import scala.collection.mutable.ListBuffer
+
 object QuarryPlusI {
     val instance = this
+    private[this] val blocks = new ListBuffer[Block]
     val creativeTab = new CreativeTabQuarryPlus
-    val blockQuarry = new BlockQuarry
-    val blockMarker = new BlockMarker
-    val blockMover = new BlockMover
-    val blockMiningWell = new BlockMiningWell
-    val blockPump = new BlockPump
-    val blockRefinery = new BlockRefinery
-    val blockPlacer = new BlockPlacer
-    val blockBreaker = new BlockBreaker
-    val blockLaser = new BlockLaser
-    val blockPlainPipe = new BlockPlainPipe
-    val blockFrame = new BlockFrame
-    val workbench = new BlockWorkbench
-    val controller = new BlockController
-    val blockChunkdestroyer = new BlockAdvQuarry
-    val blockStandalonePump = new BlockAdvPump
+    val blockQuarry = register(new BlockQuarry)
+    val blockMarker = register(new BlockMarker)
+    val blockMover = register(new BlockMover)
+    val blockMiningWell = register(new BlockMiningWell)
+    val blockPump = register(new BlockPump)
+    val blockRefinery = register(new BlockRefinery)
+    val blockPlacer = register(new BlockPlacer)
+    val blockBreaker = register(new BlockBreaker)
+    val blockLaser = register(new BlockLaser)
+    val blockPlainPipe = register(new BlockPlainPipe)
+    val blockFrame = register(new BlockFrame)
+    val blockWorkbench = register(new BlockWorkbench)
+    val blockController = register(new BlockController)
+    val blockChunkdestroyer = register(new BlockAdvQuarry)
+    val blockStandalonePump = register(new BlockAdvPump)
     val itemTool = ItemTool.item
     val magicmirror = new ItemMirror
     val debugItem = ItemQuarryDebug.item
@@ -46,6 +52,16 @@ object QuarryPlusI {
     val guiIdPlacer = 5
     val guiIdAdvQuarry = 6
     val guiIdAdvPump = 7
+
+    private def register[T <: Block](block: T): T = {
+        blocks += block
+        block
+    }
+
+    def blockList(): util.List[Block] = {
+        import scala.collection.JavaConverters._
+        new util.ArrayList[Block](blocks.asJava)
+    }
 
     @SubscribeEvent
     def onWorldUnload(event: WorldEvent.Unload): Unit = {

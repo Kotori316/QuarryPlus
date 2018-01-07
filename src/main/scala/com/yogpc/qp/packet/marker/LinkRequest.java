@@ -27,11 +27,12 @@ public class LinkRequest implements IMessage {
     @Override
     public void fromBytes(PacketBuffer buffer) throws IOException {
         pos = buffer.readBlockPos();
+        dim = buffer.readInt();
     }
 
     @Override
     public void toBytes(PacketBuffer buffer) {
-        buffer.writeBlockPos(pos);
+        buffer.writeBlockPos(pos).writeInt(dim);
     }
 
     //TODO not work...

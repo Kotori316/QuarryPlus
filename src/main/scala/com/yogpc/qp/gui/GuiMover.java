@@ -79,13 +79,13 @@ public class GuiMover extends GuiContainer {
 
         switch (button.id) {
             case 2:
-                PacketHandler.sendToServer(MoverMessage.create(pos, inventorySlots.windowId));
+                PacketHandler.sendToServer(MoverMessage.Move.create(pos, inventorySlots.windowId));
                 break;
             case 1:
-                PacketHandler.sendToServer(MoverMessage.create(pos, inventorySlots.windowId, ContainerMover.D.UP));
+                PacketHandler.sendToServer(MoverMessage.Cursor.create(pos, inventorySlots.windowId, ContainerMover.D.UP));
                 break;
             case 3:
-                PacketHandler.sendToServer(MoverMessage.create(pos, inventorySlots.windowId, ContainerMover.D.DOUN));
+                PacketHandler.sendToServer(MoverMessage.Cursor.create(pos, inventorySlots.windowId, ContainerMover.D.DOUN));
                 break;
         }
     }

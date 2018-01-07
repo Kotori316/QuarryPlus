@@ -38,6 +38,7 @@ public class ItemMirror extends ItemFood {
     }
 
     @Override
+    @SuppressWarnings("ConstantConditions")
     protected void onFoodEaten(ItemStack stack, World worldIn, EntityPlayer player) {
         if (player instanceof EntityPlayerMP) {
             if (stack.getItemDamage() == 2) {
@@ -54,7 +55,7 @@ public class ItemMirror extends ItemFood {
             BlockPos c = player.getBedLocation(player.dimension);
             if (c != null)
                 c = EntityPlayer.getBedSpawnLocation(player.world, c, player.isSpawnForced(player.dimension));
-            else
+            if (c == null)
                 c = player.world.provider.getRandomizedSpawnPoint();
             player.setPositionAndUpdate(c.getX() + 0.5D, c.getY() + 0.1D, c.getZ() + 0.5D);
         }
