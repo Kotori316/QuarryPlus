@@ -110,13 +110,15 @@ public class BlockFrame extends Block {
      * copied from buildcraft frame.
      */
     public void removeNeighboringFrames(World world, BlockPos pos) {
-        if (!Config.content().disableFrameChainBreak()) for (EnumFacing dir : EnumFacing.VALUES) {
-            BlockPos nPos = pos.offset(dir);
-            IBlockState nBlock = world.getBlockState(nPos);
-            if (nBlock.getBlock() == this) {
-                neighborChanged(nBlock, world, nPos, this, nPos);
-                if (!world.getBlockState(nPos).getValue(DAMMING))
-                    world.setBlockToAir(nPos);
+        if (!Config.content().disableFrameChainBreak()) {
+            for (EnumFacing dir : EnumFacing.VALUES) {
+                BlockPos nPos = pos.offset(dir);
+                IBlockState nBlock = world.getBlockState(nPos);
+                if (nBlock.getBlock() == this) {
+                    neighborChanged(nBlock, world, nPos, this, nPos);
+                    if (!world.getBlockState(nPos).getValue(DAMMING))
+                        world.setBlockToAir(nPos);
+                }
             }
         }
     }

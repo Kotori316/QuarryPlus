@@ -25,12 +25,12 @@ public class AdvPumpStatusMessage implements IMessage {
     boolean placeFrame;
     NBTTagCompound nbtTagCompound;
 
-    public static AdvPumpStatusMessage create(int dim, BlockPos pos, boolean placeFrame, NBTTagCompound nbtTagCompound) {
+    public static AdvPumpStatusMessage create(TileAdvPump pump) {
         AdvPumpStatusMessage message = new AdvPumpStatusMessage();
-        message.dim = dim;
-        message.pos = pos;
-        message.nbtTagCompound = nbtTagCompound;
-        message.placeFrame = placeFrame;
+        message.dim = pump.getWorld().provider.getDimension();
+        message.pos = pump.getPos();
+        message.nbtTagCompound = pump.getUpdateTag();
+        message.placeFrame = pump.placeFrame();
         return message;
     }
 

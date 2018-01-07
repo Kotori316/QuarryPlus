@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 
 import buildcraft.api.recipes.BuildcraftRecipeRegistry;
 import buildcraft.api.recipes.IRefineryRecipeManager;
+import com.yogpc.qp.Config;
 import com.yogpc.qp.PowerManager;
 import com.yogpc.qp.compat.INBTWritable;
 import com.yogpc.qp.item.ItemQuarryDebug;
@@ -124,7 +125,7 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
             return;
         }
         double v = MjReciever.getMJfrommicro(cacheEnergy);
-        if (cacheIn == null || getStoredEnergy() < v ||
+        if (cacheIn == null || (!Config.content().noEnergy() && getStoredEnergy() < v) ||
                 !PowerManager.useEnergyRefinery(this, v, ench.unbreaking, ench.efficiency)) {
             decreaseAnimation();
         } else {
@@ -280,10 +281,10 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
     }
 
     @SideOnly(Side.CLIENT)
-    public Runnable receiveMessage(AnimatonMessage message) {
+    public Runnable receiveMessage(int stage, float speed) {
         return () -> {
-            animationStage = message.stage;
-            animationSpeed = message.speed;
+            animationStage = stage;
+            animationSpeed = speed;
         };
     }
 

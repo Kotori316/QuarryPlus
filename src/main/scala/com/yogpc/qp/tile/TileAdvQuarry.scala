@@ -502,9 +502,11 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
     }
 
     @SideOnly(Side.CLIENT)
-    def recieveModeMassage(modeTag: NBTTagCompound): Unit = {
-        mode.readFromNBT(modeTag)
-        digRange = DigRange.readFromNBT(modeTag)
+    def recieveModeMassage(modeTag: NBTTagCompound): Runnable = new Runnable {
+        override def run(): Unit = {
+            mode.readFromNBT(modeTag)
+            digRange = DigRange.readFromNBT(modeTag)
+        }
     }
 
     private[TileAdvQuarry] class ItemHandler extends IItemHandlerModifiable {

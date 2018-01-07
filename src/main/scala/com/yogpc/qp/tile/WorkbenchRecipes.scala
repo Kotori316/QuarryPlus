@@ -89,7 +89,7 @@ object WorkbenchRecipes {
         addRecipe(ItemDamage(magicmirror, 1), 32000, true, new ItemStack(ENDER_EYE, 400), new ItemStack(magicmirror, 50))
         addRecipe(ItemDamage(magicmirror, 2), 32000, true, new ItemStack(ENDER_EYE, 400), new ItemStack(magicmirror, 50), new ItemStack(OBSIDIAN, 100), new ItemStack(DIRT, 200), new ItemStack(PLANKS, 200))
         if (!Config.content.disableController)
-            addRecipe(ItemDamage(controller), 1000000, true, new ItemStack(NETHER_STAR, 50), new ItemStack(ROTTEN_FLESH, 1000), new ItemStack(ARROW, 1000), new ItemStack(BONE, 1000), new ItemStack(GUNPOWDER, 1000), new ItemStack(IRON_INGOT, 2000), new ItemStack(GOLD_INGOT, 1000), new ItemStack(GHAST_TEAR, 250), new ItemStack(MAGMA_CREAM, 500), new ItemStack(BLAZE_ROD, 700), new ItemStack(CARROT, 50), new ItemStack(POTATO, 50))
+            addRecipe(ItemDamage(blockController), 1000000, true, new ItemStack(NETHER_STAR, 50), new ItemStack(ROTTEN_FLESH, 1000), new ItemStack(ARROW, 1000), new ItemStack(BONE, 1000), new ItemStack(GUNPOWDER, 1000), new ItemStack(IRON_INGOT, 2000), new ItemStack(GOLD_INGOT, 1000), new ItemStack(GHAST_TEAR, 250), new ItemStack(MAGMA_CREAM, 500), new ItemStack(BLAZE_ROD, 700), new ItemStack(CARROT, 50), new ItemStack(POTATO, 50))
         addRecipe(ItemDamage(blockMarker), 20000, true, new ItemStack(REDSTONE, 300), new ItemStack(DYE, 300, 4), new ItemStack(GOLD_INGOT, 175), new ItemStack(IRON_INGOT, 150), new ItemStack(GLOWSTONE_DUST, 50), new ItemStack(ENDER_PEARL, 10))
         addRecipe(ItemDamage(blockQuarry), 320000, true, new ItemStack(DIAMOND, 800), new ItemStack(GOLD_INGOT, 800), new ItemStack(IRON_INGOT, 1600), new ItemStack(REDSTONE, 400), new ItemStack(ENDER_PEARL, 50), new ItemStack(NETHER_STAR, 3))
         addRecipe(ItemDamage(blockMover), 320000, true, new ItemStack(OBSIDIAN, 1600), new ItemStack(DIAMOND, 800), new ItemStack(ANVIL, 50), new ItemStack(REDSTONE, 1200), new ItemStack(GOLD_INGOT, 200), new ItemStack(IRON_INGOT, 200), new ItemStack(NETHER_STAR, 1), new ItemStack(ENDER_PEARL, 25))
@@ -103,7 +103,7 @@ object WorkbenchRecipes {
         addRecipe(ItemDamage(blockPlacer), 320000, true, new ItemStack(REDSTONE, 1600), new ItemStack(DIAMOND, 600), new ItemStack(GOLD_INGOT, 1600), new ItemStack(IRON_INGOT, 800), new ItemStack(ENDER_PEARL, 50))
         addRecipe(ItemDamage(blockLaser), 640000, bcLoaded, new ItemStack(DIAMOND, 400), new ItemStack(REDSTONE, 4800), new ItemStack(OBSIDIAN, 800), new ItemStack(GLASS, 3600), new ItemStack(GLOWSTONE_DUST, 1600), new ItemStack(GOLD_INGOT, 800), new ItemStack(ENDER_PEARL, 5))
         if (!Config.content.disableChunkDestroyer)
-            addRecipe(ItemDamage(blockChunkdestroyer), 3200000, true, new ItemStack(blockQuarry, 75), new ItemStack(blockPump, 50), new ItemStack(itemTool, 1 * 25, 1), new ItemStack(blockMarker, 75), new ItemStack(DIAMOND_BLOCK, 8 * 25), new ItemStack(EMERALD_BLOCK, 8 * 25), new ItemStack(ENDER_EYE, 64 * 25))
-        addRecipe(ItemDamage(blockStandalonePump), 3200000, true, new ItemStack(blockPump, 50), new ItemStack(blockMiningWell, 2 * 25))
+            addRecipe(ItemDamage(blockChunkdestroyer), 3200000, true, new ItemStack(blockQuarry, 75), new ItemStack(blockPump, 50), new ItemStack(itemTool, 1 * 25, 1), new ItemStack(blockMarker, 75), new ItemStack(DIAMOND_BLOCK, 8 * 25), new ItemStack(EMERALD_BLOCK, 8 * 25), new ItemStack(ENDER_EYE, 64 * 25), new ItemStack(NETHER_STAR, 1 * 25), new ItemStack(net.minecraft.init.Items.SKULL, 24, 5))
+        addRecipe(ItemDamage(blockStandalonePump), 3200000, true, new ItemStack(blockPump, 2 * 25), new ItemStack(blockMiningWell, 2 * 25), new ItemStack(blockMarker, 3 * 25))
     }
 }

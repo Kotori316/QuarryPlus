@@ -13,6 +13,7 @@
 
 package com.yogpc.qp;
 
+import com.yogpc.qp.compat.BuildcraftHelper;
 import com.yogpc.qp.gui.GuiFactory;
 import com.yogpc.qp.gui.GuiHandler;
 import com.yogpc.qp.item.ItemTool;
@@ -46,6 +47,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.ModAPIManager;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -126,11 +128,13 @@ public class QuarryPlus {
     @Mod.EventHandler
     public void init(final FMLInitializationEvent event) {
         PacketHandler.init();
-        GameRegistry.addRecipe(new ItemStack(workbench(), 1),
+        GameRegistry.addRecipe(new ItemStack(blockWorkbench(), 1),
                 "III", "GDG", "RRR",
                 'D', Blocks.DIAMOND_BLOCK, 'R', Items.REDSTONE,
                 'I', Blocks.IRON_BLOCK, 'G', Blocks.GOLD_BLOCK);
         WorkbenchRecipes.registerRecipes();
+        if (inDev && ModAPIManager.INSTANCE.hasAPI(Optionals.Buildcraft_facades))
+            BuildcraftHelper.disableFacade();
     }
 
     @SubscribeEvent
@@ -144,8 +148,8 @@ public class QuarryPlus {
         event.getRegistry().register(blockBreaker());
         event.getRegistry().register(blockPlainPipe());
         event.getRegistry().register(blockFrame());
-        event.getRegistry().register(workbench());
-        event.getRegistry().register(controller());
+        event.getRegistry().register(blockWorkbench());
+        event.getRegistry().register(blockController());
         event.getRegistry().register(blockLaser());
         event.getRegistry().register(blockRefinery());
         event.getRegistry().register(blockChunkdestroyer());
@@ -174,8 +178,8 @@ public class QuarryPlus {
         event.getRegistry().register(blockBreaker().itemBlock());
         event.getRegistry().register(blockPlainPipe().itemBlock);
         event.getRegistry().register(blockFrame().itemBlock);
-        event.getRegistry().register(workbench().itemBlock());
-        event.getRegistry().register(controller().itemBlock);
+        event.getRegistry().register(blockWorkbench().itemBlock());
+        event.getRegistry().register(blockController().itemBlock);
         event.getRegistry().register(blockLaser().itemBlock());
         event.getRegistry().register(blockRefinery().itemBlock());
         event.getRegistry().register(blockChunkdestroyer().itemBlock());
@@ -193,7 +197,7 @@ public class QuarryPlus {
         ModelLoader.setCustomModelResourceLocation(blockFrame().itemBlock, 0, new ModelResourceLocation(blockFrame().getRegistryName(), "inventory"));
         ModelLoader.setCustomModelResourceLocation(blockFrame().itemBlock, 1, new ModelResourceLocation(blockFrame().getRegistryName(), "inventory"));
         ModelLoader.setCustomModelResourceLocation(blockMarker().itemBlock, 0, new ModelResourceLocation(blockMarker().getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(workbench().itemBlock(), 0, new ModelResourceLocation(workbench().getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(blockWorkbench().itemBlock(), 0, new ModelResourceLocation(blockWorkbench().getRegistryName(), "inventory"));
         ModelLoader.setCustomModelResourceLocation(blockPump().itemBlock(), 0, new ModelResourceLocation(blockPump().getRegistryName(), "inventory"));
         ModelLoader.setCustomModelResourceLocation(blockMover().itemBlock, 0, new ModelResourceLocation(blockMover().getRegistryName(), "inventory"));
         ModelLoader.setCustomModelResourceLocation(blockBreaker().itemBlock(), 0, new ModelResourceLocation(blockBreaker().getRegistryName(), "inventory"));
@@ -201,7 +205,7 @@ public class QuarryPlus {
         ModelLoader.setCustomModelResourceLocation(blockMiningWell().itemBlock(), 0, new ModelResourceLocation(blockMiningWell().getRegistryName(), "inventory"));
         ModelLoader.setCustomModelResourceLocation(blockPlainPipe().itemBlock, 0, new ModelResourceLocation(blockPlainPipe().getRegistryName(), "inventory"));
         ModelLoader.setCustomModelResourceLocation(blockRefinery().itemBlock(), 0, new ModelResourceLocation(blockRefinery().getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(controller().itemBlock, 0, new ModelResourceLocation(controller().getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(blockController().itemBlock, 0, new ModelResourceLocation(blockController().getRegistryName(), "inventory"));
         ModelLoader.setCustomModelResourceLocation(blockLaser().itemBlock(), 0, new ModelResourceLocation(blockLaser().getRegistryName(), "inventory"));
         ModelLoader.setCustomModelResourceLocation(blockChunkdestroyer().itemBlock(), 0, new ModelResourceLocation(blockChunkdestroyer().getRegistryName(), "inventory"));
         ModelLoader.setCustomModelResourceLocation(blockStandalonePump().itemBlock(), 0, new ModelResourceLocation(blockStandalonePump().getRegistryName(), "inventory"));
@@ -231,6 +235,7 @@ public class QuarryPlus {
         public static final String Buildcraft_recipes = "BuildCraftAPI|recipes";
         public static final String Buildcraft_transport = "BuildCraftAPI|transport";
         public static final String Buildcraft_tiles = "BuildCraftAPI|tiles";
+        public static final String Buildcraft_facades = "BuildCraftAPI|facades";
         public static final String updateJson = "https://raw.githubusercontent.com/Kotori316/QuarryPlus/1.12/update.json";
     }
 

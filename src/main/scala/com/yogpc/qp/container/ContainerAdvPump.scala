@@ -20,9 +20,7 @@ class ContainerAdvPump(tile: TileAdvPump, player: EntityPlayer) extends Containe
         this.addSlotToContainer(new Slot(player.inventory, vertical, 8 + vertical * oneBox, 142))
 
     if (!tile.getWorld.isRemote) {
-        PacketHandler.sendToClient(
-            AdvPumpStatusMessage.create(tile.getWorld.provider.getDimension, tile.getPos, tile.placeFrame, tile.getUpdateTag),
-            player.asInstanceOf[EntityPlayerMP])
+        PacketHandler.sendToClient(AdvPumpStatusMessage.create(tile), player.asInstanceOf[EntityPlayerMP])
     }
 
     override def transferStackInSlot(playerIn: EntityPlayer, index: Int): ItemStack = VersionUtil.empty()
