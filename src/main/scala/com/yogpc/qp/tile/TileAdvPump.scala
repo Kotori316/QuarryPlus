@@ -119,7 +119,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
         paths.clear()
 
         getWorld.profiler.startSection("Depth")
-        Iterator.iterate(getPos.down())(_.down()).takeWhile(pos => pos.getY > 0 && ench.inRange(getPos, pos))
+        Iterator.iterate(getPos.down())(_.down()).takeWhile(pos => pos.getY >= 0 && ench.inRange(getPos, pos))
           .find(!getWorld.isAirBlock(_)).foreach(pos => {
             val state = getWorld.getBlockState(pos)
             if (TilePump.isLiquid(state, false, getWorld, pos)) {
@@ -180,12 +180,15 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
                         FluidHandler.fill(maybeStack, doFill = true)
                         replaceFluidBlock(target)
                         nextPos()
+                    } else if (TilePump.isLiquid(getWorld.getBlockState(target), false, getWorld, target)) {
+                        getWorld.setBlockToAir(target)
+                        nextPos()
                     } else {
                         buildWay()
                         nextPos()
                     }
                 } else {
-                    //Pump can't act because of lack of energy. Wait to get more energy.
+                    //Pump can't work because of lack of energy. Wait to get more energy.
                     break = true
                 }
             } else {
@@ -264,7 +267,8 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
             "FluidType : " + Option(FluidHandler.getFluidType).map(_.getName).getOrElse("None"),
             "FluidAmount : " + FluidHandler.getAmount,
             "Pumped : " + FluidHandler.amountPumped,
-            "Delete : " + delete).map(new TextComponentString(_)).asJava
+            "Delete : " + delete,
+            "To Start : " + toStart).map(new TextComponentString(_)).asJava
     }
 
     override def readFromNBT(nbttc: NBTTagCompound) = {
@@ -332,9 +336,11 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
     }
 
     @SideOnly(Side.CLIENT)
-    def recieveStatusMessage(placeFrame: Boolean, nbt: NBTTagCompound): Unit = {
-        this.placeFrame = placeFrame
-        this.readFromNBT(nbt)
+    def recieveStatusMessage(placeFrame: Boolean, nbt: NBTTagCompound): Runnable = new Runnable {
+        override def run(): Unit = {
+            TileAdvPump.this.placeFrame = placeFrame
+            TileAdvPump.this.readFromNBT(nbt)
+        }
     }
 
     private object FluidHandler extends IFluidHandler with INBTWritable with INBTReadable[IFluidHandler] {
