@@ -99,27 +99,18 @@ public class BlockFrame extends Block {
                 return !blockState.isFullCube() && TilePump.isLiquid(blockState, false, world, pos.offset(facing));
             });
             if (!world.isRemote && !d) {
-                removeNeighboringFrames(world, pos);
+                for (EnumFacing dir : EnumFacing.VALUES) {
+                    BlockPos nPos = pos.offset(dir);
+                    IBlockState nBlock = world.getBlockState(nPos);
+                    if (nBlock.getBlock() == this) {
+                        neighborChanged(nBlock, world, nPos, this, nPos);
+                        if (!world.getBlockState(nPos).getValue(DAMMING))
+                            world.setBlockToAir(nPos);
+                    }
+                }
             }
 //        if (Config.content().debug())
 //            QuarryPlus.LOGGER.info("Frame broken at " + pos + (d ? " neighbor Fluid" : ""));
-        }
-    }
-
-    /**
-     * copied from buildcraft frame.
-     */
-    public void removeNeighboringFrames(World world, BlockPos pos) {
-        if (!Config.content().disableFrameChainBreak()) {
-            for (EnumFacing dir : EnumFacing.VALUES) {
-                BlockPos nPos = pos.offset(dir);
-                IBlockState nBlock = world.getBlockState(nPos);
-                if (nBlock.getBlock() == this) {
-                    neighborChanged(nBlock, world, nPos, this, nPos);
-                    if (!world.getBlockState(nPos).getValue(DAMMING))
-                        world.setBlockToAir(nPos);
-                }
-            }
         }
     }
 
