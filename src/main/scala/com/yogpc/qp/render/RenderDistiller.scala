@@ -4,13 +4,13 @@ import com.yogpc.qp.block.ADismCBlock
 import com.yogpc.qp.tile.TileRefinery
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.BufferBuilder
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer
 import net.minecraft.util.EnumFacing
+import net.minecraftforge.client.model.animation.FastTESR
 
 /**
   * @see [[buildcraft.factory.client.render.RenderDistiller]]
   */
-object RenderDistiller extends TileEntitySpecialRenderer[TileRefinery] {
+object RenderDistiller extends FastTESR[TileRefinery] {
     val instance = this
     val d = 1d / 16d
     lazy val sprite = Sprites.getMap('stripes_refinery)

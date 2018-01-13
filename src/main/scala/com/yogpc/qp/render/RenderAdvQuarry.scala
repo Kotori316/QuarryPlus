@@ -14,7 +14,6 @@ object RenderAdvQuarry extends FastTESR[TileAdvQuarry] {
                                       partialTicks: Float, destroyStage: Int, partial: Float, buffer: BufferBuilder) = {
 
         Minecraft.getMinecraft.mcProfiler.startSection("quarryplus")
-        Minecraft.getMinecraft.mcProfiler.startSection("quarry")
 
         if ((te.mode is TileAdvQuarry.MAKEFRAME) || (te.mode is TileAdvQuarry.NOTNEEDBREAK)) {
             Minecraft.getMinecraft.mcProfiler.startSection("advquarry")
@@ -30,7 +29,6 @@ object RenderAdvQuarry extends FastTESR[TileAdvQuarry] {
             Minecraft.getMinecraft.mcProfiler.endSection()
         }
 
-        Minecraft.getMinecraft.mcProfiler.endSection()
         Minecraft.getMinecraft.mcProfiler.endSection()
     }
 
