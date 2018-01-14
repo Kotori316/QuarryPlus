@@ -288,13 +288,8 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                             val z = target.getZ + 1
                             if (z > digRange.maxZ) {
                                 //Finished.
-                                if (preparedFiller()) {
-                                    target = digRange.min
-                                    mode set TileAdvQuarry.FILLBLOCKS
-                                } else {
-                                    target = BlockPos.ORIGIN
-                                    mode set TileAdvQuarry.NONE
-                                }
+                                target = BlockPos.ORIGIN
+                                mode set TileAdvQuarry.NONE
                             } else {
                                 target = new BlockPos(digRange.minX, target.getY, z)
                             }
@@ -304,8 +299,32 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                     }
                 }
             } else if (mode is TileAdvQuarry.FILLBLOCKS) {
-                target = BlockPos.ORIGIN
-                mode set TileAdvQuarry.NONE
+                val handler = InvUtils.findItemHander(getWorld, getPos.up, EnumFacing.DOWN).orNull
+                if (handler != null) {
+                    val list = Range(0, handler.getSlots).find(i => VersionUtil.nonEmpty(handler.getStackInSlot(i))).map(handler.extractItem(_, 64, false)).toList
+                    list.filter(_.getItem.isInstanceOf[ItemBlock]).flatMap(i => Range(0, i.getCount)).foreach(_ => {
+                        if (mode is TileAdvQuarry.FILLBLOCKS) {
+                            val state = list.head.getItem.asInstanceOf[ItemBlock].getBlock.getStateFromMeta(list.head.getItemDamage)
+                            getWorld.setBlockState(new BlockPos(target.getX, if (Config.content.removeBedrock) 1 else 5, target.getZ), state)
+                            val x = target.getX + 1
+                            if (x > digRange.maxX) {
+                                val z = target.getZ + 1
+                                if (z > digRange.maxZ) {
+                                    //Finished.
+                                    target = BlockPos.ORIGIN
+                                    mode set TileAdvQuarry.NONE
+                                } else {
+                                    target = new BlockPos(digRange.minX, target.getY, z)
+                                }
+                            } else {
+                                target = new BlockPos(x, target.getY, target.getZ)
+                            }
+                        }
+                    })
+                } else {
+                    target = BlockPos.ORIGIN
+                    mode set TileAdvQuarry.NONE
+                }
             }
             if (!isEmpty) {
                 var break = false
@@ -509,6 +528,13 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
         }
     }
 
+    def startFillMode(): Unit = {
+        if ((mode is TileAdvQuarry.NONE) && digRange.defined && preparedFiller()) {
+            mode set TileAdvQuarry.FILLBLOCKS
+            target = digRange.min
+        }
+    }
+
     @SideOnly(Side.CLIENT)
     def recieveModeMassage(modeTag: NBTTagCompound): Runnable = new Runnable {
         override def run(): Unit = {
@@ -519,8 +545,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 
     def preparedFiller(): Boolean = {
         val need = (digRange.maxX - digRange.minX) * (digRange.maxZ - digRange.minZ)
-        val stacks = Option(getWorld.getTileEntity(getPos.offset(EnumFacing.UP)))
-          .flatMap(t => Option(t.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.DOWN))).toList
+        val stacks = InvUtils.findItemHander(getWorld, getPos.up, EnumFacing.DOWN).toList
           .flatMap(handler => Range(0, handler.getSlots).map(handler.getStackInSlot))
         stacks.nonEmpty && stacks.head.getItem.isInstanceOf[ItemBlock] && stacks.forall(_.isItemEqual(stacks.head)) && stacks.map(_.getCount).sum >= need
     }
