@@ -18,7 +18,7 @@ import net.minecraft.enchantment.{Enchantment, EnchantmentHelper}
 import net.minecraft.entity.item.{EntityItem, EntityXPOrb}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
-import net.minecraft.item.ItemStack
+import net.minecraft.item.{ItemBlock, ItemStack}
 import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
 import net.minecraft.util.math.BlockPos.MutableBlockPos
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos, ChunkPos}
@@ -298,6 +298,34 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                         }
                     }
                 }
+            } else if (mode is TileAdvQuarry.FILLBLOCKS) {
+                val handler = InvUtils.findItemHander(getWorld, getPos.up, EnumFacing.DOWN).orNull
+                if (handler != null) {
+                    val list = Range(0, handler.getSlots).find(i => VersionUtil.nonEmpty(handler.getStackInSlot(i))).map(handler.extractItem(_, 64, false)).toList
+                    list.filter(_.getItem.isInstanceOf[ItemBlock]).flatMap(i => Range(0, i.getCount)).foreach(_ => {
+                        if (mode is TileAdvQuarry.FILLBLOCKS) {
+                            //noinspection ScalaDeprecation
+                            val state = list.head.getItem.asInstanceOf[ItemBlock].getBlock.getStateFromMeta(list.head.getItemDamage)
+                            getWorld.setBlockState(new BlockPos(target.getX, if (Config.content.removeBedrock) 1 else 5, target.getZ), state)
+                            val x = target.getX + 1
+                            if (x > digRange.maxX) {
+                                val z = target.getZ + 1
+                                if (z > digRange.maxZ) {
+                                    //Finished.
+                                    target = BlockPos.ORIGIN
+                                    mode set TileAdvQuarry.NONE
+                                } else {
+                                    target = new BlockPos(digRange.minX, target.getY, z)
+                                }
+                            } else {
+                                target = new BlockPos(x, target.getY, target.getZ)
+                            }
+                        }
+                    })
+                } else {
+                    target = BlockPos.ORIGIN
+                    mode set TileAdvQuarry.NONE
+                }
             }
             if (!isEmpty) {
                 var break = false
@@ -501,12 +529,26 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
         }
     }
 
+    def startFillMode(): Unit = {
+        if ((mode is TileAdvQuarry.NONE) && digRange.defined && preparedFiller()) {
+            mode set TileAdvQuarry.FILLBLOCKS
+            target = digRange.min
+        }
+    }
+
     @SideOnly(Side.CLIENT)
     def recieveModeMassage(modeTag: NBTTagCompound): Runnable = new Runnable {
         override def run(): Unit = {
             mode.readFromNBT(modeTag)
             digRange = DigRange.readFromNBT(modeTag)
         }
+    }
+
+    def preparedFiller(): Boolean = {
+        val need = (digRange.maxX - digRange.minX) * (digRange.maxZ - digRange.minZ)
+        val stacks = InvUtils.findItemHander(getWorld, getPos.up, EnumFacing.DOWN).toList
+          .flatMap(handler => Range(0, handler.getSlots).map(handler.getStackInSlot))
+        stacks.nonEmpty && stacks.head.getItem.isInstanceOf[ItemBlock] && stacks.forall(_.isItemEqual(stacks.head)) && stacks.map(_.getCount).sum >= need
     }
 
     private[TileAdvQuarry] class ItemHandler extends IItemHandlerModifiable {
@@ -611,6 +653,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                     case 2 => MAKEFRAME
                     case 3 => BREAKBLOCK
                     case 4 => CHECKLIQUID
+                    case 5 => FILLBLOCKS
                     case _ => throw new IllegalStateException("No available mode")
                 }
             }
@@ -819,6 +862,8 @@ object TileAdvQuarry {
     case object BREAKBLOCK extends Modes(3)
 
     case object CHECKLIQUID extends Modes(4)
+
+    case object FILLBLOCKS extends Modes(5)
 
     def getFramePoses(digRange: DigRange): List[BlockPos] = {
         val builder = List.newBuilder[BlockPos]
