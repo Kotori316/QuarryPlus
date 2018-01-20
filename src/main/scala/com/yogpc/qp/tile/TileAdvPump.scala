@@ -133,13 +133,14 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
             }
         })
         if (nextPosesToCheck.isEmpty) {
-            finished = true
-            queueBuilt = false
+            G_reinit()
             val state = getWorld.getBlockState(getPos)
-            validate()
-            getWorld.setBlockState(getPos, state.withProperty(ADismCBlock.ACTING, JBool.FALSE))
-            validate()
-            getWorld.setTileEntity(getPos, this)
+            if (state.getValue(ADismCBlock.ACTING)) {
+                validate()
+                getWorld.setBlockState(getPos, state.withProperty(ADismCBlock.ACTING, JBool.FALSE))
+                validate()
+                getWorld.setTileEntity(getPos, this)
+            }
             getWorld.profiler.endSection()
             return
         }
