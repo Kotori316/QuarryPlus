@@ -83,7 +83,6 @@ public class BlockController extends Block implements IDismantleable {
                     }
                     PacketHandler.sendToClient(AvailableEntities.create(pos, worldIn.provider.getDimension(), entries), (EntityPlayerMP) playerIn);
                 }
-
                 return true;
             }
         }

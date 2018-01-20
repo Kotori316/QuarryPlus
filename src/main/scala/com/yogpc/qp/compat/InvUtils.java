@@ -2,6 +2,7 @@ package com.yogpc.qp.compat;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,6 +17,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
+import scala.Option;
 
 import static com.yogpc.qp.version.VersionUtil.empty;
 import static com.yogpc.qp.version.VersionUtil.isEmpty;
@@ -74,6 +76,11 @@ public class InvUtils {
             }
             return insert;
         }
+    }
+
+    public static Option<IItemHandler> findItemHander(World world, BlockPos pos, EnumFacing from) {
+        Optional<IItemHandler> optional = Optional.ofNullable(world.getTileEntity(pos)).map(entity -> entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, from));
+        return Option.apply(optional.orElse(null));
     }
 
     public static boolean isDebugItem(EntityPlayer player, EnumHand hand) {

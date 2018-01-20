@@ -1,6 +1,7 @@
 package com.yogpc.qp.packet.advpump;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
@@ -8,7 +9,6 @@ import com.yogpc.qp.tile.TileAdvPump;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -52,13 +52,8 @@ public class AdvPumpStatusMessage implements IMessage {
     public IMessage onRecieve(IMessage message, MessageContext ctx) {
         World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
         if (world.provider.getDimension() == dim) {
-            TileEntity entity = world.getTileEntity(pos);
-            if (entity != null) {
-                Minecraft.getMinecraft().addScheduledTask(() -> {
-                    TileAdvPump pump = (TileAdvPump) entity;
-                    pump.recieveStatusMessage(placeFrame, nbtTagCompound);
-                });
-            }
+            Optional.ofNullable(world.getTileEntity(pos)).map(TileAdvPump.class::cast).ifPresent(pump ->
+                    Minecraft.getMinecraft().addScheduledTask(pump.recieveStatusMessage(placeFrame, nbtTagCompound)));
         }
         return null;
     }

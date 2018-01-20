@@ -92,7 +92,7 @@ public class ContainerMover extends Container {
     public void detectAndSendChanges() {
         super.detectAndSendChanges();
         ItemStack pickaxe = craftMatrix.getStackInSlot(0);
-        Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(pickaxe);
+        Map<Enchantment, Integer> enchantments = pickaxe == null ? Collections.emptyMap() : EnchantmentHelper.getEnchantments(pickaxe);
         ItemStack enchTile = craftMatrix.getStackInSlot(1);
         if (enchantments.isEmpty() || isEmpty(enchTile)) {
             avail = 0;

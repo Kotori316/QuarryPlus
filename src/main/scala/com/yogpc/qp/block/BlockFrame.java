@@ -13,8 +13,11 @@
 
 package com.yogpc.qp.block;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
+import java.util.Set;
+import java.util.function.BiPredicate;
 import java.util.stream.Stream;
 
 import com.yogpc.qp.Config;
@@ -23,12 +26,12 @@ import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.tile.TilePump;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockEmptyDrops;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
@@ -39,7 +42,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockFrame extends Block {
+public class BlockFrame extends BlockEmptyDrops {
 
     /**
      * Whether this fence connects in the northern direction
@@ -58,6 +61,9 @@ public class BlockFrame extends Block {
     public static final AxisAlignedBB East_AABB = new AxisAlignedBB(.75, 0.25, 0.25, 1, 0.75, 0.75);
     public static final AxisAlignedBB UP_AABB = new AxisAlignedBB(0.25, .75, 0.25, 0.75, 1, 0.75);
     public static final AxisAlignedBB Down_AABB = new AxisAlignedBB(0.25, 0, 0.25, 0.75, .25, 0.75);
+    private static final BiPredicate<World, BlockPos> HASNEIGHBOURLIQUID = (world, pos) ->
+            Stream.of(EnumFacing.VALUES).map(pos::offset).map(world::getBlockState)
+                    .anyMatch(state -> !state.isFullCube() && TilePump.isLiquid(state, false, null, null));
 
     public final ItemBlock itemBlock;
 
@@ -91,16 +97,25 @@ public class BlockFrame extends Block {
                 .withProperty(TOP, canConnectTo(worldIn, pos.up()));
     }
 
+    private boolean breaking = false;
+
     @Override
     public void breakBlock(World world, BlockPos pos, IBlockState state) {
         if (!Config.content().disableFrameChainBreak()) {
-            boolean d = Stream.of(EnumFacing.VALUES).anyMatch(facing -> {
-                IBlockState blockState = world.getBlockState(pos.offset(facing));
-                return !blockState.isFullCube() && TilePump.isLiquid(blockState, false, world, pos.offset(facing));
-            });
-            if (!world.isRemote && !d) {
-                removeNeighboringFrames(world, pos);
+            boolean firstBreak;
+            if (breaking)
+                firstBreak = false;
+            else {
+                firstBreak = true;
+                breaking = true;
             }
+            if (firstBreak) {
+                if (!HASNEIGHBOURLIQUID.test(world, pos)) {
+                    breakChain(world, pos);
+                }
+                breaking = false;
+            }
+
 //        if (Config.content().debug())
 //            QuarryPlus.LOGGER.info("Frame broken at " + pos + (d ? " neighbor Fluid" : ""));
         }
@@ -109,17 +124,28 @@ public class BlockFrame extends Block {
     /**
      * copied from buildcraft frame.
      */
-    public void removeNeighboringFrames(World world, BlockPos pos) {
-        if (!Config.content().disableFrameChainBreak()) {
-            for (EnumFacing dir : EnumFacing.VALUES) {
-                BlockPos nPos = pos.offset(dir);
-                IBlockState nBlock = world.getBlockState(nPos);
-                if (nBlock.getBlock() == this) {
-                    neighborChanged(nBlock, world, nPos, this/*, nPos*/);
-                    if (!world.getBlockState(nPos).getValue(DAMMING))
-                        world.setBlockToAir(nPos);
+    @SuppressWarnings("unchecked")
+    public void breakChain(World world, BlockPos first) {
+        if (!world.isRemote) {
+            Set<BlockPos> set = new HashSet<>();
+            set.add(first);
+            ArrayList<BlockPos> nextCheck = new ArrayList<>();
+            nextCheck.add(first);
+            while (!nextCheck.isEmpty()) {
+                List<BlockPos> list = (List<BlockPos>) nextCheck.clone();
+                nextCheck.clear();
+                for (BlockPos pos : list) {
+                    for (EnumFacing dir : EnumFacing.VALUES) {
+                        BlockPos nPos = pos.offset(dir);
+                        IBlockState nBlock = world.getBlockState(nPos);
+                        if (nBlock.getBlock() == this) {
+                            if (!HASNEIGHBOURLIQUID.test(world, nPos) && set.add(nPos))
+                                nextCheck.add(nPos);
+                        }
+                    }
                 }
             }
+            set.forEach(world::setBlockToAir);
         }
     }
 
@@ -170,16 +196,6 @@ public class BlockFrame extends Block {
     @SuppressWarnings("deprecation")
     public boolean isFullCube(IBlockState state) {
         return false;
-    }
-
-    @Override
-    public Item getItemDropped(IBlockState state, Random rand, int fortune) {
-        return null;
-    }
-
-    @Override
-    public int quantityDropped(Random random) {
-        return 0;
     }
 
     @Override
@@ -239,11 +255,7 @@ public class BlockFrame extends Block {
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn/*, BlockPos fromPos*/) {
         super.neighborChanged(state, worldIn, pos, blockIn/*, fromPos*/);
         if (!Config.content().disableFrameChainBreak() && state.getValue(DAMMING)) {
-            worldIn.setBlockState(pos, state.withProperty(DAMMING,
-                    Stream.of(EnumFacing.VALUES).anyMatch(facing -> {
-                        IBlockState blockState = worldIn.getBlockState(pos.offset(facing));
-                        return !blockState.isFullCube() && TilePump.isLiquid(blockState, false, worldIn, pos.offset(facing));
-                    })), 2);
+            worldIn.setBlockState(pos, state.withProperty(DAMMING, HASNEIGHBOURLIQUID.test(worldIn, pos)), 2);
         }
     }
 }

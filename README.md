@@ -10,8 +10,6 @@ Jar files are available on https://github.com/Kotori316/QuarryPlus/releases OR h
 
 Minecraft CurseForge - https://minecraft.curseforge.com/projects/additional-enchanted-miner
 
-**These are nightly builds. These versions will be cleaned up at fixed intervals.**  
-
 Supported API
 -------------
 * BuildCraft API
@@ -21,8 +19,6 @@ Supported API
 * Forge Energy API (net.minecraftforge.energy.IEnergyStorage)
 * Forge ItemHandler API (net.minecraftforge.items.IItemHandler)
 * Forge FluidHandler API (net.minecraftforge.fluids.capability.IFluidHandler)
-
-**All of unofficial build are unsupported**
 
 Build with...
 -------------

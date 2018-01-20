@@ -4,11 +4,15 @@ package com.yogpc.qp.compat;
 
 import cofh.api.item.IToolHammer;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.QuarryPlusI;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModAPIManager;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 public class BuildcraftHelper {
 

@@ -23,7 +23,7 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
-import scala.collection.mutable.ListBuffer
+import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 
 /**
   * @see [[buildcraft.factory.tile.TilePump]]
@@ -113,13 +113,13 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
 
     def buildWay(): Unit = {
         val checked = mutable.Set.empty[BlockPos]
-        val nextPosesToCheck = new ListBuffer[BlockPos]()
+        val nextPosesToCheck = new ArrayBuffer[BlockPos](pos.getY)
         var fluid = FluidRegistry.WATER
         toDig = Nil
         paths.clear()
 
         getWorld.theProfiler.startSection("Depth")
-        Iterator.iterate(getPos.down())(_.down()).takeWhile(pos => pos.getY > 0 && ench.inRange(getPos, pos))
+        Iterator.iterate(getPos.down())(_.down()).takeWhile(pos => pos.getY >= 0 && ench.inRange(getPos, pos))
           .find(!getWorld.isAirBlock(_)).foreach(pos => {
             val state = getWorld.getBlockState(pos)
             if (TilePump.isLiquid(state, false, getWorld, pos)) {
@@ -146,7 +146,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
 
         getWorld.theProfiler.endStartSection("Wide")
         while (nextPosesToCheck.nonEmpty) {
-            val copied = nextPosesToCheck.result()
+            val copied = nextPosesToCheck.toArray
             nextPosesToCheck.clear()
             for (posToCheck <- copied; offset <- FACINGS) {
                 val offsetPos = posToCheck.offset(offset)
@@ -154,7 +154,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
                     if (checked.add(offsetPos)) {
                         val state = getWorld.getBlockState(offsetPos)
                         if (findFluid(state) == fluid) {
-                            paths.put(offsetPos, offsetPos :: paths(posToCheck))
+                            paths += ((offsetPos, offsetPos :: paths(posToCheck)))
                             nextPosesToCheck += offsetPos
                             if (TilePump.isLiquid(state, true, getWorld, offsetPos))
                                 toDig = offsetPos :: toDig
@@ -180,12 +180,15 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
                         FluidHandler.fill(maybeStack, doFill = true)
                         replaceFluidBlock(target)
                         nextPos()
+                    } else if (TilePump.isLiquid(getWorld.getBlockState(target), false, getWorld, target)) {
+                        getWorld.setBlockToAir(target)
+                        nextPos()
                     } else {
                         buildWay()
                         nextPos()
                     }
                 } else {
-                    //Pump can't act because of lack of energy. Wait to get more energy.
+                    //Pump can't work because of lack of energy. Wait to get more energy.
                     break = true
                 }
             } else {
@@ -264,7 +267,8 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
             "FluidType : " + Option(FluidHandler.getFluidType).map(_.getName).getOrElse("None"),
             "FluidAmount : " + FluidHandler.getAmount,
             "Pumped : " + FluidHandler.amountPumped,
-            "Delete : " + delete).map(new TextComponentString(_)).asJava
+            "Delete : " + delete,
+            "To Start : " + toStart).map(new TextComponentString(_)).asJava
     }
 
     override def readFromNBT(nbttc: NBTTagCompound) = {
@@ -332,9 +336,11 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
     }
 
     @SideOnly(Side.CLIENT)
-    def recieveStatusMessage(placeFrame: Boolean, nbt: NBTTagCompound): Unit = {
-        this.placeFrame = placeFrame
-        this.readFromNBT(nbt)
+    def recieveStatusMessage(placeFrame: Boolean, nbt: NBTTagCompound): Runnable = new Runnable {
+        override def run(): Unit = {
+            TileAdvPump.this.placeFrame = placeFrame
+            TileAdvPump.this.readFromNBT(nbt)
+        }
     }
 
     private object FluidHandler extends IFluidHandler with INBTWritable with INBTReadable[IFluidHandler] {
@@ -401,9 +407,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
             if (kind.amount >= source.amount) {
                 val extract = source.amount
                 if (doDrain) fluidStacks.remove(fluidStacks.indexOf(kind))
-                val c = kind.copy()
-                c.setAmount(extract)
-                c
+                kind.copywithAmount(extract)
             } else {
                 val nAmount = source.amount - kind.amount
                 if (doDrain) source.setAmount(nAmount)
@@ -494,7 +498,8 @@ object TileAdvPump {
         }
 
         val distance = fortune match {
-            case 0 | 1 => 64
+            case 0 => 32
+            case 1 => 64
             case 2 => 96
             case 3 => 128
         }

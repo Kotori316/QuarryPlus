@@ -67,7 +67,7 @@ object Config {
         recipeDifficulty.setMinValue(1d)
         WorkbenchRecipes.difficulty = recipeDifficulty.getDouble(2d)
 
-        val placerOnlyPlaceFront = configuration.get(Configuration.CATEGORY_GENERAL, PlacerOnlyPlaceFront_key, true).getBoolean
+        val placerOnlyPlaceFront = configuration.getBoolean(PlacerOnlyPlaceFront_key, Configuration.CATEGORY_GENERAL, true, PlacerOnlyPlaceFront_key)
         val noEnergy = configuration.getBoolean(NoEnergy_key, Configuration.CATEGORY_GENERAL, false, NoEnergy_key)
         PowerManager.loadConfiguration(configuration)
 
