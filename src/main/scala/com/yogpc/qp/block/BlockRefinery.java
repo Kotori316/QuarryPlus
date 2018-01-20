@@ -46,12 +46,14 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidActionResult;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.items.CapabilityItemHandler;
 
 public class BlockRefinery extends ADismCBlock {
 
@@ -112,13 +114,10 @@ public class BlockRefinery extends ADismCBlock {
     private static void fill(TileRefinery refinery, EntityPlayer player, EnumHand hand, EnumFacing facing) {
         ItemStack current = player.getHeldItem(hand);
         IFluidHandler handler = refinery.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing);
-        IFluidHandlerItem handlerItem = FluidUtil.getFluidHandler(current);
-        if (handlerItem != null && handler != null) {
-            int fill = handler.fill(FluidUtil.getFluidContained(current), false);
-            if (fill > 0) {
-                handler.fill(handlerItem.drain(fill, !player.capabilities.isCreativeMode), true);
-                player.setHeldItem(hand, handlerItem.getContainer());
-            }
+        FluidActionResult result = FluidUtil.tryEmptyContainerAndStow(current, handler,
+                player.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.UP), Fluid.BUCKET_VOLUME, player);
+        if (result.isSuccess()) {
+            player.setHeldItem(hand, result.getResult());
         }
     }
 

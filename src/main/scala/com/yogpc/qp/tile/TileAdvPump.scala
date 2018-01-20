@@ -263,6 +263,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
 
     override def getDebugmessages = {
         List("Range = " + ench.distance,
+            "target : " + target,
             "Finished : " + finished,
             "Ench : " + ench,
             "FluidType : " + Option(FluidHandler.getFluidType).map(_.getName).getOrElse("None"),
