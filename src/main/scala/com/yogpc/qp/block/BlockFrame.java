@@ -13,7 +13,11 @@
 
 package com.yogpc.qp.block;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.function.BiPredicate;
 import java.util.stream.Stream;
 
 import com.yogpc.qp.Config;
@@ -57,6 +61,9 @@ public class BlockFrame extends BlockEmptyDrops {
     public static final AxisAlignedBB East_AABB = new AxisAlignedBB(.75, 0.25, 0.25, 1, 0.75, 0.75);
     public static final AxisAlignedBB UP_AABB = new AxisAlignedBB(0.25, .75, 0.25, 0.75, 1, 0.75);
     public static final AxisAlignedBB Down_AABB = new AxisAlignedBB(0.25, 0, 0.25, 0.75, .25, 0.75);
+    private static final BiPredicate<World, BlockPos> HASNEIGHBOURLIQUID = (world, pos) ->
+            Stream.of(EnumFacing.VALUES).map(pos::offset).map(world::getBlockState)
+                    .anyMatch(state -> !state.isFullCube() && TilePump.isLiquid(state, false, null, null));
 
     public final ItemBlock itemBlock;
 
@@ -90,26 +97,52 @@ public class BlockFrame extends BlockEmptyDrops {
                 .withProperty(TOP, canConnectTo(worldIn, pos.up()));
     }
 
+    private boolean breaking = false;
+
     @Override
     public void breakBlock(World world, BlockPos pos, IBlockState state) {
         if (!Config.content().disableFrameChainBreak()) {
-            boolean d = Stream.of(EnumFacing.VALUES).anyMatch(facing -> {
-                IBlockState blockState = world.getBlockState(pos.offset(facing));
-                return !blockState.isFullCube() && TilePump.isLiquid(blockState, false, world, pos.offset(facing));
-            });
-            if (!world.isRemote && !d) {
-                for (EnumFacing dir : EnumFacing.VALUES) {
-                    BlockPos nPos = pos.offset(dir);
-                    IBlockState nBlock = world.getBlockState(nPos);
-                    if (nBlock.getBlock() == this) {
-                        neighborChanged(nBlock, world, nPos, this, nPos);
-                        if (!world.getBlockState(nPos).getValue(DAMMING))
-                            world.setBlockToAir(nPos);
+            boolean firstBreak;
+            if (breaking)
+                firstBreak = false;
+            else {
+                firstBreak = true;
+                breaking = true;
+            }
+            if (firstBreak) {
+                if (!HASNEIGHBOURLIQUID.test(world, pos)) {
+                    breakChain(world, pos);
+                }
+                breaking = false;
+            }
+
+//        if (Config.content().debug())
+//            QuarryPlus.LOGGER.info("Frame broken at " + pos + (d ? " neighbor Fluid" : ""));
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void breakChain(World world, BlockPos first) {
+        if (!world.isRemote) {
+            Set<BlockPos> set = new HashSet<>();
+            set.add(first);
+            ArrayList<BlockPos> nextCheck = new ArrayList<>();
+            nextCheck.add(first);
+            while (!nextCheck.isEmpty()) {
+                List<BlockPos> list = (List<BlockPos>) nextCheck.clone();
+                nextCheck.clear();
+                for (BlockPos pos : list) {
+                    for (EnumFacing dir : EnumFacing.VALUES) {
+                        BlockPos nPos = pos.offset(dir);
+                        IBlockState nBlock = world.getBlockState(nPos);
+                        if (nBlock.getBlock() == this) {
+                            if (!HASNEIGHBOURLIQUID.test(world, nPos) && set.add(nPos))
+                                nextCheck.add(nPos);
+                        }
                     }
                 }
             }
-//        if (Config.content().debug())
-//            QuarryPlus.LOGGER.info("Frame broken at " + pos + (d ? " neighbor Fluid" : ""));
+            set.forEach(world::setBlockToAir);
         }
     }
 
@@ -219,11 +252,7 @@ public class BlockFrame extends BlockEmptyDrops {
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
         super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
         if (!Config.content().disableFrameChainBreak() && state.getValue(DAMMING)) {
-            worldIn.setBlockState(pos, state.withProperty(DAMMING,
-                    Stream.of(EnumFacing.VALUES).anyMatch(facing -> {
-                        IBlockState blockState = worldIn.getBlockState(pos.offset(facing));
-                        return !blockState.isFullCube() && TilePump.isLiquid(blockState, false, worldIn, pos.offset(facing));
-                    })), 2);
+            worldIn.setBlockState(pos, state.withProperty(DAMMING, HASNEIGHBOURLIQUID.test(worldIn, pos)), 2);
         }
     }
 }

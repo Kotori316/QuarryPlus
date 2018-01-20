@@ -6,6 +6,7 @@
     "1.10.2-recommended": "0.7.5"
   },
   "1.12.2": {
+    "0.7.9": "Fixed frame caused StackOverFlowError.",
     "0.7.8": "Changed the recipe of Advanced Pump. It gets wider range.",
     "0.7.5": "Made quarry with pump a little faster. Close #12.",
     "0.7.4": "Added RefineryPlus. Close #7.",
@@ -15,6 +16,7 @@
     "0.6.8": "Added Forge version check system."
   },
   "1.11.2": {
+    "0.7.9": "Fixed frame caused StackOverFlowError.",
     "0.7.8": "Changed the recipe of Advanced Pump. It gets wider range.",
     "0.7.5": "Made quarry with pump a little faster. Close #12.",
     "0.7.4": "Added RefineryPlus. Close #7.",
@@ -23,6 +25,7 @@
     "0.6.8": "Added Forge version check system."
   },
   "1.10.2": {
+    "0.7.9": "Fixed frame caused StackOverFlowError.",
     "0.7.8": "Changed the recipe of Advanced Pump. It gets wider range.",
     "0.7.5": "Made quarry with pump a little faster. Close #12.",
     "0.7.4": "Added RefineryPlus. Close #7.",

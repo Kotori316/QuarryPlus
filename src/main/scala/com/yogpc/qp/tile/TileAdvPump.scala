@@ -23,7 +23,7 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
-import scala.collection.mutable.ListBuffer
+import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 
 /**
   * @see [[buildcraft.factory.tile.TilePump]]
@@ -113,7 +113,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
 
     def buildWay(): Unit = {
         val checked = mutable.Set.empty[BlockPos]
-        val nextPosesToCheck = new ListBuffer[BlockPos]()
+        val nextPosesToCheck = new ArrayBuffer[BlockPos](pos.getY)
         var fluid = FluidRegistry.WATER
         toDig = Nil
         paths.clear()
@@ -146,7 +146,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
 
         getWorld.profiler.endStartSection("Wide")
         while (nextPosesToCheck.nonEmpty) {
-            val copied = nextPosesToCheck.result()
+            val copied = nextPosesToCheck.toArray
             nextPosesToCheck.clear()
             for (posToCheck <- copied; offset <- FACINGS) {
                 val offsetPos = posToCheck.offset(offset)
@@ -154,7 +154,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
                     if (checked.add(offsetPos)) {
                         val state = getWorld.getBlockState(offsetPos)
                         if (findFluid(state) == fluid) {
-                            paths.put(offsetPos, offsetPos :: paths(posToCheck))
+                            paths += ((offsetPos, offsetPos :: paths(posToCheck)))
                             nextPosesToCheck += offsetPos
                             if (TilePump.isLiquid(state, true, getWorld, offsetPos))
                                 toDig = offsetPos :: toDig
@@ -407,9 +407,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
             if (kind.amount >= source.amount) {
                 val extract = source.amount
                 if (doDrain) fluidStacks.remove(fluidStacks.indexOf(kind))
-                val c = kind.copy()
-                c.setAmount(extract)
-                c
+                kind.copywithAmount(extract)
             } else {
                 val nAmount = source.amount - kind.amount
                 if (doDrain) source.setAmount(nAmount)
@@ -500,7 +498,8 @@ object TileAdvPump {
         }
 
         val distance = fortune match {
-            case 0 | 1 => 64
+            case 0 => 32
+            case 1 => 64
             case 2 => 96
             case 3 => 128
         }
