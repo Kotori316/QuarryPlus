@@ -14,20 +14,12 @@
 package com.yogpc.qp.tile
 
 import java.util
-import javax.annotation.Nullable
 
 import com.yogpc.qp.tile.IEnchantableTile._
-import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.tileentity.TileEntity
-import net.minecraft.util.EnumFacing
-import net.minecraftforge.common.capabilities.Capability
-import net.minecraftforge.items.CapabilityItemHandler
-import net.minecraftforge.items.wrapper.InvWrapper
 
-class TileBreaker extends TileEntity with IEnchantableTile with HasInv {
-    private[this] val handler = new InvWrapper(this)
+class TileBreaker extends TileEntity with IEnchantableTile {
     var silktouch = false
     var fortune: Byte = 0
 
@@ -55,33 +47,4 @@ class TileBreaker extends TileEntity with IEnchantableTile with HasInv {
         else if (id == SilktouchID && value > 0) this.silktouch = true
 
     override def G_reinit() = ()
-
-    override def getSizeInventory = 1
-
-    override def isEmpty = true
-
-    override def getStackInSlot(i: Int) = com.yogpc.qp.version.VersionUtil.empty()
-
-    override def decrStackSize(i: Int, a: Int) = com.yogpc.qp.version.VersionUtil.empty()
-
-    override def removeStackFromSlot(index: Int) = com.yogpc.qp.version.VersionUtil.empty()
-
-    override def setInventorySlotContents(index: Int, stack: ItemStack) = ()
-
-    override def getInventoryStackLimit = 0
-
-    override def isItemValidForSlot(s: Int, stack: ItemStack) = false
-
-    override def clear() = ()
-
-    override def getName = "tile.breakerplus.name"
-
-    override def isUsableByPlayer(player: EntityPlayer) = getWorld.getTileEntity(getPos) eq this
-
-    override def hasCapability(capability: Capability[_], @Nullable facing: EnumFacing): Boolean =
-        (capability eq CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) || super.hasCapability(capability, facing)
-
-    @Nullable override def getCapability[T](capability: Capability[T], @Nullable facing: EnumFacing): T =
-        if (capability eq CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(handler)
-        else super.getCapability(capability, facing)
 }
