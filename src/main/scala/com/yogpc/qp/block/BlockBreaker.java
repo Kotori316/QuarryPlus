@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
+import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.ReflectionHelper;
@@ -76,7 +77,7 @@ public class BlockBreaker extends ADismCBlock {
             if (pos1.getY() < 1)
                 return;
             IBlockState blockState = worldIn.getBlockState(pos1);
-            if (blockState.getBlock().isAir(blockState, worldIn, pos1))
+            if (!isBlockBreakable(state, worldIn, pos1))
                 return;
             final EntityPlayer player = FakePlayerFactory.getMinecraft((WorldServer) worldIn);
             blockState.getBlock().onBlockHarvested(worldIn, pos1, blockState, player);
@@ -104,6 +105,13 @@ public class BlockBreaker extends ADismCBlock {
                 }
             }
         }
+    }
+
+    private static boolean isBlockBreakable(IBlockState state, World world, BlockPos pos) {
+        if (state.getBlock().isAir(state, world, pos))
+            return false;
+        float hardness = state.getBlockHardness(world, pos);
+        return (hardness != -1) || Config.content().removeBedrock();
     }
 
     @Override
