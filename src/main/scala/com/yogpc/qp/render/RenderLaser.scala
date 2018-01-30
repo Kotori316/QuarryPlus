@@ -23,8 +23,8 @@ import org.lwjgl.opengl.GL11
   */
 object RenderLaser extends TileEntitySpecialRenderer[TileLaser] {
     val instance = this
-    val d4 = 4 / 16D
-    val d = 1 / 16D
+    private[this] final val d4 = 4 / 16D
+    private[this] final val d = 1 / 16D
     lazy val textureArray = Array(Sprites.getMap('laser_1), Sprites.getMap('laser_2), Sprites.getMap('laser_3), Sprites.getMap('laser_4))
 
     private val bcLoaded = Loader isModLoaded QuarryPlus.Optionals.Buildcraft_modID

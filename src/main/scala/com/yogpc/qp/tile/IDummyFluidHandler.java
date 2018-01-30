@@ -3,8 +3,12 @@ package com.yogpc.qp.tile;
 import javax.annotation.Nullable;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidTankProperties;
 
 public interface IDummyFluidHandler extends IFluidHandler {
+
+    @Override
+    IFluidTankProperties[] getTankProperties();
 
     @Override
     default int fill(FluidStack resource, boolean doFill) {

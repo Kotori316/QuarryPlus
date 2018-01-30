@@ -30,6 +30,7 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -138,7 +139,7 @@ public class BlockPlacer extends ADismCBlock {
 
     @Override
     @SuppressWarnings("deprecation")
-    public BlockFaceShape getBlockFaceShape(IBlockAccess p_193383_1_, IBlockState state, BlockPos p_193383_3_, EnumFacing side) {
+    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos p_193383_3_, EnumFacing side) {
         return state.getValue(FACING) != side ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
     }
 
@@ -167,7 +168,7 @@ public class BlockPlacer extends ADismCBlock {
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack stack = playerIn.getHeldItem(hand);
         if (InvUtils.isDebugItem(playerIn, hand)) return true;
-        if (BuildcraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
+        if (stack.getItem() == Items.STICK || BuildcraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
             TileEntity entity = worldIn.getTileEntity(pos);
             if (entity != null) {
                 entity.validate();

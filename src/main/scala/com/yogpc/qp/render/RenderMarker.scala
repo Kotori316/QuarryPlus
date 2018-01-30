@@ -9,7 +9,7 @@ import net.minecraftforge.client.model.animation.FastTESR
 object RenderMarker extends FastTESR[TileMarker] {
 
     val instance = this
-    val d = 1d / 16d
+    private[this] final val d = 1d / 16d
     lazy val sprite_B = Sprites.getMap(LaserType.BLUE_LASER.symbol)
     lazy val sprite_R = Sprites.getMap(LaserType.RED_LASER.symbol)
 

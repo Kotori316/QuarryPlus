@@ -61,7 +61,7 @@ public class BlockBreaker extends ADismCBlock {
     private final ArrayList<ItemStack> drops = new ArrayList<>();
 
     public BlockBreaker() {
-        super(Material.ROCK, QuarryPlus.Names.breaker, ItemBlockBreaker::new);
+        super(Material.PISTON, QuarryPlus.Names.breaker, ItemBlockBreaker::new);
         setHardness(3.5F);
         setSoundType(SoundType.STONE);
         setDefaultState(blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(POWERED, false));
@@ -122,14 +122,20 @@ public class BlockBreaker extends ADismCBlock {
     @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         if (!worldIn.isRemote) {
-            worldIn.setBlockState(pos, state.withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer)), 2);
+//            worldIn.setBlockState(pos, state.withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer)), 2);
             Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t -> EnchantmentHelper.init(t, stack.getEnchantmentTagList()));
         }
     }
 
     @Override
+    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing,
+                                            float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
+        return getDefaultState().withProperty(FACING, facing.getOpposite());
+    }
+
+    @Override
     @SuppressWarnings("deprecation")
-    public BlockFaceShape getBlockFaceShape(IBlockAccess p_193383_1_, IBlockState state, BlockPos p_193383_3_, EnumFacing side) {
+    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos p_193383_3_, EnumFacing side) {
         return state.getValue(FACING) != side ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
     }
 

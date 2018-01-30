@@ -667,8 +667,8 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 
 object TileAdvQuarry {
 
-    val MAX_STORED = 300 * 256
-    val noDigBLOCKS = Set(
+    final val MAX_STORED = 300 * 256
+    final val noDigBLOCKS = Set(
         BlockWrapper(Blocks.STONE.getDefaultState, ignoreMeta = true),
         BlockWrapper(Blocks.COBBLESTONE.getDefaultState),
         BlockWrapper(Blocks.DIRT.getDefaultState, ignoreProperty = true),
@@ -676,12 +676,12 @@ object TileAdvQuarry {
         BlockWrapper(Blocks.NETHERRACK.getDefaultState),
         BlockWrapper(Blocks.SANDSTONE.getDefaultState, ignoreMeta = true),
         BlockWrapper(Blocks.RED_SANDSTONE.getDefaultState, ignoreMeta = true))
-    private val ENERGYLIMIT_LIST = IndexedSeq(512, 1024, 2048, 4096, 8192, MAX_STORED)
-    private val NBT_QENCH = "nbt_qench"
-    private val NBT_DIGRANGE = "nbt_digrange"
-    private val NBT_MODE = "nbt_quarrymode"
-    private val NBT_ITEMLIST = "nbt_itemlist"
-    private val NBT_ITEMELEMENTS = "nbt_itemelements"
+    private final val ENERGYLIMIT_LIST = IndexedSeq(512, 1024, 2048, 4096, 8192, MAX_STORED)
+    private final val NBT_QENCH = "nbt_qench"
+    private final val NBT_DIGRANGE = "nbt_digrange"
+    private final val NBT_MODE = "nbt_quarrymode"
+    private final val NBT_ITEMLIST = "nbt_itemlist"
+    private final val NBT_ITEMELEMENTS = "nbt_itemelements"
 
     val defaultEnch = QEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false)
     val defaultRange: DigRange = NoDefinedRange

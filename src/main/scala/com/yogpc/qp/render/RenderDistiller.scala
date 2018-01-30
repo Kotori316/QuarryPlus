@@ -12,7 +12,7 @@ import net.minecraftforge.client.model.animation.FastTESR
   */
 object RenderDistiller extends FastTESR[TileRefinery] {
     val instance = this
-    val d = 1d / 16d
+    private[this] final val d = 1d / 16d
     lazy val sprite = Sprites.getMap('stripes_refinery)
     val spriteUFromStage = (i: Float) => {
         if (i <= 1) 0
