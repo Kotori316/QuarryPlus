@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.stream.Stream;
@@ -376,7 +375,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
                 lineBoxes[5] = new AxisAlignedBB(px + 0.5, py + 0.5, pz + b, px + 0.5, py + 0.5, pz + c + MAX_SIZE);
             }
             if (pw.isRemote) {
-                boxes = Arrays.stream(lineBoxes).filter(Objects::nonNull)
+                boxes = Arrays.stream(lineBoxes).filter(nonNull)
                         .map(aabb -> Box.apply(aabb, RenderMarker.d() * 2, RenderMarker.d() * 2, RenderMarker.d() * 2, false, false))
                         .toArray(Box[]::new);
             } else {
@@ -406,7 +405,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
 
         @Override
         public String toString() {
-            long i = Stream.of(lineBoxes).filter(Objects::nonNull).count();
+            long i = Stream.of(lineBoxes).filter(nonNull).count();
             return x + " " + y + " " + z + " Lasers : " + i;
         }
     }
@@ -543,7 +542,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
                 lineBoxes[11] = new AxisAlignedBB(xx + a, yx + a, zn + b, xx + a, yx + a, zx + c);
             }
             if (w.isRemote) {
-                boxes = Arrays.stream(lineBoxes).filter(Objects::nonNull)
+                boxes = Arrays.stream(lineBoxes).filter(nonNull)
                         .map(aabb -> Box.apply(aabb, RenderMarker.d() * 2, RenderMarker.d() * 2, RenderMarker.d() * 2, false, false))
                         .toArray(Box[]::new);
             } else {
@@ -564,7 +563,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
 
         @Override
         public String toString() {
-            long i = Stream.of(lineBoxes).filter(Objects::nonNull).count();
+            long i = Stream.of(lineBoxes).filter(nonNull).count();
             return minPos() + " to " + maxPos() + " Lasers : " + i;
         }
 

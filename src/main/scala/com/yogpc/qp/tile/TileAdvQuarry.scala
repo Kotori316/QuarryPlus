@@ -1,7 +1,6 @@
 package com.yogpc.qp.tile
 
 import java.lang.{Boolean => JBool, Byte => JByte, Integer => JInt}
-import java.util.Objects
 import javax.annotation.Nonnull
 
 import com.yogpc.qp.block.ADismCBlock
@@ -118,7 +117,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                     if (target.getX % 3 == 0) {
                         val axis = new AxisAlignedBB(new BlockPos(target.getX - 6, 1, target.getZ - 6), target.add(6, 0, 6))
                         //catch dropped items
-                        getWorld.getEntitiesWithinAABB(classOf[EntityItem], axis).asScala.filter(Objects.nonNull).foreach(entity => {
+                        getWorld.getEntitiesWithinAABB(classOf[EntityItem], axis).asScala.filter(APacketTile.nonNull.test).foreach(entity => {
                             if (!entity.isDead) {
                                 val drop = entity.getItem
                                 if (drop.getCount > 0) {
@@ -128,7 +127,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                             }
                         })
                         //remove XPs
-                        getWorld.getEntitiesWithinAABB(classOf[EntityXPOrb], axis).asScala.filter(Objects.nonNull).foreach(entityXPOrb => {
+                        getWorld.getEntitiesWithinAABB(classOf[EntityXPOrb], axis).asScala.filter(APacketTile.nonNull.test).foreach(entityXPOrb => {
                             if (!entityXPOrb.isDead)
                                 entityXPOrb.getEntityWorld.removeEntity(entityXPOrb)
                         })
@@ -304,6 +303,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                     val list = Range(0, handler.getSlots).find(i => VersionUtil.nonEmpty(handler.getStackInSlot(i))).map(handler.extractItem(_, 64, false)).toList
                     list.filter(_.getItem.isInstanceOf[ItemBlock]).flatMap(i => Range(0, i.getCount)).foreach(_ => {
                         if (mode is TileAdvQuarry.FILLBLOCKS) {
+                            //noinspection ScalaDeprecation
                             val state = list.head.getItem.asInstanceOf[ItemBlock].getBlock.getStateFromMeta(list.head.getItemDamage)
                             getWorld.setBlockState(new BlockPos(target.getX, if (Config.content.removeBedrock) 1 else 5, target.getZ), state)
                             val x = target.getX + 1
