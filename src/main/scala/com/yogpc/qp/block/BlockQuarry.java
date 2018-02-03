@@ -15,6 +15,7 @@ package com.yogpc.qp.block;
 
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
@@ -111,10 +112,8 @@ public class BlockQuarry extends ADismCBlock {
         if (!worldIn.isRemote) {
             EnumFacing facing = get2dOrientation(placer.posX, placer.posZ, pos.getX(), pos.getZ()).getOpposite();
             worldIn.setBlockState(pos, state.withProperty(FACING, facing), 2);
-            Optional.ofNullable((TileQuarry) worldIn.getTileEntity(pos)).ifPresent(quarry -> {
-                quarry.requestTicket();
-                EnchantmentHelper.init(quarry, stack.getEnchantmentTagList());
-            });
+            Consumer<TileQuarry> consumer = quarry -> EnchantmentHelper.init(quarry, stack.getEnchantmentTagList());
+            Optional.ofNullable((TileQuarry) worldIn.getTileEntity(pos)).ifPresent(consumer.andThen(TileQuarry.requestTicket));
         }
     }
 

@@ -1,6 +1,7 @@
 package com.yogpc.qp.block;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
@@ -10,6 +11,7 @@ import com.yogpc.qp.compat.EnchantmentHelper;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.item.ItemBlockAdvPump;
 import com.yogpc.qp.tile.TileAdvPump;
+import com.yogpc.qp.tile.TilePump;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -52,7 +54,7 @@ public class BlockAdvPump extends ADismCBlock {
             }
             return true;
         } else if (Config.content().debug() && stack.getItem() == Items.STICK) {
-            Optional.ofNullable((TileAdvPump) worldIn.getTileEntity(pos)).ifPresent(tileAdvPump -> tileAdvPump.delete_$eq(!tileAdvPump.delete()));
+            Optional.ofNullable((TileAdvPump) worldIn.getTileEntity(pos)).ifPresent(TileAdvPump::toggleDelete);
             return true;
         } else if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == 0) {
             if (!worldIn.isRemote)
@@ -92,10 +94,8 @@ public class BlockAdvPump extends ADismCBlock {
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
         if (!worldIn.isRemote) {
-            Optional.ofNullable((TileAdvPump) worldIn.getTileEntity(pos)).ifPresent(pump -> {
-                pump.requestTicket();
-                EnchantmentHelper.init(pump, stack.getEnchantmentTagList());
-            });
+            Consumer<TileAdvPump> consumer = pump -> EnchantmentHelper.init(pump, stack.getEnchantmentTagList());
+            Optional.ofNullable((TileAdvPump) worldIn.getTileEntity(pos)).ifPresent(consumer.andThen(TilePump.requestTicket));
         }
     }
 

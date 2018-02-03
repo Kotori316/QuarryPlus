@@ -37,7 +37,7 @@ import net.minecraftforge.items.{CapabilityItemHandler, IItemHandlerModifiable}
 import scala.collection.JavaConverters._
 import scala.collection.convert.WrapAsJava
 
-class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with ITickable with IDebugSender {
+class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with ITickable with IDebugSender with IChunkLoadTile {
     self =>
     private[this] var mDigRange = TileAdvQuarry.defaultRange
     var ench = TileAdvQuarry.defaultEnch
@@ -482,7 +482,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 
     private[this] var chunkTicket: ForgeChunkManager.Ticket = _
 
-    def requestTicket(): Unit = {
+    override def requestTicket(): Unit = {
         if (this.chunkTicket != null) return
         this.chunkTicket = ForgeChunkManager.requestTicket(QuarryPlus.INSTANCE, getWorld, Type.NORMAL)
         if (this.chunkTicket == null) return
@@ -493,7 +493,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
         forceChunkLoading(this.chunkTicket)
     }
 
-    def forceChunkLoading(ticket: ForgeChunkManager.Ticket): Unit = {
+    override def forceChunkLoading(ticket: ForgeChunkManager.Ticket): Unit = {
         if (this.chunkTicket == null) this.chunkTicket = ticket
         val quarryChunk = new ChunkPos(getPos)
         ForgeChunkManager.forceChunk(ticket, quarryChunk)

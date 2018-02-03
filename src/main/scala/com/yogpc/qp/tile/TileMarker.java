@@ -59,7 +59,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @Optional.Interface(iface = "buildcraft.api.tiles.ITileAreaProvider", modid = QuarryPlus.Optionals.Buildcraft_tiles)
-public class TileMarker extends APacketTile implements ITileAreaProvider, ITickable {
+public class TileMarker extends APacketTile implements ITileAreaProvider, ITickable, IChunkLoadTile {
     public static final List<Link> linkList = Collections.synchronizedList(new ArrayList<>());
     public static final List<Laser> laserList = Collections.synchronizedList(new ArrayList<>());
     public static final IndexOnlyList<Link> LINK_INDEX = new IndexOnlyList<>(linkList, linkList);
@@ -234,6 +234,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
 
     private Ticket chunkTicket;
 
+    @Override
     public void requestTicket() {// onPostBlockPlaced
         if (this.chunkTicket != null)
             return;
@@ -247,6 +248,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
         forceChunkLoading(this.chunkTicket);
     }
 
+    @Override
     public void forceChunkLoading(final Ticket ticket) {// ticketsLoaded
         if (this.chunkTicket == null)
             this.chunkTicket = ticket;

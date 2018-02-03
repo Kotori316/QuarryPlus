@@ -65,7 +65,7 @@ public class BlockBreaker extends ADismCBlock {
         setHardness(3.5F);
         setSoundType(SoundType.STONE);
         setDefaultState(blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(POWERED, false));
-        //Random tick setting is Config.
+        //Random tick setting is in Config.
     }
 
     @Override

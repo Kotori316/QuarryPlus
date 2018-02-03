@@ -59,7 +59,7 @@ import static com.yogpc.qp.tile.TileQuarry.Mode.MOVEHEAD;
 import static com.yogpc.qp.tile.TileQuarry.Mode.NONE;
 import static com.yogpc.qp.tile.TileQuarry.Mode.NOTNEEDBREAK;
 
-public class TileQuarry extends TileBasic implements IDebugSender {
+public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTile {
     public final boolean bccoreLoaded;
     private int targetX, targetY, targetZ;
     public int xMin, xMax, yMin, yMax = Integer.MIN_VALUE, zMin, zMax;
@@ -504,6 +504,7 @@ public class TileQuarry extends TileBasic implements IDebugSender {
 
     private Ticket chunkTicket;
 
+    @Override
     public void requestTicket() {
         if (this.chunkTicket != null)
             return;
@@ -518,6 +519,7 @@ public class TileQuarry extends TileBasic implements IDebugSender {
         forceChunkLoading(this.chunkTicket);
     }
 
+    @Override
     public void forceChunkLoading(final Ticket ticket) {
         if (this.chunkTicket == null)
             this.chunkTicket = ticket;
