@@ -15,10 +15,10 @@ package com.yogpc.qp.tile
 import javax.annotation.{Nonnull, Nullable}
 
 import com.yogpc.qp.version.VersionUtil
-import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.entity.player.{EntityPlayer, InventoryPlayer}
 import net.minecraft.inventory.ItemStackHelper
 import net.minecraft.item.ItemStack
-import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.{EnumFacing, NonNullList}
 import net.minecraftforge.common.capabilities.Capability
@@ -69,4 +69,21 @@ class TilePlacer extends TileEntity with HasInv {
     @Nullable override def getCapability[T](capability: Capability[T], @Nullable facing: EnumFacing): T =
         if (capability eq CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(handler)
         else super.getCapability(capability, facing)
+}
+
+class PlayerInvCopy(inventory: InventoryPlayer) {
+    val preList = inventory.writeToNBT(new NBTTagList)
+
+    def setItems(placer: TilePlacer): Unit = {
+        inventory.clear()
+        for (i <- 0 until 9) {
+            inventory.mainInventory.set(i, placer.getStackInSlot(i))
+        }
+        inventory.currentItem = 0
+    }
+
+    def resetItems(): Unit = {
+        inventory.currentItem = 0
+        inventory.readFromNBT(preList)
+    }
 }

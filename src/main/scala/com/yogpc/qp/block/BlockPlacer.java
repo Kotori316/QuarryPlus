@@ -20,6 +20,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.BuildcraftHelper;
 import com.yogpc.qp.compat.InvUtils;
+import com.yogpc.qp.tile.PlayerInvCopy;
 import com.yogpc.qp.tile.TilePlacer;
 import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.block.Block;
@@ -69,12 +70,12 @@ public class BlockPlacer extends ADismCBlock {
                 EnumFacing facing2 = EnumFacing.getFront(facing.getIndex() + 4);
 
                 final EntityPlayer player = FakePlayerFactory.getMinecraft((WorldServer) worldIn);
-                ItemStack previous = player.getHeldItem(EnumHand.MAIN_HAND);
-                ItemStack is = com.yogpc.qp.version.VersionUtil.empty();
+                PlayerInvCopy playerInvCopy = new PlayerInvCopy(player.inventory);
+                playerInvCopy.setItems(tile);
                 int i = 0;
                 for (; i < tile.getSizeInventory(); i++) {
-                    is = tile.getStackInSlot(i);
-                    player.inventory.setInventorySlotContents(player.inventory.currentItem, is);
+                    ItemStack is = tile.getStackInSlot(i);
+                    player.inventory.currentItem = i;
                     BlockPos offset = pos.offset(facing);
                     if (VersionUtil.nonEmpty(is)) {
                         if (is.getItem().onItemUseFirst(player, worldIn, offset, facing.getOpposite(), 0.5F, 0.5F, 0.5F, EnumHand.MAIN_HAND) == EnumActionResult.SUCCESS)
@@ -113,10 +114,10 @@ public class BlockPlacer extends ADismCBlock {
                         worldIn.setBlockToAir(offset.down());
                     }
                 }
-                player.inventory.setInventorySlotContents(player.inventory.currentItem, previous);
                 if (i < tile.getSizeInventory())
-                    if (VersionUtil.isEmpty(is))
+                    if (VersionUtil.isEmpty(player.inventory.getCurrentItem()))
                         tile.setInventorySlotContents(i, VersionUtil.empty());
+                playerInvCopy.resetItems();
             }
         }
     }
