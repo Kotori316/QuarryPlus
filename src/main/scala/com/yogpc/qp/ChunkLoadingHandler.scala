@@ -14,7 +14,7 @@ package com.yogpc.qp
 
 import java.util
 
-import com.yogpc.qp.tile.{TileAdvPump, TileAdvQuarry, TileMarker, TileQuarry}
+import com.yogpc.qp.tile.IChunkLoadTile
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import net.minecraftforge.common.ForgeChunkManager
@@ -31,10 +31,7 @@ object ChunkLoadingHandler extends ForgeChunkManager.OrderedLoadingCallback {
             val quarryZ = ticket.getModData.getInteger("quarryZ")
             val te = world.getTileEntity(new BlockPos(quarryX, quarryY, quarryZ))
             te match {
-                case quarry: TileQuarry => quarry.forceChunkLoading(ticket)
-                case marker: TileMarker => marker.forceChunkLoading(ticket)
-                case chunkQuarry: TileAdvQuarry => chunkQuarry.forceChunkLoading(ticket)
-                case advPump: TileAdvPump => advPump.forceChunkLoading(ticket)
+                case tile: IChunkLoadTile => tile.forceChunkLoading(ticket)
                 case _ =>
             }
         }

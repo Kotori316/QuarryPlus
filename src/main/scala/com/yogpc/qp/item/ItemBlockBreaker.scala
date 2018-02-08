@@ -20,7 +20,7 @@ import net.minecraft.item.{ItemBlock, ItemStack}
 class ItemBlockBreaker(val b: Block) extends ItemBlock(b) with IEnchantableItem {
     override def canMove(is: ItemStack, enchantment: Enchantment): Boolean = {
         if (EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, is) > 0) {
-            enchantment != Enchantments.FORTUNE
+            false
         } else if (EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, is) > 0) {
             enchantment != Enchantments.SILK_TOUCH && enchantment == Enchantments.FORTUNE
         } else {

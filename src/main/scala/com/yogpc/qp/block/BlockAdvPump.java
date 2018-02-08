@@ -2,6 +2,7 @@ package com.yogpc.qp.block;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import com.yogpc.qp.Config;
 import com.yogpc.qp.NonNullList;
@@ -12,6 +13,7 @@ import com.yogpc.qp.compat.EnchantmentHelper;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.item.ItemBlockAdvPump;
 import com.yogpc.qp.tile.TileAdvPump;
+import com.yogpc.qp.tile.TilePump;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -32,7 +34,7 @@ import net.minecraft.world.World;
 
 public class BlockAdvPump extends ADismCBlock {
     public BlockAdvPump() {
-        super(Material.IRON, QuarryPlus.Names.advpump, ItemBlockAdvPump::new);
+        super(Material.ANVIL, QuarryPlus.Names.advpump, ItemBlockAdvPump::new);
         setHardness(1.5F);
         setResistance(10F);
         setSoundType(SoundType.STONE);
@@ -53,7 +55,7 @@ public class BlockAdvPump extends ADismCBlock {
             }
             return true;
         } else if (Config.content().debug() && stack != null && stack.getItem() == Items.STICK) {
-            Optional.ofNullable((TileAdvPump) worldIn.getTileEntity(pos)).ifPresent(tileAdvPump -> tileAdvPump.delete_$eq(!tileAdvPump.delete()));
+            Optional.ofNullable((TileAdvPump) worldIn.getTileEntity(pos)).ifPresent(TileAdvPump::toggleDelete);
             return true;
         } else if (stack != null && stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == 0) {
             if (!worldIn.isRemote)
@@ -100,10 +102,8 @@ public class BlockAdvPump extends ADismCBlock {
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
         if (!worldIn.isRemote) {
-            Optional.ofNullable((TileAdvPump) worldIn.getTileEntity(pos)).ifPresent(pump -> {
-                pump.requestTicket();
-                EnchantmentHelper.init(pump, stack.getEnchantmentTagList());
-            });
+            Consumer<TileAdvPump> consumer = pump -> EnchantmentHelper.init(pump, stack.getEnchantmentTagList());
+            Optional.ofNullable((TileAdvPump) worldIn.getTileEntity(pos)).ifPresent(consumer.andThen(TilePump.requestTicket));
         }
     }
 

@@ -46,7 +46,7 @@ public class BlockMiningWell extends ADismCBlock {
     private final ArrayList<ItemStack> drops = new ArrayList<>();
 
     public BlockMiningWell() {
-        super(Material.GROUND, QuarryPlus.Names.miningwell, ItemBlockEnchantable::new);
+        super(Material.ANVIL, QuarryPlus.Names.miningwell, ItemBlockEnchantable::new);
         setHardness(1.5F);
         setResistance(10F);
         setSoundType(SoundType.STONE);

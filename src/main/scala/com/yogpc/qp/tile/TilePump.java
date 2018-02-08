@@ -47,7 +47,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
@@ -625,19 +624,19 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     @Override
     public List<ITextComponent> getDebugmessages() {
         ArrayList<ITextComponent> list = new ArrayList<>();
-        list.add(new TextComponentString("Connection : " + this.connectTo));
+        list.add(toComponentString.apply("Connection : " + this.connectTo));
         for (EnumFacing facing : EnumFacing.VALUES) {
             this.mapping.get(facing).stream()
-                    .reduce((s1, s2) -> s1 + ", " + s2).map(TextComponentString::new)
+                    .reduce(combiner).map(toComponentString)
                     .ifPresent(list::add);
         }
         if (!liquids.isEmpty()) {
             list.add(new TextComponentTranslation("chat.pumpcontain"));
             liquids.stream().map(fluidStack -> fluidStack.getLocalizedName() + fluidStack.amount + "mB")
-                    .reduce((s, s2) -> s + ", " + s2).map(TextComponentString::new)
+                    .reduce(combiner).map(toComponentString)
                     .ifPresent(list::add);
         } else {
-            list.add(new TextComponentString("No liquids"));
+            list.add(toComponentString.apply("No liquids"));
         }
         return list;
     }

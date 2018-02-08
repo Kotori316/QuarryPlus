@@ -1,6 +1,8 @@
 package com.yogpc.qp.tile;
 
+import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 
 public interface HasInv extends net.minecraft.inventory.IInventory {
 
@@ -31,12 +33,54 @@ public interface HasInv extends net.minecraft.inventory.IInventory {
         return false;
     }
 
-    boolean isUsableByPlayer(EntityPlayer player);
-
-    boolean isEmpty();
-
     @Override
     default boolean isUseableByPlayer(EntityPlayer player) {
         return isUsableByPlayer(player);
+    }
+
+    @Override
+    default int getSizeInventory() {
+        return 1;
+    }
+
+    default boolean isEmpty() {
+        return true;
+    }
+
+    @Override
+    default ItemStack getStackInSlot(int index) {
+        return VersionUtil.empty();
+    }
+
+    @Override
+    default ItemStack decrStackSize(int index, int count) {
+        return VersionUtil.empty();
+    }
+
+    @Override
+    default ItemStack removeStackFromSlot(int index) {
+        return VersionUtil.empty();
+    }
+
+    @Override
+    default void setInventorySlotContents(int index, ItemStack stack) {
+    }
+
+    @Override
+    default int getInventoryStackLimit() {
+        return 0;
+    }
+
+    default boolean isUsableByPlayer(EntityPlayer player) {
+        return true;
+    }
+
+    @Override
+    default boolean isItemValidForSlot(int index, ItemStack stack) {
+        return false;
+    }
+
+    @Override
+    default void clear() {
     }
 }

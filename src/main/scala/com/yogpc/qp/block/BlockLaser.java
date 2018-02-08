@@ -54,7 +54,7 @@ public class BlockLaser extends ADismCBlock {
     private static final AxisAlignedBB DOWN_LANCHER = new AxisAlignedBB(5d / 16d, 3d / 16d, 5d / 16d, 11d / 16d, 12d / 16d, 11d / 16d);
 
     public BlockLaser() {
-        super(Material.IRON, QuarryPlus.Names.laser, ItemBlockEnchantable::new);
+        super(Material.ANVIL, QuarryPlus.Names.laser, ItemBlockEnchantable::new);
         setHardness(10F);
         setDefaultState(getBlockState().getBaseState().withProperty(FACING, EnumFacing.UP));
     }

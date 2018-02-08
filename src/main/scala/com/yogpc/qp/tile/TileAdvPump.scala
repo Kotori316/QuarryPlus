@@ -28,7 +28,7 @@ import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 /**
   * @see [[buildcraft.factory.tile.TilePump]]
   */
-class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with IDebugSender {
+class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with IDebugSender with IChunkLoadTile {
 
     var placeFrame = true
     var delete = false
@@ -313,7 +313,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
 
     private[this] var chunkTicket: ForgeChunkManager.Ticket = _
 
-    def requestTicket(): Unit = {
+    override def requestTicket(): Unit = {
         if (this.chunkTicket != null) return
         this.chunkTicket = ForgeChunkManager.requestTicket(QuarryPlus.INSTANCE, getWorld, Type.NORMAL)
         if (this.chunkTicket == null) return
@@ -324,7 +324,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
         forceChunkLoading(this.chunkTicket)
     }
 
-    def forceChunkLoading(ticket: ForgeChunkManager.Ticket): Unit = {
+    override def forceChunkLoading(ticket: ForgeChunkManager.Ticket): Unit = {
         if (this.chunkTicket == null) this.chunkTicket = ticket
         val quarryChunk = new ChunkPos(getPos)
         ForgeChunkManager.forceChunk(ticket, quarryChunk)
@@ -342,6 +342,8 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
             TileAdvPump.this.readFromNBT(nbt)
         }
     }
+
+    def toggleDelete(): Unit = delete = !delete
 
     private object FluidHandler extends IFluidHandler with INBTWritable with INBTReadable[IFluidHandler] {
 

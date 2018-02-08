@@ -1,7 +1,6 @@
 package com.yogpc.qp.packet.laser;
 
 import java.io.IOException;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 import com.yogpc.qp.QuarryPlus;
@@ -43,11 +42,8 @@ public class LaserMessage implements IMessage {
     @Override
     public void toBytes(PacketBuffer buffer) {
         buffer.writeBlockPos(pos);
-        buffer.writeInt((int) Stream.of(vec3ds).filter(Objects::nonNull).count());
-        for (Vec3d vec3d : vec3ds) {
-            if (vec3d != null)
-                buffer.writeDouble(vec3d.xCoord).writeDouble(vec3d.yCoord).writeDouble(vec3d.zCoord);
-        }
+        buffer.writeInt((int) Stream.of(vec3ds).filter(TileLaser.nonNull).count());
+        Stream.of(vec3ds).filter(TileLaser.nonNull).forEach(vec3d -> buffer.writeDouble(vec3d.xCoord).writeDouble(vec3d.yCoord).writeDouble(vec3d.zCoord));
     }
 
     @Override

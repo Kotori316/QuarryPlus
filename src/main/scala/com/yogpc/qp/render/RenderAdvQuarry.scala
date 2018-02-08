@@ -6,7 +6,7 @@ import net.minecraft.client.renderer.VertexBuffer
 import net.minecraftforge.client.model.animation.FastTESR
 
 object RenderAdvQuarry extends FastTESR[TileAdvQuarry] {
-    val d = 1d / 16d
+    private[this] final val d = 1d / 16d
     val instance = this
     lazy val sprite = Sprites.getMap('yellow)
 
