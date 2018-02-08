@@ -32,7 +32,7 @@ public class InvUtils {
 
     /**
      * @param w   world
-     * @param pos Position of TileEntity from which itesstack comes.
+     * @param pos Position of TileEntity from which itemstack comes.
      * @param is  ItemStack to be inserted. The stack doesn't change in this method.
      */
     public static ItemStack injectToNearTile(final World w, BlockPos pos, final ItemStack is) {

@@ -1,7 +1,6 @@
 package com.yogpc.qp.tile
 
 import java.lang.{Boolean => JBool, Byte => JByte, Integer => JInt}
-import java.util.Objects
 import javax.annotation.Nonnull
 
 import com.yogpc.qp.block.ADismCBlock
@@ -38,7 +37,7 @@ import net.minecraftforge.items.{CapabilityItemHandler, IItemHandlerModifiable}
 import scala.collection.JavaConverters._
 import scala.collection.convert.WrapAsJava
 
-class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with ITickable with IDebugSender {
+class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with ITickable with IDebugSender with IChunkLoadTile {
     self =>
     private[this] var mDigRange = TileAdvQuarry.defaultRange
     var ench = TileAdvQuarry.defaultEnch
@@ -118,7 +117,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                     if (target.getX % 3 == 0) {
                         val axis = new AxisAlignedBB(new BlockPos(target.getX - 6, 1, target.getZ - 6), target.add(6, 0, 6))
                         //catch dropped items
-                        getWorld.getEntitiesWithinAABB(classOf[EntityItem], axis).asScala.filter(Objects.nonNull).foreach(entity => {
+                        getWorld.getEntitiesWithinAABB(classOf[EntityItem], axis).asScala.filter(APacketTile.nonNull.test).foreach(entity => {
                             if (!entity.isDead) {
                                 val drop = entity.getEntityItem
                                 if (drop.getCount > 0) {
@@ -128,7 +127,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                             }
                         })
                         //remove XPs
-                        getWorld.getEntitiesWithinAABB(classOf[EntityXPOrb], axis).asScala.filter(Objects.nonNull).foreach(entityXPOrb => {
+                        getWorld.getEntitiesWithinAABB(classOf[EntityXPOrb], axis).asScala.filter(APacketTile.nonNull.test).foreach(entityXPOrb => {
                             if (!entityXPOrb.isDead)
                                 entityXPOrb.getEntityWorld.removeEntity(entityXPOrb)
                         })
@@ -483,7 +482,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 
     private[this] var chunkTicket: ForgeChunkManager.Ticket = _
 
-    def requestTicket(): Unit = {
+    override def requestTicket(): Unit = {
         if (this.chunkTicket != null) return
         this.chunkTicket = ForgeChunkManager.requestTicket(QuarryPlus.INSTANCE, getWorld, Type.NORMAL)
         if (this.chunkTicket == null) return
@@ -494,7 +493,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
         forceChunkLoading(this.chunkTicket)
     }
 
-    def forceChunkLoading(ticket: ForgeChunkManager.Ticket): Unit = {
+    override def forceChunkLoading(ticket: ForgeChunkManager.Ticket): Unit = {
         if (this.chunkTicket == null) this.chunkTicket = ticket
         val quarryChunk = new ChunkPos(getPos)
         ForgeChunkManager.forceChunk(ticket, quarryChunk)
@@ -666,8 +665,8 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 
 object TileAdvQuarry {
 
-    val MAX_STORED = 300 * 256
-    val noDigBLOCKS = Set(
+    final val MAX_STORED = 300 * 256
+    final val noDigBLOCKS = Set(
         BlockWrapper(Blocks.STONE.getDefaultState, ignoreMeta = true),
         BlockWrapper(Blocks.COBBLESTONE.getDefaultState),
         BlockWrapper(Blocks.DIRT.getDefaultState, ignoreProperty = true),
@@ -675,12 +674,12 @@ object TileAdvQuarry {
         BlockWrapper(Blocks.NETHERRACK.getDefaultState),
         BlockWrapper(Blocks.SANDSTONE.getDefaultState, ignoreMeta = true),
         BlockWrapper(Blocks.RED_SANDSTONE.getDefaultState, ignoreMeta = true))
-    private val ENERGYLIMIT_LIST = IndexedSeq(512, 1024, 2048, 4096, 8192, MAX_STORED)
-    private val NBT_QENCH = "nbt_qench"
-    private val NBT_DIGRANGE = "nbt_digrange"
-    private val NBT_MODE = "nbt_quarrymode"
-    private val NBT_ITEMLIST = "nbt_itemlist"
-    private val NBT_ITEMELEMENTS = "nbt_itemelements"
+    private final val ENERGYLIMIT_LIST = IndexedSeq(512, 1024, 2048, 4096, 8192, MAX_STORED)
+    private final val NBT_QENCH = "nbt_qench"
+    private final val NBT_DIGRANGE = "nbt_digrange"
+    private final val NBT_MODE = "nbt_quarrymode"
+    private final val NBT_ITEMLIST = "nbt_itemlist"
+    private final val NBT_ITEMELEMENTS = "nbt_itemelements"
 
     val defaultEnch = QEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false)
     val defaultRange: DigRange = NoDefinedRange

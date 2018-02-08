@@ -18,7 +18,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.stream.Stream;
@@ -61,7 +60,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @Optional.Interface(iface = "buildcraft.api.tiles.ITileAreaProvider", modid = QuarryPlus.Optionals.Buildcraft_tiles)
-public class TileMarker extends APacketTile implements ITileAreaProvider, ITickable {
+public class TileMarker extends APacketTile implements ITileAreaProvider, ITickable, IChunkLoadTile {
     public static final List<Link> linkList = Collections.synchronizedList(new ArrayList<>());
     public static final List<Laser> laserList = Collections.synchronizedList(new ArrayList<>());
     public static final IndexOnlyList<Link> LINK_INDEX = new IndexOnlyList<>(linkList, linkList);
@@ -236,6 +235,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
 
     private Ticket chunkTicket;
 
+    @Override
     public void requestTicket() {// onPostBlockPlaced
         if (this.chunkTicket != null)
             return;
@@ -249,6 +249,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
         forceChunkLoading(this.chunkTicket);
     }
 
+    @Override
     public void forceChunkLoading(final Ticket ticket) {// ticketsLoaded
         if (this.chunkTicket == null)
             this.chunkTicket = ticket;
@@ -377,7 +378,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
                 lineBoxes[5] = new AxisAlignedBB(px + 0.5, py + 0.5, pz + b, px + 0.5, py + 0.5, pz + c + MAX_SIZE);
             }
             if (pw.isRemote) {
-                boxes = Arrays.stream(lineBoxes).filter(Objects::nonNull)
+                boxes = Arrays.stream(lineBoxes).filter(nonNull)
                         .map(aabb -> Box.apply(aabb, RenderMarker.d() * 2, RenderMarker.d() * 2, RenderMarker.d() * 2, false, false))
                         .toArray(Box[]::new);
             } else {
@@ -407,7 +408,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
 
         @Override
         public String toString() {
-            long i = Stream.of(lineBoxes).filter(Objects::nonNull).count();
+            long i = Stream.of(lineBoxes).filter(nonNull).count();
             return x + " " + y + " " + z + " Lasers : " + i;
         }
     }
@@ -544,7 +545,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
                 lineBoxes[11] = new AxisAlignedBB(xx + a, yx + a, zn + b, xx + a, yx + a, zx + c);
             }
             if (w.isRemote) {
-                boxes = Arrays.stream(lineBoxes).filter(Objects::nonNull)
+                boxes = Arrays.stream(lineBoxes).filter(nonNull)
                         .map(aabb -> Box.apply(aabb, RenderMarker.d() * 2, RenderMarker.d() * 2, RenderMarker.d() * 2, false, false))
                         .toArray(Box[]::new);
             } else {
@@ -565,7 +566,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
 
         @Override
         public String toString() {
-            long i = Stream.of(lineBoxes).filter(Objects::nonNull).count();
+            long i = Stream.of(lineBoxes).filter(nonNull).count();
             return minPos() + " to " + maxPos() + " Lasers : " + i;
         }
 

@@ -17,8 +17,6 @@ import java.util
 import javax.annotation.Nullable
 
 import com.yogpc.qp.tile.IEnchantableTile._
-import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.EnumFacing
@@ -56,27 +54,7 @@ class TileBreaker extends TileEntity with IEnchantableTile with HasInv {
 
     override def G_reinit() = ()
 
-    override def getSizeInventory = 1
-
-    override def isEmpty = true
-
-    override def getStackInSlot(i: Int) = com.yogpc.qp.version.VersionUtil.empty()
-
-    override def decrStackSize(i: Int, a: Int) = com.yogpc.qp.version.VersionUtil.empty()
-
-    override def removeStackFromSlot(index: Int) = com.yogpc.qp.version.VersionUtil.empty()
-
-    override def setInventorySlotContents(index: Int, stack: ItemStack) = ()
-
-    override def getInventoryStackLimit = 0
-
-    override def isItemValidForSlot(s: Int, stack: ItemStack) = false
-
-    override def clear() = ()
-
     override def getName = "tile.breakerplus.name"
-
-    override def isUsableByPlayer(player: EntityPlayer) = getWorld.getTileEntity(getPos) eq this
 
     override def hasCapability(capability: Capability[_], @Nullable facing: EnumFacing): Boolean =
         (capability eq CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) || super.hasCapability(capability, facing)

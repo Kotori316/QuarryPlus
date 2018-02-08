@@ -2,6 +2,7 @@ package com.yogpc.qp.block;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
@@ -38,7 +39,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class BlockAdvQuarry extends ADismCBlock {
 
     public BlockAdvQuarry() {
-        super(Material.IRON, QuarryPlus.Names.advquarry, ItemBlockEnchantable::new);
+        super(Material.ANVIL, QuarryPlus.Names.advquarry, ItemBlockEnchantable::new);
         setHardness(1.5F);
         setResistance(10F);
         setSoundType(SoundType.STONE);
@@ -112,10 +113,8 @@ public class BlockAdvQuarry extends ADismCBlock {
         if (!worldIn.isRemote) {
             EnumFacing facing = placer.getHorizontalFacing().getOpposite();
             worldIn.setBlockState(pos, state.withProperty(FACING, facing), 2);
-            Optional.ofNullable((TileAdvQuarry) worldIn.getTileEntity(pos)).ifPresent(quarry -> {
-                quarry.requestTicket();
-                EnchantmentHelper.init(quarry, stack.getEnchantmentTagList());
-            });
+            Consumer<TileAdvQuarry> consumer = quarry -> EnchantmentHelper.init(quarry, stack.getEnchantmentTagList());
+            Optional.ofNullable((TileAdvQuarry) worldIn.getTileEntity(pos)).ifPresent(consumer.andThen(TileAdvQuarry.requestTicket));
         }
     }
 

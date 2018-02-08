@@ -37,7 +37,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -284,15 +283,15 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
     @Override
     public List<ITextComponent> getDebugmessages() {
         List<ITextComponent> list = new ArrayList<>();
-        list.add(new TextComponentString("Targets"));
+        list.add(toComponentString.apply("Targets"));
         targets.stream()
                 .map(pos1 -> String.format("x=%d, y=%d, z=%d", pos1.getX(), pos1.getY(), pos1.getZ()))
-                .reduce((s, s2) -> s + ", " + s2).map(TextComponentString::new)
+                .reduce(combiner).map(toComponentString)
                 .ifPresent(list::add);
-        list.add(new TextComponentString("Lasers"));
-        Stream.of(lasers).filter(Objects::nonNull)
+        list.add(toComponentString.apply("Lasers"));
+        Stream.of(lasers).filter(nonNull)
                 .map(pos1 -> String.format("x=%s, y=%s, z=%s", pos1.xCoord, pos1.yCoord, pos1.zCoord))
-                .reduce((s, s2) -> s + ", " + s2).map(TextComponentString::new)
+                .reduce(combiner).map(toComponentString)
                 .ifPresent(list::add);
         return list;
     }

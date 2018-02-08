@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
+import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.ReflectionHelper;
@@ -37,6 +38,7 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -57,11 +59,11 @@ public class BlockBreaker extends ADismCBlock {
     private final ArrayList<ItemStack> drops = new ArrayList<>();
 
     public BlockBreaker() {
-        super(Material.ROCK, QuarryPlus.Names.breaker, ItemBlockBreaker::new);
+        super(Material.PISTON, QuarryPlus.Names.breaker, ItemBlockBreaker::new);
         setHardness(3.5F);
         setSoundType(SoundType.STONE);
         setDefaultState(blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(POWERED, false));
-        //Random tick setting is Config.
+        //Random tick setting is in Config.
     }
 
     @Override
@@ -73,7 +75,7 @@ public class BlockBreaker extends ADismCBlock {
             if (pos1.getY() < 1)
                 return;
             IBlockState blockState = worldIn.getBlockState(pos1);
-            if (blockState.getBlock().isAir(blockState, worldIn, pos1))
+            if (!isBlockBreakable(state, worldIn, pos1))
                 return;
             final EntityPlayer player = FakePlayerFactory.getMinecraft((WorldServer) worldIn);
             blockState.getBlock().onBlockHarvested(worldIn, pos1, blockState, player);
@@ -102,6 +104,13 @@ public class BlockBreaker extends ADismCBlock {
         }
     }
 
+    private static boolean isBlockBreakable(IBlockState state, World world, BlockPos pos) {
+        if (state.getBlock().isAir(state, world, pos))
+            return false;
+        float hardness = state.getBlockHardness(world, pos);
+        return (hardness != -1) || Config.content().removeBedrock();
+    }
+
     @Override
     protected BlockStateContainer createBlockState() {
         return new BlockStateContainer(this, FACING, POWERED);
@@ -110,9 +119,15 @@ public class BlockBreaker extends ADismCBlock {
     @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         if (!worldIn.isRemote) {
-            worldIn.setBlockState(pos, state.withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer)), 2);
+//            worldIn.setBlockState(pos, state.withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer)), 2);
             Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t -> EnchantmentHelper.init(t, stack.getEnchantmentTagList()));
         }
+    }
+
+    @Override
+    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing,
+                                            float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
+        return getDefaultState().withProperty(FACING, facing.getOpposite());
     }
 
     @Override
@@ -169,7 +184,7 @@ public class BlockBreaker extends ADismCBlock {
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack stack = playerIn.getHeldItem(hand);
-        if (BuildcraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
+        if (stack.getItem() == Items.STICK || BuildcraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
             TileEntity entity = worldIn.getTileEntity(pos);
             if (entity != null) {
                 entity.validate();

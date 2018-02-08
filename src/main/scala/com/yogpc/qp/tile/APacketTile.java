@@ -13,14 +13,25 @@
 
 package com.yogpc.qp.tile;
 
+import java.util.Objects;
+import java.util.function.BinaryOperator;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public abstract class APacketTile extends TileEntity {
+    public static final BinaryOperator<String> combiner = (s, s2) -> s + ", " + s2;
+    public static final Function<String, TextComponentString> toComponentString = TextComponentString::new;
+    public static final Predicate<Object> nonNull = Objects::nonNull;
+    public static final Consumer<IChunkLoadTile> requestTicket = IChunkLoadTile::requestTicket;
 
     @Override
     public SPacketUpdateTileEntity getUpdatePacket() {

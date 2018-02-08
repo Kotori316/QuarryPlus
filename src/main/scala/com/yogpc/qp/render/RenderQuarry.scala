@@ -9,15 +9,15 @@ import net.minecraftforge.client.model.animation.FastTESR
 object RenderQuarry extends FastTESR[TileQuarry] {
     val instance = this
 
-    val d1 = 1d / 16d
-    val d4 = 4d / 16d
+    private[this] final val d1 = 1d / 16d
+    private[this] final val d4 = 4d / 16d
     private lazy val spriteV = Sprites.getMap('stripes_v)
     private lazy val spriteH = Sprites.getMap('stripes_h)
     private lazy val boxStripe = Sprites.getMap('stripes_b)
     private lazy val drillStripe = Sprites.getMap(LaserType.DRILL.symbol)
     private lazy val headSprite = Sprites.getMap(LaserType.DRILL_HEAD.symbol)
-    val plusF: (Double, Double) => Double = (double1, double2) => double1 + double2
-    val minusF: (Double, Double) => Double = (double1, double2) => double1 - double2
+    private[this] final val plusF: (Double, Double) => Double = (double1, double2) => double1 + double2
+    private[this] final val minusF: (Double, Double) => Double = (double1, double2) => double1 - double2
 
     override def renderTileEntityFast(quarry: TileQuarry, distanceX: Double, distanceY: Double, distanceZ: Double,
                                       partialTicks: Float, destroyStage: Int, buffer: VertexBuffer) = {

@@ -184,7 +184,7 @@ public class BlockMarker extends Block implements ITileEntityProvider {//BlockCo
     @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
-        Optional.ofNullable(((TileMarker) worldIn.getTileEntity(pos))).ifPresent(TileMarker::requestTicket);
+        Optional.ofNullable(((TileMarker) worldIn.getTileEntity(pos))).ifPresent(TileMarker.requestTicket);
     }
 
     @Override

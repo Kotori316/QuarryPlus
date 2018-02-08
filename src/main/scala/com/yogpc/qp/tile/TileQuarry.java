@@ -15,7 +15,6 @@ package com.yogpc.qp.tile;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -60,7 +59,7 @@ import static com.yogpc.qp.tile.TileQuarry.Mode.MOVEHEAD;
 import static com.yogpc.qp.tile.TileQuarry.Mode.NONE;
 import static com.yogpc.qp.tile.TileQuarry.Mode.NOTNEEDBREAK;
 
-public class TileQuarry extends TileBasic implements IDebugSender {
+public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTile {
     public final boolean bccoreLoaded;
     private int targetX, targetY, targetZ;
     public int xMin, xMax, yMin, yMax = Integer.MIN_VALUE, zMin, zMax;
@@ -327,8 +326,8 @@ public class TileQuarry extends TileBasic implements IDebugSender {
         EnumFacing facing = getWorld().getBlockState(getPos()).getValue(BlockQuarry.FACING).getOpposite();
         if (bccoreLoaded) {
             Optional<ITileAreaProvider> marker = Stream.of(pos.offset(facing), pos.offset(facing.rotateYCCW()), pos.offset(facing.rotateY()))
-                    .map(getWorld()::getTileEntity).filter(Objects::nonNull)
-                    .map(t -> t.getCapability(TilesAPI.CAP_TILE_AREA_PROVIDER, null)).filter(Objects::nonNull).findFirst();
+                    .map(getWorld()::getTileEntity).filter(nonNull)
+                    .map(t -> t.getCapability(TilesAPI.CAP_TILE_AREA_PROVIDER, null)).filter(nonNull).findFirst();
             if (marker.isPresent()) {
                 ITileAreaProvider provider = marker.get();
                 if (provider.min().getX() == provider.max().getX() || provider.min().getZ() == provider.max().getZ()) {
@@ -505,6 +504,7 @@ public class TileQuarry extends TileBasic implements IDebugSender {
 
     private Ticket chunkTicket;
 
+    @Override
     public void requestTicket() {
         if (this.chunkTicket != null)
             return;
@@ -519,6 +519,7 @@ public class TileQuarry extends TileBasic implements IDebugSender {
         forceChunkLoading(this.chunkTicket);
     }
 
+    @Override
     public void forceChunkLoading(final Ticket ticket) {
         if (this.chunkTicket == null)
             this.chunkTicket = ticket;
