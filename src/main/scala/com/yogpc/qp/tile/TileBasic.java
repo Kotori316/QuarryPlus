@@ -2,11 +2,11 @@
  * Copyright (C) 2012,2013 yogpstop This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
@@ -133,9 +133,9 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     private byte S_addDroppedItems(final Collection<ItemStack> list, final Block b, final int x, final int y, final int z) {
         BlockPos pos = new BlockPos(x, y, z);
         IBlockState state = getWorld().getBlockState(pos);
-        if (b.canSilkHarvest(this.getWorld(), pos, state, null)
-                && this.silktouch
-                && this.silktouchList.contains(new BlockData(ForgeRegistries.BLOCKS.getKey(b), state.getBlock().getMetaFromState(state))) == this.silktouchInclude) {
+        if (b.canSilkHarvest(this.getWorld(), pos, state, null) && this.silktouch
+                && this.silktouchList.contains(new BlockData(ForgeRegistries.BLOCKS.getKey(b),
+                state.getBlock().getMetaFromState(state))) == this.silktouchInclude) {
             list.add((ItemStack) ReflectionHelper.invoke(createStackedBlock, b, state));
             return -1;
         }
@@ -249,7 +249,6 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         return res;
     }
 
-
     @Override
     @Nonnull
     public ItemStack removeStackFromSlot(int i) {
@@ -270,17 +269,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     }
 
     @Override
-    public int getInventoryStackLimit() {
-        return 0;
-    }
-
-    @Override
     public boolean isUsableByPlayer(EntityPlayer player) {
-        return false;
-    }
-
-    @Override
-    public boolean isItemValidForSlot(int index, ItemStack stack) {
         return false;
     }
 
