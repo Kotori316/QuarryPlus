@@ -303,8 +303,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                     val list = Range(0, handler.getSlots).find(i => VersionUtil.nonEmpty(handler.getStackInSlot(i))).map(handler.extractItem(_, 64, false)).toList
                     list.filter(_.getItem.isInstanceOf[ItemBlock]).flatMap(i => Range(0, i.getCount)).foreach(_ => {
                         if (mode is TileAdvQuarry.FILLBLOCKS) {
-                            //noinspection ScalaDeprecation
-                            val state = list.head.getItem.asInstanceOf[ItemBlock].getBlock.getStateFromMeta(list.head.getItemDamage)
+                            val state = InvUtils.getStateFromItem(list.head.getItem.asInstanceOf[ItemBlock], list.head.getItemDamage)
                             getWorld.setBlockState(new BlockPos(target.getX, if (Config.content.removeBedrock) 1 else 5, target.getZ), state)
                             val x = target.getX + 1
                             if (x > digRange.maxX) {
