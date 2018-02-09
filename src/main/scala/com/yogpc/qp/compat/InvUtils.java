@@ -5,8 +5,11 @@ import java.util.List;
 import java.util.Optional;
 
 import com.yogpc.qp.QuarryPlus;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -90,6 +93,12 @@ public class InvUtils {
             return item == quarrydebug || item == meter;
         }
         return false;
+    }
+
+    @SuppressWarnings("deprecation")
+    public static IBlockState getStateFromItem(ItemBlock itemBlock, int meta) {
+        Block block = itemBlock.getBlock();
+        return block.getStateFromMeta(meta);
     }
 
     @GameRegistry.ObjectHolder(QuarryPlus.Optionals.IC2_modID + ":meter")
