@@ -1,11 +1,12 @@
 {
   "homepage": "https://minecraft.curseforge.com/projects/additional-enchanted-miner",
   "promos": {
-    "1.12.2-recommended": "0.7.9",
-    "1.11.2-recommended": "0.7.9",
-    "1.10.2-recommended": "0.7.9"
+    "1.12.2-recommended": "0.8.0",
+    "1.11.2-recommended": "0.8.0",
+    "1.10.2-recommended": "0.8.0"
   },
   "1.12.2": {
+    "0.8.0": "Improved BreakerPlus and PlacerPlus.",
     "0.7.9": "Fixed frame caused StackOverFlowError.",
     "0.7.8": "Changed the recipe of Advanced Pump. It gets wider range.",
     "0.7.5": "Made quarry with pump a little faster. Close #12.",
@@ -16,6 +17,7 @@
     "0.6.8": "Added Forge version check system."
   },
   "1.11.2": {
+    "0.8.0": "Improved BreakerPlus and PlacerPlus.",
     "0.7.9": "Fixed frame caused StackOverFlowError.",
     "0.7.8": "Changed the recipe of Advanced Pump. It gets wider range.",
     "0.7.5": "Made quarry with pump a little faster. Close #12.",
@@ -25,6 +27,7 @@
     "0.6.8": "Added Forge version check system."
   },
   "1.10.2": {
+    "0.8.0": "Improved BreakerPlus and PlacerPlus.",
     "0.7.9": "Fixed frame caused StackOverFlowError.",
     "0.7.8": "Changed the recipe of Advanced Pump. It gets wider range.",
     "0.7.5": "Made quarry with pump a little faster. Close #12.",
