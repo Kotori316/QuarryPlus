@@ -68,10 +68,6 @@ public interface HasInv extends net.minecraft.inventory.IInventory {
     }
 
     @Override
-    default void markDirty() {
-    }
-
-    @Override
     default boolean isUsableByPlayer(EntityPlayer player) {
         return true;
     }
