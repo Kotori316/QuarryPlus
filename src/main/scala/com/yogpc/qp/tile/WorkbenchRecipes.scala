@@ -25,12 +25,11 @@ class WorkbenchRecipes(val output: ItemDamage, val energy: Double, val showInJEI
     override def hashCode(): Int = output.hashCode()
 
     override def equals(obj: scala.Any): Boolean = {
-        if (super.equals(obj)) {
-            return true
-        }
-        obj match {
-            case r: WorkbenchRecipes => output == r.output && energy == r.energy
-            case _ => false
+        super.equals(obj) && {
+            obj match {
+                case r: WorkbenchRecipes => output == r.output && energy == r.energy
+                case _ => false
+            }
         }
     }
 }
