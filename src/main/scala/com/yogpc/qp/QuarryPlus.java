@@ -18,6 +18,7 @@ import com.yogpc.qp.gui.GuiFactory;
 import com.yogpc.qp.gui.GuiHandler;
 import com.yogpc.qp.item.ItemTool;
 import com.yogpc.qp.packet.PacketHandler;
+import com.yogpc.qp.tile.ItemDamage;
 import com.yogpc.qp.tile.TileAdvPump;
 import com.yogpc.qp.tile.TileAdvQuarry;
 import com.yogpc.qp.tile.TileBreaker;
@@ -34,6 +35,7 @@ import com.yogpc.qp.version.VersionDiff;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
@@ -46,6 +48,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.ModAPIManager;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -205,6 +208,14 @@ public class QuarryPlus {
         ModelLoader.setCustomModelResourceLocation(magicmirror(), 1, new ModelResourceLocation(magicmirror().getRegistryName(), "inventory"));
         ModelLoader.setCustomModelResourceLocation(magicmirror(), 2, new ModelResourceLocation(magicmirror().getRegistryName(), "inventory"));
         ModelLoader.setCustomModelResourceLocation(debugItem(), 0, new ModelResourceLocation(debugItem().getRegistryName(), "inventory"));
+    }
+
+    @Mod.EventHandler
+    public void message(FMLInterModComms.IMCEvent imcEvent) {
+        imcEvent.getMessages().forEach(imcMessage -> {
+            ItemStack stack = imcMessage.getItemStackValue();
+            WorkbenchRecipes.removeRecipe(ItemDamage.apply(stack));
+        });
     }
 
     @SuppressWarnings("unused")
