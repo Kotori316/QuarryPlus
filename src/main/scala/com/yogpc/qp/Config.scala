@@ -48,7 +48,7 @@ object Config {
     val EnableChunkDestroyerFluidHander_key = "EnableChunkDestroyerFluidHandler"
     val SpawnerControllerEntityBlackList_key = "SpawnerControllerEntityBlackList"
     val RecipeDifficulty_key = "RecipeDifficulty"
-    val Recipe_key = "RecipeDifficulty"
+    val Recipe_key = "NewRecipeDifficulty"
     val PlacerOnlyPlaceFront_key = "PlacerOnlyPlaceFront"
     val NoEnergy_key = "NoEnergy"
     val RemoveBedrock_Key = "RemoveBedrock"
