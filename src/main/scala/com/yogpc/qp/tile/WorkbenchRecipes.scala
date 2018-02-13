@@ -5,20 +5,17 @@ import com.yogpc.qp.version.VersionUtil
 import com.yogpc.qp.{Config, QuarryPlus}
 import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.Loader
-import net.minecraftforge.items.ItemHandlerHelper
 import net.minecraftforge.oredict.OreDictionary
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 
-class WorkbenchRecipes(val output: ItemDamage, val energy: Double, val showInJEI: Boolean, in: ItemStack*) {
-    val size: Int = in.size
+abstract sealed class WorkbenchRecipes(val output: ItemDamage, val energy: Double, val showInJEI: Boolean = true) {
+    val size: Int
 
-    def inputs = in.map(i => ItemHandlerHelper.copyStackWithSize(i, amount(i.getCount))).filter(VersionUtil.nonEmpty)
+    def inputs: Seq[ItemStack]
 
     def inputsJ() = inputs.asJava
-
-    val amount: (Int => Int) = p => Math.floor(WorkbenchRecipes.difficulty * p / 50).toInt
 
     override def toString = s"WorkbenchRecipes(output=$output, energy=$energy)"
 
@@ -34,21 +31,25 @@ class WorkbenchRecipes(val output: ItemDamage, val energy: Double, val showInJEI
     }
 }
 
+private final class R1(o: ItemDamage, e: Double, s: Boolean = true, val seq: Seq[(Int => ItemStack)]) extends WorkbenchRecipes(o, e, s) {
+    override val size: Int = seq.size
+
+    override def inputs: Seq[ItemStack] = seq.map(_.apply(Config.content.recipe)).filter(VersionUtil.nonEmpty)
+}
+
+private final class R2(o: ItemDamage, e: Double, s: Boolean = true,
+                       list: java.util.List[java.util.function.Function[Integer, ItemStack]]) extends WorkbenchRecipes(o, e, s) {
+    val seq = list.asScala
+    override val size: Int = seq.size
+
+    override def inputs: Seq[ItemStack] = seq.map(_.apply(Config.content.recipe)).filter(VersionUtil.nonEmpty)
+}
+
 object WorkbenchRecipes {
-    var difficulty: Double = 2
 
     private[this] val recipes = mutable.Map.empty[ItemDamage, WorkbenchRecipes]
 
     def recipeSize: Int = recipes.size
-
-    def addRecipe(output: ItemDamage, energy: Int, unit: EnergyUnit, showInJEI: Boolean, inputs: ItemStack*): Unit = {
-        val newRecipe = new WorkbenchRecipes(output, unit.multiple * energy, showInJEI, inputs: _*)
-        recipes put(output, newRecipe)
-    }
-
-    def addRecipe(output: ItemDamage, energy: Int, showInJEI: Boolean, inputs: ItemStack*): Unit = {
-        addRecipe(output, energy, UnitMJ, showInJEI, inputs: _*)
-    }
 
     def removeRecipe(output: ItemDamage): Unit = recipes.remove(output)
 
@@ -61,6 +62,11 @@ object WorkbenchRecipes {
         }.values.toList.asJava
     }
 
+    def addRecipe(output: ItemDamage, energy: Int, inputs: Seq[(Int => ItemStack)])(implicit showInJEI: Boolean = true, unit: EnergyUnit): Unit = {
+        val newRecipe = new R1(output, unit.multiple * energy, showInJEI, inputs)
+        recipes put(output, newRecipe)
+    }
+
     def getRecipeMap: Map[ItemDamage, WorkbenchRecipes] = recipes.toMap
 
     def getRecipeFromResult(stack: ItemStack): java.util.Optional[WorkbenchRecipes] = {
@@ -68,11 +74,11 @@ object WorkbenchRecipes {
         recipes.get(ItemDamage(stack)).asJava
     }
 
-    protected trait EnergyUnit {
+    protected sealed trait EnergyUnit {
         def multiple: Double
     }
 
-    protected object UnitMJ extends EnergyUnit {
+    protected implicit object UnitMJ extends EnergyUnit {
         override val multiple: Double = 1
     }
 
@@ -84,25 +90,26 @@ object WorkbenchRecipes {
         import com.yogpc.qp.QuarryPlusI._
         import net.minecraft.init.Blocks._
         import net.minecraft.init.Items._
+        implicit val showInJEI: Boolean = true
         val bcLoaded = Loader.isModLoaded(QuarryPlus.Optionals.Buildcraft_modID)
-        addRecipe(ItemDamage(magicmirror, 1), 32000, true, new ItemStack(ENDER_EYE, 400), new ItemStack(magicmirror, 50))
-        addRecipe(ItemDamage(magicmirror, 2), 32000, true, new ItemStack(ENDER_EYE, 400), new ItemStack(magicmirror, 50), new ItemStack(OBSIDIAN, 100), new ItemStack(DIRT, 200), new ItemStack(PLANKS, 200))
+        addRecipe(ItemDamage(magicmirror, 1), 32000, Seq(i => new ItemStack(ENDER_EYE, i * 8), i => new ItemStack(magicmirror, i * 1)))
+        addRecipe(ItemDamage(magicmirror, 2), 32000, Seq(i => new ItemStack(ENDER_EYE, i * 8), i => new ItemStack(magicmirror, i * 1), i => new ItemStack(OBSIDIAN, i * 4), i => new ItemStack(DIRT, i * 8), i => new ItemStack(PLANKS, i * 8)))
         if (!Config.content.disableController)
-            addRecipe(ItemDamage(blockController), 1000000, true, new ItemStack(NETHER_STAR, 50), new ItemStack(ROTTEN_FLESH, 1000), new ItemStack(ARROW, 1000), new ItemStack(BONE, 1000), new ItemStack(GUNPOWDER, 1000), new ItemStack(IRON_INGOT, 2000), new ItemStack(GOLD_INGOT, 1000), new ItemStack(GHAST_TEAR, 250), new ItemStack(MAGMA_CREAM, 500), new ItemStack(BLAZE_ROD, 700), new ItemStack(CARROT, 50), new ItemStack(POTATO, 50))
-        addRecipe(ItemDamage(blockMarker), 20000, true, new ItemStack(REDSTONE, 300), new ItemStack(DYE, 300, 4), new ItemStack(GOLD_INGOT, 175), new ItemStack(IRON_INGOT, 150), new ItemStack(GLOWSTONE_DUST, 50), new ItemStack(ENDER_PEARL, 10))
-        addRecipe(ItemDamage(blockQuarry), 320000, true, new ItemStack(DIAMOND, 800), new ItemStack(GOLD_INGOT, 800), new ItemStack(IRON_INGOT, 1600), new ItemStack(REDSTONE, 400), new ItemStack(ENDER_PEARL, 50), new ItemStack(NETHER_STAR, 3))
-        addRecipe(ItemDamage(blockMover), 320000, true, new ItemStack(OBSIDIAN, 1600), new ItemStack(DIAMOND, 800), new ItemStack(ANVIL, 50), new ItemStack(REDSTONE, 1200), new ItemStack(GOLD_INGOT, 200), new ItemStack(IRON_INGOT, 200), new ItemStack(NETHER_STAR, 1), new ItemStack(ENDER_PEARL, 25))
-        addRecipe(ItemDamage(blockMiningWell), 160000, true, new ItemStack(IRON_INGOT, 800), new ItemStack(REDSTONE, 400), new ItemStack(DIAMOND, 100), new ItemStack(ENDER_PEARL, 50), new ItemStack(NETHER_STAR, 1), new ItemStack(GOLD_INGOT, 25))
-        addRecipe(ItemDamage(blockPump), 320000, true, new ItemStack(IRON_INGOT, 1200), new ItemStack(REDSTONE, 1600), new ItemStack(GLASS, 12800), new ItemStack(CACTUS, 2000), new ItemStack(GOLD_INGOT, 400), new ItemStack(NETHER_STAR, 1), new ItemStack(ENDER_PEARL, 10))
-        addRecipe(ItemDamage(blockRefinery), 640000, bcLoaded, new ItemStack(DIAMOND, 900), new ItemStack(GOLD_INGOT, 600), new ItemStack(IRON_INGOT, 600), new ItemStack(GLASS, 3200), new ItemStack(REDSTONE, 800), new ItemStack(ANVIL, 50), new ItemStack(OBSIDIAN, 600), new ItemStack(NETHER_STAR, 1), new ItemStack(ENDER_PEARL, 20))
-        addRecipe(ItemDamage(itemTool, 0), 80000, true, new ItemStack(GOLD_INGOT, 400), new ItemStack(IRON_INGOT, 600), new ItemStack(OBSIDIAN, 100), new ItemStack(DIAMOND, 100), new ItemStack(REDSTONE, 400), new ItemStack(DYE, 100, 4), new ItemStack(ENDER_PEARL, 3))
-        addRecipe(ItemDamage(ItemTool.getEditorStack), 160000, true, new ItemStack(IRON_INGOT, 400), new ItemStack(BOOK, 1600), new ItemStack(FEATHER, 50), new ItemStack(DYE, 400), new ItemStack(DIAMOND, 100), new ItemStack(REDSTONE, 100), new ItemStack(ENDER_PEARL, 3))
-        addRecipe(ItemDamage(itemTool, 2), 320000, true, new ItemStack(IRON_INGOT, 1600), new ItemStack(LAVA_BUCKET, 60), new ItemStack(WATER_BUCKET, 60), new ItemStack(ENDER_PEARL, 3))
-        addRecipe(ItemDamage(blockBreaker), 320000, true, new ItemStack(REDSTONE, 1600), new ItemStack(DIAMOND, 600), new ItemStack(GOLD_INGOT, 800), new ItemStack(IRON_INGOT, 1600), new ItemStack(ENDER_PEARL, 50))
-        addRecipe(ItemDamage(blockPlacer), 320000, true, new ItemStack(REDSTONE, 1600), new ItemStack(DIAMOND, 600), new ItemStack(GOLD_INGOT, 1600), new ItemStack(IRON_INGOT, 800), new ItemStack(ENDER_PEARL, 50))
-        addRecipe(ItemDamage(blockLaser), 640000, bcLoaded, new ItemStack(DIAMOND, 400), new ItemStack(REDSTONE, 4800), new ItemStack(OBSIDIAN, 800), new ItemStack(GLASS, 3600), new ItemStack(GLOWSTONE_DUST, 1600), new ItemStack(GOLD_INGOT, 800), new ItemStack(ENDER_PEARL, 5))
+            addRecipe(ItemDamage(blockController), 1000000, Seq(i => new ItemStack(NETHER_STAR, i * 2), i => new ItemStack(ROTTEN_FLESH, i * 40), i => new ItemStack(ARROW, i * 40), i => new ItemStack(BONE, i * 40), i => new ItemStack(GUNPOWDER, i * 40), i => new ItemStack(IRON_INGOT, i * 80), i => new ItemStack(GOLD_INGOT, i * 40), i => new ItemStack(GHAST_TEAR, i * 10), i => new ItemStack(MAGMA_CREAM, i * 20), i => new ItemStack(BLAZE_ROD, i * 28), i => new ItemStack(CARROT, i * 2), i => new ItemStack(POTATO, i * 2)))
+        addRecipe(ItemDamage(blockMarker), 20000, Seq(i => new ItemStack(REDSTONE, i * 12), i => new ItemStack(DYE, i * 12, 4), i => new ItemStack(GOLD_INGOT, i * 7), i => new ItemStack(IRON_INGOT, i * 8), i => new ItemStack(GLOWSTONE_DUST, i * 2), i => new ItemStack(ENDER_PEARL, i * 2 / 5)))
+        addRecipe(ItemDamage(blockQuarry), 320000, Seq(i => new ItemStack(DIAMOND, i * 32), i => new ItemStack(GOLD_INGOT, i * 32), i => new ItemStack(IRON_INGOT, i * 64), i => new ItemStack(REDSTONE, i * 18), i => new ItemStack(ENDER_PEARL, i * 2), i => new ItemStack(NETHER_STAR, i * 3 / 25)))
+        addRecipe(ItemDamage(blockMover), 320000, Seq(i => new ItemStack(OBSIDIAN, i * 64), i => new ItemStack(DIAMOND, i * 32), i => new ItemStack(ANVIL, i * 2), i => new ItemStack(REDSTONE, i * 48), i => new ItemStack(GOLD_INGOT, i * 8), i => new ItemStack(IRON_INGOT, i * 8), i => new ItemStack(NETHER_STAR, i * 1 / 25), i => new ItemStack(ENDER_PEARL, i * 1)))
+        addRecipe(ItemDamage(blockMiningWell), 160000, Seq(i => new ItemStack(IRON_INGOT, i * 32), i => new ItemStack(REDSTONE, i * 16), i => new ItemStack(DIAMOND, i * 4), i => new ItemStack(ENDER_PEARL, i * 2), i => new ItemStack(NETHER_STAR, i * 1 / 25), i => new ItemStack(GOLD_INGOT, i * 1)))
+        addRecipe(ItemDamage(blockPump), 320000, Seq(i => new ItemStack(IRON_INGOT, i * 48), i => new ItemStack(REDSTONE, i * 64), i => new ItemStack(GLASS, i * 256), i => new ItemStack(CACTUS, i * 40), i => new ItemStack(GOLD_INGOT, i * 16), i => new ItemStack(NETHER_STAR, i * 1 / 25), i => new ItemStack(ENDER_PEARL, i * 2 / 5)))
+        addRecipe(ItemDamage(blockRefinery), 640000, Seq(i => new ItemStack(DIAMOND, i * 36), i => new ItemStack(GOLD_INGOT, i * 24), i => new ItemStack(IRON_INGOT, i * 24), i => new ItemStack(GLASS, i * 128), i => new ItemStack(REDSTONE, i * 32), i => new ItemStack(ANVIL, i * 2), i => new ItemStack(OBSIDIAN, i * 24), i => new ItemStack(NETHER_STAR, i * 1 / 25), i => new ItemStack(ENDER_PEARL, i * 4 / 5)))(bcLoaded, UnitMJ)
+        addRecipe(ItemDamage(itemTool, 0), 80000, Seq(i => new ItemStack(GOLD_INGOT, i * 16), i => new ItemStack(IRON_INGOT, i * 24), i => new ItemStack(OBSIDIAN, i * 4), i => new ItemStack(DIAMOND, i * 4), i => new ItemStack(REDSTONE, i * 16), i => new ItemStack(DYE, i * 4, 4), i => new ItemStack(ENDER_PEARL, i * 3 / 25)))
+        addRecipe(ItemDamage(ItemTool.getEditorStack), 160000, Seq(i => new ItemStack(IRON_INGOT, i * 16), i => new ItemStack(BOOK, i * 64), i => new ItemStack(FEATHER, i * 2), i => new ItemStack(DYE, i * 16), i => new ItemStack(DIAMOND, i * 4), i => new ItemStack(REDSTONE, i * 4), i => new ItemStack(ENDER_PEARL, i * 1 / 5)))
+        addRecipe(ItemDamage(itemTool, 2), 320000, Seq(i => new ItemStack(IRON_INGOT, i * 64), i => new ItemStack(LAVA_BUCKET, i * 12 / 5), i => new ItemStack(WATER_BUCKET, i * 12 / 5), i => new ItemStack(ENDER_PEARL, i * 3 / 25)))
+        addRecipe(ItemDamage(blockBreaker), 320000, Seq(i => new ItemStack(REDSTONE, i * 64), i => new ItemStack(DIAMOND, i * 24), i => new ItemStack(GOLD_INGOT, i * 32), i => new ItemStack(IRON_INGOT, i * 64), i => new ItemStack(ENDER_PEARL, i * 2)))
+        addRecipe(ItemDamage(blockPlacer), 320000, Seq(i => new ItemStack(REDSTONE, i * 64), i => new ItemStack(DIAMOND, i * 24), i => new ItemStack(GOLD_INGOT, i * 64), i => new ItemStack(IRON_INGOT, i * 32), i => new ItemStack(ENDER_PEARL, i * 2)))
+        addRecipe(ItemDamage(blockLaser), 640000, Seq(i => new ItemStack(DIAMOND, i * 16), i => new ItemStack(REDSTONE, i * 192), i => new ItemStack(OBSIDIAN, i * 32), i => new ItemStack(GLASS, i * 128), i => new ItemStack(GLOWSTONE_DUST, i * 64), i => new ItemStack(GOLD_INGOT, i * 32), i => new ItemStack(ENDER_PEARL, i * 1 / 5)))(bcLoaded, UnitMJ)
         if (!Config.content.disableChunkDestroyer)
-            addRecipe(ItemDamage(blockChunkdestroyer), 3200000, true, new ItemStack(blockQuarry, 75), new ItemStack(blockPump, 50), new ItemStack(itemTool, 1 * 25, 1), new ItemStack(blockMarker, 75), new ItemStack(DIAMOND_BLOCK, 8 * 25), new ItemStack(EMERALD_BLOCK, 8 * 25), new ItemStack(ENDER_EYE, 64 * 25), new ItemStack(NETHER_STAR, 1 * 25), new ItemStack(net.minecraft.init.Items.SKULL, 24, 5))
-        addRecipe(ItemDamage(blockStandalonePump), 3200000, true, new ItemStack(blockPump, 2 * 25), new ItemStack(blockMiningWell, 2 * 25), new ItemStack(blockMarker, 3 * 25))
+            addRecipe(ItemDamage(blockChunkdestroyer), 3200000, Seq(i => new ItemStack(blockQuarry, i * 3), i => new ItemStack(blockPump, i * 2), i => new ItemStack(itemTool, i * 1, 1), i => new ItemStack(blockMarker, i * 3), i => new ItemStack(DIAMOND_BLOCK, i * 8), i => new ItemStack(EMERALD_BLOCK, i * 8), i => new ItemStack(ENDER_EYE, i * 64), i => new ItemStack(NETHER_STAR, i * 1), i => new ItemStack(net.minecraft.init.Items.SKULL, i * 24 / 25, 5)))
+        addRecipe(ItemDamage(blockStandalonePump), 3200000, Seq(i => new ItemStack(blockPump, i * 2), i => new ItemStack(blockMiningWell, i * 2), i => new ItemStack(blockMarker, i * 3)))
     }
 }
