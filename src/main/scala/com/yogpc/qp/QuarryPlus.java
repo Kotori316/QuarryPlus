@@ -258,7 +258,7 @@ public class QuarryPlus {
                 ItemDamage result = ItemDamage.apply(toStack.apply(list.getCompoundTagAt(0)));
                 List<Function<Integer, ItemStack>> functionList = StreamSupport.stream(Spliterators.spliterator(list.iterator(), list.tagCount(), Spliterator.ORDERED), false)
                         .skip(1).map(cast.andThen(toStack).andThen(toFunc)).collect(Collectors.toList());
-                WorkbenchRecipes.addListRecipe$default$4(result, nbtValue.getInteger(Optionals.IMC_Energy), functionList);
+                WorkbenchRecipes.addListRecipe(result, nbtValue.getInteger(Optionals.IMC_Energy), functionList, true, WorkbenchRecipes.UnitRF$.MODULE$);
             }
         });
     }

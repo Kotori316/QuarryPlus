@@ -81,7 +81,7 @@ object WorkbenchRecipes {
     }
 
     def addListRecipe(output: ItemDamage, energy: Int, inputs: java.util.List[java.util.function.Function[Integer, ItemStack]])
-                     (implicit showInJEI: Boolean = true, unit: EnergyUnit): Unit = {
+                     (implicit showInJEI: Boolean, unit: EnergyUnit): Unit = {
         val newRecipe = new R2(output, unit.multiple * energy, showInJEI, inputs)
         recipes put(output, newRecipe)
     }
@@ -101,7 +101,7 @@ object WorkbenchRecipes {
         override val multiple: Double = 1
     }
 
-    protected object UnitRF extends EnergyUnit {
+    object UnitRF extends EnergyUnit {
         override val multiple: Double = 0.1
     }
 
