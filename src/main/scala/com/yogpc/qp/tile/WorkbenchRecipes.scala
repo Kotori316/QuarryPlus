@@ -1,5 +1,7 @@
 package com.yogpc.qp.tile
 
+import java.util.Collections
+
 import com.yogpc.qp.item.ItemTool
 import com.yogpc.qp.version.VersionUtil
 import com.yogpc.qp.{Config, QuarryPlus}
@@ -15,9 +17,9 @@ abstract sealed class WorkbenchRecipes(val output: ItemDamage, val energy: Doubl
 
     def inputs: Seq[ItemStack]
 
-    def inputsJ() = inputs.asJava
+    def inputsJ(): java.util.List[ItemStack] = inputs.asJava
 
-    val hasContent = false
+    val hasContent: Boolean = true
 
     override val toString = s"WorkbenchRecipes(output=$output, energy=$energy)"
 
@@ -51,12 +53,12 @@ object WorkbenchRecipes {
 
     private[this] val recipes = mutable.Map.empty[ItemDamage, WorkbenchRecipes]
 
-    val dummyRecipe: WorkbenchRecipes = new WorkbenchRecipes(ItemDamage.invalid, 0, false) {
+    val dummyRecipe: WorkbenchRecipes = new WorkbenchRecipes(ItemDamage.invalid, energy = 0, showInJEI = false) {
         override val inputs: Seq[ItemStack] = Nil
+        override val inputsJ: java.util.List[ItemStack] = Collections.emptyList()
         override val size: Int = 0
-        override val toString = "WorkbenchRecipe NoRecipe"
-        override val hashCode = 0
-        override val hasContent = true
+        override val toString: String = "WorkbenchRecipe NoRecipe"
+        override val hasContent: Boolean = false
     }
 
     def recipeSize: Int = recipes.size
