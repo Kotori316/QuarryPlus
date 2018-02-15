@@ -6,6 +6,7 @@
     "1.10.2-recommended": "0.8.0"
   },
   "1.12.2": {
+    "0.8.1": "Changed recipe logic and config option.",
     "0.8.0": "Improved BreakerPlus and PlacerPlus.",
     "0.7.9": "Fixed frame caused StackOverFlowError.",
     "0.7.8": "Changed the recipe of Advanced Pump. It gets wider range.",

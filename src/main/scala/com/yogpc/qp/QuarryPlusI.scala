@@ -16,15 +16,11 @@ import java.util
 
 import com.yogpc.qp.block._
 import com.yogpc.qp.item.{ItemMirror, ItemQuarryDebug, ItemTool}
-import com.yogpc.qp.tile.TileMarker
 import net.minecraft.block.Block
-import net.minecraftforge.event.world.WorldEvent
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 import scala.collection.mutable.ListBuffer
 
 object QuarryPlusI {
-    val instance = this
     private[this] val blocks = new ListBuffer[Block]
     val creativeTab = new CreativeTabQuarryPlus
     val blockQuarry = register(new BlockQuarry)
@@ -61,17 +57,5 @@ object QuarryPlusI {
     def blockList(): util.List[Block] = {
         import scala.collection.JavaConverters._
         new util.ArrayList[Block](blocks.asJava)
-    }
-
-    @SubscribeEvent
-    def onWorldUnload(event: WorldEvent.Unload): Unit = {
-        val la = TileMarker.linkList.toArray(new Array[TileMarker.Link](TileMarker.linkList.size))
-        for (l <- la) {
-            if (l.w eq event.getWorld) l.removeConnection(false)
-        }
-        val lb = TileMarker.laserList.toArray(new Array[TileMarker.Laser](TileMarker.laserList.size))
-        for (l <- lb) {
-            if (l.w eq event.getWorld) l.destructor()
-        }
     }
 }

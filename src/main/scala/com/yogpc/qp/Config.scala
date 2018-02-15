@@ -2,7 +2,6 @@ package com.yogpc.qp
 
 import java.io.File
 
-import com.yogpc.qp.tile.WorkbenchRecipes
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.common.config.{ConfigElement, Configuration}
@@ -12,7 +11,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object Config {
 
-    val instance = this
     private[this] var mContent: Content = _
     private[this] var configuration: Configuration = _
 
@@ -32,7 +30,7 @@ object Config {
 
     def setConfigFile(file: File): Unit = {
         this.configuration = new Configuration(file)
-        MinecraftForge.EVENT_BUS.register(Config.instance)
+        MinecraftForge.EVENT_BUS.register(this)
         sync()
     }
 
@@ -50,6 +48,7 @@ object Config {
     val EnableChunkDestroyerFluidHander_key = "EnableChunkDestroyerFluidHandler"
     val SpawnerControllerEntityBlackList_key = "SpawnerControllerEntityBlackList"
     val RecipeDifficulty_key = "RecipeDifficulty"
+    val Recipe_key = "NewRecipeDifficulty"
     val PlacerOnlyPlaceFront_key = "PlacerOnlyPlaceFront"
     val NoEnergy_key = "NoEnergy"
     val RemoveBedrock_Key = "RemoveBedrock"
@@ -66,9 +65,9 @@ object Config {
         val spawnerBlacklist = configuration.get(Configuration.CATEGORY_GENERAL, SpawnerControllerEntityBlackList_key, Array("minecraft:ender_dragon", "minecraft:wither"), "Spawner Blacklist")
           .getStringList.map(new ResourceLocation(_)).toSet.asJava
         val recipeDifficulty = configuration.get(Configuration.CATEGORY_GENERAL, RecipeDifficulty_key, 2d)
-        recipeDifficulty.setComment("Default is 2.0")
+        recipeDifficulty.setComment("!!!UNUSED!!! //Default is 2.0")
         recipeDifficulty.setMinValue(1d)
-        WorkbenchRecipes.difficulty = recipeDifficulty.getDouble(2d)
+        val recipe = configuration.getInt(Recipe_key, Configuration.CATEGORY_GENERAL, recipeDifficulty.getDouble.toInt, 1, Short.MaxValue, Recipe_key)
 
         val placerOnlyPlaceFront = configuration.getBoolean(PlacerOnlyPlaceFront_key, Configuration.CATEGORY_GENERAL, true, PlacerOnlyPlaceFront_key)
         val noEnergy = configuration.getBoolean(NoEnergy_key, Configuration.CATEGORY_GENERAL, false, NoEnergy_key)

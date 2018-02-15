@@ -13,11 +13,19 @@
 
 package com.yogpc.qp;
 
+import java.util.List;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
 import com.yogpc.qp.compat.BuildcraftHelper;
 import com.yogpc.qp.gui.GuiFactory;
 import com.yogpc.qp.gui.GuiHandler;
 import com.yogpc.qp.item.ItemTool;
 import com.yogpc.qp.packet.PacketHandler;
+import com.yogpc.qp.tile.ItemDamage;
 import com.yogpc.qp.tile.TileAdvPump;
 import com.yogpc.qp.tile.TileAdvQuarry;
 import com.yogpc.qp.tile.TileBreaker;
@@ -31,27 +39,36 @@ import com.yogpc.qp.tile.TileRefinery;
 import com.yogpc.qp.tile.TileWorkbench;
 import com.yogpc.qp.tile.WorkbenchRecipes;
 import com.yogpc.qp.version.VersionDiff;
+import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.launchwrapper.Launch;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.ModAPIManager;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.items.ItemHandlerHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -111,7 +128,6 @@ public class QuarryPlus {
         Config.setConfigFile(event.getSuggestedConfigurationFile());
         ForgeChunkManager.setForcedChunkLoadingCallback(QuarryPlus.instance(), ChunkLoadingHandler.instance());
         MinecraftForge.EVENT_BUS.register(QuarryPlus.instance());
-        MinecraftForge.EVENT_BUS.register(QuarryPlusI.instance());
         MinecraftForge.EVENT_BUS.register(Loot.instance());
         proxy.registerTextures();
         NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, GuiHandler.instance());
@@ -207,6 +223,46 @@ public class QuarryPlus {
         ModelLoader.setCustomModelResourceLocation(debugItem(), 0, new ModelResourceLocation(debugItem().getRegistryName(), "inventory"));
     }
 
+    @SubscribeEvent
+    public void onWorldUnload(WorldEvent.Unload event) {
+        TileMarker.Link[] la = TileMarker.linkList.toArray(new TileMarker.Link[TileMarker.linkList.size()]);
+        for (TileMarker.Link link : la) {
+            if (link.w == event.getWorld()) link.removeConnection(false);
+        }
+
+        TileMarker.Laser[] lb = TileMarker.laserList.toArray(new TileMarker.Laser[TileMarker.laserList.size()]);
+        for (TileMarker.Laser laser : lb) {
+            if (laser.w == event.getWorld()) laser.destructor();
+        }
+    }
+
+    /**
+     * Message key must be either {@code IMC_RemoveRecipe} or {@code IMC_AddRecipe}.
+     * Message value must be NBTTag.
+     *
+     * @param event event
+     */
+    @Mod.EventHandler
+    public void message(FMLInterModComms.IMCEvent event) {
+        event.getMessages().forEach(imcMessage -> {
+            NBTTagCompound nbtValue = imcMessage.getNBTValue();
+            Function<NBTTagCompound, ItemStack> toStack = VersionUtil::fromNBTTag;
+            if (Optionals.IMC_Remove.equals(imcMessage.key)) {
+                WorkbenchRecipes.removeRecipe(ItemDamage.apply(toStack.apply(nbtValue)));
+            } else if (Optionals.IMC_Add.equals(imcMessage.key)) {
+                Function<NBTBase, NBTTagCompound> cast = NBTTagCompound.class::cast;
+                Function<ItemStack, Function<Integer, ItemStack>> toFunc = stack -> (Function<Integer, ItemStack>) integer ->
+                        ItemHandlerHelper.copyStackWithSize(stack, stack.getCount() * integer);
+
+                NBTTagList list = nbtValue.getTagList(Optionals.IMC_Add, Constants.NBT.TAG_COMPOUND);
+                ItemDamage result = ItemDamage.apply(toStack.apply(list.getCompoundTagAt(0)));
+                List<Function<Integer, ItemStack>> functionList = StreamSupport.stream(Spliterators.spliterator(list.iterator(), list.tagCount(), Spliterator.ORDERED), false)
+                        .skip(1).map(cast.andThen(toStack).andThen(toFunc)).collect(Collectors.toList());
+                WorkbenchRecipes.addListRecipe$default$4(result, nbtValue.getInteger(Optionals.IMC_Energy), functionList);
+            }
+        });
+    }
+
     @SuppressWarnings("unused")
     public static class Optionals {
         public static final String clientProxy = "com.yogpc.qp.ProxyClient";
@@ -227,6 +283,9 @@ public class QuarryPlus {
         public static final String Buildcraft_tiles = "BuildCraftAPI|tiles";
         public static final String Buildcraft_facades = "BuildCraftAPI|facades";
         public static final String updateJson = "https://raw.githubusercontent.com/Kotori316/QuarryPlus/1.12/update.json";
+        public static final String IMC_Remove = "IMC_RemoveRecipe";
+        public static final String IMC_Add = "IMC_AddRecipe";
+        public static final String IMC_Energy = "energy";
     }
 
     public static class Names {
