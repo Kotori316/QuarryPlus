@@ -115,7 +115,7 @@ public class GuiWorkbench extends GuiContainer {
         final int xf = this.width - this.xSize >> 1;
         final int yf = this.height - this.ySize >> 1;
         drawTexturedModalRect(xf, yf, 0, 0, this.xSize, this.ySize);
-        if (tile.currentRecipe.isPresent()) {
+        if (tile.isWorking()) {
             drawTexturedModalRect(xf + 8, yf + 78, 0, this.ySize, this.tile.getProgressScaled(160), 4);
             int cur_recipe = 27 + tile.getRecipeIndex();
             int i = (tile.workcontinue ? 16 : 0);
