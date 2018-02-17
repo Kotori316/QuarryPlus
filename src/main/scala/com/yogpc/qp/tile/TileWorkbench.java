@@ -15,7 +15,6 @@ package com.yogpc.qp.tile;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.IntStream;
 
 import cofh.api.tileentity.IInventoryConnection;
@@ -40,24 +39,22 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
     public final NonNullList<ItemStack> inventory = NonNullList.withSize(27, com.yogpc.qp.version.VersionUtil.empty());
     public final NonNullList<ItemStack> inventory2 = NonNullList.withSize(18, com.yogpc.qp.version.VersionUtil.empty());
     public List<WorkbenchRecipes> recipesList = Collections.emptyList();
-    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    public Optional<WorkbenchRecipes> currentRecipe = Optional.empty();
+    private WorkbenchRecipes currentRecipe = WorkbenchRecipes.dummyRecipe();
     public boolean workcontinue;
 
     @Override
     public void update() {
         super.update();
         if (!getWorld().isRemote) {
-            if (currentRecipe.isPresent()) {
-                WorkbenchRecipes recipes = currentRecipe.get();
-                if (recipes.energy() <= getStoredEnergy() || Config.content().noEnergy()) {
-                    useEnergy(recipes.energy(), recipes.energy(), true);
-                    ItemStack stack = recipes.output().toStack(1);
+            if (isWorking()) {
+                if (currentRecipe.energy() <= getStoredEnergy() || Config.content().noEnergy()) {
+                    useEnergy(currentRecipe.energy(), currentRecipe.energy(), true);
+                    ItemStack stack = currentRecipe.output().toStack(1);
                     ItemStack inserted = InvUtils.injectToNearTile(getWorld(), getPos(), stack);
                     if (VersionUtil.nonEmpty(inserted)) {
                         InventoryHelper.spawnItemStack(getWorld(), getPos().getX(), getPos().getY(), getPos().getZ(), stack);
                     }
-                    recipes.inputsJ().forEach(v1 ->
+                    currentRecipe.inputsJ().forEach(v1 ->
                             inventory.stream().filter(v1::isItemEqual).findFirst().ifPresent(stack1 -> VersionUtil.shrink(stack1, VersionUtil.getCount(v1)))
                     );
                     markDirty();
@@ -68,8 +65,8 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
     }
 
     @Override
-    protected boolean isWorking() {
-        return currentRecipe.isPresent();
+    public boolean isWorking() {
+        return currentRecipe.hasContent();
     }
 
     @Override
@@ -217,7 +214,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
 
     @Override
     public List<TextComponentString> getDebugmessages() {
-        return Arrays.asList(new TextComponentString(currentRecipe.map(WorkbenchRecipes::toString).orElse("No recipe.")),
+        return Arrays.asList(new TextComponentString(currentRecipe.toString()),
                 new TextComponentString("Work mode : " + (workcontinue ? "Continue" : "Only once")));
     }
 
@@ -228,20 +225,23 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
 
     public void setCurrentRecipe(int recipeIndex) {
         if (recipeIndex >= 0 && recipesList.size() > recipeIndex) {
-            this.currentRecipe = Optional.of(recipesList.get(recipeIndex));
+            this.currentRecipe = recipesList.get(recipeIndex);
         } else {
-            this.currentRecipe = Optional.empty();
+            this.currentRecipe = WorkbenchRecipes.dummyRecipe();
         }
-        configure(250, currentRecipe.map(WorkbenchRecipes::energy).orElse(0d));
+        configure(250, currentRecipe.energy());
     }
 
     @SideOnly(Side.CLIENT)
     public int getProgressScaled(int scale) {
-        return currentRecipe.map(w -> getStoredEnergy() * scale / w.energy()).orElse(0d).intValue();
+        if (isWorking())
+            return (int) (getStoredEnergy() * scale / currentRecipe.energy());
+        else
+            return 0;
     }
 
     public int getRecipeIndex() {
-        return currentRecipe.map(recipesList::indexOf).orElse(-1);
+        return recipesList.indexOf(currentRecipe);
     }
 
     /**

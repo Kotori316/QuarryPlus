@@ -1,11 +1,17 @@
 package com.yogpc.qp.version;
 
+import java.util.Iterator;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 
 public class Diff10 implements VersionDiff {
 
@@ -46,5 +52,15 @@ public class Diff10 implements VersionDiff {
     @Override
     public void onTake(Slot slot, EntityPlayer thePlayer, ItemStack stack) {
         slot.onPickupFromSlot(thePlayer, stack);
+    }
+
+    @Override
+    public Iterator<NBTBase> getIterator(NBTTagList list) {
+        return nbtListStream(list).map(NBTBase.class::cast).iterator();
+    }
+
+    @Override
+    public Stream<NBTTagCompound> nbtListStream(NBTTagList list) {
+        return IntStream.range(0, list.tagCount()).mapToObj(list::getCompoundTagAt);
     }
 }
