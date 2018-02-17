@@ -1,11 +1,15 @@
 package com.yogpc.qp.version;
 
+import java.util.Iterator;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 
 public class Diff12 implements VersionDiff {
 
@@ -42,5 +46,10 @@ public class Diff12 implements VersionDiff {
     @Override
     public void onTake(Slot slot, EntityPlayer thePlayer, ItemStack stack) {
         slot.onTake(thePlayer, stack);
+    }
+
+    @Override
+    public Iterator<NBTBase> getIterator(NBTTagList list) {
+        return list.iterator();
     }
 }

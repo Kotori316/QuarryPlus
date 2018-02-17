@@ -1,5 +1,7 @@
 package com.yogpc.qp.version;
 
+import java.util.stream.Stream;
+
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -7,6 +9,7 @@ import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 
 public class VersionUtil {
 
@@ -48,5 +51,9 @@ public class VersionUtil {
 
     public static void onTake(Slot slot, EntityPlayer thePlayer, ItemStack stack) {
         QuarryPlus.DIFF.onTake(slot, thePlayer, stack);
+    }
+
+    public static Stream<NBTTagCompound> nbtListStream(NBTTagList list) {
+        return QuarryPlus.DIFF.nbtListStream(list);
     }
 }
