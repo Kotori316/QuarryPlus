@@ -14,11 +14,8 @@
 package com.yogpc.qp;
 
 import java.util.List;
-import java.util.Spliterator;
-import java.util.Spliterators;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import com.yogpc.qp.compat.BuildcraftHelper;
 import com.yogpc.qp.gui.GuiFactory;
@@ -48,7 +45,6 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.launchwrapper.Launch;
-import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.client.event.ModelRegistryEvent;
@@ -259,14 +255,12 @@ public class QuarryPlus {
             if (Optionals.IMC_Remove.equals(imcMessage.key)) {
                 WorkbenchRecipes.removeRecipe(ItemDamage.apply(toStack.apply(nbtValue)));
             } else if (Optionals.IMC_Add.equals(imcMessage.key)) {
-                Function<NBTBase, NBTTagCompound> cast = NBTTagCompound.class::cast;
                 Function<ItemStack, Function<Integer, ItemStack>> toFunc = stack -> (Function<Integer, ItemStack>) integer ->
-                        ItemHandlerHelper.copyStackWithSize(stack, stack.getCount() * integer);
+                        ItemHandlerHelper.copyStackWithSize(stack, VersionUtil.getCount(stack) * integer);
 
                 NBTTagList list = nbtValue.getTagList(Optionals.IMC_Add, Constants.NBT.TAG_COMPOUND);
                 ItemDamage result = ItemDamage.apply(toStack.apply(list.getCompoundTagAt(0)));
-                List<Function<Integer, ItemStack>> functionList = StreamSupport.stream(Spliterators.spliterator(list.iterator(), list.tagCount(), Spliterator.ORDERED), false)
-                        .skip(1).map(cast.andThen(toStack).andThen(toFunc)).collect(Collectors.toList());
+                List<Function<Integer, ItemStack>> functionList = VersionUtil.nbtListStream(list).skip(1).map(toStack.andThen(toFunc)).collect(Collectors.toList());
                 WorkbenchRecipes.addListRecipe(result, nbtValue.getInteger(Optionals.IMC_Energy), functionList, true, WorkbenchRecipes.UnitRF$.MODULE$);
             }
         });
