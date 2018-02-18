@@ -10,6 +10,7 @@ import com.yogpc.qp.compat.BuildcraftHelper;
 import com.yogpc.qp.compat.EnchantmentHelper;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.item.ItemBlockEnchantable;
+import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TileAdvQuarry;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -82,8 +83,8 @@ public class BlockAdvQuarry extends ADismCBlock {
             return true;
         } else if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == 0) {
             if (!worldIn.isRemote)
-                Optional.ofNullable((TileAdvQuarry) worldIn.getTileEntity(pos))
-                        .map(EnchantmentHelper::getEnchantmentsChat).ifPresent(l -> l.forEach(playerIn::sendMessage));
+                Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t ->
+                        EnchantmentHelper.getEnchantmentsChat(t).forEach(playerIn::sendMessage));
             return true;
         } else if (Config.content().noEnergy() && stack.getItem() == Items.STICK) {
             if (!worldIn.isRemote)

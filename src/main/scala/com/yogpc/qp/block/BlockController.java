@@ -5,6 +5,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import cofh.api.block.IDismantleable;
@@ -18,7 +19,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemBlock;
@@ -72,16 +72,12 @@ public class BlockController extends Block implements IDismantleable {
         if (InvUtils.isDebugItem(playerIn, hand)) return true;
         if (!Config.content().disableController()) {
             if (!playerIn.isSneaking()) {
-//            playerIn.openGui(QuarryPlus.instance(), QuarryPlusI.guiIDController, worldIn, pos.getX(), pos.getY(), pos.getZ());
                 if (!worldIn.isRemote) {
-                    List<EntityEntry> entries = new ArrayList<>();
-                    for (EntityEntry entity : ForgeRegistries.ENTITIES) {
-                        Class<? extends Entity> entityClass = entity.getEntityClass();
-                        if (entityClass == null || Modifier.isAbstract(entityClass.getModifiers()) || Config.content().spawnerBlacklist().contains(entity.getRegistryName())) {
-                            continue;
-                        }
-                        entries.add(entity);
-                    }
+                    List<EntityEntry> entries = ForgeRegistries.ENTITIES.getValues().stream().filter(entity ->
+                            entity.getEntityClass() != null &&
+                                    !Modifier.isAbstract(entity.getEntityClass().getModifiers()) &&
+                                    !Config.content().spawnerBlacklist().contains(entity.getRegistryName()))
+                            .collect(Collectors.toList());
                     PacketHandler.sendToClient(AvailableEntities.create(pos, worldIn.provider.getDimension(), entries), (EntityPlayerMP) playerIn);
                 }
                 return true;
