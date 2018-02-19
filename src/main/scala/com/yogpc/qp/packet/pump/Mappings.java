@@ -1,7 +1,9 @@
 package com.yogpc.qp.packet.pump;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
@@ -24,35 +26,33 @@ public class Mappings {
     public static class All implements IMessage {
         BlockPos pos;
         EnumFacing facing;
-        @SuppressWarnings("unchecked")
-        LinkedList<String>[] lists = new LinkedList[6];
+        List<LinkedList<String>> lists = new ArrayList<>();
 
-        @SuppressWarnings("unchecked")
         public static All create(TilePump pump, EnumFacing facing) {
-            All mappings = new All();
-            mappings.pos = pump.getPos();
-            mappings.facing = facing;
-            mappings.lists[0] = pump.mapping.get(EnumFacing.DOWN);
-            mappings.lists[1] = pump.mapping.get(EnumFacing.UP);
-            mappings.lists[2] = pump.mapping.get(EnumFacing.NORTH);
-            mappings.lists[3] = pump.mapping.get(EnumFacing.SOUTH);
-            mappings.lists[4] = pump.mapping.get(EnumFacing.WEST);
-            mappings.lists[5] = pump.mapping.get(EnumFacing.EAST);
+            All message = new All();
+            message.pos = pump.getPos();
+            message.facing = facing;
+            message.lists.add(pump.mapping.get(EnumFacing.DOWN));
+            message.lists.add(pump.mapping.get(EnumFacing.UP));
+            message.lists.add(pump.mapping.get(EnumFacing.NORTH));
+            message.lists.add(pump.mapping.get(EnumFacing.SOUTH));
+            message.lists.add(pump.mapping.get(EnumFacing.WEST));
+            message.lists.add(pump.mapping.get(EnumFacing.EAST));
 
-            return mappings;
+            return message;
         }
 
         @Override
         public void fromBytes(PacketBuffer buffer) throws IOException {
             pos = buffer.readBlockPos();
             facing = buffer.readEnumValue(EnumFacing.class);
-            for (int i = 0; i < lists.length; i++) {
+            for (int i = 0; i < lists.size(); i++) {
                 int l = buffer.readInt();
                 LinkedList<String> strings = new LinkedList<>();
                 for (int j = 0; j < l; j++) {
                     strings.add(buffer.readString(Short.MAX_VALUE));
                 }
-                lists[i] = strings;
+                lists.add(strings);
             }
         }
 
@@ -73,7 +73,7 @@ public class Mappings {
                 Minecraft.getMinecraft().addScheduledTask(() -> {
                     pumpC.mapping.clear();
                     for (EnumFacing facing : EnumFacing.VALUES) {
-                        pumpC.mapping.put(facing, lists[facing.ordinal()]);
+                        pumpC.mapping.put(facing, lists.get(facing.ordinal()));
                     }
                 });
             }
