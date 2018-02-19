@@ -1,9 +1,8 @@
 package com.yogpc.qp.packet.pump;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.LinkedList;
-import java.util.List;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
@@ -26,19 +25,13 @@ public class Mappings {
     public static class All implements IMessage {
         BlockPos pos;
         EnumFacing facing;
-        List<LinkedList<String>> lists = new ArrayList<>();
+        EnumMap<EnumFacing, LinkedList<String>> map = new EnumMap<>(EnumFacing.class);
 
         public static All create(TilePump pump, EnumFacing facing) {
             All message = new All();
             message.pos = pump.getPos();
             message.facing = facing;
-            message.lists.add(pump.mapping.get(EnumFacing.DOWN));
-            message.lists.add(pump.mapping.get(EnumFacing.UP));
-            message.lists.add(pump.mapping.get(EnumFacing.NORTH));
-            message.lists.add(pump.mapping.get(EnumFacing.SOUTH));
-            message.lists.add(pump.mapping.get(EnumFacing.WEST));
-            message.lists.add(pump.mapping.get(EnumFacing.EAST));
-
+            message.map = new EnumMap<>(pump.mapping);
             return message;
         }
 
@@ -46,20 +39,20 @@ public class Mappings {
         public void fromBytes(PacketBuffer buffer) throws IOException {
             pos = buffer.readBlockPos();
             facing = buffer.readEnumValue(EnumFacing.class);
-            for (int i = 0; i < lists.size(); i++) {
+            for (EnumFacing VALUE : EnumFacing.VALUES) {
                 int l = buffer.readInt();
                 LinkedList<String> strings = new LinkedList<>();
                 for (int j = 0; j < l; j++) {
                     strings.add(buffer.readString(Short.MAX_VALUE));
                 }
-                lists.add(strings);
+                map.put(VALUE, strings);
             }
         }
 
         @Override
         public void toBytes(PacketBuffer buffer) {
             buffer.writeBlockPos(pos).writeEnumValue(facing);
-            for (LinkedList<String> strings : lists) {
+            for (LinkedList<String> strings : map.values()) {
                 buffer.writeInt(strings.size());
                 strings.forEach(buffer::writeString);
             }
@@ -72,9 +65,7 @@ public class Mappings {
             if (pumpC != null) {
                 Minecraft.getMinecraft().addScheduledTask(() -> {
                     pumpC.mapping.clear();
-                    for (EnumFacing facing : EnumFacing.VALUES) {
-                        pumpC.mapping.put(facing, lists.get(facing.ordinal()));
-                    }
+                    pumpC.mapping.putAll(map);
                 });
             }
             return null;
@@ -153,13 +144,13 @@ public class Mappings {
                     }
                     break;
                 case Down:
-                    if (i > 0) {
+                    if (i >= 0 && i != list.size() - 1) {
                         list.remove(i);
                         list.add(i + 1, fluidName);
                     }
                     break;
                 case Bottom:
-                    if (i > 0) {
+                    if (i >= 0 && i != list.size() - 1) {
                         list.remove(i);
                         list.addLast(fluidName);
                     }
@@ -208,7 +199,6 @@ public class Mappings {
         }
 
         @Override
-        @SideOnly(Side.CLIENT)
         public IMessage onRecieve(IMessage message, MessageContext ctx) {
             World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
             MinecraftServer server = world.getMinecraftServer();
