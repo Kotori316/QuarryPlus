@@ -23,7 +23,7 @@ Supported API
 Build with...
 -------------
 * ~~BuildCraft [MC1.11.2] 7.99.7~~
-* BuildCraft [MC1.12.2] buildcraft-7.99.14.jar
+* BuildCraft [MC1.12.2] buildcraft-7.99.15.jar
 * IC2\_experimental [MC1.12] industrialcraft-2-2.8.26-ex112-api.jar
 * ~~CoFHLib [MC1.11.2] CoFHLib-1.11.2-1.8.0.1~~
 * CoFHCore [MC1.12] CoFHCore-1.12-4.3.6.16.jar
