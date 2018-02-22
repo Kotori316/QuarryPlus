@@ -683,7 +683,11 @@ object TileAdvQuarry {
     private final val NBT_ITEMELEMENTS = "nbt_itemelements"
 
     val defaultEnch = QEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false)
-    val defaultRange: DigRange = NoDefinedRange
+    val defaultRange: DigRange = new DigRange(BlockPos.ORIGIN, BlockPos.ORIGIN) {
+        override val defined: Boolean = false
+        override val min: BlockPos = BlockPos.ORIGIN
+        override val toString: String = "Dig Range Not Defined"
+    }
 
     private[TileAdvQuarry] case class QEnch(efficiency: Byte, unbreaking: Byte, fortune: Byte, silktouch: Boolean) extends INBTWritable {
 
@@ -764,17 +768,11 @@ object TileAdvQuarry {
                     DigRange(t.getInteger("minX"), t.getInteger("minY"), t.getInteger("minZ"),
                         t.getInteger("maxX"), t.getInteger("maxY"), t.getInteger("maxZ"))
                 } else {
-                    NoDefinedRange
+                    defaultRange
                 }
             } else
-                NoDefinedRange
+                defaultRange
         }
-    }
-
-    private object NoDefinedRange extends DigRange(BlockPos.ORIGIN, BlockPos.ORIGIN) {
-        override val defined: Boolean = false
-        override val min: BlockPos = BlockPos.ORIGIN
-        override val toString: String = "Dig Range Not Defined"
     }
 
     class ItemList extends INBTWritable with INBTReadable[ItemList] {
@@ -838,7 +836,11 @@ object TileAdvQuarry {
         override def toString: String = itemDamage.toString + " x" + count
     }
 
-    private[TileAdvQuarry] case class BlockWrapper(state: IBlockState, ignoreProperty: Boolean = false, ignoreMeta: Boolean = false) {
+    private[TileAdvQuarry] case class BlockWrapper(state: IBlockState, ignoreProperty: Boolean = false, ignoreMeta: Boolean = false)
+      extends java.util.function.Predicate[IBlockState] with (IBlockState => Boolean) {
+
+        override def apply(v1: IBlockState): Boolean = contain(v1)
+
         def contain(that: IBlockState): Boolean = {
             if (ignoreMeta) {
                 state.getBlock == that.getBlock
@@ -849,21 +851,23 @@ object TileAdvQuarry {
                 state == that
             }
         }
+
+        override def test(t: IBlockState): Boolean = contain(t)
     }
 
-    sealed class Modes(val index: Int)
+    sealed class Modes(val index: Int, override val toString: String)
 
-    case object NONE extends Modes(0)
+    val NONE = new Modes(0, "NONE")
 
-    case object NOTNEEDBREAK extends Modes(1)
+    val NOTNEEDBREAK = new Modes(1, "NOTNEEDBREAK")
 
-    case object MAKEFRAME extends Modes(2)
+    val MAKEFRAME = new Modes(2, "MAKEFRAME")
 
-    case object BREAKBLOCK extends Modes(3)
+    val BREAKBLOCK = new Modes(3, "BREAKBLOCK")
 
-    case object CHECKLIQUID extends Modes(4)
+    val CHECKLIQUID = new Modes(4, "CHECKLIQUID")
 
-    case object FILLBLOCKS extends Modes(5)
+    val FILLBLOCKS = new Modes(5, "FILLBLOCKS")
 
     def getFramePoses(digRange: DigRange): List[BlockPos] = {
         val builder = List.newBuilder[BlockPos]
