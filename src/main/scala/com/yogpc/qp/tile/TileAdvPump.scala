@@ -230,7 +230,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
         if (placeFrame)
             EnumFacing.HORIZONTALS.map(pos.offset).filter(!inRange.contains(_)).foreach(offset => {
                 if (TilePump.isLiquid(getWorld.getBlockState(offset), false, getWorld, offset)) {
-                    getWorld.setBlockState(offset, QuarryPlusI.blockFrame.getDamiingState)
+                    getWorld.setBlockState(offset, QuarryPlusI.blockFrame.getDammingState)
                 }
             })
     }
@@ -505,7 +505,7 @@ object TileAdvPump {
             case 0 => 32
             case 1 => 64
             case 2 => 96
-            case 3 => 128
+            case _ => 128
         }
 
         val distanceSq = distance * distance

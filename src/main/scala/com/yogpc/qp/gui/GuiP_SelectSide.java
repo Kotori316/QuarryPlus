@@ -67,7 +67,7 @@ public class GuiP_SelectSide extends GuiScreenA {
             tile.mapping.put(to, list);
             showParent();
         } else {
-            mc.displayGuiScreen(new GuiP_List((byte) button.id, tile));
+            mc.displayGuiScreen(new GuiP_List(button.id, tile));
 //            this.mc.displayGuiScreen(new GuiP_SelectSide(parent, tile, false, EnumFacing.getFront(button.id)));
         }
     }

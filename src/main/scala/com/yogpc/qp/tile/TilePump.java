@@ -434,7 +434,8 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                     for (bz = 0; bz < this.block_side_z; bz++)
                         if (this.blocks[this.py - this.yOffset][this.px][bz] != 0) {
                             bb = this.ebses[this.px >> 4][bz >> 4][this.py >> 4].get(this.px & 0xF, this.py & 0xF, bz & 0xF);
-                            if (isLiquid(bb, Config.content().removeOnlySource(), getWorld(), new BlockPos(this.px + this.xOffset, this.py, bz + this.zOffset)))
+                            if (isLiquid(bb, Config.content().removeOnlySource(), getWorld(),
+                                    new BlockPos(this.px + this.xOffset, this.py, bz + this.zOffset)))
                                 count++;
                         }
                 }
@@ -452,14 +453,16 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                 for (bx = 0; bx < this.block_side_x; bx++)
                     for (bz = 0; bz < this.block_side_z; bz++)
                         if ((this.blocks[this.py - this.yOffset][bx][bz] & 0x40) != 0) {
-                            drainBlock(bx, bz, QuarryPlusI.blockFrame().getDamiingState());
+                            drainBlock(bx, bz, QuarryPlusI.blockFrame().getDammingState());
                             if (isquarry) {
                                 TileQuarry quarry = (TileQuarry) tbpp;
                                 if (Config.content().debug()) {
-                                    if (quarry.xMin < bx + xOffset && bx + xOffset < quarry.xMax) {
-                                        QuarryPlus.LOGGER.warn(String.format("Quarry placed frame in dig range. at %d, %d, %d", bx + xOffset, py, bz + zOffset));
-                                    } else if (quarry.zMin < bz + zOffset && bz + zOffset < quarry.zMax) {
-                                        QuarryPlus.LOGGER.warn(String.format("Quarry placed frame in dig range. at %d, %d, %d", bx + xOffset, py, bz + zOffset));
+                                    int xTarget = bx + xOffset;
+                                    int zTarget = bz + zOffset;
+                                    if (quarry.xMin < xTarget && xTarget < quarry.xMax) {
+                                        QuarryPlus.LOGGER.warn(String.format("Quarry placed frame at %d, %d, %d", xTarget, py, zTarget));
+                                    } else if (quarry.zMin < zTarget && zTarget < quarry.zMax) {
+                                        QuarryPlus.LOGGER.warn(String.format("Quarry placed frame at %d, %d, %d", xTarget, py, zTarget));
                                     }
                                 }
                             }
@@ -472,7 +475,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         return this.py < this.cy;
     }
 
-    // ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * @param state      BlockState

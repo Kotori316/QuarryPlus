@@ -170,7 +170,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 
                             def checkandsetFrame(world: World, thatPos: BlockPos): Unit = {
                                 if (TilePump.isLiquid(world.getBlockState(thatPos), false, world, thatPos)) {
-                                    world.setBlockState(thatPos, QuarryPlusI.blockFrame.getDamiingState)
+                                    world.setBlockState(thatPos, QuarryPlusI.blockFrame.getDammingState)
                                 }
                             }
 
@@ -546,7 +546,10 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
         val need = (digRange.maxX - digRange.minX) * (digRange.maxZ - digRange.minZ)
         val stacks = InvUtils.findItemHander(getWorld, getPos.up, EnumFacing.DOWN).toList
           .flatMap(handler => Range(0, handler.getSlots).map(handler.getStackInSlot))
-        stacks.nonEmpty && stacks.head.getItem.isInstanceOf[ItemBlock] && stacks.forall(_.isItemEqual(stacks.head)) && stacks.map(_.getCount).sum >= need
+        stacks.nonEmpty &&
+          stacks.head.getItem.isInstanceOf[ItemBlock] &&
+          stacks.forall(stack => VersionUtil.isEmpty(stack) || stack.isItemEqual(stacks.head)) &&
+          stacks.map(_.getCount).sum >= need
     }
 
     private[TileAdvQuarry] class ItemHandler extends IItemHandlerModifiable {
@@ -654,7 +657,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                     case 3 => BREAKBLOCK
                     case 4 => CHECKLIQUID
                     case 5 => FILLBLOCKS
-                    case _ => throw new IllegalStateException("No available mode")
+                    case _ => throw new IllegalStateException("Invalid mode")
                 }
             }
             this
@@ -794,9 +797,7 @@ object TileAdvQuarry {
             }
         }
 
-        def add(stack: ItemStack): Unit = {
-            add(ItemDamage(stack), stack.getCount)
-        }
+        def add(stack: ItemStack): Unit = add(ItemDamage(stack), stack.getCount)
 
         def decrease(index: Int, count: Int): ItemStack = {
             val t = list(index)
