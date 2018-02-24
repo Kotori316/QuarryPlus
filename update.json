@@ -6,6 +6,7 @@
     "1.10.2-recommended": "0.8.1"
   },
   "1.12.2": {
+    "0.8.2": "Added wrench of IC2 support and fixed bugs in GUI of pump.",
     "0.8.1": "Added IMC support. See wiki to get more information.",
     "0.8.0": "Improved BreakerPlus and PlacerPlus.",
     "0.7.9": "Fixed frame caused StackOverFlowError.",
