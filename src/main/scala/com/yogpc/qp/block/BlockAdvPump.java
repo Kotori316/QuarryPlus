@@ -119,4 +119,8 @@ public class BlockAdvPump extends ADismCBlock {
         return getDefaultState().withProperty(ACTING, (meta & 8) == 8);
     }
 
+    @Override
+    protected boolean canRotate() {
+        return false;
+    }
 }

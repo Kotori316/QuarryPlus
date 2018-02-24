@@ -325,7 +325,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
 
         EnumFacing facing = getWorld().getBlockState(getPos()).getValue(BlockQuarry.FACING).getOpposite();
         if (bccoreLoaded) {
-            Optional<ITileAreaProvider> marker = Stream.of(pos.offset(facing), pos.offset(facing.rotateYCCW()), pos.offset(facing.rotateY()))
+            Optional<ITileAreaProvider> marker = Stream.of(getNeighbors(facing))
                     .map(getWorld()::getTileEntity).filter(nonNull)
                     .map(t -> t.getCapability(TilesAPI.CAP_TILE_AREA_PROVIDER, null)).filter(nonNull).findFirst();
             if (marker.isPresent()) {
@@ -359,7 +359,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                 setDefaultRange(getPos(), facing);
             }
         } else {
-            Optional<TileMarker> marker = Stream.of(pos.offset(facing), pos.offset(facing.rotateYCCW()), pos.offset(facing.rotateY()))
+            Optional<TileMarker> marker = Stream.of(getNeighbors(facing))
                     .map(getWorld()::getTileEntity)
                     .filter(t -> t instanceof TileMarker)
                     .map(t -> (TileMarker) t).findFirst();

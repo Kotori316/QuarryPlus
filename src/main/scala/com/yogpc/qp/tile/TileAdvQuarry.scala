@@ -1,6 +1,6 @@
 package com.yogpc.qp.tile
 
-import java.lang.{Boolean => JBool, Byte => JByte, Integer => JInt}
+import java.lang.{Boolean => JBool}
 import javax.annotation.Nonnull
 
 import com.yogpc.qp.block.ADismCBlock
@@ -215,7 +215,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                         })
                         if (shear.nonEmpty) {
                             val itemShear = new ItemStack(net.minecraft.init.Items.SHEARS)
-                            EnchantmentHelper.setEnchantments(ench.getMap.collect { case (a, b) if b > 0 => (Enchantment.getEnchantmentByID(a), JInt.valueOf(b)) }.asJava, itemShear)
+                            EnchantmentHelper.setEnchantments(ench.getMap.collect { case (a, b) if b > 0 => (Enchantment.getEnchantmentByID(a), Int.box(b)) }.asJava, itemShear)
                             shear.foreach(p => {
                                 val state = getWorld.getBlockState(p)
                                 val block = state.getBlock.asInstanceOf[Block with IShearable]
@@ -300,8 +300,11 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
             } else if (mode is TileAdvQuarry.FILLBLOCKS) {
                 val handler = InvUtils.findItemHander(getWorld, getPos.up, EnumFacing.DOWN).orNull
                 if (handler != null) {
-                    val list = Range(0, handler.getSlots).find(i => VersionUtil.nonEmpty(handler.getStackInSlot(i))).map(handler.extractItem(_, 64, false)).toList
-                    list.filter(_.getItem.isInstanceOf[ItemBlock]).flatMap(i => Range(0, i.getCount)).foreach(_ => {
+                    val list = Range(0, handler.getSlots).find(i => {
+                        val stack = handler.getStackInSlot(i)
+                        VersionUtil.nonEmpty(stack) && stack.getItem.isInstanceOf[ItemBlock]
+                    }).map(handler.extractItem(_, 64, false)).toList
+                    list.flatMap(i => Range(0, i.getCount)).foreach(_ => {
                         if (mode is TileAdvQuarry.FILLBLOCKS) {
                             val state = InvUtils.getStateFromItem(list.head.getItem.asInstanceOf[ItemBlock], list.head.getItemDamage)
                             getWorld.setBlockState(new BlockPos(target.getX, if (Config.content.removeBedrock) 1 else 5, target.getZ), state)
@@ -395,7 +398,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
     /**
       * @return Map (Enchantment id, level)
       */
-    override def getEnchantments = ench.getMap.collect { case (a, b) if b > 0 => (JInt.valueOf(a), JByte.valueOf(b)) }.asJava
+    override def getEnchantments = ench.getMap.collect { case (a, b) if b > 0 => (Int.box(a), Byte.box(b)) }.asJava
 
     /**
       * @param id    Enchantment id
@@ -500,7 +503,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 
     def makeRangeBox() = {
         val facing = getWorld.getBlockState(getPos).getValue(ADismCBlock.FACING).getOpposite
-        val link = List(getPos.offset(facing), getPos.offset(facing.rotateYCCW), getPos.offset(facing.rotateY)).map(getWorld.getTileEntity(_))
+        val link = getNeighbors(facing).map(getWorld.getTileEntity(_))
           .collectFirst { case m: TileMarker if m.link != null =>
               val poses = (m.min().add(+1, 0, +1), m.max().add(-1, 0, -1))
               m.removeFromWorldWithItem().asScala.foreach(cacheItems.add)
@@ -528,7 +531,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
     }
 
     def startFillMode(): Unit = {
-        if ((mode is TileAdvQuarry.NONE) && digRange.defined && preparedFiller()) {
+        if ((mode is TileAdvQuarry.NONE) && digRange.defined && preparedFiller) {
             mode set TileAdvQuarry.FILLBLOCKS
             target = digRange.min
         }
@@ -542,14 +545,17 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
         }
     }
 
-    def preparedFiller(): Boolean = {
-        val need = (digRange.maxX - digRange.minX) * (digRange.maxZ - digRange.minZ)
-        val stacks = InvUtils.findItemHander(getWorld, getPos.up, EnumFacing.DOWN).toList
-          .flatMap(handler => Range(0, handler.getSlots).map(handler.getStackInSlot))
-        stacks.nonEmpty &&
-          stacks.head.getItem.isInstanceOf[ItemBlock] &&
-          stacks.forall(stack => VersionUtil.isEmpty(stack) || stack.isItemEqual(stacks.head)) &&
-          stacks.map(_.getCount).sum >= need
+    def preparedFiller: Boolean = {
+        val y = if (Config.content.removeBedrock) 1 else 5
+        if (BlockPos.getAllInBoxMutable(digRange.minX, y, digRange.minZ, digRange.maxX, y, digRange.maxZ).iterator().asScala.forall(getWorld.isAirBlock)) {
+            val need = (digRange.maxX - digRange.minX + 1) * (digRange.maxZ - digRange.minZ + 1)
+            val stacks = InvUtils.findItemHander(getWorld, getPos.up, EnumFacing.DOWN).toList
+              .flatMap(handler => Range(0, handler.getSlots).map(handler.getStackInSlot))
+            val blocks = stacks.filter(s => VersionUtil.nonEmpty(s) && s.getItem.isInstanceOf[ItemBlock])
+            blocks.nonEmpty &&
+              stacks.forall(stack => VersionUtil.isEmpty(stack) || !stack.getItem.isInstanceOf[ItemBlock] || stack.isItemEqual(blocks.head)) &&
+              blocks.map(_.getCount).sum >= need
+        } else false
     }
 
     private[TileAdvQuarry] class ItemHandler extends IItemHandlerModifiable {

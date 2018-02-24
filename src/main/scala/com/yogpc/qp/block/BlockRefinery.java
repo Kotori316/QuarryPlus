@@ -115,7 +115,7 @@ public class BlockRefinery extends ADismCBlock {
         ItemStack current = player.getHeldItem(hand);
         IFluidHandler handler = refinery.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing);
         FluidActionResult result = FluidUtil.tryEmptyContainerAndStow(current, handler,
-                player.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.UP), Fluid.BUCKET_VOLUME, player);
+                player.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.UP), Fluid.BUCKET_VOLUME, player, true);
         if (result.isSuccess()) {
             player.setHeldItem(hand, result.getResult());
         }
@@ -196,5 +196,10 @@ public class BlockRefinery extends ADismCBlock {
     public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items) {
         if (bcLoaded())
             super.getSubBlocks(itemIn, items);
+    }
+
+    @Override
+    protected boolean canRotate() {
+        return true;
     }
 }

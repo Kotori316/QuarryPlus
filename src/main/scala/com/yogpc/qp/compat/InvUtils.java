@@ -2,7 +2,6 @@ package com.yogpc.qp.compat;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 import buildcraft.api.inventory.IItemTransactor;
 import buildcraft.lib.inventory.ItemTransactorHelper;
@@ -81,15 +80,19 @@ public class InvUtils {
     }
 
     public static Option<IItemHandler> findItemHander(World world, BlockPos pos, EnumFacing from) {
-        Optional<IItemHandler> optional = Optional.ofNullable(world.getTileEntity(pos)).map(entity -> entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, from));
-        return Option.apply(optional.orElse(null));
+        TileEntity entity = world.getTileEntity(pos);
+        if (entity == null) {
+            return Option.empty();
+        } else {
+            return Option.apply(entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, from));
+        }
     }
 
     public static boolean isDebugItem(EntityPlayer player, EnumHand hand) {
         ItemStack stack = player.getHeldItem(hand);
         if (nonEmpty(stack)) {
             Item item = stack.getItem();
-            return item == quarrydebug || item == meter;
+            return item == quarrydebug || item == ic2_meter || item == ic2_wrench || item == ic2_electric_wrench;
         }
         return false;
     }
@@ -101,7 +104,11 @@ public class InvUtils {
     }
 
     @GameRegistry.ObjectHolder(QuarryPlus.Optionals.IC2_modID + ":meter")
-    public static final Item meter = new Item();
+    public static final Item ic2_meter = new Item();
+    @GameRegistry.ObjectHolder(QuarryPlus.Optionals.IC2_modID + ":wrench")
+    public static final Item ic2_wrench = new Item();
+    @GameRegistry.ObjectHolder(QuarryPlus.Optionals.IC2_modID + ":electric_wrench")
+    public static final Item ic2_electric_wrench = new Item();
     @GameRegistry.ObjectHolder(QuarryPlus.modID + ":quarrydebug")
     public static final Item quarrydebug = new Item();
 }

@@ -29,6 +29,7 @@ import javax.annotation.Nullable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
@@ -104,6 +105,10 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
             }
             this.ic2ok = false;
         }
+    }
+
+    protected BlockPos[] getNeighbors(EnumFacing facing) {
+        return new BlockPos[]{pos.offset(facing), pos.offset(facing.rotateYCCW()), pos.offset(facing.rotateY())};
     }
 
     protected abstract boolean isWorking();

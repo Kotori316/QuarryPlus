@@ -86,9 +86,14 @@ public class BlockAdvQuarry extends ADismCBlock {
                 Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t ->
                         EnchantmentHelper.getEnchantmentsChat(t).forEach(playerIn::sendMessage));
             return true;
-        } else if (Config.content().noEnergy() && stack.getItem() == Items.STICK) {
-            if (!worldIn.isRemote)
-                Optional.ofNullable((TileAdvQuarry) worldIn.getTileEntity(pos)).ifPresent(TileAdvQuarry::stickActivated);
+        } else if (stack.getItem() == Items.STICK) {
+            if (!worldIn.isRemote) {
+                Optional.ofNullable((TileAdvQuarry) worldIn.getTileEntity(pos)).ifPresent(tileAdvQuarry -> {
+                    if (Config.content().noEnergy())
+                        tileAdvQuarry.stickActivated();
+                    tileAdvQuarry.startFillMode();
+                });
+            }
             return true;
         } else if (!playerIn.isSneaking()) {
             playerIn.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdAdvQuarry(), worldIn, pos.getX(), pos.getY(), pos.getZ());
@@ -144,5 +149,10 @@ public class BlockAdvQuarry extends ADismCBlock {
         if (!Config.content().disableChunkDestroyer()) {
             super.getSubBlocks(itemIn, items);
         }
+    }
+
+    @Override
+    protected boolean canRotate() {
+        return true;
     }
 }

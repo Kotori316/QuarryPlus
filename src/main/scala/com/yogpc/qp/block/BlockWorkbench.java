@@ -47,4 +47,9 @@ public class BlockWorkbench extends ADismCBlock {
         }
         return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
     }
+
+    @Override
+    protected boolean canRotate() {
+        return false;
+    }
 }

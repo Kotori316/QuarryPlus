@@ -1,6 +1,6 @@
 package com.yogpc.qp.tile
 
-import java.lang.{Boolean => JBool, Byte => JByte, Integer => JInt}
+import java.lang.{Boolean => JBool}
 
 import com.yogpc.qp.block.ADismCBlock
 import com.yogpc.qp.compat.{INBTReadable, INBTWritable}
@@ -251,7 +251,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
     /**
       * @return Map (Enchantment id, level)
       */
-    override def getEnchantments = ench.getMap.collect { case (a, b) if b > 0 => (JInt.valueOf(a), JByte.valueOf(b)) }.asJava
+    override def getEnchantments = ench.getMap.collect { case (a, b) if b > 0 => (Int.box(a), Byte.box(b)) }.asJava
 
     /**
       * @param id    Enchantment id
