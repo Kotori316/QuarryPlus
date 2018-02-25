@@ -3,7 +3,7 @@ Addtional Enchnted Miner
 This mod adds automatic miner.
 All machines can accept RF, MJ, EU and Forge Energy.
 
-Mahines:
+Machines:
 * **QuarryPlus** : It digs to y = 1 in the area of max 256 x 256 (blocks). Enchantments allow to improve fuel efficiency and enchanted mining.
 * **PumpPlus** : It adds QuarryPlus a function to pump liquid. You can make the Nether dry.
 * **WorkbenchPlus** : You need this to make machines by this mod.
@@ -11,6 +11,8 @@ Mahines:
 * **ChunkDestroyer** : It takes less than 3 minute to flatten the area of 16 x 16 (chunks).
 * **Advanced Pump** : A pump faster than BC's one.
 * **Spawner Controller** : Change the content of neighbor spawner.
+
+ChunkDestroyer and Advanced Pump will increase the number of old GC and lag.
 
 このmodは自動で採掘してくれる機械を追加します。
 どの機械もRF, MJ, EU, Forge Energyをエネルギーとして使用することができます。
