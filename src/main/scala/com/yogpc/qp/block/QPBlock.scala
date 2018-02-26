@@ -2,15 +2,16 @@ package com.yogpc.qp.block
 
 import java.util.function.Function
 
-import com.yogpc.qp.compat.InvUtils
+import com.yogpc.qp.compat.{EnchantmentHelper, InvUtils}
+import com.yogpc.qp.tile.IEnchantableTile
 import com.yogpc.qp.{QuarryPlus, QuarryPlusI}
 import net.minecraft.block.BlockContainer
 import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.EntityLiving
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.item.ItemBlock
-import net.minecraft.util.math.BlockPos
+import net.minecraft.item.{ItemBlock, ItemStack}
+import net.minecraft.util.math.{BlockPos, RayTraceResult}
 import net.minecraft.util.{EnumBlockRenderType, EnumFacing, EnumHand}
 import net.minecraft.world.{IBlockAccess, World}
 import net.minecraftforge.fml.common.Loader
@@ -33,4 +34,15 @@ abstract class QPBlock(materialIn: Material, name: String, generator: Function[Q
         InvUtils.isDebugItem(playerIn, hand) || super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ)
 
     override def rotateBlock(world: World, pos: BlockPos, axis: EnumFacing): Boolean = false
+
+    override def getPickBlock(state: IBlockState, target: RayTraceResult, world: World, pos: BlockPos, player: EntityPlayer): ItemStack = {
+        val tile = world.getTileEntity(pos)
+        tile match {
+            case enchantable: IEnchantableTile =>
+                val stack = new ItemStack(this, 1, damageDropped(state))
+                EnchantmentHelper.enchantmentToIS(enchantable, stack)
+                stack
+            case _ => super.getPickBlock(state, target, world, pos, player)
+        }
+    }
 }
