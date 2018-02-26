@@ -163,4 +163,9 @@ public class BlockQuarry extends ADismCBlock {
     public IBlockState getStateFromMeta(int meta) {
         return getDefaultState().withProperty(FACING, EnumFacing.getFront(meta & 7)).withProperty(ACTING, (meta & 8) == 8);
     }
+
+    @Override
+    protected boolean canRotate() {
+        return true;
+    }
 }

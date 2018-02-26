@@ -127,68 +127,68 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
     private static void S_renewConnection(final Link l, final World w, final int x, final int y, final int z) {
         int tx = 0, ty = 0, tz = 0;
         Block b;
-        if (l.xx == l.xn) {
+        if (l.xMax == l.xMin) {
             for (tx = 1; tx <= MAX_SIZE; tx++) {
                 b = w.getBlockState(new BlockPos(x + tx, y, z)).getBlock();
                 if (b instanceof BlockMarker && !LINK_INDEX.contains(new BlockIndex(w, x + tx, y, z))) {
-                    l.xx = x + tx;
+                    l.xMax = x + tx;
                     break;
                 }
                 b = w.getBlockState(new BlockPos(x - tx, y, z)).getBlock();
                 if (b instanceof BlockMarker && !LINK_INDEX.contains(new BlockIndex(w, x - tx, y, z))) {
                     tx = -tx;
-                    l.xn = x + tx;
+                    l.xMin = x + tx;
                     break;
                 }
             }
-            if (l.xx == l.xn)
+            if (l.xMax == l.xMin)
                 tx = 0;
         }
-        if (l.yx == l.yn) {
+        if (l.yMax == l.yMin) {
             for (ty = 1; ty <= MAX_SIZE; ty++) {
                 b = w.getBlockState(new BlockPos(x, y + ty, z)).getBlock();
                 if (b instanceof BlockMarker && !LINK_INDEX.contains(new BlockIndex(w, x, y + ty, z))) {
-                    l.yx = y + ty;
+                    l.yMax = y + ty;
                     break;
                 }
                 b = w.getBlockState(new BlockPos(x, y - ty, z)).getBlock();
                 if (b instanceof BlockMarker && !LINK_INDEX.contains(new BlockIndex(w, x, y - ty, z))) {
                     ty = -ty;
-                    l.yn = y + ty;
+                    l.yMin = y + ty;
                     break;
                 }
             }
-            if (l.yx == l.yn)
+            if (l.yMax == l.yMin)
                 ty = 0;
         }
-        if (l.zx == l.zn) {
+        if (l.zMax == l.zMin) {
             for (tz = 1; tz <= MAX_SIZE; tz++) {
                 b = w.getBlockState(new BlockPos(x, y, z + tz)).getBlock();
                 if (b instanceof BlockMarker && !LINK_INDEX.contains(new BlockIndex(w, x, y, z + tz))) {
-                    l.zx = z + tz;
+                    l.zMax = z + tz;
                     break;
                 }
                 b = w.getBlockState(new BlockPos(x, y, z - tz)).getBlock();
                 if (b instanceof BlockMarker && !LINK_INDEX.contains(new BlockIndex(w, x, y, z - tz))) {
                     tz = -tz;
-                    l.zn = z + tz;
+                    l.zMin = z + tz;
                     break;
                 }
             }
-            if (l.zx == l.zn)
+            if (l.zMax == l.zMin)
                 tz = 0;
         }
-        if (l.xx == l.xn && ty != 0)
+        if (l.xMax == l.xMin && ty != 0)
             S_renewConnection(l, w, x, y + ty, z);
-        if (l.xx == l.xn && tz != 0)
+        if (l.xMax == l.xMin && tz != 0)
             S_renewConnection(l, w, x, y, z + tz);
-        if (l.yx == l.yn && tx != 0)
+        if (l.yMax == l.yMin && tx != 0)
             S_renewConnection(l, w, x + tx, y, z);
-        if (l.yx == l.yn && tz != 0)
+        if (l.yMax == l.yMin && tz != 0)
             S_renewConnection(l, w, x, y, z + tz);
-        if (l.zx == l.zn && tx != 0)
+        if (l.zMax == l.zMin && tx != 0)
             S_renewConnection(l, w, x + tx, y, z);
-        if (l.zx == l.zn && ty != 0)
+        if (l.zMax == l.zMin && ty != 0)
             S_renewConnection(l, w, x, y + ty, z);
 
     }
@@ -199,7 +199,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
             this.laser = null;
         }
         if (!this.getWorld().isRemote) {
-            if (getWorld().isBlockPowered(getPos()) && (this.link == null || this.link.xn == this.link.xx || this.link.yn == this.link.yx || this.link.zn == this.link.zx)) {
+            if (getWorld().isBlockPowered(getPos()) && (this.link == null || this.link.xMin == this.link.xMax || this.link.yMin == this.link.yMax || this.link.zMin == this.link.zMax)) {
                 //create
                 this.laser = new Laser(this.getWorld(), getPos(), this.link);
                 PacketHandler.sendToAround(LinkUpdate.create(this, true), getWorld(), getPos());
@@ -215,7 +215,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
             this.link.removeConnection(false);
         this.link = new Link(getWorld(), getPos());
         S_renewConnection(this.link, getWorld(), getPos().getX(), getPos().getY(), getPos().getZ());
-        if (this.link.xx == this.link.xn && this.link.yx == this.link.yn && this.link.zx == this.link.zn) {
+        if (this.link.xMax == this.link.xMin && this.link.yMax == this.link.yMin && this.link.zMax == this.link.zMin) {
             this.link = null;
             return;
         }
@@ -315,9 +315,9 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
     @Optional.Method(modid = QuarryPlus.Optionals.BuildCraft_core)
     public boolean isValidFromLocation(BlockPos pos) {
         if (link != null) {
-            boolean xFlag = link.xn <= pos.getX() && link.xx <= pos.getX();
-            boolean yFlag = link.yn <= pos.getY() && link.yx <= pos.getY();
-            boolean zFlag = link.zn <= pos.getZ() && link.zx <= pos.getZ();
+            boolean xFlag = link.xMin <= pos.getX() && link.xMax <= pos.getX();
+            boolean yFlag = link.yMin <= pos.getY() && link.yMax <= pos.getY();
+            boolean zFlag = link.zMin <= pos.getZ() && link.zMax <= pos.getZ();
             if (xFlag && yFlag && zFlag) {
                 return false;
             }
@@ -365,15 +365,15 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
             this.z = pz;
             this.w = pw;
             double b = 10d / 16d, c = 6d / 16d;
-            if (l == null || l.xn == l.xx) {
+            if (l == null || l.xMin == l.xMax) {
                 lineBoxes[0] = new AxisAlignedBB(px + b - MAX_SIZE, py + 0.5, pz + 0.5, px + c, py + 0.5, pz + 0.5);
                 lineBoxes[3] = new AxisAlignedBB(px + b, py + 0.5, pz + 0.5, px + c + MAX_SIZE, py + 0.5, pz + 0.5);
             }
-            if (l == null || l.yn == l.yx) {
+            if (l == null || l.yMin == l.yMax) {
                 lineBoxes[1] = new AxisAlignedBB(px + 0.5, 0, pz + 0.5, px + 0.5, py - 0.1, pz + 0.5);
                 lineBoxes[4] = new AxisAlignedBB(px + 0.5, py + b, pz + 0.5, px + 0.5, 255, pz + 0.5);
             }
-            if (l == null || l.zn == l.zx) {
+            if (l == null || l.zMin == l.zMax) {
                 lineBoxes[2] = new AxisAlignedBB(px + 0.5, py + 0.5, pz + b - MAX_SIZE, px + 0.5, py + 0.5, pz + c);
                 lineBoxes[5] = new AxisAlignedBB(px + 0.5, py + 0.5, pz + b, px + 0.5, py + 0.5, pz + c + MAX_SIZE);
             }
@@ -417,7 +417,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
      * Link with other markers.
      */
     public static class Link {
-        public int xx, xn, yx, yn, zx, zn;
+        public int xMax, xMin, yMax, yMin, zMax, zMin;
         public final AxisAlignedBB[] lineBoxes = new AxisAlignedBB[12];
         public Box[] boxes;
         public final World w;
@@ -431,22 +431,22 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
         }
 
         Link(final World pw, final int vx, final int vy, final int vz) {
-            this.xx = vx;
-            this.xn = vx;
-            this.yx = vy;
-            this.yn = vy;
-            this.zx = vz;
-            this.zn = vz;
+            this.xMax = vx;
+            this.xMin = vx;
+            this.yMax = vy;
+            this.yMin = vy;
+            this.zMax = vz;
+            this.zMin = vz;
             this.w = pw;
         }
 
         Link(final World pw, final int vxx, final int vxn, final int vyx, final int vyn, final int vzx, final int vzn) {
-            this.xx = vxx;
-            this.xn = vxn;
-            this.yx = vyx;
-            this.yn = vyn;
-            this.zx = vzx;
-            this.zn = vzn;
+            this.xMax = vxx;
+            this.xMin = vxn;
+            this.yMax = vyx;
+            this.yMin = vyn;
+            this.zMax = vzx;
+            this.zMin = vzn;
             this.w = pw;
         }
 
@@ -481,12 +481,12 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
                 linkList.get(i).removeConnection(false);
             linkList.add(this);
             connect(this.w.getTileEntity(minPos()));
-            connect(this.w.getTileEntity(new BlockPos(this.xn, this.yn, this.zx)));
-            connect(this.w.getTileEntity(new BlockPos(this.xn, this.yx, this.zn)));
-            connect(this.w.getTileEntity(new BlockPos(this.xn, this.yx, this.zx)));
-            connect(this.w.getTileEntity(new BlockPos(this.xx, this.yn, this.zn)));
-            connect(this.w.getTileEntity(new BlockPos(this.xx, this.yn, this.zx)));
-            connect(this.w.getTileEntity(new BlockPos(this.xx, this.yx, this.zn)));
+            connect(this.w.getTileEntity(new BlockPos(this.xMin, this.yMin, this.zMax)));
+            connect(this.w.getTileEntity(new BlockPos(this.xMin, this.yMax, this.zMin)));
+            connect(this.w.getTileEntity(new BlockPos(this.xMin, this.yMax, this.zMax)));
+            connect(this.w.getTileEntity(new BlockPos(this.xMax, this.yMin, this.zMin)));
+            connect(this.w.getTileEntity(new BlockPos(this.xMax, this.yMin, this.zMax)));
+            connect(this.w.getTileEntity(new BlockPos(this.xMax, this.yMax, this.zMin)));
             connect(this.w.getTileEntity(maxPos()));
         }
 
@@ -497,14 +497,14 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
             }
             deleteLaser();
             final ArrayList<ItemStack> i = new ArrayList<>();
-            i.addAll(removeLink(this.xn, this.yn, this.zn, bb));
-            i.addAll(removeLink(this.xn, this.yn, this.zx, bb));
-            i.addAll(removeLink(this.xn, this.yx, this.zn, bb));
-            i.addAll(removeLink(this.xn, this.yx, this.zx, bb));
-            i.addAll(removeLink(this.xx, this.yn, this.zn, bb));
-            i.addAll(removeLink(this.xx, this.yn, this.zx, bb));
-            i.addAll(removeLink(this.xx, this.yx, this.zn, bb));
-            i.addAll(removeLink(this.xx, this.yx, this.zx, bb));
+            i.addAll(removeLink(this.xMin, this.yMin, this.zMin, bb));
+            i.addAll(removeLink(this.xMin, this.yMin, this.zMax, bb));
+            i.addAll(removeLink(this.xMin, this.yMax, this.zMin, bb));
+            i.addAll(removeLink(this.xMin, this.yMax, this.zMax, bb));
+            i.addAll(removeLink(this.xMax, this.yMin, this.zMin, bb));
+            i.addAll(removeLink(this.xMax, this.yMin, this.zMax, bb));
+            i.addAll(removeLink(this.xMax, this.yMax, this.zMin, bb));
+            i.addAll(removeLink(this.xMax, this.yMax, this.zMax, bb));
             return i;
         }
 
@@ -512,37 +512,37 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
             deleteLaser();
             byte flag = 0;
             final double a = 0.5d, b = 10d / 16d, c = 6d / 16d;
-            if (this.xn != this.xx)
+            if (this.xMin != this.xMax)
                 flag |= 1;
-            if (this.yn != this.yx)
+            if (this.yMin != this.yMax)
                 flag |= 2;
-            if (this.zn != this.zx)
+            if (this.zMin != this.zMax)
                 flag |= 4;
             if ((flag & 1) == 1) {//x
-                lineBoxes[0] = new AxisAlignedBB(xn + b, yn + a, zn + a, xx + c, yn + a, zn + a);
+                lineBoxes[0] = new AxisAlignedBB(xMin + b, yMin + a, zMin + a, xMax + c, yMin + a, zMin + a);
             }
             if ((flag & 2) == 2) {//y
-                lineBoxes[4] = new AxisAlignedBB(xn + a, yn + b, zn + a, xn + a, yx + c, zn + a);
+                lineBoxes[4] = new AxisAlignedBB(xMin + a, yMin + b, zMin + a, xMin + a, yMax + c, zMin + a);
             }
             if ((flag & 4) == 4) {//z
-                lineBoxes[8] = new AxisAlignedBB(xn + a, yn + a, zn + b, xn + a, yn + a, zx + c);
+                lineBoxes[8] = new AxisAlignedBB(xMin + a, yMin + a, zMin + b, xMin + a, yMin + a, zMax + c);
             }
             if ((flag & 3) == 3) {//xy
-                lineBoxes[2] = new AxisAlignedBB(xn + b, yx + a, zn + a, xx + c, yx + a, zn + a);
-                lineBoxes[6] = new AxisAlignedBB(xx + a, yn + b, zn + a, xx + a, yx + c, zn + a);
+                lineBoxes[2] = new AxisAlignedBB(xMin + b, yMax + a, zMin + a, xMax + c, yMax + a, zMin + a);
+                lineBoxes[6] = new AxisAlignedBB(xMax + a, yMin + b, zMin + a, xMax + a, yMax + c, zMin + a);
             }
             if ((flag & 5) == 5) {//xz
-                lineBoxes[1] = new AxisAlignedBB(xn + b, yn + a, zx + a, xx + c, yn + a, zx + a);
-                lineBoxes[9] = new AxisAlignedBB(xx + a, yn + a, zn + b, xx + a, yn + a, zx + c);
+                lineBoxes[1] = new AxisAlignedBB(xMin + b, yMin + a, zMax + a, xMax + c, yMin + a, zMax + a);
+                lineBoxes[9] = new AxisAlignedBB(xMax + a, yMin + a, zMin + b, xMax + a, yMin + a, zMax + c);
             }
             if ((flag & 6) == 6) {//yz
-                lineBoxes[5] = new AxisAlignedBB(xn + a, yn + b, zx + a, xn + a, yx + c, zx + a);
-                lineBoxes[10] = new AxisAlignedBB(xn + a, yx + a, zn + b, xn + a, yx + a, zx + c);
+                lineBoxes[5] = new AxisAlignedBB(xMin + a, yMin + b, zMax + a, xMin + a, yMax + c, zMax + a);
+                lineBoxes[10] = new AxisAlignedBB(xMin + a, yMax + a, zMin + b, xMin + a, yMax + a, zMax + c);
             }
             if ((flag & 7) == 7) {//xyz
-                lineBoxes[3] = new AxisAlignedBB(xn + b, yx + a, zx + a, xx + c, yx + a, zx + a);
-                lineBoxes[7] = new AxisAlignedBB(xx + a, yn + b, zx + a, xx + a, yx + c, zx + a);
-                lineBoxes[11] = new AxisAlignedBB(xx + a, yx + a, zn + b, xx + a, yx + a, zx + c);
+                lineBoxes[3] = new AxisAlignedBB(xMin + b, yMax + a, zMax + a, xMax + c, yMax + a, zMax + a);
+                lineBoxes[7] = new AxisAlignedBB(xMax + a, yMin + b, zMax + a, xMax + a, yMax + c, zMax + a);
+                lineBoxes[11] = new AxisAlignedBB(xMax + a, yMax + a, zMin + b, xMax + a, yMax + a, zMax + c);
             }
             if (w.isRemote) {
                 boxes = Arrays.stream(lineBoxes).filter(nonNull)
@@ -557,11 +557,11 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
         }
 
         public BlockPos minPos() {
-            return new BlockPos(xn, yn, zn);
+            return new BlockPos(xMin, yMin, zMin);
         }
 
         public BlockPos maxPos() {
-            return new BlockPos(xx, yx, zx);
+            return new BlockPos(xMax, yMax, zMax);
         }
 
         @Override
@@ -575,13 +575,13 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
             if (!(o instanceof Link))
                 return false;
             final Link l = (Link) o;
-            return l.xn == this.xn && l.xx == this.xx && l.yn == this.yn &&
-                    l.yx == this.yx && l.zn == this.zn && l.zx == this.zx && l.w == this.w;
+            return l.xMin == this.xMin && l.xMax == this.xMax && l.yMin == this.yMin &&
+                    l.yMax == this.yMax && l.zMin == this.zMin && l.zMax == this.zMax && l.w == this.w;
         }
 
         @Override
         public int hashCode() {
-            return (xn << 10 + yn << 5 + zn) + (xx << 10 + yx << 5 + zx);
+            return (xMin << 10 + yMin << 5 + zMin) + (xMax << 10 + yMax << 5 + zMax);
         }
     }
 
@@ -589,7 +589,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
         BiPredicate<Link, Object> p1 = (link1, r) -> {
             if (r instanceof BlockIndex) {
                 BlockIndex bi = ((BlockIndex) r);
-                return (bi.x == link1.xn || bi.x == link1.xx) && (bi.y == link1.yn || bi.y == link1.yx) && (bi.z == link1.zn || bi.z == link1.zx) && link1.w == bi.w;
+                return (bi.x == link1.xMin || bi.x == link1.xMax) && (bi.y == link1.yMin || bi.y == link1.yMax) && (bi.z == link1.zMin || bi.z == link1.zMax) && link1.w == bi.w;
             }
             return false;
         };

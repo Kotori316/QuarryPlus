@@ -2,11 +2,11 @@
  * Copyright (C) 2012,2013 yogpstop This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
@@ -116,7 +116,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
         } else {
             b = getWorld().getBlockState(target);
         }
-        final float h = b.getBlockHardness(getWorld(), target);
+        final float blockHardness = b.getBlockHardness(getWorld(), target);
         switch (this.now) {
             case BREAKBLOCK:
             case MOVEHEAD:
@@ -125,7 +125,8 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                     PacketHandler.sendToAround(ModeMessage.create(this), getWorld(), getPos());
                     return true;
                 }
-                return !(h < 0) && !b.getBlock().isAir(b, getWorld(), target) && (this.pump != null || !TilePump.isLiquid(b, false, getWorld(), target));
+                return !(blockHardness < 0) && !b.getBlock().isAir(b, getWorld(), target) && (this.pump != null ||
+                        !TilePump.isLiquid(b, false, getWorld(), target));
             case NOTNEEDBREAK:
                 if (this.targetY < this.yMin) {
                     if (this.filler) {
@@ -142,7 +143,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                     this.changeZ = false;
                     return S_checkTarget();
                 }
-                if (h < 0 || b.getBlock().isAir(b, getWorld(), target))
+                if (blockHardness < 0 || b.getBlock().isAir(b, getWorld(), target))
                     return false;
                 if (this.pump == null && TilePump.isLiquid(b, false, getWorld(), target))
                     return false;
@@ -154,8 +155,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                         flag++;
                     if (this.targetZ == this.zMin || this.targetZ == this.zMax)
                         flag++;
-                    if (flag > 1)
-                        return false;
+                    return flag <= 1;
                 }
                 return true;
             case MAKEFRAME:
@@ -306,16 +306,16 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
 
     private void S_checkDropItem() {
         final AxisAlignedBB axis = new AxisAlignedBB(this.targetX - 4, this.targetY - 4, this.targetZ - 4,
-                this.targetX + 6, this.targetY + 6, this.targetZ + 6);
+                this.targetX + 5, this.targetY + 3, this.targetZ + 5);
         final List<EntityItem> result = getWorld().getEntitiesWithinAABB(EntityItem.class, axis);
         for (EntityItem entityItem : result) {
-            if (entityItem.isDead)
-                continue;
-            final ItemStack drop = entityItem.getEntityItem();
-            if (VersionUtil.isEmpty(drop))
-                continue;
-            QuarryPlus.proxy.removeEntity(entityItem);
-            this.cacheItems.add(drop);
+            if (!entityItem.isDead) {
+                ItemStack drop = entityItem.getEntityItem();
+                if (VersionUtil.nonEmpty(drop)) {
+                    QuarryPlus.proxy.removeEntity(entityItem);
+                    this.cacheItems.add(drop);
+                }
+            }
         }
     }
 
@@ -325,7 +325,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
 
         EnumFacing facing = getWorld().getBlockState(getPos()).getValue(BlockQuarry.FACING).getOpposite();
         if (bccoreLoaded) {
-            Optional<ITileAreaProvider> marker = Stream.of(pos.offset(facing), pos.offset(facing.rotateYCCW()), pos.offset(facing.rotateY()))
+            Optional<ITileAreaProvider> marker = Stream.of(getNeighbors(facing))
                     .map(getWorld()::getTileEntity).filter(nonNull)
                     .map(t -> t.getCapability(TilesAPI.CAP_TILE_AREA_PROVIDER, null)).filter(nonNull).findFirst();
             if (marker.isPresent()) {
@@ -359,7 +359,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                 setDefaultRange(getPos(), facing);
             }
         } else {
-            Optional<TileMarker> marker = Stream.of(pos.offset(facing), pos.offset(facing.rotateYCCW()), pos.offset(facing.rotateY()))
+            Optional<TileMarker> marker = Stream.of(getNeighbors(facing))
                     .map(getWorld()::getTileEntity)
                     .filter(t -> t instanceof TileMarker)
                     .map(t -> (TileMarker) t).findFirst();
@@ -632,7 +632,8 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {
         if (this.yMax == Integer.MIN_VALUE)
-            return new AxisAlignedBB(getPos().getX(), Double.NEGATIVE_INFINITY, getPos().getZ(), getPos().getX() + 1, getPos().getY() + 1, getPos().getZ() + 1);
+            return new AxisAlignedBB(getPos().getX(), Double.NEGATIVE_INFINITY, getPos().getZ(),
+                    getPos().getX() + 1, getPos().getY() + 1, getPos().getZ() + 1);
         final double xn = this.xMin + 0.46875;
         final double xx = this.xMax + 0.53125;
         final double yx = this.yMax + 0.75;

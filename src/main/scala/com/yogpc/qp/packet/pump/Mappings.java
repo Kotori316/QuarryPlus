@@ -1,6 +1,7 @@
 package com.yogpc.qp.packet.pump;
 
 import java.io.IOException;
+import java.util.EnumMap;
 import java.util.LinkedList;
 
 import com.yogpc.qp.QuarryPlus;
@@ -24,42 +25,34 @@ public class Mappings {
     public static class All implements IMessage {
         BlockPos pos;
         EnumFacing facing;
-        @SuppressWarnings("unchecked")
-        LinkedList<String>[] lists = new LinkedList[6];
+        EnumMap<EnumFacing, LinkedList<String>> map = new EnumMap<>(EnumFacing.class);
 
-        @SuppressWarnings("unchecked")
         public static All create(TilePump pump, EnumFacing facing) {
-            All mappings = new All();
-            mappings.pos = pump.getPos();
-            mappings.facing = facing;
-            mappings.lists[0] = pump.mapping.get(EnumFacing.DOWN);
-            mappings.lists[1] = pump.mapping.get(EnumFacing.UP);
-            mappings.lists[2] = pump.mapping.get(EnumFacing.NORTH);
-            mappings.lists[3] = pump.mapping.get(EnumFacing.SOUTH);
-            mappings.lists[4] = pump.mapping.get(EnumFacing.WEST);
-            mappings.lists[5] = pump.mapping.get(EnumFacing.EAST);
-
-            return mappings;
+            All message = new All();
+            message.pos = pump.getPos();
+            message.facing = facing;
+            message.map = new EnumMap<>(pump.mapping);
+            return message;
         }
 
         @Override
         public void fromBytes(PacketBuffer buffer) throws IOException {
             pos = buffer.readBlockPos();
             facing = buffer.readEnumValue(EnumFacing.class);
-            for (int i = 0; i < lists.length; i++) {
+            for (EnumFacing VALUE : EnumFacing.VALUES) {
                 int l = buffer.readInt();
                 LinkedList<String> strings = new LinkedList<>();
                 for (int j = 0; j < l; j++) {
                     strings.add(buffer.readString(Short.MAX_VALUE));
                 }
-                lists[i] = strings;
+                map.put(VALUE, strings);
             }
         }
 
         @Override
         public void toBytes(PacketBuffer buffer) {
             buffer.writeBlockPos(pos).writeEnumValue(facing);
-            for (LinkedList<String> strings : lists) {
+            for (LinkedList<String> strings : map.values()) {
                 buffer.writeInt(strings.size());
                 strings.forEach(buffer::writeString);
             }
@@ -72,9 +65,7 @@ public class Mappings {
             if (pumpC != null) {
                 Minecraft.getMinecraft().addScheduledTask(() -> {
                     pumpC.mapping.clear();
-                    for (EnumFacing facing : EnumFacing.VALUES) {
-                        pumpC.mapping.put(facing, lists[facing.ordinal()]);
-                    }
+                    pumpC.mapping.putAll(map);
                 });
             }
             return null;
@@ -153,13 +144,13 @@ public class Mappings {
                     }
                     break;
                 case Down:
-                    if (i > 0) {
+                    if (i >= 0 && i != list.size() - 1) {
                         list.remove(i);
                         list.add(i + 1, fluidName);
                     }
                     break;
                 case Bottom:
-                    if (i > 0) {
+                    if (i >= 0 && i != list.size() - 1) {
                         list.remove(i);
                         list.addLast(fluidName);
                     }
@@ -208,7 +199,6 @@ public class Mappings {
         }
 
         @Override
-        @SideOnly(Side.CLIENT)
         public IMessage onRecieve(IMessage message, MessageContext ctx) {
             World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
             MinecraftServer server = world.getMinecraftServer();

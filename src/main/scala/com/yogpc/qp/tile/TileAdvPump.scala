@@ -1,6 +1,6 @@
 package com.yogpc.qp.tile
 
-import java.lang.{Boolean => JBool, Byte => JByte, Integer => JInt}
+import java.lang.{Boolean => JBool}
 
 import com.yogpc.qp.block.ADismCBlock
 import com.yogpc.qp.compat.{INBTReadable, INBTWritable}
@@ -229,7 +229,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
         if (placeFrame)
             EnumFacing.HORIZONTALS.map(pos.offset).filter(!inRange.contains(_)).foreach(offset => {
                 if (TilePump.isLiquid(getWorld.getBlockState(offset), false, getWorld, offset)) {
-                    getWorld.setBlockState(offset, QuarryPlusI.blockFrame.getDamiingState)
+                    getWorld.setBlockState(offset, QuarryPlusI.blockFrame.getDammingState)
                 }
             })
     }
@@ -250,7 +250,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
     /**
       * @return Map (Enchantment id, level)
       */
-    override def getEnchantments = ench.getMap.collect { case (a, b) if b > 0 => (JInt.valueOf(a), JByte.valueOf(b)) }.asJava
+    override def getEnchantments = ench.getMap.collect { case (a, b) if b > 0 => (Int.box(a), Byte.box(b)) }.asJava
 
     /**
       * @param id    Enchantment id
@@ -503,7 +503,7 @@ object TileAdvPump {
             case 0 => 32
             case 1 => 64
             case 2 => 96
-            case 3 => 128
+            case _ => 128
         }
 
         val distanceSq = distance * distance

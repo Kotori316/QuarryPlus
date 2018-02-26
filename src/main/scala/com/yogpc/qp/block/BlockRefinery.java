@@ -199,4 +199,9 @@ public class BlockRefinery extends ADismCBlock {
         if (bcLoaded())
             super.getSubBlocks(itemIn, tab, list);
     }
+
+    @Override
+    protected boolean canRotate() {
+        return true;
+    }
 }

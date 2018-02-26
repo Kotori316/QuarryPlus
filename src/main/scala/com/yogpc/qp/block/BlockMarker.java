@@ -200,7 +200,7 @@ public class BlockMarker extends Block implements ITileEntityProvider {//BlockCo
                     if (l == null)
                         return true;
                     playerIn.sendMessage(new TextComponentTranslation("chat.markerarea"));
-                    String sb = "x:" + l.xn + " y:" + l.yn + " z:" + l.zn + " - x:" + l.xx + " y:" + l.yx + " z:" + l.zx;
+                    String sb = "x:" + l.xMin + " y:" + l.yMin + " z:" + l.zMin + " - x:" + l.xMax + " y:" + l.yMax + " z:" + l.zMax;
                     playerIn.sendMessage(new TextComponentString(sb));// NP coord info
                     return true;
                 } else {
