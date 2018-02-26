@@ -12,6 +12,7 @@ import com.yogpc.qp.compat.BuildcraftHelper;
 import com.yogpc.qp.compat.EnchantmentHelper;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.item.ItemBlockAdvPump;
+import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TileAdvPump;
 import com.yogpc.qp.tile.TilePump;
 import javax.annotation.Nullable;
@@ -48,10 +49,7 @@ public class BlockAdvPump extends ADismCBlock {
         if (InvUtils.isDebugItem(playerIn, hand)) return true;
         if (BuildcraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
             if (!worldIn.isRemote) {
-                TileAdvPump pump = (TileAdvPump) worldIn.getTileEntity(pos);
-                if (pump != null) {
-                    pump.G_reinit();
-                }
+                Optional.ofNullable((TileAdvPump) worldIn.getTileEntity(pos)).ifPresent(TileAdvPump::G_reinit);
             }
             return true;
         } else if (Config.content().debug() && stack != null && stack.getItem() == Items.STICK) {
@@ -59,8 +57,8 @@ public class BlockAdvPump extends ADismCBlock {
             return true;
         } else if (stack != null && stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == 0) {
             if (!worldIn.isRemote)
-                Optional.ofNullable((TileAdvPump) worldIn.getTileEntity(pos))
-                        .map(EnchantmentHelper::getEnchantmentsChat).ifPresent(l -> l.forEach(playerIn::addChatComponentMessage));
+                Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t ->
+                        EnchantmentHelper.getEnchantmentsChat(t).forEach(playerIn::addChatComponentMessage));
             return true;
         } else if (!playerIn.isSneaking()) {
             playerIn.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdAdvPump(), worldIn, pos.getX(), pos.getY(), pos.getZ());
@@ -130,4 +128,8 @@ public class BlockAdvPump extends ADismCBlock {
         return getDefaultState().withProperty(ACTING, (meta & 8) == 8);
     }
 
+    @Override
+    protected boolean canRotate() {
+        return false;
+    }
 }

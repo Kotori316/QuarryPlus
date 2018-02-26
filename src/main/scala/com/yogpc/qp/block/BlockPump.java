@@ -138,4 +138,9 @@ public class BlockPump extends ADismCBlock {
     public IBlockState getStateFromMeta(int meta) {
         return getDefaultState().withProperty(ACTING, (meta & 1) == 1).withProperty(CONNECTED, (meta & 2) == 2);
     }
+
+    @Override
+    protected boolean canRotate() {
+        return false;
+    }
 }

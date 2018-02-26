@@ -32,7 +32,8 @@ object RenderDistiller extends FastTESR[TileRefinery] {
         val lightValue = Box.LightValue(skyLight, blockLight)
         val facing = te.getWorld.getBlockState(pos).getValue(ADismCBlock.FACING)
 
-        renderFluid(buffer, lightValue, 1, te.horizontalsTank, 0.5 + facing.offsetX(0.25), 0, 0.5 + facing.offsetZ(0.25), 0.5, 0.5)
+        renderFluid(buffer, lightValue, 1, te.horizontalsTank, 0.5 + facing.offsetX(0.25), 0, 0.5 + facing.offsetZ(0.25),
+            x = 0.5, z = 0.5)
         renderFluid(buffer, lightValue, 0.5, te.upTank, 0.5 - facing.offsetX(0.25), 1, 0.5 - facing.offsetZ(0.25),
             x = 0.5 + facing.offsetZAbs(0.5), z = 0.5 + facing.offsetXAbs(0.5))
         renderFluid(buffer, lightValue, 0.5, te.downTank, 0.5 - facing.offsetX(0.25), 0, 0.5 - facing.offsetZ(0.25),

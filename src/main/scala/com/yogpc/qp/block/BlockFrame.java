@@ -176,7 +176,7 @@ public class BlockFrame extends BlockEmptyDrops {
         return super.getStateFromMeta(meta).withProperty(DAMMING, meta == 1);
     }
 
-    public IBlockState getDamiingState() {
+    public IBlockState getDammingState() {
         return getDefaultState().withProperty(DAMMING, true);
     }
 

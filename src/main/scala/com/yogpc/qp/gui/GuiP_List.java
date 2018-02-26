@@ -41,9 +41,9 @@ public class GuiP_List extends GuiScreenA implements GuiYesNoCallback {
     private GuiButton delete, top, up, down, bottom;
     private final TilePump tile;
     private boolean inited;
-    EnumFacing dir;
+    final EnumFacing dir;
 
-    public GuiP_List(final byte id, final TilePump tq) {
+    public GuiP_List(final int id, final TilePump tq) {
         super(null);
         this.dir = EnumFacing.getFront(id);
         this.tile = tq;
@@ -79,7 +79,7 @@ public class GuiP_List extends GuiScreenA implements GuiYesNoCallback {
         this.buttonList.add(up);
         this.buttonList.add(down);
         this.buttonList.add(bottom);
-        this.oreslot = new GuiP_SlotList(this.mc, this.width * 3 / 5, this.height, 30, this.height - 30, this, this.tile.mapping.get(dir));
+        this.oreslot = new GuiP_SlotList(this.mc, this.width * 3 / 5, this.height, 30, this.height - 30, this, tile, dir);
         if (delete == null) {
             QuarryPlus.LOGGER.error("Why null?@init", new Throwable());
         }

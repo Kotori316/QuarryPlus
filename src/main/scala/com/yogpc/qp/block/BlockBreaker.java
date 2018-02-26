@@ -196,7 +196,7 @@ public class BlockBreaker extends ADismCBlock {
         }
         if (stack != null && stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == 0) {
             if (!worldIn.isRemote) {
-                Optional.ofNullable((TileBreaker) worldIn.getTileEntity(pos)).ifPresent(t ->
+                Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t ->
                         EnchantmentHelper.getEnchantmentsChat(t).forEach(playerIn::addChatComponentMessage));
             }
             return true;
@@ -215,5 +215,10 @@ public class BlockBreaker extends ADismCBlock {
     @SuppressWarnings("deprecation")
     public IBlockState getStateFromMeta(int meta) {
         return getDefaultState().withProperty(FACING, EnumFacing.getFront(meta & 7)).withProperty(POWERED, (meta & 8) == 8);
+    }
+
+    @Override
+    protected boolean canRotate() {
+        return true;
     }
 }

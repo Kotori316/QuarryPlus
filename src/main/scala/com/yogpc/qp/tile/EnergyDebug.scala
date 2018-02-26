@@ -1,11 +1,10 @@
 package com.yogpc.qp.tile
 
 import com.yogpc.qp.{Config, QuarryPlus}
-import net.minecraft.tileentity.TileEntity
 
 import scala.collection.mutable.ListBuffer
 
-class EnergyDebug(tile: TileEntity) {
+class EnergyDebug(tile: APowerTile) {
 
     private[this] var count = 0
     private[this] var lastTick = 0l
@@ -28,7 +27,7 @@ class EnergyDebug(tile: TileEntity) {
 
             if (count >= 100) {
                 count = 0
-                if (Config.content.debug) {
+                if (Config.content.debug && tile.isOutputEnergyInfo) {
                     val allGot = getBuilder
                     val allUsed = useBuilder
                     val gotSum = allGot.sum

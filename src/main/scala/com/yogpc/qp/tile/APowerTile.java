@@ -24,6 +24,7 @@ import javax.annotation.Nullable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -48,9 +49,11 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
     /*package-private*/ double all, maxGot, max, got;
     private boolean ic2ok = false;
     public boolean bcLoaded;
+    public boolean ic2Loaded;
     private Object helper;//buildcraft capability helper
     private EnergyDebug debug = new EnergyDebug(this);
-    public boolean ic2Loaded;
+    protected boolean outputEnergyInfo = true;
+    private final boolean isDebugSender = this instanceof IDebugSender;
 
     public APowerTile() {
         bcLoaded = ModAPIManager.INSTANCE.hasAPI(QuarryPlus.Optionals.BuildCraft_core);
@@ -107,6 +110,14 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
         }
     }
 
+    protected BlockPos[] getNeighbors(EnumFacing facing) {
+        return new BlockPos[]{pos.offset(facing), pos.offset(facing.rotateYCCW()), pos.offset(facing.rotateY())};
+    }
+
+    public boolean isOutputEnergyInfo() {
+        return outputEnergyInfo;
+    }
+
     protected abstract boolean isWorking();
 
     @Optional.Method(modid = QuarryPlus.Optionals.IC2_modID)
@@ -124,6 +135,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
         super.readFromNBT(nbttc);
         setStoredEnergy(nbttc.getDouble("storedEnergy"));
         configure(nbttc.getDouble("MAX_receive"), nbttc.getDouble("MAX_stored"));
+        outputEnergyInfo = nbttc.getBoolean("outputEnergyInfo");
     }
 
     @Override
@@ -131,6 +143,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
         nbttc.setDouble("storedEnergy", this.all);
         nbttc.setDouble("MAX_stored", this.max);
         nbttc.setDouble("MAX_receive", this.maxGot);
+        nbttc.setBoolean("outputEnergyInfo", outputEnergyInfo);
         return super.writeToNBT(nbttc);
     }
 
@@ -367,7 +380,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
         left.add(getClass().getName());
         left.add(ItemQuarryDebug.tileposToString(this).getText());
         left.add(ItemQuarryDebug.energyToString(this).getText());
-        if (IDebugSender.class.isInstance(this)) {
+        if (isDebugSender) {
             IDebugSender sender = (IDebugSender) this;
             sender.getDebugmessages().stream().map(ITextComponent::getUnformattedComponentText).forEach(left::add);
         }

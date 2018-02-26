@@ -13,11 +13,11 @@
 
 package com.yogpc.qp.gui;
 
-import java.util.List;
-
+import com.yogpc.qp.tile.TilePump;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiSlot;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -26,17 +26,19 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class GuiP_SlotList extends GuiSlot {
     private final GuiScreen parent;
     public int currentore = 0;
-    protected List<String> target;
+    private final TilePump pump;
+    private final EnumFacing facing;
 
-    public GuiP_SlotList(Minecraft mcIn, int width, int height, int topIn, int bottomIn, final GuiScreen parents, final List<String> ali) {
+    public GuiP_SlotList(Minecraft mcIn, int width, int height, int topIn, int bottomIn, final GuiScreen parents, TilePump pump, EnumFacing facing) {
         super(mcIn, width, height, topIn, bottomIn, 18);
         this.parent = parents;
-        this.target = ali;
+        this.pump = pump;
+        this.facing = facing;
     }
 
     @Override
     protected int getSize() {
-        return this.target.size();
+        return this.pump.mapping.get(facing).size();
     }
 
     @Override
@@ -61,7 +63,7 @@ public class GuiP_SlotList extends GuiSlot {
 
     @Override
     protected void drawSlot(int entryID, int insideLeft, int yPos, int insideSlotHeight, int mouseXIn, int mouseYIn) {
-        String name = this.target.get(entryID);
+        String name = this.pump.mapping.get(facing).get(entryID);
         if (FluidRegistry.isFluidRegistered(name))
             name = FluidRegistry.getFluid(name).getLocalizedName(FluidRegistry.getFluidStack(name, 0));
         Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(name,

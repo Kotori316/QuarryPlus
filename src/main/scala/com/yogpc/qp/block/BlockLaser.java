@@ -200,4 +200,9 @@ public class BlockLaser extends ADismCBlock {
     public void getSubBlocks(Item itemIn, CreativeTabs tab, List<ItemStack> list) {
 //        super.getSubBlocks(itemIn, tab, list);
     }
+
+    @Override
+    protected boolean canRotate() {
+        return false;
+    }
 }

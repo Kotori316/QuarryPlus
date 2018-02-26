@@ -33,7 +33,7 @@ public class ProxyClient extends ProxyCommon {
         if (!worldIn.isRemote) {
             pump.S_OpenGUI(facing, playerIn);
         } else {
-            Minecraft.getMinecraft().displayGuiScreen(new GuiP_List((byte) facing.ordinal(), pump));
+            Minecraft.getMinecraft().displayGuiScreen(new GuiP_List(facing.ordinal(), pump));
         }
     }
 

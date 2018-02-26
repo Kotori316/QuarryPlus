@@ -1,6 +1,6 @@
 package com.yogpc.qp.tile
 
-import java.lang.{Boolean => JBool, Byte => JByte, Integer => JInt}
+import java.lang.{Boolean => JBool}
 import javax.annotation.Nonnull
 
 import com.yogpc.qp.block.ADismCBlock
@@ -170,7 +170,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 
                             def checkandsetFrame(world: World, thatPos: BlockPos): Unit = {
                                 if (TilePump.isLiquid(world.getBlockState(thatPos), false, world, thatPos)) {
-                                    world.setBlockState(thatPos, QuarryPlusI.blockFrame.getDamiingState)
+                                    world.setBlockState(thatPos, QuarryPlusI.blockFrame.getDammingState)
                                 }
                             }
 
@@ -215,7 +215,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                         })
                         if (shear.nonEmpty) {
                             val itemShear = new ItemStack(net.minecraft.init.Items.SHEARS)
-                            EnchantmentHelper.setEnchantments(ench.getMap.collect { case (a, b) if b > 0 => (Enchantment.getEnchantmentByID(a), JInt.valueOf(b)) }.asJava, itemShear)
+                            EnchantmentHelper.setEnchantments(ench.getMap.collect { case (a, b) if b > 0 => (Enchantment.getEnchantmentByID(a), Int.box(b)) }.asJava, itemShear)
                             shear.foreach(p => {
                                 val state = getWorld.getBlockState(p)
                                 val block = state.getBlock.asInstanceOf[Block with IShearable]
@@ -300,8 +300,11 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
             } else if (mode is TileAdvQuarry.FILLBLOCKS) {
                 val handler = InvUtils.findItemHander(getWorld, getPos.up, EnumFacing.DOWN).orNull
                 if (handler != null) {
-                    val list = Range(0, handler.getSlots).find(i => VersionUtil.nonEmpty(handler.getStackInSlot(i))).map(handler.extractItem(_, 64, false)).toList
-                    list.filter(_.getItem.isInstanceOf[ItemBlock]).flatMap(i => Range(0, i.getCount)).foreach(_ => {
+                    val list = Range(0, handler.getSlots).find(i => {
+                        val stack = handler.getStackInSlot(i)
+                        VersionUtil.nonEmpty(stack) && stack.getItem.isInstanceOf[ItemBlock]
+                    }).map(handler.extractItem(_, 64, false)).toList
+                    list.flatMap(i => Range(0, i.getCount)).foreach(_ => {
                         if (mode is TileAdvQuarry.FILLBLOCKS) {
                             val state = InvUtils.getStateFromItem(list.head.getItem.asInstanceOf[ItemBlock], list.head.getItemDamage)
                             getWorld.setBlockState(new BlockPos(target.getX, if (Config.content.removeBedrock) 1 else 5, target.getZ), state)
@@ -395,7 +398,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
     /**
       * @return Map (Enchantment id, level)
       */
-    override def getEnchantments = ench.getMap.collect { case (a, b) if b > 0 => (JInt.valueOf(a), JByte.valueOf(b)) }.asJava
+    override def getEnchantments = ench.getMap.collect { case (a, b) if b > 0 => (Int.box(a), Byte.box(b)) }.asJava
 
     /**
       * @param id    Enchantment id
@@ -500,7 +503,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 
     def makeRangeBox() = {
         val facing = getWorld.getBlockState(getPos).getValue(ADismCBlock.FACING).getOpposite
-        val link = List(getPos.offset(facing), getPos.offset(facing.rotateYCCW), getPos.offset(facing.rotateY)).map(getWorld.getTileEntity(_))
+        val link = getNeighbors(facing).map(getWorld.getTileEntity(_))
           .collectFirst { case m: TileMarker if m.link != null =>
               val poses = (m.min().add(+1, 0, +1), m.max().add(-1, 0, -1))
               m.removeFromWorldWithItem().asScala.foreach(cacheItems.add)
@@ -528,7 +531,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
     }
 
     def startFillMode(): Unit = {
-        if ((mode is TileAdvQuarry.NONE) && digRange.defined && preparedFiller()) {
+        if ((mode is TileAdvQuarry.NONE) && digRange.defined && preparedFiller) {
             mode set TileAdvQuarry.FILLBLOCKS
             target = digRange.min
         }
@@ -542,11 +545,17 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
         }
     }
 
-    def preparedFiller(): Boolean = {
-        val need = (digRange.maxX - digRange.minX) * (digRange.maxZ - digRange.minZ)
-        val stacks = InvUtils.findItemHander(getWorld, getPos.up, EnumFacing.DOWN).toList
-          .flatMap(handler => Range(0, handler.getSlots).map(handler.getStackInSlot))
-        stacks.nonEmpty && stacks.head.getItem.isInstanceOf[ItemBlock] && stacks.forall(_.isItemEqual(stacks.head)) && stacks.map(_.getCount).sum >= need
+    def preparedFiller: Boolean = {
+        val y = if (Config.content.removeBedrock) 1 else 5
+        if (BlockPos.getAllInBoxMutable(new BlockPos(digRange.minX, y, digRange.minZ), new BlockPos(digRange.maxX, y, digRange.maxZ)).iterator().asScala.forall(getWorld.isAirBlock)) {
+            val need = (digRange.maxX - digRange.minX + 1) * (digRange.maxZ - digRange.minZ + 1)
+            val stacks = InvUtils.findItemHander(getWorld, getPos.up, EnumFacing.DOWN).toList
+              .flatMap(handler => Range(0, handler.getSlots).map(handler.getStackInSlot))
+            val blocks = stacks.filter(s => VersionUtil.nonEmpty(s) && s.getItem.isInstanceOf[ItemBlock])
+            blocks.nonEmpty &&
+              stacks.forall(stack => VersionUtil.isEmpty(stack) || !stack.getItem.isInstanceOf[ItemBlock] || stack.isItemEqual(blocks.head)) &&
+              blocks.map(_.getCount).sum >= need
+        } else false
     }
 
     private[TileAdvQuarry] class ItemHandler extends IItemHandlerModifiable {
@@ -654,7 +663,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                     case 3 => BREAKBLOCK
                     case 4 => CHECKLIQUID
                     case 5 => FILLBLOCKS
-                    case _ => throw new IllegalStateException("No available mode")
+                    case _ => throw new IllegalStateException("Invalid mode")
                 }
             }
             this
@@ -683,7 +692,11 @@ object TileAdvQuarry {
     private final val NBT_ITEMELEMENTS = "nbt_itemelements"
 
     val defaultEnch = QEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false)
-    val defaultRange: DigRange = NoDefinedRange
+    val defaultRange: DigRange = new DigRange(BlockPos.ORIGIN, BlockPos.ORIGIN) {
+        override val defined: Boolean = false
+        override val min: BlockPos = BlockPos.ORIGIN
+        override val toString: String = "Dig Range Not Defined"
+    }
 
     private[TileAdvQuarry] case class QEnch(efficiency: Byte, unbreaking: Byte, fortune: Byte, silktouch: Boolean) extends INBTWritable {
 
@@ -764,17 +777,11 @@ object TileAdvQuarry {
                     DigRange(t.getInteger("minX"), t.getInteger("minY"), t.getInteger("minZ"),
                         t.getInteger("maxX"), t.getInteger("maxY"), t.getInteger("maxZ"))
                 } else {
-                    NoDefinedRange
+                    defaultRange
                 }
             } else
-                NoDefinedRange
+                defaultRange
         }
-    }
-
-    private object NoDefinedRange extends DigRange(BlockPos.ORIGIN, BlockPos.ORIGIN) {
-        override val defined: Boolean = false
-        override val min: BlockPos = BlockPos.ORIGIN
-        override val toString: String = "Dig Range Not Defined"
     }
 
     class ItemList extends INBTWritable with INBTReadable[ItemList] {
@@ -796,9 +803,7 @@ object TileAdvQuarry {
             }
         }
 
-        def add(stack: ItemStack): Unit = {
-            add(ItemDamage(stack), stack.getCount)
-        }
+        def add(stack: ItemStack): Unit = add(ItemDamage(stack), stack.getCount)
 
         def decrease(index: Int, count: Int): ItemStack = {
             val t = list(index)
@@ -838,7 +843,11 @@ object TileAdvQuarry {
         override def toString: String = itemDamage.toString + " x" + count
     }
 
-    private[TileAdvQuarry] case class BlockWrapper(state: IBlockState, ignoreProperty: Boolean = false, ignoreMeta: Boolean = false) {
+    private[TileAdvQuarry] case class BlockWrapper(state: IBlockState, ignoreProperty: Boolean = false, ignoreMeta: Boolean = false)
+      extends java.util.function.Predicate[IBlockState] with (IBlockState => Boolean) {
+
+        override def apply(v1: IBlockState): Boolean = contain(v1)
+
         def contain(that: IBlockState): Boolean = {
             if (ignoreMeta) {
                 state.getBlock == that.getBlock
@@ -849,21 +858,23 @@ object TileAdvQuarry {
                 state == that
             }
         }
+
+        override def test(t: IBlockState): Boolean = contain(t)
     }
 
-    sealed class Modes(val index: Int)
+    sealed class Modes(val index: Int, override val toString: String)
 
-    case object NONE extends Modes(0)
+    val NONE = new Modes(0, "NONE")
 
-    case object NOTNEEDBREAK extends Modes(1)
+    val NOTNEEDBREAK = new Modes(1, "NOTNEEDBREAK")
 
-    case object MAKEFRAME extends Modes(2)
+    val MAKEFRAME = new Modes(2, "MAKEFRAME")
 
-    case object BREAKBLOCK extends Modes(3)
+    val BREAKBLOCK = new Modes(3, "BREAKBLOCK")
 
-    case object CHECKLIQUID extends Modes(4)
+    val CHECKLIQUID = new Modes(4, "CHECKLIQUID")
 
-    case object FILLBLOCKS extends Modes(5)
+    val FILLBLOCKS = new Modes(5, "FILLBLOCKS")
 
     def getFramePoses(digRange: DigRange): List[BlockPos] = {
         val builder = List.newBuilder[BlockPos]
