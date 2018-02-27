@@ -19,7 +19,6 @@ import java.util.Optional;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
-import com.yogpc.qp.compat.EnchantmentHelper;
 import com.yogpc.qp.item.ItemBlockEnchantable;
 import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TileLaser;
@@ -168,7 +167,7 @@ public class BlockLaser extends ADismCBlock {
             final Item it = getItemDropped(state, worldIn.rand, 0);
             for (int i = 0; i < count; i++) {
                 final ItemStack is = new ItemStack(it, 1, damageDropped(state));
-                EnchantmentHelper.enchantmentToIS(tile, is);
+                IEnchantableTile.enchantmentToIS(tile, is);
                 this.drop.add(is);
             }
         });
@@ -183,7 +182,7 @@ public class BlockLaser extends ADismCBlock {
     @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
-        Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t -> EnchantmentHelper.init(t, stack.getEnchantmentTagList()));
+        Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t -> IEnchantableTile.init(t, stack.getEnchantmentTagList()));
     }
 
     @Override
@@ -192,8 +191,7 @@ public class BlockLaser extends ADismCBlock {
         ItemStack stack = playerIn.getHeldItem(hand);
         if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == 0) {
             if (!worldIn.isRemote) {
-                Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t ->
-                        EnchantmentHelper.getEnchantmentsChat(t).forEach(playerIn::sendMessage));
+                Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t -> t.sendEnchantMassage(playerIn));
             }
             return true;
         }

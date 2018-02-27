@@ -19,7 +19,6 @@ import java.util.Optional;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.BuildcraftHelper;
-import com.yogpc.qp.compat.EnchantmentHelper;
 import com.yogpc.qp.item.ItemBlockPump;
 import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TilePump;
@@ -72,7 +71,7 @@ public class BlockPump extends ADismCBlock {
             final Item it = getItemDropped(state, worldIn.rand, 0);
             for (int i = 0; i < count; i++) {
                 final ItemStack is = new ItemStack(it, 1, damageDropped(state));
-                EnchantmentHelper.enchantmentToIS(tile, is);
+                IEnchantableTile.enchantmentToIS(tile, is);
                 this.drop.add(is);
             }
         });
@@ -89,7 +88,7 @@ public class BlockPump extends ADismCBlock {
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
         TileEntity entity = worldIn.getTileEntity(pos);
         if (entity != null) {
-            EnchantmentHelper.init((IEnchantableTile) entity, stack.getEnchantmentTagList());
+            IEnchantableTile.init((IEnchantableTile) entity, stack.getEnchantmentTagList());
         }
     }
 
@@ -112,7 +111,7 @@ public class BlockPump extends ADismCBlock {
             if (!worldIn.isRemote && stack.getItemDamage() == 0) {
                 TilePump pump = (TilePump) worldIn.getTileEntity(pos);
                 if (pump != null) {
-                    EnchantmentHelper.getEnchantmentsChat(pump).forEach(playerIn::sendMessage);
+                    IEnchantableTile.getEnchantmentsChat(pump).forEach(playerIn::sendMessage);
                     pump.C_getNames().forEach(playerIn::sendMessage);
                 }
             } else if (stack.getItemDamage() == 2) {

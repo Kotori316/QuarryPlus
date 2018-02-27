@@ -8,7 +8,6 @@ import java.util.function.Function;
 import cofh.api.block.IDismantleable;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
-import com.yogpc.qp.compat.EnchantmentHelper;
 import com.yogpc.qp.tile.IEnchantableTile;
 import ic2.api.tile.IWrenchable;
 import net.minecraft.block.Block;
@@ -108,7 +107,7 @@ public abstract class ADismCBlock extends QPBlock implements IDismantleable, IWr
         if (IEnchantableTile.class.isInstance(te)) {
             IEnchantableTile tile = (IEnchantableTile) te;
             ItemStack stack = new ItemStack(block);
-            EnchantmentHelper.enchantmentToIS(tile, stack);
+            IEnchantableTile.enchantmentToIS(tile, stack);
             if (world.getBlockState(pos) == state) {
                 world.setBlockToAir(pos);
             }

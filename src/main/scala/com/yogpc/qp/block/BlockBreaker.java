@@ -24,7 +24,6 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.ReflectionHelper;
 import com.yogpc.qp.compat.BuildcraftHelper;
-import com.yogpc.qp.compat.EnchantmentHelper;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.item.ItemBlockBreaker;
 import com.yogpc.qp.tile.IEnchantableTile;
@@ -123,7 +122,7 @@ public class BlockBreaker extends ADismCBlock {
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         if (!worldIn.isRemote) {
 //            worldIn.setBlockState(pos, state.withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer)), 2);
-            Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t -> EnchantmentHelper.init(t, stack.getEnchantmentTagList()));
+            Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t -> IEnchantableTile.init(t, stack.getEnchantmentTagList()));
         }
     }
 
@@ -172,7 +171,7 @@ public class BlockBreaker extends ADismCBlock {
             final Item id1 = getItemDropped(state, worldIn.rand, 0);
             for (int i = 0; i < count; i++) {
                 ItemStack is = new ItemStack(id1, 1, damageDropped(state));
-                EnchantmentHelper.enchantmentToIS(tile, is);
+                IEnchantableTile.enchantmentToIS(tile, is);
                 this.drops.add(is);
             }
         });
@@ -201,7 +200,7 @@ public class BlockBreaker extends ADismCBlock {
         if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == 0) {
             if (!worldIn.isRemote) {
                 Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t ->
-                        EnchantmentHelper.getEnchantmentsChat(t).forEach(playerIn::sendMessage));
+                        IEnchantableTile.getEnchantmentsChat(t).forEach(playerIn::sendMessage));
             }
             return true;
         }

@@ -20,9 +20,9 @@ import java.util.function.Consumer;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.BuildcraftHelper;
-import com.yogpc.qp.compat.EnchantmentHelper;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.item.ItemBlockEnchantable;
+import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TileQuarry;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -66,7 +66,7 @@ public class BlockQuarry extends ADismCBlock {
                 final Item it = getItemDropped(state, worldIn.rand, 0);
                 for (int i = 0; i < count; i++) {
                     final ItemStack is = new ItemStack(it, 1, damageDropped(state));
-                    EnchantmentHelper.enchantmentToIS(tile, is);
+                    IEnchantableTile.enchantmentToIS(tile, is);
                     this.drops.add(is);
                 }
             }
@@ -93,7 +93,7 @@ public class BlockQuarry extends ADismCBlock {
             if (t != null) {
                 TileQuarry quarry = (TileQuarry) t;
                 if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == 0) {
-                    EnchantmentHelper.getEnchantmentsChat(quarry).forEach(playerIn::sendMessage);
+                    IEnchantableTile.getEnchantmentsChat(quarry).forEach(playerIn::sendMessage);
                     playerIn.sendMessage(new TextComponentTranslation("chat.currentmode",
                             new TextComponentTranslation(quarry.filler ? "chat.fillermode" : "chat.quarrymode")));
                 } else if (quarry.G_getNow() == TileQuarry.Mode.NOTNEEDBREAK) {
@@ -112,7 +112,7 @@ public class BlockQuarry extends ADismCBlock {
         if (!worldIn.isRemote) {
             EnumFacing facing = get2dOrientation(placer.posX, placer.posZ, pos.getX(), pos.getZ()).getOpposite();
             worldIn.setBlockState(pos, state.withProperty(FACING, facing), 2);
-            Consumer<TileQuarry> consumer = quarry -> EnchantmentHelper.init(quarry, stack.getEnchantmentTagList());
+            Consumer<TileQuarry> consumer = quarry -> IEnchantableTile.init(quarry, stack.getEnchantmentTagList());
             Optional.ofNullable((TileQuarry) worldIn.getTileEntity(pos)).ifPresent(consumer.andThen(TileQuarry.requestTicket));
         }
     }

@@ -20,7 +20,6 @@ import java.util.function.Consumer;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.BuildcraftHelper;
-import com.yogpc.qp.compat.EnchantmentHelper;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.item.ItemBlockRefinery;
 import com.yogpc.qp.packet.PacketHandler;
@@ -85,7 +84,7 @@ public class BlockRefinery extends ADismCBlock {
         final Item it = getItemDropped(state, worldIn.rand, 0);
         for (int i = 0; i < count; i++) {
             final ItemStack is = new ItemStack(it, 1, damageDropped(state));
-            EnchantmentHelper.enchantmentToIS(tile, is);
+            IEnchantableTile.enchantmentToIS(tile, is);
             this.drop.add(is);
         }
 
@@ -101,7 +100,7 @@ public class BlockRefinery extends ADismCBlock {
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
         if (!worldIn.isRemote) {
-            Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t -> EnchantmentHelper.init(t, stack.getEnchantmentTagList()));
+            Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t -> IEnchantableTile.init(t, stack.getEnchantmentTagList()));
         }
     }
 
@@ -134,7 +133,7 @@ public class BlockRefinery extends ADismCBlock {
         Consumer<TileRefinery> sendPacket = t -> PacketHandler.sendToAround(TileMessage.create(t), worldIn, pos);
         if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == 0) {
             if (!worldIn.isRemote) {
-                Consumer<TileRefinery> consumer1 = t -> EnchantmentHelper.getEnchantmentsChat(t).forEach(playerIn::sendMessage);
+                Consumer<TileRefinery> consumer1 = t -> IEnchantableTile.getEnchantmentsChat(t).forEach(playerIn::sendMessage);
                 tileEntity.ifPresent(consumer1.andThen(sendPacket));
             }
             return true;
