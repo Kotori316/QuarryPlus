@@ -1,6 +1,8 @@
 package com.yogpc.qp
 
 import com.yogpc.qp.compat.{INBTReadable, INBTWritable}
+import net.minecraft.block.Block
+import net.minecraft.block.state.IBlockState
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.registry.ForgeRegistries
@@ -36,6 +38,10 @@ case class BlockData(name: ResourceLocation, meta: Int) extends INBTWritable {
 
     def this(resourceName: String, meta: Int) {
         this(new ResourceLocation(resourceName), meta)
+    }
+
+    def this(block: Block, state: IBlockState) {
+        this(ForgeRegistries.BLOCKS.getKey(block), state.getBlock.getMetaFromState(state))
     }
 
     override def equals(o: Any): Boolean = {

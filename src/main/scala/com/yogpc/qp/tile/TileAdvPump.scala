@@ -236,14 +236,15 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
     }
 
     private def findFluid(state: IBlockState) = {
-        if (state.getBlock == Blocks.FLOWING_WATER) {
+        val block = state.getBlock
+        if (block == Blocks.FLOWING_WATER || block == Blocks.WATER) {
             FluidRegistry.WATER
-        } else if (state.getBlock == Blocks.FLOWING_LAVA) {
+        } else if (block == Blocks.FLOWING_LAVA || block == Blocks.LAVA) {
             FluidRegistry.LAVA
         } else {
-            state.getBlock match {
+            block match {
                 case fluidBlock: IFluidBlock => FluidRegistry.getFluid(fluidBlock.getFluid.getName)
-                case block => FluidRegistry.lookupFluidForBlock(block)
+                case other => FluidRegistry.lookupFluidForBlock(other)
             }
         }
     }
@@ -421,7 +422,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
 
         override def getTankProperties: Array[IFluidTankProperties] = {
             if (fluidStacks.isEmpty) {
-                Array(new FluidTankProperties(null, 0, false, false))
+                IDummyFluidHandler.emptyPropertyArray
             } else {
                 fluidStacks.map(s => new FluidTankProperties(s, ench.maxAmount, false, true)).toArray
             }

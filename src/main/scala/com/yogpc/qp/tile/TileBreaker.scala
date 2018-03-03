@@ -43,8 +43,8 @@ class TileBreaker extends TileEntity with IEnchantableTile with HasInv {
 
     override def getEnchantments: util.Map[java.lang.Integer, java.lang.Byte] = {
         val ret = new util.HashMap[java.lang.Integer, java.lang.Byte]
-        if (this.fortune > 0) ret.put(FortuneID, this.fortune)
-        if (this.silktouch) ret.put(SilktouchID, 1.toByte)
+        if (this.fortune > 0) ret.put(Int.box(FortuneID), Byte.box(fortune))
+        if (this.silktouch) ret.put(Int.box(SilktouchID), Byte.box(1))
         ret
     }
 
