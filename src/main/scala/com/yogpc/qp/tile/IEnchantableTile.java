@@ -52,14 +52,14 @@ public interface IEnchantableTile {
         getEnchantmentsChat(this).forEach(player::sendMessage);
     }
 
-    static void init(@Nonnull final IEnchantableTile te, @Nullable final NBTTagList tagList) {
+    public static void init(@Nonnull final IEnchantableTile te, @Nullable final NBTTagList tagList) {
         if (tagList != null)
             for (int i = 0; i < tagList.tagCount(); i++)
                 te.setEnchantent(tagList.getCompoundTagAt(i).getShort("id"), tagList.getCompoundTagAt(i).getShort("lvl"));
         te.G_reinit();
     }
 
-    static List<ITextComponent> getEnchantmentsChat(@Nonnull final IEnchantableTile te) {
+    public static List<ITextComponent> getEnchantmentsChat(@Nonnull final IEnchantableTile te) {
         final List<ITextComponent> als = new ArrayList<>();
         final Map<Integer, Byte> enchs = te.getEnchantments();
         if (enchs.size() <= 0)
@@ -76,7 +76,7 @@ public interface IEnchantableTile {
         return als;
     }
 
-    static void enchantmentToIS(@Nonnull final IEnchantableTile te, @Nonnull final ItemStack is) {
+    public static void enchantmentToIS(@Nonnull final IEnchantableTile te, @Nonnull final ItemStack is) {
         final Map<Integer, Byte> enchs = te.getEnchantments();
         for (final Map.Entry<Integer, Byte> e : enchs.entrySet()) {
             Enchantment ench = Enchantment.getEnchantmentByID(e.getKey());

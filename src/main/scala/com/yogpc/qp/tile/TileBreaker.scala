@@ -16,6 +16,7 @@ package com.yogpc.qp.tile
 import java.util
 import javax.annotation.Nullable
 
+import com.yogpc.qp.gui.TranslationKeys
 import com.yogpc.qp.tile.IEnchantableTile._
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.tileentity.TileEntity
@@ -54,7 +55,7 @@ class TileBreaker extends TileEntity with IEnchantableTile with HasInv {
 
     override def G_reinit() = ()
 
-    override def getName = "tile.breakerplus.name"
+    override def getName = TranslationKeys.breaker
 
     override def hasCapability(capability: Capability[_], @Nullable facing: EnumFacing): Boolean =
         (capability eq CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) || super.hasCapability(capability, facing)

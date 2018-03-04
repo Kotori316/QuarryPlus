@@ -73,7 +73,7 @@ public class BlockController extends Block implements IDismantleable {
         if (!Config.content().disableController()) {
             if (!playerIn.isSneaking()) {
                 if (!worldIn.isRemote) {
-                    List<EntityEntry> entries = ForgeRegistries.ENTITIES.getValues().stream().filter(entity ->
+                    List<EntityEntry> entries = ForgeRegistries.ENTITIES.getValuesCollection().stream().filter(entity ->
                             entity.getEntityClass() != null &&
                                     !Modifier.isAbstract(entity.getEntityClass().getModifiers()) &&
                                     !Config.content().spawnerBlacklist().contains(entity.getRegistryName()))

@@ -28,6 +28,7 @@ import com.yogpc.qp.PowerManager;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.block.BlockPump;
+import com.yogpc.qp.gui.TranslationKeys;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.pump.Mappings;
 import com.yogpc.qp.packet.pump.Now;
@@ -290,9 +291,9 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         else
             this.range++;
         if (this.quarryRange)
-            ep.sendMessage(new TextComponentTranslation("chat.pump_rtoggle.quarry"));
+            ep.sendMessage(new TextComponentTranslation(TranslationKeys.CHAT_PUMP_RTOGGLE_QUARRY));
         else
-            ep.sendMessage(new TextComponentTranslation("chat.pump_rtoggle.num", Integer.toString(this.range * 2 + 1)));
+            ep.sendMessage(new TextComponentTranslation(TranslationKeys.CHAT_PUMP_RTOGGLE_NUM, Integer.toString(this.range * 2 + 1)));
         this.fwt = 0;
     }
 
@@ -615,12 +616,12 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     public List<ITextComponent> C_getNames() {
         if (!liquids.isEmpty()) {
             List<ITextComponent> list = new ArrayList<>(liquids.size() + 1);
-            list.add(new TextComponentTranslation("chat.pumpcontain"));
-            liquids.forEach(s -> list.add(new TextComponentTranslation("yog.pump.liquid",
+            list.add(new TextComponentTranslation(TranslationKeys.CHAT_PUMPCONTAIN));
+            liquids.forEach(s -> list.add(new TextComponentTranslation(TranslationKeys.LIQUID_FORMAT,
                     new TextComponentTranslation(s.getFluid().getUnlocalizedName(s)), Integer.toString(s.amount))));
             return list;
         } else {
-            return Collections.singletonList(new TextComponentTranslation("chat.pumpcontainno"));
+            return Collections.singletonList(new TextComponentTranslation(TranslationKeys.CHAT_PUMPCONTAINNO));
         }
     }
 
@@ -634,7 +635,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                     .ifPresent(list::add);
         }
         if (!liquids.isEmpty()) {
-            list.add(new TextComponentTranslation("chat.pumpcontain"));
+            list.add(new TextComponentTranslation(TranslationKeys.CHAT_PUMPCONTAIN));
             liquids.stream().map(fluidStack -> fluidStack.getLocalizedName() + fluidStack.amount + "mB")
                     .reduce(combiner).map(toComponentString)
                     .ifPresent(list::add);
@@ -646,7 +647,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
 
     @Override
     public String getDebugName() {
-        return "tile.pumpplus.name";
+        return TranslationKeys.pump;
     }
 
     @Override

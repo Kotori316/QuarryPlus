@@ -3,7 +3,7 @@
 * **Blocks**
 - [ ] Advanced Pump
 - [x] Breaker Plus
-- [ ] Chunck Destroyer
+- [ ] Chunk Destroyer
 - [x] Enchant Mover
 - [ ] Laser Plus
 - [x] Marker Plus
@@ -18,5 +18,5 @@
 * **Items**
 - [x] Status Checker
 - [ ] Magic Mirror * 3
-- [ ] List Editer
+- [ ] List Editor
 - [ ] Liquid Selector

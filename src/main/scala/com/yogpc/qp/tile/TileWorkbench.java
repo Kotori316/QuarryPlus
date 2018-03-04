@@ -21,6 +21,7 @@ import cofh.api.tileentity.IInventoryConnection;
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.InvUtils;
+import com.yogpc.qp.gui.TranslationKeys;
 import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryHelper;
@@ -215,7 +216,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
 
     @Override
     public String getDebugName() {
-        return "tile.workbenchplus.name";
+        return TranslationKeys.workbench;
     }
 
     public void setCurrentRecipe(int recipeIndex) {

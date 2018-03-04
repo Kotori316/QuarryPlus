@@ -28,6 +28,7 @@ import com.google.common.collect.Sets;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.block.BlockMarker;
+import com.yogpc.qp.gui.TranslationKeys;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.marker.LinkReply;
 import com.yogpc.qp.packet.marker.LinkRequest;
@@ -333,7 +334,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
 
     @Override
     public String getDebugName() {
-        return "tile.markerplus.name";
+        return TranslationKeys.marker;
     }
 
     @Override

@@ -27,6 +27,7 @@ import com.yogpc.qp.PowerManager;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.ReflectionHelper;
 import com.yogpc.qp.compat.InvUtils;
+import com.yogpc.qp.gui.TranslationKeys;
 import com.yogpc.qp.version.VersionUtil;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -261,7 +262,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
 
     @Override
     public String getName() {
-        return "container.yog.basic";
+        return TranslationKeys.MACHINE_BUFFER;
     }
 
     @Override

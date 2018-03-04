@@ -47,15 +47,15 @@ public class GuiMover extends GuiContainer {
         super.initGui();
         final int i = this.width - this.xSize >> 1;
         final int j = this.height - this.ySize >> 1;
-        this.buttonList.add(new GuiButton(1, i + 27, j + 18, 122, 18, "UP"));
+        this.buttonList.add(new GuiButton(1, i + 27, j + 18, 122, 18, I18n.format(TranslationKeys.UP)));
         this.buttonList.add(new GuiButton(2, i + 27, j + 36, 122, 18, ""));
-        this.buttonList.add(new GuiButton(3, i + 27, j + 54, 122, 18, "Down"));
+        this.buttonList.add(new GuiButton(3, i + 27, j + 54, 122, 18, I18n.format(TranslationKeys.DOWN)));
     }
 
     @Override
     protected void drawGuiContainerForegroundLayer(final int mouseX, final int mouseY) {
-        this.fontRenderer.drawString(I18n.format("tile.enchantmover.name"), 8, 6, 0x404040);
-        this.fontRenderer.drawString(I18n.format("container.inventory"), 8, 72, 0x404040);
+        this.fontRenderer.drawString(I18n.format(TranslationKeys.mover), 8, 6, 0x404040);
+        this.fontRenderer.drawString(I18n.format(TranslationKeys.CONTAINER_INVENTORY), 8, 72, 0x404040);
     }
 
     @Override

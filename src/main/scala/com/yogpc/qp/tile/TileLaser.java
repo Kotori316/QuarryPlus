@@ -26,6 +26,7 @@ import buildcraft.api.mj.MjAPI;
 import com.yogpc.qp.PowerManager;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.block.BlockLaser;
+import com.yogpc.qp.gui.TranslationKeys;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.laser.LaserAverageMessage;
 import com.yogpc.qp.packet.laser.LaserMessage;
@@ -298,7 +299,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
 
     @Override
     public String getDebugName() {
-        return "tile.laserplus.name";
+        return TranslationKeys.laser;
     }
 
     @Override

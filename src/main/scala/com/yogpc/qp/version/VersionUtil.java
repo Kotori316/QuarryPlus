@@ -56,4 +56,8 @@ public class VersionUtil {
     public static Stream<NBTTagCompound> nbtListStream(NBTTagList list) {
         return QuarryPlus.DIFF.nbtListStream(list);
     }
+
+    public static boolean changeAdvPumpState() {
+        return QuarryPlus.DIFF.changeAdvPumpState();
+    }
 }

@@ -75,7 +75,7 @@ object ItemTool extends Item with IEnchantableItem {
                     if (id == IEnchantableTile.FortuneID) f = true
                 }
             }
-            var stackTag = stack.getTagCompound
+            var stackTag: NBTTagCompound = stack.getTagCompound
             val state = worldIn.getBlockState(pos)
             var bd: BlockData = null
             if (stackTag != null && stackTag.hasKey(NAME_key)) {
@@ -93,8 +93,9 @@ object ItemTool extends Item with IEnchantableItem {
                             (if (f) tb.fortuneList else tb.silktouchList).add(bd)
                         stackTag.removeTag(NAME_key)
                         stackTag.removeTag(META_key)
-                    } else if (!worldIn.isRemote)
+                    } else {
                         player.openGui(QuarryPlus.INSTANCE, if (f) QuarryPlusI.guiIdFList else QuarryPlusI.guiIdSList, worldIn, pos.getX, pos.getY, pos.getZ)
+                    }
                     return EnumActionResult.SUCCESS
                 case _ =>
             }

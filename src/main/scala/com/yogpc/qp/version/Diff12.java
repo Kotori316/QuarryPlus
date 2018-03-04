@@ -52,4 +52,9 @@ public class Diff12 implements VersionDiff {
     public Iterator<NBTBase> getIterator(NBTTagList list) {
         return list.iterator();
     }
+
+    @Override
+    public boolean changeAdvPumpState() {
+        return true;
+    }
 }

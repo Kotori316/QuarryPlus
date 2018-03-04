@@ -1,0 +1,62 @@
+package com.yogpc.qp.gui;
+
+import com.yogpc.qp.QuarryPlus;
+
+public class TranslationKeys {
+    public static final String ADD = "tof.addnewore";
+    public static final String ADD_FLUID_SURE = "tof.addfluidsure";
+    public static final String ALREADY_REGISTERED_ERROR = "tof.alreadyerror";
+    public static final String CANCEL = "gui.cancel";
+    public static final String CHANGE_DIRECTION = "pp.change";
+    public static final String CHAT_CURRENTMODE = "chat.currentmode";
+    public static final String CHAT_FILLERMODE = "chat.fillermode";
+    public static final String CHAT_PUMPCONTAIN = "chat.pumpcontain";
+    public static final String CHAT_PUMPCONTAINNO = "chat.pumpcontainno";
+    public static final String CHAT_PUMP_RTOGGLE_NUM = "chat.pump_rtoggle.num";
+    public static final String CHAT_PUMP_RTOGGLE_QUARRY = "chat.pump_rtoggle.quarry";
+    public static final String CONTAINER_INVENTORY = "container.inventory";
+    public static final String COPY_FROM_OTHER_DIRECTION = "pp.copy";
+    public static final String COPY_SELECT = "pp.copy.select";
+    public static final String DELETE = "selectServer.delete";
+    public static final String DELETE_BLOCK_SURE = "tof.deleteblocksure";
+    public static final String DELETE_FLUID_SURE = "tof.deletefluidsure";
+    public static final String DONE = "gui.done";
+    public static final String DOWN = "FD.down";
+    public static final String EAST = "FD.east";
+    public static final String FLUID_ID = "tof.fluidid";
+    public static final String FROM_LIST = "tof.fromlist";
+    public static final String GO_BOTTOM = "tof.bottom";
+    public static final String GO_DOWN = "tof.down";
+    public static final String GO_TOP = "tof.top";
+    public static final String GO_UP = "tof.up";
+    public static final String LIQUID_FORMAT = "yog.pump.liquid";
+    public static final String LIST_SETTING = "pp.list.setting";
+    public static final String MACHINE_BUFFER = "container.yog.basic";
+    public static final String MANUAL_INPUT = "tof.manualinput";
+    public static final String NORTH = "FD.north";
+    public static final String QP_ENABLE_LIST = "qp.list.setting";
+    public static final String SELECT_FLUID = "tof.selectfluid";
+    public static final String SET_SELECT = "pp.set.select";
+    public static final String SOUTH = "FD.south";
+    public static final String TOF_EXCLUDE = "tof.exclude";
+    public static final String TOF_INCLUDE = "tof.include";
+    public static final String UP = "FD.up";
+    public static final String WEST = "FD.west";
+    public static final String YOG_SPAWNER_SETTING = "yog.spanwer.setting";
+
+    public static final String advpump = "tile." + QuarryPlus.Names.advpump + ".name";
+    public static final String advquarry = "tile." + QuarryPlus.Names.advquarry + ".name";
+    public static final String breaker = "tile." + QuarryPlus.Names.breaker + ".name";
+    //    public static final String controller = "tile." + QuarryPlus.Names.controller + ".name";
+    public static final String frame = "tile." + QuarryPlus.Names.frame + ".name";
+    public static final String laser = "tile." + QuarryPlus.Names.laser + ".name";
+    public static final String marker = "tile." + QuarryPlus.Names.marker + ".name";
+    public static final String miningwell = "tile." + QuarryPlus.Names.miningwell + ".name";
+    public static final String mover = "tile." + QuarryPlus.Names.mover + ".name";
+    public static final String placer = "tile." + QuarryPlus.Names.placer + ".name";
+    //    public static final String plainpipe = "tile." + QuarryPlus.Names.plainpipe + ".name";
+    public static final String pump = "tile." + QuarryPlus.Names.pump + ".name";
+    public static final String quarry = "tile." + QuarryPlus.Names.quarry + ".name";
+    //    public static final String refinery = "tile." + QuarryPlus.Names.refinery + ".name";
+    public static final String workbench = "tile." + QuarryPlus.Names.workbench + ".name";
+}

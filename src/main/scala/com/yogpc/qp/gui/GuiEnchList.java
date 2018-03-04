@@ -57,12 +57,13 @@ public class GuiEnchList extends GuiContainer implements GuiYesNoCallback {
         this.xSize = this.width;
         this.ySize = this.height;
         super.initGui();
+//        PacketHandler.sendToServer(BlockListRequestMessage.create(inventorySlots.windowId));
         this.buttonList.add(new GuiButton(-1, this.width / 2 - 125, this.height - 26, 250, 20,
-                I18n.format("gui.done")));
+                I18n.format(TranslationKeys.DONE)));
         this.buttonList.add(new GuiButton(Toggle_id,
                 this.width * 2 / 3 + 10, 140, 100, 20, ""));
         this.buttonList.add(new GuiButton(Remove_id,
-                this.width * 2 / 3 + 10, 110, 100, 20, I18n.format("selectServer.delete")));
+                this.width * 2 / 3 + 10, 110, 100, 20, I18n.format(TranslationKeys.DELETE)));
         this.slot = new GuiSlotEnchList(this.mc, this.width * 3 / 5, this.height - 60, 30, this.height - 30,
                 this, this.target == Enchantments.FORTUNE ? this.tile.fortuneList : this.tile.silktouchList);
     }
@@ -83,7 +84,7 @@ public class GuiEnchList extends GuiContainer implements GuiYesNoCallback {
                 this.mc.player.closeScreen();
                 break;
             case Remove_id:
-                this.mc.displayGuiScreen(new GuiYesNo(this, I18n.format("tof.deleteblocksure"),
+                this.mc.displayGuiScreen(new GuiYesNo(this, I18n.format(TranslationKeys.DELETE_BLOCK_SURE),
                         (this.target == Enchantments.FORTUNE ? this.tile.fortuneList : this.tile.silktouchList).get(this.slot.currentore()).getLocalizedName(), par1.id));
                 break;
             default: //maybe toggle
@@ -102,7 +103,7 @@ public class GuiEnchList extends GuiContainer implements GuiYesNoCallback {
                 tile.fortuneList.remove(bd);
             else if (target == Enchantments.SILK_TOUCH)
                 tile.silktouchList.remove(bd);
-
+            slot.target().remove(bd);
         }
         this.mc.displayGuiScreen(this);
     }
@@ -120,14 +121,14 @@ public class GuiEnchList extends GuiContainer implements GuiYesNoCallback {
 
     @Override
     protected void drawGuiContainerForegroundLayer(final int i, final int j) {
-        drawCenteredString(this.fontRenderer, I18n.format(
-                "qp.list.setting", I18n.format(this.target.getName())), this.xSize / 2, 8, 0xFFFFFF);
+        drawCenteredString(this.fontRenderer, I18n.format(TranslationKeys.QP_ENABLE_LIST, I18n.format(this.target.getName())),
+                this.xSize / 2, 8, 0xFFFFFF);
     }
 
     @Override
     public void updateScreen() {
         super.updateScreen();
-        this.buttonList.get(1).displayString = I18n.format(include() ? "tof.include" : "tof.exclude");
+        this.buttonList.get(1).displayString = I18n.format(include() ? TranslationKeys.TOF_INCLUDE : TranslationKeys.TOF_EXCLUDE);
         this.buttonList.get(2).enabled = !(this.target == Enchantments.FORTUNE ? this.tile.fortuneList : this.tile.silktouchList).isEmpty();
     }
 }

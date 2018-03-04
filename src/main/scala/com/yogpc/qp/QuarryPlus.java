@@ -259,47 +259,47 @@ public class QuarryPlus {
 
     @SuppressWarnings("unused")
     public static class Optionals {
-        public static final String clientProxy = "com.yogpc.qp.ProxyClient";
-        public static final String serverProxy = "com.yogpc.qp.ProxyCommon";
-        public static final String configFactory = "com.yogpc.qp.gui.GuiFactory";
-        public static final String IC2_modID = "ic2";
-        public static final String Buildcraft_modID = "buildcraftcore";
-        public static final String COFH_modID = "cofhcore";
-        public static final String RedstoneFlux_modID = "redstoneflux";
-        public static final String COFH_block = "cofhapi|block";
-        public static final String COFH_item = "cofhapi|item";
-        public static final String COFH_energy = "cofhapi|energy";
-        public static final String COFH_tileentity = "cofhapi|tileentity";
         public static final String BuildCraft_core = "BuildCraftAPI|core";
-        public static final String Buildcraft_tools = "BuildCraftAPI|tools";
-        public static final String Buildcraft_recipes = "BuildCraftAPI|recipes";
-        public static final String Buildcraft_transport = "BuildCraftAPI|transport";
-        public static final String Buildcraft_tiles = "BuildCraftAPI|tiles";
         public static final String Buildcraft_facades = "BuildCraftAPI|facades";
-        public static final String updateJson = "https://raw.githubusercontent.com/Kotori316/QuarryPlus/1.12/update.json";
-        public static final String IMC_Remove = "IMC_RemoveRecipe";
+        public static final String Buildcraft_modID = "buildcraftcore";
+        public static final String Buildcraft_recipes = "BuildCraftAPI|recipes";
+        public static final String Buildcraft_tiles = "BuildCraftAPI|tiles";
+        public static final String Buildcraft_tools = "BuildCraftAPI|tools";
+        public static final String Buildcraft_transport = "BuildCraftAPI|transport";
+        public static final String COFH_block = "cofhapi|block";
+        public static final String COFH_energy = "cofhapi|energy";
+        public static final String COFH_item = "cofhapi|item";
+        public static final String COFH_modID = "cofhcore";
+        public static final String COFH_tileentity = "cofhapi|tileentity";
+        public static final String IC2_modID = "ic2";
         public static final String IMC_Add = "IMC_AddRecipe";
         public static final String IMC_Energy = "energy";
+        public static final String IMC_Remove = "IMC_RemoveRecipe";
+        public static final String RedstoneFlux_modID = "redstoneflux";
+        public static final String clientProxy = "com.yogpc.qp.ProxyClient";
+        public static final String configFactory = "com.yogpc.qp.gui.GuiFactory";
+        public static final String serverProxy = "com.yogpc.qp.ProxyCommon";
+        public static final String updateJson = "https://raw.githubusercontent.com/Kotori316/QuarryPlus/1.12/update.json";
     }
 
     public static class Names {
-        public static final String breaker = "breakerplus";
-        public static final String placer = "placerplus";
-        public static final String frame = "quarryframe";
-        public static final String marker = "markerplus";
-        public static final String plainpipe = "plainpipe";
-        public static final String miningwell = "miningwellplus";
-        public static final String quarry = "quarryplus";
-        public static final String pump = "pumpplus";
-        public static final String refinery = "refineryplus";
-        public static final String workbench = "workbenchplus";
-        public static final String controller = "spawnercontroller";
-        public static final String mover = "enchantmover";
-        public static final String advquarry = "chunkdestroyer";
         public static final String advpump = "standalonepump";
-        public static final String laser = "laserplus";
-        public static final String mirror = "magicmirror";
-        public static final String tool = "tool";
+        public static final String advquarry = "chunkdestroyer";
+        public static final String breaker = "breakerplus";
+        public static final String controller = "spawnercontroller";
         public static final String debug = "quarrydebug";
+        public static final String frame = "quarryframe";
+        public static final String laser = "laserplus";
+        public static final String marker = "markerplus";
+        public static final String miningwell = "miningwellplus";
+        public static final String mirror = "magicmirror";
+        public static final String mover = "enchantmover";
+        public static final String placer = "placerplus";
+        public static final String plainpipe = "plainpipe";
+        public static final String pump = "pumpplus";
+        public static final String quarry = "quarryplus";
+        public static final String refinery = "refineryplus";
+        public static final String tool = "tool";
+        public static final String workbench = "workbenchplus";
     }
 }

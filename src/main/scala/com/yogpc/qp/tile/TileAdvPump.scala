@@ -4,8 +4,10 @@ import java.lang.{Boolean => JBool}
 
 import com.yogpc.qp.block.ADismCBlock
 import com.yogpc.qp.compat.{INBTReadable, INBTWritable}
+import com.yogpc.qp.gui.TranslationKeys
 import com.yogpc.qp.tile.IEnchantableTile.{EfficiencyID, FortuneID, SilktouchID, UnbreakingID}
 import com.yogpc.qp.tile.TileAdvPump._
+import com.yogpc.qp.version.VersionUtil
 import com.yogpc.qp.{Config, QuarryPlus, QuarryPlusI}
 import net.minecraft.block.state.IBlockState
 import net.minecraft.init.Blocks
@@ -66,10 +68,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
                         finished = false
                         val state = getWorld.getBlockState(getPos)
                         if (!state.getValue(ADismCBlock.ACTING)) {
-                            validate()
-                            getWorld.setBlockState(getPos, state.withProperty(ADismCBlock.ACTING, JBool.TRUE))
-                            validate()
-                            getWorld.setTileEntity(getPos, this)
+                            changeState(working = true, state)
                         }
                     }
                 }
@@ -136,10 +135,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
             G_reinit()
             val state = getWorld.getBlockState(getPos)
             if (state.getValue(ADismCBlock.ACTING)) {
-                validate()
-                getWorld.setBlockState(getPos, state.withProperty(ADismCBlock.ACTING, JBool.FALSE))
-                validate()
-                getWorld.setTileEntity(getPos, this)
+                changeState(working = false, state)
             }
             getWorld.profiler.endSection()
             return
@@ -235,6 +231,15 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
             })
     }
 
+    private def changeState(working: Boolean, state: IBlockState): Unit = {
+        if (VersionUtil.changeAdvPumpState()) {
+            validate()
+            getWorld.setBlockState(getPos, state.withProperty(ADismCBlock.ACTING, if (working) JBool.TRUE else JBool.FALSE))
+            validate()
+            getWorld.setTileEntity(getPos, this)
+        }
+    }
+
     private def findFluid(state: IBlockState) = {
         val block = state.getBlock
         if (block == Blocks.FLOWING_WATER || block == Blocks.WATER) {
@@ -260,7 +265,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
       */
     override def setEnchantent(id: Short, value: Short) = ench = ench.set(id, value)
 
-    override def getDebugName = "tile.standalonepump.name"
+    override def getDebugName = TranslationKeys.advpump
 
     override def getDebugmessages = {
         List("Range = " + ench.distance,
