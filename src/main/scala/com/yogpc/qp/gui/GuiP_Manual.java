@@ -100,8 +100,8 @@ public class GuiP_Manual extends GuiScreenA implements GuiYesNoCallback {
     public void drawScreen(final int i, final int j, final float k) {
         drawDefaultBackground();
         drawCenteredString(this.fontRenderer, I18n.format(TranslationKeys.SELECT_FLUID), this.width / 2, 8, 0xFFFFFF);
-        this.fontRenderer.drawStringWithShadow(I18n.format(TranslationKeys.FLUID_ID),
-                this.width / 2 - 60 - this.fontRenderer.getStringWidth(I18n.format(TranslationKeys.FLUID_ID)), 50, 0xFFFFFF);
+        String fluidId = I18n.format(TranslationKeys.FLUID_ID);
+        this.fontRenderer.drawStringWithShadow(fluidId, this.width / 2 - 60 - this.fontRenderer.getStringWidth(fluidId), 50, 0xFFFFFF);
         this.blockid.drawTextBox();
         super.drawScreen(i, j, k);
     }

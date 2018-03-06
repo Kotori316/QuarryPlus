@@ -33,23 +33,23 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import net.minecraftforge.oredict.OreDictionary
 
 object ItemTool extends Item with IEnchantableItem {
-    private final val meta_statuschecker = 0
-    private final val meta_listeditor = 1
-    private final val meta_liquidselector = 2
+    final val meta_statuschecker = 0
+    final val meta_listeditor = 1
+    final val meta_liquidselector = 2
     /**
       * meta=1
       */
-    val listeditor = "listeditor"
+    final val listeditor = "listeditor"
     /**
       * meta=2
       */
-    val liquidselector = "liquidselector"
+    final val liquidselector = "liquidselector"
     /**
       * meta=0
       */
-    val statuschecker = "statuschecker"
-    val NAME_key = "Bname"
-    val META_key = "Bmeta"
+    final val statuschecker = "statuschecker"
+    final val NAME_key = "Bname"
+    final val META_key = "Bmeta"
     val item = this
 
     setMaxStackSize(1)
@@ -89,8 +89,11 @@ object ItemTool extends Item with IEnchantableItem {
             worldIn.getTileEntity(pos) match {
                 case tb: TileBasic if s != f =>
                     if (stackTag != null && bd != null) {
-                        if (!worldIn.isRemote)
-                            (if (f) tb.fortuneList else tb.silktouchList).add(bd)
+                        if (!worldIn.isRemote) {
+                            val datas = if (f) tb.fortuneList else tb.silktouchList
+                            if (!datas.contains(bd))
+                                datas.add(bd)
+                        }
                         stackTag.removeTag(NAME_key)
                         stackTag.removeTag(META_key)
                     } else {

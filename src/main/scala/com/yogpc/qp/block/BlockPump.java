@@ -20,6 +20,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.BuildcraftHelper;
 import com.yogpc.qp.item.ItemBlockPump;
+import com.yogpc.qp.item.ItemTool;
 import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TilePump;
 import net.minecraft.block.Block;
@@ -108,13 +109,13 @@ public class BlockPump extends ADismCBlock {
             return true;
         }
         if (stack.getItem() == QuarryPlusI.itemTool()) {
-            if (!worldIn.isRemote && stack.getItemDamage() == 0) {
+            if (!worldIn.isRemote && stack.getItemDamage() == ItemTool.meta_statuschecker()) {
                 TilePump pump = (TilePump) worldIn.getTileEntity(pos);
                 if (pump != null) {
                     IEnchantableTile.getEnchantmentsChat(pump).forEach(playerIn::sendMessage);
                     pump.C_getNames().forEach(playerIn::sendMessage);
                 }
-            } else if (stack.getItemDamage() == 2) {
+            } else if (stack.getItemDamage() == ItemTool.meta_liquidselector()) {
                 TilePump pump = (TilePump) worldIn.getTileEntity(pos);
                 if (pump != null) {
                     QuarryPlus.proxy.openPumpGui(worldIn, playerIn, facing, pump);

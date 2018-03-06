@@ -6,6 +6,7 @@ import com.yogpc.qp.BlockData;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.tile.TileBasic;
+import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.init.Enchantments;
 import net.minecraft.nbt.NBTTagCompound;
@@ -47,7 +48,7 @@ public class EnchantmentMessage implements IMessage {
     @Override
     @SuppressWarnings("ConstantConditions")
     public void toBytes(PacketBuffer buffer) {
-        buffer.writeBlockPos(pos).writeEnumValue(type).writeString(enchantment.getRegistryName().toString()).writeCompoundTag(data.writeToNBT(new NBTTagCompound()));
+        buffer.writeBlockPos(pos).writeEnumValue(type).writeString(VersionUtil.getRegistryName(enchantment).toString()).writeCompoundTag(data.writeToNBT(new NBTTagCompound()));
     }
 
     @Override

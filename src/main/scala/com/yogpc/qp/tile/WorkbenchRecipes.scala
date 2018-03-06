@@ -42,7 +42,7 @@ private final class R1(o: ItemDamage, e: Double, s: Boolean = true, seq: Seq[(In
     override def inputs: Seq[ItemStack] = seq.map(_.apply(Config.content.recipe)).filter(VersionUtil.nonEmpty)
 }
 
-private final class R2(o: ItemDamage, e: Double, s: Boolean, list: java.util.List[java.util.function.Function[Integer, ItemStack]])
+private final class R2(o: ItemDamage, e: Double, s: Boolean, list: java.util.List[java.util.function.IntFunction[ItemStack]])
   extends WorkbenchRecipes(o, e, s) {
     private[this] final val seq = list.asScala
     override val size: Int = seq.size
@@ -80,7 +80,7 @@ object WorkbenchRecipes {
         recipes put(output, newRecipe)
     }
 
-    def addListRecipe(output: ItemDamage, energy: Int, inputs: java.util.List[java.util.function.Function[Integer, ItemStack]])
+    def addListRecipe(output: ItemDamage, energy: Int, inputs: java.util.List[java.util.function.IntFunction[ItemStack]])
                      (implicit showInJEI: Boolean, unit: EnergyUnit): Unit = {
         val newRecipe = new R2(output, unit.multiple * energy, showInJEI, inputs)
         recipes put(output, newRecipe)
