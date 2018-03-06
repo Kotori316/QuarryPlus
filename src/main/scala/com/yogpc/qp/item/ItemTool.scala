@@ -63,6 +63,7 @@ object ItemTool extends Item with IEnchantableItem {
 
     override def onItemUseFirst(player: EntityPlayer, worldIn: World, pos: BlockPos, side: EnumFacing,
                                 hitX: Float, hitY: Float, hitZ: Float, hand: EnumHand): EnumActionResult = {
+        val returnValue = if (!worldIn.isRemote) EnumActionResult.SUCCESS else EnumActionResult.PASS
         val stack = player.getHeldItem(hand)
         if (stack.getItemDamage == meta_listeditor) {
             var s = false
@@ -83,7 +84,7 @@ object ItemTool extends Item with IEnchantableItem {
                 if (player.isSneaking && bd == new BlockData(state.getBlock, state)) {
                     stackTag.removeTag(NAME_key)
                     stackTag.removeTag(META_key)
-                    return EnumActionResult.SUCCESS
+                    return returnValue
                 }
             }
             worldIn.getTileEntity(pos) match {
@@ -99,7 +100,7 @@ object ItemTool extends Item with IEnchantableItem {
                     } else {
                         player.openGui(QuarryPlus.INSTANCE, if (f) QuarryPlusI.guiIdFList else QuarryPlusI.guiIdSList, worldIn, pos.getX, pos.getY, pos.getZ)
                     }
-                    return EnumActionResult.SUCCESS
+                    return returnValue
                 case _ =>
             }
             if (!state.getBlock.isAir(state, worldIn, pos)) {
@@ -117,7 +118,7 @@ object ItemTool extends Item with IEnchantableItem {
                     stackTag.setString(NAME_key, name)
                     stackTag.setInteger(META_key, meta)
                 }
-                return EnumActionResult.SUCCESS
+                return returnValue
             }
         }
         super.onItemUseFirst(player, worldIn, pos, side, hitX, hitY, hitZ, hand)
