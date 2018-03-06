@@ -135,7 +135,7 @@ public class BlockRefinery extends ADismCBlock {
         Consumer<TileRefinery> sendPacket = t -> PacketHandler.sendToAround(TileMessage.create(t), worldIn, pos);
         if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == 0) {
             if (!worldIn.isRemote) {
-                Consumer<TileRefinery> consumer1 = t -> IEnchantableTile.getEnchantmentsChat(t).forEach(playerIn::sendMessage);
+                Consumer<TileRefinery> consumer1 = t -> t.sendEnchantMassage(playerIn);
                 tileEntity.ifPresent(consumer1.andThen(sendPacket));
             }
             return true;

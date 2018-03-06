@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.yogpc.qp.version.VersionUtil;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.enchantment.Enchantment;
@@ -49,7 +50,7 @@ public interface IEnchantableTile {
     void setEnchantent(short id, short val);
 
     default void sendEnchantMassage(EntityPlayer player) {
-        getEnchantmentsChat(this).forEach(player::sendMessage);
+        getEnchantmentsChat(this).forEach(c -> VersionUtil.sendMessage(player, c));
     }
 
     public static void init(@Nonnull final IEnchantableTile te, @Nullable final NBTTagList tagList) {

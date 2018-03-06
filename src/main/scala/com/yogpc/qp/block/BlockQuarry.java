@@ -25,6 +25,7 @@ import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.item.ItemBlockEnchantable;
 import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TileQuarry;
+import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -93,12 +94,12 @@ public class BlockQuarry extends ADismCBlock {
             if (t != null) {
                 TileQuarry quarry = (TileQuarry) t;
                 if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == 0) {
-                    IEnchantableTile.getEnchantmentsChat(quarry).forEach(playerIn::sendMessage);
-                    playerIn.sendMessage(new TextComponentTranslation("chat.currentmode",
+                    quarry.sendEnchantMassage(playerIn);
+                    VersionUtil.sendMessage(playerIn, new TextComponentTranslation("chat.currentmode",
                             new TextComponentTranslation(quarry.filler ? "chat.fillermode" : "chat.quarrymode")));
                 } else if (quarry.G_getNow() == TileQuarry.Mode.NOTNEEDBREAK) {
                     quarry.filler = !quarry.filler;
-                    playerIn.sendMessage(new TextComponentTranslation("chat.changemode",
+                    VersionUtil.sendMessage(playerIn, new TextComponentTranslation("chat.changemode",
                             new TextComponentTranslation(quarry.filler ? "chat.fillermode" : "chat.quarrymode")));
                 }
             }

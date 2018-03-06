@@ -10,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.text.ITextComponent;
 
 public class Diff11 implements VersionDiff {
 
@@ -51,5 +52,10 @@ public class Diff11 implements VersionDiff {
     @Override
     public Iterator<NBTBase> getIterator(NBTTagList list) {
         return list.iterator();
+    }
+
+    @Override
+    public void sendMessage(EntityPlayer player, ITextComponent component) {
+        player.sendStatusMessage(component, false);
     }
 }
