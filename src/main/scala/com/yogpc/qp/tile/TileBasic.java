@@ -27,6 +27,7 @@ import com.yogpc.qp.PowerManager;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.ReflectionHelper;
 import com.yogpc.qp.compat.InvUtils;
+import com.yogpc.qp.gui.TranslationKeys;
 import com.yogpc.qp.version.VersionUtil;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -38,11 +39,11 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.Optional;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
@@ -93,16 +94,16 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     protected boolean S_breakBlock(final int x, final int y, final int z) {
         final List<ItemStack> dropped = new LinkedList<>();
         Chunk loadedChunk = getWorld().getChunkProvider().getLoadedChunk(x >> 4, z >> 4);
-        final IBlockState b;
+        final IBlockState blockState;
         BlockPos pos = new BlockPos(x, y, z);
         if (loadedChunk == null) {
-            b = getWorld().getBlockState(pos);
+            blockState = getWorld().getBlockState(pos);
         } else {
-            b = loadedChunk.getBlockState(x & 0xF, y, z & 0xF);
+            blockState = loadedChunk.getBlockState(x & 0xF, y, z & 0xF);
         }
-        if (b.getBlock().isAir(b, getWorld(), pos))
+        if (blockState.getBlock().isAir(blockState, getWorld(), pos))
             return true;
-        if (pump != null && TilePump.isLiquid(b, false, getWorld(), pos)) {
+        if (pump != null && TilePump.isLiquid(blockState, false, getWorld(), pos)) {
             final TileEntity te = getWorld().getTileEntity(getPos().offset(pump));
             if (!(te instanceof TilePump)) {
                 this.pump = null;
@@ -111,41 +112,39 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
             }
             return ((TilePump) te).S_removeLiquids(this, x, y, z);
         }
-        if (!PowerManager.useEnergyBreak(this, b.getBlockHardness(getWorld(), pos),
-                S_addDroppedItems(dropped, b.getBlock(), x, y, z), this.unbreaking))
+        if (!PowerManager.useEnergyBreak(this, blockState.getBlockHardness(getWorld(), pos),
+                S_addDroppedItems(dropped, blockState, pos), this.unbreaking))
             return false;
         this.cacheItems.addAll(dropped);
         this.getWorld().destroyBlock(pos, false);
         return true;
     }
 
-    boolean S_connect(final EnumFacing fd) {
+    boolean S_connect(final EnumFacing facing) {
         if (pump != null) {
             final TileEntity te = this.getWorld().getTileEntity(getPos().offset(pump));
-            if (te instanceof TilePump && this.pump != fd)
+            if (te instanceof TilePump && this.pump != facing)
                 return false;
         }
-        this.pump = fd;
+        this.pump = facing;
         G_renew_powerConfigure();
         return true;
     }
 
-    private byte S_addDroppedItems(final Collection<ItemStack> list, final Block b, final int x, final int y, final int z) {
-        BlockPos pos = new BlockPos(x, y, z);
-        IBlockState state = getWorld().getBlockState(pos);
-        if (b.canSilkHarvest(this.getWorld(), pos, state, null) && this.silktouch
-                && this.silktouchList.contains(new BlockData(ForgeRegistries.BLOCKS.getKey(b),
-                state.getBlock().getMetaFromState(state))) == this.silktouchInclude) {
-            list.add((ItemStack) ReflectionHelper.invoke(createStackedBlock, b, state));
+    private byte S_addDroppedItems(final Collection<ItemStack> collection, final IBlockState state, final BlockPos pos) {
+        Block block = state.getBlock();
+        if (block.canSilkHarvest(getWorld(), pos, state, null) && this.silktouch
+                && silktouchList.contains(new BlockData(block, state)) == this.silktouchInclude) {
+            collection.add((ItemStack) ReflectionHelper.invoke(createStackedBlock, block, state));
             return -1;
+        } else {
+            boolean b = fortuneList.contains(new BlockData(block, state)) == this.fortuneInclude;
+            byte fortuneLevel = b ? this.fortune : 0;
+            NonNullList<ItemStack> list = NonNullList.create();
+            list.addAll(block.getDrops(getWorld(), pos, state, fortuneLevel));
+            collection.addAll(list);
+            return fortuneLevel;
         }
-        if (this.fortuneList.contains(new BlockData(ForgeRegistries.BLOCKS.getKey(b),
-                state.getBlock().getMetaFromState(state))) == this.fortuneInclude) {
-            list.addAll(b.getDrops(getWorld(), pos, state, this.fortune));
-            return this.fortune;
-        }
-        list.addAll(b.getDrops(getWorld(), pos, state, 0));
-        return 0;
     }
 
     public static final Method createStackedBlock = ReflectionHelper.getMethod(Block.class,
@@ -235,37 +234,36 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
 
     @Override
     @Nonnull
-    public ItemStack decrStackSize(final int i, final int a) {
-        if (i < 0 || i >= this.cacheItems.size())
+    public ItemStack decrStackSize(final int index, final int count) {
+        if (index < 0 || index >= this.cacheItems.size())
             return com.yogpc.qp.version.VersionUtil.empty();
-        final ItemStack from = this.cacheItems.get(i);
-        final ItemStack res = new ItemStack(from.getItem(), Math.min(a, VersionUtil.getCount(from)), from.getItemDamage());
+        final ItemStack from = this.cacheItems.get(index);
+        final ItemStack res = new ItemStack(from.getItem(), Math.min(count, VersionUtil.getCount(from)), from.getItemDamage());
         if (from.hasTagCompound())
             //noinspection ConstantConditions
             res.setTagCompound(from.getTagCompound().copy());
         VersionUtil.shrink(from, VersionUtil.getCount(res));
         if (VersionUtil.isEmpty(from))
-            this.cacheItems.remove(i);
+            this.cacheItems.remove(index);
         return res;
     }
 
     @Override
     @Nonnull
-    public ItemStack removeStackFromSlot(int i) {
-        return i < 0 || i >= this.cacheItems.size() ? com.yogpc.qp.version.VersionUtil.empty() : this.cacheItems.get(i);
+    public ItemStack removeStackFromSlot(int index) {
+        return index < 0 || index >= this.cacheItems.size() ? com.yogpc.qp.version.VersionUtil.empty() : this.cacheItems.remove(index);
     }
 
     @Override
-    public void setInventorySlotContents(final int i, final ItemStack is) {
-        if (VersionUtil.nonEmpty(is))
+    public void setInventorySlotContents(final int index, final ItemStack stack) {
+        if (VersionUtil.nonEmpty(stack))
             QuarryPlus.LOGGER.warn("QuarryPlus WARN: call setInventorySlotContents with non null ItemStack.");
-        if (i >= 0 && i < this.cacheItems.size())
-            this.cacheItems.remove(i);
+        removeStackFromSlot(index);
     }
 
     @Override
     public String getName() {
-        return "container.yog.basic";
+        return TranslationKeys.MACHINE_BUFFER;
     }
 
     @Override

@@ -16,6 +16,7 @@ package com.yogpc.qp.tile;
 import com.yogpc.qp.PowerManager;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.block.BlockMiningWell;
+import com.yogpc.qp.gui.TranslationKeys;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.TileMessage;
 import net.minecraft.block.state.IBlockState;
@@ -47,7 +48,7 @@ public class TileMiningWell extends TileBasic implements ITickable {
 
     @Override
     public String getName() {
-        return "tile.miningwellplus.name";
+        return TranslationKeys.miningwell;
     }
 
     @Override

@@ -16,6 +16,7 @@ import javax.annotation.{Nonnull, Nullable}
 
 import com.yogpc.qp.Config
 import com.yogpc.qp.block.ADismCBlock
+import com.yogpc.qp.gui.TranslationKeys
 import com.yogpc.qp.version.VersionUtil
 import net.minecraft.entity.player.{EntityPlayer, InventoryPlayer}
 import net.minecraft.init.Blocks
@@ -134,7 +135,7 @@ class TilePlacer extends TileEntity with HasInv {
 
     override def clear() = inventory.clear()
 
-    override def getName = "tile.placerplus.name"
+    override def getName = TranslationKeys.placer
 
     override def isUsableByPlayer(player: EntityPlayer) = getWorld.getTileEntity(getPos) eq this
 

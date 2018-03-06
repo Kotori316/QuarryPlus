@@ -29,6 +29,7 @@ import com.google.common.collect.Sets;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.block.BlockMarker;
+import com.yogpc.qp.gui.TranslationKeys;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.marker.LinkReply;
 import com.yogpc.qp.packet.marker.LinkRequest;
@@ -49,6 +50,8 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
@@ -60,7 +63,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @Optional.Interface(iface = "buildcraft.api.tiles.ITileAreaProvider", modid = QuarryPlus.Optionals.Buildcraft_tiles)
-public class TileMarker extends APacketTile implements ITileAreaProvider, ITickable, IChunkLoadTile {
+public class TileMarker extends APacketTile implements ITileAreaProvider, ITickable, IChunkLoadTile, IDebugSender {
     public static final List<Link> linkList = Collections.synchronizedList(new ArrayList<>());
     public static final List<Laser> laserList = Collections.synchronizedList(new ArrayList<>());
     public static final IndexOnlyList<Link> LINK_INDEX = new IndexOnlyList<>(linkList, linkList);
@@ -328,6 +331,17 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
             }
         }
         return false;
+    }
+
+    @Override
+    public String getDebugName() {
+        return TranslationKeys.marker;
+    }
+
+    @Override
+    public List<? extends ITextComponent> getDebugmessages() {
+        return Arrays.asList(new TextComponentString("Link : " + link),
+                new TextComponentString("Laser : " + laser));
     }
 
     public static class BlockIndex {

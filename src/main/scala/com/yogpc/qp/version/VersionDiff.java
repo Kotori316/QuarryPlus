@@ -51,4 +51,8 @@ public interface VersionDiff {
         return StreamSupport.stream(Spliterators.spliterator(getIterator(list), list.tagCount(), Spliterator.ORDERED),
                 false).map(NBT_TAG_COMPOUND_FUNCTION);
     }
+
+    default boolean changeAdvPumpState() {
+        return false;
+    }
 }

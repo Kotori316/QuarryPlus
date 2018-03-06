@@ -5,6 +5,7 @@ import javax.annotation.Nonnull
 
 import com.yogpc.qp.block.ADismCBlock
 import com.yogpc.qp.compat.{INBTReadable, INBTWritable, InvUtils}
+import com.yogpc.qp.gui.TranslationKeys
 import com.yogpc.qp.packet.PacketHandler
 import com.yogpc.qp.packet.advquarry.AdvModeMessage
 import com.yogpc.qp.tile.TileAdvQuarry.{DigRange, ItemElement, ItemList, QEnch}
@@ -29,7 +30,7 @@ import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.util.Constants
 import net.minecraftforge.common.{ForgeChunkManager, IShearable}
 import net.minecraftforge.fluids.capability.templates.FluidHandlerFluidMap
-import net.minecraftforge.fluids.capability.{CapabilityFluidHandler, FluidTankProperties, IFluidHandler, IFluidTankProperties}
+import net.minecraftforge.fluids.capability.{CapabilityFluidHandler, IFluidHandler, IFluidTankProperties}
 import net.minecraftforge.fluids.{Fluid, FluidStack, FluidTank, FluidUtil}
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import net.minecraftforge.items.{CapabilityItemHandler, IItemHandlerModifiable}
@@ -430,7 +431,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 
     override def getStackInSlot(index: Int) = cacheItems.list(index).toStack
 
-    override val getDebugName = "tile.chunkdestroyer.name"
+    override val getDebugName = TranslationKeys.advquarry
 
     override def isUsableByPlayer(player: EntityPlayer) = self.getWorld.getTileEntity(self.getPos) eq this
 
@@ -547,7 +548,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 
     def preparedFiller: Boolean = {
         val y = if (Config.content.removeBedrock) 1 else 5
-        if (BlockPos.func_191531_b(digRange.minX, y, digRange.minZ, digRange.maxX, y, digRange.maxZ).iterator().asScala.forall(getWorld.isAirBlock)) {
+        if (BlockPos.getAllInBoxMutable(new BlockPos(digRange.minX, y, digRange.minZ), new BlockPos(digRange.maxX, y, digRange.maxZ)).iterator().asScala.forall(getWorld.isAirBlock)) {
             val need = (digRange.maxX - digRange.minX + 1) * (digRange.maxZ - digRange.minZ + 1)
             val stacks = InvUtils.findItemHander(getWorld, getPos.up, EnumFacing.DOWN).toList
               .flatMap(handler => Range(0, handler.getSlots).map(handler.getStackInSlot))
@@ -581,7 +582,6 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
     }
 
     private[TileAdvQuarry] class FluidHandler extends FluidHandlerFluidMap(WrapAsJava.mutableMapAsJavaMap(fluidStacks)) {
-        val emptyProperty = new FluidTankProperties(null, 0, false, false)
 
         /**
           * Not fillable.
@@ -592,7 +592,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
             if (fluidStacks.nonEmpty) {
                 super.getTankProperties
             } else {
-                Array(emptyProperty)
+                IDummyFluidHandler.emptyPropertyArray
             }
         }
 

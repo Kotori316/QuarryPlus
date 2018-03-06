@@ -8,7 +8,6 @@ import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.BuildcraftHelper;
-import com.yogpc.qp.compat.EnchantmentHelper;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.item.ItemBlockAdvPump;
 import com.yogpc.qp.tile.IEnchantableTile;
@@ -58,7 +57,7 @@ public class BlockAdvPump extends ADismCBlock {
         } else if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == 0) {
             if (!worldIn.isRemote)
                 Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t ->
-                        EnchantmentHelper.getEnchantmentsChat(t).forEach(playerIn::sendMessage));
+                        IEnchantableTile.getEnchantmentsChat(t).forEach(playerIn::sendMessage));
             return true;
         } else if (!playerIn.isSneaking()) {
             playerIn.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdAdvPump(), worldIn, pos.getX(), pos.getY(), pos.getZ());
@@ -91,7 +90,7 @@ public class BlockAdvPump extends ADismCBlock {
         if (TileAdvPump.class.isInstance(entity)) {
             TileAdvPump quarry = (TileAdvPump) entity;
             ItemStack stack = new ItemStack(QuarryPlusI.blockStandalonePump(), 1, 0);
-            EnchantmentHelper.enchantmentToIS(quarry, stack);
+            IEnchantableTile.enchantmentToIS(quarry, stack);
             drops.add(stack);
         }
     }
@@ -100,7 +99,7 @@ public class BlockAdvPump extends ADismCBlock {
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
         if (!worldIn.isRemote) {
-            Consumer<TileAdvPump> consumer = pump -> EnchantmentHelper.init(pump, stack.getEnchantmentTagList());
+            Consumer<TileAdvPump> consumer = pump -> IEnchantableTile.init(pump, stack.getEnchantmentTagList());
             Optional.ofNullable((TileAdvPump) worldIn.getTileEntity(pos)).ifPresent(consumer.andThen(TilePump.requestTicket));
         }
     }

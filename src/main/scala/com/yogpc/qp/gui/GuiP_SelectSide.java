@@ -46,17 +46,17 @@ public class GuiP_SelectSide extends GuiScreenA {
     public void initGui() {
         super.initGui();
         this.buttonList.add(new GuiButton(EnumFacing.UP.ordinal(), this.width / 2 - 50,
-                this.height / 2 - 60, 100, 20, I18n.format("FD.up")));
+                this.height / 2 - 60, 100, 20, I18n.format(TranslationKeys.UP)));
         this.buttonList.add(new GuiButton(EnumFacing.DOWN.ordinal(), this.width / 2 - 50,
-                this.height / 2 + 40, 100, 20, I18n.format("FD.down")));
+                this.height / 2 + 40, 100, 20, I18n.format(TranslationKeys.DOWN)));
         this.buttonList.add(new GuiButton(EnumFacing.SOUTH.ordinal(), this.width / 2 - 50,
-                this.height / 2 + 15, 100, 20, I18n.format("FD.south")));
+                this.height / 2 + 15, 100, 20, I18n.format(TranslationKeys.SOUTH)));
         this.buttonList.add(new GuiButton(EnumFacing.NORTH.ordinal(), this.width / 2 - 50,
-                this.height / 2 - 35, 100, 20, I18n.format("FD.north")));
+                this.height / 2 - 35, 100, 20, I18n.format(TranslationKeys.NORTH)));
         this.buttonList.add(new GuiButton(EnumFacing.EAST.ordinal(), this.width / 2 + 40,
-                this.height / 2 - 10, 100, 20, I18n.format("FD.east")));
+                this.height / 2 - 10, 100, 20, I18n.format(TranslationKeys.EAST)));
         this.buttonList.add(new GuiButton(EnumFacing.WEST.ordinal(), this.width / 2 - 140,
-                this.height / 2 - 10, 100, 20, I18n.format("FD.west")));
+                this.height / 2 - 10, 100, 20, I18n.format(TranslationKeys.WEST)));
     }
 
     @Override
@@ -76,7 +76,7 @@ public class GuiP_SelectSide extends GuiScreenA {
     public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
         drawDefaultBackground();
         drawCenteredString(this.fontRendererObj,
-                I18n.format(this.copy ? "pp.copy.select" : "pp.set.select"), this.width / 2, 8, 0xFFFFFF);
+                I18n.format(this.copy ? TranslationKeys.COPY_SELECT : TranslationKeys.SET_SELECT), this.width / 2, 8, 0xFFFFFF);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
