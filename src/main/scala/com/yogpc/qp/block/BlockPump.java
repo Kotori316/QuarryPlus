@@ -23,6 +23,7 @@ import com.yogpc.qp.item.ItemBlockPump;
 import com.yogpc.qp.item.ItemTool;
 import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TilePump;
+import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
@@ -112,8 +113,8 @@ public class BlockPump extends ADismCBlock {
             if (!worldIn.isRemote && stack.getItemDamage() == ItemTool.meta_statuschecker()) {
                 TilePump pump = (TilePump) worldIn.getTileEntity(pos);
                 if (pump != null) {
-                    IEnchantableTile.getEnchantmentsChat(pump).forEach(playerIn::sendMessage);
-                    pump.C_getNames().forEach(playerIn::sendMessage);
+                    pump.sendEnchantMassage(playerIn);
+                    pump.C_getNames().forEach(c -> VersionUtil.sendMessage(playerIn, c));
                 }
             } else if (stack.getItemDamage() == ItemTool.meta_liquidselector()) {
                 TilePump pump = (TilePump) worldIn.getTileEntity(pos);

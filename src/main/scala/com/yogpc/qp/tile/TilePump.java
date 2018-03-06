@@ -32,6 +32,7 @@ import com.yogpc.qp.gui.TranslationKeys;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.pump.Mappings;
 import com.yogpc.qp.packet.pump.Now;
+import com.yogpc.qp.version.VersionUtil;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -291,9 +292,9 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         else
             this.range++;
         if (this.quarryRange)
-            ep.sendMessage(new TextComponentTranslation(TranslationKeys.CHAT_PUMP_RTOGGLE_QUARRY));
+            VersionUtil.sendMessage(ep, new TextComponentTranslation(TranslationKeys.CHAT_PUMP_RTOGGLE_QUARRY));
         else
-            ep.sendMessage(new TextComponentTranslation(TranslationKeys.CHAT_PUMP_RTOGGLE_NUM, Integer.toString(this.range * 2 + 1)));
+            VersionUtil.sendMessage(ep, new TextComponentTranslation(TranslationKeys.CHAT_PUMP_RTOGGLE_NUM, Integer.toString(this.range * 2 + 1)));
         this.fwt = 0;
     }
 

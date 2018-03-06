@@ -83,7 +83,7 @@ public class BlockAdvQuarry extends ADismCBlock {
         } else if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == 0) {
             if (!worldIn.isRemote)
                 Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t ->
-                        IEnchantableTile.getEnchantmentsChat(t).forEach(playerIn::sendMessage));
+                        t.sendEnchantMassage(playerIn));
             return true;
         } else if (stack.getItem() == Items.STICK) {
             if (!worldIn.isRemote) {

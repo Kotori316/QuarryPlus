@@ -10,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.text.ITextComponent;
 
 public class Diff12 implements VersionDiff {
 
@@ -56,5 +57,10 @@ public class Diff12 implements VersionDiff {
     @Override
     public boolean changeAdvPumpState() {
         return true;
+    }
+
+    @Override
+    public void sendMessage(EntityPlayer player, ITextComponent component) {
+        player.sendStatusMessage(component, false);
     }
 }

@@ -19,6 +19,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.tile.TileMarker;
+import com.yogpc.qp.version.VersionUtil;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
@@ -199,9 +200,9 @@ public class BlockMarker extends Block implements ITileEntityProvider {//BlockCo
                     final TileMarker.Link l = marker.link;
                     if (l == null)
                         return true;
-                    playerIn.sendMessage(new TextComponentTranslation("chat.markerarea"));
+                    VersionUtil.sendMessage(playerIn, new TextComponentTranslation("chat.markerarea"));
                     String sb = "x:" + l.xMin + " y:" + l.yMin + " z:" + l.zMin + " - x:" + l.xMax + " y:" + l.yMax + " z:" + l.zMax;
-                    playerIn.sendMessage(new TextComponentString(sb));// NP coord info
+                    VersionUtil.sendMessage(playerIn, new TextComponentString(sb));// NP coord info
                     return true;
                 } else {
                     marker.S_tryConnection();

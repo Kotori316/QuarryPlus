@@ -15,6 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.text.ITextComponent;
 
 public interface VersionDiff {
     ItemStack empty();
@@ -55,4 +56,6 @@ public interface VersionDiff {
     default boolean changeAdvPumpState() {
         return false;
     }
+
+    void sendMessage(EntityPlayer player, ITextComponent component);
 }
