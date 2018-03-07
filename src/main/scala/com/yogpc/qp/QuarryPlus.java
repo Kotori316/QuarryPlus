@@ -15,6 +15,7 @@ package com.yogpc.qp;
 
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 
 import com.yogpc.qp.compat.BuildcraftHelper;
@@ -199,33 +200,33 @@ public class QuarryPlus {
         event.getRegistry().register(debugItem());
     }
 
-    @SuppressWarnings("ConstantConditions")
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
     public void registerModels(ModelRegistryEvent event) {
-        ModelLoader.setCustomModelResourceLocation(blockQuarry().itemBlock(), 0, new ModelResourceLocation(blockQuarry().getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(blockFrame().itemBlock, 0, new ModelResourceLocation(blockFrame().getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(blockFrame().itemBlock, 1, new ModelResourceLocation(blockFrame().getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(blockMarker().itemBlock, 0, new ModelResourceLocation(blockMarker().getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(blockWorkbench().itemBlock(), 0, new ModelResourceLocation(blockWorkbench().getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(blockPump().itemBlock(), 0, new ModelResourceLocation(blockPump().getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(blockMover().itemBlock, 0, new ModelResourceLocation(blockMover().getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(blockBreaker().itemBlock(), 0, new ModelResourceLocation(blockBreaker().getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(blockPlacer().itemBlock(), 0, new ModelResourceLocation(blockPlacer().getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(blockMiningWell().itemBlock(), 0, new ModelResourceLocation(blockMiningWell().getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(blockPlainPipe().itemBlock, 0, new ModelResourceLocation(blockPlainPipe().getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(blockRefinery().itemBlock(), 0, new ModelResourceLocation(blockRefinery().getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(blockController().itemBlock, 0, new ModelResourceLocation(blockController().getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(blockLaser().itemBlock(), 0, new ModelResourceLocation(blockLaser().getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(blockChunkdestroyer().itemBlock(), 0, new ModelResourceLocation(blockChunkdestroyer().getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(blockStandalonePump().itemBlock(), 0, new ModelResourceLocation(blockStandalonePump().getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(itemTool(), 0, new ModelResourceLocation(prefix + ItemTool.statuschecker(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(itemTool(), 1, new ModelResourceLocation(prefix + ItemTool.listeditor(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(itemTool(), 2, new ModelResourceLocation(prefix + ItemTool.liquidselector(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(magicmirror(), 0, new ModelResourceLocation(magicmirror().getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(magicmirror(), 1, new ModelResourceLocation(magicmirror().getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(magicmirror(), 2, new ModelResourceLocation(magicmirror().getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(debugItem(), 0, new ModelResourceLocation(debugItem().getRegistryName(), "inventory"));
+        final String variantIn = "inventory";
+        ModelLoader.setCustomModelResourceLocation(blockQuarry().itemBlock(), 0, proxy.fromEntry(blockQuarry()));
+        ModelLoader.setCustomModelResourceLocation(blockFrame().itemBlock, 0, proxy.fromEntry(blockFrame()));
+        ModelLoader.setCustomModelResourceLocation(blockFrame().itemBlock, 1, proxy.fromEntry(blockFrame()));
+        ModelLoader.setCustomModelResourceLocation(blockMarker().itemBlock, 0, proxy.fromEntry(blockMarker()));
+        ModelLoader.setCustomModelResourceLocation(blockWorkbench().itemBlock(), 0, proxy.fromEntry(blockWorkbench()));
+        ModelLoader.setCustomModelResourceLocation(blockPump().itemBlock(), 0, proxy.fromEntry(blockPump()));
+        ModelLoader.setCustomModelResourceLocation(blockMover().itemBlock, 0, proxy.fromEntry(blockMover()));
+        ModelLoader.setCustomModelResourceLocation(blockBreaker().itemBlock(), 0, proxy.fromEntry(blockBreaker()));
+        ModelLoader.setCustomModelResourceLocation(blockPlacer().itemBlock(), 0, proxy.fromEntry(blockPlacer()));
+        ModelLoader.setCustomModelResourceLocation(blockMiningWell().itemBlock(), 0, proxy.fromEntry(blockMiningWell()));
+        ModelLoader.setCustomModelResourceLocation(blockPlainPipe().itemBlock, 0, proxy.fromEntry(blockPlainPipe()));
+        ModelLoader.setCustomModelResourceLocation(blockRefinery().itemBlock(), 0, proxy.fromEntry(blockRefinery()));
+        ModelLoader.setCustomModelResourceLocation(blockController().itemBlock, 0, proxy.fromEntry(blockController()));
+        ModelLoader.setCustomModelResourceLocation(blockLaser().itemBlock(), 0, proxy.fromEntry(blockLaser()));
+        ModelLoader.setCustomModelResourceLocation(blockChunkdestroyer().itemBlock(), 0, proxy.fromEntry(blockChunkdestroyer()));
+        ModelLoader.setCustomModelResourceLocation(blockStandalonePump().itemBlock(), 0, proxy.fromEntry(blockStandalonePump()));
+        ModelLoader.setCustomModelResourceLocation(itemTool(), 0, new ModelResourceLocation(prefix + ItemTool.statuschecker(), variantIn));
+        ModelLoader.setCustomModelResourceLocation(itemTool(), 1, new ModelResourceLocation(prefix + ItemTool.listeditor(), variantIn));
+        ModelLoader.setCustomModelResourceLocation(itemTool(), 2, new ModelResourceLocation(prefix + ItemTool.liquidselector(), variantIn));
+        ModelLoader.setCustomModelResourceLocation(magicmirror(), 0, proxy.fromEntry(magicmirror()));
+        ModelLoader.setCustomModelResourceLocation(magicmirror(), 1, proxy.fromEntry(magicmirror()));
+        ModelLoader.setCustomModelResourceLocation(magicmirror(), 2, proxy.fromEntry(magicmirror()));
+        ModelLoader.setCustomModelResourceLocation(debugItem(), 0, proxy.fromEntry(debugItem()));
     }
 
     @SubscribeEvent
@@ -255,12 +256,12 @@ public class QuarryPlus {
             if (Optionals.IMC_Remove.equals(imcMessage.key)) {
                 WorkbenchRecipes.removeRecipe(ItemDamage.apply(toStack.apply(nbtValue)));
             } else if (Optionals.IMC_Add.equals(imcMessage.key)) {
-                Function<ItemStack, Function<Integer, ItemStack>> toFunc = stack -> (Function<Integer, ItemStack>) integer ->
+                Function<ItemStack, IntFunction<ItemStack>> toFunc = stack -> (IntFunction<ItemStack>) integer ->
                         ItemHandlerHelper.copyStackWithSize(stack, VersionUtil.getCount(stack) * integer);
 
                 NBTTagList list = nbtValue.getTagList(Optionals.IMC_Add, Constants.NBT.TAG_COMPOUND);
                 ItemDamage result = ItemDamage.apply(toStack.apply(list.getCompoundTagAt(0)));
-                List<Function<Integer, ItemStack>> functionList = VersionUtil.nbtListStream(list).skip(1).map(toStack.andThen(toFunc)).collect(Collectors.toList());
+                List<IntFunction<ItemStack>> functionList = VersionUtil.nbtListStream(list).skip(1).map(toStack.andThen(toFunc)).collect(Collectors.toList());
                 WorkbenchRecipes.addListRecipe(result, nbtValue.getInteger(Optionals.IMC_Energy), functionList, true, WorkbenchRecipes.UnitRF$.MODULE$);
             }
         });
@@ -268,46 +269,47 @@ public class QuarryPlus {
 
     @SuppressWarnings("unused")
     public static class Optionals {
-        public static final String clientProxy = "com.yogpc.qp.ProxyClient";
-        public static final String serverProxy = "com.yogpc.qp.ProxyCommon";
-        public static final String configFactory = "com.yogpc.qp.gui.GuiFactory";
-        public static final String IC2_modID = "ic2";
-        public static final String Buildcraft_modID = "buildcraftcore";
-        public static final String COFH_modID = "cofhcore";
-        public static final String COFH_block = "cofhapi|block";
-        public static final String COFH_item = "cofhapi|item";
-        public static final String COFH_energy = "cofhapi|energy";
-        public static final String COFH_tileentity = "cofhapi|tileentity";
         public static final String BuildCraft_core = "BuildCraftAPI|core";
-        public static final String Buildcraft_tools = "BuildCraftAPI|tools";
-        public static final String Buildcraft_recipes = "BuildCraftAPI|recipes";
-        public static final String Buildcraft_transport = "BuildCraftAPI|transport";
-        public static final String Buildcraft_tiles = "BuildCraftAPI|tiles";
         public static final String Buildcraft_facades = "BuildCraftAPI|facades";
-        public static final String updateJson = "https://raw.githubusercontent.com/Kotori316/QuarryPlus/1.12/update.json";
-        public static final String IMC_Remove = "IMC_RemoveRecipe";
+        public static final String Buildcraft_modID = "buildcraftcore";
+        public static final String Buildcraft_recipes = "BuildCraftAPI|recipes";
+        public static final String Buildcraft_tiles = "BuildCraftAPI|tiles";
+        public static final String Buildcraft_tools = "BuildCraftAPI|tools";
+        public static final String Buildcraft_transport = "BuildCraftAPI|transport";
+        public static final String COFH_block = "cofhapi|block";
+        public static final String COFH_energy = "cofhapi|energy";
+        public static final String COFH_item = "cofhapi|item";
+        public static final String COFH_modID = "cofhcore";
+        public static final String COFH_tileentity = "cofhapi|tileentity";
+        public static final String IC2_modID = "ic2";
         public static final String IMC_Add = "IMC_AddRecipe";
         public static final String IMC_Energy = "energy";
+        public static final String IMC_Remove = "IMC_RemoveRecipe";
+        public static final String RedstoneFlux_modID = "redstoneflux";
+        public static final String clientProxy = "com.yogpc.qp.ProxyClient";
+        public static final String configFactory = "com.yogpc.qp.gui.GuiFactory";
+        public static final String serverProxy = "com.yogpc.qp.ProxyCommon";
+        public static final String updateJson = "https://raw.githubusercontent.com/Kotori316/QuarryPlus/1.12/update.json";
     }
 
     public static class Names {
-        public static final String breaker = "breakerplus";
-        public static final String placer = "placerplus";
-        public static final String frame = "quarryframe";
-        public static final String marker = "markerplus";
-        public static final String plainpipe = "plainpipe";
-        public static final String miningwell = "miningwellplus";
-        public static final String quarry = "quarryplus";
-        public static final String pump = "pumpplus";
-        public static final String refinery = "refineryplus";
-        public static final String workbench = "workbenchplus";
-        public static final String controller = "spawnercontroller";
-        public static final String mover = "enchantmover";
-        public static final String advquarry = "chunkdestroyer";
         public static final String advpump = "standalonepump";
-        public static final String laser = "laserplus";
-        public static final String mirror = "magicmirror";
-        public static final String tool = "tool";
+        public static final String advquarry = "chunkdestroyer";
+        public static final String breaker = "breakerplus";
+        public static final String controller = "spawnercontroller";
         public static final String debug = "quarrydebug";
+        public static final String frame = "quarryframe";
+        public static final String laser = "laserplus";
+        public static final String marker = "markerplus";
+        public static final String miningwell = "miningwellplus";
+        public static final String mirror = "magicmirror";
+        public static final String mover = "enchantmover";
+        public static final String placer = "placerplus";
+        public static final String plainpipe = "plainpipe";
+        public static final String pump = "pumpplus";
+        public static final String quarry = "quarryplus";
+        public static final String refinery = "refineryplus";
+        public static final String tool = "tool";
+        public static final String workbench = "workbenchplus";
     }
 }

@@ -25,6 +25,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.block.BlockFrame;
 import com.yogpc.qp.block.BlockQuarry;
+import com.yogpc.qp.gui.TranslationKeys;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.TileMessage;
 import com.yogpc.qp.packet.quarry.ModeMessage;
@@ -596,7 +597,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
 
     @Override
     public String getDebugName() {
-        return "tile.quarryplus.name";
+        return TranslationKeys.quarry;
     }
 
     /**
@@ -685,12 +686,12 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     @Override
     public List<ITextComponent> getDebugmessages() {
         ArrayList<ITextComponent> list = new ArrayList<>();
-        list.add(new TextComponentTranslation("chat.currentmode", G_getNow()));
+        list.add(new TextComponentTranslation(TranslationKeys.CURRENT_MODE, G_getNow()));
         list.add(new TextComponentString(String.format("Next target : (%d, %d, %d)", targetX, targetY, targetZ)));
         list.add(new TextComponentString(String.format("Head Pos : (%s, %s, %s)", headPosX, headPosY, headPosZ)));
         list.add(new TextComponentString("X : " + xMin + " to " + xMax));
         list.add(new TextComponentString("Z : " + zMin + " to " + zMax));
-        list.add(new TextComponentTranslation(filler ? "chat.fillermode" : "chat.quarrymode"));
+        list.add(new TextComponentTranslation(filler ? TranslationKeys.FILLER_MODE : TranslationKeys.QUARRY_MODE));
         return list;
     }
 

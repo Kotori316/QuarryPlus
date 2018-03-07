@@ -35,14 +35,16 @@ class GuiAdvQuarry(tile: TileAdvQuarry, player: EntityPlayer) extends GuiContain
 
     override def initGui(): Unit = {
         super.initGui()
-        buttonList.add(new GuiButton(0, guiLeft + 98, guiTop + 16, 10, 8, "+"))
-        buttonList.add(new GuiButton(1, guiLeft + 68, guiTop + 16, 10, 8, "-"))
-        buttonList.add(new GuiButton(2, guiLeft + 98, guiTop + 62, 10, 8, "+"))
-        buttonList.add(new GuiButton(3, guiLeft + 68, guiTop + 62, 10, 8, "-"))
-        buttonList.add(new GuiButton(4, guiLeft + 38, guiTop + 39, 10, 8, "+"))
-        buttonList.add(new GuiButton(5, guiLeft + 8, guiTop + 39, 10, 8, "-"))
-        buttonList.add(new GuiButton(6, guiLeft + 158, guiTop + 39, 10, 8, "+"))
-        buttonList.add(new GuiButton(7, guiLeft + 128, guiTop + 39, 10, 8, "-"))
+        val plus = "+"
+        val minus = "-"
+        buttonList.add(new GuiButton(0, guiLeft + 98, guiTop + 16, 10, 8, plus))
+        buttonList.add(new GuiButton(1, guiLeft + 68, guiTop + 16, 10, 8, minus))
+        buttonList.add(new GuiButton(2, guiLeft + 98, guiTop + 62, 10, 8, plus))
+        buttonList.add(new GuiButton(3, guiLeft + 68, guiTop + 62, 10, 8, minus))
+        buttonList.add(new GuiButton(4, guiLeft + 38, guiTop + 39, 10, 8, plus))
+        buttonList.add(new GuiButton(5, guiLeft + 8, guiTop + 39, 10, 8, minus))
+        buttonList.add(new GuiButton(6, guiLeft + 158, guiTop + 39, 10, 8, plus))
+        buttonList.add(new GuiButton(7, guiLeft + 128, guiTop + 39, 10, 8, minus))
     }
 
     private def range = tile.digRange
@@ -80,9 +82,9 @@ class GuiAdvQuarry(tile: TileAdvQuarry, player: EntityPlayer) extends GuiContain
     }
 
     override def drawGuiContainerForegroundLayer(mouseX: Int, mouseY: Int) {
-        val s: String = I18n.format("tile.chunkdestroyer.name")
+        val s: String = I18n.format(TranslationKeys.advquarry)
         this.fontRendererObj.drawString(s, this.xSize / 2 - this.fontRendererObj.getStringWidth(s) / 2, 6, 0x404040)
-        this.fontRendererObj.drawString(I18n.format("container.inventory"), 8, this.ySize - 96 + 2, 0x404040)
+        this.fontRendererObj.drawString(I18n.format(TranslationKeys.CONTAINER_INVENTORY), 8, this.ySize - 96 + 2, 0x404040)
         if (range.defined) {
             val chunkPos = new ChunkPos(tile.getPos)
             val north: Double = chunkPos.getZStart - range.minZ

@@ -10,6 +10,9 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
 
 public class VersionUtil {
 
@@ -55,5 +58,22 @@ public class VersionUtil {
 
     public static Stream<NBTTagCompound> nbtListStream(NBTTagList list) {
         return QuarryPlus.DIFF.nbtListStream(list);
+    }
+
+    public static boolean changeAdvPumpState() {
+        return QuarryPlus.DIFF.changeAdvPumpState();
+    }
+
+    public static ResourceLocation getRegistryName(IForgeRegistryEntry<?> entry) {
+        ResourceLocation registryName = entry.getRegistryName();
+        if (registryName != null) {
+            return registryName;
+        } else {
+            return new ResourceLocation("Unknown:Dummy");
+        }
+    }
+
+    public static void sendMessage(EntityPlayer player, ITextComponent component) {
+        QuarryPlus.DIFF.sendMessage(player, component);
     }
 }

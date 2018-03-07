@@ -5,11 +5,11 @@ import java.io.IOException;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.tile.TileQuarry;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -55,7 +55,7 @@ public class ModeMessage implements IMessage {
             TileEntity entity = world.getTileEntity(pos);
             if (TileQuarry.class.isInstance(entity)) {
                 TileQuarry quarry = (TileQuarry) entity;
-                Minecraft.getMinecraft().addScheduledTask(() -> {
+                FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> {
                     quarry.setNow(mode);
                     quarry.xMin = minPos.getX();
                     quarry.yMin = minPos.getY();

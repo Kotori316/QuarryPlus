@@ -21,10 +21,12 @@ import java.util.function.Consumer;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.BuildcraftHelper;
-import com.yogpc.qp.compat.EnchantmentHelper;
 import com.yogpc.qp.compat.InvUtils;
+import com.yogpc.qp.gui.TranslationKeys;
 import com.yogpc.qp.item.ItemBlockEnchantable;
+import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TileQuarry;
+import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -66,7 +68,7 @@ public class BlockQuarry extends ADismCBlock {
                 final Item it = getItemDropped(state, worldIn.rand, 0);
                 for (int i = 0; i < count; i++) {
                     final ItemStack is = new ItemStack(it, 1, damageDropped(state));
-                    EnchantmentHelper.enchantmentToIS(tile, is);
+                    IEnchantableTile.enchantmentToIS(tile, is);
                     this.drops.add(is);
                 }
             }
@@ -93,13 +95,13 @@ public class BlockQuarry extends ADismCBlock {
             if (t != null) {
                 TileQuarry quarry = (TileQuarry) t;
                 if (stack != null && stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == 0) {
-                    EnchantmentHelper.getEnchantmentsChat(quarry).forEach(playerIn::addChatComponentMessage);
-                    playerIn.addChatComponentMessage(new TextComponentTranslation("chat.currentmode",
-                            new TextComponentTranslation(quarry.filler ? "chat.fillermode" : "chat.quarrymode")));
+                    quarry.sendEnchantMassage(playerIn);
+                    VersionUtil.sendMessage(playerIn, new TextComponentTranslation(TranslationKeys.CURRENT_MODE,
+                            new TextComponentTranslation(quarry.filler ? TranslationKeys.FILLER_MODE : TranslationKeys.QUARRY_MODE)));
                 } else if (quarry.G_getNow() == TileQuarry.Mode.NOTNEEDBREAK) {
                     quarry.filler = !quarry.filler;
-                    playerIn.addChatComponentMessage(new TextComponentTranslation("chat.changemode",
-                            new TextComponentTranslation(quarry.filler ? "chat.fillermode" : "chat.quarrymode")));
+                    VersionUtil.sendMessage(playerIn, new TextComponentTranslation(TranslationKeys.CHANGEMODE,
+                            new TextComponentTranslation(quarry.filler ? TranslationKeys.FILLER_MODE : TranslationKeys.QUARRY_MODE)));
                 }
             }
         }
@@ -112,7 +114,7 @@ public class BlockQuarry extends ADismCBlock {
         if (!worldIn.isRemote) {
             EnumFacing facing = get2dOrientation(placer.posX, placer.posZ, pos.getX(), pos.getZ()).getOpposite();
             worldIn.setBlockState(pos, state.withProperty(FACING, facing), 2);
-            Consumer<TileQuarry> consumer = quarry -> EnchantmentHelper.init(quarry, stack.getEnchantmentTagList());
+            Consumer<TileQuarry> consumer = quarry -> IEnchantableTile.init(quarry, stack.getEnchantmentTagList());
             Optional.ofNullable((TileQuarry) worldIn.getTileEntity(pos)).ifPresent(consumer.andThen(TileQuarry.requestTicket));
         }
     }

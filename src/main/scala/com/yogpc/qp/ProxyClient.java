@@ -13,8 +13,10 @@ import com.yogpc.qp.tile.TileMarker;
 import com.yogpc.qp.tile.TilePump;
 import com.yogpc.qp.tile.TileQuarry;
 import com.yogpc.qp.tile.TileRefinery;
+import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetHandler;
@@ -23,6 +25,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -72,5 +75,10 @@ public class ProxyClient extends ProxyCommon {
 //        ClientRegistry.bindTileEntitySpecialRenderer(TileRefinery.class, RenderRefinery.INSTANCE);
         ClientRegistry.bindTileEntitySpecialRenderer(TileRefinery.class, RenderDistiller.instance());
         MinecraftForge.EVENT_BUS.register(Sprites.instance());
+    }
+
+    @Override
+    public ModelResourceLocation fromEntry(IForgeRegistryEntry<?> entry) {
+        return new ModelResourceLocation(VersionUtil.getRegistryName(entry), "inventory");
     }
 }

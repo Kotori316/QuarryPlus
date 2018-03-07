@@ -14,8 +14,11 @@
 package com.yogpc.qp.gui;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 import com.yogpc.qp.BlockData;
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.container.ContainerEnchList;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.enchantment.EnchantmentMessage;
@@ -52,19 +55,31 @@ public class GuiEnchList extends GuiContainer implements GuiYesNoCallback {
         return this.tile.silktouchInclude;
     }
 
+    private List<BlockData> getBlockDataList(Enchantment enchantment) {
+        if (enchantment == Enchantments.SILK_TOUCH) {
+            return tile.silktouchList;
+        } else if (enchantment == Enchantments.FORTUNE) {
+            return tile.fortuneList;
+        } else {
+            QuarryPlus.LOGGER.error(String.format("GuiEnchList target is %s", enchantment));
+            return Collections.emptyList();
+        }
+    }
+
     @Override
     public void initGui() {
         this.xSize = this.width;
         this.ySize = this.height;
-        super.initGui();
-        this.buttonList.add(new GuiButton(-1, this.width / 2 - 125, this.height - 26, 250, 20,
-                I18n.format("gui.done")));
+        super.initGui(); // must be here!
+//        PacketHandler.sendToServer(BlockListRequestMessage.create(inventorySlots.windowId));
+        this.buttonList.add(new GuiButton(-1,
+                this.width / 2 - 125, this.height - 26, 250, 20, I18n.format(TranslationKeys.DONE)));
         this.buttonList.add(new GuiButton(Toggle_id,
                 this.width * 2 / 3 + 10, 140, 100, 20, ""));
         this.buttonList.add(new GuiButton(Remove_id,
-                this.width * 2 / 3 + 10, 110, 100, 20, I18n.format("selectServer.delete")));
+                this.width * 2 / 3 + 10, 110, 100, 20, I18n.format(TranslationKeys.DELETE)));
         this.slot = new GuiSlotEnchList(this.mc, this.width * 3 / 5, this.height - 60, 30, this.height - 30,
-                this, this.target == Enchantments.FORTUNE ? this.tile.fortuneList : this.tile.silktouchList);
+                this, getBlockDataList(target));
     }
 
     /**
@@ -83,8 +98,8 @@ public class GuiEnchList extends GuiContainer implements GuiYesNoCallback {
                 this.mc.thePlayer.closeScreen();
                 break;
             case Remove_id:
-                this.mc.displayGuiScreen(new GuiYesNo(this, I18n.format("tof.deleteblocksure"),
-                        (this.target == Enchantments.FORTUNE ? this.tile.fortuneList : this.tile.silktouchList).get(this.slot.currentore()).getLocalizedName(), par1.id));
+                this.mc.displayGuiScreen(new GuiYesNo(this, I18n.format(TranslationKeys.DELETE_BLOCK_SURE),
+                        getBlockDataList(target).get(this.slot.currentore()).getLocalizedName(), par1.id));
                 break;
             default: //maybe toggle
                 PacketHandler.sendToServer(EnchantmentMessage.create(tile, EnchantmentMessage.Type.Toggle, target, BlockData.Invalid()));
@@ -98,11 +113,8 @@ public class GuiEnchList extends GuiContainer implements GuiYesNoCallback {
             final BlockData bd = this.slot.target().get(this.slot.currentore());
             PacketHandler.sendToServer(EnchantmentMessage.create(tile, EnchantmentMessage.Type.Remove, target, bd));
 
-            if (target == Enchantments.FORTUNE)
-                tile.fortuneList.remove(bd);
-            else if (target == Enchantments.SILK_TOUCH)
-                tile.silktouchList.remove(bd);
-
+            getBlockDataList(target).remove(bd);
+            slot.target().remove(bd);
         }
         this.mc.displayGuiScreen(this);
     }
@@ -120,14 +132,14 @@ public class GuiEnchList extends GuiContainer implements GuiYesNoCallback {
 
     @Override
     protected void drawGuiContainerForegroundLayer(final int i, final int j) {
-        drawCenteredString(this.fontRendererObj, I18n.format(
-                "qp.list.setting", I18n.format(this.target.getName())), this.xSize / 2, 8, 0xFFFFFF);
+        drawCenteredString(this.fontRendererObj, I18n.format(TranslationKeys.QP_ENABLE_LIST, I18n.format(this.target.getName())),
+                this.xSize / 2, 8, 0xFFFFFF);
     }
 
     @Override
     public void updateScreen() {
         super.updateScreen();
-        this.buttonList.get(1).displayString = I18n.format(include() ? "tof.include" : "tof.exclude");
-        this.buttonList.get(2).enabled = !(this.target == Enchantments.FORTUNE ? this.tile.fortuneList : this.tile.silktouchList).isEmpty();
+        this.buttonList.get(1).displayString = I18n.format(include() ? TranslationKeys.TOF_INCLUDE : TranslationKeys.TOF_EXCLUDE);
+        this.buttonList.get(2).enabled = !getBlockDataList(target).isEmpty();
     }
 }

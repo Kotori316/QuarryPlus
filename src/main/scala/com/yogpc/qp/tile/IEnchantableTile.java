@@ -13,10 +13,21 @@
 
 package com.yogpc.qp.tile;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import com.yogpc.qp.gui.TranslationKeys;
+import com.yogpc.qp.version.VersionUtil;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Enchantments;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 
 public interface IEnchantableTile {
 
@@ -30,6 +41,7 @@ public interface IEnchantableTile {
     /**
      * @return Map (Enchantment id, level)
      */
+    @Nonnull
     Map<Integer, Byte> getEnchantments();
 
     /**
@@ -37,4 +49,46 @@ public interface IEnchantableTile {
      * @param val level
      */
     void setEnchantent(short id, short val);
+
+    default void sendEnchantMassage(EntityPlayer player) {
+        getEnchantmentsChat(this).forEach(c -> VersionUtil.sendMessage(player, c));
+    }
+
+    public static void init(@Nonnull final IEnchantableTile te, @Nullable final NBTTagList tagList) {
+        if (tagList != null)
+            for (int i = 0; i < tagList.tagCount(); i++)
+                te.setEnchantent(tagList.getCompoundTagAt(i).getShort("id"), tagList.getCompoundTagAt(i).getShort("lvl"));
+        te.G_reinit();
+    }
+
+    public static List<ITextComponent> getEnchantmentsChat(@Nonnull final IEnchantableTile te) {
+        final List<ITextComponent> als = new ArrayList<>();
+        final Map<Integer, Byte> enchs = te.getEnchantments();
+        if (enchs.size() <= 0)
+            als.add(new TextComponentTranslation(TranslationKeys.PLUSENCHANTNO));
+        else
+            als.add(new TextComponentTranslation(TranslationKeys.PLUSENCHANT));
+        for (final Map.Entry<Integer, Byte> e : enchs.entrySet()) {
+            Integer key = e.getKey();
+            Enchantment enchantment = Enchantment.getEnchantmentByID(key);
+            if (enchantment != null) {
+                als.add(new TextComponentTranslation(TranslationKeys.INDENT, new TextComponentTranslation(enchantment.getName()),
+                        enchantment.getMaxLevel() != 1
+                                ? new TextComponentTranslation(TranslationKeys.ENCHANT_LEVELS.getOrDefault(e.getValue().intValue(), e.getValue().toString()))
+                                : ""));
+            }
+        }
+        return als;
+    }
+
+    public static void enchantmentToIS(@Nonnull final IEnchantableTile te, @Nonnull final ItemStack is) {
+        final Map<Integer, Byte> enchs = te.getEnchantments();
+        for (final Map.Entry<Integer, Byte> e : enchs.entrySet()) {
+            Enchantment ench = Enchantment.getEnchantmentByID(e.getKey());
+            if (ench != null) {
+                is.addEnchantment(ench, e.getValue());
+            }
+        }
+    }
+
 }

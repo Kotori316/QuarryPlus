@@ -2,7 +2,7 @@ package com.yogpc.qp.block
 
 import java.util.function.Function
 
-import com.yogpc.qp.compat.{EnchantmentHelper, InvUtils}
+import com.yogpc.qp.compat.InvUtils
 import com.yogpc.qp.tile.IEnchantableTile
 import com.yogpc.qp.{QuarryPlus, QuarryPlusI}
 import net.minecraft.block.BlockContainer
@@ -45,7 +45,7 @@ abstract class QPBlock(materialIn: Material, name: String, generator: Function[Q
         tile match {
             case enchantable: IEnchantableTile =>
                 val stack = new ItemStack(this, 1, damageDropped(state))
-                EnchantmentHelper.enchantmentToIS(enchantable, stack)
+                IEnchantableTile.enchantmentToIS(enchantable, stack)
                 stack
             case _ => super.getPickBlock(state, target, world, pos, player)
         }

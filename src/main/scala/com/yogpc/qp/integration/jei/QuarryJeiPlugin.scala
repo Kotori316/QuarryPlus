@@ -20,6 +20,7 @@ class QuarryJeiPlugin extends BlankModPlugin {
         registry.addRecipeClickArea(classOf[GuiWorkbench], 7, 74, 161, 11, WorkBenchRecipeCategory.UID)
         registry.addRecipes(WorkBenchRecipeWrapper.getAll)
     }
+
     /*
         //noinspection ConvertExpressionToSAM
         override def register(registry: IModRegistry): Unit = {

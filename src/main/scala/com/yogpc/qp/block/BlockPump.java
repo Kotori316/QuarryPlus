@@ -20,10 +20,11 @@ import java.util.Optional;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.BuildcraftHelper;
-import com.yogpc.qp.compat.EnchantmentHelper;
 import com.yogpc.qp.item.ItemBlockPump;
+import com.yogpc.qp.item.ItemTool;
 import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TilePump;
+import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
@@ -72,7 +73,7 @@ public class BlockPump extends ADismCBlock {
             final Item it = getItemDropped(state, worldIn.rand, 0);
             for (int i = 0; i < count; i++) {
                 final ItemStack is = new ItemStack(it, 1, damageDropped(state));
-                EnchantmentHelper.enchantmentToIS(tile, is);
+                IEnchantableTile.enchantmentToIS(tile, is);
                 this.drop.add(is);
             }
         });
@@ -89,7 +90,7 @@ public class BlockPump extends ADismCBlock {
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
         TileEntity entity = worldIn.getTileEntity(pos);
         if (entity != null) {
-            EnchantmentHelper.init((IEnchantableTile) entity, stack.getEnchantmentTagList());
+            IEnchantableTile.init((IEnchantableTile) entity, stack.getEnchantmentTagList());
         }
     }
 
@@ -109,13 +110,13 @@ public class BlockPump extends ADismCBlock {
             return true;
         }
         if (stack != null && stack.getItem() == QuarryPlusI.itemTool()) {
-            if (!worldIn.isRemote && stack.getItemDamage() == 0) {
+            if (!worldIn.isRemote && stack.getItemDamage() == ItemTool.meta_statuschecker()) {
                 TilePump pump = (TilePump) worldIn.getTileEntity(pos);
                 if (pump != null) {
-                    EnchantmentHelper.getEnchantmentsChat(pump).forEach(playerIn::addChatComponentMessage);
-                    pump.C_getNames().forEach(playerIn::addChatComponentMessage);
+                    pump.sendEnchantMassage(playerIn);
+                    pump.C_getNames().forEach(c -> VersionUtil.sendMessage(playerIn, c));
                 }
-            } else if (stack.getItemDamage() == 2) {
+            } else if (stack.getItemDamage() == ItemTool.meta_liquidselector()) {
                 TilePump pump = (TilePump) worldIn.getTileEntity(pos);
                 if (pump != null) {
                     QuarryPlus.proxy.openPumpGui(worldIn, playerIn, facing, pump);

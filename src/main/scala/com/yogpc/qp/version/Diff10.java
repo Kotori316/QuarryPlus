@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.text.ITextComponent;
 
 public class Diff10 implements VersionDiff {
 
@@ -62,5 +63,10 @@ public class Diff10 implements VersionDiff {
     @Override
     public Stream<NBTTagCompound> nbtListStream(NBTTagList list) {
         return IntStream.range(0, list.tagCount()).mapToObj(list::getCompoundTagAt);
+    }
+
+    @Override
+    public void sendMessage(EntityPlayer player, ITextComponent component) {
+        player.addChatComponentMessage(component);
     }
 }

@@ -9,7 +9,6 @@ import com.yogpc.qp.NonNullList;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.BuildcraftHelper;
-import com.yogpc.qp.compat.EnchantmentHelper;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.item.ItemBlockEnchantable;
 import com.yogpc.qp.tile.IEnchantableTile;
@@ -71,7 +70,7 @@ public class BlockAdvQuarry extends ADismCBlock {
         if (TileAdvQuarry.class.isInstance(entity)) {
             TileAdvQuarry quarry = (TileAdvQuarry) entity;
             ItemStack stack = new ItemStack(QuarryPlusI.blockChunkdestroyer(), 1, 0);
-            EnchantmentHelper.enchantmentToIS(quarry, stack);
+            IEnchantableTile.enchantmentToIS(quarry, stack);
             drops.add(stack);
         }
     }
@@ -95,7 +94,7 @@ public class BlockAdvQuarry extends ADismCBlock {
         } else if (stack != null && stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == 0) {
             if (!worldIn.isRemote)
                 Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t ->
-                        EnchantmentHelper.getEnchantmentsChat(t).forEach(playerIn::addChatComponentMessage));
+                        t.sendEnchantMassage(playerIn));
             return true;
         } else if (Config.content().noEnergy() && stack != null && stack.getItem() == Items.STICK) {
             if (!worldIn.isRemote) {
@@ -119,7 +118,7 @@ public class BlockAdvQuarry extends ADismCBlock {
         if (!worldIn.isRemote) {
             EnumFacing facing = placer.getHorizontalFacing().getOpposite();
             worldIn.setBlockState(pos, state.withProperty(FACING, facing), 2);
-            Consumer<TileAdvQuarry> consumer = quarry -> EnchantmentHelper.init(quarry, stack.getEnchantmentTagList());
+            Consumer<TileAdvQuarry> consumer = quarry -> IEnchantableTile.init(quarry, stack.getEnchantmentTagList());
             Optional.ofNullable((TileAdvQuarry) worldIn.getTileEntity(pos)).ifPresent(consumer.andThen(TileAdvQuarry.requestTicket));
         }
     }

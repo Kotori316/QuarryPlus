@@ -43,8 +43,8 @@ public class GuiP_SelectBlock extends GuiScreenA {
     public void initGui() {
         super.initGui();
         this.blocks = new GuiP_SlotBlockList(this.mc, this.width, this.height, 24, this.height - 32, this, this.tile.mapping.get(targetid));
-        this.buttonList.add(new GuiButton(DONE_Id, this.width / 2 - 150, this.height - 26, 140, 20, I18n.format("gui.done")));
-        this.buttonList.add(new GuiButton(CANCEL_Id, this.width / 2 + 10, this.height - 26, 140, 20, I18n.format("gui.cancel")));
+        this.buttonList.add(new GuiButton(DONE_Id, this.width / 2 - 150, this.height - 26, 140, 20, I18n.format(TranslationKeys.DONE)));
+        this.buttonList.add(new GuiButton(CANCEL_Id, this.width / 2 + 10, this.height - 26, 140, 20, I18n.format(TranslationKeys.CANCEL)));
     }
 
     @Override
@@ -69,7 +69,7 @@ public class GuiP_SelectBlock extends GuiScreenA {
     public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
         drawDefaultBackground();
         this.blocks.drawScreen(mouseX, mouseY, partialTicks);
-        final String title = I18n.format("tof.selectfluid");
+        final String title = I18n.format(TranslationKeys.SELECT_FLUID);
         this.fontRendererObj.drawStringWithShadow(title,
                 (this.width - this.fontRendererObj.getStringWidth(title)) / 2, 8, 0xFFFFFF);
         super.drawScreen(mouseX, mouseY, partialTicks);

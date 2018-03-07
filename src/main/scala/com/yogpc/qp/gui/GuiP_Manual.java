@@ -44,9 +44,9 @@ public class GuiP_Manual extends GuiScreenA implements GuiYesNoCallback {
     public void initGui() {
         super.initGui();
         this.buttonList.add(new GuiButton(-1, this.width / 2 - 150, this.height - 26, 140, 20,
-                I18n.format("gui.done")));
+                I18n.format(TranslationKeys.DONE)));
         this.buttonList.add(new GuiButton(-2, this.width / 2 + 10, this.height - 26, 140, 20,
-                I18n.format("gui.cancel")));
+                I18n.format(TranslationKeys.CANCEL)));
         this.blockid = new GuiTextField(0, this.fontRendererObj, this.width / 2 - 50, 50, 100, 20);
         this.blockid.setFocused(true);
     }
@@ -61,12 +61,12 @@ public class GuiP_Manual extends GuiScreenA implements GuiYesNoCallback {
                 if (this.tile.mapping.get(targetid).contains(name)) {
                     if (FluidRegistry.isFluidRegistered(name))
                         name = FluidRegistry.getFluid(name).getLocalizedName(FluidRegistry.getFluidStack(name, 0));
-                    this.mc.displayGuiScreen(new GuiError(this, I18n.format("tof.alreadyerror"), name));
+                    this.mc.displayGuiScreen(new GuiError(this, I18n.format(TranslationKeys.ALREADY_REGISTERED_ERROR), name));
                     return;
                 }
                 if (FluidRegistry.isFluidRegistered(name))
                     name = FluidRegistry.getFluid(name).getLocalizedName(FluidRegistry.getFluidStack(name, 0));
-                this.mc.displayGuiScreen(new GuiYesNo(this, I18n.format("tof.addfluidsure"), name, -1));
+                this.mc.displayGuiScreen(new GuiYesNo(this, I18n.format(TranslationKeys.ADD_FLUID_SURE), name, -1));
                 break;
             case -2:
                 showParent();
@@ -99,9 +99,9 @@ public class GuiP_Manual extends GuiScreenA implements GuiYesNoCallback {
     @Override
     public void drawScreen(final int i, final int j, final float k) {
         drawDefaultBackground();
-        drawCenteredString(this.fontRendererObj, I18n.format("tof.selectfluid"), this.width / 2, 8, 0xFFFFFF);
-        this.fontRendererObj.drawStringWithShadow(I18n.format("tof.fluidid"),
-                this.width / 2 - 60 - this.fontRendererObj.getStringWidth(I18n.format("tof.fluidid")), 50, 0xFFFFFF);
+        drawCenteredString(this.fontRendererObj, I18n.format(TranslationKeys.SELECT_FLUID), this.width / 2, 8, 0xFFFFFF);
+        String fluidId = I18n.format(TranslationKeys.FLUID_ID);
+        this.fontRendererObj.drawStringWithShadow(fluidId, this.width / 2 - 60 - this.fontRendererObj.getStringWidth(fluidId), 50, 0xFFFFFF);
         this.blockid.drawTextBox();
         super.drawScreen(i, j, k);
     }

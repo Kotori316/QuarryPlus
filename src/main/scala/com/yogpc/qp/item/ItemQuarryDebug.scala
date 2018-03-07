@@ -39,10 +39,9 @@ object ItemQuarryDebug extends Item {
                         EnumActionResult.SUCCESS
                     case marker: TileMarker =>
                         if (!worldIn.isRemote) {
-                            player.sendStatusMessage(new TextComponentTranslation("tile.markerplus.name"), false)
+                            player.sendStatusMessage(new TextComponentTranslation(marker.getDebugName), false)
                             player.sendStatusMessage(tileposToString(tile), false)
-                            player.sendStatusMessage(new TextComponentString("Link : " + marker.link), false)
-                            player.sendStatusMessage(new TextComponentString("Laser : " + marker.laser), false)
+                            marker.sendDebugMessage(player)
                         }
                         EnumActionResult.SUCCESS
                     case placer: TilePlacer =>

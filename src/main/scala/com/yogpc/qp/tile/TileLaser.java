@@ -21,6 +21,7 @@ import java.util.stream.Stream;
 
 import com.yogpc.qp.PowerManager;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.gui.TranslationKeys;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -265,8 +266,8 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
             this.fortune = (byte) val;
         else if (id == UnbreakingID)
             this.unbreaking = (byte) val;
-        else if (id == SilktouchID && val > 0)
-            this.silktouch = true;
+        else if (id == SilktouchID)
+            this.silktouch = val > 0;
     }
 
     @Override
@@ -292,7 +293,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
 
     @Override
     public String getDebugName() {
-        return "tile.laserplus.name";
+        return TranslationKeys.laser;
     }
 
     @Override

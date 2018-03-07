@@ -2,6 +2,7 @@ package com.yogpc.qp.render
 
 /*import buildcraft.core.client.BuildCraftLaserManager
 import buildcraft.lib.client.render.laser.{LaserData_BC8, LaserRenderer_BC8}*/
+
 import com.yogpc.qp.QuarryPlus
 import com.yogpc.qp.block.ADismCBlock
 import com.yogpc.qp.tile.TileLaser

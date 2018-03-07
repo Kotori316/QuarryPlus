@@ -103,9 +103,8 @@ public class GuiWorkbench extends GuiContainer {
 
     @Override
     protected void drawGuiContainerForegroundLayer(final int mouseX, final int mouseY) {
-        this.fontRendererObj.drawString(I18n.format(this.tile.getName()), 8, 6, 0x404040);
-        this.fontRendererObj.drawString(I18n.format("container.inventory"), 8,
-                this.ySize - 96 + 2, 0x404040);
+        this.fontRendererObj.drawString(I18n.format(TranslationKeys.workbench), 8, 6, 0x404040);
+        this.fontRendererObj.drawString(I18n.format(TranslationKeys.CONTAINER_INVENTORY), 8, this.ySize - 96 + 2, 0x404040);
     }
 
     @Override
