@@ -1,9 +1,9 @@
 {
   "homepage": "https://minecraft.curseforge.com/projects/additional-enchanted-miner",
   "promos": {
-    "1.12.2-recommended": "0.8.1",
-    "1.11.2-recommended": "0.8.1",
-    "1.10.2-recommended": "0.8.1"
+    "1.12.2-recommended": "0.8.2",
+    "1.11.2-recommended": "0.8.2",
+    "1.10.2-recommended": "0.8.2"
   },
   "1.12.2": {
     "0.8.2": "Added wrench of IC2 support and fixed many bugs in GUI.",
