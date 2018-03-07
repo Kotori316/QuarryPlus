@@ -90,7 +90,7 @@ public class BlockAdvPump extends ADismCBlock {
         if (TileAdvPump.class.isInstance(entity)) {
             TileAdvPump quarry = (TileAdvPump) entity;
             ItemStack stack = new ItemStack(QuarryPlusI.blockStandalonePump(), 1, 0);
-            IEnchantableTile.enchantmentToIS(quarry, stack);
+            IEnchantableTile.Util.enchantmentToIS(quarry, stack);
             drops.add(stack);
         }
     }
@@ -99,7 +99,7 @@ public class BlockAdvPump extends ADismCBlock {
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
         if (!worldIn.isRemote) {
-            Consumer<TileAdvPump> consumer = pump -> IEnchantableTile.init(pump, stack.getEnchantmentTagList());
+            Consumer<TileAdvPump> consumer = pump -> IEnchantableTile.Util.init(pump, stack.getEnchantmentTagList());
             Optional.ofNullable((TileAdvPump) worldIn.getTileEntity(pos)).ifPresent(consumer.andThen(TilePump.requestTicket));
         }
     }

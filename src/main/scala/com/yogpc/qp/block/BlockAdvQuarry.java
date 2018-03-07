@@ -70,7 +70,7 @@ public class BlockAdvQuarry extends ADismCBlock {
         if (TileAdvQuarry.class.isInstance(entity)) {
             TileAdvQuarry quarry = (TileAdvQuarry) entity;
             ItemStack stack = new ItemStack(QuarryPlusI.blockChunkdestroyer(), 1, 0);
-            IEnchantableTile.enchantmentToIS(quarry, stack);
+            IEnchantableTile.Util.enchantmentToIS(quarry, stack);
             drops.add(stack);
         }
     }
@@ -118,7 +118,7 @@ public class BlockAdvQuarry extends ADismCBlock {
         if (!worldIn.isRemote) {
             EnumFacing facing = placer.getHorizontalFacing().getOpposite();
             worldIn.setBlockState(pos, state.withProperty(FACING, facing), 2);
-            Consumer<TileAdvQuarry> consumer = quarry -> IEnchantableTile.init(quarry, stack.getEnchantmentTagList());
+            Consumer<TileAdvQuarry> consumer = quarry -> IEnchantableTile.Util.init(quarry, stack.getEnchantmentTagList());
             Optional.ofNullable((TileAdvQuarry) worldIn.getTileEntity(pos)).ifPresent(consumer.andThen(TileAdvQuarry.requestTicket));
         }
     }

@@ -45,7 +45,7 @@ abstract class QPBlock(materialIn: Material, name: String, generator: Function[Q
         tile match {
             case enchantable: IEnchantableTile =>
                 val stack = new ItemStack(this, 1, damageDropped(state))
-                IEnchantableTile.enchantmentToIS(enchantable, stack)
+                IEnchantableTile.Util.enchantmentToIS(enchantable, stack)
                 stack
             case _ => super.getPickBlock(state, target, world, pos, player)
         }
