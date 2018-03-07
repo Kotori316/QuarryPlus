@@ -106,7 +106,7 @@ public abstract class ADismCBlock extends QPBlock implements IDismantleable, IWr
         if (IEnchantableTile.class.isInstance(te)) {
             IEnchantableTile tile = (IEnchantableTile) te;
             ItemStack stack = new ItemStack(block);
-            IEnchantableTile.enchantmentToIS(tile, stack);
+            IEnchantableTile.Util.enchantmentToIS(tile, stack);
             if (world.getBlockState(pos) == state) {
                 world.setBlockToAir(pos);
             }

@@ -140,6 +140,6 @@ public class GuiEnchList extends GuiContainer implements GuiYesNoCallback {
     public void updateScreen() {
         super.updateScreen();
         this.buttonList.get(1).displayString = I18n.format(include() ? TranslationKeys.TOF_INCLUDE : TranslationKeys.TOF_EXCLUDE);
-        this.buttonList.get(2).enabled = !(this.target == Enchantments.FORTUNE ? this.tile.fortuneList : this.tile.silktouchList).isEmpty();
+        this.buttonList.get(2).enabled = !getBlockDataList(target).isEmpty();
     }
 }

@@ -83,7 +83,7 @@ public class BlockRefinery extends ADismCBlock {
         final Item it = getItemDropped(state, worldIn.rand, 0);
         for (int i = 0; i < count; i++) {
             final ItemStack is = new ItemStack(it, 1, damageDropped(state));
-            IEnchantableTile.enchantmentToIS(tile, is);
+            IEnchantableTile.Util.enchantmentToIS(tile, is);
             this.drop.add(is);
         }
 
@@ -99,7 +99,7 @@ public class BlockRefinery extends ADismCBlock {
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
         if (!worldIn.isRemote) {
-            Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t -> IEnchantableTile.init(t, stack.getEnchantmentTagList()));
+            Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t -> IEnchantableTile.Util.init(t, stack.getEnchantmentTagList()));
         }
     }
 

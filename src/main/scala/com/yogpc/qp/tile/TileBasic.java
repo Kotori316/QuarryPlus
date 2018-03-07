@@ -52,8 +52,8 @@ import net.minecraftforge.items.wrapper.InvWrapper;
 public abstract class TileBasic extends APowerTile implements IEnchantableTile, HasInv, IInventoryConnection {
     protected EnumFacing pump = null;
 
-    public final List<BlockData> fortuneList = new ArrayList<>();
-    public final List<BlockData> silktouchList = new ArrayList<>();
+    public final NoDuplicateList<BlockData> fortuneList = NoDuplicateList.create(ArrayList::new);
+    public final NoDuplicateList<BlockData> silktouchList = NoDuplicateList.create(ArrayList::new);
     public boolean fortuneInclude, silktouchInclude;
 
     protected byte unbreaking;
@@ -167,7 +167,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         target.clear();
         for (int i = 0; i < nbttl.tagCount(); i++) {
             final NBTTagCompound c = nbttl.getCompoundTagAt(i);
-            target.add(new BlockData(c.getString("name"), c.getInteger("meta")));
+            target.add(new BlockData(c.getString(BlockData.Name_NBT()), c.getInteger(BlockData.Meta_NBT())));
         }
     }
 
@@ -187,10 +187,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     private static NBTTagList writeLongCollection(final Collection<BlockData> target) {
         final NBTTagList nbttl = new NBTTagList();
         for (final BlockData l : target) {
-            final NBTTagCompound c = new NBTTagCompound();
-            c.setString("name", l.name().toString());
-            c.setInteger("meta", l.meta());
-            nbttl.appendTag(c);
+            nbttl.appendTag(l.writeToNBT(new NBTTagCompound()).getCompoundTag(BlockData.BlockData_NBT()));
         }
         return nbttl;
     }
@@ -217,8 +214,8 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
             this.fortune = (byte) val;
         else if (id == UnbreakingID)
             this.unbreaking = (byte) val;
-        else if (id == SilktouchID && val > 0)
-            this.silktouch = true;
+        else if (id == SilktouchID)
+            this.silktouch = val > 0;
     }
 
     @Override

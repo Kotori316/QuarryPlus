@@ -17,12 +17,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
+import com.google.common.collect.ImmutableMap;
 import com.yogpc.qp.Config;
 import com.yogpc.qp.PowerManager;
 import com.yogpc.qp.QuarryPlus;
@@ -292,9 +292,9 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         else
             this.range++;
         if (this.quarryRange)
-            VersionUtil.sendMessage(ep, new TextComponentTranslation(TranslationKeys.CHAT_PUMP_RTOGGLE_QUARRY));
+            VersionUtil.sendMessage(ep, new TextComponentTranslation(TranslationKeys.PUMP_RTOGGLE_QUARRY));
         else
-            VersionUtil.sendMessage(ep, new TextComponentTranslation(TranslationKeys.CHAT_PUMP_RTOGGLE_NUM, Integer.toString(this.range * 2 + 1)));
+            VersionUtil.sendMessage(ep, new TextComponentTranslation(TranslationKeys.PUMP_RTOGGLE_NUM, Integer.toString(this.range * 2 + 1)));
         this.fwt = 0;
     }
 
@@ -617,12 +617,12 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     public List<ITextComponent> C_getNames() {
         if (!liquids.isEmpty()) {
             List<ITextComponent> list = new ArrayList<>(liquids.size() + 1);
-            list.add(new TextComponentTranslation(TranslationKeys.CHAT_PUMPCONTAIN));
+            list.add(new TextComponentTranslation(TranslationKeys.PUMP_CONTAIN));
             liquids.forEach(s -> list.add(new TextComponentTranslation(TranslationKeys.LIQUID_FORMAT,
                     new TextComponentTranslation(s.getFluid().getUnlocalizedName(s)), Integer.toString(s.amount))));
             return list;
         } else {
-            return Collections.singletonList(new TextComponentTranslation(TranslationKeys.CHAT_PUMPCONTAINNO));
+            return Collections.singletonList(new TextComponentTranslation(TranslationKeys.PUMP_CONTAIN_NO));
         }
     }
 
@@ -636,12 +636,12 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                     .ifPresent(list::add);
         }
         if (!liquids.isEmpty()) {
-            list.add(new TextComponentTranslation(TranslationKeys.CHAT_PUMPCONTAIN));
+            list.add(new TextComponentTranslation(TranslationKeys.PUMP_CONTAIN));
             liquids.stream().map(fluidStack -> fluidStack.getLocalizedName() + fluidStack.amount + "mB")
                     .reduce(combiner).map(toComponentString)
                     .ifPresent(list::add);
         } else {
-            list.add(toComponentString.apply("No liquids"));
+            list.add(new TextComponentTranslation(TranslationKeys.PUMP_CONTAIN_NO));
         }
         return list;
     }
@@ -652,15 +652,15 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     }
 
     @Override
-    public HashMap<Integer, Byte> getEnchantments() {
-        final HashMap<Integer, Byte> ret = new HashMap<>();
+    public ImmutableMap<Integer, Byte> getEnchantments() {
+        ImmutableMap.Builder<Integer, Byte> builder = ImmutableMap.builder();
         if (this.fortune > 0)
-            ret.put(FortuneID, this.fortune);
+            builder.put(FortuneID, this.fortune);
         if (this.unbreaking > 0)
-            ret.put(UnbreakingID, this.unbreaking);
+            builder.put(UnbreakingID, this.unbreaking);
         if (this.silktouch)
-            ret.put(SilktouchID, (byte) 1);
-        return ret;
+            builder.put(SilktouchID, (byte) 1);
+        return builder.build();
     }
 
     @Override
@@ -669,8 +669,8 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
             this.fortune = (byte) val;
         else if (id == UnbreakingID)
             this.unbreaking = (byte) val;
-        else if (id == SilktouchID && val > 0)
-            this.silktouch = true;
+        else if (id == SilktouchID)
+            this.silktouch = val > 0;
     }
 
     @Override

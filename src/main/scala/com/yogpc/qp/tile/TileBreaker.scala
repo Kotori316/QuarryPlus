@@ -51,7 +51,7 @@ class TileBreaker extends TileEntity with IEnchantableTile with HasInv {
 
     override def setEnchantent(id: Short, value: Short) =
         if (id == FortuneID) this.fortune = value.toByte
-        else if (id == SilktouchID && value > 0) this.silktouch = true
+        else if (id == SilktouchID) this.silktouch = value > 0
 
     override def G_reinit() = ()
 

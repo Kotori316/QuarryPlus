@@ -73,7 +73,7 @@ public class BlockPump extends ADismCBlock {
             final Item it = getItemDropped(state, worldIn.rand, 0);
             for (int i = 0; i < count; i++) {
                 final ItemStack is = new ItemStack(it, 1, damageDropped(state));
-                IEnchantableTile.enchantmentToIS(tile, is);
+                IEnchantableTile.Util.enchantmentToIS(tile, is);
                 this.drop.add(is);
             }
         });
@@ -90,7 +90,7 @@ public class BlockPump extends ADismCBlock {
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
         TileEntity entity = worldIn.getTileEntity(pos);
         if (entity != null) {
-            IEnchantableTile.init((IEnchantableTile) entity, stack.getEnchantmentTagList());
+            IEnchantableTile.Util.init((IEnchantableTile) entity, stack.getEnchantmentTagList());
         }
     }
 

@@ -3,15 +3,16 @@ package com.yogpc.qp
 import com.yogpc.qp.compat.{INBTReadable, INBTWritable}
 import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
+import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.registry.ForgeRegistries
 import net.minecraftforge.oredict.OreDictionary
 
 object BlockData extends INBTReadable[BlockData] {
-    val Name_NBT = "name"
-    val Meta_NBT = "meta"
-    val BlockData_NBT = "blockdata"
+    final val Name_NBT = "name"
+    final val Meta_NBT = "meta"
+    final val BlockData_NBT = "blockdata"
 
     override def readFromNBT(nbt: NBTTagCompound): BlockData = {
         if (!nbt.hasKey(BlockData_NBT)) Invalid
@@ -32,9 +33,20 @@ object BlockData extends INBTReadable[BlockData] {
 
         override def getLocalizedName = "Unknown:Dummy"
     }
+
+    private val orderingResourceLocation = new Ordering[ResourceLocation] {
+        override def compare(x: ResourceLocation, y: ResourceLocation) = {
+            val i = x.getResourceDomain.compareTo(y.getResourceDomain)
+            if (i != 0) {
+                i
+            } else {
+                x.getResourcePath.compareTo(y.getResourcePath)
+            }
+        }
+    }
 }
 
-case class BlockData(name: ResourceLocation, meta: Int) extends INBTWritable {
+case class BlockData(name: ResourceLocation, meta: Int) extends INBTWritable with Ordered[BlockData] {
 
     def this(resourceName: String, meta: Int) {
         this(new ResourceLocation(resourceName), meta)
@@ -68,11 +80,16 @@ case class BlockData(name: ResourceLocation, meta: Int) extends INBTWritable {
         val sb = new StringBuilder
         sb.append(name)
         if (meta != OreDictionary.WILDCARD_VALUE) {
-            sb.append(":")
-            sb.append(meta)
+            sb.append(" : ").append(meta).append("  ")
+            sb.append(Option(ForgeRegistries.BLOCKS.getValue(name)).map(new ItemStack(_, 1, meta).getDisplayName).getOrElse(""))
+        } else {
+            sb.append("  ").append(Option(ForgeRegistries.BLOCKS.getValue(name)).map(_.getLocalizedName).getOrElse(""))
         }
-        sb.append("  ")
-        sb.append(Option(ForgeRegistries.BLOCKS.getValue(name)).map(_.getLocalizedName).getOrElse(name.toString))
         sb.toString
+    }
+
+    override def compare(that: BlockData) = {
+        val i = BlockData.orderingResourceLocation.compare(this.name, that.name)
+        if (i != 0) i else this.meta.compare(that.meta)
     }
 }

@@ -90,8 +90,7 @@ object ItemTool extends Item with IEnchantableItem {
                     if (stackTag != null && bd != null) {
                         if (!worldIn.isRemote) {
                             val datas = if (f) tb.fortuneList else tb.silktouchList
-                            if (!datas.contains(bd))
-                                datas.add(bd)
+                            datas.add(bd)
                         }
                         stackTag.removeTag(NAME_key)
                         stackTag.removeTag(META_key)
