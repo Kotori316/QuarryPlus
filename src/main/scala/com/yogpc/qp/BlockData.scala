@@ -3,6 +3,7 @@ package com.yogpc.qp
 import com.yogpc.qp.compat.{INBTReadable, INBTWritable}
 import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
+import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.registry.ForgeRegistries
@@ -68,11 +69,11 @@ case class BlockData(name: ResourceLocation, meta: Int) extends INBTWritable wit
         val sb = new StringBuilder
         sb.append(name)
         if (meta != OreDictionary.WILDCARD_VALUE) {
-            sb.append(":")
-            sb.append(meta)
+            sb.append(" : ").append(meta).append("  ")
+            sb.append(Option(ForgeRegistries.BLOCKS.getValue(name)).map(new ItemStack(_, 1, meta).getDisplayName).getOrElse(""))
+        } else {
+            sb.append("  ").append(Option(ForgeRegistries.BLOCKS.getValue(name)).map(_.getLocalizedName).getOrElse(""))
         }
-        sb.append("  ")
-        sb.append(Option(ForgeRegistries.BLOCKS.getValue(name)).map(_.getLocalizedName).getOrElse(name.toString))
         sb.toString
     }
 

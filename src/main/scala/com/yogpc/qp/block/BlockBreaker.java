@@ -122,7 +122,7 @@ public class BlockBreaker extends ADismCBlock {
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         if (!worldIn.isRemote) {
 //            worldIn.setBlockState(pos, state.withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer)), 2);
-            Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t -> IEnchantableTile.init(t, stack.getEnchantmentTagList()));
+            Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t -> IEnchantableTile.Util.init(t, stack.getEnchantmentTagList()));
         }
     }
 
@@ -171,7 +171,7 @@ public class BlockBreaker extends ADismCBlock {
             final Item id1 = getItemDropped(state, worldIn.rand, 0);
             for (int i = 0; i < count; i++) {
                 ItemStack is = new ItemStack(id1, 1, damageDropped(state));
-                IEnchantableTile.enchantmentToIS(tile, is);
+                IEnchantableTile.Util.enchantmentToIS(tile, is);
                 this.drops.add(is);
             }
         });
