@@ -272,8 +272,8 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
             this.fortune = (byte) val;
         else if (id == UnbreakingID)
             this.unbreaking = (byte) val;
-        else if (id == SilktouchID && val > 0)
-            this.silktouch = true;
+        else if (id == SilktouchID)
+            this.silktouch = val > 0;
     }
 
     @Override

@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.yogpc.qp.gui.TranslationKeys;
 import com.yogpc.qp.version.VersionUtil;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -64,14 +65,17 @@ public interface IEnchantableTile {
         final List<ITextComponent> als = new ArrayList<>();
         final Map<Integer, Byte> enchs = te.getEnchantments();
         if (enchs.size() <= 0)
-            als.add(new TextComponentTranslation("chat.plusenchantno"));
+            als.add(new TextComponentTranslation(TranslationKeys.PLUSENCHANTNO));
         else
-            als.add(new TextComponentTranslation("chat.plusenchant"));
+            als.add(new TextComponentTranslation(TranslationKeys.PLUSENCHANT));
         for (final Map.Entry<Integer, Byte> e : enchs.entrySet()) {
-            Enchantment enchantment = Enchantment.getEnchantmentByID(e.getKey());
+            Integer key = e.getKey();
+            Enchantment enchantment = Enchantment.getEnchantmentByID(key);
             if (enchantment != null) {
-                als.add(new TextComponentTranslation("chat.indent", new TextComponentTranslation(enchantment.getName()),
-                        enchantment.getMaxLevel() != 1 ? new TextComponentTranslation("enchantment.level." + e.getValue()) : ""));
+                als.add(new TextComponentTranslation(TranslationKeys.INDENT, new TextComponentTranslation(enchantment.getName()),
+                        enchantment.getMaxLevel() != 1
+                                ? new TextComponentTranslation(TranslationKeys.ENCHANT_LEVELS.getOrDefault(key, key.toString()))
+                                : ""));
             }
         }
         return als;

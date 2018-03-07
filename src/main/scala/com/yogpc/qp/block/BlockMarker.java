@@ -18,6 +18,7 @@ import java.util.Optional;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.InvUtils;
+import com.yogpc.qp.gui.TranslationKeys;
 import com.yogpc.qp.tile.TileMarker;
 import com.yogpc.qp.version.VersionUtil;
 import javax.annotation.Nullable;
@@ -200,7 +201,7 @@ public class BlockMarker extends Block implements ITileEntityProvider {//BlockCo
                     final TileMarker.Link l = marker.link;
                     if (l == null)
                         return true;
-                    VersionUtil.sendMessage(playerIn, new TextComponentTranslation("chat.markerarea"));
+                    VersionUtil.sendMessage(playerIn, new TextComponentTranslation(TranslationKeys.MARKER_AREA));
                     String sb = "x:" + l.xMin + " y:" + l.yMin + " z:" + l.zMin + " - x:" + l.xMax + " y:" + l.yMax + " z:" + l.zMax;
                     VersionUtil.sendMessage(playerIn, new TextComponentString(sb));// NP coord info
                     return true;

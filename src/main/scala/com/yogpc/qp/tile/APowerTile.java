@@ -134,7 +134,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
         super.readFromNBT(nbttc);
         setStoredEnergy(nbttc.getDouble("storedEnergy"));
         configure(nbttc.getDouble("MAX_receive"), nbttc.getDouble("MAX_stored"));
-        outputEnergyInfo = nbttc.getBoolean("outputEnergyInfo");
+        outputEnergyInfo = !nbttc.hasKey("outputEnergyInfo") || nbttc.getBoolean("outputEnergyInfo");
     }
 
     @Override

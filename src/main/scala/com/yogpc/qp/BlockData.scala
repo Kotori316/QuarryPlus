@@ -9,9 +9,9 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries
 import net.minecraftforge.oredict.OreDictionary
 
 object BlockData extends INBTReadable[BlockData] {
-    val Name_NBT = "name"
-    val Meta_NBT = "meta"
-    val BlockData_NBT = "blockdata"
+    final val Name_NBT = "name"
+    final val Meta_NBT = "meta"
+    final val BlockData_NBT = "blockdata"
 
     override def readFromNBT(nbt: NBTTagCompound): BlockData = {
         if (!nbt.hasKey(BlockData_NBT)) Invalid
@@ -34,7 +34,7 @@ object BlockData extends INBTReadable[BlockData] {
     }
 }
 
-case class BlockData(name: ResourceLocation, meta: Int) extends INBTWritable {
+case class BlockData(name: ResourceLocation, meta: Int) extends INBTWritable with Ordered[BlockData] {
 
     def this(resourceName: String, meta: Int) {
         this(new ResourceLocation(resourceName), meta)
@@ -74,5 +74,10 @@ case class BlockData(name: ResourceLocation, meta: Int) extends INBTWritable {
         sb.append("  ")
         sb.append(Option(ForgeRegistries.BLOCKS.getValue(name)).map(_.getLocalizedName).getOrElse(name.toString))
         sb.toString
+    }
+
+    override def compare(that: BlockData) = {
+        val i = this.name.compareTo(that.name)
+        if (i != 0) i else this.meta.compare(that.meta)
     }
 }

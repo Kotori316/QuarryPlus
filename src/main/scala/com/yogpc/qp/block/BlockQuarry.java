@@ -21,6 +21,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.BuildcraftHelper;
 import com.yogpc.qp.compat.InvUtils;
+import com.yogpc.qp.gui.TranslationKeys;
 import com.yogpc.qp.item.ItemBlockEnchantable;
 import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TileQuarry;
@@ -95,12 +96,12 @@ public class BlockQuarry extends ADismCBlock {
                 TileQuarry quarry = (TileQuarry) t;
                 if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == 0) {
                     quarry.sendEnchantMassage(playerIn);
-                    VersionUtil.sendMessage(playerIn, new TextComponentTranslation("chat.currentmode",
-                            new TextComponentTranslation(quarry.filler ? "chat.fillermode" : "chat.quarrymode")));
+                    VersionUtil.sendMessage(playerIn, new TextComponentTranslation(TranslationKeys.CURRENT_MODE,
+                            new TextComponentTranslation(quarry.filler ? TranslationKeys.FILLER_MODE : TranslationKeys.QUARRY_MODE)));
                 } else if (quarry.G_getNow() == TileQuarry.Mode.NOTNEEDBREAK) {
                     quarry.filler = !quarry.filler;
-                    VersionUtil.sendMessage(playerIn, new TextComponentTranslation("chat.changemode",
-                            new TextComponentTranslation(quarry.filler ? "chat.fillermode" : "chat.quarrymode")));
+                    VersionUtil.sendMessage(playerIn, new TextComponentTranslation(TranslationKeys.CHANGEMODE,
+                            new TextComponentTranslation(quarry.filler ? TranslationKeys.FILLER_MODE : TranslationKeys.QUARRY_MODE)));
                 }
             }
         }
