@@ -1,5 +1,9 @@
 package com.yogpc
 
+import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
+
+import scala.collection.AbstractIterator
+
 package object qp {
 
     import scala.language.implicitConversions
@@ -31,6 +35,26 @@ package object qp {
 
     implicit class JOS[T](val o: Option[T]) extends AnyVal {
         def asJava: java.util.Optional[T] = toJavaOption(o)
+    }
+
+    implicit class NBTList2Iterator(val list: NBTTagList) extends AnyVal {
+        def tagIterator: Iterator[NBTTagCompound] = new NBTListIterator(list)
+    }
+
+    private class NBTListIterator(val list: NBTTagList) extends AbstractIterator[NBTTagCompound] {
+        var count = 0
+
+        override def hasNext: Boolean = count < list.tagCount()
+
+        override def next(): NBTTagCompound = {
+            val v = list.getCompoundTagAt(count)
+            count += 1
+            v
+        }
+
+        override def size: Int = list.tagCount()
+
+        override def isEmpty: Boolean = list.hasNoTags
     }
 
 }

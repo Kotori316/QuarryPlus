@@ -16,7 +16,7 @@ import java.util
 import javax.annotation.Nullable
 
 import com.yogpc.qp.tile.{IEnchantableTile, TileBasic}
-import com.yogpc.qp.{BlockData, Config, QuarryPlus, QuarryPlusI}
+import com.yogpc.qp.{Config, QuarryPlus, QuarryPlusI, _}
 import net.minecraft.client.resources.I18n
 import net.minecraft.client.util.ITooltipFlag
 import net.minecraft.creativetab.CreativeTabs
@@ -66,16 +66,9 @@ object ItemTool extends Item with IEnchantableItem {
         val returnValue = if (!worldIn.isRemote) EnumActionResult.SUCCESS else EnumActionResult.PASS
         val stack = player.getHeldItem(hand)
         if (stack.getItemDamage == meta_listeditor) {
-            var s = false
-            var f = false
             val nbttl = stack.getEnchantmentTagList
-            if (nbttl != null) {
-                for (i <- 0 until nbttl.tagCount()) {
-                    val id = nbttl.getCompoundTagAt(i).getShort("id")
-                    if (id == IEnchantableTile.SilktouchID) s = true
-                    if (id == IEnchantableTile.FortuneID) f = true
-                }
-            }
+            val s = Option(nbttl).toList.flatMap(_.tagIterator).exists(_.getShort("id") == IEnchantableTile.SilktouchID)
+            val f = Option(nbttl).toList.flatMap(_.tagIterator).exists(_.getShort("id") == IEnchantableTile.FortuneID)
             var stackTag: NBTTagCompound = stack.getTagCompound
             val state = worldIn.getBlockState(pos)
             var bd: BlockData = null

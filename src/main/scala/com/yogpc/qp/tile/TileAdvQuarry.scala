@@ -548,7 +548,8 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 
     def preparedFiller: Boolean = {
         val y = if (Config.content.removeBedrock) 1 else 5
-        if (BlockPos.getAllInBoxMutable(new BlockPos(digRange.minX, y, digRange.minZ), new BlockPos(digRange.maxX, y, digRange.maxZ)).iterator().asScala.forall(getWorld.isAirBlock)) {
+        if (BlockPos.getAllInBoxMutable(new BlockPos(digRange.minX, y, digRange.minZ), new BlockPos(digRange.maxX, y, digRange.maxZ))
+          .iterator().asScala.forall(getWorld.isAirBlock)) {
             val need = (digRange.maxX - digRange.minX + 1) * (digRange.maxZ - digRange.minZ + 1)
             val stacks = InvUtils.findItemHander(getWorld, getPos.up, EnumFacing.DOWN).toList
               .flatMap(handler => Range(0, handler.getSlots).map(handler.getStackInSlot))
