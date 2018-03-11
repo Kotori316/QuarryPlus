@@ -251,16 +251,16 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
     }
 
     @Override
-    public Map<Integer, Byte> getEnchantments() {
-        final Map<Integer, Byte> ret = new HashMap<>();
+    public Map<Integer, Integer> getEnchantments() {
+        final Map<Integer, Integer> ret = new HashMap<>();
         if (this.efficiency > 0)
-            ret.put(EfficiencyID, this.efficiency);
+            ret.put(EfficiencyID, (int) this.efficiency);
         if (this.fortune > 0)
-            ret.put(FortuneID, this.fortune);
+            ret.put(FortuneID, (int) this.fortune);
         if (this.unbreaking > 0)
-            ret.put(UnbreakingID, this.unbreaking);
+            ret.put(UnbreakingID, (int) this.unbreaking);
         if (this.silktouch)
-            ret.put(SilktouchID, (byte) 1);
+            ret.put(SilktouchID, 1);
         return ret;
     }
 

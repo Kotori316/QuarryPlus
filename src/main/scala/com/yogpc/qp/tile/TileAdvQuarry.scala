@@ -399,7 +399,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
     /**
       * @return Map (Enchantment id, level)
       */
-    override def getEnchantments = ench.getMap.collect { case (a, b) if b > 0 => (Int.box(a), Byte.box(b)) }.asJava
+    override def getEnchantments = ench.getMap.collect { case (a, b) if b > 0 => (Int.box(a), Int.box(b)) }.asJava
 
     /**
       * @param id    Enchantment id

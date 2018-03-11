@@ -13,9 +13,11 @@
 
 package com.yogpc.qp.tile;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.yogpc.qp.gui.TranslationKeys;
 import com.yogpc.qp.version.VersionUtil;
@@ -28,6 +30,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
+import org.apache.commons.lang3.tuple.Pair;
+
+import static jp.t2v.lab.syntax.MapStreamSyntax.byKey;
+import static jp.t2v.lab.syntax.MapStreamSyntax.entry;
+import static jp.t2v.lab.syntax.MapStreamSyntax.keys;
+import static jp.t2v.lab.syntax.MapStreamSyntax.toAny;
 
 public interface IEnchantableTile {
 
@@ -42,7 +50,7 @@ public interface IEnchantableTile {
      * @return Map (Enchantment id, level)
      */
     @Nonnull
-    Map<Integer, Byte> getEnchantments();
+    Map<Integer, Integer> getEnchantments();
 
     /**
      * @param id  Enchantment id
@@ -58,40 +66,33 @@ public interface IEnchantableTile {
     public static class Util {
 
         public static void init(@Nonnull final IEnchantableTile te, @Nullable final NBTTagList tagList) {
-            if (tagList != null)
-                for (int i = 0; i < tagList.tagCount(); i++)
-                    te.setEnchantent(tagList.getCompoundTagAt(i).getShort("id"), tagList.getCompoundTagAt(i).getShort("lvl"));
+            VersionUtil.nbtListStream(tagList).map(nbt -> Pair.of(nbt.getShort("id"), nbt.getShort("lvl")))
+                .forEach(pair -> te.setEnchantent(pair.getKey(), pair.getValue()));
             te.G_reinit();
         }
 
         public static List<ITextComponent> getEnchantmentsChat(@Nonnull final IEnchantableTile te) {
-            final List<ITextComponent> als = new ArrayList<>();
-            final Map<Integer, Byte> enchs = te.getEnchantments();
-            if (enchs.size() <= 0)
-                als.add(new TextComponentTranslation(TranslationKeys.PLUSENCHANTNO));
-            else
-                als.add(new TextComponentTranslation(TranslationKeys.PLUSENCHANT));
-            for (final Map.Entry<Integer, Byte> e : enchs.entrySet()) {
-                Integer key = e.getKey();
-                Enchantment enchantment = Enchantment.getEnchantmentByID(key);
-                if (enchantment != null) {
-                    als.add(new TextComponentTranslation(TranslationKeys.INDENT, new TextComponentTranslation(enchantment.getName()),
+            final Map<Integer, Integer> enchs = te.getEnchantments();
+            if (enchs.size() <= 0) {
+                return Collections.singletonList(new TextComponentTranslation(TranslationKeys.PLUSENCHANTNO));
+            } else {
+                LinkedList<ITextComponent> collect = enchs.entrySet().stream()
+                    .map(keys(Enchantment::getEnchantmentByID))
+                    .filter(byKey(APacketTile.nonNull)).map(toAny((enchantment, level) ->
+                        new TextComponentTranslation(TranslationKeys.INDENT, new TextComponentTranslation(enchantment.getName()),
                             enchantment.getMaxLevel() != 1
-                                    ? new TextComponentTranslation(TranslationKeys.ENCHANT_LEVELS.getOrDefault(e.getValue().intValue(), e.getValue().toString()))
-                                    : ""));
-                }
+                                ? new TextComponentTranslation(TranslationKeys.ENCHANT_LEVELS.getOrDefault(level, level.toString()))
+                                : ""))).collect(Collectors.toCollection(LinkedList::new));
+                collect.addFirst(new TextComponentTranslation(TranslationKeys.PLUSENCHANT));
+                return collect;
             }
-            return als;
         }
 
         public static void enchantmentToIS(@Nonnull final IEnchantableTile te, @Nonnull final ItemStack is) {
-            final Map<Integer, Byte> enchs = te.getEnchantments();
-            for (final Map.Entry<Integer, Byte> e : enchs.entrySet()) {
-                Enchantment ench = Enchantment.getEnchantmentByID(e.getKey());
-                if (ench != null) {
-                    is.addEnchantment(ench, e.getValue());
-                }
-            }
+            te.getEnchantments().entrySet().stream()
+                .map(keys(Enchantment::getEnchantmentByID))
+                .filter(byKey(APacketTile.nonNull))
+                .forEach(entry(is::addEnchantment));
         }
     }
 

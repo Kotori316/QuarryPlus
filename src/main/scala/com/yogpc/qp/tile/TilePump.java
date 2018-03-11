@@ -331,15 +331,15 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
             if (x_add > 0) {
                 chunk_side_x += x_add;
                 this.xOffset -=
-                        ((x_add & 0xFFFFFFFE) << 3)
-                                + (x_add % 2 != 0 && (b.xMax + b.xMin + 1) / 2 % 0x10 <= 8 ? 0x10 : 0);
+                    ((x_add & 0xFFFFFFFE) << 3)
+                        + (x_add % 2 != 0 && (b.xMax + b.xMin + 1) / 2 % 0x10 <= 8 ? 0x10 : 0);
             }
             final int z_add = this.range * 2 + 1 - chunk_side_z;
             if (z_add > 0) {
                 chunk_side_z += z_add;
                 this.zOffset -=
-                        ((z_add & 0xFFFFFFFE) << 3)
-                                + (z_add % 2 != 0 && (b.zMax + b.zMin + 1) / 2 % 0x10 <= 8 ? 0x10 : 0);
+                    ((z_add & 0xFFFFFFFE) << 3)
+                        + (z_add % 2 != 0 && (b.zMax + b.zMin + 1) / 2 % 0x10 <= 8 ? 0x10 : 0);
             }
         } else {
             this.quarryRange = false;
@@ -358,8 +358,8 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         for (kx = 0; kx < chunk_side_x; kx++)
             for (kz = 0; kz < chunk_side_z; kz++)
                 this.ebses[kx][kz] = getWorld().getChunkProvider()
-                        .provideChunk(kx + (this.xOffset >> 4), kz + (this.zOffset >> 4))
-                        .getBlockStorageArray();
+                    .provideChunk(kx + (this.xOffset >> 4), kz + (this.zOffset >> 4))
+                    .getBlockStorageArray();
         S_put(x - this.xOffset, y, z - this.zOffset);
         IBlockState b_c;
         ExtendedBlockStorage ebs_c;
@@ -368,7 +368,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
             if (ebs_c != null) {
                 b_c = ebs_c.get(xb[cg] & 0xF, yb[cg] & 0xF, zb[cg] & 0xF);
                 if (this.blocks[yb[cg] - this.yOffset][xb[cg]][zb[cg]] == 0
-                        && isLiquid(b_c, false, null, BlockPos.ORIGIN)) {
+                    && isLiquid(b_c, false, null, BlockPos.ORIGIN)) {
                     this.blocks[yb[cg] - this.yOffset][xb[cg]][zb[cg]] = 0x3F;
 
                     if ((b != null ? b.xMin & 0xF : 0) < xb[cg])
@@ -405,15 +405,15 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         S_sendNowPacket();
         boolean isquarry = tbpp instanceof TileQuarry;
         if (this.cx != x || this.cy != y || this.cz != z || this.py < this.cy
-                || getWorld().getWorldTime() - this.fwt > 200)
+            || getWorld().getWorldTime() - this.fwt > 200)
             S_searchLiquid(x, y, z);
         else {
             this.ebses = new ExtendedBlockStorage[this.ebses.length][this.ebses[0].length][];
             for (int kx = 0; kx < this.ebses.length; kx++) {
                 for (int kz = 0; kz < this.ebses[0].length; kz++) {
                     this.ebses[kx][kz] = getWorld().getChunkProvider()
-                            .provideChunk(kx + (this.xOffset >> 4), kz + (this.zOffset >> 4))
-                            .getBlockStorageArray();
+                        .provideChunk(kx + (this.xOffset >> 4), kz + (this.zOffset >> 4))
+                        .getBlockStorageArray();
                 }
             }
         }
@@ -437,7 +437,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                         if (this.blocks[this.py - this.yOffset][this.px][bz] != 0) {
                             bb = this.ebses[this.px >> 4][bz >> 4][this.py >> 4].get(this.px & 0xF, this.py & 0xF, bz & 0xF);
                             if (isLiquid(bb, Config.content().removeOnlySource(), getWorld(),
-                                    new BlockPos(this.px + this.xOffset, this.py, bz + this.zOffset)))
+                                new BlockPos(this.px + this.xOffset, this.py, bz + this.zOffset)))
                                 count++;
                         }
                 }
@@ -492,7 +492,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
             return !findSource || ((IFluidBlock) block).canDrain(world, pos);
         else {
             return (block == Blocks.WATER || block == Blocks.FLOWING_WATER || block == Blocks.LAVA || block == Blocks.FLOWING_LAVA)
-                    && (!findSource || state.getValue(BlockLiquid.LEVEL) == 0);
+                && (!findSource || state.getValue(BlockLiquid.LEVEL) == 0);
         }
     }
 
@@ -619,7 +619,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
             List<ITextComponent> list = new ArrayList<>(liquids.size() + 1);
             list.add(new TextComponentTranslation(TranslationKeys.PUMP_CONTAIN));
             liquids.forEach(s -> list.add(new TextComponentTranslation(TranslationKeys.LIQUID_FORMAT,
-                    new TextComponentTranslation(s.getFluid().getUnlocalizedName(s)), Integer.toString(s.amount))));
+                new TextComponentTranslation(s.getFluid().getUnlocalizedName(s)), Integer.toString(s.amount))));
             return list;
         } else {
             return Collections.singletonList(new TextComponentTranslation(TranslationKeys.PUMP_CONTAIN_NO));
@@ -632,14 +632,14 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         list.add(toComponentString.apply("Connection : " + this.connectTo));
         for (EnumFacing facing : EnumFacing.VALUES) {
             this.mapping.get(facing).stream()
-                    .reduce(combiner).map(toComponentString)
-                    .ifPresent(list::add);
+                .reduce(combiner).map(toComponentString)
+                .ifPresent(list::add);
         }
         if (!liquids.isEmpty()) {
             list.add(new TextComponentTranslation(TranslationKeys.PUMP_CONTAIN));
             liquids.stream().map(fluidStack -> fluidStack.getLocalizedName() + fluidStack.amount + "mB")
-                    .reduce(combiner).map(toComponentString)
-                    .ifPresent(list::add);
+                .reduce(combiner).map(toComponentString)
+                .ifPresent(list::add);
         } else {
             list.add(new TextComponentTranslation(TranslationKeys.PUMP_CONTAIN_NO));
         }
@@ -652,14 +652,14 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     }
 
     @Override
-    public ImmutableMap<Integer, Byte> getEnchantments() {
-        ImmutableMap.Builder<Integer, Byte> builder = ImmutableMap.builder();
+    public ImmutableMap<Integer, Integer> getEnchantments() {
+        ImmutableMap.Builder<Integer, Integer> builder = ImmutableMap.builder();
         if (this.fortune > 0)
-            builder.put(FortuneID, this.fortune);
+            builder.put(FortuneID, (int) this.fortune);
         if (this.unbreaking > 0)
-            builder.put(UnbreakingID, this.unbreaking);
+            builder.put(UnbreakingID, (int) this.unbreaking);
         if (this.silktouch)
-            builder.put(SilktouchID, (byte) 1);
+            builder.put(SilktouchID, 1);
         return builder.build();
     }
 
@@ -679,8 +679,8 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     }
 
     private IFluidHandler tankAll = (IDummyFluidHandler) () -> TilePump.this.liquids.stream()
-            .map(fluidStack -> new FluidTankProperties(fluidStack, fluidStack.amount, false, false))
-            .toArray(IFluidTankProperties[]::new);
+        .map(fluidStack -> new FluidTankProperties(fluidStack, fluidStack.amount, false, false))
+        .toArray(IFluidTankProperties[]::new);
 
     @Nullable
     @Override

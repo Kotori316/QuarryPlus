@@ -45,7 +45,7 @@ public class ItemMirror extends ItemFood {
     public static final int Dimension_Meta = 1;
     public static final int Overworld_Meta = 2;
     private static final Method UPDATE_PLAYERS
-            = ReflectionHelper.findMethod(DragonFightManager.class, "updateplayers", "func_186100_j");
+        = ReflectionHelper.findMethod(DragonFightManager.class, "updateplayers", "func_186100_j");
 
     public ItemMirror() {
         super(0, 0, false);
@@ -75,6 +75,7 @@ public class ItemMirror extends ItemFood {
             }
             //Player World has changed.
             BlockPos c = getBedLocation(playerMP, playerMP.dimension);
+            playerMP.getServerWorld().getChunkProvider().provideChunk(c.getX() >> 4, c.getZ() >> 4);
             playerMP.setPositionAndUpdate(c.getX() + 0.5D, c.getY() + 0.1D, c.getZ() + 0.5D);
         }
     }
@@ -98,8 +99,8 @@ public class ItemMirror extends ItemFood {
     @SuppressWarnings("ConstantConditions")
     private BlockPos getBedLocation(EntityPlayerMP playerMP, int dim) {
         return Optional.ofNullable(playerMP.getBedLocation(dim))
-                .map(p -> EntityPlayerMP.getBedSpawnLocation(playerMP.getServerWorld(), p, playerMP.isSpawnForced(dim)))
-                .orElseGet(() -> playerMP.getServerWorld().provider.getRandomizedSpawnPoint());
+            .map(p -> EntityPlayerMP.getBedSpawnLocation(playerMP.getServerWorld(), p, playerMP.isSpawnForced(dim)))
+            .orElseGet(() -> playerMP.getServerWorld().provider.getRandomizedSpawnPoint());
     }
 
     @Override
