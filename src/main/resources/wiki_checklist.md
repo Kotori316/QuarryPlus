@@ -17,6 +17,6 @@
 
 * **Items**
 - [x] Status Checker
-- [ ] Magic Mirror * 3
-- [ ] List Editor
-- [ ] Liquid Selector
+- [x] Magic Mirror * 3
+- [x] List Editor
+- [x] Liquid Selector
