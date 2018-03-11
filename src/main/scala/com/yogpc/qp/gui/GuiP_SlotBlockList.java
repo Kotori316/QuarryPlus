@@ -78,10 +78,10 @@ public class GuiP_SlotBlockList extends GuiSlot {
     @Override
     protected void drawSlot(int entryID, int insideLeft, int yPos, int insideSlotHeight, int mouseXIn, int mouseYIn, float a) {
         final String name = FluidRegistry.getFluid(this.blocklist.get(entryID)).getLocalizedName(
-                FluidRegistry.getFluidStack(this.blocklist.get(entryID), 0));
+            FluidRegistry.getFluidStack(this.blocklist.get(entryID), 0));
         Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(name,
-                (this.parent.width - Minecraft.getMinecraft().fontRenderer.getStringWidth(name)) / 2,
-                yPos + 2, 0xFFFFFF);
+            (this.parent.width - Minecraft.getMinecraft().fontRenderer.getStringWidth(name)) / 2,
+            yPos + 2, 0xFFFFFF);
     }
 
 }

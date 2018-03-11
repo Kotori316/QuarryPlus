@@ -114,7 +114,7 @@ public class BlockRefinery extends ADismCBlock {
         ItemStack current = player.getHeldItem(hand);
         IFluidHandler handler = refinery.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing);
         FluidActionResult result = FluidUtil.tryEmptyContainerAndStow(current, handler,
-                player.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.UP), Fluid.BUCKET_VOLUME, player, true);
+            player.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.UP), Fluid.BUCKET_VOLUME, player, true);
         if (result.isSuccess()) {
             player.setHeldItem(hand, result.getResult());
         }

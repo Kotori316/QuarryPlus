@@ -44,9 +44,9 @@ public class GuiP_Manual extends GuiScreenA implements GuiYesNoCallback {
     public void initGui() {
         super.initGui();
         this.buttonList.add(new GuiButton(-1, this.width / 2 - 150, this.height - 26, 140, 20,
-                I18n.format(TranslationKeys.DONE)));
+            I18n.format(TranslationKeys.DONE)));
         this.buttonList.add(new GuiButton(-2, this.width / 2 + 10, this.height - 26, 140, 20,
-                I18n.format(TranslationKeys.CANCEL)));
+            I18n.format(TranslationKeys.CANCEL)));
         this.blockid = new GuiTextField(0, this.fontRenderer, this.width / 2 - 50, 50, 100, 20);
         this.blockid.setFocused(true);
     }

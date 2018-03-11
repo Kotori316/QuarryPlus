@@ -54,26 +54,26 @@ public class GuiP_List extends GuiScreenA implements GuiYesNoCallback {
         super.initGui();
         inited = true;
         this.buttonList.add(new GuiButton(CHANGE_ID, this.width / 2 - 160, this.height - 26, 100, 20,
-                I18n.format(TranslationKeys.CHANGE_DIRECTION)));
+            I18n.format(TranslationKeys.CHANGE_DIRECTION)));
         this.buttonList.add(new GuiButton(DONE_ID, this.width / 2 - 50, this.height - 26, 100, 20,
-                I18n.format(TranslationKeys.DONE)));
+            I18n.format(TranslationKeys.DONE)));
         this.buttonList.add(new GuiButton(COPY_ID, this.width / 2 + 60, this.height - 26, 100, 20,
-                I18n.format(TranslationKeys.COPY_FROM_OTHER_DIRECTION)));
+            I18n.format(TranslationKeys.COPY_FROM_OTHER_DIRECTION)));
         this.buttonList.add(new GuiButton(ADDMANUAL_ID, this.width * 2 / 3 + 10, 45, 100, 20,
-                I18n.format(TranslationKeys.ADD) + "(" + I18n.format(TranslationKeys.MANUAL_INPUT) + ")"));
+            I18n.format(TranslationKeys.ADD) + "(" + I18n.format(TranslationKeys.MANUAL_INPUT) + ")"));
         this.buttonList.add(new GuiButton(ADDFROMLIST_ID, this.width * 2 / 3 + 10, 20, 100, 20,
-                I18n.format(TranslationKeys.ADD) + "(" + I18n.format(TranslationKeys.FROM_LIST) + ")"));
+            I18n.format(TranslationKeys.ADD) + "(" + I18n.format(TranslationKeys.FROM_LIST) + ")"));
 
         this.delete = new GuiButton(Mappings.Type.Remove.getId(), this.width * 2 / 3 + 10, 70, 100, 20,
-                I18n.format(TranslationKeys.DELETE));
+            I18n.format(TranslationKeys.DELETE));
         this.top = new GuiButton(Mappings.Type.Top.getId(), this.width * 2 / 3 + 10, 95, 100, 20,
-                I18n.format(TranslationKeys.GO_TOP));
+            I18n.format(TranslationKeys.GO_TOP));
         this.up = new GuiButton(Mappings.Type.Up.getId(), this.width * 2 / 3 + 10, 120, 100, 20,
-                I18n.format(TranslationKeys.GO_UP));
+            I18n.format(TranslationKeys.GO_UP));
         this.down = new GuiButton(Mappings.Type.Down.getId(), this.width * 2 / 3 + 10, 145, 100, 20,
-                I18n.format(TranslationKeys.GO_DOWN));
+            I18n.format(TranslationKeys.GO_DOWN));
         this.bottom = new GuiButton(Mappings.Type.Bottom.getId(), this.width * 2 / 3 + 10, 170, 100, 20,
-                I18n.format(TranslationKeys.GO_BOTTOM));
+            I18n.format(TranslationKeys.GO_BOTTOM));
         this.buttonList.add(delete);
         this.buttonList.add(top);
         this.buttonList.add(up);
@@ -124,8 +124,8 @@ public class GuiP_List extends GuiScreenA implements GuiYesNoCallback {
         if (oreslot != null)
             this.oreslot.drawScreen(mouseX, mouseY, partialTicks);
         drawCenteredString(this.fontRenderer,
-                I18n.format(TranslationKeys.LIST_SETTING) + I18n.format("FD." + dir),
-                this.width / 2, 8, 0xFFFFFF);
+            I18n.format(TranslationKeys.LIST_SETTING) + I18n.format("FD." + dir),
+            this.width / 2, 8, 0xFFFFFF);
         if (this.tile.mapping.get(dir).isEmpty()) {
             if (inited) {
                 if (delete == null) {

@@ -172,7 +172,7 @@ public class ContainerWorkbench extends Container {
                     } else {
                         //put TO workbench.
                         if (slotStack.getItem() == playerStack.getItem() && slotStack.getMetadata() == playerStack.getMetadata()
-                                && ItemStack.areItemStackTagsEqual(slotStack, playerStack)) {
+                            && ItemStack.areItemStackTagsEqual(slotStack, playerStack)) {
                             int j2 = dragType == 0 ? getCount(playerStack) : 1;
 
                             VersionUtil.shrink(playerStack, j2);
@@ -206,7 +206,7 @@ public class ContainerWorkbench extends Container {
                 ItemStack itemstack = slot.getStack();
 
                 if (nonEmpty(itemstack) && itemstack.getItem() == stack.getItem() &&
-                        (!stack.getHasSubtypes() || stack.getMetadata() == itemstack.getMetadata()) && ItemStack.areItemStackTagsEqual(stack, itemstack)) {
+                    (!stack.getHasSubtypes() || stack.getMetadata() == itemstack.getMetadata()) && ItemStack.areItemStackTagsEqual(stack, itemstack)) {
                     int j = getCount(itemstack) + getCount(stack);
                     int maxSize = slot.getSlotStackLimit();// ignore limit of stack. Math.min(slot.getSlotStackLimit(), stack.getMaxStackSize());
 

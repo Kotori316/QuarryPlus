@@ -97,11 +97,11 @@ public class BlockQuarry extends ADismCBlock {
                 if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == 0) {
                     quarry.sendEnchantMassage(playerIn);
                     VersionUtil.sendMessage(playerIn, new TextComponentTranslation(TranslationKeys.CURRENT_MODE,
-                            new TextComponentTranslation(quarry.filler ? TranslationKeys.FILLER_MODE : TranslationKeys.QUARRY_MODE)));
+                        new TextComponentTranslation(quarry.filler ? TranslationKeys.FILLER_MODE : TranslationKeys.QUARRY_MODE)));
                 } else if (quarry.G_getNow() == TileQuarry.Mode.NOTNEEDBREAK) {
                     quarry.filler = !quarry.filler;
                     VersionUtil.sendMessage(playerIn, new TextComponentTranslation(TranslationKeys.CHANGEMODE,
-                            new TextComponentTranslation(quarry.filler ? TranslationKeys.FILLER_MODE : TranslationKeys.QUARRY_MODE)));
+                        new TextComponentTranslation(quarry.filler ? TranslationKeys.FILLER_MODE : TranslationKeys.QUARRY_MODE)));
                 }
             }
         }

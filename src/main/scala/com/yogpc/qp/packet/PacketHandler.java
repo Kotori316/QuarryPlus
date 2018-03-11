@@ -92,7 +92,7 @@ public class PacketHandler {
      */
     public static void sendToAround(IMessage message, World world, BlockPos pos) {
         wrapper.sendToAllAround(message, new NetworkRegistry.TargetPoint(
-                world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 256
+            world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 256
         ));
     }
 

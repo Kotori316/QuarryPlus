@@ -72,12 +72,12 @@ import org.apache.logging.log4j.Logger;
 import static com.yogpc.qp.QuarryPlusI.*;
 
 @Mod(
-        modid = QuarryPlus.modID,
-        name = QuarryPlus.Mod_Name,
-        version = "${version}",
-        dependencies = "after:ic2",
-        guiFactory = QuarryPlus.Optionals.configFactory,
-        updateJSON = QuarryPlus.Optionals.updateJson
+    modid = QuarryPlus.modID,
+    name = QuarryPlus.Mod_Name,
+    version = "${version}",
+    dependencies = "after:ic2",
+    guiFactory = QuarryPlus.Optionals.configFactory,
+    updateJSON = QuarryPlus.Optionals.updateJson
 )
 public class QuarryPlus {
 
@@ -248,7 +248,7 @@ public class QuarryPlus {
                 WorkbenchRecipes.removeRecipe(ItemDamage.apply(toStack.apply(nbtValue)));
             } else if (Optionals.IMC_Add.equals(imcMessage.key)) {
                 Function<ItemStack, IntFunction<ItemStack>> toFunc = stack -> (IntFunction<ItemStack>) integer ->
-                        ItemHandlerHelper.copyStackWithSize(stack, VersionUtil.getCount(stack) * integer);
+                    ItemHandlerHelper.copyStackWithSize(stack, VersionUtil.getCount(stack) * integer);
 
                 NBTTagList list = nbtValue.getTagList(Optionals.IMC_Add, Constants.NBT.TAG_COMPOUND);
                 ItemDamage result = ItemDamage.apply(toStack.apply(list.getCompoundTagAt(0)));

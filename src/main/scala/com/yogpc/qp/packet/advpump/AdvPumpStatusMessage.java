@@ -53,7 +53,7 @@ public class AdvPumpStatusMessage implements IMessage {
         World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
         if (world.provider.getDimension() == dim) {
             Optional.ofNullable(world.getTileEntity(pos)).map(TileAdvPump.class::cast).ifPresent(pump ->
-                    Minecraft.getMinecraft().addScheduledTask(pump.recieveStatusMessage(placeFrame, nbtTagCompound)));
+                Minecraft.getMinecraft().addScheduledTask(pump.recieveStatusMessage(placeFrame, nbtTagCompound)));
         }
         return null;
     }

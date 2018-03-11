@@ -71,7 +71,7 @@ public class GuiP_SelectBlock extends GuiScreenA {
         this.blocks.drawScreen(mouseX, mouseY, partialTicks);
         final String title = I18n.format(TranslationKeys.SELECT_FLUID);
         this.fontRenderer.drawStringWithShadow(title,
-                (this.width - this.fontRenderer.getStringWidth(title)) / 2, 8, 0xFFFFFF);
+            (this.width - this.fontRenderer.getStringWidth(title)) / 2, 8, 0xFFFFFF);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 }

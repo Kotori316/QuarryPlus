@@ -81,7 +81,7 @@ public class MjReciever implements IMjReceiver, IMjReadable {
     @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.BuildCraft_core)
     public long getPowerRequested() {
         return (long) (Math.min(tile.maxGot - tile.got,
-                tile.getMaxStored() - tile.getStoredEnergy() - tile.got) * MjAPI.MJ);
+            tile.getMaxStored() - tile.getStoredEnergy() - tile.got) * MjAPI.MJ);
     }
 
     @Override

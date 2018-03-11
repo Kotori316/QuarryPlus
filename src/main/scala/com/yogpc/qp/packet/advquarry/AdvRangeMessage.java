@@ -54,7 +54,7 @@ public class AdvRangeMessage implements IMessage {
             if (TileAdvQuarry.class.isInstance(entity)) {
                 TileAdvQuarry quarry = (TileAdvQuarry) entity;
                 Optional.ofNullable(world.getMinecraftServer()).ifPresent(s -> s.addScheduledTask(() ->
-                        quarry.digRange_$eq(TileAdvQuarry.DigRange$.MODULE$.readFromNBT(rangeNBT))));
+                    quarry.digRange_$eq(TileAdvQuarry.DigRange$.MODULE$.readFromNBT(rangeNBT))));
             }
         }
         return null;

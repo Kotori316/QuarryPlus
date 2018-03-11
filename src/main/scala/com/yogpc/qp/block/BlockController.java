@@ -63,7 +63,7 @@ public class BlockController extends Block implements IDismantleable {
 
     private static Optional<MobSpawnerBaseLogic> getSpawner(World world, BlockPos pos) {
         return Stream.of(EnumFacing.VALUES).map(pos::offset).map(world::getTileEntity).filter(TileEntityMobSpawner.class::isInstance)
-                .map(tileEntity -> ((TileEntityMobSpawner) tileEntity).getSpawnerBaseLogic()).findFirst();
+            .map(tileEntity -> ((TileEntityMobSpawner) tileEntity).getSpawnerBaseLogic()).findFirst();
     }
 
     @Override
@@ -74,10 +74,10 @@ public class BlockController extends Block implements IDismantleable {
             if (!playerIn.isSneaking()) {
                 if (!worldIn.isRemote) {
                     List<EntityEntry> entries = ForgeRegistries.ENTITIES.getValuesCollection().stream().filter(entity ->
-                            entity.getEntityClass() != null &&
-                                    !Modifier.isAbstract(entity.getEntityClass().getModifiers()) &&
-                                    !Config.content().spawnerBlacklist().contains(entity.getRegistryName()))
-                            .collect(Collectors.toList());
+                        entity.getEntityClass() != null &&
+                            !Modifier.isAbstract(entity.getEntityClass().getModifiers()) &&
+                            !Config.content().spawnerBlacklist().contains(entity.getRegistryName()))
+                        .collect(Collectors.toList());
                     PacketHandler.sendToClient(AvailableEntities.create(pos, worldIn.provider.getDimension(), entries), (EntityPlayerMP) playerIn);
                 }
                 return true;

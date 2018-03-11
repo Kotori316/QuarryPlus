@@ -201,7 +201,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
         }
         if (!this.getWorld().isRemote) {
             if (getWorld().isBlockPowered(getPos()) && (this.link == null ||
-                    this.link.xMin == this.link.xMax || this.link.yMin == this.link.yMax || this.link.zMin == this.link.zMax)) {
+                this.link.xMin == this.link.xMax || this.link.yMin == this.link.yMax || this.link.zMin == this.link.zMax)) {
                 //create
                 this.laser = new Laser(this.getWorld(), getPos(), this.link);
                 PacketHandler.sendToAround(LinkUpdate.create(this, true), getWorld(), getPos());
@@ -340,7 +340,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
     @Override
     public List<? extends ITextComponent> getDebugmessages() {
         return Arrays.asList(new TextComponentString("Link : " + link),
-                new TextComponentString("Laser : " + laser));
+            new TextComponentString("Laser : " + laser));
     }
 
     public static class BlockIndex {
@@ -392,8 +392,8 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
             }
             if (pw.isRemote) {
                 boxes = Arrays.stream(lineBoxes).filter(nonNull)
-                        .map(aabb -> Box.apply(aabb, 1d / 8d, 1d / 8d, 1d / 8d, false, false))
-                        .toArray(Box[]::new);
+                    .map(aabb -> Box.apply(aabb, 1d / 8d, 1d / 8d, 1d / 8d, false, false))
+                    .toArray(Box[]::new);
             } else {
                 //Server
                 boxes = null;
@@ -559,8 +559,8 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
             }
             if (w.isRemote) {
                 boxes = Arrays.stream(lineBoxes).filter(nonNull)
-                        .map(aabb -> Box.apply(aabb, 1d / 8d, 1d / 8d, 1d / 8d, false, false))
-                        .toArray(Box[]::new);
+                    .map(aabb -> Box.apply(aabb, 1d / 8d, 1d / 8d, 1d / 8d, false, false))
+                    .toArray(Box[]::new);
             } else {
                 boxes = null;
             }
@@ -589,7 +589,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
                 return false;
             final Link l = (Link) o;
             return l.xMin == this.xMin && l.xMax == this.xMax && l.yMin == this.yMin &&
-                    l.yMax == this.yMax && l.zMin == this.zMin && l.zMax == this.zMax && l.w == this.w;
+                l.yMax == this.yMax && l.zMin == this.zMin && l.zMax == this.zMax && l.w == this.w;
         }
 
         @Override
