@@ -127,7 +127,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                     return true;
                 }
                 return !(blockHardness < 0) && !b.getBlock().isAir(b, getWorld(), target) && (this.pump != null ||
-                        !TilePump.isLiquid(b, false, getWorld(), target));
+                    !TilePump.isLiquid(b, false, getWorld(), target));
             case NOTNEEDBREAK:
                 if (this.targetY < this.yMin) {
                     if (this.filler) {
@@ -171,7 +171,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                     return S_checkTarget();
                 }
                 if (b.getMaterial().isSolid()
-                        && !(b.getBlock() == QuarryPlusI.blockFrame() && !b.getValue(BlockFrame.DAMMING))) {
+                    && !(b.getBlock() == QuarryPlusI.blockFrame() && !b.getValue(BlockFrame.DAMMING))) {
                     setNow(NOTNEEDBREAK);
                     G_renew_powerConfigure();
                     this.targetX = this.xMin;
@@ -307,7 +307,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
 
     private void S_checkDropItem() {
         final AxisAlignedBB axis = new AxisAlignedBB(this.targetX - 4, this.targetY - 4, this.targetZ - 4,
-                this.targetX + 5, this.targetY + 3, this.targetZ + 5);
+            this.targetX + 5, this.targetY + 3, this.targetZ + 5);
         final List<EntityItem> result = getWorld().getEntitiesWithinAABB(EntityItem.class, axis);
         for (EntityItem entityItem : result) {
             if (!entityItem.isDead) {
@@ -327,8 +327,8 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
         EnumFacing facing = getWorld().getBlockState(getPos()).getValue(BlockQuarry.FACING).getOpposite();
         if (bccoreLoaded) {
             Optional<ITileAreaProvider> marker = Stream.of(getNeighbors(facing))
-                    .map(getWorld()::getTileEntity).filter(nonNull)
-                    .map(t -> t.getCapability(TilesAPI.CAP_TILE_AREA_PROVIDER, null)).filter(nonNull).findFirst();
+                .map(getWorld()::getTileEntity).filter(nonNull)
+                .map(t -> t.getCapability(TilesAPI.CAP_TILE_AREA_PROVIDER, null)).filter(nonNull).findFirst();
             if (marker.isPresent()) {
                 ITileAreaProvider provider = marker.get();
                 if (provider.min().getX() == provider.max().getX() || provider.min().getZ() == provider.max().getZ()) {
@@ -342,7 +342,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                     this.zMax = provider.max().getZ();
 
                     if (getPos().getX() >= this.xMin && getPos().getX() <= this.xMax && getPos().getY() >= this.yMin
-                            && getPos().getY() <= this.yMax && getPos().getZ() >= this.zMin && getPos().getZ() <= this.zMax) {
+                        && getPos().getY() <= this.yMax && getPos().getZ() >= this.zMin && getPos().getZ() <= this.zMax) {
                         this.yMax = Integer.MIN_VALUE;
                         setDefaultRange(getPos(), facing);
                         return;
@@ -361,9 +361,9 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
             }
         } else {
             Optional<TileMarker> marker = Stream.of(getNeighbors(facing))
-                    .map(getWorld()::getTileEntity)
-                    .filter(t -> t instanceof TileMarker)
-                    .map(t -> (TileMarker) t).findFirst();
+                .map(getWorld()::getTileEntity)
+                .filter(t -> t instanceof TileMarker)
+                .map(t -> (TileMarker) t).findFirst();
             if (marker.isPresent()) {
                 TileMarker tileMarker = marker.get();
                 if (tileMarker.link == null) {
@@ -376,7 +376,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                     this.yMax = tileMarker.max().getY();
                     this.zMax = tileMarker.max().getZ();
                     if (getPos().getX() >= this.xMin && getPos().getX() <= this.xMax && getPos().getY() >= this.yMin
-                            && getPos().getY() <= this.yMax && getPos().getZ() >= this.zMin && getPos().getZ() <= this.zMax) {
+                        && getPos().getY() <= this.yMax && getPos().getZ() >= this.zMin && getPos().getZ() <= this.zMax) {
                         this.yMax = Integer.MIN_VALUE;
                         setDefaultRange(getPos(), facing);
                         return;
@@ -634,7 +634,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     public AxisAlignedBB getRenderBoundingBox() {
         if (this.yMax == Integer.MIN_VALUE)
             return new AxisAlignedBB(getPos().getX(), Double.NEGATIVE_INFINITY, getPos().getZ(),
-                    getPos().getX() + 1, getPos().getY() + 1, getPos().getZ() + 1);
+                getPos().getX() + 1, getPos().getY() + 1, getPos().getZ() + 1);
         final double xn = this.xMin + 0.46875;
         final double xx = this.xMax + 0.53125;
         final double yx = this.yMax + 0.75;

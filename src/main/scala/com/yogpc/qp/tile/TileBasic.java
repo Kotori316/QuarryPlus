@@ -113,7 +113,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
             return ((TilePump) te).S_removeLiquids(this, x, y, z);
         }
         if (!PowerManager.useEnergyBreak(this, blockState.getBlockHardness(getWorld(), pos),
-                S_addDroppedItems(dropped, blockState, pos), this.unbreaking))
+            S_addDroppedItems(dropped, blockState, pos), this.unbreaking))
             return false;
         this.cacheItems.addAll(dropped);
         this.getWorld().destroyBlock(pos, false);
@@ -134,7 +134,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     private byte S_addDroppedItems(final Collection<ItemStack> collection, final IBlockState state, final BlockPos pos) {
         Block block = state.getBlock();
         if (block.canSilkHarvest(getWorld(), pos, state, null) && this.silktouch
-                && silktouchList.contains(new BlockData(block, state)) == this.silktouchInclude) {
+            && silktouchList.contains(new BlockData(block, state)) == this.silktouchInclude) {
             collection.add((ItemStack) ReflectionHelper.invoke(createStackedBlock, block, state));
             return -1;
         } else {
@@ -148,7 +148,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     }
 
     public static final Method createStackedBlock = ReflectionHelper.getMethod(Block.class,
-            new String[]{"func_180643_i", "getSilkTouchDrop"}, new Class<?>[]{IBlockState.class});
+        new String[]{"func_180643_i", "getSilkTouchDrop"}, new Class<?>[]{IBlockState.class});
 
     @Override
     public void readFromNBT(final NBTTagCompound nbttc) {
@@ -193,16 +193,16 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     }
 
     @Override
-    public Map<Integer, Byte> getEnchantments() {
-        final Map<Integer, Byte> ret = new HashMap<>();
+    public Map<Integer, Integer> getEnchantments() {
+        final Map<Integer, Integer> ret = new HashMap<>();
         if (this.efficiency > 0)
-            ret.put(EfficiencyID, this.efficiency);
+            ret.put(EfficiencyID, (int) this.efficiency);
         if (this.fortune > 0)
-            ret.put(FortuneID, this.fortune);
+            ret.put(FortuneID, (int) this.fortune);
         if (this.unbreaking > 0)
-            ret.put(UnbreakingID, this.unbreaking);
+            ret.put(UnbreakingID, (int) this.unbreaking);
         if (this.silktouch)
-            ret.put(SilktouchID, (byte) 1);
+            ret.put(SilktouchID, 1);
         return ret;
     }
 

@@ -85,10 +85,10 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
         if (!targets.isEmpty()) {
             long maxPower = (long) (PowerManager.simurateEnergyLaser(this, this.unbreaking, this.fortune, this.silktouch, this.efficiency) * MjAPI.MJ);
             List<ILaserTarget> targetList = targets.stream()
-                    .map(getWorld()::getTileEntity)
-                    .map(ILaserTarget.class::cast)
-                    .filter(t -> !Objects.requireNonNull(t).isInvalidTarget() && t.getRequiredLaserPower() > 0)
-                    .collect(Collectors.toList());
+                .map(getWorld()::getTileEntity)
+                .map(ILaserTarget.class::cast)
+                .filter(t -> !Objects.requireNonNull(t).isInvalidTarget() && t.getRequiredLaserPower() > 0)
+                .collect(Collectors.toList());
             if (!targetList.isEmpty()) {
                 long each = maxPower / targetList.size();
                 targetList.forEach(iLaserTarget -> {
@@ -111,9 +111,9 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
             for (int i = 0; i < targets.size(); i++) {
                 BlockPos targetPos = targets.get(i);
                 vec3ds[i] = new Vec3d(targetPos).addVector(
-                        (5 + getWorld().rand.nextInt(6) + 0.5) / 16D,
-                        9 / 16D,
-                        (5 + getWorld().rand.nextInt(6) + 0.5) / 16D
+                    (5 + getWorld().rand.nextInt(6) + 0.5) / 16D,
+                    9 / 16D,
+                    (5 + getWorld().rand.nextInt(6) + 0.5) / 16D
                 );
             }
             lasers = vec3ds;
@@ -197,11 +197,11 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
     }
 
     public static final ResourceLocation[] LASER_TEXTURES = new ResourceLocation[]{
-            new ResourceLocation(QuarryPlus.modID, "textures/entities/laser_1.png"),
-            new ResourceLocation(QuarryPlus.modID, "textures/entities/laser_2.png"),
-            new ResourceLocation(QuarryPlus.modID, "textures/entities/laser_3.png"),
-            new ResourceLocation(QuarryPlus.modID, "textures/entities/laser_4.png"),
-            new ResourceLocation(QuarryPlus.modID, "textures/entities/stripes.png")};
+        new ResourceLocation(QuarryPlus.modID, "textures/entities/laser_1.png"),
+        new ResourceLocation(QuarryPlus.modID, "textures/entities/laser_2.png"),
+        new ResourceLocation(QuarryPlus.modID, "textures/entities/laser_3.png"),
+        new ResourceLocation(QuarryPlus.modID, "textures/entities/laser_4.png"),
+        new ResourceLocation(QuarryPlus.modID, "textures/entities/stripes.png")};
 
     public ResourceLocation getTexture() {
         final double avg = getAvg();
@@ -251,16 +251,16 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
     }
 
     @Override
-    public Map<Integer, Byte> getEnchantments() {
-        final Map<Integer, Byte> ret = new HashMap<>();
+    public Map<Integer, Integer> getEnchantments() {
+        final Map<Integer, Integer> ret = new HashMap<>();
         if (this.efficiency > 0)
-            ret.put(EfficiencyID, this.efficiency);
+            ret.put(EfficiencyID, (int) this.efficiency);
         if (this.fortune > 0)
-            ret.put(FortuneID, this.fortune);
+            ret.put(FortuneID, (int) this.fortune);
         if (this.unbreaking > 0)
-            ret.put(UnbreakingID, this.unbreaking);
+            ret.put(UnbreakingID, (int) this.unbreaking);
         if (this.silktouch)
-            ret.put(SilktouchID, (byte) 1);
+            ret.put(SilktouchID, 1);
         return ret;
     }
 
@@ -286,14 +286,14 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
         List<ITextComponent> list = new ArrayList<>();
         list.add(toComponentString.apply("Targets"));
         targets.stream()
-                .map(pos1 -> String.format("x=%d, y=%d, z=%d", pos1.getX(), pos1.getY(), pos1.getZ()))
-                .reduce(combiner).map(toComponentString)
-                .ifPresent(list::add);
+            .map(pos1 -> String.format("x=%d, y=%d, z=%d", pos1.getX(), pos1.getY(), pos1.getZ()))
+            .reduce(combiner).map(toComponentString)
+            .ifPresent(list::add);
         list.add(toComponentString.apply("Lasers"));
         Stream.of(lasers).filter(nonNull)
-                .map(pos1 -> String.format("x=%s, y=%s, z=%s", pos1.xCoord, pos1.yCoord, pos1.zCoord))
-                .reduce(combiner).map(toComponentString)
-                .ifPresent(list::add);
+            .map(pos1 -> String.format("x=%s, y=%s, z=%s", pos1.xCoord, pos1.yCoord, pos1.zCoord))
+            .reduce(combiner).map(toComponentString)
+            .ifPresent(list::add);
         return list;
     }
 

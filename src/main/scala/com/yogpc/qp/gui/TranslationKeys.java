@@ -1,12 +1,13 @@
 package com.yogpc.qp.gui;
 
-import java.util.AbstractMap;
 import java.util.Collections;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import com.yogpc.qp.QuarryPlus;
+
+import static jp.t2v.lab.syntax.MapStreamSyntax.entryToMap;
+import static jp.t2v.lab.syntax.MapStreamSyntax.valuesInt;
 
 public class TranslationKeys {
     public static final String ADD = "tof.addnewore";
@@ -76,8 +77,7 @@ public class TranslationKeys {
 
     static {
         final String s = "enchantment.level.";
-        Map<Integer, String> map = IntStream.rangeClosed(1, 10).mapToObj(i -> new AbstractMap.SimpleImmutableEntry<>(i, s + i))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        Map<Integer, String> map = IntStream.rangeClosed(1, 10).mapToObj(valuesInt(i -> i + s)).collect(entryToMap());
         ENCHANT_LEVELS = Collections.unmodifiableMap(map);
     }
 }

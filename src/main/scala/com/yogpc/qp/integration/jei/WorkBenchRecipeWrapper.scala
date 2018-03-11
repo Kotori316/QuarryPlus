@@ -8,6 +8,7 @@ import mezz.jei.api.recipe.BlankRecipeWrapper
 import net.minecraft.item.ItemStack
 
 import scala.collection.JavaConverters._
+
 class WorkBenchRecipeWrapper(recipe: WorkbenchRecipes) extends BlankRecipeWrapper with Ordered[WorkBenchRecipeWrapper] {
 
     override def getIngredients(ingredients: IIngredients): Unit = {

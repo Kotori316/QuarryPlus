@@ -73,13 +73,13 @@ public class GuiEnchList extends GuiContainer implements GuiYesNoCallback {
         super.initGui(); // must be here!
 //        PacketHandler.sendToServer(BlockListRequestMessage.create(inventorySlots.windowId));
         this.buttonList.add(new GuiButton(-1,
-                this.width / 2 - 125, this.height - 26, 250, 20, I18n.format(TranslationKeys.DONE)));
+            this.width / 2 - 125, this.height - 26, 250, 20, I18n.format(TranslationKeys.DONE)));
         this.buttonList.add(new GuiButton(Toggle_id,
-                this.width * 2 / 3 + 10, 140, 100, 20, ""));
+            this.width * 2 / 3 + 10, 140, 100, 20, ""));
         this.buttonList.add(new GuiButton(Remove_id,
-                this.width * 2 / 3 + 10, 110, 100, 20, I18n.format(TranslationKeys.DELETE)));
+            this.width * 2 / 3 + 10, 110, 100, 20, I18n.format(TranslationKeys.DELETE)));
         this.slot = new GuiSlotEnchList(this.mc, this.width * 3 / 5, this.height - 60, 30, this.height - 30,
-                this, getBlockDataList(target));
+            this, getBlockDataList(target));
     }
 
     /**
@@ -99,7 +99,7 @@ public class GuiEnchList extends GuiContainer implements GuiYesNoCallback {
                 break;
             case Remove_id:
                 this.mc.displayGuiScreen(new GuiYesNo(this, I18n.format(TranslationKeys.DELETE_BLOCK_SURE),
-                        getBlockDataList(target).get(this.slot.currentore()).getLocalizedName(), par1.id));
+                    getBlockDataList(target).get(this.slot.currentore()).getLocalizedName(), par1.id));
                 break;
             default: //maybe toggle
                 PacketHandler.sendToServer(EnchantmentMessage.create(tile, EnchantmentMessage.Type.Toggle, target, BlockData.Invalid()));
@@ -133,7 +133,7 @@ public class GuiEnchList extends GuiContainer implements GuiYesNoCallback {
     @Override
     protected void drawGuiContainerForegroundLayer(final int i, final int j) {
         drawCenteredString(this.fontRendererObj, I18n.format(TranslationKeys.QP_ENABLE_LIST, I18n.format(this.target.getName())),
-                this.xSize / 2, 8, 0xFFFFFF);
+            this.xSize / 2, 8, 0xFFFFFF);
     }
 
     @Override

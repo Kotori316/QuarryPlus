@@ -49,8 +49,12 @@ public interface VersionDiff {
     Function<NBTBase, NBTTagCompound> NBT_TAG_COMPOUND_FUNCTION = NBTTagCompound.class::cast;
 
     default Stream<NBTTagCompound> nbtListStream(NBTTagList list) {
-        return StreamSupport.stream(Spliterators.spliterator(getIterator(list), list.tagCount(), Spliterator.ORDERED),
+        if (list == null) {
+            return Stream.empty();
+        } else {
+            return StreamSupport.stream(Spliterators.spliterator(getIterator(list), list.tagCount(), Spliterator.ORDERED),
                 false).map(NBT_TAG_COMPOUND_FUNCTION);
+        }
     }
 
     default boolean changeAdvPumpState() {

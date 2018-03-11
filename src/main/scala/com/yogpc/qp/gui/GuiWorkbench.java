@@ -31,7 +31,7 @@ public class GuiWorkbench extends GuiContainer {
 
         public MyFontRenderer() {
             super(Minecraft.getMinecraft().gameSettings, new ResourceLocation("textures/font/ascii.png"),
-                    Minecraft.getMinecraft().renderEngine, false);
+                Minecraft.getMinecraft().renderEngine, false);
         }
 
         @Override
@@ -87,9 +87,9 @@ public class GuiWorkbench extends GuiContainer {
     }
 
     private static final RenderItem myitem = new MyRenderItem(
-            Minecraft.getMinecraft().getTextureManager(),
-            Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getModelManager(),
-            Minecraft.getMinecraft().getItemColors());
+        Minecraft.getMinecraft().getTextureManager(),
+        Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getModelManager(),
+        Minecraft.getMinecraft().getItemColors());
 
     private static final ResourceLocation gui = new ResourceLocation(QuarryPlus.modID, "textures/gui/workbench.png");
     private final TileWorkbench tile;

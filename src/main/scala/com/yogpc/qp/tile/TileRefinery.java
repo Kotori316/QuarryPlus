@@ -126,7 +126,7 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
         }
         double v = MjReciever.getMJfrommicro(cacheEnergy);
         if (cacheIn == null || (!Config.content().noEnergy() && getStoredEnergy() < v) ||
-                !PowerManager.useEnergyRefinery(this, v, ench.unbreaking, ench.efficiency)) {
+            !PowerManager.useEnergyRefinery(this, v, ench.unbreaking, ench.efficiency)) {
             decreaseAnimation();
         } else {
             increaseAnimation();
@@ -157,7 +157,7 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
     private void updateRecipe() {
         if (bcLoaded) {
             IRefineryRecipeManager.IDistillationRecipe recipe =
-                    BuildcraftRecipeRegistry.refineryRecipes.getDistillationRegistry().getRecipeForInput(horizontalsTank.getFluid());
+                BuildcraftRecipeRegistry.refineryRecipes.getDistillationRegistry().getRecipeForInput(horizontalsTank.getFluid());
             if (recipe != null) {
                 cacheIn = recipe.in();
                 cachedLiqud = recipe.outLiquid();
@@ -216,16 +216,16 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
     }
 
     @Override
-    public Map<Integer, Byte> getEnchantments() {
-        final Map<Integer, Byte> ret = new HashMap<>();
+    public Map<Integer, Integer> getEnchantments() {
+        final Map<Integer, Integer> ret = new HashMap<>();
         if (ench.efficiency > 0)
-            ret.put(EfficiencyID, ench.efficiency);
+            ret.put(EfficiencyID, (int) ench.efficiency);
         if (ench.fortune > 0)
-            ret.put(FortuneID, ench.fortune);
+            ret.put(FortuneID, (int) ench.fortune);
         if (ench.unbreaking > 0)
-            ret.put(UnbreakingID, ench.unbreaking);
+            ret.put(UnbreakingID, (int) ench.unbreaking);
         if (ench.silktouch)
-            ret.put(SilktouchID, (byte) 1);
+            ret.put(SilktouchID, 1);
         return ret;
     }
 

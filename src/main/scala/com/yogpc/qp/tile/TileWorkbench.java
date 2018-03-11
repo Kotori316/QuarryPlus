@@ -57,7 +57,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
                         InventoryHelper.spawnItemStack(getWorld(), getPos().getX(), getPos().getY(), getPos().getZ(), stack);
                     }
                     currentRecipe.inputsJ().forEach(v1 ->
-                            inventory.stream().filter(v1::isItemEqual).findFirst().ifPresent(stack1 -> VersionUtil.shrink(stack1, VersionUtil.getCount(v1)))
+                        inventory.stream().filter(v1::isItemEqual).findFirst().ifPresent(stack1 -> VersionUtil.shrink(stack1, VersionUtil.getCount(v1)))
                     );
                     markDirty();
                     setCurrentRecipe(workcontinue ? getRecipeIndex() : -1);
@@ -217,7 +217,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
     @Override
     public List<TextComponentString> getDebugmessages() {
         return Arrays.asList(new TextComponentString(currentRecipe.toString()),
-                new TextComponentString("Work mode : " + (workcontinue ? "Continue" : "Only once")));
+            new TextComponentString("Work mode : " + (workcontinue ? "Continue" : "Only once")));
     }
 
     @Override

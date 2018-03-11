@@ -15,7 +15,7 @@ object Loot {
     private[this] val mirror = new LootEntryItem(
         QuarryPlusI.magicmirror, 1, 0, NO_FUNCTION, NO_CONDITION, QuarryPlusI.magicmirror.getRegistryName.toString
     )
-    private[this] val empty = new LootEntryEmpty(4, 0, NO_CONDITION, "EMPTY")
+    private[this] val empty = new LootEntryEmpty(9, 0, NO_CONDITION, "EMPTY")
     private[this] val pool = new LootPool(Array(mirror, empty), NO_CONDITION, new RandomValueRange(1), new RandomValueRange(0), QuarryPlus.Mod_Name)
 
     @SubscribeEvent
