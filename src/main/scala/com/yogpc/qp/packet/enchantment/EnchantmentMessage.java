@@ -43,12 +43,13 @@ public class EnchantmentMessage implements IMessage {
         type = buffer.readEnumValue(Type.class);
         enchantment = Enchantment.getEnchantmentByLocation(buffer.readString(Short.MAX_VALUE));
         data = BlockData.readFromNBT(buffer.readCompoundTag());
+        dim = buffer.readInt();
     }
 
     @Override
-    @SuppressWarnings("ConstantConditions")
     public void toBytes(PacketBuffer buffer) {
-        buffer.writeBlockPos(pos).writeEnumValue(type).writeString(VersionUtil.getRegistryName(enchantment).toString()).writeCompoundTag(data.writeToNBT(new NBTTagCompound()));
+        buffer.writeBlockPos(pos).writeEnumValue(type).writeString(VersionUtil.getRegistryName(enchantment).toString())
+            .writeCompoundTag(data.writeToNBT(new NBTTagCompound())).writeInt(dim);
     }
 
     @Override
