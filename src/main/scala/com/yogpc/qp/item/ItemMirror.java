@@ -17,6 +17,7 @@ import java.util.Optional;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
+import com.yogpc.qp.version.VersionUtil;
 import javax.annotation.Nonnull;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
@@ -106,7 +107,7 @@ public class ItemMirror extends ItemFood {
     @Override
     public ItemStack onItemUseFinish(ItemStack stack, World worldIn, EntityLivingBase entityLiving) {
         ItemStack itemStack = super.onItemUseFinish(stack, worldIn, entityLiving);
-        itemStack.grow(1); //prevent stack size from being shrinked.
+        VersionUtil.setCountForce(itemStack, VersionUtil.getCount(itemStack) + 1); //prevent stack size from being shrinked.
         return itemStack;
     }
 

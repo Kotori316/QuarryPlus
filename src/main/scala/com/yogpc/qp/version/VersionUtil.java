@@ -28,6 +28,10 @@ public class VersionUtil {
         QuarryPlus.DIFF.setCount(stack, newSize);
     }
 
+    public static void setCountForce(ItemStack stack, int newSize) {
+        QuarryPlus.DIFF.setCountForce(stack, newSize);
+    }
+
     public static int getCount(ItemStack stack) {
         return QuarryPlus.DIFF.getCount(stack);
     }
