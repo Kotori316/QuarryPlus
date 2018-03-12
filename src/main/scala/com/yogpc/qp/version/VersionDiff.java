@@ -28,6 +28,10 @@ public interface VersionDiff {
 
     void setCount(ItemStack stack, int newSize);
 
+    default void setCountForce(ItemStack stack, int newSize) {
+        setCount(stack, newSize);
+    }
+
     default void shrink(ItemStack stack, int size) {
         setCount(stack, getCount(stack) - size);
     }
