@@ -46,6 +46,13 @@ public class Diff10 implements VersionDiff {
     }
 
     @Override
+    public void setCountForce(ItemStack stack, int newSize) {
+        if (stack != null) {
+            stack.stackSize = newSize;
+        }
+    }
+
+    @Override
     public void sendWindowProperty(IContainerListener listener, Container containerIn, int varToUpdate, int newValue) {
         listener.sendProgressBarUpdate(containerIn, varToUpdate, newValue);
     }
@@ -62,7 +69,11 @@ public class Diff10 implements VersionDiff {
 
     @Override
     public Stream<NBTTagCompound> nbtListStream(NBTTagList list) {
-        return IntStream.range(0, list.tagCount()).mapToObj(list::getCompoundTagAt);
+        if (list == null) {
+            return Stream.empty();
+        } else {
+            return IntStream.range(0, list.tagCount()).mapToObj(list::getCompoundTagAt);
+        }
     }
 
     @Override

@@ -62,8 +62,8 @@ public class BlockFrame extends BlockEmptyDrops {
     public static final AxisAlignedBB UP_AABB = new AxisAlignedBB(0.25, .75, 0.25, 0.75, 1, 0.75);
     public static final AxisAlignedBB Down_AABB = new AxisAlignedBB(0.25, 0, 0.25, 0.75, .25, 0.75);
     private static final BiPredicate<World, BlockPos> HASNEIGHBOURLIQUID = (world, pos) ->
-            Stream.of(EnumFacing.VALUES).map(pos::offset).map(world::getBlockState)
-                    .anyMatch(state -> !state.isFullCube() && TilePump.isLiquid(state, false, null, null));
+        Stream.of(EnumFacing.VALUES).map(pos::offset).map(world::getBlockState)
+            .anyMatch(state -> !state.isFullCube() && TilePump.isLiquid(state, false, null, null));
 
     public final ItemBlock itemBlock;
 
@@ -74,9 +74,9 @@ public class BlockFrame extends BlockEmptyDrops {
         setUnlocalizedName(QuarryPlus.Names.frame);
         setRegistryName(QuarryPlus.modID, QuarryPlus.Names.frame);
         this.setDefaultState(this.blockState.getBaseState()
-                .withProperty(NORTH, false).withProperty(EAST, false).withProperty(SOUTH, false)
-                .withProperty(WEST, false).withProperty(TOP, false).withProperty(DOWN, false)
-                .withProperty(DAMMING, false));
+            .withProperty(NORTH, false).withProperty(EAST, false).withProperty(SOUTH, false)
+            .withProperty(WEST, false).withProperty(TOP, false).withProperty(DOWN, false)
+            .withProperty(DAMMING, false));
         itemBlock = new ItemBlock(this);
         itemBlock.setRegistryName(QuarryPlus.modID, QuarryPlus.Names.frame);
     }
@@ -89,12 +89,12 @@ public class BlockFrame extends BlockEmptyDrops {
     @SuppressWarnings("deprecation")
     public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
         return state
-                .withProperty(NORTH, canConnectTo(worldIn, pos.north()))
-                .withProperty(EAST, canConnectTo(worldIn, pos.east()))
-                .withProperty(SOUTH, canConnectTo(worldIn, pos.south()))
-                .withProperty(WEST, canConnectTo(worldIn, pos.west()))
-                .withProperty(DOWN, canConnectTo(worldIn, pos.down()))
-                .withProperty(TOP, canConnectTo(worldIn, pos.up()));
+            .withProperty(NORTH, canConnectTo(worldIn, pos.north()))
+            .withProperty(EAST, canConnectTo(worldIn, pos.east()))
+            .withProperty(SOUTH, canConnectTo(worldIn, pos.south()))
+            .withProperty(WEST, canConnectTo(worldIn, pos.west()))
+            .withProperty(DOWN, canConnectTo(worldIn, pos.down()))
+            .withProperty(TOP, canConnectTo(worldIn, pos.up()));
     }
 
     private boolean breaking = false;

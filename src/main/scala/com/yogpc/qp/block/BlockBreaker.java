@@ -196,7 +196,7 @@ public class BlockBreaker extends ADismCBlock {
         if (stack != null && stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == 0) {
             if (!worldIn.isRemote) {
                 Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t ->
-                        t.sendEnchantMassage(playerIn));
+                    t.sendEnchantMassage(playerIn));
             }
             return true;
         }

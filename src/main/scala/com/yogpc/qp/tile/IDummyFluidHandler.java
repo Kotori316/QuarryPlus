@@ -9,7 +9,7 @@ import net.minecraftforge.fluids.capability.IFluidTankProperties;
 public interface IDummyFluidHandler extends IFluidHandler {
 
     public static final IFluidTankProperties[] emptyPropertyArray =
-            new IFluidTankProperties[]{new FluidTankProperties(null, 0, false, false)};
+        new IFluidTankProperties[]{new FluidTankProperties(null, 0, false, false)};
 
     @Override
     IFluidTankProperties[] getTankProperties();

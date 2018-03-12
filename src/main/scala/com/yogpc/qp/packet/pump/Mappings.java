@@ -99,11 +99,12 @@ public class Mappings {
             facing = buffer.readEnumValue(EnumFacing.class);
             type = buffer.readEnumValue(Type.class);
             fluidName = buffer.readStringFromBuffer(Short.MAX_VALUE);
+            dim = buffer.readInt();
         }
 
         @Override
         public void toBytes(PacketBuffer buffer) {
-            buffer.writeBlockPos(pos).writeEnumValue(facing).writeEnumValue(type).writeString(fluidName);
+            buffer.writeBlockPos(pos).writeEnumValue(facing).writeEnumValue(type).writeString(fluidName).writeInt(dim);
         }
 
         @Override

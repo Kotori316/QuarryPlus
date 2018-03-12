@@ -75,12 +75,12 @@ import org.apache.logging.log4j.Logger;
 import static com.yogpc.qp.QuarryPlusI.*;
 
 @Mod(
-        modid = QuarryPlus.modID,
-        name = QuarryPlus.Mod_Name,
-        version = "${version}",
-        dependencies = "after:ic2",
-        guiFactory = QuarryPlus.Optionals.configFactory,
-        updateJSON = QuarryPlus.Optionals.updateJson
+    modid = QuarryPlus.modID,
+    name = QuarryPlus.Mod_Name,
+    version = "${version}",
+    dependencies = "after:ic2",
+    guiFactory = QuarryPlus.Optionals.configFactory,
+    updateJSON = QuarryPlus.Optionals.updateJson
 )
 public class QuarryPlus {
 
@@ -140,9 +140,9 @@ public class QuarryPlus {
     public void init(final FMLInitializationEvent event) {
         PacketHandler.init();
         GameRegistry.addRecipe(new ItemStack(blockWorkbench(), 1),
-                "III", "GDG", "RRR",
-                'D', Blocks.DIAMOND_BLOCK, 'R', Items.REDSTONE,
-                'I', Blocks.IRON_BLOCK, 'G', Blocks.GOLD_BLOCK);
+            "III", "GDG", "RRR",
+            'D', Blocks.DIAMOND_BLOCK, 'R', Items.REDSTONE,
+            'I', Blocks.IRON_BLOCK, 'G', Blocks.GOLD_BLOCK);
         WorkbenchRecipes.registerRecipes();
         if (inDev && ModAPIManager.INSTANCE.hasAPI(Optionals.Buildcraft_facades))
             BuildcraftHelper.disableFacade();
@@ -257,7 +257,7 @@ public class QuarryPlus {
                 WorkbenchRecipes.removeRecipe(ItemDamage.apply(toStack.apply(nbtValue)));
             } else if (Optionals.IMC_Add.equals(imcMessage.key)) {
                 Function<ItemStack, IntFunction<ItemStack>> toFunc = stack -> (IntFunction<ItemStack>) integer ->
-                        ItemHandlerHelper.copyStackWithSize(stack, VersionUtil.getCount(stack) * integer);
+                    ItemHandlerHelper.copyStackWithSize(stack, VersionUtil.getCount(stack) * integer);
 
                 NBTTagList list = nbtValue.getTagList(Optionals.IMC_Add, Constants.NBT.TAG_COMPOUND);
                 ItemDamage result = ItemDamage.apply(toStack.apply(list.getCompoundTagAt(0)));

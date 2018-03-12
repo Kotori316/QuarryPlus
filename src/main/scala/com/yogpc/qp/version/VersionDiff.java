@@ -28,6 +28,10 @@ public interface VersionDiff {
 
     void setCount(ItemStack stack, int newSize);
 
+    default void setCountForce(ItemStack stack, int newSize) {
+        setCount(stack, newSize);
+    }
+
     default void shrink(ItemStack stack, int size) {
         setCount(stack, getCount(stack) - size);
     }
@@ -49,8 +53,12 @@ public interface VersionDiff {
     Function<NBTBase, NBTTagCompound> NBT_TAG_COMPOUND_FUNCTION = NBTTagCompound.class::cast;
 
     default Stream<NBTTagCompound> nbtListStream(NBTTagList list) {
-        return StreamSupport.stream(Spliterators.spliterator(getIterator(list), list.tagCount(), Spliterator.ORDERED),
+        if (list == null) {
+            return Stream.empty();
+        } else {
+            return StreamSupport.stream(Spliterators.spliterator(getIterator(list), list.tagCount(), Spliterator.ORDERED),
                 false).map(NBT_TAG_COMPOUND_FUNCTION);
+        }
     }
 
     default boolean changeAdvPumpState() {

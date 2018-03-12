@@ -62,7 +62,7 @@ public class BlockController extends Block implements IDismantleable {
 
     private static Optional<MobSpawnerBaseLogic> getSpawner(World world, BlockPos pos) {
         return Stream.of(EnumFacing.VALUES).map(pos::offset).map(world::getTileEntity).filter(TileEntityMobSpawner.class::isInstance)
-                .map(tileEntity -> ((TileEntityMobSpawner) tileEntity).getSpawnerBaseLogic()).findFirst();
+            .map(tileEntity -> ((TileEntityMobSpawner) tileEntity).getSpawnerBaseLogic()).findFirst();
     }
 
     @Override

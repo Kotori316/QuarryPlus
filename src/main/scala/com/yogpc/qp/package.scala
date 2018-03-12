@@ -2,6 +2,9 @@ package com.yogpc
 
 import com.yogpc.qp.version.VersionUtil
 import net.minecraft.item.ItemStack
+import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
+
+import scala.collection.AbstractIterator
 
 package object qp {
 
@@ -38,6 +41,26 @@ package object qp {
 
     implicit class ISHelper(val stack: ItemStack) extends AnyVal {
         def getCount: Int = VersionUtil.getCount(stack)
+    }
+
+    implicit class NBTList2Iterator(val list: NBTTagList) extends AnyVal {
+        def tagIterator: Iterator[NBTTagCompound] = new NBTListIterator(list)
+    }
+
+    private class NBTListIterator(val list: NBTTagList) extends AbstractIterator[NBTTagCompound] {
+        var count = 0
+
+        override def hasNext: Boolean = count < list.tagCount()
+
+        override def next(): NBTTagCompound = {
+            val v = list.getCompoundTagAt(count)
+            count += 1
+            v
+        }
+
+        override def size: Int = list.tagCount()
+
+        override def isEmpty: Boolean = list.hasNoTags
     }
 
 }

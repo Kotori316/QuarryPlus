@@ -15,7 +15,20 @@ import net.minecraftforge.common.util.Constants;
  */
 public class ItemStackHelper {
     public static ItemStack getAndSplit(List<ItemStack> stacks, int index, int amount) {
-        return index >= 0 && index < stacks.size() && VersionUtil.nonEmpty(stacks.get(index)) && amount > 0 ? stacks.get(index).splitStack(amount) : VersionUtil.empty();
+        if (index >= 0 && index < stacks.size()) {
+            ItemStack stack1 = stacks.get(index);
+            if (VersionUtil.nonEmpty(stack1) && amount > 0) {
+                ItemStack stack = stack1.splitStack(amount);
+                if (VersionUtil.isEmpty(stack1)) {
+                    stacks.set(index, VersionUtil.empty());
+                }
+                return stack;
+            } else {
+                return VersionUtil.empty();
+            }
+        } else {
+            return VersionUtil.empty();
+        }
     }
 
     public static ItemStack getAndRemove(List<ItemStack> stacks, int index) {

@@ -15,6 +15,7 @@ package com.yogpc.qp
 import java.util
 
 import com.yogpc.qp.tile.IChunkLoadTile
+import net.minecraft.block.Block
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import net.minecraftforge.common.ForgeChunkManager
@@ -23,6 +24,7 @@ import scala.collection.JavaConverters._
 
 object ChunkLoadingHandler extends ForgeChunkManager.OrderedLoadingCallback {
     val instance = this
+    val blockSet: Set[Block] = Set(QuarryPlusI.blockQuarry, QuarryPlusI.blockMarker, QuarryPlusI.blockChunkdestroyer, QuarryPlusI.blockStandalonePump)
 
     override def ticketsLoaded(tickets: util.List[ForgeChunkManager.Ticket], world: World): Unit = {
         for (ticket <- tickets.asScala) {
@@ -44,8 +46,7 @@ object ChunkLoadingHandler extends ForgeChunkManager.OrderedLoadingCallback {
             val quarryY = ticket.getModData.getInteger("quarryY")
             val quarryZ = ticket.getModData.getInteger("quarryZ")
             val state = world.getBlockState(new BlockPos(quarryX, quarryY, quarryZ))
-            if (state.getBlock == QuarryPlusI.blockQuarry || state.getBlock == QuarryPlusI.blockMarker
-              || state.getBlock == QuarryPlusI.blockChunkdestroyer || state.getBlock == QuarryPlusI.blockStandalonePump)
+            if (blockSet contains state.getBlock)
                 validTickets.add(ticket)
         }
         validTickets

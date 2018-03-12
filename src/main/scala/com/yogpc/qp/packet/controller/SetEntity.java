@@ -45,7 +45,7 @@ public class SetEntity implements IMessage {
         World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
         if (world.provider.getDimension() == dim) {
             Optional.ofNullable(world.getMinecraftServer()).ifPresent(s -> s.addScheduledTask(() ->
-                    BlockController.setSpawnerEntity(world, pos, location)));
+                BlockController.setSpawnerEntity(world, pos, location)));
         }
         return null;
     }

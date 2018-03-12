@@ -49,12 +49,12 @@ public class AdvPumpChangeMessage implements IMessage {
         MinecraftServer server = world.getMinecraftServer();
         if (world.provider.getDimension() == dim && server != null) {
             Optional.ofNullable((TileAdvPump) world.getTileEntity(pos)).ifPresent(tileAdvPump ->
-                    server.addScheduledTask(() -> {
-                        tileAdvPump.placeFrame_$eq(placeFrame);
-                        if (toStart == ToStart.START) {
-                            tileAdvPump.start();
-                        }
-                    }));
+                server.addScheduledTask(() -> {
+                    tileAdvPump.placeFrame_$eq(placeFrame);
+                    if (toStart == ToStart.START) {
+                        tileAdvPump.start();
+                    }
+                }));
         }
         return null;
     }

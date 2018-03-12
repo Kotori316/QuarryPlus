@@ -2,13 +2,16 @@ buildscript {
     repositories {
         jcenter()
         maven { url = "http://files.minecraftforge.net/maven" }
+        maven { url = "https://plugins.gradle.org/m2/" }
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+        classpath "gradle.plugin.com.matthewprenger:CurseGradle:1.0.10"
     }
 }
 apply plugin: 'scala'
 apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: "com.matthewprenger.cursegradle"
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
 
@@ -51,7 +54,7 @@ repositories {
         name "BuildCraft"
         url = "https://mod-buildcraft.com/maven"
     }
-    maven{
+    maven {
         name "IC2"
         url = "http://maven.ic2.player.to/"
     }
@@ -100,4 +103,14 @@ task deobfJar(type: Jar) {
 // Tell the artifact system about our extra jars
 artifacts {
     archives srcJar, deobfJar
+}
+
+curseforge {
+    apiKey = project.hasProperty("curseforge_additional-enchanted-miner_key") ? getProperty("curseforge_additional-enchanted-miner_key") : ""
+    project {
+        id = '282837'
+        changelog = 'See GitHub commit'
+        releaseType = 'release'
+        mainArtifact jar
+    }
 }
