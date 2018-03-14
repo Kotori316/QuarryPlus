@@ -25,6 +25,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
+import scala.Function1;
 
 @Optional.InterfaceList({
     @Optional.Interface(iface = "cofh.api.block.IDismantleable", modid = QuarryPlus.Optionals.COFH_block),
@@ -37,6 +38,10 @@ public abstract class ADismCBlock extends QPBlock implements IDismantleable, IWr
 
     protected ADismCBlock(final Material material, String name, Function<QPBlock, ? extends ItemBlock> generator) {
         super(material, name, generator);
+    }
+
+    protected ADismCBlock(final Material material, String name, Function1<QPBlock, ? extends ItemBlock> generator, boolean dummy) {
+        super(material, name, generator, dummy);
     }
 
     @Override

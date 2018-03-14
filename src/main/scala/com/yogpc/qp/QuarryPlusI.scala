@@ -38,9 +38,9 @@ object QuarryPlusI {
     val blockController = register(new BlockController)
     val blockChunkdestroyer = register(new BlockAdvQuarry)
     val blockStandalonePump = register(new BlockAdvPump)
-    val itemTool = ItemTool.item
+    val itemTool = new ItemTool
     val magicmirror = new ItemMirror
-    val debugItem = ItemQuarryDebug.item
+    val debugItem = new ItemQuarryDebug
     val guiIdWorkbench = 1
     val guiIdMover = 2
     val guiIdFList = 3

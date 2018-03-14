@@ -17,24 +17,12 @@ object Loot {
     )
     private[this] val empty = new LootEntryEmpty(9, 0, NO_CONDITION, "EMPTY")
     private[this] val pool = new LootPool(Array(mirror, empty), NO_CONDITION, new RandomValueRange(1), new RandomValueRange(0), QuarryPlus.Mod_Name)
+    private[this] val nameSet = Set(CHESTS_SIMPLE_DUNGEON, CHESTS_ABANDONED_MINESHAFT, CHESTS_DESERT_PYRAMID, CHESTS_JUNGLE_TEMPLE,
+        CHESTS_STRONGHOLD_CORRIDOR, CHESTS_STRONGHOLD_CROSSING, CHESTS_STRONGHOLD_LIBRARY, CHESTS_VILLAGE_BLACKSMITH)
 
     @SubscribeEvent
     def addEntry(event: LootTableLoadEvent): Unit = {
-        if (event.getName == CHESTS_SIMPLE_DUNGEON) {
-            event.getTable.addPool(pool)
-        } else if (event.getName == CHESTS_ABANDONED_MINESHAFT) {
-            event.getTable.addPool(pool)
-        } else if (event.getName == CHESTS_DESERT_PYRAMID) {
-            event.getTable.addPool(pool)
-        } else if (event.getName == CHESTS_JUNGLE_TEMPLE) {
-            event.getTable.addPool(pool)
-        } else if (event.getName == CHESTS_STRONGHOLD_CORRIDOR) {
-            event.getTable.addPool(pool)
-        } else if (event.getName == CHESTS_STRONGHOLD_CROSSING) {
-            event.getTable.addPool(pool)
-        } else if (event.getName == CHESTS_STRONGHOLD_LIBRARY) {
-            event.getTable.addPool(pool)
-        } else if (event.getName == CHESTS_VILLAGE_BLACKSMITH) {
+        if (nameSet contains event.getName) {
             event.getTable.addPool(pool)
         }
     }

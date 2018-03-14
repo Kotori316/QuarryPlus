@@ -127,7 +127,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                     return true;
                 }
                 return !(blockHardness < 0) && !b.getBlock().isAir(b, getWorld(), target) && (this.pump != null ||
-                    !TilePump.isLiquid(b, false, getWorld(), target));
+                    !TilePump.isLiquid(b));
             case NOTNEEDBREAK:
                 if (this.targetY < this.yMin) {
                     if (this.filler) {
@@ -146,7 +146,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                 }
                 if (blockHardness < 0 || b.getBlock().isAir(b, getWorld(), target))
                     return false;
-                if (this.pump == null && TilePump.isLiquid(b, false, getWorld(), target))
+                if (this.pump == null && TilePump.isLiquid(b))
                     return false;
                 if (b.getBlock() == QuarryPlusI.blockFrame() && !b.getValue(BlockFrame.DAMMING)) {
                     byte flag = 0;

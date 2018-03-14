@@ -8,12 +8,11 @@ import com.yogpc.qp.gui.TranslationKeys
 import com.yogpc.qp.tile.IEnchantableTile.{EfficiencyID, FortuneID, SilktouchID, UnbreakingID}
 import com.yogpc.qp.tile.TileAdvPump._
 import com.yogpc.qp.version.VersionUtil
-import com.yogpc.qp.{Config, QuarryPlus, QuarryPlusI}
+import com.yogpc.qp.{Config, QuarryPlus, QuarryPlusI, _}
 import net.minecraft.block.state.IBlockState
 import net.minecraft.init.Blocks
 import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
 import net.minecraft.util.math.{BlockPos, ChunkPos}
-import net.minecraft.util.text.TextComponentString
 import net.minecraft.util.{EnumFacing, ITickable}
 import net.minecraftforge.common.ForgeChunkManager
 import net.minecraftforge.common.ForgeChunkManager.Type
@@ -112,25 +111,36 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
 
     def buildWay(): Unit = {
         val checked = mutable.Set.empty[BlockPos]
-        val nextPosesToCheck = new ArrayBuffer[BlockPos](pos.getY)
+        val nextPosesToCheck = new ArrayBuffer[BlockPos](getPos.getY)
         var fluid = FluidRegistry.WATER
         toDig = Nil
         paths.clear()
 
         getWorld.profiler.startSection("Depth")
-        Iterator.iterate(getPos.down())(_.down()).takeWhile(pos => pos.getY >= 0 && ench.inRange(getPos, pos))
-          .find(!getWorld.isAirBlock(_)).foreach(pos => {
-            val state = getWorld.getBlockState(pos)
-            if (TilePump.isLiquid(state, false, getWorld, pos)) {
-                checked.add(pos)
-                paths.put(pos, List(pos))
-                if (TilePump.isLiquid(state, true, getWorld, pos))
-                    toDig = pos :: toDig
-                nextPosesToCheck += pos
 
-                fluid = findFluid(state)
+        var downPos = getPos.down
+        var flag = true
+        while (flag) {
+            if (downPos.getY < 0 || !ench.inRange(getPos, downPos)) {
+                flag = false
+            } else {
+                if (!getWorld.isAirBlock(downPos)) {
+                    val state = getWorld.getBlockState(downPos)
+                    if (TilePump.isLiquid(state)) {
+                        checked.add(downPos)
+                        paths.put(downPos, List(downPos))
+                        if (TilePump.isLiquid(state, true, getWorld, downPos))
+                            toDig = downPos :: toDig
+                        nextPosesToCheck += downPos
+
+                        fluid = findFluid(state)
+                    }
+                    flag = false
+                } else {
+                    downPos = downPos.down
+                }
             }
-        })
+        }
         if (nextPosesToCheck.isEmpty) {
             G_reinit()
             val state = getWorld.getBlockState(getPos)
@@ -171,13 +181,14 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
             if (option.nonEmpty) {
                 val energy = ench.getEnergy(placeFrame)
                 if (useEnergy(energy, energy, true) == energy) {
-                    val maybeStack = Option(FluidUtil.getFluidHandler(getWorld, target, EnumFacing.UP)).map(_.drain(Fluid.BUCKET_VOLUME, false))
-                    if (maybeStack.isDefined && option.get.forall(pos => TilePump.isLiquid(getWorld.getBlockState(pos), false, getWorld, pos) /*&&
+                    val handler = FluidUtil.getFluidHandler(getWorld, target, EnumFacing.UP)
+                    if (nonNull(handler) && option.get.forall(pos => TilePump.isLiquid(getWorld.getBlockState(pos)) /*&&
                       (FluidHandler.getFluidType == null || FluidHandler.getFluidType == maybeStack.get.getFluid)*/)) {
-                        FluidHandler.fill(maybeStack, doFill = true)
+                        val drained = handler.drain(Fluid.BUCKET_VOLUME, false)
+                        FluidHandler.fillInternal(drained, doFill = true)
                         replaceFluidBlock(target)
                         nextPos()
-                    } else if (TilePump.isLiquid(getWorld.getBlockState(target), false, getWorld, target)) {
+                    } else if (TilePump.isLiquid(getWorld.getBlockState(target))) {
                         getWorld.setBlockToAir(target)
                         nextPos()
                     } else {
@@ -203,16 +214,20 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
         }
         val stack = FluidHandler.drain(FluidHandler.getAmount, doDrain = false)
         if (!stack.isEmpty) {
-            EnumFacing.VALUES.map(f => (getWorld.getTileEntity(getPos.offset(f)), f))
-              .collect { case (t, f) if t != null => t.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, f.getOpposite) }
-              .filter(_ != null).foreach(handler => {
+            for (facing <- EnumFacing.VALUES) {
                 if (stack.amount > 0) {
-                    val used = handler.fill(stack, true)
-                    if (used > 0) {
-                        FluidHandler.drain(stack.copy().setAmount(used), doDrain = true)
+                    val tile = getWorld.getTileEntity(getPos.offset(facing))
+                    if (tile != null) {
+                        val handler = tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing.getOpposite)
+                        if (handler != null) {
+                            val used = handler.fill(stack, true)
+                            if (used > 0) {
+                                FluidHandler.drain(stack.copy().setAmount(used), doDrain = true)
+                            }
+                        }
                     }
                 }
-            })
+            }
         }
     }
 
@@ -224,8 +239,9 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
     def replaceFluidBlock(pos: BlockPos): Unit = {
         FluidUtil.getFluidHandler(getWorld, pos, EnumFacing.UP).drain(Fluid.BUCKET_VOLUME, true)
         if (placeFrame)
-            EnumFacing.HORIZONTALS.map(pos.offset).filter(!inRange.contains(_)).foreach(offset => {
-                if (TilePump.isLiquid(getWorld.getBlockState(offset), false, getWorld, offset)) {
+            EnumFacing.HORIZONTALS.foreach(facing => {
+                val offset = pos.offset(facing)
+                if (!inRange.contains(offset) && TilePump.isLiquid(getWorld.getBlockState(offset))) {
                     getWorld.setBlockState(offset, QuarryPlusI.blockFrame.getDammingState)
                 }
             })
@@ -257,7 +273,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
     /**
       * @return Map (Enchantment id, level)
       */
-    override def getEnchantments = ench.getMap.collect { case (a, b) if b > 0 => (Int.box(a), Int.box(b)) }.asJava
+    override def getEnchantments = ench.getMap.collect(enchantCollector).asJava
 
     /**
       * @param id    Enchantment id
@@ -276,7 +292,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
             "FluidAmount : " + FluidHandler.getAmount,
             "Pumped : " + FluidHandler.amountPumped,
             "Delete : " + delete,
-            "To Start : " + toStart).map(new TextComponentString(_)).asJava
+            "To Start : " + toStart).map(toComponentString).asJava
     }
 
     override def readFromNBT(nbttc: NBTTagCompound) = {
@@ -316,8 +332,6 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
         if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(FluidHandler)
         else super.getCapability(capability, facing)
     }
-
-    override def onLoad(): Unit = super.onLoad()
 
     private[this] var chunkTicket: ForgeChunkManager.Ticket = _
 
@@ -386,13 +400,6 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
                         amountPumped += resource.amount
                     }
                     resource.amount
-            }
-        }
-
-        def fill(mayStack: Option[FluidStack], doFill: Boolean): Int = {
-            mayStack match {
-                case Some(stack) => fillInternal(stack, doFill)
-                case None => 0
             }
         }
 

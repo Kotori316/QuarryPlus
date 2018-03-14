@@ -11,8 +11,10 @@ import net.minecraft.util.text.{TextComponentString, TextComponentTranslation}
 import net.minecraft.util.{EnumActionResult, EnumFacing, EnumHand, NonNullList}
 import net.minecraft.world.World
 
-object ItemQuarryDebug extends Item {
-    val item = this
+class ItemQuarryDebug extends Item {
+
+    import ItemQuarryDebug._
+
     setUnlocalizedName(QuarryPlus.Names.debug)
     setRegistryName(QuarryPlus.modID, QuarryPlus.Names.debug)
     setMaxStackSize(1)
@@ -63,10 +65,13 @@ object ItemQuarryDebug extends Item {
         }
     }
 
-
     override def getSubItems(tab: CreativeTabs, items: NonNullList[ItemStack]): Unit = {
         if (Config.content.debug) super.getSubItems(tab, items)
     }
+
+}
+
+object ItemQuarryDebug {
 
     def tileposToString(tile: TileEntity) = {
         new TextComponentString(s"Tile Pos : x=${tile.getPos.getX}, y=${tile.getPos.getY}, z=${tile.getPos.getZ}")
