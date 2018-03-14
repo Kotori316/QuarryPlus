@@ -372,7 +372,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
         private[this] val fluidStacks = new ListBuffer[FluidStack]
         private[this] val NBT_FluidHandler = "FluidHandler"
         private[this] val NBT_pumped = "amountPumped"
-        private[this] val NBT_liquds = "liquds"
+        private[this] val NBT_liquids = "liquds"
         var amountPumped = 0l
 
         override def fill(resource: FluidStack, doFill: Boolean): Int = 0
@@ -462,7 +462,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
             for (s <- fluidStacks) {
                 list.appendTag(s.writeToNBT(new NBTTagCompound))
             }
-            tag.setTag(NBT_liquds, list)
+            tag.setTag(NBT_liquids, list)
             nbt.setTag(NBT_FluidHandler, tag)
             nbt
         }
@@ -470,7 +470,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
         override def readFromNBT(nbt: NBTTagCompound): IFluidHandler = {
             val tag = nbt.getCompoundTag(NBT_FluidHandler)
             amountPumped = tag.getLong(NBT_pumped)
-            val list = tag.getTagList(NBT_liquds, NBT.TAG_COMPOUND)
+            val list = tag.getTagList(NBT_liquids, NBT.TAG_COMPOUND)
             for (i <- 0 until list.tagCount()) {
                 Option(FluidStack.loadFluidStackFromNBT(list.getCompoundTagAt(i))).foreach(fluidStacks.+=)
             }
