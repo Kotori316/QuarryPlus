@@ -437,12 +437,12 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 
     override def getDebugmessages = if (!Config.content.disableController) {
         import scala.collection.JavaConverters._
-        List(new TextComponentString("Items to extract = " + cacheItems.list.size),
-            new TextComponentString("Liquid to extract = " + fluidStacks.size),
-            new TextComponentString("Next target = " + target.toString),
-            new TextComponentString(mode.toString),
-            new TextComponentString(digRange.toString),
-            new TextComponentString("Resent 5 seconds, used " + getInfoEnergyPerTick + " MJ/t")).asJava
+        List("Items to extract = " + cacheItems.list.size,
+            "Liquid to extract = " + fluidStacks.size,
+            "Next target = " + target.toString,
+            mode.toString,
+            digRange.toString,
+            "Resent 5 seconds, used " + getInfoEnergyPerTick + " MJ/t").map(new TextComponentString(_)).asJava
     } else {
         java.util.Collections.singletonList(new TextComponentString("ChunkDestroyer is disabled."))
     }

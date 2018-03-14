@@ -272,7 +272,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
             "target : " + target,
             "Finished : " + finished,
             "Ench : " + ench,
-            "FluidType : " + Option(FluidHandler.getFluidType).map(_.getName).getOrElse("None"),
+            "FluidType : " + Option(FluidHandler.getFluidType).fold("None")(_.getName),
             "FluidAmount : " + FluidHandler.getAmount,
             "Pumped : " + FluidHandler.amountPumped,
             "Delete : " + delete,
