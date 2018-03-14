@@ -38,7 +38,7 @@ public class BlockListRequestMessage implements IMessage {
         EntityPlayer player = QuarryPlus.proxy.getPacketPlayer(ctx.netHandler);
         if (/*player.openContainer.windowId == containerId &&*/ player.openContainer instanceof ContainerEnchList) {
             ContainerEnchList container = (ContainerEnchList) player.openContainer;
-            return DiffMessage.create(container, container.tile().fortuneList, container.tile().silktouchList);
+            return DiffMessage.create(container, container.tile.fortuneList, container.tile.silktouchList);
         }
         return null;
     }

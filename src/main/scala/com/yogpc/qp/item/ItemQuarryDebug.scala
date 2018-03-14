@@ -14,8 +14,10 @@ import net.minecraft.util.{EnumActionResult, EnumFacing, EnumHand}
 import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-object ItemQuarryDebug extends Item {
-    val item = this
+class ItemQuarryDebug extends Item {
+
+    import ItemQuarryDebug._
+
     setUnlocalizedName(QuarryPlus.Names.debug)
     setRegistryName(QuarryPlus.modID, QuarryPlus.Names.debug)
     setMaxStackSize(1)
@@ -76,6 +78,10 @@ object ItemQuarryDebug extends Item {
             super.getSubItems(itemIn, tab, subItems)
     }
 
+}
+
+object ItemQuarryDebug {
+
     def tileposToString(tile: TileEntity) = {
         new TextComponentString(s"Tile Pos : x=${tile.getPos.getX}, y=${tile.getPos.getY}, z=${tile.getPos.getZ}")
     }
@@ -85,7 +91,7 @@ object ItemQuarryDebug extends Item {
         else new TextComponentString(tile.getStoredEnergy + " / " + tile.getMaxStored + " MJ")
     }
 
-    private[this] implicit class PH(val player: EntityPlayer) extends AnyVal {
+    private implicit class PH(val player: EntityPlayer) extends AnyVal {
         def sendStatusMessage(t: ITextComponent, actionBar: Boolean): Unit = {
             player.addChatComponentMessage(t)
         }

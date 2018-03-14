@@ -118,7 +118,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                     if (target.getX % 3 == 0) {
                         val axis = new AxisAlignedBB(new BlockPos(target.getX - 6, 1, target.getZ - 6), target.add(6, 0, 6))
                         //catch dropped items
-                        getWorld.getEntitiesWithinAABB(classOf[EntityItem], axis).asScala.filter(APacketTile.nonNull.test).foreach(entity => {
+                        getWorld.getEntitiesWithinAABB(classOf[EntityItem], axis).asScala.filter(nonNull).foreach(entity => {
                             if (!entity.isDead) {
                                 val drop = entity.getEntityItem
                                 if (drop.getCount > 0) {
@@ -128,7 +128,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                             }
                         })
                         //remove XPs
-                        getWorld.getEntitiesWithinAABB(classOf[EntityXPOrb], axis).asScala.filter(APacketTile.nonNull.test).foreach(entityXPOrb => {
+                        getWorld.getEntitiesWithinAABB(classOf[EntityXPOrb], axis).asScala.filter(nonNull).foreach(entityXPOrb => {
                             if (!entityXPOrb.isDead)
                                 entityXPOrb.getEntityWorld.removeEntity(entityXPOrb)
                         })
@@ -140,7 +140,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                     for (pos <- digPoses) {
                         val state = getWorld.getBlockState(pos)
                         if (!state.getBlock.isAir(state, getWorld, pos)) {
-                            if (TilePump.isLiquid(state, false, getWorld, pos)) {
+                            if (TilePump.isLiquid(state)) {
                                 requireEnergy += PowerManager.calcEnergyPumpDrain(ench.unbreaking, 1, 0)
                                 drain = pos :: drain
                             } else {
@@ -170,7 +170,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                             }
 
                             def checkandsetFrame(world: World, thatPos: BlockPos): Unit = {
-                                if (TilePump.isLiquid(world.getBlockState(thatPos), false, world, thatPos)) {
+                                if (TilePump.isLiquid(world.getBlockState(thatPos))) {
                                     world.setBlockState(thatPos, QuarryPlusI.blockFrame.getDammingState)
                                 }
                             }
@@ -217,15 +217,15 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                         if (shear.nonEmpty) {
                             val itemShear = new ItemStack(net.minecraft.init.Items.SHEARS)
                             EnchantmentHelper.setEnchantments(ench.getMap.collect { case (a, b) if b > 0 => (Enchantment.getEnchantmentByID(a), Int.box(b)) }.asJava, itemShear)
-                            shear.foreach(p => {
+                            for (p <- shear) {
                                 val state = getWorld.getBlockState(p)
                                 val block = state.getBlock.asInstanceOf[Block with IShearable]
                                 list.addAll(block.onSheared(itemShear, getWorld, p, ench.fortune))
                                 getWorld.setBlockState(p, Blocks.AIR.getDefaultState, 2)
-                            })
+                            }
                         }
                         destroy.foreach(getWorld.setBlockState(_, Blocks.AIR.getDefaultState, 2))
-                        drain.foreach(p => {
+                        for (p <- drain) {
                             val handler = Option(FluidUtil.getFluidHandler(getWorld, p, EnumFacing.UP))
                             val fluidOp = handler.map(_.getTankProperties.apply(0)).flatMap(p => Option(p.getContents)).map(_.getFluid)
                             fluidOp match {
@@ -236,7 +236,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                                 case None => //QuarryPlus.LOGGER.error(s"Adv Fluid null, ${getWorld.getBlockState(p)}, ${FluidUtil.getFluidHandler(getWorld, p, EnumFacing.UP)}")
                             }
                             getWorld.setBlockState(p, Blocks.AIR.getDefaultState, 2)
-                        })
+                        }
                         list.asScala.foreach(cacheItems.add)
                         true
                     } else {
@@ -276,11 +276,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                     if (mode is TileAdvQuarry.CHECKLIQUID) {
                         List.iterate(target.down(), target.getY - 1)(_.down()).filter(p => {
                             val state = getWorld.getBlockState(p)
-                            if (!state.getBlock.isAir(state, getWorld, p)) {
-                                TilePump.isLiquid(state, false, getWorld, p)
-                            } else {
-                                false
-                            }
+                            !state.getBlock.isAir(state, getWorld, p) && TilePump.isLiquid(state)
                         }).foreach(getWorld.setBlockToAir)
 
                         val x = target.getX + 1
@@ -374,10 +370,9 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
         target = BlockPos.fromLong(nbttc.getLong("NBT_TARGET"))
         mode.readFromNBT(nbttc)
         cacheItems.readFromNBT(nbttc)
-        val l = nbttc.getTagList("NBT_FLUIDLIST", Constants.NBT.TAG_COMPOUND)
-        Range(0, l.tagCount()).foreach(i => {
+        nbttc.getTagList("NBT_FLUIDLIST", Constants.NBT.TAG_COMPOUND).tagIterator.foreach(tag => {
             val tank = new FluidTank(0)
-            CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.readNBT(tank, null, l.get(i))
+            CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.readNBT(tank, null, tag)
             if (tank.getFluid != null) {
                 fluidStacks.put(tank.getFluid.getFluid, tank)
             }
@@ -399,7 +394,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
     /**
       * @return Map (Enchantment id, level)
       */
-    override def getEnchantments = ench.getMap.collect { case (a, b) if b > 0 => (Int.box(a), Int.box(b)) }.asJava
+    override def getEnchantments = ench.getMap.collect(enchantCollector).asJava
 
     /**
       * @param id    Enchantment id
@@ -437,12 +432,12 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 
     override def getDebugmessages = if (!Config.content.disableController) {
         import scala.collection.JavaConverters._
-        List(new TextComponentString("Items to extract = " + cacheItems.list.size),
-            new TextComponentString("Liquid to extract = " + fluidStacks.size),
-            new TextComponentString("Next target = " + target.toString),
-            new TextComponentString(mode.toString),
-            new TextComponentString(digRange.toString),
-            new TextComponentString("Resent 5 seconds, used " + getInfoEnergyPerTick + " MJ/t")).asJava
+        List("Items to extract = " + cacheItems.list.size,
+            "Liquid to extract = " + fluidStacks.size,
+            "Next target = " + target.toString,
+            mode.toString,
+            digRange.toString,
+            "Resent 5 seconds, used " + getInfoEnergyPerTick + " MJ/t").map(toComponentString).asJava
     } else {
         java.util.Collections.singletonList(new TextComponentString("ChunkDestroyer is disabled."))
     }
@@ -617,24 +612,26 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 
         def set(newmode: Modes): Unit = {
             mode = newmode
-            if (!getWorld.isRemote) {
+            val world1 = getWorld
+            val pos1 = getPos
+            if (!world1.isRemote) {
                 energyConfigure()
-                PacketHandler.sendToAround(AdvModeMessage.create(self), getWorld, getPos)
+                PacketHandler.sendToAround(AdvModeMessage.create(self), world1, pos1)
             }
-            val state = getWorld.getBlockState(getPos)
+            val state = world1.getBlockState(pos1)
             if (state.getValue(ACTING)) {
                 if (newmode == NONE || newmode == NOTNEEDBREAK) {
                     validate()
-                    getWorld.setBlockState(getPos, state.withProperty(ACTING, JBool.FALSE))
+                    world1.setBlockState(pos1, state.withProperty(ACTING, JBool.FALSE))
                     validate()
-                    getWorld.setTileEntity(getPos, self)
+                    world1.setTileEntity(pos1, self)
                 }
             } else {
                 if (newmode != NONE && newmode != NOTNEEDBREAK) {
                     validate()
-                    getWorld.setBlockState(getPos, state.withProperty(ACTING, JBool.TRUE))
+                    world1.setBlockState(pos1, state.withProperty(ACTING, JBool.TRUE))
                     validate()
-                    getWorld.setTileEntity(getPos, self)
+                    world1.setTileEntity(pos1, self)
                 }
             }
         }

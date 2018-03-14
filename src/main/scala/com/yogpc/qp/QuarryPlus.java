@@ -150,21 +150,24 @@ public class QuarryPlus {
 
     @SubscribeEvent
     public void registerBlocks(RegistryEvent.Register<Block> event) {
-        event.getRegistry().register(blockQuarry());
-        event.getRegistry().register(blockPump());
-        event.getRegistry().register(blockMarker());
-        event.getRegistry().register(blockMover());
-        event.getRegistry().register(blockMiningWell());
-        event.getRegistry().register(blockPlacer());
-        event.getRegistry().register(blockBreaker());
-        event.getRegistry().register(blockPlainPipe());
-        event.getRegistry().register(blockFrame());
-        event.getRegistry().register(blockWorkbench());
-        event.getRegistry().register(blockController());
-        event.getRegistry().register(blockLaser());
-        event.getRegistry().register(blockRefinery());
-        event.getRegistry().register(blockChunkdestroyer());
-        event.getRegistry().register(blockStandalonePump());
+        event.getRegistry().registerAll(
+            blockQuarry(),
+            blockPump(),
+            blockMarker(),
+            blockMover(),
+            blockMiningWell(),
+            blockPlacer(),
+            blockBreaker(),
+            blockPlainPipe(),
+            blockFrame(),
+            blockWorkbench(),
+            blockController(),
+            blockLaser(),
+            blockRefinery(),
+            blockChunkdestroyer(),
+            blockStandalonePump()
+        );
+
         GameRegistry.registerTileEntity(TileWorkbench.class, prefix + QuarryPlus.Names.workbench);
         GameRegistry.registerTileEntity(TileQuarry.class, prefix + QuarryPlus.Names.quarry);
         GameRegistry.registerTileEntity(TileMarker.class, prefix + QuarryPlus.Names.marker);
@@ -180,24 +183,26 @@ public class QuarryPlus {
 
     @SubscribeEvent
     public void registerItems(RegistryEvent.Register<Item> event) {
-        event.getRegistry().register(blockQuarry().itemBlock());
-        event.getRegistry().register(blockPump().itemBlock());
-        event.getRegistry().register(blockMarker().itemBlock);
-        event.getRegistry().register(blockMover().itemBlock);
-        event.getRegistry().register(blockMiningWell().itemBlock());
-        event.getRegistry().register(blockPlacer().itemBlock());
-        event.getRegistry().register(blockBreaker().itemBlock());
-        event.getRegistry().register(blockPlainPipe().itemBlock);
-        event.getRegistry().register(blockFrame().itemBlock);
-        event.getRegistry().register(blockWorkbench().itemBlock());
-        event.getRegistry().register(blockController().itemBlock);
-        event.getRegistry().register(blockLaser().itemBlock());
-        event.getRegistry().register(blockRefinery().itemBlock());
-        event.getRegistry().register(blockChunkdestroyer().itemBlock());
-        event.getRegistry().register(blockStandalonePump().itemBlock());
-        event.getRegistry().register(itemTool());
-        event.getRegistry().register(magicmirror());
-        event.getRegistry().register(debugItem());
+        event.getRegistry().registerAll(
+            blockQuarry().itemBlock(),
+            blockPump().itemBlock(),
+            blockMarker().itemBlock,
+            blockMover().itemBlock,
+            blockMiningWell().itemBlock(),
+            blockPlacer().itemBlock(),
+            blockBreaker().itemBlock(),
+            blockPlainPipe().itemBlock,
+            blockFrame().itemBlock,
+            blockWorkbench().itemBlock(),
+            blockController().itemBlock,
+            blockLaser().itemBlock(),
+            blockRefinery().itemBlock(),
+            blockChunkdestroyer().itemBlock(),
+            blockStandalonePump().itemBlock(),
+            itemTool(),
+            magicmirror(),
+            debugItem()
+        );
     }
 
     @SubscribeEvent

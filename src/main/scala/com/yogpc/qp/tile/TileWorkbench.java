@@ -15,7 +15,6 @@ package com.yogpc.qp.tile;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import cofh.api.tileentity.IInventoryConnection;
 import com.yogpc.qp.Config;
@@ -74,7 +73,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
     public void readFromNBT(NBTTagCompound nbttc) {
         super.readFromNBT(nbttc);
         NBTTagList list = nbttc.getTagList("Items", Constants.NBT.TAG_COMPOUND);
-        IntStream.range(0, list.tagCount()).mapToObj(list::getCompoundTagAt).forEach(nbtTagCompound -> {
+        VersionUtil.nbtListStream(list).forEach(nbtTagCompound -> {
             int j = nbtTagCompound.getByte("Slot") & 255;
             ItemStack stack = VersionUtil.fromNBTTag(nbtTagCompound);
             VersionUtil.setCount(stack, nbtTagCompound.getInteger("Count"));

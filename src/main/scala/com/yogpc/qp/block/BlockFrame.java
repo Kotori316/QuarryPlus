@@ -63,7 +63,7 @@ public class BlockFrame extends BlockEmptyDrops {
     public static final AxisAlignedBB Down_AABB = new AxisAlignedBB(0.25, 0, 0.25, 0.75, .25, 0.75);
     private static final BiPredicate<World, BlockPos> HASNEIGHBOURLIQUID = (world, pos) ->
         Stream.of(EnumFacing.VALUES).map(pos::offset).map(world::getBlockState)
-            .anyMatch(state -> !state.isFullCube() && TilePump.isLiquid(state, false, null, null));
+            .anyMatch(state -> !state.isFullCube() && TilePump.isLiquid(state));
 
     public final ItemBlock itemBlock;
 
