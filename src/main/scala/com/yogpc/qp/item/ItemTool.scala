@@ -30,25 +30,9 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import net.minecraftforge.oredict.OreDictionary
 
-object ItemTool extends Item with IEnchantableItem {
-    final val meta_statuschecker = 0
-    final val meta_listeditor = 1
-    final val meta_liquidselector = 2
-    /**
-      * meta=1
-      */
-    final val listeditor = "listeditor"
-    /**
-      * meta=2
-      */
-    final val liquidselector = "liquidselector"
-    /**
-      * meta=0
-      */
-    final val statuschecker = "statuschecker"
-    final val NAME_key = "Bname"
-    final val META_key = "Bmeta"
-    val item = this
+class ItemTool extends Item with IEnchantableItem {
+
+    import ItemTool._
 
     setMaxStackSize(1)
     setHasSubtypes(true)
@@ -114,11 +98,6 @@ object ItemTool extends Item with IEnchantableItem {
         super.onItemUseFirst(player, worldIn, pos, side, hitX, hitY, hitZ, hand)
     }
 
-    override def onItemUse(player: EntityPlayer, worldIn: World, pos: BlockPos, hand: EnumHand,
-                           facing: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): EnumActionResult = {
-        super.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ)
-    }
-
     override def getUnlocalizedName(is: ItemStack) =
         is.getItemDamage match {
             case ItemTool.meta_listeditor =>
@@ -174,6 +153,27 @@ object ItemTool extends Item with IEnchantableItem {
         (l == null || l.tagCount == 0) && ((enchantment eq Enchantments.SILK_TOUCH) || (enchantment eq Enchantments.FORTUNE))
     }
 
+}
+
+object ItemTool {
+    final val meta_statuschecker = 0
+    final val meta_listeditor = 1
+    final val meta_liquidselector = 2
+    /**
+      * meta=1
+      */
+    final val listeditor = "listeditor"
+    /**
+      * meta=2
+      */
+    final val liquidselector = "liquidselector"
+    /**
+      * meta=0
+      */
+    final val statuschecker = "statuschecker"
+    final val NAME_key = "Bname"
+    final val META_key = "Bmeta"
+
     private def getEnchantmentMap(stack: ItemStack): Map[Enchantment, Int] = {
         val nbttaglist = stack.getEnchantmentTagList
         if (nbttaglist == null) {
@@ -187,7 +187,7 @@ object ItemTool extends Item with IEnchantableItem {
     }
 
     def getEditorStack = {
-        val stack = new ItemStack(this, 1, meta_listeditor)
+        val stack = new ItemStack(QuarryPlusI.itemTool, 1, meta_listeditor)
         val compound = new NBTTagCompound
         compound.setInteger("HideFlags", 1)
         stack.setTagCompound(compound)

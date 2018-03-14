@@ -81,9 +81,9 @@ case class BlockData(name: ResourceLocation, meta: Int) extends INBTWritable wit
         sb.append(name)
         if (meta != OreDictionary.WILDCARD_VALUE) {
             sb.append(" : ").append(meta).append("  ")
-            sb.append(Option(ForgeRegistries.BLOCKS.getValue(name)).map(new ItemStack(_, 1, meta).getDisplayName).getOrElse(""))
+            sb.append(Option(ForgeRegistries.BLOCKS.getValue(name)).fold("")(new ItemStack(_, 1, meta).getDisplayName))
         } else {
-            sb.append("  ").append(Option(ForgeRegistries.BLOCKS.getValue(name)).map(_.getLocalizedName).getOrElse(""))
+            sb.append("  ").append(Option(ForgeRegistries.BLOCKS.getValue(name)).fold("")(_.getLocalizedName))
         }
         sb.toString
     }

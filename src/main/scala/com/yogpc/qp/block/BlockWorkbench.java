@@ -33,7 +33,7 @@ public class BlockWorkbench extends ADismCBlock {
     }
 
     @Override
-    public TileWorkbench createNewTileEntity(final World p_149915_1_, final int p_149915_2_) {
+    public TileWorkbench createNewTileEntity(World worldIn, int meta) {
         return new TileWorkbench();
     }
 

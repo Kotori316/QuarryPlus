@@ -1,12 +1,19 @@
 package com.yogpc
 
 import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
+import net.minecraft.util.text.TextComponentString
 
 import scala.collection.AbstractIterator
 
 package object qp {
 
     import scala.language.implicitConversions
+
+    val enchantCollector: PartialFunction[(Int, Byte), (Integer, Integer)] = {
+        case (a, b) if b > 0 => (Int.box(a), Int.box(b))
+    }
+    val toComponentString: (String => TextComponentString) = s => new TextComponentString(s)
+    val nonNull: (AnyRef => Boolean) = obj => obj != null
 
     def toJavaOption[T](o: Option[T]): java.util.Optional[T] = {
         //I think it's faster than match function.

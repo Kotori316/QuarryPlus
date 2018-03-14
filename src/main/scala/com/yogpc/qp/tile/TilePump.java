@@ -368,7 +368,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
             if (ebs_c != null) {
                 b_c = ebs_c.get(xb[cg] & 0xF, yb[cg] & 0xF, zb[cg] & 0xF);
                 if (this.blocks[yb[cg] - this.yOffset][xb[cg]][zb[cg]] == 0
-                    && isLiquid(b_c, false, null, BlockPos.ORIGIN)) {
+                    && isLiquid(b_c)) {
                     this.blocks[yb[cg] - this.yOffset][xb[cg]][zb[cg]] = 0x3F;
 
                     if ((b != null ? b.xMin & 0xF : 0) < xb[cg])
@@ -429,7 +429,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                         for (bz = 0; bz < this.block_side_z; bz++)
                             if ((this.blocks[this.py - this.yOffset][bx][bz] & 0x40) != 0) {
                                 bb = this.ebses[bx >> 4][bz >> 4][this.py >> 4].get(bx & 0xF, this.py & 0xF, bz & 0xF);
-                                if (isLiquid(bb, false, null, BlockPos.ORIGIN))
+                                if (isLiquid(bb))
                                     count++;
                             }
                 } else {
@@ -494,6 +494,10 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
             return (block == Blocks.WATER || block == Blocks.FLOWING_WATER || block == Blocks.LAVA || block == Blocks.FLOWING_LAVA)
                 && (!findSource || state.getValue(BlockLiquid.LEVEL) == 0);
         }
+    }
+
+    public static boolean isLiquid(@Nonnull IBlockState state) {
+        return isLiquid(state, false, null, null);
     }
 
     private class PumpTank extends FluidTank {
@@ -596,8 +600,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     }
 
     private void drainBlock(final int bx, final int bz, final IBlockState tb) {
-        final IBlockState b = this.ebses[bx >> 4][bz >> 4][this.py >> 4].get(bx & 0xF, this.py & 0xF, bz & 0xF);
-        if (isLiquid(b, false, null, BlockPos.ORIGIN)) {
+        if (isLiquid(this.ebses[bx >> 4][bz >> 4][this.py >> 4].get(bx & 0xF, this.py & 0xF, bz & 0xF))) {
             BlockPos blockPos = new BlockPos(bx + xOffset, py, bz + zOffset);
             IFluidHandler handler = FluidUtil.getFluidHandler(getWorld(), blockPos, EnumFacing.UP);
             if (handler != null) {

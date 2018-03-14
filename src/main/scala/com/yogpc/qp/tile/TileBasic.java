@@ -103,7 +103,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         }
         if (blockState.getBlock().isAir(blockState, getWorld(), pos))
             return true;
-        if (pump != null && TilePump.isLiquid(blockState, false, getWorld(), pos)) {
+        if (pump != null && TilePump.isLiquid(blockState)) {
             final TileEntity te = getWorld().getTileEntity(getPos().offset(pump));
             if (!(te instanceof TilePump)) {
                 this.pump = null;
