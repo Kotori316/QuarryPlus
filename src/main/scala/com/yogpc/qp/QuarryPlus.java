@@ -182,7 +182,7 @@ public class QuarryPlus {
             blockMiningWell().itemBlock(),
             blockPlacer().itemBlock(),
             blockBreaker().itemBlock(),
-            blockPlainPipe().itemBlock(),
+            blockPlainPipe().itemBlock,
             blockFrame().itemBlock,
             blockWorkbench().itemBlock(),
             blockController().itemBlock,
@@ -210,7 +210,7 @@ public class QuarryPlus {
         ModelLoader.setCustomModelResourceLocation(blockBreaker().itemBlock(), 0, proxy.fromEntry(blockBreaker()));
         ModelLoader.setCustomModelResourceLocation(blockPlacer().itemBlock(), 0, proxy.fromEntry(blockPlacer()));
         ModelLoader.setCustomModelResourceLocation(blockMiningWell().itemBlock(), 0, proxy.fromEntry(blockMiningWell()));
-        ModelLoader.setCustomModelResourceLocation(blockPlainPipe().itemBlock(), 0, proxy.fromEntry(blockPlainPipe()));
+        ModelLoader.setCustomModelResourceLocation(blockPlainPipe().itemBlock, 0, proxy.fromEntry(blockPlainPipe()));
         ModelLoader.setCustomModelResourceLocation(blockRefinery().itemBlock(), 0, proxy.fromEntry(blockRefinery()));
         ModelLoader.setCustomModelResourceLocation(blockController().itemBlock, 0, proxy.fromEntry(blockController()));
         ModelLoader.setCustomModelResourceLocation(blockLaser().itemBlock(), 0, proxy.fromEntry(blockLaser()));
