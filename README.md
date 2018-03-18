@@ -1,4 +1,4 @@
-# QuarryPlus (Additional Enchanted Miner)
+# QuarryPlus (Additional Enchanted Miner) for 1.10.2 or later
 ===========
 
 Advanced machines for minecraft.
