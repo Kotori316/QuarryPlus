@@ -77,7 +77,7 @@ public class TranslationKeys {
 
     static {
         final String s = "enchantment.level.";
-        Map<Integer, String> map = IntStream.rangeClosed(1, 10).mapToObj(valuesInt(i -> i + s)).collect(entryToMap());
+        Map<Integer, String> map = IntStream.rangeClosed(1, 10).mapToObj(valuesInt(i -> s + i)).collect(entryToMap());
         ENCHANT_LEVELS = Collections.unmodifiableMap(map);
     }
 }
