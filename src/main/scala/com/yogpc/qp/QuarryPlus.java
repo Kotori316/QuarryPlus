@@ -57,6 +57,7 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.ModAPIManager;
 import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -77,7 +78,8 @@ import static com.yogpc.qp.QuarryPlusI.*;
     version = "${version}",
     dependencies = "after:ic2",
     guiFactory = QuarryPlus.Optionals.configFactory,
-    updateJSON = QuarryPlus.Optionals.updateJson
+    updateJSON = QuarryPlus.Optionals.updateJson,
+    certificateFingerprint = "@FINGERPRINT@"
 )
 public class QuarryPlus {
 
@@ -261,6 +263,14 @@ public class QuarryPlus {
                 WorkbenchRecipes.addListRecipe(result, nbtValue.getInteger(Optionals.IMC_Energy), functionList, true, WorkbenchRecipes.UnitRF$.MODULE$);
             }
         });
+    }
+
+    @Mod.EventHandler
+    public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
+        if (!inDev) {
+            LOGGER.warn("Invalid fingerprint detected! The file " + event.getSource().getName() +
+                " may have been tampered with. This version will NOT be supported by the author!");
+        }
     }
 
     @SuppressWarnings("unused")
