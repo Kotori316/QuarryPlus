@@ -30,7 +30,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
-import org.apache.commons.lang3.tuple.Pair;
 
 import static jp.t2v.lab.syntax.MapStreamSyntax.byKey;
 import static jp.t2v.lab.syntax.MapStreamSyntax.entry;
@@ -62,12 +61,11 @@ public interface IEnchantableTile {
         Util.getEnchantmentsChat(this).forEach(c -> VersionUtil.sendMessage(player, c));
     }
 
-    //Move static methods to this inner class because static method of an interface is not supported in Scala 2.11.1.
+    //Move static methods to this inner class because static method in an interface is not supported by Scala 2.11.1.
     public static class Util {
 
         public static void init(@Nonnull final IEnchantableTile te, @Nullable final NBTTagList tagList) {
-            VersionUtil.nbtListStream(tagList).map(nbt -> Pair.of(nbt.getShort("id"), nbt.getShort("lvl")))
-                .forEach(pair -> te.setEnchantent(pair.getKey(), pair.getValue()));
+            VersionUtil.nbtListStream(tagList).forEach(nbt -> te.setEnchantent(nbt.getShort("id"), nbt.getShort("lvl")));
             te.G_reinit();
         }
 

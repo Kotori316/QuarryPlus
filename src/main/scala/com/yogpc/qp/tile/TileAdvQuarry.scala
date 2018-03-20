@@ -36,7 +36,6 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import net.minecraftforge.items.{CapabilityItemHandler, IItemHandlerModifiable}
 
 import scala.collection.JavaConverters._
-import scala.collection.convert.WrapAsJava
 
 class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with ITickable with IDebugSender with IChunkLoadTile {
     self =>
@@ -577,7 +576,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
         override def insertItem(slot: Int, stack: ItemStack, simulate: Boolean): ItemStack = stack
     }
 
-    private[TileAdvQuarry] class FluidHandler extends FluidHandlerFluidMap(WrapAsJava.mutableMapAsJavaMap(fluidStacks)) {
+    private[TileAdvQuarry] class FluidHandler extends FluidHandlerFluidMap(fluidStacks.asJava) {
 
         /**
           * Not fillable.

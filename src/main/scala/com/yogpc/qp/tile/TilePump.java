@@ -461,11 +461,8 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                                 if (Config.content().debug()) {
                                     int xTarget = bx + xOffset;
                                     int zTarget = bz + zOffset;
-                                    if (quarry.xMin < xTarget && xTarget < quarry.xMax) {
+                                    if ((quarry.xMin < xTarget && xTarget < quarry.xMax) && (quarry.zMin < zTarget && zTarget < quarry.zMax))
                                         QuarryPlus.LOGGER.warn(String.format("Quarry placed frame at %d, %d, %d", xTarget, py, zTarget));
-                                    } else if (quarry.zMin < zTarget && zTarget < quarry.zMax) {
-                                        QuarryPlus.LOGGER.warn(String.format("Quarry placed frame at %d, %d, %d", xTarget, py, zTarget));
-                                    }
                                 }
                             }
                         }
