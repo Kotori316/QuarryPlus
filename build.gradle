@@ -23,7 +23,7 @@ sourceCompatibility = targetCompatibility = "1.8" // Need this here so eclipse t
 compileScala {
     sourceCompatibility = targetCompatibility = "1.8"
     compileScala.options.compilerArgs = ['-Xlint:all']
-    scalaCompileOptions.additionalParameters = ["-feature"]
+    scalaCompileOptions.additionalParameters = ["-feature"/*, "-target:jvm-1.8", "-Ybackend:GenBCode", "-Ydelambdafy:method"*/]
 }
 
 minecraft {
@@ -38,6 +38,7 @@ minecraft {
     mappings = "snapshot_20161111"
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
     replace "\${version}", project.version
+    replace '@FINGERPRINT@', getProperty('signSHA1')
 }
 
 repositories {
@@ -61,6 +62,7 @@ repositories {
 }
 
 dependencies {
+//    compile 'org.scala-lang:scala-library:2.11.11'
     compile fileTree(include: ['*.jar'], dir: 'libs')
 //    deobfCompile "com.mod-buildcraft:buildcraft:7.99.7"
     deobfCompile "cofh:CoFHCore:1.10.2-4.1.12.17:universal"
@@ -89,6 +91,27 @@ processResources {
 jar {
     classifier = 'universal'
 }
+
+task signJar(type: SignJar, dependsOn: reobfJar) {
+
+    // Skips if the keyStore property is missing.
+    onlyIf {
+        project.hasProperty('keyStore')
+    }
+
+    // findProperty allows us to reference the property without it existing.
+    // Using project.propName would cause the script to fail validation if
+    // the property did not exist.
+    keyStore = project.getProperty("keyStore")
+    alias = getProperty('keyStoreAlias')
+    storePass = getProperty('keyStorePass')
+    keyPass = getProperty('keyStoreKeyPass')
+    inputFile = jar.archivePath
+    outputFile = jar.archivePath
+}
+// Runs this task automatically when build is ran.
+build.dependsOn signJar
+
 
 task srcJar(type: Jar) {
     from sourceSets.main.allSource

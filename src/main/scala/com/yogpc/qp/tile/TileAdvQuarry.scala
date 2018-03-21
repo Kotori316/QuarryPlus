@@ -36,7 +36,6 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import net.minecraftforge.items.{CapabilityItemHandler, IItemHandlerModifiable}
 
 import scala.collection.JavaConverters._
-import scala.collection.convert.WrapAsJava
 
 class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with ITickable with IDebugSender with IChunkLoadTile {
     self =>
@@ -577,7 +576,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
         override def insertItem(slot: Int, stack: ItemStack, simulate: Boolean): ItemStack = stack
     }
 
-    private[TileAdvQuarry] class FluidHandler extends FluidHandlerFluidMap(WrapAsJava.mutableMapAsJavaMap(fluidStacks)) {
+    private[TileAdvQuarry] class FluidHandler extends FluidHandlerFluidMap(fluidStacks.asJava) {
 
         /**
           * Not fillable.
@@ -715,7 +714,7 @@ object TileAdvQuarry {
         def getMap = Map(EfficiencyID -> efficiency, UnbreakingID -> unbreaking,
             FortuneID -> fortune, SilktouchID -> silktouch.compare(false).toByte)
 
-        val maxRecieve = if (efficiency >= 5) ENERGYLIMIT_LIST(5) / 10 else ENERGYLIMIT_LIST(efficiency) / 10
+        val maxRecieve = if (efficiency >= 5) ENERGYLIMIT_LIST(5) / 10d else ENERGYLIMIT_LIST(efficiency) / 10d
 
         val mode: Byte = if (silktouch) -1 else fortune
 
@@ -876,23 +875,28 @@ object TileAdvQuarry {
 
     def getFramePoses(digRange: DigRange): List[BlockPos] = {
         val builder = List.newBuilder[BlockPos]
+        val minX = digRange.minX
+        val maxX = digRange.maxX
+        val maxY = digRange.maxY
+        val minZ = digRange.minZ
+        val maxZ = digRange.maxZ
         for (i <- 0 to 4) {
-            builder += new BlockPos(digRange.minX - 1, digRange.maxY + 4 - i, digRange.minZ - 1)
-            builder += new BlockPos(digRange.minX - 1, digRange.maxY + 4 - i, digRange.maxZ + 1)
-            builder += new BlockPos(digRange.maxX + 1, digRange.maxY + 4 - i, digRange.maxZ + 1)
-            builder += new BlockPos(digRange.maxX + 1, digRange.maxY + 4 - i, digRange.minZ - 1)
+            builder += new BlockPos(minX - 1, maxY + 4 - i, minZ - 1)
+            builder += new BlockPos(minX - 1, maxY + 4 - i, maxZ + 1)
+            builder += new BlockPos(maxX + 1, maxY + 4 - i, maxZ + 1)
+            builder += new BlockPos(maxX + 1, maxY + 4 - i, minZ - 1)
         }
-        for (x <- digRange.minX to digRange.maxX) {
-            builder += new BlockPos(x, digRange.maxY + 4, digRange.minZ - 1)
-            builder += new BlockPos(x, digRange.maxY + 0, digRange.minZ - 1)
-            builder += new BlockPos(x, digRange.maxY + 0, digRange.maxZ + 1)
-            builder += new BlockPos(x, digRange.maxY + 4, digRange.maxZ + 1)
+        for (x <- minX to maxX) {
+            builder += new BlockPos(x, maxY + 4, minZ - 1)
+            builder += new BlockPos(x, maxY + 0, minZ - 1)
+            builder += new BlockPos(x, maxY + 0, maxZ + 1)
+            builder += new BlockPos(x, maxY + 4, maxZ + 1)
         }
-        for (z <- digRange.minZ to digRange.maxZ) {
-            builder += new BlockPos(digRange.minX - 1, digRange.maxY + 4, z)
-            builder += new BlockPos(digRange.minX - 1, digRange.maxY + 0, z)
-            builder += new BlockPos(digRange.maxX + 1, digRange.maxY + 0, z)
-            builder += new BlockPos(digRange.maxX + 1, digRange.maxY + 4, z)
+        for (z <- minZ to maxZ) {
+            builder += new BlockPos(minX - 1, maxY + 4, z)
+            builder += new BlockPos(minX - 1, maxY + 0, z)
+            builder += new BlockPos(maxX + 1, maxY + 0, z)
+            builder += new BlockPos(maxX + 1, maxY + 4, z)
         }
         builder.result()
     }
