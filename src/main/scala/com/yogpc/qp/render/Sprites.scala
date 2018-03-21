@@ -17,16 +17,9 @@ object Sprites {
 
     @SubscribeEvent
     def registerTexture(event: TextureStitchEvent.Pre): Unit = {
-        LaserType.values().foreach(laserType => map.put(laserType.symbol, event.getMap.registerSprite(laserType.location())))
-        map.put('laser_1, event.getMap.registerSprite(new ResourceLocation(QuarryPlus.modID, "entities/laser_1")))
-        map.put('laser_2, event.getMap.registerSprite(new ResourceLocation(QuarryPlus.modID, "entities/laser_2")))
-        map.put('laser_3, event.getMap.registerSprite(new ResourceLocation(QuarryPlus.modID, "entities/laser_3")))
-        map.put('laser_4, event.getMap.registerSprite(new ResourceLocation(QuarryPlus.modID, "entities/laser_4")))
-        map.put('yellow, event.getMap.registerSprite(new ResourceLocation(QuarryPlus.modID, "entities/yellow")))
-        //        map.put('stripes, event.getMap.registerSprite(new ResourceLocation(QuarryPlus.modID, "entities/stripes")))
-        map.put('stripes_h, event.getMap.registerSprite(new ResourceLocation(QuarryPlus.modID, "entities/stripes_h")))
-        map.put('stripes_v, event.getMap.registerSprite(new ResourceLocation(QuarryPlus.modID, "entities/stripes_v")))
-        map.put('stripes_b, event.getMap.registerSprite(new ResourceLocation(QuarryPlus.modID, "entities/stripes_b")))
-        map.put('stripes_refinery, event.getMap.registerSprite(new ResourceLocation(QuarryPlus.modID, "entities/stripes_refinery")))
+        val textureMap = event.getMap
+        LaserType.values().foreach(laserType => map.put(laserType.symbol, textureMap.registerSprite(laserType.location())))
+        val put_F = (name: Symbol) => map.put(name, textureMap.registerSprite(new ResourceLocation(QuarryPlus.modID, "entities/" + name)))
+        List('laser_1, 'laser_2, 'laser_3, 'laser_4, 'yellow, 'stripes_h, 'stripes_v, 'stripes_b, 'stripes_refinery).foreach(put_F)
     }
 }

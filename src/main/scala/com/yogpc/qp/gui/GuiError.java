@@ -1,7 +1,5 @@
 package com.yogpc.qp.gui;
 
-import java.io.IOException;
-
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiErrorScreen;
 import net.minecraft.client.gui.GuiScreen;
@@ -16,7 +14,7 @@ public class GuiError extends GuiErrorScreen {
     }
 
     @Override
-    protected void actionPerformed(GuiButton button) throws IOException {
+    protected void actionPerformed(GuiButton button) {
         mc.displayGuiScreen(parent);
     }
 
