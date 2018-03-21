@@ -126,7 +126,7 @@ artifacts {
 }
 
 curseforge {
-    apiKey = project.hasProperty("curseforge_additional-enchanted-miner_key") ? getProperty("curseforge_additional-enchanted-miner_key") : ""
+    apiKey = /*project.hasProperty("curseforge_additional-enchanted-miner_key") ? getProperty("curseforge_additional-enchanted-miner_key") :*/ ""
     project {
         id = '282837'
         changelog = 'See GitHub commit'
