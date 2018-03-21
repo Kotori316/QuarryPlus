@@ -12,6 +12,7 @@
  */
 package com.yogpc.qp.item
 
+import com.yogpc.qp.item.IEnchantableItem.{FORTUNE, SILKTOUCH, UNBREAKING}
 import net.minecraft.block.Block
 import net.minecraft.enchantment.{Enchantment, EnchantmentHelper}
 import net.minecraft.init.Enchantments
@@ -20,11 +21,11 @@ import net.minecraft.item.{ItemBlock, ItemStack}
 class ItemBlockPump(b: Block) extends ItemBlock(b) with IEnchantableItem {
     override def canMove(is: ItemStack, enchantment: Enchantment): Boolean = {
         if (EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, is) > 0) {
-            enchantment != Enchantments.FORTUNE && enchantment == Enchantments.UNBREAKING || enchantment == Enchantments.SILK_TOUCH
+            FORTUNE.negate().and(UNBREAKING.or(SILKTOUCH)).test(enchantment)
         } else if (EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, is) > 0) {
-            enchantment != Enchantments.SILK_TOUCH && enchantment == Enchantments.UNBREAKING || enchantment == Enchantments.FORTUNE
+            SILKTOUCH.negate().and(UNBREAKING.or(FORTUNE)).test(enchantment)
         } else {
-            enchantment == Enchantments.SILK_TOUCH || enchantment == Enchantments.FORTUNE || enchantment == Enchantments.UNBREAKING
+            SILKTOUCH.or(FORTUNE).or(UNBREAKING).test(enchantment)
         }
     }
 

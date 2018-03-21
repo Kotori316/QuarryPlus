@@ -1,4 +1,4 @@
-# QuarryPlus (Additional Enchanted Miner)
+# QuarryPlus (Additional Enchanted Miner) for 1.11.2
 ===========
 
 **Work for 1.11.2 have NOT finished yet.**

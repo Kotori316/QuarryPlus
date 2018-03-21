@@ -1,1 +1,1 @@
-gradlew curseforge
+gradlew build curseforge

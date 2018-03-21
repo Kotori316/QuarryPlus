@@ -13,8 +13,11 @@
 
 package com.yogpc.qp.item;
 
+import java.util.function.Predicate;
+
 import javax.annotation.Nonnull;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.init.Enchantments;
 import net.minecraft.item.ItemStack;
 
 public interface IEnchantableItem {
@@ -27,4 +30,10 @@ public interface IEnchantableItem {
      * @return that ItemStack can move enchantment on EnchantMover
      */
     boolean canMove(@Nonnull ItemStack is, Enchantment enchantment);
+
+    Predicate<Enchantment> FALSE = o -> false;
+    Predicate<Enchantment> SILKTOUCH = enchantment -> enchantment == Enchantments.SILK_TOUCH;
+    Predicate<Enchantment> FORTUNE = enchantment -> enchantment == Enchantments.FORTUNE;
+    Predicate<Enchantment> EFFICIENCY = enchantment -> enchantment == Enchantments.EFFICIENCY;
+    Predicate<Enchantment> UNBREAKING = enchantment -> enchantment == Enchantments.UNBREAKING;
 }

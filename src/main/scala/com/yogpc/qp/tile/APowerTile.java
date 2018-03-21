@@ -111,12 +111,16 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
         }
     }
 
-    protected BlockPos[] getNeighbors(EnumFacing facing) {
+    protected final BlockPos[] getNeighbors(EnumFacing facing) {
         return new BlockPos[]{pos.offset(facing), pos.offset(facing.rotateYCCW()), pos.offset(facing.rotateY())};
     }
 
-    public boolean isOutputEnergyInfo() {
+    public final boolean isOutputEnergyInfo() {
         return outputEnergyInfo;
+    }
+
+    public final void toggleOutputEnergyInfo() {
+        this.outputEnergyInfo = !this.outputEnergyInfo;
     }
 
     protected abstract boolean isWorking();
@@ -175,7 +179,8 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
         return res;
     }
 
-    /*package-private*/ double getEnergy(final double a, final boolean real) {
+    /*package-private*/
+    final double getEnergy(final double a, final boolean real) {
         if (Config.content().noEnergy()) {
             return 0d;
         }
@@ -212,7 +217,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
      */
     @Override
     @Optional.Method(modid = QuarryPlus.Optionals.IC2_modID)
-    public double injectEnergy(EnumFacing directionFrom, double amount, double voltage) {
+    public final double injectEnergy(EnumFacing directionFrom, double amount, double voltage) {
         return amount - getEnergy(amount / 2.5, true) * 2.5;
     }
 
@@ -241,25 +246,25 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
      */
     @Override
     @Optional.Method(modid = QuarryPlus.Optionals.COFH_energy)
-    public int receiveEnergy(EnumFacing from, int maxReceive, boolean simulate) {
+    public final int receiveEnergy(EnumFacing from, int maxReceive, boolean simulate) {
         return receiveEnergy(maxReceive, simulate);
     }
 
     @Override
     @Optional.Method(modid = QuarryPlus.Optionals.COFH_energy)
-    public int getEnergyStored(EnumFacing from) {
+    public final int getEnergyStored(EnumFacing from) {
         return getEnergyStored();
     }
 
     @Override
     @Optional.Method(modid = QuarryPlus.Optionals.COFH_energy)
-    public int getMaxEnergyStored(EnumFacing from) {
+    public final int getMaxEnergyStored(EnumFacing from) {
         return getMaxEnergyStored();
     }
 
     @Override
     @Optional.Method(modid = QuarryPlus.Optionals.COFH_energy)
-    public boolean canConnectEnergy(EnumFacing from) {
+    public final boolean canConnectEnergy(EnumFacing from) {
         return canReceive();
     }
 
@@ -267,7 +272,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
      * Returns energy usage/generation per tick (RF/t).
      */
     @Override
-    public int getInfoEnergyPerTick() {
+    public final int getInfoEnergyPerTick() {
         return debug.energyPerTick();
     }
 
@@ -275,7 +280,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
      * Returns maximum energy usage/generation per tick (RF/t).
      */
     @Override
-    public int getInfoMaxEnergyPerTick() {
+    public final int getInfoMaxEnergyPerTick() {
         return debug.maxUsed();
     }
 
@@ -283,7 +288,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
      * Returns energy stored (RF).
      */
     @Override
-    public int getInfoEnergyStored() {
+    public final int getInfoEnergyStored() {
         return getEnergyStored();
     }
 
@@ -298,22 +303,22 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
      * Energy unit is RF.
      */
     @Override
-    public int receiveEnergy(int maxReceive, boolean simulate) {
+    public final int receiveEnergy(int maxReceive, boolean simulate) {
         return (int) getEnergy((double) maxReceive / 10, !simulate) * 10;
     }
 
     @Override
-    public int extractEnergy(int maxExtract, boolean simulate) {
+    public final int extractEnergy(int maxExtract, boolean simulate) {
         return 0;
     }
 
     @Override
-    public int getEnergyStored() {
+    public final int getEnergyStored() {
         return (int) (this.all * 10);
     }
 
     @Override
-    public int getMaxEnergyStored() {
+    public final int getMaxEnergyStored() {
         return (int) (this.max * 10);
     }
 

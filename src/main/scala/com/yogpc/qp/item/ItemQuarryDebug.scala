@@ -31,10 +31,14 @@ class ItemQuarryDebug extends Item {
                 tile match {
                     case plusMachine: APowerTile with IDebugSender =>
                         if (!worldIn.isRemote) {
-                            player.sendStatusMessage(new TextComponentTranslation(plusMachine.getDebugName), false)
-                            player.sendStatusMessage(tileposToString(tile), false)
-                            player.sendStatusMessage(energyToString(plusMachine), false)
-                            plusMachine.sendDebugMessage(player)
+                            if (player.isSneaking) {
+                                plusMachine.toggleOutputEnergyInfo()
+                            } else {
+                                player.sendStatusMessage(new TextComponentTranslation(plusMachine.getDebugName), false)
+                                player.sendStatusMessage(tileposToString(tile), false)
+                                player.sendStatusMessage(energyToString(plusMachine), false)
+                                plusMachine.sendDebugMessage(player)
+                            }
                         }
                         EnumActionResult.SUCCESS
                     case marker: TileMarker =>
