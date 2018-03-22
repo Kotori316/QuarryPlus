@@ -1,11 +1,12 @@
 {
   "homepage": "https://minecraft.curseforge.com/projects/additional-enchanted-miner",
   "promos": {
-    "1.12.2-recommended": "0.8.4",
-    "1.11.2-recommended": "0.8.4",
-    "1.10.2-recommended": "0.8.4"
+    "1.12.2-recommended": "0.8.5",
+    "1.11.2-recommended": "0.8.5",
+    "1.10.2-recommended": "0.8.5"
   },
   "1.12.2": {
+    "0.8.5": "Added signature to jar file.",
     "0.8.4": "Fixed a problem where buttons in some GUIs didn't work.",
     "0.8.3": "Fixed a problem where magic mirror caused crush when you used in Twilight Forest or The End.",
     "0.8.2": "Added wrench of IC2 support and fixed many bugs in GUI.",
@@ -21,6 +22,7 @@
     "0.6.8": "Added Forge version check system."
   },
   "1.11.2": {
+    "0.8.5": "Added signature to jar file.",
     "0.8.4": "Fixed a problem where buttons in some GUIs didn't work.",
     "0.8.3": "Fixed a problem where magic mirror caused crush when you used in Twilight Forest or The End.",
     "0.8.2": "Added wrench of IC2 support and fixed many bugs in GUI.",
@@ -35,6 +37,7 @@
     "0.6.8": "Added Forge version check system."
   },
   "1.10.2": {
+    "0.8.5": "Added signature to jar file.",
     "0.8.4": "Fixed a problem where buttons in some GUIs didn't work.",
     "0.8.3": "Fixed a problem where magic mirror caused crush when you used in Twilight Forest or The End.",
     "0.8.2": "Added wrench of IC2 support and fixed many bugs in GUI.",
