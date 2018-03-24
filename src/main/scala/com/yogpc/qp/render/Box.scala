@@ -25,7 +25,7 @@ sealed class Box(val startX: Double, val startY: Double, val startZ: Double,
         val n1Size = Math.sqrt(n1X * n1X + n1Y * n1Y + n1Z * n1Z)
         val n2X = dy * n1Z - dz * n1Y
         val n2Z = dx * n1Y - dy * n1X
-        val n2Size = Math.hypot(n2X, n2Z)
+        val n2Size = Math.sqrt(n2X * n2X + n2Z * n2Z)
         renderInternal(buffer, sprite, n1X / n1Size / 2, n1Y / n1Size / 2, n1Z / n1Size / 2, n2X / n2Size / 2, n2Z / n2Size / 2, lightValue)
     }
 
@@ -95,6 +95,7 @@ sealed class Box(val startX: Double, val startY: Double, val startZ: Double,
             case o: Box => startX == o.startX && startY == o.startY && startZ == o.startZ &&
               endX == o.endX && endY == o.endY && endZ == o.endZ &&
               sizeX == o.sizeX && sizeY == o.sizeY && sizeZ == o.sizeZ && firstSide == o.firstSide && endSide == o.endSide
+            case _ => false
         }
     }
 
@@ -269,10 +270,10 @@ private class BoxZ(startZ: Double,
 private class BoxXZ(startX: Double, startZ: Double, endX: Double, y: Double, endZ: Double,
                     sizeX: Double, sizeY: Double, sizeZ: Double, firstSide: Boolean, endSide: Boolean)
   extends Box(startX, y, startZ, endX, y, endZ, sizeX, sizeY, sizeZ, firstSide, endSide) {
-    override val length = Math.hypot(dx, dz)
+    override val length = Math.sqrt(dx * dx + dz * dz)
 
     override def render(buffer: BufferBuilder, sprite: TextureAtlasSprite)(implicit lv: Box.LightValue): Unit = {
-        val n2Size = Math.hypot(dz, dx)
+        val n2Size = length
         renderInternal(buffer, sprite, 0, 0.5, 0, -dz / n2Size / 2, dx / n2Size / 2, lv)
     }
 }
