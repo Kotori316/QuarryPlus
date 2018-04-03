@@ -79,7 +79,6 @@ import static com.yogpc.qp.QuarryPlusI.*;
     modid = QuarryPlus.modID,
     name = QuarryPlus.Mod_Name,
     version = "${version}",
-    dependencies = "after:ic2",
     guiFactory = QuarryPlus.Optionals.configFactory,
     updateJSON = QuarryPlus.Optionals.updateJson,
     certificateFingerprint = "@FINGERPRINT@"
