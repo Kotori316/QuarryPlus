@@ -288,7 +288,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
             "target : " + target,
             "Finished : " + finished,
             "Ench : " + ench,
-            "FluidType : " + Option(FluidHandler.getFluidType).fold("None")(_.getName),
+            "FluidType : " + FluidHandler.getFluidType,
             "FluidAmount : " + FluidHandler.getAmount,
             "Pumped : " + FluidHandler.amountPumped,
             "Delete : " + delete,
@@ -440,12 +440,14 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
             }
         }
 
-        def getFluidType =
-            if (fluidStacks.isEmpty) {
-                null
+        def getFluidType = {
+            val str = fluidStacks.flatMap(s => Option(s.getFluid).toList).map(_.getName).mkString(", ")
+            if (str.isEmpty) {
+                "None"
             } else {
-                fluidStacks.head.getFluid
+                str
             }
+        }
 
         def getAmount =
             if (fluidStacks.nonEmpty) fluidStacks.head.amount

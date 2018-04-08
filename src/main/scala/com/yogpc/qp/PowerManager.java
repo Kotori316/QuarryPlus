@@ -194,6 +194,15 @@ public class PowerManager {
         return BP * hardness * CSP / (unbreaking * CU + 1);
     }
 
+    public static double calcEnergyBreak(float hardness, byte enchantMode, byte unbreaking) {
+        double BP = QuarryWork_BP, CU = QuarryWork_CU, CSP;
+        if (enchantMode < 0)
+            CSP = QuarryWork_CS;
+        else
+            CSP = Math.pow(QuarryWork_CF, enchantMode);
+        return BP * hardness * CSP / (unbreaking * CU + 1);
+    }
+
     public static boolean useEnergyPump(final APowerTile pp, final byte U, final long liquidsCount, final long framesToBuild) {
         final double pw = calcEnergyPumpDrain(U, liquidsCount, framesToBuild);
         if (pp.useEnergy(pw, pw, false) != pw)

@@ -19,7 +19,7 @@ import net.minecraft.entity.item.{EntityItem, EntityXPOrb}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
 import net.minecraft.item.{ItemBlock, ItemStack}
-import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
+import net.minecraft.nbt.{NBTTagCompound, NBTTagList, NBTTagLong}
 import net.minecraft.util.math.BlockPos.MutableBlockPos
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos, ChunkPos}
 import net.minecraft.util.text.TextComponentString
@@ -43,6 +43,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
     var ench = TileAdvQuarry.defaultEnch
     var target = BlockPos.ORIGIN
     var framePoses = List.empty[BlockPos]
+    var chunks = List.empty[ChunkPos]
     val fluidStacks = scala.collection.mutable.Map.empty[Fluid, IFluidHandler]
     val cacheItems = new ItemList
     val itemHandler = new ItemHandler
@@ -69,14 +70,14 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                         }
 
                         if (ench.silktouch && state.getBlock.canSilkHarvest(getWorld, target, state, null)) {
-                            val energy = PowerManager.calcEnergyBreak(self, state.getBlockHardness(getWorld, target), -1, ench.unbreaking)
+                            val energy = PowerManager.calcEnergyBreak(state.getBlockHardness(getWorld, target), -1, ench.unbreaking)
                             if (useEnergy(energy, energy, false) == energy) {
                                 useEnergy(energy, energy, true)
                                 list.add(ReflectionHelper.invoke(TileBasic.createStackedBlock, state.getBlock, state).asInstanceOf[ItemStack])
                                 getWorld.setBlockToAir(target)
                             }
                         } else {
-                            val energy = PowerManager.calcEnergyBreak(self, state.getBlockHardness(getWorld, target), ench.fortune, ench.unbreaking)
+                            val energy = PowerManager.calcEnergyBreak(state.getBlockHardness(getWorld, target), ench.fortune, ench.unbreaking)
                             if (useEnergy(energy, energy, false) == energy) {
                                 useEnergy(energy, energy, true)
                                 state.getBlock.getDrops(list, getWorld, target, state, ench.fortune)
@@ -104,7 +105,14 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                     val headtail = TileAdvQuarry.getFramePoses(digRange)
                     target = headtail.head
                     framePoses = headtail.tail
+                    chunks = digRange.chunkSeq
                 }
+                if (chunks.nonEmpty) {
+                    val chunkPos = chunks.head
+                    getWorld.getChunkFromChunkCoords(chunkPos.x, chunkPos.z)
+                    chunks = chunks.tail
+                }
+
                 for (_ <- 0 until 4)
                     if (mode is TileAdvQuarry.MAKEFRAME)
                         makeFrame()
@@ -147,15 +155,15 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                                 if (blockHardness != -1 && !blockHardness.isInfinity) {
                                     state.getBlock match {
                                         case _ if TileAdvQuarry.noDigBLOCKS.exists(_.contain(state)) =>
-                                            requireEnergy += PowerManager.calcEnergyBreak(this, blockHardness, 0, ench.unbreaking)
+                                            requireEnergy += PowerManager.calcEnergyBreak(blockHardness, 0, ench.unbreaking)
                                             destroy = pos :: destroy
                                         case leave: IShearable if leave.isLeaves(state, getWorld, pos) =>
-                                            requireEnergy += PowerManager.calcEnergyBreak(this, blockHardness, ench.mode, ench.unbreaking)
+                                            requireEnergy += PowerManager.calcEnergyBreak(blockHardness, ench.mode, ench.unbreaking)
                                             if (ench.silktouch)
                                                 shear = pos :: shear
                                             else
                                                 dig = pos :: dig
-                                        case _ => requireEnergy += PowerManager.calcEnergyBreak(this, blockHardness, ench.mode, ench.unbreaking)
+                                        case _ => requireEnergy += PowerManager.calcEnergyBreak(blockHardness, ench.mode, ench.unbreaking)
                                             dig = pos :: dig
                                     }
                                 } else if (Config.content.removeBedrock && (state.getBlock == Blocks.BEDROCK) &&
@@ -243,35 +251,41 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                     }
                 }
 
-                if (breakBlocks()) {
-                    var i = 0
-                    do {
-                        i += 1
-                        val x = target.getX + 1
-                        if (x > digRange.maxX) {
-                            val z = target.getZ + 1
-                            if (z > digRange.maxZ) {
-                                //Finished.
-                                target = digRange.min
-                                mode set TileAdvQuarry.CHECKLIQUID
-                            } else {
-                                target = new BlockPos(digRange.minX, target.getY, z)
-                            }
-                        } else {
-                            target = new BlockPos(x, target.getY, target.getZ)
-                        }
-                    } while (i < 32 && {
-                        val p = new MutableBlockPos(target)
-                        Range.inclusive(1, target.getY).forall { i => p.setY(i); getWorld.isAirBlock(p) }
-                    })
+                if (chunks.nonEmpty) {
+                    val chunkPos = chunks.head
+                    getWorld.getChunkFromChunkCoords(chunkPos.x, chunkPos.z)
+                    chunks = chunks.tail
                 }
+                for (_ <- 0 until digRange.timeInTick) if (mode is TileAdvQuarry.BREAKBLOCK)
+                    if (breakBlocks()) {
+                        var i = 0
+                        do {
+                            i += 1
+                            val x = target.getX + 1
+                            if (x > digRange.maxX) {
+                                val z = target.getZ + 1
+                                if (z > digRange.maxZ) {
+                                    //Finished.
+                                    target = digRange.min
+                                    mode set TileAdvQuarry.CHECKLIQUID
+                                } else {
+                                    target = new BlockPos(digRange.minX, target.getY, z)
+                                }
+                            } else {
+                                target = new BlockPos(x, target.getY, target.getZ)
+                            }
+                        } while (i < 32 && {
+                            val p = new MutableBlockPos(target)
+                            Range.inclusive(1, target.getY).forall { i => p.setY(i); getWorld.isAirBlock(p) }
+                        })
+                    }
 
             } else if (mode is TileAdvQuarry.NOTNEEDBREAK) {
                 if (digRange.defined && !Config.content.noEnergy)
                     if (getStoredEnergy > getMaxStored * 0.3)
                         mode set TileAdvQuarry.MAKEFRAME
             } else if (mode is TileAdvQuarry.CHECKLIQUID) {
-                for (_ <- 0 until 32) {
+                for (_ <- 0 until 32 * digRange.timeInTick) {
                     if (mode is TileAdvQuarry.CHECKLIQUID) {
                         List.iterate(target.down(), target.getY - 1)(_.down()).filter(p => {
                             val state = getWorld.getBlockState(p)
@@ -376,6 +390,8 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                 fluidStacks.put(tank.getFluid.getFluid, tank)
             }
         })
+        val l2 = nbttc.getTagList("NBT_CHUNKLOADLIST", Constants.NBT.TAG_DOUBLE)
+        chunks = Range(0, l2.tagCount()).map(i => new ChunkPos(BlockPos.fromLong(l2.get(i).asInstanceOf[NBTTagLong].getLong))).toList
     }
 
     override def writeToNBT(nbttc: NBTTagCompound) = {
@@ -384,9 +400,12 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
         nbttc.setLong("NBT_TARGET", target.toLong)
         mode.writeToNBT(nbttc)
         cacheItems.writeToNBT(nbttc)
-        val l = new NBTTagList
-        fluidStacks.foreach { case (_, tank) => l.appendTag(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.writeNBT(tank, null)) }
-        nbttc.setTag("NBT_FLUIDLIST", l)
+        val l1 = new NBTTagList
+        fluidStacks.foreach { case (_, tank) => l1.appendTag(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.writeNBT(tank, null)) }
+        nbttc.setTag("NBT_FLUIDLIST", l1)
+        val l2 = new NBTTagList
+        chunks.foreach(c => l1.appendTag(new NBTTagLong(c.getBlock(0, 0, 0).toLong)))
+        nbttc.setTag("NBT_CHUNKLOADLIST", l2)
         super.writeToNBT(nbttc)
     }
 
@@ -749,6 +768,26 @@ object TileAdvQuarry {
         def min: BlockPos = new BlockPos(minX, minY, minZ)
 
         val rendrBox = new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ)
+
+        val timeInTick = {
+            val length = (maxX + maxZ - minX - minZ) / 2
+            if (length < 256) {
+                1
+            } else if (length < 1024) {
+                4
+            } else if (length < 4096) {
+                16
+            } else {
+                32
+            }
+        }
+
+        def chunkSeq: List[ChunkPos] = {
+            val a = for (x <- Range(minX, maxX, 16);
+                         z <- Range(minZ, maxZ, 16)
+            ) yield new ChunkPos(x >> 4, z >> 4)
+            a.toList :+ new ChunkPos(maxX >> 4, maxZ >> 4)
+        }
 
         override val toString: String = s"Dig Range from ($minX, $minY, $minZ) to ($maxX, $maxY, $maxZ)"
 

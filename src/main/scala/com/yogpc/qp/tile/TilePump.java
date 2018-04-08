@@ -678,9 +678,12 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
     }
 
-    private IFluidHandler tankAll = (IDummyFluidHandler) () -> TilePump.this.liquids.stream()
-        .map(fluidStack -> new FluidTankProperties(fluidStack, fluidStack.amount, false, false))
-        .toArray(IFluidTankProperties[]::new);
+    private IFluidHandler tankAll = (IDummyFluidHandler) () -> {
+        IFluidTankProperties[] array = TilePump.this.liquids.stream()
+            .map(fluidStack -> new FluidTankProperties(fluidStack, fluidStack.amount, false, false))
+            .toArray(IFluidTankProperties[]::new);
+        return array.length == 0 ? IDummyFluidHandler.emptyPropertyArray : array;
+    };
 
     @Nullable
     @Override
