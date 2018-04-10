@@ -40,6 +40,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
     private[this] var ench = TileAdvPump.defaultEnch
     private[this] var target: BlockPos = BlockPos.ORIGIN
     private[this] var toDig: List[BlockPos] = Nil
+    private[this] var toDelete: List[BlockPos] = Nil
     private[this] var inRange: Set[BlockPos] = Set.empty
     private[this] val paths = mutable.Map.empty[BlockPos, List[BlockPos]]
     private[this] val FACINGS = List(EnumFacing.UP, EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST)
@@ -105,7 +106,21 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
                     } else
                         nextPos(i + 1)
                 }
-            case Nil => target = BlockPos.ORIGIN
+            case Nil => toDelete match {
+                case next :: rest => toDelete = rest
+                    if (TilePump.isLiquid(getWorld.getBlockState(next))) {
+                        target = next
+                    } else {
+                        if (i > ench.maxAmount / 1000) {
+                            skip = true
+                            if (Config.content.debug) {
+                                QuarryPlus.LOGGER.warn("Pump overflow", new StackOverflowError("Pump"))
+                            }
+                        } else
+                            nextPos(i + 1)
+                    }
+                case Nil => target = BlockPos.ORIGIN
+            }
         }
     }
 
@@ -165,6 +180,8 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
                             nextPosesToCheck += offsetPos
                             if (TilePump.isLiquid(state, true, getWorld, offsetPos))
                                 toDig = offsetPos :: toDig
+                            else if (TilePump.isLiquid(state))
+                                toDelete = offsetPos :: toDelete
                         }
                     } //else means the pos has already checked.
                 }
@@ -180,16 +197,17 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
             val option = paths.get(target)
             if (option.nonEmpty) {
                 val energy = ench.getEnergy(placeFrame)
-                if (useEnergy(energy, energy, true) == energy) {
+                val isLiquid = TilePump.isLiquid(getWorld.getBlockState(target))
+                val isSource = TilePump.isLiquid(getWorld.getBlockState(target), true, getWorld, target)
+                if (isLiquid && !isSource) {
+                    getWorld.setBlockToAir(target)
+                    nextPos()
+                } else if (useEnergy(energy, energy, true) == energy) {
                     val handler = FluidUtil.getFluidHandler(getWorld, target, EnumFacing.UP)
-                    if (nonNull(handler) && option.get.forall(pos => TilePump.isLiquid(getWorld.getBlockState(pos)) /*&&
-                      (FluidHandler.getFluidType == null || FluidHandler.getFluidType == maybeStack.get.getFluid)*/)) {
+                    if (nonNull(handler) && option.get.forall(pos => TilePump.isLiquid(getWorld.getBlockState(pos)))) {
                         val drained = handler.drain(Fluid.BUCKET_VOLUME, false)
                         FluidHandler.fillInternal(drained, doFill = true)
                         replaceFluidBlock(target)
-                        nextPos()
-                    } else if (TilePump.isLiquid(getWorld.getBlockState(target))) {
-                        getWorld.setBlockToAir(target)
                         nextPos()
                     } else {
                         buildWay()
@@ -378,6 +396,8 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
         override def fill(resource: FluidStack, doFill: Boolean): Int = 0
 
         def fillInternal(resource: FluidStack, doFill: Boolean): Int = {
+            if (resource == null || resource.amount <= 0)
+                return 0
             fluidStacks.find(_ == resource) match {
                 case Some(stack) =>
                     val nAmount = stack.amount + resource.amount
@@ -418,7 +438,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
         }
 
         private def drainInternal(kind: FluidStack, source: FluidStack, doDrain: Boolean): FluidStack = {
-            if (kind.amount <= 0) {
+            if (kind == null || kind.amount <= 0) {
                 return null
             }
             if (kind.amount >= source.amount) {

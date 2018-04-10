@@ -1,7 +1,6 @@
 package com.yogpc.qp.tile
 
 import java.lang.{Boolean => JBool}
-import javax.annotation.Nonnull
 
 import com.yogpc.qp.block.ADismCBlock
 import com.yogpc.qp.compat.{INBTReadable, INBTWritable, InvUtils}
@@ -11,6 +10,7 @@ import com.yogpc.qp.packet.advquarry.AdvModeMessage
 import com.yogpc.qp.tile.TileAdvQuarry.{DigRange, ItemElement, ItemList, QEnch}
 import com.yogpc.qp.version.VersionUtil
 import com.yogpc.qp.{Config, PowerManager, QuarryPlus, QuarryPlusI, ReflectionHelper, _}
+import javax.annotation.Nonnull
 import net.minecraft.block.Block
 import net.minecraft.block.properties.PropertyHelper
 import net.minecraft.block.state.IBlockState
@@ -107,11 +107,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                     framePoses = headtail.tail
                     chunks = digRange.chunkSeq
                 }
-                if (chunks.nonEmpty) {
-                    val chunkPos = chunks.head
-                    getWorld.getChunkFromChunkCoords(chunkPos.x, chunkPos.z)
-                    chunks = chunks.tail
-                }
+                chunkLoad()
 
                 for (_ <- 0 until 4)
                     if (mode is TileAdvQuarry.MAKEFRAME)
@@ -251,12 +247,9 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                     }
                 }
 
-                if (chunks.nonEmpty) {
-                    val chunkPos = chunks.head
-                    getWorld.getChunkFromChunkCoords(chunkPos.x, chunkPos.z)
-                    chunks = chunks.tail
-                }
-                for (_ <- 0 until digRange.timeInTick) if (mode is TileAdvQuarry.BREAKBLOCK)
+                chunkLoad()
+                val n = if (chunks.isEmpty) digRange.timeInTick else 1
+                for (_ <- 0 until n) if (mode is TileAdvQuarry.BREAKBLOCK)
                     if (breakBlocks()) {
                         var i = 0
                         do {
@@ -357,6 +350,19 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
         }
     }
 
+    private def chunkLoad() = {
+        if (chunks.nonEmpty) {
+            val chunkPos = chunks.head
+            val bool = getWorld.isChunkGeneratedAt(chunkPos.x, chunkPos.z)
+            if (Config.content.debug) {
+                QuarryPlus.LOGGER.debug("Chunk has already loaded : " + bool)
+            }
+            if (bool)
+                getWorld.getChunkFromChunkCoords(chunkPos.x, chunkPos.z)
+            chunks = chunks.tail
+        }
+    }
+
     override protected def isWorking = mode.isWorking
 
     override def G_reinit(): Unit = {
@@ -404,7 +410,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
         fluidStacks.foreach { case (_, tank) => l1.appendTag(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.writeNBT(tank, null)) }
         nbttc.setTag("NBT_FLUIDLIST", l1)
         val l2 = new NBTTagList
-        chunks.foreach(c => l1.appendTag(new NBTTagLong(c.getBlock(0, 0, 0).toLong)))
+        chunks.foreach(c => l2.appendTag(new NBTTagLong(c.getBlock(0, 0, 0).toLong)))
         nbttc.setTag("NBT_CHUNKLOADLIST", l2)
         super.writeToNBT(nbttc)
     }
