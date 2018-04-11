@@ -20,11 +20,22 @@ object RenderAdvQuarry extends FastTESR[TileAdvQuarry] {
             val range = te.digRange
             if (range.defined) {
                 val pos = te.getPos
-                buffer.setTranslation(x - pos.getX, y - pos.getY, z - pos.getZ)
-                Box(range.minX - 0.5, range.minY, range.minZ - 0.5, range.maxX + 1.5, range.maxY, range.minZ - 0.5, d, d, d, firstSide = false, endSide = false).render(buffer, sprite)
-                Box(range.minX - 0.5, range.minY, range.maxZ + 1.5, range.maxX + 1.5, range.maxY, range.maxZ + 1.5, d, d, d, firstSide = false, endSide = false).render(buffer, sprite)
-                Box(range.minX - 0.5, range.minY, range.minZ - 0.5, range.minX - 0.5, range.maxY, range.maxZ + 1.5, d, d, d, firstSide = false, endSide = false).render(buffer, sprite)
-                Box(range.maxX + 1.5, range.minY, range.minZ - 0.5, range.maxX + 1.5, range.maxY, range.maxZ + 1.5, d, d, d, firstSide = false, endSide = false).render(buffer, sprite)
+                val playerX = pos.getX - x
+                val playerY = pos.getY - y
+                val playerZ = pos.getZ - z
+                buffer.setTranslation(-playerX, -playerY, -playerZ)
+                val b1 = (playerZ - range.minZ - 0.5).abs < 256
+                val b2 = (playerZ - range.maxZ + 1.5).abs < 256
+                val b3 = (playerX - range.minX - 0.5).abs < 256
+                val b4 = (playerX - range.maxX + 1.5).abs < 256
+                val minX = math.max(range.minX - 0.5, playerX - 128)
+                val maxX = math.min(range.maxX + 1.5, playerX + 128)
+                val minZ = math.max(range.minZ - 0.5, playerZ - 128)
+                val maxZ = math.min(range.maxZ + 1.5, playerZ + 128)
+                if (b1) Box(minX, range.minY, range.minZ - 0.5, maxX, range.maxY, range.minZ - 0.5, d, d, d, firstSide = false, endSide = false).render(buffer, sprite)
+                if (b2) Box(minX, range.minY, range.maxZ + 1.5, maxX, range.maxY, range.maxZ + 1.5, d, d, d, firstSide = false, endSide = false).render(buffer, sprite)
+                if (b3) Box(range.minX - 0.5, range.minY, minZ, range.minX - 0.5, range.maxY, maxZ, d, d, d, firstSide = false, endSide = false).render(buffer, sprite)
+                if (b4) Box(range.maxX + 1.5, range.minY, minZ, range.maxX + 1.5, range.maxY, maxZ, d, d, d, firstSide = false, endSide = false).render(buffer, sprite)
             }
             Minecraft.getMinecraft.mcProfiler.endSection()
         }
@@ -33,4 +44,6 @@ object RenderAdvQuarry extends FastTESR[TileAdvQuarry] {
     }
 
     override def isGlobalRenderer(te: TileAdvQuarry): Boolean = true
+
+    def distanceSq(a: Double, b: Double, c: Double): Double = a * a + b * b + c * c
 }

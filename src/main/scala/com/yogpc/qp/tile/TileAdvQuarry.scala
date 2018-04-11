@@ -1,6 +1,7 @@
 package com.yogpc.qp.tile
 
 import java.lang.{Boolean => JBool}
+import javax.annotation.Nonnull
 
 import com.yogpc.qp.block.ADismCBlock
 import com.yogpc.qp.compat.{INBTReadable, INBTWritable, InvUtils}
@@ -10,7 +11,6 @@ import com.yogpc.qp.packet.advquarry.AdvModeMessage
 import com.yogpc.qp.tile.TileAdvQuarry.{DigRange, ItemElement, ItemList, QEnch}
 import com.yogpc.qp.version.VersionUtil
 import com.yogpc.qp.{Config, PowerManager, QuarryPlus, QuarryPlusI, ReflectionHelper, _}
-import javax.annotation.Nonnull
 import net.minecraft.block.Block
 import net.minecraft.block.properties.PropertyHelper
 import net.minecraft.block.state.IBlockState
@@ -484,10 +484,13 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
     override def hasFastRenderer: Boolean = true
 
     override def getRenderBoundingBox: AxisAlignedBB = {
-        if (digRange.defined) {
-            digRange.rendrBox
-        } else
-            super.getRenderBoundingBox
+        if (digRange.defined) digRange.rendrBox
+        else super.getRenderBoundingBox
+    }
+
+    override def getMaxRenderDistanceSquared: Double = {
+        if (digRange.defined) digRange.lengthSq
+        else super.getMaxRenderDistanceSquared
     }
 
     override def onLoad(): Unit = {
@@ -774,6 +777,8 @@ object TileAdvQuarry {
         def min: BlockPos = new BlockPos(minX, minY, minZ)
 
         val rendrBox = new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ)
+
+        val lengthSq = min.distanceSq(maxZ, maxY, maxZ)
 
         val timeInTick = {
             val length = (maxX + maxZ - minX - minZ) / 2
