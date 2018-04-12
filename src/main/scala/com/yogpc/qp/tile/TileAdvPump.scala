@@ -11,6 +11,7 @@ import com.yogpc.qp.version.VersionUtil
 import com.yogpc.qp.{Config, QuarryPlus, QuarryPlusI, _}
 import net.minecraft.block.state.IBlockState
 import net.minecraft.init.Blocks
+import net.minecraft.inventory.InventoryHelper
 import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
 import net.minecraft.util.math.{BlockPos, ChunkPos}
 import net.minecraft.util.{EnumFacing, ITickable}
@@ -55,6 +56,15 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
         target = BlockPos.ORIGIN
         toDig = Nil
         paths.clear()
+        if (!ench.square) {
+            EnumFacing.HORIZONTALS.map(f => getWorld.getTileEntity(getPos.offset(f))).collectFirst {
+                case marker: TileMarker if marker.link != null => marker
+            }.foreach(marker => {
+                ench = ench.copy(start = marker.link.minPos(), end = marker.link.maxPos())
+                marker.removeFromWorldWithItem().asScala.foreach(s =>
+                    InventoryHelper.spawnItemStack(getWorld, getPos.getX + 0.5, getPos.getY + 1, getPos.getZ + 0.5, s))
+            })
+        }
     }
 
     override def update() = {
@@ -133,7 +143,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
 
         getWorld.profiler.startSection("Depth")
 
-        var downPos = getPos.down
+        var downPos = ench.firstPos(getPos).down
         var flag = true
         while (flag) {
             if (downPos.getY < 0 || !ench.inRange(getPos, downPos)) {
@@ -311,7 +321,9 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
             "FluidAmount : " + FluidHandler.getAmount,
             "Pumped : " + FluidHandler.amountPumped,
             "Delete : " + delete,
-            "To Start : " + toStart).map(toComponentString).asJava
+            "To Start : " + toStart,
+            "Start pos : " + ench.start,
+            "End pos : " + ench.end).map(toComponentString).asJava
     }
 
     override def readFromNBT(nbttc: NBTTagCompound) = {
@@ -507,12 +519,13 @@ object TileAdvPump {
 
     private val NBT_PENCH = "nbt_pench"
     private[this] val defaultBaseEnergy = Seq(10, 8, 6, 4)
-    val defaultEnch = PEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false)
+    val defaultEnch = PEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false, BlockPos.ORIGIN, BlockPos.ORIGIN)
 
-    case class PEnch(efficiency: Byte, unbreaking: Byte, fortune: Byte, silktouch: Boolean) extends INBTWritable {
+    case class PEnch(efficiency: Byte, unbreaking: Byte, fortune: Byte, silktouch: Boolean, start: BlockPos, end: BlockPos) extends INBTWritable {
         require(efficiency >= 0)
         require(unbreaking >= 0)
         require(fortune >= 0)
+        val square = start != BlockPos.ORIGIN && end != BlockPos.ORIGIN
 
         override def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
             val t = new NBTTagCompound
@@ -520,6 +533,8 @@ object TileAdvPump {
             t.setByte("unbreaking", unbreaking)
             t.setByte("fortune", fortune)
             t.setBoolean("silktouch", silktouch)
+            t.setLong("start", start.toLong)
+            t.setLong("end", end.toLong)
             nbt.setTag(NBT_PENCH, t)
             nbt
         }
@@ -553,7 +568,16 @@ object TileAdvPump {
         }
 
         def inRange(tilePos: BlockPos, pos: BlockPos): Boolean = {
-            if (silktouch) {
+            if (square) {
+                if (silktouch) {
+                    start.getX < pos.getX && pos.getX < end.getX &&
+                      start.getZ < pos.getZ && pos.getZ < end.getZ
+                } else {
+                    start.getX < pos.getX && pos.getX < end.getX &&
+                      start.getZ < pos.getZ && pos.getZ < end.getZ &&
+                      tilePos.distanceSq(pos) < distanceSq
+                }
+            } else if (silktouch) {
                 val dx = tilePos.getX - pos.getX
                 val dz = tilePos.getZ - pos.getZ
                 (dx * dx + dz * dz) <= distanceSq
@@ -561,15 +585,25 @@ object TileAdvPump {
                 tilePos.distanceSq(pos) <= distanceSq
             }
         }
+
+        def firstPos(default: BlockPos) = {
+            if (square)
+                new BlockPos((start.getX + end.getX) / 2, start.getY, (start.getZ + end.getZ) / 2)
+            else
+                default
+        }
+
+        override def toString: String = s"PEnch($efficiency, $unbreaking, $fortune, $silktouch)"
     }
 
     object PEnch extends INBTReadable[PEnch] {
         override def readFromNBT(tag: NBTTagCompound): PEnch = {
             if (tag.hasKey(NBT_PENCH)) {
                 val t = tag.getCompoundTag(NBT_PENCH)
-                PEnch(t.getByte("efficiency"), t.getByte("unbreaking"), t.getByte("fortune"), t.getBoolean("silktouch"))
+                PEnch(t.getByte("efficiency"), t.getByte("unbreaking"), t.getByte("fortune"), t.getBoolean("silktouch"),
+                    BlockPos.fromLong(t.getLong("start")), BlockPos.fromLong(t.getLong("end")))
             } else
-                PEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false)
+                PEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false, BlockPos.ORIGIN, BlockPos.ORIGIN)
         }
     }
 
