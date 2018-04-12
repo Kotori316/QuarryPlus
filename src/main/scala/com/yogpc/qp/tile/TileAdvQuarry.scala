@@ -531,11 +531,11 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
               val poses = (m.min().add(+1, 0, +1), m.max().add(-1, 0, -1))
               m.removeFromWorldWithItem().asScala.foreach(cacheItems.add)
               poses
-          }.getOrElse({
+          }.getOrElse {
             val chunkPos = new ChunkPos(getPos)
             val y = getPos.getY
             (new BlockPos(chunkPos.getXStart, y, chunkPos.getZStart), new BlockPos(chunkPos.getXEnd, y, chunkPos.getZEnd))
-        })
+        }
         new TileAdvQuarry.DigRange(link._1, link._2)
     }
 
@@ -780,24 +780,20 @@ object TileAdvQuarry {
 
         val lengthSq = min.distanceSq(maxZ, maxY, maxZ)
 
-        val timeInTick = {
+        val timeInTick: Int = {
             val length = (maxX + maxZ - minX - minZ) / 2
             if (length < 256) {
                 1
-            } else if (length < 1024) {
-                4
-            } else if (length < 4096) {
-                16
             } else {
-                32
+                length / 256
             }
         }
 
         def chunkSeq: List[ChunkPos] = {
-            val a = for (x <- Range(minX, maxX, 16);
-                         z <- Range(minZ, maxZ, 16)
+            val a = for (x <- Range(minX, maxX, 16) :+ maxX;
+                         z <- Range(minZ, maxZ, 16) :+ maxZ
             ) yield new ChunkPos(x >> 4, z >> 4)
-            a.toList :+ new ChunkPos(maxX >> 4, maxZ >> 4)
+            a.toList
         }
 
         override val toString: String = s"Dig Range from ($minX, $minY, $minZ) to ($maxX, $maxY, $maxZ)"

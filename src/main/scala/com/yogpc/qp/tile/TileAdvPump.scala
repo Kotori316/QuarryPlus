@@ -241,6 +241,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
                             val used = handler.fill(stack, true)
                             if (used > 0) {
                                 FluidHandler.drain(stack.copy().setAmount(used), doDrain = true)
+                                stack.amount -= used
                             }
                         }
                     }
