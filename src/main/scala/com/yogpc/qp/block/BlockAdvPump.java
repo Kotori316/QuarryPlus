@@ -13,7 +13,6 @@ import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.item.ItemBlockAdvPump;
 import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TileAdvPump;
-import com.yogpc.qp.tile.TilePump;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -100,7 +99,7 @@ public class BlockAdvPump extends ADismCBlock {
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
         if (!worldIn.isRemote) {
             Consumer<TileAdvPump> consumer = pump -> IEnchantableTile.Util.init(pump, stack.getEnchantmentTagList());
-            Optional.ofNullable((TileAdvPump) worldIn.getTileEntity(pos)).ifPresent(consumer.andThen(TilePump.requestTicket));
+            Optional.ofNullable((TileAdvPump) worldIn.getTileEntity(pos)).ifPresent(consumer.andThen(TileAdvPump.requestTicket));
         }
     }
 

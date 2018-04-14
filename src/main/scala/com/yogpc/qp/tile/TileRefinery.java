@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -334,13 +335,7 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
 
         @Override
         public String toString() {
-            String info;
-            if (fluid == null) {
-                info = "None";
-            } else {
-                info = fluid.getFluid().getName() + " : " + fluid.amount;
-            }
-            return name + " " + info;
+            return name + " " + Optional.ofNullable(fluid).map(s -> s.getFluid().getName() + " : " + s.amount).orElse("None");
         }
 
         public double getAA(double d) {
