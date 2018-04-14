@@ -719,8 +719,9 @@ object TileAdvQuarry {
     val defaultEnch = QEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false)
     val defaultRange: DigRange = new DigRange(BlockPos.ORIGIN, BlockPos.ORIGIN) {
         override val defined: Boolean = false
-        override val min: BlockPos = BlockPos.ORIGIN
         override val toString: String = "Dig Range Not Defined"
+
+        override def min: BlockPos = BlockPos.ORIGIN
     }
 
     private[TileAdvQuarry] case class QEnch(efficiency: Byte, unbreaking: Byte, fortune: Byte, silktouch: Boolean) extends INBTWritable {
