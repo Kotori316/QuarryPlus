@@ -56,7 +56,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
         target = BlockPos.ORIGIN
         toDig = Nil
         paths.clear()
-        if (!ench.square) {
+        if (!ench.square && ench.fortune >= 3) {
             EnumFacing.HORIZONTALS.map(f => getWorld.getTileEntity(getPos.offset(f))).collectFirst {
                 case marker: TileMarker if marker.link != null => marker
             }.foreach(marker => {
@@ -103,6 +103,21 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
     }
 
     def nextPos(i: Int = 0): Unit = {
+        def overflowedMessage() = {
+            if (Config.content.debug) {
+                QuarryPlus.LOGGER.warn("Pump overflowed")
+                List("Pos = " + getPos,
+                    "Range = " + ench.distance,
+                    "target : " + target,
+                    "Ench : " + ench,
+                    "FluidType : " + FluidHandler.getFluidType,
+                    "FluidAmount : " + FluidHandler.getAmount,
+                    "Pumped : " + FluidHandler.amountPumped,
+                    "Start pos : " + ench.start,
+                    "End pos : " + ench.end).map("   " + _).foreach(QuarryPlus.LOGGER.warn)
+            }
+        }
+
         toDig match {
             case next :: rest => toDig = rest
                 if (TilePump.isLiquid(getWorld.getBlockState(next), true, getWorld, next)) {
@@ -110,9 +125,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
                 } else {
                     if (i > ench.maxAmount / 1000) {
                         skip = true
-                        if (Config.content.debug) {
-                            QuarryPlus.LOGGER.warn("Pump overflow", new StackOverflowError("Pump"))
-                        }
+                        overflowedMessage()
                     } else
                         nextPos(i + 1)
                 }
@@ -123,9 +136,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
                     } else {
                         if (i > ench.maxAmount / 1000) {
                             skip = true
-                            if (Config.content.debug) {
-                                QuarryPlus.LOGGER.warn("Pump overflow", new StackOverflowError("Pump"))
-                            }
+                            overflowedMessage()
                         } else
                             nextPos(i + 1)
                     }
@@ -521,7 +532,7 @@ object TileAdvPump {
     private[this] val defaultBaseEnergy = Seq(10, 8, 6, 4)
     val defaultEnch = PEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false, BlockPos.ORIGIN, BlockPos.ORIGIN)
 
-    case class PEnch(efficiency: Byte, unbreaking: Byte, fortune: Byte, silktouch: Boolean, start: BlockPos, end: BlockPos) extends INBTWritable {
+    case class PEnch(efficiency: Int, unbreaking: Int, fortune: Int, silktouch: Boolean, start: BlockPos, end: BlockPos) extends INBTWritable {
         require(efficiency >= 0)
         require(unbreaking >= 0)
         require(fortune >= 0)
@@ -529,9 +540,9 @@ object TileAdvPump {
 
         override def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
             val t = new NBTTagCompound
-            t.setByte("efficiency", efficiency)
-            t.setByte("unbreaking", unbreaking)
-            t.setByte("fortune", fortune)
+            t.setInteger("efficiency", efficiency)
+            t.setInteger("unbreaking", unbreaking)
+            t.setInteger("fortune", fortune)
             t.setBoolean("silktouch", silktouch)
             t.setLong("start", start.toLong)
             t.setLong("end", end.toLong)
@@ -540,13 +551,13 @@ object TileAdvPump {
         }
 
         def getMap = Map(EfficiencyID -> efficiency, UnbreakingID -> unbreaking,
-            FortuneID -> fortune, SilktouchID -> silktouch.compare(false).toByte)
+            FortuneID -> fortune, SilktouchID -> silktouch.compare(false))
 
         def set(id: Short, level: Int): PEnch = {
             id match {
-                case EfficiencyID => this.copy(efficiency = level.toByte)
-                case UnbreakingID => this.copy(unbreaking = level.toByte)
-                case FortuneID => this.copy(fortune = level.toByte)
+                case EfficiencyID => this.copy(efficiency = level)
+                case UnbreakingID => this.copy(unbreaking = level)
+                case FortuneID => this.copy(fortune = level)
                 case SilktouchID => this.copy(silktouch = level > 0)
                 case _ => this
             }
@@ -600,7 +611,7 @@ object TileAdvPump {
         override def readFromNBT(tag: NBTTagCompound): PEnch = {
             if (tag.hasKey(NBT_PENCH)) {
                 val t = tag.getCompoundTag(NBT_PENCH)
-                PEnch(t.getByte("efficiency"), t.getByte("unbreaking"), t.getByte("fortune"), t.getBoolean("silktouch"),
+                PEnch(t.getInteger("efficiency"), t.getInteger("unbreaking"), t.getInteger("fortune"), t.getBoolean("silktouch"),
                     BlockPos.fromLong(t.getLong("start")), BlockPos.fromLong(t.getLong("end")))
             } else
                 PEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false, BlockPos.ORIGIN, BlockPos.ORIGIN)
