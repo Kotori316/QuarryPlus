@@ -357,7 +357,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
             if (Config.content.debug) {
                 QuarryPlus.LOGGER.debug("Chunk has already loaded : " + bool + chunkPos.chunkXPos + chunkPos.chunkZPos)
             }
-            if (bool)
+            if (!bool)
                 getWorld.getChunkFromChunkCoords(chunkPos.chunkXPos, chunkPos.chunkZPos)
             chunks = chunks.tail
         }
