@@ -6,6 +6,7 @@
     "1.10.2-recommended": "0.8.6"
   },
   "1.12.2": {
+    "0.8.7": "Fixed a bug of Advanced Pump resulting in duplication of fluid.",
     "0.8.6": "Fixed a crash after placing MarkerPlus.",
     "0.8.5": "Added signature to jar file.",
     "0.8.4": "Fixed a problem where buttons in some GUIs didn't work.",
@@ -23,6 +24,7 @@
     "0.6.8": "Added Forge version check system."
   },
   "1.11.2": {
+    "0.8.7": "Fixed a bug of Advanced Pump resulting in duplication of fluid.",
     "0.8.6": "Fixed a crash after placing MarkerPlus.",
     "0.8.5": "Added signature to jar file.",
     "0.8.4": "Fixed a problem where buttons in some GUIs didn't work.",
@@ -39,6 +41,7 @@
     "0.6.8": "Added Forge version check system."
   },
   "1.10.2": {
+    "0.8.7": "Fixed a bug of Advanced Pump resulting in duplication of fluid.",
     "0.8.6": "Fixed a crash after placing MarkerPlus.",
     "0.8.5": "Added signature to jar file.",
     "0.8.4": "Fixed a problem where buttons in some GUIs didn't work.",
