@@ -5,8 +5,8 @@ import com.yogpc.qp.container.ContainerAdvQuarry
 import com.yogpc.qp.packet.PacketHandler
 import com.yogpc.qp.packet.advquarry.AdvRangeMessage
 import com.yogpc.qp.tile.TileAdvQuarry
-import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.inventory.GuiContainer
+import net.minecraft.client.gui.{GuiButton, GuiScreen}
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.resources.I18n
 import net.minecraft.entity.player.EntityPlayer
@@ -54,7 +54,9 @@ class GuiAdvQuarry(tile: TileAdvQuarry, player: EntityPlayer) extends GuiContain
         if (tile.mode is TileAdvQuarry.NOTNEEDBREAK) {
             val direction = EnumFacing.getFront(button.id / 2 + 2)
             val increase = if (button.id % 2 == 0) 1 else -1
-            val t = 16 * increase
+            val shift = GuiScreen.isShiftKeyDown
+            val ctrl = GuiScreen.isCtrlKeyDown
+            val t = (if (shift && ctrl) 1024 else if (shift) 256 else if (ctrl) 64 else 16) * increase
 
             if (range.defined) {
                 val newRange =

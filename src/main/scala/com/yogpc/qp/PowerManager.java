@@ -118,7 +118,7 @@ public class PowerManager {
     }
 
     private static void configure(final APowerTile pp, final double CE, final byte effciencyLevel, final byte unbreakingLevel,
-                                  final double CU, final double XR, final double MS, final byte pump) {
+                                  final double CU, final double XR, final double MS, final int pump) {
         pp.configure(XR * Math.pow(CE, effciencyLevel) / (unbreakingLevel * CU + 1),
             MS * Math.pow(CE, effciencyLevel) / (unbreakingLevel * CU + 1)
                 + (pump > 0 ? 65536 * PumpDrain_BP / (pump * PumpDrain_CU + 1) + 1020 * PumpFrame_BP / (pump * PumpFrame_CU + 1) : 0));
@@ -132,24 +132,24 @@ public class PowerManager {
                 + (pump > 0 ? 65536 * PumpDrain_BP / (pump * PumpDrain_CU + 1) + 1020 * PumpFrame_BP / (pump * PumpFrame_CU + 1) : 0));
     }*/
 
-    public static void configureQuarryWork(final APowerTile pp, final byte effciencyLevel, final byte unbreakingLevel, final byte pump) {
+    public static void configureQuarryWork(final APowerTile pp, final byte effciencyLevel, final byte unbreakingLevel, final int pump) {
         configure(pp, QuarryWork_CE, effciencyLevel, unbreakingLevel, QuarryWork_CU, QuarryWork_XR, QuarryWork_MS, pump);
     }
 
-    public static void configureMiningWell(final APowerTile pp, final byte effciencyLevel, final byte unbreakingLevel, final byte pump) {
+    public static void configureMiningWell(final APowerTile pp, final byte effciencyLevel, final byte unbreakingLevel, final int pump) {
         configure(pp, MiningWell_CE, effciencyLevel, unbreakingLevel, MiningWell_CU, MiningWell_XR, MiningWell_MS, pump);
     }
 
     public static void configureLaser(final APowerTile pp, final byte effciencyLevel, final byte unbreakingLevel) {
-        configure(pp, Laser_CE, effciencyLevel, unbreakingLevel, Laser_CU, Laser_XR, Laser_MS, (byte) 0);
+        configure(pp, Laser_CE, effciencyLevel, unbreakingLevel, Laser_CU, Laser_XR, Laser_MS, 0);
     }
 
-    public static void configureFrameBuild(final APowerTile pp, final byte effciencyLevel, final byte unbreakingLevel, final byte pump) {
+    public static void configureFrameBuild(final APowerTile pp, final byte effciencyLevel, final byte unbreakingLevel, final int pump) {
         configure(pp, FrameBuild_CE, effciencyLevel, unbreakingLevel, FrameBuild_CU, FrameBuild_XR, FrameBuild_MS, pump);
     }
 
     public static void configureRefinery(final APowerTile pp, final byte effciencyLevel, final byte unbreakingLevel) {
-        configure(pp, Refinery_CE, effciencyLevel, unbreakingLevel, Refinery_CU, Refinery_XR, Refinery_MS, (byte) 0);
+        configure(pp, Refinery_CE, effciencyLevel, unbreakingLevel, Refinery_CU, Refinery_XR, Refinery_MS, 0);
     }
 
     /**
@@ -179,18 +179,17 @@ public class PowerManager {
         if (pp instanceof TileMiningWell) {
             BP = MiningWell_BP;
             CU = MiningWell_CU;
-            if (enchantMode < 0)
-                CSP = MiningWell_CS;
-            else
-                CSP = Math.pow(MiningWell_CF, enchantMode);
+            CSP = enchantMode < 0 ? MiningWell_CS : Math.pow(MiningWell_CF, enchantMode);
         } else {
             BP = QuarryWork_BP;
             CU = QuarryWork_CU;
-            if (enchantMode < 0)
-                CSP = QuarryWork_CS;
-            else
-                CSP = Math.pow(QuarryWork_CF, enchantMode);
+            CSP = enchantMode < 0 ? QuarryWork_CS : Math.pow(QuarryWork_CF, enchantMode);
         }
+        return BP * hardness * CSP / (unbreaking * CU + 1);
+    }
+
+    public static double calcEnergyBreak(float hardness, int enchantMode, int unbreaking) {
+        double BP = QuarryWork_BP, CU = QuarryWork_CU, CSP = enchantMode < 0 ? QuarryWork_CS : Math.pow(QuarryWork_CF, enchantMode);
         return BP * hardness * CSP / (unbreaking * CU + 1);
     }
 
@@ -202,11 +201,11 @@ public class PowerManager {
         return true;
     }
 
-    public static double calcEnergyPumpDrain(byte unbreaking, long liquids, long frames) {
+    public static double calcEnergyPumpDrain(int unbreaking, long liquids, long frames) {
         return PumpDrain_BP * liquids / (unbreaking * PumpDrain_CU + 1) + PumpFrame_BP * frames / (unbreaking * PumpFrame_CU + 1);
     }
 
-    private static boolean useEnergy(final APowerTile pp, final double BP, final byte U, final double CU, final byte E, final double CE) {
+    private static boolean useEnergy(final APowerTile pp, final double BP, final int U, final double CU, final int E, final double CE) {
         final double pw = BP / Math.pow(CE, E) / (U * CU + 1);
         if (pp.useEnergy(pw, pw, false) != pw)
             return false;
@@ -214,8 +213,8 @@ public class PowerManager {
         return true;
     }
 
-    public static boolean useEnergyFrameBuild(final APowerTile pp, final byte U) {
-        return useEnergy(pp, FrameBuild_BP, U, FrameBuild_CU, (byte) 0, 1);
+    public static boolean useEnergyFrameBuild(final APowerTile pp, final int U) {
+        return useEnergy(pp, FrameBuild_BP, U, FrameBuild_CU, 0, 1);
     }
 
     public static boolean useEnergyRefinery(final APowerTile pp, final double BP, final byte U, final byte E) {

@@ -9,7 +9,7 @@ package object qp {
 
     import scala.language.implicitConversions
 
-    val enchantCollector: PartialFunction[(Int, Byte), (Integer, Integer)] = {
+    val enchantCollector: PartialFunction[(Int, Int), (Integer, Integer)] = {
         case (a, b) if b > 0 => (Int.box(a), Int.box(b))
     }
     val toComponentString: (String => TextComponentString) = s => new TextComponentString(s)
