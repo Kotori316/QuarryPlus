@@ -619,7 +619,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
             List<ITextComponent> list = new ArrayList<>(liquids.size() + 1);
             list.add(new TextComponentTranslation(TranslationKeys.PUMP_CONTAIN));
             liquids.forEach(s -> list.add(new TextComponentTranslation(TranslationKeys.LIQUID_FORMAT,
-                new TextComponentTranslation(s.getFluid().getUnlocalizedName(s)), Integer.toString(s.amount))));
+                new TextComponentTranslation(s.getUnlocalizedName(), Integer.toString(s.amount)))));
             return list;
         } else {
             return Collections.singletonList(new TextComponentTranslation(TranslationKeys.PUMP_CONTAIN_NO));

@@ -55,15 +55,19 @@ repositories {
         name "BuildCraft"
         url = "https://mod-buildcraft.com/maven"
     }
+    maven {
+        name = "ic2"
+        url = "http://maven.ic2.player.to/"
+    }
 }
 
 dependencies {
 //    compile 'org.scala-lang:scala-library:2.11.11'
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    deobfCompile 'net.industrial-craft:industrialcraft-2:2.8.75-ex112:dev'
     deobfCompile "cofh:RedstoneFlux:1.12-2.0.1.2:universal"
-    deobfCompile "cofh:CoFHCore:1.12.2-4.3.10.4:universal"
+    deobfCompile "cofh:CoFHCore:1.12.2-4.4.1.12:universal"
     deobfCompile "mezz.jei:jei_1.12.2:4.8.0.119"
-    deobfCompile "com.mod-buildcraft:buildcraft:7.99.15"
+    deobfCompile "com.mod-buildcraft:buildcraft:7.99.16"
 }
 
 processResources {
