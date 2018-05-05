@@ -41,7 +41,6 @@ object RenderQuarry extends FastTESR[TileQuarry] {
             val maxY = maxPos.getY
             val maxZ = maxPos.getZ
 
-
             val subtract = quarry.getMaxPos subtract quarry.getMinPos
 
             //X 4 LINES

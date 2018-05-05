@@ -21,22 +21,6 @@ public enum LaserType {
         this.resourceLocation = new ResourceLocation(QuarryPlus.modID, l);
     }
 
-    public float getr() {
-        return r / 255;
-    }
-
-    public float getg() {
-        return g / 255;
-    }
-
-    public float getb() {
-        return b / 255;
-    }
-
-    public float geta() {
-        return a / 255;
-    }
-
     public ResourceLocation location() {
         return resourceLocation;
     }
