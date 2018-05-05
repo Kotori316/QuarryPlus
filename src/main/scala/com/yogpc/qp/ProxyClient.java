@@ -68,13 +68,14 @@ public class ProxyClient extends ProxyCommon {
 
     @Override
     public void registerTextures() {
-        ClientRegistry.bindTileEntitySpecialRenderer(TileQuarry.class, RenderQuarry.instance());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileMarker.class, RenderMarker.instance());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileLaser.class, RenderLaser.instance());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileAdvQuarry.class, RenderAdvQuarry.instance());
-//        ClientRegistry.bindTileEntitySpecialRenderer(TileRefinery.class, RenderRefinery.INSTANCE);
-        ClientRegistry.bindTileEntitySpecialRenderer(TileRefinery.class, RenderDistiller.instance());
-        MinecraftForge.EVENT_BUS.register(Sprites.instance());
+        if (!Config.content().DisableRendering()) {
+            ClientRegistry.bindTileEntitySpecialRenderer(TileQuarry.class, RenderQuarry.instance());
+            ClientRegistry.bindTileEntitySpecialRenderer(TileMarker.class, RenderMarker.instance());
+            ClientRegistry.bindTileEntitySpecialRenderer(TileLaser.class, RenderLaser.instance());
+            ClientRegistry.bindTileEntitySpecialRenderer(TileAdvQuarry.class, RenderAdvQuarry.instance());
+            ClientRegistry.bindTileEntitySpecialRenderer(TileRefinery.class, RenderDistiller.instance());
+            MinecraftForge.EVENT_BUS.register(Sprites.instance());
+        }
     }
 
     @Override

@@ -14,7 +14,8 @@ object RenderDistiller extends FastTESR[TileRefinery] {
     val instance = this
     private[this] final val d = 1d / 16d
     lazy val sprite = Sprites.getMap('stripes_refinery)
-    val spriteUFromStage = (i: Float) => {
+
+    private def spriteUFromStage(i: Float) = {
         if (i <= 1) 0
         else if (i <= 2.5) 2
         else if (i <= 4.5) 4
