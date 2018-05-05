@@ -8,7 +8,7 @@ Machines:
 * **PumpPlus** : It adds QuarryPlus a function to pump liquid. You can make the Nether dry.
 * **WorkbenchPlus** : You need this to make machines by this mod.
 * **LaserPlus** : Use this instead of 32 BC's Laser. It improve performance of your PC and simplify wiring.
-* **ChunkDestroyer** : It takes less than 3 minute to flatten the area of 16 x 16 (chunks).
+* **ChunkDestroyer** : It takes less than an hour to flatten the area of 16 x 16 (chunks).
 * **Advanced Pump** : A pump faster than BC's one.
 * **Spawner Controller** : Change the content of neighbor spawner.
 
@@ -22,7 +22,7 @@ ChunkDestroyer and Advanced Pump will increase the number of old GC and lag.
 * **PumpPlus** : QuarryPlusに液体回収機能を追加します。ネザーで溶岩を思う存分回収しましょう。
 * **WorkbenchPlus** : このmodで追加される機械を作成するための機械です。
 * **LaserPlus** : BCのLaserを32台置くのはやめて、LaserPlus1台に任せましょう。PCの負担軽減と配線の単純化が期待できます。
-* **ChunkDestroyer** : 16x16チャンクを掘りつくすのに2時間もかけるのは長すぎると考えるあなたにこの機械をおすすめ。設置から回収まで3分かかりません。
+* **ChunkDestroyer** : 16x16チャンクを掘りつくすのに数時間もかけるのは長すぎると考えるあなたにこの機械をおすすめ。設置から回収まで1時間かかりません。
 * **Advanced Pump** : 速さが取り柄のポンプです。
 * **Spawner Controller** : 隣接したスポナーの中身を書き換えます。ゲームバランス崩壊の第一歩にどうぞ。
 
