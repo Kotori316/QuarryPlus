@@ -80,8 +80,8 @@ object WorkbenchRecipes {
         recipes put(output, newRecipe)
     }
 
-    def addListRecipe(output: ItemDamage, energy: Int, inputs: java.util.List[java.util.function.IntFunction[ItemStack]])
-                     (implicit showInJEI: Boolean, unit: EnergyUnit): Unit = {
+    def addListRecipe(output: ItemDamage, energy: Int, inputs: java.util.List[java.util.function.IntFunction[ItemStack]],
+                      showInJEI: Boolean, unit: EnergyUnit): Unit = {
         val newRecipe = new R2(output, unit.multiple * energy, showInJEI, inputs)
         recipes put(output, newRecipe)
     }

@@ -411,10 +411,10 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
 
     private object FluidHandler extends IFluidHandler with INBTWritable with INBTReadable[IFluidHandler] {
 
-        private[this] val fluidStacks = new ListBuffer[FluidStack]
-        private[this] val NBT_FluidHandler = "FluidHandler"
-        private[this] val NBT_pumped = "amountPumped"
-        private[this] val NBT_liquids = "liquds"
+        private[this] final val fluidStacks = new ListBuffer[FluidStack]
+        private[this] final val NBT_FluidHandler = "FluidHandler"
+        private[this] final val NBT_pumped = "amountPumped"
+        private[this] final val NBT_liquids = "liquds"
         var amountPumped = 0l
 
         override def fill(resource: FluidStack, doFill: Boolean): Int = 0
@@ -528,8 +528,8 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
 
 object TileAdvPump {
 
-    private val NBT_PENCH = "nbt_pench"
-    private[this] val defaultBaseEnergy = Seq(10, 8, 6, 4)
+    private final val NBT_PENCH = "nbt_pench"
+    private[this] final val defaultBaseEnergy = Seq(10, 8, 6, 4)
     val defaultEnch = PEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false, BlockPos.ORIGIN, BlockPos.ORIGIN)
 
     case class PEnch(efficiency: Int, unbreaking: Int, fortune: Int, silktouch: Boolean, start: BlockPos, end: BlockPos) extends INBTWritable {
