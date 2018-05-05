@@ -1,23 +1,8 @@
 package com.yogpc.qp
 
-import net.minecraft.client.renderer.BufferBuilder
 import net.minecraft.util.EnumFacing
 
 package object render {
-
-    implicit class BufferBuilderHelper(val buffer: BufferBuilder) extends AnyVal {
-        /**
-          * buffer.color(255, 255, 255, 255)
-          *
-          * @return the buffer
-          */
-        def colored(): BufferBuilder = buffer.color(255, 255, 255, 255)
-
-        /**
-          * buffer.lightmap(240, 0).endVertex()
-          */
-        def lightedAndEnd(): Unit = buffer.lightmap(240, 0).endVertex()
-    }
 
     implicit class FacingOffset(val facing: EnumFacing) extends AnyVal {
         @inline
