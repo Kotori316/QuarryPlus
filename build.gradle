@@ -38,10 +38,14 @@ minecraft {
     mappings = "snapshot_20171003"
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
     replace "\${version}", project.version
-    replace '@FINGERPRINT@', getProperty('signSHA1')
+    replace '@FINGERPRINT@', hasProperty('signSHA1') ? getProperty('signSHA1') : ""
 }
 
 repositories {
+    maven {
+        name 'curseforge'
+        url 'https://minecraft.curseforge.com/api/maven/'
+    }
     maven {
         // location of the maven that hosts JEI files
         name = "Progwml6 maven"
@@ -59,6 +63,18 @@ repositories {
         name = "ic2"
         url = "http://maven.ic2.player.to/"
     }
+    maven {
+        name = "Mekanism"
+        url = "http://maven.thiakil.com/"
+    }
+    maven {
+        name 'Crafttweaker'
+        url 'http://maven.blamejared.com/'
+    }
+    maven {
+        name 'CTM'
+        url 'http://maven.tterrag.com/'
+    }
 }
 
 dependencies {
@@ -68,6 +84,7 @@ dependencies {
     deobfCompile "cofh:CoFHCore:1.12.2-4.4.1.12:universal"
     deobfCompile "mezz.jei:jei_1.12.2:4.8.0.119"
     deobfCompile "com.mod-buildcraft:buildcraft:7.99.16"
+    deobfCompile "mekanism:Mekanism:1.12.2-9.4.4.330+0b21085"
 }
 
 processResources {
@@ -103,10 +120,10 @@ task signJar(type: SignJar, dependsOn: reobfJar) {
     // findProperty allows us to reference the property without it existing.
     // Using project.propName would cause the script to fail validation if
     // the property did not exist.
-    keyStore = project.getProperty("keyStore")
-    alias = getProperty('keyStoreAlias')
-    storePass = getProperty('keyStorePass')
-    keyPass = getProperty('keyStoreKeyPass')
+    keyStore = hasProperty('keyStore') ? project.getProperty("keyStore") : ""
+    alias = hasProperty('keyStore') ? getProperty('keyStoreAlias') : ""
+    storePass = hasProperty('keyStore') ? getProperty('keyStorePass') : ""
+    keyPass = hasProperty('keyStore') ? getProperty('keyStoreKeyPass') : ""
     inputFile = jar.archivePath
     outputFile = jar.archivePath
 }
