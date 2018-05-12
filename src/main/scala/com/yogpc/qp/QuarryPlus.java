@@ -268,7 +268,7 @@ public class QuarryPlus {
                 NBTTagList list = nbtValue.getTagList(Optionals.IMC_Add, Constants.NBT.TAG_COMPOUND);
                 ItemDamage result = ItemDamage.apply(toStack.apply(list.getCompoundTagAt(0)));
                 List<IntFunction<ItemStack>> functionList = VersionUtil.nbtListStream(list).skip(1).map(toStack.andThen(toFunc)).collect(Collectors.toList());
-                WorkbenchRecipes.addListRecipe(result, nbtValue.getInteger(Optionals.IMC_Energy), functionList, true, WorkbenchRecipes.UnitRF$.MODULE$);
+                WorkbenchRecipes.addListRecipe(result, nbtValue.getInteger(Optionals.IMC_Energy), functionList, true, WorkbenchRecipes.UnitRF());
             }
         });
     }
@@ -304,6 +304,7 @@ public class QuarryPlus {
         public static final String configFactory = "com.yogpc.qp.gui.GuiFactory";
         public static final String serverProxy = "com.yogpc.qp.ProxyCommon";
         public static final String updateJson = "https://raw.githubusercontent.com/Kotori316/QuarryPlus/1.12/update.json";
+        public static final String Mekanism_modID = "mekanism";
     }
 
     public static class Names {

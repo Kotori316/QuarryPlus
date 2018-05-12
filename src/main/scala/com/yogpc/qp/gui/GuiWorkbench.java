@@ -17,7 +17,7 @@ import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.inventory.IInventory;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
@@ -94,8 +94,8 @@ public class GuiWorkbench extends GuiContainer {
     private static final ResourceLocation gui = new ResourceLocation(QuarryPlus.modID, "textures/gui/workbench.png");
     private final TileWorkbench tile;
 
-    public GuiWorkbench(final IInventory pi, final TileWorkbench tw) {
-        super(new ContainerWorkbench(pi, tw));
+    public GuiWorkbench(EntityPlayer player, final TileWorkbench tw) {
+        super(new ContainerWorkbench(player, tw));
         this.xSize = 176;
         this.ySize = 222;
         this.tile = tw;
