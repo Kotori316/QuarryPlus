@@ -4,6 +4,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.tile.TileWorkbench;
+import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
@@ -31,12 +32,12 @@ public class BlockWorkbench extends ADismCBlock {
             for (int i = 0; i < 27; ++i) {
                 ItemStack itemstack = inventory.getStackInSlot(i);
 
-                if (!itemstack.isEmpty()) {
+                if (VersionUtil.nonEmpty(itemstack)) {
                     float f = RANDOM.nextFloat() * 0.8F + 0.1F;
                     float f1 = RANDOM.nextFloat() * 0.8F + 0.1F;
                     float f2 = RANDOM.nextFloat() * 0.8F + 0.1F;
 
-                    while (!itemstack.isEmpty()) {
+                    while (VersionUtil.nonEmpty(itemstack)) {
                         EntityItem entityitem = new EntityItem(worldIn, pos.getX() + (double) f, pos.getY() + (double) f1, pos.getZ() + (double) f2,
                             itemstack.splitStack(Math.min(RANDOM.nextInt(21) + 10, itemstack.getMaxStackSize())));
                         entityitem.motionX = RANDOM.nextGaussian() * 0.05D;

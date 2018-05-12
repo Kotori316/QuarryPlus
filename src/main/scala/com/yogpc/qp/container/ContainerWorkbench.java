@@ -74,7 +74,7 @@ public class ContainerWorkbench extends Container {
             } else if (!n_mergeItemStack(remain))
                 //To workbench
                 return empty();
-            if (remain.isEmpty())
+            if (VersionUtil.isEmpty(remain))
                 slot.putStack(empty());
             else
                 slot.onSlotChanged();
@@ -121,7 +121,7 @@ public class ContainerWorkbench extends Container {
 
             if (!ItemStack.areItemStacksEqual(itemstack1, itemstack)) {
                 boolean clientStackChanged = !ItemStack.areItemStacksEqualUsingNBTShareTag(itemstack1, itemstack);
-                itemstack1 = itemstack.isEmpty() ? ItemStack.EMPTY : itemstack.copy();
+                itemstack1 = VersionUtil.isEmpty(itemstack) ? VersionUtil.empty() : itemstack.copy();
                 this.inventoryItemStacks.set(i, itemstack1);
 
                 if (clientStackChanged)
