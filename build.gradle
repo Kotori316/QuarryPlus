@@ -85,6 +85,7 @@ dependencies {
     deobfCompile "mezz.jei:jei_1.12.2:4.8.0.119"
     deobfCompile "com.mod-buildcraft:buildcraft:7.99.16"
     deobfCompile "mekanism:Mekanism:1.12.2-9.4.4.330+0b21085"
+    deobfCompile "team.chisel.ctm:CTM:MC1.12-0.2.3.13"
 }
 
 processResources {
@@ -120,10 +121,10 @@ task signJar(type: SignJar, dependsOn: reobfJar) {
     // findProperty allows us to reference the property without it existing.
     // Using project.propName would cause the script to fail validation if
     // the property did not exist.
-    keyStore = hasProperty('keyStore') ? project.getProperty("keyStore") : ""
-    alias = hasProperty('keyStore') ? getProperty('keyStoreAlias') : ""
-    storePass = hasProperty('keyStore') ? getProperty('keyStorePass') : ""
-    keyPass = hasProperty('keyStore') ? getProperty('keyStoreKeyPass') : ""
+    keyStore = project.hasProperty('keyStore') ? project.getProperty("keyStore") : ""
+    alias = project.hasProperty('keyStoreAlias') ? project.getProperty('keyStoreAlias') : ""
+    storePass = project.hasProperty('keyStorePass') ? project.getProperty('keyStorePass') : ""
+    keyPass = project.hasProperty('keyStoreKeyPass') ? project.getProperty('keyStoreKeyPass') : ""
     inputFile = jar.archivePath
     outputFile = jar.archivePath
 }

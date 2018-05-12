@@ -13,7 +13,8 @@ import net.minecraftforge.oredict.OreDictionary
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 
-abstract sealed class WorkbenchRecipes(val output: ItemDamage, val energy: Double, val showInJEI: Boolean = true) {
+abstract sealed class WorkbenchRecipes(val output: ItemDamage, val energy: Double, val showInJEI: Boolean = true)
+  extends Ordered[WorkbenchRecipes] {
     val size: Int
 
     def inputs: Seq[ItemStack]
@@ -27,11 +28,20 @@ abstract sealed class WorkbenchRecipes(val output: ItemDamage, val energy: Doubl
     override val hashCode: Int = output.hashCode()
 
     override def equals(obj: scala.Any): Boolean = {
-        super.equals(obj) && {
+        super.equals(obj) || {
             obj match {
                 case r: WorkbenchRecipes => output == r.output && energy == r.energy
                 case _ => false
             }
+        }
+    }
+
+    override def compare(that: WorkbenchRecipes) = {
+        val a1 = this.energy compare that.energy
+        if (a1 == 0) {
+            Integer.compare(Item.getIdFromItem(this.output.item), Item.getIdFromItem(that.output.item))
+        } else {
+            a1
         }
     }
 }
@@ -72,7 +82,7 @@ object WorkbenchRecipes {
             workRecipe.inputs.forall(i => {
                 asScala.exists(t => OreDictionary.itemMatches(i, t, false) && t.getCount >= i.getCount)
             })
-        }.values.toList.asJava
+        }.values.toList.sorted.asJava
     }
 
     def addSeqRecipe(output: ItemDamage, energy: Int, inputs: Seq[(Int => ItemStack)])(implicit showInJEI: Boolean = true, unit: EnergyUnit): Unit = {
@@ -97,11 +107,11 @@ object WorkbenchRecipes {
         def multiple: Double
     }
 
-    protected implicit object UnitMJ extends EnergyUnit {
+    protected implicit val UnitMJ = new EnergyUnit {
         override val multiple: Double = 1
     }
 
-    object UnitRF extends EnergyUnit {
+    val UnitRF = new EnergyUnit {
         override val multiple: Double = 0.1
     }
 

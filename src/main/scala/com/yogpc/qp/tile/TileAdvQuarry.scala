@@ -333,7 +333,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
             }
             if (!isEmpty) {
                 var break = false
-                var is = cacheItems.list.remove(0).toStack
+                var is = cacheItems.remove(0)
                 while (!break) {
                     val stack = InvUtils.injectToNearTile(getWorld, getPos, is)
                     if (stack.getCount > 0) {
@@ -343,7 +343,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                     if (isEmpty || break) {
                         break = true
                     } else {
-                        is = cacheItems.list.remove(0).toStack
+                        is = cacheItems.remove(0)
                     }
                 }
             }
@@ -438,9 +438,9 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 
     override def decrStackSize(index: Int, count: Int) = cacheItems.decrease(index, count)
 
-    override def getSizeInventory = cacheItems.list.size
+    override def getSizeInventory = Math.max(cacheItems.list.size, 1)
 
-    override def removeStackFromSlot(index: Int) = cacheItems.list.remove(index).toStack
+    override def removeStackFromSlot(index: Int) = cacheItems.remove(index)
 
     override val getInventoryStackLimit = 1
 
@@ -448,7 +448,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 
     override def isEmpty = cacheItems.list.isEmpty
 
-    override def getStackInSlot(index: Int) = cacheItems.list(index).toStack
+    override def getStackInSlot(index: Int) = cacheItems.getStack(index)
 
     override val getDebugName = TranslationKeys.advquarry
 
@@ -861,6 +861,20 @@ object TileAdvQuarry {
                 list(index) = ItemElement(t.itemDamage, t.count - min)
                 t.itemDamage.toStack(min)
             }
+        }
+
+        def getStack(index: Int): ItemStack = {
+            if (index < list.size)
+                list(index).toStack
+            else
+                ItemStack.EMPTY
+        }
+
+        def remove(index: Int): ItemStack = {
+            if (index < list.size)
+                list.remove(index).toStack
+            else
+                ItemStack.EMPTY
         }
 
         override def toString: String = "ItemList size = " + list.size
