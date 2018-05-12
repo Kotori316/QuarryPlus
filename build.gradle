@@ -38,10 +38,14 @@ minecraft {
     mappings = "snapshot_20161111"
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
     replace "\${version}", project.version
-    replace '@FINGERPRINT@', getProperty('signSHA1')
+    replace '@FINGERPRINT@', hasProperty('signSHA1') ? getProperty('signSHA1') : ""
 }
 
 repositories {
+    maven {
+        name 'curseforge'
+        url 'https://minecraft.curseforge.com/api/maven/'
+    }
     maven {
         // location of the maven that hosts JEI files
         name = "Progwml6 maven"
@@ -58,6 +62,18 @@ repositories {
     maven {
         name "IC2"
         url = "http://maven.ic2.player.to/"
+    }
+    maven {
+        name = "Mekanism"
+        url = "http://maven.thiakil.com/"
+    }
+    maven {
+        name 'Crafttweaker'
+        url 'http://maven.blamejared.com/'
+    }
+    maven {
+        name 'CTM'
+        url 'http://maven.tterrag.com/'
     }
 }
 
@@ -102,10 +118,10 @@ task signJar(type: SignJar, dependsOn: reobfJar) {
     // findProperty allows us to reference the property without it existing.
     // Using project.propName would cause the script to fail validation if
     // the property did not exist.
-    keyStore = project.getProperty("keyStore")
-    alias = getProperty('keyStoreAlias')
-    storePass = getProperty('keyStorePass')
-    keyPass = getProperty('keyStoreKeyPass')
+    keyStore = project.hasProperty('keyStore') ? project.getProperty("keyStore") : ""
+    alias = project.hasProperty('keyStoreAlias') ? project.getProperty('keyStoreAlias') : ""
+    storePass = project.hasProperty('keyStorePass') ? project.getProperty('keyStorePass') : ""
+    keyPass = project.hasProperty('keyStoreKeyPass') ? project.getProperty('keyStoreKeyPass') : ""
     inputFile = jar.archivePath
     outputFile = jar.archivePath
 }
