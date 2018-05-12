@@ -48,7 +48,7 @@ public class WorkbenchMessage implements IMessage {
             TileEntity entity = world.getTileEntity(pos);
             if (TileWorkbench.class.isInstance(entity)) {
                 TileWorkbench workbench = (TileWorkbench) entity;
-                server.addScheduledTask(() -> workbench.setCurrentRecipe(recipeIndex));
+                server.addScheduledTask(() -> workbench.setCurrentRecipeIndex(recipeIndex));
             }
         }
         return null;

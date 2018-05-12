@@ -26,7 +26,7 @@ public class Diff12 implements VersionDiff {
 
     @Override
     public boolean isEmpty(ItemStack stack) {
-        return stack.isEmpty();
+        return stack == null || stack.isEmpty();
     }
 
     @Override

@@ -2,14 +2,16 @@ package com.yogpc.qp.container;
 
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.packet.PacketHandler;
+import com.yogpc.qp.packet.TileMessage;
 import com.yogpc.qp.tile.TileWorkbench;
 import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IContainerListener;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
@@ -23,9 +25,11 @@ import static com.yogpc.qp.version.VersionUtil.nonEmpty;
 public class ContainerWorkbench extends Container {
 
     private final TileWorkbench tile;
+    private final EntityPlayer player;
 
-    public ContainerWorkbench(final IInventory pi, final TileWorkbench tw) {
+    public ContainerWorkbench(final EntityPlayer player, final TileWorkbench tw) {
         this.tile = tw;
+        this.player = player;
         int row;
         int col;
 
@@ -42,11 +46,11 @@ public class ContainerWorkbench extends Container {
         //45-62
         for (row = 0; row < 3; ++row)
             for (col = 0; col < 9; ++col)
-                addSlotToContainer(new Slot(pi, col + row * 9 + 9, 8 + col * 18, 140 + row * 18));
+                addSlotToContainer(new Slot(player.inventory, col + row * 9 + 9, 8 + col * 18, 140 + row * 18));
 
         //63-71
         for (col = 0; col < 9; ++col)
-            addSlotToContainer(new Slot(pi, col, 8 + col * 18, 198));
+            addSlotToContainer(new Slot(player.inventory, col, 8 + col * 18, 198));
     }
 
     @Override
@@ -81,22 +85,54 @@ public class ContainerWorkbench extends Container {
         return src;
     }
 
+    /**
+     * Called on server side. (!world.isRemote must be true.)
+     *
+     * @param listener player?
+     */
     @Override
     public void addListener(IContainerListener listener) {
-        super.addListener(listener);
-        listener.sendAllWindowProperties(this, tile);
+        if (this.listeners.contains(listener)) {
+            throw new IllegalArgumentException("Listener already listening");
+        } else {
+            this.listeners.add(listener);
+            // This method send byte as stack count.
+            //listener.sendAllContents(this, this.getInventory());
+            if (EntityPlayerMP.class.isInstance(listener)) {
+                EntityPlayerMP playerMP = (EntityPlayerMP) listener;
+                PacketHandler.sendToClient(TileMessage.create(tile), playerMP);
+            }
+            this.detectAndSendChanges();
+        }
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public void updateProgressBar(int id, int data) {
-        super.updateProgressBar(id, data);
         tile.setField(id, data);
     }
 
     @Override
     public void detectAndSendChanges() {
-        super.detectAndSendChanges();
+        //super.detectAndSendChanges();
+        for (int i = 45; i < this.inventorySlots.size(); ++i) {
+            ItemStack itemstack = this.inventorySlots.get(i).getStack();
+            ItemStack itemstack1 = this.inventoryItemStacks.get(i);
+
+            if (!ItemStack.areItemStacksEqual(itemstack1, itemstack)) {
+                boolean clientStackChanged = !ItemStack.areItemStacksEqualUsingNBTShareTag(itemstack1, itemstack);
+                itemstack1 = itemstack.isEmpty() ? ItemStack.EMPTY : itemstack.copy();
+                this.inventoryItemStacks.set(i, itemstack1);
+
+                if (clientStackChanged)
+                    for (IContainerListener listener : this.listeners) {
+                        listener.sendSlotContents(this, i, itemstack1);
+                    }
+            }
+        }
+        if (!tile.getWorld().isRemote)
+            PacketHandler.sendToClient(TileMessage.create(tile), (EntityPlayerMP) player);
+
         listeners.forEach(listener -> listener.sendAllWindowProperties(this, tile));
     }
 
@@ -116,10 +152,10 @@ public class ContainerWorkbench extends Container {
                     if (index == tile.getRecipeIndex()) {
                         tile.workcontinue = !tile.workcontinue;
                     } else {
-                        tile.setCurrentRecipe(index);
+                        tile.setCurrentRecipeIndex(index);
                     }
                 } else if (dragType == 1) {
-                    tile.setCurrentRecipe(-1);
+                    tile.setCurrentRecipeIndex(-1);
                 }
             }
             return empty();
