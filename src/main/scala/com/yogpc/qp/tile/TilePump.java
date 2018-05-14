@@ -319,7 +319,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         this.py = Y_SIZE - 1;
         this.px = -1;
         final TileBasic tb = G_connected();
-        TileQuarry b = null;
+        @Nullable TileQuarry b = null;
         if (tb instanceof TileQuarry)
             b = (TileQuarry) tb;
         if (b != null && b.yMax != Integer.MIN_VALUE) {
@@ -558,7 +558,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                     });
                 }
             }
-            return ret.toArray(new FluidTankProperties[ret.size()]);
+            return ret.toArray(new FluidTankProperties[0]);
         }
 
         @Override

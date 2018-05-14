@@ -121,7 +121,7 @@ public class ContainerWorkbench extends Container {
 
             if (!ItemStack.areItemStacksEqual(itemstack1, itemstack)) {
                 boolean clientStackChanged = !ItemStack.areItemStacksEqualUsingNBTShareTag(itemstack1, itemstack);
-                itemstack1 = itemstack.isEmpty() ? ItemStack.EMPTY : itemstack.copy();
+                itemstack1 = VersionUtil.isEmpty(itemstack) ? VersionUtil.empty() : itemstack.copy();
                 this.inventoryItemStacks.set(i, itemstack1);
 
                 if (clientStackChanged)

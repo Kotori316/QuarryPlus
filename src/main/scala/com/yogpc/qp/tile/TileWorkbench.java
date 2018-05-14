@@ -81,7 +81,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
         VersionUtil.nbtListStream(list).forEach(nbtTagCompound -> {
             int j = nbtTagCompound.getByte("Slot") & 255;
             ItemStack stack = VersionUtil.fromNBTTag(nbtTagCompound);
-            VersionUtil.setCount(stack, nbtTagCompound.getInteger("Count"));
+            VersionUtil.setCountForce(stack, nbtTagCompound.getInteger("Count"));
             inventory.set(j, stack);
         });
         markDirty();
@@ -183,7 +183,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
             case 0:
                 return getRecipeIndex();
             case 1:
-                return (int) getStoredEnergy();
+                return 0;//(int) getStoredEnergy();
             case 2:
                 return workcontinue ? 1 : 0;
         }
@@ -197,7 +197,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
                 setCurrentRecipeIndex(value);
                 break;
             case 1:
-                setStoredEnergy(value);
+//                setStoredEnergy(value);
                 break;
             case 2:
                 workcontinue = value == 1;

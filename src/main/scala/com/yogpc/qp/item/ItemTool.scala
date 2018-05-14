@@ -180,10 +180,9 @@ object ItemTool {
         if (nbttaglist == null) {
             Map.empty
         } else {
-            Range(0, nbttaglist.tagCount()).map(i => {
-                val tag = nbttaglist.getCompoundTagAt(i)
-                (Enchantment.getEnchantmentByID(tag.getShort("id")), tag.getShort("lvl").toInt)
-            }).toMap
+            nbttaglist.tagIterator.map(tag =>
+                (Enchantment.getEnchantmentByID(tag.getShort("id")), tag.getShort("lvl").toInt))
+              .toMap
         }
     }
 

@@ -90,8 +90,8 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
             if (ic2Loaded) {
                 try {
                     ic2load();
-                } catch (final Throwable ignored) {
-                    ignored.printStackTrace();
+                } catch (final Throwable e) {
+                    e.printStackTrace();
                 }
             }
             this.ic2ok = true;
@@ -103,8 +103,8 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
             if (ic2Loaded) {
                 try {
                     ic2unload();
-                } catch (final Throwable ignored) {
-                    ignored.printStackTrace();
+                } catch (final Throwable e) {
+                    e.printStackTrace();
                 }
             }
             this.ic2ok = false;

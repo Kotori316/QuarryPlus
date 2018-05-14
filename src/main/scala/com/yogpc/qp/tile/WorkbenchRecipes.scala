@@ -46,7 +46,7 @@ abstract sealed class WorkbenchRecipes(val output: ItemDamage, val energy: Doubl
     }
 }
 
-private final class R1(o: ItemDamage, e: Double, s: Boolean = true, seq: Seq[(Int => ItemStack)]) extends WorkbenchRecipes(o, e, s) {
+private final class R1(o: ItemDamage, e: Double, s: Boolean = true, seq: Seq[Int => ItemStack]) extends WorkbenchRecipes(o, e, s) {
     override val size: Int = seq.size
 
     override def inputs: Seq[ItemStack] = seq.map(_.apply(Config.content.recipe)).filter(VersionUtil.nonEmpty)
@@ -85,7 +85,7 @@ object WorkbenchRecipes {
         }.values.toList.sorted.asJava
     }
 
-    def addSeqRecipe(output: ItemDamage, energy: Int, inputs: Seq[(Int => ItemStack)])(implicit showInJEI: Boolean = true, unit: EnergyUnit): Unit = {
+    def addSeqRecipe(output: ItemDamage, energy: Int, inputs: Seq[Int => ItemStack])(implicit showInJEI: Boolean = true, unit: EnergyUnit): Unit = {
         val newRecipe = new R1(output, unit.multiple * energy, showInJEI, inputs)
         recipes put(output, newRecipe)
     }
@@ -120,11 +120,11 @@ object WorkbenchRecipes {
     }
 
     object F {
-        def apply(item: Item, count: Double): (Int => ItemStack) = new F(item, count)
+        def apply(item: Item, count: Double): Int => ItemStack = new F(item, count)
 
-        def apply(item: Item, count: Double, damage: Int): (Int => ItemStack) = new F(item, count, damage)
+        def apply(item: Item, count: Double, damage: Int): Int => ItemStack = new F(item, count, damage)
 
-        def apply(block: Block, count: Double): (Int => ItemStack) = new F(Item.getItemFromBlock(block), count)
+        def apply(block: Block, count: Double): Int => ItemStack = new F(Item.getItemFromBlock(block), count)
     }
 
     def registerRecipes(): Unit = {
