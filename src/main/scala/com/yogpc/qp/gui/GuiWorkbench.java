@@ -143,6 +143,7 @@ public class GuiWorkbench extends GuiContainer {
         item = field;
     }
 
+    @Nullable
     private RenderItem nitem, pitem;
 
     public void handlePre() {
