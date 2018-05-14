@@ -177,7 +177,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
             case 0:
                 return getRecipeIndex();
             case 1:
-                return (int) getStoredEnergy();
+                return 0;//(int) getStoredEnergy();
             case 2:
                 return workcontinue ? 1 : 0;
         }
@@ -191,7 +191,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
                 setCurrentRecipeIndex(value);
                 break;
             case 1:
-                setStoredEnergy(value);
+//                setStoredEnergy(value);
                 break;
             case 2:
                 workcontinue = value == 1;

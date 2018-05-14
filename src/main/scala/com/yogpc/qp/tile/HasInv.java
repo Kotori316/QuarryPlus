@@ -1,11 +1,8 @@
 package com.yogpc.qp.tile;
 
 import com.yogpc.qp.version.VersionUtil;
-import javax.annotation.Nonnull;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
 
 public interface HasInv extends net.minecraft.inventory.IInventory {
 
@@ -17,11 +14,22 @@ public interface HasInv extends net.minecraft.inventory.IInventory {
     default void closeInventory(EntityPlayer player) {
     }
 
+    /**
+     * Send short value to client.
+     *
+     * @param id the index of data. Must be under 256.
+     * @return short value, must be under 2^15.
+     */
     @Override
     default int getField(int id) {
         return 0;
     }
 
+    /**
+     * Get from server and set value in client side.
+     * @param id the index of data. Must be under 256.
+     * @param value value in server side. Should be under 2^15.
+     */
     @Override
     default void setField(int id, int value) {
     }
@@ -82,11 +90,5 @@ public interface HasInv extends net.minecraft.inventory.IInventory {
 
     @Override
     default void clear() {
-    }
-
-    @Override
-    @Nonnull
-    default ITextComponent getDisplayName() {
-        return new TextComponentTranslation(getName());
     }
 }
