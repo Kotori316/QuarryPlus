@@ -120,11 +120,11 @@ object WorkbenchRecipes {
     }
 
     object F {
-        def apply(item: Item, count: Double): (Int => ItemStack) = new F(item, count)
+        def apply(item: Item, count: Double): Int => ItemStack = new F(item, count)
 
-        def apply(item: Item, count: Double, damage: Int): (Int => ItemStack) = new F(item, count, damage)
+        def apply(item: Item, count: Double, damage: Int): Int => ItemStack = new F(item, count, damage)
 
-        def apply(block: Block, count: Double): (Int => ItemStack) = new F(Item.getItemFromBlock(block), count)
+        def apply(block: Block, count: Double): Int => ItemStack = new F(Item.getItemFromBlock(block), count)
     }
 
     def registerRecipes(): Unit = {
