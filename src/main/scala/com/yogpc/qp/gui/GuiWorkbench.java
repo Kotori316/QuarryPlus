@@ -129,6 +129,7 @@ public class GuiWorkbench extends GuiContainer {
         handlePost();
     }
 
+    @Nullable
     private RenderItem pitem;
 
     public void handlePre() {

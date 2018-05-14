@@ -1,8 +1,11 @@
 package com.yogpc.qp.tile;
 
 import com.yogpc.qp.version.VersionUtil;
+import javax.annotation.Nonnull;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 
 public interface HasInv extends net.minecraft.inventory.IInventory {
 
@@ -79,5 +82,11 @@ public interface HasInv extends net.minecraft.inventory.IInventory {
 
     @Override
     default void clear() {
+    }
+
+    @Override
+    @Nonnull
+    default ITextComponent getDisplayName() {
+        return new TextComponentTranslation(getName());
     }
 }
