@@ -1,11 +1,13 @@
 {
   "homepage": "https://minecraft.curseforge.com/projects/additional-enchanted-miner",
   "promos": {
-    "1.12.2-recommended": "0.8.8",
-    "1.11.2-recommended": "0.8.8",
-    "1.10.2-recommended": "0.8.8"
+    "1.12.2-recommended": "0.9.0",
+    "1.11.2-recommended": "0.9.0",
+    "1.10.2-recommended": "0.9.0"
   },
   "1.12.2": {
+    "0.9.0": "Fixed an issue that WorkbenchPlus didn't show its content and energy in dedicated server.",
+    "0.8.9": "Added support for Mekanism transporter.",
     "0.8.8": "Added config option to disable rendering of TileEntities.",
     "0.8.7": "Fixed a bug of Advanced Pump resulting in duplication of fluid.",
     "0.8.6": "Fixed a crash after placing MarkerPlus.",
@@ -25,6 +27,8 @@
     "0.6.8": "Added Forge version check system."
   },
   "1.11.2": {
+    "0.9.0": "Fixed an issue that WorkbenchPlus didn't show its content and energy in dedicated server.",
+    "0.8.9": "None.",
     "0.8.8": "Added config option to disable rendering of TileEntities.",
     "0.8.7": "Fixed a bug of Advanced Pump resulting in duplication of fluid.",
     "0.8.6": "Fixed a crash after placing MarkerPlus.",
@@ -43,6 +47,8 @@
     "0.6.8": "Added Forge version check system."
   },
   "1.10.2": {
+    "0.9.0": "Fixed an issue that WorkbenchPlus didn't show its content and energy in dedicated server.",
+    "0.8.9": "None.",
     "0.8.8": "Added config option to disable rendering of TileEntities.",
     "0.8.7": "Fixed a bug of Advanced Pump resulting in duplication of fluid.",
     "0.8.6": "Fixed a crash after placing MarkerPlus.",
