@@ -1,6 +1,7 @@
 package com.yogpc.qp.tile
 
 import java.lang.{Boolean => JBool}
+import javax.annotation.Nonnull
 
 import com.yogpc.qp.block.ADismCBlock
 import com.yogpc.qp.compat.{INBTReadable, INBTWritable, InvUtils}
@@ -10,7 +11,6 @@ import com.yogpc.qp.packet.advquarry.AdvModeMessage
 import com.yogpc.qp.tile.TileAdvQuarry.{DigRange, ItemElement, ItemList, QEnch}
 import com.yogpc.qp.version.VersionUtil
 import com.yogpc.qp.{Config, PowerManager, QuarryPlus, QuarryPlusI, ReflectionHelper, _}
-import javax.annotation.Nonnull
 import net.minecraft.block.Block
 import net.minecraft.block.properties.PropertyHelper
 import net.minecraft.block.state.IBlockState
@@ -80,7 +80,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                             val energy = PowerManager.calcEnergyBreak(state.getBlockHardness(getWorld, target), ench.fortune, ench.unbreaking)
                             if (useEnergy(energy, energy, false) == energy) {
                                 useEnergy(energy, energy, true)
-                                state.getBlock.getDrops(list, getWorld, target, state, ench.fortune)
+                                TileBasic.getDrops(getWorld, target, state, state.getBlock, ench.fortune, list)
                                 getWorld.setBlockToAir(target)
                             }
                         }

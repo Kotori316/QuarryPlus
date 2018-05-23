@@ -292,6 +292,7 @@ public class QuarryPlus {
         public static final String IMC_Remove = "IMC_RemoveRecipe";
         public static final String Mekanism_modID = "mekanism";
         public static final String RedstoneFlux_modID = "redstoneflux";
+        public static final String Thaumcraft_modID = "thaumcraft";
         public static final String clientProxy = "com.yogpc.qp.ProxyClient";
         public static final String configFactory = "com.yogpc.qp.gui.GuiFactory";
         public static final String serverProxy = "com.yogpc.qp.ProxyCommon";

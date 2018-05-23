@@ -41,6 +41,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -140,9 +141,18 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
             boolean b = fortuneList.contains(new BlockData(block, state)) == this.fortuneInclude;
             byte fortuneLevel = b ? this.fortune : 0;
             NonNullList<ItemStack> list = NonNullList.create();
-            block.getDrops(list, getWorld(), pos, state, fortuneLevel);
+            getDrops(getWorld(), pos, state, block, fortuneLevel, list);
             collection.addAll(list);
             return fortuneLevel;
+        }
+    }
+
+    @SuppressWarnings({"ConstantConditions", "deprecation"})
+    public static void getDrops(World world, BlockPos pos, IBlockState state, Block block, int fortuneLevel, NonNullList<ItemStack> list) {
+        if (QuarryPlus.Optionals.Thaumcraft_modID.equals(block.getRegistryName().getResourceDomain())) {
+            list.addAll(block.getDrops(world, pos, state, fortuneLevel));
+        } else {
+            block.getDrops(list, world, pos, state, fortuneLevel);
         }
     }
 
