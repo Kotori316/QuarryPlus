@@ -62,7 +62,7 @@ object Config {
         import scala.collection.JavaConverters._
 
         val disableController = configuration.get(Configuration.CATEGORY_GENERAL, DisableSpawnerController_key, false, DisableSpawnerController_key).setRequiresMcRestart(true).getBoolean
-        val disableChunkDestroyer = configuration.get(Configuration.CATEGORY_GENERAL, DisableChunkDestroyer_key, true, DisableChunkDestroyer_key).setRequiresMcRestart(true).getBoolean
+        val disableChunkDestroyer = configuration.get(Configuration.CATEGORY_GENERAL, DisableChunkDestroyer_key, false, DisableChunkDestroyer_key).setRequiresMcRestart(true).getBoolean
         val spawnerBlacklist = configuration.get(Configuration.CATEGORY_GENERAL, SpawnerControllerEntityBlackList_key, Array("minecraft:ender_dragon", "minecraft:wither"), "Spawner Blacklist")
           .getStringList.map(new ResourceLocation(_)).toSet.asJava
         val recipeDifficulty = configuration.get(Configuration.CATEGORY_GENERAL, RecipeDifficulty_key, 2d)
@@ -76,7 +76,7 @@ object Config {
 
         val removeBedrock = configuration.getBoolean(RemoveBedrock_Key, Configuration.CATEGORY_GENERAL, false, RemoveBedrock_Key)
         val removeOnlySource = configuration.getBoolean(RemoveOnlySource_Key, Configuration.CATEGORY_GENERAL, false, RemoveOnlySource_Key)
-        val enableChunkDestroyerFluidHander = configuration.getBoolean(EnableChunkDestroyerFluidHander_key, Configuration.CATEGORY_GENERAL, false, EnableChunkDestroyerFluidHander_key)
+        val enableChunkDestroyerFluidHander = configuration.getBoolean(EnableChunkDestroyerFluidHander_key, Configuration.CATEGORY_GENERAL, true, EnableChunkDestroyerFluidHander_key)
         val disableFrameChainBreak = configuration.getBoolean(DisableFrameChainBreak_key, Configuration.CATEGORY_GENERAL, false, DisableFrameChainBreak_key)
         val pumpAutoStart = configuration.getBoolean(PumpAutoStart_Key, Configuration.CATEGORY_GENERAL, false, PumpAutoStart_Key)
         val DisableRendering = configuration.get(Configuration.CATEGORY_CLIENT, DisableRendering_Key, false, "Disable rendering of quarries.")
