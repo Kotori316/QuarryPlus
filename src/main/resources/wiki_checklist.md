@@ -3,15 +3,15 @@
 * **Blocks**
 - [ ] Advanced Pump
 - [x] Breaker Plus
-- [ ] Chunk Destroyer
+- [x] Chunk Destroyer
 - [x] Enchant Mover
-- [ ] Laser Plus
+- [x] Laser Plus
 - [x] Marker Plus
 - [x] Mining Well Plus
 - [x] Placer Plus
 - [x] Pump Plus
 - [x] QuarryPlus
-- [ ] Refinery Plus
+- [ ] Refinery Plus - Is this needed?
 - [x] Spawner Controller
 - [x] Workbench Plus
 
