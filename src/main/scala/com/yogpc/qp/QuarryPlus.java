@@ -45,6 +45,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.ForgeChunkManager;
@@ -160,17 +161,17 @@ public class QuarryPlus {
             blockStandalonePump()
         );
 
-        GameRegistry.registerTileEntity(TileWorkbench.class, prefix + QuarryPlus.Names.workbench);
-        GameRegistry.registerTileEntity(TileQuarry.class, prefix + QuarryPlus.Names.quarry);
-        GameRegistry.registerTileEntity(TileMarker.class, prefix + QuarryPlus.Names.marker);
-        GameRegistry.registerTileEntity(TileMiningWell.class, prefix + QuarryPlus.Names.miningwell);
-        GameRegistry.registerTileEntity(TilePump.class, prefix + QuarryPlus.Names.pump);
-        GameRegistry.registerTileEntity(TileRefinery.class, prefix + QuarryPlus.Names.refinery);
-        GameRegistry.registerTileEntity(TilePlacer.class, prefix + QuarryPlus.Names.placer);
-        GameRegistry.registerTileEntity(TileBreaker.class, prefix + QuarryPlus.Names.breaker);
-        GameRegistry.registerTileEntity(TileLaser.class, prefix + QuarryPlus.Names.laser);
-        GameRegistry.registerTileEntity(TileAdvQuarry.class, prefix + QuarryPlus.Names.advquarry);
-        GameRegistry.registerTileEntity(TileAdvPump.class, prefix + QuarryPlus.Names.advpump);
+        GameRegistry.registerTileEntity(TileWorkbench.class, new ResourceLocation(modID, QuarryPlus.Names.workbench));
+        GameRegistry.registerTileEntity(TileQuarry.class, new ResourceLocation(modID, QuarryPlus.Names.quarry));
+        GameRegistry.registerTileEntity(TileMarker.class, new ResourceLocation(modID, QuarryPlus.Names.marker));
+        GameRegistry.registerTileEntity(TileMiningWell.class, new ResourceLocation(modID, QuarryPlus.Names.miningwell));
+        GameRegistry.registerTileEntity(TilePump.class, new ResourceLocation(modID, QuarryPlus.Names.pump));
+        GameRegistry.registerTileEntity(TileRefinery.class, new ResourceLocation(modID, QuarryPlus.Names.refinery));
+        GameRegistry.registerTileEntity(TilePlacer.class, new ResourceLocation(modID, QuarryPlus.Names.placer));
+        GameRegistry.registerTileEntity(TileBreaker.class, new ResourceLocation(modID, QuarryPlus.Names.breaker));
+        GameRegistry.registerTileEntity(TileLaser.class, new ResourceLocation(modID, QuarryPlus.Names.laser));
+        GameRegistry.registerTileEntity(TileAdvQuarry.class, new ResourceLocation(modID, QuarryPlus.Names.advquarry));
+        GameRegistry.registerTileEntity(TileAdvPump.class, new ResourceLocation(modID, QuarryPlus.Names.advpump));
     }
 
     @SubscribeEvent
