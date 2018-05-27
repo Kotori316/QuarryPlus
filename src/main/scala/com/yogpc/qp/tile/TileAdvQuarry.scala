@@ -213,7 +213,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                             if (ench.silktouch && state.getBlock.canSilkHarvest(getWorld, p, state, null)) {
                                 list.add(ReflectionHelper.invoke(TileBasic.createStackedBlock, state.getBlock, state).asInstanceOf[ItemStack])
                             } else {
-                                state.getBlock.getDrops(list, getWorld, p, state, ench.fortune)
+                                TileBasic.getDrops(getWorld, p, state, state.getBlock, ench.fortune, list)
                             }
                             getWorld.setBlockState(p, Blocks.AIR.getDefaultState, 2)
                         })
