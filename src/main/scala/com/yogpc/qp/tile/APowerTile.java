@@ -16,7 +16,6 @@ import java.util.List;
 
 import buildcraft.api.mj.MjCapabilityHelper;
 import buildcraft.api.tiles.IDebuggable;
-import cofh.api.tileentity.IEnergyInfo;
 import cofh.redstoneflux.api.IEnergyReceiver;
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
@@ -41,10 +40,9 @@ import net.minecraftforge.fml.common.Optional;
 
 @Optional.InterfaceList(value = {
     @Optional.Interface(iface = "cofh.redstoneflux.api.IEnergyReceiver", modid = QuarryPlus.Optionals.RedstoneFlux_modID),
-    @Optional.Interface(iface = "cofh.api.tileentity.IEnergyInfo", modid = QuarryPlus.Optionals.COFH_tileentity),
     @Optional.Interface(iface = "buildcraft.api.tiles.IDebuggable", modid = QuarryPlus.Optionals.Buildcraft_tiles),
     @Optional.Interface(iface = "ic2.api.energy.tile.IEnergySink", modid = QuarryPlus.Optionals.IC2_modID)})
-public abstract class APowerTile extends APacketTile implements ITickable, IEnergyStorage, IEnergyInfo, IEnergyReceiver, IEnergySink, IDebuggable {
+public abstract class APowerTile extends APacketTile implements ITickable, IEnergyStorage, IEnergyReceiver, IEnergySink, IDebuggable {
     /*package-private*/ double all, maxGot, max, got;
     private boolean ic2ok = false;
     public boolean bcLoaded;
@@ -264,30 +262,6 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
     @Optional.Method(modid = QuarryPlus.Optionals.RedstoneFlux_modID)
     public final boolean canConnectEnergy(EnumFacing from) {
         return canReceive();
-    }
-
-    /**
-     * Returns energy usage/generation per tick (RF/t).
-     */
-    @Override
-    public final int getInfoEnergyPerTick() {
-        return debug.energyPerTick();
-    }
-
-    /**
-     * Returns maximum energy usage/generation per tick (RF/t).
-     */
-    @Override
-    public final int getInfoMaxEnergyPerTick() {
-        return debug.maxUsed();
-    }
-
-    /**
-     * Returns energy stored (RF).
-     */
-    @Override
-    public final int getInfoEnergyStored() {
-        return getEnergyStored();
     }
 
     //Forge energy api implecation

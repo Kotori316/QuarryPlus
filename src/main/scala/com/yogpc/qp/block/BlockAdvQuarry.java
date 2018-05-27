@@ -75,7 +75,7 @@ public class BlockAdvQuarry extends ADismCBlock {
                 if (quarry != null) {
                     quarry.G_reinit();
                     if (Config.content().noEnergy()) {
-                        quarry.stickActivated();
+                        quarry.stickActivated(playerIn);
                     }
                 }
             }
@@ -89,7 +89,7 @@ public class BlockAdvQuarry extends ADismCBlock {
             if (!worldIn.isRemote) {
                 Optional.ofNullable((TileAdvQuarry) worldIn.getTileEntity(pos)).ifPresent(tileAdvQuarry -> {
                     if (Config.content().noEnergy())
-                        tileAdvQuarry.stickActivated();
+                        tileAdvQuarry.stickActivated(playerIn);
                     tileAdvQuarry.startFillMode();
                 });
             }
