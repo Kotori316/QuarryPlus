@@ -460,8 +460,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
             "Liquid to extract = " + fluidStacks.size,
             "Next target = " + target.toString,
             mode.toString,
-            digRange.toString,
-            "Resent 5 seconds, used " + getInfoEnergyPerTick + " MJ/t").map(toComponentString).asJava
+            digRange.toString).map(toComponentString).asJava
     } else {
         java.util.Collections.singletonList(new TextComponentString("ChunkDestroyer is disabled."))
     }
@@ -546,9 +545,11 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
         mDigRange = digRange
     }
 
-    def stickActivated(): Unit = {
+    def stickActivated(player: EntityPlayer): Unit = {
         //Called when noEnergy is true and block is right clicked with stick (item)
-        if (mode is TileAdvQuarry.NOTNEEDBREAK) {
+        if (Config.content.disableChunkDestroyer) {
+            VersionUtil.sendMessage(player, new TextComponentString("ChunkDestroyer is disabled."), true)
+        } else if (mode is TileAdvQuarry.NOTNEEDBREAK) {
             mode set TileAdvQuarry.MAKEFRAME
         }
     }

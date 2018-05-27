@@ -78,6 +78,10 @@ public class VersionUtil {
     }
 
     public static void sendMessage(EntityPlayer player, ITextComponent component) {
-        QuarryPlus.DIFF.sendMessage(player, component);
+        QuarryPlus.DIFF.sendMessage(player, component, false);
+    }
+
+    public static void sendMessage(EntityPlayer player, ITextComponent component, boolean actionBar) {
+        QuarryPlus.DIFF.sendMessage(player, component, actionBar);
     }
 }

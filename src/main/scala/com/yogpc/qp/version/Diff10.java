@@ -77,7 +77,7 @@ public class Diff10 implements VersionDiff {
     }
 
     @Override
-    public void sendMessage(EntityPlayer player, ITextComponent component) {
+    public void sendMessage(EntityPlayer player, ITextComponent component, boolean b) {
         player.addChatComponentMessage(component);
     }
 }

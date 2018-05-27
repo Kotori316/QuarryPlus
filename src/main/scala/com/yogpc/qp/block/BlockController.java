@@ -15,6 +15,7 @@ import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.controller.AvailableEntities;
+import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
@@ -31,6 +32,7 @@ import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.FakePlayer;
@@ -69,9 +71,9 @@ public class BlockController extends Block implements IDismantleable {
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, ItemStack s, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (InvUtils.isDebugItem(playerIn, hand)) return true;
-        if (!Config.content().disableController()) {
-            if (!playerIn.isSneaking()) {
-                if (!worldIn.isRemote) {
+        if (!playerIn.isSneaking()) {
+            if (!worldIn.isRemote) {
+                if (!Config.content().disableController()) {
                     List<String> entries = new ArrayList<>();
                     for (Map.Entry<Class<? extends Entity>, String> entry : EntityList.CLASS_TO_NAME.entrySet()) {
                         Class<? extends Entity> entityClass = entry.getKey();
@@ -81,9 +83,11 @@ public class BlockController extends Block implements IDismantleable {
                         entries.add(entry.getValue());
                     }
                     PacketHandler.sendToClient(AvailableEntities.create(pos, worldIn.provider.getDimension(), entries), (EntityPlayerMP) playerIn);
+                } else {
+                    VersionUtil.sendMessage(playerIn, new TextComponentString("Spawner Controller is disabled."), true);
                 }
-                return true;
             }
+            return true;
         }
         return super.onBlockActivated(worldIn, pos, state, playerIn, hand, s, facing, hitX, hitY, hitZ);
     }
