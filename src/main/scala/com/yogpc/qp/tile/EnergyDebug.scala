@@ -15,7 +15,7 @@ class EnergyDebug(tile: APowerTile) {
     private[this] val tilename = tile.getClass.getSimpleName
 
     def tick(got: Double): Unit = {
-        if (true /*Config.content.debug*/ ) {
+        if (Config.content.debug) {
             count += 1
             if (getBuilder.size < 100) {
                 getBuilder += got
@@ -49,7 +49,7 @@ class EnergyDebug(tile: APowerTile) {
     }
 
     def useEnergy(amount: Double, simulate: Boolean): Unit = {
-        if ( /*Config.content.debug &&*/ !simulate) {
+        if (Config.content.debug && !simulate) {
 
             if (mMaxUsed < amount) {
                 mMaxUsed = amount.toInt
@@ -71,14 +71,4 @@ class EnergyDebug(tile: APowerTile) {
         }
     }
 
-    def maxUsed = mMaxUsed
-
-    def energyPerTick: Int = {
-        if (useBuilder.isEmpty) {
-            0
-        } else {
-            val allgot = useBuilder.sum
-            (allgot / useBuilder.size).toInt
-        }
-    }
 }

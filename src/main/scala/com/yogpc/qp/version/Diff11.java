@@ -55,7 +55,7 @@ public class Diff11 implements VersionDiff {
     }
 
     @Override
-    public void sendMessage(EntityPlayer player, ITextComponent component) {
-        player.sendStatusMessage(component, false);
+    public void sendMessage(EntityPlayer player, ITextComponent component, boolean actionBar) {
+        player.sendStatusMessage(component, actionBar);
     }
 }

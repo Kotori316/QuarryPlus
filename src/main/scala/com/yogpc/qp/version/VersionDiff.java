@@ -65,5 +65,5 @@ public interface VersionDiff {
         return false;
     }
 
-    void sendMessage(EntityPlayer player, ITextComponent component);
+    void sendMessage(EntityPlayer player, ITextComponent component, boolean actionBar);
 }
