@@ -50,6 +50,7 @@ import net.minecraftforge.items.wrapper.InvWrapper;
 
 @net.minecraftforge.fml.common.Optional.Interface(iface = "cofh.api.tileentity.IInventoryConnection", modid = QuarryPlus.Optionals.COFH_tileentity)
 public abstract class TileBasic extends APowerTile implements IEnchantableTile, HasInv, IInventoryConnection {
+    @Nullable
     protected EnumFacing pump = null;
 
     public final NoDuplicateList<BlockData> fortuneList = NoDuplicateList.create(ArrayList::new);

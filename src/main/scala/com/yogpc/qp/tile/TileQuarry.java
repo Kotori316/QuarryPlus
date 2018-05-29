@@ -34,6 +34,7 @@ import com.yogpc.qp.packet.TileMessage;
 import com.yogpc.qp.packet.quarry.ModeMessage;
 import com.yogpc.qp.packet.quarry.MoveHead;
 import com.yogpc.qp.version.VersionUtil;
+import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
@@ -66,6 +67,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     public int xMin, xMax, yMin, yMax = Integer.MIN_VALUE, zMin, zMax;
     public boolean filler;
 
+    @Nullable
     private Object areaProvider = null;
 
     public TileQuarry() {
