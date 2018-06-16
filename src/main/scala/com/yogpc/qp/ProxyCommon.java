@@ -1,6 +1,7 @@
 package com.yogpc.qp;
 
 import com.yogpc.qp.packet.PacketHandler;
+import com.yogpc.qp.packet.advquarry.AdvContentMessage;
 import com.yogpc.qp.packet.advquarry.AdvFilterMessage;
 import com.yogpc.qp.tile.TileAdvQuarry;
 import com.yogpc.qp.tile.TilePump;
@@ -20,7 +21,10 @@ public class ProxyCommon {
     }
 
     public void openAdvQuarryPumpGui(World worldIn, EntityPlayer player, TileAdvQuarry quarry, EnumFacing facing) {
-        if (!worldIn.isRemote) PacketHandler.sendToClient(AdvFilterMessage.create(quarry), (EntityPlayerMP) player);
+        if (!worldIn.isRemote) {
+            PacketHandler.sendToClient(AdvContentMessage.create(quarry), (EntityPlayerMP) player);
+            PacketHandler.sendToClient(AdvFilterMessage.create(quarry), (EntityPlayerMP) player);
+        }
     }
 
     public EntityPlayer getPacketPlayer(final INetHandler inh) {
