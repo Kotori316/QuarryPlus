@@ -1,7 +1,7 @@
 # Check list of machines added by QuarryPlus
 
 * **Blocks**
-- [ ] Advanced Pump
+- [x] Advanced Pump
 - [x] Breaker Plus
 - [x] Chunk Destroyer
 - [x] Enchant Mover
