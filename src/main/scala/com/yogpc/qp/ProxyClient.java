@@ -1,6 +1,9 @@
 package com.yogpc.qp;
 
+import com.yogpc.qp.gui.GuiAdvQuarryFluid;
 import com.yogpc.qp.gui.GuiP_List;
+import com.yogpc.qp.packet.PacketHandler;
+import com.yogpc.qp.packet.advquarry.AdvFilterMessage;
 import com.yogpc.qp.render.RenderAdvQuarry;
 import com.yogpc.qp.render.RenderDistiller;
 import com.yogpc.qp.render.RenderLaser;
@@ -19,6 +22,7 @@ import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.util.EnumFacing;
@@ -37,6 +41,15 @@ public class ProxyClient extends ProxyCommon {
             pump.S_OpenGUI(facing, playerIn);
         } else {
             Minecraft.getMinecraft().displayGuiScreen(new GuiP_List(facing.ordinal(), pump));
+        }
+    }
+
+    @Override
+    public void openAdvQuarryPumpGui(World worldIn, EntityPlayer player, TileAdvQuarry quarry, EnumFacing facing) {
+        if (!worldIn.isRemote) {
+            PacketHandler.sendToClient(AdvFilterMessage.create(quarry), (EntityPlayerMP) player);
+        } else {
+            Minecraft.getMinecraft().displayGuiScreen(new GuiAdvQuarryFluid(quarry, player, facing));
         }
     }
 

@@ -12,6 +12,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
 public class VersionUtil {
@@ -21,7 +22,11 @@ public class VersionUtil {
     }
 
     public static ItemStack fromNBTTag(NBTTagCompound compound) {
-        return QuarryPlus.DIFF.fromNBTTag(compound);
+        ItemStack stack = QuarryPlus.DIFF.fromNBTTag(compound);
+        if (compound.hasKey("Count", Constants.NBT.TAG_INT)) {
+            setCountForce(stack, compound.getInteger("Count"));
+        }
+        return stack;
     }
 
     public static void setCount(ItemStack stack, int newSize) {

@@ -7,7 +7,7 @@ import com.yogpc.qp.block.ADismCBlock
 import com.yogpc.qp.compat.{INBTReadable, INBTWritable, InvUtils}
 import com.yogpc.qp.gui.TranslationKeys
 import com.yogpc.qp.packet.PacketHandler
-import com.yogpc.qp.packet.advquarry.AdvModeMessage
+import com.yogpc.qp.packet.advquarry.{AdvContentMessage, AdvModeMessage}
 import com.yogpc.qp.tile.TileAdvQuarry.{DigRange, ItemElement, ItemList, QEnch}
 import com.yogpc.qp.version.VersionUtil
 import com.yogpc.qp.{Config, PowerManager, QuarryPlus, QuarryPlusI, ReflectionHelper, _}
@@ -29,7 +29,6 @@ import net.minecraftforge.common.ForgeChunkManager.Type
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.util.Constants
 import net.minecraftforge.common.{ForgeChunkManager, IShearable}
-import net.minecraftforge.fluids.capability.templates.FluidHandlerFluidMap
 import net.minecraftforge.fluids.capability.{CapabilityFluidHandler, FluidTankProperties, IFluidHandler, IFluidTankProperties}
 import net.minecraftforge.fluids.{Fluid, FluidStack, FluidTank, FluidUtil}
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
@@ -44,10 +43,11 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
     var target = BlockPos.ORIGIN
     var framePoses = List.empty[BlockPos]
     var chunks = List.empty[ChunkPos]
-    val fluidStacks = scala.collection.mutable.Map.empty[Fluid, IFluidHandler]
+    val fluidStacks = scala.collection.mutable.Map.empty[FluidStack, FluidTank]
     val cacheItems = new ItemList
     val itemHandler = new ItemHandler
-    val fluidHandler = new FluidHandler
+    val fluidHandlers = EnumFacing.VALUES.map(f => (f, new FluidHandler(facing = f))).toMap.withDefaultValue(new FluidHandler(null))
+    val fluidExtractFacings = EnumFacing.VALUES.map(f => (f, scala.collection.mutable.Set.empty[FluidStack])).toMap
     val mode = new Mode
     val ACTING: PropertyHelper[JBool] = ADismCBlock.ACTING
 
@@ -230,11 +230,11 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                         destroy.foreach(getWorld.setBlockState(_, Blocks.AIR.getDefaultState, 2))
                         for (p <- drain) {
                             val handler = Option(FluidUtil.getFluidHandler(getWorld, p, EnumFacing.UP))
-                            val fluidOp = handler.map(_.getTankProperties.apply(0)).flatMap(p => Option(p.getContents)).map(_.getFluid)
+                            val fluidOp = handler.map(_.getTankProperties.apply(0)).flatMap(p => Option(p.getContents))
                             fluidOp match {
-                                case Some(fluid) => handler.map(_.drain(Fluid.BUCKET_VOLUME, false)).foreach(s => fluidStacks.get(fluid) match {
+                                case Some(fluidStack) => handler.map(_.drain(Fluid.BUCKET_VOLUME, false)).foreach(s => fluidStacks.get(fluidStack) match {
                                     case Some(tank) => tank.fill(s, true)
-                                    case None => fluidStacks.put(fluid, new FluidTank(s, Int.MaxValue))
+                                    case None => fluidStacks.put(fluidStack, new QuarryTank(s, Int.MaxValue))
                                 })
                                 case None => //QuarryPlus.LOGGER.error(s"Adv Fluid null, ${getWorld.getBlockState(p)}, ${FluidUtil.getFluidHandler(getWorld, p, EnumFacing.UP)}")
                             }
@@ -390,10 +390,10 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
         mode.readFromNBT(nbttc)
         cacheItems.readFromNBT(nbttc)
         nbttc.getTagList("NBT_FLUIDLIST", Constants.NBT.TAG_COMPOUND).tagIterator.foreach(tag => {
-            val tank = new FluidTank(0)
+            val tank = new QuarryTank(null, 0)
             CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.readNBT(tank, null, tag)
             if (tank.getFluid != null) {
-                fluidStacks.put(tank.getFluid.getFluid, tank)
+                fluidStacks.put(tank.getFluid, tank)
             }
         })
         val l2 = nbttc.getTagList("NBT_CHUNKLOADLIST", Constants.NBT.TAG_DOUBLE)
@@ -475,7 +475,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
         if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
             CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(itemHandler)
         } else if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && Config.content.enableChunkDestroyerFluidHander) {
-            CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(fluidHandler)
+            CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(fluidHandlers(facing))
         } else
             super.getCapability(capability, facing)
     }
@@ -605,7 +605,10 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
         override def insertItem(slot: Int, stack: ItemStack, simulate: Boolean): ItemStack = stack
     }
 
-    private[TileAdvQuarry] class FluidHandler extends FluidHandlerFluidMap(fluidStacks.asJava) {
+    private[TileAdvQuarry] class FluidHandler(val facing: EnumFacing) extends IFluidHandler {
+        //FluidHandlerFluidMap(fluidStacks.asJava) {
+
+        def fluids = if (facing != null) fluidStacks.filterKeys(fluidExtractFacings(facing)) else fluidStacks.toMap
 
         /**
           * Not fillable.
@@ -613,8 +616,10 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
         override def fill(resource: FluidStack, doFill: Boolean): Int = 0
 
         override def getTankProperties: Array[IFluidTankProperties] = {
-            val array = fluidStacks.flatMap {
-                case (_, handler) => Option(handler.drain(Int.MaxValue, false)).map(s => new FluidTankProperties(s, s.amount, false, true)).toList
+            val array = fluids.flatMap {
+                case (_, handler) => Option(handler.drain(Int.MaxValue, false))
+                  .collect { case s if s.amount > 0 => new FluidTankProperties(s, s.amount, false, true) }
+                  .toList
             }.toArray
             if (array.length == 0) {
                 IDummyFluidHandler.emptyPropertyArray
@@ -630,6 +635,29 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                     case None => ("No liqud", 0)
                 }
             }.mkString(", ")
+        }
+
+        override def drain(resource: FluidStack, doDrain: Boolean): FluidStack = {
+            //The map of fluid doesn't have duplicated key.
+            Option(resource).filter(_.amount > 0).collect(fluids).map(_.drain(resource, doDrain)).orNull
+        }
+
+        override def drain(maxDrain: Int, doDrain: Boolean): FluidStack = {
+            fluids.values.toStream.map(_.drain(maxDrain, doDrain)).find(nonNull).orNull
+        }
+    }
+
+    private[TileAdvQuarry] class QuarryTank(s: FluidStack, a: Int) extends FluidTank(s, a) {
+        setTileEntity(TileAdvQuarry.this)
+
+        override def onContentsChanged(): Unit = {
+            super.onContentsChanged()
+            if (this.getFluidAmount == 0) {
+                TileAdvQuarry.this.fluidStacks.retain { case (_, v) => v != this }
+                if (!tile.getWorld.isRemote) {
+                    PacketHandler.sendToAround(AdvContentMessage.create(TileAdvQuarry.this), getWorld, getPos)
+                }
+            }
         }
     }
 
@@ -883,7 +911,7 @@ object TileAdvQuarry {
         override def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
             val t = new NBTTagCompound
             val l = new NBTTagList
-            list.map(_.toStack.serializeNBT()).foreach(l.appendTag(_))
+            list.map(_.toNBT).foreach(l.appendTag(_))
             t.setTag(NBT_ITEMELEMENTS, l)
             nbt.setTag(NBT_ITEMLIST, t)
             nbt
@@ -901,13 +929,20 @@ object TileAdvQuarry {
     case class ItemElement(itemDamage: ItemDamage, count: Int) {
         def toStack = itemDamage.toStack(count)
 
+        def toNBT = {
+            val nbt = toStack.serializeNBT()
+            nbt.removeTag("Count")
+            nbt.setInteger("Count", count)
+            nbt
+        }
+
         override def toString: String = itemDamage.toString + " x" + count
     }
 
     private[TileAdvQuarry] case class BlockWrapper(state: IBlockState, ignoreProperty: Boolean = false, ignoreMeta: Boolean = false)
-      extends java.util.function.Predicate[IBlockState] with (IBlockState => Boolean) {
+      extends java.util.function.Predicate[IBlockState] {
 
-        override def apply(v1: IBlockState): Boolean = contain(v1)
+        def apply(v1: IBlockState): Boolean = contain(v1)
 
         def contain(that: IBlockState): Boolean = {
             if (ignoreMeta) {

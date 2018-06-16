@@ -46,7 +46,7 @@ public class GuiScreenA extends GuiScreen {
 
     @Override
     protected void keyTyped(final char typedChar, final int keyCode) {
-        if (keyCode == Keyboard.KEY_ESCAPE)
+        if (keyCode == Keyboard.KEY_ESCAPE || this.mc.gameSettings.keyBindInventory.isActiveAndMatches(keyCode))
             showParent();
     }
 }
