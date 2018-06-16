@@ -87,13 +87,19 @@ object WorkbenchRecipes {
 
     def addSeqRecipe(output: ItemDamage, energy: Int, inputs: Seq[Int => ItemStack])(implicit showInJEI: Boolean = true, unit: EnergyUnit): Unit = {
         val newRecipe = new R1(output, unit.multiple * energy, showInJEI, inputs)
-        recipes put(output, newRecipe)
+        if (energy > 0)
+            recipes put(output, newRecipe)
+        else
+            QuarryPlus.LOGGER.error(s"Energy of Workbench Recipe is 0. $newRecipe")
     }
 
     def addListRecipe(output: ItemDamage, energy: Int, inputs: java.util.List[java.util.function.IntFunction[ItemStack]],
                       showInJEI: Boolean, unit: EnergyUnit): Unit = {
         val newRecipe = new R2(output, unit.multiple * energy, showInJEI, inputs)
-        recipes put(output, newRecipe)
+        if (energy > 0)
+            recipes put(output, newRecipe)
+        else
+            QuarryPlus.LOGGER.error(s"Energy of Workbench Recipe is 0. $newRecipe")
     }
 
     def getRecipeMap: Map[ItemDamage, WorkbenchRecipes] = recipes.toMap

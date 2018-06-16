@@ -91,10 +91,17 @@ public class BlockAdvQuarry extends ADismCBlock {
                 }
             }
             return true;
-        } else if (stack != null && stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == 0) {
-            if (!worldIn.isRemote)
-                Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t ->
-                    t.sendEnchantMassage(playerIn));
+        } else if (stack != null && stack.getItem() == QuarryPlusI.itemTool()) {
+            switch (stack.getItemDamage()) {
+                case 0:
+                    if (!worldIn.isRemote)
+                        Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t ->
+                            t.sendEnchantMassage(playerIn));
+                    break;
+                case 2:
+                    QuarryPlus.proxy.openAdvQuarryPumpGui(worldIn, playerIn, (TileAdvQuarry) worldIn.getTileEntity(pos), facing);
+                    break;
+            }
             return true;
         } else if (Config.content().noEnergy() && stack != null && stack.getItem() == Items.STICK) {
             if (!worldIn.isRemote) {

@@ -237,12 +237,12 @@ public class QuarryPlus {
 
     @SubscribeEvent
     public void onWorldUnload(WorldEvent.Unload event) {
-        TileMarker.Link[] la = TileMarker.linkList.toArray(new TileMarker.Link[TileMarker.linkList.size()]);
+        TileMarker.Link[] la = TileMarker.linkList.toArray(new TileMarker.Link[0]);
         for (TileMarker.Link link : la) {
             if (link.w == event.getWorld()) link.removeConnection(false);
         }
 
-        TileMarker.Laser[] lb = TileMarker.laserList.toArray(new TileMarker.Laser[TileMarker.laserList.size()]);
+        TileMarker.Laser[] lb = TileMarker.laserList.toArray(new TileMarker.Laser[0]);
         for (TileMarker.Laser laser : lb) {
             if (laser.w == event.getWorld()) laser.destructor();
         }

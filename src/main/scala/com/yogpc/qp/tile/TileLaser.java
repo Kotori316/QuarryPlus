@@ -44,7 +44,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
     /**
      * To target table.
      */
-    public Vec3d[] lasers;
+    public Vec3d[] lasers = new Vec3d[0];
     private final List<BlockPos> targets = new ArrayList<>();
 
     protected byte unbreaking;
