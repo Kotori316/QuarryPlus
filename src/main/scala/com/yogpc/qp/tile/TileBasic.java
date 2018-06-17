@@ -39,8 +39,10 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.Optional;
@@ -134,18 +136,23 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
 
     private byte S_addDroppedItems(final Collection<ItemStack> collection, final IBlockState state, final BlockPos pos) {
         Block block = state.getBlock();
-        if (block.canSilkHarvest(getWorld(), pos, state, null) && this.silktouch
+        byte i;
+        QuarryFakePlayer fakePlayer = QuarryFakePlayer.get(((WorldServer) getWorld()));
+        fakePlayer.setHeldItem(EnumHand.MAIN_HAND, getEnchantedPickaxe());
+        if (block.canSilkHarvest(getWorld(), pos, state, fakePlayer) && this.silktouch
             && silktouchList.contains(new BlockData(block, state)) == this.silktouchInclude) {
             collection.add((ItemStack) ReflectionHelper.invoke(createStackedBlock, block, state));
-            return -1;
+            i = -1;
         } else {
             boolean b = fortuneList.contains(new BlockData(block, state)) == this.fortuneInclude;
             byte fortuneLevel = b ? this.fortune : 0;
             NonNullList<ItemStack> list = NonNullList.create();
             list.addAll(block.getDrops(getWorld(), pos, state, fortuneLevel));
             collection.addAll(list);
-            return fortuneLevel;
+            i = fortuneLevel;
         }
+        fakePlayer.setHeldItem(EnumHand.MAIN_HAND, VersionUtil.empty());
+        return i;
     }
 
     public static final Method createStackedBlock = ReflectionHelper.getMethod(Block.class,

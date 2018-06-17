@@ -41,7 +41,7 @@ class TilePlacer extends TileEntity with HasInv {
         val state = world.getBlockState(pos)
         state.getBlock.isAir(state, world, pos)
     }
-    private[this] lazy val fakePlayer = new QuarryFakePlayer(getWorld.asInstanceOf[WorldServer])
+    private[this] lazy val fakePlayer = QuarryFakePlayer.get(getWorld.asInstanceOf[WorldServer])
 
     def updateTick(): Unit = {
         val facing = getWorld.getBlockState(getPos).getValue(ADismCBlock.FACING)
@@ -105,6 +105,7 @@ class TilePlacer extends TileEntity with HasInv {
         if (lastIndex < tile.getSizeInventory)
             if (VersionUtil.isEmpty(fakePlayer.inventory.getCurrentItem))
                 tile.setInventorySlotContents(lastIndex, VersionUtil.empty)
+        playerInvCopy.resetItems()
     }
 
     override def readFromNBT(compound: NBTTagCompound): Unit = {

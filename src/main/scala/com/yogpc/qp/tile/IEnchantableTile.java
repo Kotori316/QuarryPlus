@@ -26,6 +26,7 @@ import javax.annotation.Nullable;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Enchantments;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.text.ITextComponent;
@@ -43,6 +44,9 @@ public interface IEnchantableTile {
     int EfficiencyID = Enchantment.getEnchantmentID(Enchantments.EFFICIENCY);
     int UnbreakingID = Enchantment.getEnchantmentID(Enchantments.UNBREAKING);
 
+    /**
+     * Called after enchantment setting.
+     */
     void G_reinit();
 
     /**
@@ -59,6 +63,15 @@ public interface IEnchantableTile {
 
     default void sendEnchantMassage(EntityPlayer player) {
         Util.getEnchantmentsChat(this).forEach(c -> VersionUtil.sendMessage(player, c));
+    }
+
+    default ItemStack getEnchantedPickaxe() {
+        ItemStack stack = new ItemStack(Items.DIAMOND_PICKAXE);
+        getEnchantments().entrySet().stream()
+            .map(keys(Enchantment::getEnchantmentByID))
+            .filter(byKey(APacketTile.nonNull))
+            .forEach(entry(stack::addEnchantment));
+        return stack;
     }
 
     //Move static methods to this inner class because static method in an interface is not supported by Scala 2.11.1.
