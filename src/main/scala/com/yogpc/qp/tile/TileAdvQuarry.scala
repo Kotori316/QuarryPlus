@@ -23,8 +23,8 @@ import net.minecraft.nbt.{NBTTagCompound, NBTTagList, NBTTagLong}
 import net.minecraft.util.math.BlockPos.MutableBlockPos
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos, ChunkPos}
 import net.minecraft.util.text.TextComponentString
-import net.minecraft.util.{EnumFacing, ITickable, NonNullList}
-import net.minecraft.world.World
+import net.minecraft.util.{EnumFacing, EnumHand, ITickable, NonNullList}
+import net.minecraft.world.{World, WorldServer}
 import net.minecraftforge.common.ForgeChunkManager.Type
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.util.Constants
@@ -210,11 +210,14 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                         useEnergy(requireEnergy, requireEnergy, true)
                         dig.foreach(p => {
                             val state = getWorld.getBlockState(p)
-                            if (ench.silktouch && state.getBlock.canSilkHarvest(getWorld, p, state, null)) {
+                            val fakePlayer = QuarryFakePlayer.get(getWorld.asInstanceOf[WorldServer])
+                            fakePlayer.setHeldItem(EnumHand.MAIN_HAND, getEnchantedPickaxe)
+                            if (ench.silktouch && state.getBlock.canSilkHarvest(getWorld, p, state, fakePlayer)) {
                                 list.add(ReflectionHelper.invoke(TileBasic.createStackedBlock, state.getBlock, state).asInstanceOf[ItemStack])
                             } else {
                                 TileBasic.getDrops(getWorld, p, state, state.getBlock, ench.fortune, list)
                             }
+                            fakePlayer.setHeldItem(EnumHand.MAIN_HAND, VersionUtil.empty())
                             getWorld.setBlockState(p, Blocks.AIR.getDefaultState, 2)
                         })
                         if (shear.nonEmpty) {
@@ -425,6 +428,8 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
       * @param value level
       */
     override def setEnchantent(id: Short, value: Short) = ench = ench.set(id, value)
+
+    override def getEnchantedPickaxe: ItemStack = ench.pickaxe
 
     override def isItemValidForSlot(index: Int, stack: ItemStack) = false
 
@@ -758,6 +763,10 @@ object TileAdvQuarry {
     private[TileAdvQuarry] case class QEnch(efficiency: Int, unbreaking: Int, fortune: Int, silktouch: Boolean) extends INBTWritable {
 
         require(efficiency >= 0 && unbreaking >= 0 && fortune >= 0, "Chunk Destroyer Enchantment error")
+        val pickaxe = new ItemStack(net.minecraft.init.Items.DIAMOND_PICKAXE)
+        EnchantmentHelper.setEnchantments(getMap.collect {
+            case (id, level) if level > 0 => (Enchantment.getEnchantmentByID(id), Int.box(level))
+        }.asJava, pickaxe)
 
         import IEnchantableTile._
 

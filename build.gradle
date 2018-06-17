@@ -38,7 +38,7 @@ minecraft {
     mappings = "snapshot_20171003"
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
     replace "\${version}", project.version
-    replace '@FINGERPRINT@', hasProperty('signSHA1') ? getProperty('signSHA1') : ""
+    replace '@FINGERPRINT@', project.hasProperty('signSHA1') ? project.getProperty('signSHA1') : ""
 }
 
 repositories {
@@ -115,7 +115,8 @@ task signJar(type: SignJar, dependsOn: reobfJar) {
 
     // Skips if the keyStore property is missing.
     onlyIf {
-        project.hasProperty('keyStore')
+//        project.hasProperty('keyStore')
+        true
     }
 
     // findProperty allows us to reference the property without it existing.
