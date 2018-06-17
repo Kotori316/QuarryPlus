@@ -49,7 +49,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
     override def isWorking = !finished
 
     override def G_reinit() = {
-        configure(128d, 1024d)
+        configure(ench.getRecieveEnergy, 1024d)
         finished = true
         queueBuilt = false
         skip = false
@@ -530,6 +530,7 @@ object TileAdvPump {
 
     private final val NBT_PENCH = "nbt_pench"
     private[this] final val defaultBaseEnergy = Seq(10, 8, 6, 4)
+    private[this] final val defaultRecieveEnergy = Seq(32, 64, 128, 256, 512, 1024)
     val defaultEnch = PEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false, BlockPos.ORIGIN, BlockPos.ORIGIN)
 
     case class PEnch(efficiency: Int, unbreaking: Int, fortune: Int, silktouch: Boolean, start: BlockPos, end: BlockPos) extends INBTWritable {
@@ -577,6 +578,8 @@ object TileAdvPump {
         def getEnergy(placeFrame: Boolean): Double = {
             defaultBaseEnergy(if (unbreaking >= 3) 3 else unbreaking) * (if (placeFrame) 2.5 else 1)
         }
+
+        def getRecieveEnergy: Double = if (efficiency >= 5) defaultRecieveEnergy(5) else defaultRecieveEnergy(efficiency)
 
         def inRange(tilePos: BlockPos, pos: BlockPos): Boolean = {
             if (square) {

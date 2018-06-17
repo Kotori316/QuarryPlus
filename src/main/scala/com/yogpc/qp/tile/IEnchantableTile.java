@@ -43,6 +43,9 @@ public interface IEnchantableTile {
     int EfficiencyID = Enchantment.getEnchantmentID(Enchantments.EFFICIENCY);
     int UnbreakingID = Enchantment.getEnchantmentID(Enchantments.UNBREAKING);
 
+    /**
+     * Called after enchantment setting.
+     */
     void G_reinit();
 
     /**
