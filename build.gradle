@@ -115,8 +115,7 @@ task signJar(type: SignJar, dependsOn: reobfJar) {
 
     // Skips if the keyStore property is missing.
     onlyIf {
-//        project.hasProperty('keyStore')
-        true
+        project.hasProperty('keyStore')
     }
 
     // findProperty allows us to reference the property without it existing.
