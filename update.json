@@ -1,11 +1,12 @@
 {
   "homepage": "https://minecraft.curseforge.com/projects/additional-enchanted-miner",
   "promos": {
-    "1.12.2-recommended": "0.9.2",
-    "1.11.2-recommended": "0.9.1",
-    "1.10.2-recommended": "0.9.1"
+    "1.12.2-recommended": "0.9.3",
+    "1.11.2-recommended": "0.9.3",
+    "1.10.2-recommended": "0.9.3"
   },
   "1.12.2": {
+    "0.9.3": "Added liquid select GUI to Chunk Destroyer.",
     "0.9.2": "Quarries now can pick Thaumcraft crystals.",
     "0.9.1": "Added message for disabled machines.",
     "0.9.0": "Fixed an issue that WorkbenchPlus didn't show its content and energy in dedicated server.",
@@ -29,6 +30,7 @@
     "0.6.8": "Added Forge version check system."
   },
   "1.11.2": {
+    "0.9.3": "Added liquid select GUI to Chunk Destroyer.",
     "0.9.1": "Added message for disabled machines.",
     "0.9.0": "Fixed an issue that WorkbenchPlus didn't show its content and energy in dedicated server.",
     "0.8.9": "None.",
@@ -50,6 +52,7 @@
     "0.6.8": "Added Forge version check system."
   },
   "1.10.2": {
+    "0.9.3": "Added liquid select GUI to Chunk Destroyer.",
     "0.9.1": "Added message for disabled machines.",
     "0.9.0": "Fixed an issue that WorkbenchPlus didn't show its content and energy in dedicated server.",
     "0.8.9": "None.",
