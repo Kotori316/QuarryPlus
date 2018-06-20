@@ -46,7 +46,7 @@ import net.minecraft.world.World;
 public class BlockPlacer extends ADismCBlock {
 
     public BlockPlacer() {
-        super(Material.PISTON, QuarryPlus.Names.placer, ItemBlock::new);
+        super(Material.IRON, QuarryPlus.Names.placer, ItemBlock::new);
         setHardness(3.5F);
         setSoundType(SoundType.STONE);
         //Random tick setting is in Config.

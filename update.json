@@ -1,11 +1,12 @@
 {
   "homepage": "https://minecraft.curseforge.com/projects/additional-enchanted-miner",
   "promos": {
-    "1.12.2-recommended": "0.9.4",
+    "1.12.2-recommended": "0.9.5",
     "1.11.2-recommended": "0.9.4",
     "1.10.2-recommended": "0.9.4"
   },
   "1.12.2": {
+    "0.9.5": "Fixed no drop when pickaxe from Mekanism is used. Closed #22.",
     "0.9.4": "Fixed an issue that fingerprint is disabled and closed #21.",
     "0.9.3": "Added liquid select GUI to Chunk Destroyer.",
     "0.9.2": "Quarries now can pick Thaumcraft crystals.",

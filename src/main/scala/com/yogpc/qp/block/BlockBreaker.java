@@ -60,7 +60,7 @@ public class BlockBreaker extends ADismCBlock {
     private final ArrayList<ItemStack> drops = new ArrayList<>();
 
     public BlockBreaker() {
-        super(Material.PISTON, QuarryPlus.Names.breaker, ItemBlockBreaker::new);
+        super(Material.ROCK, QuarryPlus.Names.breaker, ItemBlockBreaker::new);
         setHardness(3.5F);
         setSoundType(SoundType.STONE);
         setDefaultState(blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(POWERED, false));

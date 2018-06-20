@@ -32,7 +32,7 @@ import net.minecraft.world.World;
 
 public class BlockAdvPump extends ADismCBlock {
     public BlockAdvPump() {
-        super(Material.ANVIL, QuarryPlus.Names.advpump, ItemBlockAdvPump::new);
+        super(Material.IRON, QuarryPlus.Names.advpump, ItemBlockAdvPump::new);
         setHardness(1.5F);
         setResistance(10F);
         setSoundType(SoundType.STONE);

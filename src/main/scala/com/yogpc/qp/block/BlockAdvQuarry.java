@@ -35,7 +35,7 @@ import net.minecraft.world.World;
 public class BlockAdvQuarry extends ADismCBlock {
 
     public BlockAdvQuarry() {
-        super(Material.ANVIL, QuarryPlus.Names.advquarry, ItemBlockEnchantable::new);
+        super(Material.IRON, QuarryPlus.Names.advquarry, ItemBlockEnchantable::new);
         setHardness(1.5F);
         setResistance(10F);
         setSoundType(SoundType.STONE);
