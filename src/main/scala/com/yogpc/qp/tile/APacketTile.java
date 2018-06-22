@@ -19,6 +19,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import com.yogpc.qp.Config;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -36,6 +37,7 @@ public abstract class APacketTile extends TileEntity {
     public static final Consumer<IChunkLoadTile> requestTicket = IChunkLoadTile::requestTicket;
 
     private final ITextComponent displayName;
+    protected final boolean machineDisabled;
 
     protected APacketTile() {
         if (HasInv.class.isInstance(this)) {
@@ -47,6 +49,8 @@ public abstract class APacketTile extends TileEntity {
         } else {
             displayName = new TextComponentString("APacketTile");
         }
+
+        machineDisabled = Config.content().disableMapJ().get(getSymbol());
     }
 
     @Override
@@ -70,4 +74,6 @@ public abstract class APacketTile extends TileEntity {
     public ITextComponent getDisplayName() {
         return displayName;
     }
+
+    protected abstract scala.Symbol getSymbol();
 }

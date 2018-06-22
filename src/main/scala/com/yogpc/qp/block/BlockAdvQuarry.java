@@ -153,7 +153,7 @@ public class BlockAdvQuarry extends ADismCBlock {
 
     @Override
     public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items) {
-        if (!Config.content().disableChunkDestroyer()) {
+        if (!Config.content().disableMapJ().get(TileAdvQuarry.SYMBOL())) {
             super.getSubBlocks(itemIn, items);
         }
     }

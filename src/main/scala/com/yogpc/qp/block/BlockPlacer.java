@@ -42,8 +42,10 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import scala.Symbol;
 
 public class BlockPlacer extends ADismCBlock {
+    public static final Symbol SYMBOL = Symbol.apply("PlacerPlus");
 
     public BlockPlacer() {
         super(Material.IRON, QuarryPlus.Names.placer, ItemBlock::new);
@@ -56,7 +58,7 @@ public class BlockPlacer extends ADismCBlock {
     @Override
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
         super.updateTick(worldIn, pos, state, rand);
-        if (!worldIn.isRemote) {
+        if (!worldIn.isRemote && !Config.content().disableMapJ().get(SYMBOL)) {
             Optional.ofNullable((TilePlacer) worldIn.getTileEntity(pos)).ifPresent(TilePlacer::updateTick);
         }
     }

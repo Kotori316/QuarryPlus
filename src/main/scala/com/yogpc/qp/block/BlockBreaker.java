@@ -56,7 +56,7 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.FakePlayerFactory;
 
 public class BlockBreaker extends ADismCBlock {
-
+    public static final scala.Symbol SYMBOL = scala.Symbol.apply("BreakerPlus");
     private final ArrayList<ItemStack> drops = new ArrayList<>();
 
     public BlockBreaker() {
@@ -70,7 +70,7 @@ public class BlockBreaker extends ADismCBlock {
     @Override
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
         super.updateTick(worldIn, pos, state, rand);
-        if (!worldIn.isRemote) {
+        if (!worldIn.isRemote && !Config.content().disableMapJ().get(SYMBOL)) {
             EnumFacing facing = state.getValue(FACING);
             BlockPos pos1 = pos.offset(facing);
             if (pos1.getY() < 1)

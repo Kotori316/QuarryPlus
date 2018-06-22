@@ -53,7 +53,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 
     override def update() = {
         super.update()
-        if (!getWorld.isRemote && !Config.content.disableController) {
+        if (!getWorld.isRemote && !machineDisabled) {
             if (mode is TileAdvQuarry.MAKEFRAME) {
                 @inline
                 def makeFrame(): Unit = {
@@ -459,7 +459,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 
     override def isUsableByPlayer(player: EntityPlayer) = self.getWorld.getTileEntity(self.getPos) eq this
 
-    override def getDebugmessages = if (!Config.content.disableController) {
+    override def getDebugmessages = if (!machineDisabled) {
         import scala.collection.JavaConverters._
         List("Items to extract = " + cacheItems.list.size,
             "Liquid to extract = " + fluidStacks.size,
@@ -552,7 +552,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 
     def stickActivated(player: EntityPlayer): Unit = {
         //Called when noEnergy is true and block is right clicked with stick (item)
-        if (Config.content.disableChunkDestroyer) {
+        if (machineDisabled) {
             VersionUtil.sendMessage(player, new TextComponentString("ChunkDestroyer is disabled."), true)
         } else if (mode is TileAdvQuarry.NOTNEEDBREAK) {
             mode set TileAdvQuarry.MAKEFRAME
@@ -731,9 +731,12 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
     }
 
     override def getName = getDebugName
+
+    override protected def getSymbol = TileAdvQuarry.SYMBOL
 }
 
 object TileAdvQuarry {
+    final val SYMBOL = Symbol("ChunkDestroyer")
 
     final val MAX_STORED = 300 * 256
     final val noDigBLOCKS = Set(

@@ -45,6 +45,7 @@ import static com.yogpc.qp.block.ADismCBlock.ACTING;
 @net.minecraftforge.fml.common.Optional.Interface(iface = "cofh.api.block.IDismantleable", modid = QuarryPlus.Optionals.COFH_block)
 public class BlockController extends Block implements IDismantleable {
     private static final Field logic_spawnDelay = ReflectionHelper.findField(MobSpawnerBaseLogic.class, "spawnDelay", "field_98286_b");
+    public static final scala.Symbol SYMBOL = scala.Symbol.apply("SpawnerController");
     public final ItemBlock itemBlock;
 
     public BlockController() {
@@ -74,7 +75,7 @@ public class BlockController extends Block implements IDismantleable {
         if (InvUtils.isDebugItem(playerIn, hand)) return true;
         if (!playerIn.isSneaking()) {
             if (!worldIn.isRemote) {
-                if (!Config.content().disableController()) {
+                if (!Config.content().disableMapJ().get(SYMBOL)) {
                     List<EntityEntry> entries = ForgeRegistries.ENTITIES.getValuesCollection().stream().filter(entity ->
                         entity.getEntityClass() != null &&
                             !Modifier.isAbstract(entity.getEntityClass().getModifiers()) &&
@@ -104,7 +105,7 @@ public class BlockController extends Block implements IDismantleable {
     @Override
     @SuppressWarnings("deprecation")
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
-        if (!worldIn.isRemote && !Config.content().disableController()) {
+        if (!worldIn.isRemote && !Config.content().disableMapJ().get(SYMBOL)) {
             boolean r = worldIn.isBlockPowered(pos);
             boolean m = state.getValue(ACTING);
             if (r && !m) {
