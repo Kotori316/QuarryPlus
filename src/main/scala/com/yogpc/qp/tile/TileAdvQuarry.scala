@@ -459,15 +459,13 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 
     override def isUsableByPlayer(player: EntityPlayer) = self.getWorld.getTileEntity(self.getPos) eq this
 
-    override def getDebugmessages = if (!machineDisabled) {
+    override def getDebugmessages = {
         import scala.collection.JavaConverters._
         List("Items to extract = " + cacheItems.list.size,
             "Liquid to extract = " + fluidStacks.size,
             "Next target = " + target.toString,
             mode.toString,
             digRange.toString).map(toComponentString).asJava
-    } else {
-        java.util.Collections.singletonList(new TextComponentString("ChunkDestroyer is disabled."))
     }
 
     override def hasCapability(capability: Capability[_], facing: EnumFacing) = {

@@ -72,7 +72,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
 
     @Override
     public boolean isWorking() {
-        return currentRecipe.hasContent();
+        return !machineDisabled && currentRecipe.hasContent();
     }
 
     @Override

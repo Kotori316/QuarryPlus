@@ -1,7 +1,6 @@
 package com.yogpc.qp.tile
 
 import java.lang.{Boolean => JBool}
-import java.util.Collections
 
 import com.yogpc.qp.block.ADismCBlock
 import com.yogpc.qp.compat.{INBTReadable, INBTWritable}
@@ -326,8 +325,6 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
     override def getDebugName = TranslationKeys.advpump
 
     override def getDebugmessages: java.util.List[TextComponentString] = {
-        if (machineDisabled)
-            return Collections.singletonList(toComponentString("AdvancedPump is disabled."))
         List("Range = " + ench.distance,
             "target : " + target,
             "Finished : " + finished,

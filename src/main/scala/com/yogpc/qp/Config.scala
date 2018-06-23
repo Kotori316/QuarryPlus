@@ -80,10 +80,10 @@ object Config {
 
         val enableMap = (Disables.map(s => {
             val key = "Disable" + s.name
-            (s, !configuration.get(Configuration.CATEGORY_GENERAL, key, false, key + " [Default: False]").setRequiresMcRestart(true).getBoolean)
+            (s, !configuration.get(Configuration.CATEGORY_GENERAL, key, false).setRequiresMcRestart(true).setShowInGui(false).getBoolean)
         }) ++ DisableBC.map(s => {
             val key = "Disable" + s.name
-            (s, !configuration.get(Configuration.CATEGORY_GENERAL, key, false, key + " [Default: False]").setRequiresMcRestart(true).getBoolean &&
+            (s, !configuration.get(Configuration.CATEGORY_GENERAL, key, false).setRequiresMcRestart(true).setShowInGui(false).getBoolean &&
               Loader.isModLoaded(QuarryPlus.Optionals.Buildcraft_modID))
         })).toMap
         val disableMapJ = enableMap.map { case (s, b) => (s, Boolean.box(!b)) }.asJava
