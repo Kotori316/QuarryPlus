@@ -25,8 +25,10 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.Chunk;
+import scala.Symbol;
 
 public class TileMiningWell extends TileBasic implements ITickable {
+    public static final scala.Symbol SYMBOL = scala.Symbol.apply("MiningwellPlus");
 
     public boolean working;
 
@@ -54,7 +56,7 @@ public class TileMiningWell extends TileBasic implements ITickable {
     @Override
     public void update() {
         super.update();
-        if (!getWorld().isRemote) {
+        if (!getWorld().isRemote && !machineDisabled) {
             int depth = getPos().getY() - 1;
             while (!S_checkTarget(depth)) {
                 if (this.working)
@@ -144,5 +146,10 @@ public class TileMiningWell extends TileBasic implements ITickable {
             validate();
             getWorld().setTileEntity(getPos(), this);
         }
+    }
+
+    @Override
+    protected Symbol getSymbol() {
+        return SYMBOL;
     }
 }

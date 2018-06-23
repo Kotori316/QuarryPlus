@@ -60,6 +60,7 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import scala.Symbol;
 
 @Optional.Interface(iface = "buildcraft.api.tiles.ITileAreaProvider", modid = QuarryPlus.Optionals.Buildcraft_tiles)
 public class TileMarker extends APacketTile implements ITileAreaProvider, ITickable, IChunkLoadTile, IDebugSender {
@@ -69,10 +70,16 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
     public static final IndexOnlyList<Laser> LASER_INDEX = new IndexOnlyList<>(laserList, laserList);
 
     private static final int MAX_SIZE = 256;
+    public static final Symbol SYMBOL = Symbol.apply("MarkerPlus");
     private final boolean bcLoaded;
 
     public TileMarker() {
         this.bcLoaded = Loader.isModLoaded(QuarryPlus.Optionals.Buildcraft_modID);
+    }
+
+    @Override
+    protected Symbol getSymbol() {
+        return SYMBOL;
     }
 
     public Link link;

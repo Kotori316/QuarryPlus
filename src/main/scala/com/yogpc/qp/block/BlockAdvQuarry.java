@@ -39,7 +39,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class BlockAdvQuarry extends ADismCBlock {
 
     public BlockAdvQuarry() {
-        super(Material.ANVIL, QuarryPlus.Names.advquarry, ItemBlockEnchantable::new);
+        super(Material.IRON, QuarryPlus.Names.advquarry, ItemBlockEnchantable::new);
         setHardness(1.5F);
         setResistance(10F);
         setSoundType(SoundType.STONE);
@@ -165,7 +165,7 @@ public class BlockAdvQuarry extends ADismCBlock {
     @Override
     @SideOnly(Side.CLIENT)
     public void getSubBlocks(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> list) {
-        if (!Config.content().disableChunkDestroyer()) {
+        if (!Config.content().disableMapJ().get(TileAdvQuarry.SYMBOL())) {
             super.getSubBlocks(itemIn, tab, list);
         }
     }

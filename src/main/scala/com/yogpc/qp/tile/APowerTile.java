@@ -315,7 +315,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
         left.add(ItemQuarryDebug.energyToString(this).getText());
         if (isDebugSender) {
             IDebugSender sender = (IDebugSender) this;
-            sender.getDebugmessages().stream().map(ITextComponent::getUnformattedComponentText).forEach(left::add);
+            sender.getMessage().stream().map(ITextComponent::getUnformattedComponentText).forEach(left::add);
         }
     }
 

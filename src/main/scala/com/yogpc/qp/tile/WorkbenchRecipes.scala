@@ -2,12 +2,12 @@ package com.yogpc.qp.tile
 
 import java.util.Collections
 
+import com.yogpc.qp.block.{BlockBreaker, BlockController, BlockMover, BlockPlacer}
 import com.yogpc.qp.item.ItemTool
 import com.yogpc.qp.version.VersionUtil
 import com.yogpc.qp.{Config, QuarryPlus}
 import net.minecraft.block.Block
 import net.minecraft.item.{Item, ItemStack}
-import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.oredict.OreDictionary
 
 import scala.collection.JavaConverters._
@@ -138,25 +138,28 @@ object WorkbenchRecipes {
         import net.minecraft.init.Blocks._
         import net.minecraft.init.Items._
         implicit val showInJEI: Boolean = true
-        val bcLoaded = Loader.isModLoaded(QuarryPlus.Optionals.Buildcraft_modID)
+        val map = Map(
+            BlockController.SYMBOL -> (ItemDamage(blockController), 1000000, Seq(F(NETHER_STAR, 1), F(GOLD_INGOT, 40), F(IRON_INGOT, 40), F(ROTTEN_FLESH, 20), F(ARROW, 20), F(BONE, 20), F(GUNPOWDER, 20), F(GHAST_TEAR, 5), F(MAGMA_CREAM, 10), F(BLAZE_ROD, 14), F(CARROT, 2), F(POTATO, 2))),
+            TileMiningWell.SYMBOL -> (ItemDamage(blockMiningWell), 160000, Seq(F(DIAMOND, 1), F(GOLD_INGOT, 3), F(IRON_INGOT, 16), F(REDSTONE, 8), F(ENDER_PEARL, 1), F(NETHER_STAR, 1d / 25d))),
+            BlockBreaker.SYMBOL -> (ItemDamage(blockBreaker), 320000, Seq(F(DIAMOND, 12), F(GOLD_INGOT, 16), F(IRON_INGOT, 32), F(REDSTONE, 32), F(ENDER_PEARL, 1))),
+            TileLaser.SYMBOL -> (ItemDamage(blockLaser), 640000, Seq(F(DIAMOND, 8), F(GOLD_INGOT, 16), F(REDSTONE, 96), F(GLOWSTONE_DUST, 32), F(OBSIDIAN, 16), F(GLASS, 72), F(ENDER_PEARL, 1d / 5d))),
+            TileAdvQuarry.SYMBOL -> (ItemDamage(blockChunkdestroyer), 3200000, Seq(F(blockQuarry, 3d / 2d), F(blockPump, 1), F(itemTool, 1, 1), F(blockMarker, 3d / 2d), F(DIAMOND_BLOCK, 4), F(EMERALD_BLOCK, 4), F(ENDER_EYE, 32), F(NETHER_STAR, 1), F(net.minecraft.init.Items.SKULL, 24d / 25d, 5))),
+            TileAdvPump.SYMBOL -> (ItemDamage(blockStandalonePump), 3200000, Seq(F(blockPump, 1), F(blockMiningWell, 1), F(blockMarker, 3d / 2d))),
+            BlockMover.SYMBOL -> (ItemDamage(blockMover), 320000, Seq(F(DIAMOND, 16), F(GOLD_INGOT, 4), F(IRON_INGOT, 4), F(REDSTONE, 24), F(OBSIDIAN, 32), F(ANVIL, 1), F(NETHER_STAR, 1d / 25d), F(ENDER_PEARL, 1))),
+            BlockPlacer.SYMBOL -> (ItemDamage(blockPlacer), 320000, Seq(F(DIAMOND, 12), F(GOLD_INGOT, 32), F(IRON_INGOT, 16), F(REDSTONE, 32), F(ENDER_PEARL, 1))),
+            Symbol("PumpPlus") -> (ItemDamage(blockPump), 320000, Seq(F(GOLD_INGOT, 8), F(IRON_INGOT, 24), F(REDSTONE, 32), F(GLASS, 256), F(CACTUS, 40), F(NETHER_STAR, 1d / 25d), F(ENDER_PEARL, 2d / 5d))),
+            TileMarker.SYMBOL -> (ItemDamage(blockMarker), 20000, Seq(F(GOLD_INGOT, 7d / 2d), F(IRON_INGOT, 4), F(REDSTONE, 6), F(DYE, 6, 4), F(GLOWSTONE_DUST, 2), F(ENDER_PEARL, 2d / 5d))),
+            TileRefinery.SYMBOL -> (ItemDamage(blockRefinery), 640000, Seq(F(DIAMOND, 18), F(GOLD_INGOT, 12), F(IRON_INGOT, 12), F(GLASS, 64), F(REDSTONE, 16), F(ANVIL, 1), F(OBSIDIAN, 12), F(NETHER_STAR, 1d / 25d), F(ENDER_PEARL, 4d / 5d))),
+            TileQuarry.SYMBOL -> (ItemDamage(blockQuarry), 320000, Seq(F(DIAMOND, 16), F(GOLD_INGOT, 16), F(IRON_INGOT, 32), F(REDSTONE, 8), F(ENDER_PEARL, 2), F(NETHER_STAR, 3d / 25d)))
+        )
+        map.filterKeys(Config.content.enableMap).foreach {
+            case (_, (item, energy, recipe)) => addSeqRecipe(item, energy, recipe)
+        }
+
         addSeqRecipe(ItemDamage(magicmirror, 1), 32000, Seq(F(ENDER_EYE, 8), F(magicmirror, 1)))
         addSeqRecipe(ItemDamage(magicmirror, 2), 32000, Seq(F(ENDER_EYE, 8), F(magicmirror, 1), F(OBSIDIAN, 4), F(DIRT, 8), F(PLANKS, 8)))
-        if (!Config.content.disableController)
-            addSeqRecipe(ItemDamage(blockController), 1000000, Seq(F(NETHER_STAR, 1), F(GOLD_INGOT, 40), F(IRON_INGOT, 40), F(ROTTEN_FLESH, 20), F(ARROW, 20), F(BONE, 20), F(GUNPOWDER, 20), F(GHAST_TEAR, 5), F(MAGMA_CREAM, 10), F(BLAZE_ROD, 14), F(CARROT, 2), F(POTATO, 2)))
-        addSeqRecipe(ItemDamage(blockMarker), 20000, Seq(F(GOLD_INGOT, 7d / 2d), F(IRON_INGOT, 4), F(REDSTONE, 6), F(DYE, 6, 4), F(GLOWSTONE_DUST, 2), F(ENDER_PEARL, 2d / 5d)))
-        addSeqRecipe(ItemDamage(blockQuarry), 320000, Seq(F(DIAMOND, 16), F(GOLD_INGOT, 16), F(IRON_INGOT, 32), F(REDSTONE, 8), F(ENDER_PEARL, 2), F(NETHER_STAR, 3d / 25d)))
-        addSeqRecipe(ItemDamage(blockMover), 320000, Seq(F(DIAMOND, 16), F(GOLD_INGOT, 4), F(IRON_INGOT, 4), F(REDSTONE, 24), F(OBSIDIAN, 32), F(ANVIL, 1), F(NETHER_STAR, 1d / 25d), F(ENDER_PEARL, 1)))
-        addSeqRecipe(ItemDamage(blockMiningWell), 160000, Seq(F(DIAMOND, 1), F(GOLD_INGOT, 3), F(IRON_INGOT, 16), F(REDSTONE, 8), F(ENDER_PEARL, 1), F(NETHER_STAR, 1d / 25d)))
-        addSeqRecipe(ItemDamage(blockPump), 320000, Seq(F(GOLD_INGOT, 8), F(IRON_INGOT, 24), F(REDSTONE, 32), F(GLASS, 256), F(CACTUS, 40), F(NETHER_STAR, 1d / 25d), F(ENDER_PEARL, 2d / 5d)))
-        addSeqRecipe(ItemDamage(blockRefinery), 640000, Seq(F(DIAMOND, 18), F(GOLD_INGOT, 12), F(IRON_INGOT, 12), F(GLASS, 64), F(REDSTONE, 16), F(ANVIL, 1), F(OBSIDIAN, 12), F(NETHER_STAR, 1d / 25d), F(ENDER_PEARL, 4d / 5d)))(bcLoaded, UnitMJ)
         addSeqRecipe(ItemDamage(itemTool, 0), 80000, Seq(F(DIAMOND, 2), F(GOLD_INGOT, 8), F(IRON_INGOT, 12), F(REDSTONE, 16), F(DYE, 4, 4), F(OBSIDIAN, 2), F(ENDER_PEARL, 3d / 25d)))
         addSeqRecipe(ItemDamage(ItemTool.getEditorStack), 160000, Seq(F(DIAMOND, 2), F(IRON_INGOT, 8), F(REDSTONE, 2), F(DYE, 8), F(BOOK, 32), F(FEATHER, 1), F(ENDER_PEARL, 1d / 5d)))
         addSeqRecipe(ItemDamage(itemTool, 2), 320000, Seq(F(IRON_INGOT, 32), F(LAVA_BUCKET, 6d / 5d), F(WATER_BUCKET, 6d / 5d), F(ENDER_PEARL, 3d / 25d)))
-        addSeqRecipe(ItemDamage(blockBreaker), 320000, Seq(F(DIAMOND, 12), F(GOLD_INGOT, 16), F(IRON_INGOT, 32), F(REDSTONE, 32), F(ENDER_PEARL, 1)))
-        addSeqRecipe(ItemDamage(blockPlacer), 320000, Seq(F(DIAMOND, 12), F(GOLD_INGOT, 32), F(IRON_INGOT, 16), F(REDSTONE, 32), F(ENDER_PEARL, 1)))
-        addSeqRecipe(ItemDamage(blockLaser), 640000, Seq(F(DIAMOND, 8), F(GOLD_INGOT, 16), F(REDSTONE, 96), F(GLOWSTONE_DUST, 32), F(OBSIDIAN, 16), F(GLASS, 72), F(ENDER_PEARL, 1d / 5d)))(bcLoaded, UnitMJ)
-        if (!Config.content.disableChunkDestroyer)
-            addSeqRecipe(ItemDamage(blockChunkdestroyer), 3200000, Seq(F(blockQuarry, 3d / 2d), F(blockPump, 1), F(itemTool, 1, 1), F(blockMarker, 3d / 2d), F(DIAMOND_BLOCK, 4), F(EMERALD_BLOCK, 4), F(ENDER_EYE, 32), F(NETHER_STAR, 1), F(net.minecraft.init.Items.SKULL, 24d / 25d, 5)))
-        addSeqRecipe(ItemDamage(blockStandalonePump), 3200000, Seq(F(blockPump, 1), F(blockMiningWell, 1), F(blockMarker, 3d / 2d)))
     }
 }

@@ -51,9 +51,9 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.ForgeChunkManager.Type;
-import net.minecraftforge.fml.common.ModAPIManager;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import scala.Symbol;
 
 import static com.yogpc.qp.tile.TileQuarry.Mode.BREAKBLOCK;
 import static com.yogpc.qp.tile.TileQuarry.Mode.MAKEFRAME;
@@ -62,7 +62,7 @@ import static com.yogpc.qp.tile.TileQuarry.Mode.NONE;
 import static com.yogpc.qp.tile.TileQuarry.Mode.NOTNEEDBREAK;
 
 public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTile {
-    public final boolean bccoreLoaded;
+    public static final Symbol SYMBOL = Symbol.apply("QuarryPlus");
     private int targetX, targetY, targetZ;
     public int xMin, xMax, yMin, yMax = Integer.MIN_VALUE, zMin, zMax;
     public boolean filler;
@@ -70,15 +70,17 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     @Nullable
     private Object areaProvider = null;
 
-    public TileQuarry() {
-        bccoreLoaded = ModAPIManager.INSTANCE.hasAPI(QuarryPlus.Optionals.BuildCraft_core);
+    @Override
+    protected Symbol getSymbol() {
+        return SYMBOL;
     }
 
     private void S_updateEntity() {
+        if (machineDisabled) return;
         if (this.areaProvider != null) {
             if (this.areaProvider instanceof TileMarker)
                 this.cacheItems.addAll(((TileMarker) this.areaProvider).removeFromWorldWithItem());
-            else if (bccoreLoaded && areaProvider instanceof IAreaProvider) {
+            else if (bcLoaded && areaProvider instanceof IAreaProvider) {
                 ((IAreaProvider) this.areaProvider).removeFromWorld();
             }
             this.areaProvider = null;
@@ -327,7 +329,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
             return;
 
         EnumFacing facing = getWorld().getBlockState(getPos()).getValue(BlockQuarry.FACING).getOpposite();
-        if (bccoreLoaded) {
+        if (bcLoaded) {
             Optional<ITileAreaProvider> marker = Stream.of(getNeighbors(facing))
                 .map(getWorld()::getTileEntity).filter(nonNull)
                 .map(t -> t.getCapability(TilesAPI.CAP_TILE_AREA_PROVIDER, null)).filter(nonNull).findFirst();

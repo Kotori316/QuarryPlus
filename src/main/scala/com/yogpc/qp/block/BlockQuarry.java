@@ -49,7 +49,7 @@ import net.minecraft.world.World;
 public class BlockQuarry extends ADismCBlock {
 
     public BlockQuarry() {
-        super(Material.ANVIL, QuarryPlus.Names.quarry, ItemBlockEnchantable::new);
+        super(Material.IRON, QuarryPlus.Names.quarry, ItemBlockEnchantable::new);
         setHardness(1.5F);
         setResistance(10F);
         setSoundType(SoundType.STONE);
