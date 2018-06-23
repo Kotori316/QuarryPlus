@@ -20,7 +20,7 @@ import net.minecraft.world.World;
 public class BlockWorkbench extends ADismCBlock {
 
     public BlockWorkbench() {
-        super(Material.ANVIL, QuarryPlus.Names.workbench, ItemBlock::new);
+        super(Material.IRON, QuarryPlus.Names.workbench, ItemBlock::new);
         setHardness(3F);
     }
 

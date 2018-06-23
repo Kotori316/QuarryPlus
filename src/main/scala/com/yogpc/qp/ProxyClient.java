@@ -86,9 +86,10 @@ public class ProxyClient extends ProxyCommon {
         if (!Config.content().DisableRendering()) {
             ClientRegistry.bindTileEntitySpecialRenderer(TileQuarry.class, RenderQuarry.instance());
             ClientRegistry.bindTileEntitySpecialRenderer(TileMarker.class, RenderMarker.instance());
-            if (!Config.content().disableChunkDestroyer())
+            if (!Config.content().disableMapJ().get(TileAdvQuarry.SYMBOL()))
                 ClientRegistry.bindTileEntitySpecialRenderer(TileAdvQuarry.class, RenderAdvQuarry.instance());
-            ClientRegistry.bindTileEntitySpecialRenderer(TileLaser.class, RenderLaser.instance());
+            if (!Config.content().disableMapJ().get(TileLaser.SYMBOL))
+                ClientRegistry.bindTileEntitySpecialRenderer(TileLaser.class, RenderLaser.instance());
             ClientRegistry.bindTileEntitySpecialRenderer(TileRefinery.class, RenderDistiller.instance());
             MinecraftForge.EVENT_BUS.register(Sprites.instance());
         }

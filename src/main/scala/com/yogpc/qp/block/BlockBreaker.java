@@ -54,11 +54,11 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.FakePlayerFactory;
 
 public class BlockBreaker extends ADismCBlock {
-
+    public static final scala.Symbol SYMBOL = scala.Symbol.apply("BreakerPlus");
     private final ArrayList<ItemStack> drops = new ArrayList<>();
 
     public BlockBreaker() {
-        super(Material.PISTON, QuarryPlus.Names.breaker, ItemBlockBreaker::new);
+        super(Material.ROCK, QuarryPlus.Names.breaker, ItemBlockBreaker::new);
         setHardness(3.5F);
         setSoundType(SoundType.STONE);
         setDefaultState(blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(POWERED, false));
@@ -68,7 +68,7 @@ public class BlockBreaker extends ADismCBlock {
     @Override
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
         super.updateTick(worldIn, pos, state, rand);
-        if (!worldIn.isRemote) {
+        if (!worldIn.isRemote && !Config.content().disableMapJ().get(SYMBOL)) {
             EnumFacing facing = state.getValue(FACING);
             BlockPos pos1 = pos.offset(facing);
             if (pos1.getY() < 1)

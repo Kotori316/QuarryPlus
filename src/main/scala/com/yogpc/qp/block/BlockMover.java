@@ -16,6 +16,7 @@ package com.yogpc.qp.block;
 import java.util.ArrayList;
 
 import cofh.api.block.IDismantleable;
+import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.InvUtils;
@@ -30,9 +31,11 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
+import scala.Symbol;
 
 @Optional.Interface(iface = "cofh.api.block.IDismantleable", modid = QuarryPlus.Optionals.COFH_block)
 public class BlockMover extends Block implements IDismantleable {
+    public static final Symbol SYMBOL = Symbol.apply("EnchantMover");
     public final ItemBlock itemBlock;
 
     public BlockMover() {
@@ -49,7 +52,7 @@ public class BlockMover extends Block implements IDismantleable {
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, ItemStack s, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (InvUtils.isDebugItem(playerIn, hand)) return true;
-        if (!playerIn.isSneaking()) {
+        if (!playerIn.isSneaking() && !Config.content().disableMapJ().get(SYMBOL)) {
             playerIn.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdMover(), worldIn, pos.getX(), pos.getY(), pos.getZ());
             return true;
         }

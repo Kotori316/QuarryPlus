@@ -41,6 +41,7 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import scala.Symbol;
 
 //import buildcraft.api.recipes.BuildcraftRecipeRegistry;
 //import buildcraft.api.recipes.IRefineryRecipeManager;
@@ -49,6 +50,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * See {@link buildcraft.factory.tile.TileDistiller_BC8}, {@link buildcraft.api.recipes.IRefineryRecipeManager}, {@link buildcraft.energy.BCEnergyRecipes}
  */
 public class TileRefinery extends APowerTile implements IEnchantableTile {
+    public static final Symbol SYMBOL = Symbol.apply("RefineryPlus");
     public final DistillerTank horizontalsTank = new DistillerTank("horizontalsTank");
     public final DistillerTank upTank = new DistillerTank("upTank");
     public final DistillerTank downTank = new DistillerTank("downTank");
@@ -70,13 +72,18 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
 
     public TileRefinery() {
         horizontalsTank.setCanDrain(false);
-        if (bcLoaded) {
+        if (!machineDisabled) {
 //            horizontalsTank.predicate = fluidStack -> BuildcraftRecipeRegistry.refineryRecipes.getDistillationRegistry().getRecipeForInput(fluidStack) != null;
         } else {
             horizontalsTank.predicate = fluidStack -> false;
         }
         upTank.setCanFill(false);
         downTank.setCanFill(false);
+    }
+
+    @Override
+    protected Symbol getSymbol() {
+        return SYMBOL;
     }
 
     @Override
@@ -115,7 +122,7 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
     @Override
     public void update() {
         super.update();
-        if (!bcLoaded) return;
+        if (!bcLoaded || machineDisabled) return;
         if (getWorld().isRemote) {
             simpleAnimationIterate();
             return;

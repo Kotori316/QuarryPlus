@@ -31,6 +31,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import scala.Symbol;
 
 /*import buildcraft.api.mj.ILaserTarget;
 import buildcraft.api.mj.MjAPI;*/
@@ -39,6 +40,7 @@ import buildcraft.api.mj.MjAPI;*/
  * The plus machine of {@link buildcraft.silicon.tile.TileLaser}
  */
 public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSender {
+    public static final scala.Symbol SYMBOL = scala.Symbol.apply("LaserPlus");
     private int ticks;
 
     /**
@@ -58,9 +60,14 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
     }
 
     @Override
+    protected Symbol getSymbol() {
+        return SYMBOL;
+    }
+
+    @Override
     public void update() {/*
         super.update();
-        if (!bcLoaded || getWorld().isRemote)
+        if (!bcLoaded || getWorld().isRemote || machineDisabled)
             return;
 
         ticks += 1;

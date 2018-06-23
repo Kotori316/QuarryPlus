@@ -56,6 +56,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import scala.Symbol;
 
 /*import buildcraft.api.tiles.ITileAreaProvider;
 import buildcraft.api.tiles.TilesAPI;*/
@@ -68,10 +69,16 @@ public class TileMarker extends APacketTile implements /*ITileAreaProvider,*/ IT
     public static final IndexOnlyList<Laser> LASER_INDEX = new IndexOnlyList<>(laserList, laserList);
 
     private static final int MAX_SIZE = 256;
+    public static final Symbol SYMBOL = Symbol.apply("MarkerPlus");
     private final boolean bcLoaded;
 
     public TileMarker() {
         this.bcLoaded = Loader.isModLoaded(QuarryPlus.Optionals.Buildcraft_modID);
+    }
+
+    @Override
+    protected Symbol getSymbol() {
+        return SYMBOL;
     }
 
     public Link link;

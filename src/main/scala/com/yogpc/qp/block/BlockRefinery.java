@@ -42,7 +42,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class BlockRefinery extends ADismCBlock {
 
     public BlockRefinery() {
-        super(Material.ANVIL, QuarryPlus.Names.refinery, ItemBlockRefinery::new);
+        super(Material.IRON, QuarryPlus.Names.refinery, ItemBlockRefinery::new);
         setHardness(5F);
         setDefaultState(getBlockState().getBaseState().withProperty(FACING, EnumFacing.NORTH));
     }

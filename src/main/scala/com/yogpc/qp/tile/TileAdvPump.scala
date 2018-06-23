@@ -14,6 +14,7 @@ import net.minecraft.init.Blocks
 import net.minecraft.inventory.InventoryHelper
 import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
 import net.minecraft.util.math.{BlockPos, ChunkPos}
+import net.minecraft.util.text.TextComponentString
 import net.minecraft.util.{EnumFacing, ITickable}
 import net.minecraftforge.common.ForgeChunkManager
 import net.minecraftforge.common.ForgeChunkManager.Type
@@ -69,7 +70,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
 
     override def update() = {
         super.update()
-        if (!getWorld.isRemote) {
+        if (!getWorld.isRemote && !machineDisabled) {
             if (finished) {
                 if (toStart) {
                     toStart = false
@@ -324,7 +325,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
 
     override def getDebugName = TranslationKeys.advpump
 
-    override def getDebugmessages = {
+    override def getDebugmessages: java.util.List[TextComponentString] = {
         List("Range = " + ench.distance,
             "Finished : " + finished,
             "Ench : " + ench,
@@ -524,10 +525,12 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
         }
     }
 
+    override protected def getSymbol = SYMBOL
 }
 
 object TileAdvPump {
 
+    final val SYMBOL = Symbol("AdvancedPump")
     private final val NBT_PENCH = "nbt_pench"
     private[this] final val defaultBaseEnergy = Seq(10, 8, 6, 4)
     private[this] final val defaultRecieveEnergy = Seq(32, 64, 128, 256, 512, 1024)

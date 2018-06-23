@@ -6,6 +6,7 @@ import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.common.config.{ConfigElement, Configuration}
 import net.minecraftforge.fml.client.config.IConfigElement
 import net.minecraftforge.fml.client.event.ConfigChangedEvent
+import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object Config {
@@ -41,8 +42,24 @@ object Config {
 
     def content = mContent
 
-    val DisableSpawnerController_key = "DisableSpawnerController"
-    val DisableChunkDestroyer_key = "DisableChunkDestroyer"
+    private val Disables = Set(
+        'SpawnerController,
+        'ChunkDestroyer,
+        'AdvancedPump,
+        'BreakerPlus,
+        'MiningwellPlus,
+        'MagicMirror,
+        'EnchantMover,
+        'PlacerPlus,
+        'PumpPlus,
+        'MarkerPlus,
+        'QuarryPlus,
+        'WorkbenchPlus)
+    private val DisableBC = Set(
+        'LaserPlus,
+        'RefineryPlus
+    )
+
     val DisableFrameChainBreak_key = "DisableFrameChainBreak"
     val DisableRendering_Key = "DisableRendering"
     val EnableChunkDestroyerFluidHander_key = "EnableChunkDestroyerFluidHandler"
@@ -60,8 +77,15 @@ object Config {
 
         import scala.collection.JavaConverters._
 
-        val disableController = configuration.get(Configuration.CATEGORY_GENERAL, DisableSpawnerController_key, false).setRequiresMcRestart(true).getBoolean
-        val disableChunkDestroyer = configuration.get(Configuration.CATEGORY_GENERAL, DisableChunkDestroyer_key, true).setRequiresMcRestart(true).getBoolean
+        val enableMap = (Disables.map(s => {
+            val key = "Disable" + s.name
+            (s, !configuration.get(Configuration.CATEGORY_GENERAL, key, false).setRequiresMcRestart(true).setShowInGui(false).getBoolean)
+        }) ++ DisableBC.map(s => {
+            val key = "Disable" + s.name
+            (s, !configuration.get(Configuration.CATEGORY_GENERAL, key, false).setRequiresMcRestart(true).setShowInGui(false).getBoolean &&
+              Loader.isModLoaded(QuarryPlus.Optionals.Buildcraft_modID))
+        })).toMap
+        val disableMapJ = enableMap.map { case (s, b) => (s, Boolean.box(!b)) }.asJava
         val spawnerBlacklist = configuration.get(Configuration.CATEGORY_GENERAL, SpawnerControllerEntityBlackList_key, Array("EnderDragon", "WitherBoss"))
           .getStringList /*.map(new ResourceLocation(_))*/ .toSet.asJava
         val recipeDifficulty = configuration.get(Configuration.CATEGORY_GENERAL, RecipeDifficulty_key, 2d)
