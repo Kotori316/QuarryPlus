@@ -72,6 +72,7 @@ object Config {
     val RemoveBedrock_Key = "RemoveBedrock"
     val RemoveOnlySource_Key = "RemoveOnlySource"
     val PumpAutoStart_Key = "PumpAutoStart"
+    val WorkbenchplusReceive = "WorkbenchplusReceive="
     val DEBUG_key = "DEBUG"
 
     class Content {
@@ -106,6 +107,8 @@ object Config {
         val pumpAutoStart = configuration.getBoolean(PumpAutoStart_Key, Configuration.CATEGORY_GENERAL, false, PumpAutoStart_Key)
         val DisableRendering = configuration.get(Configuration.CATEGORY_CLIENT, DisableRendering_Key, false, "Disable rendering of quarries.")
           .setRequiresMcRestart(true).setShowInGui(false).getBoolean
+        val workbenchMaxReceive = configuration.getInt(WorkbenchplusReceive, Configuration.CATEGORY_GENERAL, 250, 1, Int.MaxValue,
+            "Amount of enegy WorkbenchPlus can accept in a tick. Unit is MJ and 1 MJ = 10 RF = 10 FE.")
         val debug = configuration.getBoolean(DEBUG_key, Configuration.CATEGORY_GENERAL, false, DEBUG_key)
 
         if (configuration.hasChanged)
