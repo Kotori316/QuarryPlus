@@ -61,18 +61,18 @@ object Config {
         'RefineryPlus
     )
 
-    val DisableFrameChainBreak_key = "DisableFrameChainBreak"
-    val DisableRendering_Key = "DisableRendering"
-    val EnableChunkDestroyerFluidHander_key = "EnableChunkDestroyerFluidHandler"
-    val SpawnerControllerEntityBlackList_key = "SpawnerControllerEntityBlackList"
-    val RecipeDifficulty_key = "RecipeDifficulty"
-    val Recipe_key = "NewRecipeDifficulty"
-    val PlacerOnlyPlaceFront_key = "PlacerOnlyPlaceFront"
-    val NoEnergy_key = "NoEnergy"
-    val RemoveBedrock_Key = "RemoveBedrock"
-    val RemoveOnlySource_Key = "RemoveOnlySource"
-    val PumpAutoStart_Key = "PumpAutoStart"
-    val DEBUG_key = "DEBUG"
+    final val DisableFrameChainBreak_key = "DisableFrameChainBreak"
+    final val DisableRendering_Key = "DisableRendering"
+    final val EnableChunkDestroyerFluidHander_key = "EnableChunkDestroyerFluidHandler"
+    final val SpawnerControllerEntityBlackList_key = "SpawnerControllerEntityBlackList"
+    final val RecipeDifficulty_key = "RecipeDifficulty"
+    final val Recipe_key = "NewRecipeDifficulty"
+    final val PlacerOnlyPlaceFront_key = "PlacerOnlyPlaceFront"
+    final val NoEnergy_key = "NoEnergy"
+    final val RemoveBedrock_Key = "RemoveBedrock"
+    final val RemoveOnlySource_Key = "RemoveOnlySource"
+    final val PumpAutoStart_Key = "PumpAutoStart"
+    final val DEBUG_key = "DEBUG"
 
     class Content {
 
