@@ -271,7 +271,11 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
      */
     @Override
     public final int receiveEnergy(int maxReceive, boolean simulate) {
-        return (int) getEnergy((double) maxReceive / 10, !simulate) * 10;
+        int i = (int) getEnergy((double) maxReceive / 10, !simulate) * 10;
+        if (maxReceive > 0 && i == 0 && this.max - this.all > 0 && this.max - this.all < 1) {
+            return 1;
+        }
+        return i;
     }
 
     @Override
