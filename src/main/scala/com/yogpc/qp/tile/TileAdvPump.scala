@@ -1,7 +1,5 @@
 package com.yogpc.qp.tile
 
-import java.lang.{Boolean => JBool}
-
 import com.yogpc.qp.block.ADismCBlock
 import com.yogpc.qp.compat.{INBTReadable, INBTWritable}
 import com.yogpc.qp.gui.TranslationKeys
@@ -291,7 +289,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
     private def changeState(working: Boolean, state: IBlockState): Unit = {
         if (VersionUtil.changeAdvPumpState()) {
             validate()
-            getWorld.setBlockState(getPos, state.withProperty(ADismCBlock.ACTING, if (working) JBool.TRUE else JBool.FALSE))
+            getWorld.setBlockState(getPos, state.withProperty(ADismCBlock.ACTING, Boolean.box(working)))
             validate()
             getWorld.setTileEntity(getPos, this)
         }

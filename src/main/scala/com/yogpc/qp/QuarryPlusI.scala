@@ -41,13 +41,13 @@ object QuarryPlusI {
     val itemTool = new ItemTool
     val magicmirror = new ItemMirror
     val debugItem = new ItemQuarryDebug
-    val guiIdWorkbench = 1
-    val guiIdMover = 2
-    val guiIdFList = 3
-    val guiIdSList = 4
-    val guiIdPlacer = 5
-    val guiIdAdvQuarry = 6
-    val guiIdAdvPump = 7
+    final val guiIdWorkbench = 1
+    final val guiIdMover = 2
+    final val guiIdFList = 3
+    final val guiIdSList = 4
+    final val guiIdPlacer = 5
+    final val guiIdAdvQuarry = 6
+    final val guiIdAdvPump = 7
 
     private def register[T <: Block](block: T): T = {
         blocks += block
