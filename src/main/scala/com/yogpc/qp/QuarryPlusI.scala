@@ -38,6 +38,7 @@ object QuarryPlusI {
     val blockController = register(new BlockController)
     val blockChunkdestroyer = register(new BlockAdvQuarry)
     val blockStandalonePump = register(new BlockAdvPump)
+    val blockBookMover = register(new BlockBookMover)
     val itemTool = new ItemTool
     val magicmirror = new ItemMirror
     val debugItem = new ItemQuarryDebug
@@ -48,6 +49,7 @@ object QuarryPlusI {
     final val guiIdPlacer = 5
     final val guiIdAdvQuarry = 6
     final val guiIdAdvPump = 7
+    final val guiIdMoverFromBook = 8
 
     private def register[T <: Block](block: T): T = {
         blocks += block

@@ -16,6 +16,7 @@ tile.refineryplus.name=Refinery Plus
 tile.spawnercontroller.name=Spawner Controller
 tile.standalonepump.name=Advanced Pump
 tile.workbenchplus.name=Workbench Plus
+tile.enchantmoverfrombook.name=Book EnchantMover
 item.dimensionmirror.name=DimensionalMirror
 item.electric_armor.name=ElectricArmorPlus
 item.liquidselector.name=LiquidSelector

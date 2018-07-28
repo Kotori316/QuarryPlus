@@ -51,6 +51,7 @@ object Config {
         'MiningwellPlus,
         'MagicMirror,
         'EnchantMover,
+        'EnchantMoverFromBook,
         'PlacerPlus,
         'PumpPlus,
         'MarkerPlus,
@@ -81,7 +82,7 @@ object Config {
 
         val enableMap = (Disables.map(s => {
             val key = "Disable" + s.name
-            (s, !configuration.get(Configuration.CATEGORY_GENERAL, key, false).setRequiresMcRestart(true).setShowInGui(false).getBoolean)
+            (s, !configuration.get(Configuration.CATEGORY_GENERAL, key, s == 'EnchantMoverFromBook).setRequiresMcRestart(true).setShowInGui(false).getBoolean)
         }) ++ DisableBC.map(s => {
             val key = "Disable" + s.name
             (s, !configuration.get(Configuration.CATEGORY_GENERAL, key, false).setRequiresMcRestart(true).setShowInGui(false).getBoolean &&

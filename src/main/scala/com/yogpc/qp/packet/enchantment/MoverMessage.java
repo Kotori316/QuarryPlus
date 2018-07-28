@@ -31,7 +31,7 @@ public class MoverMessage {
         }
 
         @Override
-        public void fromBytes(PacketBuffer buffer) throws IOException {
+        public void fromBytes(PacketBuffer buffer) {
             pos = buffer.readBlockPos();
             id = buffer.readInt();
         }
@@ -72,7 +72,7 @@ public class MoverMessage {
         }
 
         @Override
-        public void fromBytes(PacketBuffer buffer) throws IOException {
+        public void fromBytes(PacketBuffer buffer) {
             d = buffer.readEnumValue(D.class);
             pos = buffer.readBlockPos();
             id = buffer.readInt();

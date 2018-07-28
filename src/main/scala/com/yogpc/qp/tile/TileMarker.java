@@ -17,14 +17,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.stream.Stream;
 
 import buildcraft.api.tiles.ITileAreaProvider;
 import buildcraft.api.tiles.TilesAPI;
 import buildcraft.lib.misc.PositionUtil;
-import com.google.common.collect.Sets;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.block.BlockMarker;
@@ -262,10 +260,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
     public void forceChunkLoading(final Ticket ticket) {// ticketsLoaded
         if (this.chunkTicket == null)
             this.chunkTicket = ticket;
-        final Set<ChunkPos> chunks = Sets.newHashSet();
-        final ChunkPos quarryChunk = new ChunkPos(getPos());
-        chunks.add(quarryChunk);
-        ForgeChunkManager.forceChunk(ticket, quarryChunk);
+        ForgeChunkManager.forceChunk(ticket, new ChunkPos(getPos()));
     }
 
     private boolean vlF;

@@ -29,7 +29,7 @@ public class RemoveLink implements IMessage {
     }
 
     @Override
-    public void fromBytes(PacketBuffer buffer) throws IOException {
+    public void fromBytes(PacketBuffer buffer) {
         minPos = buffer.readBlockPos();
         maxPos = buffer.readBlockPos();
         dimensionId = buffer.readInt();

@@ -40,10 +40,10 @@ public abstract class APacketTile extends TileEntity {
     protected final boolean machineDisabled;
 
     protected APacketTile() {
-        if (HasInv.class.isInstance(this)) {
+        if (this instanceof HasInv) {
             HasInv hasInv = (HasInv) this;
             displayName = new TextComponentTranslation(hasInv.getName());
-        } else if (IDebugSender.class.isInstance(this)) {
+        } else if (this instanceof IDebugSender) {
             IDebugSender sender = (IDebugSender) this;
             displayName = new TextComponentTranslation(sender.getDebugName());
         } else {

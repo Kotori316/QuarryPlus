@@ -31,7 +31,7 @@ public class LaserMessage implements IMessage {
     }
 
     @Override
-    public void fromBytes(PacketBuffer buffer) throws IOException {
+    public void fromBytes(PacketBuffer buffer) {
         pos = buffer.readBlockPos();
         vec3ds = new Vec3d[buffer.readInt()];
         for (int i = 0; i < vec3ds.length; i++) {

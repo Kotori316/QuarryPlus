@@ -26,7 +26,7 @@ import org.lwjgl.opengl.GL11;
 @SideOnly(Side.CLIENT)
 public class GuiPlacer extends GuiContainer {
     private static final ResourceLocation tex = new ResourceLocation("minecraft", "textures/gui/container/dispenser.png");
-    public TilePlacer tile;
+    public final TilePlacer tile;
 
     public GuiPlacer(final InventoryPlayer inventoryPlayer, final TilePlacer placer) {
         super(new ContainerPlacer(inventoryPlayer, placer));

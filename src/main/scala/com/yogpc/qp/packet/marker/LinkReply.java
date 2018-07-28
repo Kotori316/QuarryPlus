@@ -29,7 +29,7 @@ public class LinkReply implements IMessage {
     }
 
     @Override
-    public void fromBytes(PacketBuffer buffer) throws IOException {
+    public void fromBytes(PacketBuffer buffer) {
         pos = buffer.readBlockPos();
         linkMin = buffer.readBlockPos();
         linkMax = buffer.readBlockPos();

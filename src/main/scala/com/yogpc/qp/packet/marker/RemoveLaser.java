@@ -27,7 +27,7 @@ public class RemoveLaser implements IMessage {
     }
 
     @Override
-    public void fromBytes(PacketBuffer buffer) throws IOException {
+    public void fromBytes(PacketBuffer buffer) {
         pos = buffer.readBlockPos();
         dimensionId = buffer.readInt();
     }

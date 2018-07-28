@@ -30,7 +30,7 @@ public class SetEntity implements IMessage {
     }
 
     @Override
-    public void fromBytes(PacketBuffer buffer) throws IOException {
+    public void fromBytes(PacketBuffer buffer) {
         pos = buffer.readBlockPos();
         location = buffer.readString(Short.MAX_VALUE);
         dim = buffer.readInt();

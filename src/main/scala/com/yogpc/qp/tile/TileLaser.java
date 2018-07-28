@@ -165,7 +165,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
         this.targets.clear();
         BlockPos.getAllInBoxMutable(new BlockPos(minX, minY, minZ), new BlockPos(maxX, maxY, maxZ)).forEach(mutableBlockPos -> {
             TileEntity tileEntity = getWorld().getTileEntity(mutableBlockPos);
-            if (ILaserTarget.class.isInstance(tileEntity)) {
+            if (tileEntity instanceof ILaserTarget) {
                 ILaserTarget target = (ILaserTarget) tileEntity;
                 if (!target.isInvalidTarget() && target.getRequiredLaserPower() > 0) {
                     targets.add(mutableBlockPos.toImmutable());
@@ -193,7 +193,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
     public double pa;
     private int pi = 0;
 
-    private void pushPower(final double received) {
+    private void pushPower(final long received) {
         this.pa -= this.tp[this.pi];
         this.pa += received;
         this.tp[this.pi] = received;

@@ -31,7 +31,7 @@ public class AdvPumpChangeMessage implements IMessage {
     }
 
     @Override
-    public void fromBytes(PacketBuffer buffer) throws IOException {
+    public void fromBytes(PacketBuffer buffer) {
         pos = buffer.readBlockPos();
         dim = buffer.readInt();
         placeFrame = buffer.readBoolean();

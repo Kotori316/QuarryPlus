@@ -29,7 +29,7 @@ public class LaserAverageMessage implements IMessage {
     }
 
     @Override
-    public void fromBytes(PacketBuffer buffer) throws IOException {
+    public void fromBytes(PacketBuffer buffer) {
         pos = buffer.readBlockPos();
         powerAverage = buffer.readDouble();
     }

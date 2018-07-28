@@ -13,8 +13,8 @@
 package com.yogpc.qp.gui
 
 import com.yogpc.qp.QuarryPlusI
-import com.yogpc.qp.container.{ContainerAdvPump, ContainerAdvQuarry, ContainerEnchList, ContainerMover, ContainerPlacer, ContainerWorkbench}
-import com.yogpc.qp.tile.{TileAdvPump, TileAdvQuarry, TileBasic, TilePlacer, TileWorkbench}
+import com.yogpc.qp.container.{ContainerAdvPump, ContainerAdvQuarry, ContainerBookMover, ContainerEnchList, ContainerMover, ContainerPlacer, ContainerWorkbench}
+import com.yogpc.qp.tile.{TileAdvPump, TileAdvQuarry, TileBasic, TileBookMover, TilePlacer, TileWorkbench}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Enchantments
 import net.minecraft.util.math.BlockPos
@@ -44,6 +44,8 @@ object GuiHandler extends IGuiHandler {
                 new GuiAdvQuarry(w.getTileEntity(pos).asInstanceOf[TileAdvQuarry], p)
             case QuarryPlusI.guiIdAdvPump =>
                 new GuiAdvPump(w.getTileEntity(pos).asInstanceOf[TileAdvPump], p)
+            case QuarryPlusI.guiIdMoverFromBook =>
+                new GuiBookMover(w.getTileEntity(pos).asInstanceOf[TileBookMover], p)
             case _ => null
         }
     }
@@ -65,6 +67,8 @@ object GuiHandler extends IGuiHandler {
                 new ContainerAdvQuarry(w.getTileEntity(pos).asInstanceOf[TileAdvQuarry], p)
             case QuarryPlusI.guiIdAdvPump =>
                 new ContainerAdvPump(w.getTileEntity(pos).asInstanceOf[TileAdvPump], p)
+            case QuarryPlusI.guiIdMoverFromBook =>
+                new ContainerBookMover(w.getTileEntity(pos).asInstanceOf[TileBookMover], p)
             case _ => null
         }
     }

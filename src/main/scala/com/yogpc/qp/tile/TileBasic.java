@@ -65,7 +65,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     protected byte efficiency;
 
     protected final LinkedList<ItemStack> cacheItems = new LinkedList<>();
-    protected IItemHandler handler = new InvWrapper(this) {
+    protected final IItemHandler handler = new InvWrapper(this) {
         @Nonnull
         @Override
         public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {

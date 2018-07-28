@@ -1,0 +1,23 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "cube",
+    "textures": {
+      "particle": "quarryplus:blocks/bookmover",
+      "down": "quarryplus:blocks/bookmover",
+      "up": "quarryplus:blocks/bookmover",
+      "north": "quarryplus:blocks/bookmover",
+      "east": "quarryplus:blocks/bookmover",
+      "south": "quarryplus:blocks/bookmover",
+      "west": "quarryplus:blocks/bookmover"
+    }
+  },
+  "variants": {
+    "normal": [
+      {}
+    ],
+    "inventory": [
+      {}
+    ]
+  }
+}

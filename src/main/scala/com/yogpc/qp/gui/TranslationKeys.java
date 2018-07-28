@@ -66,6 +66,7 @@ public class TranslationKeys {
     public static final String marker = "tile." + QuarryPlus.Names.marker + ".name";
     public static final String miningwell = "tile." + QuarryPlus.Names.miningwell + ".name";
     public static final String mover = "tile." + QuarryPlus.Names.mover + ".name";
+    public static final String moverfrombook = "tile." + QuarryPlus.Names.moverfrombook + ".name";
     public static final String placer = "tile." + QuarryPlus.Names.placer + ".name";
     //    public static final String plainpipe = "tile." + QuarryPlus.Names.plainpipe + ".name";
     public static final String pump = "tile." + QuarryPlus.Names.pump + ".name";

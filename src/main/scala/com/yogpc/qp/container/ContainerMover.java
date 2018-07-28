@@ -43,7 +43,7 @@ import static com.yogpc.qp.version.VersionUtil.isEmpty;
 import static com.yogpc.qp.version.VersionUtil.nonEmpty;
 
 public class ContainerMover extends Container {
-    public IInventory craftMatrix = new InventoryBasic("Matrix", false, 2) {
+    public final IInventory craftMatrix = new InventoryBasic("Matrix", false, 2) {
         @Override
         public void markDirty() {
             super.markDirty();
@@ -269,7 +269,7 @@ public class ContainerMover extends Container {
         public boolean equals(Object obj) {
             if (obj == this)
                 return true;
-            if (Tuple.class.isInstance(obj)) {
+            if (obj instanceof Tuple) {
                 Tuple tuple = (Tuple) obj;
                 return tuple.enchantment == this.enchantment && tuple.level == this.level;
             }

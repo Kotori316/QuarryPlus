@@ -32,7 +32,7 @@ public class Now implements IMessage {
     }
 
     @Override
-    public void fromBytes(PacketBuffer buffer) throws IOException {
+    public void fromBytes(PacketBuffer buffer) {
         int i = buffer.readVarInt();
         if (i == -1) {
             facing = null;

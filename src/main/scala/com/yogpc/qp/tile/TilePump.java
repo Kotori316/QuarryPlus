@@ -625,7 +625,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
             List<ITextComponent> list = new ArrayList<>(liquids.size() + 1);
             list.add(new TextComponentTranslation(TranslationKeys.PUMP_CONTAIN));
             liquids.forEach(s -> list.add(new TextComponentTranslation(TranslationKeys.LIQUID_FORMAT,
-                new TextComponentTranslation(s.getUnlocalizedName(), Integer.toString(s.amount)))));
+                new TextComponentTranslation(s.getUnlocalizedName()), Integer.toString(s.amount))));
             return list;
         } else {
             return Collections.singletonList(new TextComponentTranslation(TranslationKeys.PUMP_CONTAIN_NO));
@@ -684,7 +684,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
     }
 
-    private IFluidHandler tankAll = (IDummyFluidHandler) () -> {
+    private final IFluidHandler tankAll = (IDummyFluidHandler) () -> {
         IFluidTankProperties[] array = TilePump.this.liquids.stream()
             .map(fluidStack -> new FluidTankProperties(fluidStack, fluidStack.amount, false, false))
             .toArray(IFluidTankProperties[]::new);
