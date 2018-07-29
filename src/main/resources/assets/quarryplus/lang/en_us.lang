@@ -96,3 +96,5 @@ yog.armor.hover.off=Hover Mode disabled.
 yog.armor.hover.on=Hover Mode enabled.
 yog.pump.liquid=-    %s: %smB
 yog.spanwer.setting=Please select entity to be spawned by spawner
+
+quarryplus.machines.tooltip=Machines

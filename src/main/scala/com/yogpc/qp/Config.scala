@@ -5,7 +5,7 @@ import java.io.File
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.common.config.{ConfigElement, Configuration}
-import net.minecraftforge.fml.client.config.IConfigElement
+import net.minecraftforge.fml.client.config.{DummyConfigElement, IConfigElement}
 import net.minecraftforge.fml.client.event.ConfigChangedEvent
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -38,6 +38,8 @@ object Config {
     def getElements: java.util.List[IConfigElement] = {
         val list = new java.util.LinkedList[IConfigElement]()
         list.addAll(new ConfigElement(configuration.getCategory(Configuration.CATEGORY_GENERAL)).getChildElements)
+        list.add(new DummyConfigElement.DummyCategoryElement("Machines", s"${QuarryPlus.modID}.$CATEGORY_MACHINES",
+            new ConfigElement(configuration.getCategory(CATEGORY_MACHINES)).getChildElements))
         list
     }
 
@@ -62,6 +64,9 @@ object Config {
         'RefineryPlus
     )
 
+    private val defaultDisables = Set('EnchantMoverFromBook)
+
+    final val CATEGORY_MACHINES = "machines"
     final val DisableFrameChainBreak_key = "DisableFrameChainBreak"
     final val DisableRendering_Key = "DisableRendering"
     final val EnableChunkDestroyerFluidHander_key = "EnableChunkDestroyerFluidHandler"
@@ -82,10 +87,10 @@ object Config {
 
         val enableMap = (Disables.map(s => {
             val key = "Disable" + s.name
-            (s, !configuration.get(Configuration.CATEGORY_GENERAL, key, s == 'EnchantMoverFromBook).setRequiresMcRestart(true).setShowInGui(false).getBoolean)
+            (s, !configuration.get(CATEGORY_MACHINES, key, defaultDisables.contains(s)).setRequiresMcRestart(true).getBoolean)
         }) ++ DisableBC.map(s => {
             val key = "Disable" + s.name
-            (s, !configuration.get(Configuration.CATEGORY_GENERAL, key, false).setRequiresMcRestart(true).setShowInGui(false).getBoolean &&
+            (s, !configuration.get(CATEGORY_MACHINES, key, false).setRequiresMcRestart(true).getBoolean &&
               Loader.isModLoaded(QuarryPlus.Optionals.Buildcraft_modID))
         })).toMap
         val disableMapJ = enableMap.map { case (s, b) => (s, Boolean.box(!b)) }.asJava

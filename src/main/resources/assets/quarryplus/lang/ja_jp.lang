@@ -96,3 +96,5 @@ yog.armor.hover.off=ホバリングモードが無効になりました
 yog.armor.hover.on=ホバリングモードが有効になりました
 yog.pump.liquid=-    %s: %smB
 yog.spanwer.setting=隣接したスポーナーからスポーンさせる生物を選択してください
+
+quarryplus.machines.tooltip=機械の設定

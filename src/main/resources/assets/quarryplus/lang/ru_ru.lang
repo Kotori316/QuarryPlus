@@ -96,3 +96,5 @@ yog.armor.hover.off=Режим парения отключен.
 yog.armor.hover.on=Режим парения включен.
 yog.pump.liquid=-    %s: %smB
 yog.spanwer.setting=Пожалуйста, выберите существо, которое будет спавнится в спавнере
+
+quarryplus.machines.tooltip=Machines

@@ -37,5 +37,6 @@ public class ContainerBookMover extends Container {
     @Override
     public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
         return VersionUtil.empty();
+        //TODO implement shift move.
     }
 }
