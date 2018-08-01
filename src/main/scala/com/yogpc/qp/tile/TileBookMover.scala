@@ -5,12 +5,13 @@ import com.yogpc.qp.gui.TranslationKeys
 import com.yogpc.qp.item.IEnchantableItem
 import com.yogpc.qp.version.VersionUtil
 import com.yogpc.qp.{Config, _}
-import net.minecraft.enchantment.EnchantmentHelper
+import net.minecraft.enchantment.{EnchantmentHelper, EnumEnchantmentType}
 import net.minecraft.init.Items
 import net.minecraft.inventory.ItemStackHelper
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.{ITickable, NonNullList}
+import net.minecraftforge.fml.common.registry.ForgeRegistries
 
 import scala.collection.JavaConverters._
 
@@ -18,6 +19,7 @@ class TileBookMover extends APowerTile with HasInv with ITickable {
 
     val inv = NonNullList.withSize(getSizeInventory, VersionUtil.empty())
     configure(Config.content.workbenchMaxReceive, 50000)
+    val validEnch = ForgeRegistries.ENCHANTMENTS.getValuesCollection.asScala.filter(e => e.`type` == EnumEnchantmentType.DIGGER).toSet
 
     override def writeToNBT(nbttc: NBTTagCompound): NBTTagCompound = {
         ItemStackHelper.saveAllItems(nbttc, inv)
@@ -33,9 +35,10 @@ class TileBookMover extends APowerTile with HasInv with ITickable {
         super.update()
         if (!machineDisabled && !world.isRemote && isWorking && getStoredEnergy >= getMaxStored) {
             val enchList = EnchantmentHelper.getEnchantments(inv.get(1)).asScala
-            val item = inv.get(0).getItem.asInstanceOf[IEnchantableItem]
             enchList.find { case (e, level) =>
-                item.canMove(inv.get(0), e) && EnchantmentHelper.getEnchantmentLevel(e, inv.get(0)) < level
+                validEnch.contains(e) &&
+                  EnchantmentHelper.getEnchantments(inv.get(0)).asScala.forall { case (e1, _) => e1 == e || e1.isCompatibleWith(e) } &&
+                  EnchantmentHelper.getEnchantmentLevel(e, inv.get(0)) < level
             }.foreach { case (e, level) =>
                 val copy = inv.get(0).copy()
                 copy.removeEnchantment(e)

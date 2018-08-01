@@ -46,6 +46,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
@@ -72,6 +73,8 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
             return stack;
         }
     };
+
+    protected Map<Integer, Integer> ench = new HashMap<>();
 
     public abstract void G_renew_powerConfigure();
 
@@ -141,13 +144,17 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         fakePlayer.setHeldItem(EnumHand.MAIN_HAND, getEnchantedPickaxe());
         if (block.canSilkHarvest(getWorld(), pos, state, fakePlayer) && this.silktouch
             && silktouchList.contains(new BlockData(block, state)) == this.silktouchInclude) {
-            collection.add((ItemStack) ReflectionHelper.invoke(createStackedBlock, block, state));
+            List<ItemStack> list = new ArrayList<>(1);
+            list.add((ItemStack) ReflectionHelper.invoke(createStackedBlock, block, state));
+            ForgeEventFactory.fireBlockHarvesting(list, world, pos, state, 0, 1.0f, true, fakePlayer);
+            collection.addAll(list);
             i = -1;
         } else {
             boolean b = fortuneList.contains(new BlockData(block, state)) == this.fortuneInclude;
             byte fortuneLevel = b ? this.fortune : 0;
             NonNullList<ItemStack> list = NonNullList.create();
             getDrops(getWorld(), pos, state, block, fortuneLevel, list);
+            ForgeEventFactory.fireBlockHarvesting(list, world, pos, state, fortuneLevel, 1.0f, false, fakePlayer);
             collection.addAll(list);
             i = fortuneLevel;
         }
@@ -211,16 +218,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
 
     @Override
     public Map<Integer, Integer> getEnchantments() {
-        final Map<Integer, Integer> ret = new HashMap<>();
-        if (this.efficiency > 0)
-            ret.put(EfficiencyID, (int) this.efficiency);
-        if (this.fortune > 0)
-            ret.put(FortuneID, (int) this.fortune);
-        if (this.unbreaking > 0)
-            ret.put(UnbreakingID, (int) this.unbreaking);
-        if (this.silktouch)
-            ret.put(SilktouchID, 1);
-        return ret;
+        return new HashMap<>(ench);
     }
 
     @Override
@@ -233,6 +231,10 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
             this.unbreaking = (byte) val;
         else if (id == SilktouchID)
             this.silktouch = val > 0;
+
+        if (val > 0) {
+            ench.put((int) id, (int) val);
+        }
     }
 
     @Override
