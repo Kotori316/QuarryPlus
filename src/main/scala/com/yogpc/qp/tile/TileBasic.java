@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import cofh.api.tileentity.IInventoryConnection;
 import com.yogpc.qp.BlockData;
@@ -27,6 +28,7 @@ import com.yogpc.qp.PowerManager;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.ReflectionHelper;
 import com.yogpc.qp.compat.InvUtils;
+import com.yogpc.qp.compat.NBTBuilder;
 import com.yogpc.qp.gui.TranslationKeys;
 import com.yogpc.qp.version.VersionUtil;
 import javax.annotation.Nonnull;
@@ -38,6 +40,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagShort;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -52,10 +55,6 @@ import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
-import org.apache.commons.lang3.tuple.Pair;
-
-import static jp.t2v.lab.syntax.MapStreamSyntax.byKey;
-import static jp.t2v.lab.syntax.MapStreamSyntax.entryToMap;
 
 @net.minecraftforge.fml.common.Optional.Interface(iface = "cofh.api.tileentity.IInventoryConnection", modid = QuarryPlus.Optionals.COFH_tileentity)
 public abstract class TileBasic extends APowerTile implements IEnchantableTile, HasInv, IInventoryConnection {
@@ -191,9 +190,8 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         this.silktouchInclude = nbttc.getBoolean("silktouchInclude");
         readLongCollection(nbttc.getTagList("fortuneList", 10), this.fortuneList);
         readLongCollection(nbttc.getTagList("silktouchList", 10), this.silktouchList);
-        ench = VersionUtil.nbtListStream(nbttc.getTagList("enchList", Constants.NBT.TAG_COMPOUND)).map(
-            nbt -> Pair.of((int) nbt.getShort("id"), (int) nbt.getShort("level"))
-        ).filter(byKey(s -> Enchantment.getEnchantmentByID(s) != null)).collect(entryToMap());
+        ench = NBTBuilder.fromList(nbttc.getTagList("enchList", Constants.NBT.TAG_COMPOUND), n -> n.getInteger("id"), n -> n.getInteger("level"),
+            s -> Enchantment.getEnchantmentByID(s) != null, s -> true);
     }
 
     private static void readLongCollection(final NBTTagList nbttl, final Collection<BlockData> target) {
@@ -214,14 +212,8 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         nbttc.setBoolean("silktouchInclude", this.silktouchInclude);
         nbttc.setTag("fortuneList", writeLongCollection(this.fortuneList));
         nbttc.setTag("silktouchList", writeLongCollection(this.silktouchList));
-        NBTTagList enchList = new NBTTagList();
-        ench.forEach((id, level) -> {
-            NBTTagCompound nbtTagCompound = new NBTTagCompound();
-            nbtTagCompound.setShort("id", id.shortValue());
-            nbtTagCompound.setShort("level", level.shortValue());
-            enchList.appendTag(nbtTagCompound);
-        });
-        nbttc.setTag("enchList", enchList);
+        Function<Integer, Short> function = Integer::shortValue;
+        nbttc.setTag("enchList", NBTBuilder.fromMap(ench, "id", "value", function.andThen(NBTTagShort::new), function.andThen(NBTTagShort::new)));
         return super.writeToNBT(nbttc);
     }
 
