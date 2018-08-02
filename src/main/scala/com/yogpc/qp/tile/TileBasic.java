@@ -33,6 +33,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -46,10 +47,15 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
+import org.apache.commons.lang3.tuple.Pair;
+
+import static jp.t2v.lab.syntax.MapStreamSyntax.byKey;
+import static jp.t2v.lab.syntax.MapStreamSyntax.entryToMap;
 
 @net.minecraftforge.fml.common.Optional.Interface(iface = "cofh.api.tileentity.IInventoryConnection", modid = QuarryPlus.Optionals.COFH_tileentity)
 public abstract class TileBasic extends APowerTile implements IEnchantableTile, HasInv, IInventoryConnection {
@@ -185,6 +191,9 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         this.silktouchInclude = nbttc.getBoolean("silktouchInclude");
         readLongCollection(nbttc.getTagList("fortuneList", 10), this.fortuneList);
         readLongCollection(nbttc.getTagList("silktouchList", 10), this.silktouchList);
+        ench = VersionUtil.nbtListStream(nbttc.getTagList("enchList", Constants.NBT.TAG_COMPOUND)).map(
+            nbt -> Pair.of((int) nbt.getShort("id"), (int) nbt.getShort("level"))
+        ).filter(byKey(s -> Enchantment.getEnchantmentByID(s) != null)).collect(entryToMap());
     }
 
     private static void readLongCollection(final NBTTagList nbttl, final Collection<BlockData> target) {
@@ -205,6 +214,14 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         nbttc.setBoolean("silktouchInclude", this.silktouchInclude);
         nbttc.setTag("fortuneList", writeLongCollection(this.fortuneList));
         nbttc.setTag("silktouchList", writeLongCollection(this.silktouchList));
+        NBTTagList enchList = new NBTTagList();
+        ench.forEach((id, level) -> {
+            NBTTagCompound nbtTagCompound = new NBTTagCompound();
+            nbtTagCompound.setShort("id", id.shortValue());
+            nbtTagCompound.setShort("level", level.shortValue());
+            enchList.appendTag(nbtTagCompound);
+        });
+        nbttc.setTag("enchList", enchList);
         return super.writeToNBT(nbttc);
     }
 

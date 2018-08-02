@@ -17,8 +17,11 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import com.yogpc.qp.Config;
+import com.yogpc.qp.block.BlockBookMover;
 import com.yogpc.qp.gui.TranslationKeys;
 import com.yogpc.qp.version.VersionUtil;
 import javax.annotation.Nonnull;
@@ -43,6 +46,7 @@ public interface IEnchantableTile {
     int SilktouchID = Enchantment.getEnchantmentID(Enchantments.SILK_TOUCH);
     int EfficiencyID = Enchantment.getEnchantmentID(Enchantments.EFFICIENCY);
     int UnbreakingID = Enchantment.getEnchantmentID(Enchantments.UNBREAKING);
+    Predicate<Integer> isValidEnch = id -> id == FortuneID || id == SilktouchID || id == EfficiencyID || id == UnbreakingID;
 
     /**
      * Called after enchantment setting.
@@ -68,6 +72,7 @@ public interface IEnchantableTile {
     default ItemStack getEnchantedPickaxe() {
         ItemStack stack = new ItemStack(Items.DIAMOND_PICKAXE);
         getEnchantments().entrySet().stream()
+            .filter(byKey(Config.content().disableMapJ().get(BlockBookMover.SYMBOL) ? isValidEnch : t -> true))
             .map(keys(Enchantment::getEnchantmentByID))
             .filter(byKey(APacketTile.nonNull))
             .forEach(entry(stack::addEnchantment));
