@@ -1,7 +1,5 @@
 package com.yogpc.qp.packet.quarry;
 
-import java.io.IOException;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.tile.TileQuarry;
@@ -55,7 +53,7 @@ public class MoveHead implements IMessage {
         World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
         if (world.provider.getDimension() == dim) {
             TileEntity entity = world.getTileEntity(pos);
-            if (TileQuarry.class.isInstance(entity)) {
+            if (entity instanceof TileQuarry) {
                 TileQuarry quarry = (TileQuarry) entity;
                 Minecraft.getMinecraft().addScheduledTask(() -> {
                     quarry.headPosX = headPosX;

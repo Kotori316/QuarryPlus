@@ -1,7 +1,5 @@
 package com.yogpc.qp.packet.workbench;
 
-import java.io.IOException;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.tile.TileWorkbench;
@@ -46,7 +44,7 @@ public class WorkbenchMessage implements IMessage {
         MinecraftServer server = world.getMinecraftServer();
         if (world.provider.getDimension() == dim && server != null) {
             TileEntity entity = world.getTileEntity(pos);
-            if (TileWorkbench.class.isInstance(entity)) {
+            if (entity instanceof TileWorkbench) {
                 TileWorkbench workbench = (TileWorkbench) entity;
                 server.addScheduledTask(() -> workbench.setCurrentRecipeIndex(recipeIndex));
             }

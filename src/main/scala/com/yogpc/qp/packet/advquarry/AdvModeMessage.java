@@ -55,7 +55,7 @@ public class AdvModeMessage implements IMessage {
         World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
         if (world.provider.getDimension() == dim) {
             TileEntity entity = world.getTileEntity(pos);
-            if (TileAdvQuarry.class.isInstance(entity)) {
+            if (entity instanceof TileAdvQuarry) {
                 TileAdvQuarry quarry = (TileAdvQuarry) entity;
                 Minecraft.getMinecraft().addScheduledTask(quarry.recieveModeMassage(modeNBT));
             }

@@ -1,6 +1,5 @@
 package com.yogpc.qp.packet.laser;
 
-import java.io.IOException;
 import java.util.stream.Stream;
 
 import com.yogpc.qp.QuarryPlus;

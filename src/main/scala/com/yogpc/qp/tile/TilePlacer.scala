@@ -12,12 +12,11 @@
  */
 package com.yogpc.qp.tile
 
-import javax.annotation.{Nonnull, Nullable}
-
 import com.yogpc.qp.Config
 import com.yogpc.qp.block.ADismCBlock
 import com.yogpc.qp.gui.TranslationKeys
 import com.yogpc.qp.version.VersionUtil
+import javax.annotation.{Nonnull, Nullable}
 import net.minecraft.entity.player.{EntityPlayer, InventoryPlayer}
 import net.minecraft.init.Blocks
 import net.minecraft.inventory.ItemStackHelper

@@ -1,7 +1,6 @@
 package com.yogpc.qp.tile
 
 import java.lang.{Boolean => JBool}
-import javax.annotation.Nonnull
 
 import com.yogpc.qp.block.ADismCBlock
 import com.yogpc.qp.compat.{INBTReadable, INBTWritable, InvUtils}
@@ -11,6 +10,7 @@ import com.yogpc.qp.packet.advquarry.{AdvContentMessage, AdvModeMessage}
 import com.yogpc.qp.tile.TileAdvQuarry.{DigRange, ItemElement, ItemList, QEnch}
 import com.yogpc.qp.version.VersionUtil
 import com.yogpc.qp.{Config, PowerManager, QuarryPlus, QuarryPlusI, ReflectionHelper, _}
+import javax.annotation.Nonnull
 import net.minecraft.block.Block
 import net.minecraft.block.properties.PropertyHelper
 import net.minecraft.block.state.IBlockState

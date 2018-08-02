@@ -27,7 +27,8 @@ public interface HasInv extends net.minecraft.inventory.IInventory {
 
     /**
      * Get from server and set value in client side.
-     * @param id the index of data. Must be under 256.
+     *
+     * @param id    the index of data. Must be under 256.
      * @param value value in server side. Should be under 2^15.
      */
     @Override

@@ -13,10 +13,10 @@
 package com.yogpc.qp.item
 
 import java.util
-import javax.annotation.Nullable
 
 import com.yogpc.qp.tile.{IEnchantableTile, TileBasic}
 import com.yogpc.qp.{Config, QuarryPlus, QuarryPlusI, _}
+import javax.annotation.Nullable
 import net.minecraft.client.resources.I18n
 import net.minecraft.client.util.ITooltipFlag
 import net.minecraft.creativetab.CreativeTabs

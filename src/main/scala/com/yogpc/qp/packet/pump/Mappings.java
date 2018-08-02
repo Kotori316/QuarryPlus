@@ -1,6 +1,5 @@
 package com.yogpc.qp.packet.pump;
 
-import java.io.IOException;
 import java.util.EnumMap;
 import java.util.LinkedList;
 

@@ -1,7 +1,5 @@
 package com.yogpc.qp.packet.pump;
 
-import java.io.IOException;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.tile.TilePump;
@@ -58,7 +56,7 @@ public class Now implements IMessage {
     @SideOnly(Side.CLIENT)
     public IMessage onRecieve(IMessage message, MessageContext ctx) {
         TileEntity entity = QuarryPlus.proxy.getPacketWorld(ctx.netHandler).getTileEntity(blockPos);
-        if (TilePump.class.isInstance(entity)) {
+        if (entity instanceof TilePump) {
             TilePump pump = (TilePump) entity;
             Minecraft.getMinecraft().addScheduledTask(() -> {
                 pump.setConnectTo(facing);

@@ -14,10 +14,10 @@
 package com.yogpc.qp.tile
 
 import java.util
-import javax.annotation.Nullable
 
 import com.yogpc.qp.gui.TranslationKeys
 import com.yogpc.qp.tile.IEnchantableTile._
+import javax.annotation.Nullable
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.EnumFacing

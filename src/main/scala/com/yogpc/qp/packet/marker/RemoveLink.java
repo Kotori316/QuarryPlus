@@ -1,7 +1,5 @@
 package com.yogpc.qp.packet.marker;
 
-import java.io.IOException;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.tile.TileMarker;

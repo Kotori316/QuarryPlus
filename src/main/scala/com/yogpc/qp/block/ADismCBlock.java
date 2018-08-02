@@ -109,7 +109,7 @@ public abstract class ADismCBlock extends QPBlock implements IDismantleable, IWr
     @Optional.Method(modid = QuarryPlus.Optionals.IC2_modID)
     public List<ItemStack> getWrenchDrops(World world, BlockPos pos, IBlockState state, TileEntity te, EntityPlayer player, int fortune) {
         Block block = state.getBlock();
-        if (IEnchantableTile.class.isInstance(te)) {
+        if (te instanceof IEnchantableTile) {
             IEnchantableTile tile = (IEnchantableTile) te;
             ItemStack stack = new ItemStack(block);
             IEnchantableTile.Util.enchantmentToIS(tile, stack);

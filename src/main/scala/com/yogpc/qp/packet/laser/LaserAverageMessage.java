@@ -1,7 +1,5 @@
 package com.yogpc.qp.packet.laser;
 
-import java.io.IOException;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.tile.TileLaser;
