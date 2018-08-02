@@ -27,7 +27,7 @@ compileScala {
 }
 
 minecraft {
-    version = "1.12.2-14.23.4.2703"
+    version = "1.12.2-14.23.4.2746"
     runDir = "run"
 
     // the mappings can be changed at any time, and must be in the following format.
