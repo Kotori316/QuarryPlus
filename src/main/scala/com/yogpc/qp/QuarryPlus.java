@@ -129,7 +129,8 @@ public class QuarryPlus {
         Config.setConfigFile(event.getSuggestedConfigurationFile());
         ForgeChunkManager.setForcedChunkLoadingCallback(QuarryPlus.instance(), ChunkLoadingHandler.instance());
         MinecraftForge.EVENT_BUS.register(QuarryPlus.instance());
-        MinecraftForge.EVENT_BUS.register(Loot.instance());
+        if (!Config.content().disableDungeonLoot())
+            MinecraftForge.EVENT_BUS.register(Loot.instance());
         proxy.registerTextures();
         NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, GuiHandler.instance());
         inDev = ((Boolean) Launch.blackboard.getOrDefault("fml.deobfuscatedEnvironment", Boolean.FALSE));

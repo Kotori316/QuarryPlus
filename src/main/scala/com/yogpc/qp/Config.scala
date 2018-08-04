@@ -70,6 +70,7 @@ object Config {
     final val CollectBedrock_key = "CollectBedrock"
     final val DisableFrameChainBreak_key = "DisableFrameChainBreak"
     final val DisableRendering_Key = "DisableRendering"
+    final val DisableDungeonRoot_key = "DisableDungeonRoot"
     final val EnableChunkDestroyerFluidHander_key = "EnableChunkDestroyerFluidHandler"
     final val SpawnerControllerEntityBlackList_key = "SpawnerControllerEntityBlackList"
     final val RecipeDifficulty_key = "RecipeDifficulty"
@@ -116,6 +117,8 @@ object Config {
           .setRequiresMcRestart(true).setShowInGui(false).getBoolean
         val workbenchMaxReceive = configuration.getInt(WorkbenchplusReceive, Configuration.CATEGORY_GENERAL, 250, 1, Int.MaxValue,
             "Amount of enegy WorkbenchPlus can accept in a tick. Unit is MJ and 1 MJ = 10 RF = 10 FE.")
+        val disableDungeonLoot = configuration.get(Configuration.CATEGORY_GENERAL, DisableDungeonRoot_key, false, "Disable adding magic mirror to loot.")
+          .setRequiresMcRestart(true).getBoolean
         val debug = configuration.getBoolean(DEBUG_key, Configuration.CATEGORY_GENERAL, false, DEBUG_key)
 
         if (configuration.hasChanged)
