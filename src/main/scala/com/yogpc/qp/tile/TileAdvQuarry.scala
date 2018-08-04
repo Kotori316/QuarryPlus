@@ -164,8 +164,13 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                                     }
                                 } else if (Config.content.removeBedrock && (state.getBlock == Blocks.BEDROCK) &&
                                   ((pos.getY > 0 && pos.getY <= 5) || (pos.getY > 122 && pos.getY < 127))) {
-                                    requireEnergy += 200
-                                    destroy = pos :: destroy
+                                    if (Config.content.collectBedrock) {
+                                        requireEnergy += 600
+                                        dig = pos :: dig
+                                    } else {
+                                        requireEnergy += 200
+                                        destroy = pos :: destroy
+                                    }
                                 } else if (state.getBlock == Blocks.PORTAL) {
                                     getWorld.setBlockToAir(pos)
                                     requireEnergy += 20

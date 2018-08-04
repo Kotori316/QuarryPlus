@@ -67,6 +67,7 @@ object Config {
     private val defaultDisables = Set('EnchantMoverFromBook)
 
     final val CATEGORY_MACHINES = "machines"
+    final val CollectBedrock_key = "CollectBedrock"
     final val DisableFrameChainBreak_key = "DisableFrameChainBreak"
     final val DisableRendering_Key = "DisableRendering"
     final val EnableChunkDestroyerFluidHander_key = "EnableChunkDestroyerFluidHandler"
@@ -119,6 +120,8 @@ object Config {
 
         if (configuration.hasChanged)
             configuration.save()
+
+        val collectBedrock = configuration.get(Configuration.CATEGORY_GENERAL, CollectBedrock_key, false, CollectBedrock_key).setShowInGui(false).getBoolean
     }
 
 }
