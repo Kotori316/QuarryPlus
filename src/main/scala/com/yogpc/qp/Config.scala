@@ -16,9 +16,11 @@ object Config {
     private[this] var configuration: Configuration = _
 
     @SubscribeEvent
-    def onChange(configChangedEvent: ConfigChangedEvent): Unit = {
+    def onChange(configChangedEvent: ConfigChangedEvent.OnConfigChangedEvent): Unit = {
         if (configChangedEvent.getModID == QuarryPlus.modID) {
             QuarryPlus.LOGGER.info("QuarryPlus Config loaded!")
+            if (!content.munuallyDefinedHidden)
+                configuration.removeCategory(configuration.getCategory(CATEGORY_HIDDEN))
             sync()
         }
     }
@@ -67,10 +69,11 @@ object Config {
     private val defaultDisables = Set('EnchantMoverFromBook)
 
     final val CATEGORY_MACHINES = "machines"
+    final val CATEGORY_HIDDEN = "hidden"
     final val CollectBedrock_key = "CollectBedrock"
     final val DisableFrameChainBreak_key = "DisableFrameChainBreak"
     final val DisableRendering_Key = "DisableRendering"
-    final val DisableDungeonRoot_key = "DisableDungeonRoot"
+    final val DisableDungeonRoot_key = "DisableDungeonLoot"
     final val EnableChunkDestroyerFluidHander_key = "EnableChunkDestroyerFluidHandler"
     final val SpawnerControllerEntityBlackList_key = "SpawnerControllerEntityBlackList"
     final val RecipeDifficulty_key = "RecipeDifficulty"
@@ -124,7 +127,8 @@ object Config {
         if (configuration.hasChanged)
             configuration.save()
 
-        val collectBedrock = configuration.get(Configuration.CATEGORY_GENERAL, CollectBedrock_key, false, CollectBedrock_key).setShowInGui(false).getBoolean
+        val munuallyDefinedHidden = configuration.hasCategory(CATEGORY_HIDDEN)
+        val collectBedrock = configuration.get(CATEGORY_HIDDEN, CollectBedrock_key, false, CollectBedrock_key).setShowInGui(false).getBoolean
     }
 
 }
