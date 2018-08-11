@@ -42,7 +42,7 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 import static com.yogpc.qp.block.ADismCBlock.ACTING;
 
-@net.minecraftforge.fml.common.Optional.Interface(iface = "cofh.api.block.IDismantleable", modid = QuarryPlus.Optionals.COFH_block)
+@net.minecraftforge.fml.common.Optional.Interface(iface = "cofh.api.block.IDismantleable", modid = QuarryPlus.Optionals.COFH_modID)
 public class BlockController extends Block implements IDismantleable {
     private static final Field logic_spawnDelay = ReflectionHelper.findField(MobSpawnerBaseLogic.class, "spawnDelay", "field_98286_b");
     public static final scala.Symbol SYMBOL = scala.Symbol.apply("SpawnerController");
@@ -143,13 +143,13 @@ public class BlockController extends Block implements IDismantleable {
     }
 
     @Override
-    @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.COFH_block)
+    @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.COFH_modID)
     public ArrayList<ItemStack> dismantleBlock(World world, BlockPos pos, IBlockState state, EntityPlayer player, boolean returnDrops) {
         return ADismCBlock.dismantle(world, pos, state, returnDrops);
     }
 
     @Override
-    @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.COFH_block)
+    @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.COFH_modID)
     public boolean canDismantle(World world, BlockPos pos, IBlockState state, EntityPlayer player) {
         return true;
     }

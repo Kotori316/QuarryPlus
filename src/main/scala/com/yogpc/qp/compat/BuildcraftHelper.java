@@ -19,7 +19,7 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 public class BuildcraftHelper {
 
     public static boolean isWrench(EntityPlayer player, EnumHand hand, ItemStack wrench, RayTraceResult rayTrace) {
-        if (ModAPIManager.INSTANCE.hasAPI(QuarryPlus.Optionals.COFH_item)) {
+        if (Loader.isModLoaded(QuarryPlus.Optionals.COFH_modID)) {
             if (wrench.getItem() instanceof IToolHammer) {
                 IToolHammer wrenchItem = (IToolHammer) wrench.getItem();
                 if (wrenchItem.isUsable(wrench, player, rayTrace.getBlockPos())) {

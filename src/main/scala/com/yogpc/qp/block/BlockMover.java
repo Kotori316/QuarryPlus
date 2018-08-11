@@ -33,7 +33,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
 import scala.Symbol;
 
-@Optional.Interface(iface = "cofh.api.block.IDismantleable", modid = QuarryPlus.Optionals.COFH_block)
+@Optional.Interface(iface = "cofh.api.block.IDismantleable", modid = QuarryPlus.Optionals.COFH_modID)
 public class BlockMover extends Block implements IDismantleable {
     public static final Symbol SYMBOL = Symbol.apply("EnchantMover");
     public final ItemBlock itemBlock;
@@ -60,13 +60,13 @@ public class BlockMover extends Block implements IDismantleable {
     }
 
     @Override
-    @Optional.Method(modid = QuarryPlus.Optionals.COFH_block)
+    @Optional.Method(modid = QuarryPlus.Optionals.COFH_modID)
     public ArrayList<ItemStack> dismantleBlock(World world, BlockPos pos, IBlockState state, EntityPlayer player, boolean returnDrops) {
         return ADismCBlock.dismantle(world, pos, state, returnDrops);
     }
 
     @Override
-    @Optional.Method(modid = QuarryPlus.Optionals.COFH_block)
+    @Optional.Method(modid = QuarryPlus.Optionals.COFH_modID)
     public boolean canDismantle(World world, BlockPos pos, IBlockState state, EntityPlayer player) {
         return true;
     }

@@ -36,7 +36,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import scala.Symbol;
 
-@net.minecraftforge.fml.common.Optional.Interface(iface = "cofh.api.tileentity.IInventoryConnection", modid = QuarryPlus.Optionals.COFH_tileentity)
+@net.minecraftforge.fml.common.Optional.Interface(iface = "cofh.api.tileentity.IInventoryConnection", modid = QuarryPlus.Optionals.COFH_modID)
 public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, IInventoryConnection {
     public final NonNullList<ItemStack> inventory = NonNullList.withSize(27, com.yogpc.qp.version.VersionUtil.empty());
     public final NonNullList<ItemStack> inventory2 = NonNullList.withSize(18, com.yogpc.qp.version.VersionUtil.empty());
@@ -242,7 +242,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
     }
 
     @Override
-    @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.COFH_tileentity)
+    @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.COFH_modID)
     public ConnectionType canConnectInventory(EnumFacing from) {
         return ConnectionType.FORCE;
     }

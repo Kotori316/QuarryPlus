@@ -56,7 +56,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
-@net.minecraftforge.fml.common.Optional.Interface(iface = "cofh.api.tileentity.IInventoryConnection", modid = QuarryPlus.Optionals.COFH_tileentity)
+@net.minecraftforge.fml.common.Optional.Interface(iface = "cofh.api.tileentity.IInventoryConnection", modid = QuarryPlus.Optionals.COFH_modID)
 public abstract class TileBasic extends APowerTile implements IEnchantableTile, HasInv, IInventoryConnection {
     @Nullable
     protected EnumFacing pump = null;
@@ -322,7 +322,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     }
 
     @Override
-    @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.COFH_tileentity)
+    @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.COFH_modID)
     public ConnectionType canConnectInventory(EnumFacing from) {
         return ConnectionType.FORCE;
     }

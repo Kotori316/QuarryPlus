@@ -289,11 +289,7 @@ public class QuarryPlus {
         public static final String Buildcraft_tiles = "BuildCraftAPI|tiles";
         public static final String Buildcraft_tools = "BuildCraftAPI|tools";
         public static final String Buildcraft_transport = "BuildCraftAPI|transport";
-        public static final String COFH_block = "cofhapi|block";
-        public static final String COFH_energy = "cofhapi|energy";
-        public static final String COFH_item = "cofhapi|item";
         public static final String COFH_modID = "cofhcore";
-        public static final String COFH_tileentity = "cofhapi|tileentity";
         public static final String IC2_modID = "ic2";
         public static final String IMC_Add = "IMC_AddRecipe";
         public static final String IMC_Energy = "energy";

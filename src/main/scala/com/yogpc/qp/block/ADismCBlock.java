@@ -28,7 +28,7 @@ import net.minecraftforge.fml.common.Optional;
 import scala.Function1;
 
 @Optional.InterfaceList({
-    @Optional.Interface(iface = "cofh.api.block.IDismantleable", modid = QuarryPlus.Optionals.COFH_block),
+    @Optional.Interface(iface = "cofh.api.block.IDismantleable", modid = QuarryPlus.Optionals.COFH_modID),
     @Optional.Interface(iface = "ic2.api.tile.IWrenchable", modid = QuarryPlus.Optionals.IC2_modID)})
 public abstract class ADismCBlock extends QPBlock implements IDismantleable, IWrenchable {
 
@@ -45,13 +45,13 @@ public abstract class ADismCBlock extends QPBlock implements IDismantleable, IWr
     }
 
     @Override
-    @Optional.Method(modid = QuarryPlus.Optionals.COFH_block)
+    @Optional.Method(modid = QuarryPlus.Optionals.COFH_modID)
     public ArrayList<ItemStack> dismantleBlock(World world, BlockPos pos, IBlockState state, EntityPlayer player, boolean returnDrops) {
         return dismantle(world, pos, state, returnDrops);
     }
 
     @Override
-    @Optional.Method(modid = QuarryPlus.Optionals.COFH_block)
+    @Optional.Method(modid = QuarryPlus.Optionals.COFH_modID)
     public boolean canDismantle(World world, BlockPos pos, IBlockState state, EntityPlayer player) {
         return this != QuarryPlusI.blockChunkdestroyer();
     }
