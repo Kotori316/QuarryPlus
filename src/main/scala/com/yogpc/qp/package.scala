@@ -71,7 +71,7 @@ package object qp {
         def removeEnchantment(ench: Enchantment): Unit = {
             val enchId = Enchantment.getEnchantmentID(ench).toShort
             val tagName = if (stack.getItem == net.minecraft.init.Items.ENCHANTED_BOOK) "StoredEnchantments" else "ench"
-            val list = Option(stack.getTagCompound).map(_.getTagList(tagName, NBT.TAG_COMPOUND)).getOrElse(new NBTTagList)
+            val list = Option(stack.getTagCompound).fold(new NBTTagList)(_.getTagList(tagName, NBT.TAG_COMPOUND))
 
             val copied = list.copy()
             for (i <- 0 until list.tagCount()) {

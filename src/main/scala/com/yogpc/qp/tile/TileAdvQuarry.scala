@@ -436,8 +436,6 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 
     override def getEnchantedPickaxe: ItemStack = ench.pickaxe
 
-    override def isItemValidForSlot(index: Int, stack: ItemStack) = false
-
     override def setInventorySlotContents(index: Int, stack: ItemStack) = {
         if (VersionUtil.nonEmpty(stack)) {
             QuarryPlus.LOGGER.warn("QuarryPlus WARN: call setInventorySlotContents with non empty ItemStack.")
@@ -570,7 +568,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
     }
 
     @SideOnly(Side.CLIENT)
-    def recieveModeMassage(modeTag: NBTTagCompound): Runnable = new Runnable {
+    def recieveModeMessage(modeTag: NBTTagCompound): Runnable = new Runnable {
         override def run(): Unit = {
             mode.readFromNBT(modeTag)
             digRange = DigRange.readFromNBT(modeTag)
@@ -611,6 +609,8 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
         override def getSlots: Int = self.getSizeInventory
 
         override def insertItem(slot: Int, stack: ItemStack, simulate: Boolean): ItemStack = stack
+
+        override def isItemValid(slot: Int, stack: ItemStack): Boolean = isItemValidForSlot(slot, stack)
     }
 
     private[TileAdvQuarry] class FluidHandler(val facing: EnumFacing) extends IFluidHandler {

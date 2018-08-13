@@ -22,6 +22,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.gui.TranslationKeys;
 import com.yogpc.qp.version.VersionUtil;
+import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.ItemStackHelper;
@@ -31,9 +32,13 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.ItemHandlerHelper;
 import scala.Symbol;
 
 @net.minecraftforge.fml.common.Optional.Interface(iface = "cofh.api.tileentity.IInventoryConnection", modid = QuarryPlus.Optionals.COFH_tileentity)
@@ -42,6 +47,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
     public final NonNullList<ItemStack> inventory2 = NonNullList.withSize(18, com.yogpc.qp.version.VersionUtil.empty());
     public List<WorkbenchRecipes> recipesList = Collections.emptyList();
     private WorkbenchRecipes currentRecipe = WorkbenchRecipes.dummyRecipe();
+    private ItemHandler itemHandler = new ItemHandler();
     public boolean workcontinue;
 
     @Override
@@ -220,6 +226,20 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
         return TranslationKeys.workbench;
     }
 
+    @Override
+    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
+        return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
+    }
+
+    @Nullable
+    @Override
+    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
+        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+            return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(itemHandler);
+        }
+        return super.getCapability(capability, facing);
+    }
+
     public void setCurrentRecipeIndex(int recipeIndex) {
         if (recipeIndex >= 0 && recipesList.size() > recipeIndex) {
             this.currentRecipe = recipesList.get(recipeIndex);
@@ -258,5 +278,63 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
     @Override
     protected Symbol getSymbol() {
         return Symbol.apply("WorkbenchPlus");
+    }
+
+    private class ItemHandler implements IItemHandlerModifiable {
+
+        @Override
+        public void setStackInSlot(int slot, ItemStack stack) {
+            setInventorySlotContents(slot, stack);
+        }
+
+        @Override
+        public int getSlots() {
+            return inventory.size();
+        }
+
+        @Override
+        public ItemStack getStackInSlot(int slot) {
+            return TileWorkbench.this.getStackInSlot(slot);
+        }
+
+        @Override
+        public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
+            if (VersionUtil.isEmpty(stack))
+                return VersionUtil.empty();
+            ItemStack inSlot = getStackInSlot(slot).copy();
+            if (VersionUtil.nonEmpty(inSlot)) {
+                if (ItemHandlerHelper.canItemStacksStack(inSlot, stack)) {
+                    if (!simulate) {
+                        VersionUtil.grow(inSlot, VersionUtil.getCount(stack));
+                        setStackInSlot(slot, inSlot);
+                        markDirty();
+                    }
+                    return VersionUtil.empty();
+                } else {
+                    return stack;
+                }
+            } else {
+                if (!simulate) {
+                    setStackInSlot(slot, stack.copy());
+                    markDirty();
+                }
+                return VersionUtil.empty();
+            }
+        }
+
+        @Override
+        public ItemStack extractItem(int slot, int amount, boolean simulate) {
+            return VersionUtil.empty();
+        }
+
+        @Override
+        public int getSlotLimit(int slot) {
+            return getInventoryStackLimit();
+        }
+
+        @Override
+        public boolean isItemValid(int slot, ItemStack stack) {
+            return isItemValidForSlot(slot, stack);
+        }
     }
 }

@@ -50,7 +50,6 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
     private Object helper;//buildcraft capability helper
     private final EnergyDebug debug = new EnergyDebug(this);
     protected boolean outputEnergyInfo = true;
-    private final boolean isDebugSender = this instanceof IDebugSender;
 
     public APowerTile() {
         bcLoaded = ModAPIManager.INSTANCE.hasAPI(QuarryPlus.Optionals.BuildCraft_core);

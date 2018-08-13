@@ -155,11 +155,13 @@ public class PowerManager {
     /**
      * @param pp          power tile
      * @param hardness    block hardness
-     * @param enchantMode no ench -> 0, silktouch -> -1, fortune -> fortune level
+     * @param enchantMode no ench -> 0, silktouch -> -1, fortune -> fortune level, break canceled -> -2
      * @param unbreaking  unbreaking level
      * @return Whether the tile used energy.
      */
     public static boolean useEnergyBreak(final APowerTile pp, final float hardness, final byte enchantMode, final byte unbreaking) {
+        if (enchantMode == -2)
+            return true;
         final double pw = calcEnergyBreak(pp, hardness, enchantMode, unbreaking);
         if (pp.useEnergy(pw, pw, false) != pw)
             return false;
