@@ -28,6 +28,7 @@ import com.yogpc.qp.tile.TileAdvPump;
 import com.yogpc.qp.tile.TileAdvQuarry;
 import com.yogpc.qp.tile.TileBookMover;
 import com.yogpc.qp.tile.TileBreaker;
+import com.yogpc.qp.tile.TileExpPump;
 import com.yogpc.qp.tile.TileLaser;
 import com.yogpc.qp.tile.TileMarker;
 import com.yogpc.qp.tile.TileMiningWell;
@@ -162,7 +163,8 @@ public class QuarryPlus {
             blockRefinery(),
             blockChunkdestroyer(),
             blockStandalonePump(),
-            blockBookMover()
+            blockBookMover(),
+            blockExpPump()
         );
 
         GameRegistry.registerTileEntity(TileWorkbench.class, new ResourceLocation(modID, QuarryPlus.Names.workbench));
@@ -177,6 +179,7 @@ public class QuarryPlus {
         GameRegistry.registerTileEntity(TileAdvQuarry.class, new ResourceLocation(modID, QuarryPlus.Names.advquarry));
         GameRegistry.registerTileEntity(TileAdvPump.class, new ResourceLocation(modID, QuarryPlus.Names.advpump));
         GameRegistry.registerTileEntity(TileBookMover.class, new ResourceLocation(modID, QuarryPlus.Names.moverfrombook));
+        GameRegistry.registerTileEntity(TileExpPump.class, new ResourceLocation(modID, QuarryPlus.Names.exppump));
     }
 
     @SubscribeEvent
@@ -198,6 +201,7 @@ public class QuarryPlus {
             blockChunkdestroyer().itemBlock(),
             blockStandalonePump().itemBlock(),
             blockBookMover().itemBlock(),
+            blockExpPump().itemBlock(),
             itemTool(),
             magicmirror(),
             debugItem()
@@ -225,6 +229,7 @@ public class QuarryPlus {
         ModelLoader.setCustomModelResourceLocation(blockChunkdestroyer().itemBlock(), 0, proxy.fromEntry(blockChunkdestroyer()));
         ModelLoader.setCustomModelResourceLocation(blockStandalonePump().itemBlock(), 0, proxy.fromEntry(blockStandalonePump()));
         ModelLoader.setCustomModelResourceLocation(blockBookMover().itemBlock(), 0, proxy.fromEntry(blockBookMover()));
+        ModelLoader.setCustomModelResourceLocation(blockExpPump().itemBlock(), 0, proxy.fromEntry(blockExpPump()));
         ModelLoader.setCustomModelResourceLocation(itemTool(), 0, new ModelResourceLocation(prefix + ItemTool.statuschecker(), variantIn));
         ModelLoader.setCustomModelResourceLocation(itemTool(), 1, new ModelResourceLocation(prefix + ItemTool.listeditor(), variantIn));
         ModelLoader.setCustomModelResourceLocation(itemTool(), 2, new ModelResourceLocation(prefix + ItemTool.liquidselector(), variantIn));
@@ -274,7 +279,7 @@ public class QuarryPlus {
 
     @Mod.EventHandler
     public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
-        if (!inDev) {
+        if (!((Boolean) Launch.blackboard.getOrDefault("fml.deobfuscatedEnvironment", Boolean.FALSE))) {
             LOGGER.warn("Invalid fingerprint detected! The file " + event.getSource().getName() +
                 " may have been tampered with. This version will NOT be supported by the author!");
         }
@@ -309,6 +314,7 @@ public class QuarryPlus {
         public static final String breaker = "breakerplus";
         public static final String controller = "spawnercontroller";
         public static final String debug = "quarrydebug";
+        public static final String exppump = "exppump";
         public static final String frame = "quarryframe";
         public static final String laser = "laserplus";
         public static final String marker = "markerplus";

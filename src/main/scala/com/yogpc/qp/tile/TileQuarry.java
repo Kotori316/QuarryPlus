@@ -36,6 +36,7 @@ import com.yogpc.qp.version.VersionUtil;
 import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -321,6 +322,24 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                 }
             }
         }
+        if (exppump != null) {
+            List<EntityXPOrb> xpOrbs = getWorld().getEntitiesWithinAABB(EntityXPOrb.class, axis);
+            for (EntityXPOrb xpOrb : xpOrbs) {
+                if (!xpOrb.isDead) {
+                    TileEntity tileEntity = world.getTileEntity(pos.offset(exppump));
+                    if (tileEntity instanceof TileExpPump) {
+                        TileExpPump t = (TileExpPump) tileEntity;
+                        double min = t.getEnergyUse(xpOrb.xpValue);
+                        if (useEnergy(min, min, false) == min) {
+                            useEnergy(min, min, true);
+                            t.addXp(xpOrb.xpValue);
+                            QuarryPlus.proxy.removeEntity(xpOrb);
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
     private void S_createBox() {
@@ -620,6 +639,12 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                 pmp = ((TilePump) te).unbreaking;
             else
                 this.pump = null;
+        }
+        if (hasWorld() && exppump != null) {
+            TileEntity entity = getWorld().getTileEntity(getPos().offset(exppump));
+            if (!(entity instanceof TileExpPump)) {
+                exppump = null;
+            }
         }
         if (this.now == NONE)
             PowerManager.configure0(this);

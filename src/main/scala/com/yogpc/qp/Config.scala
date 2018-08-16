@@ -58,6 +58,7 @@ object Config {
         'EnchantMoverFromBook,
         'PlacerPlus,
         'PumpPlus,
+        'ExpPump,
         'MarkerPlus,
         'QuarryPlus,
         'WorkbenchPlus)
