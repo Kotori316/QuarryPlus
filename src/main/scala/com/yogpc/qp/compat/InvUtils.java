@@ -9,7 +9,11 @@ import java.util.stream.Stream;
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -103,6 +107,11 @@ public class InvUtils {
         return block.getStateFromMeta(meta);
     }
 
+    public static boolean hasSmelting(ItemStack stack) {
+        return (cofh_smelting != DummyEnchantment.DUMMY_ENCHANTMENT && EnchantmentHelper.getEnchantmentLevel(cofh_smelting, stack) > 0) ||
+            (endercore_smelting != DummyEnchantment.DUMMY_ENCHANTMENT && EnchantmentHelper.getEnchantmentLevel(endercore_smelting, stack) > 0);
+    }
+
     @GameRegistry.ObjectHolder(QuarryPlus.Optionals.IC2_modID + ":meter")
     public static final Item ic2_meter = new Item();
     @GameRegistry.ObjectHolder(QuarryPlus.Optionals.IC2_modID + ":wrench")
@@ -111,6 +120,10 @@ public class InvUtils {
     public static final Item ic2_electric_wrench = new Item();
     @GameRegistry.ObjectHolder(QuarryPlus.modID + ":quarrydebug")
     public static final Item quarrydebug = new Item();
+    @GameRegistry.ObjectHolder(QuarryPlus.Optionals.COFH_modID + ":smelting")
+    public static final Enchantment cofh_smelting = DummyEnchantment.DUMMY_ENCHANTMENT;
+    @GameRegistry.ObjectHolder("endercore:autosmelt")
+    public static final Enchantment endercore_smelting = DummyEnchantment.DUMMY_ENCHANTMENT;
 
     private static class ForgeInjector implements IInjector {
         private final IItemHandler handler;
@@ -134,4 +147,11 @@ public class InvUtils {
         }
     }
 
+    private static final class DummyEnchantment extends Enchantment {
+        private static final DummyEnchantment DUMMY_ENCHANTMENT = new DummyEnchantment();
+
+        protected DummyEnchantment() {
+            super(Rarity.COMMON, EnumEnchantmentType.ALL, new EntityEquipmentSlot[]{});
+        }
+    }
 }

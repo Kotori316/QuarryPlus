@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 
 import cofh.api.tileentity.IInventoryConnection;
@@ -39,6 +38,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagShort;
@@ -47,6 +47,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
@@ -185,11 +186,23 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
                 i = fortuneLevel;
             }
             if (exppump != null) {
-                Optional.ofNullable((TileExpPump) world.getTileEntity(getPos().offset(exppump))).ifPresent(t -> {
+                TileExpPump t = ((TileExpPump) world.getTileEntity(getPos().offset(exppump)));
+                if (t != null) {
                     double min = t.getEnergyUse(event.getExpToDrop());
                     if (useEnergy(min, min, true) == min)
                         t.addXp(event.getExpToDrop());
-                });
+                    if (InvUtils.hasSmelting(fakePlayer.getHeldItemMainhand())) {
+                        collection.forEach(stack -> {
+                            float furnaceXp = FurnaceRecipes.instance().getSmeltingExperience(stack);
+                            if (furnaceXp > 0) {
+                                int xp = MathHelper.floor(furnaceXp * VersionUtil.getCount(stack));
+                                double e = t.getEnergyUse(xp);
+                                if (useEnergy(e, e, true) == e)
+                                    t.addXp(xp);
+                            }
+                        });
+                    }
+                }
             }
         } else {
             i = -2;
@@ -221,7 +234,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         this.silktouchInclude = nbttc.getBoolean("silktouchInclude");
         readLongCollection(nbttc.getTagList("fortuneList", 10), this.fortuneList);
         readLongCollection(nbttc.getTagList("silktouchList", 10), this.silktouchList);
-        ench = NBTBuilder.fromList(nbttc.getTagList("enchList", Constants.NBT.TAG_COMPOUND), n -> n.getInteger("id"), n -> n.getInteger("level"),
+        ench = NBTBuilder.fromList(nbttc.getTagList("enchList", Constants.NBT.TAG_COMPOUND), n -> n.getInteger("id"), n -> n.getInteger("value"),
             s -> Enchantment.getEnchantmentByID(s) != null, s -> true);
     }
 
