@@ -279,7 +279,9 @@ public class QuarryPlus {
 
     @Mod.EventHandler
     public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
-        if (!((Boolean) Launch.blackboard.getOrDefault("fml.deobfuscatedEnvironment", Boolean.FALSE))) {
+        try {
+            Class.forName("net.minecraft.item.ItemStack").getDeclaredField("EMPTY");
+        } catch (ReflectiveOperationException ignore) {
             LOGGER.warn("Invalid fingerprint detected! The file " + event.getSource().getName() +
                 " may have been tampered with. This version will NOT be supported by the author!");
         }
