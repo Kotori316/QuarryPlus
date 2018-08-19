@@ -129,9 +129,21 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
             }
             return ((TilePump) te).S_removeLiquids(this, x, y, z);
         }
+        BI bi = S_addDroppedItems(dropped, blockState, pos);
         if (!PowerManager.useEnergyBreak(this, blockState.getBlockHardness(getWorld(), pos),
-            S_addDroppedItems(dropped, blockState, pos), this.unbreaking))
+            bi.b, this.unbreaking))
             return false;
+        if (exppump != null) {
+            TileEntity entity = world.getTileEntity(getPos().offset(exppump));
+            if (entity instanceof TileExpPump) {
+                TileExpPump t = (TileExpPump) entity;
+                double expEnergy = t.getEnergyUse(bi.i);
+                if (useEnergy(expEnergy, expEnergy, false) == expEnergy) {
+                    useEnergy(expEnergy, expEnergy, true);
+                    t.addXp(bi.i);
+                }
+            }
+        }
         this.cacheItems.addAll(dropped);
         this.getWorld().destroyBlock(pos, false);
         return true;
@@ -161,9 +173,10 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         return true;
     }
 
-    private byte S_addDroppedItems(final Collection<ItemStack> collection, final IBlockState state, final BlockPos pos) {
+    private BI S_addDroppedItems(final Collection<ItemStack> collection, final IBlockState state, final BlockPos pos) {
         Block block = state.getBlock();
         byte i;
+        int xp = 0;
         QuarryFakePlayer fakePlayer = QuarryFakePlayer.get(((WorldServer) getWorld()));
         fakePlayer.setHeldItem(EnumHand.MAIN_HAND, getEnchantedPickaxe());
         BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(world, pos, state, fakePlayer);
@@ -186,29 +199,23 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
                 i = fortuneLevel;
             }
             if (exppump != null) {
-                TileExpPump t = ((TileExpPump) world.getTileEntity(getPos().offset(exppump)));
-                if (t != null) {
-                    double min = t.getEnergyUse(event.getExpToDrop());
-                    if (useEnergy(min, min, true) == min)
-                        t.addXp(event.getExpToDrop());
-                    if (InvUtils.hasSmelting(fakePlayer.getHeldItemMainhand())) {
-                        collection.forEach(stack -> {
-                            float furnaceXp = FurnaceRecipes.instance().getSmeltingExperience(stack);
-                            if (furnaceXp > 0) {
-                                int xp = MathHelper.floor(furnaceXp * VersionUtil.getCount(stack));
-                                double e = t.getEnergyUse(xp);
-                                if (useEnergy(e, e, true) == e)
-                                    t.addXp(xp);
-                            }
-                        });
-                    }
+                xp += event.getExpToDrop();
+                if (InvUtils.hasSmelting(fakePlayer.getHeldItemMainhand())) {
+                    xp += collection.stream().mapToInt(stack -> {
+                        float furnaceXp = FurnaceRecipes.instance().getSmeltingExperience(stack);
+                        int floor = MathHelper.floor(furnaceXp * VersionUtil.getCount(stack));
+                        if (floor > 0)
+                            return floor;
+                        else
+                            return Math.random() < furnaceXp ? 1 : 0;
+                    }).sum();
                 }
             }
         } else {
             i = -2;
         }
         fakePlayer.setHeldItem(EnumHand.MAIN_HAND, VersionUtil.empty());
-        return i;
+        return new BI(i, xp);
     }
 
     @SuppressWarnings({"ConstantConditions", "deprecation"})
@@ -378,5 +385,15 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.COFH_modID)
     public ConnectionType canConnectInventory(EnumFacing from) {
         return ConnectionType.FORCE;
+    }
+
+    private static class BI {
+        final byte b;
+        final int i;
+
+        private BI(byte b, int i) {
+            this.b = b;
+            this.i = i;
+        }
     }
 }
