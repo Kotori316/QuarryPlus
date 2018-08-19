@@ -131,7 +131,7 @@ public class BlockPump extends ADismCBlock {
     public int getMetaFromState(IBlockState state) {
         boolean work = state.getValue(ACTING);
         boolean connected = state.getValue(CONNECTED);
-        return (work ? 1 : 0) & (connected ? 2 : 0);
+        return (work ? 1 : 0) | (connected ? 2 : 0);
     }
 
     @SuppressWarnings("deprecation")

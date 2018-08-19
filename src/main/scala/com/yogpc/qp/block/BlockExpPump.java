@@ -6,6 +6,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.item.ItemBlockPump;
 import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TileExpPump;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
@@ -16,7 +17,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import scala.Symbol;
 
@@ -92,4 +95,35 @@ public class BlockExpPump extends ADismCBlock {
         return false;
     }
 
+    @Override
+    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
+        return willHarvest || super.removedByPlayer(state, world, pos, player, false);
+    }
+
+    @Override
+    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack) {
+        super.harvestBlock(worldIn, player, pos, state, te, stack);
+        worldIn.setBlockToAir(pos);
+    }
+
+    @Override
+    public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+        TileEntity entity = world.getTileEntity(pos);
+        if (entity instanceof TileExpPump) {
+            TileExpPump pump = (TileExpPump) entity;
+            ItemStack stack = new ItemStack(this);
+            IEnchantableTile.Util.enchantmentToIS(pump, stack);
+            drops.add(stack);
+        }
+    }
+
+    @Override
+    public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+        TileEntity entity = worldIn.getTileEntity(pos);
+        if (entity instanceof TileExpPump) {
+            TileExpPump pump = (TileExpPump) entity;
+            pump.onBreak(worldIn);
+        }
+        super.breakBlock(worldIn, pos, state);
+    }
 }
