@@ -119,10 +119,12 @@ public class BlockExpPump extends ADismCBlock {
 
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-        TileEntity entity = worldIn.getTileEntity(pos);
-        if (entity instanceof TileExpPump) {
-            TileExpPump pump = (TileExpPump) entity;
-            pump.onBreak(worldIn);
+        if (!worldIn.isRemote) {
+            TileEntity entity = worldIn.getTileEntity(pos);
+            if (entity instanceof TileExpPump) {
+                TileExpPump pump = (TileExpPump) entity;
+                pump.onBreak(worldIn);
+            }
         }
         super.breakBlock(worldIn, pos, state);
     }
