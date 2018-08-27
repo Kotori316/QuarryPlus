@@ -2,6 +2,7 @@
 
 tile.breakerplus.name=Breaker Plus
 tile.chunkdestroyer.name=Chunk Destroyer
+tile.exppump.name=Experience Pump for Quarry
 tile.enchantmover.name=EnchantMover
 tile.InfMJSrc.name=InfinityMJSource
 tile.laserplus.name=Laser Plus
@@ -16,6 +17,7 @@ tile.refineryplus.name=Refinery Plus
 tile.spawnercontroller.name=Spawner Controller
 tile.standalonepump.name=Advanced Pump
 tile.workbenchplus.name=Workbench Plus
+tile.enchantmoverfrombook.name=Book EnchantMover
 item.dimensionmirror.name=DimensionalMirror
 item.electric_armor.name=ElectricArmorPlus
 item.liquidselector.name=LiquidSelector
@@ -95,3 +97,5 @@ yog.armor.hover.off=Hover Mode disabled.
 yog.armor.hover.on=Hover Mode enabled.
 yog.pump.liquid=-    %s: %smB
 yog.spanwer.setting=Please select entity to be spawned by spawner
+
+quarryplus.machines.tooltip=Machines

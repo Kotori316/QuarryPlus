@@ -188,7 +188,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
             if (!initialized) {
                 if (connectTo != null) {
                     TileEntity te = getWorld().getTileEntity(getPos().offset(connectTo));
-                    if (te instanceof TileBasic && ((TileBasic) te).S_connect(this.connectTo.getOpposite())) {
+                    if (te instanceof TileBasic && ((TileBasic) te).S_connectPump(this.connectTo.getOpposite())) {
                         S_sendNowPacket();
                         this.initialized = true;
                     } else if (getWorld().isAirBlock(getPos().offset(connectTo))) {
@@ -207,7 +207,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
             TileEntity te;
             for (EnumFacing facing : EnumFacing.VALUES) {
                 te = getWorld().getTileEntity(getPos().offset(facing));
-                if (te instanceof TileBasic && ((TileBasic) te).S_connect(facing.getOpposite())) {
+                if (te instanceof TileBasic && ((TileBasic) te).S_connectPump(facing.getOpposite())) {
                     setConnectTo(facing);
                     S_sendNowPacket();
                     return;
@@ -625,7 +625,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
             List<ITextComponent> list = new ArrayList<>(liquids.size() + 1);
             list.add(new TextComponentTranslation(TranslationKeys.PUMP_CONTAIN));
             liquids.forEach(s -> list.add(new TextComponentTranslation(TranslationKeys.LIQUID_FORMAT,
-                new TextComponentTranslation(s.getUnlocalizedName(), Integer.toString(s.amount)))));
+                new TextComponentTranslation(s.getUnlocalizedName()), Integer.toString(s.amount))));
             return list;
         } else {
             return Collections.singletonList(new TextComponentTranslation(TranslationKeys.PUMP_CONTAIN_NO));
@@ -684,7 +684,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
     }
 
-    private IFluidHandler tankAll = (IDummyFluidHandler) () -> {
+    private final IFluidHandler tankAll = (IDummyFluidHandler) () -> {
         IFluidTankProperties[] array = TilePump.this.liquids.stream()
             .map(fluidStack -> new FluidTankProperties(fluidStack, fluidStack.amount, false, false))
             .toArray(IFluidTankProperties[]::new);

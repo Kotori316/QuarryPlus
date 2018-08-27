@@ -1,6 +1,5 @@
 package com.yogpc.qp.packet.pump;
 
-import java.io.IOException;
 import java.util.EnumMap;
 import java.util.LinkedList;
 
@@ -36,7 +35,7 @@ public class Mappings {
         }
 
         @Override
-        public void fromBytes(PacketBuffer buffer) throws IOException {
+        public void fromBytes(PacketBuffer buffer) {
             pos = buffer.readBlockPos();
             facing = buffer.readEnumValue(EnumFacing.class);
             for (EnumFacing VALUE : EnumFacing.VALUES) {
@@ -94,7 +93,7 @@ public class Mappings {
         }
 
         @Override
-        public void fromBytes(PacketBuffer buffer) throws IOException {
+        public void fromBytes(PacketBuffer buffer) {
             pos = buffer.readBlockPos();
             facing = buffer.readEnumValue(EnumFacing.class);
             type = buffer.readEnumValue(Type.class);
@@ -182,7 +181,7 @@ public class Mappings {
         }
 
         @Override
-        public void fromBytes(PacketBuffer buffer) throws IOException {
+        public void fromBytes(PacketBuffer buffer) {
             pos = buffer.readBlockPos();
             dest = buffer.readEnumValue(EnumFacing.class);
             dim = buffer.readInt();

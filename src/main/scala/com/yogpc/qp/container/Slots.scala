@@ -46,3 +46,7 @@ class SlotMover(inv: IInventory, index: Int, xPosition: Int, yPosition: Int) ext
 
     override def getSlotStackLimit = 1
 }
+
+class SlotTile(inv: IInventory, index: Int, xPosition: Int, yPosition: Int) extends Slot(inv, index, xPosition, yPosition) {
+    override def isItemValid(stack: ItemStack): Boolean = inv.isItemValidForSlot(index, stack)
+}

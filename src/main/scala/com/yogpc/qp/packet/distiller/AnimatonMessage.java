@@ -1,7 +1,5 @@
 package com.yogpc.qp.packet.distiller;
 
-import java.io.IOException;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.tile.TileRefinery;
@@ -33,7 +31,7 @@ public class AnimatonMessage implements IMessage {
     }
 
     @Override
-    public void fromBytes(PacketBuffer buffer) throws IOException {
+    public void fromBytes(PacketBuffer buffer) {
         pos = buffer.readBlockPos();
         dim = buffer.readInt();
         speed = buffer.readFloat();

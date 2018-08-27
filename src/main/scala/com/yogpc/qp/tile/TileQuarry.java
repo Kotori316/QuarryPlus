@@ -15,14 +15,13 @@ package com.yogpc.qp.tile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import buildcraft.api.core.IAreaProvider;
 import buildcraft.api.tiles.ITileAreaProvider;
 import buildcraft.api.tiles.TilesAPI;
-import com.google.common.collect.Sets;
 import com.yogpc.qp.PowerManager;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
@@ -37,6 +36,7 @@ import com.yogpc.qp.version.VersionUtil;
 import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -322,6 +322,24 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                 }
             }
         }
+        if (exppump != null) {
+            List<EntityXPOrb> xpOrbs = getWorld().getEntitiesWithinAABB(EntityXPOrb.class, axis);
+            for (EntityXPOrb xpOrb : xpOrbs) {
+                if (!xpOrb.isDead) {
+                    TileEntity tileEntity = world.getTileEntity(pos.offset(exppump));
+                    if (tileEntity instanceof TileExpPump) {
+                        TileExpPump t = (TileExpPump) tileEntity;
+                        double min = t.getEnergyUse(xpOrb.xpValue);
+                        if (useEnergy(min, min, false) == min) {
+                            useEnergy(min, min, true);
+                            t.addXp(xpOrb.xpValue);
+                            QuarryPlus.proxy.removeEntity(xpOrb);
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
     private void S_createBox() {
@@ -331,7 +349,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
         EnumFacing facing = getWorld().getBlockState(getPos()).getValue(BlockQuarry.FACING).getOpposite();
         if (bcLoaded) {
             Optional<ITileAreaProvider> marker = Stream.of(getNeighbors(facing))
-                .map(getWorld()::getTileEntity).filter(nonNull)
+                .map(getWorld()::getTileEntity).filter(Objects::nonNull)
                 .map(t -> t.getCapability(TilesAPI.CAP_TILE_AREA_PROVIDER, null)).filter(nonNull).findFirst();
             if (marker.isPresent()) {
                 ITileAreaProvider provider = marker.get();
@@ -428,8 +446,8 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
         this.targetX = this.xMin;
         this.targetZ = this.zMin;
         this.targetY = this.yMax;
-        this.headPosX = (this.xMin + this.xMax + 1) / 2;
-        this.headPosZ = (this.zMin + this.zMax + 1) / 2;
+        this.headPosX = (this.xMin + this.xMax + 1) >> 1;
+        this.headPosZ = (this.zMin + this.zMax + 1) >> 1;
         this.headPosY = this.yMax - 1;
     }
 
@@ -528,10 +546,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     public void forceChunkLoading(final Ticket ticket) {
         if (this.chunkTicket == null)
             this.chunkTicket = ticket;
-        final Set<ChunkPos> chunks = Sets.newHashSet();
-        final ChunkPos quarryChunk = new ChunkPos(getPos());
-        chunks.add(quarryChunk);
-        ForgeChunkManager.forceChunk(ticket, quarryChunk);
+        ForgeChunkManager.forceChunk(ticket, new ChunkPos(getPos()));
     }
 
     @Override
@@ -624,6 +639,12 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                 pmp = ((TilePump) te).unbreaking;
             else
                 this.pump = null;
+        }
+        if (hasWorld() && exppump != null) {
+            TileEntity entity = getWorld().getTileEntity(getPos().offset(exppump));
+            if (!(entity instanceof TileExpPump)) {
+                exppump = null;
+            }
         }
         if (this.now == NONE)
             PowerManager.configure0(this);

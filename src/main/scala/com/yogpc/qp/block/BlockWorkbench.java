@@ -27,7 +27,7 @@ public class BlockWorkbench extends ADismCBlock {
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
         TileEntity entity = worldIn.getTileEntity(pos);
-        if (TileWorkbench.class.isInstance(entity)) {
+        if (entity instanceof TileWorkbench) {
             TileWorkbench inventory = (TileWorkbench) entity;
             for (int i = 0; i < 27; ++i) {
                 ItemStack itemstack = inventory.getStackInSlot(i);

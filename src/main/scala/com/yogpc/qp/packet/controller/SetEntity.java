@@ -1,6 +1,5 @@
 package com.yogpc.qp.packet.controller;
 
-import java.io.IOException;
 import java.util.Optional;
 
 import com.yogpc.qp.QuarryPlus;
@@ -30,7 +29,7 @@ public class SetEntity implements IMessage {
     }
 
     @Override
-    public void fromBytes(PacketBuffer buffer) throws IOException {
+    public void fromBytes(PacketBuffer buffer) {
         pos = buffer.readBlockPos();
         location = buffer.readString(Short.MAX_VALUE);
         dim = buffer.readInt();

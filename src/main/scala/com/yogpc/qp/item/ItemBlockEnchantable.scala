@@ -22,13 +22,13 @@ class ItemBlockEnchantable(block: Block) extends ItemBlock(block) with IEnchanta
 
     override def canMove(is: ItemStack, enchantment: Enchantment): Boolean = {
         if (EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, is) > 0) {
-            FORTUNE.negate().and(UNBREAKING.or(EFFICIENCY).or(SILKTOUCH)).test(enchantment)
+            FORTUNE.negate() and (UNBREAKING or EFFICIENCY or SILKTOUCH)
         } else if (EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, is) > 0) {
-            SILKTOUCH.negate().and(UNBREAKING.or(EFFICIENCY).or(FORTUNE)).test(enchantment)
+            SILKTOUCH.negate() and (UNBREAKING or EFFICIENCY or FORTUNE)
         } else {
-            SILKTOUCH.or(FORTUNE).or(UNBREAKING).or(EFFICIENCY).test(enchantment)
+            SILKTOUCH or FORTUNE or UNBREAKING or EFFICIENCY
         }
-    }
+    }.test(enchantment)
 
     override def isBookEnchantable(itemstack1: ItemStack, itemstack2: ItemStack) = false
 }

@@ -67,7 +67,7 @@ public class BlockAdvQuarry extends ADismCBlock {
     //    @Override
     public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
         TileEntity entity = world.getTileEntity(pos);
-        if (TileAdvQuarry.class.isInstance(entity)) {
+        if (entity instanceof TileAdvQuarry) {
             TileAdvQuarry quarry = (TileAdvQuarry) entity;
             ItemStack stack = new ItemStack(QuarryPlusI.blockChunkdestroyer(), 1, 0);
             IEnchantableTile.Util.enchantmentToIS(quarry, stack);

@@ -1,6 +1,5 @@
 package com.yogpc.qp.packet.controller;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,7 +32,7 @@ public class AvailableEntities implements IMessage {
     }
 
     @Override
-    public void fromBytes(PacketBuffer buffer) throws IOException {
+    public void fromBytes(PacketBuffer buffer) {
         pos = buffer.readBlockPos();
         dim = buffer.readInt();
         int i = buffer.readInt();

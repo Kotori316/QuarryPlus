@@ -1,7 +1,5 @@
 package com.yogpc.qp.packet.quarry;
 
-import java.io.IOException;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.tile.TileQuarry;
@@ -34,7 +32,7 @@ public class ModeMessage implements IMessage {
     }
 
     @Override
-    public void fromBytes(PacketBuffer buffer) throws IOException {
+    public void fromBytes(PacketBuffer buffer) {
         pos = buffer.readBlockPos();
         minPos = buffer.readBlockPos();
         maxPos = buffer.readBlockPos();
@@ -53,7 +51,7 @@ public class ModeMessage implements IMessage {
         World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
         if (world.provider.getDimension() == dim) {
             TileEntity entity = world.getTileEntity(pos);
-            if (TileQuarry.class.isInstance(entity)) {
+            if (entity instanceof TileQuarry) {
                 TileQuarry quarry = (TileQuarry) entity;
                 FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> {
                     quarry.setNow(mode);
