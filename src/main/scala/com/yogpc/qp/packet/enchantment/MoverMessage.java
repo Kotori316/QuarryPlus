@@ -1,6 +1,5 @@
 package com.yogpc.qp.packet.enchantment;
 
-import java.io.IOException;
 import java.util.Optional;
 
 import com.yogpc.qp.QuarryPlus;
@@ -31,7 +30,7 @@ public class MoverMessage {
         }
 
         @Override
-        public void fromBytes(PacketBuffer buffer) throws IOException {
+        public void fromBytes(PacketBuffer buffer) {
             pos = buffer.readBlockPos();
             id = buffer.readInt();
         }
@@ -72,7 +71,7 @@ public class MoverMessage {
         }
 
         @Override
-        public void fromBytes(PacketBuffer buffer) throws IOException {
+        public void fromBytes(PacketBuffer buffer) {
             d = buffer.readEnumValue(D.class);
             pos = buffer.readBlockPos();
             id = buffer.readInt();

@@ -87,7 +87,7 @@ public class ItemMirror extends ItemFood {
     private static void changeDimension(EntityPlayerMP playerMP, MinecraftServer server, int dimensionIn) {
         int preDim = playerMP.dimension;
         server.getPlayerList().transferPlayerToDimension(playerMP, dimensionIn, new DummyTeleporter(playerMP));
-        if (WorldProviderEnd.class.isInstance(server.worldServerForDimension(preDim).provider)) {
+        if (server.worldServerForDimension(preDim).provider instanceof WorldProviderEnd) {
             WorldProviderEnd providerEnd = (WorldProviderEnd) server.worldServerForDimension(preDim).provider;
             Optional.ofNullable(providerEnd.getDragonFightManager()).ifPresent(dragonFightManager -> {
                 try {

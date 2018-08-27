@@ -1,7 +1,5 @@
 package com.yogpc.qp.packet.marker;
 
-import java.io.IOException;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.tile.TileMarker;
@@ -25,7 +23,7 @@ public class LinkRequest implements IMessage {
     }
 
     @Override
-    public void fromBytes(PacketBuffer buffer) throws IOException {
+    public void fromBytes(PacketBuffer buffer) {
         pos = buffer.readBlockPos();
         dim = buffer.readInt();
     }

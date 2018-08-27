@@ -14,6 +14,7 @@ import com.yogpc.qp.packet.enchantment.BlockListRequestMessage;
 import com.yogpc.qp.packet.enchantment.DiffMessage;
 import com.yogpc.qp.packet.enchantment.EnchantmentMessage;
 import com.yogpc.qp.packet.enchantment.MoverMessage;
+import com.yogpc.qp.packet.exppump.ExpPumpMessage;
 import com.yogpc.qp.packet.laser.LaserAverageMessage;
 import com.yogpc.qp.packet.laser.LaserMessage;
 import com.yogpc.qp.packet.marker.LinkReply;
@@ -82,6 +83,8 @@ public class PacketHandler {
         wrapper.registerMessage(handler, AdvPumpChangeMessage.class, i++, Side.SERVER);
         //distiller
         wrapper.registerMessage(handler, AnimatonMessage.class, i++, Side.CLIENT);
+        //exppump
+        wrapper.registerMessage(handler, ExpPumpMessage.class, i++, Side.CLIENT);
         assert i > 0 : "Dummy Operation";
     }
 

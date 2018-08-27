@@ -2,6 +2,7 @@
 
 tile.breakerplus.name=Улучшенный крушитель
 tile.chunkdestroyer.name=Разрушитель чанков
+tile.exppump.name=Experience Pump for Quarry
 tile.enchantmover.name=Передаватель чар
 tile.InfMJSrc.name=Бесконечный источник MJ
 tile.laserplus.name=Улучшенный лазер
@@ -16,6 +17,7 @@ tile.refineryplus.name=Улучшенный нефтеперерабатываю
 tile.spawnercontroller.name=Спавнер контроллер
 tile.standalonepump.name=Advanced Pump
 tile.workbenchplus.name=Улучшенный верстак
+tile.enchantmoverfrombook.name=Book EnchantMover
 item.dimensionmirror.name=Зеркало измерения
 item.electric_armor.name=Электрическая улучшенная броня
 item.liquidselector.name=Жидкостный селектор
@@ -95,3 +97,5 @@ yog.armor.hover.off=Режим парения отключен.
 yog.armor.hover.on=Режим парения включен.
 yog.pump.liquid=-    %s: %smB
 yog.spanwer.setting=Пожалуйста, выберите существо, которое будет спавнится в спавнере
+
+quarryplus.machines.tooltip=Machines

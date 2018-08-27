@@ -1,6 +1,5 @@
 package com.yogpc.qp.packet.advpump;
 
-import java.io.IOException;
 import java.util.Optional;
 
 import com.yogpc.qp.QuarryPlus;
@@ -31,7 +30,7 @@ public class AdvPumpChangeMessage implements IMessage {
     }
 
     @Override
-    public void fromBytes(PacketBuffer buffer) throws IOException {
+    public void fromBytes(PacketBuffer buffer) {
         pos = buffer.readBlockPos();
         dim = buffer.readInt();
         placeFrame = buffer.readBoolean();

@@ -13,6 +13,7 @@
 
 package com.yogpc.qp.tile;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
@@ -20,17 +21,22 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import com.yogpc.qp.Config;
+import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.item.ItemQuarryDebug;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public abstract class APacketTile extends TileEntity {
+@Optional.Interface(iface = "buildcraft.api.tiles.IDebuggable", modid = QuarryPlus.Optionals.Buildcraft_tiles)
+public abstract class APacketTile extends TileEntity /*implements buildcraft.api.tiles.IDebuggable*/ {
     public static final BinaryOperator<String> combiner = (s, s2) -> s + ", " + s2;
     public static final Function<String, TextComponentString> toComponentString = TextComponentString::new;
     public static final Predicate<Object> nonNull = Objects::nonNull;
@@ -38,12 +44,13 @@ public abstract class APacketTile extends TileEntity {
 
     private final ITextComponent displayName;
     protected final boolean machineDisabled;
+    protected final boolean isDebugSender = this instanceof IDebugSender;
 
     protected APacketTile() {
-        if (HasInv.class.isInstance(this)) {
+        if (this instanceof HasInv) {
             HasInv hasInv = (HasInv) this;
             displayName = new TextComponentTranslation(hasInv.getName());
-        } else if (IDebugSender.class.isInstance(this)) {
+        } else if (isDebugSender) {
             IDebugSender sender = (IDebugSender) this;
             displayName = new TextComponentTranslation(sender.getDebugName());
         } else {
@@ -80,4 +87,21 @@ public abstract class APacketTile extends TileEntity {
     }
 
     protected abstract scala.Symbol getSymbol();
+
+    /**
+     * Get the debug information from a tile entity as a list of strings, used for the F3 debug menu. The left and
+     * right parameters correspond to the sides of the F3 screen.
+     *
+     * @param side The side the block was clicked on, may be null if we don't know, or is the "centre" side
+     */
+//    @Override
+    public void getDebugInfo(List<String> left, List<String> right, EnumFacing side) {
+        left.add(getClass().getName());
+        left.add(ItemQuarryDebug.tileposToString(this).getText());
+        if (isDebugSender) {
+            IDebugSender sender = (IDebugSender) this;
+            sender.getMessage().stream().map(ITextComponent::getUnformattedComponentText).forEach(left::add);
+        }
+    }
+
 }

@@ -106,6 +106,8 @@ processResources {
 
 jar {
     classifier = 'universal'
+    from sourceSets.main.output
+    exclude("*.md")
 }
 
 task signJar(type: SignJar, dependsOn: reobfJar) {

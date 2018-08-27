@@ -1,9 +1,11 @@
 package com.yogpc
 
 import com.yogpc.qp.version.VersionUtil
+import net.minecraft.enchantment.Enchantment
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
 import net.minecraft.util.text.TextComponentString
+import net.minecraftforge.common.util.Constants.NBT
 
 import scala.collection.AbstractIterator
 
@@ -14,8 +16,8 @@ package object qp {
     val enchantCollector: PartialFunction[(Int, Int), (Integer, Integer)] = {
         case (a, b) if b > 0 => (Int.box(a), Int.box(b))
     }
-    val toComponentString: (String => TextComponentString) = s => new TextComponentString(s)
-    val nonNull: (AnyRef => Boolean) = obj => obj != null
+    val toComponentString: String => TextComponentString = s => new TextComponentString(s)
+    val nonNull: AnyRef => Boolean = obj => obj != null
 
     def toJavaOption[T](o: Option[T]): java.util.Optional[T] = {
         //I think it's faster than match function.
@@ -68,6 +70,29 @@ package object qp {
         override def size: Int = list.tagCount()
 
         override def isEmpty: Boolean = list.hasNoTags
+    }
+
+    implicit class ItemStackRemoveEnch(val stack: ItemStack) {
+        def removeEnchantment(ench: Enchantment): Unit = {
+            val enchId = Enchantment.getEnchantmentID(ench).toShort
+            val tagName = if (stack.getItem == net.minecraft.init.Items.ENCHANTED_BOOK) "StoredEnchantments" else "ench"
+            val list = Option(stack.getTagCompound).fold(new NBTTagList)(_.getTagList(tagName, NBT.TAG_COMPOUND))
+
+            val copied = list.copy()
+            for (i <- 0 until list.tagCount()) {
+                val tag = copied.getCompoundTagAt(i)
+                if (tag.getShort("id") == enchId) {
+                    list.removeTag(i)
+                }
+            }
+            Option(stack.getTagCompound).foreach(subtag => {
+                subtag.removeTag(tagName)
+                if (!list.hasNoTags) {
+                    subtag.setTag(tagName, list)
+                }
+                stack.setTagCompound(if (subtag.hasNoTags) null else subtag)
+            })
+        }
     }
 
 }

@@ -1,7 +1,5 @@
 package com.yogpc.qp.packet.enchantment;
 
-import java.io.IOException;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.container.ContainerEnchList;
 import com.yogpc.qp.packet.IMessage;
@@ -24,7 +22,7 @@ public class BlockListRequestMessage implements IMessage {
     }
 
     @Override
-    public void fromBytes(PacketBuffer buffer) throws IOException {
+    public void fromBytes(PacketBuffer buffer) {
         containerId = buffer.readInt();
     }
 

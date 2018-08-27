@@ -84,7 +84,7 @@ public class MjReciever /*implements IMjReceiver, IMjReadable*/ {
 
     @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.BuildCraft_core)
     public static double getMJfrommicro(long microJoules) {
-        return microJoules / MjAPI.MJ;
+        return (double) microJoules / MjAPI.MJ;
     }
 
     @Override

@@ -98,7 +98,7 @@ public class ContainerWorkbench extends Container {
             this.listeners.add(listener);
             // This method send byte as stack count.
             //listener.sendAllContents(this, this.getInventory());
-            if (EntityPlayerMP.class.isInstance(listener)) {
+            if (listener instanceof EntityPlayerMP) {
                 EntityPlayerMP playerMP = (EntityPlayerMP) listener;
                 PacketHandler.sendToClient(TileMessage.create(tile), playerMP);
             }

@@ -2,11 +2,11 @@
  * Copyright (C) 2012,2013 yogpstop This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
@@ -155,11 +155,13 @@ public class PowerManager {
     /**
      * @param pp          power tile
      * @param hardness    block hardness
-     * @param enchantMode no ench -> 0, silktouch -> -1, fortune -> fortune level
+     * @param enchantMode no ench -> 0, silktouch -> -1, fortune -> fortune level, break canceled -> -2
      * @param unbreaking  unbreaking level
      * @return Whether the tile used energy.
      */
     public static boolean useEnergyBreak(final APowerTile pp, final float hardness, final byte enchantMode, final byte unbreaking) {
+        if (enchantMode == -2)
+            return true;
         final double pw = calcEnergyBreak(pp, hardness, enchantMode, unbreaking);
         if (pp.useEnergy(pw, pw, false) != pw)
             return false;

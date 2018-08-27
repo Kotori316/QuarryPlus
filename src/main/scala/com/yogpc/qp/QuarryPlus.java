@@ -27,7 +27,9 @@ import com.yogpc.qp.render.Sprites;
 import com.yogpc.qp.tile.ItemDamage;
 import com.yogpc.qp.tile.TileAdvPump;
 import com.yogpc.qp.tile.TileAdvQuarry;
+import com.yogpc.qp.tile.TileBookMover;
 import com.yogpc.qp.tile.TileBreaker;
+import com.yogpc.qp.tile.TileExpPump;
 import com.yogpc.qp.tile.TileLaser;
 import com.yogpc.qp.tile.TileMarker;
 import com.yogpc.qp.tile.TileMiningWell;
@@ -130,7 +132,8 @@ public class QuarryPlus {
         Config.setConfigFile(event.getSuggestedConfigurationFile());
         ForgeChunkManager.setForcedChunkLoadingCallback(INSTANCE, ChunkLoadingHandler.instance());
         proxy.registerTextures();
-        MinecraftForge.EVENT_BUS.register(Loot.instance());
+        if (!Config.content().disableDungeonLoot())
+            MinecraftForge.EVENT_BUS.register(Loot.instance());
         if (event.getSide() == Side.CLIENT)
             MinecraftForge.EVENT_BUS.register(Sprites.instance());
         NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, GuiHandler.instance());
@@ -166,7 +169,9 @@ public class QuarryPlus {
             blockLaser(),
             blockRefinery(),
             blockChunkdestroyer(),
-            blockStandalonePump()
+            blockStandalonePump(),
+            blockBookMover(),
+            blockExpPump()
         );
 
         GameRegistry.registerTileEntity(TileWorkbench.class, prefix + QuarryPlus.Names.workbench);
@@ -180,6 +185,8 @@ public class QuarryPlus {
         GameRegistry.registerTileEntity(TileLaser.class, prefix + QuarryPlus.Names.laser);
         GameRegistry.registerTileEntity(TileAdvQuarry.class, prefix + QuarryPlus.Names.advquarry);
         GameRegistry.registerTileEntity(TileAdvPump.class, prefix + QuarryPlus.Names.advpump);
+        GameRegistry.registerTileEntity(TileBookMover.class, prefix + QuarryPlus.Names.moverfrombook);
+        GameRegistry.registerTileEntity(TileExpPump.class, prefix + QuarryPlus.Names.exppump);
     }
 
     @SubscribeEvent
@@ -200,6 +207,8 @@ public class QuarryPlus {
             blockRefinery().itemBlock(),
             blockChunkdestroyer().itemBlock(),
             blockStandalonePump().itemBlock(),
+            blockBookMover().itemBlock(),
+            blockExpPump().itemBlock(),
             itemTool(),
             magicmirror(),
             debugItem()
@@ -226,6 +235,8 @@ public class QuarryPlus {
         ModelLoader.setCustomModelResourceLocation(blockLaser().itemBlock(), 0, proxy.fromEntry(blockLaser()));
         ModelLoader.setCustomModelResourceLocation(blockChunkdestroyer().itemBlock(), 0, proxy.fromEntry(blockChunkdestroyer()));
         ModelLoader.setCustomModelResourceLocation(blockStandalonePump().itemBlock(), 0, proxy.fromEntry(blockStandalonePump()));
+        ModelLoader.setCustomModelResourceLocation(blockBookMover().itemBlock(), 0, proxy.fromEntry(blockBookMover()));
+        ModelLoader.setCustomModelResourceLocation(blockExpPump().itemBlock(), 0, proxy.fromEntry(blockExpPump()));
         ModelLoader.setCustomModelResourceLocation(itemTool(), 0, new ModelResourceLocation(prefix + ItemTool.statuschecker(), variantIn));
         ModelLoader.setCustomModelResourceLocation(itemTool(), 1, new ModelResourceLocation(prefix + ItemTool.listeditor(), variantIn));
         ModelLoader.setCustomModelResourceLocation(itemTool(), 2, new ModelResourceLocation(prefix + ItemTool.liquidselector(), variantIn));
@@ -275,7 +286,9 @@ public class QuarryPlus {
 
     @Mod.EventHandler
     public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
-        if (!inDev) {
+        try {
+            Class.forName("net.minecraft.item.ItemStack").getDeclaredField("EMPTY");
+        } catch (ReflectiveOperationException ignore) {
             LOGGER.warn("Invalid fingerprint detected! The file " + event.getSource().getName() +
                 " may have been tampered with. This version will NOT be supported by the author!");
         }
@@ -313,12 +326,14 @@ public class QuarryPlus {
         public static final String breaker = "breakerplus";
         public static final String controller = "spawnercontroller";
         public static final String debug = "quarrydebug";
+        public static final String exppump = "exppump";
         public static final String frame = "quarryframe";
         public static final String laser = "laserplus";
         public static final String marker = "markerplus";
         public static final String miningwell = "miningwellplus";
         public static final String mirror = "magicmirror";
         public static final String mover = "enchantmover";
+        public static final String moverfrombook = "enchantmoverfrombook";
         public static final String placer = "placerplus";
         public static final String plainpipe = "plainpipe";
         public static final String pump = "pumpplus";

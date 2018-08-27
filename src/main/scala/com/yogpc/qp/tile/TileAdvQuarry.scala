@@ -1,7 +1,6 @@
 package com.yogpc.qp.tile
 
 import java.lang.{Boolean => JBool}
-import javax.annotation.Nonnull
 
 import com.yogpc.qp.block.ADismCBlock
 import com.yogpc.qp.compat.{INBTReadable, INBTWritable, InvUtils}
@@ -11,6 +10,7 @@ import com.yogpc.qp.packet.advquarry.{AdvContentMessage, AdvModeMessage}
 import com.yogpc.qp.tile.TileAdvQuarry.{DigRange, ItemElement, ItemList, QEnch}
 import com.yogpc.qp.version.VersionUtil
 import com.yogpc.qp.{Config, NonNullList, PowerManager, QuarryPlus, QuarryPlusI, ReflectionHelper, _}
+import javax.annotation.Nonnull
 import net.minecraft.block.Block
 import net.minecraft.block.properties.PropertyHelper
 import net.minecraft.block.state.IBlockState
@@ -164,8 +164,13 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                                     }
                                 } else if (Config.content.removeBedrock && (state.getBlock == Blocks.BEDROCK) &&
                                   ((pos.getY > 0 && pos.getY <= 5) || (pos.getY > 122 && pos.getY < 127))) {
-                                    requireEnergy += 200
-                                    destroy = pos :: destroy
+                                    if (Config.content.collectBedrock) {
+                                        requireEnergy += 600
+                                        dig = pos :: dig
+                                    } else {
+                                        requireEnergy += 200
+                                        destroy = pos :: destroy
+                                    }
                                 } else if (state.getBlock == Blocks.PORTAL) {
                                     getWorld.setBlockToAir(pos)
                                     requireEnergy += 20
@@ -431,8 +436,6 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 
     override def getEnchantedPickaxe: ItemStack = ench.pickaxe
 
-    override def isItemValidForSlot(index: Int, stack: ItemStack) = false
-
     override def setInventorySlotContents(index: Int, stack: ItemStack) = {
         if (VersionUtil.nonEmpty(stack)) {
             QuarryPlus.LOGGER.warn("QuarryPlus WARN: call setInventorySlotContents with non empty ItemStack.")
@@ -565,7 +568,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
     }
 
     @SideOnly(Side.CLIENT)
-    def recieveModeMassage(modeTag: NBTTagCompound): Runnable = new Runnable {
+    def recieveModeMessage(modeTag: NBTTagCompound): Runnable = new Runnable {
         override def run(): Unit = {
             mode.readFromNBT(modeTag)
             digRange = DigRange.readFromNBT(modeTag)
@@ -606,6 +609,8 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
         override def getSlots: Int = self.getSizeInventory
 
         override def insertItem(slot: Int, stack: ItemStack, simulate: Boolean): ItemStack = stack
+
+        def isItemValid(slot: Int, stack: ItemStack): Boolean = isItemValidForSlot(slot, stack)
     }
 
     private[TileAdvQuarry] class FluidHandler(val facing: EnumFacing) extends IFluidHandler {

@@ -14,7 +14,7 @@ public class BuildcraftHelper {
 
     public static boolean isWrench(EntityPlayer player, EnumHand hand, ItemStack wrench, RayTraceResult rayTrace) {
         if (ModAPIManager.INSTANCE.hasAPI(QuarryPlus.Optionals.COFH_item)) {
-            if (wrench != null && IToolHammer.class.isInstance(wrench.getItem())) {
+            if (wrench != null && wrench.getItem() instanceof IToolHammer) {
                 IToolHammer wrenchItem = (IToolHammer) wrench.getItem();
                 if (wrenchItem.isUsable(wrench, player, rayTrace.getBlockPos())) {
                     wrenchItem.toolUsed(wrench, player, rayTrace.getBlockPos());
@@ -23,7 +23,7 @@ public class BuildcraftHelper {
             }
         }
         /*if (ModAPIManager.INSTANCE.hasAPI(QuarryPlus.Optionals.Buildcraft_tools)) {
-            if (IToolWrench.class.isInstance(wrench.getItem())) {
+            if (wrench.getItem() instanceof IToolWrench) {
                 IToolWrench wrenchItem = (IToolWrench) wrench.getItem();
                 if (wrenchItem.canWrench(player, hand, wrench, rayTrace)) {
                     wrenchItem.wrenchUsed(player, hand, wrench, rayTrace);

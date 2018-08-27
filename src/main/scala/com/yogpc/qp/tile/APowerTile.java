@@ -47,11 +47,10 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
     /*package-private*/ double all, maxGot, max, got;
     private boolean ic2ok = false;
     public boolean bcLoaded;
-    public boolean ic2Loaded;
+    public final boolean ic2Loaded;
     private Object helper;//buildcraft capability helper
-    private EnergyDebug debug = new EnergyDebug(this);
+    private final EnergyDebug debug = new EnergyDebug(this);
     protected boolean outputEnergyInfo = true;
-    private final boolean isDebugSender = this instanceof IDebugSender;
 
     public APowerTile() {
         bcLoaded = ModAPIManager.INSTANCE.hasAPI(QuarryPlus.Optionals.BuildCraft_core);
@@ -211,17 +210,20 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
 
     /**
      * Energy unit is EU
+     * Accept all EU sent to this machine.
      */
     @Override
     @Optional.Method(modid = QuarryPlus.Optionals.IC2_modID)
     public final double injectEnergy(EnumFacing directionFrom, double amount, double voltage) {
-        return amount - getEnergy(amount / 2.5, true) * 2.5;
+        double mj = amount / 2.5;
+        this.got += mj;
+        return 0;
     }
 
     @Override
     @Optional.Method(modid = QuarryPlus.Optionals.IC2_modID)
     public boolean acceptsEnergyFrom(IEnergyEmitter emitter, EnumFacing side) {
-        return true;
+        return canReceive();
     }
 
     @Override
@@ -272,7 +274,13 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
      */
     @Override
     public final int receiveEnergy(int maxReceive, boolean simulate) {
-        return (int) getEnergy((double) maxReceive / 10, !simulate) * 10;
+        if (!canReceive())
+            return 0;
+        int i = (int) getEnergy((double) maxReceive / 10, !simulate) * 10;
+        if (maxReceive > 0 && i == 0 && this.max - this.all > 0 && this.max - this.all < 1) {
+            return 1;
+        }
+        return i;
     }
 
     @Override

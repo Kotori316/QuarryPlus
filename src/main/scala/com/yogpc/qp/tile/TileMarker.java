@@ -2,11 +2,11 @@
  * Copyright (C) 2012,2013 yogpstop This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
@@ -18,11 +18,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.stream.Stream;
 
-import com.google.common.collect.Sets;
 import com.yogpc.qp.NonNullList;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
@@ -262,10 +260,7 @@ public class TileMarker extends APacketTile implements /*ITileAreaProvider,*/ IT
     public void forceChunkLoading(final Ticket ticket) {// ticketsLoaded
         if (this.chunkTicket == null)
             this.chunkTicket = ticket;
-        final Set<ChunkPos> chunks = Sets.newHashSet();
-        final ChunkPos quarryChunk = new ChunkPos(getPos());
-        chunks.add(quarryChunk);
-        ForgeChunkManager.forceChunk(ticket, quarryChunk);
+        ForgeChunkManager.forceChunk(ticket, new ChunkPos(getPos()));
     }
 
     private boolean vlF;

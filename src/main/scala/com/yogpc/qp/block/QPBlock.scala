@@ -16,7 +16,7 @@ import net.minecraft.util.{EnumBlockRenderType, EnumFacing, EnumHand}
 import net.minecraft.world.{IBlockAccess, World}
 import net.minecraftforge.fml.common.Loader
 
-abstract class QPBlock(materialIn: Material, name: String, generator: (QPBlock => _ <: ItemBlock), dummy: Boolean = false) extends BlockContainer(materialIn) {
+abstract class QPBlock(materialIn: Material, name: String, generator: QPBlock => _ <: ItemBlock, dummy: Boolean = false) extends BlockContainer(materialIn) {
 
     def this(materialIn: Material, name: String, generator: Function[QPBlock, _ <: ItemBlock]) = {
         this(materialIn, name, (block: QPBlock) => generator.apply(block))

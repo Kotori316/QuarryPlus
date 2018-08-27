@@ -51,7 +51,7 @@ public class AdvRangeMessage implements IMessage {
         World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
         if (world.provider.getDimension() == dim) {
             TileEntity entity = world.getTileEntity(pos);
-            if (TileAdvQuarry.class.isInstance(entity)) {
+            if (entity instanceof TileAdvQuarry) {
                 TileAdvQuarry quarry = (TileAdvQuarry) entity;
                 Optional.ofNullable(world.getMinecraftServer()).ifPresent(s -> s.addScheduledTask(() ->
                     quarry.digRange_$eq(TileAdvQuarry.DigRange$.MODULE$.readFromNBT(rangeNBT))));
