@@ -8,6 +8,7 @@ import com.yogpc.qp.tile.TileBookMover;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -33,6 +34,16 @@ public class BlockBookMover extends ADismCBlock {
             return true;
         }
         return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
+    }
+
+    @Override
+    public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+        TileBookMover mover = (TileBookMover) worldIn.getTileEntity(pos);
+        if (mover != null) {
+            InventoryHelper.dropInventoryItems(worldIn, pos, mover);
+            worldIn.updateComparatorOutputLevel(pos, this);
+        }
+        super.breakBlock(worldIn, pos, state);
     }
 
     @Override

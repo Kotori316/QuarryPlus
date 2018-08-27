@@ -106,9 +106,10 @@ class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender {
     }
 
     def onBreak(worldIn: World): Unit = {
-        val xpOrb = new EntityXPOrb(worldIn, getPos.getX, getPos.getY, getPos.getZ, xpAmount)
-        worldIn.spawnEntity(xpOrb)
-        addXp(-xpAmount)
+        if (xpAmount > 0) {
+            val xpOrb = new EntityXPOrb(worldIn, getPos.getX, getPos.getY, getPos.getZ, xpAmount)
+            worldIn.spawnEntity(xpOrb)
+        }
     }
 
     /**
