@@ -1,11 +1,12 @@
 {
   "homepage": "https://minecraft.curseforge.com/projects/additional-enchanted-miner",
   "promos": {
-    "1.12.2-recommended": "0.9.14",
+    "1.12.2-recommended": "0.9.16",
     "1.11.2-recommended": "0.9.14",
     "1.10.2-recommended": "0.9.14"
   },
   "1.12.2": {
+    "0.9.16": "Added support of ExpPump for ChunkDestroyer.",
     "0.9.14": "Added new machines.",
     "0.9.7": "WorkbenchPlus now completes its work when Immersive Engineering wire is connected.",
     "0.9.6": "Added option to disable machine.",
