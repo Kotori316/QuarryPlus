@@ -73,8 +73,8 @@ class TileBookMover extends APowerTile with HasInv with ITickable {
 
     override def isItemValidForSlot(index: Int, stack: ItemStack): Boolean = {
         index match {
-            case 0 => stack.getItem.isInstanceOf[IEnchantableItem]
-            case 1 => stack.getItem == Items.ENCHANTED_BOOK
+            case 0 => stack != null && stack.getItem.isInstanceOf[IEnchantableItem]
+            case 1 => stack != null && stack.getItem == Items.ENCHANTED_BOOK
             case _ => false
         }
     }
