@@ -36,7 +36,33 @@ public class ContainerBookMover extends Container {
 
     @Override
     public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
-        return VersionUtil.empty();
-        //TODO implement shift move.
+        int allSlots = 3;
+        ItemStack src = VersionUtil.empty();
+        final Slot slot = this.inventorySlots.get(index);
+        if (slot != null && slot.getHasStack()) {
+            final ItemStack remain = slot.getStack();
+            src = remain.copy();
+            if (index < allSlots) {
+                if (!mergeItemStack(remain, allSlots, allSlots + 36, true))
+                    return VersionUtil.empty();
+            } else {
+                for (int i = 0; i < allSlots; i++) {
+                    if (mover.isItemValidForSlot(i, remain)) {
+                        if (!mergeItemStack(remain, i, i + 1, false)) {
+                            return VersionUtil.empty();
+                        }
+                        break;
+                    }
+                }
+            }
+            if (VersionUtil.getCount(remain) == 0)
+                slot.putStack(VersionUtil.empty());
+            else
+                slot.onSlotChanged();
+            if (VersionUtil.getCount(remain) == VersionUtil.getCount(src))
+                return VersionUtil.empty();
+            VersionUtil.onTake(slot, playerIn, remain);
+        }
+        return src;
     }
 }
