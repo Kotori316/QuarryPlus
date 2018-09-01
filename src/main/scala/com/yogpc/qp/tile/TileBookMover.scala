@@ -35,6 +35,8 @@ class TileBookMover extends APowerTile with HasInv with ITickable {
     override def update(): Unit = {
         super.update()
         if (!machineDisabled && !world.isRemote && isWorking && getStoredEnergy >= getMaxStored) {
+            if (!isItemValidForSlot(0, inv.get(0)) || !isItemValidForSlot(1, inv.get(1)))
+                return
             val enchList = EnchantmentHelper.getEnchantments(inv.get(1)).asScala
             enchList.find { case (e, level) =>
                 validEnch.contains(e) &&
