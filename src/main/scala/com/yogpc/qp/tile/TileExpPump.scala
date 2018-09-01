@@ -43,10 +43,12 @@ class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender {
 
     private def refreshConnection() = {
         if (hasWorld && !world.isRemote) {
-            val (facing, _) = EnumFacing.VALUES
+            val facing = EnumFacing.VALUES
               .map(f => (f, getWorld.getTileEntity(getPos.offset(f))))
-              .collectFirst { case (f: EnumFacing, t: TileBasic) if t.S_connectExppump(f.getOpposite) => (f, t) }
-              .getOrElse((null, null))
+              .collectFirst {
+                  case (f: EnumFacing, t: TileBasic) if t.S_connectExppump(f.getOpposite) => f
+                  case (f: EnumFacing, t: TileAdvQuarry) if t.setExpPumpConnection(f.getOpposite) => f
+              }.orNull
             setConnectTo(facing)
             S_sendNowPacket()
         }
