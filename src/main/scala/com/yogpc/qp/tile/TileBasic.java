@@ -17,9 +17,11 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 import cofh.api.tileentity.IInventoryConnection;
@@ -182,10 +184,12 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(world, pos, state, fakePlayer);
         MinecraftForge.EVENT_BUS.post(event);
         if (!event.isCanceled()) {
+            Set<ItemStack> rawItems;
             if (block.canSilkHarvest(getWorld(), pos, state, fakePlayer) && this.silktouch
                 && silktouchList.contains(new BlockData(block, state)) == this.silktouchInclude) {
                 List<ItemStack> list = new ArrayList<>(1);
                 list.add((ItemStack) ReflectionHelper.invoke(createStackedBlock, block, state));
+                rawItems = new HashSet<>(list);
                 ForgeEventFactory.fireBlockHarvesting(list, world, pos, state, 0, 1.0f, true, fakePlayer);
                 collection.addAll(list);
                 i = -1;
@@ -194,6 +198,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
                 byte fortuneLevel = b ? this.fortune : 0;
                 NonNullList<ItemStack> list = NonNullList.create();
                 getDrops(getWorld(), pos, state, block, fortuneLevel, list);
+                rawItems = new HashSet<>(list);
                 ForgeEventFactory.fireBlockHarvesting(list, world, pos, state, fortuneLevel, 1.0f, false, fakePlayer);
                 collection.addAll(list);
                 i = fortuneLevel;
@@ -201,14 +206,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
             if (exppump != null) {
                 xp += event.getExpToDrop();
                 if (InvUtils.hasSmelting(fakePlayer.getHeldItemMainhand())) {
-                    xp += collection.stream().mapToInt(stack -> {
-                        float furnaceXp = FurnaceRecipes.instance().getSmeltingExperience(stack);
-                        int floor = MathHelper.floor(furnaceXp * VersionUtil.getCount(stack));
-                        if (floor > 0)
-                            return floor;
-                        else
-                            return Math.random() < furnaceXp ? 1 : 0;
-                    }).sum();
+                    xp += getSmeltingXp(collection, rawItems);
                 }
             }
         } else {
@@ -225,6 +223,21 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         } else {
             block.getDrops(list, world, pos, state, fortuneLevel);
         }
+    }
+
+    /**
+     * @param stacks read only
+     * @param raws   read only
+     * @return The amount of xp by smelting items.
+     */
+    public static int getSmeltingXp(Collection<ItemStack> stacks, Collection<ItemStack> raws) {
+        return stacks.stream().filter(s -> !raws.contains(s)).mapToInt(stack ->
+            floorFloat(FurnaceRecipes.instance().getSmeltingExperience(stack) * VersionUtil.getCount(stack))).sum();
+    }
+
+    static int floorFloat(float value) {
+        int i = MathHelper.floor(value);
+        return i + (Math.random() < (value - i) ? 1 : 0);
     }
 
     public static final Method createStackedBlock = ReflectionHelper.getMethod(Block.class,

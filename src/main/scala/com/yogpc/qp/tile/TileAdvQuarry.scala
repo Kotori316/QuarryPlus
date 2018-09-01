@@ -1,14 +1,14 @@
 package com.yogpc.qp.tile
 
 import java.lang.{Boolean => JBool}
-import java.util.Objects
+import java.util.{Collections, Objects}
 
 import com.yogpc.qp.block.{ADismCBlock, BlockBookMover}
 import com.yogpc.qp.compat.{INBTReadable, INBTWritable, InvUtils}
 import com.yogpc.qp.gui.TranslationKeys
 import com.yogpc.qp.packet.PacketHandler
 import com.yogpc.qp.packet.advquarry.{AdvContentMessage, AdvModeMessage}
-import com.yogpc.qp.tile.TileAdvQuarry.{DigRange, ItemElement, ItemList, NotNullList, QEnch}
+import com.yogpc.qp.tile.TileAdvQuarry._
 import com.yogpc.qp.version.VersionUtil
 import com.yogpc.qp.{Config, PowerManager, QuarryPlus, QuarryPlusI, ReflectionHelper, _}
 import javax.annotation.Nonnull
@@ -19,6 +19,7 @@ import net.minecraft.enchantment.{Enchantment, EnchantmentHelper}
 import net.minecraft.entity.item.{EntityItem, EntityXPOrb}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
+import net.minecraft.item.crafting.FurnaceRecipes
 import net.minecraft.item.{ItemBlock, ItemStack}
 import net.minecraft.nbt.{NBTTagCompound, NBTTagList, NBTTagLong}
 import net.minecraft.util.math.BlockPos.MutableBlockPos
@@ -227,6 +228,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                         useEnergy(requireEnergy, requireEnergy, true)
                         val fakePlayer = QuarryFakePlayer.get(getWorld.asInstanceOf[WorldServer])
                         fakePlayer.setHeldItem(EnumHand.MAIN_HAND, getEnchantedPickaxe)
+                        val collectFurnaceXP = InvUtils.hasSmelting(fakePlayer.getHeldItemMainhand) && expPump.isDefined
                         val tempList = new NotNullList(new ArrayBuffer[ItemStack]())
                         dig.foreach(p => {
                             val state = getWorld.getBlockState(p)
@@ -238,10 +240,13 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                                 } else {
                                     TileBasic.getDrops(getWorld, p, state, state.getBlock, ench.fortune, tempList)
                                 }
+                                tempList.fix = true
                                 ForgeEventFactory.fireBlockHarvesting(tempList, getWorld, p, state, ench.fortune, 1f, ench.silktouch, fakePlayer)
                                 list.addAll(tempList)
+                                if (collectFurnaceXP)
+                                    event.setExpToDrop(event.getExpToDrop + TileBasic.getSmeltingXp(tempList.fixing.asJava, Collections.emptyList()))
+                                expPump.filter(xpFilter(event.getExpToDrop)).foreach(_.addXp(event.getExpToDrop))
                                 tempList.clear()
-                                expPump.foreach(_.addXp(event.getExpToDrop))
                                 getWorld.setBlockState(p, Blocks.AIR.getDefaultState, 2)
                             }
                         })
@@ -260,18 +265,31 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                                     list.addAll(tempList)
                                     tempList.clear()
                                     getWorld.setBlockState(p, Blocks.AIR.getDefaultState, 2)
-                                    expPump.foreach(_.addXp(event.getExpToDrop))
+                                    expPump.filter(xpFilter(event.getExpToDrop)).foreach(_.addXp(event.getExpToDrop))
                                 }
                             }
                         }
+                        val l = new ItemList
                         destroy.foreach(p => {
-                            val event = new BlockEvent.BreakEvent(getWorld, p, getWorld.getBlockState(p), fakePlayer)
+                            val state = getWorld.getBlockState(p)
+                            val event = new BlockEvent.BreakEvent(getWorld, p, state, fakePlayer)
                             MinecraftForge.EVENT_BUS.post(event)
                             if (!event.isCanceled) {
                                 getWorld.setBlockState(p, Blocks.AIR.getDefaultState, 2)
-                                expPump.foreach(_.addXp(event.getExpToDrop))
+                                if (collectFurnaceXP) {
+                                    val nnl = new NotNullList(new ArrayBuffer[ItemStack]())
+                                    TileBasic.getDrops(getWorld, p, state, state.getBlock, 0, nnl)
+                                    nnl.seq.foreach(l.add)
+                                }
+                                expPump.filter(xpFilter(event.getExpToDrop)).foreach(_.addXp(event.getExpToDrop))
                             }
                         })
+                        if (collectFurnaceXP) {
+                            val xp = TileBasic.floorFloat(l.list.map(ie => FurnaceRecipes.instance().getSmeltingResult(ie.toStack) -> ie.count).collect {
+                                case (s, i) if !s.isEmpty => FurnaceRecipes.instance().getSmeltingExperience(s) * i
+                            }.sum)
+                            expPump.filter(xpFilter(xp)).foreach(_.addXp(xp))
+                        }
                         for (p <- drain) {
                             val handler = Option(FluidUtil.getFluidHandler(getWorld, p, EnumFacing.UP))
                             val fluidOp = handler.map(_.getTankProperties.apply(0)).flatMap(p => Option(p.getContents))
@@ -937,7 +955,7 @@ object TileAdvQuarry {
     }
 
     class ItemList extends INBTWritable with INBTReadable[ItemList] {
-        val list = scala.collection.mutable.ArrayBuffer.empty[ItemElement]
+        val list = ArrayBuffer.empty[ItemElement]
 
         def add(itemDamage: ItemDamage, count: Int): Unit = {
             val i = list.indexWhere(_.itemDamage == itemDamage)
@@ -1035,15 +1053,31 @@ object TileAdvQuarry {
         override def test(t: IBlockState): Boolean = contain(t)
     }
 
-    private[TileAdvQuarry] class NotNullList(seq: mutable.Buffer[ItemStack] with Clearable) extends NonNullList[ItemStack](seq.asJava, null) {
-        override def clear(): Unit = seq.clear()
+    private[TileAdvQuarry] class NotNullList(val seq: mutable.Buffer[ItemStack] with Clearable) extends NonNullList[ItemStack](seq.asJava, null) {
+        var fix = false
+        val fixing = ArrayBuffer.empty[ItemStack]
+
+        override def clear(): Unit = {
+            seq.clear()
+            fix = false
+            fixing.clear()
+        }
 
         override def add(e: ItemStack): Boolean = {
             seq.append(Objects.requireNonNull(e))
+            if (fix) fixing += e
             true
         }
 
-        override def add(i: Int, e: ItemStack): Unit = seq.insert(i, Objects.requireNonNull(e))
+        override def add(i: Int, e: ItemStack): Unit = {
+            seq.insert(i, Objects.requireNonNull(e))
+            if (fix) fixing += e
+        }
+
+        override def set(i: Int, e: ItemStack): ItemStack = {
+            if (fix) fixing += e
+            super.set(i, e)
+        }
     }
 
     sealed class Modes(val index: Int, override val toString: String)
@@ -1087,4 +1121,6 @@ object TileAdvQuarry {
         }
         builder.result()
     }
+
+    def xpFilter(i: Int): Any => Boolean = _ => i > 0
 }
