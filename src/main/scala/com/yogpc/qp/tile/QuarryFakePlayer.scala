@@ -1,8 +1,10 @@
 package com.yogpc.qp.tile
 
+import java.io.File
 import java.util.UUID
 
 import com.mojang.authlib.GameProfile
+import net.minecraft.advancements.{Advancement, AdvancementProgress, PlayerAdvancements}
 import net.minecraft.entity.IMerchant
 import net.minecraft.entity.passive.AbstractHorse
 import net.minecraft.inventory.IInventory
@@ -16,6 +18,9 @@ import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 class QuarryFakePlayer private(worldServer: WorldServer) extends FakePlayer(worldServer, QuarryFakePlayer.profile) {
+
+    private[this] val advancements = new Advancements
+
     override def openGuiHorseInventory(horse: AbstractHorse, inventoryIn: IInventory): Unit = ()
 
     override def displayGUIChest(chestInventory: IInventory): Unit = ()
@@ -33,6 +38,20 @@ class QuarryFakePlayer private(worldServer: WorldServer) extends FakePlayer(worl
     override def playEquipSound(stack: ItemStack): Unit = ()
 
     override def isSilent: Boolean = true
+
+    override def getAdvancements: PlayerAdvancements = advancements
+
+    private class Advancements extends PlayerAdvancements(
+        worldServer.getMinecraftServer,
+        new File(new File(worldServer.getMinecraftServer.getWorld(0).getSaveHandler.getWorldDirectory, "advancements"), getUniqueID + ".json"),
+        this) {
+        override def getProgress(advancementIn: Advancement): AdvancementProgress = {
+            new AdvancementProgress() {
+                override def isDone: Boolean = true
+            }
+        }
+    }
+
 }
 
 object QuarryFakePlayer {
