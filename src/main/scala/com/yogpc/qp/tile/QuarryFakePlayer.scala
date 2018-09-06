@@ -19,7 +19,16 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 class QuarryFakePlayer private(worldServer: WorldServer) extends FakePlayer(worldServer, QuarryFakePlayer.profile) {
 
-    private[this] val advancements = new Advancements
+    private[this] val advancements = new PlayerAdvancements(
+        worldServer.getMinecraftServer,
+        new File(new File(worldServer.getMinecraftServer.getWorld(0).getSaveHandler.getWorldDirectory, "advancements"), getUniqueID + ".json"),
+        this) {
+        override def getProgress(advancementIn: Advancement): AdvancementProgress = {
+            new AdvancementProgress() {
+                override def isDone: Boolean = true
+            }
+        }
+    }
 
     override def openGuiHorseInventory(horse: AbstractHorse, inventoryIn: IInventory): Unit = ()
 
@@ -40,17 +49,6 @@ class QuarryFakePlayer private(worldServer: WorldServer) extends FakePlayer(worl
     override def isSilent: Boolean = true
 
     override def getAdvancements: PlayerAdvancements = advancements
-
-    private class Advancements extends PlayerAdvancements(
-        worldServer.getMinecraftServer,
-        new File(new File(worldServer.getMinecraftServer.getWorld(0).getSaveHandler.getWorldDirectory, "advancements"), getUniqueID + ".json"),
-        this) {
-        override def getProgress(advancementIn: Advancement): AdvancementProgress = {
-            new AdvancementProgress() {
-                override def isDone: Boolean = true
-            }
-        }
-    }
 
 }
 

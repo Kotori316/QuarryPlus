@@ -872,8 +872,9 @@ object TileAdvQuarry {
             t.setInteger("fortune", fortune)
             t.setBoolean("silktouch", silktouch)
             val o = new NBTTagCompound
-            other.map { case (i, l) => Enchantment.getEnchantmentByID(i) -> l }.filter(_._1 != null).foreach { case (e, l) =>
-                o.setInteger(e.getRegistryName.toString, l)
+            other.map { case (i, l) => Enchantment.getEnchantmentByID(i) -> l }.foreach { case (e, l) =>
+                if (e != null)
+                    o.setInteger(e.getRegistryName.toString, l)
             }
             t.setTag("other", o)
             nbt.setTag(NBT_QENCH, t)
