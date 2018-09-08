@@ -439,9 +439,9 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
         if (!mode.isWorking) {
             this.configure(0, getMaxStored)
         } else if (mode.reduceRecieve) {
-            this.configure(ench.maxRecieve / 128, TileAdvQuarry.MAX_STORED)
+            this.configure(ench.maxRecieve / 128, ench.maxStore)
         } else {
-            this.configure(ench.maxRecieve, TileAdvQuarry.MAX_STORED)
+            this.configure(ench.maxRecieve, ench.maxStore)
         }
     }
 
@@ -810,7 +810,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 object TileAdvQuarry {
     final val SYMBOL = Symbol("ChunkDestroyer")
 
-    final val MAX_STORED = 300 * 256
+    private final val MAX_STORED = 300 * 256
     final val noDigBLOCKS = Set(
         BlockWrapper(Blocks.STONE.getDefaultState, ignoreMeta = true),
         BlockWrapper(Blocks.COBBLESTONE.getDefaultState),
@@ -862,6 +862,8 @@ object TileAdvQuarry {
             FortuneID -> fortune, SilktouchID -> silktouch.compare(false)) ++ other
 
         val maxRecieve = if (efficiency >= 5) ENERGYLIMIT_LIST(5) / 10d else ENERGYLIMIT_LIST(efficiency) / 10d
+
+        val maxStore = MAX_STORED * (efficiency + 1)
 
         val mode: Byte = if (silktouch) -1 else fortune.toByte
 
