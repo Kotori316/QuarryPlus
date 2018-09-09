@@ -2,7 +2,7 @@ package com.yogpc
 
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.item.ItemStack
-import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
+import net.minecraft.nbt.{NBTTagCompound, NBTTagList, NBTTagLong}
 import net.minecraft.util.text.TextComponentString
 import net.minecraftforge.common.util.Constants.NBT
 
@@ -88,6 +88,45 @@ package object qp {
                 stack.setTagCompound(if (subtag.hasNoTags) null else subtag)
             })
         }
+    }
+
+    /**
+      * Copied from [[https://yuroyoro.hatenablog.com/entry/20110323/1300854858]].
+      *
+      * @tparam A anyref
+      */
+    // 入れ物はタッパーです。
+    implicit class Tapper[A](val obj: A) extends AnyVal {
+        // RubyのObject#tap的な。引数fに自分自身を適用させて自身を返す。
+        // 副作用専用メソッド。nullだったらなにもしなーい
+        def tap(f: A => Unit): A = {
+            if (obj != null)
+                f(obj)
+            obj
+        }
+
+        // 上記の、戻り値Option版。nullだったらNoneが返る
+        def tapOption(f: A => Unit): Option[A] = {
+            Option(tap(f))
+        }
+
+        // いつでもmapできたら便利よね?
+        def map[B](f: A => B): Option[B] = Option(obj).map(f)
+
+        // Option(obj)でもいいけど、何でもメソッドチェーンしたい病の人に
+        def toOption: Option[A] = Option(obj)
+    }
+
+    trait NBTWrapeer[A, NBTType] {
+        def wrap(num: A): NBTType
+    }
+
+    implicit object Long2NBT extends NBTWrapeer[Long, NBTTagLong] {
+        override def wrap(num: Long): NBTTagLong = new NBTTagLong(num)
+    }
+
+    implicit class NumberToNbt[A](val num: A) extends AnyVal {
+        def toNBT[B](implicit wrapeer: NBTWrapeer[A, B]): B = wrapeer wrap num
     }
 
 }

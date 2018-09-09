@@ -517,7 +517,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
             amountPumped = tag.getLong(NBT_pumped)
             val list = tag.getTagList(NBT_liquids, NBT.TAG_COMPOUND)
             for (t <- list.tagIterator;
-                 f <- Option(FluidStack.loadFluidStackFromNBT(t)))
+                 f <- FluidStack.loadFluidStackFromNBT(t).toOption)
                 fluidStacks += f
             this
         }

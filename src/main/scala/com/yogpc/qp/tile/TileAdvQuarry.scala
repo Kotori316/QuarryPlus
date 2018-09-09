@@ -469,12 +469,10 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
         nbttc.setLong("NBT_TARGET", target.toLong)
         mode.writeToNBT(nbttc)
         cacheItems.writeToNBT(nbttc)
-        val l1 = new NBTTagList
-        fluidStacks.foreach { case (_, tank) => l1.appendTag(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.writeNBT(tank, null)) }
-        nbttc.setTag("NBT_FLUIDLIST", l1)
-        val l2 = new NBTTagList
-        chunks.foreach(c => l2.appendTag(new NBTTagLong(c.getBlock(0, 0, 0).toLong)))
-        nbttc.setTag("NBT_CHUNKLOADLIST", l2)
+        nbttc.setTag("NBT_FLUIDLIST", (new NBTTagList).tap(tagList => fluidStacks.foreach {
+            case (_, tank) => tagList.appendTag(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.writeNBT(tank, null))
+        }))
+        nbttc.setTag("NBT_CHUNKLOADLIST", (new NBTTagList).tap(tagList => chunks.foreach(c => tagList.appendTag(c.getBlock(0, 0, 0).toLong.toNBT))))
         super.writeToNBT(nbttc)
     }
 
@@ -779,9 +777,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
         override def toString: String = "ChunkDestroyer mode = " + mode
 
         override def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
-            val tag = new NBTTagCompound
-            tag.setInteger("mode", mode.index)
-            nbt.setTag(NBT_MODE, tag)
+            nbt.setTag(NBT_MODE, (new NBTTagCompound).tap(_.setInteger("mode", mode.index)))
             nbt
         }
 
@@ -1011,7 +1007,8 @@ object TileAdvQuarry {
             val l = new NBTTagList
             list.map(_.toNBT).foreach(l.appendTag(_))
             t.setTag(NBT_ITEMELEMENTS, l)
-            nbt.setTag(NBT_ITEMLIST, t)
+            nbt.setTag(NBT_ITEMLIST, (new NBTTagCompound).tap(t => t.setTag(NBT_ITEMELEMENTS, (new NBTTagList).tap(l =>
+                list.foreach(i => l.appendTag(i.toNBT))))))
             nbt
         }
 
