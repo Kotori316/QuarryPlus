@@ -125,6 +125,8 @@ object Config {
           .setRequiresMcRestart(true).getBoolean
         val debug = configuration.getBoolean(DEBUG_key, Configuration.CATEGORY_GENERAL, false, DEBUG_key)
 
+        (Disables ++ DisableBC).map("Disable" + _.name).foreach(s => configuration.getCategory(Configuration.CATEGORY_GENERAL).remove(s))
+
         if (configuration.hasChanged)
             configuration.save()
 
