@@ -130,8 +130,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                     PacketHandler.sendToAround(ModeMessage.create(this), getWorld(), getPos());
                     return true;
                 }
-                return !(blockHardness < 0) && !b.getBlock().isAir(b, getWorld(), target) && (this.pump != null ||
-                    !TilePump.isLiquid(b));
+                return blockHardness >= 0 && !b.getBlock().isAir(b, getWorld(), target) && !(this.pump == null && TilePump.isLiquid(b));
             case NOTNEEDBREAK:
                 if (this.targetY < this.yMin) {
                     if (this.filler) {

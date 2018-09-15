@@ -47,6 +47,9 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
     private boolean ic2ok = false;
     public boolean bcLoaded;
     public final boolean ic2Loaded;
+    /**
+     * Instance of {@link buildcraft.api.mj.MjCapabilityHelper}. Null if BC isn't installed.
+     */
     private Object helper;//buildcraft capability helper
     private final EnergyDebug debug = new EnergyDebug(this);
     protected boolean outputEnergyInfo = true;

@@ -103,10 +103,8 @@ object Config {
 
         val spawnerBlacklist = configuration.get(Configuration.CATEGORY_GENERAL, SpawnerControllerEntityBlackList_key, Array("minecraft:ender_dragon", "minecraft:wither"), "Spawner Blacklist")
           .getStringList.map(new ResourceLocation(_)).toSet.asJava
-        val recipeDifficulty = configuration.get(Configuration.CATEGORY_GENERAL, RecipeDifficulty_key, 2d)
-        recipeDifficulty.setComment("!!!UNUSED!!! //Default is 2.0")
-        recipeDifficulty.setMinValue(1d)
-        val recipe = configuration.getInt(Recipe_key, Configuration.CATEGORY_GENERAL, recipeDifficulty.getDouble.toInt, 1, Short.MaxValue, Recipe_key)
+        configuration.getCategory(Configuration.CATEGORY_GENERAL).remove(RecipeDifficulty_key)
+        val recipe = configuration.getInt(Recipe_key, Configuration.CATEGORY_GENERAL, 2, 1, Short.MaxValue, Recipe_key)
 
         val placerOnlyPlaceFront = configuration.getBoolean(PlacerOnlyPlaceFront_key, Configuration.CATEGORY_GENERAL, true, PlacerOnlyPlaceFront_key)
         val noEnergy = configuration.getBoolean(NoEnergy_key, Configuration.CATEGORY_GENERAL, false, NoEnergy_key)
