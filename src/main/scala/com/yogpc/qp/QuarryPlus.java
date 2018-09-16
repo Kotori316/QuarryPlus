@@ -165,7 +165,7 @@ public class QuarryPlus {
             blockChunkdestroyer(),
             blockStandalonePump(),
             blockBookMover(),
-            blockExpPump()
+            blockExpPump(),
             blockSolidQuarry()
         );
 
