@@ -28,6 +28,7 @@ import com.yogpc.qp.tile.TileAdvPump;
 import com.yogpc.qp.tile.TileAdvQuarry;
 import com.yogpc.qp.tile.TileBookMover;
 import com.yogpc.qp.tile.TileBreaker;
+import com.yogpc.qp.tile.TileExpPump;
 import com.yogpc.qp.tile.TileLaser;
 import com.yogpc.qp.tile.TileMarker;
 import com.yogpc.qp.tile.TileMiningWell;
@@ -164,6 +165,7 @@ public class QuarryPlus {
             blockChunkdestroyer(),
             blockStandalonePump(),
             blockBookMover(),
+            blockExpPump()
             blockSolidQuarry()
         );
 
@@ -179,6 +181,7 @@ public class QuarryPlus {
         GameRegistry.registerTileEntity(TileAdvQuarry.class, new ResourceLocation(modID, QuarryPlus.Names.advquarry));
         GameRegistry.registerTileEntity(TileAdvPump.class, new ResourceLocation(modID, QuarryPlus.Names.advpump));
         GameRegistry.registerTileEntity(TileBookMover.class, new ResourceLocation(modID, QuarryPlus.Names.moverfrombook));
+        GameRegistry.registerTileEntity(TileExpPump.class, new ResourceLocation(modID, QuarryPlus.Names.exppump));
         GameRegistry.registerTileEntity(TileSolidQuarry.class, new ResourceLocation(modID, QuarryPlus.Names.solidquarry));
     }
 
@@ -201,6 +204,7 @@ public class QuarryPlus {
             blockChunkdestroyer().itemBlock(),
             blockStandalonePump().itemBlock(),
             blockBookMover().itemBlock(),
+            blockExpPump().itemBlock(),
             blockSolidQuarry().itemBlock(),
             itemTool(),
             magicmirror(),
@@ -229,6 +233,7 @@ public class QuarryPlus {
         ModelLoader.setCustomModelResourceLocation(blockChunkdestroyer().itemBlock(), 0, proxy.fromEntry(blockChunkdestroyer()));
         ModelLoader.setCustomModelResourceLocation(blockStandalonePump().itemBlock(), 0, proxy.fromEntry(blockStandalonePump()));
         ModelLoader.setCustomModelResourceLocation(blockBookMover().itemBlock(), 0, proxy.fromEntry(blockBookMover()));
+        ModelLoader.setCustomModelResourceLocation(blockExpPump().itemBlock(), 0, proxy.fromEntry(blockExpPump()));
         ModelLoader.setCustomModelResourceLocation(blockSolidQuarry().itemBlock(), 0, proxy.fromEntry(blockSolidQuarry()));
         ModelLoader.setCustomModelResourceLocation(itemTool(), 0, new ModelResourceLocation(prefix + ItemTool.statuschecker(), variantIn));
         ModelLoader.setCustomModelResourceLocation(itemTool(), 1, new ModelResourceLocation(prefix + ItemTool.listeditor(), variantIn));
@@ -279,7 +284,9 @@ public class QuarryPlus {
 
     @Mod.EventHandler
     public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
-        if (!inDev) {
+        try {
+            Class.forName("net.minecraft.item.ItemStack").getDeclaredField("EMPTY");
+        } catch (ReflectiveOperationException ignore) {
             LOGGER.warn("Invalid fingerprint detected! The file " + event.getSource().getName() +
                 " may have been tampered with. This version will NOT be supported by the author!");
         }
@@ -314,6 +321,7 @@ public class QuarryPlus {
         public static final String breaker = "breakerplus";
         public static final String controller = "spawnercontroller";
         public static final String debug = "quarrydebug";
+        public static final String exppump = "exppump";
         public static final String frame = "quarryframe";
         public static final String laser = "laserplus";
         public static final String marker = "markerplus";

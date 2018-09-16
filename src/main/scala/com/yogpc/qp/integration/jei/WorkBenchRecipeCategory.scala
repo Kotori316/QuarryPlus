@@ -11,21 +11,21 @@ import net.minecraft.util.ResourceLocation
 
 class WorkBenchRecipeCategory(guiHelper: IGuiHelper) extends IRecipeCategory[WorkBenchRecipeWrapper] {
     //4, 13 => 172, 110
-    private val xOff = 4
-    private val yOff = 13
-    private var currentrecipe: WorkBenchRecipeWrapper = _
+    private[this] final val xOff = 4
+    private[this] final val yOff = 13
+    private[this] final val o = 18
+    private[this] var currentrecipe: WorkBenchRecipeWrapper = _
 
     override val getBackground: IDrawable = guiHelper.createDrawable(backGround, xOff, yOff, 168, 98)
 
     override def setRecipe(recipeLayout: IRecipeLayout, recipeWrapper: WorkBenchRecipeWrapper, ingredients: IIngredients): Unit = {
         val guiItemStack = recipeLayout.getItemStacks
         //7, 17 -- 7, 89
-        val o = 18
         for (i <- 0 until recipeWrapper.recipeSize) {
             if (i < 9) {
                 guiItemStack.init(i, true, 7 + o * i - xOff, 17 - yOff)
             } else if (i < 18) {
-                guiItemStack.init(i, true, 7 + o * (i - 9) - xOff, 17 + 18 - yOff)
+                guiItemStack.init(i, true, 7 + o * (i - 9) - xOff, 17 + o - yOff)
             }
         }
         guiItemStack.init(recipeWrapper.recipeSize, false, 7 - xOff, 89 - yOff)
@@ -48,6 +48,6 @@ class WorkBenchRecipeCategory(guiHelper: IGuiHelper) extends IRecipeCategory[Wor
 }
 
 object WorkBenchRecipeCategory {
-    val UID = "quarryplus.workbenchplus"
+    final val UID = "quarryplus.workbenchplus"
     val backGround = new ResourceLocation(QuarryPlus.modID, "textures/gui/workbench_jei2.png")
 }

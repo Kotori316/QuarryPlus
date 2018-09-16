@@ -61,6 +61,7 @@ public class TranslationKeys {
     public static final String advquarry = "tile." + QuarryPlus.Names.advquarry + ".name";
     public static final String breaker = "tile." + QuarryPlus.Names.breaker + ".name";
     //    public static final String controller = "tile." + QuarryPlus.Names.controller + ".name";
+    public static final String exppump = "tile." + QuarryPlus.Names.exppump + ".name";
     public static final String frame = "tile." + QuarryPlus.Names.frame + ".name";
     public static final String laser = "tile." + QuarryPlus.Names.laser + ".name";
     public static final String marker = "tile." + QuarryPlus.Names.marker + ".name";

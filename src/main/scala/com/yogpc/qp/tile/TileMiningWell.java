@@ -42,6 +42,12 @@ public class TileMiningWell extends TileBasic implements ITickable {
             else
                 this.pump = null;
         }
+        if (hasWorld() && exppump != null) {
+            TileEntity entity = getWorld().getTileEntity(getPos().offset(exppump));
+            if (!(entity instanceof TileExpPump)) {
+                exppump = null;
+            }
+        }
         if (this.working)
             PowerManager.configureMiningWell(this, this.efficiency, this.unbreaking, pmp);
         else

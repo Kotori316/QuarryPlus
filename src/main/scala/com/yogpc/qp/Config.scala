@@ -2,8 +2,6 @@ package com.yogpc.qp
 
 import java.io.File
 
-import com.yogpc.qp.block.{BlockBookMover, BlockBreaker, BlockController, BlockMover, BlockPlacer, BlockSolidQuarry}
-import com.yogpc.qp.tile.{TileAdvPump, TileAdvQuarry, TileLaser, TileMarker, TileMiningWell, TileQuarry, TileRefinery}
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.common.config.{ConfigElement, Configuration}
@@ -50,23 +48,24 @@ object Config {
     def content = mContent
 
     private val Disables = Set(
-        BlockController.SYMBOL,
-        TileAdvQuarry.SYMBOL,
-        TileAdvPump.SYMBOL,
-        BlockBreaker.SYMBOL,
-        TileMiningWell.SYMBOL,
+        'SpawnerController,
+        'ChunkDestroyer,
+        'AdvancedPump,
+        'BreakerPlus,
+        'MiningwellPlus,
         'MagicMirror,
-        BlockMover.SYMBOL,
-        BlockBookMover.SYMBOL,
-        BlockPlacer.SYMBOL,
+        'EnchantMover,
+        'EnchantMoverFromBook,
+        'PlacerPlus,
         'PumpPlus,
-        TileMarker.SYMBOL,
-        TileQuarry.SYMBOL,
+        'ExpPump,
+        'MarkerPlus,
+        'QuarryPlus,
         'WorkbenchPlus,
-        BlockSolidQuarry.SYMBOL)
+        'SolidFuleQuarry)
     private val DisableBC = Set(
-        TileLaser.SYMBOL,
-        TileRefinery.SYMBOL
+        'LaserPlus,
+        'RefineryPlus
     )
 
     private val defaultDisables = Set('EnchantMoverFromBook)
@@ -105,10 +104,8 @@ object Config {
 
         val spawnerBlacklist = configuration.get(Configuration.CATEGORY_GENERAL, SpawnerControllerEntityBlackList_key, Array("minecraft:ender_dragon", "minecraft:wither"), "Spawner Blacklist")
           .getStringList.map(new ResourceLocation(_)).toSet.asJava
-        val recipeDifficulty = configuration.get(Configuration.CATEGORY_GENERAL, RecipeDifficulty_key, 2d)
-        recipeDifficulty.setComment("!!!UNUSED!!! //Default is 2.0")
-        recipeDifficulty.setMinValue(1d)
-        val recipe = configuration.getInt(Recipe_key, Configuration.CATEGORY_GENERAL, recipeDifficulty.getDouble.toInt, 1, Short.MaxValue, Recipe_key)
+        configuration.getCategory(Configuration.CATEGORY_GENERAL).remove(RecipeDifficulty_key)
+        val recipe = configuration.getInt(Recipe_key, Configuration.CATEGORY_GENERAL, 2, 1, Short.MaxValue, Recipe_key)
 
         val placerOnlyPlaceFront = configuration.getBoolean(PlacerOnlyPlaceFront_key, Configuration.CATEGORY_GENERAL, true, PlacerOnlyPlaceFront_key)
         val noEnergy = configuration.getBoolean(NoEnergy_key, Configuration.CATEGORY_GENERAL, false, NoEnergy_key)
@@ -126,6 +123,8 @@ object Config {
         val disableDungeonLoot = configuration.get(Configuration.CATEGORY_GENERAL, DisableDungeonRoot_key, false, "Disable adding magic mirror to loot.")
           .setRequiresMcRestart(true).getBoolean
         val debug = configuration.getBoolean(DEBUG_key, Configuration.CATEGORY_GENERAL, false, DEBUG_key)
+
+        (Disables ++ DisableBC).map("Disable" + _.name).foreach(s => configuration.getCategory(Configuration.CATEGORY_GENERAL).remove(s))
 
         if (configuration.hasChanged)
             configuration.save()
