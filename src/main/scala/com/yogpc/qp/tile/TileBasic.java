@@ -132,8 +132,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
             return ((TilePump) te).S_removeLiquids(this, x, y, z);
         }
         BI bi = S_addDroppedItems(dropped, blockState, pos);
-        if (!PowerManager.useEnergyBreak(this, blockState.getBlockHardness(getWorld(), pos),
-            bi.b, this.unbreaking))
+        if (!PowerManager.useEnergyBreak(this, blockState.getBlockHardness(getWorld(), pos), bi.b, this.unbreaking))
             return false;
         if (exppump != null) {
             TileEntity entity = world.getTileEntity(getPos().offset(exppump));
@@ -396,7 +395,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
 
     @Override
     @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.COFH_modID)
-    public ConnectionType canConnectInventory(EnumFacing from) {
+    public final ConnectionType canConnectInventory(EnumFacing from) {
         return ConnectionType.FORCE;
     }
 

@@ -437,11 +437,11 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 
     def energyConfigure(): Unit = {
         if (!mode.isWorking) {
-            this.configure(0, getMaxStored)
+            configure(0, getMaxStored)
         } else if (mode.reduceRecieve) {
-            this.configure(ench.maxRecieve / 128, ench.maxStore)
+            configure(ench.maxRecieve / 128, ench.maxStore)
         } else {
-            this.configure(ench.maxRecieve, ench.maxStore)
+            configure(ench.maxRecieve, ench.maxStore)
         }
     }
 
@@ -469,12 +469,10 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
         nbttc.setLong("NBT_TARGET", target.toLong)
         mode.writeToNBT(nbttc)
         cacheItems.writeToNBT(nbttc)
-        val l1 = new NBTTagList
-        fluidStacks.foreach { case (_, tank) => l1.appendTag(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.writeNBT(tank, null)) }
-        nbttc.setTag("NBT_FLUIDLIST", l1)
-        val l2 = new NBTTagList
-        chunks.foreach(c => l2.appendTag(new NBTTagLong(c.getBlock(0, 0, 0).toLong)))
-        nbttc.setTag("NBT_CHUNKLOADLIST", l2)
+        nbttc.setTag("NBT_FLUIDLIST", (new NBTTagList).tap(tagList => fluidStacks.foreach {
+            case (_, tank) => tagList.appendTag(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.writeNBT(tank, null))
+        }))
+        nbttc.setTag("NBT_CHUNKLOADLIST", (new NBTTagList).tap(tagList => chunks.foreach(c => tagList.appendTag(c.getBlock(0, 0, 0).toLong.toNBT))))
         super.writeToNBT(nbttc)
     }
 
@@ -730,9 +728,9 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
         override def onContentsChanged(): Unit = {
             super.onContentsChanged()
             if (this.getFluidAmount == 0) {
-                TileAdvQuarry.this.fluidStacks.retain { case (_, v) => v != this }
+                self.fluidStacks.retain { case (_, v) => v != this }
                 if (!tile.getWorld.isRemote) {
-                    PacketHandler.sendToAround(AdvContentMessage.create(TileAdvQuarry.this), getWorld, getPos)
+                    PacketHandler.sendToAround(AdvContentMessage.create(self), getWorld, getPos)
                 }
             }
         }
@@ -779,9 +777,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
         override def toString: String = "ChunkDestroyer mode = " + mode
 
         override def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
-            val tag = new NBTTagCompound
-            tag.setInteger("mode", mode.index)
-            nbt.setTag(NBT_MODE, tag)
+            nbt.setTag(NBT_MODE, (new NBTTagCompound).tap(_.setInteger("mode", mode.index)))
             nbt
         }
 
@@ -819,7 +815,6 @@ object TileAdvQuarry {
         BlockWrapper(Blocks.NETHERRACK.getDefaultState),
         BlockWrapper(Blocks.SANDSTONE.getDefaultState, ignoreMeta = true),
         BlockWrapper(Blocks.RED_SANDSTONE.getDefaultState, ignoreMeta = true))
-    private final val ENERGYLIMIT_LIST = IndexedSeq(512, 1024, 2048, 4096, 8192, MAX_STORED)
     private final val NBT_QENCH = "nbt_qench"
     private final val NBT_DIGRANGE = "nbt_digrange"
     private final val NBT_MODE = "nbt_quarrymode"
@@ -861,9 +856,9 @@ object TileAdvQuarry {
         def getMap: Map[Int, Int] = Map(EfficiencyID -> efficiency, UnbreakingID -> unbreaking,
             FortuneID -> fortune, SilktouchID -> silktouch.compare(false)) ++ other
 
-        val maxRecieve = if (efficiency >= 5) ENERGYLIMIT_LIST(5) / 10d else ENERGYLIMIT_LIST(efficiency) / 10d
-
         val maxStore = MAX_STORED * (efficiency + 1)
+
+        val maxRecieve = if (efficiency >= 5) maxStore else maxStore * Math.pow(efficiency.toDouble / 5.0, 3)
 
         val mode: Byte = if (silktouch) -1 else fortune.toByte
 
@@ -1011,7 +1006,8 @@ object TileAdvQuarry {
             val l = new NBTTagList
             list.map(_.toNBT).foreach(l.appendTag(_))
             t.setTag(NBT_ITEMELEMENTS, l)
-            nbt.setTag(NBT_ITEMLIST, t)
+            nbt.setTag(NBT_ITEMLIST, (new NBTTagCompound).tap(t => t.setTag(NBT_ITEMELEMENTS, (new NBTTagList).tap(l =>
+                list.foreach(i => l.appendTag(i.toNBT))))))
             nbt
         }
 

@@ -58,11 +58,7 @@ object QuarryFakePlayer {
     MinecraftForge.EVENT_BUS.register(this)
 
     def get(server: WorldServer): QuarryFakePlayer = {
-        players.getOrElse(profile, {
-            val newPlayer = new QuarryFakePlayer(server)
-            players = players updated(profile, newPlayer)
-            newPlayer
-        })
+        players.getOrElse(profile, new QuarryFakePlayer(server).tap(p => players = players updated(profile, p)))
     }
 
     @SubscribeEvent

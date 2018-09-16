@@ -36,7 +36,7 @@ final class Buffer {
         bufferBuilder.lightmap(240, 0).endVertex();
     }
 
-    final boolean eq(BufferBuilder builder) {
+    final boolean bufferEq(BufferBuilder builder) {
         return bufferBuilder == builder;
     }
 }

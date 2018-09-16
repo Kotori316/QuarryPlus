@@ -25,7 +25,7 @@ abstract sealed class WorkbenchRecipes(val output: ItemDamage, val energy: Doubl
 
     override val toString = s"WorkbenchRecipes(output=$output, energy=$energy)"
 
-    override val hashCode: Int = output.hashCode()
+    override val hashCode: Int = output.hashCode() ^ energy.##
 
     override def equals(obj: scala.Any): Boolean = {
         super.equals(obj) || {
@@ -123,6 +123,8 @@ object WorkbenchRecipes {
 
     protected class F(item: Item, count: Double, damage: Int = 0) extends (Int => ItemStack) {
         override def apply(v1: Int): ItemStack = new ItemStack(item, (count * v1).toInt, damage)
+
+        override def toString(): String = item.getUnlocalizedName + "@" + damage + " x" + count
     }
 
     object F {

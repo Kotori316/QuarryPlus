@@ -121,7 +121,7 @@ class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender {
         Map(IEnchantableTile.FortuneID -> fortune,
             IEnchantableTile.UnbreakingID -> unbreaking,
             IEnchantableTile.SilktouchID -> silktouch.compareTo(false))
-          .collect { case (id, value) if value > 0 => (Int.box(id), Int.box(value)) }.asJava
+          .collect(enchantCollector).asJava
     }
 
     /**
@@ -138,7 +138,7 @@ class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender {
     }
 
     override def writeToNBT(compound: NBTTagCompound): NBTTagCompound = {
-        compound.setByte("mConnectTo", Option(mConnectTo).map(_.ordinal().toByte).getOrElse(-1))
+        compound.setByte("mConnectTo", mConnectTo.map(_.ordinal().toByte).getOrElse(-1))
         compound.setInteger("xpAmount", xpAmount)
         compound.setBoolean("silktouch", this.silktouch)
         compound.setByte("fortune", this.fortune.toByte)

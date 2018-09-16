@@ -23,7 +23,7 @@ object RenderQuarry extends FastTESR[TileQuarry] {
     override def renderTileEntityFast(quarry: TileQuarry, distanceX: Double, distanceY: Double, distanceZ: Double,
                                       partialTicks: Float, destroyStage: Int, partial: Float, bufferBuilder: BufferBuilder) = {
         val pos = quarry.getPos
-        if (!(bufferInstance eq bufferBuilder)) {
+        if (!(bufferInstance bufferEq bufferBuilder)) {
             bufferInstance = new Buffer(bufferBuilder)
         }
         val buffer = bufferInstance
