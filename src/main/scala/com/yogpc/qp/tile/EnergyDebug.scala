@@ -32,7 +32,7 @@ class EnergyDebug(tile: APowerTile) {
                     val allUsed = useBuilder
                     val gotSum = allGot.sum
                     if (allUsed.nonEmpty && usedTicks != 0) {
-                        val usedSum = allUsed.sum
+                        val usedSum = allUsed.reverse.take(usedTicks).sum
                         QuarryPlus.LOGGER.info(
                             s"$tilename used $usedSum MJ in $usedTicks ticks (${usedSum / usedTicks * 10} RF/t), got $gotSum in 100 ticks (${gotSum / 100 * 10} RF/t)"
                         )

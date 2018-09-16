@@ -82,7 +82,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
     }
 
     private void postLoadEvent() {
-        if (!this.ic2ok && !getWorld().isRemote) {
+        if (!getWorld().isRemote && !this.ic2ok) {
             if (ic2Loaded) {
                 try {
                     ic2load();

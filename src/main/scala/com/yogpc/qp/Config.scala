@@ -2,6 +2,8 @@ package com.yogpc.qp
 
 import java.io.File
 
+import com.yogpc.qp.block.{BlockBookMover, BlockBreaker, BlockController, BlockMover, BlockPlacer, BlockSolidQuarry}
+import com.yogpc.qp.tile.{TileAdvPump, TileAdvQuarry, TileLaser, TileMarker, TileMiningWell, TileQuarry, TileRefinery}
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.common.config.{ConfigElement, Configuration}
@@ -48,22 +50,23 @@ object Config {
     def content = mContent
 
     private val Disables = Set(
-        'SpawnerController,
-        'ChunkDestroyer,
-        'AdvancedPump,
-        'BreakerPlus,
-        'MiningwellPlus,
+        BlockController.SYMBOL,
+        TileAdvQuarry.SYMBOL,
+        TileAdvPump.SYMBOL,
+        BlockBreaker.SYMBOL,
+        TileMiningWell.SYMBOL,
         'MagicMirror,
-        'EnchantMover,
-        'EnchantMoverFromBook,
-        'PlacerPlus,
+        BlockMover.SYMBOL,
+        BlockBookMover.SYMBOL,
+        BlockPlacer.SYMBOL,
         'PumpPlus,
-        'MarkerPlus,
-        'QuarryPlus,
-        'WorkbenchPlus)
+        TileMarker.SYMBOL,
+        TileQuarry.SYMBOL,
+        'WorkbenchPlus,
+        BlockSolidQuarry.SYMBOL)
     private val DisableBC = Set(
-        'LaserPlus,
-        'RefineryPlus
+        TileLaser.SYMBOL,
+        TileRefinery.SYMBOL
     )
 
     private val defaultDisables = Set('EnchantMoverFromBook)

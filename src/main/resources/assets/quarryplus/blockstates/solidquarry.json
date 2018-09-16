@@ -1,0 +1,49 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "cube",
+    "textures": {
+      "particle": "quarryplus:blocks/solidquarry",
+      "down": "quarryplus:blocks/solidquarry",
+      "up": "quarryplus:blocks/solidquarry_top",
+      "north": "quarryplus:blocks/solidquarry_front",
+      "east": "quarryplus:blocks/solidquarry",
+      "south": "quarryplus:blocks/solidquarry",
+      "west": "quarryplus:blocks/solidquarry"
+    }
+  },
+  "variants": {
+    "acting": {
+      "true": {
+        "textures": {
+          "up": "quarryplus:blocks/solidquarry_top_bb"
+        }
+      },
+      "false": {
+      }
+    },
+    "facing": {
+      "north": {
+        "transform": "forge:default-block"
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      },
+      "east": {
+        "y": 90
+      },
+      "up": {
+        "x": 270
+      },
+      "down": {
+        "x": 90
+      }
+    }
+  },
+  "inventory": [
+    {}
+  ]
+}
