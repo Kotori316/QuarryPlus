@@ -395,7 +395,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
 
     @Override
     @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.COFH_modID)
-    public ConnectionType canConnectInventory(EnumFacing from) {
+    public final ConnectionType canConnectInventory(EnumFacing from) {
         return ConnectionType.FORCE;
     }
 

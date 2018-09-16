@@ -75,7 +75,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
         return SYMBOL;
     }
 
-    private void S_updateEntity() {
+    protected void S_updateEntity() {
         if (machineDisabled) return;
         if (this.areaProvider != null) {
             if (this.areaProvider instanceof TileMarker)

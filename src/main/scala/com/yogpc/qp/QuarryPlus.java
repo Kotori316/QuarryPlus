@@ -36,6 +36,7 @@ import com.yogpc.qp.tile.TilePlacer;
 import com.yogpc.qp.tile.TilePump;
 import com.yogpc.qp.tile.TileQuarry;
 import com.yogpc.qp.tile.TileRefinery;
+import com.yogpc.qp.tile.TileSolidQuarry;
 import com.yogpc.qp.tile.TileWorkbench;
 import com.yogpc.qp.tile.WorkbenchRecipes;
 import com.yogpc.qp.version.VersionDiff;
@@ -164,7 +165,8 @@ public class QuarryPlus {
             blockChunkdestroyer(),
             blockStandalonePump(),
             blockBookMover(),
-            blockExpPump()
+            blockExpPump(),
+            blockSolidQuarry()
         );
 
         GameRegistry.registerTileEntity(TileWorkbench.class, new ResourceLocation(modID, QuarryPlus.Names.workbench));
@@ -180,6 +182,7 @@ public class QuarryPlus {
         GameRegistry.registerTileEntity(TileAdvPump.class, new ResourceLocation(modID, QuarryPlus.Names.advpump));
         GameRegistry.registerTileEntity(TileBookMover.class, new ResourceLocation(modID, QuarryPlus.Names.moverfrombook));
         GameRegistry.registerTileEntity(TileExpPump.class, new ResourceLocation(modID, QuarryPlus.Names.exppump));
+        GameRegistry.registerTileEntity(TileSolidQuarry.class, new ResourceLocation(modID, QuarryPlus.Names.solidquarry));
     }
 
     @SubscribeEvent
@@ -202,6 +205,7 @@ public class QuarryPlus {
             blockStandalonePump().itemBlock(),
             blockBookMover().itemBlock(),
             blockExpPump().itemBlock(),
+            blockSolidQuarry().itemBlock(),
             itemTool(),
             magicmirror(),
             debugItem()
@@ -230,6 +234,7 @@ public class QuarryPlus {
         ModelLoader.setCustomModelResourceLocation(blockStandalonePump().itemBlock(), 0, proxy.fromEntry(blockStandalonePump()));
         ModelLoader.setCustomModelResourceLocation(blockBookMover().itemBlock(), 0, proxy.fromEntry(blockBookMover()));
         ModelLoader.setCustomModelResourceLocation(blockExpPump().itemBlock(), 0, proxy.fromEntry(blockExpPump()));
+        ModelLoader.setCustomModelResourceLocation(blockSolidQuarry().itemBlock(), 0, proxy.fromEntry(blockSolidQuarry()));
         ModelLoader.setCustomModelResourceLocation(itemTool(), 0, new ModelResourceLocation(prefix + ItemTool.statuschecker(), variantIn));
         ModelLoader.setCustomModelResourceLocation(itemTool(), 1, new ModelResourceLocation(prefix + ItemTool.listeditor(), variantIn));
         ModelLoader.setCustomModelResourceLocation(itemTool(), 2, new ModelResourceLocation(prefix + ItemTool.liquidselector(), variantIn));
@@ -329,6 +334,7 @@ public class QuarryPlus {
         public static final String pump = "pumpplus";
         public static final String quarry = "quarryplus";
         public static final String refinery = "refineryplus";
+        public static final String solidquarry = "solidquarry";
         public static final String tool = "tool";
         public static final String workbench = "workbenchplus";
     }

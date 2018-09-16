@@ -61,7 +61,8 @@ object Config {
         'ExpPump,
         'MarkerPlus,
         'QuarryPlus,
-        'WorkbenchPlus)
+        'WorkbenchPlus,
+        'SolidFuleQuarry)
     private val DisableBC = Set(
         'LaserPlus,
         'RefineryPlus
