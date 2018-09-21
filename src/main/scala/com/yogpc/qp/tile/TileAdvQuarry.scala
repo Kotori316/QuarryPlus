@@ -663,7 +663,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 
         override def extractItem(slot: Int, amount: Int, simulate: Boolean): ItemStack = {
             if (simulate) {
-                cacheItems.list(slot) match {
+                cacheItems.list.applyOrElse(slot, (_: Int) => ItemElement(ItemDamage.invalid, 1)) match {
                     case ItemElement(i, size) => i.toStack(Math.min(amount, Math.min(size, i.itemStackLimit)))
                 }
             } else {
@@ -974,29 +974,33 @@ object TileAdvQuarry {
         def add(stack: ItemStack): Unit = add(ItemDamage(stack), stack.getCount)
 
         def decrease(index: Int, count: Int): ItemStack = {
-            val t = list(index)
-            val min = Math.min(count, t.itemDamage.itemStackLimit)
-            if (t.count <= min) {
-                list.remove(index)
-                t.itemDamage.toStack(t.count)
+            if (list.isDefinedAt(index)) {
+                val t = list(index)
+                val min = Math.min(count, t.itemDamage.itemStackLimit)
+                if (t.count <= min) {
+                    list.remove(index)
+                    t.itemDamage.toStack(t.count)
+                } else {
+                    list(index) = ItemElement(t.itemDamage, t.count - min)
+                    t.itemDamage.toStack(min)
+                }
             } else {
-                list(index) = ItemElement(t.itemDamage, t.count - min)
-                t.itemDamage.toStack(min)
+                VersionUtil.empty()
             }
         }
 
         def getStack(index: Int): ItemStack = {
-            if (index < list.size)
+            if (list.isDefinedAt(index))
                 list(index).toStack
             else
-                ItemStack.EMPTY
+                VersionUtil.empty()
         }
 
         def remove(index: Int): ItemStack = {
-            if (index < list.size)
+            if (list.isDefinedAt(index))
                 list.remove(index).toStack
             else
-                ItemStack.EMPTY
+                VersionUtil.empty()
         }
 
         override def toString: String = "ItemList size = " + list.size
