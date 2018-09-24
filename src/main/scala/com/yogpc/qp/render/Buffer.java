@@ -36,6 +36,10 @@ final class Buffer {
         bufferBuilder.lightmap(240, 0).endVertex();
     }
 
+    final void lightedAndEnd(Box.LightValue value) {
+        bufferBuilder.lightmap(value.l1(), value.l2()).endVertex();
+    }
+
     final boolean bufferEq(BufferBuilder builder) {
         return bufferBuilder == builder;
     }
