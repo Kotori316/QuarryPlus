@@ -26,7 +26,6 @@ import java.util.function.Function;
 
 import cofh.api.tileentity.IInventoryConnection;
 import com.yogpc.qp.BlockData;
-import com.yogpc.qp.Config;
 import com.yogpc.qp.PowerManager;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.ReflectionHelper;
@@ -198,12 +197,12 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
                 byte fortuneLevel = b ? this.fortune : 0;
                 NonNullList<ItemStack> list = NonNullList.create();
                 getDrops(getWorld(), pos, state, block, fortuneLevel, list);
-                if (list.isEmpty() && Config.content().debug())
-                    ReflectionHelper.checkGetDrops(getWorld(), pos, state, block, fortuneLevel, list);
+//                if (list.isEmpty() && Config.content().debug())
+//                    ReflectionHelper.checkGetDrops(getWorld(), pos, state, block, fortuneLevel, list);
                 rawItems = new HashSet<>(list);
                 ForgeEventFactory.fireBlockHarvesting(list, world, pos, state, fortuneLevel, 1.0f, false, fakePlayer);
-                if (!rawItems.isEmpty() && list.isEmpty() && Config.content().debug())
-                    QuarryPlus.LOGGER.info("Drop items were removed during BlockHarvestingEvent.");
+//                if (!rawItems.isEmpty() && list.isEmpty() && Config.content().debug())
+//                    QuarryPlus.LOGGER.info("Drop items were removed during BlockHarvestingEvent.");
                 collection.addAll(list);
                 i = fortuneLevel;
             }
