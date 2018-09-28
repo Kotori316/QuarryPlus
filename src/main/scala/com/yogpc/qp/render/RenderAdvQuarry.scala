@@ -45,5 +45,4 @@ object RenderAdvQuarry extends FastTESR[TileAdvQuarry] {
 
     override def isGlobalRenderer(te: TileAdvQuarry): Boolean = true
 
-    def distanceSq(a: Double, b: Double, c: Double): Double = a * a + b * b + c * c
 }
