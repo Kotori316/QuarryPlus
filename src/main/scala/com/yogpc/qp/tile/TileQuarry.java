@@ -485,6 +485,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                     getWorld().setBlockState(getPos(), state.withProperty(BlockQuarry.ACTING, false));
                     validate();
                     getWorld().setTileEntity(getPos(), this);
+                    finishWork();
                 }
             } else {
                 if (now != NONE) {
@@ -492,6 +493,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                     getWorld().setBlockState(getPos(), state.withProperty(BlockQuarry.ACTING, true));
                     validate();
                     getWorld().setTileEntity(getPos(), this);
+                    startWork();
                 }
             }
         }

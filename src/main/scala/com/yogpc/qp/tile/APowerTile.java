@@ -51,7 +51,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
      * Instance of {@link buildcraft.api.mj.MjCapabilityHelper}. Null if BC isn't installed.
      */
     private Object helper;//buildcraft capability helper
-    private final EnergyDebug debug = new EnergyDebug(this);
+    protected final EnergyDebug debug = new EnergyDebug(this);
     protected boolean outputEnergyInfo = true;
 
     public APowerTile() {
@@ -67,7 +67,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
         postLoadEvent();
         this.all += this.got;
         if (!getWorld().isRemote && isWorking())
-            debug.tick(got);
+            debug.getAndTick(got);
         this.got = 0;
     }
 
@@ -121,6 +121,14 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
         this.outputEnergyInfo = !this.outputEnergyInfo;
     }
 
+    protected final void startWork() {
+        debug.start();
+    }
+
+    protected final void finishWork() {
+        debug.finish();
+    }
+
     protected abstract boolean isWorking();
 
     @Optional.Method(modid = QuarryPlus.Optionals.IC2_modID)
@@ -158,7 +166,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
      */
     public final double useEnergy(final double min, final double amount, final boolean real) {
         if (Config.content().noEnergy()) {
-            debug.useEnergy(amount, !real);
+            debug.use(amount, !real);
             return amount;
         }
         double res = 0;
@@ -173,7 +181,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
                     this.all -= amount;
             }
         }
-        debug.useEnergy(res, !real);
+        debug.use(res, !real);
         return res;
     }
 

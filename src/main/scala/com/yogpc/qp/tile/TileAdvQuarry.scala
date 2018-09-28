@@ -323,6 +323,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                                 if (z > digRange.maxZ) {
                                     //Finished.
                                     target = digRange.min
+                                    finishWork()
                                     mode set TileAdvQuarry.CHECKLIQUID
                                 } else {
                                     target = new BlockPos(digRange.minX, target.getY, z)
@@ -338,8 +339,10 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 
             } else if (mode is TileAdvQuarry.NOTNEEDBREAK) {
                 if (digRange.defined && !Config.content.noEnergy)
-                    if (getStoredEnergy > getMaxStored * 0.3)
+                    if (getStoredEnergy > getMaxStored * 0.3) {
                         mode set TileAdvQuarry.MAKEFRAME
+                        startWork()
+                    }
             } else if (mode is TileAdvQuarry.CHECKLIQUID) {
                 for (_ <- 0 until 32 * digRange.timeInTick) {
                     if (mode is TileAdvQuarry.CHECKLIQUID) {
@@ -611,6 +614,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
             VersionUtil.sendMessage(player, new TextComponentString("ChunkDestroyer is disabled."), true)
         } else if (mode is TileAdvQuarry.NOTNEEDBREAK) {
             mode set TileAdvQuarry.MAKEFRAME
+            startWork()
         }
     }
 

@@ -75,6 +75,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
                     buildWay()
                     if (toDig.nonEmpty) {
                         finished = false
+                        startWork()
                         val state = getWorld.getBlockState(getPos)
                         if (!state.getValue(ADismCBlock.ACTING)) {
                             changeState(working = true, state)
@@ -178,6 +179,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
         }
         if (nextPosesToCheck.isEmpty) {
             G_reinit()
+            finishWork()
             val state = getWorld.getBlockState(getPos)
             if (state.getValue(ADismCBlock.ACTING)) {
                 changeState(working = false, state)
