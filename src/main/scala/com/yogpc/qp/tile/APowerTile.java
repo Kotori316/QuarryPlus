@@ -164,9 +164,9 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
      *
      * @return the amount of used energy.
      */
-    public final double useEnergy(final double min, final double amount, final boolean real) {
+    public final double useEnergy(final double min, final double amount, final boolean real, EnergyUsage usage) {
         if (Config.content().noEnergy()) {
-            debug.use(amount, !real);
+            debug.use(amount, !real, usage);
             return amount;
         }
         double res = 0;
@@ -181,7 +181,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
                     this.all -= amount;
             }
         }
-        debug.use(res, !real);
+        debug.use(res, !real, usage);
         return res;
     }
 

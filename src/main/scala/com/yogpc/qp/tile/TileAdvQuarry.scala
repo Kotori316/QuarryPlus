@@ -80,15 +80,15 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 
                         if (ench.silktouch && state.getBlock.canSilkHarvest(getWorld, target, state, null)) {
                             val energy = PowerManager.calcEnergyBreak(state.getBlockHardness(getWorld, target), -1, ench.unbreaking)
-                            if (useEnergy(energy, energy, false) == energy) {
-                                useEnergy(energy, energy, true)
+                            if (useEnergy(energy, energy, false, EnergyUsage.ADV_BREAK_BLOCK) == energy) {
+                                useEnergy(energy, energy, true, EnergyUsage.ADV_BREAK_BLOCK)
                                 list.add(ReflectionHelper.invoke(TileBasic.createStackedBlock, state.getBlock, state).asInstanceOf[ItemStack])
                                 getWorld.setBlockToAir(target)
                             }
                         } else {
                             val energy = PowerManager.calcEnergyBreak(state.getBlockHardness(getWorld, target), ench.fortune, ench.unbreaking)
-                            if (useEnergy(energy, energy, false) == energy) {
-                                useEnergy(energy, energy, true)
+                            if (useEnergy(energy, energy, false, EnergyUsage.ADV_BREAK_BLOCK) == energy) {
+                                useEnergy(energy, energy, true, EnergyUsage.ADV_BREAK_BLOCK)
                                 TileBasic.getDrops(getWorld, target, state, state.getBlock, ench.fortune, list)
                                 getWorld.setBlockToAir(target)
                             }
@@ -224,8 +224,8 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                     }
 
                     requireEnergy *= 1.25
-                    if (useEnergy(requireEnergy, requireEnergy, false) == requireEnergy) {
-                        useEnergy(requireEnergy, requireEnergy, true)
+                    if (useEnergy(requireEnergy, requireEnergy, false, EnergyUsage.ADV_BREAK_BLOCK) == requireEnergy) {
+                        useEnergy(requireEnergy, requireEnergy, true, EnergyUsage.ADV_BREAK_BLOCK)
                         val fakePlayer = QuarryFakePlayer.get(getWorld.asInstanceOf[WorldServer])
                         fakePlayer.setHeldItem(EnumHand.MAIN_HAND, getEnchantedPickaxe)
                         val collectFurnaceXP = InvUtils.hasSmelting(fakePlayer.getHeldItemMainhand) && expPump.isDefined

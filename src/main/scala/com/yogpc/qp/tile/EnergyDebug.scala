@@ -3,6 +3,8 @@ package com.yogpc.qp.tile
 import com.google.common.base.Stopwatch
 import com.yogpc.qp.{Config, QuarryPlus}
 
+import scala.collection.mutable
+
 class EnergyDebug(tile: APowerTile) {
 
     private[this] val tilename = tile.getClass.getSimpleName
@@ -18,6 +20,7 @@ class EnergyDebug(tile: APowerTile) {
     private[this] final val mj = 1000000L
     private[this] val stopWatch = Stopwatch.createUnstarted()
     private[this] var startTime = 0l
+    private[this] val usageMap = mutable.Map.empty[EnergyUsage, Long]
 
     def started: Boolean = stopWatch.isRunning
 
@@ -35,7 +38,7 @@ class EnergyDebug(tile: APowerTile) {
         Config.content.debug && tile.isOutputEnergyInfo
     }
 
-    def use(amount: Double, simurate: Boolean): Unit = {
+    def use(amount: Double, simurate: Boolean, usage: EnergyUsage): Unit = {
         if (!outputInfo || simurate) return
         if (!started)
             start()
@@ -49,6 +52,7 @@ class EnergyDebug(tile: APowerTile) {
             uLastTick = tick
         }
         totalUsed += energy
+        usageMap(usage) = usageMap.getOrElse(usage, 0l) + energy
     }
 
     def get(amount: Double): Unit = {
@@ -115,10 +119,16 @@ class EnergyDebug(tile: APowerTile) {
             printinfo()
             val time = getTime - startTime
             QuarryPlus.LOGGER.info(
-                s"$tilename finished its work and took ${stopWatch.toString}. Used ${totalUsed / mj} MJ at ${totalUsed * 10 / time / mj} RF/t"
+                s"$tilename finished its work and took ${stopWatch.toString}, $time ticks. Used ${totalUsed / mj} MJ at ${totalUsed * 10 / time / mj} RF/t"
             )
+            usageMap.foreach { case (usage, amount) => QuarryPlus.LOGGER.info(usage + " used " + amount / mj + "MJ.") }
+            usageMap.clear()
             totalUsed = 0l
             startTime = 0l
         }
+    }
+
+    override def toString: String = {
+        s"Debugger for $tilename. $stopWatch t: $totalUsed"
     }
 }

@@ -93,7 +93,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                 break;
             case MOVEHEAD:
                 final boolean done = S_moveHead();
-                PacketHandler.sendToAround(MoveHead.create(this), getWorld(), getPos());
+                MoveHead.send(this);
                 if (!done)
                     break;
                 setNow(BREAKBLOCK);
@@ -329,8 +329,8 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                     if (tileEntity instanceof TileExpPump) {
                         TileExpPump t = (TileExpPump) tileEntity;
                         double min = t.getEnergyUse(xpOrb.xpValue);
-                        if (useEnergy(min, min, false) == min) {
-                            useEnergy(min, min, true);
+                        if (useEnergy(min, min, false, EnergyUsage.PUMP_EXP) == min) {
+                            useEnergy(min, min, true, EnergyUsage.PUMP_EXP);
                             t.addXp(xpOrb.xpValue);
                             QuarryPlus.proxy.removeEntity(xpOrb);
                         }

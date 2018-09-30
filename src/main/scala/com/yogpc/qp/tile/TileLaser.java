@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 
 import buildcraft.api.mj.ILaserTarget;
 import buildcraft.api.mj.MjAPI;
+import com.yogpc.qp.Config;
 import com.yogpc.qp.PowerManager;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.block.BlockLaser;
@@ -113,7 +114,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
     }
 
     private void updateLaser() {
-        if (!targets.isEmpty()) {
+        if (!targets.isEmpty() && !Config.content().disableRendering()) {
             Vec3d[] vec3ds = new Vec3d[targets.size()];
             for (int i = 0; i < targets.size(); i++) {
                 BlockPos targetPos = targets.get(i);

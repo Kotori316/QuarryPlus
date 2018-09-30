@@ -224,7 +224,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
                 if (isLiquid && !isSource) {
                     getWorld.setBlockToAir(target)
                     nextPos()
-                } else if (useEnergy(energy, energy, true) == energy) {
+                } else if (useEnergy(energy, energy, true, EnergyUsage.ADV_PUMP_FLUID) == energy) {
                     val handler = FluidUtil.getFluidHandler(getWorld, target, EnumFacing.UP)
                     if (nonNull(handler) && option.get.forall(pos => TilePump.isLiquid(getWorld.getBlockState(pos)))) {
                         val drained = handler.drain(Fluid.BUCKET_VOLUME, false)

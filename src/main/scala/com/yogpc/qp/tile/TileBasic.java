@@ -139,8 +139,8 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
             if (entity instanceof TileExpPump) {
                 TileExpPump t = (TileExpPump) entity;
                 double expEnergy = t.getEnergyUse(bi.i);
-                if (useEnergy(expEnergy, expEnergy, false) == expEnergy) {
-                    useEnergy(expEnergy, expEnergy, true);
+                if (useEnergy(expEnergy, expEnergy, false, EnergyUsage.PUMP_EXP) == expEnergy) {
+                    useEnergy(expEnergy, expEnergy, true, EnergyUsage.PUMP_EXP);
                     t.addXp(bi.i);
                 }
             }

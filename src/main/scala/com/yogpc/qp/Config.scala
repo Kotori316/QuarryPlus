@@ -116,7 +116,7 @@ object Config {
         val enableChunkDestroyerFluidHander = configuration.getBoolean(EnableChunkDestroyerFluidHander_key, Configuration.CATEGORY_GENERAL, true, EnableChunkDestroyerFluidHander_key)
         val disableFrameChainBreak = configuration.getBoolean(DisableFrameChainBreak_key, Configuration.CATEGORY_GENERAL, false, DisableFrameChainBreak_key)
         val pumpAutoStart = configuration.getBoolean(PumpAutoStart_Key, Configuration.CATEGORY_GENERAL, false, PumpAutoStart_Key)
-        val DisableRendering = configuration.get(Configuration.CATEGORY_CLIENT, DisableRendering_Key, false, "Disable rendering of quarries.")
+        val disableRendering = configuration.get(Configuration.CATEGORY_CLIENT, DisableRendering_Key, false, "Disable rendering of quarries.")
           .setRequiresMcRestart(true).setShowInGui(false).getBoolean
         val workbenchMaxReceive = configuration.getInt(WorkbenchplusReceive, Configuration.CATEGORY_GENERAL, 250, 1, Int.MaxValue,
             "Amount of enegy WorkbenchPlus can accept in a tick. Unit is MJ and 1 MJ = 10 RF = 10 FE.")

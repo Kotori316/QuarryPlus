@@ -83,7 +83,7 @@ public class ProxyClient extends ProxyCommon {
 
     @Override
     public void registerTextures() {
-        if (!Config.content().DisableRendering()) {
+        if (!Config.content().disableRendering()) {
             ClientRegistry.bindTileEntitySpecialRenderer(TileQuarry.class, RenderQuarry.instance());
             ClientRegistry.bindTileEntitySpecialRenderer(TileMarker.class, RenderMarker.instance());
             if (!Config.content().disableMapJ().get(TileAdvQuarry.SYMBOL()))
