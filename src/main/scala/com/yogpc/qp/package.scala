@@ -48,23 +48,21 @@ package object qp {
     }
 
     implicit class NBTList2Iterator(val list: NBTTagList) extends AnyVal {
-        def tagIterator: Iterator[NBTTagCompound] = new NBTListIterator(list)
-    }
+        def tagIterator: Iterator[NBTTagCompound] = new AbstractIterator[NBTTagCompound] {
+            var count = 0
 
-    private class NBTListIterator(val list: NBTTagList) extends AbstractIterator[NBTTagCompound] {
-        var count = 0
+            override def hasNext: Boolean = count < list.tagCount()
 
-        override def hasNext: Boolean = count < list.tagCount()
+            override def next(): NBTTagCompound = {
+                val v = list.getCompoundTagAt(count)
+                count += 1
+                v
+            }
 
-        override def next(): NBTTagCompound = {
-            val v = list.getCompoundTagAt(count)
-            count += 1
-            v
+            override def size: Int = list.tagCount()
+
+            override def hasDefiniteSize: Boolean = true
         }
-
-        override def size: Int = list.tagCount()
-
-        override def isEmpty: Boolean = list.hasNoTags
     }
 
     implicit class ItemStackRemoveEnch(val stack: ItemStack) {

@@ -83,7 +83,7 @@ import static com.yogpc.qp.QuarryPlusI.*;
     guiFactory = QuarryPlus.Optionals.configFactory,
     updateJSON = QuarryPlus.Optionals.updateJson,
     certificateFingerprint = "@FINGERPRINT@",
-    dependencies = "required:forge@[14.23.4.2703,);"
+    dependencies = "required:forge@[14.23.4.2705,);"
 )
 public class QuarryPlus {
 
