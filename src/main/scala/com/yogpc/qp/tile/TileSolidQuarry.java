@@ -133,6 +133,11 @@ public class TileSolidQuarry extends TileQuarry {
     }
 
     @Override
+    protected boolean isWorking() {
+        return super.isWorking() && (fuelCount > 0 || VersionUtil.nonEmpty(fuel));
+    }
+
+    @Override
     public List<ITextComponent> getDebugmessages() {
         List<ITextComponent> list = super.getDebugmessages();
         // I know super.getDebugmessages returns ArrayList.

@@ -244,4 +244,15 @@ public class PowerManager {
         double pw = power * Math.pow(Laser_CF, F) * (S ? Laser_CS : 1) / (U * Laser_CU + 1);
         pp.useEnergy(pw, pw, !simulate, EnergyUsage.LASER);
     }
+
+    /**
+     * @return true when Adv Quarry can continue to search blocks.
+     */
+    public static boolean useEnergyAdvSearch(final APowerTile pp, int unbreakingLevel, int targetY) {
+        double pw = MoveHead_BP / (MoveHead_CU * unbreakingLevel + 1) * targetY;
+        if (pp.useEnergy(pw, pw, false, EnergyUsage.ADV_CHECK_BLOCK) == pw) {
+            pp.useEnergy(pw, pw, true, EnergyUsage.ADV_CHECK_BLOCK);
+            return true;
+        } else return false;
+    }
 }

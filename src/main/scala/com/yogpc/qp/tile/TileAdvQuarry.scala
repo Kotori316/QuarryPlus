@@ -317,20 +317,22 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                         var i = 0
                         do {
                             i += 1
-                            val x = target.getX + 1
-                            if (x > digRange.maxX) {
-                                val z = target.getZ + 1
-                                if (z > digRange.maxZ) {
-                                    //Finished.
-                                    target = digRange.min
-                                    finishWork()
-                                    mode set TileAdvQuarry.CHECKLIQUID
+                            if (PowerManager.useEnergyAdvSearch(this, ench.unbreaking, target.getY)) {
+                                val x = target.getX + 1
+                                if (x > digRange.maxX) {
+                                    val z = target.getZ + 1
+                                    if (z > digRange.maxZ) {
+                                        //Finished.
+                                        target = digRange.min
+                                        finishWork()
+                                        mode set TileAdvQuarry.CHECKLIQUID
+                                    } else {
+                                        target = new BlockPos(digRange.minX, target.getY, z)
+                                    }
                                 } else {
-                                    target = new BlockPos(digRange.minX, target.getY, z)
+                                    target = new BlockPos(x, target.getY, target.getZ)
                                 }
-                            } else {
-                                target = new BlockPos(x, target.getY, target.getZ)
-                            }
+                            } else i = 33 //Finish searching.
                         } while (i < 32 && {
                             val p = new MutableBlockPos(target)
                             Range.inclusive(1, target.getY).forall { i => p.setY(i); getWorld.isAirBlock(p) }
