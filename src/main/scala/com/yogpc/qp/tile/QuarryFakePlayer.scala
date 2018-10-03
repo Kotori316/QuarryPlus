@@ -7,6 +7,7 @@ import net.minecraft.entity.IMerchant
 import net.minecraft.entity.passive.AbstractHorse
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
+import net.minecraft.stats.Achievement
 import net.minecraft.tileentity.{TileEntityCommandBlock, TileEntitySign}
 import net.minecraft.util.EnumHand
 import net.minecraft.world.{IInteractionObject, WorldServer}
@@ -33,6 +34,8 @@ class QuarryFakePlayer private(worldServer: WorldServer) extends FakePlayer(worl
     override def playEquipSound(stack: ItemStack): Unit = ()
 
     override def isSilent: Boolean = true
+
+    override def hasAchievement(achievementIn: Achievement): Boolean = true
 }
 
 object QuarryFakePlayer {
@@ -41,11 +44,7 @@ object QuarryFakePlayer {
     MinecraftForge.EVENT_BUS.register(this)
 
     def get(server: WorldServer): QuarryFakePlayer = {
-        players.getOrElse(profile, {
-            val newPlayer = new QuarryFakePlayer(server)
-            players = players updated(profile, newPlayer)
-            newPlayer
-        })
+        players.getOrElse(profile, new QuarryFakePlayer(server).tap(p => players = players updated(profile, p)))
     }
 
     @SubscribeEvent

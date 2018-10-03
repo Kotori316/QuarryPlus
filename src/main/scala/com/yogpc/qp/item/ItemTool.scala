@@ -49,7 +49,7 @@ class ItemTool extends Item with IEnchantableItem {
         val stack = player.getHeldItem(hand)
         if (stack.getItemDamage == meta_listeditor) {
             val nbttl = stack.getEnchantmentTagList
-            val list = Option(nbttl).toList.flatMap(_.tagIterator.map(_.getShort("id")))
+            val list = Some(nbttl).toList.flatMap(_.tagIterator.map(_.getShort("id")))
             val s = list.contains(IEnchantableTile.SilktouchID)
             val f = list.contains(IEnchantableTile.FortuneID)
             var stackTag: NBTTagCompound = stack.getTagCompound

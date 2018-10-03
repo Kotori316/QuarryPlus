@@ -1,42 +1,39 @@
 package com.yogpc.qp.container;
 
-import com.yogpc.qp.tile.TileBookMover;
+import com.yogpc.qp.tile.TileSolidQuarry;
 import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
-public class ContainerBookMover extends Container {
+public class ContainerSolidQuarry extends Container {
+    private final TileSolidQuarry quarry;
 
-    private final TileBookMover mover;
+    public ContainerSolidQuarry(TileSolidQuarry quarry, EntityPlayer player) {
+        this.quarry = quarry;
 
-    public ContainerBookMover(TileBookMover mover, EntityPlayer player) {
-        this.mover = mover;
+        addSlotToContainer(new SlotTile(quarry, 0, 44, 27));
 
-        addSlotToContainer(new SlotTile(mover, 0, 13, 35));
-        addSlotToContainer(new SlotTile(mover, 1, 55, 35));
-        addSlotToContainer(new SlotTile(mover, 2, 116, 35));
-
-        for (int i = 0; i < 3; ++i) {
-            for (int j = 0; j < 9; ++j) {
-                this.addSlotToContainer(new Slot(player.inventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
+        int oneBox = 18;
+        for (int h = 0; h < 3; h++) {
+            for (int v = 0; v < 9; v++) {
+                this.addSlotToContainer(new Slot(player.inventory, v + h * 9 + 9, 8 + v * oneBox, 84 + h * oneBox));
             }
         }
-
-        for (int k = 0; k < 9; ++k) {
-            this.addSlotToContainer(new Slot(player.inventory, k, 8 + k * 18, 142));
+        for (int vertical = 0; vertical < 9; vertical++) {
+            this.addSlotToContainer(new Slot(player.inventory, vertical, 8 + vertical * oneBox, 142));
         }
     }
 
     @Override
     public boolean canInteractWith(EntityPlayer playerIn) {
-        return mover.isUsableByPlayer(playerIn);
+        return quarry.isUsableByPlayer(playerIn);
     }
 
     @Override
     public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
-        int allSlots = 3;
+        int allSlots = 1;
         ItemStack src = VersionUtil.empty();
         final Slot slot = this.inventorySlots.get(index);
         if (slot != null && slot.getHasStack()) {
@@ -47,7 +44,7 @@ public class ContainerBookMover extends Container {
                     return VersionUtil.empty();
             } else {
                 for (int i = 0; i < allSlots; i++) {
-                    if (mover.isItemValidForSlot(i, remain)) {
+                    if (quarry.isItemValidForSlot(i, remain)) {
                         if (!mergeItemStack(remain, i, i + 1, false)) {
                             return VersionUtil.empty();
                         }

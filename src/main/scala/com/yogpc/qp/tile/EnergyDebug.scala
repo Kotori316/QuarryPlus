@@ -1,74 +1,141 @@
 package com.yogpc.qp.tile
 
+import com.google.common.base.Stopwatch
 import com.yogpc.qp.{Config, QuarryPlus}
 
-import scala.collection.mutable.ListBuffer
+import scala.collection.mutable
 
 class EnergyDebug(tile: APowerTile) {
 
-    private[this] var count = 0
-    private[this] var lastTick = 0l
-    private[this] var usedTicks = 0
-    private[this] var mMaxUsed = 0
-    private[this] val getBuilder = new ListBuffer[Double]
-    private[this] val useBuilder = new ListBuffer[Double]
     private[this] val tilename = tile.getClass.getSimpleName
+    private[this] val got = Array.ofDim[Long](100)
+    private[this] val used = Array.ofDim[Long](100)
+    private[this] var gotCount = 0
+    private[this] var usedCount = 0
+    private[this] var totalUsed = 0l
 
-    def tick(got: Double): Unit = {
-        if (Config.content.debug) {
-            count += 1
-            if (getBuilder.size < 100) {
-                getBuilder += got
-            } else {
-                // keep size 100
-                getBuilder.remove(0)
-                getBuilder += got
+    private[this] var uLastTick = 0l
+    private[this] var gLastTick = 0l
+    private[this] var lastOutput = 0l
+    private[this] final val mj = 1000000L
+    private[this] val stopWatch = Stopwatch.createUnstarted()
+    private[this] var startTime = 0l
+    private[this] val usageMap = mutable.Map.empty[EnergyUsage, Long]
+
+    def started: Boolean = stopWatch.isRunning
+
+    def start(): Unit = {
+        if (started) return
+        stopWatch.start()
+        startTime = getTime
+    }
+
+    private def getTime: Long = {
+        tile.getWorld.getTotalWorldTime
+    }
+
+    private def outputInfo: Boolean = {
+        Config.content.debug && tile.isOutputEnergyInfo
+    }
+
+    def use(amount: Double, simurate: Boolean, usage: EnergyUsage): Unit = {
+        if (!outputInfo || simurate) return
+        if (!started)
+            start()
+        val tick = getTime
+        val energy = Math.round(amount * mj)
+        if (tick == uLastTick) {
+            used(usedCount - 1) += energy
+        } else {
+            usedCount += 1
+            if (usedCount > 100) {
+                print(usedCount)
+                return
             }
+            used(usedCount - 1) = energy
+            uLastTick = tick
+        }
+        totalUsed += energy
+        usageMap(usage) = usageMap.getOrElse(usage, 0l) + energy
+    }
 
-            if (count >= 100) {
-                count = 0
-                if (Config.content.debug && tile.isOutputEnergyInfo) {
-                    val allGot = getBuilder
-                    val allUsed = useBuilder
-                    val gotSum = allGot.sum
-                    if (allUsed.nonEmpty && usedTicks != 0) {
-                        val usedSum = allUsed.sum
-                        QuarryPlus.LOGGER.info(
-                            s"$tilename used $usedSum MJ in $usedTicks ticks (${usedSum / usedTicks * 10} RF/t), got $gotSum in 100 ticks (${gotSum / 100 * 10} RF/t)"
-                        )
-                    } else {
-                        useBuilder.clear()
-                        QuarryPlus.LOGGER.info(
-                            s"$tilename used 0 MJ, got $gotSum in 100 ticks (${gotSum / 100} MJ/t)"
-                        )
-                    }
-                }
-                usedTicks = 0
+    def get(amount: Double): Unit = {
+        if (!outputInfo) return
+        val tick = getTime
+        val energy = Math.round(amount * mj)
+        if (tick == gLastTick) {
+            got(gotCount - 1) += energy
+        } else {
+            gotCount += 1
+            if (gotCount > 100) {
+                print(gotCount)
+                return
+            }
+            got(gotCount - 1) = energy
+            gLastTick = tick
+        }
+    }
+
+    def tick(): Unit = {
+        if (getTime - lastOutput >= 100) {
+            if (lastOutput == 0l) {
+                usedCount = 0
+                gotCount = 0
+                lastOutput = getTime
+            } else if (outputInfo) {
+                printinfo()
             }
         }
     }
 
-    def useEnergy(amount: Double, simulate: Boolean): Unit = {
-        if (Config.content.debug && !simulate) {
+    private def printinfo(): Unit = {
+        val allused = used.take(usedCount).sum / mj
+        val allgot = got.take(gotCount).sum / mj
+        if (allused == 0 || usedCount == 0) {
+            if (gotCount == 0)
+                QuarryPlus.LOGGER.info(s"$tilename used 0 MJ, got 0 MJ")
+            else
+                QuarryPlus.LOGGER.info(
+                    s"$tilename used 0 MJ, got $allgot in 100 ticks (${allgot * 10 / gotCount} RF/t)"
+                )
+        } else {
+            if (gotCount == 0)
+                QuarryPlus.LOGGER.info(s"$tilename used $allused MJ in $usedCount ticks (${allused * 10 / usedCount} RF/t), got 0 MJ")
+            else
+                QuarryPlus.LOGGER.info(
+                    s"$tilename used $allused MJ in $usedCount ticks (${allused * 10 / usedCount} RF/t), got $allgot in 100 ticks (${allgot * 10 / gotCount} RF/t)"
+                )
+        }
+        usedCount = 0
+        gotCount = 0
+        lastOutput = getTime
+    }
 
-            if (mMaxUsed < amount) {
-                mMaxUsed = amount.toInt
-            }
-            if (lastTick != tile.getWorld.getTotalWorldTime) {
-                lastTick = tile.getWorld.getTotalWorldTime
-                usedTicks += 1
-                if (useBuilder.size < 100) {
-                    useBuilder += amount
-                } else {
-                    // keep size 100
-                    useBuilder.remove(0)
-                    useBuilder += amount
-                }
-            } else {
-                val old = useBuilder.remove(useBuilder.size - 1)
-                useBuilder += amount + old
-            }
+    def getAndTick(amount: Double): Unit = {
+        get(amount)
+        tick()
+    }
+
+    def finish(): Unit = {
+        if (!started) return
+        stopWatch.stop()
+        if (outputInfo) {
+            printinfo()
+            val time = getTime - startTime
+            QuarryPlus.LOGGER.info(
+                s"$tilename finished its work and took ${stopWatch.toString}, $time ticks. Used ${totalUsed / mj} MJ at ${totalUsed * 10 / time / mj} RF/t"
+            )
+            usageMap.foreach { case (usage, amount) => QuarryPlus.LOGGER.info(usage + " used " + amount / mj + "MJ.") }
+            usageMap.clear()
+            totalUsed = 0l
+            startTime = 0l
+            uLastTick = 0l
+            gLastTick = 0l
+            lastOutput = 0l
         }
     }
 
+    override def toString: String = {
+        s"Debugger for $tilename. $stopWatch t: $totalUsed"
+    }
 }

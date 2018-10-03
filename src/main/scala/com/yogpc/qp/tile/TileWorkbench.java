@@ -56,7 +56,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
         if (!getWorld().isRemote) {
             if (isWorking()) {
                 if (currentRecipe.energy() <= getStoredEnergy() || Config.content().noEnergy()) {
-                    useEnergy(currentRecipe.energy(), currentRecipe.energy(), true);
+                    useEnergy(currentRecipe.energy(), currentRecipe.energy(), true, EnergyUsage.WORKBENCH);
                     ItemStack stack = currentRecipe.output().toStack(1);
                     ItemStack inserted = InvUtils.injectToNearTile(getWorld(), getPos(), stack);
                     if (VersionUtil.nonEmpty(inserted)) {
@@ -175,6 +175,8 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
         }
         if (getRecipeIndex() == -1) {
             setCurrentRecipeIndex(-1);
+        } else {
+            startWork();
         }
     }
 

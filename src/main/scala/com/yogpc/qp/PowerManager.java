@@ -14,6 +14,7 @@
 package com.yogpc.qp;
 
 import com.yogpc.qp.tile.APowerTile;
+import com.yogpc.qp.tile.EnergyUsage;
 import com.yogpc.qp.tile.TileMiningWell;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
@@ -163,9 +164,9 @@ public class PowerManager {
         if (enchantMode == -2)
             return true;
         final double pw = calcEnergyBreak(pp, hardness, enchantMode, unbreaking);
-        if (pp.useEnergy(pw, pw, false) != pw)
+        if (pp.useEnergy(pw, pw, false, EnergyUsage.BREAK_BLOCK) != pw)
             return false;
-        pp.useEnergy(pw, pw, true);
+        pp.useEnergy(pw, pw, true, EnergyUsage.BREAK_BLOCK);
         return true;
     }
 
@@ -197,9 +198,9 @@ public class PowerManager {
 
     public static boolean useEnergyPump(final APowerTile pp, final byte U, final long liquidsCount, final long framesToBuild) {
         final double pw = calcEnergyPumpDrain(U, liquidsCount, framesToBuild);
-        if (pp.useEnergy(pw, pw, false) != pw)
+        if (pp.useEnergy(pw, pw, false, EnergyUsage.PUMP_FLUID) != pw)
             return false;
-        pp.useEnergy(pw, pw, true);
+        pp.useEnergy(pw, pw, true, EnergyUsage.PUMP_FLUID);
         return true;
     }
 
@@ -207,33 +208,33 @@ public class PowerManager {
         return PumpDrain_BP * liquids / (unbreaking * PumpDrain_CU + 1) + PumpFrame_BP * frames / (unbreaking * PumpFrame_CU + 1);
     }
 
-    private static boolean useEnergy(final APowerTile pp, final double BP, final int U, final double CU, final int E, final double CE) {
+    private static boolean useEnergy(final APowerTile pp, final double BP, final int U, final double CU, final int E, final double CE, EnergyUsage usage) {
         final double pw = BP / Math.pow(CE, E) / (U * CU + 1);
-        if (pp.useEnergy(pw, pw, false) != pw)
+        if (pp.useEnergy(pw, pw, false, usage) != pw)
             return false;
-        pp.useEnergy(pw, pw, true);
+        pp.useEnergy(pw, pw, true, usage);
         return true;
     }
 
     public static boolean useEnergyFrameBuild(final APowerTile pp, final int U) {
-        return useEnergy(pp, FrameBuild_BP, U, FrameBuild_CU, 0, 1);
+        return useEnergy(pp, FrameBuild_BP, U, FrameBuild_CU, 0, 1, EnergyUsage.FRAME_BUILD);
     }
 
     public static boolean useEnergyRefinery(final APowerTile pp, final double BP, final byte U, final byte E) {
-        return useEnergy(pp, BP, U, Refinery_CU, E, Refinery_CE);
+        return useEnergy(pp, BP, U, Refinery_CU, E, Refinery_CE, EnergyUsage.REFINERY);
     }
 
     public static double useEnergyQuarryHead(final APowerTile pp, final double dist, final byte U) {
-        double pw = Math.min(2 + pp.getStoredEnergy() / 500, (dist - 0.1) * MoveHead_BP / (U * MoveHead_CU + 1));
-        pw = pp.useEnergy(0, pw, true);
-        return pw * (U * MoveHead_CU + 1) / MoveHead_BP + 0.1;
+        double pw = Math.min(2 + pp.getStoredEnergy() / 500, (dist / 2 - 0.05) * MoveHead_BP / (U * MoveHead_CU + 1));
+        pw = pp.useEnergy(0, pw, true, EnergyUsage.MOVE_HEAD);
+        return pw * (U * MoveHead_CU + 1) / MoveHead_BP + 0.05;
     }
 
     public static double simurateEnergyLaser(final APowerTile pp, final byte U, final byte F, final boolean S, final byte E) {
         double pw = Laser_BP * Math.pow(Laser_CF, F) * Math.pow(Laser_CE, E) / (U * Laser_CU + 1);
         if (S)
             pw *= Laser_CS;
-        pw = pp.useEnergy(0, pw, false);
+        pw = pp.useEnergy(0, pw, false, EnergyUsage.LASER);
         if (S)
             pw = pw / Laser_CS;
         return pw * (U * Laser_CU + 1) / Math.pow(Laser_CF, F);
@@ -241,6 +242,17 @@ public class PowerManager {
 
     public static void useEnergyLaser(final APowerTile pp, final double power, final byte U, final byte F, final boolean S, boolean simulate) {
         double pw = power * Math.pow(Laser_CF, F) * (S ? Laser_CS : 1) / (U * Laser_CU + 1);
-        pp.useEnergy(pw, pw, !simulate);
+        pp.useEnergy(pw, pw, !simulate, EnergyUsage.LASER);
+    }
+
+    /**
+     * @return true when Adv Quarry can continue to search blocks.
+     */
+    public static boolean useEnergyAdvSearch(final APowerTile pp, int unbreakingLevel, int targetY) {
+        double pw = MoveHead_BP / (MoveHead_CU * unbreakingLevel + 1) * targetY;
+        if (pp.useEnergy(pw, pw, false, EnergyUsage.ADV_CHECK_BLOCK) == pw) {
+            pp.useEnergy(pw, pw, true, EnergyUsage.ADV_CHECK_BLOCK);
+            return true;
+        } else return false;
     }
 }

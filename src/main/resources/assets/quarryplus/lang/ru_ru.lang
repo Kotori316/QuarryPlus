@@ -18,6 +18,7 @@ tile.spawnercontroller.name=Спавнер контроллер
 tile.standalonepump.name=Advanced Pump
 tile.workbenchplus.name=Улучшенный верстак
 tile.enchantmoverfrombook.name=Book EnchantMover
+tile.solidquarry.name=Solid Fuel Quarry
 item.dimensionmirror.name=Зеркало измерения
 item.electric_armor.name=Электрическая улучшенная броня
 item.liquidselector.name=Жидкостный селектор

@@ -17,7 +17,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
+import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
 import com.yogpc.qp.Config;
@@ -35,6 +35,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 
+import static jp.t2v.lab.syntax.MapStreamSyntax.byEntry;
 import static jp.t2v.lab.syntax.MapStreamSyntax.byKey;
 import static jp.t2v.lab.syntax.MapStreamSyntax.entry;
 import static jp.t2v.lab.syntax.MapStreamSyntax.keys;
@@ -46,7 +47,14 @@ public interface IEnchantableTile {
     int SilktouchID = Enchantment.getEnchantmentID(Enchantments.SILK_TOUCH);
     int EfficiencyID = Enchantment.getEnchantmentID(Enchantments.EFFICIENCY);
     int UnbreakingID = Enchantment.getEnchantmentID(Enchantments.UNBREAKING);
-    Predicate<Integer> isValidEnch = id -> id == FortuneID || id == SilktouchID || id == EfficiencyID || id == UnbreakingID;
+    BiPredicate<Integer, Integer> isValidEnch = (id, level) -> {
+        if (id == FortuneID || id == UnbreakingID)
+            return level <= 3;
+        else if (id == EfficiencyID)
+            return level <= 5;
+        else
+            return id == SilktouchID;
+    };
 
     /**
      * Called after enchantment setting.
@@ -72,7 +80,7 @@ public interface IEnchantableTile {
     default ItemStack getEnchantedPickaxe() {
         ItemStack stack = new ItemStack(Items.DIAMOND_PICKAXE);
         getEnchantments().entrySet().stream()
-            .filter(byKey(Config.content().disableMapJ().get(BlockBookMover.SYMBOL) ? isValidEnch : t -> true))
+            .filter(byEntry(Config.content().disableMapJ().get(BlockBookMover.SYMBOL) ? isValidEnch : (k, v) -> true))
             .map(keys(Enchantment::getEnchantmentByID))
             .filter(byKey(APacketTile.nonNull))
             .forEach(entry(stack::addEnchantment));

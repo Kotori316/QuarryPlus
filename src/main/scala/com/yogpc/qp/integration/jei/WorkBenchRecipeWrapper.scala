@@ -5,6 +5,7 @@ import java.util.{Collections, ArrayList => AList, List => JList}
 import com.yogpc.qp.tile.WorkbenchRecipes
 import mezz.jei.api.ingredients.IIngredients
 import mezz.jei.api.recipe.BlankRecipeWrapper
+import net.minecraft.client.Minecraft
 import net.minecraft.item.ItemStack
 
 import scala.collection.JavaConverters._
@@ -19,6 +20,11 @@ class WorkBenchRecipeWrapper(recipe: WorkbenchRecipes) extends BlankRecipeWrappe
 
         ingredients.setInputLists(classOf[ItemStack], inputs)
         ingredients.setOutputs(classOf[ItemStack], outputs)
+    }
+
+    override def drawInfo(minecraft: Minecraft, recipeWidth: Int, recipeHeight: Int, mouseX: Int, mouseY: Int): Unit = {
+        import WorkBenchRecipeCategory._
+        minecraft.fontRendererObj.drawString(getEnergyRequired.toString + "MJ", 40 - xOff, 74 - yOff, 0x404040)
     }
 
     val getEnergyRequired: Double = recipe.energy

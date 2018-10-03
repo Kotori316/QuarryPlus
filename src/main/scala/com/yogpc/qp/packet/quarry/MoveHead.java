@@ -1,9 +1,10 @@
 package com.yogpc.qp.packet.quarry;
 
+import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
+import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.tile.TileQuarry;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -32,6 +33,12 @@ public class MoveHead implements IMessage {
         return message;
     }
 
+    public static void send(TileQuarry quarry) {
+        if (!Config.content().disableRendering()) {
+            PacketHandler.sendToAround(create(quarry), quarry.getWorld(), quarry.getPos());
+        }
+    }
+
     @Override
     public void fromBytes(PacketBuffer buffer) {
         pos = buffer.readBlockPos();
@@ -55,11 +62,9 @@ public class MoveHead implements IMessage {
             TileEntity entity = world.getTileEntity(pos);
             if (entity instanceof TileQuarry) {
                 TileQuarry quarry = (TileQuarry) entity;
-                Minecraft.getMinecraft().addScheduledTask(() -> {
-                    quarry.headPosX = headPosX;
-                    quarry.headPosY = headPosY;
-                    quarry.headPosZ = headPosZ;
-                });
+                quarry.headPosX = headPosX;
+                quarry.headPosY = headPosY;
+                quarry.headPosZ = headPosZ;
             }
         }
         return null;
