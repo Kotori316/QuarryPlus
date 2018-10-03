@@ -35,11 +35,14 @@ object RenderLaser extends TileEntitySpecialRenderer[TileLaser] {
         if (te.getAvg > 0.1 && te.lasers != null) {
             val pos = te.getPos
             buffer.setTranslation(x - pos.getX, y - pos.getY, z - pos.getZ)
-            for (vector <- te.lasers) {
+            var i = 0
+            while (i < te.lasers.length) {
+                val vector = te.lasers(i)
                 val side = te.getWorld.getBlockState(pos).getValue(ADismCBlock.FACING)
                 val index = if (te.getAvg <= 1.5) 0 else if (te.getAvg <= 2.5) 1 else if (te.getAvg <= 3.5) 2 else 3
                 Box.apply(pos.getX + 0.5 + side.offsetX(d4), pos.getY + 0.5 + side.offsetY(d4), pos.getZ + 0.5 + side.offsetZ(d4),
                     vector.xCoord, vector.yCoord, vector.zCoord, d, d, d, firstSide = false, endSide = false).render(buffer, textureArray(index))
+                i += 1
             }
         }
 
@@ -67,12 +70,15 @@ object RenderLaser extends TileEntitySpecialRenderer[TileLaser] {
 
                 vertexBuffer.setTranslation(x - te.getPos.getX, y - te.getPos.getY, z - te.getPos.getZ)
 
-                for (vector <- te.lasers) {
+                var c = 0
+                while (c < te.lasers.length) {
+                    val vector = te.lasers(c)
                     val side = te.getWorld.getBlockState(te.getPos).getValue(ADismCBlock.FACING)
                     val offset = new Vec3d(0.5, 0.5, 0.5).add(new Vec3d(side.getDirectionVec).scale(4 / 16D))
                     val index = if (te.getAvg <= 1) 0 else if (te.getAvg <= 2) 1 else if (te.getAvg <= 3) 2 else 3
                     val laser = new LaserData_BC8(BuildCraftLaserManager.POWERS(index), new Vec3d(te.getPos).add(offset), vector, 1 / 16D)
                     LaserRenderer_BC8.renderLaserDynamic(laser, vertexBuffer)
+                    c += 1
                 }
 
                 vertexBuffer.setTranslation(0, 0, 0)
@@ -92,7 +98,9 @@ object RenderLaser extends TileEntitySpecialRenderer[TileLaser] {
             GL11.glEnable(GL11.GL_BLEND)
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
             GL11.glTranslated(x - te.getPos.getX, y - te.getPos.getY, z - te.getPos.getZ)
-            for (l <- te.lasers) {
+            var c = 0
+            while (c < te.lasers.length) {
+                val l = te.lasers(c)
                 if (l != null) {
                     val facing = te.getWorld.getBlockState(te.getPos).getValue(ADismCBlock.FACING)
                     renderLaser(this.rendererDispatcher.renderEngine,
@@ -102,6 +110,7 @@ object RenderLaser extends TileEntitySpecialRenderer[TileLaser] {
                         l.xCoord, l.yCoord, l.zCoord,
                         (te.getWorld.getWorldTime % 40).toInt, te.getTexture)
                 }
+                c += 1
             }
             GL11.glPopAttrib()
             GL11.glPopMatrix()

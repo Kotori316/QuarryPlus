@@ -1,6 +1,6 @@
 /*
  * MapStreamSyntax
- * 
+ *
  * Copyright(c) gakuzzzz
  *
  * This software is released under the MIT License.
@@ -14,6 +14,7 @@ import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -60,6 +61,10 @@ public class MapStreamSyntax {
 
     public static <K, V> Predicate<Map.Entry<K, V>> byValue(final Predicate<? super V> f) {
         return e -> f.test(e.getValue());
+    }
+
+    public static <K, V> Predicate<Map.Entry<K, V>> byEntry(final BiPredicate<? super K, ? super V> f) {
+        return e -> f.test(e.getKey(), e.getValue());
     }
 
     public static <K, V> Collector<Map.Entry<K, V>, ?, Map<K, V>> entryToMap() {

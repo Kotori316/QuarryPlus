@@ -107,7 +107,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
 
     /*
         private void updateLaser() {
-            if (!targets.isEmpty()) {
+            if (!targets.isEmpty() && !Config.content().disableRendering()) {
                 Vec3d[] vec3ds = new Vec3d[targets.size()];
                 for (int i = 0; i < targets.size(); i++) {
                     BlockPos targetPos = targets.get(i);

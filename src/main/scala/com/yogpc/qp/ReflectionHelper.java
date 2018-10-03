@@ -7,7 +7,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+
 public class ReflectionHelper {
+
     public static List<Method> getMethods(final Class<?> t, final Class<? extends Annotation> a) {
         final List<Method> ms = new ArrayList<>();
         Class<?> c = t;
@@ -81,5 +88,32 @@ public class ReflectionHelper {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @SuppressWarnings("deprecation")
+    public static void checkGetDrops(World world, BlockPos pos, IBlockState state, Block block, int fortuneLevel, NonNullList<ItemStack> list) {
+        /*if (block.getClass() == Block.class ||
+            block.getItemDropped(state, world.rand, fortuneLevel) == Items.AIR ||
+            block.quantityDropped(state, fortuneLevel, world.rand) == 0) {
+            QuarryPlus.LOGGER.info("Block " + block.getRegistryName() + " has no drops.");
+            return;
+        }
+        for (Class<?> aClass = block.getClass(); Block.class != aClass; aClass = aClass.getSuperclass()) {
+            try {
+                aClass.getDeclaredMethod("getDrops", IBlockAccess.class, BlockPos.class, IBlockState.class, int.class);
+                list.addAll(block.getDrops(world, pos, state, fortuneLevel));
+                QuarryPlus.LOGGER.info("Block " + block.getRegistryName() + " implements getDrops(IBlockAccess, BlockPos, IBlockState, int).");
+                return;
+            } catch (NoSuchMethodException ignore) {
+            }
+            try {
+                aClass.getDeclaredMethod("getDrops", NonNullList.class, IBlockAccess.class, BlockPos.class, IBlockState.class, int.class);
+                block.getDrops(list, world, pos, state, fortuneLevel);
+                QuarryPlus.LOGGER.info("Block " + block.getRegistryName() + " implements getDrops(NonNullList, IBlockAccess, BlockPos, IBlockState, int).");
+                return;
+            } catch (NoSuchMethodException ignore) {
+            }
+        }
+        QuarryPlus.LOGGER.info("Block " + block.getRegistryName() + " doesn't implement getDrop.");*/
     }
 }

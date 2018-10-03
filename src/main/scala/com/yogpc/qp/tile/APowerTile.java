@@ -48,8 +48,11 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
     private boolean ic2ok = false;
     public boolean bcLoaded;
     public final boolean ic2Loaded;
+    /**
+     * Instance of {@link buildcraft.api.mj.MjCapabilityHelper}. Null if BC isn't installed.
+     */
     private Object helper;//buildcraft capability helper
-    private final EnergyDebug debug = new EnergyDebug(this);
+    protected final EnergyDebug debug = new EnergyDebug(this);
     protected boolean outputEnergyInfo = true;
 
     public APowerTile() {
@@ -65,7 +68,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
         postLoadEvent();
         this.all += this.got;
         if (!getWorld().isRemote && isWorking())
-            debug.tick(got);
+            debug.getAndTick(got);
         this.got = 0;
     }
 
@@ -82,7 +85,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
     }
 
     private void postLoadEvent() {
-        if (!this.ic2ok && !getWorld().isRemote) {
+        if (!getWorld().isRemote && !this.ic2ok) {
             if (ic2Loaded) {
                 try {
                     ic2load();
@@ -117,6 +120,14 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
 
     public final void toggleOutputEnergyInfo() {
         this.outputEnergyInfo = !this.outputEnergyInfo;
+    }
+
+    protected final void startWork() {
+        debug.start();
+    }
+
+    protected final void finishWork() {
+        debug.finish();
     }
 
     protected abstract boolean isWorking();
@@ -154,9 +165,9 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
      *
      * @return the amount of used energy.
      */
-    public final double useEnergy(final double min, final double amount, final boolean real) {
+    public final double useEnergy(final double min, final double amount, final boolean real, EnergyUsage usage) {
         if (Config.content().noEnergy()) {
-            debug.useEnergy(amount, !real);
+            debug.use(amount, !real, usage);
             return amount;
         }
         double res = 0;
@@ -171,7 +182,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
                     this.all -= amount;
             }
         }
-        debug.useEnergy(res, !real);
+        debug.use(res, !real, usage);
         return res;
     }
 

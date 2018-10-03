@@ -17,9 +17,11 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 import cofh.api.tileentity.IInventoryConnection;
@@ -32,7 +34,6 @@ import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.compat.NBTBuilder;
 import com.yogpc.qp.gui.TranslationKeys;
 import com.yogpc.qp.version.VersionUtil;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -48,6 +49,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.MinecraftForge;
@@ -130,16 +132,15 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
             return ((TilePump) te).S_removeLiquids(this, x, y, z);
         }
         BI bi = S_addDroppedItems(dropped, blockState, pos);
-        if (!PowerManager.useEnergyBreak(this, blockState.getBlockHardness(getWorld(), pos),
-            bi.b, this.unbreaking))
+        if (!PowerManager.useEnergyBreak(this, blockState.getBlockHardness(getWorld(), pos), bi.b, this.unbreaking))
             return false;
         if (exppump != null) {
             TileEntity entity = worldObj.getTileEntity(getPos().offset(exppump));
             if (entity instanceof TileExpPump) {
                 TileExpPump t = (TileExpPump) entity;
                 double expEnergy = t.getEnergyUse(bi.i);
-                if (useEnergy(expEnergy, expEnergy, false) == expEnergy) {
-                    useEnergy(expEnergy, expEnergy, true);
+                if (useEnergy(expEnergy, expEnergy, false, EnergyUsage.PUMP_EXP) == expEnergy) {
+                    useEnergy(expEnergy, expEnergy, true, EnergyUsage.PUMP_EXP);
                     t.addXp(bi.i);
                 }
             }
@@ -182,10 +183,12 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(worldObj, pos, state, fakePlayer);
         MinecraftForge.EVENT_BUS.post(event);
         if (!event.isCanceled()) {
+            Set<ItemStack> rawItems;
             if (block.canSilkHarvest(getWorld(), pos, state, fakePlayer) && this.silktouch
                 && silktouchList.contains(new BlockData(block, state)) == this.silktouchInclude) {
                 List<ItemStack> list = new ArrayList<>(1);
                 list.add((ItemStack) ReflectionHelper.invoke(createStackedBlock, block, state));
+                rawItems = new HashSet<>(list);
                 ForgeEventFactory.fireBlockHarvesting(list, worldObj, pos, state, 0, 1.0f, true, fakePlayer);
                 collection.addAll(list);
                 i = -1;
@@ -193,7 +196,10 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
                 boolean b = fortuneList.contains(new BlockData(block, state)) == this.fortuneInclude;
                 byte fortuneLevel = b ? this.fortune : 0;
                 NonNullList<ItemStack> list = NonNullList.create();
-                list.addAll(block.getDrops(getWorld(), pos, state, fortuneLevel));
+                getDrops(getWorld(), pos, state, block, fortuneLevel, list);
+//                if (list.isEmpty() && Config.content().debug())
+//                    ReflectionHelper.checkGetDrops(getWorld(), pos, state, block, fortuneLevel, list);
+                rawItems = new HashSet<>(list);
                 ForgeEventFactory.fireBlockHarvesting(list, worldObj, pos, state, fortuneLevel, 1.0f, false, fakePlayer);
                 collection.addAll(list);
                 i = fortuneLevel;
@@ -201,14 +207,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
             if (exppump != null) {
                 xp += event.getExpToDrop();
                 if (InvUtils.hasSmelting(fakePlayer.getHeldItemMainhand())) {
-                    xp += collection.stream().mapToInt(stack -> {
-                        float furnaceXp = FurnaceRecipes.instance().getSmeltingExperience(stack);
-                        int floor = MathHelper.floor_float(furnaceXp * VersionUtil.getCount(stack));
-                        if (floor > 0)
-                            return floor;
-                        else
-                            return Math.random() < furnaceXp ? 1 : 0;
-                    }).sum();
+                    xp += getSmeltingXp(collection, rawItems);
                 }
             }
         } else {
@@ -216,6 +215,25 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         }
         fakePlayer.setHeldItem(EnumHand.MAIN_HAND, VersionUtil.empty());
         return new BI(i, xp);
+    }
+
+    public static void getDrops(World world, BlockPos pos, IBlockState state, Block block, int fortuneLevel, NonNullList<ItemStack> list) {
+        list.addAll(block.getDrops(world, pos, state, fortuneLevel));
+    }
+
+    /**
+     * @param stacks read only
+     * @param raws   read only
+     * @return The amount of xp by smelting items.
+     */
+    public static int getSmeltingXp(Collection<ItemStack> stacks, Collection<ItemStack> raws) {
+        return stacks.stream().filter(s -> !raws.contains(s)).mapToInt(stack ->
+            floorFloat(FurnaceRecipes.instance().getSmeltingExperience(stack) * VersionUtil.getCount(stack))).sum();
+    }
+
+    static int floorFloat(float value) {
+        int i = MathHelper.floor_float(value);
+        return i + (Math.random() < (value - i) ? 1 : 0);
     }
 
     public static final Method createStackedBlock = ReflectionHelper.getMethod(Block.class,
@@ -303,13 +321,13 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     }
 
     @Override
-    @Nonnull
+    @Nullable
     public ItemStack getStackInSlot(final int i) {
         return i < 0 || i >= this.cacheItems.size() ? com.yogpc.qp.version.VersionUtil.empty() : this.cacheItems.get(i);
     }
 
     @Override
-    @Nonnull
+    @Nullable
     public ItemStack decrStackSize(final int index, final int count) {
         if (index < 0 || index >= this.cacheItems.size())
             return com.yogpc.qp.version.VersionUtil.empty();
@@ -325,13 +343,13 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     }
 
     @Override
-    @Nonnull
+    @Nullable
     public ItemStack removeStackFromSlot(int index) {
         return index < 0 || index >= this.cacheItems.size() ? com.yogpc.qp.version.VersionUtil.empty() : this.cacheItems.remove(index);
     }
 
     @Override
-    public void setInventorySlotContents(final int index, final ItemStack stack) {
+    public void setInventorySlotContents(final int index, final @Nullable ItemStack stack) {
         if (VersionUtil.nonEmpty(stack))
             QuarryPlus.LOGGER.warn("QuarryPlus WARN: call setInventorySlotContents with non null ItemStack.");
         removeStackFromSlot(index);
@@ -359,7 +377,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
 
     @Override
     @Optional.Method(modid = QuarryPlus.Optionals.COFH_tileentity)
-    public ConnectionType canConnectInventory(final EnumFacing arg0) {
+    public final ConnectionType canConnectInventory(final EnumFacing arg0) {
         return ConnectionType.FORCE;
     }
 

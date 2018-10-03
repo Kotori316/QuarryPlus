@@ -23,7 +23,7 @@ public class NonNullList<E> extends AbstractList<E> {
     }
 
     public static <T> NonNullList<T> create() {
-        return new NonNullList<>(new ArrayList<T>(), null, false);
+        return new NonNullList<>(new ArrayList<>(), null, false);
     }
 
     public static <T> NonNullList<T> create(T defaultElement) {

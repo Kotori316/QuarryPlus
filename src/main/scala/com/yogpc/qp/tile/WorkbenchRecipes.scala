@@ -25,7 +25,7 @@ abstract sealed class WorkbenchRecipes(val output: ItemDamage, val energy: Doubl
 
     override val toString = s"WorkbenchRecipes(output=$output, energy=$energy)"
 
-    override val hashCode: Int = output.hashCode()
+    override val hashCode: Int = output.hashCode() ^ energy.##
 
     override def equals(obj: scala.Any): Boolean = {
         super.equals(obj) || {
@@ -85,7 +85,7 @@ object WorkbenchRecipes {
         }.values.toList.sorted.asJava
     }
 
-    def addSeqRecipe(output: ItemDamage, energy: Int, inputs: Seq[Int => ItemStack])(implicit showInJEI: Boolean = true, unit: EnergyUnit): Unit = {
+    def addSeqRecipe(output: ItemDamage, energy: Int, inputs: Seq[Int => ItemStack], showInJEI: Boolean = true, unit: EnergyUnit = UnitMJ): Unit = {
         val newRecipe = new R1(output, unit.multiple * energy, showInJEI, inputs)
         if (energy > 0)
             recipes put(output, newRecipe)
@@ -113,7 +113,7 @@ object WorkbenchRecipes {
         def multiple: Double
     }
 
-    protected implicit val UnitMJ = new EnergyUnit {
+    protected val UnitMJ = new EnergyUnit {
         override val multiple: Double = 1
     }
 
@@ -123,6 +123,8 @@ object WorkbenchRecipes {
 
     protected class F(item: Item, count: Double, damage: Int = 0) extends (Int => ItemStack) {
         override def apply(v1: Int): ItemStack = new ItemStack(item, (count * v1).toInt, damage)
+
+        override def toString(): String = item.getUnlocalizedName + "@" + damage + " x" + count
     }
 
     object F {
@@ -137,7 +139,6 @@ object WorkbenchRecipes {
         import com.yogpc.qp.QuarryPlusI._
         import net.minecraft.init.Blocks._
         import net.minecraft.init.Items._
-        implicit val showInJEI: Boolean = true
         val map = Map(
             BlockController.SYMBOL -> (ItemDamage(blockController), 1000000, Seq(F(NETHER_STAR, 1), F(GOLD_INGOT, 40), F(IRON_INGOT, 40), F(ROTTEN_FLESH, 20), F(ARROW, 20), F(BONE, 20), F(GUNPOWDER, 20), F(GHAST_TEAR, 5), F(MAGMA_CREAM, 10), F(BLAZE_ROD, 14), F(CARROT, 2), F(POTATO, 2))),
             TileMiningWell.SYMBOL -> (ItemDamage(blockMiningWell), 160000, Seq(F(DIAMOND, 1), F(GOLD_INGOT, 3), F(IRON_INGOT, 16), F(REDSTONE, 8), F(ENDER_PEARL, 1), F(NETHER_STAR, 1d / 25d))),

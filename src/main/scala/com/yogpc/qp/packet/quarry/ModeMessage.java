@@ -61,7 +61,7 @@ public class ModeMessage implements IMessage {
                     quarry.xMax = maxPos.getX();
                     quarry.yMax = maxPos.getY();
                     quarry.zMax = maxPos.getZ();
-                    quarry.G_renew_powerConfigure();
+//                    quarry.G_renew_powerConfigure();
 //                IBlockState state = world.getBlockState(pos);
 //                world.notifyBlockUpdate(pos, state, state, 3);
                 });

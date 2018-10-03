@@ -34,7 +34,7 @@ public class MjReciever /*implements IMjReceiver, IMjReadable*/ {
                 temp = Class.forName("buildcraft.api.mj.MjCapabilityHelper").getConstructor(Class.forName("buildcraft.api.mj.IMjConnector"));
             } catch (ReflectiveOperationException e) {
                 if (Config.content().debug()) {
-                    QuarryPlus.LOGGER.error(e);
+                    QuarryPlus.LOGGER.error(MjReciever.class.getSimpleName(), e);
                 }
                 temp = null;
             }
@@ -52,7 +52,7 @@ public class MjReciever /*implements IMjReceiver, IMjReadable*/ {
                 return CONSTRUCTOR.newInstance(new MjReciever(tile));
             } catch (ReflectiveOperationException e) {
                 if (Config.content().debug()) {
-                    QuarryPlus.LOGGER.error(e);
+                    QuarryPlus.LOGGER.error(MjReciever.class.getSimpleName(), e);
                 }
                 return null;
             }

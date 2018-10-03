@@ -2,7 +2,7 @@
 
 tile.breakerplus.name=改良型破壊装置
 tile.chunkdestroyer.name=Chunk Destroyer
-tile.exppump.name=Experience Pump for Quarry
+tile.exppump.name=採掘機用経験値ポンプ
 tile.enchantmover.name=エンチャント移動機
 tile.InfMJSrc.name=無限電源
 tile.laserplus.name=改良型レーザー
@@ -18,6 +18,7 @@ tile.spawnercontroller.name=モンスタースポナー制御装置
 tile.standalonepump.name=自立改良型ポンプ
 tile.workbenchplus.name=改良型作業台
 tile.enchantmoverfrombook.name=エンチャント移動機2
+tile.solidquarry.name=固体燃料採掘機
 item.dimensionmirror.name=世界の鏡
 item.electric_armor.name=改良型電動防具
 item.liquidselector.name=液体選択用具

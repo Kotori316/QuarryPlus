@@ -56,7 +56,7 @@ public class BlockExpPump extends ADismCBlock {
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
         TileEntity entity = worldIn.getTileEntity(pos);
-        if (entity != null) {
+        if (entity instanceof IEnchantableTile) {
             IEnchantableTile.Util.init((IEnchantableTile) entity, stack.getEnchantmentTagList());
         }
     }

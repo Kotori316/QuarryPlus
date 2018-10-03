@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.stream.Stream;
 
+import com.yogpc.qp.Config;
 import com.yogpc.qp.NonNullList;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
@@ -392,7 +393,7 @@ public class TileMarker extends APacketTile implements /*ITileAreaProvider,*/ IT
                 lineBoxes[2] = new AxisAlignedBB(px + 0.5, py + 0.5, pz + b - MAX_SIZE, px + 0.5, py + 0.5, pz + c);
                 lineBoxes[5] = new AxisAlignedBB(px + 0.5, py + 0.5, pz + b, px + 0.5, py + 0.5, pz + c + MAX_SIZE);
             }
-            if (pw.isRemote) {
+            if (pw.isRemote && !Config.content().disableRendering()) {
                 boxes = Arrays.stream(lineBoxes).filter(nonNull)
                     .map(aabb -> Box.apply(aabb, 1d / 8d, 1d / 8d, 1d / 8d, false, false))
                     .toArray(Box[]::new);

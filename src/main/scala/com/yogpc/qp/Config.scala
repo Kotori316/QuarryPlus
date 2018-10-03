@@ -60,7 +60,8 @@ object Config {
         'ExpPump,
         'MarkerPlus,
         'QuarryPlus,
-        'WorkbenchPlus)
+        'WorkbenchPlus,
+        'SolidFuleQuarry)
     private val DisableBC = Set(
         'LaserPlus,
         'RefineryPlus
@@ -101,10 +102,8 @@ object Config {
         val disableMapJ = enableMap.map { case (s, b) => (s, Boolean.box(!b)) }.asJava
         val spawnerBlacklist = configuration.get(Configuration.CATEGORY_GENERAL, SpawnerControllerEntityBlackList_key, Array("EnderDragon", "WitherBoss"))
           .getStringList /*.map(new ResourceLocation(_))*/ .toSet.asJava
-        val recipeDifficulty = configuration.get(Configuration.CATEGORY_GENERAL, RecipeDifficulty_key, 2d)
-        recipeDifficulty.setComment("!!!UNUSED!!! //Default is 2.0")
-        recipeDifficulty.setMinValue(1d)
-        val recipe = configuration.getInt(Recipe_key, Configuration.CATEGORY_GENERAL, recipeDifficulty.getDouble.toInt, 1, Short.MaxValue, Recipe_key)
+        configuration.getCategory(Configuration.CATEGORY_GENERAL).remove(RecipeDifficulty_key)
+        val recipe = configuration.getInt(Recipe_key, Configuration.CATEGORY_GENERAL, 2, 1, Short.MaxValue, Recipe_key)
 
         val placerOnlyPlaceFront = configuration.getBoolean(PlacerOnlyPlaceFront_key, Configuration.CATEGORY_GENERAL, true, PlacerOnlyPlaceFront_key)
         val noEnergy = configuration.getBoolean(NoEnergy_key, Configuration.CATEGORY_GENERAL, false, NoEnergy_key)
@@ -115,13 +114,15 @@ object Config {
         val enableChunkDestroyerFluidHander = configuration.getBoolean(EnableChunkDestroyerFluidHander_key, Configuration.CATEGORY_GENERAL, false, EnableChunkDestroyerFluidHander_key)
         val disableFrameChainBreak = configuration.getBoolean(DisableFrameChainBreak_key, Configuration.CATEGORY_GENERAL, false, DisableFrameChainBreak_key)
         val pumpAutoStart = configuration.getBoolean(PumpAutoStart_Key, Configuration.CATEGORY_GENERAL, false, PumpAutoStart_Key)
-        val DisableRendering = configuration.get(Configuration.CATEGORY_CLIENT, DisableRendering_Key, false, "Disable rendering of quarries.")
+        val disableRendering = configuration.get(Configuration.CATEGORY_CLIENT, DisableRendering_Key, false, "Disable rendering of quarries.")
           .setRequiresMcRestart(true).setShowInGui(false).getBoolean
         val workbenchMaxReceive = configuration.getInt(WorkbenchplusReceive, Configuration.CATEGORY_GENERAL, 250, 1, Int.MaxValue,
             "Amount of enegy WorkbenchPlus can accept in a tick. Unit is MJ and 1 MJ = 10 RF = 10 FE.")
         val disableDungeonLoot = configuration.get(Configuration.CATEGORY_GENERAL, DisableDungeonRoot_key, false, "Disable adding magic mirror to loot.")
           .setRequiresMcRestart(true).getBoolean
         val debug = configuration.getBoolean(DEBUG_key, Configuration.CATEGORY_GENERAL, false, DEBUG_key)
+
+        (Disables ++ DisableBC).map("Disable" + _.name).foreach(s => configuration.getCategory(Configuration.CATEGORY_GENERAL).remove(s))
 
         if (configuration.hasChanged)
             configuration.save()

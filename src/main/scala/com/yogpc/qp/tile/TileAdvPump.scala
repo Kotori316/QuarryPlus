@@ -75,6 +75,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
                     buildWay()
                     if (toDig.nonEmpty) {
                         finished = false
+                        startWork()
                         val state = getWorld.getBlockState(getPos)
                         if (!state.getValue(ADismCBlock.ACTING)) {
                             changeState(working = true, state)
@@ -179,6 +180,8 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
         if (nextPosesToCheck.isEmpty) {
             finished = true
             queueBuilt = false
+            //            G_reinit() TODO check
+            finishWork()
             val state = getWorld.getBlockState(getPos)
             if (state.getValue(ADismCBlock.ACTING)) {
                 changeState(working = false, state)
@@ -223,7 +226,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
                 if (isLiquid && !isSource) {
                     getWorld.setBlockToAir(target)
                     nextPos()
-                } else if (useEnergy(energy, energy, true) == energy) {
+                } else if (useEnergy(energy, energy, true, EnergyUsage.ADV_PUMP_FLUID) == energy) {
                     val handler = FluidUtil.getFluidHandler(getWorld, target, EnumFacing.UP)
                     if (nonNull(handler) && option.get.forall(pos => TilePump.isLiquid(getWorld.getBlockState(pos)))) {
                         val drained = handler.drain(Fluid.BUCKET_VOLUME, false)
@@ -517,7 +520,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
             amountPumped = tag.getLong(NBT_pumped)
             val list = tag.getTagList(NBT_liquids, NBT.TAG_COMPOUND)
             for (t <- list.tagIterator;
-                 f <- Option(FluidStack.loadFluidStackFromNBT(t)))
+                 f <- FluidStack.loadFluidStackFromNBT(t).toOption)
                 fluidStacks += f
             this
         }

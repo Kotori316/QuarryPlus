@@ -43,10 +43,12 @@ class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender {
 
     private def refreshConnection() = {
         if (hasWorld && !worldObj.isRemote) {
-            val (facing, _) = EnumFacing.VALUES
+            val facing = EnumFacing.VALUES
               .map(f => (f, getWorld.getTileEntity(getPos.offset(f))))
-              .collectFirst { case (f: EnumFacing, t: TileBasic) if t.S_connectExppump(f.getOpposite) => (f, t) }
-              .getOrElse((null, null))
+              .collectFirst {
+                  case (f: EnumFacing, t: TileBasic) if t.S_connectExppump(f.getOpposite) => f
+                  case (f: EnumFacing, t: TileAdvQuarry) if t.setExpPumpConnection(f.getOpposite) => f
+              }.orNull
             setConnectTo(facing)
             S_sendNowPacket()
         }
@@ -121,7 +123,7 @@ class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender {
         Map(IEnchantableTile.FortuneID -> fortune,
             IEnchantableTile.UnbreakingID -> unbreaking,
             IEnchantableTile.SilktouchID -> silktouch.compareTo(false))
-          .collect { case (id, value) if value > 0 => (Int.box(id), Int.box(value)) }.asJava
+          .collect(enchantCollector).asJava
     }
 
     /**
@@ -138,7 +140,7 @@ class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender {
     }
 
     override def writeToNBT(compound: NBTTagCompound): NBTTagCompound = {
-        compound.setByte("mConnectTo", Option(mConnectTo).map(_.ordinal().toByte).getOrElse(-1))
+        compound.setByte("mConnectTo", mConnectTo.map(_.ordinal().toByte).getOrElse(-1))
         compound.setInteger("xpAmount", xpAmount)
         compound.setBoolean("silktouch", this.silktouch)
         compound.setByte("fortune", this.fortune.toByte)

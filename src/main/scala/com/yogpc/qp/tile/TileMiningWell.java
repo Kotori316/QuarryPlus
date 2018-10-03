@@ -83,6 +83,7 @@ public class TileMiningWell extends TileBasic implements ITickable {
     private boolean S_checkTarget(final int depth) {
         if (depth < 1) {
             G_destroy();
+            finishWork();
             return true;
         }
         BlockPos pos = new BlockPos(getPos().getX(), depth, getPos().getZ());
@@ -145,6 +146,8 @@ public class TileMiningWell extends TileBasic implements ITickable {
 
     public void setWorking(boolean working) {
         this.working = working;
+        if (working)
+            startWork();
         if (hasWorld()) {
             IBlockState old = getWorld().getBlockState(getPos());
             validate();

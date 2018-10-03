@@ -273,7 +273,7 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
         return true;
     }
 
-    //    @Override
+    @Override
     public void getDebugInfo(List<String> left, List<String> right, EnumFacing side) {
         left.add(getClass().getName());
         left.add(ItemQuarryDebug.tileposToString(this).getText());

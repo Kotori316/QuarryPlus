@@ -33,24 +33,30 @@ class TileBookMover extends APowerTile with HasInv with ITickable {
 
     override def update(): Unit = {
         super.update()
-        if (!machineDisabled && !worldObj.isRemote && isWorking && getStoredEnergy >= getMaxStored) {
-            val enchList = EnchantmentHelper.getEnchantments(inv.get(1)).asScala
-            enchList.find { case (e, level) =>
-                validEnch.contains(e) &&
-                  EnchantmentHelper.getEnchantments(inv.get(0)).asScala.forall { case (e1, _) => e1 == e || e1.canApplyTogether(e) } &&
-                  EnchantmentHelper.getEnchantmentLevel(e, inv.get(0)) < level
-            }.foreach { case (e, level) =>
-                val copy = inv.get(0).copy()
-                copy.removeEnchantment(e)
-                copy.addEnchantment(e, level)
-                if (enchList.size == 1) {
-                    setInventorySlotContents(1, new ItemStack(Items.BOOK))
-                } else {
-                    inv.get(1).removeEnchantment(e)
+        if (!worldObj.isRemote && isWorking) {
+            startWork()
+            if (!machineDisabled && getStoredEnergy >= getMaxStored) {
+                if (!isItemValidForSlot(0, inv.get(0)) || !isItemValidForSlot(1, inv.get(1)))
+                    return
+                val enchList = EnchantmentHelper.getEnchantments(inv.get(1)).asScala
+                enchList.find { case (e, level) =>
+                    validEnch.contains(e) &&
+                      EnchantmentHelper.getEnchantments(inv.get(0)).asScala.forall { case (e1, _) => e1 == e || e1.canApplyTogether(e) } &&
+                      EnchantmentHelper.getEnchantmentLevel(e, inv.get(0)) < level
+                }.foreach { case (e, level) =>
+                    val copy = inv.get(0).copy()
+                    copy.removeEnchantment(e)
+                    copy.addEnchantment(e, level)
+                    if (enchList.size == 1) {
+                        setInventorySlotContents(1, new ItemStack(Items.BOOK))
+                    } else {
+                        inv.get(1).removeEnchantment(e)
+                    }
+                    setInventorySlotContents(0, VersionUtil.empty())
+                    setInventorySlotContents(2, copy)
+                    useEnergy(getMaxStored, getMaxStored, true, EnergyUsage.BOOKMOVER)
+                    finishWork()
                 }
-                setInventorySlotContents(0, VersionUtil.empty())
-                setInventorySlotContents(2, copy)
-                useEnergy(getMaxStored, getMaxStored, true)
             }
         }
     }
