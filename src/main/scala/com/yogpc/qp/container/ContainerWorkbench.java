@@ -89,15 +89,15 @@ public class ContainerWorkbench extends Container {
                         } else {
                             ItemStack dest = destinationSlot.getStack();
                             if (areStackable(dest, remain)) {
-                                int newSize = dest.getCount() + remain.getCount();
+                                int newSize = VersionUtil.getCount(dest) + VersionUtil.getCount(remain);
                                 int maxSize = Math.min(slot.getSlotStackLimit(), remain.getMaxStackSize());
 
                                 if (newSize <= maxSize) {
                                     VersionUtil.setCount(remain, 0);
                                     VersionUtil.setCount(dest, newSize);
                                     slot.onSlotChanged();
-                                } else if (dest.getCount() < maxSize) {
-                                    VersionUtil.shrink(remain, maxSize - dest.getCount());
+                                } else if (VersionUtil.getCount(dest) < maxSize) {
+                                    VersionUtil.shrink(remain, maxSize - VersionUtil.getCount(dest));
                                     VersionUtil.setCount(dest, maxSize);
                                     slot.onSlotChanged();
                                 }

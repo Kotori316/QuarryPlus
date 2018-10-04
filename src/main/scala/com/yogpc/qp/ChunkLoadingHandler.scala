@@ -24,7 +24,13 @@ import scala.collection.JavaConverters._
 
 object ChunkLoadingHandler extends ForgeChunkManager.OrderedLoadingCallback {
     val instance = this
-    val blockSet: Set[Block] = Set(QuarryPlusI.blockQuarry, QuarryPlusI.blockMarker, QuarryPlusI.blockChunkdestroyer, QuarryPlusI.blockStandalonePump)
+    val blockSet: Set[Block] = Set(
+        QuarryPlusI.blockQuarry,
+        QuarryPlusI.blockMarker,
+        QuarryPlusI.blockChunkdestroyer,
+        QuarryPlusI.blockStandalonePump,
+        QuarryPlusI.blockSolidQuarry
+    )
 
     override def ticketsLoaded(tickets: util.List[ForgeChunkManager.Ticket], world: World): Unit = {
         for (ticket <- tickets.asScala) {
