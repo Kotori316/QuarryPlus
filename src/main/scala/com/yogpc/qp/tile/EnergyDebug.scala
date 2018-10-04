@@ -125,6 +125,9 @@ class EnergyDebug(tile: APowerTile) {
             usageMap.clear()
             totalUsed = 0l
             startTime = 0l
+            uLastTick = 0l
+            gLastTick = 0l
+            lastOutput = 0l
         }
     }
 

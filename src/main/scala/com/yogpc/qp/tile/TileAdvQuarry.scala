@@ -286,7 +286,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                         })
                         if (collectFurnaceXP) {
                             val xp = TileBasic.floorFloat(l.list.map(ie => FurnaceRecipes.instance().getSmeltingResult(ie.toStack) -> ie.count).collect {
-                                case (s, i) if !s.isEmpty => FurnaceRecipes.instance().getSmeltingExperience(s) * i
+                                case (s, i) if VersionUtil.nonEmpty(s) => FurnaceRecipes.instance().getSmeltingExperience(s) * i
                             }.sum)
                             expPump.filter(xpFilter(xp)).foreach(_.addXp(xp))
                         }
