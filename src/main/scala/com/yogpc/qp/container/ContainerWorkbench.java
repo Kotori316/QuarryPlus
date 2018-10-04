@@ -84,12 +84,12 @@ public class ContainerWorkbench extends Container {
 
                         if (!destinationSlot.getHasStack()) {
                             //Just move
-                            int maxSize = Math.min(slot.getSlotStackLimit(), VersionUtil.getCount(remain));
+                            int maxSize = Math.min(slot.getSlotStackLimit(), remain.getMaxStackSize());
                             destinationSlot.putStack(remain.splitStack(maxSize));
                         } else {
                             ItemStack dest = destinationSlot.getStack();
                             if (areStackable(dest, remain)) {
-                                int newSize = VersionUtil.getCount(dest) + remain.getCount();
+                                int newSize = VersionUtil.getCount(dest) + VersionUtil.getCount(remain);
                                 int maxSize = Math.min(slot.getSlotStackLimit(), remain.getMaxStackSize());
 
                                 if (newSize <= maxSize) {
