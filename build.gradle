@@ -6,7 +6,7 @@ buildscript {
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
-        classpath "gradle.plugin.com.matthewprenger:CurseGradle:1.0.10"
+        classpath "gradle.plugin.com.matthewprenger:CurseGradle:1.1.0"
     }
 }
 apply plugin: 'scala'
@@ -134,7 +134,6 @@ task signJar(type: SignJar, dependsOn: reobfJar) {
 // Runs this task automatically when build is ran.
 build.dependsOn signJar
 
-
 task srcJar(type: Jar) {
     from sourceSets.main.allSource
     classifier = 'sources'
@@ -157,5 +156,9 @@ curseforge {
         changelog = 'See GitHub commit'
         releaseType = 'release'
         mainArtifact jar
+        afterEvaluate {
+            gameVersionStrings.remove('Java 8')
+            gameVersionStrings.remove('Java 9')
+        }
     }
 }
