@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -340,9 +341,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
             return com.yogpc.qp.version.VersionUtil.empty();
         final ItemStack from = this.cacheItems.get(index);
         final ItemStack res = new ItemStack(from.getItem(), Math.min(count, VersionUtil.getCount(from)), from.getItemDamage());
-        if (from.hasTagCompound())
-            //noinspection ConstantConditions
-            res.setTagCompound(from.getTagCompound().copy());
+        Optional.ofNullable(from.getTagCompound()).map(NBTTagCompound::copy).ifPresent(res::setTagCompound);
         VersionUtil.shrink(from, VersionUtil.getCount(res));
         if (VersionUtil.isEmpty(from))
             this.cacheItems.remove(index);

@@ -78,7 +78,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     protected byte unbreaking;
     protected byte fortune;
     protected boolean silktouch;
-    private final LinkedList<FluidStack> liquids = new LinkedList<>();
+    private final List<FluidStack> liquids = new ArrayList<>();
     public final EnumMap<EnumFacing, LinkedList<String>> mapping = new EnumMap<>(EnumFacing.class);
     public final EnumMap<EnumFacing, PumpTank> tankMap = new EnumMap<>(EnumFacing.class);
 
@@ -368,8 +368,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
             ebs_c = this.ebses[xb[cg] >> 4][zb[cg] >> 4][yb[cg] >> 4];
             if (ebs_c != null) {
                 b_c = ebs_c.get(xb[cg] & 0xF, yb[cg] & 0xF, zb[cg] & 0xF);
-                if (this.blocks[yb[cg] - this.yOffset][xb[cg]][zb[cg]] == 0
-                    && isLiquid(b_c)) {
+                if (this.blocks[yb[cg] - this.yOffset][xb[cg]][zb[cg]] == 0 && isLiquid(b_c)) {
                     this.blocks[yb[cg] - this.yOffset][xb[cg]][zb[cg]] = 0x3F;
 
                     if ((b != null ? b.xMin & 0xF : 0) < xb[cg])
@@ -434,11 +433,12 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                                     count++;
                             }
                 } else {
+                    BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
                     for (bz = 0; bz < this.block_side_z; bz++)
                         if (this.blocks[this.py - this.yOffset][this.px][bz] != 0) {
                             bb = this.ebses[this.px >> 4][bz >> 4][this.py >> 4].get(this.px & 0xF, this.py & 0xF, bz & 0xF);
-                            if (isLiquid(bb, Config.content().removeOnlySource(), getWorld(),
-                                new BlockPos(this.px + this.xOffset, this.py, bz + this.zOffset)))
+                            mutableBlockPos.setPos(this.px + this.xOffset, this.py, bz + this.zOffset);
+                            if (isLiquid(bb, Config.content().removeOnlySource(), getWorld(), mutableBlockPos))
                                 count++;
                         }
                 }

@@ -3,6 +3,8 @@ package com.yogpc
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.{NBTTagCompound, NBTTagList, NBTTagLong}
+import net.minecraft.util.EnumFacing
+import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.TextComponentString
 import net.minecraftforge.common.util.Constants.NBT
 
@@ -125,6 +127,15 @@ package object qp {
 
     implicit class NumberToNbt[A](val num: A) extends AnyVal {
         def toNBT[B](implicit wrapeer: NBTWrapeer[A, B]): B = wrapeer wrap num
+    }
+
+    implicit class PosHelper(val blockPos: BlockPos) extends AnyVal {
+        def offset(facing1: EnumFacing, facing2: EnumFacing): BlockPos = {
+            val x = facing1.getFrontOffsetX + facing2.getFrontOffsetX
+            val y = facing1.getFrontOffsetY + facing2.getFrontOffsetY
+            val z = facing1.getFrontOffsetZ + facing2.getFrontOffsetZ
+            blockPos.add(x, y, z)
+        }
     }
 
 }

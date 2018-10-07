@@ -43,6 +43,7 @@ import scala.collection.JavaConverters._
 import scala.collection.generic.Clearable
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
+import scala.reflect.ClassTag
 
 class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with ITickable with IDebugSender with IChunkLoadTile {
     self =>
@@ -122,15 +123,17 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                     if (mode is TileAdvQuarry.MAKEFRAME)
                         makeFrame()
             } else if (mode is TileAdvQuarry.BREAKBLOCK) {
+                val x = target.getX
+                val z = target.getZ
+
                 @inline
                 def breakBlocks(): Boolean = {
-                    val digPoses = List.iterate(target.down(), target.getY - 1)(_.down())
                     val list = NonNullList.create[ItemStack]()
                     val expPump = Option(mConnectExpPump).map(f => getWorld.getTileEntity(getPos.offset(f)))
                       .collect { case pump: TileExpPump => pump }
 
-                    if (target.getX % 3 == 0) {
-                        val axis = new AxisAlignedBB(new BlockPos(target.getX - 6, 1, target.getZ - 6), target.add(6, 0, 6))
+                    if (x % 3 == 0) {
+                        val axis = new AxisAlignedBB(new BlockPos(x - 6, 1, z - 6), target.add(6, 0, 6))
                         //catch dropped items
                         getWorld.getEntitiesWithinAABB(classOf[EntityItem], axis).asScala.filter(nonNull).foreach(entity => {
                             if (!entity.isDead) {
@@ -150,39 +153,42 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                         })
                     }
 
-                    var destroy, dig, drain, shear = Nil: List[BlockPos]
-                    val flags = Array(target.getX == digRange.minX, target.getX == digRange.maxX, target.getZ == digRange.minZ, target.getZ == digRange.maxZ)
+                    var destroy, dig, drain, shear = new mutable.WrappedArrayBuilder[Int](ClassTag.Int)
+                    val flags = Array(x == digRange.minX, x == digRange.maxX, z == digRange.minZ, z == digRange.maxZ)
                     var requireEnergy = 0d
-                    for (pos <- digPoses) {
+                    var y = target.getY - 1
+                    val pos = new MutableBlockPos(x, y, z)
+                    while (y > 0) {
+                        pos.setY(y)
                         val state = getWorld.getBlockState(pos)
                         if (!state.getBlock.isAir(state, getWorld, pos)) {
                             if (TilePump.isLiquid(state)) {
                                 requireEnergy += PowerManager.calcEnergyPumpDrain(ench.unbreaking, 1, 0)
-                                drain = pos :: drain
+                                drain += y
                             } else {
                                 val blockHardness = state.getBlockHardness(getWorld, pos)
                                 if (blockHardness != -1 && !blockHardness.isInfinity) {
                                     state.getBlock match {
                                         case _ if TileAdvQuarry.noDigBLOCKS.exists(_.contain(state)) =>
                                             requireEnergy += PowerManager.calcEnergyBreak(blockHardness, 0, ench.unbreaking)
-                                            destroy = pos :: destroy
+                                            destroy += y
                                         case leave: IShearable if leave.isLeaves(state, getWorld, pos) =>
                                             requireEnergy += PowerManager.calcEnergyBreak(blockHardness, ench.mode, ench.unbreaking)
                                             if (ench.silktouch)
-                                                shear = pos :: shear
+                                                shear += y
                                             else
-                                                dig = pos :: dig
+                                                dig += y
                                         case _ => requireEnergy += PowerManager.calcEnergyBreak(blockHardness, ench.mode, ench.unbreaking)
-                                            dig = pos :: dig
+                                            dig += y
                                     }
                                 } else if (Config.content.removeBedrock && (state.getBlock == Blocks.BEDROCK) &&
                                   ((pos.getY > 0 && pos.getY <= 5) || (pos.getY > 122 && pos.getY < 127))) {
                                     if (Config.content.collectBedrock) {
                                         requireEnergy += 600
-                                        dig = pos :: dig
+                                        dig += y
                                     } else {
                                         requireEnergy += 200
-                                        destroy = pos :: destroy
+                                        destroy += y
                                     }
                                 } else if (state.getBlock == Blocks.PORTAL) {
                                     getWorld.setBlockToAir(pos)
@@ -199,19 +205,19 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                             if (flags(0)) { //-x
                                 checkandsetFrame(getWorld, pos.offset(EnumFacing.WEST))
                                 if (flags(2)) { //-z, -x
-                                    checkandsetFrame(getWorld, pos.offset(EnumFacing.NORTH).offset(EnumFacing.WEST))
+                                    checkandsetFrame(getWorld, pos.offset(EnumFacing.NORTH, EnumFacing.WEST))
                                 }
                                 else if (flags(3)) { //+z, -x
-                                    checkandsetFrame(getWorld, pos.offset(EnumFacing.SOUTH).offset(EnumFacing.WEST))
+                                    checkandsetFrame(getWorld, pos.offset(EnumFacing.SOUTH, EnumFacing.WEST))
                                 }
                             }
                             else if (flags(1)) { //+x
                                 checkandsetFrame(getWorld, pos.offset(EnumFacing.EAST))
                                 if (flags(2)) { //-z, +x
-                                    checkandsetFrame(getWorld, pos.offset(EnumFacing.NORTH).offset(EnumFacing.EAST))
+                                    checkandsetFrame(getWorld, pos.offset(EnumFacing.NORTH, EnumFacing.EAST))
                                 }
                                 else if (flags(3)) { //+z, +x
-                                    checkandsetFrame(getWorld, pos.offset(EnumFacing.SOUTH).offset(EnumFacing.EAST))
+                                    checkandsetFrame(getWorld, pos.offset(EnumFacing.SOUTH, EnumFacing.EAST))
                                 }
                             }
                             if (flags(2)) { //-z
@@ -221,6 +227,8 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                                 checkandsetFrame(getWorld, pos.offset(EnumFacing.SOUTH))
                             }
                         }
+
+                        y -= 1
                     }
 
                     requireEnergy *= 1.25
@@ -230,7 +238,9 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                         fakePlayer.setHeldItem(EnumHand.MAIN_HAND, getEnchantedPickaxe)
                         val collectFurnaceXP = InvUtils.hasSmelting(fakePlayer.getHeldItemMainhand) && expPump.isDefined
                         val tempList = new NotNullList(new ArrayBuffer[ItemStack]())
-                        dig.foreach(p => {
+                        val p = new MutableBlockPos(x, 0, z)
+                        dig.result().foreach(y => {
+                            p.setY(y)
                             val state = getWorld.getBlockState(p)
                             val event = new BlockEvent.BreakEvent(getWorld, p, state, fakePlayer)
                             MinecraftForge.EVENT_BUS.post(event)
@@ -250,11 +260,12 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                                 getWorld.setBlockState(p, Blocks.AIR.getDefaultState, 2)
                             }
                         })
-                        if (shear.nonEmpty) {
+                        if (shear.result().nonEmpty) {
                             //Enchantment must be Silktouch.
                             val itemShear = new ItemStack(net.minecraft.init.Items.SHEARS)
                             EnchantmentHelper.setEnchantments(ench.getMap.collect { case (a, b) if b > 0 => (Enchantment.getEnchantmentByID(a), Int.box(b)) }.asJava, itemShear)
-                            for (p <- shear) {
+                            for (y <- shear.result()) {
+                                p.setY(y)
                                 val state = getWorld.getBlockState(p)
                                 val block = state.getBlock.asInstanceOf[Block with IShearable]
                                 val event = new BlockEvent.BreakEvent(getWorld, p, state, fakePlayer)
@@ -270,7 +281,8 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                             }
                         }
                         val l = new ItemList
-                        destroy.foreach(p => {
+                        destroy.result().foreach(y => {
+                            p.setY(y)
                             val state = getWorld.getBlockState(p)
                             val event = new BlockEvent.BreakEvent(getWorld, p, state, fakePlayer)
                             MinecraftForge.EVENT_BUS.post(event)
@@ -290,9 +302,10 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                             }.sum)
                             expPump.filter(xpFilter(xp)).foreach(_.addXp(xp))
                         }
-                        for (p <- drain) {
+                        for (y <- drain.result()) {
+                            p.setY(y)
                             val handler = Option(FluidUtil.getFluidHandler(getWorld, p, EnumFacing.UP))
-                            val fluidOp = handler.map(_.getTankProperties.apply(0)).flatMap(p => Option(p.getContents))
+                            val fluidOp = handler.map(_.getTankProperties.apply(0)).flatMap(prop => Option(prop.getContents))
                             fluidOp match {
                                 case Some(fluidStack) => handler.map(_.drain(Fluid.BUCKET_VOLUME, false)).foreach(s => fluidStacks.get(fluidStack) match {
                                     case Some(tank) => tank.fill(s, true)
