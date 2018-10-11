@@ -15,7 +15,7 @@ import net.minecraft.world.World
 
 import scala.collection.JavaConverters._
 
-class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender {
+class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender with IAttachment {
     private[this] var mConnectTo: EnumFacing = _
     private[this] var xpAmount = 0
     private[this] var loading = false
@@ -54,7 +54,7 @@ class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender {
         }
     }
 
-    def setConnectTo(@Nullable connectTo: EnumFacing) {
+    override def setConnectTo(@Nullable connectTo: EnumFacing) {
         this.mConnectTo = connectTo
         if (hasWorld) {
             val state = getWorld.getBlockState(getPos)

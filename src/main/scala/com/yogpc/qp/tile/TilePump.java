@@ -67,7 +67,7 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import scala.Symbol;
 
-public class TilePump extends APacketTile implements IEnchantableTile, ITickable, IDebugSender {
+public class TilePump extends APacketTile implements IEnchantableTile, ITickable, IDebugSender, IAttachment {
     @SuppressWarnings("NullableProblems")
     @Nullable
     public EnumFacing connectTo = null;
@@ -226,6 +226,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         }
     }
 
+    @Override
     public void setConnectTo(@Nullable EnumFacing connectTo) {
         this.connectTo = connectTo;
         if (hasWorld()) {

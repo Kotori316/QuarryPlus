@@ -13,6 +13,7 @@
 
 package com.yogpc.qp.tile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BinaryOperator;
@@ -45,6 +46,8 @@ public abstract class APacketTile extends TileEntity implements buildcraft.api.t
     private final ITextComponent displayName;
     protected final boolean machineDisabled;
     protected final boolean isDebugSender = this instanceof IDebugSender;
+    protected final List<Runnable> startListener = new ArrayList<>();
+    protected final List<Runnable> finishListener = new ArrayList<>();
 
     protected APacketTile() {
         if (this instanceof HasInv) {
@@ -80,6 +83,14 @@ public abstract class APacketTile extends TileEntity implements buildcraft.api.t
     @Override
     public ITextComponent getDisplayName() {
         return displayName;
+    }
+
+    protected final void startWork() {
+        startListener.forEach(Runnable::run);
+    }
+
+    protected final void finishWork() {
+        finishListener.forEach(Runnable::run);
     }
 
     protected abstract scala.Symbol getSymbol();

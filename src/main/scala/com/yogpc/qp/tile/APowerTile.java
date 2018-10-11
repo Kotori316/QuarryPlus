@@ -60,6 +60,8 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
         if (bcLoaded) {
             helper = MjReciever.mjCapabilityHelper(this);
         }
+        startListener.add(debug::start);
+        finishListener.add(debug::finish);
     }
 
     @Override
@@ -119,14 +121,6 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
 
     public final void toggleOutputEnergyInfo() {
         this.outputEnergyInfo = !this.outputEnergyInfo;
-    }
-
-    protected final void startWork() {
-        debug.start();
-    }
-
-    protected final void finishWork() {
-        debug.finish();
     }
 
     protected abstract boolean isWorking();
