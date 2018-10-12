@@ -16,6 +16,8 @@ package com.yogpc.qp.tile;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -63,12 +65,13 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
+import static com.yogpc.qp.tile.IAttachment.Attachments.*;
+
 @net.minecraftforge.fml.common.Optional.Interface(iface = "cofh.api.tileentity.IInventoryConnection", modid = QuarryPlus.Optionals.COFH_modID)
 public abstract class TileBasic extends APowerTile implements IEnchantableTile, HasInv, IInventoryConnection {
-    @Nullable
-    protected EnumFacing pump = null;
-    @Nullable
-    protected EnumFacing exppump = null;
+
+    private static final EnumSet<IAttachment.Attachments> VALID_ATTACHMENTS = EnumSet.allOf(IAttachment.Attachments.class);
+    protected final EnumMap<IAttachment.Attachments, EnumFacing> facingMap = new EnumMap<>(IAttachment.Attachments.class);
 
     public final NoDuplicateList<BlockData> fortuneList = NoDuplicateList.create(ArrayList::new);
     public final NoDuplicateList<BlockData> silktouchList = NoDuplicateList.create(ArrayList::new);
@@ -123,10 +126,10 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         }
         if (blockState.getBlock().isAir(blockState, getWorld(), pos))
             return true;
-        if (pump != null && TilePump.isLiquid(blockState)) {
-            final TileEntity te = getWorld().getTileEntity(getPos().offset(pump));
+        if (facingMap.containsKey(FLUID_PUMP) && TilePump.isLiquid(blockState)) {
+            final TileEntity te = getWorld().getTileEntity(getPos().offset(facingMap.get(FLUID_PUMP)));
             if (!(te instanceof TilePump)) {
-                this.pump = null;
+                facingMap.remove(FLUID_PUMP);
                 G_renew_powerConfigure();
                 return true;
             }
@@ -135,8 +138,8 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         BI bi = S_addDroppedItems(dropped, blockState, pos);
         if (!PowerManager.useEnergyBreak(this, blockState.getBlockHardness(getWorld(), pos), bi.b, this.unbreaking))
             return false;
-        if (exppump != null) {
-            TileEntity entity = world.getTileEntity(getPos().offset(exppump));
+        if (facingMap.containsKey(EXP_PUMP)) {
+            TileEntity entity = world.getTileEntity(getPos().offset(facingMap.get(EXP_PUMP)));
             if (entity instanceof TileExpPump) {
                 TileExpPump t = (TileExpPump) entity;
                 double expEnergy = t.getEnergyUse(bi.i);
@@ -151,26 +154,15 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         return true;
     }
 
-    boolean S_connectPump(final EnumFacing facing) {
-        if (pump != null) {
-            final TileEntity te = this.getWorld().getTileEntity(getPos().offset(pump));
-            if (te instanceof TilePump && this.pump != facing)
-                return false;
-        }
-        this.pump = facing;
-        G_renew_powerConfigure();
-        return true;
-    }
-
-    boolean S_connectExppump(EnumFacing facing) {
-        if (exppump != null) {
-            // Exp Pump has been connected.
-            TileEntity entity = getWorld().getTileEntity(getPos().offset(exppump));
-            if (entity instanceof TileExpPump && exppump != facing) {
+    boolean S_connectAttachment(final EnumFacing facing, IAttachment.Attachments attachments) {
+        if (!VALID_ATTACHMENTS.contains(attachments)) return false;
+        if (facingMap.containsKey(attachments)) {
+            TileEntity entity = getWorld().getTileEntity(getPos().offset(facingMap.get(attachments)));
+            if (attachments.test(entity) && facingMap.get(attachments) != facing) {
                 return false;
             }
         }
-        exppump = facing;
+        facingMap.put(attachments, facing);
         G_renew_powerConfigure();
         return true;
     }
@@ -207,7 +199,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
                 collection.addAll(list);
                 i = fortuneLevel;
             }
-            if (exppump != null) {
+            if (facingMap.containsKey(EXP_PUMP)) {
                 xp += event.getExpToDrop();
                 if (InvUtils.hasSmelting(fakePlayer.getHeldItemMainhand())) {
                     xp += getSmeltingXp(collection, rawItems);

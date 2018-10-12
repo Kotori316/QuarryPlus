@@ -188,7 +188,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
             if (!initialized) {
                 if (connectTo != null) {
                     TileEntity te = getWorld().getTileEntity(getPos().offset(connectTo));
-                    if (te instanceof TileBasic && ((TileBasic) te).S_connectPump(this.connectTo.getOpposite())) {
+                    if (te instanceof TileBasic && ((TileBasic) te).S_connectAttachment(this.connectTo.getOpposite(), Attachments.FLUID_PUMP)) {
                         S_sendNowPacket();
                         this.initialized = true;
                     } else if (getWorld().isAirBlock(getPos().offset(connectTo))) {
@@ -207,7 +207,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
             TileEntity te;
             for (EnumFacing facing : EnumFacing.VALUES) {
                 te = getWorld().getTileEntity(getPos().offset(facing));
-                if (te instanceof TileBasic && ((TileBasic) te).S_connectPump(facing.getOpposite())) {
+                if (te instanceof TileBasic && ((TileBasic) te).S_connectAttachment(facing.getOpposite(), Attachments.FLUID_PUMP)) {
                     setConnectTo(facing);
                     S_sendNowPacket();
                     return;

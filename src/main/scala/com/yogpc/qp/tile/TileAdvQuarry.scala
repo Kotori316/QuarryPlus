@@ -2,7 +2,7 @@ package com.yogpc.qp.tile
 
 import java.lang.{Boolean => JBool}
 import java.util.{Collections, Objects}
-
+import com.yogpc.qp.tile.IAttachment.Attachments
 import com.yogpc.qp.block.{ADismCBlock, BlockBookMover}
 import com.yogpc.qp.compat.{INBTReadable, INBTWritable, InvUtils}
 import com.yogpc.qp.gui.TranslationKeys
@@ -48,7 +48,7 @@ import scala.reflect.ClassTag
 class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with ITickable with IDebugSender with IChunkLoadTile {
     self =>
     private[this] var mDigRange = TileAdvQuarry.defaultRange
-    private[this] var mConnectExpPump: EnumFacing = _
+    private[this] var facingMap: Map[Attachments, EnumFacing] = Map.empty
     var ench = TileAdvQuarry.defaultEnch
     var target = BlockPos.ORIGIN
     var framePoses = List.empty[BlockPos]
@@ -129,7 +129,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                 @inline
                 def breakBlocks(): Boolean = {
                     val list = NonNullList.create[ItemStack]()
-                    val expPump = Option(mConnectExpPump).map(f => getWorld.getTileEntity(getPos.offset(f)))
+                    val expPump = facingMap.get(Attachments.EXP_PUMP).map(f => getWorld.getTileEntity(getPos.offset(f)))
                       .collect { case pump: TileExpPump => pump }
 
                     if (x % 3 == 0) {
@@ -640,15 +640,20 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
         }
     }
 
-    def setExpPumpConnection(facing: EnumFacing): Boolean = {
-        if (mConnectExpPump == null) {
-            mConnectExpPump = facing
-            true
-        } else {
-            val t = getWorld.getTileEntity(getPos.offset(mConnectExpPump))
-            t match {
-                case _: TileExpPump => mConnectExpPump == facing
-                case _ => mConnectExpPump = facing; true
+    def setAttachment(facing: EnumFacing, attachments: Attachments): Boolean = {
+        if (!VALID_ATTACHMENTS(attachments)) false
+        else {
+            if (!facingMap.contains(attachments)) {
+                facingMap = facingMap + ((attachments, facing))
+                true
+            } else {
+                val t = getWorld.getTileEntity(getPos.offset(facingMap(attachments)))
+                if (!attachments.test(t)) {
+                    facingMap = facingMap.updated(attachments, facing)
+                    true
+                } else {
+                    facingMap(attachments) == facing
+                }
             }
         }
     }
@@ -839,6 +844,7 @@ object TileAdvQuarry {
     private final val NBT_MODE = "nbt_quarrymode"
     private final val NBT_ITEMLIST = "nbt_itemlist"
     private final val NBT_ITEMELEMENTS = "nbt_itemelements"
+    final val VALID_ATTACHMENTS = Set(Attachments.EXP_PUMP)
 
     val defaultEnch = QEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false)
     val defaultRange: DigRange = new DigRange(BlockPos.ORIGIN, BlockPos.ORIGIN) {
