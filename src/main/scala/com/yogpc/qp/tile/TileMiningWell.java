@@ -13,6 +13,9 @@
 
 package com.yogpc.qp.tile;
 
+import java.util.Map;
+import java.util.Optional;
+
 import com.yogpc.qp.PowerManager;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.block.BlockMiningWell;
@@ -21,11 +24,14 @@ import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.TileMessage;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.Chunk;
 import scala.Symbol;
+
+import static jp.t2v.lab.syntax.MapStreamSyntax.byEntry;
+import static jp.t2v.lab.syntax.MapStreamSyntax.entryToMap;
 
 public class TileMiningWell extends TileBasic implements ITickable {
     public static final scala.Symbol SYMBOL = scala.Symbol.apply("MiningwellPlus");
@@ -35,19 +41,17 @@ public class TileMiningWell extends TileBasic implements ITickable {
     @Override
     public void G_renew_powerConfigure() {
         byte pmp = 0;
-        if (hasWorld() && this.pump != null) {
-            final TileEntity te = getWorld().getTileEntity(getPos().offset(pump));
-            if (te instanceof TilePump)
-                pmp = ((TilePump) te).unbreaking;
-            else
-                this.pump = null;
+        if (hasWorld()) {
+            Map<IAttachment.Attachments, EnumFacing> map = facingMap.entrySet().stream()
+                .filter(byEntry((attachments, facing) -> attachments.test(getWorld().getTileEntity(getPos().offset(facing)))))
+                .collect(entryToMap());
+            facingMap.putAll(map);
+            pmp = Optional.ofNullable(facingMap.get(IAttachment.Attachments.FLUID_PUMP))
+                .map(f -> getWorld().getTileEntity(getPos().offset(f)))
+                .map(TilePump.class::cast)
+                .map(p -> p.unbreaking).orElse((byte) 0);
         }
-        if (hasWorld() && exppump != null) {
-            TileEntity entity = getWorld().getTileEntity(getPos().offset(exppump));
-            if (!(entity instanceof TileExpPump)) {
-                exppump = null;
-            }
-        }
+
         if (this.working)
             PowerManager.configureMiningWell(this, this.efficiency, this.unbreaking, pmp);
         else
@@ -98,7 +102,7 @@ public class TileMiningWell extends TileBasic implements ITickable {
         if (h < 0 || b.getBlock() == QuarryPlusI.blockPlainPipe() || b.getBlock().isAir(b, getWorld(), pos)) {
             return false;
         }
-        if (this.pump == null && b.getMaterial().isLiquid())
+        if (!facingMap.containsKey(IAttachment.Attachments.FLUID_PUMP) && b.getMaterial().isLiquid())
             return false;
         if (!this.working) {
             //Find something to break!

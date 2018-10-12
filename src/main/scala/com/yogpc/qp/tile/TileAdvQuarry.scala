@@ -644,7 +644,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
         if (!VALID_ATTACHMENTS(attachments)) false
         else {
             if (!facingMap.contains(attachments)) {
-                facingMap = facingMap + ((attachments, facing))
+                facingMap = facingMap.updated(attachments, facing)
                 true
             } else {
                 val t = getWorld.getTileEntity(getPos.offset(facingMap(attachments)))

@@ -15,6 +15,7 @@ package com.yogpc.qp.tile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -55,11 +56,15 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import scala.Symbol;
 
+import static com.yogpc.qp.tile.IAttachment.Attachments.EXP_PUMP;
+import static com.yogpc.qp.tile.IAttachment.Attachments.FLUID_PUMP;
 import static com.yogpc.qp.tile.TileQuarry.Mode.BREAKBLOCK;
 import static com.yogpc.qp.tile.TileQuarry.Mode.MAKEFRAME;
 import static com.yogpc.qp.tile.TileQuarry.Mode.MOVEHEAD;
 import static com.yogpc.qp.tile.TileQuarry.Mode.NONE;
 import static com.yogpc.qp.tile.TileQuarry.Mode.NOTNEEDBREAK;
+import static jp.t2v.lab.syntax.MapStreamSyntax.byEntry;
+import static jp.t2v.lab.syntax.MapStreamSyntax.entryToMap;
 
 public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTile {
     public static final Symbol SYMBOL = Symbol.apply("QuarryPlus");
@@ -130,7 +135,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                     PacketHandler.sendToAround(ModeMessage.create(this), getWorld(), getPos());
                     return true;
                 }
-                return blockHardness >= 0 && !b.getBlock().isAir(b, getWorld(), target) && !(this.pump == null && TilePump.isLiquid(b));
+                return blockHardness >= 0 && !b.getBlock().isAir(b, getWorld(), target) && !(facingMap.containsKey(FLUID_PUMP) && TilePump.isLiquid(b));
             case NOTNEEDBREAK:
                 if (this.targetY < this.yMin) {
                     if (this.filler) {
@@ -149,7 +154,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                 }
                 if (blockHardness < 0 || b.getBlock().isAir(b, getWorld(), target))
                     return false;
-                if (this.pump == null && TilePump.isLiquid(b))
+                if (!facingMap.containsKey(FLUID_PUMP) && TilePump.isLiquid(b))
                     return false;
                 if (b.getBlock() == QuarryPlusI.blockFrame() && !b.getValue(BlockFrame.DAMMING)) {
                     byte flag = 0;
@@ -321,11 +326,11 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                 }
             }
         }
-        if (exppump != null) {
+        if (facingMap.containsKey(EXP_PUMP)) {
             List<EntityXPOrb> xpOrbs = getWorld().getEntitiesWithinAABB(EntityXPOrb.class, axis);
             for (EntityXPOrb xpOrb : xpOrbs) {
                 if (!xpOrb.isDead) {
-                    TileEntity tileEntity = world.getTileEntity(pos.offset(exppump));
+                    TileEntity tileEntity = world.getTileEntity(pos.offset(facingMap.get(EXP_PUMP)));
                     if (tileEntity instanceof TileExpPump) {
                         TileExpPump t = (TileExpPump) tileEntity;
                         double min = t.getEnergyUse(xpOrb.xpValue);
@@ -341,6 +346,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
 
     }
 
+    @SuppressWarnings("Duplicates") // To avoid BC's library error.
     private void S_createBox() {
         if (this.yMax != Integer.MIN_VALUE)
             return;
@@ -634,18 +640,15 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     @Override
     public void G_renew_powerConfigure() {
         byte pmp = 0;
-        if (hasWorld() && this.pump != null) {
-            final TileEntity te = getWorld().getTileEntity(getPos().offset(pump));
-            if (te instanceof TilePump)
-                pmp = ((TilePump) te).unbreaking;
-            else
-                this.pump = null;
-        }
-        if (hasWorld() && exppump != null) {
-            TileEntity entity = getWorld().getTileEntity(getPos().offset(exppump));
-            if (!(entity instanceof TileExpPump)) {
-                exppump = null;
-            }
+        if (hasWorld()) {
+            Map<IAttachment.Attachments, EnumFacing> map = facingMap.entrySet().stream()
+                .filter(byEntry((attachments, facing) -> attachments.test(getWorld().getTileEntity(getPos().offset(facing)))))
+                .collect(entryToMap());
+            facingMap.putAll(map);
+            pmp = Optional.ofNullable(facingMap.get(FLUID_PUMP))
+                .map(f -> getWorld().getTileEntity(getPos().offset(f)))
+                .map(TilePump.class::cast)
+                .map(p -> p.unbreaking).orElse((byte) 0);
         }
         if (this.now == NONE)
             PowerManager.configure0(this);
