@@ -65,10 +65,11 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
-import static com.yogpc.qp.tile.IAttachment.Attachments.*;
+import static com.yogpc.qp.tile.IAttachment.Attachments.EXP_PUMP;
+import static com.yogpc.qp.tile.IAttachment.Attachments.FLUID_PUMP;
 
 @net.minecraftforge.fml.common.Optional.Interface(iface = "cofh.api.tileentity.IInventoryConnection", modid = QuarryPlus.Optionals.COFH_modID)
-public abstract class TileBasic extends APowerTile implements IEnchantableTile, HasInv, IInventoryConnection {
+public abstract class TileBasic extends APowerTile implements IEnchantableTile, HasInv, IInventoryConnection, IAttachable {
 
     private static final EnumSet<IAttachment.Attachments> VALID_ATTACHMENTS = EnumSet.allOf(IAttachment.Attachments.class);
     protected final EnumMap<IAttachment.Attachments, EnumFacing> facingMap = new EnumMap<>(IAttachment.Attachments.class);
@@ -154,8 +155,8 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         return true;
     }
 
-    boolean S_connectAttachment(final EnumFacing facing, IAttachment.Attachments attachments) {
-        if (!VALID_ATTACHMENTS.contains(attachments)) return false;
+    @Override
+    public boolean connectAttachment(final EnumFacing facing, IAttachment.Attachments attachments) {
         if (facingMap.containsKey(attachments)) {
             TileEntity entity = getWorld().getTileEntity(getPos().offset(facingMap.get(attachments)));
             if (attachments.test(entity) && facingMap.get(attachments) != facing) {
@@ -165,6 +166,11 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         facingMap.put(attachments, facing);
         G_renew_powerConfigure();
         return true;
+    }
+
+    @Override
+    public boolean isValidAttachment(IAttachment.Attachments attachments) {
+        return VALID_ATTACHMENTS.contains(attachments);
     }
 
     private BI S_addDroppedItems(final Collection<ItemStack> collection, final IBlockState state, final BlockPos pos) {

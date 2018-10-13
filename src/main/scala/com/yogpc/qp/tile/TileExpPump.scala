@@ -46,8 +46,7 @@ class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender wi
             val facing = EnumFacing.VALUES
               .map(f => (f, getWorld.getTileEntity(getPos.offset(f))))
               .collectFirst {
-                  case (f: EnumFacing, t: TileBasic) if t.S_connectAttachment(f.getOpposite, IAttachment.Attachments.EXP_PUMP) => f
-                  case (f: EnumFacing, t: TileAdvQuarry) if t.setAttachment(f.getOpposite, IAttachment.Attachments.EXP_PUMP) => f
+                  case (f: EnumFacing, t: IAttachable) if t.connect(f.getOpposite, IAttachment.Attachments.EXP_PUMP) => f
               }.orNull
             setConnectTo(facing)
             S_sendNowPacket()

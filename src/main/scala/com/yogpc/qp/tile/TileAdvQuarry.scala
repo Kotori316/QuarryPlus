@@ -2,12 +2,13 @@ package com.yogpc.qp.tile
 
 import java.lang.{Boolean => JBool}
 import java.util.{Collections, Objects}
-import com.yogpc.qp.tile.IAttachment.Attachments
+
 import com.yogpc.qp.block.{ADismCBlock, BlockBookMover}
 import com.yogpc.qp.compat.{INBTReadable, INBTWritable, InvUtils}
 import com.yogpc.qp.gui.TranslationKeys
 import com.yogpc.qp.packet.PacketHandler
 import com.yogpc.qp.packet.advquarry.{AdvContentMessage, AdvModeMessage}
+import com.yogpc.qp.tile.IAttachment.Attachments
 import com.yogpc.qp.tile.TileAdvQuarry._
 import com.yogpc.qp.version.VersionUtil
 import com.yogpc.qp.{Config, PowerManager, QuarryPlus, QuarryPlusI, ReflectionHelper, _}
@@ -45,7 +46,7 @@ import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.ClassTag
 
-class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with ITickable with IDebugSender with IChunkLoadTile {
+class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with ITickable with IDebugSender with IChunkLoadTile with IAttachable {
     self =>
     private[this] var mDigRange = TileAdvQuarry.defaultRange
     private[this] var facingMap: Map[Attachments, EnumFacing] = Map.empty
@@ -640,23 +641,22 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
         }
     }
 
-    def setAttachment(facing: EnumFacing, attachments: Attachments): Boolean = {
-        if (!VALID_ATTACHMENTS(attachments)) false
-        else {
-            if (!facingMap.contains(attachments)) {
+    override def connectAttachment(facing: EnumFacing, attachments: Attachments): Boolean = {
+        if (!facingMap.contains(attachments)) {
+            facingMap = facingMap.updated(attachments, facing)
+            true
+        } else {
+            val t = getWorld.getTileEntity(getPos.offset(facingMap(attachments)))
+            if (!attachments.test(t)) {
                 facingMap = facingMap.updated(attachments, facing)
                 true
             } else {
-                val t = getWorld.getTileEntity(getPos.offset(facingMap(attachments)))
-                if (!attachments.test(t)) {
-                    facingMap = facingMap.updated(attachments, facing)
-                    true
-                } else {
-                    facingMap(attachments) == facing
-                }
+                facingMap(attachments) == facing
             }
         }
     }
+
+    override def isValidAttachment(attachments: Attachments): Boolean = VALID_ATTACHMENTS(attachments)
 
     @SideOnly(Side.CLIENT)
     def recieveModeMessage(modeTag: NBTTagCompound): Runnable = new Runnable {
