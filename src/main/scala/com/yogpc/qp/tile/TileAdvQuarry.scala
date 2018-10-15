@@ -86,6 +86,8 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                                 useEnergy(energy, energy, true, EnergyUsage.ADV_BREAK_BLOCK)
                                 list.add(ReflectionHelper.invoke(TileBasic.createStackedBlock, state.getBlock, state).asInstanceOf[ItemStack])
                                 getWorld.setBlockToAir(target)
+                            } else {
+                                return
                             }
                         } else {
                             val energy = PowerManager.calcEnergyBreak(state.getBlockHardness(getWorld, target), ench.fortune, ench.unbreaking)
@@ -93,6 +95,8 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                                 useEnergy(energy, energy, true, EnergyUsage.ADV_BREAK_BLOCK)
                                 TileBasic.getDrops(getWorld, target, state, state.getBlock, ench.fortune, list)
                                 getWorld.setBlockToAir(target)
+                            } else {
+                                return
                             }
                         }
                         list.asScala.foreach(cacheItems.add)
@@ -120,9 +124,12 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                 }
                 chunkLoad()
 
-                for (_ <- 0 until 4)
+                var i = 0
+                while (i < 4) {
                     if (mode is TileAdvQuarry.MAKEFRAME)
                         makeFrame()
+                    i += 1
+                }
             } else if (mode is TileAdvQuarry.BREAKBLOCK) {
                 val x = target.getX
                 val z = target.getZ
