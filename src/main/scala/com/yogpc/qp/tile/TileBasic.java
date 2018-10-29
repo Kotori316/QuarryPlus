@@ -306,6 +306,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     }
 
     @Override
+    @SuppressWarnings("Duplicates")
     public void setEnchantent(final short id, final short val) {
         if (id == EfficiencyID)
             this.efficiency = (byte) val;

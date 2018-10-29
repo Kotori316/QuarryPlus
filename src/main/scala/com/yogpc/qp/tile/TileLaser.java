@@ -31,6 +31,7 @@ import com.yogpc.qp.gui.TranslationKeys;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.laser.LaserAverageMessage;
 import com.yogpc.qp.packet.laser.LaserMessage;
+import javax.annotation.Nullable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -184,6 +185,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
         lasers = new Vec3d[targets.size()];
     }
 
+    @SuppressWarnings("AssignmentToNull") // Null check is done by nonNull Predicate.
     protected void removeLaser() {
         if (this.lasers != null)
             for (int i = 0; i < this.lasers.length; i++)
@@ -273,6 +275,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
     }
 
     @Override
+    @SuppressWarnings("Duplicates")
     public void setEnchantent(final short id, final short val) {
         if (id == EfficiencyID)
             this.efficiency = (byte) val;

@@ -671,6 +671,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     }
 
     @Override
+    @SuppressWarnings("Duplicates")
     public void setEnchantent(final short id, final short val) {
         if (id == FortuneID)
             this.fortune = (byte) val;
