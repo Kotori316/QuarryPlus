@@ -1115,7 +1115,7 @@ object TileAdvQuarry {
         }
     }
 
-    sealed class Modes(val index: Int, override val toString: String)
+    private class Modes(val index: Int, override val toString: String)
 
     val NONE = new Modes(0, "NONE")
 
