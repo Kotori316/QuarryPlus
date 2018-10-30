@@ -158,12 +158,13 @@ public class PowerManager {
      * @param hardness    block hardness
      * @param enchantMode no ench -> 0, silktouch -> -1, fortune -> fortune level, break canceled -> -2
      * @param unbreaking  unbreaking level
+     * @param replacer    True if replacer is woring.
      * @return Whether the tile used energy.
      */
-    public static boolean useEnergyBreak(final APowerTile pp, final float hardness, final byte enchantMode, final byte unbreaking) {
+    public static boolean useEnergyBreak(final APowerTile pp, final float hardness, final byte enchantMode, final byte unbreaking, boolean replacer) {
         if (enchantMode == -2)
             return true;
-        final double pw = calcEnergyBreak(pp, hardness, enchantMode, unbreaking);
+        final double pw = calcEnergyBreak(pp, hardness, enchantMode, unbreaking) * (replacer ? 1.1 : 1);
         if (pp.useEnergy(pw, pw, false, EnergyUsage.BREAK_BLOCK) != pw)
             return false;
         pp.useEnergy(pw, pw, true, EnergyUsage.BREAK_BLOCK);
@@ -249,7 +250,7 @@ public class PowerManager {
      * @return true when Adv Quarry can continue to search blocks.
      */
     public static boolean useEnergyAdvSearch(final APowerTile pp, int unbreakingLevel, int targetY) {
-        double pw = MoveHead_BP / (MoveHead_CU * unbreakingLevel + 1) * targetY;
+        double pw = MoveHead_BP * targetY / (MoveHead_CU * unbreakingLevel + 1);
         if (pp.useEnergy(pw, pw, false, EnergyUsage.ADV_CHECK_BLOCK) == pw) {
             pp.useEnergy(pw, pw, true, EnergyUsage.ADV_CHECK_BLOCK);
             return true;

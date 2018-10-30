@@ -16,8 +16,6 @@ package com.yogpc.qp.tile;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.EnumMap;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -65,14 +63,15 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
+import static com.yogpc.qp.tile.IAttachment.Attachments.ALL;
 import static com.yogpc.qp.tile.IAttachment.Attachments.EXP_PUMP;
 import static com.yogpc.qp.tile.IAttachment.Attachments.FLUID_PUMP;
 
 @net.minecraftforge.fml.common.Optional.Interface(iface = "cofh.api.tileentity.IInventoryConnection", modid = QuarryPlus.Optionals.COFH_modID)
 public abstract class TileBasic extends APowerTile implements IEnchantableTile, HasInv, IInventoryConnection, IAttachable {
 
-    private static final EnumSet<IAttachment.Attachments> VALID_ATTACHMENTS = EnumSet.allOf(IAttachment.Attachments.class);
-    protected final EnumMap<IAttachment.Attachments, EnumFacing> facingMap = new EnumMap<>(IAttachment.Attachments.class);
+    private static final Set<IAttachment.Attachments<?>> VALID_ATTACHMENTS = ALL;
+    protected final Map<IAttachment.Attachments<?>, EnumFacing> facingMap = new HashMap<>();
 
     public final NoDuplicateList<BlockData> fortuneList = NoDuplicateList.create(ArrayList::new);
     public final NoDuplicateList<BlockData> silktouchList = NoDuplicateList.create(ArrayList::new);
@@ -115,7 +114,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         }
     }
 
-    protected boolean S_breakBlock(final int x, final int y, final int z) {
+    protected boolean S_breakBlock(final int x, final int y, final int z, IBlockState replace) {
         final List<ItemStack> dropped = new LinkedList<>();
         Chunk loadedChunk = getWorld().getChunkProvider().getLoadedChunk(x >> 4, z >> 4);
         final IBlockState blockState;
@@ -137,26 +136,27 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
             return ((TilePump) te).S_removeLiquids(this, x, y, z);
         }
         BI bi = S_addDroppedItems(dropped, blockState, pos);
-        if (!PowerManager.useEnergyBreak(this, blockState.getBlockHardness(getWorld(), pos), bi.b, this.unbreaking))
+        if (!PowerManager.useEnergyBreak(this, blockState.getBlockHardness(getWorld(), pos), bi.b, this.unbreaking, bi.b1))
             return false;
-        if (facingMap.containsKey(EXP_PUMP)) {
-            TileEntity entity = world.getTileEntity(getPos().offset(facingMap.get(EXP_PUMP)));
-            if (entity instanceof TileExpPump) {
-                TileExpPump t = (TileExpPump) entity;
+        Optional.ofNullable(facingMap.get(EXP_PUMP)).map(getPos()::offset)
+            .map(getWorld()::getTileEntity)
+            .filter(EXP_PUMP).map(EXP_PUMP)
+            .ifPresent(t -> {
                 double expEnergy = t.getEnergyUse(bi.i);
                 if (useEnergy(expEnergy, expEnergy, false, EnergyUsage.PUMP_EXP) == expEnergy) {
                     useEnergy(expEnergy, expEnergy, true, EnergyUsage.PUMP_EXP);
                     t.addXp(bi.i);
                 }
-            }
-        }
+            });
         this.cacheItems.addAll(dropped);
-        this.getWorld().destroyBlock(pos, false);
+        // Replace block
+        getWorld().playEvent(2001, pos, Block.getStateId(blockState));
+        getWorld().setBlockState(pos, replace, 3);
         return true;
     }
 
     @Override
-    public boolean connectAttachment(final EnumFacing facing, IAttachment.Attachments attachments) {
+    public boolean connectAttachment(final EnumFacing facing, IAttachment.Attachments<? extends APacketTile> attachments) {
         if (facingMap.containsKey(attachments)) {
             TileEntity entity = getWorld().getTileEntity(getPos().offset(facingMap.get(attachments)));
             if (attachments.test(entity) && facingMap.get(attachments) != facing) {
@@ -169,7 +169,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     }
 
     @Override
-    public boolean isValidAttachment(IAttachment.Attachments attachments) {
+    public boolean isValidAttachment(IAttachment.Attachments<? extends APacketTile> attachments) {
         return VALID_ATTACHMENTS.contains(attachments);
     }
 
@@ -215,7 +215,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
             i = -2;
         }
         fakePlayer.setHeldItem(EnumHand.MAIN_HAND, VersionUtil.empty());
-        return new BI(i, xp);
+        return new BI(i, xp, facingMap.containsKey(IAttachment.Attachments.REPLACER));
     }
 
     @SuppressWarnings({"ConstantConditions", "deprecation"})
@@ -404,10 +404,12 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     private static class BI {
         final byte b;
         final int i;
+        final boolean b1;
 
-        private BI(byte b, int i) {
+        private BI(byte b, int i, boolean b1) {
             this.b = b;
             this.i = i;
+            this.b1 = b1;
         }
     }
 }

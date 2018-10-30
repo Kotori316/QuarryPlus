@@ -41,6 +41,8 @@ object QuarryPlusI {
     val blockBookMover = register(new BlockBookMover)
     val blockExpPump = register(new BlockExpPump())
     val blockSolidQuarry = register(new BlockSolidQuarry)
+    val dummyBlock = register(new DummyBlock)
+    val blockReplacer = register(new BlockReplacer)
     val itemTool = new ItemTool
     val magicmirror = new ItemMirror
     val debugItem = new ItemQuarryDebug

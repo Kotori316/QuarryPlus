@@ -7,6 +7,7 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.TextComponentString
 import net.minecraftforge.common.util.Constants.NBT
+import net.minecraftforge.fluids.FluidStack
 
 import scala.collection.AbstractIterator
 
@@ -123,6 +124,10 @@ package object qp {
 
     implicit object Long2NBT extends NBTWrapeer[Long, NBTTagLong] {
         override def wrap(num: Long): NBTTagLong = new NBTTagLong(num)
+    }
+
+    implicit object Fluid2NBT extends NBTWrapeer[FluidStack, NBTTagCompound] {
+        override def wrap(num: FluidStack): NBTTagCompound = num.writeToNBT(new NBTTagCompound)
     }
 
     implicit class NumberToNbt[A](val num: A) extends AnyVal {

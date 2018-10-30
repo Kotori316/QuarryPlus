@@ -53,4 +53,7 @@ public class ProxyCommon {
     public ModelResourceLocation fromEntry(IForgeRegistryEntry<?> entry) {
         return null;
     }
+
+    public void setDummyTexture(String textureName) {
+    }
 }

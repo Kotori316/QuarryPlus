@@ -23,6 +23,7 @@ import com.yogpc.qp.gui.TranslationKeys;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.TileMessage;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
@@ -42,13 +43,14 @@ public class TileMiningWell extends TileBasic implements ITickable {
     public void G_renew_powerConfigure() {
         byte pmp = 0;
         if (hasWorld()) {
-            Map<IAttachment.Attachments, EnumFacing> map = facingMap.entrySet().stream()
+            Map<IAttachment.Attachments<?>, EnumFacing> map = facingMap.entrySet().stream()
                 .filter(byEntry((attachments, facing) -> attachments.test(getWorld().getTileEntity(getPos().offset(facing)))))
                 .collect(entryToMap());
             facingMap.putAll(map);
             pmp = Optional.ofNullable(facingMap.get(IAttachment.Attachments.FLUID_PUMP))
-                .map(f -> getWorld().getTileEntity(getPos().offset(f)))
-                .map(TilePump.class::cast)
+                .map(getPos()::offset)
+                .map(getWorld()::getTileEntity)
+                .map(IAttachment.Attachments.FLUID_PUMP)
                 .map(p -> p.unbreaking).orElse((byte) 0);
         }
 
@@ -74,7 +76,7 @@ public class TileMiningWell extends TileBasic implements ITickable {
                 depth--;
             }
             if (this.working)
-                S_breakBlock(getPos().getX(), depth, getPos().getZ());
+                S_breakBlock(getPos().getX(), depth, getPos().getZ(), Blocks.AIR.getDefaultState());
             S_pollItems();
         }
     }

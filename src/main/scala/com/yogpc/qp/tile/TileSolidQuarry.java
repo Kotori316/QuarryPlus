@@ -5,7 +5,9 @@ import java.util.List;
 import com.yogpc.qp.block.BlockSolidQuarry;
 import com.yogpc.qp.gui.TranslationKeys;
 import com.yogpc.qp.version.VersionUtil;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntityFurnace;
@@ -37,6 +39,11 @@ public class TileSolidQuarry extends TileQuarry {
             }
         }
         super.S_updateEntity();
+    }
+
+    @Override
+    protected IBlockState S_getFillBlock() {
+        return Blocks.AIR.getDefaultState(); // Replace with dummy block is not allowed.
     }
 
     @Override

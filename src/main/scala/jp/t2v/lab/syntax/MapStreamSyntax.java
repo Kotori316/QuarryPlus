@@ -82,4 +82,8 @@ public class MapStreamSyntax {
     public static <K, V> Consumer<Map.Entry<K, V>> entry(BiConsumer<? super K, ? super V> biConsumer) {
         return kvEntry -> biConsumer.accept(kvEntry.getKey(), kvEntry.getValue());
     }
+
+    public static <T> Predicate<T> not(Predicate<T> original){
+        return t -> !original.test(t);
+    }
 }

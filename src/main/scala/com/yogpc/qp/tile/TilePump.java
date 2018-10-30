@@ -89,11 +89,11 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         }
     }
 
-    public TileBasic G_connected() {
+    public IAttachable G_connected() {
         if (connectTo != null) {
             final TileEntity te = getWorld().getTileEntity(getPos().offset(connectTo));
-            if (te instanceof TileBasic)
-                return (TileBasic) te;
+            if (te instanceof IAttachable)
+                return (IAttachable) te;
             else {
                 setConnectTo(null);
                 if (!getWorld().isRemote)
@@ -169,10 +169,10 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                 BlockPos offset = getPos().offset(facing);
                 IBlockState state = getWorld().getBlockState(offset);
                 if (state.getBlock().hasTileEntity(state)) {
-                    TileEntity tileEntity = getWorld().getTileEntity(offset);
-                    if (tileEntity != null && tileEntity.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing.getOpposite())) {
-                        IFluidHandler handler = tileEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing.getOpposite());
-                        if (handler != null) {
+                    Optional.ofNullable(getWorld().getTileEntity(offset))
+                        .filter(t -> t.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing.getOpposite()))
+                        .map(t -> t.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing.getOpposite()))
+                        .ifPresent(handler -> {
                             PumpTank tank = tankMap.get(facing);
                             FluidStack resource = tank.drain(Fluid.BUCKET_VOLUME, false);
                             if (resource != null) {
@@ -181,14 +181,13 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                                     handler.fill(tank.drain(fill, true), true);
                                 }
                             }
-                        }
-                    }
+                        });
                 }
             }
             if (!initialized) {
                 if (connectTo != null) {
                     TileEntity te = getWorld().getTileEntity(getPos().offset(connectTo));
-                    if (te instanceof TileBasic && ((TileBasic) te).connect(this.connectTo.getOpposite(), Attachments.FLUID_PUMP)) {
+                    if (te instanceof IAttachable && ((IAttachable) te).connect(this.connectTo.getOpposite(), Attachments.FLUID_PUMP)) {
                         S_sendNowPacket();
                         this.initialized = true;
                     } else if (getWorld().isAirBlock(getPos().offset(connectTo))) {
@@ -207,7 +206,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
             TileEntity te;
             for (EnumFacing facing : EnumFacing.VALUES) {
                 te = getWorld().getTileEntity(getPos().offset(facing));
-                if (te instanceof TileBasic && ((TileBasic) te).connect(facing.getOpposite(), Attachments.FLUID_PUMP)) {
+                if (te instanceof IAttachable && ((IAttachable) te).connect(facing.getOpposite(), Attachments.FLUID_PUMP)) {
                     setConnectTo(facing);
                     S_sendNowPacket();
                     return;
@@ -320,7 +319,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         this.yOffset = y & 0xFFFFFFF0;
         this.py = Y_SIZE - 1;
         this.px = -1;
-        final TileBasic tb = G_connected();
+        final IAttachable tb = G_connected();
         @Nullable TileQuarry b = null;
         if (tb instanceof TileQuarry)
             b = (TileQuarry) tb;
@@ -549,8 +548,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
             final LinkedList<FluidTankProperties> ret = new LinkedList<>();
             if (mapping.get(facing).isEmpty()) {
                 if (liquids.isEmpty())
-                    for (Fluid fluid : FluidRegistry.getRegisteredFluids().values())
-                        ret.add(new FluidTankProperties(new FluidStack(fluid, 0), Integer.MAX_VALUE, false, true));
+                    return IDummyFluidHandler.emptyPropertyArray;
                 else
                     for (final FluidStack fs : liquids)
                         ret.add(new FluidTankProperties(fs, Integer.MAX_VALUE, false, true));

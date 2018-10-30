@@ -103,14 +103,13 @@ case object NG extends ItemDamage {
 }
 
 object ItemDamage {
-    def apply(itemStack: ItemStack): ItemDamage =
-        itemStack match {
-            case null => NG
-            case _ if VersionUtil.isEmpty(itemStack) => NG
-            case _ if itemStack.getItem.isInstanceOf[ItemBlock] =>
-                BlockOK(itemStack, itemStack.getItem.asInstanceOf[ItemBlock].getBlock)
+    def apply(itemStack: ItemStack): ItemDamage = {
+        if (VersionUtil.isEmpty(itemStack)) NG
+        else itemStack.getItem match {
+            case block: ItemBlock => BlockOK(itemStack, block.getBlock)
             case _ => OK(itemStack)
         }
+    }
 
     def apply(item: Item, damage: Int): ItemDamage =
         item match {

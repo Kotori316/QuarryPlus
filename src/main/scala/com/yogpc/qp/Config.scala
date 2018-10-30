@@ -22,6 +22,8 @@ object Config {
             if (!content.munuallyDefinedHidden)
                 configuration.removeCategory(configuration.getCategory(CATEGORY_HIDDEN))
             sync()
+            // Moved here to avoid reloading in preInit.
+            QuarryPlus.proxy.setDummyTexture(mContent.dummyBlockTextureName)
         }
     }
 
@@ -40,8 +42,10 @@ object Config {
     def getElements: java.util.List[IConfigElement] = {
         val list = new java.util.LinkedList[IConfigElement]()
         list.addAll(new ConfigElement(configuration.getCategory(Configuration.CATEGORY_GENERAL)).getChildElements)
-        list.add(new DummyConfigElement.DummyCategoryElement("Machines", s"${QuarryPlus.modID}.$CATEGORY_MACHINES",
+        list.add(new DummyConfigElement.DummyCategoryElement("Machines", QuarryPlus.modID + "." + CATEGORY_MACHINES,
             new ConfigElement(configuration.getCategory(CATEGORY_MACHINES)).getChildElements))
+        list.add(new DummyConfigElement.DummyCategoryElement("Client", QuarryPlus.modID + "." + Configuration.CATEGORY_CLIENT,
+            new ConfigElement(configuration.getCategory(Configuration.CATEGORY_CLIENT)).getChildElements))
         list
     }
 
@@ -62,13 +66,14 @@ object Config {
         'MarkerPlus,
         'QuarryPlus,
         'WorkbenchPlus,
-        'SolidFuleQuarry)
+        'SolidFuleQuarry,
+        'Replacer)
     private val DisableBC = Set(
         'LaserPlus,
         'RefineryPlus
     )
 
-    private val defaultDisables = Set('EnchantMoverFromBook)
+    private val defaultDisables = Set('EnchantMoverFromBook, 'Replacer)
 
     final val CATEGORY_MACHINES = "machines"
     final val CATEGORY_HIDDEN = "hidden"
@@ -76,6 +81,7 @@ object Config {
     final val DisableFrameChainBreak_key = "DisableFrameChainBreak"
     final val DisableRendering_Key = "DisableRendering"
     final val DisableDungeonRoot_key = "DisableDungeonLoot"
+    final val DummyBlockTextureName_key = "DummyBlockTextureName"
     final val EnableChunkDestroyerFluidHander_key = "EnableChunkDestroyerFluidHandler"
     final val SpawnerControllerEntityBlackList_key = "SpawnerControllerEntityBlackList"
     final val RecipeDifficulty_key = "RecipeDifficulty"
@@ -123,6 +129,8 @@ object Config {
         val disableDungeonLoot = configuration.get(Configuration.CATEGORY_GENERAL, DisableDungeonRoot_key, false, "Disable adding magic mirror to loot.")
           .setRequiresMcRestart(true).getBoolean
         val debug = configuration.getBoolean(DEBUG_key, Configuration.CATEGORY_GENERAL, false, DEBUG_key)
+        val dummyBlockTextureName = configuration.getString(DummyBlockTextureName_key, Configuration.CATEGORY_CLIENT, "minecraft:glass",
+            "The name of block whose texture is used for dummy block placed by Replacer.")
 
         (Disables ++ DisableBC).map("Disable" + _.name).foreach(s => configuration.getCategory(Configuration.CATEGORY_GENERAL).remove(s))
 
