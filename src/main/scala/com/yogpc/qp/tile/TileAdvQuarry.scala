@@ -1131,7 +1131,7 @@ object TileAdvQuarry {
         }
     }
 
-    private class Modes(val index: Int, override val toString: String)
+    private[TileAdvQuarry] class Modes(val index: Int, override val toString: String)
 
     val NONE = new Modes(0, "NONE")
 
