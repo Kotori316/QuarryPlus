@@ -1,6 +1,7 @@
 package com.yogpc.qp.compat;
 
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import buildcraft.api.facades.FacadeAPI;
 import buildcraft.api.tools.IToolWrench;
@@ -8,6 +9,7 @@ import cofh.api.item.IToolHammer;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
@@ -43,7 +45,9 @@ public class BuildcraftHelper {
     @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.Buildcraft_facades)
     public static void disableFacade() {
         if (Loader.isModLoaded(QuarryPlus.Optionals.IC2_modID))
-            Optional.ofNullable(ForgeRegistries.BLOCKS.getValue(new ResourceLocation("ic2:te"))).ifPresent(FacadeAPI::disableBlock);
+            Optional.ofNullable(ForgeRegistries.BLOCKS.getValue(new ResourceLocation("ic2:te")))
+                .filter(Predicate.isEqual(Blocks.AIR).negate())
+                .ifPresent(FacadeAPI::disableBlock);
         QuarryPlusI.blockList().forEach(FacadeAPI::disableBlock);
     }
 }

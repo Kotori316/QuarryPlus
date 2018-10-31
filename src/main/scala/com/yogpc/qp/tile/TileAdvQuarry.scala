@@ -485,7 +485,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                 fluidStacks.put(tank.getFluid, tank)
             }
         })
-        val l2 = nbttc.getTagList("NBT_CHUNKLOADLIST", Constants.NBT.TAG_DOUBLE)
+        val l2 = nbttc.getTagList("NBT_CHUNKLOADLIST", Constants.NBT.TAG_LONG)
         chunks = Range(0, l2.tagCount()).map(i => new ChunkPos(BlockPos.fromLong(l2.get(i).asInstanceOf[NBTTagLong].getLong))).toList
     }
 
