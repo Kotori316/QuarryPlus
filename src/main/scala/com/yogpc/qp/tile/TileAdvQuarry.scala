@@ -35,7 +35,7 @@ import net.minecraftforge.common.{ForgeChunkManager, IShearable, MinecraftForge}
 import net.minecraftforge.event.ForgeEventFactory
 import net.minecraftforge.event.world.BlockEvent
 import net.minecraftforge.fluids.capability.{CapabilityFluidHandler, FluidTankProperties, IFluidHandler, IFluidTankProperties}
-import net.minecraftforge.fluids.{Fluid, FluidStack, FluidTank, FluidUtil}
+import net.minecraftforge.fluids.{FluidStack, FluidTank, FluidUtil}
 import net.minecraftforge.fml.common.registry.ForgeRegistries
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import net.minecraftforge.items.{CapabilityItemHandler, IItemHandlerModifiable}
@@ -49,7 +49,7 @@ import scala.reflect.ClassTag
 class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with ITickable with IDebugSender with IChunkLoadTile with IAttachable {
     self =>
     private[this] var mDigRange = TileAdvQuarry.defaultRange
-    private[this] var facingMap: Map[Attachments, EnumFacing] = Map.empty
+    private[this] var facingMap: Map[Attachments[_ <: APacketTile], EnumFacing] = Map.empty
     var ench = TileAdvQuarry.defaultEnch
     var target = BlockPos.ORIGIN
     var framePoses = List.empty[BlockPos]
@@ -143,21 +143,17 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                     if (x % 3 == 0) {
                         val axis = new AxisAlignedBB(new BlockPos(x - 6, 1, z - 6), target.add(6, 0, 6))
                         //catch dropped items
-                        getWorld.getEntitiesWithinAABB(classOf[EntityItem], axis).asScala.filter(nonNull).foreach(entity => {
-                            if (!entity.isDead) {
-                                val drop = entity.getItem
-                                if (drop.getCount > 0) {
-                                    entity.getEntityWorld.removeEntity(entity)
-                                    list.add(drop)
-                                }
+                        getWorld.getEntitiesWithinAABB(classOf[EntityItem], axis).asScala.filter(nonNull).filter(!_.isDead).foreach(entity => {
+                            val drop = entity.getItem
+                            if (drop.getCount > 0) {
+                                entity.getEntityWorld.removeEntity(entity)
+                                list.add(drop)
                             }
                         })
                         //remove XPs
-                        getWorld.getEntitiesWithinAABB(classOf[EntityXPOrb], axis).asScala.filter(nonNull).foreach(entityXPOrb => {
-                            if (!entityXPOrb.isDead) {
-                                expPump.foreach(_.addXp(entityXPOrb.xpValue))
-                                entityXPOrb.getEntityWorld.removeEntity(entityXPOrb)
-                            }
+                        getWorld.getEntitiesWithinAABB(classOf[EntityXPOrb], axis).asScala.filter(nonNull).filter(!_.isDead).foreach(entityXPOrb => {
+                            expPump.foreach(_.addXp(entityXPOrb.xpValue))
+                            entityXPOrb.getEntityWorld.removeEntity(entityXPOrb)
                         })
                     }
 
@@ -246,6 +242,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                         fakePlayer.setHeldItem(EnumHand.MAIN_HAND, getEnchantedPickaxe)
                         val collectFurnaceXP = InvUtils.hasSmelting(fakePlayer.getHeldItemMainhand) && expPump.isDefined
                         val tempList = new NotNullList(new ArrayBuffer[ItemStack]())
+                        val toReplace = getFillBlock
                         val p = new MutableBlockPos(x, 0, z)
                         dig.result().foreach(y => {
                             p.setY(y)
@@ -265,7 +262,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                                     event.setExpToDrop(event.getExpToDrop + TileBasic.getSmeltingXp(tempList.fixing.asJava, Collections.emptyList()))
                                 expPump.filter(xpFilter(event.getExpToDrop)).foreach(_.addXp(event.getExpToDrop))
                                 tempList.clear()
-                                getWorld.setBlockState(p, Blocks.AIR.getDefaultState, 2)
+                                setBlock(p, toReplace)
                             }
                         })
                         if (shear.result().nonEmpty) {
@@ -283,7 +280,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                                     ForgeEventFactory.fireBlockHarvesting(tempList, getWorld, p, state, ench.fortune, 1f, ench.silktouch, fakePlayer)
                                     list.addAll(tempList)
                                     tempList.clear()
-                                    getWorld.setBlockState(p, Blocks.AIR.getDefaultState, 2)
+                                    setBlock(p, toReplace)
                                     expPump.filter(xpFilter(event.getExpToDrop)).foreach(_.addXp(event.getExpToDrop))
                                 }
                             }
@@ -295,7 +292,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                             val event = new BlockEvent.BreakEvent(getWorld, p, state, fakePlayer)
                             MinecraftForge.EVENT_BUS.post(event)
                             if (!event.isCanceled) {
-                                getWorld.setBlockState(p, Blocks.AIR.getDefaultState, 2)
+                                setBlock(p, toReplace)
                                 if (collectFurnaceXP) {
                                     val nnl = new NotNullList(new ArrayBuffer[ItemStack]())
                                     TileBasic.getDrops(getWorld, p, state, state.getBlock, 0, nnl)
@@ -313,9 +310,9 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                         for (y <- drain.result()) {
                             p.setY(y)
                             val handler = Option(FluidUtil.getFluidHandler(getWorld, p, EnumFacing.UP))
-                            val fluidOp = handler.map(_.getTankProperties.apply(0)).flatMap(prop => Option(prop.getContents))
+                            val fluidOp = handler.flatMap(_.getTankProperties.apply(0).nnMap(_.getContents))
                             fluidOp match {
-                                case Some(fluidStack) => handler.map(_.drain(Fluid.BUCKET_VOLUME, false)).foreach(s => fluidStacks.get(fluidStack) match {
+                                case Some(fluidStack) => handler.flatMap(_.drain(fluidStack.amount, false).toOption).foreach(s => fluidStacks.get(fluidStack) match {
                                     case Some(tank) => tank.fill(s, true)
                                     case None => fluidStacks.put(fluidStack, new QuarryTank(s, Int.MaxValue))
                                 })
@@ -450,6 +447,11 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                 getWorld.getChunkFromChunkCoords(chunkPos.x, chunkPos.z)
             chunks = chunks.tail
         }
+    }
+
+    private def setBlock(pos: BlockPos, state: IBlockState): Unit = {
+        val i = if (state.isFullCube) 2 else 3
+        getWorld.setBlockState(pos, state, i)
     }
 
     override protected def isWorking = mode.isWorking
@@ -648,7 +650,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
         }
     }
 
-    override def connectAttachment(facing: EnumFacing, attachments: Attachments): Boolean = {
+    override def connectAttachment(facing: EnumFacing, attachments: Attachments[_ <: APacketTile]): Boolean = {
         if (!facingMap.contains(attachments)) {
             facingMap = facingMap.updated(attachments, facing)
             true
@@ -663,7 +665,14 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
         }
     }
 
-    override def isValidAttachment(attachments: Attachments): Boolean = VALID_ATTACHMENTS(attachments)
+    override def isValidAttachment(attachments: Attachments[_ <: APacketTile]): Boolean = VALID_ATTACHMENTS(attachments)
+
+    private def getFillBlock: IBlockState = {
+        facingMap.get(Attachments.REPLACER)
+          .flatMap(f => getWorld.getTileEntity(getPos.offset(f)).toOption)
+          .collect { case t if Attachments.REPLACER.test(t) => Attachments.REPLACER.apply(t) }
+          .fold(Blocks.AIR.getDefaultState)(_.getReplaceState)
+    }
 
     @SideOnly(Side.CLIENT)
     def recieveModeMessage(modeTag: NBTTagCompound): Runnable = new Runnable {
@@ -765,6 +774,14 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                 }
             }
         }
+
+        override def toString: String = {
+            if (fluid == null) {
+                "QuarryTank(null, 0)"
+            } else {
+                "QuarryTank(" + fluid.getLocalizedName + ", " + getFluidAmount + ")"
+            }
+        }
     }
 
     private[TileAdvQuarry] class Mode extends INBTWritable with INBTReadable[Mode] {
@@ -851,7 +868,7 @@ object TileAdvQuarry {
     private final val NBT_MODE = "nbt_quarrymode"
     private final val NBT_ITEMLIST = "nbt_itemlist"
     private final val NBT_ITEMELEMENTS = "nbt_itemelements"
-    final val VALID_ATTACHMENTS = Set(Attachments.EXP_PUMP)
+    final val VALID_ATTACHMENTS: Set[Attachments[_]] = Set(Attachments.EXP_PUMP, Attachments.REPLACER)
 
     val defaultEnch = QEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false)
     val defaultRange: DigRange = new DigRange(BlockPos.ORIGIN, BlockPos.ORIGIN) {
@@ -867,11 +884,11 @@ object TileAdvQuarry {
         require(efficiency >= 0 && unbreaking >= 0 && fortune >= 0,
             s"Chunk Destroyer Enchantment error with Efficiency $efficiency, Unbreaking $unbreaking, Fortune $fortune, Silktouch $silktouch, other $other")
         val pickaxe = new ItemStack(net.minecraft.init.Items.DIAMOND_PICKAXE)
-        EnchantmentHelper.setEnchantments(getMap.collect {
-            case (id, level) if level > 0 && {
-                Config.content.enableMap(BlockBookMover.SYMBOL) || IEnchantableTile.isValidEnch.test(id, level)
-            } => (Enchantment.getEnchantmentByID(id), Int.box(level))
-        }.asJava, pickaxe)
+        private val pf: PartialFunction[(Int, Int), (Enchantment, Integer)] = {
+            case (id, level) if level > 0 && (Config.content.enableMap(BlockBookMover.SYMBOL) || IEnchantableTile.isValidEnch.test(id, level))
+            => (Enchantment.getEnchantmentByID(id), Int.box(level))
+        }
+        EnchantmentHelper.setEnchantments((getMap collect pf).asJava, pickaxe)
 
         import IEnchantableTile._
 
@@ -890,7 +907,7 @@ object TileAdvQuarry {
 
         val maxStore = MAX_STORED * (efficiency + 1)
 
-        val maxRecieve = if (efficiency >= 5) maxStore else maxStore * Math.pow(efficiency.toDouble / 5.0, 3)
+        val maxRecieve = if (efficiency >= 5) maxStore else if (efficiency == 0) maxStore * 0.001 else maxStore * Math.pow(efficiency.toDouble / 5.0, 3)
 
         val mode: Byte = if (silktouch) -1 else fortune.toByte
 
@@ -901,9 +918,9 @@ object TileAdvQuarry {
             t.setInteger("fortune", fortune)
             t.setBoolean("silktouch", silktouch)
             val o = new NBTTagCompound
-            other.map { case (i, l) => Enchantment.getEnchantmentByID(i) -> l }.foreach { case (e, l) =>
-                if (e != null)
-                    o.setInteger(e.getRegistryName.toString, l)
+            other.map { case (i, l) => Option(Enchantment.getEnchantmentByID(i)) -> l }.foreach {
+                case (Some(e), l) => o.setInteger(e.getRegistryName.toString, l)
+                case _ =>
             }
             t.setTag("other", o)
             nbt.setTag(NBT_QENCH, t)
@@ -1039,18 +1056,17 @@ object TileAdvQuarry {
 
         override def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
             val t = new NBTTagCompound
-            val l = new NBTTagList
-            list.map(_.toNBT).foreach(l.appendTag(_))
+            val l = (new NBTTagList).tap(l => list.map(_.toNBT).foreach(l.appendTag))
             t.setTag(NBT_ITEMELEMENTS, l)
-            nbt.setTag(NBT_ITEMLIST, (new NBTTagCompound).tap(t => t.setTag(NBT_ITEMELEMENTS, (new NBTTagList).tap(l =>
-                list.foreach(i => l.appendTag(i.toNBT))))))
+            val l2 = (new NBTTagList).tap(l => list.foreach(i => l.appendTag(i.toNBT)))
+            nbt.setTag(NBT_ITEMLIST, (new NBTTagCompound).tap(t => t.setTag(NBT_ITEMELEMENTS, l2)))
             nbt
         }
 
         override def readFromNBT(tag: NBTTagCompound): ItemList = {
             if (tag.hasKey(NBT_ITEMLIST)) {
                 val l = tag.getCompoundTag(NBT_ITEMLIST).getTagList(NBT_ITEMELEMENTS, Constants.NBT.TAG_COMPOUND)
-                Range(0, l.tagCount()).foreach(i => add(VersionUtil.fromNBTTag(l.getCompoundTagAt(i))))
+                l.tagIterator.foreach(t => add(VersionUtil.fromNBTTag(t)))
             }
             this
         }

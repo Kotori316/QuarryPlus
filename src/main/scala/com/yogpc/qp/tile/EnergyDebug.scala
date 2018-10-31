@@ -115,6 +115,7 @@ class EnergyDebug(tile: APowerTile) {
     def finish(): Unit = {
         if (!started) return
         stopWatch.stop()
+        stopWatch.reset()
         if (outputInfo) {
             printinfo()
             val time = getTime - startTime

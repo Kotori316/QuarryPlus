@@ -36,13 +36,13 @@ import com.yogpc.qp.tile.TilePlacer;
 import com.yogpc.qp.tile.TilePump;
 import com.yogpc.qp.tile.TileQuarry;
 import com.yogpc.qp.tile.TileRefinery;
+import com.yogpc.qp.tile.TileReplacer;
 import com.yogpc.qp.tile.TileSolidQuarry;
 import com.yogpc.qp.tile.TileWorkbench;
 import com.yogpc.qp.tile.WorkbenchRecipes;
 import com.yogpc.qp.version.VersionDiff;
 import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.launchwrapper.Launch;
@@ -134,6 +134,7 @@ public class QuarryPlus {
         if (!Config.content().disableDungeonLoot())
             MinecraftForge.EVENT_BUS.register(Loot.instance());
         proxy.registerTextures();
+        MinecraftForge.EVENT_BUS.register(proxy);
         NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, GuiHandler.instance());
         inDev = ((Boolean) Launch.blackboard.getOrDefault("fml.deobfuscatedEnvironment", Boolean.FALSE));
     }
@@ -166,7 +167,9 @@ public class QuarryPlus {
             blockStandalonePump(),
             blockBookMover(),
             blockExpPump(),
-            blockSolidQuarry()
+            blockSolidQuarry(),
+            dummyBlock(),
+            blockReplacer()
         );
 
         GameRegistry.registerTileEntity(TileWorkbench.class, new ResourceLocation(modID, QuarryPlus.Names.workbench));
@@ -183,6 +186,7 @@ public class QuarryPlus {
         GameRegistry.registerTileEntity(TileBookMover.class, new ResourceLocation(modID, QuarryPlus.Names.moverfrombook));
         GameRegistry.registerTileEntity(TileExpPump.class, new ResourceLocation(modID, QuarryPlus.Names.exppump));
         GameRegistry.registerTileEntity(TileSolidQuarry.class, new ResourceLocation(modID, QuarryPlus.Names.solidquarry));
+        GameRegistry.registerTileEntity(TileReplacer.class, new ResourceLocation(modID, QuarryPlus.Names.replacer));
     }
 
     @SubscribeEvent
@@ -206,6 +210,8 @@ public class QuarryPlus {
             blockBookMover().itemBlock(),
             blockExpPump().itemBlock(),
             blockSolidQuarry().itemBlock(),
+            dummyBlock().itemBlock(),
+            blockReplacer().itemBlock(),
             itemTool(),
             magicmirror(),
             debugItem()
@@ -215,7 +221,6 @@ public class QuarryPlus {
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
     public void registerModels(ModelRegistryEvent event) {
-        final String variantIn = "inventory";
         ModelLoader.setCustomModelResourceLocation(blockQuarry().itemBlock(), 0, proxy.fromEntry(blockQuarry()));
         ModelLoader.setCustomModelResourceLocation(blockFrame().itemBlock, 0, proxy.fromEntry(blockFrame()));
         ModelLoader.setCustomModelResourceLocation(blockFrame().itemBlock, 1, proxy.fromEntry(blockFrame()));
@@ -235,9 +240,11 @@ public class QuarryPlus {
         ModelLoader.setCustomModelResourceLocation(blockBookMover().itemBlock(), 0, proxy.fromEntry(blockBookMover()));
         ModelLoader.setCustomModelResourceLocation(blockExpPump().itemBlock(), 0, proxy.fromEntry(blockExpPump()));
         ModelLoader.setCustomModelResourceLocation(blockSolidQuarry().itemBlock(), 0, proxy.fromEntry(blockSolidQuarry()));
-        ModelLoader.setCustomModelResourceLocation(itemTool(), 0, new ModelResourceLocation(prefix + ItemTool.statuschecker(), variantIn));
-        ModelLoader.setCustomModelResourceLocation(itemTool(), 1, new ModelResourceLocation(prefix + ItemTool.listeditor(), variantIn));
-        ModelLoader.setCustomModelResourceLocation(itemTool(), 2, new ModelResourceLocation(prefix + ItemTool.liquidselector(), variantIn));
+        ModelLoader.setCustomModelResourceLocation(dummyBlock().itemBlock(), 0, proxy.fromEntry(dummyBlock()));
+        ModelLoader.setCustomModelResourceLocation(blockReplacer().itemBlock(), 0, proxy.fromEntry(blockReplacer()));
+        ModelLoader.setCustomModelResourceLocation(itemTool(), 0, ModelLoader.getInventoryVariant(prefix + ItemTool.statuschecker()));
+        ModelLoader.setCustomModelResourceLocation(itemTool(), 1, ModelLoader.getInventoryVariant(prefix + ItemTool.listeditor()));
+        ModelLoader.setCustomModelResourceLocation(itemTool(), 2, ModelLoader.getInventoryVariant(prefix + ItemTool.liquidselector()));
         ModelLoader.setCustomModelResourceLocation(magicmirror(), 0, proxy.fromEntry(magicmirror()));
         ModelLoader.setCustomModelResourceLocation(magicmirror(), 1, proxy.fromEntry(magicmirror()));
         ModelLoader.setCustomModelResourceLocation(magicmirror(), 2, proxy.fromEntry(magicmirror()));
@@ -321,6 +328,7 @@ public class QuarryPlus {
         public static final String breaker = "breakerplus";
         public static final String controller = "spawnercontroller";
         public static final String debug = "quarrydebug";
+        public static final String dummyblock = "dummyblock";
         public static final String exppump = "exppump";
         public static final String frame = "quarryframe";
         public static final String laser = "laserplus";
@@ -334,6 +342,7 @@ public class QuarryPlus {
         public static final String pump = "pumpplus";
         public static final String quarry = "quarryplus";
         public static final String refinery = "refineryplus";
+        public static final String replacer = "quarryreplacer";
         public static final String solidquarry = "solidquarry";
         public static final String tool = "tool";
         public static final String workbench = "workbenchplus";

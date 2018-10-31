@@ -38,7 +38,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
-import net.minecraft.item.ItemStack;
+import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -58,6 +58,7 @@ import scala.Symbol;
 
 import static com.yogpc.qp.tile.IAttachment.Attachments.EXP_PUMP;
 import static com.yogpc.qp.tile.IAttachment.Attachments.FLUID_PUMP;
+import static com.yogpc.qp.tile.IAttachment.Attachments.REPLACER;
 import static com.yogpc.qp.tile.TileQuarry.Mode.BREAKBLOCK;
 import static com.yogpc.qp.tile.TileQuarry.Mode.MAKEFRAME;
 import static com.yogpc.qp.tile.TileQuarry.Mode.MOVEHEAD;
@@ -72,6 +73,9 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     public int xMin, xMax, yMin, yMax = Integer.MIN_VALUE, zMin, zMax;
     public boolean filler;
 
+    /**
+     * The marker of {@link IAreaProvider} or {@link TileMarker}.
+     */
     @Nullable
     private Object areaProvider = null;
 
@@ -80,6 +84,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
         return SYMBOL;
     }
 
+    @SuppressWarnings("fallthrough")
     protected void S_updateEntity() {
         if (machineDisabled) return;
         if (this.areaProvider != null) {
@@ -90,27 +95,36 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
             }
             this.areaProvider = null;
         }
-        switch (this.now) {
-            case MAKEFRAME:
-                if (S_makeFrame())
-                    while (!S_checkTarget())
-                        S_setNextTarget();
-                break;
-            case MOVEHEAD:
-                final boolean done = S_moveHead();
-                MoveHead.send(this);
-                if (!done)
+        boolean breaked = false;
+        for (int i = 0; i < efficiency + 1 && !breaked; i++) {
+            switch (this.now) {
+                case MAKEFRAME:
+                    if (S_makeFrame())
+                        while (!S_checkTarget())
+                            S_setNextTarget();
+                    breaked = true;
                     break;
-                setNow(BREAKBLOCK);
+                case MOVEHEAD:
+                    final boolean done = S_moveHead();
+                    MoveHead.send(this);
+                    if (!done) {
+                        breaked = true;
+                        break;
+                    }
+                    setNow(BREAKBLOCK);
+                    break;
                 //$FALL-THROUGH$
-            case NOTNEEDBREAK:
-            case BREAKBLOCK:
-                if (S_breakBlock())
-                    while (!S_checkTarget())
-                        S_setNextTarget();
-                break;
-            case NONE:
-                break;
+                case NOTNEEDBREAK:
+                    breaked = true;
+                case BREAKBLOCK:
+                    if (S_breakBlock())
+                        while (!S_checkTarget())
+                            S_setNextTarget();
+                    break;
+                case NONE:
+                    breaked = true;
+                    break;
+            }
         }
         S_pollItems();
     }
@@ -135,7 +149,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                     PacketHandler.sendToAround(ModeMessage.create(this), getWorld(), getPos());
                     return true;
                 }
-                return blockHardness >= 0 && !b.getBlock().isAir(b, getWorld(), target) && !(facingMap.containsKey(FLUID_PUMP) && TilePump.isLiquid(b));
+                return isBreakableBlock(target, b, blockHardness);
             case NOTNEEDBREAK:
                 if (this.targetY < this.yMin) {
                     if (this.filler) {
@@ -152,9 +166,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                     this.changeZ = false;
                     return S_checkTarget();
                 }
-                if (blockHardness < 0 || b.getBlock().isAir(b, getWorld(), target))
-                    return false;
-                if (!facingMap.containsKey(FLUID_PUMP) && TilePump.isLiquid(b))
+                if (!isBreakableBlock(target, b, blockHardness))
                     return false;
                 if (b.getBlock() == QuarryPlusI.blockFrame() && !b.getValue(BlockFrame.DAMMING)) {
                     byte flag = 0;
@@ -201,6 +213,13 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                 break;
         }
         return true;
+    }
+
+    private boolean isBreakableBlock(BlockPos target, IBlockState b, float blockHardness) {
+        return blockHardness >= 0 && // Not to break unbreakable
+            !b.getBlock().isAir(b, getWorld(), target) && // Avoid air
+            (now != NOTNEEDBREAK && (!facingMap.containsKey(REPLACER) || b != S_getFillBlock())) && // Avoid dummy block.
+            !(!facingMap.containsKey(FLUID_PUMP) && TilePump.isLiquid(b)); // Fluid when pump isn't connected.
     }
 
     private boolean addX = true;
@@ -303,7 +322,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
 
     private boolean S_breakBlock() {
         this.digged = true;
-        if (S_breakBlock(this.targetX, this.targetY, this.targetZ)) {
+        if (S_breakBlock(this.targetX, this.targetY, this.targetZ, S_getFillBlock())) {
             S_checkDropItem();
             if (this.now == BREAKBLOCK)
                 setNow(MOVEHEAD);
@@ -317,30 +336,22 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
         final AxisAlignedBB axis = new AxisAlignedBB(this.targetX - 4, this.targetY - 4, this.targetZ - 4,
             this.targetX + 5, this.targetY + 3, this.targetZ + 5);
         final List<EntityItem> result = getWorld().getEntitiesWithinAABB(EntityItem.class, axis);
-        for (EntityItem entityItem : result) {
-            if (!entityItem.isDead) {
-                ItemStack drop = entityItem.getItem();
-                if (VersionUtil.nonEmpty(drop)) {
-                    QuarryPlus.proxy.removeEntity(entityItem);
-                    this.cacheItems.add(drop);
-                }
-            }
-        }
+        result.stream().filter(EntityItem::isEntityAlive).map(EntityItem::getItem).filter(VersionUtil::nonEmpty).forEach(this.cacheItems::add);
+        result.forEach(QuarryPlus.proxy::removeEntity);
+
         if (facingMap.containsKey(EXP_PUMP)) {
             List<EntityXPOrb> xpOrbs = getWorld().getEntitiesWithinAABB(EntityXPOrb.class, axis);
-            for (EntityXPOrb xpOrb : xpOrbs) {
-                if (!xpOrb.isDead) {
-                    TileEntity tileEntity = world.getTileEntity(pos.offset(facingMap.get(EXP_PUMP)));
-                    if (tileEntity instanceof TileExpPump) {
-                        TileExpPump t = (TileExpPump) tileEntity;
-                        double min = t.getEnergyUse(xpOrb.xpValue);
-                        if (useEnergy(min, min, false, EnergyUsage.PUMP_EXP) == min) {
-                            useEnergy(min, min, true, EnergyUsage.PUMP_EXP);
-                            t.addXp(xpOrb.xpValue);
-                            QuarryPlus.proxy.removeEntity(xpOrb);
-                        }
+            TileEntity t = world.getTileEntity(pos.offset(facingMap.get(EXP_PUMP)));
+            if (t instanceof TileExpPump) {
+                TileExpPump pump = (TileExpPump) t;
+                xpOrbs.stream().filter(EntityXPOrb::isEntityAlive).mapToInt(EntityXPOrb::getXpValue).forEach(value -> {
+                    double min = pump.getEnergyUse(value);
+                    if (useEnergy(min, min, false, EnergyUsage.PUMP_EXP) == min) {
+                        useEnergy(min, min, true, EnergyUsage.PUMP_EXP);
+                        pump.addXp(value);
                     }
-                }
+                });
+                xpOrbs.forEach(QuarryPlus.proxy::removeEntity);
             }
         }
 
@@ -422,6 +433,18 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
             }
         }
 
+    }
+
+    protected IBlockState S_getFillBlock() {
+        if (now == NOTNEEDBREAK || !facingMap.containsKey(REPLACER))
+            return Blocks.AIR.getDefaultState();
+        else {
+            return Optional.ofNullable(world.getTileEntity(pos.offset(facingMap.get(REPLACER))))
+                .filter(REPLACER)
+                .map(REPLACER)
+                .map(TileReplacer::getReplaceState)
+                .orElse(Blocks.AIR.getDefaultState());
+        }
     }
 
     public void setDefaultRange(BlockPos pos, EnumFacing facing) {
@@ -641,14 +664,16 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     public void G_renew_powerConfigure() {
         byte pmp = 0;
         if (hasWorld()) {
-            Map<IAttachment.Attachments, EnumFacing> map = facingMap.entrySet().stream()
+            Map<IAttachment.Attachments<?>, EnumFacing> map = facingMap.entrySet().stream()
                 .filter(byEntry((attachments, facing) -> attachments.test(getWorld().getTileEntity(getPos().offset(facing)))))
                 .collect(entryToMap());
             facingMap.putAll(map);
             pmp = Optional.ofNullable(facingMap.get(FLUID_PUMP))
-                .map(f -> getWorld().getTileEntity(getPos().offset(f)))
-                .map(TilePump.class::cast)
-                .map(p -> p.unbreaking).orElse((byte) 0);
+                .map(getPos()::offset)
+                .map(getWorld()::getTileEntity)
+                .map(FLUID_PUMP)
+                .map(p -> p.unbreaking)
+                .orElse((byte) 0);
         }
         if (this.now == NONE)
             PowerManager.configure0(this);

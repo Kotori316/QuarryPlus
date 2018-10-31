@@ -53,7 +53,7 @@ public interface IEnchantableTile {
         else if (id == EfficiencyID)
             return level <= 5;
         else
-            return id == SilktouchID;
+            return id == SilktouchID && level == 1;
     };
 
     /**

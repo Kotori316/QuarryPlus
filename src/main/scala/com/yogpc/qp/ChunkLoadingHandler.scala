@@ -34,11 +34,7 @@ object ChunkLoadingHandler extends ForgeChunkManager.OrderedLoadingCallback {
 
     override def ticketsLoaded(tickets: util.List[ForgeChunkManager.Ticket], world: World): Unit = {
         for (ticket <- tickets.asScala) {
-            val quarryX = ticket.getModData.getInteger("quarryX")
-            val quarryY = ticket.getModData.getInteger("quarryY")
-            val quarryZ = ticket.getModData.getInteger("quarryZ")
-            val te = world.getTileEntity(new BlockPos(quarryX, quarryY, quarryZ))
-            te match {
+            world.getTileEntity(getTilePos(ticket)) match {
                 case tile: IChunkLoadTile => tile.forceChunkLoading(ticket)
                 case _ =>
             }
@@ -48,13 +44,19 @@ object ChunkLoadingHandler extends ForgeChunkManager.OrderedLoadingCallback {
     override def ticketsLoaded(tickets: util.List[ForgeChunkManager.Ticket], world: World, maxTicketCount: Int): util.List[ForgeChunkManager.Ticket] = {
         val validTickets = new util.ArrayList[ForgeChunkManager.Ticket]()
         for (ticket <- tickets.asScala) {
-            val quarryX = ticket.getModData.getInteger("quarryX")
-            val quarryY = ticket.getModData.getInteger("quarryY")
-            val quarryZ = ticket.getModData.getInteger("quarryZ")
-            val state = world.getBlockState(new BlockPos(quarryX, quarryY, quarryZ))
+            val state = world.getBlockState(getTilePos(ticket))
             if (blockSet contains state.getBlock)
                 validTickets.add(ticket)
         }
         validTickets
     }
+
+    private def getTilePos(ticket: ForgeChunkManager.Ticket) = {
+        val quarryX = ticket.getModData.getInteger("quarryX")
+        val quarryY = ticket.getModData.getInteger("quarryY")
+        val quarryZ = ticket.getModData.getInteger("quarryZ")
+        val pos = new BlockPos(quarryX, quarryY, quarryZ)
+        pos
+    }
+
 }

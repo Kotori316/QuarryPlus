@@ -19,6 +19,8 @@ tile.standalonepump.name=自立改良型ポンプ
 tile.workbenchplus.name=改良型作業台
 tile.enchantmoverfrombook.name=エンチャント移動機2
 tile.solidquarry.name=固体燃料採掘機
+tile.quarryplus.dummyblock.name=Dummy Block
+tile.quarryreplacer.name=採掘機用置き換え機
 item.dimensionmirror.name=世界の鏡
 item.electric_armor.name=改良型電動防具
 item.liquidselector.name=液体選択用具
@@ -100,4 +102,4 @@ yog.pump.liquid=-    %s: %smB
 yog.spanwer.setting=隣接したスポーナーからスポーンさせる生物を選択してください
 
 quarryplus.machines.tooltip=機械の設定
-
+quarryplus.client.tooltip=クライアントの設定

@@ -8,11 +8,11 @@ public interface IAttachable {
      *
      * @param attachments must have returned true by {@link IAttachable#isValidAttachment(IAttachment.Attachments)}.
      */
-    boolean connectAttachment(final EnumFacing facing, final IAttachment.Attachments attachments);
+    boolean connectAttachment(final EnumFacing facing, final IAttachment.Attachments<? extends APacketTile> attachments);
 
-    boolean isValidAttachment(final IAttachment.Attachments attachments);
+    boolean isValidAttachment(final IAttachment.Attachments<? extends APacketTile> attachments);
 
-    default boolean connect(final EnumFacing facing, final IAttachment.Attachments attachments) {
+    default boolean connect(final EnumFacing facing, final IAttachment.Attachments<? extends APacketTile> attachments) {
         return isValidAttachment(attachments) && connectAttachment(facing, attachments);
     }
 }

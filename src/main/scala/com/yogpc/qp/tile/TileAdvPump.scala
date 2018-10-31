@@ -504,12 +504,8 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
 
         override def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
             val tag = new NBTTagCompound
-            tag.setLong(NBT_pumped, amountPumped)
-            val list = new NBTTagList
-            for (s <- fluidStacks) {
-                list.appendTag(s.writeToNBT(new NBTTagCompound))
-            }
-            tag.setTag(NBT_liquids, list)
+            tag.setTag(NBT_pumped, amountPumped.toNBT)
+            tag.setTag(NBT_liquids, (new NBTTagList).tap(l => fluidStacks.map(_.toNBT).foreach(l.appendTag)))
             nbt.setTag(NBT_FluidHandler, tag)
             nbt
         }
