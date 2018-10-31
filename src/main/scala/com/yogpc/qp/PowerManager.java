@@ -250,7 +250,7 @@ public class PowerManager {
      * @return true when Adv Quarry can continue to search blocks.
      */
     public static boolean useEnergyAdvSearch(final APowerTile pp, int unbreakingLevel, int targetY) {
-        double pw = MoveHead_BP * targetY / (MoveHead_CU * unbreakingLevel + 1);
+        double pw = MoveHead_BP * targetY / (MoveHead_CU * unbreakingLevel + 1) / 4;
         if (pp.useEnergy(pw, pw, false, EnergyUsage.ADV_CHECK_BLOCK) == pw) {
             pp.useEnergy(pw, pw, true, EnergyUsage.ADV_CHECK_BLOCK);
             return true;

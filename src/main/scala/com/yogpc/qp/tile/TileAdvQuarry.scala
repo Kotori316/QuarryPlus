@@ -262,7 +262,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                                     event.setExpToDrop(event.getExpToDrop + TileBasic.getSmeltingXp(tempList.fixing.asJava, Collections.emptyList()))
                                 expPump.filter(xpFilter(event.getExpToDrop)).foreach(_.addXp(event.getExpToDrop))
                                 tempList.clear()
-                                getWorld.setBlockState(p, toReplace, 2)
+                                setBlock(p, toReplace)
                             }
                         })
                         if (shear.result().nonEmpty) {
@@ -280,7 +280,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                                     ForgeEventFactory.fireBlockHarvesting(tempList, getWorld, p, state, ench.fortune, 1f, ench.silktouch, fakePlayer)
                                     list.addAll(tempList)
                                     tempList.clear()
-                                    getWorld.setBlockState(p, toReplace, 2)
+                                    setBlock(p, toReplace)
                                     expPump.filter(xpFilter(event.getExpToDrop)).foreach(_.addXp(event.getExpToDrop))
                                 }
                             }
@@ -292,7 +292,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                             val event = new BlockEvent.BreakEvent(getWorld, p, state, fakePlayer)
                             MinecraftForge.EVENT_BUS.post(event)
                             if (!event.isCanceled) {
-                                getWorld.setBlockState(p, toReplace, 2)
+                                setBlock(p, toReplace)
                                 if (collectFurnaceXP) {
                                     val nnl = new NotNullList(new ArrayBuffer[ItemStack]())
                                     TileBasic.getDrops(getWorld, p, state, state.getBlock, 0, nnl)
@@ -447,6 +447,11 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                 getWorld.getChunkFromChunkCoords(chunkPos.x, chunkPos.z)
             chunks = chunks.tail
         }
+    }
+
+    private def setBlock(pos: BlockPos, state: IBlockState): Unit = {
+        val i = if (state.isFullCube) 2 else 3
+        getWorld.setBlockState(pos, state, i)
     }
 
     override protected def isWorking = mode.isWorking

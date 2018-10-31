@@ -10,6 +10,8 @@ import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import org.apache.commons.lang3.tuple.Pair;
@@ -63,7 +65,7 @@ public class TileReplacer extends APacketTile implements IAttachment {
                 .orElse(null);
             setConnectTo(enumFacing);
             IBlockState state = world.getBlockState(pos.up());
-            if (state == Blocks.AIR.getDefaultState() ||
+            if (Item.getItemFromBlock(state.getBlock()) == Items.AIR ||
                 state.getBlock().hasTileEntity(state) ||
                 state.getMaterial() == Material.CIRCUITS ||
                 TilePump.isLiquid(state)) {
