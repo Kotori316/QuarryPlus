@@ -310,7 +310,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                         for (y <- drain.result()) {
                             p.setY(y)
                             val handler = Option(FluidUtil.getFluidHandler(getWorld, p, EnumFacing.UP))
-                            val fluidOp = handler.flatMap(_.getTankProperties.apply(0).map(_.getContents))
+                            val fluidOp = handler.flatMap(_.getTankProperties.apply(0).nnMap(_.getContents))
                             fluidOp match {
                                 case Some(fluidStack) => handler.flatMap(_.drain(fluidStack.amount, false).toOption).foreach(s => fluidStacks.get(fluidStack) match {
                                     case Some(tank) => tank.fill(s, true)

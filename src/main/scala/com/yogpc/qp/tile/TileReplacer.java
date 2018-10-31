@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.block.BlockPump;
 import javax.annotation.Nullable;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
@@ -62,8 +63,13 @@ public class TileReplacer extends APacketTile implements IAttachment {
                 .orElse(null);
             setConnectTo(enumFacing);
             IBlockState state = world.getBlockState(pos.up());
-            if (state == Blocks.AIR.getDefaultState() || state.getBlock().hasTileEntity(state)) {
+            if (state == Blocks.AIR.getDefaultState() ||
+                state.getBlock().hasTileEntity(state) ||
+                state.getMaterial() == Material.CIRCUITS ||
+                TilePump.isLiquid(state)) {
                 // Blocks sould not be replaced with TileEntities.
+                // Material.CIRCUITS is for blocks which isn't normal.
+                // Liquid block cause crash.
                 toReplaceState = QuarryPlusI.dummyBlock().getDefaultState();
             } else {
                 toReplaceState = state;

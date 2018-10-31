@@ -114,6 +114,8 @@ package object qp {
         // いつでもmapできたら便利よね?
         def map[B](f: A => B): Option[B] = Option(obj).map(f)
 
+        def nnMap[B](f: A => B): Option[B] = Option(obj).flatMap(f.andThen(Option.apply))
+
         // Option(obj)でもいいけど、何でもメソッドチェーンしたい病の人に
         def toOption: Option[A] = Option(obj)
     }
