@@ -1,4 +1,4 @@
-package com.yogpc.qp;
+package com.yogpc.qp.utils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.yogpc.qp.QuarryPlus;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Items;

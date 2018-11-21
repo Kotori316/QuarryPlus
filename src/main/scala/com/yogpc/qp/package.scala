@@ -97,7 +97,7 @@ package object qp {
       * @tparam A anyref
       */
     // 入れ物はタッパーです。
-    implicit class Tapper[A](val obj: A) extends AnyVal {
+    implicit class Tapper[A](private val obj: A) extends AnyVal {
         // RubyのObject#tap的な。引数fに自分自身を適用させて自身を返す。
         // 副作用専用メソッド。nullだったらなにもしなーい
         def tap(f: A => Unit): A = {
@@ -132,7 +132,7 @@ package object qp {
         override def wrap(num: FluidStack): NBTTagCompound = num.writeToNBT(new NBTTagCompound)
     }
 
-    implicit class NumberToNbt[A](val num: A) extends AnyVal {
+    implicit class NumberToNbt[A](private val num: A) extends AnyVal {
         def toNBT[B](implicit wrapeer: NBTWrapeer[A, B]): B = wrapeer wrap num
     }
 

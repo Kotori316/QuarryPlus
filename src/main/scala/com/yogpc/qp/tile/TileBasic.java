@@ -26,13 +26,13 @@ import java.util.Set;
 import java.util.function.Function;
 
 import cofh.api.tileentity.IInventoryConnection;
-import com.yogpc.qp.BlockData;
 import com.yogpc.qp.PowerManager;
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.ReflectionHelper;
 import com.yogpc.qp.compat.InvUtils;
-import com.yogpc.qp.compat.NBTBuilder;
 import com.yogpc.qp.gui.TranslationKeys;
+import com.yogpc.qp.utils.BlockData;
+import com.yogpc.qp.utils.NBTBuilder;
+import com.yogpc.qp.utils.ReflectionHelper;
 import com.yogpc.qp.version.VersionUtil;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

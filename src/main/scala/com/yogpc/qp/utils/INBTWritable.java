@@ -1,4 +1,4 @@
-package com.yogpc.qp.compat;
+package com.yogpc.qp.utils;
 
 import net.minecraft.nbt.NBTTagCompound;
 

@@ -17,12 +17,12 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-import com.yogpc.qp.BlockData;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.container.ContainerEnchList;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.enchantment.EnchantmentMessage;
 import com.yogpc.qp.tile.TileBasic;
+import com.yogpc.qp.utils.BlockData;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiYesNoCallback;
 import net.minecraft.client.gui.inventory.GuiContainer;

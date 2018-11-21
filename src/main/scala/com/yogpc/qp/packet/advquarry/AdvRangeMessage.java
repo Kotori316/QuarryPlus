@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.util.Optional;
 
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.compat.INBTWritable;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.tile.TileAdvQuarry;
+import com.yogpc.qp.utils.INBTWritable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;

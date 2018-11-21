@@ -1,10 +1,10 @@
 package com.yogpc.qp.tile
 
 import com.yogpc.qp.block.ADismCBlock
-import com.yogpc.qp.compat.{INBTReadable, INBTWritable}
 import com.yogpc.qp.gui.TranslationKeys
 import com.yogpc.qp.tile.IEnchantableTile.{EfficiencyID, FortuneID, SilktouchID, UnbreakingID}
 import com.yogpc.qp.tile.TileAdvPump._
+import com.yogpc.qp.utils.{INBTReadable, INBTWritable}
 import com.yogpc.qp.version.VersionUtil
 import com.yogpc.qp.{Config, QuarryPlus, QuarryPlusI, _}
 import net.minecraft.block.state.IBlockState

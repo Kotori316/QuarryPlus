@@ -12,7 +12,7 @@
  */
 package com.yogpc.qp.gui
 
-import com.yogpc.qp.BlockData
+import com.yogpc.qp.utils.BlockData
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.{GuiScreen, GuiSlot}
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}

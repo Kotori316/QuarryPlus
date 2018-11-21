@@ -115,7 +115,6 @@ class EnergyDebug(tile: APowerTile) {
     def finish(): Unit = {
         if (!started) return
         stopWatch.stop()
-        stopWatch.reset()
         if (outputInfo) {
             printinfo()
             val time = getTime - startTime
@@ -130,6 +129,7 @@ class EnergyDebug(tile: APowerTile) {
             gLastTick = 0l
             lastOutput = 0l
         }
+        stopWatch.reset()
     }
 
     override def toString: String = {

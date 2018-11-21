@@ -15,6 +15,7 @@ package com.yogpc.qp.item
 import java.util
 
 import com.yogpc.qp.tile.{IEnchantableTile, TileBasic}
+import com.yogpc.qp.utils.BlockData
 import com.yogpc.qp.{Config, QuarryPlus, QuarryPlusI, _}
 import javax.annotation.Nullable
 import net.minecraft.client.resources.I18n

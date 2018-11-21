@@ -2,10 +2,10 @@ package com.yogpc.qp.packet.enchantment;
 
 import java.io.IOException;
 
-import com.yogpc.qp.BlockData;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.tile.TileBasic;
+import com.yogpc.qp.utils.BlockData;
 import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.init.Enchantments;

@@ -3,9 +3,9 @@ package com.yogpc.qp.packet.advquarry;
 import java.io.IOException;
 
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.compat.INBTWritable;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.tile.TileAdvQuarry;
+import com.yogpc.qp.utils.INBTWritable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;

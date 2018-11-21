@@ -1,17 +1,18 @@
 package com.yogpc.qp.tile
 
 import java.lang.{Boolean => JBool}
-import java.util.{Collections, Objects}
+import java.util.Collections
 
 import com.yogpc.qp.block.{ADismCBlock, BlockBookMover}
-import com.yogpc.qp.compat.{INBTReadable, INBTWritable, InvUtils}
+import com.yogpc.qp.compat.InvUtils
 import com.yogpc.qp.gui.TranslationKeys
 import com.yogpc.qp.packet.PacketHandler
 import com.yogpc.qp.packet.advquarry.{AdvContentMessage, AdvModeMessage}
 import com.yogpc.qp.tile.IAttachment.Attachments
 import com.yogpc.qp.tile.TileAdvQuarry._
+import com.yogpc.qp.utils.{INBTReadable, INBTWritable, ItemElement, NotNullList, Reason, ReflectionHelper}
 import com.yogpc.qp.version.VersionUtil
-import com.yogpc.qp.{Config, PowerManager, QuarryPlus, QuarryPlusI, ReflectionHelper, _}
+import com.yogpc.qp.{Config, PowerManager, QuarryPlus, QuarryPlusI, _}
 import javax.annotation.Nonnull
 import net.minecraft.block.Block
 import net.minecraft.block.properties.PropertyHelper
@@ -41,7 +42,6 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import net.minecraftforge.items.{CapabilityItemHandler, IItemHandlerModifiable}
 
 import scala.collection.JavaConverters._
-import scala.collection.generic.Clearable
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.ClassTag
@@ -136,7 +136,8 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
 
                 type B_1 = (NonNullList[ItemStack], Seq[Int], Seq[Int], Seq[Int], Seq[Int], Double)
                 type C_1 = (NonNullList[ItemStack], Seq[Int], Seq[Int], Seq[Int], Seq[Int])
-                val A: Unit => Either[Exception, NonNullList[ItemStack]] = (_: Unit) => {
+                type D_1 = (NonNullList[ItemStack], Seq[Reason])
+                val A: Unit => Either[Reason, NonNullList[ItemStack]] = (_: Unit) => {
                     if (x % 3 == 0) {
                         val list = NonNullList.create[ItemStack]()
                         val expPump = facingMap.get(Attachments.EXP_PUMP).map(f => getWorld.getTileEntity(getPos.offset(f)))
@@ -161,7 +162,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                     }
                 }
 
-                val B: NonNullList[ItemStack] => Either[Exception, B_1] = list => {
+                val B: NonNullList[ItemStack] => Either[Reason, B_1] = list => {
                     var destroy, dig, drain, shear = new mutable.WrappedArrayBuilder[Int](ClassTag.Int)
                     var requireEnergy = 0d
                     var y = target.getY - 1
@@ -169,32 +170,6 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                     val flags = Array(x == digRange.minX, x == digRange.maxX, z == digRange.minZ, z == digRange.maxZ)
                     while (y > 0) {
                         pos.setY(y)
-                        if (flags.exists(b => b)) {
-                            if (flags(0)) { //-x
-                                checkandsetFrame(getWorld, pos.offset(EnumFacing.WEST))
-                                if (flags(2)) { //-z, -x
-                                    checkandsetFrame(getWorld, pos.offset(EnumFacing.NORTH, EnumFacing.WEST))
-                                }
-                                else if (flags(3)) { //+z, -x
-                                    checkandsetFrame(getWorld, pos.offset(EnumFacing.SOUTH, EnumFacing.WEST))
-                                }
-                            }
-                            else if (flags(1)) { //+x
-                                checkandsetFrame(getWorld, pos.offset(EnumFacing.EAST))
-                                if (flags(2)) { //-z, +x
-                                    checkandsetFrame(getWorld, pos.offset(EnumFacing.NORTH, EnumFacing.EAST))
-                                }
-                                else if (flags(3)) { //+z, +x
-                                    checkandsetFrame(getWorld, pos.offset(EnumFacing.SOUTH, EnumFacing.EAST))
-                                }
-                            }
-                            if (flags(2)) { //-z
-                                checkandsetFrame(getWorld, pos.offset(EnumFacing.NORTH))
-                            }
-                            else if (flags(3)) { //+z
-                                checkandsetFrame(getWorld, pos.offset(EnumFacing.SOUTH))
-                            }
-                        }
 
                         val state = getWorld.getBlockState(pos)
                         if (!state.getBlock.isAir(state, getWorld, pos)) {
@@ -228,6 +203,32 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                                     getWorld.setBlockToAir(pos)
                                     requireEnergy += 20
                                 }
+                                if (flags.exists(b => b)) {
+                                    if (flags(0)) { //-x
+                                        checkandsetFrame(getWorld, pos.offset(EnumFacing.WEST))
+                                        if (flags(2)) { //-z, -x
+                                            checkandsetFrame(getWorld, pos.offset(EnumFacing.NORTH, EnumFacing.WEST))
+                                        }
+                                        else if (flags(3)) { //+z, -x
+                                            checkandsetFrame(getWorld, pos.offset(EnumFacing.SOUTH, EnumFacing.WEST))
+                                        }
+                                    }
+                                    else if (flags(1)) { //+x
+                                        checkandsetFrame(getWorld, pos.offset(EnumFacing.EAST))
+                                        if (flags(2)) { //-z, +x
+                                            checkandsetFrame(getWorld, pos.offset(EnumFacing.NORTH, EnumFacing.EAST))
+                                        }
+                                        else if (flags(3)) { //+z, +x
+                                            checkandsetFrame(getWorld, pos.offset(EnumFacing.SOUTH, EnumFacing.EAST))
+                                        }
+                                    }
+                                    if (flags(2)) { //-z
+                                        checkandsetFrame(getWorld, pos.offset(EnumFacing.NORTH))
+                                    }
+                                    else if (flags(3)) { //+z
+                                        checkandsetFrame(getWorld, pos.offset(EnumFacing.SOUTH))
+                                    }
+                                }
                             }
                         }
                         y -= 1
@@ -235,17 +236,17 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                     Right((list, destroy.result(), dig.result(), drain.result(), shear.result(), requireEnergy * 1.25))
                 }
 
-                val C: B_1 => Either[Exception, C_1] = b => {
+                val C: B_1 => Either[Reason, C_1] = b => {
                     val (list, destroy, dig, drain, rest, energy) = b
                     if (useEnergy(energy, energy, false, EnergyUsage.ADV_BREAK_BLOCK) == energy) {
                         useEnergy(energy, energy, true, EnergyUsage.ADV_BREAK_BLOCK)
                         Right(list, destroy, dig, drain, rest)
                     } else {
-                        Left(new Exception)
+                        Left(Reason(EnergyUsage.ADV_BREAK_BLOCK, energy, getStoredEnergy))
                     }
                 }
 
-                val D: C_1 => Either[Exception, NonNullList[ItemStack]] = c => {
+                val D: C_1 => Either[Reason, D_1] = c => {
                     val (list, destroy, dig, drain, shear) = c
                     val expPump = facingMap.get(Attachments.EXP_PUMP).map(f => getWorld.getTileEntity(getPos.offset(f)))
                       .collect { case pump: TileExpPump => pump }
@@ -256,7 +257,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                     val toReplace = getFillBlock
                     val p = new MutableBlockPos(x, 0, z)
 
-
+                    val reasons = new ArrayBuffer[Reason](0)
                     dig.foreach(y => {
                         p.setY(y)
                         val state = getWorld.getBlockState(p)
@@ -276,6 +277,8 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                             expPump.filter(xpFilter(event.getExpToDrop)).foreach(_.addXp(event.getExpToDrop))
                             tempList.clear()
                             setBlock(p, toReplace)
+                        } else {
+                            reasons.append(Reason(p, state))
                         }
                     })
                     if (shear.nonEmpty) {
@@ -295,6 +298,8 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                                 tempList.clear()
                                 setBlock(p, toReplace)
                                 expPump.filter(xpFilter(event.getExpToDrop)).foreach(_.addXp(event.getExpToDrop))
+                            } else {
+                                reasons.append(Reason(p, state))
                             }
                         }
                     }
@@ -312,6 +317,8 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                                 nnl.seq.foreach(l.add)
                             }
                             expPump.filter(xpFilter(event.getExpToDrop)).foreach(_.addXp(event.getExpToDrop))
+                        } else {
+                            reasons.append(Reason(p, state))
                         }
                     })
                     if (collectFurnaceXP) {
@@ -334,44 +341,64 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                         getWorld.setBlockState(p, Blocks.AIR.getDefaultState, 2)
                     }
                     fakePlayer.setHeldItem(EnumHand.MAIN_HAND, VersionUtil.empty())
-                    Right(list)
+                    Right(list, reasons)
                 }
 
                 chunkLoad()
                 val n = if (chunks.isEmpty) digRange.timeInTick else 1
                 var j = 0
                 while (j < n) {
-                    if (mode is TileAdvQuarry.BREAKBLOCK) {
-                        A().right.flatMap(B).right.flatMap(C).right.flatMap(D).right.foreach(l => {
+                    var notEnoughEnergy = false
+                    if ((mode is TileAdvQuarry.BREAKBLOCK) && !notEnoughEnergy) {
+                        A().right.flatMap(B).right.flatMap(C).right.flatMap(D).fold(Reason.print, ll => {
+                            val (l, reasons) = ll
                             l.asScala.foreach(cacheItems.add)
-                            var i = 0
-                            do {
-                                i += 1
-                                if (PowerManager.useEnergyAdvSearch(this, ench.unbreaking, target.getY)) {
-                                    val x = target.getX + 1
-                                    if (x > digRange.maxX) {
-                                        val z = target.getZ + 1
-                                        if (z > digRange.maxZ) {
-                                            //Finished.
-                                            target = digRange.min
-                                            finishWork()
-                                            mode set TileAdvQuarry.CHECKLIQUID
-                                            i = 33
-                                        } else {
-                                            target = new BlockPos(digRange.minX, target.getY, z)
-                                        }
-                                    } else {
-                                        target = new BlockPos(x, target.getY, target.getZ)
-                                    }
-                                } else i = 33 //Finish searching.
-                            } while (i < 32 && {
-                                val p = new MutableBlockPos(target)
-                                Range.inclusive(1, target.getY).forall { i => p.setY(i); getWorld.isAirBlock(p) }
-                            })
+                            reasons.foreach(Reason.print)
+                            nextPoses(digRange, target).take(32).zipWithIndex.filter { case (t, i) =>
+                                i == 31 || // Index
+                                  t == BlockPos.ORIGIN || // Finished
+                                  BlockPos.getAllInBoxMutable(new BlockPos(t.getX, 1, t.getZ), new BlockPos(t.getX, t.getY, t.getZ)).asScala.exists(p => !getWorld.isAirBlock(p))
+                            }.collectFirst { case (t, _) => t }
+                        }).foreach(p => {
+                            if (PowerManager.useEnergyAdvSearch(self, ench.unbreaking, p.getY)) {
+                                target = p
+                                if (p == BlockPos.ORIGIN) {
+                                    //Finished.
+                                    target = digRange.min
+                                    finishWork()
+                                    mode set TileAdvQuarry.CHECKLIQUID
+                                }
+                            } else {
+                                notEnoughEnergy = true
+                            }
                         })
                     }
                     j += 1
                 }
+                //                            var i = 0
+                //                            do {
+                //                                i += 1
+                //                                if (PowerManager.useEnergyAdvSearch(this, ench.unbreaking, target.getY)) {
+                //                                    val x = target.getX + 1
+                //                                    if (x > digRange.maxX) {
+                //                                        val z = target.getZ + 1
+                //                                        if (z > digRange.maxZ) {
+                //                                            //Finished.
+                //                                            target = digRange.min
+                //                                            finishWork()
+                //                                            mode set TileAdvQuarry.CHECKLIQUID
+                //                                            i = 33
+                //                                        } else {
+                //                                            target = new BlockPos(digRange.minX, target.getY, z)
+                //                                        }
+                //                                    } else {
+                //                                        target = new BlockPos(x, target.getY, target.getZ)
+                //                                    }
+                //                                } else i = 33 //Finish searching.
+                //                            } while (i < 32 && {
+                //                                val p = new MutableBlockPos(target)
+                //                                Range.inclusive(1, target.getY).forall { i => p.setY(i); getWorld.isAirBlock(p) }}
+                //
             } else if (mode is TileAdvQuarry.NOTNEEDBREAK) {
                 if (digRange.defined && !Config.content.noEnergy)
                     if (getStoredEnergy > getMaxStored * 0.3) {
@@ -379,28 +406,18 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                         startWork()
                     }
             } else if (mode is TileAdvQuarry.CHECKLIQUID) {
-                for (_ <- 0 until 32 * digRange.timeInTick) {
-                    if (mode is TileAdvQuarry.CHECKLIQUID) {
-                        List.iterate(target.down(), target.getY - 1)(_.down()).filter(p => {
+                nextPoses(digRange, target, inclusive = true).take(32 * digRange.timeInTick).foreach(p => {
+                    target = p
+                    if (p == BlockPos.ORIGIN) {
+                        mode set TileAdvQuarry.NONE
+                    } else if (mode is TileAdvQuarry.CHECKLIQUID) {
+                        Iterator.iterate(p.down())(_.down()).takeWhile(_.getY > 0).filter(p => {
                             val state = getWorld.getBlockState(p)
                             !state.getBlock.isAir(state, getWorld, p) && TilePump.isLiquid(state)
                         }).foreach(getWorld.setBlockToAir)
-
-                        val x = target.getX + 1
-                        if (x > digRange.maxX) {
-                            val z = target.getZ + 1
-                            if (z > digRange.maxZ) {
-                                //Finished.
-                                target = BlockPos.ORIGIN
-                                mode set TileAdvQuarry.NONE
-                            } else {
-                                target = new BlockPos(digRange.minX, target.getY, z)
-                            }
-                        } else {
-                            target = new BlockPos(x, target.getY, target.getZ)
-                        }
                     }
-                }
+                })
+
             } else if (mode is TileAdvQuarry.FILLBLOCKS) {
                 val handler = InvUtils.findItemHander(getWorld, getPos.up, EnumFacing.DOWN).orNull
                 if (handler != null) {
@@ -408,25 +425,35 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
                         val stack = handler.getStackInSlot(i)
                         VersionUtil.nonEmpty(stack) && stack.getItem.isInstanceOf[ItemBlock]
                     }).map(handler.extractItem(_, 64, false)).toList
-                    list.flatMap(i => Range(0, i.getCount)).foreach(_ => {
-                        if (mode is TileAdvQuarry.FILLBLOCKS) {
+                    val y = if (Config.content.removeBedrock) 1 else 5
+                    nextPoses(digRange, target).take(list.map(_.getCount).sum).foreach { p =>
+                        target = p
+                        if (p == BlockPos.ORIGIN) {
+                            mode set TileAdvQuarry.NONE
+                        } else {
                             val state = InvUtils.getStateFromItem(list.head.getItem.asInstanceOf[ItemBlock], list.head.getItemDamage)
-                            getWorld.setBlockState(new BlockPos(target.getX, if (Config.content.removeBedrock) 1 else 5, target.getZ), state)
-                            val x = target.getX + 1
-                            if (x > digRange.maxX) {
-                                val z = target.getZ + 1
-                                if (z > digRange.maxZ) {
-                                    //Finished.
-                                    target = BlockPos.ORIGIN
-                                    mode set TileAdvQuarry.NONE
-                                } else {
-                                    target = new BlockPos(digRange.minX, target.getY, z)
-                                }
-                            } else {
-                                target = new BlockPos(x, target.getY, target.getZ)
-                            }
+                            getWorld.setBlockState(new BlockPos(p.getX, y, p.getZ), state)
                         }
-                    })
+                    }
+                    //                    list.flatMap(i => Range(0, i.getCount)).foreach(_ => {
+                    //                        if (mode is TileAdvQuarry.FILLBLOCKS) {
+                    //                            val state = InvUtils.getStateFromItem(list.head.getItem.asInstanceOf[ItemBlock], list.head.getItemDamage)
+                    //                            getWorld.setBlockState(new BlockPos(target.getX, if (Config.content.removeBedrock) 1 else 5, target.getZ), state)
+                    //                            val x = target.getX + 1
+                    //                            if (x > digRange.maxX) {
+                    //                                val z = target.getZ + 1
+                    //                                if (z > digRange.maxZ) {
+                    //                                    //Finished.
+                    //                                    target = BlockPos.ORIGIN
+                    //                                    mode set TileAdvQuarry.NONE
+                    //                                } else {
+                    //                                    target = new BlockPos(digRange.minX, target.getY, z)
+                    //                                }
+                    //                            } else {
+                    //                                target = new BlockPos(x, target.getY, target.getZ)
+                    //                            }
+                    //                        }
+                    //                    })
                 } else {
                     target = BlockPos.ORIGIN
                     mode set TileAdvQuarry.NONE
@@ -667,7 +694,7 @@ class TileAdvQuarry extends APowerTile with IEnchantableTile with HasInv with IT
     def startFillMode(): Unit = {
         if ((mode is TileAdvQuarry.NONE) && digRange.defined && preparedFiller) {
             mode set TileAdvQuarry.FILLBLOCKS
-            target = digRange.min
+            target = digRange.min.add(-1, 0, 0)
         }
     }
 
@@ -1093,19 +1120,6 @@ object TileAdvQuarry {
         }
     }
 
-    case class ItemElement(itemDamage: ItemDamage, count: Int) {
-        def toStack = itemDamage.toStack(count)
-
-        def toNBT = {
-            val nbt = toStack.serializeNBT()
-            nbt.removeTag("Count")
-            nbt.setInteger("Count", count)
-            nbt
-        }
-
-        override def toString: String = itemDamage.toString + " x" + count
-    }
-
     private[TileAdvQuarry] case class BlockWrapper(state: IBlockState, ignoreProperty: Boolean = false, ignoreMeta: Boolean = false)
       extends java.util.function.Predicate[IBlockState] {
 
@@ -1123,33 +1137,6 @@ object TileAdvQuarry {
         }
 
         override def test(t: IBlockState): Boolean = contain(t)
-    }
-
-    private[TileAdvQuarry] class NotNullList(val seq: mutable.Buffer[ItemStack] with Clearable) extends NonNullList[ItemStack](seq.asJava, null) {
-        var fix = false
-        val fixing = ArrayBuffer.empty[ItemStack]
-
-        override def clear(): Unit = {
-            seq.clear()
-            fix = false
-            fixing.clear()
-        }
-
-        override def add(e: ItemStack): Boolean = {
-            seq.append(Objects.requireNonNull(e))
-            if (fix) fixing += e
-            true
-        }
-
-        override def add(i: Int, e: ItemStack): Unit = {
-            seq.insert(i, Objects.requireNonNull(e))
-            if (fix) fixing += e
-        }
-
-        override def set(i: Int, e: ItemStack): ItemStack = {
-            if (fix) fixing += e
-            super.set(i, e)
-        }
     }
 
     private[TileAdvQuarry] class Modes(val index: Int, override val toString: String)
@@ -1192,6 +1179,32 @@ object TileAdvQuarry {
             builder += new BlockPos(maxX + 1, maxY + 4, z)
         }
         builder.result()
+    }
+
+    def nextPoses(range: DigRange, previous: BlockPos, inclusive: Boolean = false): Stream[BlockPos] = {
+        val getNext: BlockPos => BlockPos = (pos: BlockPos) => {
+            if (pos == BlockPos.ORIGIN)
+                BlockPos.ORIGIN
+            else {
+                val x = pos.getX + 1
+                if (x > range.maxX) {
+                    val z = pos.getZ + 1
+                    if (z > range.maxZ) {
+                        // Finished. Update Status
+                        BlockPos.ORIGIN
+                    } else {
+                        new BlockPos(range.minX, pos.getY, z)
+                    }
+                } else {
+                    new BlockPos(x, pos.getY, pos.getZ)
+                }
+            }
+        }
+        if (inclusive) {
+            Stream.iterate(previous)(getNext)
+        } else {
+            Stream.iterate(getNext(previous))(getNext)
+        }
     }
 
     def xpFilter(i: Int): Any => Boolean = _ => i > 0

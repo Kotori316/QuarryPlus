@@ -1,6 +1,5 @@
-package com.yogpc.qp
+package com.yogpc.qp.utils
 
-import com.yogpc.qp.compat.{INBTReadable, INBTWritable}
 import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
 import net.minecraft.item.ItemStack
