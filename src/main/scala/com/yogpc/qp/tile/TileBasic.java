@@ -32,6 +32,7 @@ import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.gui.TranslationKeys;
 import com.yogpc.qp.utils.BlockData;
 import com.yogpc.qp.utils.NBTBuilder;
+import com.yogpc.qp.utils.NoDuplicateList;
 import com.yogpc.qp.utils.ReflectionHelper;
 import com.yogpc.qp.version.VersionUtil;
 import javax.annotation.Nonnull;

@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.item.IEnchantableItem;
+import com.yogpc.qp.utils.LoopList;
 import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;

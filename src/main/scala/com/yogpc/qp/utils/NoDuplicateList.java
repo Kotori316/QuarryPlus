@@ -1,4 +1,4 @@
-package com.yogpc.qp.tile;
+package com.yogpc.qp.utils;
 
 import java.util.Collection;
 import java.util.HashSet;
