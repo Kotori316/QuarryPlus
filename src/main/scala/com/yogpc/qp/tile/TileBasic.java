@@ -287,7 +287,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     private static NBTTagList writeLongCollection(final Collection<BlockData> target) {
         final NBTTagList nbttl = new NBTTagList();
         for (final BlockData l : target) {
-            nbttl.appendTag(l.writeToNBT(new NBTTagCompound()).getCompoundTag(BlockData.BlockData_NBT()));
+            nbttl.appendTag(l.toNBT().getCompoundTag(BlockData.BlockData_NBT()));
         }
         return nbttl;
     }

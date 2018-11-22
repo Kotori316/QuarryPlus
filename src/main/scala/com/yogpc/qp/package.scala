@@ -2,7 +2,7 @@ package com.yogpc
 
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.item.ItemStack
-import net.minecraft.nbt.{NBTTagCompound, NBTTagList, NBTTagLong}
+import net.minecraft.nbt.{NBTBase, NBTTagCompound, NBTTagList, NBTTagLong}
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.TextComponentString
@@ -68,7 +68,7 @@ package object qp {
         }
     }
 
-    implicit class ItemStackRemoveEnch(val stack: ItemStack) {
+    implicit class ItemStackRemoveEnch(val stack: ItemStack) extends AnyVal {
         def removeEnchantment(ench: Enchantment): Unit = {
             val enchId = Enchantment.getEnchantmentID(ench).toShort
             val tagName = if (stack.getItem == net.minecraft.init.Items.ENCHANTED_BOOK) "StoredEnchantments" else "ench"
@@ -120,7 +120,7 @@ package object qp {
         def toOption: Option[A] = Option(obj)
     }
 
-    trait NBTWrapeer[A, NBTType] {
+    trait NBTWrapeer[A, NBTType <: NBTBase] {
         def wrap(num: A): NBTType
     }
 
