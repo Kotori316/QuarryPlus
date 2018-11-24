@@ -34,7 +34,7 @@ object Reason {
         override def usage: Option[EnergyUsage] = Some(energyUsage)
 
         override def toString: String = {
-            s"Action of ${usage.get.toString} required ${required * 10 / Nano} RF but machine has ${amount * 10 / Nano} RF."
+            s"Action of $energyUsage required ${required * 10 / Nano} RF but machine has ${amount * 10 / Nano} RF."
         }
     }
 
