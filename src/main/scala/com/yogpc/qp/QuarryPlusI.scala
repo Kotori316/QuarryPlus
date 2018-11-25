@@ -21,48 +21,48 @@ import net.minecraft.block.Block
 import scala.collection.mutable.ListBuffer
 
 object QuarryPlusI {
-    private[this] val blocks = new ListBuffer[Block]
-    val creativeTab = new CreativeTabQuarryPlus
-    val blockQuarry = register(new BlockQuarry)
-    val blockMarker = register(new BlockMarker)
-    val blockMover = register(new BlockMover)
-    val blockMiningWell = register(new BlockMiningWell)
-    val blockPump = register(new BlockPump)
-    val blockRefinery = register(new BlockRefinery)
-    val blockPlacer = register(new BlockPlacer)
-    val blockBreaker = register(new BlockBreaker)
-    val blockLaser = register(new BlockLaser)
-    val blockPlainPipe = register(new BlockPlainPipe)
-    val blockFrame = register(new BlockFrame)
-    val blockWorkbench = register(new BlockWorkbench)
-    val blockController = register(new BlockController)
-    val blockChunkdestroyer = register(new BlockAdvQuarry)
-    val blockStandalonePump = register(new BlockAdvPump)
-    val blockBookMover = register(new BlockBookMover)
-    val blockExpPump = register(new BlockExpPump())
-    val blockSolidQuarry = register(new BlockSolidQuarry)
-    val dummyBlock = register(new DummyBlock)
-    val blockReplacer = register(new BlockReplacer)
-    val itemTool = new ItemTool
-    val magicmirror = new ItemMirror
-    val debugItem = new ItemQuarryDebug
-    final val guiIdWorkbench = 1
-    final val guiIdMover = 2
-    final val guiIdFList = 3
-    final val guiIdSList = 4
-    final val guiIdPlacer = 5
-    final val guiIdAdvQuarry = 6
-    final val guiIdAdvPump = 7
-    final val guiIdMoverFromBook = 8
-    final val guiIdSolidQuarry = 9
+  private[this] val blocks = new ListBuffer[Block]
+  val creativeTab = new CreativeTabQuarryPlus
+  val blockQuarry = register(new BlockQuarry)
+  val blockMarker = register(new BlockMarker)
+  val blockMover = register(new BlockMover)
+  val blockMiningWell = register(new BlockMiningWell)
+  val blockPump = register(new BlockPump)
+  val blockRefinery = register(new BlockRefinery)
+  val blockPlacer = register(new BlockPlacer)
+  val blockBreaker = register(new BlockBreaker)
+  val blockLaser = register(new BlockLaser)
+  val blockPlainPipe = register(new BlockPlainPipe)
+  val blockFrame = register(new BlockFrame)
+  val blockWorkbench = register(new BlockWorkbench)
+  val blockController = register(new BlockController)
+  val blockChunkdestroyer = register(new BlockAdvQuarry)
+  val blockStandalonePump = register(new BlockAdvPump)
+  val blockBookMover = register(new BlockBookMover)
+  val blockExpPump = register(new BlockExpPump())
+  val blockSolidQuarry = register(new BlockSolidQuarry)
+  val dummyBlock = register(new DummyBlock)
+  val blockReplacer = register(new BlockReplacer)
+  val itemTool = new ItemTool
+  val magicmirror = new ItemMirror
+  val debugItem = new ItemQuarryDebug
+  final val guiIdWorkbench = 1
+  final val guiIdMover = 2
+  final val guiIdFList = 3
+  final val guiIdSList = 4
+  final val guiIdPlacer = 5
+  final val guiIdAdvQuarry = 6
+  final val guiIdAdvPump = 7
+  final val guiIdMoverFromBook = 8
+  final val guiIdSolidQuarry = 9
 
-    private def register[T <: Block](block: T): T = {
-        blocks += block
-        block
-    }
+  private def register[T <: Block](block: T): T = {
+    blocks += block
+    block
+  }
 
-    def blockList(): util.List[Block] = {
-        import scala.collection.JavaConverters._
-        new util.ArrayList[Block](blocks.asJava)
-    }
+  def blockList(): util.List[Block] = {
+    import scala.collection.JavaConverters._
+    new util.ArrayList[Block](blocks.asJava)
+  }
 }

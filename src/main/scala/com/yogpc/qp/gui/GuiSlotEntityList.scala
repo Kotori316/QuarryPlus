@@ -18,22 +18,22 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 @SideOnly(Side.CLIENT)
 class GuiSlotEntityList(mc: Minecraft, width: Int, height: Int, topIn: Int, bottomIn: Int, gc: GuiController) extends GuiSlot(mc, width, height, topIn, bottomIn, 18) {
-    var selected = 0
+  var selected = 0
 
-    override protected def getSize: Int = this.gc.names.size
+  override protected def getSize: Int = this.gc.names.size
 
-    override protected def elementClicked(slotIndex: Int, isDoubleClick: Boolean, mouseX: Int, mouseY: Int): Unit = this.selected = slotIndex
+  override protected def elementClicked(slotIndex: Int, isDoubleClick: Boolean, mouseX: Int, mouseY: Int): Unit = this.selected = slotIndex
 
-    override protected def isSelected(slotIndex: Int): Boolean = this.selected == slotIndex
+  override protected def isSelected(slotIndex: Int): Boolean = this.selected == slotIndex
 
-    override protected def drawBackground(): Unit = ()
+  override protected def drawBackground(): Unit = ()
 
-    override protected def getContentHeight: Int = this.getSize * 18
+  override protected def getContentHeight: Int = this.getSize * 18
 
-    override protected def drawSlot(entryID: Int, insideLeft: Int, yPos: Int, insideSlotHeight: Int, mouseXIn: Int, mouseYIn: Int, f: Float): Unit = {
-        val name = this.gc.names.get(entryID)
-        Minecraft.getMinecraft.fontRenderer.drawStringWithShadow(name,
-            (this.mc.currentScreen.width - Minecraft.getMinecraft.fontRenderer.getStringWidth(name)) / 2,
-            yPos + 2, 0xFFFFFF)
-    }
+  override protected def drawSlot(entryID: Int, insideLeft: Int, yPos: Int, insideSlotHeight: Int, mouseXIn: Int, mouseYIn: Int, f: Float): Unit = {
+    val name = this.gc.names.get(entryID)
+    Minecraft.getMinecraft.fontRenderer.drawStringWithShadow(name,
+      (this.mc.currentScreen.width - Minecraft.getMinecraft.fontRenderer.getStringWidth(name)) / 2,
+      yPos + 2, 0xFFFFFF)
+  }
 }

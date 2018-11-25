@@ -23,40 +23,40 @@ import net.minecraftforge.common.ForgeChunkManager
 import scala.collection.JavaConverters._
 
 object ChunkLoadingHandler extends ForgeChunkManager.OrderedLoadingCallback {
-    val instance = this
-    val blockSet: Set[Block] = Set(
-        QuarryPlusI.blockQuarry,
-        QuarryPlusI.blockMarker,
-        QuarryPlusI.blockChunkdestroyer,
-        QuarryPlusI.blockStandalonePump,
-        QuarryPlusI.blockSolidQuarry
-    )
+  val instance = this
+  val blockSet: Set[Block] = Set(
+    QuarryPlusI.blockQuarry,
+    QuarryPlusI.blockMarker,
+    QuarryPlusI.blockChunkdestroyer,
+    QuarryPlusI.blockStandalonePump,
+    QuarryPlusI.blockSolidQuarry
+  )
 
-    override def ticketsLoaded(tickets: util.List[ForgeChunkManager.Ticket], world: World): Unit = {
-        for (ticket <- tickets.asScala) {
-            world.getTileEntity(getTilePos(ticket)) match {
-                case tile: IChunkLoadTile => tile.forceChunkLoading(ticket)
-                case _ =>
-            }
-        }
+  override def ticketsLoaded(tickets: util.List[ForgeChunkManager.Ticket], world: World): Unit = {
+    for (ticket <- tickets.asScala) {
+      world.getTileEntity(getTilePos(ticket)) match {
+        case tile: IChunkLoadTile => tile.forceChunkLoading(ticket)
+        case _ =>
+      }
     }
+  }
 
-    override def ticketsLoaded(tickets: util.List[ForgeChunkManager.Ticket], world: World, maxTicketCount: Int): util.List[ForgeChunkManager.Ticket] = {
-        val validTickets = new util.ArrayList[ForgeChunkManager.Ticket]()
-        for (ticket <- tickets.asScala) {
-            val state = world.getBlockState(getTilePos(ticket))
-            if (blockSet contains state.getBlock)
-                validTickets.add(ticket)
-        }
-        validTickets
+  override def ticketsLoaded(tickets: util.List[ForgeChunkManager.Ticket], world: World, maxTicketCount: Int): util.List[ForgeChunkManager.Ticket] = {
+    val validTickets = new util.ArrayList[ForgeChunkManager.Ticket]()
+    for (ticket <- tickets.asScala) {
+      val state = world.getBlockState(getTilePos(ticket))
+      if (blockSet contains state.getBlock)
+        validTickets.add(ticket)
     }
+    validTickets
+  }
 
-    private def getTilePos(ticket: ForgeChunkManager.Ticket) = {
-        val quarryX = ticket.getModData.getInteger("quarryX")
-        val quarryY = ticket.getModData.getInteger("quarryY")
-        val quarryZ = ticket.getModData.getInteger("quarryZ")
-        val pos = new BlockPos(quarryX, quarryY, quarryZ)
-        pos
-    }
+  private def getTilePos(ticket: ForgeChunkManager.Ticket) = {
+    val quarryX = ticket.getModData.getInteger("quarryX")
+    val quarryY = ticket.getModData.getInteger("quarryY")
+    val quarryZ = ticket.getModData.getInteger("quarryZ")
+    val pos = new BlockPos(quarryX, quarryY, quarryZ)
+    pos
+  }
 
 }

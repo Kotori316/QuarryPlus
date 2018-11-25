@@ -10,16 +10,16 @@ import scala.collection.mutable
 
 object Sprites {
 
-    val instance = this
-    private val map = mutable.Map.empty[Symbol, TextureAtlasSprite]
+  val instance = this
+  private val map = mutable.Map.empty[Symbol, TextureAtlasSprite]
 
-    def getMap = map.toMap
+  def getMap = map.toMap
 
-    @SubscribeEvent
-    def registerTexture(event: TextureStitchEvent.Pre): Unit = {
-        val textureMap = event.getMap
-        LaserType.values().foreach(laserType => map.put(laserType.symbol, textureMap.registerSprite(laserType.location())))
-        val put_F = (name: Symbol) => map.put(name, textureMap.registerSprite(new ResourceLocation(QuarryPlus.modID, "entities/" + name.name)))
-        List('laser_1, 'laser_2, 'laser_3, 'laser_4, 'yellow, 'stripes_h, 'stripes_v, 'stripes_b, 'stripes_refinery).foreach(put_F)
-    }
+  @SubscribeEvent
+  def registerTexture(event: TextureStitchEvent.Pre): Unit = {
+    val textureMap = event.getMap
+    LaserType.values().foreach(laserType => map.put(laserType.symbol, textureMap.registerSprite(laserType.location())))
+    val put_F = (name: Symbol) => map.put(name, textureMap.registerSprite(new ResourceLocation(QuarryPlus.modID, "entities/" + name.name)))
+    List('laser_1, 'laser_2, 'laser_3, 'laser_4, 'yellow, 'stripes_h, 'stripes_v, 'stripes_b, 'stripes_refinery).foreach(put_F)
+  }
 }

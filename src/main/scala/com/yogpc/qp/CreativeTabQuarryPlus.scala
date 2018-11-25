@@ -6,7 +6,7 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 class CreativeTabQuarryPlus extends CreativeTabs(QuarryPlus.Mod_Name) {
 
-    @SideOnly(Side.CLIENT)
-    override def getTabIconItem = new ItemStack(QuarryPlusI.blockQuarry)
+  @SideOnly(Side.CLIENT)
+  override def getTabIconItem = new ItemStack(QuarryPlusI.blockQuarry)
 
 }

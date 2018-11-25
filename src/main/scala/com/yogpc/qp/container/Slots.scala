@@ -21,32 +21,32 @@ import net.minecraft.item.{Item, ItemBow, ItemStack, ItemTool}
 class SlotUnlimited(inv: IInventory, num: Int, x: Int, y: Int) extends Slot(inv, num, x, y)
 
 class SlotWorkbench(inv: IInventory, index: Int, xPosition: Int, yPosition: Int) extends Slot(inv, index, xPosition, yPosition) {
-    override def isItemValid(is: ItemStack) = false
+  override def isItemValid(is: ItemStack) = false
 
-    override def canTakeStack(playerIn: EntityPlayer) = false
+  override def canTakeStack(playerIn: EntityPlayer) = false
 }
 
 class SlotMover(inv: IInventory, index: Int, xPosition: Int, yPosition: Int) extends Slot(inv, index, xPosition, yPosition) {
-    override def isItemValid(is: ItemStack): Boolean = {
-        this.slotNumber match {
-            case 0 =>
-                if (is.getEnchantmentTagList != null) {
-                    is.getItem match {
-                        case tool: ItemTool => tool.getToolMaterialName == Item.ToolMaterial.DIAMOND.toString
-                        case _: ItemBow => true
-                        case _ => false
-                    }
-                } else {
-                    false
-                }
-            case 1 => is.getItem.isInstanceOf[IEnchantableItem]
+  override def isItemValid(is: ItemStack): Boolean = {
+    this.slotNumber match {
+      case 0 =>
+        if (is.getEnchantmentTagList != null) {
+          is.getItem match {
+            case tool: ItemTool => tool.getToolMaterialName == Item.ToolMaterial.DIAMOND.toString
+            case _: ItemBow => true
             case _ => false
+          }
+        } else {
+          false
         }
+      case 1 => is.getItem.isInstanceOf[IEnchantableItem]
+      case _ => false
     }
+  }
 
-    override def getSlotStackLimit = 1
+  override def getSlotStackLimit = 1
 }
 
 class SlotTile(inv: IInventory, index: Int, xPosition: Int, yPosition: Int) extends Slot(inv, index, xPosition, yPosition) {
-    override def isItemValid(stack: ItemStack): Boolean = inv.isItemValidForSlot(index, stack)
+  override def isItemValid(stack: ItemStack): Boolean = inv.isItemValidForSlot(index, stack)
 }

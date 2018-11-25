@@ -19,52 +19,52 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 class QuarryFakePlayer private(worldServer: WorldServer) extends FakePlayer(worldServer, QuarryFakePlayer.profile) {
 
-    private[this] val advancements = new PlayerAdvancements(
-        worldServer.getMinecraftServer,
-        new File(new File(worldServer.getMinecraftServer.getWorld(0).getSaveHandler.getWorldDirectory, "advancements"), getUniqueID + ".json"),
-        this) {
-        override def getProgress(advancementIn: Advancement): AdvancementProgress = {
-            new AdvancementProgress() {
-                override def isDone: Boolean = true
-            }
-        }
+  private[this] val advancements = new PlayerAdvancements(
+    worldServer.getMinecraftServer,
+    new File(new File(worldServer.getMinecraftServer.getWorld(0).getSaveHandler.getWorldDirectory, "advancements"), getUniqueID + ".json"),
+    this) {
+    override def getProgress(advancementIn: Advancement): AdvancementProgress = {
+      new AdvancementProgress() {
+        override def isDone: Boolean = true
+      }
     }
+  }
 
-    override def openGuiHorseInventory(horse: AbstractHorse, inventoryIn: IInventory): Unit = ()
+  override def openGuiHorseInventory(horse: AbstractHorse, inventoryIn: IInventory): Unit = ()
 
-    override def displayGUIChest(chestInventory: IInventory): Unit = ()
+  override def displayGUIChest(chestInventory: IInventory): Unit = ()
 
-    override def displayGui(guiOwner: IInteractionObject): Unit = ()
+  override def displayGui(guiOwner: IInteractionObject): Unit = ()
 
-    override def displayVillagerTradeGui(villager: IMerchant): Unit = ()
+  override def displayVillagerTradeGui(villager: IMerchant): Unit = ()
 
-    override def displayGuiCommandBlock(commandBlock: TileEntityCommandBlock): Unit = ()
+  override def displayGuiCommandBlock(commandBlock: TileEntityCommandBlock): Unit = ()
 
-    override def openBook(stack: ItemStack, hand: EnumHand): Unit = ()
+  override def openBook(stack: ItemStack, hand: EnumHand): Unit = ()
 
-    override def openEditSign(signTile: TileEntitySign): Unit = ()
+  override def openEditSign(signTile: TileEntitySign): Unit = ()
 
-    override def playEquipSound(stack: ItemStack): Unit = ()
+  override def playEquipSound(stack: ItemStack): Unit = ()
 
-    override def isSilent: Boolean = true
+  override def isSilent: Boolean = true
 
-    override def getAdvancements: PlayerAdvancements = advancements
+  override def getAdvancements: PlayerAdvancements = advancements
 
 }
 
 object QuarryFakePlayer {
-    val profile = new GameProfile(UUID.fromString("ce6c3b8d-11ba-4b32-90d5-e5d30167fca7"), "[QuarryPlus]")
-    private var players = Map.empty[GameProfile, QuarryFakePlayer]
-    MinecraftForge.EVENT_BUS.register(this)
+  val profile = new GameProfile(UUID.fromString("ce6c3b8d-11ba-4b32-90d5-e5d30167fca7"), "[QuarryPlus]")
+  private var players = Map.empty[GameProfile, QuarryFakePlayer]
+  MinecraftForge.EVENT_BUS.register(this)
 
-    def get(server: WorldServer): QuarryFakePlayer = {
-        players.getOrElse(profile, new QuarryFakePlayer(server).tap(p => players = players updated(profile, p)))
-    }
+  def get(server: WorldServer): QuarryFakePlayer = {
+    players.getOrElse(profile, new QuarryFakePlayer(server).tap(p => players = players updated(profile, p)))
+  }
 
-    @SubscribeEvent
-    def onUnload(event: WorldEvent.Unload): Unit = {
-        if (event.getWorld.isInstanceOf[WorldServer]) {
-            players = players.filter { case (_, p) => p.world != event.getWorld }
-        }
+  @SubscribeEvent
+  def onUnload(event: WorldEvent.Unload): Unit = {
+    if (event.getWorld.isInstanceOf[WorldServer]) {
+      players = players.filter { case (_, p) => p.world != event.getWorld }
     }
+  }
 }

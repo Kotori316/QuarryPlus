@@ -83,7 +83,7 @@ public class MapStreamSyntax {
         return kvEntry -> biConsumer.accept(kvEntry.getKey(), kvEntry.getValue());
     }
 
-    public static <T> Predicate<T> not(Predicate<T> original){
+    public static <T> Predicate<T> not(Predicate<T> original) {
         return t -> !original.test(t);
     }
 }

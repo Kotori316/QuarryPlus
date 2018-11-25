@@ -26,41 +26,41 @@ import net.minecraftforge.items.CapabilityItemHandler
 import net.minecraftforge.items.wrapper.InvWrapper
 
 class TileBreaker extends TileEntity with IEnchantableTile with HasInv {
-    private[this] val handler = new InvWrapper(this)
-    var silktouch = false
-    var fortune: Byte = 0
+  private[this] val handler = new InvWrapper(this)
+  var silktouch = false
+  var fortune: Byte = 0
 
-    override def readFromNBT(nbttc: NBTTagCompound): Unit = {
-        super.readFromNBT(nbttc)
-        this.silktouch = nbttc.getBoolean("silktouch")
-        this.fortune = nbttc.getByte("fortune")
-    }
+  override def readFromNBT(nbttc: NBTTagCompound): Unit = {
+    super.readFromNBT(nbttc)
+    this.silktouch = nbttc.getBoolean("silktouch")
+    this.fortune = nbttc.getByte("fortune")
+  }
 
-    override def writeToNBT(nbttc: NBTTagCompound): NBTTagCompound = {
-        nbttc.setBoolean("silktouch", this.silktouch)
-        nbttc.setByte("fortune", this.fortune)
-        super.writeToNBT(nbttc)
-    }
+  override def writeToNBT(nbttc: NBTTagCompound): NBTTagCompound = {
+    nbttc.setBoolean("silktouch", this.silktouch)
+    nbttc.setByte("fortune", this.fortune)
+    super.writeToNBT(nbttc)
+  }
 
-    override def getEnchantments: util.Map[java.lang.Integer, java.lang.Integer] = {
-        val ret = new util.HashMap[java.lang.Integer, java.lang.Integer]
-        if (this.fortune > 0) ret.put(Int.box(FortuneID), Int.box(fortune))
-        if (this.silktouch) ret.put(Int.box(SilktouchID), Int.box(1))
-        ret
-    }
+  override def getEnchantments: util.Map[java.lang.Integer, java.lang.Integer] = {
+    val ret = new util.HashMap[java.lang.Integer, java.lang.Integer]
+    if (this.fortune > 0) ret.put(Int.box(FortuneID), Int.box(fortune))
+    if (this.silktouch) ret.put(Int.box(SilktouchID), Int.box(1))
+    ret
+  }
 
-    override def setEnchantent(id: Short, value: Short) =
-        if (id == FortuneID) this.fortune = value.toByte
-        else if (id == SilktouchID) this.silktouch = value > 0
+  override def setEnchantent(id: Short, value: Short) =
+    if (id == FortuneID) this.fortune = value.toByte
+    else if (id == SilktouchID) this.silktouch = value > 0
 
-    override def G_reinit() = ()
+  override def G_reinit() = ()
 
-    override def getName = TranslationKeys.breaker
+  override def getName = TranslationKeys.breaker
 
-    override def hasCapability(capability: Capability[_], @Nullable facing: EnumFacing): Boolean =
-        (capability eq CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) || super.hasCapability(capability, facing)
+  override def hasCapability(capability: Capability[_], @Nullable facing: EnumFacing): Boolean =
+    (capability eq CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) || super.hasCapability(capability, facing)
 
-    @Nullable override def getCapability[T](capability: Capability[T], @Nullable facing: EnumFacing): T =
-        if (capability eq CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(handler)
-        else super.getCapability(capability, facing)
+  @Nullable override def getCapability[T](capability: Capability[T], @Nullable facing: EnumFacing): T =
+    if (capability eq CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(handler)
+    else super.getCapability(capability, facing)
 }

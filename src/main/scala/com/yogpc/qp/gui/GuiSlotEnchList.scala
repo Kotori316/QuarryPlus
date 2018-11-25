@@ -19,21 +19,21 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 @SideOnly(Side.CLIENT)
 class GuiSlotEnchList(mc: Minecraft, w: Int, h: Int, t: Int, b: Int, val parent: GuiScreen, val target: java.util.List[BlockData]) extends GuiSlot(mc, w, h, t, b, 18) {
-    var currentore = 0
+  var currentore = 0
 
-    override protected def getSize: Int = this.target.size
+  override protected def getSize: Int = this.target.size
 
-    override protected def elementClicked(var1: Int, var2: Boolean, var3: Int, var4: Int): Unit = this.currentore = var1
+  override protected def elementClicked(var1: Int, var2: Boolean, var3: Int, var4: Int): Unit = this.currentore = var1
 
-    override protected def getContentHeight: Int = this.getSize * 18
+  override protected def getContentHeight: Int = this.getSize * 18
 
-    override protected def isSelected(var1: Int): Boolean = var1 == this.currentore
+  override protected def isSelected(var1: Int): Boolean = var1 == this.currentore
 
-    override protected def drawBackground(): Unit = ()
+  override protected def drawBackground(): Unit = ()
 
-    override protected def drawSlot(entryID: Int, insideLeft: Int, yPos: Int, insideSlotHeight: Int, mouseXIn: Int, mouseYIn: Int, f: Float): Unit = {
-        val name = this.target.get(entryID).getLocalizedName
-        Minecraft.getMinecraft.fontRenderer.drawStringWithShadow(name,
-            (this.parent.width * 3 / 5 - Minecraft.getMinecraft.fontRenderer.getStringWidth(name)) / 2, yPos + 2, 0xFFFFFF)
-    }
+  override protected def drawSlot(entryID: Int, insideLeft: Int, yPos: Int, insideSlotHeight: Int, mouseXIn: Int, mouseYIn: Int, f: Float): Unit = {
+    val name = this.target.get(entryID).getLocalizedName
+    Minecraft.getMinecraft.fontRenderer.drawStringWithShadow(name,
+      (this.parent.width * 3 / 5 - Minecraft.getMinecraft.fontRenderer.getStringWidth(name)) / 2, yPos + 2, 0xFFFFFF)
+  }
 }
