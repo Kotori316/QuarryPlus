@@ -1,6 +1,7 @@
 package com.yogpc.qp.tile;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -21,15 +22,17 @@ public interface IAttachment {
         public static final Set<Attachments<? extends APacketTile>> ALL;
 
         static {
-            ALL = Arrays.stream(Attachments.class.getDeclaredFields())
-                .filter(field -> field.getType() == Attachments.class)
-                .map(field -> {
-                    try {
-                        return (Attachments<? extends APacketTile>) field.get(null);
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    }
-                }).collect(Collectors.toSet());
+            ALL = Collections.unmodifiableSet(
+                Arrays.stream(Attachments.class.getDeclaredFields())
+                    .filter(field -> field.getType() == Attachments.class)
+                    .map(field -> {
+                        try {
+                            return (Attachments<? extends APacketTile>) field.get(null);
+                        } catch (IllegalAccessException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }).collect(Collectors.toSet())
+            );
             assert !ALL.isEmpty();
         }
 
