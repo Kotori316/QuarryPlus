@@ -133,7 +133,7 @@ package object qp {
     }
 
     implicit class NumberToNbt[A](private val num: A) extends AnyVal {
-        def toNBT[B](implicit wrapeer: NBTWrapeer[A, B]): B = wrapeer wrap num
+        def toNBT[B <: NBTBase](implicit wrapeer: NBTWrapeer[A, B]): B = wrapeer wrap num
     }
 
     implicit class PosHelper(val blockPos: BlockPos) extends AnyVal {

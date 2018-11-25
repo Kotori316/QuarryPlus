@@ -19,7 +19,16 @@ object Reason {
 
     def apply(energyUsage: EnergyUsage, required: Double, amount: Double): Reason = new EnergyReasonImpl(energyUsage, (required * Nano).toLong, (amount * Nano).toLong)
 
-    def apply(pos: BlockPos, state: IBlockState): Reason = new BreakCanceled(pos, state)
+    def apply(pos: BlockPos, state: IBlockState): Reason = new BreakCanceledImpl(pos, state)
+
+    def apply(pos: BlockPos): Reason = new AllAirImpl(pos)
+
+    def printNonEnergy[T]: Reason => Option[T] = r => {
+        if (Config.content.debug && !r.isEnergyIsuue) {
+            QuarryPlus.LOGGER.info(r.toString)
+        }
+        None
+    }
 
     def print[T]: Reason => Option[T] = r => {
         if (Config.content.debug) {
@@ -28,7 +37,7 @@ object Reason {
         None
     }
 
-    class EnergyReasonImpl(energyUsage: EnergyUsage, required: Long, amount: Long) extends Reason {
+    private class EnergyReasonImpl(energyUsage: EnergyUsage, required: Long, amount: Long) extends Reason {
         override def isEnergyIsuue: Boolean = true
 
         override def usage: Option[EnergyUsage] = Some(energyUsage)
@@ -38,10 +47,16 @@ object Reason {
         }
     }
 
-    class BreakCanceled(pos: BlockPos, state: IBlockState) extends Reason {
+    private class BreakCanceledImpl(pos: BlockPos, state: IBlockState) extends Reason {
         override def isEnergyIsuue: Boolean = false
 
         override def toString: String = s"Breaking $state at ${pos.getX}, ${pos.getY}, ${pos.getZ} was canceled."
+    }
+
+    private class AllAirImpl(pos: BlockPos) extends Reason {
+        override def isEnergyIsuue: Boolean = false
+
+        override def toString: String = s"x = ${pos.getX}, z = ${pos.getZ} has no blocks."
     }
 
 }
