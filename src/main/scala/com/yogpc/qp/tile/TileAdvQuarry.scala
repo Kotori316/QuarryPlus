@@ -41,6 +41,7 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import net.minecraftforge.items.{CapabilityItemHandler, IItemHandlerModifiable}
 
+import scala.annotation.tailrec
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
@@ -143,7 +144,7 @@ class TileAdvQuarry extends APowerTile
         type B_1 = (NonNullList[ItemStack], Seq[Int], Seq[Int], Seq[Int], Seq[Int], Double)
         type C_1 = (NonNullList[ItemStack], Seq[Int], Seq[Int], Seq[Int], Seq[Int])
         type D_1 = (NonNullList[ItemStack], Seq[Reason])
-        val A: Unit => Either[Reason, NonNullList[ItemStack]] = (_: Unit) => {
+        val dropCheck: Unit => Either[Reason, NonNullList[ItemStack]] = (_: Unit) => {
           if (x % 3 == 0) {
             val list = NonNullList.create[ItemStack]()
             val expPump = facingMap.get(Attachments.EXP_PUMP).map(f => getWorld.getTileEntity(getPos.offset(f)))
@@ -166,7 +167,7 @@ class TileAdvQuarry extends APowerTile
           }
         }
 
-        val B: NonNullList[ItemStack] => Either[Reason, B_1] = list => {
+        val calcBreakEnergy: NonNullList[ItemStack] => Either[Reason, B_1] = list => {
           val destroy, dig, drain, shear = new mutable.WrappedArrayBuilder[Int](ClassTag.Int)
           var requireEnergy = 0d
           var y = target.getY - 1
@@ -238,7 +239,7 @@ class TileAdvQuarry extends APowerTile
           Right((list, destroy.result(), dig.result(), drain.result(), shear.result(), requireEnergy * 1.25))
         }
 
-        val C: B_1 => Either[Reason, C_1] = b => {
+        val cosumeEnergy: B_1 => Either[Reason, C_1] = b => {
           val (list, destroy, dig, drain, rest, energy) = b
           if (useEnergy(energy, energy, false, EnergyUsage.ADV_BREAK_BLOCK) == energy) {
             useEnergy(energy, energy, true, EnergyUsage.ADV_BREAK_BLOCK)
@@ -248,7 +249,7 @@ class TileAdvQuarry extends APowerTile
           }
         }
 
-        val D: C_1 => Either[Reason, D_1] = c => {
+        val digging: C_1 => Either[Reason, D_1] = c => {
           val (list, destroy, dig, drain, shear) = c
           val expPump = facingMap.get(Attachments.EXP_PUMP).map(f => getWorld.getTileEntity(getPos.offset(f)))
             .collect { case pump: TileExpPump => pump }
@@ -336,55 +337,54 @@ class TileAdvQuarry extends APowerTile
         val n = if (chunks.isEmpty) digRange.timeInTick else 1
         var j = 0
         var notEnoughEnergy = false
-        while (j < n) {
-          if ((mode is TileAdvQuarry.BREAKBLOCK) && !notEnoughEnergy) {
-            ((for (a <- A().right;
-                   b <- B(a).right;
-                   c <- C(b).right;
-                   d <- D(c).right) yield d) match {
-              case Left(a) =>
-                if (a.isEnergyIsuue) notEnoughEnergy = true
-                Reason.printNonEnergy(a)
-              case Right((l, reasons)) =>
-                l.asScala.foreach(cacheItems.add)
-                reasons.foreach(Reason.printNonEnergy)
+        while (j < n && (mode is TileAdvQuarry.BREAKBLOCK) && !notEnoughEnergy) {
+          ((for (a <- dropCheck().right;
+                 b <- calcBreakEnergy(a).right;
+                 c <- cosumeEnergy(b).right;
+                 d <- digging(c).right) yield d) match {
+            case Left(a) =>
+              if (a.isEnergyIsuue) notEnoughEnergy = true
+              Reason.printNonEnergy(a)
+            case Right((l, reasons)) =>
+              l.asScala.foreach(cacheItems.add)
+              reasons.foreach(Reason.printNonEnergy)
 
-                val pf: ((BlockPos, BlockPos), Int) => Either[Reason, BlockPos] = (t, index) => {
-                  val (pre, pos) = t
-                  if (index == 0 && pos == BlockPos.ORIGIN) {
-                    Right(pos)
+              val pf: ((BlockPos, BlockPos), Int) => Either[Reason, BlockPos] = (t, index) => {
+                val (pre, pos) = t
+                if (index == 0 && pos == BlockPos.ORIGIN) {
+                  Right(pos)
+                } else {
+                  val energy = PowerManager.calcEnergyAdvSearch(self, ench.unbreaking, pos.getY)
+                  if (notEnoughEnergy || useEnergy(energy, energy, false, EnergyUsage.ADV_CHECK_BLOCK) != energy) {
+                    notEnoughEnergy = true
+                    if (index == 0)
+                      Left(Reason(EnergyUsage.ADV_CHECK_BLOCK, energy, getStoredEnergy))
+                    else
+                      Right(pre)
                   } else {
-                    val energy = PowerManager.calcEnergyAdvSearch(self, ench.unbreaking, pos.getY)
-                    if (notEnoughEnergy || useEnergy(energy, energy, false, EnergyUsage.ADV_CHECK_BLOCK) != energy) {
-                      notEnoughEnergy = true
-                      if (index == 0)
-                        Left(Reason(EnergyUsage.ADV_CHECK_BLOCK, energy, getStoredEnergy))
-                      else
-                        Right(pre)
+                    useEnergy(energy, energy, true, EnergyUsage.ADV_CHECK_BLOCK)
+                    if (index == 31) {
+                      Right(pos)
+                    } else if (BlockPos.getAllInBoxMutable(new BlockPos(pos.getX, 1, pos.getZ), pos).asScala.exists(p => !getWorld.isAirBlock(p))) {
+                      Right(pos)
                     } else {
-                      useEnergy(energy, energy, true, EnergyUsage.ADV_CHECK_BLOCK)
-                      if (index == 31) {
-                        Right(pos)
-                      } else if (BlockPos.getAllInBoxMutable(new BlockPos(pos.getX, 1, pos.getZ), pos).asScala.exists(p => !getWorld.isAirBlock(p))) {
-                        Right(pos)
-                      } else {
-                        Left(Reason(pos))
-                      }
+                      Left(Reason(pos))
                     }
                   }
                 }
-
-                nextPoses(digRange, target).take(32).zipWithIndex.flatMap(pf.tupled.andThen(_.right.toSeq)).headOption
-            }).foreach { p =>
-              target = p
-              if (p == BlockPos.ORIGIN) {
-                //Finished.
-                target = digRange.min
-                finishWork()
-                mode set TileAdvQuarry.CHECKLIQUID
               }
+
+              nextPoses(digRange, target).take(32).zipWithIndex.flatMap(pf.tupled.andThen(_.right.toSeq)).headOption
+          }).foreach { p =>
+            target = p
+            if (p == BlockPos.ORIGIN) {
+              //Finished.
+              target = digRange.min
+              finishWork()
+              mode set TileAdvQuarry.CHECKLIQUID
             }
           }
+
           j += 1
         }
       } else if (mode is TileAdvQuarry.NOTNEEDBREAK) {
@@ -429,20 +429,17 @@ class TileAdvQuarry extends APowerTile
         }
       }
       if (!isEmpty) {
-        var break = false
-        var is = cacheItems.remove(0)
-        while (!break) {
-          val stack = InvUtils.injectToNearTile(getWorld, getPos, is)
+        @tailrec
+        def inject(out: ItemStack): Unit = {
+          val stack = InvUtils.injectToNearTile(getWorld, getPos, out)
           if (stack.getCount > 0) {
             cacheItems.add(stack)
-            break = true
-          }
-          if (isEmpty || break) {
-            break = true
-          } else {
-            is = cacheItems.remove(0)
+          } else if (!isEmpty) {
+            inject(cacheItems.remove(0))
           }
         }
+
+        inject(cacheItems.remove(0))
       }
     }
   }
