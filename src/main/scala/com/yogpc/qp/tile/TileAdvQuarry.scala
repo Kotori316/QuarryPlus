@@ -144,7 +144,7 @@ class TileAdvQuarry extends APowerTile
         type B_1 = (NonNullList[ItemStack], Seq[Int], Seq[Int], Seq[Int], Seq[Int], Double)
         type C_1 = (NonNullList[ItemStack], Seq[Int], Seq[Int], Seq[Int], Seq[Int])
         type D_1 = (NonNullList[ItemStack], Seq[Reason])
-        val dropCheck: Unit => Either[Reason, NonNullList[ItemStack]] = (_: Unit) => {
+        val dropCheck: () => Either[Reason, NonNullList[ItemStack]] = () => {
           if (x % 3 == 0) {
             val list = NonNullList.create[ItemStack]()
             val expPump = facingMap.get(Attachments.EXP_PUMP).map(f => getWorld.getTileEntity(getPos.offset(f)))
