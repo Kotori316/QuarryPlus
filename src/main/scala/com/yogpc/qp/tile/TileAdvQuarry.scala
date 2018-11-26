@@ -349,32 +349,37 @@ class TileAdvQuarry extends APowerTile
               l.asScala.foreach(cacheItems.add)
               reasons.foreach(Reason.printNonEnergy)
 
-              val pf: ((BlockPos, BlockPos), Int) => Either[Reason, BlockPos] = (t, index) => {
-                val (pre, pos) = t
-                if (index == 0 && pos == BlockPos.ORIGIN) {
-                  Right(pos)
-                } else {
-                  val energy = PowerManager.calcEnergyAdvSearch(self, ench.unbreaking, pos.getY)
-                  if (notEnoughEnergy || useEnergy(energy, energy, false, EnergyUsage.ADV_CHECK_BLOCK) != energy) {
-                    notEnoughEnergy = true
-                    if (index == 0)
-                      Left(Reason(EnergyUsage.ADV_CHECK_BLOCK, energy, getStoredEnergy))
-                    else
-                      Right(pre)
-                  } else {
-                    useEnergy(energy, energy, true, EnergyUsage.ADV_CHECK_BLOCK)
-                    if (index == 31) {
-                      Right(pos)
-                    } else if (BlockPos.getAllInBoxMutable(new BlockPos(pos.getX, 1, pos.getZ), pos).asScala.exists(p => !getWorld.isAirBlock(p))) {
-                      Right(pos)
+              @tailrec
+              def next(stream: Stream[((BlockPos, BlockPos), Int)], reasons: List[Reason] = Nil): (Option[BlockPos], Seq[Reason]) = {
+                stream match {
+                  case ((pre, newPos), index) #:: rest =>
+                    if (pre == newPos) {
+                      Some(BlockPos.ORIGIN) -> reasons
                     } else {
-                      Left(Reason(pos))
+                      val energy = PowerManager.calcEnergyAdvSearch(self, ench.unbreaking, newPos.getY)
+                      if (notEnoughEnergy || useEnergy(energy, energy, false, EnergyUsage.ADV_CHECK_BLOCK) != energy) {
+                        notEnoughEnergy = true
+                        if (index == 0)
+                          None -> Seq(Reason(EnergyUsage.ADV_CHECK_BLOCK, energy, getStoredEnergy, index))
+                        else
+                          Some(pre) -> (Reason(EnergyUsage.ADV_CHECK_BLOCK, energy, getStoredEnergy, index) :: reasons)
+                      } else {
+                        useEnergy(energy, energy, true, EnergyUsage.ADV_CHECK_BLOCK)
+                        if (index == 31) {
+                          Some(newPos) -> reasons
+                        } else if (BlockPos.getAllInBoxMutable(new BlockPos(newPos.getX, 1, newPos.getZ), newPos).asScala.exists(p => !getWorld.isAirBlock(p))) {
+                          Some(newPos) -> reasons
+                        } else {
+                          next(rest, Reason(newPos, index) :: reasons)
+                        }
+                      }
                     }
-                  }
                 }
               }
 
-              nextPoses(digRange, target).take(32).zipWithIndex.flatMap(pf.tupled.andThen(_.right.toSeq)).headOption
+              next(nextPoses(digRange, target).take(32).zipWithIndex) match {
+                case (opt, r) => r.reverse.foreach(Reason.print); opt
+              }
           }).foreach { p =>
             target = p
             if (p == BlockPos.ORIGIN) {
