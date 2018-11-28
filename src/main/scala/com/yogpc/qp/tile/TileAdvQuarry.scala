@@ -132,7 +132,7 @@ class TileAdvQuarry extends APowerTile
         chunkLoad()
 
         var i = 0
-        while (i < 4) {
+        while (i < 4 * digRange.timeInTick) {
           if (mode is TileAdvQuarry.MAKEFRAME)
             makeFrame()
           i += 1
@@ -981,7 +981,7 @@ object TileAdvQuarry {
     final val lengthSq = min.distanceSq(maxZ, maxY, maxZ)
 
     val timeInTick: Int = {
-      val length = (maxX + maxZ - minX - minZ) / 2
+      val length = (maxX + maxZ - minX - minZ + 2) / 2
       if (length < 128) {
         1
       } else {
@@ -996,7 +996,7 @@ object TileAdvQuarry {
       a.toList
     }
 
-    override val toString: String = s"Dig Range from ($minX, $minY, $minZ) to ($maxX, $maxY, $maxZ)"
+    override val toString: String = s"Dig Range from ($minX, $minY, $minZ) to ($maxX, $maxY, $maxZ). $timeInTick times a tick."
 
     override def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
       nbt.setBoolean("defined", defined)
