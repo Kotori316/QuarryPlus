@@ -138,13 +138,13 @@ class TileAdvQuarry extends APowerTile
           i += 1
         }
       } else if (mode is TileAdvQuarry.BREAKBLOCK) {
-        val x = target.getX
-        val z = target.getZ
 
         type B_1 = (NonNullList[ItemStack], Seq[Int], Seq[Int], Seq[Int], Seq[Int], Double)
         type C_1 = (NonNullList[ItemStack], Seq[Int], Seq[Int], Seq[Int], Seq[Int])
         type D_1 = (NonNullList[ItemStack], Seq[Reason])
         val dropCheck: () => Either[Reason, NonNullList[ItemStack]] = () => {
+          val x = target.getX
+          val z = target.getZ
           if (x % 3 == 0) {
             val list = NonNullList.create[ItemStack]()
             val expPump = facingMap.get(Attachments.EXP_PUMP).map(f => getWorld.getTileEntity(getPos.offset(f)))
@@ -170,7 +170,9 @@ class TileAdvQuarry extends APowerTile
         val calcBreakEnergy: NonNullList[ItemStack] => Either[Reason, B_1] = list => {
           val destroy, dig, drain, shear = new mutable.WrappedArrayBuilder[Int](ClassTag.Int)
           var requireEnergy = 0d
+          val x = target.getX
           var y = target.getY - 1
+          val z = target.getZ
           val pos = new MutableBlockPos(x, y, z)
           val flags = Array(x == digRange.minX, x == digRange.maxX, z == digRange.minZ, z == digRange.maxZ)
           while (y > 0) {
@@ -258,7 +260,7 @@ class TileAdvQuarry extends APowerTile
           val collectFurnaceXP = InvUtils.hasSmelting(fakePlayer.getHeldItemMainhand) && expPump.isDefined
           val tempList = new NotNullList(new ArrayBuffer[ItemStack]())
           val toReplace = getFillBlock
-          val p = new MutableBlockPos(x, 0, z)
+          val p = new MutableBlockPos(target.getX, 0, target.getZ)
 
           val reasons = new ArrayBuffer[Reason](0)
           dig.foreach { y =>
@@ -469,7 +471,7 @@ class TileAdvQuarry extends APowerTile
   }
 
   private def setBlock(pos: BlockPos, state: IBlockState): Unit = {
-    val i = if (state.isFullCube) 2 else 3
+    val i = if (state == Blocks.AIR.getDefaultState || state.isFullCube) 2 else 3
     getWorld.setBlockState(pos, state, i)
   }
 
