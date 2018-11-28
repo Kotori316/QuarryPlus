@@ -506,11 +506,11 @@ class TileAdvQuarry extends APowerTile
 
   override def readFromNBT(nbttc: NBTTagCompound) = {
     super.readFromNBT(nbttc)
-    ench = QEnch.readFromNBT(nbttc)
-    digRange = DigRange.readFromNBT(nbttc)
+    ench = QEnch.readFromNBT(nbttc.getCompoundTag(NBT_QENCH))
+    digRange = DigRange.readFromNBT(nbttc.getCompoundTag(NBT_DIGRANGE))
     target = BlockPos.fromLong(nbttc.getLong("NBT_TARGET"))
-    mode.readFromNBT(nbttc)
-    cacheItems.readFromNBT(nbttc)
+    mode.readFromNBT(nbttc.getCompoundTag(NBT_MODE))
+    cacheItems.readFromNBT(nbttc.getCompoundTag(NBT_ITEMLIST))
     nbttc.getTagList("NBT_FLUIDLIST", Constants.NBT.TAG_COMPOUND).tagIterator.foreach(tag => {
       val tank = new QuarryTank(null, 0)
       CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.readNBT(tank, null, tag)
@@ -860,17 +860,14 @@ class TileAdvQuarry extends APowerTile
     }
 
     override def readFromNBT(tag: NBTTagCompound): Mode = {
-      if (tag hasKey NBT_MODE) {
-        val t = tag.getCompoundTag(NBT_MODE)
-        this.mode = t.getInteger("mode") match {
-          case 0 => NONE
-          case 1 => NOTNEEDBREAK
-          case 2 => MAKEFRAME
-          case 3 => BREAKBLOCK
-          case 4 => CHECKLIQUID
-          case 5 => FILLBLOCKS
-          case _ => throw new IllegalStateException("Invalid mode")
-        }
+      this.mode = tag.getInteger("mode") match {
+        case 0 => NONE
+        case 1 => NOTNEEDBREAK
+        case 2 => MAKEFRAME
+        case 3 => BREAKBLOCK
+        case 4 => CHECKLIQUID
+        case 5 => FILLBLOCKS
+        case _ => throw new IllegalStateException("Invalid mode")
       }
       this
     }
@@ -958,12 +955,11 @@ object TileAdvQuarry {
 
   object QEnch extends INBTReadable[QEnch] {
     override def readFromNBT(tag: NBTTagCompound): QEnch = {
-      if (tag.hasKey(NBT_QENCH)) {
-        val t = tag.getCompoundTag(NBT_QENCH)
-        val o = t.getCompoundTag("other")
+      if (!tag.hasNoTags) {
+        val o = tag.getCompoundTag("other")
         val otherMap = o.getKeySet.asScala.map(s => ForgeRegistries.ENCHANTMENTS.getValue(new ResourceLocation(s)) -> o.getInteger(s))
           .collect { case (e, l) if e != null => Enchantment.getEnchantmentID(e) -> l }.toMap
-        QEnch(t.getInteger("efficiency"), t.getInteger("unbreaking"), t.getInteger("fortune"), t.getBoolean("silktouch"), otherMap)
+        QEnch(tag.getInteger("efficiency"), tag.getInteger("unbreaking"), tag.getInteger("fortune"), tag.getBoolean("silktouch"), otherMap)
       } else
         QEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false)
     }
@@ -1014,16 +1010,12 @@ object TileAdvQuarry {
 
   object DigRange extends INBTReadable[DigRange] {
     override def readFromNBT(tag: NBTTagCompound): DigRange = {
-      if (tag.hasKey(NBT_DIGRANGE)) {
-        val t = tag.getCompoundTag(NBT_DIGRANGE)
-        if (t.getBoolean("defined")) {
-          DigRange(t.getInteger("minX"), t.getInteger("minY"), t.getInteger("minZ"),
-            t.getInteger("maxX"), t.getInteger("maxY"), t.getInteger("maxZ"))
-        } else {
-          defaultRange
-        }
-      } else
+      if (tag.getBoolean("defined")) {
+        DigRange(tag.getInteger("minX"), tag.getInteger("minY"), tag.getInteger("minZ"),
+          tag.getInteger("maxX"), tag.getInteger("maxY"), tag.getInteger("maxZ"))
+      } else {
         defaultRange
+      }
     }
   }
 
@@ -1087,10 +1079,8 @@ object TileAdvQuarry {
     }
 
     override def readFromNBT(tag: NBTTagCompound): ItemList = {
-      if (tag.hasKey(NBT_ITEMLIST)) {
-        val l = tag.getCompoundTag(NBT_ITEMLIST).getTagList(NBT_ITEMELEMENTS, Constants.NBT.TAG_COMPOUND)
-        l.tagIterator.map(VersionUtil.fromNBTTag).foreach(this.add)
-      }
+      val l = tag.getTagList(NBT_ITEMELEMENTS, Constants.NBT.TAG_COMPOUND)
+      l.tagIterator.map(VersionUtil.fromNBTTag).foreach(this.add)
       this
     }
   }
