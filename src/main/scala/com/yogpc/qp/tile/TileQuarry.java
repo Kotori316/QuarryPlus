@@ -439,7 +439,8 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
         if (now == NOTNEEDBREAK || !facingMap.containsKey(REPLACER))
             return Blocks.AIR.getDefaultState();
         else {
-            return Optional.ofNullable(world.getTileEntity(pos.offset(facingMap.get(REPLACER))))
+            return Optional.ofNullable(facingMap.get(REPLACER))
+                .map(pos::offset).map(world::getTileEntity)
                 .filter(REPLACER)
                 .map(REPLACER)
                 .map(TileReplacer::getReplaceState)
@@ -508,21 +509,15 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
         if (!getWorld().isRemote) {
             PacketHandler.sendToAround(ModeMessage.create(this), getWorld(), getPos());
             IBlockState state = getWorld().getBlockState(getPos());
-            if (state.getValue(BlockQuarry.ACTING)) {
-                if (now == NONE) {
-                    validate();
-                    getWorld().setBlockState(getPos(), state.withProperty(BlockQuarry.ACTING, false));
-                    validate();
-                    getWorld().setTileEntity(getPos(), this);
-                    finishWork();
-                }
-            } else {
-                if (now != NONE) {
-                    validate();
-                    getWorld().setBlockState(getPos(), state.withProperty(BlockQuarry.ACTING, true));
-                    validate();
-                    getWorld().setTileEntity(getPos(), this);
+            if (state.getValue(BlockQuarry.ACTING) == !isWorking()) {
+                validate();
+                getWorld().setBlockState(getPos(), state.withProperty(BlockQuarry.ACTING, isWorking()));
+                validate();
+                getWorld().setTileEntity(getPos(), this);
+                if (isWorking()) {
                     startWork();
+                } else {
+                    finishWork();
                 }
             }
         }

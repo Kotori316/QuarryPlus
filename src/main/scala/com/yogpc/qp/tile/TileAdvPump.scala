@@ -254,18 +254,14 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
     }
     val stack = FluidHandler.drain(FluidHandler.getAmount, doDrain = false)
     if (!stack.isEmpty) {
-      for (facing <- EnumFacing.VALUES) {
+      for (facing <- EnumFacing.VALUES;
+           tile <- Option(getWorld.getTileEntity(getPos.offset(facing)));
+           handler <- Option(tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing.getOpposite))) {
         if (stack.amount > 0) {
-          val tile = getWorld.getTileEntity(getPos.offset(facing))
-          if (tile != null) {
-            val handler = tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing.getOpposite)
-            if (handler != null) {
-              val used = handler.fill(stack, true)
-              if (used > 0) {
-                FluidHandler.drain(stack.copywithAmount(used), doDrain = true)
-                stack.amount -= used
-              }
-            }
+          val used = handler.fill(stack, true)
+          if (used > 0) {
+            FluidHandler.drain(stack.copywithAmount(used), doDrain = true)
+            stack.amount -= used
           }
         }
       }
@@ -345,11 +341,11 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
     val NBT_DELETE = "delete"
     super.readFromNBT(nbttc)
     target = BlockPos.fromLong(nbttc.getLong(NBT_POS))
-    ench = PEnch.readFromNBT(nbttc)
+    ench = PEnch.readFromNBT(nbttc.getCompoundTag(NBT_PENCH))
     finished = nbttc.getBoolean(NBT_FINISHED)
     placeFrame = nbttc.getBoolean(NBT_PLACEFRAME)
     delete = nbttc.getBoolean(NBT_DELETE)
-    FluidHandler.readFromNBT(nbttc)
+    FluidHandler.readFromNBT(nbttc.getCompoundTag(NBT_FluidHandler))
   }
 
   override def writeToNBT(nbttc: NBTTagCompound) = {
@@ -361,8 +357,8 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
     nbttc.setBoolean(NBT_FINISHED, finished)
     nbttc.setBoolean(NBT_PLACEFRAME, placeFrame)
     nbttc.setBoolean(NBT_DELETE, delete)
-    ench.writeToNBT(nbttc)
-    FluidHandler.writeToNBT(nbttc)
+    nbttc.setTag(NBT_PENCH, ench.toNBT)
+    nbttc.setTag(NBT_FluidHandler, FluidHandler.toNBT)
     super.writeToNBT(nbttc)
   }
 
@@ -413,9 +409,6 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
   private object FluidHandler extends IFluidHandler with INBTWritable with INBTReadable[IFluidHandler] {
 
     private[this] final val fluidStacks = new ListBuffer[FluidStack]
-    private[this] final val NBT_FluidHandler = "FluidHandler"
-    private[this] final val NBT_pumped = "amountPumped"
-    private[this] final val NBT_liquids = "liquds"
     var amountPumped = 0l
 
     override def fill(resource: FluidStack, doFill: Boolean): Int = 0
@@ -503,17 +496,14 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
       else fluidStacks.forall(_.amount <= ench.maxAmount / 2)
 
     override def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
-      val tag = new NBTTagCompound
-      tag.setTag(NBT_pumped, amountPumped.toNBT)
-      tag.setTag(NBT_liquids, (new NBTTagList).tap(l => fluidStacks.map(_.toNBT).foreach(l.appendTag)))
-      nbt.setTag(NBT_FluidHandler, tag)
+      nbt.setTag(NBT_pumped, amountPumped.toNBT)
+      nbt.setTag(NBT_liquids, (new NBTTagList).tap(l => fluidStacks.map(_.toNBT).foreach(l.appendTag)))
       nbt
     }
 
     override def readFromNBT(nbt: NBTTagCompound): IFluidHandler = {
-      val tag = nbt.getCompoundTag(NBT_FluidHandler)
-      amountPumped = tag.getLong(NBT_pumped)
-      val list = tag.getTagList(NBT_liquids, NBT.TAG_COMPOUND)
+      amountPumped = nbt.getLong(NBT_pumped)
+      val list = nbt.getTagList(NBT_liquids, NBT.TAG_COMPOUND)
       for (t <- list.tagIterator;
            f <- FluidStack.loadFluidStackFromNBT(t).toOption)
         fluidStacks += f
@@ -528,6 +518,9 @@ object TileAdvPump {
 
   final val SYMBOL = Symbol("AdvancedPump")
   private final val NBT_PENCH = "nbt_pench"
+  private final val NBT_FluidHandler = "FluidHandler"
+  private final val NBT_pumped = "amountPumped"
+  private final val NBT_liquids = "liquds"
   private[this] final val defaultBaseEnergy = Seq(10, 8, 6, 4)
   private[this] final val defaultRecieveEnergy = Seq(32, 64, 128, 256, 512, 1024)
   val defaultEnch = PEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false, BlockPos.ORIGIN, BlockPos.ORIGIN)
@@ -539,14 +532,12 @@ object TileAdvPump {
     val square = start != BlockPos.ORIGIN && end != BlockPos.ORIGIN
 
     override def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
-      val t = new NBTTagCompound
-      t.setInteger("efficiency", efficiency)
-      t.setInteger("unbreaking", unbreaking)
-      t.setInteger("fortune", fortune)
-      t.setBoolean("silktouch", silktouch)
-      t.setLong("start", start.toLong)
-      t.setLong("end", end.toLong)
-      nbt.setTag(NBT_PENCH, t)
+      nbt.setInteger("efficiency", efficiency)
+      nbt.setInteger("unbreaking", unbreaking)
+      nbt.setInteger("fortune", fortune)
+      nbt.setBoolean("silktouch", silktouch)
+      nbt.setLong("start", start.toLong)
+      nbt.setLong("end", end.toLong)
       nbt
     }
 
@@ -611,10 +602,9 @@ object TileAdvPump {
 
   object PEnch extends INBTReadable[PEnch] {
     override def readFromNBT(tag: NBTTagCompound): PEnch = {
-      if (tag.hasKey(NBT_PENCH)) {
-        val t = tag.getCompoundTag(NBT_PENCH)
-        PEnch(t.getInteger("efficiency"), t.getInteger("unbreaking"), t.getInteger("fortune"), t.getBoolean("silktouch"),
-          BlockPos.fromLong(t.getLong("start")), BlockPos.fromLong(t.getLong("end")))
+      if (!tag.hasNoTags) {
+        PEnch(tag.getInteger("efficiency"), tag.getInteger("unbreaking"), tag.getInteger("fortune"), tag.getBoolean("silktouch"),
+          BlockPos.fromLong(tag.getLong("start")), BlockPos.fromLong(tag.getLong("end")))
       } else
         PEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false, BlockPos.ORIGIN, BlockPos.ORIGIN)
     }
