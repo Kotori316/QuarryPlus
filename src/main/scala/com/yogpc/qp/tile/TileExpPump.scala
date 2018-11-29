@@ -57,14 +57,9 @@ class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender wi
     this.mConnectTo = connectTo
     if (hasWorld) {
       val state = getWorld.getBlockState(getPos)
-      if (connectTo == null && state.getValue(BlockPump.CONNECTED)) {
+      if (!working == state.getValue(BlockPump.CONNECTED)) {
         validate()
-        getWorld.setBlockState(getPos, state.withProperty(BlockPump.CONNECTED, Boolean.box(false)))
-        validate()
-        getWorld.setTileEntity(getPos, this)
-      } else if (connectTo != null && !state.getValue(BlockPump.CONNECTED)) {
-        validate()
-        getWorld.setBlockState(getPos, state.withProperty(BlockPump.CONNECTED, Boolean.box(true)))
+        getWorld.setBlockState(getPos, state.withProperty(BlockPump.CONNECTED, Boolean.box(working)))
         validate()
         getWorld.setTileEntity(getPos, this)
       }
