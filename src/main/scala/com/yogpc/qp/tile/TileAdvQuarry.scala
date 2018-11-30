@@ -210,7 +210,7 @@ class TileAdvQuarry extends APowerTile
                 }
               }
             }
-            if (flags.exists(b => b)) {
+            if (flags.exists(identity)) {
               if (flags(0)) { //-x
                 checkandsetFrame(getWorld, pos.offset(EnumFacing.WEST))
                 if (flags(2)) { //-z, -x
