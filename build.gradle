@@ -153,7 +153,8 @@ curseforge {
     apiKey = project.hasProperty("curseforge_additional-enchanted-miner_key") ? getProperty("curseforge_additional-enchanted-miner_key") : ""
     project {
         id = '282837'
-        changelog = 'See GitHub commit'
+        changelogType = 'markdown'
+        changelog = new File("temp_changelog.md")
         releaseType = 'release'
         mainArtifact jar
         afterEvaluate {
