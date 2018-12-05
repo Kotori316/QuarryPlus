@@ -218,7 +218,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     private boolean isBreakableBlock(BlockPos target, IBlockState b, float blockHardness) {
         return blockHardness >= 0 && // Not to break unbreakable
             !b.getBlock().isAir(b, getWorld(), target) && // Avoid air
-            (now != NOTNEEDBREAK && (!facingMap.containsKey(REPLACER) || b != S_getFillBlock())) && // Avoid dummy block.
+            (now == NOTNEEDBREAK || !facingMap.containsKey(REPLACER) || b != S_getFillBlock()) && // Avoid dummy block.
             !(!facingMap.containsKey(FLUID_PUMP) && TilePump.isLiquid(b)); // Fluid when pump isn't connected.
     }
 
