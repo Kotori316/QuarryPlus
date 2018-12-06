@@ -121,30 +121,30 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
 
     @Override
     public ItemStack getStackInSlot(int index) {
-        if (27 <= index && index < 45) {
-            return inventory2.get(index - 27);
+        if (inventory.size() <= index && index < getSizeInventory()) {
+            return inventory2.get(index - inventory.size());
         }
         return inventory.get(index);
     }
 
     @Override
     public ItemStack decrStackSize(int index, int count) {
-        if (27 <= index && index < 45)
-            return ItemStackHelper.getAndSplit(inventory2, index - 27, count);
+        if (inventory.size() <= index && index < getSizeInventory())
+            return ItemStackHelper.getAndSplit(inventory2, index - inventory.size(), count);
         return ItemStackHelper.getAndSplit(inventory, index, count);
     }
 
     @Override
     public ItemStack removeStackFromSlot(int index) {
-        if (27 <= index && index < 45)
-            return ItemStackHelper.getAndRemove(inventory2, index - 27);
+        if (inventory.size() <= index && index < getSizeInventory())
+            return ItemStackHelper.getAndRemove(inventory2, index - inventory.size());
         return ItemStackHelper.getAndRemove(inventory, index);
     }
 
     @Override
     public void setInventorySlotContents(int index, ItemStack stack) {
-        if (27 <= index && index < 45) {
-            inventory2.set(index - 27, stack);
+        if (inventory.size() <= index && index < getSizeInventory()) {
+            inventory2.set(index - inventory.size(), stack);
         } else
             inventory.set(index, stack);
     }
@@ -165,7 +165,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
         recipesList = WorkbenchRecipes.getRecipe(inventory);
         inventory2.clear();
         for (int i = 0; i < recipesList.size(); i++) {
-            setInventorySlotContents(27 + i, recipesList.get(i).output().toStack(1));
+            setInventorySlotContents(inventory.size() + i, recipesList.get(i).output().toStack(1));
         }
         if (getRecipeIndex() == -1) {
             setCurrentRecipeIndex(-1);

@@ -67,6 +67,7 @@ import net.minecraftforge.items.wrapper.InvWrapper;
 import static com.yogpc.qp.tile.IAttachment.Attachments.ALL;
 import static com.yogpc.qp.tile.IAttachment.Attachments.EXP_PUMP;
 import static com.yogpc.qp.tile.IAttachment.Attachments.FLUID_PUMP;
+import static jp.t2v.lab.syntax.MapStreamSyntax.not;
 
 @net.minecraftforge.fml.common.Optional.Interface(iface = "cofh.api.tileentity.IInventoryConnection", modid = QuarryPlus.Optionals.COFH_modID)
 public abstract class TileBasic extends APowerTile implements IEnchantableTile, HasInv, IInventoryConnection, IAttachable {
@@ -234,7 +235,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
      * @return The amount of xp by smelting items.
      */
     public static int getSmeltingXp(Collection<ItemStack> stacks, Collection<ItemStack> raws) {
-        return stacks.stream().filter(s -> !raws.contains(s)).mapToInt(stack ->
+        return stacks.stream().filter(not(raws::contains)).mapToInt(stack ->
             floorFloat(FurnaceRecipes.instance().getSmeltingExperience(stack) * VersionUtil.getCount(stack))).sum();
     }
 

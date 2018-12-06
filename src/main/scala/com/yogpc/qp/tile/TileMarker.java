@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import buildcraft.api.tiles.ITileAreaProvider;
@@ -326,11 +327,8 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
             if (xFlag && yFlag && zFlag) {
                 return false;
             }
-            for (BlockPos p : PositionUtil.getCorners(min(), max())) {
-                if (PositionUtil.isNextTo(p, pos)) {
-                    return true;
-                }
-            }
+            Predicate<BlockPos> predicate = p -> PositionUtil.isNextTo(p, pos);
+            return PositionUtil.getCorners(min(), max()).stream().anyMatch(predicate);
         }
         return false;
     }

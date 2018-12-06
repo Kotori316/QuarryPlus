@@ -84,6 +84,6 @@ public class MapStreamSyntax {
     }
 
     public static <T> Predicate<T> not(Predicate<T> original) {
-        return t -> !original.test(t);
+        return original.negate();
     }
 }

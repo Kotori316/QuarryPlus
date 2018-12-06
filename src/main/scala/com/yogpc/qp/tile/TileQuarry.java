@@ -40,7 +40,6 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -341,18 +340,26 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
 
         if (facingMap.containsKey(EXP_PUMP)) {
             List<EntityXPOrb> xpOrbs = getWorld().getEntitiesWithinAABB(EntityXPOrb.class, axis);
-            TileEntity t = world.getTileEntity(pos.offset(facingMap.get(EXP_PUMP)));
-            if (t instanceof TileExpPump) {
-                TileExpPump pump = (TileExpPump) t;
-                xpOrbs.stream().filter(EntityXPOrb::isEntityAlive).mapToInt(EntityXPOrb::getXpValue).forEach(value -> {
-                    double min = pump.getEnergyUse(value);
-                    if (useEnergy(min, min, false, EnergyUsage.PUMP_EXP) == min) {
-                        useEnergy(min, min, true, EnergyUsage.PUMP_EXP);
-                        pump.addXp(value);
-                    }
-                });
-                xpOrbs.forEach(QuarryPlus.proxy::removeEntity);
+            class Data {
+                public final int xp;
+                public final TileExpPump pump;
+                public final double energy;
+
+                public Data(int xp, TileExpPump pump) {
+                    this.xp = xp;
+                    this.pump = pump;
+                    this.energy = pump.getEnergyUse(xp);
+                }
             }
+            Optional.ofNullable(world.getTileEntity(pos.offset(facingMap.get(EXP_PUMP)))).filter(EXP_PUMP).map(EXP_PUMP)
+                .map(Stream::of).orElseGet(Stream::empty)
+                .map(p -> new Data(xpOrbs.stream().filter(EntityXPOrb::isEntityAlive).mapToInt(EntityXPOrb::getXpValue).sum(), p))
+                .filter(data -> useEnergy(data.energy, data.energy, false, EnergyUsage.PUMP_EXP) == data.energy)
+                .forEach(data -> {
+                    useEnergy(data.energy, data.energy, true, EnergyUsage.PUMP_EXP);
+                    data.pump.addXp(data.xp);
+                    xpOrbs.forEach(QuarryPlus.proxy::removeEntity);
+                });
         }
 
     }

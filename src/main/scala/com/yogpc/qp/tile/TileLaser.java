@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import buildcraft.api.mj.ILaserTarget;
 import buildcraft.api.mj.MjAPI;
@@ -164,15 +165,12 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
         }
 
         this.targets.clear();
-        BlockPos.getAllInBoxMutable(new BlockPos(minX, minY, minZ), new BlockPos(maxX, maxY, maxZ)).forEach(mutableBlockPos -> {
-            TileEntity tileEntity = getWorld().getTileEntity(mutableBlockPos);
-            if (tileEntity instanceof ILaserTarget) {
-                ILaserTarget target = (ILaserTarget) tileEntity;
-                if (!target.isInvalidTarget() && target.getRequiredLaserPower() > 0) {
-                    targets.add(mutableBlockPos.toImmutable());
-                }
-            }
-        });
+        StreamSupport.stream(BlockPos.getAllInBoxMutable(new BlockPos(minX, minY, minZ), new BlockPos(maxX, maxY, maxZ)).spliterator(), false)
+            .map(p -> getWorld().getTileEntity(p)).filter(ILaserTarget.class::isInstance)
+            .map(t -> (TileEntity & ILaserTarget) t)
+            .filter(t -> !t.isInvalidTarget() && t.getRequiredLaserPower() > 0)
+            .map(TileEntity::getPos)
+            .forEach(targets::add);
 
         if (this.targets.isEmpty())
             return;

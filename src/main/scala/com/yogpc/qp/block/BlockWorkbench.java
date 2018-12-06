@@ -29,9 +29,7 @@ public class BlockWorkbench extends ADismCBlock {
         TileEntity entity = worldIn.getTileEntity(pos);
         if (entity instanceof TileWorkbench) {
             TileWorkbench inventory = (TileWorkbench) entity;
-            for (int i = 0; i < 27; ++i) {
-                ItemStack itemstack = inventory.getStackInSlot(i);
-
+            for (ItemStack itemstack : inventory.inventory) {
                 if (VersionUtil.nonEmpty(itemstack)) {
                     float f = RANDOM.nextFloat() * 0.8F + 0.1F;
                     float f1 = RANDOM.nextFloat() * 0.8F + 0.1F;

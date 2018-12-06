@@ -151,7 +151,7 @@ public class ContainerWorkbench extends Container {
     @Override
     public void detectAndSendChanges() {
         //super.detectAndSendChanges();
-        for (int i = 45; i < this.inventorySlots.size(); ++i) {
+        for (int i = playerSlot; i < this.inventorySlots.size(); ++i) {
             ItemStack itemstack = this.inventorySlots.get(i).getStack();
             ItemStack itemstack1 = this.inventoryItemStacks.get(i);
 
