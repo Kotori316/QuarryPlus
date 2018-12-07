@@ -6,10 +6,13 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ContainerBookMover extends Container {
 
     private final TileBookMover mover;
+    private int progress;
 
     public ContainerBookMover(TileBookMover mover, EntityPlayer player) {
         this.mover = mover;
@@ -64,5 +67,26 @@ public class ContainerBookMover extends Container {
             VersionUtil.onTake(slot, playerIn, remain);
         }
         return src;
+    }
+
+    @Override
+    public void detectAndSendChanges() {
+        super.detectAndSendChanges();
+        int progress = (int) (mover.getStoredEnergy() / mover.getMaxStored() * 1000);
+        listeners.forEach(listener -> listener.sendWindowProperty(this, 0, progress));
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void updateProgressBar(int id, int data) {
+        super.updateProgressBar(id, data);
+        if (id == 0) {
+            this.progress = data;
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    public int getProgress() {
+        return progress;
     }
 }

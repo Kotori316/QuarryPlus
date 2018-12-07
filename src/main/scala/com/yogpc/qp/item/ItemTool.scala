@@ -157,6 +157,9 @@ class ItemTool extends Item with IEnchantableItem {
     (l == null || l.tagCount == 0) && ((enchantment eq Enchantments.SILK_TOUCH) || (enchantment eq Enchantments.FORTUNE))
   }
 
+  override def stacks(): Array[ItemStack] = Array(getEditorStack)
+
+  override def isValidInBookMover: Boolean = false
 }
 
 object ItemTool {

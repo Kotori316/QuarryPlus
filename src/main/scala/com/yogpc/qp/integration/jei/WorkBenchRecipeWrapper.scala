@@ -24,7 +24,7 @@ class WorkBenchRecipeWrapper(recipe: WorkbenchRecipes) extends IRecipeWrapper wi
 
   override def drawInfo(minecraft: Minecraft, recipeWidth: Int, recipeHeight: Int, mouseX: Int, mouseY: Int): Unit = {
     import WorkBenchRecipeCategory._
-    minecraft.fontRenderer.drawString(getEnergyRequired.toString + "MJ", 40 - xOff, 74 - yOff, 0x404040)
+    minecraft.fontRenderer.drawString(getEnergyRequired.toString + "MJ", 36 - xOff, 70 - yOff, 0x404040)
   }
 
   val getEnergyRequired: Double = recipe.energy

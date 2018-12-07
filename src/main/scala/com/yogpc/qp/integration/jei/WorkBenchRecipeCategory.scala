@@ -13,22 +13,24 @@ import net.minecraft.util.ResourceLocation
 class WorkBenchRecipeCategory(guiHelper: IGuiHelper) extends IRecipeCategory[WorkBenchRecipeWrapper] {
   //4, 13 => 175, 94
 
-  val bar = guiHelper.createDrawable(backGround, xOff, 95, 160, 4)
+  val bar = guiHelper.createDrawable(backGround, xOff, 87, 160, 4)
   val animateBar = guiHelper.createAnimatedDrawable(bar, 300, StartDirection.LEFT, false)
 
-  override val getBackground: IDrawable = guiHelper.createDrawable(backGround, xOff, yOff, 175, 94)
+  override val getBackground: IDrawable = guiHelper.createDrawable(backGround, xOff, yOff, 167, 86)
 
   override def setRecipe(recipeLayout: IRecipeLayout, recipeWrapper: WorkBenchRecipeWrapper, ingredients: IIngredients): Unit = {
     val guiItemStack = recipeLayout.getItemStacks
     //7, 17 -- 7, 89
+
+    val x0 = 3
     for (i <- 0 until recipeWrapper.recipeSize) {
       if (i < 9) {
-        guiItemStack.init(i, true, 7 + o * i - xOff, 7 - yOff)
+        guiItemStack.init(i, true, x0 + o * i - xOff, x0 - yOff)
       } else if (i < 18) {
-        guiItemStack.init(i, true, 7 + o * (i - 9) - xOff, 7 + o - yOff)
+        guiItemStack.init(i, true, x0 + o * (i - 9) - xOff, x0 + o - yOff)
       }
     }
-    guiItemStack.init(recipeWrapper.recipeSize, false, 7 - xOff, 71 - yOff)
+    guiItemStack.init(recipeWrapper.recipeSize, false, x0 - xOff, x0 + 64 - yOff)
     guiItemStack.set(ingredients)
   }
 
@@ -37,7 +39,7 @@ class WorkBenchRecipeCategory(guiHelper: IGuiHelper) extends IRecipeCategory[Wor
   override val getUid: String = UID
 
   override def drawExtras(minecraft: Minecraft): Unit = {
-    animateBar.draw(minecraft, 8, 64)
+    animateBar.draw(minecraft, 4, 60)
   }
 
   override def getModName: String = QuarryPlus.Mod_Name
