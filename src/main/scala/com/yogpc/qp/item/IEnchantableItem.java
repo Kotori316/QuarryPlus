@@ -18,6 +18,7 @@ import java.util.function.Predicate;
 import javax.annotation.Nonnull;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.init.Enchantments;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 public interface IEnchantableItem {
@@ -36,4 +37,12 @@ public interface IEnchantableItem {
     Predicate<Enchantment> FORTUNE = enchantment -> enchantment == Enchantments.FORTUNE;
     Predicate<Enchantment> EFFICIENCY = enchantment -> enchantment == Enchantments.EFFICIENCY;
     Predicate<Enchantment> UNBREAKING = enchantment -> enchantment == Enchantments.UNBREAKING;
+
+    default ItemStack[] stacks() {
+        return new ItemStack[]{new ItemStack((Item) this, 1, 0)};
+    }
+
+    default boolean isValidInBookMover() {
+        return true;
+    }
 }

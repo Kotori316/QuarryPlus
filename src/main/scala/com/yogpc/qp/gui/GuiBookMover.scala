@@ -11,11 +11,15 @@ import net.minecraft.util.ResourceLocation
 
 class GuiBookMover(mover: TileBookMover, player: EntityPlayer) extends GuiContainer(new ContainerBookMover(mover, player)) {
   val LOCATION = new ResourceLocation(QuarryPlus.modID, "textures/gui/bookmover.png")
+  val container = this.inventorySlots.asInstanceOf[ContainerBookMover]
 
   override def drawGuiContainerBackgroundLayer(partialTicks: Float, mouseX: Int, mouseY: Int): Unit = {
     GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F)
     this.mc.getTextureManager.bindTexture(LOCATION)
     this.drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize)
+    if (mover.isWorking) {
+      this.drawTexturedModalRect(guiLeft + 79, guiTop + 35, xSize + 0, 14, container.getProgress * 3 / 125, 16)
+    }
   }
 
   override def drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float): Unit = {
