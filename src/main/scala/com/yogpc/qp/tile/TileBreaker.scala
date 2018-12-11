@@ -49,13 +49,13 @@ class TileBreaker extends TileEntity with IEnchantableTile with HasInv {
     ret
   }
 
-  override def setEnchantent(id: Short, value: Short) =
+  override def setEnchantment(id: Short, value: Short): Unit =
     if (id == FortuneID) this.fortune = value.toByte
     else if (id == SilktouchID) this.silktouch = value > 0
 
-  override def G_reinit() = ()
+  override def G_reinit(): Unit = ()
 
-  override def getName = TranslationKeys.breaker
+  override def getName: String = TranslationKeys.breaker
 
   override def hasCapability(capability: Capability[_], @Nullable facing: EnumFacing): Boolean =
     (capability eq CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) || super.hasCapability(capability, facing)

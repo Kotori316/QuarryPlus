@@ -7,7 +7,7 @@ import scala.collection.mutable
 
 class EnergyDebug(tile: APowerTile) {
 
-  private[this] val tilename = tile.getClass.getSimpleName
+  private[this] val tileName = tile.getClass.getSimpleName
   private[this] val got = Array.ofDim[Long](100)
   private[this] val used = Array.ofDim[Long](100)
   private[this] var gotCount = 0
@@ -38,8 +38,8 @@ class EnergyDebug(tile: APowerTile) {
     Config.content.debug && tile.isOutputEnergyInfo
   }
 
-  def use(amount: Double, simurate: Boolean, usage: EnergyUsage): Unit = {
-    if (!outputInfo || simurate) return
+  def use(amount: Double, simulate: Boolean, usage: EnergyUsage): Unit = {
+    if (!outputInfo || simulate) return
     if (!started)
       start()
     val tick = getTime
@@ -79,27 +79,27 @@ class EnergyDebug(tile: APowerTile) {
         gotCount = 0
         lastOutput = getTime
       } else if (outputInfo) {
-        printinfo()
+        printInfo()
       }
     }
   }
 
-  private def printinfo(): Unit = {
-    val allused = used.take(usedCount).sum / mj
-    val allgot = got.take(gotCount).sum / mj
-    if (allused == 0 || usedCount == 0) {
+  private def printInfo(): Unit = {
+    val allUsed = used.take(usedCount).sum / mj
+    val allGot = got.take(gotCount).sum / mj
+    if (allUsed == 0 || usedCount == 0) {
       if (gotCount == 0)
-        QuarryPlus.LOGGER.info(s"$tilename used 0 MJ, got 0 MJ")
+        QuarryPlus.LOGGER.info(s"$tileName used 0 MJ, got 0 MJ")
       else
         QuarryPlus.LOGGER.info(
-          s"$tilename used 0 MJ, got $allgot in 100 ticks (${allgot * 10 / gotCount} RF/t)"
+          s"$tileName used 0 MJ, got $allGot in 100 ticks (${allGot * 10 / gotCount} RF/t)"
         )
     } else {
       if (gotCount == 0)
-        QuarryPlus.LOGGER.info(s"$tilename used $allused MJ in $usedCount ticks (${allused * 10 / usedCount} RF/t), got 0 MJ")
+        QuarryPlus.LOGGER.info(s"$tileName used $allUsed MJ in $usedCount ticks (${allUsed * 10 / usedCount} RF/t), got 0 MJ")
       else
         QuarryPlus.LOGGER.info(
-          s"$tilename used $allused MJ in $usedCount ticks (${allused * 10 / usedCount} RF/t), got $allgot in $gotCount ticks (${allgot * 10 / gotCount} RF/t)"
+          s"$tileName used $allUsed MJ in $usedCount ticks (${allUsed * 10 / usedCount} RF/t), got $allGot in $gotCount ticks (${allGot * 10 / gotCount} RF/t)"
         )
     }
     usedCount = 0
@@ -116,10 +116,10 @@ class EnergyDebug(tile: APowerTile) {
     if (!started) return
     stopWatch.stop()
     if (outputInfo) {
-      printinfo()
+      printInfo()
       val time = getTime - startTime
       QuarryPlus.LOGGER.info(
-        s"$tilename finished its work and took ${stopWatch.toString}, $time ticks. Used ${totalUsed / mj} MJ at ${totalUsed * 10 / time / mj} RF/t"
+        s"$tileName finished its work and took ${stopWatch.toString}, $time ticks. Used ${totalUsed / mj} MJ at ${totalUsed * 10 / time / mj} RF/t"
       )
       usageMap.foreach { case (usage, amount) => QuarryPlus.LOGGER.info(usage + " used " + amount / mj + "MJ.") }
       usageMap.clear()
@@ -133,6 +133,6 @@ class EnergyDebug(tile: APowerTile) {
   }
 
   override def toString: String = {
-    s"Debugger for $tilename. $stopWatch t: $totalUsed"
+    s"Debugger for $tileName. $stopWatch t: $totalUsed"
   }
 }

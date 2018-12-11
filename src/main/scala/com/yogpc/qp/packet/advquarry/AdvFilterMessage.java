@@ -58,7 +58,7 @@ public class AdvFilterMessage implements IMessage {
     }
 
     @Override
-    public IMessage onRecieve(IMessage message, MessageContext ctx) {
+    public IMessage onReceive(IMessage message, MessageContext ctx) {
         World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
         TileAdvQuarry quarry = ((TileAdvQuarry) world.getTileEntity(pos));
         if (world.provider.getDimension() == dim && quarry != null) {

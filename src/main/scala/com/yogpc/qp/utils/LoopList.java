@@ -19,9 +19,9 @@ public class LoopList<T> {
     }
 
     /*
-        public T getorDefault(int index, Supplier<T> supplier) {
+        public T getOrDefault(int index, Supplier<T> supplier) {
             if (size == 0) return supplier.get();
-            return values.get(getRealIndex(index));
+            return valuesBi.get(getRealIndex(index));
         }
     */
     public Optional<T> getOptional(int index) {

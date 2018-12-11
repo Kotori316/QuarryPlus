@@ -26,7 +26,7 @@ object BlockData extends INBTReadable[BlockData] {
 
     override def hashCode = 0
 
-    override def writeToNBT(nbt: NBTTagCompound) = nbt
+    override def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = nbt
 
     override def toString = "BlockData@Invaild"
 
@@ -76,7 +76,7 @@ case class BlockData(name: ResourceLocation, meta: Int) extends INBTWritable wit
     sb.toString
   }
 
-  override def compare(that: BlockData) = {
+  override def compare(that: BlockData): Int = {
     val i = this.name.compareTo(that.name)
     if (i != 0) i else this.meta.compare(that.meta)
   }

@@ -13,8 +13,6 @@ import scala.collection.AbstractIterator
 
 package object qp {
 
-  import scala.language.implicitConversions
-
   val enchantCollector: PartialFunction[(Int, Int), (Integer, Integer)] = {
     case (a, b) if b > 0 => (Int.box(a), Int.box(b))
   }
@@ -68,16 +66,16 @@ package object qp {
     }
   }
 
-  implicit class ItemStackRemoveEnch(val stack: ItemStack) extends AnyVal {
-    def removeEnchantment(ench: Enchantment): Unit = {
-      val enchId = Enchantment.getEnchantmentID(ench).toShort
+  implicit class ItemStackRemoveEnchantment(val stack: ItemStack) extends AnyVal {
+    def removeEnchantment(enchantment: Enchantment): Unit = {
+      val id = Enchantment.getEnchantmentID(enchantment).toShort
       val tagName = if (stack.getItem == net.minecraft.init.Items.ENCHANTED_BOOK) "StoredEnchantments" else "ench"
       val list = Option(stack.getTagCompound).fold(new NBTTagList)(_.getTagList(tagName, NBT.TAG_COMPOUND))
 
       val copied = list.copy()
       for (i <- 0 until list.tagCount()) {
         val tag = copied.getCompoundTagAt(i)
-        if (tag.getShort("id") == enchId) {
+        if (tag.getShort("id") == id) {
           list.removeTag(i)
         }
       }
@@ -94,7 +92,7 @@ package object qp {
   /**
     * Copied from [[https://yuroyoro.hatenablog.com/entry/20110323/1300854858]].
     *
-    * @tparam A anyref
+    * @tparam A AnyRef
     */
   // 入れ物はタッパーです。
   implicit class Tapper[A](private val obj: A) extends AnyVal {
@@ -120,20 +118,20 @@ package object qp {
     def toOption: Option[A] = Option(obj)
   }
 
-  trait NBTWrapeer[A, NBTType <: NBTBase] {
+  trait NBTWrapper[A, NBTType <: NBTBase] {
     def wrap(num: A): NBTType
   }
 
-  implicit object Long2NBT extends NBTWrapeer[Long, NBTTagLong] {
+  implicit object Long2NBT extends NBTWrapper[Long, NBTTagLong] {
     override def wrap(num: Long): NBTTagLong = new NBTTagLong(num)
   }
 
-  implicit object Fluid2NBT extends NBTWrapeer[FluidStack, NBTTagCompound] {
+  implicit object Fluid2NBT extends NBTWrapper[FluidStack, NBTTagCompound] {
     override def wrap(num: FluidStack): NBTTagCompound = num.writeToNBT(new NBTTagCompound)
   }
 
   implicit class NumberToNbt[A](private val num: A) extends AnyVal {
-    def toNBT[B <: NBTBase](implicit wrapeer: NBTWrapeer[A, B]): B = wrapeer wrap num
+    def toNBT[B <: NBTBase](implicit wrapper: NBTWrapper[A, B]): B = wrapper wrap num
   }
 
   implicit class PosHelper(val blockPos: BlockPos) extends AnyVal {

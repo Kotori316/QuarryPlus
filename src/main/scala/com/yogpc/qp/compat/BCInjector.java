@@ -22,7 +22,7 @@ class BCInjector implements IInjector {
 
     private final IItemTransactor transactor;
 
-    BCInjector(IItemTransactor transactor) {
+    private BCInjector(IItemTransactor transactor) {
         this.transactor = transactor;
     }
 

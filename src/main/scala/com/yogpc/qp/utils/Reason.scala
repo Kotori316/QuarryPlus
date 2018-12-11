@@ -6,7 +6,7 @@ import net.minecraft.block.state.IBlockState
 import net.minecraft.util.math.BlockPos
 
 trait Reason {
-  def isEnergyIsuue: Boolean
+  def isEnergyIssue: Boolean
 
   def usage: Option[EnergyUsage] = None
 
@@ -28,7 +28,7 @@ object Reason {
   def apply(pos: BlockPos, index: Int) = new AllAirImpl(pos, index)
 
   def printNonEnergy[T]: Reason => Option[T] = r => {
-    if (Config.content.debug && !r.isEnergyIsuue) {
+    if (Config.content.debug && !r.isEnergyIssue) {
       QuarryPlus.LOGGER.info(r.toString)
     }
     None
@@ -42,7 +42,7 @@ object Reason {
   }
 
   private[utils] class EnergyReasonImpl(energyUsage: EnergyUsage, required: Long, amount: Long, index: Option[Int] = None) extends Reason {
-    override def isEnergyIsuue: Boolean = true
+    override def isEnergyIssue: Boolean = true
 
     override def usage: Option[EnergyUsage] = Some(energyUsage)
 
@@ -53,13 +53,13 @@ object Reason {
   }
 
   private[utils] class BreakCanceledImpl(pos: BlockPos, state: IBlockState) extends Reason {
-    override def isEnergyIsuue: Boolean = false
+    override def isEnergyIssue: Boolean = false
 
     override def toString: String = s"Breaking $state at ${pos.getX}, ${pos.getY}, ${pos.getZ} was canceled."
   }
 
   private[utils] class AllAirImpl(pos: BlockPos, index: Int) extends Reason {
-    override def isEnergyIsuue: Boolean = false
+    override def isEnergyIssue: Boolean = false
 
     override def toString: String = s"x = ${pos.getX}, z = ${pos.getZ} has no blocks. index = $index"
   }

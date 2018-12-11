@@ -43,7 +43,7 @@ public class AdvPumpChangeMessage implements IMessage {
     }
 
     @Override
-    public IMessage onRecieve(IMessage message, MessageContext ctx) {
+    public IMessage onReceive(IMessage message, MessageContext ctx) {
         World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
         MinecraftServer server = world.getMinecraftServer();
         if (world.provider.getDimension() == dim && server != null) {

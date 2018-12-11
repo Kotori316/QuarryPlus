@@ -45,7 +45,7 @@ public class AnimatonMessage implements IMessage {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public IMessage onRecieve(IMessage message, MessageContext ctx) {
+    public IMessage onReceive(IMessage message, MessageContext ctx) {
         World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
         if (world.provider.getDimension() == dim) {
             TileRefinery refinery = ((TileRefinery) world.getTileEntity(pos));

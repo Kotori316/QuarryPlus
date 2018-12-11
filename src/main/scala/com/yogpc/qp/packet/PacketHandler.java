@@ -40,7 +40,7 @@ public class PacketHandler {
 
     public static void init() {
         wrapper = NetworkRegistry.INSTANCE.newSimpleChannel(QuarryPlus.modID);
-        IMessageHandler<IMessage, IMessage> handler = (message, ctx) -> message.onRecieve(message, ctx);
+        IMessageHandler<IMessage, IMessage> handler = (message, ctx) -> message.onReceive(message, ctx);
         int i = 0;
         wrapper.registerMessage(handler, TileMessage.class, i++, Side.CLIENT);
         wrapper.registerMessage(handler, TileMessage.class, i++, Side.SERVER);

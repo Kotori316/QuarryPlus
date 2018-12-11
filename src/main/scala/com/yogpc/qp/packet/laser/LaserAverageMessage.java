@@ -39,7 +39,7 @@ public class LaserAverageMessage implements IMessage {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public IMessage onRecieve(IMessage message, MessageContext ctx) {
+    public IMessage onReceive(IMessage message, MessageContext ctx) {
         World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
         TileLaser laser = (TileLaser) world.getTileEntity(pos);
         if (laser != null) {

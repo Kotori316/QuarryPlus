@@ -45,10 +45,10 @@ case class OK(itemStack: ItemStack) extends ItemDamage {
 
   override def equals(any: Any): Boolean = {
     any match {
-      case itemdamage: OK =>
-        if (hashCode() == itemdamage.hashCode())
-          if (Objects.equals(tag, itemdamage.tag))
-            return item == itemdamage.item && (anyMeta || itemdamage.damage == this.damage)
+      case itemDamage: OK =>
+        if (hashCode() == itemDamage.hashCode())
+          if (Objects.equals(tag, itemDamage.tag))
+            return item == itemDamage.item && (anyMeta || itemDamage.damage == this.damage)
         false
       case _ => false
     }
@@ -135,12 +135,5 @@ object ItemDamage {
 
   def invalid = NG
 
-  import scala.language.implicitConversions
-
-  implicit class S2D(val stack: ItemStack) extends AnyVal {
-    def toID(stack: ItemStack): ItemDamage = apply(stack)
-  }
-
-  def listFromArray(array: Array[ItemStack]): List[ItemDamage] = array.filter(s => s != null && VersionUtil.nonEmpty(s)).map(apply).toList
 }
 

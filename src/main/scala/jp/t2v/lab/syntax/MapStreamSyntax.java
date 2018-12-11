@@ -51,6 +51,10 @@ public class MapStreamSyntax {
         return e -> new SimpleImmutableEntry<>(e.getKey(), f.apply(e.getValue()));
     }
 
+    public static <K, V1, V2> Function<Map.Entry<K, V1>, Map.Entry<K, V2>> valuesBi(final BiFunction<? super K, ? super V1, ? extends V2> f) {
+        return e -> new SimpleImmutableEntry<>(e.getKey(), f.apply(e.getKey(), e.getValue()));
+    }
+
     public static <K, V1, V2> IntFunction<Map.Entry<Integer, V2>> valuesInt(final IntFunction<? extends V2> f) {
         return e -> new SimpleImmutableEntry<>(e, f.apply(e));
     }

@@ -59,7 +59,7 @@ public class DiffMessage implements IMessage {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public IMessage onRecieve(IMessage message, MessageContext ctx) {
+    public IMessage onReceive(IMessage message, MessageContext ctx) {
         Minecraft.getMinecraft().addScheduledTask(() -> {
             Container container = QuarryPlus.proxy.getPacketPlayer(ctx.netHandler).openContainer;
             if (containerId == container.windowId && container instanceof ContainerEnchList) {

@@ -50,9 +50,9 @@ class ItemTool extends Item with IEnchantableItem {
                               hitX: Float, hitY: Float, hitZ: Float, hand: EnumHand): EnumActionResult = {
     val returnValue = if (!worldIn.isRemote) EnumActionResult.SUCCESS else EnumActionResult.PASS
     val stack = player.getHeldItem(hand)
-    if (stack.getItemDamage == meta_listeditor) {
-      val nbttl = stack.getEnchantmentTagList
-      val list = Some(nbttl).toList.flatMap(_.tagIterator.map(_.getShort("id")))
+    if (stack.getItemDamage == meta_ListEditor) {
+      val enchantmentTag = stack.getEnchantmentTagList
+      val list = Some(enchantmentTag).toList.flatMap(_.tagIterator.map(_.getShort("id")))
       val s = list.contains(IEnchantableTile.SilktouchID)
       val f = list.contains(IEnchantableTile.FortuneID)
       var stackTag: NBTTagCompound = stack.getTagCompound
@@ -70,8 +70,8 @@ class ItemTool extends Item with IEnchantableItem {
         case tb: TileBasic if s != f =>
           if (stackTag != null && bd != null) {
             if (!worldIn.isRemote) {
-              val datas = if (f) tb.fortuneList else tb.silktouchList
-              datas.add(bd)
+              val data = if (f) tb.fortuneList else tb.silktouchList
+              data.add(bd)
             }
             stackTag.removeTag(NAME_key)
             stackTag.removeTag(META_key)
@@ -104,18 +104,18 @@ class ItemTool extends Item with IEnchantableItem {
 
   override def getUnlocalizedName(is: ItemStack) =
     is.getItemDamage match {
-      case ItemTool.meta_listeditor =>
+      case ItemTool.`meta_ListEditor` =>
         "item." + ItemTool.listeditor
-      case ItemTool.meta_liquidselector =>
+      case ItemTool.`meta_LiquidSelector` =>
         "item." + ItemTool.liquidselector
-      case ItemTool.meta_statuschecker =>
+      case ItemTool.`meta_StatusChecker` =>
         "item." + ItemTool.statuschecker
       case _ => super.getUnlocalizedName(is)
     }
 
   @SideOnly(Side.CLIENT)
-  override def addInformation(stack: ItemStack, @Nullable worldIn: World, tooltip: util.List[String], flagIn: ITooltipFlag) =
-    if (stack.getItemDamage == meta_listeditor) {
+  override def addInformation(stack: ItemStack, @Nullable worldIn: World, tooltip: util.List[String], flagIn: ITooltipFlag): Unit =
+    if (stack.getItemDamage == meta_ListEditor) {
       val c = stack.getTagCompound
       if (c != null) {
         if (c.hasKey(NAME_key)) {
@@ -129,10 +129,10 @@ class ItemTool extends Item with IEnchantableItem {
       }
     }
 
-  override def getSubItems(tab: CreativeTabs, items: NonNullList[ItemStack]) = if (isInCreativeTab(tab)) {
-    items.add(new ItemStack(this, 1, meta_statuschecker))
+  override def getSubItems(tab: CreativeTabs, items: NonNullList[ItemStack]): Unit = if (isInCreativeTab(tab)) {
+    items.add(new ItemStack(this, 1, meta_StatusChecker))
     items.add(getEditorStack)
-    items.add(new ItemStack(this, 1, meta_liquidselector))
+    items.add(new ItemStack(this, 1, meta_LiquidSelector))
     if (Config.content.debug /*&& QuarryPlus.instance.inDev*/ ) {
       val stack = new ItemStack(Items.DIAMOND_PICKAXE)
       stack.addEnchantment(Enchantments.EFFICIENCY, 5)
@@ -152,7 +152,7 @@ class ItemTool extends Item with IEnchantableItem {
   }
 
   override def canMove(is: ItemStack, enchantment: Enchantment): Boolean = {
-    if (is.getItemDamage != meta_listeditor) return false
+    if (is.getItemDamage != meta_ListEditor) return false
     val l = is.getEnchantmentTagList
     (l == null || l.tagCount == 0) && ((enchantment eq Enchantments.SILK_TOUCH) || (enchantment eq Enchantments.FORTUNE))
   }
@@ -163,9 +163,9 @@ class ItemTool extends Item with IEnchantableItem {
 }
 
 object ItemTool {
-  final val meta_statuschecker = 0
-  final val meta_listeditor = 1
-  final val meta_liquidselector = 2
+  final val meta_StatusChecker = 0
+  final val meta_ListEditor = 1
+  final val meta_LiquidSelector = 2
   /**
     * meta=1
     */
@@ -182,18 +182,18 @@ object ItemTool {
   final val META_key = "Bmeta"
 
   private def getEnchantmentMap(stack: ItemStack): Map[Enchantment, Int] = {
-    val nbttaglist = stack.getEnchantmentTagList
-    if (nbttaglist == null) {
+    val enchList = stack.getEnchantmentTagList
+    if (enchList == null) {
       Map.empty
     } else {
-      nbttaglist.tagIterator.map(tag =>
+      enchList.tagIterator.map(tag =>
         (Enchantment.getEnchantmentByID(tag.getShort("id")), tag.getShort("lvl").toInt))
         .toMap
     }
   }
 
-  def getEditorStack = {
-    val stack = new ItemStack(QuarryPlusI.itemTool, 1, meta_listeditor)
+  def getEditorStack: ItemStack = {
+    val stack = new ItemStack(QuarryPlusI.itemTool, 1, meta_ListEditor)
     val compound = new NBTTagCompound
     compound.setInteger("HideFlags", 1)
     stack.setTagCompound(compound)

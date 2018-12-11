@@ -118,10 +118,10 @@ public class PowerManager {
         pp.configure(0, pp.getMaxStored());
     }
 
-    private static void configure(final APowerTile pp, final double CE, final byte effciencyLevel, final byte unbreakingLevel,
+    private static void configure(final APowerTile pp, final double CE, final byte efficiencyLevel, final byte unbreakingLevel,
                                   final double CU, final double XR, final double MS, final int pump) {
-        pp.configure(XR * Math.pow(CE, effciencyLevel) / (unbreakingLevel * CU + 1),
-            MS * Math.pow(CE, effciencyLevel) / (unbreakingLevel * CU + 1)
+        pp.configure(XR * Math.pow(CE, efficiencyLevel) / (unbreakingLevel * CU + 1),
+            MS * Math.pow(CE, efficiencyLevel) / (unbreakingLevel * CU + 1)
                 + (pump > 0 ? 65536 * PumpDrain_BP / (pump * PumpDrain_CU + 1) + 1020 * PumpFrame_BP / (pump * PumpFrame_CU + 1) : 0));
     }
 
@@ -133,32 +133,32 @@ public class PowerManager {
                 + (pump > 0 ? 65536 * PumpDrain_BP / (pump * PumpDrain_CU + 1) + 1020 * PumpFrame_BP / (pump * PumpFrame_CU + 1) : 0));
     }*/
 
-    public static void configureQuarryWork(final APowerTile pp, final byte effciencyLevel, final byte unbreakingLevel, final int pump) {
-        configure(pp, QuarryWork_CE, effciencyLevel, unbreakingLevel, QuarryWork_CU, QuarryWork_XR, QuarryWork_MS, pump);
+    public static void configureQuarryWork(final APowerTile pp, final byte efficiencyLevel, final byte unbreakingLevel, final int pump) {
+        configure(pp, QuarryWork_CE, efficiencyLevel, unbreakingLevel, QuarryWork_CU, QuarryWork_XR, QuarryWork_MS, pump);
     }
 
-    public static void configureMiningWell(final APowerTile pp, final byte effciencyLevel, final byte unbreakingLevel, final int pump) {
-        configure(pp, MiningWell_CE, effciencyLevel, unbreakingLevel, MiningWell_CU, MiningWell_XR, MiningWell_MS, pump);
+    public static void configureMiningWell(final APowerTile pp, final byte efficiencyLevel, final byte unbreakingLevel, final int pump) {
+        configure(pp, MiningWell_CE, efficiencyLevel, unbreakingLevel, MiningWell_CU, MiningWell_XR, MiningWell_MS, pump);
     }
 
-    public static void configureLaser(final APowerTile pp, final byte effciencyLevel, final byte unbreakingLevel) {
-        configure(pp, Laser_CE, effciencyLevel, unbreakingLevel, Laser_CU, Laser_XR, Laser_MS, 0);
+    public static void configureLaser(final APowerTile pp, final byte efficiencyLevel, final byte unbreakingLevel) {
+        configure(pp, Laser_CE, efficiencyLevel, unbreakingLevel, Laser_CU, Laser_XR, Laser_MS, 0);
     }
 
-    public static void configureFrameBuild(final APowerTile pp, final byte effciencyLevel, final byte unbreakingLevel, final int pump) {
-        configure(pp, FrameBuild_CE, effciencyLevel, unbreakingLevel, FrameBuild_CU, FrameBuild_XR, FrameBuild_MS, pump);
+    public static void configureFrameBuild(final APowerTile pp, final byte efficiencyLevel, final byte unbreakingLevel, final int pump) {
+        configure(pp, FrameBuild_CE, efficiencyLevel, unbreakingLevel, FrameBuild_CU, FrameBuild_XR, FrameBuild_MS, pump);
     }
 
-    public static void configureRefinery(final APowerTile pp, final byte effciencyLevel, final byte unbreakingLevel) {
-        configure(pp, Refinery_CE, effciencyLevel, unbreakingLevel, Refinery_CU, Refinery_XR, Refinery_MS, 0);
+    public static void configureRefinery(final APowerTile pp, final byte efficiencyLevel, final byte unbreakingLevel) {
+        configure(pp, Refinery_CE, efficiencyLevel, unbreakingLevel, Refinery_CU, Refinery_XR, Refinery_MS, 0);
     }
 
     /**
      * @param pp          power tile
      * @param hardness    block hardness
-     * @param enchantMode no ench -> 0, silktouch -> -1, fortune -> fortune level, break canceled -> -2
+     * @param enchantMode no enchantment -> 0, silktouch -> -1, fortune -> fortune level, break canceled -> -2
      * @param unbreaking  unbreaking level
-     * @param replacer    True if replacer is woring.
+     * @param replacer    True if replacer is working.
      * @return Whether the tile used energy.
      */
     public static boolean useEnergyBreak(final APowerTile pp, final float hardness, final byte enchantMode, final byte unbreaking, boolean replacer) {
@@ -174,11 +174,11 @@ public class PowerManager {
     /**
      * @param pp          power tile
      * @param hardness    block hardness
-     * @param enchantMode no ench -> 0, silktouch -> -1, fortune -> fortune level
+     * @param enchantMode no enchantment -> 0, silktouch -> -1, fortune -> fortune level
      * @param unbreaking  unbreaking level
      * @return Require energy.
      */
-    public static double calcEnergyBreak(APowerTile pp, float hardness, byte enchantMode, byte unbreaking) {
+    private static double calcEnergyBreak(APowerTile pp, float hardness, byte enchantMode, byte unbreaking) {
         double BP, CU, CSP;
         if (pp instanceof TileMiningWell) {
             BP = MiningWell_BP;
@@ -231,7 +231,7 @@ public class PowerManager {
         return pw * (U * MoveHead_CU + 1) / MoveHead_BP + 0.05;
     }
 
-    public static double simurateEnergyLaser(final APowerTile pp, final byte U, final byte F, final boolean S, final byte E) {
+    public static double simulateEnergyLaser(final APowerTile pp, final byte U, final byte F, final boolean S, final byte E) {
         double pw = Laser_BP * Math.pow(Laser_CF, F) * Math.pow(Laser_CE, E) / (U * Laser_CU + 1);
         if (S)
             pw *= Laser_CS;
@@ -249,7 +249,7 @@ public class PowerManager {
     /**
      * @return required energy to search.
      */
-    public static double calcEnergyAdvSearch(final APowerTile pp, int unbreakingLevel, int targetY) {
+    public static double calcEnergyAdvSearch(int unbreakingLevel, int targetY) {
         return MoveHead_BP * targetY / (MoveHead_CU * unbreakingLevel + 1) / 4;
     }
 }

@@ -145,9 +145,9 @@ public class TileSolidQuarry extends TileQuarry {
     }
 
     @Override
-    public List<ITextComponent> getDebugmessages() {
-        List<ITextComponent> list = super.getDebugmessages();
-        // I know super.getDebugmessages returns ArrayList.
+    public List<ITextComponent> getDebugMessages() {
+        List<ITextComponent> list = super.getDebugMessages();
+        // I know super.getDebugMessages returns ArrayList.
         list.add(new TextComponentString("FuelCount : " + fuelCount));
         return list;
     }

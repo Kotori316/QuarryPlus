@@ -11,7 +11,7 @@ object RenderAdvQuarry extends FastTESR[TileAdvQuarry] {
   lazy val sprite = Sprites.getMap('yellow)
 
   override def renderTileEntityFast(te: TileAdvQuarry, x: Double, y: Double, z: Double,
-                                    partialTicks: Float, destroyStage: Int, partial: Float, buffer: BufferBuilder) = {
+                                    partialTicks: Float, destroyStage: Int, partial: Float, buffer: BufferBuilder): Unit = {
 
     Minecraft.getMinecraft.mcProfiler.startSection("quarryplus")
 

@@ -8,16 +8,16 @@ import net.minecraftforge.event.LootTableLoadEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object Loot {
-  val instance = this
+  final val instance = this
 
-  private[this] val NO_FUNCTION = Array.empty[LootFunction]
-  private[this] val NO_CONDITION = Array.empty[LootCondition]
-  private[this] val mirror = new LootEntryItem(
-    QuarryPlusI.magicmirror, 1, 0, NO_FUNCTION, NO_CONDITION, QuarryPlusI.magicmirror.getRegistryName.toString
+  private[this] final val NO_FUNCTION = Array.empty[LootFunction]
+  private[this] final val NO_CONDITION = Array.empty[LootCondition]
+  private[this] final val mirror = new LootEntryItem(
+    QuarryPlusI.magicMirror, 1, 0, NO_FUNCTION, NO_CONDITION, QuarryPlusI.magicMirror.getRegistryName.toString
   )
-  private[this] val empty = new LootEntryEmpty(9, 0, NO_CONDITION, "EMPTY")
-  private[this] val pool = new LootPool(Array(mirror, empty), NO_CONDITION, new RandomValueRange(1), new RandomValueRange(0), QuarryPlus.Mod_Name)
-  private[this] val nameSet = Set(CHESTS_SIMPLE_DUNGEON, CHESTS_ABANDONED_MINESHAFT, CHESTS_DESERT_PYRAMID, CHESTS_JUNGLE_TEMPLE,
+  private[this] final val empty = new LootEntryEmpty(9, 0, NO_CONDITION, "EMPTY")
+  private[this] final val pool = new LootPool(Array(mirror, empty), NO_CONDITION, new RandomValueRange(1), new RandomValueRange(0), QuarryPlus.Mod_Name)
+  private[this] final val nameSet = Set(CHESTS_SIMPLE_DUNGEON, CHESTS_ABANDONED_MINESHAFT, CHESTS_DESERT_PYRAMID, CHESTS_JUNGLE_TEMPLE,
     CHESTS_STRONGHOLD_CORRIDOR, CHESTS_STRONGHOLD_CROSSING, CHESTS_STRONGHOLD_LIBRARY, CHESTS_VILLAGE_BLACKSMITH)
 
   @SubscribeEvent

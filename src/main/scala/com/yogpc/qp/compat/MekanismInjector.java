@@ -22,7 +22,7 @@ class MekanismInjector implements IInjector {
         return new MekanismInjector(Capabilities.LOGISTICAL_TRANSPORTER_CAPABILITY.getDefaultInstance());
     }
 
-    MekanismInjector(ILogisticalTransporter transporter) {
+    private MekanismInjector(ILogisticalTransporter transporter) {
         this.transporter = transporter;
     }
 

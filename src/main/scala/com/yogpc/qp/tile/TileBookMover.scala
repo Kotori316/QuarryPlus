@@ -55,7 +55,7 @@ class TileBookMover extends APowerTile with HasInv with ITickable {
           }
           setInventorySlotContents(0, VersionUtil.empty())
           setInventorySlotContents(2, copy)
-          useEnergy(getMaxStored, getMaxStored, true, EnergyUsage.BOOKMOVER)
+          useEnergy(getMaxStored, getMaxStored, true, EnergyUsage.BOOK_MOVER)
           finishWork()
         }
       }

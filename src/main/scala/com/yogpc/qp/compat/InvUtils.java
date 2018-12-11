@@ -150,7 +150,7 @@ public class InvUtils {
     private static final class DummyEnchantment extends Enchantment {
         private static final DummyEnchantment DUMMY_ENCHANTMENT = new DummyEnchantment();
 
-        protected DummyEnchantment() {
+        DummyEnchantment() {
             super(Rarity.COMMON, EnumEnchantmentType.ALL, new EntityEquipmentSlot[]{});
         }
     }

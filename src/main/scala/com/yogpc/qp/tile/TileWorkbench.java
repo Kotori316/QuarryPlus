@@ -218,7 +218,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
     }
 
     @Override
-    public List<TextComponentString> getDebugmessages() {
+    public List<TextComponentString> getDebugMessages() {
         return Arrays.asList(new TextComponentString(currentRecipe.toString()),
             new TextComponentString("Work mode : " + (workcontinue ? "Continue" : "Only once")));
     }

@@ -41,7 +41,7 @@ public class MoverMessage {
         }
 
         @Override
-        public IMessage onRecieve(IMessage message, MessageContext ctx) {
+        public IMessage onReceive(IMessage message, MessageContext ctx) {
             MinecraftServer server = QuarryPlus.proxy.getPacketWorld(ctx.netHandler).getMinecraftServer();
             Optional.ofNullable(server).ifPresent(s -> s.addScheduledTask(() -> {
                 Container container = QuarryPlus.proxy.getPacketPlayer(ctx.netHandler).openContainer;
@@ -83,7 +83,7 @@ public class MoverMessage {
         }
 
         @Override
-        public IMessage onRecieve(IMessage message, MessageContext ctx) {
+        public IMessage onReceive(IMessage message, MessageContext ctx) {
             MinecraftServer server = QuarryPlus.proxy.getPacketWorld(ctx.netHandler).getMinecraftServer();
             Optional.ofNullable(server).ifPresent(s -> s.addScheduledTask(() -> {
                 Container container = QuarryPlus.proxy.getPacketPlayer(ctx.netHandler).openContainer;

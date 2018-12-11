@@ -7,7 +7,7 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.text.{TextComponentString, TextComponentTranslation}
+import net.minecraft.util.text.{ITextComponent, TextComponentString, TextComponentTranslation}
 import net.minecraft.util.{EnumActionResult, EnumFacing, EnumHand, NonNullList}
 import net.minecraft.world.World
 
@@ -34,7 +34,7 @@ class ItemQuarryDebug extends Item {
                 plusMachine.toggleOutputEnergyInfo()
               } else {
                 player.sendStatusMessage(new TextComponentTranslation(plusMachine.getDebugName), false)
-                player.sendStatusMessage(tileposToString(tile), false)
+                player.sendStatusMessage(tilePosToString(tile), false)
                 player.sendStatusMessage(energyToString(plusMachine), false)
                 plusMachine.sendDebugMessage(player)
               }
@@ -43,20 +43,20 @@ class ItemQuarryDebug extends Item {
           case marker: TileMarker =>
             if (!worldIn.isRemote) {
               player.sendStatusMessage(new TextComponentTranslation(marker.getDebugName), false)
-              player.sendStatusMessage(tileposToString(tile), false)
+              player.sendStatusMessage(tilePosToString(tile), false)
               marker.sendDebugMessage(player)
             }
             EnumActionResult.SUCCESS
           case placer: TilePlacer =>
             if (!worldIn.isRemote) {
               player.sendStatusMessage(new TextComponentTranslation(placer.getName), false)
-              player.sendStatusMessage(tileposToString(tile), false)
+              player.sendStatusMessage(tilePosToString(tile), false)
             }
             EnumActionResult.SUCCESS
           case pump: TilePump =>
             if (!worldIn.isRemote) {
               player.sendStatusMessage(new TextComponentTranslation(pump.getDebugName), false)
-              player.sendStatusMessage(tileposToString(tile), false)
+              player.sendStatusMessage(tilePosToString(tile), false)
               pump.sendDebugMessage(player)
             }
             EnumActionResult.SUCCESS
@@ -77,11 +77,11 @@ class ItemQuarryDebug extends Item {
 
 object ItemQuarryDebug {
 
-  def tileposToString(tile: TileEntity) = {
+  def tilePosToString(tile: TileEntity): ITextComponent = {
     new TextComponentString(s"Tile Pos : x=${tile.getPos.getX}, y=${tile.getPos.getY}, z=${tile.getPos.getZ}")
   }
 
-  def energyToString(tile: APowerTile) = {
+  def energyToString(tile: APowerTile): ITextComponent = {
     if (Config.content.noEnergy) new TextComponentString("No Energy Required.")
     else new TextComponentString(tile.getStoredEnergy + " / " + tile.getMaxStored + " MJ")
   }

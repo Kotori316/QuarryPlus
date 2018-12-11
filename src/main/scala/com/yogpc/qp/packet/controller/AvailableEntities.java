@@ -52,7 +52,7 @@ public class AvailableEntities implements IMessage {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public IMessage onRecieve(IMessage message, MessageContext ctx) {
+    public IMessage onReceive(IMessage message, MessageContext ctx) {
         Minecraft.getMinecraft().addScheduledTask(() -> Minecraft.getMinecraft().displayGuiScreen(new GuiController(dim, pos.getX(), pos.getY(), pos.getZ(), entities)));
         return null;
     }

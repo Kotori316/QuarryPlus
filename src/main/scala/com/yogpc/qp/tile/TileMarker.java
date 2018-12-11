@@ -35,6 +35,7 @@ import com.yogpc.qp.packet.marker.LinkRequest;
 import com.yogpc.qp.packet.marker.LinkUpdate;
 import com.yogpc.qp.packet.marker.RemoveLink;
 import com.yogpc.qp.render.Box;
+import com.yogpc.qp.utils.IndexOnlyList;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -339,7 +340,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
     }
 
     @Override
-    public List<? extends ITextComponent> getDebugmessages() {
+    public List<? extends ITextComponent> getDebugMessages() {
         return Arrays.asList(new TextComponentString("Link : " + link),
             new TextComponentString("Laser : " + laser));
     }

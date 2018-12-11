@@ -27,7 +27,7 @@ object ChunkLoadingHandler extends ForgeChunkManager.OrderedLoadingCallback {
   val blockSet: Set[Block] = Set(
     QuarryPlusI.blockQuarry,
     QuarryPlusI.blockMarker,
-    QuarryPlusI.blockChunkdestroyer,
+    QuarryPlusI.blockChunkDestroyer,
     QuarryPlusI.blockStandalonePump,
     QuarryPlusI.blockSolidQuarry
   )

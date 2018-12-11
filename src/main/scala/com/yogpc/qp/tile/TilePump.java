@@ -632,7 +632,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     }
 
     @Override
-    public List<ITextComponent> getDebugmessages() {
+    public List<ITextComponent> getDebugMessages() {
         ArrayList<ITextComponent> list = new ArrayList<>();
         list.add(toComponentString.apply("Connection : " + this.connectTo));
         for (EnumFacing facing : EnumFacing.VALUES) {
@@ -670,7 +670,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
 
     @Override
     @SuppressWarnings("Duplicates")
-    public void setEnchantent(final short id, final short val) {
+    public void setEnchantment(final short id, final short val) {
         if (id == FortuneID)
             this.fortune = (byte) val;
         else if (id == UnbreakingID)

@@ -58,7 +58,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
         bcLoaded = ModAPIManager.INSTANCE.hasAPI(QuarryPlus.Optionals.BuildCraft_core);
         ic2Loaded = Loader.isModLoaded(QuarryPlus.Optionals.IC2_modID);
         if (bcLoaded) {
-            helper = MjReciever.mjCapabilityHelper(this);
+            helper = MjReceiver.mjCapabilityHelper(this);
         }
         startListener.add(debug::start);
         finishListener.add(debug::finish);
@@ -202,15 +202,15 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
         return this.max;
     }
 
-    public final void configure(final double maxRecieve, final double maxstored) {
-        this.maxGot = maxRecieve;
-        this.max = maxstored;
+    public final void configure(final double maxReceive, final double maxStored) {
+        this.maxGot = maxReceive;
+        this.max = maxStored;
         if (Config.content().noEnergy()) {
-            this.all = maxstored;
+            this.all = maxStored;
         }
     }
 
-    //ic2 energy api implecation
+    //ic2 energy api implication
 
     /**
      * Energy unit is EU
@@ -242,7 +242,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
         return 4;
     }
 
-    //cofh(RF) energy api implecation
+    //cofh(RF) energy api implication
 
     /**
      * Energy Unit is RF.
@@ -271,7 +271,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
         return canReceive();
     }
 
-    //Forge energy api implecation
+    //Forge energy api implication
 
     /**
      * Energy unit is RF.
@@ -321,8 +321,8 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
     @Override
     public void getDebugInfo(List<String> left, List<String> right, EnumFacing side) {
         left.add(getClass().getName());
-        left.add(ItemQuarryDebug.tileposToString(this).getText());
-        left.add(ItemQuarryDebug.energyToString(this).getText());
+        left.add(ItemQuarryDebug.tilePosToString(this).getUnformattedComponentText());
+        left.add(ItemQuarryDebug.energyToString(this).getUnformattedComponentText());
         if (isDebugSender) {
             IDebugSender sender = (IDebugSender) this;
             sender.getMessage().stream().map(ITextComponent::getUnformattedComponentText).forEach(left::add);

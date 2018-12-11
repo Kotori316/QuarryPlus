@@ -40,7 +40,7 @@ public class LinkReply implements IMessage {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public IMessage onRecieve(IMessage message, MessageContext ctx) {
+    public IMessage onReceive(IMessage message, MessageContext ctx) {
         TileMarker marker = (TileMarker) QuarryPlus.proxy.getPacketWorld(ctx.netHandler).getTileEntity(pos);
         if (marker != null) {
             Minecraft.getMinecraft().addScheduledTask(() -> {

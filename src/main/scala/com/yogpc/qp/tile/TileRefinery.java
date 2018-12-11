@@ -62,7 +62,7 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
     public long rem_energy;
     public FluidStack cacheIn;
     public FluidStack cachedGas;
-    public FluidStack cachedLiqud;
+    public FluidStack cachedLiquid;
     public long cacheEnergy;
 
     private DEnch ench = DEnch.defaultEnch;
@@ -128,11 +128,11 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
         }
         if (getWorld().getTotalWorldTime() % 20 == 7)
             PacketHandler.sendToAround(TileMessage.create(this), getWorld(), getPos());
-        if (this.cachedGas == null || cachedLiqud == null) {
+        if (this.cachedGas == null || cachedLiquid == null) {
             decreaseAnimation();
             return;
         }
-        double v = MjReciever.getMJfrommicro(cacheEnergy);
+        double v = MjReceiver.getMJFromMicro(cacheEnergy);
         if (cacheIn == null || (!Config.content().noEnergy() && getStoredEnergy() < v) ||
             !PowerManager.useEnergyRefinery(this, v, ench.unbreaking, ench.efficiency)) {
             decreaseAnimation();
@@ -140,15 +140,15 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
             increaseAnimation();
             FluidStack inStack = horizontalsTank.drainInternal(cacheIn.amount, false);
             int gas = upTank.fillInternal(cachedGas, false);
-            int liquid = downTank.fillInternal(cachedLiqud, false);
+            int liquid = downTank.fillInternal(cachedLiquid, false);
 
             if (inStack != null && inStack.amount > 0 && gas > 0 && liquid > 0) {
                 horizontalsTank.drainInternal(cacheIn.amount, true);
                 upTank.fillInternal(cachedGas, true);
-                downTank.fillInternal(cachedLiqud, true);
+                downTank.fillInternal(cachedLiquid, true);
                 this.cacheIn = null;
                 this.cachedGas = null;
-                this.cachedLiqud = null;
+                this.cachedLiquid = null;
                 this.cacheEnergy = 0L;
                 updateRecipe();
             }
@@ -168,7 +168,7 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
                 BuildcraftRecipeRegistry.refineryRecipes.getDistillationRegistry().getRecipeForInput(horizontalsTank.getFluid());
             if (recipe != null) {
                 cacheIn = recipe.in();
-                cachedLiqud = recipe.outLiquid();
+                cachedLiquid = recipe.outLiquid();
                 cachedGas = recipe.outGas();
                 cacheEnergy = recipe.powerRequired();
             }
@@ -238,7 +238,7 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
     }
 
     @Override
-    public void setEnchantent(final short id, final short val) {
+    public void setEnchantment(final short id, final short val) {
         ench = ench.copy(id, val);
     }
 
@@ -275,11 +275,11 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
     @Override
     public void getDebugInfo(List<String> left, List<String> right, EnumFacing side) {
         left.add(getClass().getName());
-        left.add(ItemQuarryDebug.tileposToString(this).getText());
-        left.add(ItemQuarryDebug.energyToString(this).getText());
+        left.add(ItemQuarryDebug.tilePosToString(this).getUnformattedComponentText());
+        left.add(ItemQuarryDebug.energyToString(this).getUnformattedComponentText());
         if (cacheIn != null) left.add("InputRecipe : " + cacheIn.getFluid().getName());
         if (cachedGas != null) left.add("OutGas : " + cachedGas.getFluid().getName());
-        if (cachedLiqud != null) left.add("OutLiquid : " + cachedLiqud.getFluid().getName());
+        if (cachedLiquid != null) left.add("OutLiquid : " + cachedLiquid.getFluid().getName());
     }
 
     @Override
@@ -362,7 +362,7 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
         private final byte fortune;
         private final boolean silktouch;
 
-        public DEnch(int efficiency, int unbreaking, int fortune, boolean silktouch) {
+        DEnch(int efficiency, int unbreaking, int fortune, boolean silktouch) {
             this.efficiency = (byte) efficiency;
             this.unbreaking = (byte) unbreaking;
             this.fortune = (byte) fortune;

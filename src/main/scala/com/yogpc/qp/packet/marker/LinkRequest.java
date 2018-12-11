@@ -35,7 +35,7 @@ public class LinkRequest implements IMessage {
 
     //TODO not work...
     @Override
-    public LinkReply onRecieve(IMessage message, MessageContext ctx) {
+    public LinkReply onReceive(IMessage message, MessageContext ctx) {
         World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
         if (world.provider.getDimension() == dim) {
             TileMarker marker = (TileMarker) world.getTileEntity(pos);

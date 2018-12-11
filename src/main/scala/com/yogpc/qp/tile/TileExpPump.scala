@@ -1,5 +1,7 @@
 package com.yogpc.qp.tile
 
+import java.util
+
 import com.yogpc.qp._
 import com.yogpc.qp.block.{ADismCBlock, BlockExpPump, BlockPump}
 import com.yogpc.qp.gui.TranslationKeys
@@ -11,6 +13,7 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.text.TextComponentString
 import net.minecraft.world.World
 
 import scala.collection.JavaConverters._
@@ -41,7 +44,7 @@ class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender wi
     }
   }
 
-  private def refreshConnection() = {
+  private def refreshConnection(): Unit = {
     if (hasWorld && !world.isRemote) {
       val facing = EnumFacing.VALUES
         .map(f => (f, getWorld.getTileEntity(getPos.offset(f))))
@@ -111,7 +114,7 @@ class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender wi
   /**
     * @return Map (Enchantment id, level)
     */
-  override def getEnchantments = {
+  override def getEnchantments: util.Map[Integer, Integer] = {
     Map(IEnchantableTile.FortuneID -> fortune,
       IEnchantableTile.UnbreakingID -> unbreaking,
       IEnchantableTile.SilktouchID -> silktouch.compareTo(false))
@@ -122,7 +125,7 @@ class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender wi
     * @param id    Enchantment id
     * @param value level
     */
-  override def setEnchantent(id: Short, value: Short): Unit = {
+  override def setEnchantment(id: Short, value: Short): Unit = {
     id match {
       case IEnchantableTile.FortuneID => fortune = value
       case IEnchantableTile.UnbreakingID => unbreaking = value
@@ -151,14 +154,14 @@ class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender wi
     loading = true
   }
 
-  override def getDebugName = TranslationKeys.exppump
+  override def getDebugName: String = TranslationKeys.exppump
 
   /**
     * For internal use only.
     *
     * @return debug info of valid machine.
     */
-  override def getDebugmessages = Seq(
+  override def getDebugMessages: util.List[TextComponentString] = Seq(
     "Connection -> " + mConnectTo,
     "Unbreaking -> " + unbreaking,
     "Fortune -> " + fortune,

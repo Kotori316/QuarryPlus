@@ -59,7 +59,7 @@ public class Mappings {
 
         @Override
         @SideOnly(Side.CLIENT)
-        public IMessage onRecieve(IMessage message, MessageContext ctx) {
+        public IMessage onReceive(IMessage message, MessageContext ctx) {
             TilePump pumpC = (TilePump) QuarryPlus.proxy.getPacketWorld(ctx.netHandler).getTileEntity(pos);
             if (pumpC != null) {
                 Minecraft.getMinecraft().addScheduledTask(() -> {
@@ -107,7 +107,7 @@ public class Mappings {
         }
 
         @Override
-        public IMessage onRecieve(IMessage message, MessageContext ctx) {
+        public IMessage onReceive(IMessage message, MessageContext ctx) {
             World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
             MinecraftServer server = world.getMinecraftServer();
             if (world.provider.getDimension() == dim && server != null) {
@@ -199,7 +199,7 @@ public class Mappings {
         }
 
         @Override
-        public IMessage onRecieve(IMessage message, MessageContext ctx) {
+        public IMessage onReceive(IMessage message, MessageContext ctx) {
             World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
             MinecraftServer server = world.getMinecraftServer();
             if (world.provider.getDimension() == dim && server != null) {

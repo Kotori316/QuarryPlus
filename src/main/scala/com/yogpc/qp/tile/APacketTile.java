@@ -104,7 +104,7 @@ public abstract class APacketTile extends TileEntity implements buildcraft.api.t
     @Override
     public void getDebugInfo(List<String> left, List<String> right, EnumFacing side) {
         left.add(getClass().getName());
-        left.add(ItemQuarryDebug.tileposToString(this).getText());
+        left.add(ItemQuarryDebug.tilePosToString(this).getUnformattedComponentText());
         if (isDebugSender) {
             IDebugSender sender = (IDebugSender) this;
             sender.getMessage().stream().map(ITextComponent::getUnformattedComponentText).forEach(left::add);

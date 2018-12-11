@@ -47,7 +47,7 @@ public class AdvRangeMessage implements IMessage {
     }
 
     @Override
-    public IMessage onRecieve(IMessage message, MessageContext ctx) {
+    public IMessage onReceive(IMessage message, MessageContext ctx) {
         World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
         if (world.provider.getDimension() == dim) {
             TileEntity entity = world.getTileEntity(pos);

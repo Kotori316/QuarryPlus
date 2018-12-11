@@ -738,7 +738,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     }
 
     @Override
-    public List<ITextComponent> getDebugmessages() {
+    public List<ITextComponent> getDebugMessages() {
         ArrayList<ITextComponent> list = new ArrayList<>();
         list.add(new TextComponentTranslation(TranslationKeys.CURRENT_MODE, G_getNow()));
         list.add(new TextComponentString(String.format("Next target : (%d, %d, %d)", targetX, targetY, targetZ)));

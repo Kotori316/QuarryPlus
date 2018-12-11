@@ -32,7 +32,7 @@ public class BlockListRequestMessage implements IMessage {
     }
 
     @Override
-    public IMessage onRecieve(IMessage message, MessageContext ctx) {
+    public IMessage onReceive(IMessage message, MessageContext ctx) {
         EntityPlayer player = QuarryPlus.proxy.getPacketPlayer(ctx.netHandler);
         if (/*player.openContainer.windowId == containerId &&*/ player.openContainer instanceof ContainerEnchList) {
             ContainerEnchList container = (ContainerEnchList) player.openContainer;

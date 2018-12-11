@@ -92,7 +92,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
         }
 
         if (!targets.isEmpty()) {
-            long maxPower = (long) (PowerManager.simurateEnergyLaser(this, this.unbreaking, this.fortune, this.silktouch, this.efficiency) * MjAPI.MJ);
+            long maxPower = (long) (PowerManager.simulateEnergyLaser(this, this.unbreaking, this.fortune, this.silktouch, this.efficiency) * MjAPI.MJ);
             List<ILaserTarget> targetList = targets.stream()
                 .map(getWorld()::getTileEntity)
                 .map(ILaserTarget.class::cast)
@@ -183,7 +183,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
     }
 
     @SuppressWarnings("AssignmentToNull") // Null check is done by nonNull Predicate.
-    protected void removeLaser() {
+    private void removeLaser() {
         if (this.lasers != null)
             for (int i = 0; i < this.lasers.length; i++)
                 this.lasers[i] = null;
@@ -203,7 +203,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
             this.pi = 0;
     }
 
-    public static final ResourceLocation[] LASER_TEXTURES = new ResourceLocation[]{
+    private static final ResourceLocation[] LASER_TEXTURES = new ResourceLocation[]{
         new ResourceLocation(QuarryPlus.modID, "textures/entities/laser_1.png"),
         new ResourceLocation(QuarryPlus.modID, "textures/entities/laser_2.png"),
         new ResourceLocation(QuarryPlus.modID, "textures/entities/laser_3.png"),
@@ -273,7 +273,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
 
     @Override
     @SuppressWarnings("Duplicates")
-    public void setEnchantent(final short id, final short val) {
+    public void setEnchantment(final short id, final short val) {
         if (id == EfficiencyID)
             this.efficiency = (byte) val;
         else if (id == FortuneID)
@@ -290,7 +290,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
     }
 
     @Override
-    public List<ITextComponent> getDebugmessages() {
+    public List<ITextComponent> getDebugMessages() {
         List<ITextComponent> list = new ArrayList<>();
         list.add(toComponentString.apply("Targets"));
         targets.stream()
@@ -325,7 +325,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
         double maxX = getPos().getX() + 1;
         double maxY = getPos().getY() + 1;
         double maxZ = getPos().getZ() + 1;
-        /*if (this.lasers != null) //neccesary?
+        /*if (this.lasers != null) //necessary?
             for (final Vec3d p : this.lasers) {
                 if (p == null)
                     continue;

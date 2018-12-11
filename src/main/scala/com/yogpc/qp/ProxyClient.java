@@ -42,8 +42,8 @@ import net.minecraftforge.registries.IForgeRegistryEntry;
 @SideOnly(Side.CLIENT)
 public class ProxyClient extends ProxyCommon {
 
-    public DummyBlockBakedModel dummyBlockBakedModel;
-    public DummyBlockBakedModel dummyItemBakedModel;
+    private DummyBlockBakedModel dummyBlockBakedModel;
+    private DummyBlockBakedModel dummyItemBakedModel;
 
     @Override
     public void openPumpGui(World worldIn, EntityPlayer playerIn, EnumFacing facing, TilePump pump) {

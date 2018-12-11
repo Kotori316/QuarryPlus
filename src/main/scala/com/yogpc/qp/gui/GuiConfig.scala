@@ -19,5 +19,5 @@ class GuiFactory extends IModGuiFactory {
 
   override def runtimeGuiCategories() = null
 
-  override def initialize(minecraftInstance: Minecraft) = ()
+  override def initialize(minecraftInstance: Minecraft): Unit = ()
 }

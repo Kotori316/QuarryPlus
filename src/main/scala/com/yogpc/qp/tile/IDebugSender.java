@@ -16,7 +16,7 @@ public interface IDebugSender {
     String getDebugName();
 
     /**
-     * Use this instead of {@link IDebugSender#getDebugmessages()} to get info. This mathod consider whether the machine is disabled.
+     * Use this instead of {@link IDebugSender#getDebugMessages()} to get info. This method consider whether the machine is disabled.
      *
      * @return debug info.
      */
@@ -24,7 +24,7 @@ public interface IDebugSender {
         if (((APacketTile) this).machineDisabled) {
             return Collections.singletonList(new TextComponentString(((APacketTile) this).getSymbol().name() + " is disabled."));
         } else {
-            return getDebugmessages();
+            return getDebugMessages();
         }
     }
 
@@ -33,5 +33,5 @@ public interface IDebugSender {
      *
      * @return debug info of valid machine.
      */
-    List<? extends ITextComponent> getDebugmessages();
+    List<? extends ITextComponent> getDebugMessages();
 }

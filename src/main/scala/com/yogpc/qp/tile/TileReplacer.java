@@ -69,7 +69,7 @@ public class TileReplacer extends APacketTile implements IAttachment {
                 state.getBlock().hasTileEntity(state) ||
                 state.getMaterial() == Material.CIRCUITS ||
                 TilePump.isLiquid(state)) {
-                // Blocks sould not be replaced with TileEntities.
+                // Blocks should not be replaced with TileEntities.
                 // Material.CIRCUITS is for blocks which isn't normal.
                 // Liquid block cause crash.
                 toReplaceState = QuarryPlusI.dummyBlock().getDefaultState();

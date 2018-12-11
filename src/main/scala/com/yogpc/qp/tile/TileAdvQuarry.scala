@@ -1,6 +1,7 @@
 package com.yogpc.qp.tile
 
 import java.lang.{Boolean => JBool}
+import java.util
 import java.util.Collections
 
 import com.yogpc.qp.block.{ADismCBlock, BlockBookMover}
@@ -10,7 +11,7 @@ import com.yogpc.qp.packet.PacketHandler
 import com.yogpc.qp.packet.advquarry.{AdvContentMessage, AdvModeMessage}
 import com.yogpc.qp.tile.IAttachment.Attachments
 import com.yogpc.qp.tile.TileAdvQuarry._
-import com.yogpc.qp.utils.{INBTReadable, INBTWritable, ItemElement, NotNullList, Reason, ReflectionHelper}
+import com.yogpc.qp.utils.{BlockWrapper, INBTReadable, INBTWritable, ItemElement, NotNullList, Reason, ReflectionHelper}
 import com.yogpc.qp.version.VersionUtil
 import com.yogpc.qp.{Config, PowerManager, QuarryPlus, QuarryPlusI, _}
 import javax.annotation.Nonnull
@@ -57,19 +58,19 @@ class TileAdvQuarry extends APowerTile
   self =>
   private[this] var mDigRange = TileAdvQuarry.defaultRange
   private[this] var facingMap: Map[Attachments[_ <: APacketTile], EnumFacing] = Map.empty
-  var ench = TileAdvQuarry.defaultEnch
-  var target = BlockPos.ORIGIN
+  var ench: QEnch = TileAdvQuarry.defaultEnch
+  var target: BlockPos = BlockPos.ORIGIN
   var framePoses = List.empty[BlockPos]
   var chunks = List.empty[ChunkPos]
   val fluidStacks = scala.collection.mutable.Map.empty[FluidStack, FluidTank]
   val cacheItems = new ItemList
   val itemHandler = new ItemHandler
-  val fluidHandlers = EnumFacing.VALUES.map(f => f -> new FluidHandler(facing = f)).toMap.withDefaultValue(new FluidHandler(null))
-  val fluidExtractFacings = EnumFacing.VALUES.map(f => f -> scala.collection.mutable.Set.empty[FluidStack]).toMap
+  val fluidHandlers: Map[EnumFacing, FluidHandler] = EnumFacing.VALUES.map(f => f -> new FluidHandler(facing = f)).toMap.withDefaultValue(new FluidHandler(null))
+  val fluidExtractFacings: Map[EnumFacing, mutable.Set[FluidStack]] = EnumFacing.VALUES.map(f => f -> scala.collection.mutable.Set.empty[FluidStack]).toMap
   val mode = new Mode
   val ACTING: PropertyHelper[JBool] = ADismCBlock.ACTING
 
-  override def update() = {
+  override def update(): Unit = {
     super.update()
     if (!getWorld.isRemote && !machineDisabled) {
       if (mode is TileAdvQuarry.MAKEFRAME) {
@@ -187,7 +188,7 @@ class TileAdvQuarry extends APowerTile
                 val blockHardness = state.getBlockHardness(getWorld, pos)
                 if (blockHardness != -1 && !blockHardness.isInfinity) {
                   (state.getBlock match {
-                    case _ if TileAdvQuarry.noDigBLOCKS.exists(_.contain(state)) => (0, destroy)
+                    case _ if Config.content.noDigBLOCKS.exists(_.contain(state)) => (0, destroy)
                     case leave: IShearable if leave.isLeaves(state, getWorld, pos) && ench.silktouch => (ench.mode, shear)
                     case _ => (ench.mode, dig)
                   }) match {
@@ -212,28 +213,28 @@ class TileAdvQuarry extends APowerTile
             }
             if (flags.exists(identity)) {
               if (flags(0)) { //-x
-                checkandsetFrame(getWorld, pos.offset(EnumFacing.WEST))
+                checkAndSetFrame(getWorld, pos.offset(EnumFacing.WEST))
                 if (flags(2)) { //-z, -x
-                  checkandsetFrame(getWorld, pos.offset(EnumFacing.NORTH, EnumFacing.WEST))
+                  checkAndSetFrame(getWorld, pos.offset(EnumFacing.NORTH, EnumFacing.WEST))
                 }
                 else if (flags(3)) { //+z, -x
-                  checkandsetFrame(getWorld, pos.offset(EnumFacing.SOUTH, EnumFacing.WEST))
+                  checkAndSetFrame(getWorld, pos.offset(EnumFacing.SOUTH, EnumFacing.WEST))
                 }
               }
               else if (flags(1)) { //+x
-                checkandsetFrame(getWorld, pos.offset(EnumFacing.EAST))
+                checkAndSetFrame(getWorld, pos.offset(EnumFacing.EAST))
                 if (flags(2)) { //-z, +x
-                  checkandsetFrame(getWorld, pos.offset(EnumFacing.NORTH, EnumFacing.EAST))
+                  checkAndSetFrame(getWorld, pos.offset(EnumFacing.NORTH, EnumFacing.EAST))
                 }
                 else if (flags(3)) { //+z, +x
-                  checkandsetFrame(getWorld, pos.offset(EnumFacing.SOUTH, EnumFacing.EAST))
+                  checkAndSetFrame(getWorld, pos.offset(EnumFacing.SOUTH, EnumFacing.EAST))
                 }
               }
               if (flags(2)) { //-z
-                checkandsetFrame(getWorld, pos.offset(EnumFacing.NORTH))
+                checkAndSetFrame(getWorld, pos.offset(EnumFacing.NORTH))
               }
               else if (flags(3)) { //+z
-                checkandsetFrame(getWorld, pos.offset(EnumFacing.SOUTH))
+                checkAndSetFrame(getWorld, pos.offset(EnumFacing.SOUTH))
               }
             }
             y -= 1
@@ -345,7 +346,7 @@ class TileAdvQuarry extends APowerTile
                  c <- cosumeEnergy(b).right;
                  d <- digging(c).right) yield d) match {
             case Left(a) =>
-              if (a.isEnergyIsuue) notEnoughEnergy = true
+              if (a.isEnergyIssue) notEnoughEnergy = true
               Reason.printNonEnergy(a)
             case Right((l, reasons)) =>
               l.asScala.foreach(cacheItems.add)
@@ -358,7 +359,7 @@ class TileAdvQuarry extends APowerTile
                     if (pre == newPos) {
                       Some(BlockPos.ORIGIN) -> reasons
                     } else {
-                      val energy = PowerManager.calcEnergyAdvSearch(self, ench.unbreaking, newPos.getY)
+                      val energy = PowerManager.calcEnergyAdvSearch(ench.unbreaking, newPos.getY)
                       if (notEnoughEnergy || useEnergy(energy, energy, false, EnergyUsage.ADV_CHECK_BLOCK) != energy) {
                         notEnoughEnergy = true
                         if (index == 0)
@@ -451,7 +452,7 @@ class TileAdvQuarry extends APowerTile
     }
   }
 
-  private def chunkLoad() = {
+  private def chunkLoad(): Unit = {
     if (chunks.nonEmpty) {
       val chunkPos = chunks.head
       val bool = getWorld.isChunkGeneratedAt(chunkPos.x, chunkPos.z)
@@ -464,7 +465,7 @@ class TileAdvQuarry extends APowerTile
     }
   }
 
-  def checkandsetFrame(world: World, thatPos: BlockPos): Unit = {
+  def checkAndSetFrame(world: World, thatPos: BlockPos): Unit = {
     if (TilePump.isLiquid(world.getBlockState(thatPos))) {
       world.setBlockState(thatPos, QuarryPlusI.blockFrame.getDammingState)
     }
@@ -487,7 +488,7 @@ class TileAdvQuarry extends APowerTile
     }
   }
 
-  override protected def isWorking = mode.isWorking
+  override protected def isWorking: Boolean = mode.isWorking
 
   override def G_reinit(): Unit = {
     mode.set(TileAdvQuarry.NOTNEEDBREAK)
@@ -506,7 +507,7 @@ class TileAdvQuarry extends APowerTile
     }
   }
 
-  override def readFromNBT(nbttc: NBTTagCompound) = {
+  override def readFromNBT(nbttc: NBTTagCompound): Unit = {
     super.readFromNBT(nbttc)
     ench = QEnch.readFromNBT(nbttc.getCompoundTag(NBT_QENCH))
     digRange = DigRange.readFromNBT(nbttc.getCompoundTag(NBT_DIGRANGE))
@@ -524,7 +525,7 @@ class TileAdvQuarry extends APowerTile
     chunks = Range(0, l2.tagCount()).map(i => new ChunkPos(BlockPos.fromLong(l2.get(i).asInstanceOf[NBTTagLong].getLong))).toList
   }
 
-  override def writeToNBT(nbttc: NBTTagCompound) = {
+  override def writeToNBT(nbttc: NBTTagCompound): NBTTagCompound = {
     nbttc.setTag(NBT_QENCH, ench.toNBT)
     nbttc.setTag(NBT_DIGRANGE, digRange.toNBT)
     nbttc.setLong("NBT_TARGET", target.toLong)
@@ -540,17 +541,17 @@ class TileAdvQuarry extends APowerTile
   /**
     * @return Map (Enchantment id, level)
     */
-  override def getEnchantments = ench.getMap.collect(enchantCollector).asJava
+  override def getEnchantments: util.Map[Integer, Integer] = ench.getMap.collect(enchantCollector).asJava
 
   /**
     * @param id    Enchantment id
     * @param value level
     */
-  override def setEnchantent(id: Short, value: Short) = ench = ench.set(id, value)
+  override def setEnchantment(id: Short, value: Short): Unit = ench = ench.set(id, value)
 
   override def getEnchantedPickaxe: ItemStack = ench.pickaxe
 
-  override def setInventorySlotContents(index: Int, stack: ItemStack) = {
+  override def setInventorySlotContents(index: Int, stack: ItemStack): Unit = {
     if (VersionUtil.nonEmpty(stack)) {
       QuarryPlus.LOGGER.warn("QuarryPlus WARN: call setInventorySlotContents with non empty ItemStack.")
     } else {
@@ -558,25 +559,25 @@ class TileAdvQuarry extends APowerTile
     }
   }
 
-  override def decrStackSize(index: Int, count: Int) = cacheItems.decrease(index, count)
+  override def decrStackSize(index: Int, count: Int): ItemStack = cacheItems.decrease(index, count)
 
-  override def getSizeInventory = Math.max(cacheItems.list.size, 1)
+  override def getSizeInventory: Int = Math.max(cacheItems.list.size, 1)
 
-  override def removeStackFromSlot(index: Int) = cacheItems.remove(index)
+  override def removeStackFromSlot(index: Int): ItemStack = cacheItems.remove(index)
 
   override val getInventoryStackLimit = 1
 
-  override def clear() = cacheItems.list.clear()
+  override def clear(): Unit = cacheItems.list.clear()
 
-  override def isEmpty = cacheItems.list.isEmpty
+  override def isEmpty: Boolean = cacheItems.list.isEmpty
 
-  override def getStackInSlot(index: Int) = cacheItems.getStack(index)
+  override def getStackInSlot(index: Int): ItemStack = cacheItems.getStack(index)
 
-  override val getDebugName = TranslationKeys.advquarry
+  override val getDebugName: String = TranslationKeys.advquarry
 
-  override def isUsableByPlayer(player: EntityPlayer) = self.getWorld.getTileEntity(self.getPos) eq this
+  override def isUsableByPlayer(player: EntityPlayer): Boolean = self.getWorld.getTileEntity(self.getPos) eq this
 
-  override def getDebugmessages = {
+  override def getDebugMessages: util.List[TextComponentString] = {
     import scala.collection.JavaConverters._
     List("Items to extract = " + cacheItems.list.size,
       "Liquid to extract = " + fluidStacks.size,
@@ -586,13 +587,13 @@ class TileAdvQuarry extends APowerTile
       ench.toString).map(toComponentString).asJava
   }
 
-  override def hasCapability(capability: Capability[_], facing: EnumFacing) = {
+  override def hasCapability(capability: Capability[_], facing: EnumFacing): Boolean = {
     capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ||
       (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && Config.content.enableChunkDestroyerFluidHander) ||
       super.hasCapability(capability, facing)
   }
 
-  override def getCapability[T](capability: Capability[T], facing: EnumFacing) = {
+  override def getCapability[T](capability: Capability[T], facing: EnumFacing): T = {
     if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
       CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(itemHandler)
     } else if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && Config.content.enableChunkDestroyerFluidHander) {
@@ -644,7 +645,7 @@ class TileAdvQuarry extends APowerTile
     ForgeChunkManager.forceChunk(ticket, quarryChunk)
   }
 
-  def makeRangeBox() = {
+  def makeRangeBox(): DigRange = {
     val facing = getWorld.getBlockState(getPos).getValue(ADismCBlock.FACING).getOpposite
     val link = getNeighbors(facing).map(getWorld.getTileEntity(_))
       .collectFirst { case m: TileMarker if m.link != null =>
@@ -659,7 +660,7 @@ class TileAdvQuarry extends APowerTile
     new TileAdvQuarry.DigRange(link._1, link._2)
   }
 
-  def digRange = mDigRange
+  def digRange: DigRange = mDigRange
 
   def digRange_=(@Nonnull digRange: TileAdvQuarry.DigRange): Unit = {
     require(digRange != null, "DigRange must not be null.")
@@ -875,9 +876,9 @@ class TileAdvQuarry extends APowerTile
     }
   }
 
-  override def getName = getDebugName
+  override def getName: String = getDebugName
 
-  override protected def getSymbol = TileAdvQuarry.SYMBOL
+  override protected def getSymbol: Symbol = TileAdvQuarry.SYMBOL
 }
 
 object TileAdvQuarry {
@@ -1022,7 +1023,7 @@ object TileAdvQuarry {
   }
 
   class ItemList extends INBTWritable with INBTReadable[ItemList] {
-    val list = ArrayBuffer.empty[ItemElement]
+    val list: ArrayBuffer[ItemElement] = ArrayBuffer.empty[ItemElement]
 
     def add(itemDamage: ItemDamage, count: Int): Unit = {
       val i = list.indexWhere(_.itemDamage == itemDamage)
@@ -1085,25 +1086,6 @@ object TileAdvQuarry {
       l.tagIterator.map(VersionUtil.fromNBTTag).foreach(this.add)
       this
     }
-  }
-
-  private[TileAdvQuarry] case class BlockWrapper(state: IBlockState, ignoreProperty: Boolean = false, ignoreMeta: Boolean = false)
-    extends java.util.function.Predicate[IBlockState] {
-
-    def apply(v1: IBlockState): Boolean = contain(v1)
-
-    def contain(that: IBlockState): Boolean = {
-      if (ignoreMeta) {
-        state.getBlock == that.getBlock
-      } else if (ignoreProperty) {
-        state.getBlock == that.getBlock &&
-          state.getBlock.getMetaFromState(state) == that.getBlock.getMetaFromState(that)
-      } else {
-        state == that
-      }
-    }
-
-    override def test(t: IBlockState): Boolean = contain(t)
   }
 
   private[TileAdvQuarry] class Modes(val index: Int, override val toString: String)

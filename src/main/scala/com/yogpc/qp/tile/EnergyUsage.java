@@ -8,7 +8,7 @@ public enum EnergyUsage {
     LASER,
     REFINERY,
     WORKBENCH,
-    BOOKMOVER,
+    BOOK_MOVER,
     PUMP_EXP,
     ADV_BREAK_BLOCK,
     ADV_CHECK_BLOCK,

@@ -12,7 +12,7 @@ import scala.collection.mutable.ArrayBuffer
 
 class NotNullList(val seq: mutable.Buffer[ItemStack] with Clearable) extends NonNullList[ItemStack](seq.asJava, null) {
   var fix = false
-  val fixing = ArrayBuffer.empty[ItemStack]
+  val fixing: ArrayBuffer[ItemStack] = ArrayBuffer.empty[ItemStack]
 
   override def clear(): Unit = {
     seq.clear()

@@ -16,7 +16,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
  * To both client and server.
  */
 public class TileMessage implements IMessage {
-    NBTTagCompound compound;
+    private NBTTagCompound compound;
 
     public static TileMessage create(TileEntity entity) {
         TileMessage message = new TileMessage();
@@ -35,7 +35,7 @@ public class TileMessage implements IMessage {
     }
 
     @Override
-    public IMessage onRecieve(IMessage message, MessageContext ctx) {
+    public IMessage onReceive(IMessage message, MessageContext ctx) {
         BlockPos pos = new BlockPos(compound.getInteger("x"), compound.getInteger("y"), compound.getInteger("z"));
         World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
         Runnable runnable = () -> Optional.ofNullable(world.getTileEntity(pos)).ifPresent(entity -> entity.readFromNBT(compound));

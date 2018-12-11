@@ -54,7 +54,7 @@ public class Now implements IMessage {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public IMessage onRecieve(IMessage message, MessageContext ctx) {
+    public IMessage onReceive(IMessage message, MessageContext ctx) {
         TileEntity entity = QuarryPlus.proxy.getPacketWorld(ctx.netHandler).getTileEntity(blockPos);
         if (entity instanceof TilePump) {
             TilePump pump = (TilePump) entity;

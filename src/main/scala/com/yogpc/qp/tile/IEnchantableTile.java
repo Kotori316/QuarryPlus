@@ -71,7 +71,7 @@ public interface IEnchantableTile {
      * @param id  Enchantment id
      * @param val level
      */
-    void setEnchantent(short id, short val);
+    void setEnchantment(short id, short val);
 
     default void sendEnchantMassage(EntityPlayer player) {
         Util.getEnchantmentsChat(this).forEach(c -> VersionUtil.sendMessage(player, c));
@@ -91,16 +91,16 @@ public interface IEnchantableTile {
     public static class Util {
 
         public static void init(@Nonnull final IEnchantableTile te, @Nullable final NBTTagList tagList) {
-            VersionUtil.nbtListStream(tagList).forEach(nbt -> te.setEnchantent(nbt.getShort("id"), nbt.getShort("lvl")));
+            VersionUtil.nbtListStream(tagList).forEach(nbt -> te.setEnchantment(nbt.getShort("id"), nbt.getShort("lvl")));
             te.G_reinit();
         }
 
-        public static List<ITextComponent> getEnchantmentsChat(@Nonnull final IEnchantableTile te) {
-            final Map<Integer, Integer> enchs = te.getEnchantments();
-            if (enchs.size() <= 0) {
+        static List<ITextComponent> getEnchantmentsChat(@Nonnull final IEnchantableTile te) {
+            final Map<Integer, Integer> enchantments = te.getEnchantments();
+            if (enchantments.size() <= 0) {
                 return Collections.singletonList(new TextComponentTranslation(TranslationKeys.PLUSENCHANTNO));
             } else {
-                LinkedList<ITextComponent> collect = enchs.entrySet().stream()
+                LinkedList<ITextComponent> collect = enchantments.entrySet().stream()
                     .map(keys(Enchantment::getEnchantmentByID))
                     .filter(byKey(APacketTile.nonNull)).map(toAny((enchantment, level) ->
                         new TextComponentTranslation(TranslationKeys.INDENT, new TextComponentTranslation(enchantment.getName()),

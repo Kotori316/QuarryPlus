@@ -110,13 +110,13 @@ public class BlockPump extends ADismCBlock {
             return true;
         }
         if (stack.getItem() == QuarryPlusI.itemTool()) {
-            if (!worldIn.isRemote && stack.getItemDamage() == ItemTool.meta_statuschecker()) {
+            if (!worldIn.isRemote && stack.getItemDamage() == ItemTool.meta_StatusChecker()) {
                 TilePump pump = (TilePump) worldIn.getTileEntity(pos);
                 if (pump != null) {
                     pump.sendEnchantMassage(playerIn);
                     pump.C_getNames().forEach(c -> VersionUtil.sendMessage(playerIn, c));
                 }
-            } else if (stack.getItemDamage() == ItemTool.meta_liquidselector()) {
+            } else if (stack.getItemDamage() == ItemTool.meta_LiquidSelector()) {
                 TilePump pump = (TilePump) worldIn.getTileEntity(pos);
                 if (pump != null) {
                     QuarryPlus.proxy.openPumpGui(worldIn, playerIn, facing, pump);

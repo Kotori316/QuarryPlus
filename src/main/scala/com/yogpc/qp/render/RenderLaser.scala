@@ -29,7 +29,7 @@ object RenderLaser extends TileEntitySpecialRenderer[TileLaser] {
 
   private val bcLoaded = Loader isModLoaded QuarryPlus.Optionals.Buildcraft_modID
 
-  override def renderTileEntityFast(te: TileLaser, x: Double, y: Double, z: Double, partialTicks: Float, destroyStage: Int, f: Float, buffer: BufferBuilder) = {
+  override def renderTileEntityFast(te: TileLaser, x: Double, y: Double, z: Double, partialTicks: Float, destroyStage: Int, f: Float, buffer: BufferBuilder): Unit = {
     Minecraft.getMinecraft.mcProfiler.startSection("quarryplus")
     Minecraft.getMinecraft.mcProfiler.startSection("laser")
 

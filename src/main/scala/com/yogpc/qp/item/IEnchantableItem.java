@@ -33,10 +33,10 @@ public interface IEnchantableItem {
     boolean canMove(@Nonnull ItemStack is, Enchantment enchantment);
 
     Predicate<Enchantment> FALSE = o -> false;
-    Predicate<Enchantment> SILKTOUCH = enchantment -> enchantment == Enchantments.SILK_TOUCH;
-    Predicate<Enchantment> FORTUNE = enchantment -> enchantment == Enchantments.FORTUNE;
-    Predicate<Enchantment> EFFICIENCY = enchantment -> enchantment == Enchantments.EFFICIENCY;
-    Predicate<Enchantment> UNBREAKING = enchantment -> enchantment == Enchantments.UNBREAKING;
+    Predicate<Enchantment> SILKTOUCH = Predicate.isEqual(Enchantments.SILK_TOUCH);
+    Predicate<Enchantment> FORTUNE = Predicate.isEqual(Enchantments.FORTUNE);
+    Predicate<Enchantment> EFFICIENCY = Predicate.isEqual(Enchantments.EFFICIENCY);
+    Predicate<Enchantment> UNBREAKING = Predicate.isEqual(Enchantments.UNBREAKING);
 
     default ItemStack[] stacks() {
         return new ItemStack[]{new ItemStack((Item) this, 1, 0)};

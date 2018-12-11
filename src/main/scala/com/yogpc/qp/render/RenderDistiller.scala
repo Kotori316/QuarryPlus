@@ -22,7 +22,7 @@ object RenderDistiller extends FastTESR[TileRefinery] {
     else 6
   }
 
-  override def renderTileEntityFast(te: TileRefinery, x: Double, y: Double, z: Double, partialTicks: Float, destroyStage: Int, partial: Float, buffer: BufferBuilder) = {
+  override def renderTileEntityFast(te: TileRefinery, x: Double, y: Double, z: Double, partialTicks: Float, destroyStage: Int, partial: Float, buffer: BufferBuilder): Unit = {
     Minecraft.getMinecraft.mcProfiler.startSection("quarryplus")
     Minecraft.getMinecraft.mcProfiler.startSection("refinery")
     val pos = te.getPos

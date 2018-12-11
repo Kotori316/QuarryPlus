@@ -111,7 +111,7 @@ public class QuarryPlus {
         INSTANCE = new QuarryPlus();
         VersionDiff diff;
         try {
-            diff = (VersionDiff) Class.forName("com.yogpc.qp.version.Diff" + String.valueOf(ForgeVersion.getMajorVersion() - 2)).newInstance();
+            diff = (VersionDiff) Class.forName("com.yogpc.qp.version.Diff" + (ForgeVersion.getMajorVersion() - 2)).newInstance();
         } catch (ReflectiveOperationException e) {
             throw new AssertionError("VersionDiff doesn't exist!", e);
         }
@@ -163,7 +163,7 @@ public class QuarryPlus {
             blockController(),
             blockLaser(),
             blockRefinery(),
-            blockChunkdestroyer(),
+            blockChunkDestroyer(),
             blockStandalonePump(),
             blockBookMover(),
             blockExpPump(),
@@ -205,7 +205,7 @@ public class QuarryPlus {
             blockController().itemBlock,
             blockLaser().itemBlock(),
             blockRefinery().itemBlock(),
-            blockChunkdestroyer().itemBlock(),
+            blockChunkDestroyer().itemBlock(),
             blockStandalonePump().itemBlock(),
             blockBookMover().itemBlock(),
             blockExpPump().itemBlock(),
@@ -213,7 +213,7 @@ public class QuarryPlus {
             dummyBlock().itemBlock(),
             blockReplacer().itemBlock(),
             itemTool(),
-            magicmirror(),
+            magicMirror(),
             debugItem()
         );
     }
@@ -235,7 +235,7 @@ public class QuarryPlus {
         ModelLoader.setCustomModelResourceLocation(blockRefinery().itemBlock(), 0, proxy.fromEntry(blockRefinery()));
         ModelLoader.setCustomModelResourceLocation(blockController().itemBlock, 0, proxy.fromEntry(blockController()));
         ModelLoader.setCustomModelResourceLocation(blockLaser().itemBlock(), 0, proxy.fromEntry(blockLaser()));
-        ModelLoader.setCustomModelResourceLocation(blockChunkdestroyer().itemBlock(), 0, proxy.fromEntry(blockChunkdestroyer()));
+        ModelLoader.setCustomModelResourceLocation(blockChunkDestroyer().itemBlock(), 0, proxy.fromEntry(blockChunkDestroyer()));
         ModelLoader.setCustomModelResourceLocation(blockStandalonePump().itemBlock(), 0, proxy.fromEntry(blockStandalonePump()));
         ModelLoader.setCustomModelResourceLocation(blockBookMover().itemBlock(), 0, proxy.fromEntry(blockBookMover()));
         ModelLoader.setCustomModelResourceLocation(blockExpPump().itemBlock(), 0, proxy.fromEntry(blockExpPump()));
@@ -245,9 +245,9 @@ public class QuarryPlus {
         ModelLoader.setCustomModelResourceLocation(itemTool(), 0, ModelLoader.getInventoryVariant(prefix + ItemTool.statuschecker()));
         ModelLoader.setCustomModelResourceLocation(itemTool(), 1, ModelLoader.getInventoryVariant(prefix + ItemTool.listeditor()));
         ModelLoader.setCustomModelResourceLocation(itemTool(), 2, ModelLoader.getInventoryVariant(prefix + ItemTool.liquidselector()));
-        ModelLoader.setCustomModelResourceLocation(magicmirror(), 0, proxy.fromEntry(magicmirror()));
-        ModelLoader.setCustomModelResourceLocation(magicmirror(), 1, proxy.fromEntry(magicmirror()));
-        ModelLoader.setCustomModelResourceLocation(magicmirror(), 2, proxy.fromEntry(magicmirror()));
+        ModelLoader.setCustomModelResourceLocation(magicMirror(), 0, proxy.fromEntry(magicMirror()));
+        ModelLoader.setCustomModelResourceLocation(magicMirror(), 1, proxy.fromEntry(magicMirror()));
+        ModelLoader.setCustomModelResourceLocation(magicMirror(), 2, proxy.fromEntry(magicMirror()));
         ModelLoader.setCustomModelResourceLocation(debugItem(), 0, proxy.fromEntry(debugItem()));
     }
 
@@ -299,7 +299,7 @@ public class QuarryPlus {
         }
     }
 
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "WeakerAccess", "SpellCheckingInspection"})
     public static class Optionals {
         public static final String BuildCraft_core = "BuildCraftAPI|core";
         public static final String Buildcraft_facades = "BuildCraftAPI|facades";
@@ -322,6 +322,7 @@ public class QuarryPlus {
         public static final String updateJson = "https://raw.githubusercontent.com/Kotori316/QuarryPlus/1.12/update.json";
     }
 
+    @SuppressWarnings("SpellCheckingInspection")
     public static class Names {
         public static final String advpump = "standalonepump";
         public static final String advquarry = "chunkdestroyer";

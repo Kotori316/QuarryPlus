@@ -26,5 +26,5 @@ public interface IMessage extends net.minecraftforge.fml.common.network.simpleim
 
     public void toBytes(PacketBuffer buffer);
 
-    IMessage onRecieve(IMessage message, MessageContext ctx);
+    IMessage onReceive(IMessage message, MessageContext ctx);
 }
