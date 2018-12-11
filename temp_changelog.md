@@ -1,12 +1,7 @@
-Version 0.10.4
+Version 0.10.6
 
 ## Changes
-* Added Quarry Replacer, which is an attachment for quarry to replace block instead of making big hole. ([#34](https://github.com/Kotori316/QuarryPlus/issues/34))
-* Added Dummy Block, which is placed by Replacer. Looks like glass. No drops even with Silktouch.
-* QuarryPlus works more faster depending on amount of energy quarry has.
-In default, replacer is disabled. Change config entry to get it worked.
-* Rewrote NBT saving codes.
----
-Fixed [#36](https://github.com/Kotori316/QuarryPlus/issues/36) issue, ChunkDestroyer works fine in huge area.
-
-**I don't care if you have any problem with replacer. It may crash and you can't load the world if you replace blocks to ladder, torch, mushroom, redstone wire and many blocks which you can't place usually.**
+* Added JEI recipes for EnchantMover and Book EnchantMover. [#37](https://github.com/Kotori316/QuarryPlus/issues/37)
+* You can edit json file to choose which blocks ChunkDestroyer removes. I'll add example file later.
+* Fixed a lot of typos in code and comments. Don't worry I don't change NBT tag name and Config entry name.
+* Fixed infinite loop in QuarryPlus. [#38](https://github.com/Kotori316/QuarryPlus/issues/38)
