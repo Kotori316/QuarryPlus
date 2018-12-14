@@ -24,6 +24,11 @@ final class Buffer {
         return this;
     }
 
+    final Buffer color(int red, int green, int blue, int alpha) {
+        bufferBuilder.color(red, green, blue, alpha);
+        return this;
+    }
+
     final Buffer tex(float u, float v) {
         bufferBuilder.tex(u, v);
         return this;
