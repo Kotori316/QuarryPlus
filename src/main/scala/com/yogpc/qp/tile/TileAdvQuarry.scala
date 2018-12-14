@@ -589,14 +589,14 @@ class TileAdvQuarry extends APowerTile
 
   override def hasCapability(capability: Capability[_], facing: EnumFacing): Boolean = {
     capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ||
-      (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && Config.content.enableChunkDestroyerFluidHander) ||
+      (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && Config.content.enableChunkDestroyerFluidHandler) ||
       super.hasCapability(capability, facing)
   }
 
   override def getCapability[T](capability: Capability[T], facing: EnumFacing): T = {
     if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
       CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(itemHandler)
-    } else if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && Config.content.enableChunkDestroyerFluidHander) {
+    } else if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && Config.content.enableChunkDestroyerFluidHandler) {
       CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(fluidHandlers(facing))
     } else
       super.getCapability(capability, facing)

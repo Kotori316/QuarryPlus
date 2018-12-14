@@ -127,7 +127,7 @@ object Config {
 
     val removeBedrock: Boolean = configuration.getBoolean(RemoveBedrock_Key, Configuration.CATEGORY_GENERAL, false, RemoveBedrock_Key)
     val removeOnlySource: Boolean = configuration.getBoolean(RemoveOnlySource_Key, Configuration.CATEGORY_GENERAL, false, RemoveOnlySource_Key)
-    val enableChunkDestroyerFluidHander: Boolean = configuration.getBoolean(EnableChunkDestroyerFluidHandler_key, Configuration.CATEGORY_GENERAL, true, EnableChunkDestroyerFluidHandler_key)
+    val enableChunkDestroyerFluidHandler: Boolean = configuration.getBoolean(EnableChunkDestroyerFluidHandler_key, Configuration.CATEGORY_GENERAL, true, EnableChunkDestroyerFluidHandler_key)
     val disableFrameChainBreak: Boolean = configuration.getBoolean(DisableFrameChainBreak_key, Configuration.CATEGORY_GENERAL, false, DisableFrameChainBreak_key)
     val pumpAutoStart: Boolean = configuration.getBoolean(PumpAutoStart_Key, Configuration.CATEGORY_GENERAL, false, PumpAutoStart_Key)
     val disableRendering: Boolean = configuration.get(Configuration.CATEGORY_CLIENT, DisableRendering_Key, false, "Disable rendering of quarries.")
