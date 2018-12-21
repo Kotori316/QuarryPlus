@@ -3,7 +3,7 @@ package com.yogpc.qp.integration.jei
 import java.util.{Collections, ArrayList => AList, List => JList}
 
 import com.yogpc.qp.tile.WorkbenchRecipes
-import mezz.jei.api.ingredients.IIngredients
+import mezz.jei.api.ingredients.{IIngredients, VanillaTypes}
 import mezz.jei.api.recipe.IRecipeWrapper
 import net.minecraft.client.Minecraft
 import net.minecraft.item.ItemStack
@@ -18,8 +18,8 @@ class WorkBenchRecipeWrapper(recipe: WorkbenchRecipes) extends IRecipeWrapper wi
     recipe.inputs.foreach(inputs add Collections.singletonList(_))
     val outputs = Collections.singletonList(recipe.output.toStack())
 
-    ingredients.setInputLists(classOf[ItemStack], inputs)
-    ingredients.setOutputs(classOf[ItemStack], outputs)
+    ingredients.setInputLists(VanillaTypes.ITEM, inputs)
+    ingredients.setOutputs(VanillaTypes.ITEM, outputs)
   }
 
   override def drawInfo(minecraft: Minecraft, recipeWidth: Int, recipeHeight: Int, mouseX: Int, mouseY: Int): Unit = {
