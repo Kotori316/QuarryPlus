@@ -126,12 +126,12 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
     protected abstract boolean isWorking();
 
     @Optional.Method(modid = QuarryPlus.Optionals.IC2_modID)
-    public final void ic2load() {
+    private void ic2load() {
         MinecraftForge.EVENT_BUS.post(new EnergyTileLoadEvent(this));
     }
 
     @Optional.Method(modid = QuarryPlus.Optionals.IC2_modID)
-    public final void ic2unload() {
+    private void ic2unload() {
         MinecraftForge.EVENT_BUS.post(new EnergyTileUnloadEvent(this));
     }
 
