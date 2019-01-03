@@ -125,9 +125,9 @@ class TileAdvQuarry extends APowerTile
         }
 
         if (framePoses.isEmpty) {
-          val headtail = TileAdvQuarry.getFramePoses(digRange)
-          target = headtail.head
-          framePoses = headtail.tail
+          val headTail = TileAdvQuarry.getFramePoses(digRange)
+          target = headTail.head
+          framePoses = headTail.tail
           chunks = digRange.chunkSeq
         }
         chunkLoad()
@@ -242,7 +242,7 @@ class TileAdvQuarry extends APowerTile
           Right((list, destroy.result(), dig.result(), drain.result(), shear.result(), requireEnergy * 1.25))
         }
 
-        val cosumeEnergy: B_1 => Either[Reason, C_1] = b => {
+        val consumeEnergy: B_1 => Either[Reason, C_1] = b => {
           val (list, destroy, dig, drain, rest, energy) = b
           if (useEnergy(energy, energy, false, EnergyUsage.ADV_BREAK_BLOCK) == energy) {
             useEnergy(energy, energy, true, EnergyUsage.ADV_BREAK_BLOCK)
@@ -343,7 +343,7 @@ class TileAdvQuarry extends APowerTile
         while (j < n && (mode is TileAdvQuarry.BREAKBLOCK) && !notEnoughEnergy) {
           ((for (a <- dropCheck().right;
                  b <- calcBreakEnergy(a).right;
-                 c <- cosumeEnergy(b).right;
+                 c <- consumeEnergy(b).right;
                  d <- digging(c).right) yield d) match {
             case Left(a) =>
               if (a.isEnergyIssue) notEnoughEnergy = true
@@ -500,7 +500,7 @@ class TileAdvQuarry extends APowerTile
   def energyConfigure(): Unit = {
     if (!mode.isWorking) {
       configure(0, getMaxStored)
-    } else if (mode.reduceRecieve) {
+    } else if (mode.reduceReceive) {
       configure(ench.maxRecieve / 128, ench.maxStore)
     } else {
       configure(ench.maxRecieve, ench.maxStore)
@@ -510,10 +510,10 @@ class TileAdvQuarry extends APowerTile
   override def readFromNBT(nbttc: NBTTagCompound): Unit = {
     super.readFromNBT(nbttc)
     ench = QEnch.readFromNBT(nbttc.getCompoundTag(NBT_QENCH))
-    digRange = DigRange.readFromNBT(nbttc.getCompoundTag(NBT_DIGRANGE))
+    digRange = DigRange.readFromNBT(nbttc.getCompoundTag(NBT_DIG_RANGE))
     target = BlockPos.fromLong(nbttc.getLong("NBT_TARGET"))
     mode.readFromNBT(nbttc.getCompoundTag(NBT_MODE))
-    cacheItems.readFromNBT(nbttc.getCompoundTag(NBT_ITEMLIST))
+    cacheItems.readFromNBT(nbttc.getCompoundTag(NBT_ITEM_LIST))
     nbttc.getTagList("NBT_FLUIDLIST", Constants.NBT.TAG_COMPOUND).tagIterator.foreach(tag => {
       val tank = new QuarryTank(null, 0)
       CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.readNBT(tank, null, tag)
@@ -527,10 +527,10 @@ class TileAdvQuarry extends APowerTile
 
   override def writeToNBT(nbttc: NBTTagCompound): NBTTagCompound = {
     nbttc.setTag(NBT_QENCH, ench.toNBT)
-    nbttc.setTag(NBT_DIGRANGE, digRange.toNBT)
+    nbttc.setTag(NBT_DIG_RANGE, digRange.toNBT)
     nbttc.setLong("NBT_TARGET", target.toLong)
     nbttc.setTag(NBT_MODE, mode.toNBT)
-    nbttc.setTag(NBT_ITEMLIST, cacheItems.toNBT)
+    nbttc.setTag(NBT_ITEM_LIST, cacheItems.toNBT)
     nbttc.setTag("NBT_FLUIDLIST", (new NBTTagList).tap(tagList => fluidStacks.foreach {
       case (_, tank) => tagList.appendTag(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.writeNBT(tank, null))
     }))
@@ -781,7 +781,7 @@ class TileAdvQuarry extends APowerTile
       "ChunkDestroyer FluidHandler contents = " + getTankProperties.map { c =>
         Option(c.getContents) match {
           case Some(s) => (s.getFluid.getName, s.amount)
-          case None => ("No liqud", 0)
+          case None => ("No liquid", 0)
         }
       }.mkString(", ")
     }
@@ -824,8 +824,8 @@ class TileAdvQuarry extends APowerTile
 
     private[this] var mode: Modes = NONE
 
-    def set(newmode: Modes): Unit = {
-      mode = newmode
+    def set(newMode: Modes): Unit = {
+      mode = newMode
       val world1 = getWorld
       val pos1 = getPos
       if (!world1.isRemote) {
@@ -834,14 +834,14 @@ class TileAdvQuarry extends APowerTile
       }
       val state = world1.getBlockState(pos1)
       if (state.getValue(ACTING)) {
-        if (newmode == NONE || newmode == NOTNEEDBREAK) {
+        if (newMode == NONE || newMode == NOTNEEDBREAK) {
           validate()
           world1.setBlockState(pos1, state.withProperty(ACTING, JBool.FALSE))
           validate()
           world1.setTileEntity(pos1, self)
         }
       } else {
-        if (newmode != NONE && newmode != NOTNEEDBREAK) {
+        if (newMode != NONE && newMode != NOTNEEDBREAK) {
           validate()
           world1.setBlockState(pos1, state.withProperty(ACTING, JBool.TRUE))
           validate()
@@ -854,7 +854,7 @@ class TileAdvQuarry extends APowerTile
 
     def isWorking: Boolean = !is(NONE)
 
-    def reduceRecieve: Boolean = is(MAKEFRAME)
+    def reduceReceive: Boolean = is(MAKEFRAME)
 
     override def toString: String = "ChunkDestroyer mode = " + mode
 
@@ -894,10 +894,10 @@ object TileAdvQuarry {
     BlockWrapper(Blocks.SANDSTONE.getDefaultState, ignoreMeta = true),
     BlockWrapper(Blocks.RED_SANDSTONE.getDefaultState, ignoreMeta = true))
   private final val NBT_QENCH = "nbt_qench"
-  private final val NBT_DIGRANGE = "nbt_digrange"
+  private final val NBT_DIG_RANGE = "nbt_digrange"
   private final val NBT_MODE = "nbt_quarrymode"
-  private final val NBT_ITEMLIST = "nbt_itemlist"
-  private final val NBT_ITEMELEMENTS = "nbt_itemelements"
+  private final val NBT_ITEM_LIST = "nbt_itemlist"
+  private final val NBT_ITEM_ELEMENTS = "nbt_itemelements"
   final val VALID_ATTACHMENTS: Set[Attachments[_]] = Set(Attachments.EXP_PUMP, Attachments.REPLACER)
 
   val defaultEnch = QEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false)
@@ -1077,12 +1077,12 @@ object TileAdvQuarry {
 
     override def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
       val itemElements = (new NBTTagList).tap(l => list.map(_.toNBT).foreach(l.appendTag))
-      nbt.setTag(NBT_ITEMELEMENTS, itemElements)
+      nbt.setTag(NBT_ITEM_ELEMENTS, itemElements)
       nbt
     }
 
     override def readFromNBT(tag: NBTTagCompound): ItemList = {
-      val l = tag.getTagList(NBT_ITEMELEMENTS, Constants.NBT.TAG_COMPOUND)
+      val l = tag.getTagList(NBT_ITEM_ELEMENTS, Constants.NBT.TAG_COMPOUND)
       l.tagIterator.map(VersionUtil.fromNBTTag).foreach(this.add)
       this
     }
