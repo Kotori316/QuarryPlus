@@ -5,12 +5,12 @@ import java.util.Collections
 import com.yogpc.qp._
 import com.yogpc.qp.integration.jei.BookRecipeWrapper.BookRecipe
 import com.yogpc.qp.item.IEnchantableItem
-import mezz.jei.api.ingredients.IIngredients
+import mezz.jei.api.ingredients.{IIngredients, VanillaTypes}
 import mezz.jei.api.recipe.IRecipeWrapper
 import net.minecraft.client.Minecraft
 import net.minecraft.enchantment.{EnchantmentData, EnumEnchantmentType}
 import net.minecraft.init.Items
-import net.minecraft.item.{Item, ItemEnchantedBook, ItemStack}
+import net.minecraft.item.{Item, ItemEnchantedBook}
 import net.minecraftforge.fml.common.registry.ForgeRegistries
 
 import scala.collection.JavaConverters._
@@ -23,13 +23,12 @@ class BookRecipeWrapper(recipe: BookRecipe) extends IRecipeWrapper {
     val input = Seq(items.asJava, Collections.singletonList(ItemEnchantedBook.getEnchantedItemStack(recipe.ench))).asJava
     val output = items.map(_.copy()).map(_.tap(_.addEnchantment(recipe.ench.enchantment, recipe.ench.enchantmentLevel))).asJava
 
-    ingredients.setInputLists(classOf[ItemStack], input)
-    ingredients.setOutput(classOf[ItemStack], output)
+    ingredients.setInputLists(VanillaTypes.ITEM, input)
+    ingredients.setOutputLists(VanillaTypes.ITEM, Collections.singletonList(output))
   }
 
   override def drawInfo(minecraft: Minecraft, recipeWidth: Int, recipeHeight: Int, mouseX: Int, mouseY: Int): Unit = {
     import BookRecipeCategory._
-    super.drawInfo(minecraft, recipeWidth, recipeHeight, mouseX, mouseY)
     minecraft.fontRenderer.drawString(50000 + "MJ", 36 - xOff, 66 - yOff, 0x404040)
   }
 }

@@ -9,6 +9,12 @@ Jar files are available on https://github.com/Kotori316/QuarryPlus/releases
 (Additional Enchanted Miner)
 Minecraft CurseForge - https://minecraft.curseforge.com/projects/additional-enchanted-miner
 
+---
+This program is licensed under GNU LESSER GENERAL PUBLIC LICENSE.  
+Copyright (C) 2012,2013 yogpstop  
+Copyright (C) 2017-2019 Kotori316
+---
+
 Supported API
 -------------
 * BuildCraft API
