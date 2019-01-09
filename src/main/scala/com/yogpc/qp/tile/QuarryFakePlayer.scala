@@ -4,11 +4,13 @@ import java.io.File
 import java.util.UUID
 
 import com.mojang.authlib.GameProfile
+import com.yogpc.qp.utils.FakeHandler
 import net.minecraft.advancements.{Advancement, AdvancementProgress, PlayerAdvancements}
 import net.minecraft.entity.IMerchant
 import net.minecraft.entity.passive.AbstractHorse
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
+import net.minecraft.potion.PotionEffect
 import net.minecraft.tileentity.{TileEntityCommandBlock, TileEntitySign}
 import net.minecraft.util.EnumHand
 import net.minecraft.world.{IInteractionObject, WorldServer}
@@ -18,6 +20,7 @@ import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 class QuarryFakePlayer private(worldServer: WorldServer) extends FakePlayer(worldServer, QuarryFakePlayer.profile) {
+  this.connection = new FakeHandler(this)
 
   private[this] val advancements = new PlayerAdvancements(
     worldServer.getMinecraftServer,
@@ -50,6 +53,7 @@ class QuarryFakePlayer private(worldServer: WorldServer) extends FakePlayer(worl
 
   override def getAdvancements: PlayerAdvancements = advancements
 
+  override def isPotionApplicable(potioneffectIn: PotionEffect): Boolean = false
 }
 
 object QuarryFakePlayer {
