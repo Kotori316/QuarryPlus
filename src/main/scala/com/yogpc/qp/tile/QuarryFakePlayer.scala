@@ -53,7 +53,7 @@ class QuarryFakePlayer private(worldServer: WorldServer) extends FakePlayer(worl
 
   override def getAdvancements: PlayerAdvancements = advancements
 
-  override def isPotionApplicable(potioneffectIn: PotionEffect): Boolean = false
+  override def isPotionApplicable(effect: PotionEffect): Boolean = false
 }
 
 object QuarryFakePlayer {
