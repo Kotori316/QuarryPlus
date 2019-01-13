@@ -43,7 +43,7 @@ public class BlockSolidQuarry extends ADismCBlock {
             EnumFacing facing = placer.getHorizontalFacing().getOpposite();
             worldIn.setBlockState(pos, state.withProperty(FACING, facing), 2);
             Optional.ofNullable((TileSolidQuarry) worldIn.getTileEntity(pos)).ifPresent(t -> {
-                t.G_reinit();
+                t.G_ReInit();
                 TileSolidQuarry.requestTicket.accept(t);
             });
         }
@@ -69,7 +69,7 @@ public class BlockSolidQuarry extends ADismCBlock {
         ItemStack stack = playerIn.getHeldItem(hand);
         if (InvUtils.isDebugItem(playerIn, hand)) return true;
         if (BuildcraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
-            Optional.ofNullable((TileSolidQuarry) worldIn.getTileEntity(pos)).ifPresent(TileSolidQuarry::G_reinit);
+            Optional.ofNullable((TileSolidQuarry) worldIn.getTileEntity(pos)).ifPresent(TileSolidQuarry::G_ReInit);
             return true;
         }
         if (!playerIn.isSneaking()) {

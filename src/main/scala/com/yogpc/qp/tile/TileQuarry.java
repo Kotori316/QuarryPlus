@@ -58,11 +58,11 @@ import scala.Symbol;
 import static com.yogpc.qp.tile.IAttachment.Attachments.EXP_PUMP;
 import static com.yogpc.qp.tile.IAttachment.Attachments.FLUID_PUMP;
 import static com.yogpc.qp.tile.IAttachment.Attachments.REPLACER;
-import static com.yogpc.qp.tile.TileQuarry.Mode.BREAKBLOCK;
-import static com.yogpc.qp.tile.TileQuarry.Mode.MAKEFRAME;
-import static com.yogpc.qp.tile.TileQuarry.Mode.MOVEHEAD;
+import static com.yogpc.qp.tile.TileQuarry.Mode.BREAK_BLOCK;
+import static com.yogpc.qp.tile.TileQuarry.Mode.MAKE_FRAME;
+import static com.yogpc.qp.tile.TileQuarry.Mode.MOVE_HEAD;
 import static com.yogpc.qp.tile.TileQuarry.Mode.NONE;
-import static com.yogpc.qp.tile.TileQuarry.Mode.NOTNEEDBREAK;
+import static com.yogpc.qp.tile.TileQuarry.Mode.NOT_NEED_BREAK;
 import static jp.t2v.lab.syntax.MapStreamSyntax.byEntry;
 import static jp.t2v.lab.syntax.MapStreamSyntax.entryToMap;
 
@@ -94,34 +94,34 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
             }
             this.areaProvider = null;
         }
-        boolean breaked = false;
-        for (int i = 0; i < efficiency + 1 && !breaked; i++) {
+        boolean broken = false;
+        for (int i = 0; i < efficiency + 1 && !broken; i++) {
             switch (this.now) {
-                case MAKEFRAME:
+                case MAKE_FRAME:
                     if (S_makeFrame())
                         while (!S_checkTarget())
                             S_setNextTarget();
-                    breaked = true;
+                    broken = true;
                     break;
-                case MOVEHEAD:
+                case MOVE_HEAD:
                     final boolean done = S_moveHead();
                     MoveHead.send(this);
                     if (!done) {
-                        breaked = true;
+                        broken = true;
                         break;
                     }
-                    setNow(BREAKBLOCK);
+                    setNow(BREAK_BLOCK);
                     break;
                 //$FALL-THROUGH$
-                case NOTNEEDBREAK:
-                    breaked = true;
-                case BREAKBLOCK:
+                case NOT_NEED_BREAK:
+                    broken = true;
+                case BREAK_BLOCK:
                     if (S_breakBlock())
                         while (!S_checkTarget())
                             S_setNextTarget();
                     break;
                 case NONE:
-                    breaked = true;
+                    broken = true;
                     break;
             }
         }
@@ -141,62 +141,60 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
         }
         final float blockHardness = b.getBlockHardness(getWorld(), target);
         switch (this.now) {
-            case BREAKBLOCK:
-            case MOVEHEAD:
+            case BREAK_BLOCK:
+            case MOVE_HEAD:
                 if (this.targetY < 1) {
                     G_destroy();
                     PacketHandler.sendToAround(ModeMessage.create(this), getWorld(), getPos());
                     return true;
                 }
                 return isBreakableBlock(target, b, blockHardness);
-            case NOTNEEDBREAK:
+            case NOT_NEED_BREAK:
                 if (this.targetY < this.yMin) {
                     if (this.filler) {
                         G_destroy();
 //                        sendNowPacket(this);
                         return true;
                     }
-                    setNow(MAKEFRAME);
+                    setNow(MAKE_FRAME);
                     G_renew_powerConfigure();
                     this.targetX = this.xMin;
                     this.targetY = this.yMax;
                     this.targetZ = this.zMin;
-                    this.addX = this.addZ = this.digged = true;
+                    this.addX = this.addZ = this.dug = true;
                     this.changeZ = false;
                     return S_checkTarget();
                 }
                 if (!isBreakableBlock(target, b, blockHardness))
                     return false;
                 if (b.getBlock() == QuarryPlusI.blockFrame() && !b.getValue(BlockFrame.DAMMING)) {
-                    byte flag = 0;
-                    if (this.targetX == this.xMin || this.targetX == this.xMax)
-                        flag++;
-                    if (this.targetY == this.yMin || this.targetY == this.yMax)
-                        flag++;
-                    if (this.targetZ == this.zMin || this.targetZ == this.zMax)
-                        flag++;
-                    return flag <= 1;
+                    return Stream.of(
+                        this.targetX == this.xMin || this.targetX == this.xMax,
+                        this.targetY == this.yMin || this.targetY == this.yMax,
+                        this.targetZ == this.zMin || this.targetZ == this.zMax)
+                        .mapToInt(bool -> bool.compareTo(false))
+                        .sum() < 2; // true if 0 or 1 condition is true.
                 }
                 return true;
-            case MAKEFRAME:
+            case MAKE_FRAME:
                 if (this.targetY < this.yMin) {
-                    setNow(MOVEHEAD);
+                    setNow(MOVE_HEAD);
                     G_renew_powerConfigure();
                     this.targetX = this.xMin + 1;
                     this.targetY = this.yMin;
                     this.targetZ = this.zMin + 1;
-                    this.addX = this.addZ = this.digged = true;
+                    this.addX = this.addZ = this.dug = true;
                     this.changeZ = false;
                     return S_checkTarget();
                 }
                 if (b.getMaterial().isSolid()
                     && !(b.getBlock() == QuarryPlusI.blockFrame() && !b.getValue(BlockFrame.DAMMING))) {
-                    setNow(NOTNEEDBREAK);
+                    setNow(NOT_NEED_BREAK);
                     G_renew_powerConfigure();
                     this.targetX = this.xMin;
                     this.targetZ = this.zMin;
                     this.targetY = this.yMax;
-                    this.addX = this.addZ = this.digged = true;
+                    this.addX = this.addZ = this.dug = true;
                     this.changeZ = false;
                     return S_checkTarget();
                 }
@@ -217,17 +215,17 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     private boolean isBreakableBlock(BlockPos target, IBlockState b, float blockHardness) {
         return blockHardness >= 0 && // Not to break unbreakable
             !b.getBlock().isAir(b, getWorld(), target) && // Avoid air
-            (now == NOTNEEDBREAK || !facingMap.containsKey(REPLACER) || b != S_getFillBlock()) && // Avoid dummy block.
+            (now == NOT_NEED_BREAK || !facingMap.containsKey(REPLACER) || b != S_getFillBlock()) && // Avoid dummy block.
             !(!facingMap.containsKey(FLUID_PUMP) && TilePump.isLiquid(b)); // Fluid when pump isn't connected.
     }
 
     private boolean addX = true;
     private boolean addZ = true;
-    private boolean digged = true;
+    private boolean dug = true;
     private boolean changeZ = false;
 
     private void S_setNextTarget() {
-        if (this.now == MAKEFRAME) {
+        if (this.now == MAKE_FRAME) {
             if (this.changeZ) {
                 if (this.addZ) {
                     this.targetZ++;
@@ -250,8 +248,8 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                 this.targetZ = Math.max(this.zMin, Math.min(this.zMax, this.targetZ));
             }
             if (this.xMin == this.targetX && this.zMin == this.targetZ)
-                if (this.digged)
-                    this.digged = false;
+                if (this.dug)
+                    this.dug = false;
                 else
                     this.targetY--;
         } else {
@@ -259,7 +257,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                 this.targetX++;
             else
                 this.targetX--;
-            final int out = this.now == NOTNEEDBREAK ? 0 : 1;
+            final int out = this.now == NOT_NEED_BREAK ? 0 : 1;
             if (this.targetX < this.xMin + out || this.xMax - out < this.targetX) {
                 this.addX = !this.addX;
                 this.targetX = Math.max(this.xMin + out, Math.min(this.targetX, this.xMax - out));
@@ -270,8 +268,8 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                 if (this.targetZ < this.zMin + out || this.zMax - out < this.targetZ) {
                     this.addZ = !this.addZ;
                     this.targetZ = Math.max(this.zMin + out, Math.min(this.targetZ, this.zMax - out));
-                    if (this.digged)
-                        this.digged = false;
+                    if (this.dug)
+                        this.dug = false;
                     else {
                         this.targetY--;
                         final double aa = S_getDistance(this.xMin + 1, this.targetY, this.zMin + out);
@@ -311,7 +309,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     }
 
     private boolean S_makeFrame() {
-        this.digged = true;
+        this.dug = true;
         if (!PowerManager.useEnergyFrameBuild(this, this.unbreaking))
             return false;
         getWorld().setBlockState(new BlockPos(this.targetX, this.targetY, this.targetZ), QuarryPlusI.blockFrame().getDefaultState());
@@ -320,11 +318,11 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     }
 
     private boolean S_breakBlock() {
-        this.digged = true;
+        this.dug = true;
         if (S_breakBlock(this.targetX, this.targetY, this.targetZ, S_getFillBlock())) {
             S_checkDropItem();
-            if (this.now == BREAKBLOCK)
-                setNow(MOVEHEAD);
+            if (this.now == BREAK_BLOCK)
+                setNow(MOVE_HEAD);
             S_setNextTarget();
             return true;
         }
@@ -443,7 +441,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     }
 
     protected IBlockState S_getFillBlock() {
-        if (now == NOTNEEDBREAK || !facingMap.containsKey(REPLACER))
+        if (now == NOT_NEED_BREAK || !facingMap.containsKey(REPLACER))
             return Blocks.AIR.getDefaultState();
         else {
             return Optional.ofNullable(facingMap.get(REPLACER))
@@ -455,6 +453,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
         }
     }
 
+    @SuppressWarnings("Duplicates")
     public void setDefaultRange(BlockPos pos, EnumFacing facing) {
         int x = 11;
         int y = (x - 1) / 2;//5
@@ -546,10 +545,10 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     }
 
     @Override
-    public void G_reinit() {
+    public void G_ReInit() {
         if (this.yMax == Integer.MIN_VALUE && !getWorld().isRemote)
             S_createBox();
-        setNow(NOTNEEDBREAK);
+        setNow(NOT_NEED_BREAK);
         G_renew_powerConfigure();
         if (!getWorld().isRemote) {
             S_setFirstPos();
@@ -564,14 +563,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
         if (this.chunkTicket != null)
             return;
         this.chunkTicket = ForgeChunkManager.requestTicket(QuarryPlus.INSTANCE, getWorld(), Type.NORMAL);
-        if (this.chunkTicket == null)
-            return;
-        final NBTTagCompound tag = this.chunkTicket.getModData();
-
-        tag.setInteger("quarryX", getPos().getX());
-        tag.setInteger("quarryY", getPos().getY());
-        tag.setInteger("quarryZ", getPos().getZ());
-        forceChunkLoading(this.chunkTicket);
+        setTileData(this.chunkTicket, getPos());
     }
 
     @Override
@@ -598,50 +590,50 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     }
 
     @Override
-    public void readFromNBT(final NBTTagCompound nbttc) {
-        super.readFromNBT(nbttc);
-        this.xMin = nbttc.getInteger("xMin");
-        this.xMax = nbttc.getInteger("xMax");
-        this.yMin = nbttc.getInteger("yMin");
-        this.zMin = nbttc.getInteger("zMin");
-        this.zMax = nbttc.getInteger("zMax");
-        this.yMax = nbttc.getInteger("yMax");
-        this.targetX = nbttc.getInteger("targetX");
-        this.targetY = nbttc.getInteger("targetY");
-        this.targetZ = nbttc.getInteger("targetZ");
-        this.addZ = nbttc.getBoolean("addZ");
-        this.addX = nbttc.getBoolean("addX");
-        this.digged = nbttc.getBoolean("digged");
-        this.changeZ = nbttc.getBoolean("changeZ");
-        this.now = Mode.values()[nbttc.getByte("now")];
-        this.headPosX = nbttc.getDouble("headPosX");
-        this.headPosY = nbttc.getDouble("headPosY");
-        this.headPosZ = nbttc.getDouble("headPosZ");
-        this.filler = nbttc.getBoolean("filler");
+    public void readFromNBT(final NBTTagCompound nbt) {
+        super.readFromNBT(nbt);
+        this.xMin = nbt.getInteger("xMin");
+        this.xMax = nbt.getInteger("xMax");
+        this.yMin = nbt.getInteger("yMin");
+        this.zMin = nbt.getInteger("zMin");
+        this.zMax = nbt.getInteger("zMax");
+        this.yMax = nbt.getInteger("yMax");
+        this.targetX = nbt.getInteger("targetX");
+        this.targetY = nbt.getInteger("targetY");
+        this.targetZ = nbt.getInteger("targetZ");
+        this.addZ = nbt.getBoolean("addZ");
+        this.addX = nbt.getBoolean("addX");
+        this.dug = nbt.getBoolean("dug");
+        this.changeZ = nbt.getBoolean("changeZ");
+        this.now = Mode.values()[nbt.getByte("now")];
+        this.headPosX = nbt.getDouble("headPosX");
+        this.headPosY = nbt.getDouble("headPosY");
+        this.headPosZ = nbt.getDouble("headPosZ");
+        this.filler = nbt.getBoolean("filler");
         this.initialized = false;
     }
 
     @Override
-    public NBTTagCompound writeToNBT(final NBTTagCompound nbttc) {
-        nbttc.setInteger("xMin", this.xMin);
-        nbttc.setInteger("xMax", this.xMax);
-        nbttc.setInteger("yMin", this.yMin);
-        nbttc.setInteger("yMax", this.yMax);
-        nbttc.setInteger("zMin", this.zMin);
-        nbttc.setInteger("zMax", this.zMax);
-        nbttc.setInteger("targetX", this.targetX);
-        nbttc.setInteger("targetY", this.targetY);
-        nbttc.setInteger("targetZ", this.targetZ);
-        nbttc.setBoolean("addZ", this.addZ);
-        nbttc.setBoolean("addX", this.addX);
-        nbttc.setBoolean("digged", this.digged);
-        nbttc.setBoolean("changeZ", this.changeZ);
-        nbttc.setByte("now", ((byte) this.now.ordinal()));
-        nbttc.setDouble("headPosX", this.headPosX);
-        nbttc.setDouble("headPosY", this.headPosY);
-        nbttc.setDouble("headPosZ", this.headPosZ);
-        nbttc.setBoolean("filler", this.filler);
-        return super.writeToNBT(nbttc);
+    public NBTTagCompound writeToNBT(final NBTTagCompound nbt) {
+        nbt.setInteger("xMin", this.xMin);
+        nbt.setInteger("xMax", this.xMax);
+        nbt.setInteger("yMin", this.yMin);
+        nbt.setInteger("yMax", this.yMax);
+        nbt.setInteger("zMin", this.zMin);
+        nbt.setInteger("zMax", this.zMax);
+        nbt.setInteger("targetX", this.targetX);
+        nbt.setInteger("targetY", this.targetY);
+        nbt.setInteger("targetZ", this.targetZ);
+        nbt.setBoolean("addZ", this.addZ);
+        nbt.setBoolean("addX", this.addX);
+        nbt.setBoolean("dug", this.dug);
+        nbt.setBoolean("changeZ", this.changeZ);
+        nbt.setByte("now", ((byte) this.now.ordinal()));
+        nbt.setDouble("headPosX", this.headPosX);
+        nbt.setDouble("headPosY", this.headPosY);
+        nbt.setDouble("headPosZ", this.headPosZ);
+        nbt.setBoolean("filler", this.filler);
+        return super.writeToNBT(nbt);
     }
 
     @Override
@@ -679,7 +671,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
         }
         if (this.now == NONE)
             PowerManager.configure0(this);
-        else if (this.now == MAKEFRAME)
+        else if (this.now == MAKE_FRAME)
             PowerManager.configureFrameBuild(this, this.efficiency, this.unbreaking, pmp);
         else
             PowerManager.configureQuarryWork(this, this.efficiency, this.unbreaking, pmp);
@@ -723,9 +715,9 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     @Override
     @SideOnly(Side.CLIENT)
     public double getMaxRenderDistanceSquared() {
-        if ((now == Mode.NOTNEEDBREAK || now == Mode.MAKEFRAME) && yMax != Integer.MIN_VALUE) {
+        if ((now == Mode.NOT_NEED_BREAK || now == Mode.MAKE_FRAME) && yMax != Integer.MIN_VALUE) {
             return (xMax - xMin) * (xMax - xMin) + 25 + (zMax - zMin) * (zMax - zMin);
-        } else if (now == Mode.BREAKBLOCK || now == Mode.MOVEHEAD) {
+        } else if (now == Mode.BREAK_BLOCK || now == Mode.MOVE_HEAD) {
             return (xMax - xMin) * (xMax - xMin) + yMax * yMax + (zMax - zMin) * (zMax - zMin);
         } else {
             return super.getMaxRenderDistanceSquared();
@@ -751,9 +743,9 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
 
     public enum Mode {
         NONE,
-        NOTNEEDBREAK,
-        MAKEFRAME,
-        MOVEHEAD,
-        BREAKBLOCK
+        NOT_NEED_BREAK,
+        MAKE_FRAME,
+        MOVE_HEAD,
+        BREAK_BLOCK
     }
 }

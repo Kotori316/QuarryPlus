@@ -56,13 +56,13 @@ class TilePlacer extends TileEntity with HasInv {
         val offset = getPos.offset(facing)
         val facingList = List(facing.getOpposite, facing1, facing1.getOpposite, facing2, facing2.getOpposite)
         if (VersionUtil.nonEmpty(is)) {
-          val onitemusefirst = (enumfacing: EnumFacing) =>
-            is.getItem.onItemUseFirst(fakePlayer, getWorld, getPos.offset(enumfacing), enumfacing.getOpposite,
+          val onItemUseFirst = (facing: EnumFacing) =>
+            is.getItem.onItemUseFirst(fakePlayer, getWorld, getPos.offset(facing), facing.getOpposite,
               0.5F, 0.5F, 0.5F, EnumHand.MAIN_HAND) == EnumActionResult.SUCCESS
-          if (onitemusefirst(facing))
+          if (onItemUseFirst(facing))
             return true
           if (!Config.content.placerOnlyPlaceFront) {
-            if (facingList exists onitemusefirst)
+            if (facingList exists onItemUseFirst)
               return true
           }
         }
@@ -76,12 +76,12 @@ class TilePlacer extends TileEntity with HasInv {
         }
 
         def itemUse(worldIn: World, pos: BlockPos, facing: EnumFacing, facing1: EnumFacing, facing2: EnumFacing, player: EntityPlayer, is: ItemStack): Boolean = {
-          val onitemuse = (enumFacing: EnumFacing) => is.onItemUse(player, getWorld, getPos.offset(enumFacing),
+          val onItemUse = (enumFacing: EnumFacing) => is.onItemUse(player, getWorld, getPos.offset(enumFacing),
             EnumHand.MAIN_HAND, enumFacing.getOpposite, 0.5f, 0.5f, 0.5f) == EnumActionResult.SUCCESS
-          if (onitemuse(facing)) true
+          if (onItemUse(facing)) true
           //Do you want to place block on non-facing side?
           else if (!Config.content.placerOnlyPlaceFront)
-            if (facingList exists onitemuse) true
+            if (facingList exists onItemUse) true
             else false
           else
             false

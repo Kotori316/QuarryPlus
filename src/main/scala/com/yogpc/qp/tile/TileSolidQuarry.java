@@ -47,17 +47,17 @@ public class TileSolidQuarry extends TileQuarry {
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound nbttc) {
-        super.readFromNBT(nbttc);
-        fuelCount = nbttc.getInteger("fuelCount");
-        fuel = VersionUtil.fromNBTTag(nbttc.getCompoundTag("fuel"));
+    public void readFromNBT(NBTTagCompound nbt) {
+        super.readFromNBT(nbt);
+        fuelCount = nbt.getInteger("fuelCount");
+        fuel = VersionUtil.fromNBTTag(nbt.getCompoundTag("fuel"));
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound nbttc) {
-        nbttc.setInteger("fuelCount", fuelCount);
-        nbttc.setTag("fuel", fuel.serializeNBT());
-        return super.writeToNBT(nbttc);
+    public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
+        nbt.setInteger("fuelCount", fuelCount);
+        nbt.setTag("fuel", fuel.serializeNBT());
+        return super.writeToNBT(nbt);
     }
 
     @Override

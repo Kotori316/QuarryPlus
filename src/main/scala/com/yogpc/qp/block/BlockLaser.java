@@ -42,19 +42,19 @@ import net.minecraft.world.World;
 
 public class BlockLaser extends ADismCBlock {
     private static final AxisAlignedBB NORTH_BASE = new AxisAlignedBB(0, 0, 12d / 16d, 1, 1, 1);
-    private static final AxisAlignedBB NORTH_LANCHER = new AxisAlignedBB(5d / 16d, 5d / 16d, 3d / 16d, 11d / 16d, 11d / 16d, 12d / 16d);
+    private static final AxisAlignedBB NORTH_LAUNCHER = new AxisAlignedBB(5d / 16d, 5d / 16d, 3d / 16d, 11d / 16d, 11d / 16d, 12d / 16d);
     private static final AxisAlignedBB SOUTH_BASE = new AxisAlignedBB(0, 0, 0, 1, 1, 4d / 16d);
-    private static final AxisAlignedBB SOUTH_LANCHER = new AxisAlignedBB(5d / 16d, 5d / 16d, 4d / 16d, 11d / 16d, 11d / 16d, 13d / 16d);
+    private static final AxisAlignedBB SOUTH_LAUNCHER = new AxisAlignedBB(5d / 16d, 5d / 16d, 4d / 16d, 11d / 16d, 11d / 16d, 13d / 16d);
 
     private static final AxisAlignedBB EAST_BASE = new AxisAlignedBB(0, 0, 0, 4d / 16d, 1, 1);
-    private static final AxisAlignedBB EAST_LANCHER = new AxisAlignedBB(4d / 16d, 5d / 16d, 5d / 16d, 13d / 16d, 11d / 16d, 11d / 16d);
+    private static final AxisAlignedBB EAST_LAUNCHER = new AxisAlignedBB(4d / 16d, 5d / 16d, 5d / 16d, 13d / 16d, 11d / 16d, 11d / 16d);
     private static final AxisAlignedBB WEST_BASE = new AxisAlignedBB(12d / 16d, 0, 0, 1, 1, 1);
-    private static final AxisAlignedBB WEST_LANCHER = new AxisAlignedBB(3d / 16d, 5d / 16d, 5d / 16d, 12d / 16d, 11d / 16d, 11d / 16d);
+    private static final AxisAlignedBB WEST_LAUNCHER = new AxisAlignedBB(3d / 16d, 5d / 16d, 5d / 16d, 12d / 16d, 11d / 16d, 11d / 16d);
 
     private static final AxisAlignedBB UP_BASE = new AxisAlignedBB(0, 0, 0, 1, 4d / 16d, 1);
-    private static final AxisAlignedBB UP_LANCHER = new AxisAlignedBB(5d / 16d, 4d / 16d, 5d / 16d, 11d / 16d, 13d / 16d, 11d / 16d);
+    private static final AxisAlignedBB UP_LAUNCHER = new AxisAlignedBB(5d / 16d, 4d / 16d, 5d / 16d, 11d / 16d, 13d / 16d, 11d / 16d);
     private static final AxisAlignedBB DOWN_BASE = new AxisAlignedBB(0, 12d / 16d, 0, 1, 1, 1);
-    private static final AxisAlignedBB DOWN_LANCHER = new AxisAlignedBB(5d / 16d, 3d / 16d, 5d / 16d, 11d / 16d, 12d / 16d, 11d / 16d);
+    private static final AxisAlignedBB DOWN_LAUNCHER = new AxisAlignedBB(5d / 16d, 3d / 16d, 5d / 16d, 11d / 16d, 12d / 16d, 11d / 16d);
 
     public BlockLaser() {
         super(Material.IRON, QuarryPlus.Names.laser, ItemBlockEnchantable::new);
@@ -70,27 +70,27 @@ public class BlockLaser extends ADismCBlock {
         switch (value) {
             case DOWN:
                 addCollisionBoxToList(pos, entityBox, collidingBoxes, DOWN_BASE);
-                addCollisionBoxToList(pos, entityBox, collidingBoxes, DOWN_LANCHER);
+                addCollisionBoxToList(pos, entityBox, collidingBoxes, DOWN_LAUNCHER);
                 break;
             case UP:
                 addCollisionBoxToList(pos, entityBox, collidingBoxes, UP_BASE);
-                addCollisionBoxToList(pos, entityBox, collidingBoxes, UP_LANCHER);
+                addCollisionBoxToList(pos, entityBox, collidingBoxes, UP_LAUNCHER);
                 break;
             case NORTH:
                 addCollisionBoxToList(pos, entityBox, collidingBoxes, NORTH_BASE);
-                addCollisionBoxToList(pos, entityBox, collidingBoxes, NORTH_LANCHER);
+                addCollisionBoxToList(pos, entityBox, collidingBoxes, NORTH_LAUNCHER);
                 break;
             case SOUTH:
                 addCollisionBoxToList(pos, entityBox, collidingBoxes, SOUTH_BASE);
-                addCollisionBoxToList(pos, entityBox, collidingBoxes, SOUTH_LANCHER);
+                addCollisionBoxToList(pos, entityBox, collidingBoxes, SOUTH_LAUNCHER);
                 break;
             case WEST:
                 addCollisionBoxToList(pos, entityBox, collidingBoxes, WEST_BASE);
-                addCollisionBoxToList(pos, entityBox, collidingBoxes, WEST_LANCHER);
+                addCollisionBoxToList(pos, entityBox, collidingBoxes, WEST_LAUNCHER);
                 break;
             case EAST:
                 addCollisionBoxToList(pos, entityBox, collidingBoxes, EAST_BASE);
-                addCollisionBoxToList(pos, entityBox, collidingBoxes, EAST_LANCHER);
+                addCollisionBoxToList(pos, entityBox, collidingBoxes, EAST_LAUNCHER);
                 break;
         }
     }
@@ -100,17 +100,17 @@ public class BlockLaser extends ADismCBlock {
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
         switch (state.getValue(FACING)) {
             case DOWN:
-                return DOWN_BASE.union(DOWN_LANCHER);
+                return DOWN_BASE.union(DOWN_LAUNCHER);
             case UP:
-                return UP_BASE.union(UP_LANCHER);
+                return UP_BASE.union(UP_LAUNCHER);
             case NORTH:
-                return NORTH_BASE.union(NORTH_LANCHER);
+                return NORTH_BASE.union(NORTH_LAUNCHER);
             case SOUTH:
-                return SOUTH_BASE.union(SOUTH_LANCHER);
+                return SOUTH_BASE.union(SOUTH_LAUNCHER);
             case WEST:
-                return WEST_BASE.union(WEST_LANCHER);
+                return WEST_BASE.union(WEST_LAUNCHER);
             case EAST:
-                return EAST_BASE.union(EAST_LANCHER);
+                return EAST_BASE.union(EAST_LAUNCHER);
         }
         return super.getBoundingBox(state, source, pos); // unreachable
     }

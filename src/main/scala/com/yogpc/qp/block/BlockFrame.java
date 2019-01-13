@@ -61,7 +61,7 @@ public class BlockFrame extends BlockEmptyDrops {
     public static final AxisAlignedBB East_AABB = new AxisAlignedBB(.75, 0.25, 0.25, 1, 0.75, 0.75);
     public static final AxisAlignedBB UP_AABB = new AxisAlignedBB(0.25, .75, 0.25, 0.75, 1, 0.75);
     public static final AxisAlignedBB Down_AABB = new AxisAlignedBB(0.25, 0, 0.25, 0.75, .25, 0.75);
-    private static final BiPredicate<World, BlockPos> HASNEIGHBOURLIQUID = (world, pos) ->
+    private static final BiPredicate<World, BlockPos> HAS_NEIGHBOUR_LIQUID = (world, pos) ->
         Stream.of(EnumFacing.VALUES).map(pos::offset).map(world::getBlockState)
             .anyMatch(state -> !state.isFullCube() && TilePump.isLiquid(state));
 
@@ -110,7 +110,7 @@ public class BlockFrame extends BlockEmptyDrops {
                 breaking = true;
             }
             if (firstBreak) {
-                if (!HASNEIGHBOURLIQUID.test(world, pos)) {
+                if (!HAS_NEIGHBOUR_LIQUID.test(world, pos)) {
                     breakChain(world, pos);
                 }
                 breaking = false;
@@ -136,7 +136,7 @@ public class BlockFrame extends BlockEmptyDrops {
                         BlockPos nPos = pos.offset(dir);
                         IBlockState nBlock = world.getBlockState(nPos);
                         if (nBlock.getBlock() == this) {
-                            if (!HASNEIGHBOURLIQUID.test(world, nPos) && set.add(nPos))
+                            if (!HAS_NEIGHBOUR_LIQUID.test(world, nPos) && set.add(nPos))
                                 nextCheck.add(nPos);
                         }
                     }
@@ -252,7 +252,7 @@ public class BlockFrame extends BlockEmptyDrops {
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
         super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
         if (!Config.content().disableFrameChainBreak() && state.getValue(DAMMING)) {
-            worldIn.setBlockState(pos, state.withProperty(DAMMING, HASNEIGHBOURLIQUID.test(worldIn, pos)), 2);
+            worldIn.setBlockState(pos, state.withProperty(DAMMING, HAS_NEIGHBOUR_LIQUID.test(worldIn, pos)), 2);
         }
     }
 }

@@ -87,7 +87,7 @@ public class BlockQuarry extends ADismCBlock {
         ItemStack stack = playerIn.getHeldItem(hand);
         if (InvUtils.isDebugItem(playerIn, hand)) return true;
         if (BuildcraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
-            Optional.ofNullable((TileQuarry) worldIn.getTileEntity(pos)).ifPresent(TileQuarry::G_reinit);
+            Optional.ofNullable((TileQuarry) worldIn.getTileEntity(pos)).ifPresent(TileQuarry::G_ReInit);
             return true;
         }
         if (!worldIn.isRemote) {
@@ -98,7 +98,7 @@ public class BlockQuarry extends ADismCBlock {
                     quarry.sendEnchantMassage(playerIn);
                     VersionUtil.sendMessage(playerIn, new TextComponentTranslation(TranslationKeys.CURRENT_MODE,
                         new TextComponentTranslation(quarry.filler ? TranslationKeys.FILLER_MODE : TranslationKeys.QUARRY_MODE)));
-                } else if (quarry.G_getNow() == TileQuarry.Mode.NOTNEEDBREAK) {
+                } else if (quarry.G_getNow() == TileQuarry.Mode.NOT_NEED_BREAK) {
                     quarry.filler = !quarry.filler;
                     VersionUtil.sendMessage(playerIn, new TextComponentTranslation(TranslationKeys.CHANGEMODE,
                         new TextComponentTranslation(quarry.filler ? TranslationKeys.FILLER_MODE : TranslationKeys.QUARRY_MODE)));

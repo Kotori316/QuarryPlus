@@ -30,5 +30,5 @@ class ItemBlockEnchantable(block: Block) extends ItemBlock(block) with IEnchanta
     }
   }.test(enchantment)
 
-  override def isBookEnchantable(itemstack1: ItemStack, itemstack2: ItemStack) = false
+  override def isBookEnchantable(s1: ItemStack, s2: ItemStack) = false
 }

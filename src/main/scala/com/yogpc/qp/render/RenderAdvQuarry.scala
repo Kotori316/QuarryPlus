@@ -15,8 +15,8 @@ object RenderAdvQuarry extends FastTESR[TileAdvQuarry] {
 
     Minecraft.getMinecraft.mcProfiler.startSection("quarryplus")
 
-    if ((te.mode is TileAdvQuarry.MAKEFRAME) || (te.mode is TileAdvQuarry.NOTNEEDBREAK)) {
-      Minecraft.getMinecraft.mcProfiler.startSection("advquarry")
+    if ((te.mode is TileAdvQuarry.MAKE_FRAME) || (te.mode is TileAdvQuarry.NOT_NEED_BREAK)) {
+      Minecraft.getMinecraft.mcProfiler.startSection("chunkdestroyer")
       val range = te.digRange
       if (range.defined) {
         val pos = te.getPos

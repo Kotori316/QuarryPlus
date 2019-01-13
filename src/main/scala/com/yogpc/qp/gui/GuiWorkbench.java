@@ -59,7 +59,7 @@ public class GuiWorkbench extends GuiContainer {
     }
 
     private static final class MyRenderItem extends RenderItem {
-        private static final MyFontRenderer myfont = new MyFontRenderer();
+        private static final MyFontRenderer myFont = new MyFontRenderer();
 
         public MyRenderItem(TextureManager textureManager, ModelManager modelManager, ItemColors itemColors) {
             super(textureManager, modelManager, itemColors);
@@ -78,13 +78,13 @@ public class GuiWorkbench extends GuiContainer {
         @Override
         public void renderItemOverlayIntoGUI(FontRenderer fr, ItemStack stack, int xPosition, int yPosition, @Nullable String text) {
             if (VersionUtil.getCount(stack) > 64)
-                super.renderItemOverlayIntoGUI(myfont.setParent(fr), stack, xPosition, yPosition, text);
+                super.renderItemOverlayIntoGUI(myFont.setParent(fr), stack, xPosition, yPosition, text);
             else
                 Minecraft.getMinecraft().getRenderItem().renderItemOverlayIntoGUI(fr, stack, xPosition, yPosition, text);
         }
     }
 
-    private static final RenderItem myitem = new MyRenderItem(
+    private static final RenderItem myItem = new MyRenderItem(
         Minecraft.getMinecraft().getTextureManager(),
         Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getModelManager(),
         Minecraft.getMinecraft().getItemColors());
@@ -115,7 +115,7 @@ public class GuiWorkbench extends GuiContainer {
         if (tile.isWorking()) {
             drawTexturedModalRect(xf + 8, yf + 78, 0, this.ySize, this.tile.getProgressScaled(160), 4);
             int cur_recipe = 27 + tile.getRecipeIndex();
-            int i = (tile.workcontinue ? 16 : 0);
+            int i = (tile.workContinue ? 16 : 0);
             drawTexturedModalRect(xf + 8 + cur_recipe % 9 * 18, yf + 90 + (cur_recipe / 9 - 3) * 18, this.xSize + i, 0, 16, 16);
         }
     }
@@ -130,17 +130,17 @@ public class GuiWorkbench extends GuiContainer {
     }
 
     @Nullable
-    private RenderItem pitem;
+    private RenderItem preItem;
 
     public void handlePre() {
-        pitem = itemRender;
-        itemRender = myitem;
+        preItem = itemRender;
+        itemRender = myItem;
     }
 
     public void handlePost() {
-        if (pitem != null) {
-            itemRender = pitem;
-            pitem = null;
+        if (preItem != null) {
+            itemRender = preItem;
+            preItem = null;
         }
     }
 }

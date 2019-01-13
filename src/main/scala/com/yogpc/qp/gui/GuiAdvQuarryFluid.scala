@@ -18,7 +18,7 @@ class GuiAdvQuarryFluid(tile: TileAdvQuarry, player: EntityPlayer, val facing: E
   var fluidList: FluidSlot = _
 
   val DONE_ID = 0
-  val ADDFROMLIST_ID = 2
+  val ADD_FROM_LIST_ID = 2
   val REMOVE_ID = 3
 
   override def initGui(): Unit = {
@@ -26,7 +26,7 @@ class GuiAdvQuarryFluid(tile: TileAdvQuarry, player: EntityPlayer, val facing: E
     fluidList = new FluidSlot
     buttonList.add(new GuiButton(DONE_ID, this.width / 2 - 50, this.height - 26, 100, 20,
       I18n.format(TranslationKeys.DONE)))
-    buttonList.add(new GuiButton(ADDFROMLIST_ID, this.width * 2 / 3 + 10, 20, 100, 20,
+    buttonList.add(new GuiButton(ADD_FROM_LIST_ID, this.width * 2 / 3 + 10, 20, 100, 20,
       I18n.format(TranslationKeys.ADD) + "(" + I18n.format(TranslationKeys.FROM_LIST) + ")"))
     buttonList.add(new GuiButton(REMOVE_ID, this.width * 2 / 3 + 10, 70, 100, 20,
       I18n.format(TranslationKeys.DELETE)))
@@ -37,7 +37,7 @@ class GuiAdvQuarryFluid(tile: TileAdvQuarry, player: EntityPlayer, val facing: E
     button.id match {
       case DONE_ID =>
         showParent()
-      case ADDFROMLIST_ID =>
+      case ADD_FROM_LIST_ID =>
         mc.displayGuiScreen(new SelectFluid(this, tile))
       case REMOVE_ID =>
         fluidList.current.foreach(i => filter.remove(filter.toSeq(i)))

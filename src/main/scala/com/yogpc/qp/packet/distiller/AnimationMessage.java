@@ -14,15 +14,15 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 /**
  * To Client only.
  */
-public class AnimatonMessage implements IMessage {
+public class AnimationMessage implements IMessage {
 
     public int dim;
     public BlockPos pos;
     public float speed;
     public int stage;
 
-    public static AnimatonMessage create(TileRefinery refinery) {
-        AnimatonMessage message = new AnimatonMessage();
+    public static AnimationMessage create(TileRefinery refinery) {
+        AnimationMessage message = new AnimationMessage();
         message.pos = refinery.getPos();
         message.dim = refinery.getWorld().provider.getDimension();
         message.speed = refinery.animationSpeed;

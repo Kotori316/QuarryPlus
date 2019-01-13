@@ -28,7 +28,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.chunk.Chunk;
 import scala.Symbol;
 
 import static jp.t2v.lab.syntax.MapStreamSyntax.byEntry;
@@ -93,13 +92,7 @@ public class TileMiningWell extends TileBasic implements ITickable {
             return true;
         }
         BlockPos pos = new BlockPos(getPos().getX(), depth, getPos().getZ());
-        Chunk loadedChunk = getWorld().getChunkProvider().getLoadedChunk(pos.getX() >> 4, pos.getZ() >> 4);
-        final IBlockState b;
-        if (loadedChunk != null) {
-            b = loadedChunk.getBlockState(pos);
-        } else {
-            b = getWorld().getBlockState(pos);
-        }
+        final IBlockState b = getWorld().getBlockState(pos);
         final float h = b.getBlockHardness(getWorld(), pos);
         if (h < 0 || b.getBlock() == QuarryPlusI.blockPlainPipe() || b.getBlock().isAir(b, getWorld(), pos)) {
             return false;
@@ -108,26 +101,26 @@ public class TileMiningWell extends TileBasic implements ITickable {
             return false;
         if (!this.working) {
             //Find something to break!
-            G_reinit();
+            G_ReInit();
         }
         return true;
     }
 
     @Override
-    public void readFromNBT(final NBTTagCompound nbttc) {
-        super.readFromNBT(nbttc);
-        setWorking(nbttc.getBoolean("working"));
+    public void readFromNBT(final NBTTagCompound nbt) {
+        super.readFromNBT(nbt);
+        setWorking(nbt.getBoolean("working"));
         G_renew_powerConfigure();
     }
 
     @Override
-    public NBTTagCompound writeToNBT(final NBTTagCompound nbttc) {
-        nbttc.setBoolean("working", this.working);
-        return super.writeToNBT(nbttc);
+    public NBTTagCompound writeToNBT(final NBTTagCompound nbt) {
+        nbt.setBoolean("working", this.working);
+        return super.writeToNBT(nbt);
     }
 
     @Override
-    public void G_reinit() {
+    public void G_ReInit() {
         setWorking(true);
         G_renew_powerConfigure();
         if (!getWorld().isRemote)

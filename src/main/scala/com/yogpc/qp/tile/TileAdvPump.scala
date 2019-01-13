@@ -49,7 +49,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
 
   override def isWorking: Boolean = !finished
 
-  override def G_reinit(): Unit = {
+  override def G_ReInit(): Unit = {
     configure(ench.getReceiveEnergy, 1024d)
     finished = true
     queueBuilt = false
@@ -180,7 +180,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
       }
     }
     if (nextPosesToCheck.isEmpty) {
-      G_reinit()
+      G_ReInit()
       finishWork()
       val state = getWorld.getBlockState(getPos)
       if (state.getValue(ADismCBlock.ACTING)) {
@@ -336,32 +336,34 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
       "End pos : " + ench.end).map(toComponentString).asJava
   }
 
-  override def readFromNBT(nbttc: NBTTagCompound): Unit = {
+  //noinspection SpellCheckingInspection
+  override def readFromNBT(nbt: NBTTagCompound): Unit = {
     val NBT_POS = "targetpos"
     val NBT_FINISHED = "finished"
     val NBT_PLACE_FRAME = "placeFrame"
     val NBT_DELETE = "delete"
-    super.readFromNBT(nbttc)
-    target = BlockPos.fromLong(nbttc.getLong(NBT_POS))
-    ench = PEnch.readFromNBT(nbttc.getCompoundTag(NBT_PENCH))
-    finished = nbttc.getBoolean(NBT_FINISHED)
-    placeFrame = nbttc.getBoolean(NBT_PLACE_FRAME)
-    delete = nbttc.getBoolean(NBT_DELETE)
-    FluidHandler.readFromNBT(nbttc.getCompoundTag(NBT_FluidHandler))
+    super.readFromNBT(nbt)
+    target = BlockPos.fromLong(nbt.getLong(NBT_POS))
+    ench = PEnch.readFromNBT(nbt.getCompoundTag(NBT_PENCH))
+    finished = nbt.getBoolean(NBT_FINISHED)
+    placeFrame = nbt.getBoolean(NBT_PLACE_FRAME)
+    delete = nbt.getBoolean(NBT_DELETE)
+    FluidHandler.readFromNBT(nbt.getCompoundTag(NBT_FluidHandler))
   }
 
-  override def writeToNBT(nbttc: NBTTagCompound): NBTTagCompound = {
+  //noinspection SpellCheckingInspection
+  override def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
     val NBT_POS = "targetpos"
     val NBT_FINISHED = "finished"
     val NBT_PLACE_FRAME = "placeFrame"
     val NBT_DELETE = "delete"
-    nbttc.setLong(NBT_POS, target.toLong)
-    nbttc.setBoolean(NBT_FINISHED, finished)
-    nbttc.setBoolean(NBT_PLACE_FRAME, placeFrame)
-    nbttc.setBoolean(NBT_DELETE, delete)
-    nbttc.setTag(NBT_PENCH, ench.toNBT)
-    nbttc.setTag(NBT_FluidHandler, FluidHandler.toNBT)
-    super.writeToNBT(nbttc)
+    nbt.setLong(NBT_POS, target.toLong)
+    nbt.setBoolean(NBT_FINISHED, finished)
+    nbt.setBoolean(NBT_PLACE_FRAME, placeFrame)
+    nbt.setBoolean(NBT_DELETE, delete)
+    nbt.setTag(NBT_PENCH, ench.toNBT)
+    nbt.setTag(NBT_FluidHandler, FluidHandler.toNBT)
+    super.writeToNBT(nbt)
   }
 
   override def hasCapability(capability: Capability[_], facing: EnumFacing): Boolean = {
@@ -379,12 +381,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
   override def requestTicket(): Unit = {
     if (this.chunkTicket != null) return
     this.chunkTicket = ForgeChunkManager.requestTicket(QuarryPlus.INSTANCE, getWorld, Type.NORMAL)
-    if (this.chunkTicket == null) return
-    val tag = this.chunkTicket.getModData
-    tag.setInteger("quarryX", getPos.getX)
-    tag.setInteger("quarryY", getPos.getY)
-    tag.setInteger("quarryZ", getPos.getZ)
-    forceChunkLoading(this.chunkTicket)
+    setTileData(this.chunkTicket, getPos)
   }
 
   override def forceChunkLoading(ticket: ForgeChunkManager.Ticket): Unit = {
@@ -399,7 +396,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
   }
 
   @SideOnly(Side.CLIENT)
-  def recieveStatusMessage(placeFrame: Boolean, nbt: NBTTagCompound): Runnable = new Runnable {
+  def receiveStatusMessage(placeFrame: Boolean, nbt: NBTTagCompound): Runnable = new Runnable {
     override def run(): Unit = {
       TileAdvPump.this.placeFrame = placeFrame
       TileAdvPump.this.readFromNBT(nbt)

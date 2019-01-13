@@ -44,7 +44,7 @@ class ItemTool extends Item with IEnchantableItem {
   setUnlocalizedName(QuarryPlus.Names.tool)
   setRegistryName(QuarryPlus.modID, QuarryPlus.Names.tool)
 
-  override def isBookEnchantable(itemstack1: ItemStack, itemstack2: ItemStack) = false
+  override def isBookEnchantable(s1: ItemStack, s2: ItemStack) = false
 
   override def onItemUseFirst(player: EntityPlayer, worldIn: World, pos: BlockPos, side: EnumFacing,
                               hitX: Float, hitY: Float, hitZ: Float, hand: EnumHand): EnumActionResult = {

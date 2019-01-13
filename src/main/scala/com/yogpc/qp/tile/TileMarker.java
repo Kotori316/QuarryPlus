@@ -41,7 +41,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
@@ -82,7 +81,9 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
         return SYMBOL;
     }
 
+    @Nullable
     public Link link;
+    @Nullable
     public Laser laser;
 
     @Override
@@ -250,13 +251,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
         if (this.chunkTicket != null)
             return;
         this.chunkTicket = ForgeChunkManager.requestTicket(QuarryPlus.INSTANCE, this.getWorld(), Type.NORMAL);
-        if (this.chunkTicket == null)
-            return;
-        final NBTTagCompound tag = this.chunkTicket.getModData();
-        tag.setInteger("quarryX", getPos().getX());
-        tag.setInteger("quarryY", getPos().getY());
-        tag.setInteger("quarryZ", getPos().getZ());
-        forceChunkLoading(this.chunkTicket);
+        setTileData(this.chunkTicket, getPos());
     }
 
     @Override
@@ -368,6 +363,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
          * index 0=x , 1=y , 2=z
          */
         public final AxisAlignedBB[] lineBoxes = new AxisAlignedBB[6];
+        @Nullable
         public final Box[] boxes;
 
         public Laser(World w, BlockPos pos, Link link) {
@@ -394,7 +390,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
             }
             if (pw.isRemote && !Config.content().disableRendering()) {
                 boxes = Arrays.stream(lineBoxes).filter(nonNull)
-                    .map(aabb -> Box.apply(aabb, 1d / 8d, 1d / 8d, 1d / 8d, false, false))
+                    .map(range -> Box.apply(range, 1d / 8d, 1d / 8d, 1d / 8d, false, false))
                     .toArray(Box[]::new);
             } else {
                 //Server
@@ -434,6 +430,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
     public static class Link {
         public int xMax, xMin, yMax, yMin, zMax, zMin;
         public final AxisAlignedBB[] lineBoxes = new AxisAlignedBB[12];
+        @Nullable // Null in server world.
         public Box[] boxes;
         public final World w;
 
@@ -446,13 +443,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
         }
 
         Link(final World pw, final int vx, final int vy, final int vz) {
-            this.xMax = vx;
-            this.xMin = vx;
-            this.yMax = vy;
-            this.yMin = vy;
-            this.zMax = vz;
-            this.zMin = vz;
-            this.w = pw;
+            this(pw, vx, vx, vy, vy, vz, vz);
         }
 
         Link(final World pw, final int vxx, final int vxn, final int vyx, final int vyn, final int vzx, final int vzn) {
@@ -561,7 +552,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
             }
             if (w.isRemote) {
                 boxes = Arrays.stream(lineBoxes).filter(nonNull)
-                    .map(aabb -> Box.apply(aabb, 1d / 8d, 1d / 8d, 1d / 8d, false, false))
+                    .map(range -> Box.apply(range, 1d / 8d, 1d / 8d, 1d / 8d, false, false))
                     .toArray(Box[]::new);
             } else {
                 boxes = null;

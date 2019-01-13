@@ -46,7 +46,7 @@ public class BlockAdvPump extends ADismCBlock {
         if (InvUtils.isDebugItem(playerIn, hand)) return true;
         if (BuildcraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
             if (!worldIn.isRemote) {
-                Optional.ofNullable((TileAdvPump) worldIn.getTileEntity(pos)).ifPresent(TileAdvPump::G_reinit);
+                Optional.ofNullable((TileAdvPump) worldIn.getTileEntity(pos)).ifPresent(TileAdvPump::G_ReInit);
             }
             return true;
         } else if (Config.content().debug() && stack.getItem() == Items.STICK) {

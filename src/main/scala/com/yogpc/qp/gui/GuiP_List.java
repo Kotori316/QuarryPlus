@@ -34,10 +34,10 @@ public class GuiP_List extends GuiScreenA implements GuiYesNoCallback {
     private static final byte CHANGE_ID = -4;
     private static final byte DONE_ID = -1;
     private static final byte COPY_ID = -5;
-    private static final byte ADDMANUAL_ID = -2;
-    private static final byte ADDFROMLIST_ID = -3;
+    private static final byte ADD_MANUAL_ID = -2;
+    private static final byte ADD_FROM_LIST_ID = -3;
 
-    private GuiP_SlotList oreslot;
+    private GuiP_SlotList oreSlot;
     private GuiButton delete, top, up, down, bottom;
     private final TilePump tile;
     private boolean inited;
@@ -59,9 +59,9 @@ public class GuiP_List extends GuiScreenA implements GuiYesNoCallback {
             I18n.format(TranslationKeys.DONE)));
         this.buttonList.add(new GuiButton(COPY_ID, this.width / 2 + 60, this.height - 26, 100, 20,
             I18n.format(TranslationKeys.COPY_FROM_OTHER_DIRECTION)));
-        this.buttonList.add(new GuiButton(ADDMANUAL_ID, this.width * 2 / 3 + 10, 45, 100, 20,
+        this.buttonList.add(new GuiButton(ADD_MANUAL_ID, this.width * 2 / 3 + 10, 45, 100, 20,
             I18n.format(TranslationKeys.ADD) + "(" + I18n.format(TranslationKeys.MANUAL_INPUT) + ")"));
-        this.buttonList.add(new GuiButton(ADDFROMLIST_ID, this.width * 2 / 3 + 10, 20, 100, 20,
+        this.buttonList.add(new GuiButton(ADD_FROM_LIST_ID, this.width * 2 / 3 + 10, 20, 100, 20,
             I18n.format(TranslationKeys.ADD) + "(" + I18n.format(TranslationKeys.FROM_LIST) + ")"));
 
         this.delete = new GuiButton(Mappings.Type.Remove.getId(), this.width * 2 / 3 + 10, 70, 100, 20,
@@ -79,7 +79,7 @@ public class GuiP_List extends GuiScreenA implements GuiYesNoCallback {
         this.buttonList.add(up);
         this.buttonList.add(down);
         this.buttonList.add(bottom);
-        this.oreslot = new GuiP_SlotList(this.mc, this.width * 3 / 5, this.height, 30, this.height - 30, this, tile, dir);
+        this.oreSlot = new GuiP_SlotList(this.mc, this.width * 3 / 5, this.height, 30, this.height - 30, this, tile, dir);
         if (delete == null) {
             QuarryPlus.LOGGER.error("Why null?@init", new Throwable());
         }
@@ -91,10 +91,10 @@ public class GuiP_List extends GuiScreenA implements GuiYesNoCallback {
             case DONE_ID:
                 showParent();
                 break;
-            case ADDMANUAL_ID:
+            case ADD_MANUAL_ID:
                 this.mc.displayGuiScreen(new GuiP_Manual(this, this.dir, this.tile));
                 break;
-            case ADDFROMLIST_ID:
+            case ADD_FROM_LIST_ID:
                 this.mc.displayGuiScreen(new GuiP_SelectBlock(this, this.tile, this.dir));
                 break;
             case CHANGE_ID:
@@ -102,14 +102,14 @@ public class GuiP_List extends GuiScreenA implements GuiYesNoCallback {
                 this.mc.displayGuiScreen(new GuiP_SelectSide(this.tile, this, guiButton.id == COPY_ID));
                 break;
             case 1://Mappings.Type.Remove.getId():
-                String name = this.tile.mapping.get(dir).get(this.oreslot.currentore);
+                String name = this.tile.mapping.get(dir).get(this.oreSlot.currentOre);
                 if (FluidRegistry.isFluidRegistered(name))
                     name = FluidRegistry.getFluid(name).getLocalizedName(FluidRegistry.getFluidStack(name, 0));
                 this.mc.displayGuiScreen(new GuiYesNo(this, I18n.format(TranslationKeys.DELETE_FLUID_SURE), name, guiButton.id));
                 break;
             default:
                 Mappings.Type typeId = Mappings.Type.fromID(guiButton.id);
-                String fluidName = this.tile.mapping.get(dir).get(this.oreslot.currentore);
+                String fluidName = this.tile.mapping.get(dir).get(this.oreSlot.currentOre);
                 PacketHandler.sendToServer(Mappings.Update.create(tile, dir, typeId, fluidName));
 
                 LinkedList<String> list = tile.mapping.get(dir);
@@ -121,8 +121,8 @@ public class GuiP_List extends GuiScreenA implements GuiYesNoCallback {
     @Override
     public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
         drawDefaultBackground();
-        if (oreslot != null)
-            this.oreslot.drawScreen(mouseX, mouseY, partialTicks);
+        if (oreSlot != null)
+            this.oreSlot.drawScreen(mouseX, mouseY, partialTicks);
         drawCenteredString(this.fontRenderer,
             I18n.format(TranslationKeys.LIST_SETTING) + I18n.format("FD." + dir),
             this.width / 2, 8, 0xFFFFFF);
@@ -130,7 +130,7 @@ public class GuiP_List extends GuiScreenA implements GuiYesNoCallback {
             if (inited) {
                 if (delete == null) {
                     if (Config.content().debug()) {
-                        QuarryPlus.LOGGER.error("Why null?@drawscreen", new Throwable());
+                        QuarryPlus.LOGGER.error("Why null?@drawScreen", new Throwable());
                         buttonList.forEach(QuarryPlus.LOGGER::error);
                     }
                 } else {
@@ -151,17 +151,17 @@ public class GuiP_List extends GuiScreenA implements GuiYesNoCallback {
     @Override
     public void handleMouseInput() throws IOException {
         super.handleMouseInput();
-        this.oreslot.handleMouseInput();
+        this.oreSlot.handleMouseInput();
     }
 
     @Override
     public void confirmClicked(final boolean result, final int id) {
         if (result) {
             if (Config.content().debug()) {
-                QuarryPlus.LOGGER.info("GUIP_LIST callback id = " + id);
+                QuarryPlus.LOGGER.info("GUI_P_LIST callback id = " + id);
             }
             Mappings.Type typeId = Mappings.Type.fromID(id);
-            String fluidName = this.tile.mapping.get(dir).get(this.oreslot.currentore);
+            String fluidName = this.tile.mapping.get(dir).get(this.oreSlot.currentOre);
             PacketHandler.sendToServer(Mappings.Update.create(tile, dir, typeId, fluidName));
             LinkedList<String> list = tile.mapping.get(dir);
             Mappings.Update.typeAction(list, fluidName, typeId);

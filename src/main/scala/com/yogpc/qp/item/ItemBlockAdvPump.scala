@@ -11,5 +11,5 @@ class ItemBlockAdvPump(block: Block) extends ItemBlock(block) with IEnchantableI
     (SILKTOUCH or FORTUNE or UNBREAKING or EFFICIENCY).test(enchantment)
   }
 
-  override def isBookEnchantable(itemstack1: ItemStack, itemstack2: ItemStack) = false
+  override def isBookEnchantable(s1: ItemStack, s2: ItemStack) = false
 }

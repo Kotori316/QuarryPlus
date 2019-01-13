@@ -51,7 +51,7 @@ class GuiAdvQuarry(tile: TileAdvQuarry, player: EntityPlayer) extends GuiContain
 
   override def actionPerformed(button: GuiButton): Unit = {
     super.actionPerformed(button)
-    if (tile.mode is TileAdvQuarry.NOTNEEDBREAK) {
+    if (tile.mode is TileAdvQuarry.NOT_NEED_BREAK) {
       val direction = EnumFacing.getFront(button.id / 2 + 2)
       val increase = if (button.id % 2 == 0) 1 else -1
       val shift = GuiScreen.isShiftKeyDown

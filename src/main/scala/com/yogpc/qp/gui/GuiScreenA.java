@@ -22,8 +22,8 @@ import org.lwjgl.input.Keyboard;
 public class GuiScreenA extends GuiScreen {
     protected final GuiScreen parent;
 
-    public GuiScreenA(final GuiScreen pparent) {
-        this.parent = pparent;
+    public GuiScreenA(final GuiScreen p) {
+        this.parent = p;
     }
 
     @Override

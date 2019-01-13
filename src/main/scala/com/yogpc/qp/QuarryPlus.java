@@ -328,7 +328,7 @@ public class QuarryPlus {
         public static final String advquarry = "chunkdestroyer";
         public static final String breaker = "breakerplus";
         public static final String controller = "spawnercontroller";
-        public static final String debug = "quarrydebug";
+        public static final String debug = "quarryDebug";
         public static final String dummyblock = "dummyblock";
         public static final String exppump = "exppump";
         public static final String frame = "quarryframe";

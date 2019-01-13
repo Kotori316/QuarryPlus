@@ -25,22 +25,22 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class GuiP_SlotBlockList extends GuiSlot {
-    private static final List<String> blocklist_s = new ArrayList<>();
-    private final List<String> blocklist = new ArrayList<>(blocklist_s);
+    private static final List<String> blockList_s = new ArrayList<>();
+    private final List<String> blockList = new ArrayList<>(blockList_s);
     private final GuiScreen parent;
     public String current;
 
     static {
-        blocklist_s.addAll(FluidRegistry.getRegisteredFluids().keySet());
+        blockList_s.addAll(FluidRegistry.getRegisteredFluids().keySet());
     }
 
     public GuiP_SlotBlockList(final Minecraft minecraft, final int width, final int height,
                               final int topIn, final int bottomIn, final GuiScreen parents, final List<String> list) {
         super(minecraft, width, height, topIn, bottomIn, 18);
-        for (int i = 0; i < this.blocklist.size(); i++) {
+        for (int i = 0; i < this.blockList.size(); i++) {
             for (String aList : list) {
-                if (aList.equals(this.blocklist.get(i))) {
-                    this.blocklist.remove(i);
+                if (aList.equals(this.blockList.get(i))) {
+                    this.blockList.remove(i);
                     i--;
                     if (i < 0)
                         break;
@@ -52,12 +52,12 @@ public class GuiP_SlotBlockList extends GuiSlot {
 
     @Override
     protected int getSize() {
-        return this.blocklist.size();
+        return this.blockList.size();
     }
 
     @Override
     protected void elementClicked(final int slotIndex, final boolean isDoubleClick, final int mouseX, final int mouseY) {
-        this.current = this.blocklist.get(slotIndex);
+        this.current = this.blockList.get(slotIndex);
     }
 
     @Override
@@ -67,7 +67,7 @@ public class GuiP_SlotBlockList extends GuiSlot {
 
     @Override
     protected boolean isSelected(final int slotIndex) {
-        return this.blocklist.get(slotIndex).equals(this.current);
+        return this.blockList.get(slotIndex).equals(this.current);
     }
 
     @Override
@@ -77,10 +77,10 @@ public class GuiP_SlotBlockList extends GuiSlot {
 
     @Override
     protected void drawSlot(int entryID, int insideLeft, int yPos, int insideSlotHeight, int mouseXIn, int mouseYIn, float a) {
-        final String name = FluidRegistry.getFluid(this.blocklist.get(entryID)).getLocalizedName(
-            FluidRegistry.getFluidStack(this.blocklist.get(entryID), 0));
+        final String name = FluidRegistry.getFluid(this.blockList.get(entryID)).getLocalizedName(
+            FluidRegistry.getFluidStack(this.blockList.get(entryID), 0));
         Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(name,
-            (this.parent.width - Minecraft.getMinecraft().fontRenderer.getStringWidth(name)) / 2,
+            (this.parent.width - Minecraft.getMinecraft().fontRenderer.getStringWidth(name)) / 2.0f,
             yPos + 2, 0xFFFFFF);
     }
 

@@ -30,7 +30,7 @@ object RenderQuarry extends FastTESR[TileQuarry] {
 
     Minecraft.getMinecraft.mcProfiler.startSection("quarryplus")
     Minecraft.getMinecraft.mcProfiler.startSection("quarry")
-    if ((quarry.G_getNow == TileQuarry.Mode.NOTNEEDBREAK || quarry.G_getNow == TileQuarry.Mode.MAKEFRAME) && quarry.yMax != Integer.MIN_VALUE) {
+    if ((quarry.G_getNow == TileQuarry.Mode.NOT_NEED_BREAK || quarry.G_getNow == TileQuarry.Mode.MAKE_FRAME) && quarry.yMax != Integer.MIN_VALUE) {
       Minecraft.getMinecraft.mcProfiler.startSection("frame")
       bufferBuilder.setTranslation(distanceX - pos.getX + .5, distanceY - pos.getY + .5, distanceZ - pos.getZ + .5)
       val minPos = quarry.getMinPos
@@ -413,7 +413,7 @@ object RenderQuarry extends FastTESR[TileQuarry] {
       Minecraft.getMinecraft.mcProfiler.endSection()
     }
 
-    if (quarry.G_getNow() == TileQuarry.Mode.BREAKBLOCK || quarry.G_getNow() == TileQuarry.Mode.MOVEHEAD) {
+    if (quarry.G_getNow() == TileQuarry.Mode.BREAK_BLOCK || quarry.G_getNow() == TileQuarry.Mode.MOVE_HEAD) {
       Minecraft.getMinecraft.mcProfiler.startSection("drill")
       bufferBuilder.setTranslation(distanceX - pos.getX + .5, distanceY - pos.getY + .5, distanceZ - pos.getZ + .5)
       //render crossed frame

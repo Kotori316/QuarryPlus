@@ -32,7 +32,7 @@ abstract class QPBlock(materialIn: Material, name: String, generator: QPBlock =>
 
   override def getRenderType(state: IBlockState): EnumBlockRenderType = EnumBlockRenderType.MODEL
 
-  override def canCreatureSpawn(state: IBlockState, world: IBlockAccess, pos: BlockPos, spawntype: EntityLiving.SpawnPlacementType) = false
+  override def canCreatureSpawn(state: IBlockState, world: IBlockAccess, pos: BlockPos, t: EntityLiving.SpawnPlacementType) = false
 
   override def onBlockActivated(worldIn: World, pos: BlockPos, state: IBlockState, playerIn: EntityPlayer,
                                 hand: EnumHand, facing: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean =

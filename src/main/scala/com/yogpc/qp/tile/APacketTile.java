@@ -101,6 +101,7 @@ public abstract class APacketTile extends TileEntity implements buildcraft.api.t
      *
      * @param side The side the block was clicked on, may be null if we don't know, or is the "centre" side
      */
+    @SuppressWarnings("Duplicates")
     @Override
     public void getDebugInfo(List<String> left, List<String> right, EnumFacing side) {
         left.add(getClass().getName());

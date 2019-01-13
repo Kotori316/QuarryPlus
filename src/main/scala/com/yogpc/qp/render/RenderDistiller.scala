@@ -69,6 +69,7 @@ object RenderDistiller extends FastTESR[TileRefinery] {
     }
   }
 
+  //noinspection SpellCheckingInspection
   private def renderBox(buffer: Buffer, facing: EnumFacing, speed: Float, y1: Double, y2: Double): Unit = {
     val sx1 = if (facing.getAxis == EnumFacing.Axis.X) 0.5 + facing.offsetX(0.49) else 0 * d
     val sx2 = if (facing.getAxis == EnumFacing.Axis.X) 0.5 + facing.offsetX(0.49) else 12 * d

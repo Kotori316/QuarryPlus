@@ -13,6 +13,9 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 
 public interface IAttachment {
+    /**
+     * Setter method to change field in this class.
+     */
     public void setConnectTo(@Nullable EnumFacing connectTo);
 
     static class Attachments<T extends APacketTile> implements Predicate<TileEntity>, Function<TileEntity, T> {

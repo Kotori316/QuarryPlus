@@ -73,7 +73,7 @@ class TileAdvQuarry extends APowerTile
   override def update(): Unit = {
     super.update()
     if (!getWorld.isRemote && !machineDisabled) {
-      if (mode is TileAdvQuarry.MAKEFRAME) {
+      if (mode is TileAdvQuarry.MAKE_FRAME) {
         @inline
         def makeFrame(): Unit = {
           if (target == getPos) {
@@ -120,7 +120,7 @@ class TileAdvQuarry extends APowerTile
         def nextFrameTarget: BlockPos = {
           framePoses match {
             case p :: rest => framePoses = rest; p
-            case Nil => mode set TileAdvQuarry.BREAKBLOCK; digRange.min
+            case Nil => mode set TileAdvQuarry.BREAK_BLOCK; digRange.min
           }
         }
 
@@ -134,11 +134,11 @@ class TileAdvQuarry extends APowerTile
 
         var i = 0
         while (i < 4 * digRange.timeInTick) {
-          if (mode is TileAdvQuarry.MAKEFRAME)
+          if (mode is TileAdvQuarry.MAKE_FRAME)
             makeFrame()
           i += 1
         }
-      } else if (mode is TileAdvQuarry.BREAKBLOCK) {
+      } else if (mode is TileAdvQuarry.BREAK_BLOCK) {
 
         type B_1 = (NonNullList[ItemStack], Seq[Int], Seq[Int], Seq[Int], Seq[Int], Double)
         type C_1 = (NonNullList[ItemStack], Seq[Int], Seq[Int], Seq[Int], Seq[Int])
@@ -340,7 +340,7 @@ class TileAdvQuarry extends APowerTile
         val n = if (chunks.isEmpty) digRange.timeInTick else 1
         var j = 0
         var notEnoughEnergy = false
-        while (j < n && (mode is TileAdvQuarry.BREAKBLOCK) && !notEnoughEnergy) {
+        while (j < n && (mode is TileAdvQuarry.BREAK_BLOCK) && !notEnoughEnergy) {
           ((for (a <- dropCheck().right;
                  b <- calcBreakEnergy(a).right;
                  c <- consumeEnergy(b).right;
@@ -389,24 +389,24 @@ class TileAdvQuarry extends APowerTile
               //Finished.
               target = digRange.min
               finishWork()
-              mode set TileAdvQuarry.CHECKLIQUID
+              mode set TileAdvQuarry.CHECK_LIQUID
             }
           }
 
           j += 1
         }
-      } else if (mode is TileAdvQuarry.NOTNEEDBREAK) {
+      } else if (mode is TileAdvQuarry.NOT_NEED_BREAK) {
         if (digRange.defined && !Config.content.noEnergy)
           if (getStoredEnergy > getMaxStored * 0.3) {
-            mode set TileAdvQuarry.MAKEFRAME
+            mode set TileAdvQuarry.MAKE_FRAME
             startWork()
           }
-      } else if (mode is TileAdvQuarry.CHECKLIQUID) {
+      } else if (mode is TileAdvQuarry.CHECK_LIQUID) {
         nextPoses(digRange, target, inclusive = true).take(32 * digRange.timeInTick).foreach { case (_, p) =>
           target = p
           if (p == BlockPos.ORIGIN) {
             mode set TileAdvQuarry.NONE
-          } else if (mode is TileAdvQuarry.CHECKLIQUID) {
+          } else if (mode is TileAdvQuarry.CHECK_LIQUID) {
             Iterator.iterate(p.down())(_.down()).takeWhile(_.getY > 0).filter(p => {
               val state = getWorld.getBlockState(p)
               !state.getBlock.isAir(state, getWorld, p) && TilePump.isLiquid(state)
@@ -414,8 +414,8 @@ class TileAdvQuarry extends APowerTile
           }
         }
 
-      } else if (mode is TileAdvQuarry.FILLBLOCKS) {
-        val handler = InvUtils.findItemHander(getWorld, getPos.up, EnumFacing.DOWN).orNull
+      } else if (mode is TileAdvQuarry.FILL_BLOCKS) {
+        val handler = InvUtils.findItemHandler(getWorld, getPos.up, EnumFacing.DOWN).orNull
         if (handler != null) {
           val list = Range(0, handler.getSlots).find(i => {
             val stack = handler.getStackInSlot(i)
@@ -490,8 +490,8 @@ class TileAdvQuarry extends APowerTile
 
   override protected def isWorking: Boolean = mode.isWorking
 
-  override def G_reinit(): Unit = {
-    mode.set(TileAdvQuarry.NOTNEEDBREAK)
+  override def G_ReInit(): Unit = {
+    mode.set(TileAdvQuarry.NOT_NEED_BREAK)
     if (!digRange.defined) {
       digRange = makeRangeBox()
     }
@@ -501,41 +501,43 @@ class TileAdvQuarry extends APowerTile
     if (!mode.isWorking) {
       configure(0, getMaxStored)
     } else if (mode.reduceReceive) {
-      configure(ench.maxRecieve / 128, ench.maxStore)
+      configure(ench.maxReceive / 128, ench.maxStore)
     } else {
-      configure(ench.maxRecieve, ench.maxStore)
+      configure(ench.maxReceive, ench.maxStore)
     }
   }
 
-  override def readFromNBT(nbttc: NBTTagCompound): Unit = {
-    super.readFromNBT(nbttc)
-    ench = QEnch.readFromNBT(nbttc.getCompoundTag(NBT_QENCH))
-    digRange = DigRange.readFromNBT(nbttc.getCompoundTag(NBT_DIG_RANGE))
-    target = BlockPos.fromLong(nbttc.getLong("NBT_TARGET"))
-    mode.readFromNBT(nbttc.getCompoundTag(NBT_MODE))
-    cacheItems.readFromNBT(nbttc.getCompoundTag(NBT_ITEM_LIST))
-    nbttc.getTagList("NBT_FLUIDLIST", Constants.NBT.TAG_COMPOUND).tagIterator.foreach(tag => {
+  //noinspection SpellCheckingInspection
+  override def readFromNBT(nbt: NBTTagCompound): Unit = {
+    super.readFromNBT(nbt)
+    ench = QEnch.readFromNBT(nbt.getCompoundTag(NBT_QUARRY_ENCH))
+    digRange = DigRange.readFromNBT(nbt.getCompoundTag(NBT_DIG_RANGE))
+    target = BlockPos.fromLong(nbt.getLong("NBT_TARGET"))
+    mode.readFromNBT(nbt.getCompoundTag(NBT_MODE))
+    cacheItems.readFromNBT(nbt.getCompoundTag(NBT_ITEM_LIST))
+    nbt.getTagList("NBT_FLUIDLIST", Constants.NBT.TAG_COMPOUND).tagIterator.foreach(tag => {
       val tank = new QuarryTank(null, 0)
       CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.readNBT(tank, null, tag)
       if (tank.getFluid != null) {
         fluidStacks.put(tank.getFluid, tank)
       }
     })
-    val l2 = nbttc.getTagList("NBT_CHUNKLOADLIST", Constants.NBT.TAG_LONG)
+    val l2 = nbt.getTagList("NBT_CHUNKLOADLIST", Constants.NBT.TAG_LONG)
     chunks = Range(0, l2.tagCount()).map(i => new ChunkPos(BlockPos.fromLong(l2.get(i).asInstanceOf[NBTTagLong].getLong))).toList
   }
 
-  override def writeToNBT(nbttc: NBTTagCompound): NBTTagCompound = {
-    nbttc.setTag(NBT_QENCH, ench.toNBT)
-    nbttc.setTag(NBT_DIG_RANGE, digRange.toNBT)
-    nbttc.setLong("NBT_TARGET", target.toLong)
-    nbttc.setTag(NBT_MODE, mode.toNBT)
-    nbttc.setTag(NBT_ITEM_LIST, cacheItems.toNBT)
-    nbttc.setTag("NBT_FLUIDLIST", (new NBTTagList).tap(tagList => fluidStacks.foreach {
+  //noinspection SpellCheckingInspection
+  override def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
+    nbt.setTag(NBT_QUARRY_ENCH, ench.toNBT)
+    nbt.setTag(NBT_DIG_RANGE, digRange.toNBT)
+    nbt.setLong("NBT_TARGET", target.toLong)
+    nbt.setTag(NBT_MODE, mode.toNBT)
+    nbt.setTag(NBT_ITEM_LIST, cacheItems.toNBT)
+    nbt.setTag("NBT_FLUIDLIST", (new NBTTagList).tap(tagList => fluidStacks.foreach {
       case (_, tank) => tagList.appendTag(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.writeNBT(tank, null))
     }))
-    nbttc.setTag("NBT_CHUNKLOADLIST", (new NBTTagList).tap(tagList => chunks.foreach(c => tagList.appendTag(c.getBlock(0, 0, 0).toLong.toNBT))))
-    super.writeToNBT(nbttc)
+    nbt.setTag("NBT_CHUNKLOADLIST", (new NBTTagList).tap(tagList => chunks.foreach(c => tagList.appendTag(c.getBlock(0, 0, 0).toLong.toNBT))))
+    super.writeToNBT(nbt)
   }
 
   /**
@@ -605,7 +607,7 @@ class TileAdvQuarry extends APowerTile
   override def hasFastRenderer: Boolean = true
 
   override def getRenderBoundingBox: AxisAlignedBB = {
-    if (digRange.defined) digRange.rendrBox
+    if (digRange.defined) digRange.renderBox
     else super.getRenderBoundingBox
   }
 
@@ -631,12 +633,7 @@ class TileAdvQuarry extends APowerTile
   override def requestTicket(): Unit = {
     if (this.chunkTicket != null) return
     this.chunkTicket = ForgeChunkManager.requestTicket(QuarryPlus.INSTANCE, getWorld, Type.NORMAL)
-    if (this.chunkTicket == null) return
-    val tag = this.chunkTicket.getModData
-    tag.setInteger("quarryX", getPos.getX)
-    tag.setInteger("quarryY", getPos.getY)
-    tag.setInteger("quarryZ", getPos.getZ)
-    forceChunkLoading(this.chunkTicket)
+    setTileData(this.chunkTicket, getPos)
   }
 
   override def forceChunkLoading(ticket: ForgeChunkManager.Ticket): Unit = {
@@ -671,15 +668,15 @@ class TileAdvQuarry extends APowerTile
     //Called when noEnergy is true and block is right clicked with stick (item)
     if (machineDisabled) {
       VersionUtil.sendMessage(player, new TextComponentString("ChunkDestroyer is disabled."), true)
-    } else if (mode is TileAdvQuarry.NOTNEEDBREAK) {
-      mode set TileAdvQuarry.MAKEFRAME
+    } else if (mode is TileAdvQuarry.NOT_NEED_BREAK) {
+      mode set TileAdvQuarry.MAKE_FRAME
       startWork()
     }
   }
 
   def startFillMode(): Unit = {
     if ((mode is TileAdvQuarry.NONE) && digRange.defined && preparedFiller) {
-      mode set TileAdvQuarry.FILLBLOCKS
+      mode set TileAdvQuarry.FILL_BLOCKS
       target = digRange.min.add(-1, 0, 0)
     }
   }
@@ -709,7 +706,7 @@ class TileAdvQuarry extends APowerTile
   }
 
   @SideOnly(Side.CLIENT)
-  def recieveModeMessage(modeTag: NBTTagCompound): Runnable = new Runnable {
+  def receiveModeMessage(modeTag: NBTTagCompound): Runnable = new Runnable {
     override def run(): Unit = {
       mode.readFromNBT(modeTag)
       digRange = DigRange.readFromNBT(modeTag)
@@ -721,7 +718,7 @@ class TileAdvQuarry extends APowerTile
     if (BlockPos.getAllInBoxMutable(new BlockPos(digRange.minX, y, digRange.minZ), new BlockPos(digRange.maxX, y, digRange.maxZ))
       .iterator().asScala.forall(getWorld.isAirBlock)) {
       val need = (digRange.maxX - digRange.minX + 1) * (digRange.maxZ - digRange.minZ + 1)
-      val stacks = InvUtils.findItemHander(getWorld, getPos.up, EnumFacing.DOWN).toList
+      val stacks = InvUtils.findItemHandler(getWorld, getPos.up, EnumFacing.DOWN).toList
         .flatMap(handler => Range(0, handler.getSlots).map(handler.getStackInSlot))
       val blocks = stacks.filter(s => VersionUtil.nonEmpty(s) && s.getItem.isInstanceOf[ItemBlock])
       blocks.nonEmpty &&
@@ -760,7 +757,7 @@ class TileAdvQuarry extends APowerTile
     def fluids = if (facing != null) fluidStacks.filterKeys(fluidExtractFacings(facing)) else fluidStacks.toMap
 
     /**
-      * Not fillable.
+      * Not fill-able.
       */
     override def fill(resource: FluidStack, doFill: Boolean): Int = 0
 
@@ -834,14 +831,14 @@ class TileAdvQuarry extends APowerTile
       }
       val state = world1.getBlockState(pos1)
       if (state.getValue(ACTING)) {
-        if (newMode == NONE || newMode == NOTNEEDBREAK) {
+        if (newMode == NONE || newMode == NOT_NEED_BREAK) {
           validate()
           world1.setBlockState(pos1, state.withProperty(ACTING, JBool.FALSE))
           validate()
           world1.setTileEntity(pos1, self)
         }
       } else {
-        if (newMode != NONE && newMode != NOTNEEDBREAK) {
+        if (newMode != NONE && newMode != NOT_NEED_BREAK) {
           validate()
           world1.setBlockState(pos1, state.withProperty(ACTING, JBool.TRUE))
           validate()
@@ -854,7 +851,7 @@ class TileAdvQuarry extends APowerTile
 
     def isWorking: Boolean = !is(NONE)
 
-    def reduceReceive: Boolean = is(MAKEFRAME)
+    def reduceReceive: Boolean = is(MAKE_FRAME)
 
     override def toString: String = "ChunkDestroyer mode = " + mode
 
@@ -865,11 +862,11 @@ class TileAdvQuarry extends APowerTile
     override def readFromNBT(tag: NBTTagCompound): Mode = {
       this.mode = tag.getInteger("mode") match {
         case 0 => NONE
-        case 1 => NOTNEEDBREAK
-        case 2 => MAKEFRAME
-        case 3 => BREAKBLOCK
-        case 4 => CHECKLIQUID
-        case 5 => FILLBLOCKS
+        case 1 => NOT_NEED_BREAK
+        case 2 => MAKE_FRAME
+        case 3 => BREAK_BLOCK
+        case 4 => CHECK_LIQUID
+        case 5 => FILL_BLOCKS
         case _ => throw new IllegalStateException("Invalid mode")
       }
       this
@@ -893,7 +890,7 @@ object TileAdvQuarry {
     BlockWrapper(Blocks.NETHERRACK.getDefaultState),
     BlockWrapper(Blocks.SANDSTONE.getDefaultState, ignoreMeta = true),
     BlockWrapper(Blocks.RED_SANDSTONE.getDefaultState, ignoreMeta = true))
-  private final val NBT_QENCH = "nbt_qench"
+  private final val NBT_QUARRY_ENCH = "nbt_qench"
   private final val NBT_DIG_RANGE = "nbt_digrange"
   private final val NBT_MODE = "nbt_quarrymode"
   private final val NBT_ITEM_LIST = "nbt_itemlist"
@@ -937,7 +934,7 @@ object TileAdvQuarry {
 
     val maxStore = MAX_STORED * (efficiency + 1)
 
-    val maxRecieve = if (efficiency >= 5) maxStore else if (efficiency == 0) maxStore * 0.001 else maxStore * Math.pow(efficiency.toDouble / 5.0, 3)
+    val maxReceive = if (efficiency >= 5) maxStore else if (efficiency == 0) maxStore * 0.001 else maxStore * Math.pow(efficiency.toDouble / 5.0, 3)
 
     val mode: Int = if (silktouch) -1 else fortune
 
@@ -977,17 +974,13 @@ object TileAdvQuarry {
 
     def min: BlockPos = new BlockPos(minX, minY, minZ)
 
-    final val rendrBox = new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ)
+    final val renderBox = new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ)
 
     final val lengthSq = min.distanceSq(maxZ, maxY, maxZ)
 
     val timeInTick: Int = {
       val length = (maxX + maxZ - minX - minZ + 2) / 2
-      if (length < 128) {
-        1
-      } else {
-        length / 128
-      }
+      Math.max(length / 128, 1)
     }
 
     def chunkSeq: List[ChunkPos] = {
@@ -1023,7 +1016,7 @@ object TileAdvQuarry {
   }
 
   class ItemList extends INBTWritable with INBTReadable[ItemList] {
-    val list: ArrayBuffer[ItemElement] = ArrayBuffer.empty[ItemElement]
+    val list = ArrayBuffer.empty[ItemElement]
 
     def add(itemDamage: ItemDamage, count: Int): Unit = {
       val i = list.indexWhere(_.itemDamage == itemDamage)
@@ -1092,15 +1085,15 @@ object TileAdvQuarry {
 
   val NONE = new Modes(0, "NONE")
 
-  val NOTNEEDBREAK = new Modes(1, "NOTNEEDBREAK")
+  val NOT_NEED_BREAK = new Modes(1, "NOT_NEED_BREAK")
 
-  val MAKEFRAME = new Modes(2, "MAKEFRAME")
+  val MAKE_FRAME = new Modes(2, "MAKE_FRAME")
 
-  val BREAKBLOCK = new Modes(3, "BREAKBLOCK")
+  val BREAK_BLOCK = new Modes(3, "BREAK_BLOCK")
 
-  val CHECKLIQUID = new Modes(4, "CHECKLIQUID")
+  val CHECK_LIQUID = new Modes(4, "CHECK_LIQUID")
 
-  val FILLBLOCKS = new Modes(5, "FILLBLOCKS")
+  val FILL_BLOCKS = new Modes(5, "FILL_BLOCKS")
 
   def getFramePoses(digRange: DigRange): List[BlockPos] = {
     val builder = List.newBuilder[BlockPos]

@@ -30,13 +30,13 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class GuiP_Manual extends GuiScreenA implements GuiYesNoCallback {
-    private GuiTextField blockid;
-    private final EnumFacing targetid;
+    private GuiTextField blockId;
+    private final EnumFacing targetId;
     private final TilePump tile;
 
     public GuiP_Manual(final GuiScreen parents, EnumFacing facing, final TilePump tq) {
         super(parents);
-        this.targetid = facing;
+        this.targetId = facing;
         this.tile = tq;
     }
 
@@ -47,18 +47,18 @@ public class GuiP_Manual extends GuiScreenA implements GuiYesNoCallback {
             I18n.format(TranslationKeys.DONE)));
         this.buttonList.add(new GuiButton(-2, this.width / 2 + 10, this.height - 26, 140, 20,
             I18n.format(TranslationKeys.CANCEL)));
-        this.blockid = new GuiTextField(0, this.fontRenderer, this.width / 2 - 50, 50, 100, 20);
-        this.blockid.setFocused(true);
+        this.blockId = new GuiTextField(0, this.fontRenderer, this.width / 2 - 50, 50, 100, 20);
+        this.blockId.setFocused(true);
     }
 
     @Override
     public void actionPerformed(final GuiButton par1) {
         switch (par1.id) {
             case -1:
-                String name = this.blockid.getText();
+                String name = this.blockId.getText();
                 if (name.isEmpty())
                     return;
-                if (this.tile.mapping.get(targetid).contains(name)) {
+                if (this.tile.mapping.get(targetId).contains(name)) {
                     if (FluidRegistry.isFluidRegistered(name))
                         name = FluidRegistry.getFluid(name).getLocalizedName(FluidRegistry.getFluidStack(name, 0));
                     this.mc.displayGuiScreen(new GuiError(this, I18n.format(TranslationKeys.ALREADY_REGISTERED_ERROR), name));
@@ -77,23 +77,23 @@ public class GuiP_Manual extends GuiScreenA implements GuiYesNoCallback {
     @Override
     public void confirmClicked(final boolean par1, final int par2) {
         if (par1) {
-            PacketHandler.sendToServer(Mappings.Update.create(tile, targetid, Mappings.Type.Add, blockid.getText()));
-            tile.mapping.get(targetid).add(blockid.getText());
+            PacketHandler.sendToServer(Mappings.Update.create(tile, targetId, Mappings.Type.Add, blockId.getText()));
+            tile.mapping.get(targetId).add(blockId.getText());
         }
         showParent();
     }
 
     @Override
     protected void keyTyped(final char typedChar, final int keyCode) {
-        if (this.blockid.isFocused())
-            this.blockid.textboxKeyTyped(typedChar, keyCode);
+        if (this.blockId.isFocused())
+            this.blockId.textboxKeyTyped(typedChar, keyCode);
         super.keyTyped(typedChar, keyCode);
     }
 
     @Override
     protected void mouseClicked(final int par1, final int par2, final int par3) throws IOException {
         super.mouseClicked(par1, par2, par3);
-        this.blockid.mouseClicked(par1, par2, par3);
+        this.blockId.mouseClicked(par1, par2, par3);
     }
 
     @Override
@@ -102,13 +102,13 @@ public class GuiP_Manual extends GuiScreenA implements GuiYesNoCallback {
         drawCenteredString(this.fontRenderer, I18n.format(TranslationKeys.SELECT_FLUID), this.width / 2, 8, 0xFFFFFF);
         String fluidId = I18n.format(TranslationKeys.FLUID_ID);
         this.fontRenderer.drawStringWithShadow(fluidId, this.width / 2 - 60 - this.fontRenderer.getStringWidth(fluidId), 50, 0xFFFFFF);
-        this.blockid.drawTextBox();
+        this.blockId.drawTextBox();
         super.drawScreen(i, j, k);
     }
 
     @Override
     public void updateScreen() {
         super.updateScreen();
-        this.blockid.updateCursorCounter();
+        this.blockId.updateCursorCounter();
     }
 }

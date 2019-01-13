@@ -19,15 +19,15 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 @SideOnly(Side.CLIENT)
 class GuiSlotEnchList(mc: Minecraft, w: Int, h: Int, t: Int, b: Int, val parent: GuiScreen, val target: java.util.List[BlockData]) extends GuiSlot(mc, w, h, t, b, 18) {
-  var currentore = 0
+  var currentOre = 0
 
   override protected def getSize: Int = this.target.size
 
-  override protected def elementClicked(var1: Int, var2: Boolean, var3: Int, var4: Int): Unit = this.currentore = var1
+  override protected def elementClicked(var1: Int, var2: Boolean, var3: Int, var4: Int): Unit = this.currentOre = var1
 
   override protected def getContentHeight: Int = this.getSize * 18
 
-  override protected def isSelected(var1: Int): Boolean = var1 == this.currentore
+  override protected def isSelected(var1: Int): Boolean = var1 == this.currentOre
 
   override protected def drawBackground(): Unit = ()
 

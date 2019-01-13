@@ -48,7 +48,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
     public List<WorkbenchRecipes> recipesList = Collections.emptyList();
     private WorkbenchRecipes currentRecipe = WorkbenchRecipes.dummyRecipe();
     private ItemHandler itemHandler = new ItemHandler();
-    public boolean workcontinue;
+    public boolean workContinue;
 
     @Override
     public void update() {
@@ -70,7 +70,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
                             inventory.set(i, VersionUtil.empty());
                     }
                     markDirty();
-                    setCurrentRecipeIndex(workcontinue ? getRecipeIndex() : -1);
+                    setCurrentRecipeIndex(workContinue ? getRecipeIndex() : -1);
                 }
             }
         }
@@ -82,9 +82,9 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound nbttc) {
-        super.readFromNBT(nbttc);
-        NBTTagList list = nbttc.getTagList("Items", Constants.NBT.TAG_COMPOUND);
+    public void readFromNBT(NBTTagCompound nbt) {
+        super.readFromNBT(nbt);
+        NBTTagList list = nbt.getTagList("Items", Constants.NBT.TAG_COMPOUND);
         VersionUtil.nbtListStream(list).forEach(nbtTagCompound -> {
             int j = nbtTagCompound.getByte("Slot") & 255;
             ItemStack stack = VersionUtil.fromNBTTag(nbtTagCompound);
@@ -94,7 +94,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound nbttc) {
+    public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
         NBTTagList list = new NBTTagList();
         for (int i = 0; i < inventory.size(); i++) {
             ItemStack stack = inventory.get(i);
@@ -105,8 +105,8 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
             nbttagcompound.setInteger("Count", VersionUtil.getCount(stack));
             list.appendTag(nbttagcompound);
         }
-        nbttc.setTag("Items", list);
-        return super.writeToNBT(nbttc);
+        nbt.setTag("Items", list);
+        return super.writeToNBT(nbt);
     }
 
     @Override
@@ -187,7 +187,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
             case 1:
                 return 0;//(int) getStoredEnergy();
             case 2:
-                return workcontinue ? 1 : 0;
+                return workContinue ? 1 : 0;
         }
         return 0;
     }
@@ -202,7 +202,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
 //                setStoredEnergy(value);
                 break;
             case 2:
-                workcontinue = value == 1;
+                workContinue = value == 1;
                 break;
         }
     }
@@ -220,7 +220,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
     @Override
     public List<TextComponentString> getDebugMessages() {
         return Arrays.asList(new TextComponentString(currentRecipe.toString()),
-            new TextComponentString("Work mode : " + (workcontinue ? "Continue" : "Only once")));
+            new TextComponentString("Work mode : " + (workContinue ? "Continue" : "Only once")));
     }
 
     @Override

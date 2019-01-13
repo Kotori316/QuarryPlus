@@ -53,8 +53,8 @@ public class PowerManager {
     }
 
     static void loadConfiguration(final Configuration cg) throws RuntimeException {
-        ConfigCategory powersetting = cg.getCategory(Configuration.CATEGORY_GENERAL + Configuration.CATEGORY_SPLITTER + "PowerSetting");
-        powersetting.setComment("Quarry PowerSetting (min = 0.1, Max = 2,000,000,000 = 2 billion)");
+        ConfigCategory powerSetting = cg.getCategory(Configuration.CATEGORY_GENERAL + Configuration.CATEGORY_SPLITTER + "PowerSetting");
+        powerSetting.setComment("Quarry PowerSetting (min = 0.1, Max = 2,000,000,000 = 2 billion)");
         final String cn = Configuration.CATEGORY_GENERAL + Configuration.CATEGORY_SPLITTER + "PowerSetting" + Configuration.CATEGORY_SPLITTER;
 
         String cn2 = cn + "Quarry" + Configuration.CATEGORY_SPLITTER;

@@ -30,16 +30,16 @@ class TileBreaker extends TileEntity with IEnchantableTile with HasInv {
   var silktouch = false
   var fortune: Byte = 0
 
-  override def readFromNBT(nbttc: NBTTagCompound): Unit = {
-    super.readFromNBT(nbttc)
-    this.silktouch = nbttc.getBoolean("silktouch")
-    this.fortune = nbttc.getByte("fortune")
+  override def readFromNBT(nbt: NBTTagCompound): Unit = {
+    super.readFromNBT(nbt)
+    this.silktouch = nbt.getBoolean("silktouch")
+    this.fortune = nbt.getByte("fortune")
   }
 
-  override def writeToNBT(nbttc: NBTTagCompound): NBTTagCompound = {
-    nbttc.setBoolean("silktouch", this.silktouch)
-    nbttc.setByte("fortune", this.fortune)
-    super.writeToNBT(nbttc)
+  override def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
+    nbt.setBoolean("silktouch", this.silktouch)
+    nbt.setByte("fortune", this.fortune)
+    super.writeToNBT(nbt)
   }
 
   override def getEnchantments: util.Map[java.lang.Integer, java.lang.Integer] = {
@@ -53,7 +53,7 @@ class TileBreaker extends TileEntity with IEnchantableTile with HasInv {
     if (id == FortuneID) this.fortune = value.toByte
     else if (id == SilktouchID) this.silktouch = value > 0
 
-  override def G_reinit(): Unit = ()
+  override def G_ReInit(): Unit = ()
 
   override def getName: String = TranslationKeys.breaker
 

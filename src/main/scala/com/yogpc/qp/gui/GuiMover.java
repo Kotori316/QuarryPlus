@@ -85,7 +85,7 @@ public class GuiMover extends GuiContainer {
                 PacketHandler.sendToServer(MoverMessage.Cursor.create(pos, inventorySlots.windowId, ContainerMover.D.UP));
                 break;
             case 3:
-                PacketHandler.sendToServer(MoverMessage.Cursor.create(pos, inventorySlots.windowId, ContainerMover.D.DOUN));
+                PacketHandler.sendToServer(MoverMessage.Cursor.create(pos, inventorySlots.windowId, ContainerMover.D.DOWN));
                 break;
         }
     }

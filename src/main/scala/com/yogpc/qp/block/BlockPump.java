@@ -98,7 +98,7 @@ public class BlockPump extends ADismCBlock {
     @Override
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
         super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
-        Optional.ofNullable((TilePump) worldIn.getTileEntity(pos)).ifPresent(TilePump::G_reinit);
+        Optional.ofNullable((TilePump) worldIn.getTileEntity(pos)).ifPresent(TilePump::G_ReInit);
     }
 
     @Override

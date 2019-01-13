@@ -25,7 +25,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class GuiP_SlotList extends GuiSlot {
     private final GuiScreen parent;
-    public int currentore = 0;
+    public int currentOre = 0;
     private final TilePump pump;
     private final EnumFacing facing;
 
@@ -43,7 +43,7 @@ public class GuiP_SlotList extends GuiSlot {
 
     @Override
     protected void elementClicked(final int slotIndex, final boolean isDoubleClick, final int mouseX, final int mouseY) {
-        this.currentore = slotIndex;
+        this.currentOre = slotIndex;
     }
 
     @Override
@@ -53,7 +53,7 @@ public class GuiP_SlotList extends GuiSlot {
 
     @Override
     protected boolean isSelected(final int slotIndex) {
-        return slotIndex == this.currentore;
+        return slotIndex == this.currentOre;
     }
 
     @Override

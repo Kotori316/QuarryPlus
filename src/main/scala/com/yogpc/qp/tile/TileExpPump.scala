@@ -32,7 +32,7 @@ class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender wi
   /**
     * Called after enchantment setting.
     */
-  override def G_reinit(): Unit = {
+  override def G_ReInit(): Unit = {
     refreshConnection()
   }
 

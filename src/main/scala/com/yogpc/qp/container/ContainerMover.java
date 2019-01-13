@@ -152,18 +152,18 @@ public class ContainerMover extends Container {
                 if (!mergeItemStack(remain, 2, 38, true))
                     return com.yogpc.qp.version.VersionUtil.empty();
             } else {
-                Slot toslot;
+                Slot toSlot;
                 final ItemStack put = ItemHandlerHelper.copyStackWithSize(remain, 1);
                 boolean changed = false;
-                toslot = this.inventorySlots.get(0);
-                if (/*!changed(true) &&*/ toslot.isItemValid(remain) && isEmpty(toslot.getStack())) {
-                    toslot.putStack(put);
+                toSlot = this.inventorySlots.get(0);
+                if (/*!changed(true) &&*/ toSlot.isItemValid(remain) && isEmpty(toSlot.getStack())) {
+                    toSlot.putStack(put);
                     VersionUtil.shrink(remain, 1);
                     changed = true;
                 }
-                toslot = this.inventorySlots.get(1);
-                if (!changed && toslot.isItemValid(remain) && isEmpty(toslot.getStack())) {
-                    toslot.putStack(put);
+                toSlot = this.inventorySlots.get(1);
+                if (!changed && toSlot.isItemValid(remain) && isEmpty(toSlot.getStack())) {
+                    toSlot.putStack(put);
                     VersionUtil.shrink(remain, 1);
                     changed = true;
                 }
@@ -194,7 +194,7 @@ public class ContainerMover extends Container {
             if (tuple.level == 1) {
                 this.list.remove(avail);
             } else {
-                this.list.set(avail, tuple.leveldown());
+                this.list.set(avail, tuple.levelDown());
             }
             downLevel(tuple.enchantment, craftMatrix.getStackInSlot(0));
         } else {
@@ -207,7 +207,7 @@ public class ContainerMover extends Container {
                         if (tuple.level == 1) {
                             this.list.remove(avail);
                         } else {
-                            this.list.set(avail, tuple.leveldown());
+                            this.list.set(avail, tuple.levelDown());
                         }
                         downLevel(tuple.enchantment, craftMatrix.getStackInSlot(0));
                     }
@@ -245,7 +245,7 @@ public class ContainerMover extends Container {
     }
 
     public enum D {
-        UP(-1), DOUN(+1);
+        UP(-1), DOWN(+1);
         public final int offset;
 
         D(int offset) {
@@ -282,7 +282,7 @@ public class ContainerMover extends Container {
             return enchantment.hashCode() ^ level;
         }
 
-        public Tuple leveldown() {
+        public Tuple levelDown() {
             return cloneWithLevel(level - 1);
         }
 

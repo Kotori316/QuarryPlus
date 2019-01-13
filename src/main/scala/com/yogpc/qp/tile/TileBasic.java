@@ -95,8 +95,14 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
 
     protected Map<Integer, Integer> ench = new HashMap<>();
 
+    /**
+     * Reconfigure energy capacity and amount to receive.
+     */
     public abstract void G_renew_powerConfigure();
 
+    /**
+     * Called when the work was finished and this block was removed or unloaded.
+     */
     protected abstract void G_destroy();
 
     @Override
@@ -105,6 +111,9 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         super.onChunkUnload();
     }
 
+    /**
+     * Insert as much items as possible to near inventory .
+     */
     protected void S_pollItems() {
         ItemStack is;
         while (null != (is = this.cacheItems.poll())) {
@@ -116,6 +125,12 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         }
     }
 
+    /**
+     * Dig block and collect its drops.
+     *
+     * @param replace to which the block will be replaced.
+     * @return true if you should get next target, false if you should try to break again.
+     */
     protected boolean S_breakBlock(final int x, final int y, final int z, IBlockState replace) {
         final List<ItemStack> dropped = new LinkedList<>();
         Chunk loadedChunk = getWorld().getChunkProvider().getLoadedChunk(x >> 4, z >> 4);
@@ -220,6 +235,9 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         return new BI(i, xp, facingMap.containsKey(IAttachment.Attachments.REPLACER));
     }
 
+    /**
+     * Helper method for Thaumcraft.
+     */
     @SuppressWarnings({"ConstantConditions", "deprecation"})
     public static void getDrops(World world, BlockPos pos, IBlockState state, Block block, int fortuneLevel, NonNullList<ItemStack> list) {
         if (QuarryPlus.Optionals.Thaumcraft_modID.equals(block.getRegistryName().getResourceDomain())) {
@@ -248,52 +266,53 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         new String[]{"func_180643_i", "getSilkTouchDrop"}, new Class<?>[]{IBlockState.class});
 
     @Override
-    public void readFromNBT(final NBTTagCompound nbttc) {
-        super.readFromNBT(nbttc);
-        this.silktouch = nbttc.getBoolean("silktouch");
-        this.fortune = nbttc.getByte("fortune");
-        this.efficiency = nbttc.getByte("efficiency");
-        this.unbreaking = nbttc.getByte("unbreaking");
-        this.fortuneInclude = nbttc.getBoolean("fortuneInclude");
-        this.silktouchInclude = nbttc.getBoolean("silktouchInclude");
-        readLongCollection(nbttc.getTagList("fortuneList", 10), this.fortuneList);
-        readLongCollection(nbttc.getTagList("silktouchList", 10), this.silktouchList);
-        ench = NBTBuilder.fromList(nbttc.getTagList("enchList", Constants.NBT.TAG_COMPOUND), n -> n.getInteger("id"), n -> n.getInteger("value"),
+    public void readFromNBT(final NBTTagCompound nbt) {
+        super.readFromNBT(nbt);
+        this.silktouch = nbt.getBoolean("silktouch");
+        this.fortune = nbt.getByte("fortune");
+        this.efficiency = nbt.getByte("efficiency");
+        this.unbreaking = nbt.getByte("unbreaking");
+        this.fortuneInclude = nbt.getBoolean("fortuneInclude");
+        this.silktouchInclude = nbt.getBoolean("silktouchInclude");
+        readLongCollection(nbt.getTagList("fortuneList", 10), this.fortuneList);
+        readLongCollection(nbt.getTagList("silktouchList", 10), this.silktouchList);
+        ench = NBTBuilder.fromList(nbt.getTagList("enchList", Constants.NBT.TAG_COMPOUND), n -> n.getInteger("id"), n -> n.getInteger("value"),
             s -> Enchantment.getEnchantmentByID(s) != null, s -> true);
     }
 
-    private static void readLongCollection(final NBTTagList nbttl, final Collection<BlockData> target) {
+    private static void readLongCollection(final NBTTagList list, final Collection<BlockData> target) {
         target.clear();
-        for (int i = 0; i < nbttl.tagCount(); i++) {
-            final NBTTagCompound c = nbttl.getCompoundTagAt(i);
+        for (int i = 0; i < list.tagCount(); i++) {
+            final NBTTagCompound c = list.getCompoundTagAt(i);
             target.add(new BlockData(c.getString(BlockData.Name_NBT()), c.getInteger(BlockData.Meta_NBT())));
         }
     }
 
     @Override
-    public NBTTagCompound writeToNBT(final NBTTagCompound nbttc) {
-        nbttc.setBoolean("silktouch", this.silktouch);
-        nbttc.setByte("fortune", this.fortune);
-        nbttc.setByte("efficiency", this.efficiency);
-        nbttc.setByte("unbreaking", this.unbreaking);
-        nbttc.setBoolean("fortuneInclude", this.fortuneInclude);
-        nbttc.setBoolean("silktouchInclude", this.silktouchInclude);
-        nbttc.setTag("fortuneList", writeLongCollection(this.fortuneList));
-        nbttc.setTag("silktouchList", writeLongCollection(this.silktouchList));
+    public NBTTagCompound writeToNBT(final NBTTagCompound nbt) {
+        nbt.setBoolean("silktouch", this.silktouch);
+        nbt.setByte("fortune", this.fortune);
+        nbt.setByte("efficiency", this.efficiency);
+        nbt.setByte("unbreaking", this.unbreaking);
+        nbt.setBoolean("fortuneInclude", this.fortuneInclude);
+        nbt.setBoolean("silktouchInclude", this.silktouchInclude);
+        nbt.setTag("fortuneList", writeLongCollection(this.fortuneList));
+        nbt.setTag("silktouchList", writeLongCollection(this.silktouchList));
         Function<Integer, Short> function = Integer::shortValue;
-        nbttc.setTag("enchList", NBTBuilder.fromMap(ench, "id", "value", function.andThen(NBTTagShort::new), function.andThen(NBTTagShort::new)));
-        return super.writeToNBT(nbttc);
+        nbt.setTag("enchList", NBTBuilder.fromMap(ench, "id", "value", function.andThen(NBTTagShort::new), function.andThen(NBTTagShort::new)));
+        return super.writeToNBT(nbt);
     }
 
     private static NBTTagList writeLongCollection(final Collection<BlockData> target) {
-        final NBTTagList nbttl = new NBTTagList();
+        final NBTTagList list = new NBTTagList();
         for (final BlockData l : target) {
-            nbttl.appendTag(l.toNBT().getCompoundTag(BlockData.BlockData_NBT()));
+            list.appendTag(l.toNBT().getCompoundTag(BlockData.BlockData_NBT()));
         }
-        return nbttl;
+        return list;
     }
 
     @Override
+    @SuppressWarnings("Duplicates")
     public Map<Integer, Integer> getEnchantments() {
         final Map<Integer, Integer> ret = new HashMap<>(ench);
         if (this.efficiency > 0)

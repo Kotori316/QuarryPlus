@@ -9,6 +9,7 @@ import com.yogpc.qp.QuarryPlus;
 import static jp.t2v.lab.syntax.MapStreamSyntax.entryToMap;
 import static jp.t2v.lab.syntax.MapStreamSyntax.valuesInt;
 
+@SuppressWarnings("SpellCheckingInspection")
 public class TranslationKeys {
     public static final String ADD = "tof.addnewore";
     public static final String ADD_FLUID_SURE = "tof.addfluidsure";

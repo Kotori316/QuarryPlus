@@ -62,7 +62,7 @@ public class InvUtils {
 
     /**
      * @param w   world
-     * @param pos Position of TileEntity from which itemstack comes.
+     * @param pos Position of TileEntity from which itemStack comes.
      * @param is  ItemStack to be inserted. The stack doesn't change in this method.
      */
     public static ItemStack injectToNearTile(final World w, BlockPos pos, final ItemStack is) {
@@ -83,7 +83,7 @@ public class InvUtils {
 
     }
 
-    public static Option<IItemHandler> findItemHander(World world, BlockPos pos, EnumFacing from) {
+    public static Option<IItemHandler> findItemHandler(World world, BlockPos pos, EnumFacing from) {
         TileEntity entity = world.getTileEntity(pos);
         if (entity == null) {
             return Option.empty();
@@ -96,7 +96,7 @@ public class InvUtils {
         ItemStack stack = player.getHeldItem(hand);
         if (nonEmpty(stack)) {
             Item item = stack.getItem();
-            return item == quarrydebug || item == ic2_meter || item == ic2_wrench || item == ic2_electric_wrench;
+            return item == quarryDebug || item == ic2_meter || item == ic2_wrench || item == ic2_electric_wrench;
         }
         return false;
     }
@@ -119,7 +119,7 @@ public class InvUtils {
     @GameRegistry.ObjectHolder(QuarryPlus.Optionals.IC2_modID + ":electric_wrench")
     public static final Item ic2_electric_wrench = new Item();
     @GameRegistry.ObjectHolder(QuarryPlus.modID + ":quarrydebug")
-    public static final Item quarrydebug = new Item();
+    public static final Item quarryDebug = new Item();
     @GameRegistry.ObjectHolder(QuarryPlus.Optionals.COFH_modID + ":smelting")
     public static final Enchantment cofh_smelting = DummyEnchantment.DUMMY_ENCHANTMENT;
     @GameRegistry.ObjectHolder("endercore:autosmelt")

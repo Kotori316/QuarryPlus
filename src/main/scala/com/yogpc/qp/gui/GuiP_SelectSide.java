@@ -31,12 +31,12 @@ public class GuiP_SelectSide extends GuiScreenA {
     private final boolean copy;
     private final EnumFacing to;
 
-    public GuiP_SelectSide(final TilePump ptile, final GuiP_List pparent, final boolean pcopy) {
-        this(pparent, ptile, pcopy, pparent.dir);
+    public GuiP_SelectSide(final TilePump tile, final GuiP_List parent, final boolean copy) {
+        this(parent, tile, copy, parent.dir);
     }
 
-    public GuiP_SelectSide(GuiScreen pparent, TilePump tile, boolean copy, EnumFacing to) {
-        super(pparent);
+    public GuiP_SelectSide(GuiScreen screen, TilePump tile, boolean copy, EnumFacing to) {
+        super(screen);
         this.tile = tile;
         this.copy = copy;
         this.to = to;

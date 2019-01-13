@@ -28,7 +28,7 @@ import com.yogpc.qp.PowerManager;
 import com.yogpc.qp.item.ItemQuarryDebug;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.TileMessage;
-import com.yogpc.qp.packet.distiller.AnimatonMessage;
+import com.yogpc.qp.packet.distiller.AnimationMessage;
 import com.yogpc.qp.utils.INBTWritable;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NBTTagCompound;
@@ -60,8 +60,11 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
     };
 
     public long rem_energy;
+    @Nullable
     public FluidStack cacheIn;
+    @Nullable
     public FluidStack cachedGas;
+    @Nullable
     public FluidStack cachedLiquid;
     public long cacheEnergy;
 
@@ -86,36 +89,36 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
     }
 
     @Override
-    public void G_reinit() {
+    public void G_ReInit() {
         PowerManager.configureRefinery(this, ench.efficiency, ench.unbreaking);
         tanks.forEach(distillerTank -> distillerTank.setCapacity(ench.getCapacity()));
     }
 
     @Override
-    public void readFromNBT(final NBTTagCompound nbttc) {
-        super.readFromNBT(nbttc);
-        this.ench = DEnch.readFromNBT(nbttc);
-        horizontalsTank.readFromNBT(nbttc);
-        upTank.readFromNBT(nbttc);
-        downTank.readFromNBT(nbttc);
+    public void readFromNBT(final NBTTagCompound nbt) {
+        super.readFromNBT(nbt);
+        this.ench = DEnch.readFromNBT(nbt);
+        horizontalsTank.readFromNBT(nbt);
+        upTank.readFromNBT(nbt);
+        downTank.readFromNBT(nbt);
         updateRecipe();
-        this.rem_energy = nbttc.getLong("rem_energy");
-        this.animationSpeed = nbttc.getFloat("animationSpeed");
-        this.animationStage = nbttc.getInteger("animationStage");
+        this.rem_energy = nbt.getLong("rem_energy");
+        this.animationSpeed = nbt.getFloat("animationSpeed");
+        this.animationStage = nbt.getInteger("animationStage");
         PowerManager.configureRefinery(this, ench.efficiency, ench.unbreaking);
         tanks.forEach(distillerTank -> distillerTank.setCapacity(ench.getCapacity()));
     }
 
     @Override
-    public NBTTagCompound writeToNBT(final NBTTagCompound nbttc) {
-        ench.writeToNBT(nbttc);
-        horizontalsTank.writeToNBT(nbttc);
-        upTank.writeToNBT(nbttc);
-        downTank.writeToNBT(nbttc);
-        nbttc.setLong("rem_energy", this.rem_energy);
-        nbttc.setFloat("animationSpeed", this.animationSpeed);
-        nbttc.setInteger("animationStage", this.animationStage);
-        return super.writeToNBT(nbttc);
+    public NBTTagCompound writeToNBT(final NBTTagCompound nbt) {
+        ench.writeToNBT(nbt);
+        horizontalsTank.writeToNBT(nbt);
+        upTank.writeToNBT(nbt);
+        downTank.writeToNBT(nbt);
+        nbt.setLong("rem_energy", this.rem_energy);
+        nbt.setFloat("animationSpeed", this.animationSpeed);
+        nbt.setInteger("animationStage", this.animationStage);
+        return super.writeToNBT(nbt);
     }
 
     @Override
@@ -190,7 +193,7 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
     }
 
     private void sendNowPacket() {
-        PacketHandler.sendToAround(AnimatonMessage.create(this), getWorld(), getPos());
+        PacketHandler.sendToAround(AnimationMessage.create(this), getWorld(), getPos());
     }
 
     private void increaseAnimation() {

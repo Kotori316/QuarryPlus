@@ -59,7 +59,7 @@ public interface IEnchantableTile {
     /**
      * Called after enchantment setting.
      */
-    void G_reinit();
+    void G_ReInit();
 
     /**
      * @return Map (Enchantment id, level)
@@ -92,7 +92,7 @@ public interface IEnchantableTile {
 
         public static void init(@Nonnull final IEnchantableTile te, @Nullable final NBTTagList tagList) {
             VersionUtil.nbtListStream(tagList).forEach(nbt -> te.setEnchantment(nbt.getShort("id"), nbt.getShort("lvl")));
-            te.G_reinit();
+            te.G_ReInit();
         }
 
         static List<ITextComponent> getEnchantmentsChat(@Nonnull final IEnchantableTile te) {

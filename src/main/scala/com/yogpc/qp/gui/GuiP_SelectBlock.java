@@ -31,18 +31,18 @@ public class GuiP_SelectBlock extends GuiScreenA {
     private static final int CANCEL_Id = -2;
     private GuiP_SlotBlockList blocks;
     private final TilePump tile;
-    private final EnumFacing targetid;
+    private final EnumFacing targetId;
 
     public GuiP_SelectBlock(final GuiScreen parent, final TilePump tilePump, EnumFacing id) {
         super(parent);
         this.tile = tilePump;
-        this.targetid = id;
+        this.targetId = id;
     }
 
     @Override
     public void initGui() {
         super.initGui();
-        this.blocks = new GuiP_SlotBlockList(this.mc, this.width, this.height, 24, this.height - 32, this, this.tile.mapping.get(targetid));
+        this.blocks = new GuiP_SlotBlockList(this.mc, this.width, this.height, 24, this.height - 32, this, this.tile.mapping.get(targetId));
         this.buttonList.add(new GuiButton(DONE_Id, this.width / 2 - 150, this.height - 26, 140, 20, I18n.format(TranslationKeys.DONE)));
         this.buttonList.add(new GuiButton(CANCEL_Id, this.width / 2 + 10, this.height - 26, 140, 20, I18n.format(TranslationKeys.CANCEL)));
     }
@@ -50,8 +50,8 @@ public class GuiP_SelectBlock extends GuiScreenA {
     @Override
     public void actionPerformed(final GuiButton par1) {
         if (par1.id == DONE_Id) {
-            PacketHandler.sendToServer(Mappings.Update.create(tile, targetid, Mappings.Type.Add, blocks.current));
-            tile.mapping.get(targetid).add(blocks.current);
+            PacketHandler.sendToServer(Mappings.Update.create(tile, targetId, Mappings.Type.Add, blocks.current));
+            tile.mapping.get(targetId).add(blocks.current);
         }
         showParent();
     }

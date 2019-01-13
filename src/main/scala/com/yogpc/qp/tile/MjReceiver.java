@@ -9,6 +9,7 @@ import buildcraft.api.mj.MjAPI;
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import net.minecraftforge.fml.common.ModAPIManager;
 
 //Buildcraft MJ energy api implication
@@ -25,7 +26,7 @@ public class MjReceiver implements IMjReceiver, IMjReadable {
 
     static {
         boolean b = ModAPIManager.INSTANCE.hasAPI(QuarryPlus.Optionals.BuildCraft_core);
-        Constructor<?> temp;
+        @Nullable Constructor<?> temp;
         if (b) {
             try {
                 temp = Class.forName("buildcraft.api.mj.MjCapabilityHelper").getConstructor(Class.forName("buildcraft.api.mj.IMjConnector"));

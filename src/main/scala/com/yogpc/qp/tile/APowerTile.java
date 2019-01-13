@@ -136,20 +136,20 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
     }
 
     @Override
-    public void readFromNBT(final NBTTagCompound nbttc) {
-        super.readFromNBT(nbttc);
-        setStoredEnergy(nbttc.getDouble("storedEnergy"));
-        configure(nbttc.getDouble("MAX_receive"), nbttc.getDouble("MAX_stored"));
-        outputEnergyInfo = !nbttc.hasKey("outputEnergyInfo") || nbttc.getBoolean("outputEnergyInfo");
+    public void readFromNBT(final NBTTagCompound nbt) {
+        super.readFromNBT(nbt);
+        setStoredEnergy(nbt.getDouble("storedEnergy"));
+        configure(nbt.getDouble("MAX_receive"), nbt.getDouble("MAX_stored"));
+        outputEnergyInfo = !nbt.hasKey("outputEnergyInfo") || nbt.getBoolean("outputEnergyInfo");
     }
 
     @Override
-    public NBTTagCompound writeToNBT(final NBTTagCompound nbttc) {
-        nbttc.setDouble("storedEnergy", this.all);
-        nbttc.setDouble("MAX_stored", this.max);
-        nbttc.setDouble("MAX_receive", this.maxGot);
-        nbttc.setBoolean("outputEnergyInfo", outputEnergyInfo);
-        return super.writeToNBT(nbttc);
+    public NBTTagCompound writeToNBT(final NBTTagCompound nbt) {
+        nbt.setDouble("storedEnergy", this.all);
+        nbt.setDouble("MAX_stored", this.max);
+        nbt.setDouble("MAX_receive", this.maxGot);
+        nbt.setBoolean("outputEnergyInfo", outputEnergyInfo);
+        return super.writeToNBT(nbt);
     }
 
     /**

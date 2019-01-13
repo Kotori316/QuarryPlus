@@ -22,14 +22,14 @@ class TileBookMover extends APowerTile with HasInv with ITickable {
   val enchTypes = EnumEnchantmentType.values().filter(_.canEnchantItem(Items.DIAMOND_PICKAXE)).toSet
   val validEnch = ForgeRegistries.ENCHANTMENTS.getValuesCollection.asScala.filter(e => enchTypes(e.`type`)).toSet
 
-  override def writeToNBT(nbttc: NBTTagCompound): NBTTagCompound = {
-    ItemStackHelper.saveAllItems(nbttc, inv)
-    super.writeToNBT(nbttc)
+  override def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
+    ItemStackHelper.saveAllItems(nbt, inv)
+    super.writeToNBT(nbt)
   }
 
-  override def readFromNBT(nbttc: NBTTagCompound): Unit = {
-    super.readFromNBT(nbttc)
-    ItemStackHelper.loadAllItems(nbttc, inv)
+  override def readFromNBT(nbt: NBTTagCompound): Unit = {
+    super.readFromNBT(nbt)
+    ItemStackHelper.loadAllItems(nbt, inv)
   }
 
   override def update(): Unit = {

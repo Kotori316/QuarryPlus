@@ -44,7 +44,7 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper;
 public class ItemMirror extends ItemFood {
 
     public static final int Dimension_Meta = 1;
-    public static final int Overworld_Meta = 2;
+    public static final int OverWorld_Meta = 2;
     private static final Method UPDATE_PLAYERS
         = ReflectionHelper.findMethod(DragonFightManager.class, "updateplayers", "func_186100_j");
 
@@ -63,7 +63,7 @@ public class ItemMirror extends ItemFood {
             EntityPlayerMP playerMP = ((EntityPlayerMP) player);
             playerMP.dismountRidingEntity();
             MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
-            if (stack.getItemDamage() == Overworld_Meta) {
+            if (stack.getItemDamage() == OverWorld_Meta) {
                 if (playerMP.dimension != 0) {
                     changeDimension(playerMP, server, 0);
                 }
@@ -107,7 +107,7 @@ public class ItemMirror extends ItemFood {
     @Override
     public ItemStack onItemUseFinish(ItemStack stack, World worldIn, EntityLivingBase entityLiving) {
         ItemStack itemStack = super.onItemUseFinish(stack, worldIn, entityLiving);
-        VersionUtil.setCountForce(itemStack, VersionUtil.getCount(itemStack) + 1); //prevent stack size from being shrinked.
+        VersionUtil.setCountForce(itemStack, VersionUtil.getCount(itemStack) + 1); //prevent stack size from being shrink.
         return itemStack;
     }
 
@@ -130,7 +130,7 @@ public class ItemMirror extends ItemFood {
     @Override
     public String getUnlocalizedName(final ItemStack is) {
         switch (is.getItemDamage()) {
-            case Overworld_Meta:
+            case OverWorld_Meta:
                 return "item.overworldmirror";
             case Dimension_Meta:
                 return "item.dimensionmirror";
@@ -143,7 +143,7 @@ public class ItemMirror extends ItemFood {
         if (isInCreativeTab(tab)) {
             items.add(new ItemStack(this, 1, 0));
             items.add(new ItemStack(this, 1, Dimension_Meta));
-            items.add(new ItemStack(this, 1, Overworld_Meta));
+            items.add(new ItemStack(this, 1, OverWorld_Meta));
         }
     }
 

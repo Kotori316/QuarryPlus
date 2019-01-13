@@ -57,7 +57,7 @@ public class BlockMiningWell extends ADismCBlock {
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack stack = playerIn.getHeldItem(hand);
         if (BuildcraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
-            Optional.ofNullable((TileMiningWell) worldIn.getTileEntity(pos)).ifPresent(TileMiningWell::G_reinit);
+            Optional.ofNullable((TileMiningWell) worldIn.getTileEntity(pos)).ifPresent(TileMiningWell::G_ReInit);
             return true;
         }
         if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == 0) {

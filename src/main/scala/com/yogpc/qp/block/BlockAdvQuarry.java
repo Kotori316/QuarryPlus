@@ -73,7 +73,7 @@ public class BlockAdvQuarry extends ADismCBlock {
             if (!worldIn.isRemote) {
                 TileAdvQuarry quarry = (TileAdvQuarry) worldIn.getTileEntity(pos);
                 if (quarry != null) {
-                    quarry.G_reinit();
+                    quarry.G_ReInit();
                     if (Config.content().noEnergy()) {
                         quarry.stickActivated(playerIn);
                     }

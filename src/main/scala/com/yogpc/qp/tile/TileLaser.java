@@ -228,22 +228,22 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
     }
 
     @Override
-    public void readFromNBT(final NBTTagCompound nbttc) {
-        super.readFromNBT(nbttc);
-        this.fortune = nbttc.getByte("fortune");
-        this.efficiency = nbttc.getByte("efficiency");
-        this.unbreaking = nbttc.getByte("unbreaking");
-        this.silktouch = nbttc.getBoolean("silktouch");
+    public void readFromNBT(final NBTTagCompound nbt) {
+        super.readFromNBT(nbt);
+        this.fortune = nbt.getByte("fortune");
+        this.efficiency = nbt.getByte("efficiency");
+        this.unbreaking = nbt.getByte("unbreaking");
+        this.silktouch = nbt.getBoolean("silktouch");
         PowerManager.configureLaser(this, this.efficiency, this.unbreaking);
     }
 
     @Override
-    public NBTTagCompound writeToNBT(final NBTTagCompound nbttc) {
-        nbttc.setByte("fortune", this.fortune);
-        nbttc.setByte("efficiency", this.efficiency);
-        nbttc.setByte("unbreaking", this.unbreaking);
-        nbttc.setBoolean("silktouch", this.silktouch);
-        return super.writeToNBT(nbttc);
+    public NBTTagCompound writeToNBT(final NBTTagCompound nbt) {
+        nbt.setByte("fortune", this.fortune);
+        nbt.setByte("efficiency", this.efficiency);
+        nbt.setByte("unbreaking", this.unbreaking);
+        nbt.setBoolean("silktouch", this.silktouch);
+        return super.writeToNBT(nbt);
     }
 
     @Override
@@ -258,6 +258,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
     }
 
     @Override
+    @SuppressWarnings("Duplicates")
     public Map<Integer, Integer> getEnchantments() {
         final Map<Integer, Integer> ret = new HashMap<>();
         if (this.efficiency > 0)
@@ -285,7 +286,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
     }
 
     @Override
-    public void G_reinit() {
+    public void G_ReInit() {
         PowerManager.configureLaser(this, this.efficiency, this.unbreaking);
     }
 

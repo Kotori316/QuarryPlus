@@ -9,7 +9,7 @@ import com.yogpc.qp.packet.advquarry.AdvModeMessage;
 import com.yogpc.qp.packet.advquarry.AdvRangeMessage;
 import com.yogpc.qp.packet.controller.AvailableEntities;
 import com.yogpc.qp.packet.controller.SetEntity;
-import com.yogpc.qp.packet.distiller.AnimatonMessage;
+import com.yogpc.qp.packet.distiller.AnimationMessage;
 import com.yogpc.qp.packet.enchantment.BlockListRequestMessage;
 import com.yogpc.qp.packet.enchantment.DiffMessage;
 import com.yogpc.qp.packet.enchantment.EnchantmentMessage;
@@ -78,12 +78,12 @@ public class PacketHandler {
         wrapper.registerMessage(handler, AdvFilterMessage.class, i++, Side.CLIENT);
         wrapper.registerMessage(handler, AdvFilterMessage.class, i++, Side.SERVER);
         wrapper.registerMessage(handler, AdvContentMessage.class, i++, Side.CLIENT);
-        //standalonepump
+        //adv pump
         wrapper.registerMessage(handler, AdvPumpStatusMessage.class, i++, Side.CLIENT);
         wrapper.registerMessage(handler, AdvPumpChangeMessage.class, i++, Side.SERVER);
         //distiller
-        wrapper.registerMessage(handler, AnimatonMessage.class, i++, Side.CLIENT);
-        //exppump
+        wrapper.registerMessage(handler, AnimationMessage.class, i++, Side.CLIENT);
+        //exp pump
         wrapper.registerMessage(handler, ExpPumpMessage.class, i++, Side.CLIENT);
         assert i > 0 : "Dummy Operation";
     }

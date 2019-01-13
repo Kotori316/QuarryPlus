@@ -46,7 +46,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.util.FakePlayer;
 
 /**
- * A dummy class for fakeplayers. Implemented to prevent crashing due to {@link NullPointerException} of connection.
+ * A dummy class for FakePlayers. Implemented to prevent crashing due to {@link NullPointerException} of connection.
  * Copied from {@link cofh.core.entity.NetServerHandlerFake}.
  */
 public class FakeHandler extends NetHandlerPlayServer {
