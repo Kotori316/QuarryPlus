@@ -126,10 +126,10 @@ public class PowerManager {
     }
 
     //What???
-    /*private static void configure15(final APowerTile pp, final double CE, final byte effciencyLevel, final byte unbreakingLevel,
+    /*private static void configure15(final APowerTile pp, final double CE, final byte efficiencyLevel, final byte unbreakingLevel,
                                     final double CU, final double XR, final double MS, final byte pump) {
-        pp.configure(XR * Math.pow(CE, effciencyLevel) / (unbreakingLevel * CU + 1),
-                MS * Math.pow(CE, effciencyLevel) / (unbreakingLevel * CU + 1)
+        pp.configure(XR * Math.pow(CE, efficiencyLevel) / (unbreakingLevel * CU + 1),
+                MS * Math.pow(CE, efficiencyLevel) / (unbreakingLevel * CU + 1)
                 + (pump > 0 ? 65536 * PumpDrain_BP / (pump * PumpDrain_CU + 1) + 1020 * PumpFrame_BP / (pump * PumpFrame_CU + 1) : 0));
     }*/
 
