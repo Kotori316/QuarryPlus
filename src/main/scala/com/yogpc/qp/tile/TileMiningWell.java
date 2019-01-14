@@ -36,7 +36,7 @@ import static jp.t2v.lab.syntax.MapStreamSyntax.entryToMap;
 public class TileMiningWell extends TileBasic implements ITickable {
     public static final scala.Symbol SYMBOL = scala.Symbol.apply("MiningwellPlus");
 
-    public boolean working;
+    private boolean working;
 
     @Override
     public void G_renew_powerConfigure() {
@@ -143,7 +143,7 @@ public class TileMiningWell extends TileBasic implements ITickable {
         }
     }
 
-    public void setWorking(boolean working) {
+    private void setWorking(boolean working) {
         this.working = working;
         if (working)
             startWork();

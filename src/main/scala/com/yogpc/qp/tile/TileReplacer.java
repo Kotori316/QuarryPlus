@@ -1,7 +1,11 @@
 package com.yogpc.qp.tile;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import com.yogpc.qp.QuarryPlusI;
@@ -18,15 +22,18 @@ import org.apache.commons.lang3.tuple.Pair;
 import scala.Symbol;
 
 import static com.yogpc.qp.tile.IAttachment.Attachments.REPLACER;
-import static jp.t2v.lab.syntax.MapStreamSyntax.byEntry;
-import static jp.t2v.lab.syntax.MapStreamSyntax.byValue;
-import static jp.t2v.lab.syntax.MapStreamSyntax.keyToAny;
-import static jp.t2v.lab.syntax.MapStreamSyntax.not;
-import static jp.t2v.lab.syntax.MapStreamSyntax.values;
+import static jp.t2v.lab.syntax.MapStreamSyntax.*;
 
 public class TileReplacer extends APacketTile implements IAttachment {
 
     public static final Symbol SYMBOL = Symbol.apply("Replacer");
+    private static final List<Predicate<IBlockState>> rejects = new ArrayList<>(Arrays.asList(
+        state -> Item.getItemFromBlock(state.getBlock()) == Items.AIR,
+        state -> state.getBlock().hasTileEntity(state),
+        state -> state.getMaterial() == Material.CIRCUITS,
+        TilePump::isLiquid,
+        s -> false
+    ));
     private EnumFacing facing;
     private boolean loading = false;
     private IBlockState toReplaceState = Blocks.AIR.getDefaultState();
@@ -64,18 +71,13 @@ public class TileReplacer extends APacketTile implements IAttachment {
                 .findFirst()
                 .orElse(null);
             setConnectTo(enumFacing);
-            IBlockState state = world.getBlockState(pos.up());
-            if (Item.getItemFromBlock(state.getBlock()) == Items.AIR ||
-                state.getBlock().hasTileEntity(state) ||
-                state.getMaterial() == Material.CIRCUITS ||
-                TilePump.isLiquid(state)) {
-                // Blocks should not be replaced with TileEntities.
-                // Material.CIRCUITS is for blocks which isn't normal.
-                // Liquid block cause crash.
-                toReplaceState = QuarryPlusI.dummyBlock().getDefaultState();
-            } else {
-                toReplaceState = state;
-            }
+            // Blocks should not be replaced with TileEntities.
+            // Material.CIRCUITS is for blocks which isn't normal.
+            // Liquid block cause crash.
+            Predicate<IBlockState> accept = rejects.stream().reduce(s -> false, Predicate::or).negate();
+            toReplaceState = Optional.of(world.getBlockState(pos.up()))
+                .filter(accept)
+                .orElse(QuarryPlusI.dummyBlock().getDefaultState());
         }
     }
 
