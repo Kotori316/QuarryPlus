@@ -49,7 +49,7 @@ public class TileMiningWell extends TileBasic implements ITickable {
             pmp = Optional.ofNullable(facingMap.get(IAttachment.Attachments.FLUID_PUMP))
                 .map(getPos()::offset)
                 .map(getWorld()::getTileEntity)
-                .map(IAttachment.Attachments.FLUID_PUMP)
+                .flatMap(IAttachment.Attachments.FLUID_PUMP)
                 .map(p -> p.unbreaking).orElse((byte) 0);
         }
 

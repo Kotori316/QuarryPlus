@@ -157,7 +157,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
             return false;
         Optional.ofNullable(facingMap.get(EXP_PUMP)).map(getPos()::offset)
             .map(getWorld()::getTileEntity)
-            .filter(EXP_PUMP).map(EXP_PUMP)
+            .flatMap(EXP_PUMP)
             .ifPresent(t -> {
                 double expEnergy = t.getEnergyUse(bi.i);
                 if (useEnergy(expEnergy, expEnergy, false, EnergyUsage.PUMP_EXP) == expEnergy) {
@@ -249,11 +249,11 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
 
     /**
      * @param stacks read only
-     * @param raws   read only
+     * @param raw   read only
      * @return The amount of xp by smelting items.
      */
-    public static int getSmeltingXp(Collection<ItemStack> stacks, Collection<ItemStack> raws) {
-        return stacks.stream().filter(not(raws::contains)).mapToInt(stack ->
+    public static int getSmeltingXp(Collection<ItemStack> stacks, Collection<ItemStack> raw) {
+        return stacks.stream().filter(not(raw::contains)).mapToInt(stack ->
             floorFloat(FurnaceRecipes.instance().getSmeltingExperience(stack) * VersionUtil.getCount(stack))).sum();
     }
 

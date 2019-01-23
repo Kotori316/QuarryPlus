@@ -53,6 +53,7 @@ import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.ForgeChunkManager.Type;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.apache.commons.lang3.BooleanUtils;
 import scala.Symbol;
 
 import static com.yogpc.qp.tile.IAttachment.Attachments.EXP_PUMP;
@@ -172,7 +173,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                         this.targetX == this.xMin || this.targetX == this.xMax,
                         this.targetY == this.yMin || this.targetY == this.yMax,
                         this.targetZ == this.zMin || this.targetZ == this.zMax)
-                        .mapToInt(bool -> bool.compareTo(false))
+                        .mapToInt(BooleanUtils::toInteger)
                         .sum() < 2; // true if 0 or 1 condition is true.
                 }
                 return true;
@@ -349,11 +350,10 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                     this.energy = pump.getEnergyUse(xp);
                 }
             }
-            Optional.ofNullable(world.getTileEntity(pos.offset(facingMap.get(EXP_PUMP)))).filter(EXP_PUMP).map(EXP_PUMP)
-                .map(Stream::of).orElseGet(Stream::empty)
+            Optional.ofNullable(world.getTileEntity(pos.offset(facingMap.get(EXP_PUMP)))).flatMap(EXP_PUMP)
                 .map(p -> new Data(xpOrbs.stream().filter(EntityXPOrb::isEntityAlive).mapToInt(EntityXPOrb::getXpValue).sum(), p))
                 .filter(data -> useEnergy(data.energy, data.energy, false, EnergyUsage.PUMP_EXP) == data.energy)
-                .forEach(data -> {
+                .ifPresent(data -> {
                     useEnergy(data.energy, data.energy, true, EnergyUsage.PUMP_EXP);
                     data.pump.addXp(data.xp);
                     xpOrbs.forEach(QuarryPlus.proxy::removeEntity);
@@ -446,8 +446,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
         else {
             return Optional.ofNullable(facingMap.get(REPLACER))
                 .map(pos::offset).map(world::getTileEntity)
-                .filter(REPLACER)
-                .map(REPLACER)
+                .flatMap(REPLACER)
                 .map(TileReplacer::getReplaceState)
                 .orElse(Blocks.AIR.getDefaultState());
         }
@@ -665,7 +664,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
             pmp = Optional.ofNullable(facingMap.get(FLUID_PUMP))
                 .map(getPos()::offset)
                 .map(getWorld()::getTileEntity)
-                .map(FLUID_PUMP)
+                .flatMap(FLUID_PUMP)
                 .map(p -> p.unbreaking)
                 .orElse((byte) 0);
         }

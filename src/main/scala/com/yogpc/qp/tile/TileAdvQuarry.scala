@@ -11,7 +11,7 @@ import com.yogpc.qp.packet.PacketHandler
 import com.yogpc.qp.packet.advquarry.{AdvContentMessage, AdvModeMessage}
 import com.yogpc.qp.tile.IAttachment.Attachments
 import com.yogpc.qp.tile.TileAdvQuarry._
-import com.yogpc.qp.utils.{BlockWrapper, INBTReadable, INBTWritable, ItemElement, NotNullList, Reason, ReflectionHelper}
+import com.yogpc.qp.utils._
 import com.yogpc.qp.version.VersionUtil
 import com.yogpc.qp.{Config, PowerManager, QuarryPlus, QuarryPlusI, _}
 import javax.annotation.Nonnull
@@ -28,7 +28,7 @@ import net.minecraft.nbt.{NBTTagCompound, NBTTagList, NBTTagLong}
 import net.minecraft.util.math.BlockPos.MutableBlockPos
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos, ChunkPos}
 import net.minecraft.util.text.TextComponentString
-import net.minecraft.util.{EnumFacing, EnumHand, ITickable, NonNullList, ResourceLocation}
+import net.minecraft.util._
 import net.minecraft.world.{World, WorldServer}
 import net.minecraftforge.common.ForgeChunkManager.Type
 import net.minecraftforge.common.capabilities.Capability
@@ -701,7 +701,7 @@ class TileAdvQuarry extends APowerTile
   private def getFillBlock: IBlockState = {
     facingMap.get(Attachments.REPLACER)
       .flatMap(f => getWorld.getTileEntity(getPos.offset(f)).toOption)
-      .collect { case t if Attachments.REPLACER.test(t) => Attachments.REPLACER.apply(t) }
+      .flatMap(t => Attachments.REPLACER.apply(t).asScala)
       .fold(Blocks.AIR.getDefaultState)(_.getReplaceState)
   }
 

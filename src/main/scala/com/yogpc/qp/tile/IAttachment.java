@@ -2,6 +2,7 @@ package com.yogpc.qp.tile;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -18,7 +19,7 @@ public interface IAttachment {
      */
     public void setConnectTo(@Nullable EnumFacing connectTo);
 
-    static class Attachments<T extends APacketTile> implements Predicate<TileEntity>, Function<TileEntity, T> {
+    static class Attachments<T extends APacketTile> implements Predicate<TileEntity>, Function<TileEntity, Optional<T>> {
         public static final Attachments<TilePump> FLUID_PUMP = new Attachments<>("FLUID_PUMP");
         public static final Attachments<TileExpPump> EXP_PUMP = new Attachments<>("EXP_PUMP");
         public static final Attachments<TileReplacer> REPLACER = new Attachments<>("REPLACER");
@@ -56,13 +57,21 @@ public interface IAttachment {
         }
 
         @Override
-        public boolean test(TileEntity tileEntity) {
-            return clazz.isInstance(tileEntity);
+        public Optional<T> apply(TileEntity tileEntity) {
+            if (clazz.isInstance(tileEntity)) {
+                return Optional.of(clazz.cast(tileEntity));
+            }
+            return Optional.empty();
         }
 
         @Override
+        public boolean test(TileEntity tileEntity) {
+            return clazz.isInstance(tileEntity);
+        }
+/*
+        @Override
         public T apply(TileEntity tileEntity) {
             return clazz.cast(tileEntity);
-        }
+        }*/
     }
 }
