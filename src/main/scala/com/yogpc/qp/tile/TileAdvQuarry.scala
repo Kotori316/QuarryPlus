@@ -25,10 +25,10 @@ import net.minecraft.init.Blocks
 import net.minecraft.item.crafting.FurnaceRecipes
 import net.minecraft.item.{ItemBlock, ItemStack}
 import net.minecraft.nbt.{NBTTagCompound, NBTTagList, NBTTagLong}
+import net.minecraft.util._
 import net.minecraft.util.math.BlockPos.MutableBlockPos
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos, ChunkPos}
 import net.minecraft.util.text.TextComponentString
-import net.minecraft.util._
 import net.minecraft.world.{World, WorldServer}
 import net.minecraftforge.common.ForgeChunkManager.Type
 import net.minecraftforge.common.capabilities.Capability
@@ -1102,23 +1102,29 @@ object TileAdvQuarry {
     val maxY = digRange.maxY
     val minZ = digRange.minZ
     val maxZ = digRange.maxZ
-    for (i <- 0 to 4) {
+    var i = 0
+    while (i <= 4) {
       builder += new BlockPos(minX - 1, maxY + 4 - i, minZ - 1)
       builder += new BlockPos(minX - 1, maxY + 4 - i, maxZ + 1)
       builder += new BlockPos(maxX + 1, maxY + 4 - i, maxZ + 1)
       builder += new BlockPos(maxX + 1, maxY + 4 - i, minZ - 1)
+      i += 1
     }
-    for (x <- minX to maxX) {
+    var x = minX
+    while (x <= maxX) {
       builder += new BlockPos(x, maxY + 4, minZ - 1)
       builder += new BlockPos(x, maxY + 0, minZ - 1)
       builder += new BlockPos(x, maxY + 0, maxZ + 1)
       builder += new BlockPos(x, maxY + 4, maxZ + 1)
+      x += 1
     }
-    for (z <- minZ to maxZ) {
+    var z = minZ
+    while (z <= maxZ) {
       builder += new BlockPos(minX - 1, maxY + 4, z)
       builder += new BlockPos(minX - 1, maxY + 0, z)
       builder += new BlockPos(maxX + 1, maxY + 0, z)
       builder += new BlockPos(maxX + 1, maxY + 4, z)
+      z += 1
     }
     builder.result()
   }
