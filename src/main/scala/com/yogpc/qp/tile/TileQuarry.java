@@ -74,7 +74,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     public boolean filler;
 
     /**
-     * The marker of {@link IAreaProvider} or {@link TileMarker}.
+     * The marker of {@link IAreaProvider} or {@link IMarker}.
      */
     @Nullable
     private Object areaProvider = null;
@@ -88,8 +88,8 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     protected void S_updateEntity() {
         if (machineDisabled) return;
         if (this.areaProvider != null) {
-            if (this.areaProvider instanceof TileMarker)
-                this.cacheItems.addAll(((TileMarker) this.areaProvider).removeFromWorldWithItem());
+            if (this.areaProvider instanceof IMarker)
+                this.cacheItems.addAll(((IMarker) this.areaProvider).removeFromWorldWithItem());
             else if (bcLoaded && areaProvider instanceof IAreaProvider) {
                 ((IAreaProvider) this.areaProvider).removeFromWorld();
             }
@@ -403,36 +403,33 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                 setDefaultRange(getPos(), facing);
             }
         } else {
-            Optional<TileMarker> marker = Stream.of(getNeighbors(facing))
+            Optional<IMarker> marker = Stream.of(getNeighbors(facing))
                 .map(getWorld()::getTileEntity)
-                .filter(t -> t instanceof TileMarker)
-                .map(t -> (TileMarker) t).findFirst();
+                .flatMap(IMarker.flatMapper())
+                .filter(IMarker::hasLink)
+                .findFirst();
             if (marker.isPresent()) {
-                TileMarker tileMarker = marker.get();
-                if (tileMarker.link == null) {
+                IMarker iMarker = marker.get();
+                this.xMin = iMarker.min().getX();
+                this.yMin = iMarker.min().getY();
+                this.zMin = iMarker.min().getZ();
+                this.xMax = iMarker.max().getX();
+                this.yMax = iMarker.max().getY();
+                this.zMax = iMarker.max().getZ();
+                if (getPos().getX() >= this.xMin && getPos().getX() <= this.xMax && getPos().getY() >= this.yMin
+                    && getPos().getY() <= this.yMax && getPos().getZ() >= this.zMin && getPos().getZ() <= this.zMax) {
+                    this.yMax = Integer.MIN_VALUE;
                     setDefaultRange(getPos(), facing);
-                } else {
-                    this.xMin = tileMarker.min().getX();
-                    this.yMin = tileMarker.min().getY();
-                    this.zMin = tileMarker.min().getZ();
-                    this.xMax = tileMarker.max().getX();
-                    this.yMax = tileMarker.max().getY();
-                    this.zMax = tileMarker.max().getZ();
-                    if (getPos().getX() >= this.xMin && getPos().getX() <= this.xMax && getPos().getY() >= this.yMin
-                        && getPos().getY() <= this.yMax && getPos().getZ() >= this.zMin && getPos().getZ() <= this.zMax) {
-                        this.yMax = Integer.MIN_VALUE;
-                        setDefaultRange(getPos(), facing);
-                        return;
-                    }
-                    if (this.xMax - this.xMin < 2 || this.zMax - this.zMin < 2) {
-                        this.yMax = Integer.MIN_VALUE;
-                        setDefaultRange(getPos(), facing);
-                        return;
-                    }
-                    if (this.yMax - this.yMin < 2)
-                        this.yMax = this.yMin + 3;
-                    areaProvider = tileMarker;
+                    return;
                 }
+                if (this.xMax - this.xMin < 2 || this.zMax - this.zMin < 2) {
+                    this.yMax = Integer.MIN_VALUE;
+                    setDefaultRange(getPos(), facing);
+                    return;
+                }
+                if (this.yMax - this.yMin < 2)
+                    this.yMax = this.yMin + 3;
+                areaProvider = iMarker;
             } else {
                 setDefaultRange(getPos(), facing);
             }
@@ -714,9 +711,9 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     @Override
     @SideOnly(Side.CLIENT)
     public double getMaxRenderDistanceSquared() {
-        if ((now == Mode.NOT_NEED_BREAK || now == Mode.MAKE_FRAME) && yMax != Integer.MIN_VALUE) {
+        if ((now == NOT_NEED_BREAK || now == MAKE_FRAME) && yMax != Integer.MIN_VALUE) {
             return (xMax - xMin) * (xMax - xMin) + 25 + (zMax - zMin) * (zMax - zMin);
-        } else if (now == Mode.BREAK_BLOCK || now == Mode.MOVE_HEAD) {
+        } else if (now == BREAK_BLOCK || now == MOVE_HEAD) {
             return (xMax - xMin) * (xMax - xMin) + yMax * yMax + (zMax - zMin) * (zMax - zMin);
         } else {
             return super.getMaxRenderDistanceSquared();

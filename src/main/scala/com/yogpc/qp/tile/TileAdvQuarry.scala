@@ -645,7 +645,7 @@ class TileAdvQuarry extends APowerTile
   def makeRangeBox(): DigRange = {
     val facing = getWorld.getBlockState(getPos).getValue(ADismCBlock.FACING).getOpposite
     val link = getNeighbors(facing).map(getWorld.getTileEntity(_))
-      .collectFirst { case m: TileMarker if m.link != null =>
+      .collectFirst { case m: IMarker if m.hasLink =>
         val poses = (m.min().add(+1, 0, +1), m.max().add(-1, 0, -1))
         m.removeFromWorldWithItem().asScala.foreach(cacheItems.add)
         poses

@@ -62,7 +62,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import scala.Symbol;
 
 @Optional.Interface(iface = "buildcraft.api.tiles.ITileAreaProvider", modid = QuarryPlus.Optionals.Buildcraft_tiles)
-public class TileMarker extends APacketTile implements ITileAreaProvider, ITickable, IChunkLoadTile, IDebugSender {
+public class TileMarker extends APacketTile implements ITileAreaProvider, ITickable, IChunkLoadTile, IDebugSender, IMarker {
     public static final List<Link> linkList = Collections.synchronizedList(new ArrayList<>());
     public static final List<Laser> laserList = Collections.synchronizedList(new ArrayList<>());
     public static final IndexOnlyList<Link> LINK_INDEX = new IndexOnlyList<>(linkList, linkList);
@@ -103,6 +103,11 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
     }
 
     @Override
+    public boolean hasLink() {
+        return link != null && link.xMin != link.xMax && link.zMin != link.zMax;
+    }
+
+    @Override
     public BlockPos min() {
         return this.link == null ? getPos() : link.minPos();
     }
@@ -125,6 +130,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
         }
     }
 
+    @Override
     public List<ItemStack> removeFromWorldWithItem() {
         if (this.link != null)
             return this.link.removeConnection(true);

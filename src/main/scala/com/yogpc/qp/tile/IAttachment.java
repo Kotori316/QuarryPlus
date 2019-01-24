@@ -68,10 +68,6 @@ public interface IAttachment {
         public boolean test(TileEntity tileEntity) {
             return clazz.isInstance(tileEntity);
         }
-/*
-        @Override
-        public T apply(TileEntity tileEntity) {
-            return clazz.cast(tileEntity);
-        }*/
+
     }
 }
