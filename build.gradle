@@ -157,6 +157,8 @@ curseforge {
         changelog = new File("temp_changelog.md")
         releaseType = 'release'
         mainArtifact jar
+        addArtifact srcJar
+        addArtifact deobfJar
         afterEvaluate {
             gameVersionStrings.remove('Java 8')
             gameVersionStrings.remove('Java 9')

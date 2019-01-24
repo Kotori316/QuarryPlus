@@ -59,9 +59,9 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
     paths.clear()
     if (!ench.square && ench.fortune >= 3) {
       EnumFacing.HORIZONTALS.map(f => getWorld.getTileEntity(getPos.offset(f))).collectFirst {
-        case marker: TileMarker if marker.link != null => marker
+        case marker: IMarker if marker.hasLink => marker
       }.foreach(marker => {
-        ench = ench.copy(start = marker.link.minPos(), end = marker.link.maxPos())
+        ench = ench.copy(start = marker.min(), end = marker.max())
         marker.removeFromWorldWithItem().asScala.foreach(s =>
           InventoryHelper.spawnItemStack(getWorld, getPos.getX + 0.5, getPos.getY + 1, getPos.getZ + 0.5, s))
       })

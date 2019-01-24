@@ -21,7 +21,6 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import buildcraft.api.core.IAreaProvider;
-import buildcraft.api.tiles.ITileAreaProvider;
 import buildcraft.api.tiles.TilesAPI;
 import com.yogpc.qp.PowerManager;
 import com.yogpc.qp.QuarryPlus;
@@ -66,6 +65,7 @@ import static com.yogpc.qp.tile.TileQuarry.Mode.NONE;
 import static com.yogpc.qp.tile.TileQuarry.Mode.NOT_NEED_BREAK;
 import static jp.t2v.lab.syntax.MapStreamSyntax.byEntry;
 import static jp.t2v.lab.syntax.MapStreamSyntax.entryToMap;
+import static jp.t2v.lab.syntax.MapStreamSyntax.streamCast;
 
 public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTile {
     public static final Symbol SYMBOL = Symbol.apply("QuarryPlus");
@@ -369,11 +369,13 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
 
         EnumFacing facing = getWorld().getBlockState(getPos()).getValue(BlockQuarry.FACING).getOpposite();
         if (bcLoaded) {
-            Optional<ITileAreaProvider> marker = Stream.of(getNeighbors(facing))
+            Optional<IAreaProvider> marker = Stream.of(getNeighbors(facing))
                 .map(getWorld()::getTileEntity).filter(Objects::nonNull)
-                .map(t -> t.getCapability(TilesAPI.CAP_TILE_AREA_PROVIDER, null)).filter(nonNull).findFirst();
+                .flatMap(t ->
+                    Stream.concat(streamCast(IAreaProvider.class).apply(t), Stream.of(t.getCapability(TilesAPI.CAP_TILE_AREA_PROVIDER, null)))
+                ).filter(nonNull).findFirst();
             if (marker.isPresent()) {
-                ITileAreaProvider provider = marker.get();
+                IAreaProvider provider = marker.get();
                 if (provider.min().getX() == provider.max().getX() || provider.min().getZ() == provider.max().getZ()) {
                     setDefaultRange(getPos(), facing);
                 } else {
@@ -399,42 +401,39 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                         this.yMax = this.yMin + 3;
                     areaProvider = provider;
                 }
-            } else {
-                setDefaultRange(getPos(), facing);
-            }
-        } else {
-            Optional<IMarker> marker = Stream.of(getNeighbors(facing))
-                .map(getWorld()::getTileEntity)
-                .flatMap(IMarker.flatMapper)
-                .filter(IMarker::hasLink)
-                .findFirst();
-            if (marker.isPresent()) {
-                IMarker iMarker = marker.get();
-                this.xMin = iMarker.min().getX();
-                this.yMin = iMarker.min().getY();
-                this.zMin = iMarker.min().getZ();
-                this.xMax = iMarker.max().getX();
-                this.yMax = iMarker.max().getY();
-                this.zMax = iMarker.max().getZ();
-                if (getPos().getX() >= this.xMin && getPos().getX() <= this.xMax && getPos().getY() >= this.yMin
-                    && getPos().getY() <= this.yMax && getPos().getZ() >= this.zMin && getPos().getZ() <= this.zMax) {
-                    this.yMax = Integer.MIN_VALUE;
-                    setDefaultRange(getPos(), facing);
-                    return;
-                }
-                if (this.xMax - this.xMin < 2 || this.zMax - this.zMin < 2) {
-                    this.yMax = Integer.MIN_VALUE;
-                    setDefaultRange(getPos(), facing);
-                    return;
-                }
-                if (this.yMax - this.yMin < 2)
-                    this.yMax = this.yMin + 3;
-                areaProvider = iMarker;
-            } else {
-                setDefaultRange(getPos(), facing);
+                return;
             }
         }
-
+        Optional<IMarker> marker = Stream.of(getNeighbors(facing))
+            .map(getWorld()::getTileEntity)
+            .flatMap(streamCast(IMarker.class))
+            .filter(IMarker::hasLink)
+            .findFirst();
+        if (marker.isPresent()) {
+            IMarker iMarker = marker.get();
+            this.xMin = iMarker.min().getX();
+            this.yMin = iMarker.min().getY();
+            this.zMin = iMarker.min().getZ();
+            this.xMax = iMarker.max().getX();
+            this.yMax = iMarker.max().getY();
+            this.zMax = iMarker.max().getZ();
+            if (getPos().getX() >= this.xMin && getPos().getX() <= this.xMax && getPos().getY() >= this.yMin
+                && getPos().getY() <= this.yMax && getPos().getZ() >= this.zMin && getPos().getZ() <= this.zMax) {
+                this.yMax = Integer.MIN_VALUE;
+                setDefaultRange(getPos(), facing);
+                return;
+            }
+            if (this.xMax - this.xMin < 2 || this.zMax - this.zMin < 2) {
+                this.yMax = Integer.MIN_VALUE;
+                setDefaultRange(getPos(), facing);
+                return;
+            }
+            if (this.yMax - this.yMin < 2)
+                this.yMax = this.yMin + 3;
+            areaProvider = iMarker;
+        } else {
+            setDefaultRange(getPos(), facing);
+        }
     }
 
     protected IBlockState S_getFillBlock() {

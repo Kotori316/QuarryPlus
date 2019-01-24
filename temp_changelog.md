@@ -1,9 +1,13 @@
-Version 0.10.8
+# Version 0.10.9
+## Changes
+* Fixed a problem where quarry didn't find a marker which implemented buildcraft.api.core.IAreaProvider.
+* Changed logic to search markers.
+
+# Version 0.10.8
 ## Changes
 * Internal changes
 
-Version 0.10.7
-
+# Version 0.10.7
 ## Changes
 * Fixed a crash due to NullPointerException in FakePlayer. [#41](https://github.com/Kotori316/QuarryPlus/issues/41)
 * Updated for new JEI newer than 4.12.0

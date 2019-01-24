@@ -32,6 +32,7 @@ import com.yogpc.qp.gui.TranslationKeys;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.laser.LaserAverageMessage;
 import com.yogpc.qp.packet.laser.LaserMessage;
+import jp.t2v.lab.syntax.MapStreamSyntax;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -95,7 +96,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
             long maxPower = (long) (PowerManager.simulateEnergyLaser(this, this.unbreaking, this.fortune, this.silktouch, this.efficiency) * MjAPI.MJ);
             List<ILaserTarget> targetList = targets.stream()
                 .map(getWorld()::getTileEntity)
-                .map(ILaserTarget.class::cast)
+                .flatMap(MapStreamSyntax.streamCast(ILaserTarget.class))
                 .filter(t -> !Objects.requireNonNull(t).isInvalidTarget() && t.getRequiredLaserPower() > 0)
                 .collect(Collectors.toList());
             if (!targetList.isEmpty()) {

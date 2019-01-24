@@ -1,8 +1,6 @@
 package com.yogpc.qp.tile;
 
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Stream;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -30,14 +28,4 @@ public interface IMarker {
      */
     List<ItemStack> removeFromWorldWithItem();
 
-    /**
-     * Helper method for flatMap.
-     */
-    static Function<TileEntity, Stream<IMarker>> flatMapper =
-        tileEntity -> {
-            if (tileEntity instanceof IMarker) {
-                return Stream.of((IMarker) tileEntity);
-            }
-            return Stream.empty();
-        };
 }
