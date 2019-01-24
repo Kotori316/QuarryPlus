@@ -1,3 +1,7 @@
+Version 0.10.8
+## Changes
+* Internal changes
+
 Version 0.10.7
 
 ## Changes

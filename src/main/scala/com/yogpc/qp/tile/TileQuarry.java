@@ -405,7 +405,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
         } else {
             Optional<IMarker> marker = Stream.of(getNeighbors(facing))
                 .map(getWorld()::getTileEntity)
-                .flatMap(IMarker.flatMapper())
+                .flatMap(IMarker.flatMapper)
                 .filter(IMarker::hasLink)
                 .findFirst();
             if (marker.isPresent()) {

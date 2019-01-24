@@ -33,12 +33,11 @@ public interface IMarker {
     /**
      * Helper method for flatMap.
      */
-    static Function<TileEntity, Stream<IMarker>> flatMapper() {
-        return tileEntity -> {
+    static Function<TileEntity, Stream<IMarker>> flatMapper =
+        tileEntity -> {
             if (tileEntity instanceof IMarker) {
                 return Stream.of((IMarker) tileEntity);
             }
             return Stream.empty();
         };
-    }
 }
