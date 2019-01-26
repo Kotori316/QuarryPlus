@@ -1,3 +1,9 @@
+# Version 0.11.0
+## Changes
+* Remove pipes when MiningwellPlus is removed. Close #42
+* Fixed java.lang.NullPointerException at EnergyDebug#getTime when tile is loaded.
+* Config now outputs quarryplus_noDigBlocks.json.
+
 # Version 0.10.9
 ## Changes
 * Fixed a problem where quarry didn't find a marker which implemented buildcraft.api.core.IAreaProvider.
