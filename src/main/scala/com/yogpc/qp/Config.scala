@@ -150,11 +150,12 @@ object Config {
 
     import scala.collection.JavaConverters._
 
-    val path: Path = configuration.getConfigFile.toPath.getParent.resolve("QuarryPlus_noDigBlocks.json")
+    val path: Path = configuration.getConfigFile.toPath.getParent.resolve("quarryplus_noDigBlocks.json")
     val noDigBLOCKS: Set[BlockWrapper] = if (Files.exists(path)) {
       val str = Files.readAllLines(path).asScala.reduce(_ + _)
       Try(BlockWrapper.getWrapper(str)).recover { case NonFatal(e) => e.printStackTrace(); TileAdvQuarry.noDigBLOCKS }.getOrElse(TileAdvQuarry.noDigBLOCKS)
     } else {
+      Files.write(path, BlockWrapper.getString(TileAdvQuarry.noDigBLOCKS.toSeq).split(System.lineSeparator()).toSeq.asJava)
       TileAdvQuarry.noDigBLOCKS
     }
   }
