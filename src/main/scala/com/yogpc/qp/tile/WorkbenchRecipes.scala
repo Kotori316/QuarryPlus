@@ -113,11 +113,11 @@ object WorkbenchRecipes {
     def multiple: Double
   }
 
-  protected val UnitMJ = new EnergyUnit {
+  protected val UnitMJ: EnergyUnit = new EnergyUnit {
     override val multiple: Double = 1
   }
 
-  val UnitRF = new EnergyUnit {
+  val UnitRF: EnergyUnit = new EnergyUnit {
     override val multiple: Double = 0.1
   }
 
