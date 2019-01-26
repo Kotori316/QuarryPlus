@@ -133,13 +133,17 @@ public class TileMiningWell extends TileBasic implements ITickable {
             working = false; //TODO method cause loop. -> check.
             G_renew_powerConfigure();
             PacketHandler.sendToAround(TileMessage.create(this), getWorld(), getPos());
-            BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(getPos());
-            for (int depth = getPos().getY() - 1; depth > 0; depth--) {
-                pos.setY(depth);
-                if (getWorld().getBlockState(pos).getBlock() != QuarryPlusI.blockPlainPipe())
-                    break;
-                getWorld().setBlockToAir(pos);
-            }
+            removePipes();
+        }
+    }
+
+    public void removePipes() {
+        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(getPos());
+        for (int depth = getPos().getY() - 1; depth > 0; depth--) {
+            pos.setY(depth);
+            if (getWorld().getBlockState(pos).getBlock() != QuarryPlusI.blockPlainPipe())
+                break;
+            getWorld().setBlockToAir(pos);
         }
     }
 

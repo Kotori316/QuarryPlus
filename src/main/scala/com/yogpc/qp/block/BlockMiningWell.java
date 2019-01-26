@@ -105,6 +105,7 @@ public class BlockMiningWell extends ADismCBlock {
         if (!worldIn.isRemote) {
             TileMiningWell tile = (TileMiningWell) worldIn.getTileEntity(pos);
             if (tile != null) {
+                tile.removePipes();
                 final int count = quantityDropped(state, 0, worldIn.rand);
                 final Item it = getItemDropped(state, worldIn.rand, 0);
                 for (int i = 0; i < count; i++) {
