@@ -1,3 +1,7 @@
+# Version 0.11.1
+## Changes
+* Prevented SolidQuarry from being extracted from fuel slot. Close #43.
+
 # Version 0.11.0
 ## Changes
 * Remove pipes when MiningwellPlus is removed. Close #42

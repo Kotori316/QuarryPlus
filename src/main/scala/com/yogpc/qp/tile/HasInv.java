@@ -1,8 +1,11 @@
 package com.yogpc.qp.tile;
 
 import com.yogpc.qp.version.VersionUtil;
+import javax.annotation.Nonnull;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.wrapper.InvWrapper;
 
 public interface HasInv extends net.minecraft.inventory.IInventory {
 
@@ -91,5 +94,15 @@ public interface HasInv extends net.minecraft.inventory.IInventory {
 
     @Override
     default void clear() {
+    }
+
+    default IItemHandlerModifiable createHandler() {
+        return new InvWrapper(this) {
+            @Nonnull
+            @Override
+            public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+                return stack;
+            }
+        };
     }
 }

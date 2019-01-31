@@ -62,7 +62,6 @@ import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.wrapper.InvWrapper;
 
 import static com.yogpc.qp.tile.IAttachment.Attachments.ALL;
 import static com.yogpc.qp.tile.IAttachment.Attachments.EXP_PUMP;
@@ -85,13 +84,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     protected byte efficiency;
 
     protected final LinkedList<ItemStack> cacheItems = new LinkedList<>();
-    protected final IItemHandler handler = new InvWrapper(this) {
-        @Nonnull
-        @Override
-        public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-            return stack;
-        }
-    };
+    protected final IItemHandler handler = createHandler();
 
     protected Map<Integer, Integer> ench = new HashMap<>();
 
@@ -249,7 +242,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
 
     /**
      * @param stacks read only
-     * @param raw   read only
+     * @param raw    read only
      * @return The amount of xp by smelting items.
      */
     public static int getSmeltingXp(Collection<ItemStack> stacks, Collection<ItemStack> raw) {

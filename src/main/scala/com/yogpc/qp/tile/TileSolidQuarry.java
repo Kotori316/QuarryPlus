@@ -5,6 +5,7 @@ import java.util.List;
 import com.yogpc.qp.block.BlockSolidQuarry;
 import com.yogpc.qp.gui.TranslationKeys;
 import com.yogpc.qp.version.VersionUtil;
+import javax.annotation.Nonnull;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -13,6 +14,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.wrapper.InvWrapper;
 import scala.Symbol;
 
 public class TileSolidQuarry extends TileQuarry {
@@ -137,6 +140,17 @@ public class TileSolidQuarry extends TileQuarry {
     @Override
     public boolean isEmpty() {
         return super.isEmpty() && VersionUtil.isEmpty(fuel);
+    }
+
+    @Override
+    public IItemHandlerModifiable createHandler() {
+        return new InvWrapper(this) {
+            @Nonnull
+            @Override
+            public ItemStack extractItem(int slot, int amount, boolean simulate) {
+                return slot == 0 ? ItemStack.EMPTY : super.extractItem(slot, amount, simulate);
+            }
+        };
     }
 
     @Override
