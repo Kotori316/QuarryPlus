@@ -87,4 +87,57 @@ public class MapStreamSyntax {
     public static <T> Function<Object, Stream<T>> streamCast(Class<T> aClass) {
         return o -> Stream.of(o).filter(aClass::isInstance).map(aClass::cast);
     }
+
+    private static final Predicate<Object> ALWAYS_FALSE = new Predicate<Object>() {
+        @Override
+        public boolean test(Object o) {
+            return false;
+        }
+
+        @Override
+        public Predicate<Object> negate() {
+            return ALWAYS_TRUE;
+        }
+
+        @Override
+        public Predicate<Object> or(Predicate<? super Object> other) {
+            return other;
+        }
+
+        @Override
+        public Predicate<Object> and(Predicate<? super Object> other) {
+            return this;
+        }
+    };
+    private static final Predicate<Object> ALWAYS_TRUE = new Predicate<Object>() {
+        @Override
+        public boolean test(Object o) {
+            return true;
+        }
+
+        @Override
+        public Predicate<Object> negate() {
+            return ALWAYS_FALSE;
+        }
+
+        @Override
+        public Predicate<Object> or(Predicate<? super Object> other) {
+            return this;
+        }
+
+        @Override
+        public Predicate<Object> and(Predicate<? super Object> other) {
+            return other;
+        }
+    };
+
+    @SuppressWarnings("unchecked")
+    public static <T> Predicate<T> always_false() {
+        return (Predicate<T>) ALWAYS_FALSE;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> Predicate<T> always_true() {
+        return (Predicate<T>) ALWAYS_TRUE;
+    }
 }

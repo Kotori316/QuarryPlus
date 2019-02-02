@@ -1,10 +1,10 @@
 # Version 0.11.1
 ## Changes
-* Prevented SolidQuarry from being extracted from fuel slot. Close #43.
+* Now SolidQuarry doesn't push fuels to hopper. Close [#43](https://github.com/Kotori316/QuarryPlus/issues/43).
 
 # Version 0.11.0
 ## Changes
-* Remove pipes when MiningwellPlus is removed. Close #42
+* Remove pipes when MiningwellPlus is removed. Close [#42](https://github.com/Kotori316/QuarryPlus/issues/42)
 * Fixed java.lang.NullPointerException at EnergyDebug#getTime when tile is loaded.
 * Config now outputs quarryplus_noDigBlocks.json.
 

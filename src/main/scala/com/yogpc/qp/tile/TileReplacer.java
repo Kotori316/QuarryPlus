@@ -32,7 +32,7 @@ public class TileReplacer extends APacketTile implements IAttachment {
         state -> state.getBlock().hasTileEntity(state),
         state -> state.getMaterial() == Material.CIRCUITS,
         TilePump::isLiquid,
-        s -> false
+        always_false()
     ));
     private EnumFacing facing;
     private boolean loading = false;
@@ -74,7 +74,7 @@ public class TileReplacer extends APacketTile implements IAttachment {
             // Blocks should not be replaced with TileEntities.
             // Material.CIRCUITS is for blocks which isn't normal.
             // Liquid block cause crash.
-            Predicate<IBlockState> accept = rejects.stream().reduce(s -> false, Predicate::or).negate();
+            Predicate<IBlockState> accept = rejects.stream().reduce(always_false(), Predicate::or).negate();
             toReplaceState = Optional.of(world.getBlockState(pos.up()))
                 .filter(accept)
                 .orElse(QuarryPlusI.dummyBlock().getDefaultState());

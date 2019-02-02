@@ -16,6 +16,7 @@ package com.yogpc.qp.item;
 import java.util.function.Predicate;
 
 import javax.annotation.Nonnull;
+import jp.t2v.lab.syntax.MapStreamSyntax;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.init.Enchantments;
 import net.minecraft.item.Item;
@@ -32,7 +33,7 @@ public interface IEnchantableItem {
      */
     boolean canMove(@Nonnull ItemStack is, Enchantment enchantment);
 
-    Predicate<Enchantment> FALSE = o -> false;
+    Predicate<Enchantment> FALSE = MapStreamSyntax.always_false();
     Predicate<Enchantment> SILKTOUCH = Predicate.isEqual(Enchantments.SILK_TOUCH);
     Predicate<Enchantment> FORTUNE = Predicate.isEqual(Enchantments.FORTUNE);
     Predicate<Enchantment> EFFICIENCY = Predicate.isEqual(Enchantments.EFFICIENCY);
