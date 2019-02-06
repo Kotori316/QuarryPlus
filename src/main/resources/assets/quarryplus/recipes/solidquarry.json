@@ -22,5 +22,11 @@
   "result": {
     "item": "quarryplus:solidquarry",
     "count": 1
-  }
+  },
+  "conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "SolidFuleQuarry"
+    }
+  ]
 }

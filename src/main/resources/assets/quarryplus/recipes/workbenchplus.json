@@ -22,5 +22,11 @@
   "result": {
     "item": "quarryplus:workbenchplus",
     "count": 1
-  }
+  },
+  "conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "WorkbenchPlus"
+    }
+  ]
 }

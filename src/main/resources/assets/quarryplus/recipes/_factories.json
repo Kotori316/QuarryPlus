@@ -1,0 +1,5 @@
+{
+  "conditions": {
+    "machine_enabled": "com.yogpc.qp.utils.EnableCondition"
+  }
+}
