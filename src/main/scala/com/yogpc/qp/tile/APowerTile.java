@@ -153,11 +153,6 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
         return super.writeToNBT(nbt);
     }
 
-    @Override
-    protected void setWorldCreate(World worldIn) {
-        setWorld(worldIn);
-    }
-
     /**
      * Energy Unit is MJ.
      * 1MJ = 2.5EU = 10RF

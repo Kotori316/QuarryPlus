@@ -28,7 +28,7 @@ public class ContainerWorkbench extends Container {
     private final EntityPlayer player;
     private static final int sourceSlot = 27;
     private static final int recipeSlot = 18;
-    private static final int playerSlot = 45;
+    private static final int playerSlot = 36;
 
     public ContainerWorkbench(final EntityPlayer player, final TileWorkbench tw) {
         this.tile = tw;
@@ -151,7 +151,7 @@ public class ContainerWorkbench extends Container {
     @Override
     public void detectAndSendChanges() {
         //super.detectAndSendChanges();
-        for (int i = playerSlot; i < this.inventorySlots.size(); ++i) {
+        for (int i = sourceSlot + recipeSlot; i < this.inventorySlots.size(); ++i) {
             ItemStack itemStack = this.inventorySlots.get(i).getStack();
             ItemStack itemStack1 = this.inventoryItemStacks.get(i);
 

@@ -4,6 +4,8 @@ import com.yogpc.qp.tile.EnergyUsage
 import com.yogpc.qp.{Config, QuarryPlus}
 import net.minecraft.block.state.IBlockState
 import net.minecraft.util.math.BlockPos
+import net.minecraftforge.fml.common.FMLCommonHandler
+import net.minecraftforge.fml.relauncher.Side
 
 trait Reason {
   def isEnergyIssue: Boolean
@@ -35,7 +37,7 @@ object Reason {
   }
 
   def print[T]: Reason => Option[T] = r => {
-    if (Config.content.debug) {
+    if (Config.content.debug && FMLCommonHandler.instance().getSide == Side.CLIENT) {
       QuarryPlus.LOGGER.info(r.toString)
     }
     None

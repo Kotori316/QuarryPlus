@@ -87,20 +87,22 @@ class EnergyDebug(tile: APowerTile) {
   private def printInfo(): Unit = {
     val allUsed = used.take(usedCount).sum / mj
     val allGot = got.take(gotCount).sum / mj
-    if (allUsed == 0 || usedCount == 0) {
-      if (gotCount == 0)
-        QuarryPlus.LOGGER.info(s"$tileName used 0 MJ, got 0 MJ")
-      else
-        QuarryPlus.LOGGER.info(
-          s"$tileName used 0 MJ, got $allGot in 100 ticks (${allGot * 10 / gotCount} RF/t)"
-        )
-    } else {
-      if (gotCount == 0)
-        QuarryPlus.LOGGER.info(s"$tileName used $allUsed MJ in $usedCount ticks (${allUsed * 10 / usedCount} RF/t), got 0 MJ")
-      else
-        QuarryPlus.LOGGER.info(
-          s"$tileName used $allUsed MJ in $usedCount ticks (${allUsed * 10 / usedCount} RF/t), got $allGot in $gotCount ticks (${allGot * 10 / gotCount} RF/t)"
-        )
+    if (allUsed != 0 || allGot != 0) {
+      if (allUsed == 0 || usedCount == 0) {
+        if (gotCount == 0)
+          QuarryPlus.LOGGER.info(s"$tileName used 0 MJ, got 0 MJ")
+        else
+          QuarryPlus.LOGGER.info(
+            s"$tileName used 0 MJ, got $allGot in 100 ticks (${allGot * 10 / gotCount} RF/t)"
+          )
+      } else {
+        if (gotCount == 0)
+          QuarryPlus.LOGGER.info(s"$tileName used $allUsed MJ in $usedCount ticks (${allUsed * 10 / usedCount} RF/t), got 0 MJ")
+        else
+          QuarryPlus.LOGGER.info(
+            s"$tileName used $allUsed MJ in $usedCount ticks (${allUsed * 10 / usedCount} RF/t), got $allGot in $gotCount ticks (${allGot * 10 / gotCount} RF/t)"
+          )
+      }
     }
     usedCount = 0
     gotCount = 0

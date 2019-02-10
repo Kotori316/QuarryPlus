@@ -498,7 +498,7 @@ class TileAdvQuarry extends APowerTile
   }
 
   def energyConfigure(): Unit = {
-    if (!mode.isWorking) {
+    if (mode is NONE) {
       configure(0, getMaxStored)
     } else if (mode.reduceReceive) {
       configure(ench.maxReceive / 128, ench.maxStore)
@@ -849,7 +849,7 @@ class TileAdvQuarry extends APowerTile
 
     def is(modes: Modes): Boolean = mode == modes
 
-    def isWorking: Boolean = !is(NONE)
+    def isWorking: Boolean = !is(NONE) && !is(NOT_NEED_BREAK)
 
     def reduceReceive: Boolean = is(MAKE_FRAME)
 
