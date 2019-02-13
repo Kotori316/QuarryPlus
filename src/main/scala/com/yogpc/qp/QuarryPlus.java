@@ -291,11 +291,10 @@ public class QuarryPlus {
 
     @Mod.EventHandler
     public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
-        try {
-            Class.forName("net.minecraft.item.ItemStack").getDeclaredField("EMPTY");
-        } catch (ReflectiveOperationException ignore) {
+        if (!event.isDirectory()) {
             LOGGER.warn("Invalid fingerprint detected! The file " + event.getSource().getName() +
-                " may have been tampered with. This version will NOT be supported by the author!");
+                " may have been tampered with. This version will NOT be supported by the author!" + System.lineSeparator() +
+                "Download: https://minecraft.curseforge.com/projects/additional-enchanted-miner");
         }
     }
 
