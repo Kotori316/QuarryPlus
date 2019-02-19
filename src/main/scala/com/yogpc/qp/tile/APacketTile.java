@@ -86,11 +86,13 @@ public abstract class APacketTile extends TileEntity implements buildcraft.api.t
     }
 
     protected final void startWork() {
-        startListener.forEach(Runnable::run);
+        if (hasWorld())
+            startListener.forEach(Runnable::run);
     }
 
     protected final void finishWork() {
-        finishListener.forEach(Runnable::run);
+        if (hasWorld())
+            finishListener.forEach(Runnable::run);
     }
 
     protected abstract scala.Symbol getSymbol();

@@ -21,6 +21,7 @@ import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.gui.TranslationKeys;
+import com.yogpc.qp.utils.IngredientWithCount;
 import com.yogpc.qp.version.VersionUtil;
 import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
@@ -57,14 +58,19 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
             if (isWorking()) {
                 if (currentRecipe.energy() <= getStoredEnergy() || Config.content().noEnergy()) {
                     useEnergy(currentRecipe.energy(), currentRecipe.energy(), true, EnergyUsage.WORKBENCH);
-                    ItemStack stack = currentRecipe.output().toStack(1);
+                    ItemStack stack = currentRecipe.getOutput();
                     ItemStack inserted = InvUtils.injectToNearTile(getWorld(), getPos(), stack);
                     if (VersionUtil.nonEmpty(inserted)) {
                         InventoryHelper.spawnItemStack(getWorld(), getPos().getX(), getPos().getY(), getPos().getZ(), stack);
                     }
-                    currentRecipe.inputsJ().forEach(v1 ->
-                        inventory.stream().filter(v1::isItemEqual).findFirst().ifPresent(stack1 -> VersionUtil.shrink(stack1, VersionUtil.getCount(v1)))
-                    );
+                    currentRecipe.inputsJ().forEach(inputList -> {
+                        for (IngredientWithCount i : inputList) {
+                            if (inventory.stream().anyMatch(i::shrink)) break;
+                        }
+                    });
+//                    currentRecipe.inputsJ().forEach(v1 ->
+//                        inventory.stream().filter(v1::isItemEqual).findFirst().ifPresent(stack1 -> VersionUtil.shrink(stack1, VersionUtil.getCount(v1)))
+//                    );
                     for (int i = 0; i < inventory.size(); i++) {
                         if (VersionUtil.isEmpty(inventory.get(i)))
                             inventory.set(i, VersionUtil.empty());
@@ -165,7 +171,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
         recipesList = WorkbenchRecipes.getRecipe(inventory);
         inventory2.clear();
         for (int i = 0; i < recipesList.size(); i++) {
-            setInventorySlotContents(inventory.size() + i, recipesList.get(i).output().toStack(1));
+            setInventorySlotContents(inventory.size() + i, recipesList.get(i).getOutput());
         }
         if (getRecipeIndex() == -1) {
             setCurrentRecipeIndex(-1);

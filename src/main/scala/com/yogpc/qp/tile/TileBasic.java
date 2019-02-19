@@ -66,6 +66,7 @@ import net.minecraftforge.items.IItemHandler;
 import static com.yogpc.qp.tile.IAttachment.Attachments.ALL;
 import static com.yogpc.qp.tile.IAttachment.Attachments.EXP_PUMP;
 import static com.yogpc.qp.tile.IAttachment.Attachments.FLUID_PUMP;
+import static jp.t2v.lab.syntax.MapStreamSyntax.always_true;
 import static jp.t2v.lab.syntax.MapStreamSyntax.not;
 
 @net.minecraftforge.fml.common.Optional.Interface(iface = "cofh.api.tileentity.IInventoryConnection", modid = QuarryPlus.Optionals.COFH_modID)
@@ -125,7 +126,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
      * @return true if you should get next target, false if you should try to break again.
      */
     protected boolean S_breakBlock(final int x, final int y, final int z, IBlockState replace) {
-        final List<ItemStack> dropped = new LinkedList<>();
+        final List<ItemStack> dropped = new ArrayList<>(2);
         Chunk loadedChunk = getWorld().getChunkProvider().getLoadedChunk(x >> 4, z >> 4);
         final IBlockState blockState;
         BlockPos pos = new BlockPos(x, y, z);
@@ -270,7 +271,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         readLongCollection(nbt.getTagList("fortuneList", 10), this.fortuneList);
         readLongCollection(nbt.getTagList("silktouchList", 10), this.silktouchList);
         ench = NBTBuilder.fromList(nbt.getTagList("enchList", Constants.NBT.TAG_COMPOUND), n -> n.getInteger("id"), n -> n.getInteger("value"),
-            s -> Enchantment.getEnchantmentByID(s) != null, s -> true);
+            s -> Enchantment.getEnchantmentByID(s) != null, always_true());
     }
 
     private static void readLongCollection(final NBTTagList list, final Collection<BlockData> target) {

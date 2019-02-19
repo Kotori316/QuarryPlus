@@ -10,6 +10,7 @@ import net.minecraftforge.common.crafting.JsonContext;
 
 @SuppressWarnings("unused") // accessed via reflection
 public class EnableCondition implements IConditionFactory {
+    public static final String NAME = "quarryplus:machine_enabled";
     @Override
     public BooleanSupplier parse(JsonContext context, JsonObject json) {
         String s = JsonUtils.getString(json, "value");

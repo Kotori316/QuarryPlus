@@ -1,11 +1,16 @@
 package com.yogpc.qp.utils;
 
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.block.Block;
@@ -119,5 +124,15 @@ public class ReflectionHelper {
             }
         }
         QuarryPlus.LOGGER.info("Block " + block.getRegistryName() + " doesn't implement getDrop.");
+    }
+
+    public static List<Path> paths(Path path) {
+        try {
+            return Files.find(path, Integer.MAX_VALUE,
+                (path1, basicFileAttributes) -> basicFileAttributes.isRegularFile() && path1.getFileName().toString().endsWith(".json"))
+                .collect(Collectors.toList());
+        } catch (IOException e) {
+            return Collections.emptyList();
+        }
     }
 }

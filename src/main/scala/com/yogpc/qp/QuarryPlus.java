@@ -13,6 +13,7 @@
 
 package com.yogpc.qp;
 
+import java.io.File;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.IntFunction;
@@ -128,7 +129,7 @@ public class QuarryPlus {
 
     @Mod.EventHandler
     public void preInit(final FMLPreInitializationEvent event) {
-        Config.setConfigFile(event.getSuggestedConfigurationFile());
+        Config.setConfigFile(event.getSuggestedConfigurationFile(), new File(event.getModConfigurationDirectory(), modID + "/" + modID + ".cfg"));
         ForgeChunkManager.setForcedChunkLoadingCallback(QuarryPlus.instance(), ChunkLoadingHandler.instance());
         MinecraftForge.EVENT_BUS.register(QuarryPlus.instance());
         if (!Config.content().disableDungeonLoot())
@@ -143,6 +144,8 @@ public class QuarryPlus {
     public void init(final FMLInitializationEvent event) {
         PacketHandler.init();
         WorkbenchRecipes.registerRecipes();
+        Config.content().outputRecipeJson();
+        Config.recipeSync();
         if (inDev && ModAPIManager.INSTANCE.hasAPI(Optionals.Buildcraft_facades))
             BuildcraftHelper.disableFacade();
     }
@@ -266,7 +269,7 @@ public class QuarryPlus {
 
     /**
      * Message key must be either {@code IMC_RemoveRecipe} or {@code IMC_AddRecipe}.
-     * Message value must be NBTTag.
+     * Message value must be NBTTag. The NBTTag must have recipe id ({@link ResourceLocation}).
      *
      * @param event event
      */
@@ -282,9 +285,10 @@ public class QuarryPlus {
                     ItemHandlerHelper.copyStackWithSize(stack, VersionUtil.getCount(stack) * integer);
 
                 NBTTagList list = nbtValue.getTagList(Optionals.IMC_Add, Constants.NBT.TAG_COMPOUND);
+                ResourceLocation location = new ResourceLocation(nbtValue.getString("id"));
                 ItemDamage result = ItemDamage.apply(toStack.apply(list.getCompoundTagAt(0)));
                 List<IntFunction<ItemStack>> functionList = VersionUtil.nbtListStream(list).skip(1).map(toStack.andThen(toFunc)).collect(Collectors.toList());
-                WorkbenchRecipes.addListRecipe(result, nbtValue.getInteger(Optionals.IMC_Energy), functionList, true, WorkbenchRecipes.UnitRF());
+                WorkbenchRecipes.addListRecipe(location, result, nbtValue.getInteger(Optionals.IMC_Energy), functionList, true, WorkbenchRecipes.UnitRF());
             }
         });
     }
@@ -327,7 +331,7 @@ public class QuarryPlus {
         public static final String advquarry = "chunkdestroyer";
         public static final String breaker = "breakerplus";
         public static final String controller = "spawnercontroller";
-        public static final String debug = "quarryDebug";
+        public static final String debug = "quarrydebug";
         public static final String dummyblock = "dummyblock";
         public static final String exppump = "exppump";
         public static final String frame = "quarryframe";
