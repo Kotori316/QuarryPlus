@@ -4,8 +4,8 @@ import java.io.File
 import java.nio.file.{Files, Path}
 import java.{lang, util}
 
-import com.yogpc.qp.tile.TileAdvQuarry
-import com.yogpc.qp.utils.BlockWrapper
+import com.yogpc.qp.tile.{TileAdvQuarry, WorkbenchRecipes}
+import com.yogpc.qp.utils.{BlockWrapper, ReflectionHelper}
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.common.config.{ConfigElement, Configuration}
@@ -18,6 +18,8 @@ import scala.util.Try
 import scala.util.control.NonFatal
 
 object Config {
+  final val NO_DIG_BLOCK_PATH = "quarryplus_noDigBlocks.json"
+  final val RECIPE_DIRECTORY = "recipes"
 
   private[this] var mContent: Content = _
   private[this] var configuration: Configuration = _
@@ -29,6 +31,7 @@ object Config {
       if (!content.manuallyDefinedHidden)
         configuration.removeCategory(configuration.getCategory(CATEGORY_HIDDEN))
       sync()
+      recipeSync()
       // Moved here to avoid reloading in preInit.
       QuarryPlus.proxy.setDummyTexture(mContent.dummyBlockTextureName)
     }
@@ -38,10 +41,33 @@ object Config {
     mContent = new Content
     QuarryPlusI.blockBreaker.setTickRandomly(!mContent.placerOnlyPlaceFront)
     QuarryPlusI.blockPlacer.setTickRandomly(!mContent.placerOnlyPlaceFront)
-
   }
 
-  def setConfigFile(file: File): Unit = {
+  def recipeSync(): Unit = {
+    val recipePath = configuration.getConfigFile.toPath.getParent.resolve(RECIPE_DIRECTORY)
+    if (Files.notExists(recipePath)) Files.createDirectory(recipePath)
+    WorkbenchRecipes.registerJsonRecipe(ReflectionHelper.paths(recipePath))
+  }
+
+  def setConfigFile(pre: File, file: File): Unit = {
+    if (Files.exists(pre.toPath)) {
+      if (Files.notExists(file.toPath)) {
+        if (Files.notExists(file.toPath.getParent)) {
+          Files.createDirectories(file.toPath.getParent)
+        }
+        Files.move(pre.toPath, file.toPath)
+      }
+      val path: Path = pre.toPath.getParent.resolve(NO_DIG_BLOCK_PATH)
+      if (Files.exists(path)) {
+        val path2 = file.toPath.getParent.resolve(NO_DIG_BLOCK_PATH)
+        if (Files.notExists(path2)) {
+          Files.move(path, path2)
+        }
+        Files.deleteIfExists(path)
+      }
+      Files.deleteIfExists(pre.toPath)
+    }
+
     this.configuration = new Configuration(file)
     MinecraftForge.EVENT_BUS.register(this)
     sync()
@@ -99,6 +125,7 @@ object Config {
   final val RemoveBedrock_Key = "RemoveBedrock"
   final val RemoveOnlySource_Key = "RemoveOnlySource"
   final val PumpAutoStart_Key = "PumpAutoStart"
+  final val UseHardCodedRecipe_Key = "UseHardCodedRecipe"
   final val WorkbenchplusReceive = "WorkbenchplusReceive"
   final val DEBUG_key = "DEBUG"
 
@@ -139,6 +166,8 @@ object Config {
     val debug: Boolean = configuration.getBoolean(DEBUG_key, Configuration.CATEGORY_GENERAL, false, DEBUG_key)
     val dummyBlockTextureName: String = configuration.getString(DummyBlockTextureName_key, Configuration.CATEGORY_CLIENT, "minecraft:glass",
       "The name of block whose texture is used for dummy block placed by Replacer.")
+    val useHardCodedRecipe=configuration.getBoolean(UseHardCodedRecipe_Key,Configuration.CATEGORY_GENERAL, true,
+      "False to disable default workbench recipe. You can add recipe with json file.")
 
     (Disables ++ DisableBC).map("Disable" + _.name).foreach(s => configuration.getCategory(Configuration.CATEGORY_GENERAL).remove(s))
 
@@ -150,13 +179,21 @@ object Config {
 
     import scala.collection.JavaConverters._
 
-    val path: Path = configuration.getConfigFile.toPath.getParent.resolve("quarryplus_noDigBlocks.json")
+    private val path: Path = configuration.getConfigFile.toPath.getParent.resolve(NO_DIG_BLOCK_PATH)
     val noDigBLOCKS: Set[BlockWrapper] = if (Files.exists(path)) {
       val str = Files.readAllLines(path).asScala.reduce(_ + _)
       Try(BlockWrapper.getWrapper(str)).recover { case NonFatal(e) => e.printStackTrace(); TileAdvQuarry.noDigBLOCKS }.getOrElse(TileAdvQuarry.noDigBLOCKS)
     } else {
       Files.write(path, BlockWrapper.getString(TileAdvQuarry.noDigBLOCKS.toSeq).split(System.lineSeparator()).toSeq.asJava)
       TileAdvQuarry.noDigBLOCKS
+    }
+
+    def outputRecipeJson(): Unit = {
+      val recipePath = configuration.getConfigFile.toPath.getParent.resolve("default" + RECIPE_DIRECTORY)
+      if (Files.notExists(recipePath)) {
+        Files.createDirectory(recipePath)
+      }
+      WorkbenchRecipes.outputDefaultRecipe(recipePath)
     }
   }
 

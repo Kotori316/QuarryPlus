@@ -32,6 +32,8 @@ object BlockData extends INBTReadable[BlockData] {
 
     override def getLocalizedName = "Unknown:Dummy"
   }
+
+  val comparator = Ordering.by((b: BlockData) => b.name) thenComparing Ordering.by((b: BlockData) => b.meta)
 }
 
 case class BlockData(name: ResourceLocation, meta: Int) extends INBTWritable with Ordered[BlockData] {
@@ -76,8 +78,5 @@ case class BlockData(name: ResourceLocation, meta: Int) extends INBTWritable wit
     sb.toString
   }
 
-  override def compare(that: BlockData): Int = {
-    val i = this.name.compareTo(that.name)
-    if (i != 0) i else this.meta.compare(that.meta)
-  }
+  override def compare(that: BlockData): Int = BlockData.comparator.compare(this, that)
 }

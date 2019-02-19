@@ -115,7 +115,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                     break;
                 //$FALL-THROUGH$
                 case NOT_NEED_BREAK:
-                    broken = true;
+                    broken = !filler;
                 case BREAK_BLOCK:
                     if (S_breakBlock())
                         while (!S_checkTarget())
