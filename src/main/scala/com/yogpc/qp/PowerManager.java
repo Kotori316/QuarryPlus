@@ -52,6 +52,7 @@ public class PowerManager {
         return prop.getDouble(def);
     }
 
+    @SuppressWarnings("SpellCheckingInspection")
     static void loadConfiguration(final Configuration cg) throws RuntimeException {
         ConfigCategory powerSetting = cg.getCategory(Configuration.CATEGORY_GENERAL + Configuration.CATEGORY_SPLITTER + "PowerSetting");
         powerSetting.setComment("Quarry PowerSetting (min = 0.1, Max = 2,000,000,000 = 2 billion)");
@@ -226,7 +227,12 @@ public class PowerManager {
     }
 
     public static double useEnergyQuarryHead(final APowerTile pp, final double dist, final byte U) {
-        double pw = Math.min(2 + pp.getStoredEnergy() / 500, (dist / 2 - 0.05) * MoveHead_BP / (U * MoveHead_CU + 1));
+        double pw;
+        if (!Config.content().fastQuarryHeadMove()) {
+            pw = Math.min(2 + pp.getStoredEnergy() / 500, (dist / 2 - 0.05) * MoveHead_BP / (U * MoveHead_CU + 1));
+        } else {
+            pw = (dist / 2 - 0.05) * MoveHead_BP / (U * MoveHead_CU + 1);
+        }
         pw = pp.useEnergy(0, pw, true, EnergyUsage.MOVE_HEAD);
         return pw * (U * MoveHead_CU + 1) / MoveHead_BP + 0.05;
     }

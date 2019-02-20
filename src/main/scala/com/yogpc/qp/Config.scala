@@ -117,6 +117,7 @@ object Config {
   final val DisableDungeonRoot_key = "DisableDungeonLoot"
   final val DummyBlockTextureName_key = "DummyBlockTextureName"
   final val EnableChunkDestroyerFluidHandler_key = "EnableChunkDestroyerFluidHandler"
+  final val FastQuarryHeadMove_Key = "FastQuarryHeadMove"
   final val SpawnerControllerEntityBlackList_key = "SpawnerControllerEntityBlackList"
   final val RecipeDifficulty_key = "RecipeDifficulty"
   final val Recipe_key = "NewRecipeDifficulty"
@@ -166,8 +167,10 @@ object Config {
     val debug: Boolean = configuration.getBoolean(DEBUG_key, Configuration.CATEGORY_GENERAL, false, DEBUG_key)
     val dummyBlockTextureName: String = configuration.getString(DummyBlockTextureName_key, Configuration.CATEGORY_CLIENT, "minecraft:glass",
       "The name of block whose texture is used for dummy block placed by Replacer.")
-    val useHardCodedRecipe=configuration.getBoolean(UseHardCodedRecipe_Key,Configuration.CATEGORY_GENERAL, true,
+    val useHardCodedRecipe = configuration.getBoolean(UseHardCodedRecipe_Key, Configuration.CATEGORY_GENERAL, true,
       "False to disable default workbench recipe. You can add recipe with json file.")
+    val fastQuarryHeadMove=configuration.getBoolean(FastQuarryHeadMove_Key, Configuration.CATEGORY_GENERAL, false,
+      "True to allow much faster move of quarry head.")
 
     (Disables ++ DisableBC).map("Disable" + _.name).foreach(s => configuration.getCategory(Configuration.CATEGORY_GENERAL).remove(s))
 
