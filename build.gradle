@@ -156,7 +156,9 @@ curseforge {
         changelogType = 'markdown'
         changelog = new File("temp_changelog.md")
         releaseType = 'release'
-        mainArtifact jar
+        mainArtifact(jar) {
+            displayName = 'v' + project.version
+        }
         addArtifact srcJar
         addArtifact deobfJar
         afterEvaluate {
