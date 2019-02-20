@@ -122,6 +122,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                 readStringCollection(nbt.getTagList("mapping" + i, Constants.NBT.TAG_STRING), this.mapping.get(EnumFacing.getFront(i)));
         this.range = nbt.getByte("range");
         this.quarryRange = nbt.getBoolean("quarryRange");
+        this.autoChangedRange = nbt.getBoolean("autoChangedRange");
         if (this.silktouch) {
             this.liquids.clear();
             final NBTTagList liquids = nbt.getTagList("liquids", Constants.NBT.TAG_COMPOUND);
@@ -146,6 +147,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
             nbt.setTag("mapping" + i, writeStringCollection(this.mapping.get(EnumFacing.getFront(i))));
         nbt.setByte("range", this.range);
         nbt.setBoolean("quarryRange", this.quarryRange);
+        nbt.setBoolean("autoChangedRange", this.autoChangedRange);
         if (this.silktouch) {
             final NBTTagList list = new NBTTagList();
             for (final FluidStack l : this.liquids)
@@ -272,6 +274,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     private int cx, cy = -1, cz;
     private byte range = 0;
     private boolean quarryRange = true;
+    private boolean autoChangedRange = false;
 
     private int block_side_x, block_side_z;
 
@@ -402,7 +405,6 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
 
     boolean S_removeLiquids(final APowerTile tile, final int x, final int y, final int z) {
         S_sendNowPacket();
-        boolean isQuarry = tile instanceof TileQuarry;
         if (this.cx != x || this.cy != y || this.cz != z || this.py < this.cy
             || getWorld().getWorldTime() - this.fwt > 200)
             S_searchLiquid(x, y, z);
@@ -456,13 +458,22 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                     for (bz = 0; bz < this.block_side_z; bz++)
                         if ((this.blocks[this.py - this.yOffset][bx][bz] & 0x40) != 0) {
                             drainBlock(bx, bz, QuarryPlusI.blockFrame().getDammingState());
-                            if (isQuarry) {
+                            if (tile instanceof TileQuarry) {
                                 TileQuarry quarry = (TileQuarry) tile;
-                                if (Config.content().debug()) {
-                                    int xTarget = bx + xOffset;
-                                    int zTarget = bz + zOffset;
-                                    if ((quarry.xMin < xTarget && xTarget < quarry.xMax) && (quarry.zMin < zTarget && zTarget < quarry.zMax))
-                                        QuarryPlus.LOGGER.warn(String.format("Quarry placed frame at %d, %d, %d", xTarget, py, zTarget));
+                                int xTarget = bx + xOffset;
+                                int zTarget = bz + zOffset;
+                                if (quarry.G_getNow() != TileQuarry.Mode.NOT_NEED_BREAK) {
+                                    if (Config.content().debug()) {
+                                        if ((quarry.xMin < xTarget && xTarget < quarry.xMax) && (quarry.zMin < zTarget && zTarget < quarry.zMax))
+                                            QuarryPlus.LOGGER.warn(String.format("Quarry placed frame at %d, %d, %d", xTarget, py, zTarget));
+                                    }
+                                    autoChange(false);
+                                } else {
+                                    if ((quarry.xMin <= xTarget && xTarget <= quarry.xMax) && (quarry.zMin <= zTarget && zTarget <= quarry.zMax)) {
+                                        if (Config.content().debug())
+                                            QuarryPlus.LOGGER.warn(String.format("Quarry placed frame at %d, %d, %d", xTarget, py, zTarget));
+                                        autoChange(true);
+                                    }
                                 }
                             }
                         }
@@ -472,6 +483,16 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                         drainBlock(this.px, bz, Blocks.AIR.getDefaultState());
         S_sendNowPacket();
         return this.py < this.cy;
+    }
+
+    private void autoChange(boolean on) {
+        if (on) {
+            this.autoChangedRange = true;
+            this.quarryRange = false;
+        } else if (this.autoChangedRange) {
+            this.autoChangedRange = false;
+            this.quarryRange = true;
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
