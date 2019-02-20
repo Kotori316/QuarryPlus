@@ -1,3 +1,8 @@
+# Version 1.0.1
+* Working to fix a bug where QuarryPlus stops its work while removing flowing liquid with PumpPlus in frame mode.
+If you have this problem, right click the PumpPlus with a stick or wrench to change PumpPlus's mode.
+* Made quarry head moving much faster. Change FastQuarryHeadMove in config to true.
+
 # Version 1.0.0
 * Now you can modify recipes of WorkbenchPlus. Copy file from `config/quarryplus/defaultrecipes` to `config/quarryplus/recipes` and change `UseHardCodeRecipe` in config to false.
 * Made Frame mode work faster.
