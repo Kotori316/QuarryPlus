@@ -161,9 +161,9 @@ curseforge {
         }
         addArtifact srcJar
         addArtifact deobfJar
-        afterEvaluate {
-            gameVersionStrings.remove('Java 8')
-            gameVersionStrings.remove('Java 9')
-        }
+    }
+    options {
+        debug = false // defaults to false
+        javaVersionAutoDetect = false
     }
 }
