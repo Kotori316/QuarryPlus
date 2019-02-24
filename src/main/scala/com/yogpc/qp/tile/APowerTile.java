@@ -35,7 +35,6 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.ModAPIManager;
 import net.minecraftforge.fml.common.Optional;
 
 @Optional.InterfaceList(value = {
@@ -55,7 +54,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
     protected boolean outputEnergyInfo = true;
 
     public APowerTile() {
-        bcLoaded = ModAPIManager.INSTANCE.hasAPI(QuarryPlus.Optionals.BuildCraft_core);
+        bcLoaded = Loader.isModLoaded(QuarryPlus.Optionals.Buildcraft_modID);
         ic2Loaded = Loader.isModLoaded(QuarryPlus.Optionals.IC2_modID);
         if (bcLoaded) {
             helper = MjReceiver.mjCapabilityHelper(this);

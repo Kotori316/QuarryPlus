@@ -14,7 +14,6 @@ import net.minecraft.item.{ItemBlock, ItemStack}
 import net.minecraft.util.math.{BlockPos, RayTraceResult}
 import net.minecraft.util.{EnumBlockRenderType, EnumFacing, EnumHand}
 import net.minecraft.world.{IBlockAccess, World}
-import net.minecraftforge.fml.common.Loader
 
 abstract class QPBlock(materialIn: Material, name: String, generator: QPBlock => _ <: ItemBlock, dummy: Boolean = false) extends BlockContainer(materialIn) {
 
@@ -27,8 +26,6 @@ abstract class QPBlock(materialIn: Material, name: String, generator: QPBlock =>
   setCreativeTab(QuarryPlusI.creativeTab)
   val itemBlock = generator.apply(this)
   itemBlock.setRegistryName(QuarryPlus.modID, name)
-
-  val bcLoaded: Boolean = Loader.isModLoaded(QuarryPlus.Optionals.Buildcraft_modID)
 
   override def getRenderType(state: IBlockState): EnumBlockRenderType = EnumBlockRenderType.MODEL
 

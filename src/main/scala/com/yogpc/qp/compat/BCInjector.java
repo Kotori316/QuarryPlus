@@ -15,7 +15,7 @@ import net.minecraftforge.fml.common.Optional;
 
 class BCInjector implements IInjector {
 
-    @Optional.Method(modid = QuarryPlus.Optionals.Buildcraft_transport)
+    @Optional.Method(modid = QuarryPlus.Optionals.BuildCraft_core)
     public static BCInjector init() {
         return new BCInjector(NoSpaceTransactor.INSTANCE);
     }
@@ -27,7 +27,7 @@ class BCInjector implements IInjector {
     }
 
     @Override
-    @Optional.Method(modid = QuarryPlus.Optionals.Buildcraft_transport)
+    @Optional.Method(modid = QuarryPlus.Optionals.BuildCraft_core)
     public Stream<? extends IInjector> getInjector(ItemStack stack, TileEntity entity, EnumFacing facing) {
         IItemTransactor transactor = ItemTransactorHelper.getTransactor(entity, facing.getOpposite());
         if (transactor != NoSpaceTransactor.INSTANCE) {
@@ -37,7 +37,7 @@ class BCInjector implements IInjector {
     }
 
     @Override
-    @Optional.Method(modid = QuarryPlus.Optionals.Buildcraft_transport)
+    @Optional.Method(modid = QuarryPlus.Optionals.BuildCraft_core)
     public ItemStack inject(ItemStack stack, World world, BlockPos fromPos) {
         return transactor.insert(stack, false, false);
     }

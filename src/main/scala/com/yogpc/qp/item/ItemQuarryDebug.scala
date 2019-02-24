@@ -1,6 +1,6 @@
 package com.yogpc.qp.item
 
-import com.yogpc.qp.tile.{APowerTile, IDebugSender, TileMarker, TilePlacer, TilePump}
+import com.yogpc.qp.tile._
 import com.yogpc.qp.{Config, QuarryPlus, QuarryPlusI}
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.player.EntityPlayer

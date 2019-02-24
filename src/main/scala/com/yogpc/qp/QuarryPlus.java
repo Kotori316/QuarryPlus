@@ -59,8 +59,8 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.ModAPIManager;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -146,7 +146,8 @@ public class QuarryPlus {
         WorkbenchRecipes.registerRecipes();
         Config.content().outputRecipeJson();
         Config.recipeSync();
-        if (inDev && ModAPIManager.INSTANCE.hasAPI(Optionals.Buildcraft_facades))
+        // TODO change to net.minecraftforge.fml.common.ModAPIManager
+        if (inDev && Loader.isModLoaded(Optionals.Buildcraft_facades))
             BuildcraftHelper.disableFacade();
     }
 
@@ -304,13 +305,15 @@ public class QuarryPlus {
 
     @SuppressWarnings({"unused", "WeakerAccess", "SpellCheckingInspection"})
     public static class Optionals {
-        public static final String BuildCraft_core = "BuildCraftAPI|core";
-        public static final String Buildcraft_facades = "BuildCraftAPI|facades";
-        public static final String Buildcraft_modID = "buildcraftcore";
-        public static final String Buildcraft_recipes = "BuildCraftAPI|recipes";
-        public static final String Buildcraft_tiles = "BuildCraftAPI|tiles";
-        public static final String Buildcraft_tools = "BuildCraftAPI|tools";
-        public static final String Buildcraft_transport = "BuildCraftAPI|transport";
+        public static final String Buildcraft_modID = "buildcraftlib";
+        public static final String BuildCraft_core = Buildcraft_modID; // buildcraftapi_core
+        public static final String Buildcraft_facades = Buildcraft_modID; // buildcraftapi_facades
+        public static final String Buildcraft_recipes = Buildcraft_modID; // buildcraftapi_recipes
+        public static final String Buildcraft_tiles = Buildcraft_modID; // buildcraftapi_tiles
+        public static final String Buildcraft_tools = Buildcraft_modID; // buildcraftapi_tools
+        public static final String Buildcraft_transport = Buildcraft_modID; // buildcraftapi_transport
+        public static final String Buildcraft_silicon_modID = "buildcraftsilicon";
+        public static final String Buildcraft_factory_modID = "buildcraftfactory";
         public static final String COFH_modID = "cofhcore";
         public static final String IC2_modID = "ic2";
         public static final String IMC_Add = "IMC_AddRecipe";

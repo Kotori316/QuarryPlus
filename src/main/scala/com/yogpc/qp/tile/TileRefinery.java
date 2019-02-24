@@ -25,6 +25,7 @@ import buildcraft.api.recipes.BuildcraftRecipeRegistry;
 import buildcraft.api.recipes.IRefineryRecipeManager;
 import com.yogpc.qp.Config;
 import com.yogpc.qp.PowerManager;
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.item.ItemQuarryDebug;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.TileMessage;
@@ -41,6 +42,7 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.FluidTankProperties;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import scala.Symbol;
@@ -81,6 +83,7 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
         }
         upTank.setCanFill(false);
         downTank.setCanFill(false);
+        bcLoaded = Loader.isModLoaded(QuarryPlus.Optionals.Buildcraft_factory_modID);
     }
 
     @Override

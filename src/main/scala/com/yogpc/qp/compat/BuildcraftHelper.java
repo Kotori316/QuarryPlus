@@ -16,7 +16,6 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.ModAPIManager;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 public class BuildcraftHelper {
@@ -31,7 +30,8 @@ public class BuildcraftHelper {
                 }
             }
         }
-        if (ModAPIManager.INSTANCE.hasAPI(QuarryPlus.Optionals.Buildcraft_tools)) {
+        // TODO change to net.minecraftforge.fml.common.ModAPIManager
+        if (Loader.isModLoaded(QuarryPlus.Optionals.Buildcraft_tools)) {
             if (wrench.getItem() instanceof IToolWrench) {
                 IToolWrench wrenchItem = (IToolWrench) wrench.getItem();
                 if (wrenchItem.canWrench(player, hand, wrench, rayTrace)) {

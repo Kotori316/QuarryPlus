@@ -2,7 +2,7 @@ package com.yogpc.qp.utils
 
 import java.lang.reflect.Type
 
-import com.google.gson.{GsonBuilder, JsonDeserializationContext, JsonDeserializer, JsonElement, JsonObject, JsonSerializationContext, JsonSerializer}
+import com.google.gson._
 import net.minecraft.block.state.IBlockState
 import net.minecraft.init.Blocks
 import net.minecraft.util.JsonUtils

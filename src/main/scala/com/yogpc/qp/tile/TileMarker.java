@@ -55,7 +55,7 @@ import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.ForgeChunkManager.Type;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.fml.common.ModAPIManager;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -73,7 +73,8 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
     private final boolean bcLoaded;
 
     public TileMarker() {
-        this.bcLoaded = ModAPIManager.INSTANCE.hasAPI(QuarryPlus.Optionals.Buildcraft_tiles);
+        // TODO change to net.minecraftforge.fml.common.ModAPIManager
+        this.bcLoaded = Loader.isModLoaded(QuarryPlus.Optionals.Buildcraft_tiles);
     }
 
     @Override

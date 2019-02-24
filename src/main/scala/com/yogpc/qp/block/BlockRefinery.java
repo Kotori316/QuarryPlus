@@ -49,16 +49,20 @@ import net.minecraftforge.fluids.FluidActionResult;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 public class BlockRefinery extends ADismCBlock {
 
+    private final boolean bcLoaded;
+
     public BlockRefinery() {
         super(Material.IRON, QuarryPlus.Names.refinery, ItemBlockRefinery::new);
         setHardness(5F);
         setDefaultState(getBlockState().getBaseState().withProperty(FACING, EnumFacing.NORTH));
+        bcLoaded = Loader.isModLoaded(QuarryPlus.Optionals.Buildcraft_factory_modID);
     }
 
     @Override
@@ -187,7 +191,7 @@ public class BlockRefinery extends ADismCBlock {
 
     @Override
     public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items) {
-        if (bcLoaded())
+        if (bcLoaded)
             super.getSubBlocks(itemIn, items);
     }
 

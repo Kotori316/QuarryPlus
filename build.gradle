@@ -82,7 +82,7 @@ dependencies {
 //    compile group: "com.github.bigwheel", name: "util-backports_2.12", version: "1.1"
     deobfCompile 'net.industrial-craft:industrialcraft-2:2.8.75-ex112:dev'
     deobfCompile "cofh:RedstoneFlux:1.12-2.1.0.6:universal"
-    deobfCompile "cofh:CoFHCore:1.12.2-4.5.3.20:universal"
+    deobfCompile "cofh:CoFHCore:1.12.2-4.6.2.25:universal"
     deobfCompile "mezz.jei:jei_1.12.2:4.13.0.219"
     deobfCompile "com.mod-buildcraft:buildcraft-main:7.99.22"
     compileOnly "mekanism:Mekanism:1.12.2-9.4.4.330+0b21085"

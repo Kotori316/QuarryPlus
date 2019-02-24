@@ -23,7 +23,6 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.ModAPIManager;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -41,7 +40,8 @@ public class InvUtils {
 
     static {
         List<IInjector> injectors = new ArrayList<>();
-        if (ModAPIManager.INSTANCE.hasAPI(QuarryPlus.Optionals.Buildcraft_transport)) {
+        // TODO change to net.minecraftforge.fml.common.ModAPIManager
+        if (Loader.isModLoaded(QuarryPlus.Optionals.Buildcraft_transport)) {
             try {
                 injectors.add((IInjector) Class.forName("com.yogpc.qp.compat.BCInjector").getMethod("init").invoke(null));
             } catch (ReflectiveOperationException e) {

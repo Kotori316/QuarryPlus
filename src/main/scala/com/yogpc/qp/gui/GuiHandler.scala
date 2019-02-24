@@ -13,8 +13,8 @@
 package com.yogpc.qp.gui
 
 import com.yogpc.qp.QuarryPlusI
-import com.yogpc.qp.container.{ContainerAdvPump, ContainerAdvQuarry, ContainerBookMover, ContainerEnchList, ContainerMover, ContainerPlacer, ContainerSolidQuarry, ContainerWorkbench}
-import com.yogpc.qp.tile.{TileAdvPump, TileAdvQuarry, TileBasic, TileBookMover, TilePlacer, TileSolidQuarry, TileWorkbench}
+import com.yogpc.qp.container._
+import com.yogpc.qp.tile._
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Enchantments
 import net.minecraft.util.math.BlockPos

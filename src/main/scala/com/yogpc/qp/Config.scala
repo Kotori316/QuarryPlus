@@ -102,9 +102,9 @@ object Config {
     'WorkbenchPlus,
     'SolidFuleQuarry,
     'Replacer)
-  private val DisableBC = Set(
-    'LaserPlus,
-    'RefineryPlus
+  private val DisableBC = Map(
+    'LaserPlus -> QuarryPlus.Optionals.Buildcraft_silicon_modID,
+    'RefineryPlus -> QuarryPlus.Optionals.Buildcraft_factory_modID
   )
 
   private val defaultDisables = Set('EnchantMoverFromBook, 'Replacer)
@@ -137,11 +137,11 @@ object Config {
     val enableMap: Map[Symbol, Boolean] = (Disables.map(s => {
       val key = "Disable" + s.name
       (s, !configuration.get(CATEGORY_MACHINES, key, defaultDisables.contains(s)).setRequiresMcRestart(true).getBoolean)
-    }) ++ DisableBC.map(s => {
+    }) ++ DisableBC.map { case (s, modId) =>
       val key = "Disable" + s.name
       (s, !configuration.get(CATEGORY_MACHINES, key, false).setRequiresMcRestart(true).getBoolean &&
-        Loader.isModLoaded(QuarryPlus.Optionals.Buildcraft_modID))
-    })).toMap
+        Loader.isModLoaded(modId))
+    }).toMap
     val disableMapJ: util.Map[Symbol, lang.Boolean] = enableMap.map { case (s, b) => (s, Boolean.box(!b)) }.asJava
 
     val spawnerBlacklist: util.Set[ResourceLocation] = configuration.get(Configuration.CATEGORY_GENERAL, SpawnerControllerEntityBlackList_key, Array("minecraft:ender_dragon", "minecraft:wither"), "Spawner Blacklist")
@@ -169,10 +169,10 @@ object Config {
       "The name of block whose texture is used for dummy block placed by Replacer.")
     val useHardCodedRecipe = configuration.getBoolean(UseHardCodedRecipe_Key, Configuration.CATEGORY_GENERAL, true,
       "False to disable default workbench recipe. You can add recipe with json file.")
-    val fastQuarryHeadMove=configuration.getBoolean(FastQuarryHeadMove_Key, Configuration.CATEGORY_GENERAL, false,
+    val fastQuarryHeadMove = configuration.getBoolean(FastQuarryHeadMove_Key, Configuration.CATEGORY_GENERAL, false,
       "True to allow much faster move of quarry head.")
 
-    (Disables ++ DisableBC).map("Disable" + _.name).foreach(s => configuration.getCategory(Configuration.CATEGORY_GENERAL).remove(s))
+    (Disables ++ DisableBC.keySet).map("Disable" + _.name).foreach(s => configuration.getCategory(Configuration.CATEGORY_GENERAL).remove(s))
 
     if (configuration.hasChanged)
       configuration.save()
@@ -184,8 +184,8 @@ object Config {
 
     private val path: Path = configuration.getConfigFile.toPath.getParent.resolve(NO_DIG_BLOCK_PATH)
     val noDigBLOCKS: Set[BlockWrapper] = if (Files.exists(path)) {
-      val str = Files.readAllLines(path).asScala.reduce(_ + _)
-      Try(BlockWrapper.getWrapper(str)).recover { case NonFatal(e) => e.printStackTrace(); TileAdvQuarry.noDigBLOCKS }.getOrElse(TileAdvQuarry.noDigBLOCKS)
+      Try(BlockWrapper.getWrapper(Files.readAllLines(path).asScala.reduce(_ + _)))
+        .recover { case NonFatal(e) => e.printStackTrace(); TileAdvQuarry.noDigBLOCKS }.getOrElse(TileAdvQuarry.noDigBLOCKS)
     } else {
       Files.write(path, BlockWrapper.getString(TileAdvQuarry.noDigBLOCKS.toSeq).split(System.lineSeparator()).toSeq.asJava)
       TileAdvQuarry.noDigBLOCKS

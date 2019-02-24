@@ -39,6 +39,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.Loader;
 
 public class BlockLaser extends ADismCBlock {
     private static final AxisAlignedBB NORTH_BASE = new AxisAlignedBB(0, 0, 12d / 16d, 1, 1, 1);
@@ -55,11 +56,13 @@ public class BlockLaser extends ADismCBlock {
     private static final AxisAlignedBB UP_LAUNCHER = new AxisAlignedBB(5d / 16d, 4d / 16d, 5d / 16d, 11d / 16d, 13d / 16d, 11d / 16d);
     private static final AxisAlignedBB DOWN_BASE = new AxisAlignedBB(0, 12d / 16d, 0, 1, 1, 1);
     private static final AxisAlignedBB DOWN_LAUNCHER = new AxisAlignedBB(5d / 16d, 3d / 16d, 5d / 16d, 11d / 16d, 12d / 16d, 11d / 16d);
+    private final boolean bcLoaded;
 
     public BlockLaser() {
         super(Material.IRON, QuarryPlus.Names.laser, ItemBlockEnchantable::new);
         setHardness(10F);
         setDefaultState(getBlockState().getBaseState().withProperty(FACING, EnumFacing.UP));
+        bcLoaded = Loader.isModLoaded(QuarryPlus.Optionals.Buildcraft_silicon_modID);
     }
 
     @Override
@@ -200,7 +203,7 @@ public class BlockLaser extends ADismCBlock {
 
     @Override
     public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items) {
-        if (bcLoaded())
+        if (bcLoaded)
             super.getSubBlocks(itemIn, items);
     }
 

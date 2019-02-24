@@ -10,7 +10,7 @@ import net.minecraft.client.model.{ModelBase, ModelRenderer}
 import net.minecraft.client.renderer.texture.{TextureManager, TextureMap}
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraft.client.renderer.{BufferBuilder, GlStateManager, OpenGlHelper, RenderHelper, Tessellator}
+import net.minecraft.client.renderer._
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.fml.common.Loader
@@ -27,7 +27,7 @@ object RenderLaser extends TileEntitySpecialRenderer[TileLaser] {
   private[this] final val d = 1 / 16D
   lazy val textureArray = Array(Sprites.getMap('laser_1), Sprites.getMap('laser_2), Sprites.getMap('laser_3), Sprites.getMap('laser_4))
 
-  private val bcLoaded = Loader isModLoaded QuarryPlus.Optionals.Buildcraft_modID
+  private val bcLoaded = Loader isModLoaded QuarryPlus.Optionals.Buildcraft_silicon_modID
 
   override def renderTileEntityFast(te: TileLaser, x: Double, y: Double, z: Double, partialTicks: Float, destroyStage: Int, f: Float, buffer: BufferBuilder): Unit = {
     Minecraft.getMinecraft.mcProfiler.startSection("quarryplus")

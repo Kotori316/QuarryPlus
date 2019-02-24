@@ -66,7 +66,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
 
     public TileLaser() {
         PowerManager.configureLaser(this, this.efficiency, this.unbreaking);
-        bcLoaded = Loader.isModLoaded(QuarryPlus.Optionals.Buildcraft_modID);
+        bcLoaded = Loader.isModLoaded(QuarryPlus.Optionals.Buildcraft_silicon_modID);
     }
 
     @Override
