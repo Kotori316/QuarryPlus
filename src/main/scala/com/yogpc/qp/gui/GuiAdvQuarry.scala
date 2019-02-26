@@ -83,7 +83,7 @@ class GuiAdvQuarry(tile: TileAdvQuarry, player: EntityPlayer) extends GuiContain
     }
   }
 
-  override def drawGuiContainerForegroundLayer(mouseX: Int, mouseY: Int) {
+  override def drawGuiContainerForegroundLayer(mouseX: Int, mouseY: Int): Unit = {
     val s: String = I18n.format(TranslationKeys.advquarry)
     this.fontRenderer.drawString(s, this.xSize / 2 - this.fontRenderer.getStringWidth(s) / 2, 6, 0x404040)
     this.fontRenderer.drawString(I18n.format(TranslationKeys.CONTAINER_INVENTORY), 8, this.ySize - 96 + 2, 0x404040)

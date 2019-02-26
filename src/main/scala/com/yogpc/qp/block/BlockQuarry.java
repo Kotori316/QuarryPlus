@@ -23,6 +23,7 @@ import com.yogpc.qp.compat.BuildcraftHelper;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.gui.TranslationKeys;
 import com.yogpc.qp.item.ItemBlockEnchantable;
+import com.yogpc.qp.item.ItemTool;
 import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TileQuarry;
 import com.yogpc.qp.version.VersionUtil;
@@ -94,10 +95,12 @@ public class BlockQuarry extends ADismCBlock {
             TileEntity t = worldIn.getTileEntity(pos);
             if (t != null) {
                 TileQuarry quarry = (TileQuarry) t;
-                if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == 0) {
+                if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == ItemTool.meta_StatusChecker()) {
                     quarry.sendEnchantMassage(playerIn);
                     VersionUtil.sendMessage(playerIn, new TextComponentTranslation(TranslationKeys.CURRENT_MODE,
                         new TextComponentTranslation(quarry.filler ? TranslationKeys.FILLER_MODE : TranslationKeys.QUARRY_MODE)));
+                } else if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == ItemTool.meta_YSetter()) {
+                    playerIn.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdQuarryYLevel(), worldIn, pos.getX(), pos.getY(), pos.getZ());
                 } else if (quarry.G_getNow() == TileQuarry.Mode.NOT_NEED_BREAK) {
                     quarry.filler = !quarry.filler;
                     VersionUtil.sendMessage(playerIn, new TextComponentTranslation(TranslationKeys.CHANGEMODE,

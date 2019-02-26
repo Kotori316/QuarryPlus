@@ -110,6 +110,8 @@ class ItemTool extends Item with IEnchantableItem {
         "item." + ItemTool.liquidselector
       case ItemTool.`meta_StatusChecker` =>
         "item." + ItemTool.statuschecker
+      case ItemTool.meta_YSetter =>
+        "item." + ItemTool.ySetter
       case _ => super.getUnlocalizedName(is)
     }
 
@@ -133,6 +135,7 @@ class ItemTool extends Item with IEnchantableItem {
     items.add(new ItemStack(this, 1, meta_StatusChecker))
     items.add(getEditorStack)
     items.add(new ItemStack(this, 1, meta_LiquidSelector))
+    items.add(new ItemStack(this, 1, meta_YSetter))
     if (Config.content.debug /*&& QuarryPlus.instance.inDev*/ ) {
       val stack = new ItemStack(Items.DIAMOND_PICKAXE)
       stack.addEnchantment(Enchantments.EFFICIENCY, 5)
@@ -166,6 +169,7 @@ object ItemTool {
   final val meta_StatusChecker = 0
   final val meta_ListEditor = 1
   final val meta_LiquidSelector = 2
+  final val meta_YSetter = 3
   /**
     * meta=1
     */
@@ -178,6 +182,10 @@ object ItemTool {
     * meta=0
     */
   final val statuschecker = "statuschecker"
+  /**
+    * meta=3
+    */
+  final val ySetter = "y_setter"
   final val NAME_key = "Bname"
   final val META_key = "Bmeta"
 

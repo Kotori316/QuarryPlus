@@ -56,6 +56,7 @@ public class TranslationKeys {
     public static final String TOF_INCLUDE = "tof.include";
     public static final String UP = "FD.up";
     public static final String WEST = "FD.west";
+    public static final String Y_LEVEL = "chat.ylevel";
     public static final String YOG_SPAWNER_SETTING = "yog.spanwer.setting";
 
     public static final String advpump = "tile." + QuarryPlus.Names.advpump + ".name";

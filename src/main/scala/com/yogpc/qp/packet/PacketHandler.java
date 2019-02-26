@@ -24,6 +24,7 @@ import com.yogpc.qp.packet.marker.RemoveLaser;
 import com.yogpc.qp.packet.marker.RemoveLink;
 import com.yogpc.qp.packet.pump.Mappings;
 import com.yogpc.qp.packet.pump.Now;
+import com.yogpc.qp.packet.quarry.LevelMessage;
 import com.yogpc.qp.packet.quarry.ModeMessage;
 import com.yogpc.qp.packet.quarry.MoveHead;
 import com.yogpc.qp.packet.workbench.WorkbenchMessage;
@@ -69,6 +70,8 @@ public class PacketHandler {
         //quarry
         wrapper.registerMessage(handler, ModeMessage.class, i++, Side.CLIENT);
         wrapper.registerMessage(handler, MoveHead.class, i++, Side.CLIENT);
+        wrapper.registerMessage(handler, LevelMessage.class, i++, Side.CLIENT);
+        wrapper.registerMessage(handler, LevelMessage.class, i++, Side.SERVER);
         //laser
         wrapper.registerMessage(handler, LaserMessage.class, i++, Side.CLIENT);
         wrapper.registerMessage(handler, LaserAverageMessage.class, i++, Side.CLIENT);

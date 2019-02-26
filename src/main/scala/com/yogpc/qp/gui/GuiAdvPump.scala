@@ -49,7 +49,7 @@ class GuiAdvPump(tile: TileAdvPump, player: EntityPlayer) extends GuiContainer(n
     this.fontRenderer.drawString(I18n.format(TranslationKeys.CONTAINER_INVENTORY), 8, this.ySize - 96 + 2, 0x404040)
   }
 
-  override def drawGuiContainerBackgroundLayer(partialTicks: Float, mouseX: Int, mouseY: Int) = {
+  override def drawGuiContainerBackgroundLayer(partialTicks: Float, mouseX: Int, mouseY: Int): Unit = {
     GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F)
     this.mc.getTextureManager.bindTexture(LOCATION)
     this.drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize)

@@ -246,9 +246,10 @@ public class QuarryPlus {
         ModelLoader.setCustomModelResourceLocation(blockSolidQuarry().itemBlock(), 0, proxy.fromEntry(blockSolidQuarry()));
         ModelLoader.setCustomModelResourceLocation(dummyBlock().itemBlock(), 0, proxy.fromEntry(dummyBlock()));
         ModelLoader.setCustomModelResourceLocation(blockReplacer().itemBlock(), 0, proxy.fromEntry(blockReplacer()));
-        ModelLoader.setCustomModelResourceLocation(itemTool(), 0, ModelLoader.getInventoryVariant(prefix + ItemTool.statuschecker()));
-        ModelLoader.setCustomModelResourceLocation(itemTool(), 1, ModelLoader.getInventoryVariant(prefix + ItemTool.listeditor()));
-        ModelLoader.setCustomModelResourceLocation(itemTool(), 2, ModelLoader.getInventoryVariant(prefix + ItemTool.liquidselector()));
+        ModelLoader.setCustomModelResourceLocation(itemTool(), ItemTool.meta_StatusChecker(), ModelLoader.getInventoryVariant(prefix + ItemTool.statuschecker()));
+        ModelLoader.setCustomModelResourceLocation(itemTool(), ItemTool.meta_ListEditor(), ModelLoader.getInventoryVariant(prefix + ItemTool.listeditor()));
+        ModelLoader.setCustomModelResourceLocation(itemTool(), ItemTool.meta_LiquidSelector(), ModelLoader.getInventoryVariant(prefix + ItemTool.liquidselector()));
+        ModelLoader.setCustomModelResourceLocation(itemTool(), ItemTool.meta_YSetter(), ModelLoader.getInventoryVariant(prefix + ItemTool.ySetter()));
         ModelLoader.setCustomModelResourceLocation(magicMirror(), 0, proxy.fromEntry(magicMirror()));
         ModelLoader.setCustomModelResourceLocation(magicMirror(), 1, proxy.fromEntry(magicMirror()));
         ModelLoader.setCustomModelResourceLocation(magicMirror(), 2, proxy.fromEntry(magicMirror()));

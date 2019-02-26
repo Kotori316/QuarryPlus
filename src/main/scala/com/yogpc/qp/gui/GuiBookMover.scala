@@ -28,7 +28,7 @@ class GuiBookMover(mover: TileBookMover, player: EntityPlayer) extends GuiContai
     this.renderHoveredToolTip(mouseX, mouseY)
   }
 
-  override def drawGuiContainerForegroundLayer(p_146979_1_ : Int, p_146979_2_ : Int) {
+  override def drawGuiContainerForegroundLayer(p_146979_1_ : Int, p_146979_2_ : Int): Unit = {
     val s = I18n.format(TranslationKeys.moverfrombook)
     this.fontRenderer.drawString(s, this.xSize / 2 - this.fontRenderer.getStringWidth(s) / 2, 6, 0x404040)
     this.fontRenderer.drawString(I18n.format(TranslationKeys.CONTAINER_INVENTORY), 8, this.ySize - 96 + 2, 4210752)

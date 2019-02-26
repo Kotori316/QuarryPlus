@@ -236,7 +236,8 @@ object WorkbenchRecipes {
       (ItemDamage(magicMirror, 2), 32000, Seq(F(ENDER_EYE, 8), F(magicMirror, 1), F(OBSIDIAN, 4), F(DIRT, 8), F(PLANKS, 8))),
       (ItemDamage(itemTool, 0), 80000, Seq(F(DIAMOND, 2), F(GOLD_INGOT, 8), F(IRON_INGOT, 12), F(REDSTONE, 16), F(DYE, 4, 4), F(OBSIDIAN, 2), F(ENDER_PEARL, 3d / 25d))),
       (ItemDamage(ItemTool.getEditorStack), 160000, Seq(F(DIAMOND, 2), F(IRON_INGOT, 8), F(REDSTONE, 2), F(DYE, 8), F(BOOK, 32), F(FEATHER, 1), F(ENDER_PEARL, 1d / 5d))),
-      (ItemDamage(itemTool, 2), 320000, Seq(F(IRON_INGOT, 32), F(LAVA_BUCKET, 6d / 5d), F(WATER_BUCKET, 6d / 5d), F(ENDER_PEARL, 3d / 25d)))
+      (ItemDamage(itemTool, 2), 320000, Seq(F(IRON_INGOT, 32), F(LAVA_BUCKET, 6d / 5d), F(WATER_BUCKET, 6d / 5d), F(ENDER_PEARL, 3d / 25d))),
+      (ItemDamage(itemTool, 3), 80000, Seq(F(GOLD_INGOT, 16), F(REPEATER, 8), F(COMPARATOR, 4), F(QUARTZ, 32)))
     )
     list1.foreach { case (result, e, recipe) => addSeqRecipe(result, e, recipe) }
   }

@@ -55,6 +55,7 @@ object QuarryPlusI {
   final val guiIdAdvPump = 7
   final val guiIdMoverFromBook = 8
   final val guiIdSolidQuarry = 9
+  final val guiIdQuarryYLevel = 10
 
   private def register[T <: Block](block: T): T = {
     blocks += block

@@ -15,8 +15,10 @@ package com.yogpc.qp.gui
 import com.yogpc.qp.QuarryPlusI
 import com.yogpc.qp.container._
 import com.yogpc.qp.tile._
+import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Enchantments
+import net.minecraft.inventory.Container
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import net.minecraftforge.fml.common.network.IGuiHandler
@@ -27,7 +29,7 @@ object GuiHandler extends IGuiHandler {
   val instance = this
 
   @SideOnly(Side.CLIENT)
-  override def getClientGuiElement(ID: Int, p: EntityPlayer, w: World, x: Int, y: Int, z: Int) = {
+  override def getClientGuiElement(ID: Int, p: EntityPlayer, w: World, x: Int, y: Int, z: Int): GuiContainer = {
     val pos = new BlockPos(x, y, z)
     ID match {
       case QuarryPlusI.guiIdMover =>
@@ -48,11 +50,13 @@ object GuiHandler extends IGuiHandler {
         new GuiBookMover(w.getTileEntity(pos).asInstanceOf[TileBookMover], p)
       case QuarryPlusI.guiIdSolidQuarry =>
         new GuiSolidQuarry(w.getTileEntity(pos).asInstanceOf[TileSolidQuarry], p)
+      case QuarryPlusI.guiIdQuarryYLevel =>
+        new GuiQuarryLevel(w.getTileEntity(pos).asInstanceOf[TileQuarry], p)
       case _ => null
     }
   }
 
-  override def getServerGuiElement(ID: Int, p: EntityPlayer, w: World, x: Int, y: Int, z: Int) = {
+  override def getServerGuiElement(ID: Int, p: EntityPlayer, w: World, x: Int, y: Int, z: Int): Container = {
     val pos = new BlockPos(x, y, z)
     ID match {
       case QuarryPlusI.guiIdMover =>
@@ -73,6 +77,8 @@ object GuiHandler extends IGuiHandler {
         new ContainerBookMover(w.getTileEntity(pos).asInstanceOf[TileBookMover], p)
       case QuarryPlusI.guiIdSolidQuarry =>
         new ContainerSolidQuarry(w.getTileEntity(pos).asInstanceOf[TileSolidQuarry], p)
+      case QuarryPlusI.guiIdQuarryYLevel =>
+        new ContainerQuarryLevel(w.getTileEntity(pos).asInstanceOf[TileQuarry], p)
       case _ => null
     }
   }
