@@ -86,7 +86,7 @@ public class TileMiningWell extends TileBasic implements ITickable {
     }
 
     private boolean S_checkTarget(final int depth) {
-        if (depth < 1) {
+        if (depth < yLevel) {
             G_destroy();
             finishWork();
             return true;

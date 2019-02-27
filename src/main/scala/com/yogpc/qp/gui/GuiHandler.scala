@@ -14,6 +14,7 @@ package com.yogpc.qp.gui
 
 import com.yogpc.qp.QuarryPlusI
 import com.yogpc.qp.container._
+import com.yogpc.qp.gui.GuiQuarryLevel._
 import com.yogpc.qp.tile._
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.entity.player.EntityPlayer
@@ -51,7 +52,9 @@ object GuiHandler extends IGuiHandler {
       case QuarryPlusI.guiIdSolidQuarry =>
         new GuiSolidQuarry(w.getTileEntity(pos).asInstanceOf[TileSolidQuarry], p)
       case QuarryPlusI.guiIdQuarryYLevel =>
-        new GuiQuarryLevel(w.getTileEntity(pos).asInstanceOf[TileQuarry], p)
+        new GuiQuarryLevel(w.getTileEntity(pos).asInstanceOf[TileBasic], p)
+      case QuarryPlusI.guiIdAdvQuarryYLevel =>
+        new GuiQuarryLevel(w.getTileEntity(pos).asInstanceOf[TileAdvQuarry], p)
       case _ => null
     }
   }
@@ -78,7 +81,9 @@ object GuiHandler extends IGuiHandler {
       case QuarryPlusI.guiIdSolidQuarry =>
         new ContainerSolidQuarry(w.getTileEntity(pos).asInstanceOf[TileSolidQuarry], p)
       case QuarryPlusI.guiIdQuarryYLevel =>
-        new ContainerQuarryLevel(w.getTileEntity(pos).asInstanceOf[TileQuarry], p)
+        new ContainerQuarryLevel(w.getTileEntity(pos).asInstanceOf[TileBasic], p)
+      case QuarryPlusI.guiIdAdvQuarryYLevel =>
+        new ContainerQuarryLevel(w.getTileEntity(pos).asInstanceOf[TileAdvQuarry], p)
       case _ => null
     }
   }

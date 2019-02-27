@@ -62,6 +62,7 @@ class TileAdvQuarry extends APowerTile
   var target: BlockPos = BlockPos.ORIGIN
   var framePoses = List.empty[BlockPos]
   var chunks = List.empty[ChunkPos]
+  var yLevel = 1
   val fluidStacks = scala.collection.mutable.Map.empty[FluidStack, FluidTank]
   val cacheItems = new ItemList
   val itemHandler = new ItemHandler
@@ -176,7 +177,7 @@ class TileAdvQuarry extends APowerTile
           val z = target.getZ
           val pos = new MutableBlockPos(x, y, z)
           val flags = Array(x == digRange.minX, x == digRange.maxX, z == digRange.minZ, z == digRange.maxZ)
-          while (y > 0) {
+          while (y >= yLevel) {
             pos.setY(y)
 
             val state = getWorld.getBlockState(pos)
@@ -407,7 +408,7 @@ class TileAdvQuarry extends APowerTile
           if (p == BlockPos.ORIGIN) {
             mode set TileAdvQuarry.NONE
           } else if (mode is TileAdvQuarry.CHECK_LIQUID) {
-            Iterator.iterate(p.down())(_.down()).takeWhile(_.getY > 0).filter(p => {
+            Iterator.iterate(p.down())(_.down()).takeWhile(_.getY > yLevel).filter(p => {
               val state = getWorld.getBlockState(p)
               !state.getBlock.isAir(state, getWorld, p) && TilePump.isLiquid(state)
             }).foreach(getWorld.setBlockToAir)
@@ -421,7 +422,7 @@ class TileAdvQuarry extends APowerTile
             val stack = handler.getStackInSlot(i)
             VersionUtil.nonEmpty(stack) && stack.getItem.isInstanceOf[ItemBlock]
           }).map(handler.extractItem(_, 1, false)).toList
-          val y = if (Config.content.removeBedrock) 1 else 5
+          val y = Math.max(if (Config.content.removeBedrock) 1 else 5, yLevel)
           nextPoses(digRange, target).take(list.map(_.getCount).sum).foreach { case (_, p) =>
             target = p
             if (p == BlockPos.ORIGIN) {
@@ -524,6 +525,7 @@ class TileAdvQuarry extends APowerTile
     })
     val l2 = nbt.getTagList("NBT_CHUNKLOADLIST", Constants.NBT.TAG_LONG)
     chunks = Range(0, l2.tagCount()).map(i => new ChunkPos(BlockPos.fromLong(l2.get(i).asInstanceOf[NBTTagLong].getLong))).toList
+    yLevel = Math.max(nbt.getInteger("yLevel"), 1)
   }
 
   //noinspection SpellCheckingInspection
@@ -537,6 +539,7 @@ class TileAdvQuarry extends APowerTile
       case (_, tank) => tagList.appendTag(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.writeNBT(tank, null))
     }))
     nbt.setTag("NBT_CHUNKLOADLIST", (new NBTTagList).tap(tagList => chunks.foreach(c => tagList.appendTag(c.getBlock(0, 0, 0).toLong.toNBT))))
+    nbt.setInteger("yLevel", yLevel)
     super.writeToNBT(nbt)
   }
 
@@ -586,7 +589,8 @@ class TileAdvQuarry extends APowerTile
       "Next target = " + target.toString,
       mode.toString,
       digRange.toString,
-      ench.toString).map(toComponentString).asJava
+      ench.toString,
+      "YLevel = " + yLevel).map(toComponentString).asJava
   }
 
   override def hasCapability(capability: Capability[_], facing: EnumFacing): Boolean = {

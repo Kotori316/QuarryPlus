@@ -1,8 +1,8 @@
-package com.yogpc.qp.packet.quarry;
+package com.yogpc.qp.packet.advquarry;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
-import com.yogpc.qp.tile.TileBasic;
+import com.yogpc.qp.tile.TileAdvQuarry;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -13,16 +13,16 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 /**
  * To both client and server.
  */
-public class LevelMessage implements IMessage {
+public class AdvLevelMessage implements IMessage {
     int yLevel;
     BlockPos pos;
     int dim;
 
-    public static LevelMessage create(TileBasic tileBasic) {
-        LevelMessage message = new LevelMessage();
-        message.yLevel = tileBasic.yLevel;
-        message.pos = tileBasic.getPos();
-        message.dim = tileBasic.getWorld().provider.getDimension();
+    public static AdvLevelMessage create(TileAdvQuarry quarry) {
+        AdvLevelMessage message = new AdvLevelMessage();
+        message.yLevel = quarry.yLevel();
+        message.pos = quarry.getPos();
+        message.dim = quarry.getWorld().provider.getDimension();
         return message;
     }
 
@@ -44,15 +44,15 @@ public class LevelMessage implements IMessage {
         World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
         if (world.provider.getDimension() == dim) {
             TileEntity entity = world.getTileEntity(pos);
-            if (entity instanceof TileBasic) {
-                TileBasic quarry = (TileBasic) entity;
+            if (entity instanceof TileAdvQuarry) {
+                TileAdvQuarry quarry = (TileAdvQuarry) entity;
                 switch (ctx.side) {
                     case CLIENT:
-                        quarry.setYLevel(yLevel);
+                        quarry.yLevel_$eq(yLevel);
                         break;
                     case SERVER:
                         FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() ->
-                            quarry.setYLevel(yLevel));
+                            quarry.yLevel_$eq(yLevel));
                         break;
                 }
             }

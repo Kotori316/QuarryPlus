@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 import cofh.api.tileentity.IInventoryConnection;
+import com.yogpc.qp.Config;
 import com.yogpc.qp.PowerManager;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.InvUtils;
@@ -88,6 +89,11 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     protected final IItemHandler handler = createHandler();
 
     protected Map<Integer, Integer> ench = new HashMap<>();
+
+    /**
+     * Where quarry stops its work. Dig blocks at this value.
+     */
+    public int yLevel = 1;
 
     /**
      * Reconfigure energy capacity and amount to receive.
@@ -184,6 +190,15 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         return VALID_ATTACHMENTS.contains(attachments);
     }
 
+    public void setYLevel(int yLevel) {
+        this.yLevel = yLevel;
+        if (yLevel <= 0) {
+            if (Config.content().debug()) {
+                QuarryPlus.LOGGER.warn("Quarry yLevel is set to " + yLevel + ".");
+            }
+        }
+    }
+
     private BI S_addDroppedItems(final Collection<ItemStack> collection, final IBlockState state, final BlockPos pos) {
         Block block = state.getBlock();
         byte i;
@@ -268,6 +283,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         this.unbreaking = nbt.getByte("unbreaking");
         this.fortuneInclude = nbt.getBoolean("fortuneInclude");
         this.silktouchInclude = nbt.getBoolean("silktouchInclude");
+        this.yLevel = Math.max(nbt.getInteger("yLevel"), 1);
         readLongCollection(nbt.getTagList("fortuneList", 10), this.fortuneList);
         readLongCollection(nbt.getTagList("silktouchList", 10), this.silktouchList);
         ench = NBTBuilder.fromList(nbt.getTagList("enchList", Constants.NBT.TAG_COMPOUND), n -> n.getInteger("id"), n -> n.getInteger("value"),
@@ -292,6 +308,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         nbt.setBoolean("silktouchInclude", this.silktouchInclude);
         nbt.setTag("fortuneList", writeLongCollection(this.fortuneList));
         nbt.setTag("silktouchList", writeLongCollection(this.silktouchList));
+        nbt.setInteger("yLevel", this.yLevel);
         Function<Integer, Short> function = Integer::shortValue;
         nbt.setTag("enchList", NBTBuilder.fromMap(ench, "id", "value", function.andThen(NBTTagShort::new), function.andThen(NBTTagShort::new)));
         return super.writeToNBT(nbt);

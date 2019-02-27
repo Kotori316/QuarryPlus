@@ -5,6 +5,7 @@ import com.yogpc.qp.packet.advpump.AdvPumpChangeMessage;
 import com.yogpc.qp.packet.advpump.AdvPumpStatusMessage;
 import com.yogpc.qp.packet.advquarry.AdvContentMessage;
 import com.yogpc.qp.packet.advquarry.AdvFilterMessage;
+import com.yogpc.qp.packet.advquarry.AdvLevelMessage;
 import com.yogpc.qp.packet.advquarry.AdvModeMessage;
 import com.yogpc.qp.packet.advquarry.AdvRangeMessage;
 import com.yogpc.qp.packet.controller.AvailableEntities;
@@ -81,6 +82,8 @@ public class PacketHandler {
         wrapper.registerMessage(handler, AdvFilterMessage.class, i++, Side.CLIENT);
         wrapper.registerMessage(handler, AdvFilterMessage.class, i++, Side.SERVER);
         wrapper.registerMessage(handler, AdvContentMessage.class, i++, Side.CLIENT);
+        wrapper.registerMessage(handler, AdvLevelMessage.class, i++, Side.CLIENT);
+        wrapper.registerMessage(handler, AdvLevelMessage.class, i++, Side.SERVER);
         //adv pump
         wrapper.registerMessage(handler, AdvPumpStatusMessage.class, i++, Side.CLIENT);
         wrapper.registerMessage(handler, AdvPumpChangeMessage.class, i++, Side.SERVER);

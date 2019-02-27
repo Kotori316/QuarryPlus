@@ -90,6 +90,9 @@ public class BlockAdvQuarry extends ADismCBlock {
                 case 2:
                     QuarryPlus.proxy.openAdvQuarryPumpGui(worldIn, playerIn, (TileAdvQuarry) worldIn.getTileEntity(pos), facing);
                     break;
+                case 3:
+                    playerIn.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdAdvQuarryYLevel(), worldIn, pos.getX(), pos.getY(), pos.getZ());
+                    break;
             }
 
             return true;

@@ -22,7 +22,6 @@ import java.util.stream.Stream;
 
 import buildcraft.api.core.IAreaProvider;
 import buildcraft.api.tiles.TilesAPI;
-import com.yogpc.qp.Config;
 import com.yogpc.qp.PowerManager;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
@@ -73,11 +72,6 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     private int targetX, targetY, targetZ;
     public int xMin, xMax, yMin, yMax = Integer.MIN_VALUE, zMin, zMax;
     public boolean filler;
-
-    /**
-     * Where quarry stops its work. Dig blocks at this value.
-     */
-    public int yLevel = 1;
 
     /**
      * The marker of {@link IAreaProvider} or {@link IMarker}.
@@ -530,15 +524,6 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
         }
     }
 
-    public void setYLevel(int yLevel) {
-        this.yLevel = yLevel;
-        if (yLevel <= 0) {
-            if (Config.content().debug()) {
-                QuarryPlus.LOGGER.warn("Quarry yLevel is set to " + yLevel + ".");
-            }
-        }
-    }
-
     public BlockPos getMinPos() {
         return new BlockPos(xMin, yMin, zMin);
     }
@@ -620,7 +605,6 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
         this.headPosY = nbt.getDouble("headPosY");
         this.headPosZ = nbt.getDouble("headPosZ");
         this.filler = nbt.getBoolean("filler");
-        this.yLevel = nbt.getInteger("yLevel");
         this.initialized = false;
     }
 
@@ -644,7 +628,6 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
         nbt.setDouble("headPosY", this.headPosY);
         nbt.setDouble("headPosZ", this.headPosZ);
         nbt.setBoolean("filler", this.filler);
-        nbt.setInteger("yLevel", this.yLevel);
         return super.writeToNBT(nbt);
     }
 
