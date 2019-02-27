@@ -47,4 +47,10 @@ abstract class QPBlock(materialIn: Material, name: String, generator: QPBlock =>
       case _ => super.getPickBlock(state, target, world, pos, player)
     }
   }
+
+  override def getComparatorInputOverride(blockState: IBlockState, worldIn: World, pos: BlockPos): Int = {
+    if (blockState.getValue(ADismCBlock.ACTING)) 15 else 0
+  }
+
+  override def hasComparatorInputOverride(state: IBlockState): Boolean = state.getPropertyKeys.contains(ADismCBlock.ACTING)
 }
