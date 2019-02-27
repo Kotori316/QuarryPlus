@@ -1,3 +1,7 @@
+# Version 1.0.3
+* Add a new item, "Quarry Y Setter", which allows you to stop quarry work at a specific y level.
+* Machines with ability of changing its texture when working have comparator output. (When working 15, otherwise 0)
+
 # Version 1.0.2
 * Support BuildCraft 7.99.21 and newer. Close [#47](https://github.com/Kotori316/QuarryPlus/issues/47).
 
