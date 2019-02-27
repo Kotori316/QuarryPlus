@@ -14,9 +14,9 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
  * To both client and server.
  */
 public class LevelMessage implements IMessage {
-    int yLevel;
-    BlockPos pos;
-    int dim;
+    protected int yLevel;
+    protected BlockPos pos;
+    protected int dim;
 
     public static LevelMessage create(TileBasic tileBasic) {
         LevelMessage message = new LevelMessage();

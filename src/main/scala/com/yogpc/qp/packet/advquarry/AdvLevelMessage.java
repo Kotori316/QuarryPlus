@@ -2,10 +2,9 @@ package com.yogpc.qp.packet.advquarry;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
+import com.yogpc.qp.packet.quarry.LevelMessage;
 import com.yogpc.qp.tile.TileAdvQuarry;
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -13,10 +12,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 /**
  * To both client and server.
  */
-public class AdvLevelMessage implements IMessage {
-    int yLevel;
-    BlockPos pos;
-    int dim;
+public class AdvLevelMessage extends LevelMessage {
 
     public static AdvLevelMessage create(TileAdvQuarry quarry) {
         AdvLevelMessage message = new AdvLevelMessage();
@@ -24,19 +20,6 @@ public class AdvLevelMessage implements IMessage {
         message.pos = quarry.getPos();
         message.dim = quarry.getWorld().provider.getDimension();
         return message;
-    }
-
-    @Override
-    public void fromBytes(PacketBuffer buffer) {
-        pos = buffer.readBlockPos();
-        dim = buffer.readInt();
-        yLevel = buffer.readInt();
-    }
-
-    @Override
-    public void toBytes(PacketBuffer buffer) {
-        buffer.writeBlockPos(pos).writeInt(dim);
-        buffer.writeInt(yLevel);
     }
 
     @Override

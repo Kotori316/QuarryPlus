@@ -1,13 +1,16 @@
 package com.yogpc.qp.container
 
-import com.yogpc.qp.packet.{IMessage, PacketHandler}
+import com.yogpc.qp.packet.PacketHandler
+import com.yogpc.qp.packet.quarry.LevelMessage
 import com.yogpc.qp.tile.HasInv
 import com.yogpc.qp.version.VersionUtil
 import net.minecraft.entity.player.{EntityPlayer, EntityPlayerMP}
 import net.minecraft.inventory.{Container, Slot}
 import net.minecraft.tileentity.TileEntity
 
-class ContainerQuarryLevel[T <: TileEntity with HasInv](tile: T, player: EntityPlayer)(implicit messageFunc: T => _ <: IMessage) extends Container {
+class ContainerQuarryLevel[T <: TileEntity with HasInv](tile: T, player: EntityPlayer)
+                                                       (implicit messageFunc: T => _ <: LevelMessage)
+  extends Container {
   val oneBox = 18
 
   for (h <- 0 until 3; v <- 0 until 9) {

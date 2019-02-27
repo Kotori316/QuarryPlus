@@ -3,9 +3,9 @@ package com.yogpc.qp.gui
 import com.yogpc.qp.QuarryPlus
 import com.yogpc.qp.container.ContainerQuarryLevel
 import com.yogpc.qp.gui.GuiQuarryLevel.YLevel
+import com.yogpc.qp.packet.PacketHandler
 import com.yogpc.qp.packet.advquarry.AdvLevelMessage
 import com.yogpc.qp.packet.quarry.LevelMessage
-import com.yogpc.qp.packet.{IMessage, PacketHandler}
 import com.yogpc.qp.tile.{HasInv, TileAdvQuarry, TileBasic, TileQuarry}
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.inventory.GuiContainer
@@ -15,15 +15,13 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.ResourceLocation
 
-class GuiQuarryLevel[T <: TileEntity with HasInv](private[this] val tile: T,
-                                                  player: EntityPlayer)
-                                                 (implicit lA: YLevel[T], func: T => _ <: IMessage)
+class GuiQuarryLevel[T <: TileEntity with HasInv](private[this] val tile: T, player: EntityPlayer)
+                                                 (implicit lA: YLevel[T], func: T => _ <: LevelMessage)
   extends GuiContainer(new ContainerQuarryLevel(tile, player)) {
 
   val LOCATION = new ResourceLocation(QuarryPlus.modID, "textures/gui/advpump.png")
 
   val tp = 15
-  //7,15 to 168,70 box : 162, 56
 
   override def drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float): Unit = {
     this.drawDefaultBackground()
