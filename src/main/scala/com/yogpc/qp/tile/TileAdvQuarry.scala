@@ -360,7 +360,7 @@ class TileAdvQuarry extends APowerTile
                     if (pre == newPos) {
                       Some(BlockPos.ORIGIN) -> reasons
                     } else {
-                      val energy = PowerManager.calcEnergyAdvSearch(ench.unbreaking, newPos.getY)
+                      val energy = PowerManager.calcEnergyAdvSearch(ench.unbreaking, newPos.getY - yLevel + 1)
                       if (notEnoughEnergy || useEnergy(energy, energy, false, EnergyUsage.ADV_CHECK_BLOCK) != energy) {
                         notEnoughEnergy = true
                         if (index == 0)
@@ -371,7 +371,7 @@ class TileAdvQuarry extends APowerTile
                         useEnergy(energy, energy, true, EnergyUsage.ADV_CHECK_BLOCK)
                         if (index == 31) {
                           Some(newPos) -> reasons
-                        } else if (BlockPos.getAllInBoxMutable(new BlockPos(newPos.getX, 1, newPos.getZ), newPos).asScala.exists(p => !getWorld.isAirBlock(p))) {
+                        } else if (BlockPos.getAllInBoxMutable(new BlockPos(newPos.getX, yLevel, newPos.getZ), newPos).asScala.exists(p => !getWorld.isAirBlock(p))) {
                           Some(newPos) -> reasons
                         } else {
                           next(rest, Reason(newPos, index) :: reasons)
