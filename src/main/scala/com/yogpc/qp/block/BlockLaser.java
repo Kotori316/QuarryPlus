@@ -20,6 +20,7 @@ import java.util.Optional;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.item.ItemBlockEnchantable;
+import com.yogpc.qp.item.ItemTool;
 import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TileLaser;
 import javax.annotation.Nullable;
@@ -30,7 +31,6 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -163,17 +163,9 @@ public class BlockLaser extends ADismCBlock {
 
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-        Optional<TileLaser> tileEntity = Optional.ofNullable((TileLaser) worldIn.getTileEntity(pos));
         this.drop.clear();
-        tileEntity.ifPresent(tile -> {
-            final int count = quantityDropped(state, 0, worldIn.rand);
-            final Item it = getItemDropped(state, worldIn.rand, 0);
-            for (int i = 0; i < count; i++) {
-                final ItemStack is = new ItemStack(it, 1, damageDropped(state));
-                IEnchantableTile.Util.enchantmentToIS(tile, is);
-                this.drop.add(is);
-            }
-        });
+        Optional.ofNullable((TileLaser) worldIn.getTileEntity(pos)).ifPresent(tile ->
+            addEnchantedItem(worldIn, state, tile, this.drop));
         super.breakBlock(worldIn, pos, state);
     }
 
@@ -185,14 +177,14 @@ public class BlockLaser extends ADismCBlock {
     @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
-        Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t -> IEnchantableTile.Util.init(t, stack.getEnchantmentTagList()));
+        Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(IEnchantableTile.Util.initConsumer(stack));
     }
 
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack stack = playerIn.getHeldItem(hand);
-        if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == 0) {
+        if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == ItemTool.meta_StatusChecker()) {
             if (!worldIn.isRemote) {
                 Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t -> t.sendEnchantMassage(playerIn));
             }

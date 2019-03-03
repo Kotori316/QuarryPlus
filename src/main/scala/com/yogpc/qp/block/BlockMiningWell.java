@@ -84,23 +84,8 @@ public class BlockMiningWell extends ADismCBlock {
         if (!worldIn.isRemote) {
             EnumFacing facing = get2dOrientation(placer.posX, placer.posZ, pos.getX(), pos.getZ()).getOpposite();
             worldIn.setBlockState(pos, state.withProperty(FACING, facing), 2);
-            Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t -> IEnchantableTile.Util.init(t, stack.getEnchantmentTagList()));
+            Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(IEnchantableTile.Util.initConsumer(stack));
         }
-    }
-
-    private static EnumFacing get2dOrientation(final double x1, final double z1, final double x2, final double z2) {
-        final double Dx = x1 - x2;
-        final double Dz = z1 - z2;
-        final double angle = Math.atan2(Dz, Dx) / Math.PI * 180 + 180;
-
-        if (angle < 45 || angle > 315)
-            return EnumFacing.EAST;
-        else if (angle < 135)
-            return EnumFacing.SOUTH;
-        else if (angle < 225)
-            return EnumFacing.WEST;
-        else
-            return EnumFacing.NORTH;
     }
 
     @Override

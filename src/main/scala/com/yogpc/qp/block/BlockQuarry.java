@@ -34,7 +34,6 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -65,13 +64,7 @@ public class BlockQuarry extends ADismCBlock {
         if (!worldIn.isRemote) { // Always true.
             TileQuarry tile = (TileQuarry) worldIn.getTileEntity(pos);
             if (tile != null) {
-                final int count = quantityDropped(state, 0, worldIn.rand);
-                final Item it = getItemDropped(state, worldIn.rand, 0);
-                for (int i = 0; i < count; i++) {
-                    final ItemStack is = new ItemStack(it, 1, damageDropped(state));
-                    IEnchantableTile.Util.enchantmentToIS(tile, is);
-                    this.drops.add(is);
-                }
+                addEnchantedItem(worldIn, state, tile, this.drops);
             }
         }
         super.breakBlock(worldIn, pos, state);
@@ -117,24 +110,9 @@ public class BlockQuarry extends ADismCBlock {
         if (!worldIn.isRemote) {
             EnumFacing facing = get2dOrientation(placer.posX, placer.posZ, pos.getX(), pos.getZ()).getOpposite();
             worldIn.setBlockState(pos, state.withProperty(FACING, facing), 2);
-            Consumer<TileQuarry> consumer = quarry -> IEnchantableTile.Util.init(quarry, stack.getEnchantmentTagList());
+            Consumer<TileQuarry> consumer = IEnchantableTile.Util.initConsumer(stack);
             Optional.ofNullable((TileQuarry) worldIn.getTileEntity(pos)).ifPresent(consumer.andThen(TileQuarry.requestTicket));
         }
-    }
-
-    private static EnumFacing get2dOrientation(final double x1, final double z1, final double x2, final double z2) {
-        final double Dx = x1 - x2;
-        final double Dz = z1 - z2;
-        final double angle = Math.atan2(Dz, Dx) / Math.PI * 180 + 180;
-
-        if (angle < 45 || angle > 315)
-            return EnumFacing.EAST;
-        else if (angle < 135)
-            return EnumFacing.SOUTH;
-        else if (angle < 225)
-            return EnumFacing.WEST;
-        else
-            return EnumFacing.NORTH;
     }
 
     @Override

@@ -31,9 +31,7 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
@@ -68,15 +66,8 @@ public class BlockPump extends ADismCBlock {
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
         this.drop.clear();
-        Optional.ofNullable((TilePump) worldIn.getTileEntity(pos)).ifPresent(tile -> {
-            final int count = quantityDropped(state, 0, worldIn.rand);
-            final Item it = getItemDropped(state, worldIn.rand, 0);
-            for (int i = 0; i < count; i++) {
-                final ItemStack is = new ItemStack(it, 1, damageDropped(state));
-                IEnchantableTile.Util.enchantmentToIS(tile, is);
-                this.drop.add(is);
-            }
-        });
+        Optional.ofNullable((TilePump) worldIn.getTileEntity(pos)).ifPresent(tile ->
+            addEnchantedItem(worldIn, state, tile, this.drop));
         super.breakBlock(worldIn, pos, state);
     }
 
@@ -88,10 +79,7 @@ public class BlockPump extends ADismCBlock {
     @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
-        TileEntity entity = worldIn.getTileEntity(pos);
-        if (entity != null) {
-            IEnchantableTile.Util.init((IEnchantableTile) entity, stack.getEnchantmentTagList());
-        }
+        Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(IEnchantableTile.Util.initConsumer(stack));
     }
 
     @SuppressWarnings({"deprecation"})
@@ -128,6 +116,7 @@ public class BlockPump extends ADismCBlock {
         return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
     }
 
+    @SuppressWarnings("Duplicates")
     @Override
     public int getMetaFromState(IBlockState state) {
         boolean work = state.getValue(ACTING);

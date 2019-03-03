@@ -90,7 +90,7 @@ public class BlockAdvPump extends ADismCBlock {
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
         if (!worldIn.isRemote) {
-            Consumer<TileAdvPump> consumer = pump -> IEnchantableTile.Util.init(pump, stack.getEnchantmentTagList());
+            Consumer<TileAdvPump> consumer = IEnchantableTile.Util.initConsumer(stack);
             Optional.ofNullable((TileAdvPump) worldIn.getTileEntity(pos)).ifPresent(consumer.andThen(TileAdvPump.requestTicket));
         }
     }

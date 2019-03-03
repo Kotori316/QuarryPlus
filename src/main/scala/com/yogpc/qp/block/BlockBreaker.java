@@ -25,6 +25,7 @@ import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.BuildcraftHelper;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.item.ItemBlockBreaker;
+import com.yogpc.qp.item.ItemTool;
 import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TileBasic;
 import com.yogpc.qp.tile.TileBreaker;
@@ -38,11 +39,8 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.inventory.InventoryHelper;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
@@ -122,7 +120,7 @@ public class BlockBreaker extends ADismCBlock {
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         if (!worldIn.isRemote) {
 //            worldIn.setBlockState(pos, state.withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer)), 2);
-            Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t -> IEnchantableTile.Util.init(t, stack.getEnchantmentTagList()));
+            Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(IEnchantableTile.Util.initConsumer(stack));
         }
     }
 
@@ -148,13 +146,7 @@ public class BlockBreaker extends ADismCBlock {
             state = state.withProperty(POWERED, flag);
             if (flag)
                 updateTick(worldIn, pos, state, worldIn.rand);
-            TileEntity entity = worldIn.getTileEntity(pos);
-            if (entity != null) {
-                entity.validate();
-                worldIn.setBlockState(pos, state.withProperty(POWERED, flag), 3);
-                entity.validate();
-                worldIn.setTileEntity(pos, entity);
-            }
+            setNewState(worldIn, pos, state.withProperty(POWERED, flag));
         }
     }
 
@@ -166,15 +158,8 @@ public class BlockBreaker extends ADismCBlock {
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
         this.drops.clear();
-        Optional.ofNullable((TileBreaker) worldIn.getTileEntity(pos)).ifPresent(tile -> {
-            final int count = quantityDropped(state, 0, worldIn.rand);
-            final Item id1 = getItemDropped(state, worldIn.rand, 0);
-            for (int i = 0; i < count; i++) {
-                ItemStack is = new ItemStack(id1, 1, damageDropped(state));
-                IEnchantableTile.Util.enchantmentToIS(tile, is);
-                this.drops.add(is);
-            }
-        });
+        Optional.ofNullable((TileBreaker) worldIn.getTileEntity(pos)).ifPresent(tile ->
+            addEnchantedItem(worldIn, state, tile, this.drops));
         super.breakBlock(worldIn, pos, state);
     }
 
@@ -187,17 +172,10 @@ public class BlockBreaker extends ADismCBlock {
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack stack = playerIn.getHeldItem(hand);
-        if (stack.getItem() == Items.STICK || BuildcraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
-            TileEntity entity = worldIn.getTileEntity(pos);
-            if (entity != null) {
-                entity.validate();
-                worldIn.setBlockState(pos, state.cycleProperty(FACING), 3);
-                entity.validate();
-                worldIn.setTileEntity(pos, entity);
-            }
-            return true;
+        if (BuildcraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
+            return setNewState(worldIn, pos, state.cycleProperty(FACING));
         }
-        if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == 0) {
+        if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == ItemTool.meta_StatusChecker()) {
             if (!worldIn.isRemote) {
                 Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t ->
                     t.sendEnchantMassage(playerIn));

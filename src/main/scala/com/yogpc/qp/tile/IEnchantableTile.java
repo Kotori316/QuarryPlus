@@ -18,6 +18,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiPredicate;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.yogpc.qp.Config;
@@ -117,6 +118,11 @@ public interface IEnchantableTile {
                 .map(keys(Enchantment::getEnchantmentByID))
                 .filter(byKey(APacketTile.nonNull))
                 .forEach(entry(is::addEnchantment));
+        }
+
+        @Nonnull
+        public static <T extends IEnchantableTile> Consumer<T> initConsumer(ItemStack stack) {
+            return t -> init(t, stack.getEnchantmentTagList());
         }
     }
 

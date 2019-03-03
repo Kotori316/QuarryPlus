@@ -32,7 +32,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
@@ -83,14 +82,7 @@ public class BlockRefinery extends ADismCBlock {
         final TileRefinery tile = (TileRefinery) worldIn.getTileEntity(pos);
         if (worldIn.isRemote || tile == null)
             return;
-        final int count = quantityDropped(state, 0, worldIn.rand);
-        final Item it = getItemDropped(state, worldIn.rand, 0);
-        for (int i = 0; i < count; i++) {
-            final ItemStack is = new ItemStack(it, 1, damageDropped(state));
-            IEnchantableTile.Util.enchantmentToIS(tile, is);
-            this.drop.add(is);
-        }
-
+        addEnchantedItem(worldIn, state, tile, this.drop);
         super.breakBlock(worldIn, pos, state);
     }
 
@@ -103,7 +95,7 @@ public class BlockRefinery extends ADismCBlock {
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
         if (!worldIn.isRemote) {
-            Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t -> IEnchantableTile.Util.init(t, stack.getEnchantmentTagList()));
+            Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(IEnchantableTile.Util.initConsumer(stack));
         }
     }
 

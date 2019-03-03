@@ -30,7 +30,6 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -106,15 +105,8 @@ public class BlockPlacer extends ADismCBlock {
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack stack = playerIn.getHeldItem(hand);
         if (InvUtils.isDebugItem(playerIn, hand)) return true;
-        if (stack.getItem() == Items.STICK || BuildcraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
-            TileEntity entity = worldIn.getTileEntity(pos);
-            if (entity != null) {
-                entity.validate();
-                worldIn.setBlockState(pos, state.cycleProperty(FACING), 3);
-                entity.validate();
-                worldIn.setTileEntity(pos, entity);
-            }
-            return true;
+        if (BuildcraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
+            return setNewState(worldIn, pos, state.cycleProperty(FACING));
         } else if (!playerIn.isSneaking()) {
             if (Config.content().debug()) {
                 QuarryPlus.LOGGER.info("Placer touched " + hand + " Item : " + stack);

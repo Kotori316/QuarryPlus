@@ -118,7 +118,7 @@ public class BlockAdvQuarry extends ADismCBlock {
         if (!worldIn.isRemote) {
             EnumFacing facing = placer.getHorizontalFacing().getOpposite();
             worldIn.setBlockState(pos, state.withProperty(FACING, facing), 2);
-            Consumer<TileAdvQuarry> consumer = quarry -> IEnchantableTile.Util.init(quarry, stack.getEnchantmentTagList());
+            Consumer<TileAdvQuarry> consumer = IEnchantableTile.Util.initConsumer(stack);
             Optional.ofNullable((TileAdvQuarry) worldIn.getTileEntity(pos)).ifPresent(consumer.andThen(TileAdvQuarry.requestTicket));
         }
     }

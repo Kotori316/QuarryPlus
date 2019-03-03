@@ -17,6 +17,7 @@ import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryHelper;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -66,6 +67,42 @@ public abstract class ADismCBlock extends QPBlock implements IDismantleable, IWr
             }
         }
         return new ArrayList<>(list);
+    }
+
+    protected void addEnchantedItem(World worldIn, IBlockState state, IEnchantableTile tile, List<ItemStack> drops) {
+        final int count = quantityDropped(state, 0, worldIn.rand);
+        final Item it = getItemDropped(state, worldIn.rand, 0);
+        for (int i = 0; i < count; i++) {
+            final ItemStack is = new ItemStack(it, 1, damageDropped(state));
+            IEnchantableTile.Util.enchantmentToIS(tile, is);
+            drops.add(is);
+        }
+    }
+
+    protected static EnumFacing get2dOrientation(final double x1, final double z1, final double x2, final double z2) {
+        final double Dx = x1 - x2;
+        final double Dz = z1 - z2;
+        final double angle = Math.atan2(Dz, Dx) / Math.PI * 180 + 180;
+
+        if (angle < 45 || angle > 315)
+            return EnumFacing.EAST;
+        else if (angle < 135)
+            return EnumFacing.SOUTH;
+        else if (angle < 225)
+            return EnumFacing.WEST;
+        else
+            return EnumFacing.NORTH;
+    }
+
+    protected static boolean setNewState(World worldIn, BlockPos pos, IBlockState newState) {
+        TileEntity entity = worldIn.getTileEntity(pos);
+        if (entity != null) {
+            entity.validate();
+            worldIn.setBlockState(pos, newState, 3);
+            entity.validate();
+            worldIn.setTileEntity(pos, entity);
+        }
+        return true;
     }
 
     protected abstract boolean canRotate();
