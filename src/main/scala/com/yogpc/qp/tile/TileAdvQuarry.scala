@@ -827,27 +827,14 @@ class TileAdvQuarry extends APowerTile
 
     def set(newMode: Modes): Unit = {
       mode = newMode
-      val world1 = getWorld
-      val pos1 = getPos
-      if (!world1.isRemote) {
+      if (!getWorld.isRemote) {
         energyConfigure()
-        PacketHandler.sendToAround(AdvModeMessage.create(self), world1, pos1)
+        PacketHandler.sendToAround(AdvModeMessage.create(self), getWorld, getPos)
       }
-      val state = world1.getBlockState(pos1)
-      if (state.getValue(ACTING)) {
-        if (newMode == NONE || newMode == NOT_NEED_BREAK) {
-          validate()
-          world1.setBlockState(pos1, state.withProperty(ACTING, JBool.FALSE))
-          validate()
-          world1.setTileEntity(pos1, self)
-        }
-      } else {
-        if (newMode != NONE && newMode != NOT_NEED_BREAK) {
-          validate()
-          world1.setBlockState(pos1, state.withProperty(ACTING, JBool.TRUE))
-          validate()
-          world1.setTileEntity(pos1, self)
-        }
+      val state = getWorld.getBlockState(getPos)
+      val working = newMode != NONE && newMode != NOT_NEED_BREAK
+      if (state.getValue(ACTING) ^ working) {
+        InvUtils.setNewState(getWorld, getPos, self, state.withProperty(ACTING, Boolean.box(working)))
       }
     }
 

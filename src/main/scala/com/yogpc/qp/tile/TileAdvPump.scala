@@ -3,6 +3,7 @@ package com.yogpc.qp.tile
 import java.util
 
 import com.yogpc.qp.block.ADismCBlock
+import com.yogpc.qp.compat.InvUtils
 import com.yogpc.qp.gui.TranslationKeys
 import com.yogpc.qp.tile.IEnchantableTile.{EfficiencyID, FortuneID, SilktouchID, UnbreakingID}
 import com.yogpc.qp.tile.TileAdvPump._
@@ -20,8 +21,8 @@ import net.minecraftforge.common.ForgeChunkManager
 import net.minecraftforge.common.ForgeChunkManager.Type
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.util.Constants.NBT
-import net.minecraftforge.fluids.capability.{CapabilityFluidHandler, FluidTankProperties, IFluidHandler, IFluidTankProperties}
 import net.minecraftforge.fluids._
+import net.minecraftforge.fluids.capability.{CapabilityFluidHandler, FluidTankProperties, IFluidHandler, IFluidTankProperties}
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.collection.JavaConverters._
@@ -288,10 +289,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
 
   private def changeState(working: Boolean, state: IBlockState): Unit = {
     if (VersionUtil.changeAdvPumpState()) {
-      validate()
-      getWorld.setBlockState(getPos, state.withProperty(ADismCBlock.ACTING, Boolean.box(working)))
-      validate()
-      getWorld.setTileEntity(getPos, this)
+      InvUtils.setNewState(getWorld, getPos, this, state.withProperty(ADismCBlock.ACTING, Boolean.box(working)))
     }
   }
 

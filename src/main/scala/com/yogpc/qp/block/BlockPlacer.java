@@ -106,7 +106,7 @@ public class BlockPlacer extends ADismCBlock {
         ItemStack stack = playerIn.getHeldItem(hand);
         if (InvUtils.isDebugItem(playerIn, hand)) return true;
         if (BuildcraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
-            return setNewState(worldIn, pos, state.cycleProperty(FACING));
+            return InvUtils.setNewState(worldIn, pos, state.cycleProperty(FACING));
         } else if (!playerIn.isSneaking()) {
             if (Config.content().debug()) {
                 QuarryPlus.LOGGER.info("Placer touched " + hand + " Item : " + stack);

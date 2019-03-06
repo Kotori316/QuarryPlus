@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.block.BlockPump;
+import com.yogpc.qp.compat.InvUtils;
 import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -87,9 +88,7 @@ public class TileReplacer extends APacketTile implements IAttachment {
         if (hasWorld()) {
             IBlockState state = world.getBlockState(pos);
             if (facing != null ^ state.getValue(BlockPump.CONNECTED)) {
-                world.setBlockState(pos, state.withProperty(BlockPump.CONNECTED, facing != null));
-                validate();
-                world.setTileEntity(pos, this);
+                InvUtils.setNewState(world, pos, this, state.withProperty(BlockPump.CONNECTED, facing != null));
             }
         }
     }

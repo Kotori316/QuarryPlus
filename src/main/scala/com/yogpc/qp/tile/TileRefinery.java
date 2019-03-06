@@ -47,6 +47,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import scala.Symbol;
 
+import static jp.t2v.lab.syntax.MapStreamSyntax.always_false;
+
 /**
  * See {@link buildcraft.factory.tile.TileDistiller_BC8}, {@link buildcraft.api.recipes.IRefineryRecipeManager}, {@link buildcraft.energy.BCEnergyRecipes}
  */
@@ -79,7 +81,7 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
         if (!machineDisabled) {
             horizontalsTank.predicate = fluidStack -> BuildcraftRecipeRegistry.refineryRecipes.getDistillationRegistry().getRecipeForInput(fluidStack) != null;
         } else {
-            horizontalsTank.predicate = fluidStack -> false;
+            horizontalsTank.predicate = always_false();
         }
         upTank.setCanFill(false);
         downTank.setCanFill(false);
@@ -304,7 +306,7 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
 
     public class DistillerTank extends FluidTank {
         private final String name;
-        private Predicate<FluidStack> predicate = fluidStack -> false;
+        private Predicate<FluidStack> predicate = always_false();
 
         public DistillerTank(String name) {
             super(4 * Fluid.BUCKET_VOLUME);

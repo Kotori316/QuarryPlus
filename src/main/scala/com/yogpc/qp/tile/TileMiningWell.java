@@ -19,6 +19,7 @@ import java.util.Optional;
 import com.yogpc.qp.PowerManager;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.block.BlockMiningWell;
+import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.gui.TranslationKeys;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.TileMessage;
@@ -153,10 +154,7 @@ public class TileMiningWell extends TileBasic implements ITickable {
             startWork();
         if (hasWorld()) {
             IBlockState old = getWorld().getBlockState(getPos());
-            validate();
-            getWorld().setBlockState(getPos(), old.withProperty(BlockMiningWell.ACTING, working));
-            validate();
-            getWorld().setTileEntity(getPos(), this);
+            InvUtils.setNewState(getWorld(), getPos(), this, old.withProperty(BlockMiningWell.ACTING, working));
         }
     }
 

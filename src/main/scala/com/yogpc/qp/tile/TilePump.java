@@ -28,6 +28,7 @@ import com.yogpc.qp.PowerManager;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.block.BlockPump;
+import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.gui.TranslationKeys;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.pump.Mappings;
@@ -231,16 +232,8 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         this.connectTo = connectTo;
         if (hasWorld()) {
             IBlockState state = getWorld().getBlockState(getPos());
-            if (connectTo == null && state.getValue(BlockPump.CONNECTED)) {
-                validate();
-                getWorld().setBlockState(getPos(), state.withProperty(BlockPump.CONNECTED, false));
-                validate();
-                getWorld().setTileEntity(getPos(), this);
-            } else if (connectTo != null && !state.getValue(BlockPump.CONNECTED)) {
-                validate();
-                getWorld().setBlockState(getPos(), state.withProperty(BlockPump.CONNECTED, true));
-                validate();
-                getWorld().setTileEntity(getPos(), this);
+            if (connectTo != null ^ state.getValue(BlockPump.CONNECTED)) {
+                InvUtils.setNewState(getWorld(), getPos(), this, state.withProperty(BlockPump.CONNECTED, connectTo != null));
             }
         }
     }
@@ -253,10 +246,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         }
         if (!getWorld().isRemote) {
             IBlockState state = getWorld().getBlockState(getPos());
-            validate();
-            getWorld().setBlockState(getPos(), state.withProperty(BlockPump.ACTING, b));
-            validate();
-            getWorld().setTileEntity(getPos(), this);
+            InvUtils.setNewState(getWorld(), getPos(), this, state.withProperty(BlockPump.ACTING, b));
         }
     }
 

@@ -133,7 +133,7 @@ class TilePlacer extends TileEntity with HasInv {
 
   override def isItemValidForSlot(index: Int, stack: ItemStack) = true
 
-  override def clear() = inventory.clear()
+  override def clear(): Unit = inventory.clear()
 
   override def getName = TranslationKeys.placer
 

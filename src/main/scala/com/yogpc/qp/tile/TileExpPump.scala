@@ -4,6 +4,7 @@ import java.util
 
 import com.yogpc.qp._
 import com.yogpc.qp.block.{ADismCBlock, BlockExpPump, BlockPump}
+import com.yogpc.qp.compat.InvUtils
 import com.yogpc.qp.gui.TranslationKeys
 import com.yogpc.qp.packet.PacketHandler
 import com.yogpc.qp.packet.exppump.ExpPumpMessage
@@ -61,10 +62,7 @@ class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender wi
     if (hasWorld) {
       val state = getWorld.getBlockState(getPos)
       if (!working == state.getValue(BlockPump.CONNECTED)) {
-        validate()
-        getWorld.setBlockState(getPos, state.withProperty(BlockPump.CONNECTED, Boolean.box(working)))
-        validate()
-        getWorld.setTileEntity(getPos, this)
+        InvUtils.setNewState(getWorld, getPos, this, state.withProperty(BlockPump.CONNECTED, Boolean.box(working)))
       }
     }
   }
@@ -77,16 +75,9 @@ class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender wi
 
   def addXp(amount: Int): Unit = {
     xpAmount += amount
-    if (xpAmount > 0 && !getWorld.getBlockState(getPos).getValue(ADismCBlock.ACTING)) {
-      validate()
-      getWorld.setBlockState(getPos, getWorld.getBlockState(getPos).withProperty(ADismCBlock.ACTING, Boolean.box(true)))
-      validate()
-      getWorld.setTileEntity(getPos, this)
-    } else if (xpAmount <= 0 && getWorld.getBlockState(getPos).getValue(ADismCBlock.ACTING)) {
-      validate()
-      getWorld.setBlockState(getPos, getWorld.getBlockState(getPos).withProperty(ADismCBlock.ACTING, Boolean.box(false)))
-      validate()
-      getWorld.setTileEntity(getPos, this)
+    if (xpAmount > 0 ^ getWorld.getBlockState(getPos).getValue(ADismCBlock.ACTING)) {
+      val state = getWorld.getBlockState(getPos).withProperty(ADismCBlock.ACTING, Boolean.box(xpAmount > 0))
+      InvUtils.setNewState(getWorld, getPos, this, state)
     }
   }
 

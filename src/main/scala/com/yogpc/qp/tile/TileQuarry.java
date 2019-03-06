@@ -27,6 +27,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.block.BlockFrame;
 import com.yogpc.qp.block.BlockQuarry;
+import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.gui.TranslationKeys;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.TileMessage;
@@ -510,11 +511,8 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
         if (!getWorld().isRemote) {
             PacketHandler.sendToAround(ModeMessage.create(this), getWorld(), getPos());
             IBlockState state = getWorld().getBlockState(getPos());
-            if (state.getValue(BlockQuarry.ACTING) == !isWorking()) {
-                validate();
-                getWorld().setBlockState(getPos(), state.withProperty(BlockQuarry.ACTING, isWorking()));
-                validate();
-                getWorld().setTileEntity(getPos(), this);
+            if (state.getValue(BlockQuarry.ACTING) ^ isWorking()) {
+                InvUtils.setNewState(getWorld(), getPos(), this, state.withProperty(BlockQuarry.ACTING, isWorking()));
                 if (isWorking()) {
                     startWork();
                 } else {

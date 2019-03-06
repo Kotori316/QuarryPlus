@@ -146,7 +146,7 @@ public class BlockBreaker extends ADismCBlock {
             state = state.withProperty(POWERED, flag);
             if (flag)
                 updateTick(worldIn, pos, state, worldIn.rand);
-            setNewState(worldIn, pos, state.withProperty(POWERED, flag));
+            InvUtils.setNewState(worldIn, pos, state.withProperty(POWERED, flag));
         }
     }
 
@@ -173,7 +173,7 @@ public class BlockBreaker extends ADismCBlock {
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack stack = playerIn.getHeldItem(hand);
         if (BuildcraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
-            return setNewState(worldIn, pos, state.cycleProperty(FACING));
+            return InvUtils.setNewState(worldIn, pos, state.cycleProperty(FACING));
         }
         if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == ItemTool.meta_StatusChecker()) {
             if (!worldIn.isRemote) {

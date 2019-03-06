@@ -94,17 +94,6 @@ public abstract class ADismCBlock extends QPBlock implements IDismantleable, IWr
             return EnumFacing.NORTH;
     }
 
-    protected static boolean setNewState(World worldIn, BlockPos pos, IBlockState newState) {
-        TileEntity entity = worldIn.getTileEntity(pos);
-        if (entity != null) {
-            entity.validate();
-            worldIn.setBlockState(pos, newState, 3);
-            entity.validate();
-            worldIn.setTileEntity(pos, entity);
-        }
-        return true;
-    }
-
     protected abstract boolean canRotate();
 
     @Override
