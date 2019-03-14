@@ -14,21 +14,26 @@
 package com.yogpc.qp.block;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.BuildcraftHelper;
+import com.yogpc.qp.gui.TranslationKeys;
 import com.yogpc.qp.item.ItemBlockPump;
 import com.yogpc.qp.item.ItemTool;
 import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TilePump;
 import com.yogpc.qp.version.VersionUtil;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -133,5 +138,11 @@ public class BlockPump extends ADismCBlock {
     @Override
     protected boolean canRotate() {
         return false;
+    }
+
+    @Override
+    public void addInformation(ItemStack stack, @Nullable World player, List<String> tooltip, ITooltipFlag advanced) {
+        super.addInformation(stack, player, tooltip, advanced);
+        tooltip.add(I18n.format(TranslationKeys.TOOLTIP_PUMP, I18n.format(TranslationKeys.quarry), ' '));
     }
 }

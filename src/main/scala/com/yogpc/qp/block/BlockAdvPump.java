@@ -1,5 +1,6 @@
 package com.yogpc.qp.block;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -8,6 +9,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.BuildcraftHelper;
 import com.yogpc.qp.compat.InvUtils;
+import com.yogpc.qp.gui.TranslationKeys;
 import com.yogpc.qp.item.ItemBlockAdvPump;
 import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TileAdvPump;
@@ -16,6 +18,8 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -120,5 +124,11 @@ public class BlockAdvPump extends ADismCBlock {
     @Override
     protected boolean canRotate() {
         return false;
+    }
+
+    @Override
+    public void addInformation(ItemStack stack, @Nullable World player, List<String> tooltip, ITooltipFlag advanced) {
+        super.addInformation(stack, player, tooltip, advanced);
+        tooltip.add(I18n.format(TranslationKeys.TOOLTIP_ADVPUMP, ' '));
     }
 }

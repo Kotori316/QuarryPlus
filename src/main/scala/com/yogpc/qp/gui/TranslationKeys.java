@@ -59,6 +59,11 @@ public class TranslationKeys {
     public static final String Y_LEVEL = "chat.ylevel";
     public static final String YOG_SPAWNER_SETTING = "yog.spanwer.setting";
 
+    public static final String TOOLTIP_PUMP = "quarryplus.tooltip.blockpump";
+    public static final String TOOLTIP_EXPPUMP = "quarryplus.tooltip.exppump";
+    public static final String TOOLTIP_REPLACER = "quarryplus.tooltip.replacer";
+    public static final String TOOLTIP_ADVPUMP = "quarryplus.tooltip.advpump";
+
     public static final String advpump = "tile." + QuarryPlus.Names.advpump + ".name";
     public static final String advquarry = "tile." + QuarryPlus.Names.advquarry + ".name";
     public static final String breaker = "tile." + QuarryPlus.Names.breaker + ".name";
