@@ -39,7 +39,6 @@ import net.minecraftforge.event.world.BlockEvent
 import net.minecraftforge.fluids.capability.{CapabilityFluidHandler, FluidTankProperties, IFluidHandler, IFluidTankProperties}
 import net.minecraftforge.fluids.{FluidStack, FluidTank, FluidUtil}
 import net.minecraftforge.fml.common.registry.ForgeRegistries
-import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import net.minecraftforge.items.{CapabilityItemHandler, IItemHandlerModifiable}
 
 import scala.annotation.tailrec
@@ -342,56 +341,61 @@ class TileAdvQuarry extends APowerTile
         var j = 0
         var notEnoughEnergy = false
         while (j < n && (mode is TileAdvQuarry.BREAK_BLOCK) && !notEnoughEnergy) {
-          ((for (a <- dropCheck().right;
-                 b <- calcBreakEnergy(a).right;
-                 c <- consumeEnergy(b).right;
-                 d <- digging(c).right) yield d) match {
-            case Left(a) =>
-              if (a.isEnergyIssue) notEnoughEnergy = true
-              Reason.printNonEnergy(a)
-            case Right((l, reasons)) =>
-              l.asScala.foreach(cacheItems.add)
-              reasons.foreach(Reason.printNonEnergy)
-
-              @tailrec
-              def next(stream: Stream[((BlockPos, BlockPos), Int)], reasons: List[Reason] = Nil): (Option[BlockPos], Seq[Reason]) = {
-                stream match {
-                  case ((pre, newPos), index) #:: rest =>
-                    if (pre == newPos) {
-                      Some(BlockPos.ORIGIN) -> reasons
+          (for (a <- dropCheck().right;
+                b <- calcBreakEnergy(a).right;
+                c <- consumeEnergy(b).right;
+                d <- digging(c).right) yield d)
+            .right.map { case (l, reasons) =>
+            @tailrec
+            def next(stream: Stream[((BlockPos, BlockPos), Int)], reasons: List[Reason] = Nil): (Option[BlockPos], Seq[Reason]) = {
+              stream match {
+                case ((pre, newPos), index) #:: rest =>
+                  if (pre == newPos) {
+                    Some(BlockPos.ORIGIN) -> reasons
+                  } else {
+                    val energy = PowerManager.calcEnergyAdvSearch(ench.unbreaking, newPos.getY - yLevel + 1)
+                    if (notEnoughEnergy || useEnergy(energy, energy, false, EnergyUsage.ADV_CHECK_BLOCK) != energy) {
+                      notEnoughEnergy = true
+                      if (index == 0)
+                        None -> Seq(Reason(EnergyUsage.ADV_CHECK_BLOCK, energy, getStoredEnergy, index))
+                      else
+                        Some(pre) -> (Reason(EnergyUsage.ADV_CHECK_BLOCK, energy, getStoredEnergy, index) :: reasons)
                     } else {
-                      val energy = PowerManager.calcEnergyAdvSearch(ench.unbreaking, newPos.getY - yLevel + 1)
-                      if (notEnoughEnergy || useEnergy(energy, energy, false, EnergyUsage.ADV_CHECK_BLOCK) != energy) {
-                        notEnoughEnergy = true
-                        if (index == 0)
-                          None -> Seq(Reason(EnergyUsage.ADV_CHECK_BLOCK, energy, getStoredEnergy, index))
-                        else
-                          Some(pre) -> (Reason(EnergyUsage.ADV_CHECK_BLOCK, energy, getStoredEnergy, index) :: reasons)
+                      useEnergy(energy, energy, true, EnergyUsage.ADV_CHECK_BLOCK)
+                      if (index == 31) {
+                        Some(newPos) -> reasons
+                      } else if (BlockPos.getAllInBoxMutable(new BlockPos(newPos.getX, yLevel, newPos.getZ), newPos).asScala.exists(p => !getWorld.isAirBlock(p))) {
+                        Some(newPos) -> reasons
                       } else {
-                        useEnergy(energy, energy, true, EnergyUsage.ADV_CHECK_BLOCK)
-                        if (index == 31) {
-                          Some(newPos) -> reasons
-                        } else if (BlockPos.getAllInBoxMutable(new BlockPos(newPos.getX, yLevel, newPos.getZ), newPos).asScala.exists(p => !getWorld.isAirBlock(p))) {
-                          Some(newPos) -> reasons
-                        } else {
-                          next(rest, Reason(newPos, index) :: reasons)
-                        }
+                        next(rest, Reason(newPos, index) :: reasons)
                       }
                     }
+                  }
+              }
+            }
+
+            val (opt, r) = next(nextPoses(digRange, target).take(32).zipWithIndex)
+            (l, opt, reasons ++ r.reverse)
+          } match {
+            case Left(a) => Reason.printNonEnergy(a)
+            case Right((drops, nextPos, reasons)) =>
+              drops.asScala.foreach(cacheItems.add)
+              reasons.foreach { r =>
+                r.usage match {
+                  case Some(x) if x == EnergyUsage.ADV_BREAK_BLOCK => Reason.print(r)
+                  case None => Reason.print(r)
+                  case _ =>
                 }
               }
-
-              next(nextPoses(digRange, target).take(32).zipWithIndex) match {
-                case (opt, r) => r.reverse.foreach(Reason.print); opt
+              nextPos.foreach { p =>
+                target = p
+                if (p == BlockPos.ORIGIN) {
+                  //Finished.
+                  target = digRange.min
+                  finishWork()
+                  mode set TileAdvQuarry.CHECK_LIQUID
+                }
               }
-          }).foreach { p =>
-            target = p
-            if (p == BlockPos.ORIGIN) {
-              //Finished.
-              target = digRange.min
-              finishWork()
-              mode set TileAdvQuarry.CHECK_LIQUID
-            }
           }
 
           j += 1
@@ -685,6 +689,14 @@ class TileAdvQuarry extends APowerTile
     }
   }
 
+  def noFrameStart(): Unit = {
+    if (mode is TileAdvQuarry.NOT_NEED_BREAK) {
+      mode set TileAdvQuarry.BREAK_BLOCK
+      target = digRange.min
+      startWork()
+    }
+  }
+
   override def connectAttachment(facing: EnumFacing, attachments: Attachments[_ <: APacketTile]): Boolean = {
     if (!facingMap.contains(attachments)) {
       facingMap = facingMap.updated(attachments, facing)
@@ -707,14 +719,6 @@ class TileAdvQuarry extends APowerTile
       .flatMap(f => getWorld.getTileEntity(getPos.offset(f)).toOption)
       .flatMap(t => Attachments.REPLACER.apply(t).asScala)
       .fold(Blocks.AIR.getDefaultState)(_.getReplaceState)
-  }
-
-  @SideOnly(Side.CLIENT)
-  def receiveModeMessage(modeTag: NBTTagCompound): Runnable = new Runnable {
-    override def run(): Unit = {
-      mode.readFromNBT(modeTag)
-      digRange = DigRange.readFromNBT(modeTag)
-    }
   }
 
   def preparedFiller: Boolean = {
@@ -819,7 +823,7 @@ class TileAdvQuarry extends APowerTile
     }
   }
 
-  private[TileAdvQuarry] class Mode extends INBTWritable with INBTReadable[Mode] {
+  class Mode extends INBTWritable with INBTReadable[Mode] {
 
     import TileAdvQuarry._
 
@@ -897,7 +901,7 @@ object TileAdvQuarry {
     override def min: BlockPos = BlockPos.ORIGIN
   }
 
-  private[TileAdvQuarry] case class QEnch(efficiency: Int, unbreaking: Int, fortune: Int, silktouch: Boolean, other: Map[Int, Int] = Map.empty) extends INBTWritable {
+  case class QEnch(efficiency: Int, unbreaking: Int, fortune: Int, silktouch: Boolean, other: Map[Int, Int] = Map.empty) extends INBTWritable {
 
     require(efficiency >= 0 && unbreaking >= 0 && fortune >= 0,
       s"Chunk Destroyer Enchantment error with Efficiency $efficiency, Unbreaking $unbreaking, Fortune $fortune, Silktouch $silktouch, other $other")

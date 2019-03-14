@@ -57,7 +57,10 @@ public class AdvModeMessage implements IMessage {
             TileEntity entity = world.getTileEntity(pos);
             if (entity instanceof TileAdvQuarry) {
                 TileAdvQuarry quarry = (TileAdvQuarry) entity;
-                Minecraft.getMinecraft().addScheduledTask(quarry.receiveModeMessage(modeNBT));
+                Minecraft.getMinecraft().addScheduledTask(() -> {
+                    quarry.mode().readFromNBT(modeNBT);
+                    quarry.digRange_$eq(TileAdvQuarry.DigRange$.MODULE$.readFromNBT(modeNBT));
+                });
             }
         }
         return null;

@@ -3,7 +3,7 @@ package com.yogpc.qp.gui
 import com.yogpc.qp.QuarryPlus
 import com.yogpc.qp.container.ContainerAdvQuarry
 import com.yogpc.qp.packet.PacketHandler
-import com.yogpc.qp.packet.advquarry.AdvRangeMessage
+import com.yogpc.qp.packet.advquarry.AdvActionMessage
 import com.yogpc.qp.tile.TileAdvQuarry
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.gui.{GuiButton, GuiScreen}
@@ -45,13 +45,19 @@ class GuiAdvQuarry(tile: TileAdvQuarry, player: EntityPlayer) extends GuiContain
     buttonList.add(new GuiButton(5, guiLeft + 8, guiTop + 39, 10, 8, minus))
     buttonList.add(new GuiButton(6, guiLeft + 158, guiTop + 39, 10, 8, plus))
     buttonList.add(new GuiButton(7, guiLeft + 128, guiTop + 39, 10, 8, minus))
+
+    buttonList.add(new GuiButton(8, guiLeft + 108, guiTop + 58, 60, 12, "No Frame"))
   }
 
   private def range = tile.digRange
 
   override def actionPerformed(button: GuiButton): Unit = {
     super.actionPerformed(button)
-    if (tile.mode is TileAdvQuarry.NOT_NEED_BREAK) {
+    if (button.id == 8) {
+      if (tile.mode is TileAdvQuarry.NOT_NEED_BREAK) {
+        PacketHandler.sendToServer(AdvActionMessage.create(tile, AdvActionMessage.Actions.QUICK_START))
+      }
+    } else if (tile.mode is TileAdvQuarry.NOT_NEED_BREAK) {
       val direction = EnumFacing.getFront(button.id / 2 + 2)
       val increase = if (button.id % 2 == 0) 1 else -1
       val shift = GuiScreen.isShiftKeyDown
@@ -78,7 +84,7 @@ class GuiAdvQuarry(tile: TileAdvQuarry, player: EntityPlayer) extends GuiContain
             }
           } else range
         tile.digRange = newRange
-        PacketHandler.sendToServer(AdvRangeMessage.create(tile))
+        PacketHandler.sendToServer(AdvActionMessage.create(tile, AdvActionMessage.Actions.CHANGE_RANGE, tile.digRange.toNBT))
       }
     }
   }
