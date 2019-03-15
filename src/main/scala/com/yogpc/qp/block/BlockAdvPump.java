@@ -84,7 +84,7 @@ public class BlockAdvPump extends ADismCBlock {
         TileEntity entity = world.getTileEntity(pos);
         if (entity instanceof TileAdvPump) {
             TileAdvPump quarry = (TileAdvPump) entity;
-            ItemStack stack = new ItemStack(QuarryPlusI.blockStandalonePump(), 1, 0);
+            ItemStack stack = new ItemStack(itemBlock(), 1, 0);
             IEnchantableTile.Util.enchantmentToIS(quarry, stack);
             drops.add(stack);
         }

@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.yogpc.qp.QuarryPlus;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.Enchantment;
@@ -65,7 +67,7 @@ public class InvUtils {
      * @param pos Position of TileEntity from which itemStack comes.
      * @param is  ItemStack to be inserted. The stack doesn't change in this method.
      */
-    public static ItemStack injectToNearTile(final World w, BlockPos pos, final ItemStack is) {
+    public static ItemStack injectToNearTile(@Nonnull final World w, @Nonnull BlockPos pos, final ItemStack is) {
 
         List<? extends IInjector> injectors = Stream.of(EnumFacing.VALUES).flatMap(enumFacing -> {
             TileEntity t = w.getTileEntity(pos.offset(enumFacing));
@@ -83,7 +85,7 @@ public class InvUtils {
 
     }
 
-    public static Option<IItemHandler> findItemHandler(World world, BlockPos pos, EnumFacing from) {
+    public static Option<IItemHandler> findItemHandler(@Nonnull World world, @Nonnull BlockPos pos, @Nullable EnumFacing from) {
         TileEntity entity = world.getTileEntity(pos);
         if (entity == null) {
             return Option.empty();
@@ -92,7 +94,7 @@ public class InvUtils {
         }
     }
 
-    public static boolean isDebugItem(EntityPlayer player, EnumHand hand) {
+    public static boolean isDebugItem(@Nonnull EntityPlayer player, @Nonnull EnumHand hand) {
         ItemStack stack = player.getHeldItem(hand);
         if (nonEmpty(stack)) {
             Item item = stack.getItem();
@@ -102,7 +104,7 @@ public class InvUtils {
     }
 
     @SuppressWarnings("deprecation")
-    public static IBlockState getStateFromItem(ItemBlock itemBlock, int meta) {
+    public static IBlockState getStateFromItem(@Nonnull ItemBlock itemBlock, int meta) {
         Block block = itemBlock.getBlock();
         return block.getStateFromMeta(meta);
     }
@@ -125,12 +127,12 @@ public class InvUtils {
     @GameRegistry.ObjectHolder("endercore:autosmelt")
     public static final Enchantment endercore_smelting = DummyEnchantment.DUMMY_ENCHANTMENT;
 
-    public static boolean setNewState(World worldIn, BlockPos pos, IBlockState newState) {
+    public static boolean setNewState(@Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull IBlockState newState) {
         TileEntity entity = worldIn.getTileEntity(pos);
         return setNewState(worldIn, pos, entity, newState);
     }
 
-    public static boolean setNewState(World worldIn, BlockPos pos, TileEntity entity, IBlockState newState) {
+    public static boolean setNewState(@Nonnull World worldIn, @Nonnull BlockPos pos, @Nullable TileEntity entity, @Nonnull IBlockState newState) {
         if (entity != null) {
             entity.validate();
             worldIn.setBlockState(pos, newState, 3);

@@ -8,6 +8,7 @@ import java.util.function.Function;
 import cofh.api.block.IDismantleable;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
+import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.tile.IEnchantableTile;
 import ic2.api.tile.IWrenchable;
 import net.minecraft.block.Block;
@@ -113,10 +114,7 @@ public abstract class ADismCBlock extends QPBlock implements IDismantleable, IWr
             TileEntity entity = world.getTileEntity(pos);
             IBlockState state = world.getBlockState(pos);
             if (entity != null) {
-                entity.validate();
-                world.setBlockState(pos, state.withProperty(FACING, newDirection));
-                entity.validate();
-                world.setTileEntity(pos, entity);
+                InvUtils.setNewState(world, pos, entity, state.withProperty(FACING, newDirection));
             } else {
                 world.setBlockState(pos, state.withProperty(FACING, newDirection));
             }

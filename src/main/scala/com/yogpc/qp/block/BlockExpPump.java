@@ -116,7 +116,7 @@ public class BlockExpPump extends ADismCBlock {
         TileEntity entity = world.getTileEntity(pos);
         if (entity instanceof TileExpPump) {
             TileExpPump pump = (TileExpPump) entity;
-            ItemStack stack = new ItemStack(this);
+            ItemStack stack = new ItemStack(itemBlock(), 1, 0);
             IEnchantableTile.Util.enchantmentToIS(pump, stack);
             drops.add(stack);
         }
