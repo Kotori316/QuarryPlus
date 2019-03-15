@@ -73,9 +73,15 @@ public class BlockAdvQuarry extends ADismCBlock {
             if (!worldIn.isRemote) {
                 TileAdvQuarry quarry = (TileAdvQuarry) worldIn.getTileEntity(pos);
                 if (quarry != null) {
-                    quarry.G_ReInit();
-                    if (Config.content().noEnergy()) {
-                        quarry.stickActivated(playerIn);
+                    if (stack.getItem() == Items.STICK) {
+                        if (Config.content().noEnergy())
+                            quarry.stickActivated(playerIn);
+                        quarry.startFillMode();
+                    } else {
+                        quarry.G_ReInit();
+                        if (Config.content().noEnergy()) {
+                            quarry.stickActivated(playerIn);
+                        }
                     }
                 }
             }
@@ -95,15 +101,6 @@ public class BlockAdvQuarry extends ADismCBlock {
                     break;
             }
 
-            return true;
-        } else if (stack.getItem() == Items.STICK) {
-            if (!worldIn.isRemote) {
-                Optional.ofNullable((TileAdvQuarry) worldIn.getTileEntity(pos)).ifPresent(tileAdvQuarry -> {
-                    if (Config.content().noEnergy())
-                        tileAdvQuarry.stickActivated(playerIn);
-                    tileAdvQuarry.startFillMode();
-                });
-            }
             return true;
         } else if (!playerIn.isSneaking()) {
             playerIn.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdAdvQuarry(), worldIn, pos.getX(), pos.getY(), pos.getZ());
