@@ -12,6 +12,8 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 /**
  * To both client and server.
+ * Don't make this grouped with other messages.
+ * This is a sub class to use Y Setter.
  */
 public class LevelMessage implements IMessage {
     protected int yLevel;

@@ -11,6 +11,8 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 /**
  * To both client and server.
+ * Don't make this grouped with other AdvMessages.
+ * This is a sub class to use Y Setter.
  */
 public class AdvLevelMessage extends LevelMessage {
 
