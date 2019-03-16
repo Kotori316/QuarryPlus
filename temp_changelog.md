@@ -1,3 +1,8 @@
+# Version 1.0.4
+* Add NoFrameMode to ChunkDestroyer. The mode skips building frame and start breaking blocks immediately.
+* Add some tooltips to attachment machines. e.g. pumps
+* Removed duplicated code.
+
 # Version 1.0.3
 * Add a new item, "Quarry Y Setter", which allows you to stop quarry work at a specific y level.
 * Machines with ability of changing its texture when working have comparator output. (When working 15, otherwise 0)

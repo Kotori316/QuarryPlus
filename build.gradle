@@ -42,10 +42,10 @@ minecraft {
 }
 
 repositories {
-    maven {
-        name 'curseforge'
-        url 'https://minecraft.curseforge.com/api/maven/'
-    }
+//    maven {
+//        name 'curseforge'
+//        url 'https://minecraft.curseforge.com/api/maven/'
+//    }
     maven {
         // location of the maven that hosts JEI files
         name = "Progwml6 maven"
