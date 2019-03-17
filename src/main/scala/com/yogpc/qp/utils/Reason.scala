@@ -13,6 +13,8 @@ trait Reason {
   def usage: Option[EnergyUsage] = None
 
   override def toString: String
+
+  def print(): Unit = QuarryPlus.LOGGER.info(toString)
 }
 
 object Reason {
@@ -30,15 +32,15 @@ object Reason {
   def apply(pos: BlockPos, index: Int) = new AllAirImpl(pos, index)
 
   def printNonEnergy[T]: Reason => Option[T] = r => {
-    if (Config.content.debug && !r.isEnergyIssue) {
-      QuarryPlus.LOGGER.info(r.toString)
+    if (Config.content.debug && FMLCommonHandler.instance().getSide == Side.CLIENT && !r.isEnergyIssue) {
+      r.print()
     }
     None
   }
 
   def print[T]: Reason => Option[T] = r => {
     if (Config.content.debug && FMLCommonHandler.instance().getSide == Side.CLIENT) {
-      QuarryPlus.LOGGER.info(r.toString)
+      r.print()
     }
     None
   }
@@ -64,6 +66,8 @@ object Reason {
     override def isEnergyIssue: Boolean = false
 
     override def toString: String = s"x = ${pos.getX}, z = ${pos.getZ} has no blocks. index = $index"
+
+    override def print(): Unit = ()
   }
 
 }
