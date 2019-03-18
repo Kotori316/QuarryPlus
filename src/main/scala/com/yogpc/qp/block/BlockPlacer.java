@@ -30,7 +30,6 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -103,8 +102,8 @@ public class BlockPlacer extends ADismCBlock {
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+        if (super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ)) return true;
         ItemStack stack = playerIn.getHeldItem(hand);
-        if (InvUtils.isDebugItem(playerIn, hand)) return true;
         if (BuildcraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
             return InvUtils.setNewState(worldIn, pos, state.cycleProperty(FACING));
         } else if (!playerIn.isSneaking()) {
@@ -114,16 +113,12 @@ public class BlockPlacer extends ADismCBlock {
             playerIn.openGui(QuarryPlus.INSTANCE, QuarryPlusI.guiIdPlacer(), worldIn, pos.getX(), pos.getY(), pos.getZ());
             return true;
         }
-        return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
+        return false;
     }
 
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-        TilePlacer placer = (TilePlacer) worldIn.getTileEntity(pos);
-        if (placer != null) {
-            InventoryHelper.dropInventoryItems(worldIn, pos, placer);
-            worldIn.updateComparatorOutputLevel(pos, this);
-        }
+        InvUtils.dropAndUpdateInv(worldIn, pos, (TilePlacer) worldIn.getTileEntity(pos), this);
         super.breakBlock(worldIn, pos, state);
     }
 

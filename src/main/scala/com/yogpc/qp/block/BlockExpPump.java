@@ -42,6 +42,7 @@ public class BlockExpPump extends ADismCBlock {
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+        if (super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ)) return true;
         if (!playerIn.isSneaking()) {
             if (!worldIn.isRemote) {
                 TileEntity tileEntity = worldIn.getTileEntity(pos);
@@ -52,7 +53,7 @@ public class BlockExpPump extends ADismCBlock {
             }
             return true;
         }
-        return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
+        return false;
     }
 
     @Override

@@ -8,7 +8,6 @@ import com.yogpc.qp.tile.TileBookMover;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -28,21 +27,17 @@ public class BlockBookMover extends ADismCBlock {
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        if (InvUtils.isDebugItem(playerIn, hand)) return true;
+        if (super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ)) return true;
         if (!playerIn.isSneaking() && !Config.content().disableMapJ().get(SYMBOL)) {
             playerIn.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdMoverFromBook(), worldIn, pos.getX(), pos.getY(), pos.getZ());
             return true;
         }
-        return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
+        return false;
     }
 
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-        TileBookMover mover = (TileBookMover) worldIn.getTileEntity(pos);
-        if (mover != null) {
-            InventoryHelper.dropInventoryItems(worldIn, pos, mover);
-            worldIn.updateComparatorOutputLevel(pos, this);
-        }
+        InvUtils.dropAndUpdateInv(worldIn, pos, (TileBookMover) worldIn.getTileEntity(pos), this);
         super.breakBlock(worldIn, pos, state);
     }
 

@@ -22,6 +22,9 @@ import net.minecraft.init.Enchantments;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
+/**
+ * Must be implemented by a subclass of {@link Item}.
+ */
 public interface IEnchantableItem {
 
     /**
@@ -39,6 +42,11 @@ public interface IEnchantableItem {
     Predicate<Enchantment> EFFICIENCY = Predicate.isEqual(Enchantments.EFFICIENCY);
     Predicate<Enchantment> UNBREAKING = Predicate.isEqual(Enchantments.UNBREAKING);
 
+    /**
+     * Called to get which items to show in JEI.
+     *
+     * @return stack which can be enchanted.
+     */
     default ItemStack[] stacks() {
         return new ItemStack[]{new ItemStack((Item) this, 1, 0)};
     }

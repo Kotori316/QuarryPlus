@@ -2,7 +2,6 @@ package com.yogpc.qp.block;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
-import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.tile.TileWorkbench;
 import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.block.material.Material;
@@ -58,7 +57,7 @@ public class BlockWorkbench extends ADismCBlock {
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        if (InvUtils.isDebugItem(playerIn, hand)) return true;
+        if (super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ)) return true;
         if (!playerIn.isSneaking()) {
             playerIn.openGui(QuarryPlus.INSTANCE, QuarryPlusI.guiIdWorkbench(), worldIn, pos.getX(), pos.getY(), pos.getZ());
             return true;

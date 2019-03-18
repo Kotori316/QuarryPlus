@@ -8,7 +8,6 @@ import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.BuildcraftHelper;
-import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.gui.TranslationKeys;
 import com.yogpc.qp.item.ItemBlockAdvPump;
 import com.yogpc.qp.tile.IEnchantableTile;
@@ -46,8 +45,8 @@ public class BlockAdvPump extends ADismCBlock {
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+        if (super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ)) return true;
         ItemStack stack = playerIn.getHeldItem(hand);
-        if (InvUtils.isDebugItem(playerIn, hand)) return true;
         if (BuildcraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
             if (!worldIn.isRemote) {
                 Optional.ofNullable((TileAdvPump) worldIn.getTileEntity(pos)).ifPresent(TileAdvPump::G_ReInit);
@@ -65,7 +64,7 @@ public class BlockAdvPump extends ADismCBlock {
             playerIn.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdAdvPump(), worldIn, pos.getX(), pos.getY(), pos.getZ());
             return true;
         }
-        return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
+        return false;
     }
 
     @Override

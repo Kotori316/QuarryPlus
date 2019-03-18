@@ -56,6 +56,7 @@ public class BlockMiningWell extends ADismCBlock {
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+        if (super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ)) return true;
         ItemStack stack = playerIn.getHeldItem(hand);
         if (BuildcraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
             Optional.ofNullable((TileMiningWell) worldIn.getTileEntity(pos)).ifPresent(TileMiningWell::G_ReInit);
@@ -71,7 +72,7 @@ public class BlockMiningWell extends ADismCBlock {
             playerIn.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdQuarryYLevel(), worldIn, pos.getX(), pos.getY(), pos.getZ());
             return true;
         }
-        return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
+        return false;
     }
 
     @Override

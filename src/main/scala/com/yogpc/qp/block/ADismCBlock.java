@@ -8,6 +8,7 @@ import java.util.function.Function;
 import cofh.api.block.IDismantleable;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
+import com.yogpc.qp.compat.BuildcraftHelper;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.tile.IEnchantableTile;
 import ic2.api.tile.IWrenchable;
@@ -23,8 +24,11 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
 import scala.Function1;
@@ -47,13 +51,29 @@ public abstract class ADismCBlock extends QPBlock implements IDismantleable, IWr
     }
 
     @Override
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
+                                    EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+        if (InvUtils.isDebugItem(playerIn, hand)) {
+            return true;
+        } else if (
+            playerIn.isSneaking()
+                && canDismantle(worldIn, pos, state, playerIn)
+                && BuildcraftHelper.isWrench(playerIn, hand, playerIn.getHeldItem(hand), new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
+            if (!worldIn.isRemote)
+                ADismCBlock.dismantle(worldIn, pos, state, false);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
     @Optional.Method(modid = QuarryPlus.Optionals.COFH_modID)
     public ArrayList<ItemStack> dismantleBlock(World world, BlockPos pos, IBlockState state, EntityPlayer player, boolean returnDrops) {
         return dismantle(world, pos, state, returnDrops);
     }
 
     @Override
-    @Optional.Method(modid = QuarryPlus.Optionals.COFH_modID)
     public boolean canDismantle(World world, BlockPos pos, IBlockState state, EntityPlayer player) {
         return this != QuarryPlusI.blockChunkDestroyer();
     }
@@ -113,12 +133,17 @@ public abstract class ADismCBlock extends QPBlock implements IDismantleable, IWr
         if (canRotate()) {
             TileEntity entity = world.getTileEntity(pos);
             IBlockState state = world.getBlockState(pos);
-            if (entity != null) {
-                InvUtils.setNewState(world, pos, entity, state.withProperty(FACING, newDirection));
+            if (state.getValue(FACING) == newDirection) {
+                // Remove block. Wrench is used on the side machine is facing.
+                return false;
             } else {
-                world.setBlockState(pos, state.withProperty(FACING, newDirection));
+                if (entity != null) {
+                    InvUtils.setNewState(world, pos, entity, state.withProperty(FACING, newDirection));
+                } else {
+                    world.setBlockState(pos, state.withProperty(FACING, newDirection));
+                }
+                return true;
             }
-            return true;
         }
         return false;
     }
@@ -126,7 +151,7 @@ public abstract class ADismCBlock extends QPBlock implements IDismantleable, IWr
     @Override
     @Optional.Method(modid = QuarryPlus.Optionals.IC2_modID)
     public boolean wrenchCanRemove(World world, BlockPos pos, EntityPlayer player) {
-        return !canRotate();
+        return this != QuarryPlusI.blockChunkDestroyer();
     }
 
     @Override

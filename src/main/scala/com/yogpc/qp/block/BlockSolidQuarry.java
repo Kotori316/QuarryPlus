@@ -5,7 +5,6 @@ import java.util.Optional;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.BuildcraftHelper;
-import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.tile.TileSolidQuarry;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -66,8 +65,8 @@ public class BlockSolidQuarry extends ADismCBlock {
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+        if (super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ)) return true;
         ItemStack stack = playerIn.getHeldItem(hand);
-        if (InvUtils.isDebugItem(playerIn, hand)) return true;
         if (BuildcraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
             Optional.ofNullable((TileSolidQuarry) worldIn.getTileEntity(pos)).ifPresent(TileSolidQuarry::G_ReInit);
             return true;
