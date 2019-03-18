@@ -192,7 +192,7 @@ object ItemTool {
   final val META_key = "Bmeta"
 
   private def getEnchantmentMap(stack: ItemStack): Map[Enchantment, Int] = {
-    (for (enchList <- Option(stack.getEnchantmentTagList);
+    (for (enchList <- Option(stack.getEnchantmentTagList).iterator;
           tag <- enchList.tagIterator) yield {
       Enchantment.getEnchantmentByID(tag.getShort("id")) -> tag.getShort("lvl").toInt
     }).toMap

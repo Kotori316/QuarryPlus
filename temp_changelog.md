@@ -1,3 +1,7 @@
+# Version 1.0.5
+* Sneak and right click with AE's wrench and other mods's one to remove machine.
+* Reduced log spam.
+
 # Version 1.0.4
 * Add NoFrameMode to ChunkDestroyer. The mode skips building frame and start breaking blocks immediately.
 * Add some tooltips to attachment machines. e.g. pumps
