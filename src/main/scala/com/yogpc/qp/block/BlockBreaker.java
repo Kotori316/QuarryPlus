@@ -169,6 +169,7 @@ public class BlockBreaker extends ADismCBlock {
     }
 
     @Override
+    @SuppressWarnings("Duplicates") // enchantment message.
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack stack = playerIn.getHeldItem(hand);
@@ -177,8 +178,7 @@ public class BlockBreaker extends ADismCBlock {
         }
         if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == ItemTool.meta_StatusChecker()) {
             if (!worldIn.isRemote) {
-                Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t ->
-                    t.sendEnchantMassage(playerIn));
+                Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t -> t.sendEnchantMassage(playerIn));
             }
             return true;
         }

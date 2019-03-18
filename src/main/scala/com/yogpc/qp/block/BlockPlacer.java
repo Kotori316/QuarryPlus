@@ -30,7 +30,6 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -119,11 +118,7 @@ public class BlockPlacer extends ADismCBlock {
 
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-        TilePlacer placer = (TilePlacer) worldIn.getTileEntity(pos);
-        if (placer != null) {
-            InventoryHelper.dropInventoryItems(worldIn, pos, placer);
-            worldIn.updateComparatorOutputLevel(pos, this);
-        }
+        InvUtils.dropAndUpdateInv(worldIn, pos, (TilePlacer) worldIn.getTileEntity(pos), this);
         super.breakBlock(worldIn, pos, state);
     }
 

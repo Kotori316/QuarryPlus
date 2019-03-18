@@ -181,6 +181,7 @@ public class BlockLaser extends ADismCBlock {
     }
 
     @Override
+    @SuppressWarnings("Duplicates") // enchantment message.
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ)) return true;

@@ -16,6 +16,8 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -91,6 +93,13 @@ public class InvUtils {
             return Option.empty();
         } else {
             return Option.apply(entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, from));
+        }
+    }
+
+    public static void dropAndUpdateInv(World world, BlockPos pos, IInventory inventory, Block block) {
+        if (inventory != null) {
+            InventoryHelper.dropInventoryItems(world, pos, inventory);
+            world.updateComparatorOutputLevel(pos, block);
         }
     }
 
