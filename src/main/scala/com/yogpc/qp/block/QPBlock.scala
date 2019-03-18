@@ -2,7 +2,6 @@ package com.yogpc.qp.block
 
 import java.util.function.Function
 
-import com.yogpc.qp.compat.InvUtils
 import com.yogpc.qp.tile.IEnchantableTile
 import com.yogpc.qp.{QuarryPlus, QuarryPlusI}
 import net.minecraft.block.BlockContainer
@@ -12,7 +11,7 @@ import net.minecraft.entity.EntityLiving
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.{ItemBlock, ItemStack}
 import net.minecraft.util.math.{BlockPos, RayTraceResult}
-import net.minecraft.util.{EnumBlockRenderType, EnumFacing, EnumHand}
+import net.minecraft.util.{EnumBlockRenderType, EnumFacing}
 import net.minecraft.world.{IBlockAccess, World}
 
 abstract class QPBlock(materialIn: Material, name: String, generator: QPBlock => _ <: ItemBlock, dummy: Boolean = false) extends BlockContainer(materialIn) {
@@ -30,10 +29,6 @@ abstract class QPBlock(materialIn: Material, name: String, generator: QPBlock =>
   override def getRenderType(state: IBlockState): EnumBlockRenderType = EnumBlockRenderType.MODEL
 
   override def canCreatureSpawn(state: IBlockState, world: IBlockAccess, pos: BlockPos, t: EntityLiving.SpawnPlacementType) = false
-
-  override def onBlockActivated(worldIn: World, pos: BlockPos, state: IBlockState, playerIn: EntityPlayer,
-                                hand: EnumHand, facing: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean =
-    InvUtils.isDebugItem(playerIn, hand) || super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ)
 
   override def rotateBlock(world: World, pos: BlockPos, axis: EnumFacing): Boolean = false
 

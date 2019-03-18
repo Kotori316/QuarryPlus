@@ -12,7 +12,6 @@ import cofh.api.block.IDismantleable;
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
-import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.controller.AvailableEntities;
 import com.yogpc.qp.version.VersionUtil;
@@ -72,7 +71,7 @@ public class BlockController extends Block implements IDismantleable {
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        if (InvUtils.isDebugItem(playerIn, hand)) return true;
+        if (super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ)) return true;
         if (!playerIn.isSneaking()) {
             if (!worldIn.isRemote) {
                 if (!Config.content().disableMapJ().get(SYMBOL)) {
@@ -88,8 +87,7 @@ public class BlockController extends Block implements IDismantleable {
             }
             return true;
         }
-
-        return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
+        return false;
     }
 
     public static void setSpawnerEntity(World world, BlockPos pos, ResourceLocation name) {

@@ -22,7 +22,7 @@ import net.minecraft.world.World;
 
 import static com.yogpc.qp.block.BlockPump.CONNECTED;
 
-public class BlockReplacer extends QPBlock {
+public class BlockReplacer extends ADismCBlock {
 
     public BlockReplacer() {
         super(Material.IRON, QuarryPlus.Names.replacer, ItemBlock::new);
@@ -70,5 +70,10 @@ public class BlockReplacer extends QPBlock {
         super.addInformation(stack, player, tooltip, advanced);
         tooltip.add(I18n.format(TranslationKeys.TOOLTIP_REPLACER,
             I18n.format(TranslationKeys.quarry), I18n.format(TranslationKeys.advquarry), ' '));
+    }
+
+    @Override
+    protected boolean canRotate() {
+        return false;
     }
 }

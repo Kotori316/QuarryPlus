@@ -182,7 +182,7 @@ public class BlockBreaker extends ADismCBlock {
             }
             return true;
         }
-        return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
+        return false;
     }
 
     @Override
