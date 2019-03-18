@@ -51,11 +51,10 @@ class ItemTool extends Item with IEnchantableItem {
     val returnValue = if (!worldIn.isRemote) EnumActionResult.SUCCESS else EnumActionResult.PASS
     val stack = player.getHeldItem(hand)
     if (stack.getItemDamage == meta_ListEditor) {
-      val enchantmentTag = stack.getEnchantmentTagList
-      val list = Some(enchantmentTag).toList.flatMap(_.tagIterator.map(_.getShort("id")))
-      val s = list.contains(IEnchantableTile.SilktouchID)
-      val f = list.contains(IEnchantableTile.FortuneID)
-      var stackTag: NBTTagCompound = stack.getTagCompound
+      val enchantSet = stack.getEnchantmentTagList.tagIterator.map(_.getShort("id").toInt).toSet
+      val s = enchantSet.contains(IEnchantableTile.SilktouchID)
+      val f = enchantSet.contains(IEnchantableTile.FortuneID)
+      var stackTag = stack.getTagCompound
       val state = worldIn.getBlockState(pos)
       var bd: BlockData = null
       if (stackTag != null && stackTag.hasKey(NAME_key)) {
@@ -87,7 +86,7 @@ class ItemTool extends Item with IEnchantableItem {
           stack.setTagCompound(stackTag)
         }
         val key = ForgeRegistries.BLOCKS.getKey(state.getBlock)
-        assert(key != null, "Unregistered Block?")
+        require(key != null, "The item must be registered.")
         val name = key.toString
         val meta = state.getBlock.getMetaFromState(state)
         if (stackTag.hasKey(NAME_key) && name == stackTag.getString(NAME_key) && meta == stackTag.getInteger(META_key))
@@ -102,8 +101,8 @@ class ItemTool extends Item with IEnchantableItem {
     super.onItemUseFirst(player, worldIn, pos, side, hitX, hitY, hitZ, hand)
   }
 
-  override def getUnlocalizedName(is: ItemStack) =
-    is.getItemDamage match {
+  override def getUnlocalizedName(stack: ItemStack) =
+    stack.getItemDamage match {
       case ItemTool.`meta_ListEditor` =>
         "item." + ItemTool.listeditor
       case ItemTool.`meta_LiquidSelector` =>
@@ -112,22 +111,25 @@ class ItemTool extends Item with IEnchantableItem {
         "item." + ItemTool.statuschecker
       case ItemTool.meta_YSetter =>
         "item." + ItemTool.ySetter
-      case _ => super.getUnlocalizedName(is)
+      case _ => super.getUnlocalizedName(stack)
     }
 
   @SideOnly(Side.CLIENT)
   override def addInformation(stack: ItemStack, @Nullable worldIn: World, tooltip: util.List[String], flagIn: ITooltipFlag): Unit =
     if (stack.getItemDamage == meta_ListEditor) {
-      val c = stack.getTagCompound
-      if (c != null) {
-        if (c.hasKey(NAME_key)) {
-          tooltip.add(c.getString(NAME_key))
-          val meta = c.getInteger(META_key)
-          if (meta != OreDictionary.WILDCARD_VALUE) tooltip.add(meta.toString)
+      val tag = stack.getTagCompound
+      if (tag != null) {
+        if (tag.hasKey(NAME_key)) {
+          tooltip.add(tag.getString(NAME_key))
+          val meta = tag.getInteger(META_key)
+          if (meta != OreDictionary.WILDCARD_VALUE)
+            tooltip.add(meta.toString)
         }
         val enchantments = ItemTool.getEnchantmentMap(stack)
-        if (enchantments.getOrElse(Enchantments.FORTUNE, 0) > 0) tooltip.add(I18n.format(Enchantments.FORTUNE.getName))
-        else if (enchantments.getOrElse(Enchantments.SILK_TOUCH, 0) > 0) tooltip.add(I18n.format(Enchantments.SILK_TOUCH.getName))
+        if (enchantments.getOrElse(Enchantments.FORTUNE, 0) > 0)
+          tooltip.add(I18n.format(Enchantments.FORTUNE.getName))
+        else if (enchantments.getOrElse(Enchantments.SILK_TOUCH, 0) > 0)
+          tooltip.add(I18n.format(Enchantments.SILK_TOUCH.getName))
       }
     }
 
@@ -190,14 +192,10 @@ object ItemTool {
   final val META_key = "Bmeta"
 
   private def getEnchantmentMap(stack: ItemStack): Map[Enchantment, Int] = {
-    val enchList = stack.getEnchantmentTagList
-    if (enchList == null) {
-      Map.empty
-    } else {
-      enchList.tagIterator.map(tag =>
-        (Enchantment.getEnchantmentByID(tag.getShort("id")), tag.getShort("lvl").toInt))
-        .toMap
-    }
+    (for (enchList <- Option(stack.getEnchantmentTagList);
+          tag <- enchList.tagIterator) yield {
+      Enchantment.getEnchantmentByID(tag.getShort("id")) -> tag.getShort("lvl").toInt
+    }).toMap
   }
 
   def getEditorStack: ItemStack = {
