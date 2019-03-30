@@ -10,6 +10,8 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import javax.annotation.Nonnull;
+
 public class NoDuplicateList<V extends Comparable<V>> implements List<V>, Set<V> {
 
     private final Set<V> set = new HashSet<>();
@@ -38,6 +40,7 @@ public class NoDuplicateList<V extends Comparable<V>> implements List<V>, Set<V>
         return set.contains(o);
     }
 
+    @Nonnull
     @Override
     public Iterator<V> iterator() {
         return listIterator();
@@ -48,14 +51,16 @@ public class NoDuplicateList<V extends Comparable<V>> implements List<V>, Set<V>
         list.forEach(action);
     }
 
+    @Nonnull
     @Override
     public Object[] toArray() {
         return list.toArray();
     }
 
+    @Nonnull
     @SuppressWarnings("SuspiciousToArrayCall")
     @Override
-    public <T> T[] toArray(T[] a) {
+    public <T> T[] toArray(@Nonnull T[] a) {
         return list.toArray(a);
     }
 
@@ -78,7 +83,7 @@ public class NoDuplicateList<V extends Comparable<V>> implements List<V>, Set<V>
     }
 
     @Override
-    public boolean containsAll(Collection<?> c) {
+    public boolean containsAll(@Nonnull Collection<?> c) {
         return set.containsAll(c);
     }
 
@@ -104,13 +109,13 @@ public class NoDuplicateList<V extends Comparable<V>> implements List<V>, Set<V>
     }
 
     @Override
-    public boolean removeAll(Collection<?> c) {
+    public boolean removeAll(@Nonnull Collection<?> c) {
         set.removeAll(c);
         return list.removeAll(c);
     }
 
     @Override
-    public boolean retainAll(Collection<?> c) {
+    public boolean retainAll(@Nonnull Collection<?> c) {
         set.retainAll(c);
         return list.retainAll(c);
     }
@@ -168,16 +173,19 @@ public class NoDuplicateList<V extends Comparable<V>> implements List<V>, Set<V>
     }
 
     @Override
+    @Nonnull
     public ListIterator<V> listIterator() {
         return list.listIterator();
     }
 
     @Override
+    @Nonnull
     public ListIterator<V> listIterator(int index) {
         return list.listIterator(index);
     }
 
     @Override
+    @Nonnull
     public List<V> subList(int fromIndex, int toIndex) {
         return list.subList(fromIndex, toIndex);
     }

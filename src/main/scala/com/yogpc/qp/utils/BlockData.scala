@@ -1,5 +1,7 @@
 package com.yogpc.qp.utils
 
+import java.util.Comparator
+
 import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
 import net.minecraft.item.ItemStack
@@ -33,7 +35,7 @@ object BlockData extends INBTReadable[BlockData] {
     override def getLocalizedName = "Unknown:Dummy"
   }
 
-  val comparator = Ordering.by((b: BlockData) => b.name) thenComparing Ordering.by((b: BlockData) => b.meta)
+  val comparator: Comparator[BlockData] = Ordering.by((b: BlockData) => b.name) thenComparing Ordering.by((b: BlockData) => b.meta)
 }
 
 case class BlockData(name: ResourceLocation, meta: Int) extends INBTWritable with Ordered[BlockData] {

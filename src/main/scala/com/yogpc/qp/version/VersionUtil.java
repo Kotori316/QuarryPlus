@@ -1,5 +1,7 @@
 package com.yogpc.qp.version;
 
+import java.util.Map;
+import java.util.stream.Collector;
 import java.util.stream.Stream;
 
 import com.yogpc.qp.QuarryPlus;
@@ -8,6 +10,7 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
@@ -88,5 +91,13 @@ public class VersionUtil {
 
     public static void sendMessage(EntityPlayer player, ITextComponent component, boolean actionBar) {
         QuarryPlus.DIFF.sendMessage(player, component, actionBar);
+    }
+
+    public static <T extends NBTBase> Collector<T, ?, NBTTagList> toNBTList() {
+        return QuarryPlus.DIFF.toNBTList();
+    }
+
+    public static <K extends NBTBase, T extends Map.Entry<String, K>> Collector<T, ?, NBTTagCompound> toNBTTag() {
+        return QuarryPlus.DIFF.toNBTTag();
     }
 }

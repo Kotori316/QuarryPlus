@@ -315,11 +315,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     }
 
     private static NBTTagList writeLongCollection(final Collection<BlockData> target) {
-        final NBTTagList list = new NBTTagList();
-        for (final BlockData l : target) {
-            list.appendTag(l.toNBT().getCompoundTag(BlockData.BlockData_NBT()));
-        }
-        return list;
+        return target.stream().map(l -> l.toNBT().getCompoundTag(BlockData.BlockData_NBT())).collect(VersionUtil.toNBTList());
     }
 
     @Override

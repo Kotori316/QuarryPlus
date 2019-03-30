@@ -1,6 +1,7 @@
 package com.yogpc.qp.utils;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -11,6 +12,7 @@ import java.util.stream.Collectors;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
@@ -22,26 +24,22 @@ import net.minecraft.util.JsonUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
-import static jp.t2v.lab.syntax.MapStreamSyntax.byKey;
-import static jp.t2v.lab.syntax.MapStreamSyntax.entry;
-import static jp.t2v.lab.syntax.MapStreamSyntax.entryToMap;
-import static jp.t2v.lab.syntax.MapStreamSyntax.keys;
-import static jp.t2v.lab.syntax.MapStreamSyntax.toEntry;
-import static jp.t2v.lab.syntax.MapStreamSyntax.values;
-import static jp.t2v.lab.syntax.MapStreamSyntax.valuesBi;
+import static jp.t2v.lab.syntax.MapStreamSyntax.*;
 
-public class NBTBuilder {
+public class NBTBuilder<T extends NBTBase> {
 
+    @SuppressWarnings("RedundantCast")
     public static <K, V> NBTTagList fromMap(Map<? extends K, ? extends V> map, String keyName, String valueName,
                                             Function<? super K, ? extends NBTBase> keyFunction, Function<? super V, ? extends NBTBase> valueFunction) {
-        NBTTagList list = new NBTTagList();
-        map.forEach((key, value) -> {
-            NBTTagCompound compound = new NBTTagCompound();
-            compound.setTag(keyName, keyFunction.apply(key));
-            compound.setTag(valueName, valueFunction.apply(value));
-            list.appendTag(compound);
-        });
-        return list;
+        return map.entrySet().stream()
+            .map(toEntry(keyFunction.compose(Map.Entry::getKey), valueFunction.compose(Map.Entry::getValue)))
+            .map(toAny((k, v) -> {
+                NBTTagCompound compound = new NBTTagCompound();
+                compound.setTag(keyName, ((NBTBase) k));
+                compound.setTag(valueName, ((NBTBase) v));
+                return compound;
+            }))
+            .collect(VersionUtil.toNBTList());
     }
 
     public static <K, V> Map<K, V> fromList(NBTTagList list, Function<? super NBTTagCompound, ? extends K> keyFunction, Function<? super NBTTagCompound, ? extends V> valueFunction,
@@ -100,5 +98,44 @@ public class NBTBuilder {
     @SuppressWarnings("unchecked")
     private static <T extends Comparable<T>> IBlockState setValue(IBlockState state, IProperty<T> property, Object entry) {
         return state.withProperty(property, (T) entry);
+    }
+
+    private Map<String, T> map = new LinkedHashMap<>();
+    private int index = 0;
+
+    public NBTBuilder<T> setTag(Map.Entry<String, T> entry) {
+        return setTag(entry.getKey(), entry.getValue());
+    }
+
+    public NBTBuilder<T> setTag(String key, T value) {
+        map.put(key, value);
+        return this;
+    }
+
+    public NBTBuilder<T> appendTag(T value) {
+        map.put(String.valueOf(index), value);
+        index++;
+        return this;
+    }
+
+    public static <T extends NBTBase> NBTBuilder<T> appendAll(NBTBuilder<T> b1, NBTBuilder<T> b2) {
+        b1.map.putAll(b2.map);
+        return b1;
+    }
+
+    public static NBTBuilder<NBTBase> empty() {
+        return new NBTBuilder<>();
+    }
+
+    public NBTTagCompound toTag() {
+        NBTTagCompound tag = new NBTTagCompound();
+        map.forEach(tag::setTag);
+        return tag;
+    }
+
+    public NBTTagList toList() {
+        NBTTagList list = new NBTTagList();
+        map.values().forEach(list::appendTag);
+        return list;
     }
 }

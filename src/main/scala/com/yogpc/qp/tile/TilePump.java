@@ -150,18 +150,14 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         nbt.setBoolean("quarryRange", this.quarryRange);
         nbt.setBoolean("autoChangedRange", this.autoChangedRange);
         if (this.silktouch) {
-            final NBTTagList list = new NBTTagList();
-            for (final FluidStack l : this.liquids)
-                list.appendTag(l.writeToNBT(new NBTTagCompound()));
-            nbt.setTag("liquids", list);
+            nbt.setTag("liquids",
+                this.liquids.stream().map(f -> f.writeToNBT(new NBTTagCompound())).collect(VersionUtil.toNBTList()));
         }
         return super.writeToNBT(nbt);
     }
 
     private static NBTTagList writeStringCollection(final Collection<String> target) {
-        final NBTTagList list = new NBTTagList();
-        target.stream().map(NBTTagString::new).forEach(list::appendTag);
-        return list;
+        return target.stream().map(NBTTagString::new).collect(VersionUtil.toNBTList());
     }
 
     @Override
@@ -300,6 +296,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
             cp = 0;
     }
 
+    @SuppressWarnings("ConditionalCanBeOptional")
     private void S_searchLiquid(final int x, final int y, final int z) {
         this.fwt = getWorld().getWorldTime();
         int cg;
@@ -666,6 +663,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         return TranslationKeys.pump;
     }
 
+    @Nonnull
     @SuppressWarnings("Duplicates")
     @Override
     public ImmutableMap<Integer, Integer> getEnchantments() {

@@ -3,6 +3,7 @@ package com.yogpc.qp.packet.pump;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.tile.TilePump;
+import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
@@ -17,6 +18,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  */
 public class Now implements IMessage {
 
+    @Nullable
     EnumFacing facing;
     boolean working;
     BlockPos blockPos;

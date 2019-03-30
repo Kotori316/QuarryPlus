@@ -24,7 +24,7 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
 import net.minecraft.item.crafting.FurnaceRecipes
 import net.minecraft.item.{ItemBlock, ItemStack}
-import net.minecraft.nbt.{NBTTagCompound, NBTTagList, NBTTagLong}
+import net.minecraft.nbt.{NBTTagCompound, NBTTagLong}
 import net.minecraft.util._
 import net.minecraft.util.math.BlockPos.MutableBlockPos
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos, ChunkPos}
@@ -539,10 +539,11 @@ class TileAdvQuarry extends APowerTile
     nbt.setLong("NBT_TARGET", target.toLong)
     nbt.setTag(NBT_MODE, mode.toNBT)
     nbt.setTag(NBT_ITEM_LIST, cacheItems.toNBT)
-    nbt.setTag("NBT_FLUIDLIST", (new NBTTagList).tap(tagList => fluidStacks.foreach {
-      case (_, tank) => tagList.appendTag(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.writeNBT(tank, null))
-    }))
-    nbt.setTag("NBT_CHUNKLOADLIST", (new NBTTagList).tap(tagList => chunks.foreach(c => tagList.appendTag(c.getBlock(0, 0, 0).toLong.toNBT))))
+    nbt.setTag("NBT_FLUIDLIST", fluidStacks.map { case (_, tank) =>
+      CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.writeNBT(tank, null)
+    }.foldLeft(NBTBuilder.empty) { case (l, t) => l.appendTag(t) }.toList)
+    nbt.setTag("NBT_CHUNKLOADLIST", chunks.map(_.getBlock(0, 0, 0).toLong.toNBT)
+      .foldLeft(NBTBuilder.empty) { case (l, t) => l.appendTag(t) }.toList)
     nbt.setInteger("yLevel", yLevel)
     super.writeToNBT(nbt)
   }
@@ -1064,8 +1065,8 @@ object TileAdvQuarry {
     override def toString: String = "ItemList size = " + list.size
 
     override def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
-      val itemElements = (new NBTTagList).tap(l => list.map(_.toNBT).foreach(l.appendTag))
-      nbt.setTag(NBT_ITEM_ELEMENTS, itemElements)
+      nbt.setTag(NBT_ITEM_ELEMENTS,
+        list.map(_.toNBT).foldLeft(NBTBuilder.empty) { case (b, t) => b.appendTag(t) }.toList)
       nbt
     }
 

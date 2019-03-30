@@ -1,7 +1,10 @@
 package com.yogpc.qp.version;
 
 import java.util.Iterator;
+import java.util.Map;
+import java.util.stream.Collector;
 
+import com.yogpc.qp.utils.NBTBuilder;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IContainerListener;
@@ -62,5 +65,18 @@ public class Diff12 implements VersionDiff {
     @Override
     public void sendMessage(EntityPlayer player, ITextComponent component, boolean actionBar) {
         player.sendStatusMessage(component, actionBar);
+    }
+
+    @Override
+    public <T extends NBTBase> Collector<T, NBTBuilder<T>, NBTTagList> toNBTList() {
+        return Collector.of(NBTBuilder::new, NBTBuilder::appendTag,
+            NBTBuilder::appendAll, NBTBuilder::toList);
+    }
+
+    @Override
+    public <K extends NBTBase, T extends Map.Entry<String, K>> Collector<T, NBTBuilder<K>, NBTTagCompound> toNBTTag() {
+        return Collector.of(NBTBuilder::new, NBTBuilder::setTag,
+            NBTBuilder::appendAll, NBTBuilder::toTag,
+            Collector.Characteristics.UNORDERED);
     }
 }

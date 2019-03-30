@@ -451,8 +451,8 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
 
     @SuppressWarnings("Duplicates")
     public void setDefaultRange(BlockPos pos, EnumFacing facing) {
-        int x = 11;
-        int y = (x - 1) / 2;//5
+        final int x = 11;
+        final int y = (x - 1) / 2;//5
         pos = pos.offset(facing);
         BlockPos pos1 = pos.offset(facing);
         BlockPos pos2 = pos.offset(facing, x);

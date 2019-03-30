@@ -7,13 +7,13 @@ import com.yogpc.qp.compat.InvUtils
 import com.yogpc.qp.gui.TranslationKeys
 import com.yogpc.qp.tile.IEnchantableTile.{EfficiencyID, FortuneID, SilktouchID, UnbreakingID}
 import com.yogpc.qp.tile.TileAdvPump._
-import com.yogpc.qp.utils.{INBTReadable, INBTWritable}
+import com.yogpc.qp.utils.{INBTReadable, INBTWritable, NBTBuilder}
 import com.yogpc.qp.version.VersionUtil
 import com.yogpc.qp.{Config, QuarryPlus, QuarryPlusI, _}
 import net.minecraft.block.state.IBlockState
 import net.minecraft.init.Blocks
 import net.minecraft.inventory.InventoryHelper
-import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
+import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.math.{BlockPos, ChunkPos}
 import net.minecraft.util.text.TextComponentString
 import net.minecraft.util.{EnumFacing, ITickable}
@@ -494,7 +494,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
 
     override def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
       nbt.setTag(NBT_pumped, amountPumped.toNBT)
-      nbt.setTag(NBT_liquids, (new NBTTagList).tap(l => fluidStacks.map(_.toNBT).foreach(l.appendTag)))
+      nbt.setTag(NBT_liquids, fluidStacks.map(_.toNBT).foldLeft(NBTBuilder.empty) { case (l, t) => l.appendTag(t) }.toList)
       nbt
     }
 

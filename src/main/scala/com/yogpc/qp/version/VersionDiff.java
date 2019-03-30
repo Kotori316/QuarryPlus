@@ -1,9 +1,11 @@
 package com.yogpc.qp.version;
 
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Function;
+import java.util.stream.Collector;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -66,4 +68,8 @@ public interface VersionDiff {
     }
 
     void sendMessage(EntityPlayer player, ITextComponent component, boolean actionBar);
+
+    <T extends NBTBase> Collector<T, ?, NBTTagList> toNBTList();
+
+    <K extends NBTBase, T extends Map.Entry<String, K>> Collector<T, ?, NBTTagCompound> toNBTTag();
 }

@@ -7,7 +7,6 @@ import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.tile.TileAdvQuarry;
 import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -18,6 +17,9 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import scala.collection.convert.WrapAsJava$;
 import scala.collection.mutable.Set;
+
+import static jp.t2v.lab.syntax.MapStreamSyntax.keys;
+import static jp.t2v.lab.syntax.MapStreamSyntax.values;
 
 /**
  * To both client and server.
@@ -32,15 +34,12 @@ public class AdvFilterMessage implements IMessage {
         AdvFilterMessage message = new AdvFilterMessage();
         message.dim = quarry.getWorld().provider.getDimension();
         message.pos = quarry.getPos();
-        NBTTagCompound nbt = new NBTTagCompound();
-        WrapAsJava$.MODULE$.mapAsJavaMap(quarry.fluidExtractFacings()).forEach((facing, fluidStackSet) -> {
-            NBTTagList list = new NBTTagList();
-            WrapAsJava$.MODULE$.setAsJavaSet(fluidStackSet).stream()
-                .map(s -> s.writeToNBT(new NBTTagCompound()))
-                .forEach(list::appendTag);
-            nbt.setTag(facing.toString(), list);
-        });
-        message.filter = nbt;
+        message.filter = WrapAsJava$.MODULE$.mapAsJavaMap(quarry.fluidExtractFacings()).entrySet().stream()
+            .map(values(s -> WrapAsJava$.MODULE$.setAsJavaSet(s).stream()
+                .map(f -> f.writeToNBT(new NBTTagCompound()))
+                .collect(VersionUtil.toNBTList())))
+            .map(keys(EnumFacing::toString))
+            .collect(VersionUtil.toNBTTag());
         return message;
     }
 
