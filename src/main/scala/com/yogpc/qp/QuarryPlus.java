@@ -25,21 +25,7 @@ import com.yogpc.qp.gui.GuiHandler;
 import com.yogpc.qp.item.ItemTool;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.tile.ItemDamage;
-import com.yogpc.qp.tile.TileAdvPump;
-import com.yogpc.qp.tile.TileAdvQuarry;
-import com.yogpc.qp.tile.TileBookMover;
-import com.yogpc.qp.tile.TileBreaker;
-import com.yogpc.qp.tile.TileExpPump;
-import com.yogpc.qp.tile.TileLaser;
 import com.yogpc.qp.tile.TileMarker;
-import com.yogpc.qp.tile.TileMiningWell;
-import com.yogpc.qp.tile.TilePlacer;
-import com.yogpc.qp.tile.TilePump;
-import com.yogpc.qp.tile.TileQuarry;
-import com.yogpc.qp.tile.TileRefinery;
-import com.yogpc.qp.tile.TileReplacer;
-import com.yogpc.qp.tile.TileSolidQuarry;
-import com.yogpc.qp.tile.TileWorkbench;
 import com.yogpc.qp.tile.WorkbenchRecipes;
 import com.yogpc.qp.version.VersionDiff;
 import com.yogpc.qp.version.VersionUtil;
@@ -50,6 +36,7 @@ import net.minecraft.launchwrapper.Launch;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.datafix.FixTypes;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.ForgeChunkManager;
@@ -74,6 +61,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import scala.collection.convert.WrapAsJava$;
 
 import static com.yogpc.qp.QuarryPlusI.*;
 
@@ -117,6 +105,7 @@ public class QuarryPlus {
             throw new AssertionError("VersionDiff doesn't exist!", e);
         }
         DIFF = diff;
+        FMLCommonHandler.instance().getDataFixer().init(modID, 5).registerFix(FixTypes.BLOCK_ENTITY, FixData.EnergyNBTFix$.MODULE$);
     }
 
     private QuarryPlus() {
@@ -154,43 +143,9 @@ public class QuarryPlus {
     @SubscribeEvent
     public void registerBlocks(RegistryEvent.Register<Block> event) {
         event.getRegistry().registerAll(
-            blockQuarry(),
-            blockPump(),
-            blockMarker(),
-            blockMover(),
-            blockMiningWell(),
-            blockPlacer(),
-            blockBreaker(),
-            blockPlainPipe(),
-            blockFrame(),
-            blockWorkbench(),
-            blockController(),
-            blockLaser(),
-            blockRefinery(),
-            blockChunkDestroyer(),
-            blockStandalonePump(),
-            blockBookMover(),
-            blockExpPump(),
-            blockSolidQuarry(),
-            dummyBlock(),
-            blockReplacer()
+            blockList().toArray(new Block[0])
         );
-
-        GameRegistry.registerTileEntity(TileWorkbench.class, new ResourceLocation(modID, QuarryPlus.Names.workbench));
-        GameRegistry.registerTileEntity(TileQuarry.class, new ResourceLocation(modID, QuarryPlus.Names.quarry));
-        GameRegistry.registerTileEntity(TileMarker.class, new ResourceLocation(modID, QuarryPlus.Names.marker));
-        GameRegistry.registerTileEntity(TileMiningWell.class, new ResourceLocation(modID, QuarryPlus.Names.miningwell));
-        GameRegistry.registerTileEntity(TilePump.class, new ResourceLocation(modID, QuarryPlus.Names.pump));
-        GameRegistry.registerTileEntity(TileRefinery.class, new ResourceLocation(modID, QuarryPlus.Names.refinery));
-        GameRegistry.registerTileEntity(TilePlacer.class, new ResourceLocation(modID, QuarryPlus.Names.placer));
-        GameRegistry.registerTileEntity(TileBreaker.class, new ResourceLocation(modID, QuarryPlus.Names.breaker));
-        GameRegistry.registerTileEntity(TileLaser.class, new ResourceLocation(modID, QuarryPlus.Names.laser));
-        GameRegistry.registerTileEntity(TileAdvQuarry.class, new ResourceLocation(modID, QuarryPlus.Names.advquarry));
-        GameRegistry.registerTileEntity(TileAdvPump.class, new ResourceLocation(modID, QuarryPlus.Names.advpump));
-        GameRegistry.registerTileEntity(TileBookMover.class, new ResourceLocation(modID, QuarryPlus.Names.moverfrombook));
-        GameRegistry.registerTileEntity(TileExpPump.class, new ResourceLocation(modID, QuarryPlus.Names.exppump));
-        GameRegistry.registerTileEntity(TileSolidQuarry.class, new ResourceLocation(modID, QuarryPlus.Names.solidquarry));
-        GameRegistry.registerTileEntity(TileReplacer.class, new ResourceLocation(modID, QuarryPlus.Names.replacer));
+        WrapAsJava$.MODULE$.mapAsJavaMap(tileIdMap()).forEach(GameRegistry::registerTileEntity);
     }
 
     @SubscribeEvent

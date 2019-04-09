@@ -42,7 +42,12 @@ import net.minecraftforge.fml.common.Optional;
     @Optional.Interface(iface = "buildcraft.api.tiles.IDebuggable", modid = QuarryPlus.Optionals.Buildcraft_tiles),
     @Optional.Interface(iface = "ic2.api.energy.tile.IEnergySink", modid = QuarryPlus.Optionals.IC2_modID)})
 public abstract class APowerTile extends APacketTile implements ITickable, IEnergyStorage, IEnergyReceiver, IEnergySink, IDebuggable {
-    /*package-private*/ double all, maxGot, max, got;
+    public static final long MicroJtoMJ = 1_000_000L;
+    public static final String NBT_STORED_ENERGY = "storedEnergy";
+    public static final String NBT_MAX_STORED = "MAX_stored";
+    public static final String NBT_MAX_RECEIVE = "MAX_receive";
+    public static final String NBT_OUTPUT_ENERGY_INFO = "outputEnergyInfo";
+    /*package-private*/ long all, maxGot, max, got;
     private boolean ic2ok = false;
     public boolean bcLoaded;
     public final boolean ic2Loaded;
@@ -137,32 +142,32 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
     @Override
     public void readFromNBT(final NBTTagCompound nbt) {
         super.readFromNBT(nbt);
-        setStoredEnergy(nbt.getDouble("storedEnergy"));
-        configure(nbt.getDouble("MAX_receive"), nbt.getDouble("MAX_stored"));
-        outputEnergyInfo = !nbt.hasKey("outputEnergyInfo") || nbt.getBoolean("outputEnergyInfo");
+        setStoredEnergy(nbt.getLong(NBT_STORED_ENERGY));
+        configure(nbt.getLong(NBT_MAX_RECEIVE), nbt.getLong(NBT_MAX_STORED));
+        outputEnergyInfo = !nbt.hasKey(NBT_OUTPUT_ENERGY_INFO) || nbt.getBoolean(NBT_OUTPUT_ENERGY_INFO);
     }
 
     @Override
     public NBTTagCompound writeToNBT(final NBTTagCompound nbt) {
-        nbt.setDouble("storedEnergy", this.all);
-        nbt.setDouble("MAX_stored", this.max);
-        nbt.setDouble("MAX_receive", this.maxGot);
-        nbt.setBoolean("outputEnergyInfo", outputEnergyInfo);
+        nbt.setLong(NBT_STORED_ENERGY, this.all);
+        nbt.setLong(NBT_MAX_STORED, this.max);
+        nbt.setLong(NBT_MAX_RECEIVE, this.maxGot);
+        nbt.setBoolean(NBT_OUTPUT_ENERGY_INFO, outputEnergyInfo);
         return super.writeToNBT(nbt);
     }
 
     /**
-     * Energy Unit is MJ.
-     * 1MJ = 2.5EU = 10RF
+     * Energy Unit is microMJ.
+     * 1MJ = 2.5EU = 10RF = 1,000,000 micro MJ
      *
      * @return the amount of used energy.
      */
-    public final double useEnergy(final double min, final double amount, final boolean real, EnergyUsage usage) {
+    public final long useEnergy(long min, long amount, final boolean real, EnergyUsage usage) {
         if (Config.content().noEnergy()) {
             debug.use(amount, !real, usage);
             return amount;
         }
-        double res = 0;
+        long res = 0;
         if (this.all >= min) {
             if (this.all <= amount) {
                 res = this.all;
@@ -179,29 +184,29 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
     }
 
     /*package-private*/
-    final double getEnergy(final double a, final boolean real) {
+    final long getEnergy(final long a, final boolean real) {
         if (Config.content().noEnergy()) {
-            return 0d;
+            return 0;
         }
-        final double ret = Math.min(Math.min(this.maxGot - this.got, this.max - this.all - this.got), a);
+        final long ret = Math.min(Math.min(this.maxGot - this.got, this.max - this.all - this.got), a);
         if (real)
             this.got += ret;
         return ret;
     }
 
-    public final double getStoredEnergy() {
+    public final long getStoredEnergy() {
         return this.all;
     }
 
-    public final void setStoredEnergy(double all) {
+    public final void setStoredEnergy(long all) {
         this.all = all;
     }
 
-    public final double getMaxStored() {
+    public final long getMaxStored() {
         return this.max;
     }
 
-    public final void configure(final double maxReceive, final double maxStored) {
+    public final void configure(long maxReceive, long maxStored) {
         this.maxGot = maxReceive;
         this.max = maxStored;
         if (Config.content().noEnergy()) {
@@ -210,6 +215,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
     }
 
     //ic2 energy api implication
+    private static final long EUtoMicroJ = 400_000L;
 
     /**
      * Energy unit is EU
@@ -218,7 +224,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
     @Override
     @Optional.Method(modid = QuarryPlus.Optionals.IC2_modID)
     public final double injectEnergy(EnumFacing directionFrom, double amount, double voltage) {
-        double mj = amount / 2.5;
+        double mj = amount * EUtoMicroJ;
         this.got += mj;
         return 0;
     }
@@ -232,7 +238,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
     @Override
     @Optional.Method(modid = QuarryPlus.Optionals.IC2_modID)
     public final double getDemandedEnergy() {
-        return Math.min(this.maxGot - this.got, this.max - this.all - this.got) * 2.5;
+        return (double) Math.min(this.maxGot - this.got, this.max - this.all - this.got) / EUtoMicroJ;
     }
 
     @Override
@@ -272,6 +278,8 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
 
     //Forge energy api implication
 
+    private static final long FEtoMicroJ = 100_000L;
+
     /**
      * Energy unit is RF.
      */
@@ -279,11 +287,8 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
     public final int receiveEnergy(int maxReceive, boolean simulate) {
         if (!canReceive())
             return 0;
-        int i = (int) getEnergy((double) maxReceive / 10, !simulate) * 10;
-        if (maxReceive > 0 && i == 0 && this.max - this.all > 0 && this.max - this.all < 1) {
-            return 1;
-        }
-        return i;
+
+        return (int) (getEnergy((long) maxReceive * FEtoMicroJ, !simulate) / FEtoMicroJ);
     }
 
     @Override
@@ -293,12 +298,12 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
 
     @Override
     public final int getEnergyStored() {
-        return (int) (this.all * 10);
+        return (int) (this.all / FEtoMicroJ);
     }
 
     @Override
     public final int getMaxEnergyStored() {
-        return (int) (this.max * 10);
+        return (int) (this.max / FEtoMicroJ);
     }
 
     @Override

@@ -19,7 +19,7 @@ import net.minecraftforge.items.wrapper.InvWrapper;
 import scala.Symbol;
 
 public class TileSolidQuarry extends TileQuarry {
-    private static final double fuelEfficiency = 4d; // 40 RF/t
+    private static final long fuelEfficiency = 4 * APowerTile.MicroJtoMJ; // 40 RF/t
     private ItemStack fuel = VersionUtil.empty();
     private int fuelCount = 0;
 

@@ -70,27 +70,26 @@ public class MjReceiver implements IMjReceiver, IMjReadable {
     @Override
     @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.BuildCraft_core)
     public long getStored() {
-        return (long) (tile.getStoredEnergy() * MjAPI.MJ);
+        return tile.getStoredEnergy();
     }
 
     @Override
     @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.BuildCraft_core)
     public long getCapacity() {
-        return (long) (tile.getMaxStored() * MjAPI.MJ);
+        return tile.getMaxStored();
     }
 
     @Override
     @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.BuildCraft_core)
     public long getPowerRequested() {
-        return (long) (Math.min(tile.maxGot - tile.got,
-            tile.getMaxStored() - tile.getStoredEnergy() - tile.got) * MjAPI.MJ);
+        return Math.min(tile.maxGot - tile.got, tile.getMaxStored() - tile.getStoredEnergy() - tile.got);
     }
 
     @Override
     @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.BuildCraft_core)
     public long receivePower(long microJoules, boolean simulate) {
         if (tile.canReceive())
-            return (long) (microJoules - tile.getEnergy(getMJFromMicro(microJoules), !simulate) * MjAPI.MJ);
+            return microJoules - tile.getEnergy(microJoules, !simulate);
         else return microJoules;
     }
 

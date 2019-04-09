@@ -17,7 +17,7 @@ class EnergyDebug(tile: APowerTile) {
   private[this] var uLastTick = 0l
   private[this] var gLastTick = 0l
   private[this] var lastOutput = 0l
-  private[this] final val mj = 1000000L
+  private[this] final val mj = APowerTile.MicroJtoMJ
   private[this] val stopWatch = Stopwatch.createUnstarted()
   private[this] var startTime = 0l
   private[this] val usageMap = mutable.Map.empty[EnergyUsage, Long]
@@ -38,12 +38,12 @@ class EnergyDebug(tile: APowerTile) {
     Config.content.debug && tile.isOutputEnergyInfo
   }
 
-  def use(amount: Double, simulate: Boolean, usage: EnergyUsage): Unit = {
+  def use(amount: Long, simulate: Boolean, usage: EnergyUsage): Unit = {
     if (!outputInfo || simulate) return
     if (!started)
       start()
     val tick = getTime
-    val energy = Math.round(amount * mj)
+    val energy = Math.round(amount )
     if (tick == uLastTick) {
       used(usedCount - 1) += energy
     } else {
@@ -55,10 +55,10 @@ class EnergyDebug(tile: APowerTile) {
     usageMap(usage) = usageMap.getOrElse(usage, 0l) + energy
   }
 
-  def get(amount: Double): Unit = {
+  def get(amount: Long): Unit = {
     if (!outputInfo) return
     val tick = getTime
-    val energy = Math.round(amount * mj)
+    val energy = Math.round(amount )
     if (tick == gLastTick) {
       got(gotCount - 1) += energy
     } else {
@@ -109,7 +109,7 @@ class EnergyDebug(tile: APowerTile) {
     lastOutput = getTime
   }
 
-  def getAndTick(amount: Double): Unit = {
+  def getAndTick(amount: Long): Unit = {
     get(amount)
     tick()
   }

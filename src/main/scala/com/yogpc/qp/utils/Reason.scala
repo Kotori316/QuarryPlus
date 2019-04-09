@@ -20,12 +20,13 @@ trait Reason {
 object Reason {
 
   private[this] final val Nano = 1000000000l
+  private[this] final val toNano = 1000000000l
 
   def apply(energyUsage: EnergyUsage, required: Double, amount: Double): Reason =
-    new EnergyReasonImpl(energyUsage, (required * Nano).toLong, (amount * Nano).toLong)
+    new EnergyReasonImpl(energyUsage, (required * toNano).toLong, (amount * toNano).toLong)
 
   def apply(energyUsage: EnergyUsage, required: Double, amount: Double, index: Int): Reason =
-    new EnergyReasonImpl(energyUsage, (required * Nano).toLong, (amount * Nano).toLong, Some(index))
+    new EnergyReasonImpl(energyUsage, (required * toNano).toLong, (amount * toNano).toLong, Some(index))
 
   def apply(pos: BlockPos, state: IBlockState): Reason = new BreakCanceledImpl(pos, state)
 

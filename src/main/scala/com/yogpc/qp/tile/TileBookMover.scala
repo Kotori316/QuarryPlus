@@ -18,7 +18,7 @@ import scala.collection.JavaConverters._
 class TileBookMover extends APowerTile with HasInv with ITickable {
 
   val inv = NonNullList.withSize(getSizeInventory, VersionUtil.empty())
-  configure(Config.content.workbenchMaxReceive, 50000)
+  configure(Config.content.workbenchMaxReceive * APowerTile.MicroJtoMJ, 50000 * APowerTile.MicroJtoMJ)
   val enchTypes = EnumEnchantmentType.values().filter(_.canEnchantItem(Items.DIAMOND_PICKAXE)).toSet
   val validEnch = ForgeRegistries.ENCHANTMENTS.getValuesCollection.asScala.filter(e => enchTypes(e.`type`)).toSet
 

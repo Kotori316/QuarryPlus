@@ -93,7 +93,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
         }
 
         if (!targets.isEmpty()) {
-            long maxPower = (long) (PowerManager.simulateEnergyLaser(this, this.unbreaking, this.fortune, this.silktouch, this.efficiency) * MjAPI.MJ);
+            long maxPower = PowerManager.simulateEnergyLaser(this, this.unbreaking, this.fortune, this.silktouch, this.efficiency);
             List<ILaserTarget> targetList = targets.stream()
                 .map(getWorld()::getTileEntity)
                 .flatMap(MapStreamSyntax.streamCast(ILaserTarget.class))
@@ -104,7 +104,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
                 targetList.forEach(iLaserTarget -> {
                     long joules = Math.min(each, iLaserTarget.getRequiredLaserPower());
                     long excess = iLaserTarget.receiveLaserPower(joules);
-                    PowerManager.useEnergyLaser(this, (double) (joules - excess) / MjAPI.MJ, this.unbreaking, this.fortune, this.silktouch, false);
+                    PowerManager.useEnergyLaser(this,joules - excess , this.unbreaking, this.fortune, this.silktouch, false);
                 });
                 pushPower(each / MjAPI.MJ);
             }

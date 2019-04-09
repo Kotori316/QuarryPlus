@@ -16,7 +16,9 @@ import java.util
 
 import com.yogpc.qp.block._
 import com.yogpc.qp.item.{ItemMirror, ItemQuarryDebug, ItemTool}
+import com.yogpc.qp.tile._
 import net.minecraft.block.Block
+import net.minecraft.util.ResourceLocation
 
 import scala.collection.mutable.ListBuffer
 
@@ -57,6 +59,26 @@ object QuarryPlusI {
   final val guiIdSolidQuarry = 9
   final val guiIdQuarryYLevel = 10
   final val guiIdAdvQuarryYLevel = 11
+
+  val tileIdMap = Map(
+    classOf[TileWorkbench] -> QuarryPlus.Names.workbench,
+    classOf[TileQuarry] -> QuarryPlus.Names.quarry,
+    classOf[TileMarker] -> QuarryPlus.Names.marker,
+    classOf[TileMiningWell] -> QuarryPlus.Names.miningwell,
+    classOf[TilePump] -> QuarryPlus.Names.pump,
+    classOf[TileRefinery] -> QuarryPlus.Names.refinery,
+    classOf[TilePlacer] -> QuarryPlus.Names.placer,
+    classOf[TileBreaker] -> QuarryPlus.Names.breaker,
+    classOf[TileLaser] -> QuarryPlus.Names.laser,
+    classOf[TileAdvQuarry] -> QuarryPlus.Names.advquarry,
+    classOf[TileAdvPump] -> QuarryPlus.Names.advpump,
+    classOf[TileBookMover] -> QuarryPlus.Names.moverfrombook,
+    classOf[TileExpPump] -> QuarryPlus.Names.exppump,
+    classOf[TileSolidQuarry] -> QuarryPlus.Names.solidquarry,
+    classOf[TileReplacer] -> QuarryPlus.Names.replacer
+  ).mapValues(s => new ResourceLocation(QuarryPlus.modID, s))
+
+  val tileIdSet = tileIdMap.map { case (_, s) => s.toString }.toSet
 
   private def register[T <: Block](block: T): T = {
     blocks += block

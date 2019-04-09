@@ -140,7 +140,7 @@ class TileAdvQuarry extends APowerTile
         }
       } else if (mode is TileAdvQuarry.BREAK_BLOCK) {
 
-        type B_1 = (NonNullList[ItemStack], Seq[Int], Seq[Int], Seq[Int], Seq[Int], Double)
+        type B_1 = (NonNullList[ItemStack], Seq[Int], Seq[Int], Seq[Int], Seq[Int], Long)
         type C_1 = (NonNullList[ItemStack], Seq[Int], Seq[Int], Seq[Int], Seq[Int])
         type D_1 = (NonNullList[ItemStack], Seq[Reason])
         val dropCheck: () => Either[Reason, NonNullList[ItemStack]] = () => {
@@ -239,7 +239,7 @@ class TileAdvQuarry extends APowerTile
             }
             y -= 1
           }
-          Right((list, destroy.result(), dig.result(), drain.result(), shear.result(), requireEnergy * 1.25))
+          Right((list, destroy.result(), dig.result(), drain.result(), shear.result(), (requireEnergy * 1.25).toLong))
         }
 
         val consumeEnergy: B_1 => Either[Reason, C_1] = b => {
@@ -928,9 +928,9 @@ object TileAdvQuarry {
     def getMap: Map[Int, Int] = Map(EfficiencyID -> efficiency, UnbreakingID -> unbreaking,
       FortuneID -> fortune, SilktouchID -> silktouch.compare(false)) ++ other
 
-    val maxStore = MAX_STORED * (efficiency + 1)
+    val maxStore = MAX_STORED * (efficiency + 1) * APowerTile.MicroJtoMJ
 
-    val maxReceive = if (efficiency >= 5) maxStore else if (efficiency == 0) maxStore * 0.001 else maxStore * Math.pow(efficiency.toDouble / 5.0, 3)
+    val maxReceive = if (efficiency >= 5) maxStore else if (efficiency == 0) maxStore / 1000 else (maxStore * Math.pow(efficiency.toDouble / 5.0, 3)).toLong
 
     val mode: Int = if (silktouch) -1 else fortune
 
