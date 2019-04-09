@@ -62,7 +62,8 @@ object BlockWrapper extends JsonDeserializer[BlockWrapper] with JsonSerializer[B
   }
 
   override def deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): BlockWrapper = {
-    val maybeWrapper = for (state <- NBTBuilder.getStateFromJson(JsonUtils.getJsonObject(json.getAsJsonObject, KEY_STATE)).asScala;
+    val maybeWrapper = for (jsonObj <- Try(JsonUtils.getJsonObject(json.getAsJsonObject, KEY_STATE)).toOption;
+                            state <- NBTBuilder.getStateFromJson(jsonObj).asScala;
                             property <- Try(JsonUtils.getBoolean(json.getAsJsonObject, KEY_Property, false)).toOption;
                             meta <- Try(JsonUtils.getBoolean(json.getAsJsonObject, KEY_Meta, false)).toOption)
       yield BlockWrapper(state, ignoreProperty = property, ignoreMeta = meta)
