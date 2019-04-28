@@ -26,18 +26,14 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.wrapper.EmptyHandler;
+import net.minecraftforge.registries.ObjectHolder;
 import scala.Option;
-
-import static com.yogpc.qp.version.VersionUtil.empty;
-import static com.yogpc.qp.version.VersionUtil.getCount;
-import static com.yogpc.qp.version.VersionUtil.isEmpty;
-import static com.yogpc.qp.version.VersionUtil.nonEmpty;
 
 public class InvUtils {
     private static final List<IInjector> INJECTORS;
@@ -45,14 +41,14 @@ public class InvUtils {
     static {
         List<IInjector> injectors = new ArrayList<>();
         // TODO change to net.minecraftforge.fml.common.ModAPIManager
-        if (Loader.isModLoaded(QuarryPlus.Optionals.Buildcraft_transport)) {
+        if (ModList.get().isLoaded(QuarryPlus.Optionals.Buildcraft_transport)) {
             try {
                 injectors.add((IInjector) Class.forName("com.yogpc.qp.compat.BCInjector").getMethod("init").invoke(null));
             } catch (ReflectiveOperationException e) {
                 e.printStackTrace();
             }
         }
-        if (Loader.isModLoaded(QuarryPlus.Optionals.Mekanism_modID)) {
+        if (ModList.get().isLoaded(QuarryPlus.Optionals.Mekanism_modID)) {
             try {
                 injectors.add((IInjector) Class.forName("com.yogpc.qp.compat.MekanismInjector").getMethod("init").invoke(null));
             } catch (ReflectiveOperationException e) {
@@ -71,7 +67,7 @@ public class InvUtils {
      */
     public static ItemStack injectToNearTile(@Nonnull final World w, @Nonnull BlockPos pos, final ItemStack is) {
 
-        List<? extends IInjector> injectors = Stream.of(EnumFacing.VALUES).flatMap(enumFacing -> {
+        List<? extends IInjector> injectors = Stream.of(EnumFacing.values()).flatMap(enumFacing -> {
             TileEntity t = w.getTileEntity(pos.offset(enumFacing));
             return INJECTORS.stream().filter(i -> t != null).flatMap(i -> i.getInjector(is, t, enumFacing));
         }).collect(Collectors.toList());
@@ -79,20 +75,26 @@ public class InvUtils {
         ItemStack inserted = is.copy();
         for (IInjector injector : injectors) {
             inserted = injector.inject(inserted, w, pos);
-            if (isEmpty(inserted)) {
-                return empty();
+            if (inserted.isEmpty()) {
+                return ItemStack.EMPTY;
             }
         }
         return inserted;
 
     }
 
+    @Deprecated
     public static Option<IItemHandler> findItemHandler(@Nonnull World world, @Nonnull BlockPos pos, @Nullable EnumFacing from) {
         TileEntity entity = world.getTileEntity(pos);
         if (entity == null) {
             return Option.empty();
         } else {
-            return Option.apply(entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, from));
+            LazyOptional<IItemHandler> capability = entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, from);
+            if (capability.isPresent()) {
+                return Option.apply(capability.orElse(EmptyHandler.INSTANCE));
+            } else {
+                return Option.empty();
+            }
         }
     }
 
@@ -105,17 +107,16 @@ public class InvUtils {
 
     public static boolean isDebugItem(@Nonnull EntityPlayer player, @Nonnull EnumHand hand) {
         ItemStack stack = player.getHeldItem(hand);
-        if (nonEmpty(stack)) {
+        if (!stack.isEmpty()) {
             Item item = stack.getItem();
             return item == quarryDebug || item == ic2_meter || item == ic2_wrench || item == ic2_electric_wrench;
         }
         return false;
     }
 
-    @SuppressWarnings("deprecation")
     public static IBlockState getStateFromItem(@Nonnull ItemBlock itemBlock, int meta) {
         Block block = itemBlock.getBlock();
-        return block.getStateFromMeta(meta);
+        return block.getDefaultState();
     }
 
     public static boolean hasSmelting(ItemStack stack) {
@@ -123,17 +124,17 @@ public class InvUtils {
             (endercore_smelting != DummyEnchantment.DUMMY_ENCHANTMENT && EnchantmentHelper.getEnchantmentLevel(endercore_smelting, stack) > 0);
     }
 
-    @GameRegistry.ObjectHolder(QuarryPlus.Optionals.IC2_modID + ":meter")
-    public static final Item ic2_meter = new Item();
-    @GameRegistry.ObjectHolder(QuarryPlus.Optionals.IC2_modID + ":wrench")
-    public static final Item ic2_wrench = new Item();
-    @GameRegistry.ObjectHolder(QuarryPlus.Optionals.IC2_modID + ":electric_wrench")
-    public static final Item ic2_electric_wrench = new Item();
-    @GameRegistry.ObjectHolder(QuarryPlus.modID + ":quarrydebug")
-    public static final Item quarryDebug = new Item();
-    @GameRegistry.ObjectHolder(QuarryPlus.Optionals.COFH_modID + ":smelting")
+    @ObjectHolder(QuarryPlus.Optionals.IC2_modID + ":meter")
+    public static final Item ic2_meter = new Item(new Item.Properties());
+    @ObjectHolder(QuarryPlus.Optionals.IC2_modID + ":wrench")
+    public static final Item ic2_wrench = new Item(new Item.Properties());
+    @ObjectHolder(QuarryPlus.Optionals.IC2_modID + ":electric_wrench")
+    public static final Item ic2_electric_wrench = new Item(new Item.Properties());
+    @ObjectHolder(QuarryPlus.modID + ":quarrydebug")
+    public static final Item quarryDebug = new Item(new Item.Properties());
+    @ObjectHolder(QuarryPlus.Optionals.COFH_modID + ":smelting")
     public static final Enchantment cofh_smelting = DummyEnchantment.DUMMY_ENCHANTMENT;
-    @GameRegistry.ObjectHolder("endercore:autosmelt")
+    @ObjectHolder("endercore:autosmelt")
     public static final Enchantment endercore_smelting = DummyEnchantment.DUMMY_ENCHANTMENT;
 
     public static boolean setNewState(@Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull IBlockState newState) {
@@ -160,11 +161,12 @@ public class InvUtils {
 
         @Override
         public Stream<? extends IInjector> getInjector(ItemStack stack, TileEntity entity, EnumFacing facing) {
-            IItemHandler handler = entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing.getOpposite());
-            if (getCount(stack) != getCount(ItemHandlerHelper.insertItemStacked(handler, stack, true))) {
-                return Stream.of(new ForgeInjector(handler));
-            }
-            return Stream.empty();
+            return entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing.getOpposite()).filter(
+                h -> stack.getCount() != ItemHandlerHelper.insertItemStacked(h, stack, true).getCount()
+            )
+                .map(ForgeInjector::new)
+                .map(Stream::of)
+                .orElse(Stream.empty());
         }
 
         @Override

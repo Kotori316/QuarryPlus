@@ -1,30 +1,36 @@
 package com.yogpc.qp.packet;
 
-import java.io.IOException;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraft.world.World;
+import net.minecraft.world.dimension.Dimension;
+import net.minecraft.world.dimension.DimensionType;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public interface IMessage extends net.minecraftforge.fml.common.network.simpleimpl.IMessage {
-
-    @Override
-    public default void fromBytes(ByteBuf buf) {
-        try {
-            fromBytes(new PacketBuffer(buf));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+public interface IMessage<T extends IMessage<T>> {
+    static int getDimId(World world) {
+        return Optional.ofNullable(world)
+            .map(World::getDimension)
+            .map(Dimension::getType)
+            .map(DimensionType::getId)
+            .orElse(0);
     }
 
-    @Override
-    public default void toBytes(ByteBuf buf) {
-        toBytes(new PacketBuffer(buf));
+    static <T extends IMessage<T>> Function<PacketBuffer, T> decode(Supplier<T> supplier) {
+        return buffer -> supplier.get().readFromBuffer(buffer);
     }
 
-    public void fromBytes(PacketBuffer buffer) throws IOException;
+    T readFromBuffer(PacketBuffer buffer);
 
-    public void toBytes(PacketBuffer buffer);
+    void writeToBuffer(PacketBuffer buffer);
 
-    IMessage onReceive(IMessage message, MessageContext ctx);
+    void onReceive(Supplier<NetworkEvent.Context> ctx);
+
+    default void onReceiveInternal(Supplier<NetworkEvent.Context> ctx) {
+        onReceive(ctx);
+        ctx.get().setPacketHandled(true);
+    }
 }

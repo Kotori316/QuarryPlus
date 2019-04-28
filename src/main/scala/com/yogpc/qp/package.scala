@@ -2,12 +2,13 @@ package com.yogpc
 
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.item.ItemStack
-import net.minecraft.nbt.{NBTBase, NBTTagCompound, NBTTagList, NBTTagLong}
+import net.minecraft.nbt._
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.TextComponentString
 import net.minecraftforge.common.util.Constants.NBT
 import net.minecraftforge.fluids.FluidStack
+import net.minecraftforge.registries.ForgeRegistries
 
 import scala.collection.AbstractIterator
 
@@ -52,15 +53,15 @@ package object qp {
     def tagIterator: Iterator[NBTTagCompound] = new AbstractIterator[NBTTagCompound] {
       var count = 0
 
-      override def hasNext: Boolean = count < list.tagCount()
+      override def hasNext: Boolean = count < list.size()
 
       override def next(): NBTTagCompound = {
-        val v = list.getCompoundTagAt(count)
+        val v = list.getCompound(count)
         count += 1
         v
       }
 
-      override def size: Int = list.tagCount()
+      override def size: Int = list.size()
 
       override def hasDefiniteSize: Boolean = true
     }
@@ -68,23 +69,23 @@ package object qp {
 
   implicit class ItemStackRemoveEnchantment(val stack: ItemStack) extends AnyVal {
     def removeEnchantment(enchantment: Enchantment): Unit = {
-      val id = Enchantment.getEnchantmentID(enchantment).toShort
+      val id = ForgeRegistries.ENCHANTMENTS.getKey(enchantment)
       val tagName = if (stack.getItem == net.minecraft.init.Items.ENCHANTED_BOOK) "StoredEnchantments" else "ench"
-      val list = Option(stack.getTagCompound).fold(new NBTTagList)(_.getTagList(tagName, NBT.TAG_COMPOUND))
+      val list = Option(stack.getTag).fold(new NBTTagList)(_.getList(tagName, NBT.TAG_COMPOUND))
 
       val copied = list.copy()
-      for (i <- 0 until list.tagCount()) {
-        val tag = copied.getCompoundTagAt(i)
-        if (tag.getShort("id") == id) {
+      for (i <- 0 until list.size()) {
+        val tag = copied.getCompound(i)
+        if (tag.getString("id") == id.toString) {
           list.removeTag(i)
         }
       }
-      Option(stack.getTagCompound).foreach(subtag => {
+      Option(stack.getTag).foreach(subtag => {
         subtag.removeTag(tagName)
-        if (!list.hasNoTags) {
+        if (!list.isEmpty) {
           subtag.setTag(tagName, list)
         }
-        stack.setTagCompound(if (subtag.hasNoTags) null else subtag)
+        stack.setTag(if (subtag.isEmpty) null else subtag)
       })
     }
   }
@@ -118,7 +119,7 @@ package object qp {
     def toOption: Option[A] = Option(obj)
   }
 
-  trait NBTWrapper[A, NBTType <: NBTBase] {
+  trait NBTWrapper[A, NBTType <: INBTBase] {
     def wrap(num: A): NBTType
   }
 
@@ -131,14 +132,14 @@ package object qp {
   }
 
   implicit class NumberToNbt[A](private val num: A) extends AnyVal {
-    def toNBT[B <: NBTBase](implicit wrapper: NBTWrapper[A, B]): B = wrapper wrap num
+    def toNBT[B <: INBTBase](implicit wrapper: NBTWrapper[A, B]): B = wrapper wrap num
   }
 
   implicit class PosHelper(val blockPos: BlockPos) extends AnyVal {
     def offset(facing1: EnumFacing, facing2: EnumFacing): BlockPos = {
-      val x = facing1.getFrontOffsetX + facing2.getFrontOffsetX
-      val y = facing1.getFrontOffsetY + facing2.getFrontOffsetY
-      val z = facing1.getFrontOffsetZ + facing2.getFrontOffsetZ
+      val x = facing1.getXOffset + facing2.getXOffset
+      val y = facing1.getYOffset + facing2.getYOffset
+      val z = facing1.getZOffset + facing2.getZOffset
       blockPos.add(x, y, z)
     }
   }

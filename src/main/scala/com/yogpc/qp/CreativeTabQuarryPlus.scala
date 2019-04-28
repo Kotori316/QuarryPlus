@@ -1,12 +1,10 @@
 package com.yogpc.qp
 
-import net.minecraft.creativetab.CreativeTabs
-import net.minecraft.item.ItemStack
-import net.minecraftforge.fml.relauncher.{Side, SideOnly}
+import com.yogpc.qp.utils.Holder
+import net.minecraft.item.{ItemGroup, ItemStack}
+import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 
-class CreativeTabQuarryPlus extends CreativeTabs(QuarryPlus.Mod_Name) {
-
-  @SideOnly(Side.CLIENT)
-  override def getTabIconItem = new ItemStack(QuarryPlusI.blockQuarry)
-
+class CreativeTabQuarryPlus extends ItemGroup(QuarryPlus.Mod_Name) {
+  @OnlyIn(Dist.CLIENT)
+  override def createIcon() = new ItemStack(Holder.blockMarker)
 }

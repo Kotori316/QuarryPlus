@@ -12,7 +12,16 @@ package jp.t2v.lab.syntax;
 
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.Map;
-import java.util.function.*;
+import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
+import java.util.function.BinaryOperator;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.IntFunction;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -86,6 +95,10 @@ public class MapStreamSyntax {
 
     public static <T> Function<Object, Stream<T>> streamCast(Class<T> aClass) {
         return o -> Stream.of(o).filter(aClass::isInstance).map(aClass::cast);
+    }
+
+    public static <T> Function<Object, Optional<T>> optCast(Class<T> aClass) {
+        return o -> Optional.of(o).filter(aClass::isInstance).map(aClass::cast);
     }
 
     private static final Predicate<Object> ALWAYS_FALSE = new Predicate<Object>() {
