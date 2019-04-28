@@ -1,4 +1,4 @@
-package com.yogpc.qp.machines;
+package com.yogpc.qp.machines.base;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

@@ -58,6 +58,5 @@ public class LinkMessage implements IMessage<LinkMessage> {
                     .flatMap(streamCast(TileMarker.class))
                     .forEach(marker -> marker.setLink(boxed)));
         });
-        ctx.get().setPacketHandled(true);
     }
 }

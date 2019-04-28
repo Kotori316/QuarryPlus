@@ -11,15 +11,13 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.yogpc.qp.machines;
+package com.yogpc.qp.machines.base;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;

@@ -1,4 +1,4 @@
-package com.yogpc.qp.machines;
+package com.yogpc.qp.machines.base;
 
 import java.lang.reflect.Constructor;
 
@@ -8,7 +8,6 @@ import java.lang.reflect.Constructor;
 //import buildcraft.api.mj.MjAPI;
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraftforge.fml.ModList;
 

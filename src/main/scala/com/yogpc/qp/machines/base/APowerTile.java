@@ -10,7 +10,7 @@
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.yogpc.qp.machines;
+package com.yogpc.qp.machines.base;
 
 import java.util.Objects;
 
@@ -44,7 +44,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
     public boolean bcLoaded;
     public final boolean ic2Loaded;
     /**
-     * Instance of {@link buildcraft.api.mj.MjCapabilityHelper}. Null if BC isn't installed.
+     * Instance of {@code buildcraft.api.mj.MjCapabilityHelper}. Null if BC isn't installed.
      */
     private Object helper;//buildcraft capability helper
     protected final EnergyDebug debug = new EnergyDebug(this);

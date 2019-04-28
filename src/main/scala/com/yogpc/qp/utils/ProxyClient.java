@@ -1,6 +1,9 @@
 package com.yogpc.qp.utils;
 
+import java.util.Optional;
+
 import com.yogpc.qp.Config;
+import com.yogpc.qp.machines.GuiHandler;
 import com.yogpc.qp.machines.marker.TileMarker;
 import com.yogpc.qp.render.RenderMarker;
 import com.yogpc.qp.render.Sprites;
@@ -11,6 +14,7 @@ import net.minecraft.client.renderer.model.ModelManager;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.world.World;
@@ -19,8 +23,11 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ExtensionPoint;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
 @OnlyIn(Dist.CLIENT)
@@ -33,10 +40,13 @@ public class ProxyClient extends ProxyCommon {
     }
 
     @Override
-    public World getPacketWorld(final INetHandler inh) {
-        if (inh instanceof NetHandlerPlayServer)
-            return ((NetHandlerPlayServer) inh).player.getEntityWorld();
-        return getClientWorld();
+    public Optional<World> getPacketWorld(NetworkEvent.Context context) {
+        EntityPlayerMP sender = context.getSender();
+        if (sender == null) {
+            return Optional.of(getClientWorld());
+        } else {
+            return Optional.of(sender).map(Entity::getEntityWorld);
+        }
     }
 
     @Override
@@ -44,6 +54,7 @@ public class ProxyClient extends ProxyCommon {
         super.registerEvents(bus);
         bus.addListener(Sprites::putTexture);
         bus.addListener(Sprites::registerTexture);
+        ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.GUIFACTORY, () -> GuiHandler::getGui);
     }
 
     @Override

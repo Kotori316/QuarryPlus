@@ -64,6 +64,7 @@ public class InvUtils {
      * @param w   world
      * @param pos Position of TileEntity from which itemStack comes.
      * @param is  ItemStack to be inserted. The stack doesn't change in this method.
+     * @return Stack NOT inserted to inv.
      */
     public static ItemStack injectToNearTile(@Nonnull final World w, @Nonnull BlockPos pos, final ItemStack is) {
 

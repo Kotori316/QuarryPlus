@@ -11,7 +11,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.yogpc.qp.machines;
+package com.yogpc.qp.machines.base;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -22,9 +22,8 @@ import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import com.yogpc.qp.Config;
+import com.yogpc.qp.machines.TranslationKeys;
 import javax.annotation.Nonnull;
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
@@ -89,7 +88,7 @@ public interface IEnchantableTile {
     }
 
     //Move static methods to this inner class because static method in an interface is not supported by Scala 2.11.1.
-    public static class Util {
+    class Util {
 
         public static void init(@Nonnull final IEnchantableTile te, @Nonnull final NBTTagList tagList) {
             tagList.stream().map(NBTTagCompound.class::cast).forEach(nbt -> te.setEnchantment(nbt.getShort("id"), nbt.getShort("lvl")));

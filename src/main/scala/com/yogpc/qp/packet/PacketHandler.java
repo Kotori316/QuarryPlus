@@ -23,6 +23,7 @@ public class PacketHandler {
 
         INSTANCE.registerMessage(id++, LinkMessage.class, IMessage::writeToBuffer, IMessage.decode(LinkMessage::new), IMessage::onReceiveInternal);
         INSTANCE.registerMessage(id++, UpdateBoxMessage.class, IMessage::writeToBuffer, IMessage.decode(UpdateBoxMessage::new), IMessage::onReceiveInternal);
+        INSTANCE.registerMessage(id++, TileMessage.class, IMessage::writeToBuffer, IMessage.decode(TileMessage::new), IMessage::onReceiveInternal);
 
         assert id > 0;
     }

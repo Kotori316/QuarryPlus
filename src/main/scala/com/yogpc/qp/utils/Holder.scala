@@ -1,7 +1,7 @@
 package com.yogpc.qp.utils
 
 import com.yogpc.qp.machines.marker.{BlockMarker, TileMarker}
-import com.yogpc.qp.machines.workbench.TileWorkbench
+import com.yogpc.qp.machines.workbench.{BlockWorkbench, TileWorkbench}
 import com.yogpc.qp.{CreativeTabQuarryPlus, QuarryPlus}
 import net.minecraft.tileentity.{TileEntity, TileEntityType}
 import net.minecraftforge.fml.ModLoadingContext
@@ -23,9 +23,12 @@ object Holder {
   val markerTileType = createType(() => new TileMarker, QuarryPlus.Names.marker)
   val workbenchTileType = createType(() => new TileWorkbench, QuarryPlus.Names.workbench)
 
+  val tiles = Seq(markerTileType, workbenchTileType)
+
   //---------- Block ----------
   val blockMarker = new BlockMarker
+  val blockWorkbench = new BlockWorkbench
 
-  val blocks = Seq(blockMarker)
+  val blocks = Seq(blockMarker, blockWorkbench)
   //---------- Item ----------
 }

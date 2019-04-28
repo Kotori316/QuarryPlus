@@ -1,4 +1,4 @@
-package com.yogpc.qp.machines;
+package com.yogpc.qp.machines.base;
 
 public enum EnergyUsage {
     BREAK_BLOCK,

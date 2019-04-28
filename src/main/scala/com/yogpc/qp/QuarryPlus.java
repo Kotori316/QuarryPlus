@@ -62,12 +62,12 @@ public class QuarryPlus {
 
         @SubscribeEvent
         public static void registerItems(RegistryEvent.Register<Item> event) {
-            JavaConverters.seqAsJavaList(Holder.blocks()).stream().map(BlockMarker::asItem).forEach(event.getRegistry()::register);
+            JavaConverters.seqAsJavaList(Holder.blocks()).stream().map(Block::asItem).forEach(event.getRegistry()::register);
         }
 
         @SubscribeEvent
         public static void registerTiles(RegistryEvent.Register<TileEntityType<?>> event) {
-            event.getRegistry().register(Holder.markerTileType());
+            JavaConverters.seqAsJavaList(Holder.tiles()).forEach(event.getRegistry()::register);
         }
     }
 

@@ -1,4 +1,4 @@
-package com.yogpc.qp.machines
+package com.yogpc.qp.machines.base
 
 import com.google.common.base.Stopwatch
 import com.yogpc.qp.{Config, QuarryPlus}

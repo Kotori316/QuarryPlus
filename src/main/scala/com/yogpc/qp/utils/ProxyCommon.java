@@ -1,5 +1,7 @@
 package com.yogpc.qp.utils;
 
+import java.util.Optional;
+
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -8,6 +10,7 @@ import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.world.World;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
 public class ProxyCommon {
@@ -17,10 +20,8 @@ public class ProxyCommon {
         return null;
     }
 
-    public World getPacketWorld(final INetHandler inh) {
-        if (inh instanceof NetHandlerPlayServer)
-            return ((NetHandlerPlayServer) inh).player.getEntityWorld();
-        return null;
+    public Optional<World> getPacketWorld(NetworkEvent.Context context) {
+        return Optional.ofNullable(context.getSender()).map(Entity::getEntityWorld);
     }
 
     public void registerEvents(IEventBus bus) {

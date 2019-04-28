@@ -17,16 +17,19 @@ import java.util.Collections;
 import java.util.List;
 
 import com.yogpc.qp.Config;
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.InvUtils;
-import com.yogpc.qp.machines.APowerTile;
-import com.yogpc.qp.machines.EnergyUsage;
-import com.yogpc.qp.machines.HasInv;
-import com.yogpc.qp.machines.IDebugSender;
 import com.yogpc.qp.machines.TranslationKeys;
+import com.yogpc.qp.machines.base.APowerTile;
+import com.yogpc.qp.machines.base.EnergyUsage;
+import com.yogpc.qp.machines.base.HasInv;
+import com.yogpc.qp.machines.base.IDebugSender;
 import com.yogpc.qp.utils.Holder;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.Container;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
@@ -37,6 +40,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.world.IInteractionObject;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
@@ -48,7 +52,8 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import scala.Symbol;
 
 //@net.minecraftforge.fml.common.Optional.Interface(iface = "cofh.api.tileentity.IInventoryConnection", modid = QuarryPlus.Optionals.COFH_modID)
-public class TileWorkbench extends APowerTile implements HasInv, IDebugSender {
+public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, IInteractionObject {
+    public static final String GUI_ID = QuarryPlus.modID + ":gui_" + QuarryPlus.Names.workbench;
     public final NonNullList<ItemStack> inventory = NonNullList.withSize(27, ItemStack.EMPTY);
     public final NonNullList<ItemStack> inventory2 = NonNullList.withSize(18, ItemStack.EMPTY);
     public List<WorkbenchRecipes> recipesList = Collections.emptyList();
@@ -63,14 +68,14 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender {
     @Override
     public void tick() {
         super.tick();
-        if (!getWorld().isRemote) {
+        if (world != null && !world.isRemote) {
             if (isWorking()) {
                 if (currentRecipe.microEnergy() <= getStoredEnergy() || Config.common().noEnergy().get()) {
                     useEnergy(currentRecipe.microEnergy(), currentRecipe.microEnergy(), true, EnergyUsage.WORKBENCH);
                     ItemStack stack = currentRecipe.getOutput();
-                    ItemStack inserted = InvUtils.injectToNearTile(getWorld(), getPos(), stack);
+                    ItemStack inserted = InvUtils.injectToNearTile(world, getPos(), stack);
                     if (!inserted.isEmpty()) {
-                        InventoryHelper.spawnItemStack(getWorld(), getPos().getX(), getPos().getY(), getPos().getZ(), stack);
+                        InventoryHelper.spawnItemStack(world, getPos().getX(), getPos().getY(), getPos().getZ(), stack);
                     }
                     currentRecipe.inputsJ().forEach(inputList -> {
                         for (IngredientWithCount i : inputList) {
@@ -103,6 +108,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender {
         list.stream().map(b -> (NBTTagCompound) b).forEach(nbtTagCompound -> {
             int j = nbtTagCompound.getByte("Slot") & 255;
             ItemStack stack = ItemStack.read(nbtTagCompound);
+            stack.setCount(nbtTagCompound.getInt("Count"));
             inventory.set(j, stack);
         });
         markDirty();
@@ -171,7 +177,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender {
 
     @Override
     public boolean isUsableByPlayer(EntityPlayer player) {
-        return getWorld().getTileEntity(getPos()) == this && player.getDistanceSqToCenter(getPos()) <= 64;
+        return world != null && world.getTileEntity(getPos()) == this && player.getDistanceSqToCenter(getPos()) <= 64;
     }
 
     @Override
@@ -290,6 +296,16 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender {
     @Override
     protected Symbol getSymbol() {
         return Symbol.apply("WorkbenchPlus");
+    }
+
+    @Override
+    public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn) {
+        return new ContainerWorkbench(playerIn, this);
+    }
+
+    @Override
+    public String getGuiID() {
+        return GUI_ID;
     }
 
     private class ItemHandler implements IItemHandlerModifiable {

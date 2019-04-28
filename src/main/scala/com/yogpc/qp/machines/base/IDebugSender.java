@@ -1,4 +1,4 @@
-package com.yogpc.qp.machines;
+package com.yogpc.qp.machines.base;
 
 import java.util.Collections;
 import java.util.List;

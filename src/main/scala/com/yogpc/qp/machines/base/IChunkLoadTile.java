@@ -1,4 +1,4 @@
-package com.yogpc.qp.machines;
+package com.yogpc.qp.machines.base;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;

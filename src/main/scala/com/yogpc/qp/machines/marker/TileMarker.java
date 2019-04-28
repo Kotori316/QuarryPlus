@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.machines.IMarker;
+import com.yogpc.qp.machines.base.IMarker;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.marker.LinkMessage;
 import com.yogpc.qp.packet.marker.UpdateBoxMessage;

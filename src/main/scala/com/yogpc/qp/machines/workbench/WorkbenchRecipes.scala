@@ -4,7 +4,7 @@ import java.nio.file.{Files, Path}
 import java.util.{Collections, Comparator}
 
 import com.google.gson.{Gson, GsonBuilder, JsonArray, JsonObject}
-import com.yogpc.qp.machines.APowerTile
+import com.yogpc.qp.machines.base.APowerTile
 import com.yogpc.qp.utils.{EnableCondition, ItemDamage}
 import com.yogpc.qp.{QuarryPlus, _}
 import net.minecraft.block.Block
