@@ -73,9 +73,9 @@ package object qp {
       val tagName = if (stack.getItem == net.minecraft.init.Items.ENCHANTED_BOOK) "StoredEnchantments" else "ench"
       val list = Option(stack.getTag).fold(new NBTTagList)(_.getList(tagName, NBT.TAG_COMPOUND))
 
-      val copied = list.copy()
-      for (i <- 0 until list.size()) {
-        val tag = copied.getCompound(i)
+      import scala.collection.JavaConverters._
+      val copied = list.asScala.zipWithIndex.map { case (t, i) => (t.asInstanceOf[NBTTagCompound], i) }
+      for ((tag, i) <- copied) {
         if (tag.getString("id") == id.toString) {
           list.removeTag(i)
         }
