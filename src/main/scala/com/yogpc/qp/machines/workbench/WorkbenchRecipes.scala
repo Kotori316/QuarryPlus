@@ -257,7 +257,7 @@ object WorkbenchRecipes {
     json
   }
 
-  def load(objectSeq: Seq[JsonObject]) = {
+  def load(objectSeq: Seq[JsonObject]): Seq[WorkbenchRecipes] = {
 
     objectSeq.filter(json => !json.has("conditions") || CraftingHelper.processConditions(JsonUtils.getJsonArray(json, "conditions")))
       .filter(json => JsonUtils.getString(json, "type") == QuarryPlus.modID + ":workbench_recipe")
