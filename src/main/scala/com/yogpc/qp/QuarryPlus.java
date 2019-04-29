@@ -2,15 +2,20 @@ package com.yogpc.qp;
 
 import java.util.Optional;
 
+import com.yogpc.qp.machines.workbench.WorkbenchRecipes;
 import com.yogpc.qp.packet.PacketHandler;
+import com.yogpc.qp.utils.EnableCondition;
 import com.yogpc.qp.utils.Holder;
 import com.yogpc.qp.utils.ProxyClient;
 import com.yogpc.qp.utils.ProxyCommon;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraft.item.crafting.RecipeSerializers;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
@@ -18,6 +23,7 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,6 +41,7 @@ public class QuarryPlus {
     public QuarryPlus() {
         initConfig();
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+        MinecraftForge.EVENT_BUS.addListener(this::serverStart);
         proxy.registerEvents(MinecraftForge.EVENT_BUS);
     }
 
@@ -50,6 +57,13 @@ public class QuarryPlus {
     public void setup(FMLCommonSetupEvent event) {
         proxy.registerTextures(event);
         PacketHandler.init();
+        CraftingHelper.register(new ResourceLocation(EnableCondition.NAME), new EnableCondition());
+        RecipeSerializers.register(WorkbenchRecipes.Serializer$.MODULE$);
+    }
+
+    public void serverStart(FMLServerStartingEvent event) {
+        WorkbenchRecipes.registerJsonRecipe(event.getServer().getResourceManager());
+        QuarryPlus.LOGGER.debug("Recipe loaded.");
     }
 
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)

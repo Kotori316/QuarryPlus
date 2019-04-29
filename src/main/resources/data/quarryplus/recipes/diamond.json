@@ -1,0 +1,20 @@
+{
+  "type": "quarryplus:workbench_recipe",
+  "ingredients": [
+    {
+      "item": "quarryplus:markerplus",
+      "count": 3
+    }
+  ],
+  "energy": 3200000,
+  "showInJEI": true,
+  "result": {
+    "item": "minecraft:diamond",
+    "count": 1
+  },
+  "conditions": [
+    {
+      "type": "forge:false"
+    }
+  ]
+}

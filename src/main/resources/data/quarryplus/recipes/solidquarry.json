@@ -25,8 +25,11 @@
   },
   "conditions": [
     {
+      "type": "forge:false"
+    },
+    {
       "type": "quarryplus:machine_enabled",
-      "value": "SolidFuleQuarry"
+      "value": "SolidFuelQuarry"
     }
   ]
 }

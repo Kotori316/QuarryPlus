@@ -3,6 +3,7 @@ package com.yogpc.qp.machines.workbench
 import com.google.gson.{JsonElement, JsonObject}
 import net.minecraft.item.ItemStack
 import net.minecraft.item.crafting.Ingredient
+import net.minecraft.network.PacketBuffer
 import net.minecraft.util.JsonUtils
 import net.minecraftforge.common.crafting.CraftingHelper
 
@@ -40,6 +41,11 @@ case class IngredientWithCount(ingredient: Ingredient, count: Int) {
       case None => "Empty"
     }
   }
+
+  def writeToBuffer(buffer: PacketBuffer): Unit = {
+    ingredient.writeToBuffer(buffer)
+    buffer.writeInt(count)
+  }
 }
 
 object IngredientWithCount {
@@ -57,5 +63,11 @@ object IngredientWithCount {
 
   def getSeq(stack: ItemStack): Seq[IngredientWithCount] = {
     Seq(new IngredientWithCount(stack))
+  }
+
+  def readFromBuffer(buffer: PacketBuffer): IngredientWithCount = {
+    val ingredient = Ingredient.fromBuffer(buffer)
+    val count = buffer.readInt()
+    IngredientWithCount(ingredient, count)
   }
 }

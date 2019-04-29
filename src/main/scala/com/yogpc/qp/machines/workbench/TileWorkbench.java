@@ -82,9 +82,6 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
                             if (inventory.stream().anyMatch(i::shrink)) break;
                         }
                     });
-//                    currentRecipe.inputsJ().forEach(v1 ->
-//                        inventory.stream().filter(v1::isItemEqual).findFirst().ifPresent(stack1 -> VersionUtil.shrink(stack1, VersionUtil.getCount(v1)))
-//                    );
                     for (int i = 0; i < inventory.size(); i++) {
                         if (inventory.get(i).isEmpty())
                             inventory.set(i, ItemStack.EMPTY);

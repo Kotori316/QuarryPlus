@@ -1,25 +1,30 @@
 package com.yogpc.qp.machines.workbench
 
-import java.nio.file.{Files, Path}
+import java.nio.charset.StandardCharsets
 import java.util.{Collections, Comparator}
 
-import com.google.gson.{Gson, GsonBuilder, JsonArray, JsonObject}
+import com.google.gson.{Gson, GsonBuilder, JsonObject}
 import com.yogpc.qp.machines.base.APowerTile
-import com.yogpc.qp.utils.{EnableCondition, ItemDamage}
+import com.yogpc.qp.utils.ItemDamage
 import com.yogpc.qp.{QuarryPlus, _}
-import net.minecraft.block.Block
+import net.minecraft.inventory.IInventory
+import net.minecraft.item.crafting.{IRecipeHidden, IRecipeSerializer}
 import net.minecraft.item.{Item, ItemStack}
+import net.minecraft.network.PacketBuffer
+import net.minecraft.resources.{IResource, IResourceManager}
 import net.minecraft.util.{JsonUtils, ResourceLocation}
-import net.minecraftforge.common.crafting.CraftingHelper
-import org.apache.commons.io.FilenameUtils
+import net.minecraft.world.World
+import net.minecraftforge.common.crafting.{CraftingHelper, RecipeType}
+import net.minecraftforge.fml.server.ServerLifecycleHooks
+import org.apache.commons.io.IOUtils
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.util.Try
 
-abstract sealed class WorkbenchRecipes(val output: ItemDamage, val energy: Double, val showInJEI: Boolean = true)
-  extends Ordered[WorkbenchRecipes] {
-  val microEnergy = (energy * APowerTile.MicroJtoMJ).toLong
+abstract sealed class WorkbenchRecipes(val location: ResourceLocation, val output: ItemDamage, val energy: Long, val showInJEI: Boolean = true)
+  extends IRecipeHidden(location) with Ordered[WorkbenchRecipes] {
+  val microEnergy = energy
   val size: Int
 
   def inputs: Seq[Seq[IngredientWithCount]]
@@ -27,10 +32,6 @@ abstract sealed class WorkbenchRecipes(val output: ItemDamage, val energy: Doubl
   def inputsJ(): java.util.List[java.util.List[IngredientWithCount]] = inputs.map(_.asJava).asJava
 
   def hasContent: Boolean = true
-
-  val hardCode = true
-
-  def location: ResourceLocation
 
   def getOutput: ItemStack = output.toStack()
 
@@ -50,60 +51,23 @@ abstract sealed class WorkbenchRecipes(val output: ItemDamage, val energy: Doubl
   override def compare(that: WorkbenchRecipes) = {
     WorkbenchRecipes.recipeOrdering.compare(this, that)
   }
-}
 
-@deprecated(message = "Replace to json based recipe.", since = "Minecraft 1.13")
-private final class R1(o: ItemDamage, e: Double, s: Boolean = true, seq: Seq[Int => ItemStack], name: Symbol, hasCondition: Boolean) extends WorkbenchRecipes(o, e, s) {
-  override val size: Int = seq.size
-
-  override def inputs = seq.map(_.apply(2)).filter(s => !s.isEmpty).map(IngredientWithCount.getSeq)
-
-  override def hasContent = true
-
-  override val location: ResourceLocation = new ResourceLocation(QuarryPlus.modID, "builtin_" + name.name)
-
-  def toJson = {
-    def stackToJson(stack: ItemStack) = {
-      val e = new JsonObject
-      e.addProperty("item", stack.getItem.getRegistryName.toString)
-      e.addProperty("count", stack.getCount)
-      if (stack.hasTag) {
-        e.add("nbt", new GsonBuilder().disableHtmlEscaping().create().fromJson(stack.getTag.toString, classOf[JsonObject]))
-      }
-      e
-    }
-
-    val json = new JsonObject
-    json.addProperty("id", location.toString)
-    json.addProperty("type", QuarryPlus.modID + ":workbench_recipe")
-    val ingredients = new JsonArray
-    seq.map(_.apply(2)).filter(s => !s.isEmpty).map(stackToJson).foreach(ingredients.add)
-    json.add("ingredients", ingredients)
-    json.addProperty("energy", energy)
-    json.addProperty("showInJEI", showInJEI)
-    json.add("result", stackToJson(output.toStack()))
-    if (hasCondition) {
-      val conditions = new JsonArray
-      val c1 = new JsonObject
-      c1.addProperty("type", EnableCondition.NAME)
-      c1.addProperty("value", name.name)
-      conditions.add(c1)
-      json.add("conditions", conditions)
-    }
-    json
+  override def matches(inv: IInventory, worldIn: World): Boolean = {
+    val inputInv = Range(0, inv.getSizeInventory).map(inv.getStackInSlot)
+    hasContent && inputs.forall(in => inputInv.exists(invStack => in.exists(_.matches(invStack))))
   }
+
+  override def getCraftingResult(inv: IInventory) = getOutput
+
+  override def canFit(width: Int, height: Int) = true
+
+  override def getSerializer = WorkbenchRecipes.Serializer
+
+  override def getType = WorkbenchRecipes.recipeType
 }
 
-private final class R2(override val location: ResourceLocation, o: ItemDamage, e: Double, s: Boolean, list: java.util.List[java.util.function.IntFunction[ItemStack]])
-  extends WorkbenchRecipes(o, e, s) {
-  private[this] final val seq = list.asScala
-  override val size: Int = seq.size
-
-  override def inputs = seq.map(_.apply(2)).filter(s => !s.isEmpty).map(IngredientWithCount.getSeq)
-}
-
-private final class IngredientRecipe(override val location: ResourceLocation, o: ItemStack, e: Double, s: Boolean, seq: Seq[Seq[IngredientWithCount]],
-                                     override val hardCode: Boolean = false) extends WorkbenchRecipes(ItemDamage(o), e, s) {
+private final class IngredientRecipe(location: ResourceLocation, o: ItemStack, e: Long, s: Boolean, seq: Seq[Seq[IngredientWithCount]])
+  extends WorkbenchRecipes(location, ItemDamage(o), e, s) {
   override val size = seq.size
 
   override def inputs = seq
@@ -113,26 +77,36 @@ private final class IngredientRecipe(override val location: ResourceLocation, o:
 
 object WorkbenchRecipes {
 
-  private[this] val recipes = mutable.Map.empty[ResourceLocation, WorkbenchRecipes]
+  private[this] val recipes_internal = mutable.Map.empty[ResourceLocation, WorkbenchRecipes]
 
-  val dummyRecipe: WorkbenchRecipes = new WorkbenchRecipes(ItemDamage.invalid, energy = 0, showInJEI = false) {
+  val dummyRecipe: WorkbenchRecipes = new WorkbenchRecipes(
+    new ResourceLocation(QuarryPlus.modID, "builtin_dummy"), ItemDamage.invalid, energy = 0, showInJEI = false) {
     override val inputs = Nil
     override val microEnergy = 0L
     override val inputsJ: java.util.List[java.util.List[IngredientWithCount]] = Collections.emptyList()
     override val size: Int = 0
     override val toString: String = "WorkbenchRecipe NoRecipe"
     override val hasContent: Boolean = false
-    override val location: ResourceLocation = new ResourceLocation(QuarryPlus.modID, "builtin_dummy")
   }
 
   val recipeOrdering: Comparator[WorkbenchRecipes] =
     Ordering.by((a: WorkbenchRecipes) => a.energy) thenComparing Ordering.by((a: WorkbenchRecipes) => Item.getIdFromItem(a.output.item))
 
+  val recipeLocation = new ResourceLocation(QuarryPlus.modID, "workbench_recipe")
+  val recipeType = RecipeType.get(recipeLocation, classOf[WorkbenchRecipes])
+  private[this] final val conditionMessage = "Condition is false"
+
+  def recipes: Map[ResourceLocation, WorkbenchRecipes] = {
+    Option(ServerLifecycleHooks.getCurrentServer).map(_.getRecipeManager.getRecipes.asScala.collect {
+      case recipes: WorkbenchRecipes => (recipes.location, recipes)
+    }.toMap).getOrElse(Map.empty) ++ recipes_internal
+  }
+
   def recipeSize: Int = recipes.size
 
-  def removeRecipe(output: ItemDamage): Unit = recipes.retain { case (_, r) => r.output != output }
+  def removeRecipe(output: ItemDamage): Unit = recipes_internal.retain { case (_, r) => r.output != output }
 
-  def removeRecipe(location: ResourceLocation): Unit = recipes.remove(location)
+  def removeRecipe(location: ResourceLocation): Unit = recipes_internal.remove(location)
 
   def getRecipe(inputs: java.util.List[ItemStack]): java.util.List[WorkbenchRecipes] = {
     val asScala = inputs.asScala
@@ -145,34 +119,17 @@ object WorkbenchRecipes {
     }.values.toList.sorted.asJava
   }
 
-  def addSeqRecipe(output: ItemDamage, energy: Int, inputs: Seq[Int => ItemStack], name: Symbol = Symbol(""), showInJEI: Boolean = true, unit: EnergyUnit = UnitMJ): Unit = {
-    val newRecipe = new R1(output, unit.multiple * energy, showInJEI, inputs, if (name == Symbol("")) Symbol(output.toStack().getTranslationKey) else name, name != Symbol(""))
-    if (energy > 0)
-      recipes put(newRecipe.location, newRecipe)
-    else
-      QuarryPlus.LOGGER.error(s"Energy of Workbench Recipe is 0. $newRecipe")
-  }
-
-  def addListRecipe(location: ResourceLocation, output: ItemDamage, energy: Int, inputs: java.util.List[java.util.function.IntFunction[ItemStack]],
-                    showInJEI: Boolean, unit: EnergyUnit): Unit = {
-    val newRecipe = new R2(location, output, unit.multiple * energy, showInJEI, inputs)
-    if (energy > 0)
-      recipes put(location, newRecipe)
-    else
-      QuarryPlus.LOGGER.error(s"Energy of Workbench Recipe is 0. $newRecipe")
-  }
-
-  def addIngredientRecipe(location: ResourceLocation, output: ItemStack, energy: Double, inputs: java.util.List[java.util.List[IngredientWithCount]], hardCode: Boolean): Unit = {
+  def addIngredientRecipe(location: ResourceLocation, output: ItemStack, energy: Double, inputs: java.util.List[java.util.List[IngredientWithCount]]): Unit = {
     val scalaInput = inputs.asScala.map(_.asScala.toSeq)
-    val newRecipe = new IngredientRecipe(location, output, energy, s = true, scalaInput, hardCode)
+    val newRecipe = new IngredientRecipe(location, output, (energy * APowerTile.MicroJtoMJ).toLong, s = true, scalaInput)
     if (energy > 0) {
-      recipes put(location, newRecipe)
+      recipes_internal put(location, newRecipe)
     } else {
       QuarryPlus.LOGGER.error(s"Energy of Workbench Recipe is 0. $newRecipe")
     }
   }
 
-  def getRecipeMap: Map[ResourceLocation, WorkbenchRecipes] = recipes.toMap
+  def getRecipeMap: Map[ResourceLocation, WorkbenchRecipes] = recipes
 
   def getRecipeFromResult(stack: ItemStack): java.util.Optional[WorkbenchRecipes] = {
     if (stack.isEmpty) return java.util.Optional.empty()
@@ -180,112 +137,100 @@ object WorkbenchRecipes {
     recipes.find { case (_, r) => r.output == id }.map(_._2).asJava
   }
 
-  protected sealed trait EnergyUnit {
-    def multiple: Double
-  }
-
-  protected val UnitMJ: EnergyUnit = new EnergyUnit {
-    override val multiple: Double = 1
-  }
-
-  val UnitRF: EnergyUnit = new EnergyUnit {
-    override val multiple: Double = 0.1
-  }
-
-  protected class F(item: Item, count: Double) extends (Int => ItemStack) {
-    override def apply(v1: Int): ItemStack = new ItemStack(item, (count * v1).toInt)
-
-    override def toString(): String = item.getTranslationKey  + " x" + count
-  }
-
-  object F {
-    def apply(item: Item, count: Double): Int => ItemStack = new F(item, count)
-
-    def apply(block: Block, count: Double): Int => ItemStack = new F(block.asItem(), count)
-  }
-
-  def registerRecipes(): Unit = {
-    //    import net.minecraft.init.Blocks._
-    //    import net.minecraft.init.Items._
-    //    val map = Map(
-    //      BlockController.SYMBOL -> (ItemDamage(blockController), 1000000, Seq(F(NETHER_STAR, 1), F(GOLD_INGOT, 40), F(IRON_INGOT, 40), F(ROTTEN_FLESH, 20), F(ARROW, 20), F(BONE, 20), F(GUNPOWDER, 20), F(GHAST_TEAR, 5), F(MAGMA_CREAM, 10), F(BLAZE_ROD, 14), F(CARROT, 2), F(POTATO, 2))),
-    //      TileMiningWell.SYMBOL -> (ItemDamage(blockMiningWell), 160000, Seq(F(DIAMOND, 1), F(GOLD_INGOT, 3), F(IRON_INGOT, 16), F(REDSTONE, 8), F(ENDER_PEARL, 1), F(NETHER_STAR, 1d / 25d))),
-    //      BlockBreaker.SYMBOL -> (ItemDamage(blockBreaker), 320000, Seq(F(DIAMOND, 12), F(GOLD_INGOT, 16), F(IRON_INGOT, 32), F(REDSTONE, 32), F(ENDER_PEARL, 1))),
-    //      TileLaser.SYMBOL -> (ItemDamage(blockLaser), 640000, Seq(F(DIAMOND, 8), F(GOLD_INGOT, 16), F(REDSTONE, 96), F(GLOWSTONE_DUST, 32), F(OBSIDIAN, 16), F(GLASS, 72), F(ENDER_PEARL, 1d / 5d))),
-    //      TileAdvQuarry.SYMBOL -> (ItemDamage(blockChunkDestroyer), 3200000, Seq(F(blockQuarry, 3d / 2d), F(blockPump, 1), F(itemTool, 1, 1), F(blockMarker, 3d / 2d), F(DIAMOND_BLOCK, 4), F(EMERALD_BLOCK, 4), F(ENDER_EYE, 32), F(NETHER_STAR, 1), F(net.minecraft.init.Items.SKULL, 24d / 25d, 5))),
-    //      TileAdvPump.SYMBOL -> (ItemDamage(blockStandalonePump), 3200000, Seq(F(blockPump, 1), F(blockMiningWell, 1), F(blockMarker, 3d / 2d))),
-    //      BlockMover.SYMBOL -> (ItemDamage(blockMover), 320000, Seq(F(DIAMOND, 16), F(GOLD_INGOT, 4), F(IRON_INGOT, 4), F(REDSTONE, 24), F(OBSIDIAN, 32), F(ANVIL, 1), F(NETHER_STAR, 1d / 25d), F(ENDER_PEARL, 1))),
-    //      BlockPlacer.SYMBOL -> (ItemDamage(blockPlacer), 320000, Seq(F(DIAMOND, 12), F(GOLD_INGOT, 32), F(IRON_INGOT, 16), F(REDSTONE, 32), F(ENDER_PEARL, 1))),
-    //      Symbol("PumpPlus") -> (ItemDamage(blockPump), 320000, Seq(F(GOLD_INGOT, 8), F(IRON_INGOT, 24), F(REDSTONE, 32), F(GLASS, 256), F(CACTUS, 40), F(NETHER_STAR, 1d / 25d), F(ENDER_PEARL, 2d / 5d))),
-    //      TileMarker.SYMBOL -> (ItemDamage(blockMarker), 20000, Seq(F(GOLD_INGOT, 7d / 2d), F(IRON_INGOT, 4), F(REDSTONE, 6), F(DYE, 6, 4), F(GLOWSTONE_DUST, 2), F(ENDER_PEARL, 2d / 5d))),
-    //      TileRefinery.SYMBOL -> (ItemDamage(blockRefinery), 640000, Seq(F(DIAMOND, 18), F(GOLD_INGOT, 12), F(IRON_INGOT, 12), F(GLASS, 64), F(REDSTONE, 16), F(ANVIL, 1), F(OBSIDIAN, 12), F(NETHER_STAR, 1d / 25d), F(ENDER_PEARL, 4d / 5d))),
-    //      TileQuarry.SYMBOL -> (ItemDamage(blockQuarry), 320000, Seq(F(DIAMOND, 16), F(GOLD_INGOT, 16), F(IRON_INGOT, 32), F(REDSTONE, 8), F(ENDER_PEARL, 2), F(NETHER_STAR, 3d / 25d))),
-    //      BlockBookMover.SYMBOL -> (ItemDamage(blockBookMover), 500000, Seq(F(blockMover, 2), F(BEACON, 1), F(BOOKSHELF, 64), F(DIAMOND, 8))),
-    //      BlockExpPump.SYMBOL -> (ItemDamage(blockExpPump), 320000, Seq(F(GOLD_INGOT, 8), F(IRON_INGOT, 24), F(REDSTONE, 32), F(EXPERIENCE_BOTTLE, 1), F(HAY_BLOCK, 16), F(NETHER_STAR, 1d / 25d), F(ENDER_PEARL, 1))),
-    //      TileReplacer.SYMBOL -> (ItemDamage(blockReplacer), 6400000, Seq(F(WATER_BUCKET, 16), F(LAVA_BUCKET, 16), F(IRON_INGOT, 8), F(GOLD_INGOT, 16), F(REDSTONE, 8), F(ENDER_PEARL, 2), F(ENDER_EYE, 6), F(net.minecraft.init.Items.SKULL, 24d / 25d, 5), F(NETHER_STAR, 4), F(STONE, 512)))
-    //    )
-    //    map.filterKeys(Config.content.enableMap).foreach {
-    //      case (s, (item, energy, recipe)) => addSeqRecipe(item, energy, recipe, name = s)
-    //    }
-    //
-    //    val list1 = Seq(
-    //      (ItemDamage(magicMirror, 1), 32000, Seq(F(ENDER_EYE, 8), F(magicMirror, 1))),
-    //      (ItemDamage(magicMirror, 2), 32000, Seq(F(ENDER_EYE, 8), F(magicMirror, 1), F(OBSIDIAN, 4), F(DIRT, 8), F(PLANKS, 8))),
-    //      (ItemDamage(itemTool, 0), 80000, Seq(F(DIAMOND, 2), F(GOLD_INGOT, 8), F(IRON_INGOT, 12), F(REDSTONE, 16), F(DYE, 4, 4), F(OBSIDIAN, 2), F(ENDER_PEARL, 3d / 25d))),
-    //      (ItemDamage(ItemTool.getEditorStack), 160000, Seq(F(DIAMOND, 2), F(IRON_INGOT, 8), F(REDSTONE, 2), F(DYE, 8), F(BOOK, 32), F(FEATHER, 1), F(ENDER_PEARL, 1d / 5d))),
-    //      (ItemDamage(itemTool, 2), 320000, Seq(F(IRON_INGOT, 32), F(LAVA_BUCKET, 6d / 5d), F(WATER_BUCKET, 6d / 5d), F(ENDER_PEARL, 3d / 25d))),
-    //      (ItemDamage(itemTool, 3), 80000, Seq(F(GOLD_INGOT, 16), F(REPEATER, 8), F(COMPARATOR, 4), F(QUARTZ, 32)))
-    //    )
-    //    list1.foreach { case (result, e, recipe) => addSeqRecipe(result, e, recipe) }
-  }
-
-  def registerJsonRecipe(path: java.util.List[Path]): Unit = {
-    recipes.retain { case (_, r) => r.hardCode }
-    //    val pathFilter: Path => Boolean = path => !startWith("_")(path) && endWith(".json")(path)
+  def registerJsonRecipe(resourceManager: IResourceManager): Unit = {
+    recipes_internal.clear() // Loading is called every time the player enters world.
     val gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping.create
-    load(path.asScala
-      .filterNot(startWith("_"))
-      .map(p => pathToJson(p, gson)))
-      .foreach(r => recipes put(r.location, r))
+
+    resourceManager.getAllResourceLocations("quarryplus/workbench", s => s.endsWith(".json") && !s.startsWith("_")).asScala
+      .map(r => pathToJson(resourceManager.getAllResources(r).asScala.lastOption, gson, r))
+      .map(load)
+      .flatMap {
+        case Left(value) => QuarryPlus.LOGGER.error("QuarryPlus recipe loading error.", value); None
+        case Right(value) => Some(value)
+      }.foreach(r => recipes_internal.put(r.location, r))
   }
 
-  private def pathToJson(p: Path, gson: Gson): JsonObject = {
-    val reader = Files.newBufferedReader(p)
-    val json = JsonUtils.fromJson(gson, Files.newBufferedReader(p), classOf[JsonObject])
-    reader.close()
-    json.addProperty("path", FilenameUtils.getBaseName(p.toString))
-    json
+  private def pathToJson(resourceOpt: Option[IResource], gson: Gson, location: ResourceLocation) = {
+    for (resource <- resourceOpt.toRight(new RuntimeException(s"Resource: $location isn't found."));
+         readString <- Try(IOUtils.toString(resource.getInputStream, StandardCharsets.UTF_8)).toEither;
+         json <- Try(JsonUtils.fromJson(gson, readString, classOf[JsonObject])).toEither) yield {
+      val matcher = namePattern.pattern.matcher(location.toString)
+      if (matcher.matches())
+        json.addProperty("path", matcher.group(1) + ":workbench/" + matcher.group(2))
+      json
+    }
   }
 
-  def load(objectSeq: Seq[JsonObject]): Seq[WorkbenchRecipes] = {
+  def load(obj: Either[Throwable, JsonObject]): Either[String, WorkbenchRecipes] = {
 
-    objectSeq.filter(json => !json.has("conditions") || CraftingHelper.processConditions(JsonUtils.getJsonArray(json, "conditions")))
-      .filter(json => JsonUtils.getString(json, "type") == QuarryPlus.modID + ":workbench_recipe")
+    obj.left.map(_.toString)
+      .filterOrElse(json => CraftingHelper.processConditions(json, "conditions"),
+        conditionMessage)
+      .filterOrElse(json => JsonUtils.getString(json, "type") == recipeLocation.toString,
+        "Not a workbench recipe.")
       .flatMap { json =>
         val result = CraftingHelper.getItemStack(JsonUtils.getJsonObject(json, "result"), true)
         val id = JsonUtils.getString(json, "id", "")
+        // divided to compute lazy.
         val location = if (id == "") QuarryPlus.modID + ":" + JsonUtils.getString(json, "path") else id
         if (!result.isEmpty) {
-          val recipe = JsonUtils.getJsonArray(json, "ingredients").asScala.map(IngredientWithCount.getSeq).toSeq
-          val energy = Try(JsonUtils.getString(json, "energy", "1000").toDouble).getOrElse(1000d)
-          val showInJEI = JsonUtils.getBoolean(json, "showInJEI", true)
-          Seq(new IngredientRecipe(new ResourceLocation(location), result, energy, showInJEI, recipe))
+          (for (recipe <- Try(JsonUtils.getJsonArray(json, "ingredients").asScala.map(IngredientWithCount.getSeq).toSeq);
+                energy <- Try(JsonUtils.getString(json, "energy", "1000").toDouble * APowerTile.MicroJtoMJ);
+                showInJEI <- Try(JsonUtils.getBoolean(json, "showInJEI", true))) yield {
+            new IngredientRecipe(new ResourceLocation(location), result, energy.toLong, showInJEI, recipe)
+          }).toEither.left.map(_.toString)
         } else {
-          Seq.empty
+          Left("Result item is empty.")
         }
       }
-      .filter(_.energy > 0)
+      .filterOrElse(_.energy > 0, "Energy must be over than 0.")
   }
 
-  def outputDefaultRecipe(directory: Path): Unit = {
-    val gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping.create
-    getRecipeMap.collect { case (_, r: R1) => (r.output.toString + ".json", r.toJson) }
-      .map { case (s, j) => (directory.resolve(s), gson.toJson(j).split(System.lineSeparator()).toSeq) }
-      .foreach { case (outPath, s) =>
-        import scala.collection.JavaConverters._
-        Files.write(outPath, s.asJava)
+  private[this] final val namePattern = "(.+):quarryplus/workbench/(.+).json".r
+
+  object Serializer extends IRecipeSerializer[WorkbenchRecipes] {
+    override def read(recipeId: ResourceLocation, json: JsonObject): WorkbenchRecipes = {
+      json.addProperty("id", recipeId.toString)
+      load(Right(json)) match {
+        case Right(value) => value
+        case Left(value) if value == conditionMessage => WorkbenchRecipes.dummyRecipe
+        case Left(value) => throw new IllegalStateException(value)
       }
+    }
+
+    override def read(recipeId: ResourceLocation, buffer: PacketBuffer): WorkbenchRecipes = {
+      val location = buffer.readResourceLocation()
+      val output = buffer.readItemStack()
+      val energy = buffer.readLong()
+      val showInJEI = buffer.readBoolean()
+
+      val recipeSize = buffer.readInt()
+      val builder = Seq.newBuilder[Seq[IngredientWithCount]]
+      for (_ <- 0 until recipeSize) {
+        val b2 = Seq.newBuilder[IngredientWithCount]
+        val size = buffer.readInt()
+        for (_ <- 0 until size) {
+          b2 += IngredientWithCount.readFromBuffer(buffer)
+        }
+        builder += b2.result()
+      }
+      new IngredientRecipe(location, output, energy, showInJEI, builder.result())
+    }
+
+    override def write(buffer: PacketBuffer, recipe: WorkbenchRecipes): Unit = {
+      buffer.writeResourceLocation(recipe.location)
+      buffer.writeItemStack(recipe.getOutput)
+      buffer.writeLong(recipe.energy)
+      buffer.writeBoolean(recipe.showInJEI)
+
+      buffer.writeVarInt(recipe.size)
+      recipe.inputs.foreach { s =>
+        buffer.writeVarInt(s.size)
+        s.foreach(_.writeToBuffer(buffer))
+      }
+    }
+
+    override def getName = recipeLocation
   }
 
-  private val startWith: String => Path => Boolean = name => path => path.getFileName.toString.startsWith(name)
 }
