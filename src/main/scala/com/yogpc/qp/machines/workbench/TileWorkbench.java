@@ -187,6 +187,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
         }
         if (getRecipeIndex() == -1) {
             setCurrentRecipeIndex(-1);
+            finishWork();
         } else {
             startWork();
         }

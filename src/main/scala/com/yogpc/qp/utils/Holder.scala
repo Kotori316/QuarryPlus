@@ -1,5 +1,6 @@
 package com.yogpc.qp.utils
 
+import com.yogpc.qp.machines.exppump.{BlockExpPump, TileExpPump}
 import com.yogpc.qp.machines.marker.{BlockMarker, TileMarker}
 import com.yogpc.qp.machines.workbench.{BlockWorkbench, TileWorkbench}
 import com.yogpc.qp.{CreativeTabQuarryPlus, QuarryPlus}
@@ -22,13 +23,15 @@ object Holder {
 
   val markerTileType = createType(() => new TileMarker, QuarryPlus.Names.marker)
   val workbenchTileType = createType(() => new TileWorkbench, QuarryPlus.Names.workbench)
+  val expPumpTileType = createType(() => new TileExpPump, QuarryPlus.Names.exppump)
 
-  val tiles = Seq(markerTileType, workbenchTileType)
+  val tiles = Seq(markerTileType, workbenchTileType, expPumpTileType)
 
   //---------- Block ----------
   val blockMarker = new BlockMarker
   val blockWorkbench = new BlockWorkbench
+  val blockExpPump = new BlockExpPump
 
-  val blocks = Seq(blockMarker, blockWorkbench)
+  val blocks = Seq(blockMarker, blockWorkbench, blockExpPump)
   //---------- Item ----------
 }

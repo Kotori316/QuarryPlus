@@ -71,7 +71,7 @@ public interface IEnchantableTile {
      * @param id  Enchantment id
      * @param val level
      */
-    void setEnchantment(short id, short val);
+    void setEnchantment(ResourceLocation id, short val);
 
     default void sendEnchantMassage(EntityPlayer player) {
         Util.getEnchantmentsChat(this).forEach(c -> player.sendStatusMessage(c, false));
@@ -91,7 +91,7 @@ public interface IEnchantableTile {
     class Util {
 
         public static void init(@Nonnull final IEnchantableTile te, @Nonnull final NBTTagList tagList) {
-            tagList.stream().map(NBTTagCompound.class::cast).forEach(nbt -> te.setEnchantment(nbt.getShort("id"), nbt.getShort("lvl")));
+            tagList.stream().map(NBTTagCompound.class::cast).forEach(nbt -> te.setEnchantment(new ResourceLocation(nbt.getString("id")), nbt.getShort("lvl")));
             te.G_ReInit();
         }
 
