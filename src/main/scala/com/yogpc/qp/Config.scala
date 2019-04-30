@@ -31,6 +31,7 @@ object Config {
     val workbenchMaxReceive = builder.comment("Amount of energy WorkbenchPlus can receive in a tick. [MJ]")
       .defineInRange("WorkbenchMaxReceive", 250, 0, Int.MaxValue)
     val fastQuarryHeadMove = builder.comment("Fasten quarry's head moving.").define("FastQuarryHeadMove", false)
+    val removeBedrock = builder.comment("True to allow machines to remove bedrock. (Just removing. Not collecting)").define("RemoveBedrock", false)
 
     val powers = powerConfig(builder)
     builder.pop()
@@ -47,7 +48,7 @@ object Config {
       val pf = (p: List[String]) => (s: (String, Double)) => {
         get(p, s._1, s._2)
       }
-      builder.comment("Quarry PowerSetting [Mj] (min = 0, Max = 2,000,000,000 = 2 billion)").push("PowerSetting")
+      builder.comment("Quarry PowerSetting [MJ] (min = 0, Max = 2,000,000,000 = 2 billion)").push("PowerSetting")
       val quarry_break = Seq(
         ("BasePower", 40d),
         ("EfficiencyCoefficient", 1.3d),

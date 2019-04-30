@@ -5,6 +5,7 @@ import com.yogpc.qp.packet.marker.LinkMessage;
 import com.yogpc.qp.packet.marker.UpdateBoxMessage;
 import com.yogpc.qp.packet.mover.MoverMessage;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.PacketDistributor;
@@ -33,6 +34,11 @@ public class PacketHandler {
 
     public static void sendToClient(IMessage<?> message, World world) {
         INSTANCE.send(PacketDistributor.DIMENSION.with(() -> world.getDimension().getType()), message);
+    }
+
+    public static void sendToAround(IMessage<?> message, World world, BlockPos pos) {
+        INSTANCE.send(PacketDistributor.NEAR.with(PacketDistributor.TargetPoint.p(pos.getX(), pos.getY(), pos.getZ(),
+            256, world.getDimension().getType())), message);
     }
 
     public static void sendToServer(IMessage<?> message) {
