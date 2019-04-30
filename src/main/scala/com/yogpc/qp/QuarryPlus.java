@@ -2,6 +2,7 @@ package com.yogpc.qp;
 
 import java.util.Optional;
 
+import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.workbench.WorkbenchRecipes;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.EnableCondition;
@@ -56,6 +57,7 @@ public class QuarryPlus {
 
     public void setup(FMLCommonSetupEvent event) {
         proxy.registerTextures(event);
+        PowerManager.configRegister();
         PacketHandler.init();
         CraftingHelper.register(new ResourceLocation(EnableCondition.NAME), new EnableCondition());
         RecipeSerializers.register(WorkbenchRecipes.Serializer$.MODULE$);
