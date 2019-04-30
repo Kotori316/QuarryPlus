@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import com.google.gson.JsonElement;
@@ -101,7 +102,6 @@ public class NBTBuilder<T extends INBTBase> {
     }
 
     private Map<String, T> map = new LinkedHashMap<>();
-    private int index = 0;
 
     public NBTBuilder<T> setTag(Map.Entry<String, T> entry) {
         return setTag(entry.getKey(), entry.getValue());
@@ -109,12 +109,6 @@ public class NBTBuilder<T extends INBTBase> {
 
     public NBTBuilder<T> setTag(String key, T value) {
         map.put(key, value);
-        return this;
-    }
-
-    public NBTBuilder<T> appendTag(T value) {
-        map.put(String.valueOf(index), value);
-        index++;
         return this;
     }
 
@@ -127,15 +121,16 @@ public class NBTBuilder<T extends INBTBase> {
         return new NBTBuilder<>();
     }
 
+    public static <K extends INBTBase, T extends Map.Entry<String, K>> Collector<T, NBTBuilder<K>, NBTTagCompound> toNBTTag() {
+        return Collector.of(NBTBuilder::new, NBTBuilder::setTag,
+            NBTBuilder::appendAll, NBTBuilder::toTag,
+            Collector.Characteristics.UNORDERED);
+    }
+
     public NBTTagCompound toTag() {
         NBTTagCompound tag = new NBTTagCompound();
         map.forEach(tag::setTag);
         return tag;
     }
 
-    public NBTTagList toList() {
-        NBTTagList list = new NBTTagList();
-        list.addAll(map.values());
-        return list;
-    }
 }

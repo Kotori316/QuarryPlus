@@ -13,11 +13,7 @@ object BlockData {
   final val BlockData_NBT = "blockdata"
 
   def read(nbt: NBTTagCompound): BlockData = {
-    if (!nbt.hasKey(BlockData_NBT)) Invalid
-    else {
-      val compound = nbt.getCompound(BlockData_NBT)
-      new BlockData(compound.getString(Name_NBT))
-    }
+    new BlockData(nbt.getString(Name_NBT))
   }
 
   val Invalid: BlockData = new BlockData("Unknown:Dummy") {
@@ -55,11 +51,11 @@ case class BlockData(name: ResourceLocation) extends Ordered[BlockData] {
   override def hashCode: Int = this.name.hashCode
 
   def write(nbt: NBTTagCompound): NBTTagCompound = {
-    val compound = new NBTTagCompound
-    compound.setString(BlockData.Name_NBT, name.toString)
-    nbt.setTag(BlockData.BlockData_NBT, compound)
+    nbt.setString(BlockData.Name_NBT, name.toString)
     nbt
   }
+
+  def toNbt = write(new NBTTagCompound)
 
   override def toString: String = name.toString
 

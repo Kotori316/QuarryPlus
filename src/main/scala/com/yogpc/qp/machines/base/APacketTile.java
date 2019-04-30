@@ -13,12 +13,14 @@
 
 package com.yogpc.qp.machines.base;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import com.yogpc.qp.QuarryPlus;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -86,4 +88,13 @@ public abstract class APacketTile extends TileEntity {
 
     protected abstract scala.Symbol getSymbol();
 
+    @SuppressWarnings("unchecked")
+    protected static <T> T invoke(Method method, Object ref, Object... param) {
+        try {
+            return (T) method.invoke(ref, param);
+        } catch (ReflectiveOperationException e) {
+            QuarryPlus.LOGGER.warn(e);
+            return null;
+        }
+    }
 }

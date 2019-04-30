@@ -1,5 +1,6 @@
 package com.yogpc.qp.utils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -19,6 +20,9 @@ public class NoDuplicateList<V extends Comparable<V>> implements List<V>, Set<V>
 
     public static <V extends Comparable<V>> NoDuplicateList<V> create(Supplier<List<V>> listSupplier) {
         return new NoDuplicateList<>(listSupplier);
+    }
+    public static <V extends Comparable<V>> NoDuplicateList<V> create() {
+        return new NoDuplicateList<>(ArrayList::new);
     }
 
     public NoDuplicateList(Supplier<List<V>> listSupplier) {
