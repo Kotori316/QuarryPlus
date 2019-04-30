@@ -12,15 +12,15 @@
  */
 package com.yogpc.qp.machines.exppump
 
-import com.yogpc.qp.machines.base.IEnchantableItem
 import com.yogpc.qp.machines.base.IEnchantableItem.{FORTUNE, SILKTOUCH, UNBREAKING}
+import com.yogpc.qp.machines.base.ItemBlockEnchantable
 import net.minecraft.block.Block
-import net.minecraft.enchantment.{Enchantment, EnchantmentHelper}
+import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.init.Enchantments
-import net.minecraft.item.{Item, ItemBlock, ItemStack}
+import net.minecraft.item.{Item, ItemStack}
 
-class ItemBlockExpPump(b: Block, prop: Item.Properties) extends ItemBlock(b, prop) with IEnchantableItem {
-  override def canMove(is: ItemStack, enchantment: Enchantment): Boolean = {
+class ItemBlockExpPump(b: Block, prop: Item.Properties) extends ItemBlockEnchantable(b, prop) {
+  override def tester(is: ItemStack) = {
     if (EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, is) > 0) {
       FORTUNE.negate() and (UNBREAKING or SILKTOUCH)
     } else if (EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, is) > 0) {
@@ -28,7 +28,5 @@ class ItemBlockExpPump(b: Block, prop: Item.Properties) extends ItemBlock(b, pro
     } else {
       SILKTOUCH or FORTUNE or UNBREAKING
     }
-  }.test(enchantment)
-
-  override def isBookEnchantable(s1: ItemStack, s2: ItemStack) = false
+  }
 }
