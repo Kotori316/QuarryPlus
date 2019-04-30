@@ -204,11 +204,11 @@ object WorkbenchRecipes {
       val energy = buffer.readLong()
       val showInJEI = buffer.readBoolean()
 
-      val recipeSize = buffer.readInt()
+      val recipeSize = buffer.readVarInt()
       val builder = Seq.newBuilder[Seq[IngredientWithCount]]
       for (_ <- 0 until recipeSize) {
         val b2 = Seq.newBuilder[IngredientWithCount]
-        val size = buffer.readInt()
+        val size = buffer.readVarInt()
         for (_ <- 0 until size) {
           b2 += IngredientWithCount.readFromBuffer(buffer)
         }
