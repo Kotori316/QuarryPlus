@@ -6,3 +6,5 @@ Now, this project is WIP.
 Finished Work
 * Marker
 * Workbench
+* ExpPump
+* EnchantMover
