@@ -15,8 +15,6 @@ import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.network.INetHandler;
-import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -33,10 +31,12 @@ import net.minecraftforge.registries.IForgeRegistryEntry;
 @OnlyIn(Dist.CLIENT)
 public class ProxyClient extends ProxyCommon {
     @Override
-    public EntityPlayer getPacketPlayer(final INetHandler inh) {
-        if (inh instanceof NetHandlerPlayServer)
-            return ((NetHandlerPlayServer) inh).player;
-        return Minecraft.getInstance().player;
+    public Optional<EntityPlayer> getPacketPlayer(final NetworkEvent.Context context) {
+        if (context.getSender() != null) {
+            return Optional.of(context.getSender());
+        } else {
+            return Optional.ofNullable(Minecraft.getInstance().player);
+        }
     }
 
     @Override

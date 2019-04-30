@@ -2,6 +2,7 @@ package com.yogpc.qp.utils
 
 import com.yogpc.qp.machines.exppump.{BlockExpPump, TileExpPump}
 import com.yogpc.qp.machines.marker.{BlockMarker, TileMarker}
+import com.yogpc.qp.machines.mover.BlockMover
 import com.yogpc.qp.machines.workbench.{BlockWorkbench, TileWorkbench}
 import com.yogpc.qp.{CreativeTabQuarryPlus, QuarryPlus}
 import net.minecraft.tileentity.{TileEntity, TileEntityType}
@@ -28,10 +29,12 @@ object Holder {
   val tiles = Seq(markerTileType, workbenchTileType, expPumpTileType)
 
   //---------- Block ----------
+
   val blockMarker = new BlockMarker
   val blockWorkbench = new BlockWorkbench
   val blockExpPump = new BlockExpPump
+  val blockMover = new BlockMover
 
-  val blocks = Seq(blockMarker, blockWorkbench, blockExpPump)
+  val blocks = Seq(blockMarker, blockWorkbench, blockExpPump, blockMover)
   //---------- Item ----------
 }

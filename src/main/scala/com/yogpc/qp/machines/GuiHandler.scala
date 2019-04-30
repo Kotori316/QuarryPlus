@@ -1,6 +1,7 @@
 package com.yogpc.qp.machines
 
 import com.yogpc.qp.QuarryPlus
+import com.yogpc.qp.machines.mover.{BlockMover, GuiMover}
 import com.yogpc.qp.machines.workbench.{GuiWorkbench, TileWorkbench}
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
@@ -13,6 +14,7 @@ object GuiHandler {
     val player = Minecraft.getInstance().player
     context.getId.toString match {
       case TileWorkbench.GUI_ID => tile.collect { case workbench: TileWorkbench => new GuiWorkbench(player, workbench) }.orNull
+      case BlockMover.GUI_ID => new GuiMover(player, player.world, pos)
       case _ => QuarryPlus.LOGGER.error(s"Unknown GUI ID ${context.getId}."); null
     }
   }

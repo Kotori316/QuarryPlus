@@ -11,6 +11,7 @@ import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -54,20 +55,7 @@ public class BlockWorkbench extends QPBlock {
                 if (entity instanceof TileWorkbench) {
                     TileWorkbench inventory = (TileWorkbench) entity;
                     for (ItemStack itemstack : inventory.inventory) {
-                        if (!itemstack.isEmpty()) {
-                            float f = RANDOM.nextFloat() * 0.8F + 0.1F;
-                            float f1 = RANDOM.nextFloat() * 0.8F + 0.1F;
-                            float f2 = RANDOM.nextFloat() * 0.8F + 0.1F;
-
-                            while (!itemstack.isEmpty()) {
-                                EntityItem entityitem = new EntityItem(worldIn, pos.getX() + (double) f, pos.getY() + (double) f1, pos.getZ() + (double) f2,
-                                    itemstack.split(Math.min(RANDOM.nextInt(21) + 10, itemstack.getMaxStackSize())));
-                                entityitem.motionX = RANDOM.nextGaussian() * 0.05D;
-                                entityitem.motionY = RANDOM.nextGaussian() * 0.05D + 0.2D;
-                                entityitem.motionZ = RANDOM.nextGaussian() * 0.05D;
-                                worldIn.spawnEntity(entityitem);
-                            }
-                        }
+                        InventoryHelper.spawnItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), itemstack);
                     }
                     worldIn.updateComparatorOutputLevel(pos, state.getBlock());
                 }

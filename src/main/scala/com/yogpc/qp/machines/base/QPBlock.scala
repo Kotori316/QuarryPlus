@@ -7,10 +7,11 @@ import net.minecraft.block.state.IBlockState
 import net.minecraft.block.{Block, BlockContainer}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.{EntityLiving, EntitySpawnPlacementRegistry, EntityType}
+import net.minecraft.inventory.InventoryHelper
 import net.minecraft.item.{Item, ItemBlock, ItemStack}
 import net.minecraft.state.BooleanProperty
 import net.minecraft.util.math.{BlockPos, RayTraceResult}
-import net.minecraft.util.{EnumBlockRenderType, EnumFacing, EnumHand}
+import net.minecraft.util.{EnumBlockRenderType, EnumFacing, EnumHand, NonNullList}
 import net.minecraft.world.{IBlockReader, IWorldReaderBase, World}
 
 abstract class QPBlock(builder: Block.Properties, name: String, generator: java.util.function.BiFunction[QPBlock, Item.Properties, _ <: ItemBlock]) extends BlockContainer(builder) {
@@ -53,4 +54,18 @@ abstract class QPBlock(builder: Block.Properties, name: String, generator: java.
 
 object QPBlock {
   val WORKING = BooleanProperty.create("working")
+
+  def dismantle(world: World, pos: BlockPos, state: IBlockState, returnDrops: Boolean): NonNullList[ItemStack] = {
+    val list = NonNullList.create[ItemStack]
+    state.getBlock.getDrops(state, list, world, pos, 0)
+    world.removeBlock(pos)
+    if (!returnDrops) {
+      import scala.collection.JavaConverters._
+      for (drop <- list.asScala) {
+        InventoryHelper.spawnItemStack(world, pos.getX, pos.getY, pos.getZ, drop)
+      }
+    }
+    list
+  }
+
 }
