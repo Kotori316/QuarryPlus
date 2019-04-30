@@ -1,0 +1,42 @@
+{
+  "id": "quarryplus:builtin_exppump",
+  "type": "quarryplus:workbench_recipe",
+  "ingredients": [
+    {
+      "item": "minecraft:gold_ingot",
+      "count": 16
+    },
+    {
+      "item": "minecraft:iron_ingot",
+      "count": 48
+    },
+    {
+      "item": "minecraft:redstone",
+      "count": 64
+    },
+    {
+      "item": "minecraft:experience_bottle",
+      "count": 2
+    },
+    {
+      "item": "minecraft:hay_block",
+      "count": 32
+    },
+    {
+      "item": "minecraft:ender_pearl",
+      "count": 2
+    }
+  ],
+  "energy": 320000.0,
+  "showInJEI": true,
+  "result": {
+    "item": "quarryplus:exppump",
+    "count": 1
+  },
+  "conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "ExpPump"
+    }
+  ]
+}

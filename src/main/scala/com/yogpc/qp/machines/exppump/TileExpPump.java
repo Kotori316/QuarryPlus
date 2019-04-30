@@ -41,7 +41,7 @@ public class TileExpPump extends APacketTile implements IEnchantableTile, IDebug
     private int unbreaking = 0;
     private boolean silktouch = false;
 
-    protected TileExpPump() {
+    public TileExpPump() {
         super(Holder.expPumpTileType());
     }
 

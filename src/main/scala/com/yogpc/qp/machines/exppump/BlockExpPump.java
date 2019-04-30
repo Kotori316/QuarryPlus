@@ -36,7 +36,6 @@ public class BlockExpPump extends QPBlock {
     public BlockExpPump() {
         super(Properties.create(Material.ANVIL).hardnessAndResistance(5.0f), QuarryPlus.Names.exppump, ItemBlockExpPump::new);
         setDefaultState(getStateContainer().getBaseState().with(ENABLED, false).with(QPBlock.WORKING(), false));
-
     }
 
     //---------- Setting of BlockState ----------
