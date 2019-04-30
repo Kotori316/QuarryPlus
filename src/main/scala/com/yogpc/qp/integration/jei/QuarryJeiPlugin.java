@@ -1,5 +1,7 @@
 package com.yogpc.qp.integration.jei;
 
+import java.util.ArrayList;
+
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.workbench.GuiWorkbench;
 import com.yogpc.qp.machines.workbench.WorkbenchRecipes;
@@ -24,7 +26,9 @@ public class QuarryJeiPlugin implements IModPlugin {
 
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
-        registration.addRecipes(JavaConverters.mapAsJavaMap(WorkbenchRecipes.recipes()).values(), WorkBenchRecipeCategory.UID());
+        ArrayList<WorkbenchRecipes> workbenchRecipes = new ArrayList<>(JavaConverters.mapAsJavaMap(WorkbenchRecipes.recipes()).values());
+        workbenchRecipes.sort(WorkbenchRecipes.recipeOrdering());
+        registration.addRecipes(workbenchRecipes, WorkBenchRecipeCategory.UID());
     }
 
     @Override

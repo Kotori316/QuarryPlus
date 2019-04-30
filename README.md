@@ -8,3 +8,5 @@ Finished Work
 * Workbench
 * ExpPump
 * EnchantMover
+* Miningwell
+* PlainPipe
