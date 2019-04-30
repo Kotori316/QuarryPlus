@@ -4,6 +4,7 @@ import java.util.{Collections, ArrayList => AList, List => JList}
 
 import com.yogpc.qp.QuarryPlus
 import com.yogpc.qp.integration.jei.WorkBenchRecipeCategory._
+import com.yogpc.qp.machines.base.APowerTile
 import com.yogpc.qp.machines.workbench.WorkbenchRecipes
 import com.yogpc.qp.utils.Holder
 import mezz.jei.api.constants.VanillaTypes
@@ -13,6 +14,7 @@ import mezz.jei.api.gui.drawable.IDrawableAnimated.StartDirection
 import mezz.jei.api.helpers.IGuiHelper
 import mezz.jei.api.ingredients.IIngredients
 import mezz.jei.api.recipe.category.IRecipeCategory
+import net.minecraft.client.Minecraft
 import net.minecraft.client.resources.I18n
 import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
@@ -49,6 +51,7 @@ class WorkBenchRecipeCategory(guiHelper: IGuiHelper) extends IRecipeCategory[Wor
 
   override def draw(recipe: WorkbenchRecipes, mouseX: Double, mouseY: Double): Unit = {
     animateBar.draw(4, 60)
+    Minecraft.getInstance().fontRenderer.drawString((recipe.energy.toDouble / APowerTile.MicroJtoMJ).toString + "MJ", 36 - xOff, 70 - yOff, 0x404040)
   }
 
   override def getRecipeClass = classOf[WorkbenchRecipes]
