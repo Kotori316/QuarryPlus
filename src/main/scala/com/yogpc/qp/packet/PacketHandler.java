@@ -4,6 +4,9 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.marker.LinkMessage;
 import com.yogpc.qp.packet.marker.UpdateBoxMessage;
 import com.yogpc.qp.packet.mover.MoverMessage;
+import com.yogpc.qp.packet.quarry.LevelMessage;
+import com.yogpc.qp.packet.quarry.ModeMessage;
+import com.yogpc.qp.packet.quarry.MoveHead;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -28,6 +31,9 @@ public class PacketHandler {
         INSTANCE.registerMessage(id++, TileMessage.class, IMessage::writeToBuffer, IMessage.decode(TileMessage::new), IMessage::onReceiveInternal);
         INSTANCE.registerMessage(id++, MoverMessage.Move.class, IMessage::writeToBuffer, IMessage.decode(MoverMessage.Move::new), IMessage::onReceiveInternal);
         INSTANCE.registerMessage(id++, MoverMessage.Cursor.class, IMessage::writeToBuffer, IMessage.decode(MoverMessage.Cursor::new), IMessage::onReceiveInternal);
+        INSTANCE.registerMessage(id++, LevelMessage.class, IMessage::writeToBuffer, IMessage.decode(LevelMessage::new), IMessage::onReceiveInternal);
+        INSTANCE.registerMessage(id++, ModeMessage.class, IMessage::writeToBuffer, IMessage.decode(ModeMessage::new), IMessage::onReceiveInternal);
+        INSTANCE.registerMessage(id++, MoveHead.class, IMessage::writeToBuffer, IMessage.decode(MoveHead::new), IMessage::onReceiveInternal);
 
         assert id > 0;
     }

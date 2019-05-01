@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import javax.annotation.Nullable;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.Dimension;
@@ -11,7 +12,7 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 public interface IMessage<T extends IMessage<T>> {
-    static int getDimId(World world) {
+    static int getDimId(@Nullable World world) {
         return Optional.ofNullable(world)
             .map(World::getDimension)
             .map(Dimension::getType)

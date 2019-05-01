@@ -25,6 +25,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.utils.Holder;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEmptyDrops;
+import net.minecraft.block.BlockSixWay;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.BlockItemUseContext;
@@ -38,6 +39,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -97,6 +99,13 @@ public class BlockFrame extends BlockEmptyDrops {
             .with(UP, canConnectTo(worldIn, pos.up()));
     }
 
+    @Override
+    @SuppressWarnings("deprecation")
+    public IBlockState updatePostPlacement(IBlockState stateIn, EnumFacing facing, IBlockState facingState,
+                                           IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+        return stateIn.with(BlockSixWay.FACING_TO_PROPERTY_MAP.get(facing), canConnectTo(worldIn, currentPos.offset(facing)));
+    }
+
     private boolean breaking = false;
 
     @Override
@@ -149,7 +158,7 @@ public class BlockFrame extends BlockEmptyDrops {
         }
     }
 
-    private boolean canConnectTo(World worldIn, BlockPos pos) {
+    private boolean canConnectTo(IWorld worldIn, BlockPos pos) {
         return worldIn.getBlockState(pos).getBlock() == this;
     }
 

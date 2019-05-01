@@ -3,7 +3,7 @@ package com.yogpc.qp.utils
 import com.yogpc.qp.machines.exppump.{BlockExpPump, TileExpPump}
 import com.yogpc.qp.machines.marker.{BlockMarker, TileMarker}
 import com.yogpc.qp.machines.mover.BlockMover
-import com.yogpc.qp.machines.quarry.{BlockFrame, BlockMiningWell, BlockPlainPipe, TileMiningWell}
+import com.yogpc.qp.machines.quarry._
 import com.yogpc.qp.machines.workbench.{BlockWorkbench, TileWorkbench}
 import com.yogpc.qp.{CreativeTabQuarryPlus, QuarryPlus}
 import net.minecraft.block.Block
@@ -28,8 +28,9 @@ object Holder {
   val workbenchTileType = createType(() => new TileWorkbench, QuarryPlus.Names.workbench)
   val expPumpTileType = createType(() => new TileExpPump, QuarryPlus.Names.exppump)
   val miningWellTileType = createType(() => new TileMiningWell, QuarryPlus.Names.miningwell)
+  val quarryTileType = createType(() => new TileQuarry, QuarryPlus.Names.quarry)
 
-  val tiles: Seq[TileEntityType[_ <: TileEntity]] = Seq(markerTileType, workbenchTileType, expPumpTileType, miningWellTileType)
+  val tiles: Seq[TileEntityType[_ <: TileEntity]] = Seq(markerTileType, workbenchTileType, expPumpTileType, miningWellTileType, quarryTileType)
 
   //---------- Block ----------
 
@@ -40,7 +41,8 @@ object Holder {
   val blockMiningWell = new BlockMiningWell
   val blockPlainPipe = new BlockPlainPipe
   val blockFrame = new BlockFrame
+  val blockQuarry = new BlockQuarry
 
-  val blocks: Seq[Block] = Seq(blockMarker, blockWorkbench, blockExpPump, blockMover, blockMiningWell, blockPlainPipe, blockFrame)
+  val blocks: Seq[Block] = Seq(blockMarker, blockWorkbench, blockExpPump, blockMover, blockMiningWell, blockPlainPipe, blockFrame, blockQuarry)
   //---------- Item ----------
 }

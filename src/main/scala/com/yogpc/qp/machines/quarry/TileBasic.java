@@ -59,6 +59,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
@@ -173,7 +174,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
             });
         this.cacheItems.addAll(dropped);
         // Replace block
-        world.playEvent(2001, pos, Block.getStateId(blockState));
+        world.playEvent(Constants.WorldEvents.BREAK_BLOCK_EFFECTS, pos, Block.getStateId(blockState));
         world.setBlockState(pos, replace, 3);
         return true;
     }
@@ -380,7 +381,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     }
 
     @Override
-    public TextComponentString getName() {
+    public ITextComponent getName() {
         return new TextComponentString(TranslationKeys.MACHINE_BUFFER);
     }
 

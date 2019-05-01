@@ -1,5 +1,6 @@
 package com.yogpc.qp.machines.marker;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -53,7 +54,8 @@ public class TileMarker extends TileEntity implements IMarker {
 
     @Override
     public List<ItemStack> removeFromWorldWithItem() {
-        return null;
+        // TODO IMPLEMENT
+        return Collections.emptyList();
     }
 
     @Override
@@ -81,6 +83,11 @@ public class TileMarker extends TileEntity implements IMarker {
         } else {
             return super.getMaxRenderDistanceSquared();
         }
+    }
+
+    @Override
+    public boolean hasFastRenderer() {
+        return true;
     }
 
     public void activated() {

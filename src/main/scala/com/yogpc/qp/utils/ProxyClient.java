@@ -5,7 +5,9 @@ import java.util.Optional;
 import com.yogpc.qp.Config;
 import com.yogpc.qp.machines.GuiHandler;
 import com.yogpc.qp.machines.marker.TileMarker;
+import com.yogpc.qp.machines.quarry.TileQuarry;
 import com.yogpc.qp.render.RenderMarker;
+import com.yogpc.qp.render.RenderQuarry;
 import com.yogpc.qp.render.Sprites;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -73,9 +75,9 @@ public class ProxyClient extends ProxyCommon {
     public void registerTextures(FMLCommonSetupEvent event) {
         if (Config.client().enableRender().get()) {
             ClientRegistry.bindTileEntitySpecialRenderer(TileMarker.class, RenderMarker.instance());
+            ClientRegistry.bindTileEntitySpecialRenderer(TileQuarry.class, RenderQuarry.instance());
         }
 //        if (!Config.content().disableRendering()) {
-//            ClientRegistry.bindTileEntitySpecialRenderer(TileQuarry.class, RenderQuarry.instance());
 //            if (!Config.content().disableMapJ().get(TileAdvQuarry.SYMBOL()))
 //                ClientRegistry.bindTileEntitySpecialRenderer(TileAdvQuarry.class, RenderAdvQuarry.instance());
 //            if (!Config.content().disableMapJ().get(TileLaser.SYMBOL))

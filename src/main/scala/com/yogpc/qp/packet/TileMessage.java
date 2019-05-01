@@ -35,9 +35,9 @@ public class TileMessage implements IMessage<TileMessage> {
     }
 
     @Override
-    public void onReceive(Supplier<NetworkEvent.Context>  ctx) {
+    public void onReceive(Supplier<NetworkEvent.Context> ctx) {
         BlockPos pos = new BlockPos(compound.getInt("x"), compound.getInt("y"), compound.getInt("z"));
-        Optional<World> worldOptional = QuarryPlus.proxy.getPacketWorld(ctx.get());
+        Optional<World> worldOptional = QuarryPlus.proxy.getPacketWorld(ctx.get()).filter(world -> world.isBlockLoaded(pos));
         Runnable runnable = () -> worldOptional.map(world -> world.getTileEntity(pos)).ifPresent(entity -> entity.read(compound));
         ctx.get().enqueueWork(runnable);
     }

@@ -47,6 +47,7 @@ public class UpdateBoxMessage implements IMessage<UpdateBoxMessage> {
     public void onReceive(Supplier<NetworkEvent.Context> ctx) {
         Optional<World> optionalWorld = LogicalSidedProvider.CLIENTWORLD.get(ctx.get().getDirection().getReceptionSide());
         optionalWorld.filter(world -> world.getDimension().getType().getId() == dim)
+            .filter(world -> world.isBlockLoaded(pos))
             .map(world -> world.getTileEntity(pos))
             .flatMap(optCast(TileMarker.class))
             .ifPresent(marker -> marker.laser.boxUpdate(marker.getWorld(), on));
