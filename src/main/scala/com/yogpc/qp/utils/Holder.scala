@@ -43,6 +43,15 @@ object Holder {
   val blockFrame = new BlockFrame
   val blockQuarry = new BlockQuarry
 
-  val blocks: Seq[Block] = Seq(blockMarker, blockWorkbench, blockExpPump, blockMover, blockMiningWell, blockPlainPipe, blockFrame, blockQuarry)
+  val blocks: Seq[Block] = Seq(
+    blockQuarry,
+    blockMiningWell,
+    blockMarker,
+    blockWorkbench,
+    blockMover,
+    blockExpPump,
+    blockPlainPipe,
+    blockFrame,
+  )
   //---------- Item ----------
 }

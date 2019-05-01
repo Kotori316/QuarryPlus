@@ -6,5 +6,5 @@ import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 
 class CreativeTabQuarryPlus extends ItemGroup(QuarryPlus.Mod_Name) {
   @OnlyIn(Dist.CLIENT)
-  override def createIcon() = new ItemStack(Holder.blockMarker)
+  override def createIcon() = new ItemStack(Holder.blockQuarry)
 }
