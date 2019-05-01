@@ -78,7 +78,7 @@ public class TileMiningWell extends TileBasic implements ITickable {
             int depth = getPos().getY() - 1;
             while (!S_checkTarget(depth)) {
                 BlockPos pos = new BlockPos(getPos().getX(), depth, getPos().getZ());
-                if (this.working && (Config.common().removeBedrock().get() || world.getBlockState(pos).getBlockHardness(world, pos) > 0)) {
+                if (this.working && (Config.common().removeBedrock().get() || world.getBlockState(pos).getBlockHardness(world, pos) >= 0)) {
                     world.setBlockState(pos, Holder.blockPlainPipe().getDefaultState());
                 }
                 depth--;

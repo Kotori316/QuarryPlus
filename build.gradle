@@ -14,9 +14,9 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'maven-publish'
 apply plugin: 'java-library'
 
-version = '1.0'
+version = getProperty("modversion")
 group = 'com.kotori316' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'QuarryPlus'
+archivesBaseName = 'AdditionalEnchantedMiner-1.13.2'
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 compileScala.sourceCompatibility = compileScala.targetCompatibility = '1.8'
@@ -87,7 +87,7 @@ dependencies {
     def jei_version = "5.0.0.20"
     // at runtime, use the full JEI jar
     api fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
-    compile "mezz.jei:jei-${mc_version}:${jei_version}:sources"
+//    compile "mezz.jei:jei-${mc_version}:${jei_version}:sources"
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
