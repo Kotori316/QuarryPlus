@@ -63,16 +63,16 @@ public class BlockMiningWell extends QPBlock {
             Optional.ofNullable((TileMiningWell) worldIn.getTileEntity(pos)).ifPresent(TileMiningWell::G_ReInit);
             return true;
         }
-        /*if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == ItemTool.meta_StatusChecker()) {
+        if (stack.getItem() ==Holder.itemStatusChecker()) {
             if (!worldIn.isRemote) {
                 Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t ->
                     t.sendEnchantMassage(player));
             }
             return true;
-        } else if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == ItemTool.meta_YSetter()) {
-            playerIn.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdQuarryYLevel(), worldIn, pos.getX(), pos.getY(), pos.getZ());
+        } else if (stack.getItem() == Holder.itemYSetter()) {
+//            playerIn.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdQuarryYLevel(), worldIn, pos.getX(), pos.getY(), pos.getZ());
             return true;
-        }*/
+        }
         return false;
     }
 

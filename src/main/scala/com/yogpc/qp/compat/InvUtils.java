@@ -3,6 +3,7 @@ package com.yogpc.qp.compat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -70,7 +71,7 @@ public class InvUtils {
 
         List<? extends IInjector> injectors = Stream.of(EnumFacing.values()).flatMap(enumFacing -> {
             TileEntity t = w.getTileEntity(pos.offset(enumFacing));
-            return INJECTORS.stream().filter(i -> t != null).flatMap(i -> i.getInjector(is, t, enumFacing));
+            return INJECTORS.stream().filter(Objects::nonNull).filter(i -> t != null).flatMap(i -> i.getInjector(is, t, enumFacing));
         }).collect(Collectors.toList());
 
         ItemStack inserted = is.copy();

@@ -94,13 +94,13 @@ public class BlockQuarry extends QPBlock {
             TileEntity t = worldIn.getTileEntity(pos);
             if (t != null) {
                 TileQuarry quarry = (TileQuarry) t;
-                /*if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == ItemTool.meta_StatusChecker()) {
-                    quarry.sendEnchantMassage(playerIn);
-                    VersionUtil.sendMessage(playerIn, new TextComponentTranslation(TranslationKeys.CURRENT_MODE,
-                        new TextComponentTranslation(quarry.filler ? TranslationKeys.FILLER_MODE : TranslationKeys.QUARRY_MODE)));
-                } else if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == ItemTool.meta_YSetter()) {
-                    playerIn.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdQuarryYLevel(), worldIn, pos.getX(), pos.getY(), pos.getZ());
-                } else*/
+                if (stack.getItem() == Holder.itemStatusChecker()) {
+                    quarry.sendEnchantMassage(player);
+                    player.sendStatusMessage(new TextComponentTranslation(TranslationKeys.CURRENT_MODE,
+                        new TextComponentTranslation(quarry.filler ? TranslationKeys.FILLER_MODE : TranslationKeys.QUARRY_MODE)), false);
+                } else if (stack.getItem() == Holder.itemYSetter()) {
+//                    playerIn.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdQuarryYLevel(), worldIn, pos.getX(), pos.getY(), pos.getZ());
+                } else
                 if (quarry.G_getNow() == TileQuarry.Mode.NOT_NEED_BREAK) {
                     quarry.filler = !quarry.filler;
                     player.sendStatusMessage(new TextComponentTranslation(TranslationKeys.CHANGEMODE,
