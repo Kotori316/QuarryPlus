@@ -19,6 +19,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -63,6 +65,22 @@ public class TileMarker extends TileEntity implements IMarker {
     public void remove() {
         removeLink();
         super.remove();
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public AxisAlignedBB getRenderBoundingBox() {
+        return INFINITE_EXTENT_AABB;
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public double getMaxRenderDistanceSquared() {
+        if (laser.hasLaser() || link.hasAnyLink()) {
+            return 256 * 256 * 4;
+        } else {
+            return super.getMaxRenderDistanceSquared();
+        }
     }
 
     public void activated() {
@@ -122,6 +140,10 @@ public class TileMarker extends TileEntity implements IMarker {
         public String toString() {
             long i = Stream.of(lasers).filter(Objects::nonNull).count();
             return "Lasers : " + i;
+        }
+
+        public boolean hasLaser() {
+            return Stream.of(lasers).anyMatch(Objects::nonNull);
         }
 
         public void boxUpdate(World world, boolean on) {
