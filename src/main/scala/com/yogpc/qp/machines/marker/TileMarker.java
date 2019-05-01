@@ -1,5 +1,6 @@
 package com.yogpc.qp.machines.marker;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -8,6 +9,8 @@ import java.util.stream.Stream;
 
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.TranslationKeys;
+import com.yogpc.qp.machines.base.IDebugSender;
 import com.yogpc.qp.machines.base.IMarker;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.marker.LinkMessage;
@@ -19,6 +22,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -27,7 +32,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import static jp.t2v.lab.syntax.MapStreamSyntax.streamCast;
 
-public class TileMarker extends TileEntity implements IMarker {
+public class TileMarker extends TileEntity implements IMarker, IDebugSender {
     private static final int MAX_SIZE = 256;
 
     public Link link = Link.DEFAULT;
@@ -114,6 +119,17 @@ public class TileMarker extends TileEntity implements IMarker {
             .map(world::getTileEntity)
             .flatMap(streamCast(TileMarker.class))
             .forEach(m -> m.setLink(Link.DEFAULT));
+    }
+
+    @Override
+    public String getDebugName() {
+        return TranslationKeys.marker;
+    }
+
+    @Override
+    public List<? extends ITextComponent> getDebugMessages() {
+        return Arrays.asList(new TextComponentString("Link : " + link),
+            new TextComponentString("Laser : " + laser));
     }
 
     public static class Laser {

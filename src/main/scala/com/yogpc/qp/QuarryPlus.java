@@ -78,6 +78,7 @@ public class QuarryPlus {
         @SubscribeEvent
         public static void registerItems(RegistryEvent.Register<Item> event) {
             JavaConverters.seqAsJavaList(Holder.blocks()).stream().map(Block::asItem).forEach(event.getRegistry()::register);
+            JavaConverters.seqAsJavaList(Holder.items()).forEach(event.getRegistry()::register);
         }
 
         @SubscribeEvent
@@ -122,6 +123,8 @@ public class QuarryPlus {
         public static final String exppump = "exppump";
         public static final String frame = "quarryframe";
         public static final String laser = "laserplus";
+        public static final String listeditor = "listeditor";
+        public static final String liquidselector = "liquidselector";
         public static final String marker = "markerplus";
         public static final String miningwell = "miningwellplus";
         public static final String mirror = "magicmirror";
@@ -134,7 +137,9 @@ public class QuarryPlus {
         public static final String refinery = "refineryplus";
         public static final String replacer = "quarryreplacer";
         public static final String solidquarry = "solidquarry";
+        public static final String statuschecker = "statuschecker";
         public static final String tool = "tool";
+        public static final String ySetter = "y_setter";
         public static final String workbench = "workbenchplus";
     }
 }

@@ -1,12 +1,14 @@
 package com.yogpc.qp.utils
 
 import com.yogpc.qp.machines.exppump.{BlockExpPump, TileExpPump}
+import com.yogpc.qp.machines.item._
 import com.yogpc.qp.machines.marker.{BlockMarker, TileMarker}
 import com.yogpc.qp.machines.mover.BlockMover
 import com.yogpc.qp.machines.quarry._
 import com.yogpc.qp.machines.workbench.{BlockWorkbench, TileWorkbench}
 import com.yogpc.qp.{CreativeTabQuarryPlus, QuarryPlus}
 import net.minecraft.block.Block
+import net.minecraft.item.Item
 import net.minecraft.tileentity.{TileEntity, TileEntityType}
 import net.minecraftforge.fml.ModLoadingContext
 
@@ -54,4 +56,12 @@ object Holder {
     blockFrame,
   )
   //---------- Item ----------
+
+  val itemListEditor = new ItemListEditor
+  val itemLiquidSelector = new ItemLiquidSelector
+  val itemStatusChecker = new ItemStatusChecker
+  val itemYSetter = new ItemYSetter
+  val itemQuarryDebug = new ItemQuarryDebug
+
+  val items: Seq[Item] = Seq(itemStatusChecker, itemListEditor, itemLiquidSelector, itemYSetter, itemQuarryDebug)
 }
