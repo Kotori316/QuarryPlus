@@ -248,14 +248,15 @@ public class PowerManager {
     }
 
     public static double useEnergyQuarryHead(final APowerTile pp, final double dist, final byte U) {
-        long pw;
+        double bp = (double) MoveHead_BP / APowerTile.MicroJtoMJ;
+        double pw;
         if (!Config.content().fastQuarryHeadMove()) {
-            pw = Math.min(2 + pp.getStoredEnergy() / 500 / APowerTile.MicroJtoMJ, (long) ((dist / 2 - 0.05) * MoveHead_BP / (U * MoveHead_CU + 1)));
+            pw = Math.min(2 + (double) pp.getStoredEnergy() / 500 / APowerTile.MicroJtoMJ, (dist / 2 - 0.05) * bp / (U * MoveHead_CU + 1));
         } else {
-            pw = (long) ((dist / 2 - 0.05) * MoveHead_BP / (U * MoveHead_CU + 1));
+            pw = (dist / 2 - 0.05) *bp / (U * MoveHead_CU + 1);
         }
-        pw = pp.useEnergy(0, pw, true, EnergyUsage.MOVE_HEAD);
-        return pw * (U * MoveHead_CU + 1) / MoveHead_BP + 0.05;
+        pw = (double) pp.useEnergy(0, (long) (pw * APowerTile.MicroJtoMJ), true, EnergyUsage.MOVE_HEAD) / APowerTile.MicroJtoMJ;
+        return pw * (U * MoveHead_CU + 1) / bp + 0.05;
     }
 
     public static long simulateEnergyLaser(final APowerTile pp, final byte U, final byte F, final boolean S, final byte E) {
