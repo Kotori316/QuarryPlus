@@ -16,6 +16,7 @@ package com.yogpc.qp.machines;
 import com.yogpc.qp.Config;
 import com.yogpc.qp.machines.base.APowerTile;
 import com.yogpc.qp.machines.base.EnergyUsage;
+import com.yogpc.qp.machines.quarry.TileMiningWell;
 
 @SuppressWarnings("ClassWithTooManyFields")
 public class PowerManager {
@@ -166,7 +167,7 @@ public class PowerManager {
         long BP;
         double CU;
         double CSP;
-        if (false /*pp instanceof TileMiningWell*/) {
+        if (pp instanceof TileMiningWell) {
             BP = MiningWell_BP;
             CU = MiningWell_CU;
             CSP = enchantMode < 0 ? MiningWell_CS : Math.pow(MiningWell_CF, enchantMode);

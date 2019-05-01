@@ -32,6 +32,7 @@ object Config {
       .defineInRange("WorkbenchMaxReceive", 250, 0, Int.MaxValue)
     val fastQuarryHeadMove = builder.comment("Fasten quarry's head moving.").define("FastQuarryHeadMove", false)
     val removeBedrock = builder.comment("True to allow machines to remove bedrock. (Just removing. Not collecting)").define("RemoveBedrock", false)
+    val disableFrameChainBreak = builder.comment("DisableFrameChainBreak").define("DisableFrameChainBreak", false)
 
     val powers = powerConfig(builder)
     builder.pop()
