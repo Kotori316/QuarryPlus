@@ -10,3 +10,5 @@ Finished Work
 * EnchantMover
 * Miningwell
 * PlainPipe
+* QuarryFrame
+* Quarry
