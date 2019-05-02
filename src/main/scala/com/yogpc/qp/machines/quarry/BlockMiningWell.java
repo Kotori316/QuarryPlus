@@ -20,6 +20,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.BuildcraftHelper;
 import com.yogpc.qp.machines.base.IEnchantableTile;
 import com.yogpc.qp.machines.base.QPBlock;
+import com.yogpc.qp.machines.item.YSetterInteractionObject;
 import com.yogpc.qp.utils.Holder;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -27,6 +28,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateContainer;
@@ -39,7 +41,9 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkHooks;
 
+import static jp.t2v.lab.syntax.MapStreamSyntax.optCast;
 import static net.minecraft.state.properties.BlockStateProperties.FACING;
 
 public class BlockMiningWell extends QPBlock {
@@ -63,14 +67,18 @@ public class BlockMiningWell extends QPBlock {
             Optional.ofNullable((TileMiningWell) worldIn.getTileEntity(pos)).ifPresent(TileMiningWell::G_ReInit);
             return true;
         }
-        if (stack.getItem() ==Holder.itemStatusChecker()) {
+        if (stack.getItem() == Holder.itemStatusChecker()) {
             if (!worldIn.isRemote) {
                 Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t ->
                     t.sendEnchantMassage(player));
             }
             return true;
         } else if (stack.getItem() == Holder.itemYSetter()) {
-//            playerIn.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdQuarryYLevel(), worldIn, pos.getX(), pos.getY(), pos.getZ());
+            if (!worldIn.isRemote) {
+                Optional.ofNullable(worldIn.getTileEntity(pos))
+                    .flatMap(optCast(TileMiningWell.class))
+                    .ifPresent(t -> NetworkHooks.openGui(((EntityPlayerMP) player), YSetterInteractionObject.apply(t), pos));
+            }
             return true;
         }
         return false;

@@ -7,3 +7,7 @@ import net.minecraft.item.Item
 class ItemYSetter extends Item((new Item.Properties).group(Holder.tab)) {
   setRegistryName(QuarryPlus.modID, QuarryPlus.Names.ySetter)
 }
+
+object ItemYSetter {
+  final val GUI_ID = QuarryPlus.modID + ":gui_" + QuarryPlus.Names.ySetter
+}

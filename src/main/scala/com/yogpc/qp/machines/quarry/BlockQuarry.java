@@ -22,6 +22,7 @@ import com.yogpc.qp.compat.BuildcraftHelper;
 import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.IEnchantableTile;
 import com.yogpc.qp.machines.base.QPBlock;
+import com.yogpc.qp.machines.item.YSetterInteractionObject;
 import com.yogpc.qp.utils.Holder;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -29,6 +30,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateContainer;
@@ -42,6 +44,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 import static net.minecraft.state.properties.BlockStateProperties.FACING;
 
@@ -99,9 +102,8 @@ public class BlockQuarry extends QPBlock {
                     player.sendStatusMessage(new TextComponentTranslation(TranslationKeys.CURRENT_MODE,
                         new TextComponentTranslation(quarry.filler ? TranslationKeys.FILLER_MODE : TranslationKeys.QUARRY_MODE)), false);
                 } else if (stack.getItem() == Holder.itemYSetter()) {
-//                    playerIn.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdQuarryYLevel(), worldIn, pos.getX(), pos.getY(), pos.getZ());
-                } else
-                if (quarry.G_getNow() == TileQuarry.Mode.NOT_NEED_BREAK) {
+                    NetworkHooks.openGui(((EntityPlayerMP) player), YSetterInteractionObject.apply(quarry), pos);
+                } else if (quarry.G_getNow() == TileQuarry.Mode.NOT_NEED_BREAK) {
                     quarry.filler = !quarry.filler;
                     player.sendStatusMessage(new TextComponentTranslation(TranslationKeys.CHANGEMODE,
                         new TextComponentTranslation(quarry.filler ? TranslationKeys.FILLER_MODE : TranslationKeys.QUARRY_MODE)), false);
