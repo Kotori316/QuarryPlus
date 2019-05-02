@@ -143,26 +143,42 @@ object WorkbenchRecipes {
 
     resourceManager.getAllResourceLocations("quarryplus/workbench", s => s.endsWith(".json") && !s.startsWith("_")).asScala
       .map(r => pathToJson(resourceManager.getAllResources(r).asScala.lastOption, gson, r))
-      .map(load)
       .flatMap {
-        case Left(value) => QuarryPlus.LOGGER.error("QuarryPlus recipe loading error.", value); None
+        case Left(value) => QuarryPlus.LOGGER.error("QuarryPlus recipe loading error. {}", value); None
         case Right(value) => Some(value)
       }.foreach(r => recipes_internal.put(r.location, r))
   }
 
   private def pathToJson(resourceOpt: Option[IResource], gson: Gson, location: ResourceLocation) = {
-    for (resource <- resourceOpt.toRight(new RuntimeException(s"Resource: $location isn't found."));
-         readString <- Try(IOUtils.toString(resource.getInputStream, StandardCharsets.UTF_8)).toEither;
-         json <- Try(JsonUtils.fromJson(gson, readString, classOf[JsonObject])).toEither) yield {
+    val throwableOrObject = for (resource <- resourceOpt.toRight(new RuntimeException(s"Resource: $location isn't found."));
+                                 readString <- Try(IOUtils.toString(resource.getInputStream, StandardCharsets.UTF_8)).toEither;
+                                 json <- Try(JsonUtils.fromJson(gson, readString, classOf[JsonObject])).toEither) yield {
       val matcher = namePattern.pattern.matcher(location.toString)
       if (matcher.matches())
         json.addProperty("path", matcher.group(1) + ":workbench/" + matcher.group(2))
       json
     }
+    throwableOrObject.left.map(_.toString)
+      .filterOrElse(json => CraftingHelper.processConditions(json, "conditions"),
+        conditionMessage)
+      .filterOrElse(json => JsonUtils.getString(json, "type") == recipeLocation.toString,
+        "Not a workbench recipe.")
+      .flatMap { json =>
+        val id = Option(JsonUtils.getString(json, "id", ""))
+          .filterNot(_.isEmpty)
+          .getOrElse(QuarryPlus.modID + ":" + JsonUtils.getString(json, "path"))
+        (for (result <- Try(CraftingHelper.getItemStack(JsonUtils.getJsonObject(json, "result"), true));
+              recipe <- Try(JsonUtils.getJsonArray(json, "ingredients").asScala.map(IngredientWithCount.getSeq).toSeq);
+              energy <- Try(JsonUtils.getString(json, "energy", "1000").toDouble * APowerTile.MicroJtoMJ);
+              showInJEI <- Try(JsonUtils.getBoolean(json, "showInJEI", true))) yield {
+          new IngredientRecipe(new ResourceLocation(id), result, energy.toLong, showInJEI, recipe)
+        }).toEither.left.map(_.toString)
+      }
+      .filterOrElse(_.energy > 0, "Energy must be over than 0.")
+      .left.map(_ + ", at " + location)
   }
 
   def load(obj: Either[Throwable, JsonObject]): Either[String, WorkbenchRecipes] = {
-
     obj.left.map(_.toString)
       .filterOrElse(json => CraftingHelper.processConditions(json, "conditions"),
         conditionMessage)
@@ -194,7 +210,7 @@ object WorkbenchRecipes {
       load(Right(json)) match {
         case Right(value) => value
         case Left(value) if value == conditionMessage => WorkbenchRecipes.dummyRecipe
-        case Left(value) => throw new IllegalStateException(value)
+        case Left(value) => throw new IllegalStateException(s"Recipe loading error. $value, $recipeId")
       }
     }
 
