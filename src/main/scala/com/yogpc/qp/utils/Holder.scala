@@ -59,8 +59,8 @@ object Holder {
 
   val itemListEditor = new ItemListEditor
   val itemLiquidSelector = new ItemLiquidSelector
-  val itemStatusChecker = new ItemStatusChecker
-  val itemYSetter = new ItemYSetter
+  val itemStatusChecker = new Item((new Item.Properties).group(Holder.tab)).setRegistryName(QuarryPlus.modID, QuarryPlus.Names.statuschecker)
+  val itemYSetter = new Item((new Item.Properties).group(Holder.tab)).setRegistryName(QuarryPlus.modID, QuarryPlus.Names.ySetter)
   val itemQuarryDebug = new ItemQuarryDebug
 
   val items: Seq[Item] = Seq(itemStatusChecker, itemListEditor, itemLiquidSelector, itemYSetter, itemQuarryDebug)

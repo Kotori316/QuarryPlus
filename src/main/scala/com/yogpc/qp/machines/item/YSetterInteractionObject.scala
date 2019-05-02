@@ -1,5 +1,6 @@
 package com.yogpc.qp.machines.item
 
+import com.yogpc.qp.QuarryPlus
 import com.yogpc.qp.machines.quarry.TileBasic
 import net.minecraft.entity.player.{EntityPlayer, InventoryPlayer}
 import net.minecraft.util.INameable
@@ -7,7 +8,7 @@ import net.minecraft.world.IInteractionObject
 
 abstract class YSetterInteractionObject(nameable: INameable) extends IInteractionObject {
 
-  override def getGuiID = ItemYSetter.GUI_ID
+  override def getGuiID = YSetterInteractionObject.GUI_ID
 
   override def getName = nameable.getName
 
@@ -17,6 +18,7 @@ abstract class YSetterInteractionObject(nameable: INameable) extends IInteractio
 }
 
 object YSetterInteractionObject {
+  final val GUI_ID = QuarryPlus.modID + ":gui_" + QuarryPlus.Names.ySetter
 
   import GuiQuarryLevel._
 
