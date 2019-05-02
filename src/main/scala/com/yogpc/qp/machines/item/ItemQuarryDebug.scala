@@ -38,11 +38,11 @@ class ItemQuarryDebug extends Item((new Item.Properties).group(Holder.tab)) {
               }
             }
             EnumActionResult.SUCCESS
-          case marker: TileMarker =>
+          case sender: IDebugSender =>
             if (!worldIn.isRemote) {
-              player.sendStatusMessage(new TextComponentTranslation(marker.getDebugName), false)
-              player.sendStatusMessage(tilePosToString(tile), false)
-              marker.sendDebugMessage(player)
+              player.sendStatusMessage(new TextComponentTranslation(sender.getDebugName), false)
+              player.sendStatusMessage(tilePosToString(sender), false)
+              sender.sendDebugMessage(player)
             }
             EnumActionResult.SUCCESS
           /*case placer: TilePlacer =>

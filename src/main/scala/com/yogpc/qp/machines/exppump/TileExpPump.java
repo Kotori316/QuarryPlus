@@ -70,9 +70,7 @@ public class TileExpPump extends APacketTile implements IEnchantableTile, IDebug
     public List<? extends ITextComponent> getDebugMessages() {
         return Stream.of(
             "Connection -> " + mConnectTo,
-            "Unbreaking -> " + unbreaking,
-            "Fortune -> " + fortune,
-            "Silktouch -> " + silktouch,
+            Stream.of("Unbreaking -> " + unbreaking, "Fortune -> " + fortune, "Silktouch -> " + silktouch).reduce(combiner).get(),
             "XpAmount -> " + xpAmount)
             .map(toComponentString)
             .collect(Collectors.toList());
