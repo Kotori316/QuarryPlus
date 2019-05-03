@@ -4,6 +4,8 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.marker.LinkMessage;
 import com.yogpc.qp.packet.marker.UpdateBoxMessage;
 import com.yogpc.qp.packet.mover.MoverMessage;
+import com.yogpc.qp.packet.pump.Mappings;
+import com.yogpc.qp.packet.pump.Now;
 import com.yogpc.qp.packet.quarry.LevelMessage;
 import com.yogpc.qp.packet.quarry.ModeMessage;
 import com.yogpc.qp.packet.quarry.MoveHead;
@@ -34,6 +36,10 @@ public class PacketHandler {
         INSTANCE.registerMessage(id++, LevelMessage.class, IMessage::writeToBuffer, IMessage.decode(LevelMessage::new), IMessage::onReceiveInternal);
         INSTANCE.registerMessage(id++, ModeMessage.class, IMessage::writeToBuffer, IMessage.decode(ModeMessage::new), IMessage::onReceiveInternal);
         INSTANCE.registerMessage(id++, MoveHead.class, IMessage::writeToBuffer, IMessage.decode(MoveHead::new), IMessage::onReceiveInternal);
+        INSTANCE.registerMessage(id++, Now.class, IMessage::writeToBuffer, IMessage.decode(Now::new), IMessage::onReceiveInternal);
+        INSTANCE.registerMessage(id++, Mappings.All.class, IMessage::writeToBuffer, IMessage.decode(Mappings.All::new), IMessage::onReceiveInternal);
+        INSTANCE.registerMessage(id++, Mappings.Copy.class, IMessage::writeToBuffer, IMessage.decode(Mappings.Copy::new), IMessage::onReceiveInternal);
+        INSTANCE.registerMessage(id++, Mappings.Update.class, IMessage::writeToBuffer, IMessage.decode(Mappings.Update::new), IMessage::onReceiveInternal);
 
         assert id > 0;
     }

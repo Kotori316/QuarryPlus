@@ -30,6 +30,7 @@ import com.yogpc.qp.machines.base.IDebugSender;
 import com.yogpc.qp.machines.base.IMarker;
 import com.yogpc.qp.machines.base.QPBlock;
 import com.yogpc.qp.machines.exppump.TileExpPump;
+import com.yogpc.qp.machines.pump.TilePump;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.TileMessage;
 import com.yogpc.qp.packet.quarry.ModeMessage;
@@ -54,6 +55,7 @@ import org.apache.commons.lang3.BooleanUtils;
 import scala.Symbol;
 
 import static com.yogpc.qp.machines.base.IAttachment.Attachments.EXP_PUMP;
+import static com.yogpc.qp.machines.base.IAttachment.Attachments.FLUID_PUMP;
 import static jp.t2v.lab.syntax.MapStreamSyntax.byEntry;
 import static jp.t2v.lab.syntax.MapStreamSyntax.entryToMap;
 import static jp.t2v.lab.syntax.MapStreamSyntax.not;
@@ -208,7 +210,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
         return blockHardness >= 0 && // Not to break unbreakable
             !b.getBlock().isAir(b, world, target) && // Avoid air
 //            (now == Mode.NOT_NEED_BREAK || !facingMap.containsKey(REPLACER) || b != S_getFillBlock()) && // Avoid dummy block.
-            !(/*!facingMap.containsKey(FLUID_PUMP) &&*/ b.getMaterial().isLiquid()); // Fluid when pump isn't connected.
+            !(TilePump.isLiquid(b) && !facingMap.containsKey(FLUID_PUMP)); // Fluid when pump isn't connected.
     }
 
     private boolean addX = true;
@@ -647,12 +649,12 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                 .filter(byEntry((attachments, facing) -> attachments.test(world.getTileEntity(getPos().offset(facing)))))
                 .collect(entryToMap());
             facingMap.putAll(map);
-            /*pmp = Optional.ofNullable(facingMap.get(FLUID_PUMP))
+            pmp = Optional.ofNullable(facingMap.get(FLUID_PUMP))
                 .map(getPos()::offset)
                 .map(world::getTileEntity)
                 .flatMap(FLUID_PUMP)
                 .map(p -> p.unbreaking)
-                .orElse((byte) 0);*/
+                .orElse((byte) 0);
         }
         if (this.now == Mode.NONE)
             PowerManager.configure0(this);

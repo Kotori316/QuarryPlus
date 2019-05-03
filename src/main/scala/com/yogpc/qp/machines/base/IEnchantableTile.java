@@ -35,11 +35,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import static jp.t2v.lab.syntax.MapStreamSyntax.byEntry;
-import static jp.t2v.lab.syntax.MapStreamSyntax.byKey;
-import static jp.t2v.lab.syntax.MapStreamSyntax.entry;
-import static jp.t2v.lab.syntax.MapStreamSyntax.keys;
-import static jp.t2v.lab.syntax.MapStreamSyntax.toAny;
+import static jp.t2v.lab.syntax.MapStreamSyntax.*;
 
 public interface IEnchantableTile {
 
@@ -91,7 +87,11 @@ public interface IEnchantableTile {
     class Util {
 
         public static void init(@Nonnull final IEnchantableTile te, @Nonnull final NBTTagList tagList) {
-            tagList.stream().map(NBTTagCompound.class::cast).forEach(nbt -> te.setEnchantment(new ResourceLocation(nbt.getString("id")), nbt.getShort("lvl")));
+            tagList.stream()
+                .map(NBTTagCompound.class::cast)
+                .map(toEntry(n -> n.getString("id"), n -> n.getShort("lvl")))
+                .map(keys(ResourceLocation::new))
+                .forEach(entry(te::setEnchantment));
             te.G_ReInit();
         }
 

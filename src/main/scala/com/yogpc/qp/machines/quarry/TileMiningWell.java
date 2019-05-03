@@ -14,6 +14,7 @@
 package com.yogpc.qp.machines.quarry;
 
 import java.util.Map;
+import java.util.Optional;
 
 import com.yogpc.qp.Config;
 import com.yogpc.qp.compat.InvUtils;
@@ -21,6 +22,7 @@ import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.IAttachment;
 import com.yogpc.qp.machines.base.QPBlock;
+import com.yogpc.qp.machines.pump.TilePump;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.TileMessage;
 import com.yogpc.qp.utils.Holder;
@@ -53,11 +55,11 @@ public class TileMiningWell extends TileBasic implements ITickable {
                 .filter(byEntry((attachments, facing) -> attachments.test(world.getTileEntity(getPos().offset(facing)))))
                 .collect(entryToMap());
             facingMap.putAll(map);
-            /*pmp = Optional.ofNullable(facingMap.get(IAttachment.Attachments.FLUID_PUMP))
+            pmp = Optional.ofNullable(facingMap.get(IAttachment.Attachments.FLUID_PUMP))
                 .map(getPos()::offset)
                 .map(world::getTileEntity)
                 .flatMap(IAttachment.Attachments.FLUID_PUMP)
-                .map(p -> p.unbreaking).orElse((byte) 0);*/
+                .map(p -> p.unbreaking).orElse((byte) 0);
         }
 
         if (this.working)
@@ -106,7 +108,7 @@ public class TileMiningWell extends TileBasic implements ITickable {
         if (h < 0 || b.getBlock() == Holder.blockPlainPipe() || b.getBlock().isAir(b, world, pos)) {
             return false;
         }
-        if (/*!facingMap.containsKey(IAttachment.Attachments.FLUID_PUMP) &&*/ b.getMaterial().isLiquid())
+        if (!facingMap.containsKey(IAttachment.Attachments.FLUID_PUMP) && TilePump.isLiquid(b))
             return false;
         if (!this.working) {
             //Find something to break!

@@ -1,41 +1,25 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "cube",
-    "textures": {
-      "particle": "quarryplus:blocks/pump_top",
-      "down": "quarryplus:blocks/pump_bottom",
-      "up": "quarryplus:blocks/pump_top",
-      "north": "quarryplus:blocks/pump_side",
-      "east": "quarryplus:blocks/pump_side",
-      "south": "quarryplus:blocks/pump_side",
-      "west": "quarryplus:blocks/pump_side"
-    }
+    "model": "quarryplus:pumpplus"
   },
   "variants": {
-    "normal": [
-      {}
-    ],
-    "connected": {
+    "working": {
       "true": {
-        "textures": {
-          "up": "quarryplus:blocks/pump_top_c"
-        }
+        "model": "quarryplus:pumpplus_working"
       },
       "false": {
       }
     },
-    "acting": {
+    "enabled": {
       "true": {
-        "textures": {
-          "up": "quarryplus:blocks/pump_top_w"
-        }
+        "model": "quarryplus:pumpplus_enabled"
       },
       "false": {
       }
-    },
-    "inventory": [
-      {}
-    ]
-  }
+    }
+  },
+  "inventory": [
+    {}
+  ]
 }

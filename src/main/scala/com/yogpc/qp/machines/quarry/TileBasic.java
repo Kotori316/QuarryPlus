@@ -25,7 +25,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.machines.PowerManager;
@@ -37,6 +36,7 @@ import com.yogpc.qp.machines.base.HasInv;
 import com.yogpc.qp.machines.base.IAttachable;
 import com.yogpc.qp.machines.base.IAttachment;
 import com.yogpc.qp.machines.base.IEnchantableTile;
+import com.yogpc.qp.machines.pump.TilePump;
 import com.yogpc.qp.machines.workbench.BlockData;
 import com.yogpc.qp.utils.NBTBuilder;
 import com.yogpc.qp.utils.NoDuplicateList;
@@ -76,6 +76,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import static com.yogpc.qp.machines.base.IAttachment.Attachments.ALL;
 import static com.yogpc.qp.machines.base.IAttachment.Attachments.EXP_PUMP;
+import static com.yogpc.qp.machines.base.IAttachment.Attachments.FLUID_PUMP;
 import static jp.t2v.lab.syntax.MapStreamSyntax.*;
 
 //@net.minecraftforge.fml.common.Optional.Interface(iface = "cofh.api.tileentity.IInventoryConnection", modid = QuarryPlus.Optionals.COFH_modID)
@@ -150,7 +151,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         blockState = world.getBlockState(pos);
         if (blockState.getBlock().isAir(blockState, world, pos))
             return true;
-        /*if (facingMap.containsKey(FLUID_PUMP) && TilePump.isLiquid(blockState)) {
+        if (facingMap.containsKey(FLUID_PUMP) && TilePump.isLiquid(blockState)) {
             final TileEntity te = world.getTileEntity(getPos().offset(facingMap.get(FLUID_PUMP)));
             if (!(te instanceof TilePump)) {
                 facingMap.remove(FLUID_PUMP);
@@ -158,7 +159,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
                 return true;
             }
             return ((TilePump) te).S_removeLiquids(this, x, y, z);
-        }*/
+        }
         BI bi = S_addDroppedItems(dropped, blockState, pos);
         if (!PowerManager.useEnergyBreak(this, blockState.getBlockHardness(world, pos), bi.b, this.unbreaking, bi.b1))
             return false;
@@ -199,11 +200,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
 
     public void setYLevel(int yLevel) {
         this.yLevel = yLevel;
-        if (yLevel <= 0) {
-            if (Config.common().debug()) {
-                QuarryPlus.LOGGER.warn("Quarry yLevel is set to " + yLevel + ".");
-            }
-        }
+        QuarryPlus.LOGGER.debug("Quarry yLevel is set to " + yLevel + ".");
     }
 
     private BI S_addDroppedItems(final Collection<ItemStack> collection, final IBlockState state, final BlockPos pos) {
