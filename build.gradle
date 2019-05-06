@@ -1,15 +1,18 @@
 buildscript {
     repositories {
         maven { url = 'https://files.minecraftforge.net/maven' }
+        maven { url = "https://plugins.gradle.org/m2/" }
         jcenter()
         mavenCentral()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true 
+        classpath "gradle.plugin.com.matthewprenger:CurseGradle:1.2.0"
     }
 }
 apply plugin: 'scala'
 apply plugin: 'net.minecraftforge.gradle'
+apply plugin: "com.matthewprenger.cursegradle"
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'maven-publish'
 apply plugin: 'java-library'
@@ -82,7 +85,7 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft 'net.minecraftforge:forge:1.13.2-25.0.191'
     implementation "org.scala-lang:scala-library:2.12.8"
-    
+
     def mc_version = "1.13.2"
     def jei_version = "5.0.0.20"
     // at runtime, use the full JEI jar
@@ -140,5 +143,28 @@ publishing {
         maven {
             url "file:///${project.projectDir}/mcmodsrepo"
         }
+    }
+}
+
+curseforge {
+    apiKey = project.hasProperty("curseforge_additional-enchanted-miner_key") ? getProperty("curseforge_additional-enchanted-miner_key") : ""
+    project {
+        id = '282837'
+        changelogType = 'markdown'
+        changelog = new File("temp_changelog.md")
+        releaseType = 'release'
+        addGameVersion '1.13.2'
+        mainArtifact(jar) {
+            displayName = 'v' + project.version
+        }
+        addArtifact srcJar
+        addArtifact deobfJar
+        relations {
+            requiredDependency 'scalable-cats-force'
+        }
+    }
+    options {
+        debug = true // defaults to false
+        javaVersionAutoDetect = false
     }
 }
