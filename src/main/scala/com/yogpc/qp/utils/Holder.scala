@@ -33,8 +33,9 @@ object Holder {
   val miningWellTileType = createType(() => new TileMiningWell, QuarryPlus.Names.miningwell)
   val quarryTileType = createType(() => new TileQuarry, QuarryPlus.Names.quarry)
   val pumpTileType = createType(() => new TilePump, QuarryPlus.Names.pump)
+  val solidQuarryType= createType(() => new TileSolidQuarry, QuarryPlus.Names.solidquarry)
 
-  val tiles: Seq[TileEntityType[_ <: TileEntity]] = Seq(markerTileType, workbenchTileType, expPumpTileType, miningWellTileType, quarryTileType, pumpTileType)
+  val tiles: Seq[TileEntityType[_ <: TileEntity]] = Seq(markerTileType, workbenchTileType, expPumpTileType, miningWellTileType, quarryTileType, pumpTileType, solidQuarryType)
 
   //---------- Block ----------
 
@@ -47,11 +48,13 @@ object Holder {
   val blockFrame = new BlockFrame
   val blockQuarry = new BlockQuarry
   val blockPump = new BlockPump
+  val blockSolidQuarry = new BlockSolidQuarry
 
   val blocks: Seq[Block] = Seq(
     blockQuarry,
     blockMiningWell,
     blockPump,
+    blockSolidQuarry,
     blockMarker,
     blockWorkbench,
     blockMover,

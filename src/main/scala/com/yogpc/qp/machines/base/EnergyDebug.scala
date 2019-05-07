@@ -48,7 +48,8 @@ class EnergyDebug(tile: APowerTile) {
       used(usedCount - 1) += energy
     } else {
       usedCount += 1
-      used(usedCount - 1) = energy
+      if (usedCount <= 100)
+        used(usedCount - 1) = energy
       uLastTick = tick
     }
     totalUsed += energy
@@ -79,7 +80,7 @@ class EnergyDebug(tile: APowerTile) {
         usedCount = 0
         gotCount = 0
         lastOutput = getTime
-//        gLastTick = 0
+        //        gLastTick = 0
       } else if (outputInfo) {
         printInfo()
       }

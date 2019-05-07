@@ -177,7 +177,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
     }
 
     /*package-private*/
-    final long getEnergy(final long a, final boolean real) {
+    protected final long getEnergy(final long a, final boolean real) {
         if (Config.common().noEnergy().get()) {
             return 0;
         }

@@ -119,20 +119,14 @@ package object qp {
     def toOption: Option[A] = Option(obj)
   }
 
-  trait NBTWrapper[A, NBTType <: INBTBase] {
-    def wrap(num: A): NBTType
-  }
+  type NBTWrapper[A, NBTType <: INBTBase] = A => NBTType
 
-  implicit object Long2NBT extends NBTWrapper[Long, NBTTagLong] {
-    override def wrap(num: Long): NBTTagLong = new NBTTagLong(num)
-  }
+  implicit val Long2NBT: NBTWrapper[Long, NBTTagLong] = (num: Long) => new NBTTagLong(num)
 
-  implicit object Fluid2NBT extends NBTWrapper[FluidStack, NBTTagCompound] {
-    override def wrap(num: FluidStack): NBTTagCompound = num.writeToNBT(new NBTTagCompound)
-  }
+  implicit val Fluid2NBT: NBTWrapper[FluidStack, NBTTagCompound] = (num: FluidStack) => num.writeToNBT(new NBTTagCompound)
 
   implicit class NumberToNbt[A](private val num: A) extends AnyVal {
-    def toNBT[B <: INBTBase](implicit wrapper: NBTWrapper[A, B]): B = wrapper wrap num
+    def toNBT[B <: INBTBase](implicit wrapper: NBTWrapper[A, B]): B = wrapper apply num
   }
 
   implicit class PosHelper(val blockPos: BlockPos) extends AnyVal {

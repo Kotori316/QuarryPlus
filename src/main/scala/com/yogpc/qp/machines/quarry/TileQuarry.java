@@ -43,6 +43,7 @@ import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -76,6 +77,10 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
 
     public TileQuarry() {
         super(Holder.quarryTileType());
+    }
+
+    public TileQuarry(TileEntityType<?> type) {
+        super(type);
     }
 
     @Override

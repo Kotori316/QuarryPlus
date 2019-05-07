@@ -152,13 +152,12 @@ curseforge {
         id = '282837'
         changelogType = 'markdown'
         changelog = new File("temp_changelog.md")
-        releaseType = 'release'
+        releaseType = 'alpha'
         addGameVersion '1.13.2'
         mainArtifact(jar) {
             displayName = 'v' + project.version
         }
         addArtifact srcJar
-        addArtifact deobfJar
         relations {
             requiredDependency 'scalable-cats-force'
         }
