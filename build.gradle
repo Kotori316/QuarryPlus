@@ -163,7 +163,7 @@ curseforge {
         }
     }
     options {
-        debug = true // defaults to false
+        debug = false // defaults to false
         javaVersionAutoDetect = false
     }
 }
