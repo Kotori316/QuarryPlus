@@ -3,7 +3,10 @@ package com.yogpc.qp.machines.workbench
 import java.nio.charset.StandardCharsets
 import java.util.{Collections, Comparator}
 
-import com.google.gson.{Gson, GsonBuilder, JsonObject}
+import cats._
+import cats.data._
+import cats.implicits._
+import com.google.gson._
 import com.yogpc.qp.machines.base.APowerTile
 import com.yogpc.qp.utils.ItemDamage
 import com.yogpc.qp.{QuarryPlus, _}
@@ -21,6 +24,7 @@ import org.apache.commons.io.IOUtils
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.util.Try
+import scala.util.control.NonFatal
 
 abstract sealed class WorkbenchRecipes(val location: ResourceLocation, val output: ItemDamage, val energy: Long, val showInJEI: Boolean = true)
   extends IRecipeHidden(location) with Ordered[WorkbenchRecipes] {
@@ -137,45 +141,57 @@ object WorkbenchRecipes {
     recipes.find { case (_, r) => r.output == id }.map(_._2).asJava
   }
 
-  def registerJsonRecipe(resourceManager: IResourceManager): Unit = {
-    recipes_internal.clear() // Loading is called every time the player enters world.
-    val gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping.create
-
-    resourceManager.getAllResourceLocations("quarryplus/workbench", s => s.endsWith(".json") && !s.startsWith("_")).asScala
-      .map(r => pathToJson(resourceManager.getAllResources(r).asScala.lastOption, gson, r))
-      .flatMap {
-        case Left(value) => QuarryPlus.LOGGER.error("QuarryPlus recipe loading error. {}", value); None
-        case Right(value) => Some(value)
-      }.foreach(r => recipes_internal.put(r.location, r))
+  private def resource(resourceManager: IResourceManager, location: ResourceLocation): EitherT[Option, String, IResource] = {
+    EitherT.fromOption(resourceManager.getAllResources(location).asScala.lastOption, s"Resource: $location isn't found.")
   }
 
-  private def pathToJson(resourceOpt: Option[IResource], gson: Gson, location: ResourceLocation) = {
-    val throwableOrObject = for (resource <- resourceOpt.toRight(new RuntimeException(s"Resource: $location isn't found."));
-                                 readString <- Try(IOUtils.toString(resource.getInputStream, StandardCharsets.UTF_8)).toEither;
-                                 json <- Try(JsonUtils.fromJson(gson, readString, classOf[JsonObject])).toEither) yield {
-      val matcher = namePattern.pattern.matcher(location.toString)
-      if (matcher.matches())
-        json.addProperty("path", matcher.group(1) + ":workbench/" + matcher.group(2))
-      json
+  private def read(r: IResource, gson: Gson): EitherT[Option, String, JsonObject] = {
+    try {
+      for (st <- EitherT.rightT[Option, String](IOUtils.toString(r.getInputStream, StandardCharsets.UTF_8));
+           obj <- EitherT.rightT[Option, String](JsonUtils.fromJson(gson, st, classOf[JsonObject])))
+        yield obj
+    } catch {
+      case NonFatal(readEx) => EitherT.leftT[Option, JsonObject](readEx.toString)
     }
-    throwableOrObject.left.map(_.toString)
-      .filterOrElse(json => CraftingHelper.processConditions(json, "conditions"),
-        conditionMessage)
-      .filterOrElse(json => JsonUtils.getString(json, "type") == recipeLocation.toString,
-        "Not a workbench recipe.")
-      .flatMap { json =>
-        val id = Option(JsonUtils.getString(json, "id", ""))
-          .filterNot(_.isEmpty)
-          .getOrElse(QuarryPlus.modID + ":" + JsonUtils.getString(json, "path"))
-        (for (result <- Try(CraftingHelper.getItemStack(JsonUtils.getJsonObject(json, "result"), true));
-              recipe <- Try(JsonUtils.getJsonArray(json, "ingredients").asScala.map(IngredientWithCount.getSeq).toSeq);
-              energy <- Try(JsonUtils.getString(json, "energy", "1000").toDouble * APowerTile.MicroJtoMJ);
-              showInJEI <- Try(JsonUtils.getBoolean(json, "showInJEI", true))) yield {
-          new IngredientRecipe(new ResourceLocation(id), result, energy.toLong, showInJEI, recipe)
-        }).toEither.left.map(_.toString)
+  }
+
+  private def parse(json: JsonObject, location: ResourceLocation): EitherT[Option, String, WorkbenchRecipes] = {
+    type EOR[A] = ValidatedNel[String, A]
+    implicit val ff: Functor[EOR] with Semigroupal[EOR] = new Functor[EOR] with Semigroupal[EOR] {
+      override def map[A, B](fa: EOR[A])(f: A => B): EOR[B] = fa map f
+
+      override def product[A, B](fa: EOR[A], fb: EOR[B]): EOR[(A, B)] = fa product fb
+    }
+    val cond: EOR[Unit] = Validated.condNel(CraftingHelper.processConditions(json, "conditions"), (), conditionMessage)
+    val recipeType: EOR[Unit] = Validated.condNel(JsonUtils.getString(json, "type") == recipeLocation.toString, (), "Not a workbench recipe")
+    val energy: EOR[Double] = Validated.catchNonFatal(JsonUtils.getString(json, "energy", "1000").toDouble)
+      .leftMap(e => NonEmptyList.of(e.toString))
+      .andThen(d => Validated.condNel(d > 0, d * APowerTile.MicroJtoMJ, "Energy must be over than 0"))
+    val item: EOR[ItemStack] = Validated.catchNonFatal(CraftingHelper.getItemStack(JsonUtils.getJsonObject(json, "result"), true))
+      .leftMap {
+        case jsonEx: JsonParseException => NonEmptyList.of(jsonEx.getMessage)
+        case ex => NonEmptyList.of(ex.toString)
       }
-      .filterOrElse(_.energy > 0, "Energy must be over than 0.")
-      .left.map(_ + ", at " + location)
+      .andThen(i => Validated.condNel(!i.isEmpty, i, "Result item is empty"))
+    val seq: EOR[Seq[Seq[IngredientWithCount]]] = Validated.catchNonFatal(JsonUtils.getJsonArray(json, "ingredients").asScala.map(IngredientWithCount.getSeq).toSeq)
+      .leftMap(e => NonEmptyList.of(e.toString))
+    val value = (cond, recipeType, energy, item, seq).mapN { case (_, _, e, stack, recipe) =>
+      val showInJei = JsonUtils.getBoolean(json, "showInJEI", true)
+      val id = JsonUtils.getString(json, "id", "").some.filter(_.nonEmpty).map(new ResourceLocation(_)).getOrElse(location)
+      new IngredientRecipe(id, stack, e.toLong, showInJei, recipe)
+    }
+    EitherT.fromEither[Option](value.leftMap(_.mkString_(", ")).toEither)
+  }
+
+  def registerJsonRecipe(resourceManager: IResourceManager): Unit = {
+    val gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping.create
+    for (location <- resourceManager.getAllResourceLocations("quarryplus/workbench", s => s.endsWith(".json") && !s.startsWith("_")).asScala) {
+      (resource(resourceManager, location) flatMap (read(_, gson)) flatMap (parse(_, location))).value.foreach {
+        case Left(value) if value == conditionMessage =>
+        case Left(value) => QuarryPlus.LOGGER.error(s"Error in loading $location, $value")
+        case Right(r) => recipes_internal.put(r.location, r)
+      }
+    }
   }
 
   def load(obj: Either[Throwable, JsonObject]): Either[String, WorkbenchRecipes] = {
@@ -201,8 +217,6 @@ object WorkbenchRecipes {
       }
       .filterOrElse(_.energy > 0, "Energy must be over than 0.")
   }
-
-  private[this] final val namePattern = "(.+):quarryplus/workbench/(.+).json".r
 
   object Serializer extends IRecipeSerializer[WorkbenchRecipes] {
     override def read(recipeId: ResourceLocation, json: JsonObject): WorkbenchRecipes = {
@@ -249,4 +263,9 @@ object WorkbenchRecipes {
     override def getName = recipeLocation
   }
 
+  def onServerReload(resourceManager: IResourceManager): Unit = {
+    recipes_internal.clear()
+    registerJsonRecipe(resourceManager)
+    QuarryPlus.LOGGER.debug("Recipe loaded.")
+  }
 }

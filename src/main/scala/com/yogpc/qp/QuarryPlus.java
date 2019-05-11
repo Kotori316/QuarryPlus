@@ -64,8 +64,7 @@ public class QuarryPlus {
     }
 
     public void serverStart(FMLServerStartingEvent event) {
-        WorkbenchRecipes.registerJsonRecipe(event.getServer().getResourceManager());
-        QuarryPlus.LOGGER.debug("Recipe loaded.");
+        event.getServer().getResourceManager().addReloadListener(WorkbenchRecipes::onServerReload);
     }
 
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)

@@ -10,8 +10,6 @@ import net.minecraftforge.common.util.Constants.NBT
 import net.minecraftforge.fluids.FluidStack
 import net.minecraftforge.registries.ForgeRegistries
 
-import scala.collection.AbstractIterator
-
 package object qp {
 
   val enchantCollector: PartialFunction[(Int, Int), (Integer, Integer)] = {
@@ -47,24 +45,6 @@ package object qp {
 
   implicit class JOS[T](val o: Option[T]) extends AnyVal {
     def asJava: java.util.Optional[T] = toJavaOption(o)
-  }
-
-  implicit class NBTList2Iterator(val list: NBTTagList) extends AnyVal {
-    def tagIterator: Iterator[NBTTagCompound] = new AbstractIterator[NBTTagCompound] {
-      var count = 0
-
-      override def hasNext: Boolean = count < list.size()
-
-      override def next(): NBTTagCompound = {
-        val v = list.getCompound(count)
-        count += 1
-        v
-      }
-
-      override def size: Int = list.size()
-
-      override def hasDefiniteSize: Boolean = true
-    }
   }
 
   implicit class ItemStackRemoveEnchantment(val stack: ItemStack) extends AnyVal {
