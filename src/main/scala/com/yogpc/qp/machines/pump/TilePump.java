@@ -192,6 +192,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                 if (connectTo != null) {
                     TileEntity te = world.getTileEntity(getPos().offset(connectTo));
                     if (te instanceof IAttachable && ((IAttachable) te).connect(this.connectTo.getOpposite(), Attachments.FLUID_PUMP)) {
+                        ((IAttachable) te).connectAttachment(this.connectTo.getOpposite(), Attachments.FLUID_PUMP, false);
                         S_sendNowPacket();
                         this.initialized = true;
                     } else if (world.isAirBlock(getPos().offset(connectTo))) {
@@ -211,6 +212,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
             for (EnumFacing facing : EnumFacing.values()) {
                 te = world.getTileEntity(getPos().offset(facing));
                 if (te instanceof IAttachable && ((IAttachable) te).connect(facing.getOpposite(), Attachments.FLUID_PUMP)) {
+                    ((IAttachable) te).connectAttachment(facing.getOpposite(), Attachments.FLUID_PUMP, false);
                     setConnectTo(facing);
                     S_sendNowPacket();
                     return;
@@ -594,7 +596,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         }
 
         //TODO change to better code.
-        private FluidStack getFluidStack(String name, int amount){
+        private FluidStack getFluidStack(String name, int amount) {
             return null;
         }
 

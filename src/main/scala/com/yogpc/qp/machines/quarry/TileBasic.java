@@ -181,15 +181,17 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     }
 
     @Override
-    public boolean connectAttachment(final EnumFacing facing, IAttachment.Attachments<? extends APacketTile> attachments) {
+    public boolean connectAttachment(final EnumFacing facing, IAttachment.Attachments<? extends APacketTile> attachments, boolean simulate) {
         if (facingMap.containsKey(attachments)) {
             TileEntity entity = world.getTileEntity(getPos().offset(facingMap.get(attachments)));
             if (attachments.test(entity) && facingMap.get(attachments) != facing) {
                 return false;
             }
         }
-        facingMap.put(attachments, facing);
-        G_renew_powerConfigure();
+        if (!simulate) {
+            facingMap.put(attachments, facing);
+            G_renew_powerConfigure();
+        }
         return true;
     }
 

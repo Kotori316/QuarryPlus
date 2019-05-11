@@ -4,11 +4,10 @@ import net.minecraft.util.EnumFacing;
 
 public interface IAttachable {
     /**
-     * Internal use only.
-     *
      * @param attachments must have returned true by {@link IAttachable#isValidAttachment(IAttachment.Attachments)}.
+     * @param simulate    true to avoid having side effect.
      */
-    boolean connectAttachment(final EnumFacing facing, final IAttachment.Attachments<? extends APacketTile> attachments);
+    boolean connectAttachment(final EnumFacing facing, final IAttachment.Attachments<? extends APacketTile> attachments, boolean simulate);
 
     /**
      * @param attachments that you're trying to add.
@@ -24,6 +23,19 @@ public interface IAttachable {
      * @return true if the attachment was connected successfully.
      */
     default boolean connect(final EnumFacing facing, final IAttachment.Attachments<? extends APacketTile> attachments) {
-        return isValidAttachment(attachments) && connectAttachment(facing, attachments);
+        return isValidAttachment(attachments) && connectAttachment(facing, attachments, true);
     }
+
+    public static final IAttachable dummy = new IAttachable() {
+
+        @Override
+        public boolean connectAttachment(EnumFacing facing, IAttachment.Attachments<? extends APacketTile> attachments, boolean simulate) {
+            return false;
+        }
+
+        @Override
+        public boolean isValidAttachment(IAttachment.Attachments<? extends APacketTile> attachments) {
+            return false;
+        }
+    };
 }

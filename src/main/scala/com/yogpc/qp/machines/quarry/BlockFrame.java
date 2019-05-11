@@ -16,13 +16,19 @@ package com.yogpc.qp.machines.quarry;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.BiPredicate;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
+import com.google.common.collect.Maps;
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.utils.Holder;
+
+import static jp.t2v.lab.syntax.MapStreamSyntax.*;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEmptyDrops;
 import net.minecraft.block.BlockSixWay;
@@ -43,6 +49,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.apache.commons.lang3.tuple.Pair;
 
 import static net.minecraft.state.properties.BlockStateProperties.*;
 
@@ -59,6 +66,14 @@ public class BlockFrame extends BlockEmptyDrops {
     public static final VoxelShape East_AABB = VoxelShapes.create(.75, 0.25, 0.25, 1, 0.75, 0.75);
     public static final VoxelShape UP_AABB = VoxelShapes.create(0.25, .75, 0.25, 0.75, 1, 0.75);
     public static final VoxelShape Down_AABB = VoxelShapes.create(0.25, 0, 0.25, 0.75, .25, 0.75);
+    private static final Map<BooleanProperty, VoxelShape> SHAPE_MAP = Stream.of(
+        Pair.of(NORTH, North_AABB),
+        Pair.of(SOUTH, South_AABB),
+        Pair.of(WEST, West_AABB),
+        Pair.of(EAST, East_AABB),
+        Pair.of(UP, UP_AABB),
+        Pair.of(DOWN, Down_AABB)
+    ).collect(entryToMap());
     private static final BiPredicate<World, BlockPos> HAS_NEIGHBOUR_LIQUID = (world, pos) ->
         Stream.of(EnumFacing.values()).map(pos::offset).map(world::getBlockState)
             .anyMatch(state -> !state.isFullCube() && state.getMaterial().isLiquid());
@@ -188,26 +203,10 @@ public class BlockFrame extends BlockEmptyDrops {
     @Override
     @SuppressWarnings("deprecation")
     public VoxelShape getShape(IBlockState state, IBlockReader worldIn, BlockPos pos) {
-        VoxelShape aabb = BOX_AABB;
-        if (state.get(NORTH)) {
-            aabb = VoxelShapes.or(aabb, North_AABB);
-        }
-        if (state.get(SOUTH)) {
-            aabb = VoxelShapes.or(aabb, South_AABB);
-        }
-        if (state.get(WEST)) {
-            aabb = VoxelShapes.or(aabb, West_AABB);
-        }
-        if (state.get(EAST)) {
-            aabb = VoxelShapes.or(aabb, East_AABB);
-        }
-        if (state.get(UP)) {
-            aabb = VoxelShapes.or(aabb, UP_AABB);
-        }
-        if (state.get(DOWN)) {
-            aabb = VoxelShapes.or(aabb, Down_AABB);
-        }
-        return aabb;
+        return SHAPE_MAP.entrySet().stream()
+            .filter(byKey(state::get))
+            .map(valueToAny(Function.identity()))
+            .reduce(BOX_AABB, VoxelShapes::or);
     }
 
     @Override

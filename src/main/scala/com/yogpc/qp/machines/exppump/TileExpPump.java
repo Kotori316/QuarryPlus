@@ -22,6 +22,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -31,9 +32,11 @@ import org.apache.commons.lang3.tuple.Pair;
 import scala.Symbol;
 
 import static jp.t2v.lab.syntax.MapStreamSyntax.byValue;
+import static jp.t2v.lab.syntax.MapStreamSyntax.values;
 import static net.minecraft.state.properties.BlockStateProperties.ENABLED;
 
 public class TileExpPump extends APacketTile implements IEnchantableTile, IDebugSender, IAttachment {
+    @Nullable
     private EnumFacing mConnectTo;
     private int xpAmount = 0;
 
@@ -88,16 +91,18 @@ public class TileExpPump extends APacketTile implements IEnchantableTile, IDebug
 
     private void refreshConnection() {
         if (hasWorld() && !world.isRemote) {
-            EnumFacing facing = Stream.of(EnumFacing.values())
+            Map.Entry<EnumFacing, IAttachable> entry = Stream.of(EnumFacing.values())
                 .map(f -> Pair.of(f, world.getTileEntity(pos.offset(f))))
                 .filter(byValue(t -> t instanceof IAttachable))
+                .map(values(t -> ((IAttachable) t)))
                 .filter(pair ->
-                    ((IAttachable) pair.getValue()).connect(pair.getKey().getOpposite(), Attachments.EXP_PUMP)
+                    pair.getValue().connect(pair.getKey().getOpposite(), Attachments.EXP_PUMP)
                 )
-                .map(Pair::getKey)
                 .findFirst()
-                .orElse(null);
-            setConnectTo(facing);
+                .orElse(Pair.of(null, IAttachable.dummy));
+
+            if (entry.getValue().connectAttachment(entry.getKey(), Attachments.EXP_PUMP, false))
+                setConnectTo(entry.getKey());
         }
     }
 

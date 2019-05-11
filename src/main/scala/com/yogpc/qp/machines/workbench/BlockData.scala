@@ -41,15 +41,6 @@ case class BlockData(name: ResourceLocation) extends Ordered[BlockData] {
     this(ForgeRegistries.BLOCKS.getKey(state.getBlock))
   }
 
-  override def equals(o: Any): Boolean = {
-    o match {
-      case data: BlockData =>
-        name == data.name
-    }
-  }
-
-  override def hashCode: Int = this.name.hashCode
-
   def write(nbt: NBTTagCompound): NBTTagCompound = {
     nbt.setString(BlockData.Name_NBT, name.toString)
     nbt
