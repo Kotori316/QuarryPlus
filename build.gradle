@@ -14,8 +14,7 @@ apply plugin: 'scala'
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: "com.matthewprenger.cursegradle"
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
-apply plugin: 'maven-publish'
-apply plugin: 'java-library'
+apply plugin: 'eclipse'
 
 version = getProperty("modversion")
 group = 'com.kotori316' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
@@ -85,11 +84,12 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft 'net.minecraftforge:forge:1.13.2-25.0.191'
     implementation "org.scala-lang:scala-library:2.12.8"
+    implementation group: 'org.typelevel', name: "cats-core_2.12", version: '1.6.0'
 
     def mc_version = "1.13.2"
     def jei_version = "5.0.0.20"
     // at runtime, use the full JEI jar
-    api fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
+    implementation fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
 //    compile "mezz.jei:jei-${mc_version}:${jei_version}:sources"
 }
 
@@ -131,19 +131,6 @@ task deobfJar(type: Jar) {
 // Tell the artifact system about our extra jars
 artifacts {
     archives srcJar, deobfJar
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact reobfArtifact
-        }
-    }
-    repositories {
-        maven {
-            url "file:///${project.projectDir}/mcmodsrepo"
-        }
-    }
 }
 
 curseforge {
