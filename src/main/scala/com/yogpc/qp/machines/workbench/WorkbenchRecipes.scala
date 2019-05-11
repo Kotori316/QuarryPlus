@@ -23,8 +23,6 @@ import org.apache.commons.io.IOUtils
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
-import scala.util.Try
-import scala.util.control.NonFatal
 
 abstract sealed class WorkbenchRecipes(val location: ResourceLocation, val output: ItemDamage, val energy: Long, val showInJEI: Boolean = true)
   extends IRecipeHidden(location) with Ordered[WorkbenchRecipes] {
@@ -141,21 +139,21 @@ object WorkbenchRecipes {
     recipes.find { case (_, r) => r.output == id }.map(_._2).asJava
   }
 
-  private def resource(resourceManager: IResourceManager, location: ResourceLocation): EitherT[Option, String, IResource] = {
-    EitherT.fromOption(resourceManager.getAllResources(location).asScala.lastOption, s"Resource: $location isn't found.")
+  private def resource(resourceManager: IResourceManager, location: ResourceLocation): Either[String, IResource] = {
+    Either.fromOption(resourceManager.getAllResources(location).asScala.lastOption, s"Resource: $location isn't found.")
   }
 
-  private def read(r: IResource, gson: Gson): EitherT[Option, String, JsonObject] = {
-    try {
-      for (st <- EitherT.rightT[Option, String](IOUtils.toString(r.getInputStream, StandardCharsets.UTF_8));
-           obj <- EitherT.rightT[Option, String](JsonUtils.fromJson(gson, st, classOf[JsonObject])))
-        yield obj
-    } catch {
-      case NonFatal(readEx) => EitherT.leftT[Option, JsonObject](readEx.toString)
-    }
+  private def read(r: IResource, gson: Gson): Either[String, JsonObject] = {
+    val stream = r.getInputStream
+    scala.util.control.Exception.nonFatalCatch[Either[String, JsonObject]]
+      .withApply(readEx => Left(readEx.toString))
+      .andFinally(stream.close()) {
+        val st = IOUtils.toString(stream, StandardCharsets.UTF_8)
+        Right(JsonUtils.fromJson(gson, st, classOf[JsonObject]))
+      }
   }
 
-  private def parse(json: JsonObject, location: ResourceLocation): EitherT[Option, String, WorkbenchRecipes] = {
+  private def parse(json: JsonObject, location: ResourceLocation): Either[String, WorkbenchRecipes] = {
     type EOR[A] = ValidatedNel[String, A]
     implicit val ff: Functor[EOR] with Semigroupal[EOR] = new Functor[EOR] with Semigroupal[EOR] {
       override def map[A, B](fa: EOR[A])(f: A => B): EOR[B] = fa map f
@@ -180,13 +178,13 @@ object WorkbenchRecipes {
       val id = JsonUtils.getString(json, "id", "").some.filter(_.nonEmpty).map(new ResourceLocation(_)).getOrElse(location)
       new IngredientRecipe(id, stack, e.toLong, showInJei, recipe)
     }
-    EitherT.fromEither[Option](value.leftMap(_.mkString_(", ")).toEither)
+    value.leftMap(_.mkString_(", ")).toEither
   }
 
   def registerJsonRecipe(resourceManager: IResourceManager): Unit = {
     val gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping.create
     for (location <- resourceManager.getAllResourceLocations("quarryplus/workbench", s => s.endsWith(".json") && !s.startsWith("_")).asScala) {
-      (resource(resourceManager, location) flatMap (read(_, gson)) flatMap (parse(_, location))).value.foreach {
+      resource(resourceManager, location) flatMap (read(_, gson)) flatMap (parse(_, location)) match {
         case Left(value) if value == conditionMessage =>
         case Left(value) => QuarryPlus.LOGGER.error(s"Error in loading $location, $value")
         case Right(r) => recipes_internal.put(r.location, r)
@@ -194,34 +192,10 @@ object WorkbenchRecipes {
     }
   }
 
-  def load(obj: Either[Throwable, JsonObject]): Either[String, WorkbenchRecipes] = {
-    obj.left.map(_.toString)
-      .filterOrElse(json => CraftingHelper.processConditions(json, "conditions"),
-        conditionMessage)
-      .filterOrElse(json => JsonUtils.getString(json, "type") == recipeLocation.toString,
-        "Not a workbench recipe.")
-      .flatMap { json =>
-        val result = CraftingHelper.getItemStack(JsonUtils.getJsonObject(json, "result"), true)
-        val id = JsonUtils.getString(json, "id", "")
-        // divided to compute lazy.
-        val location = if (id == "") QuarryPlus.modID + ":" + JsonUtils.getString(json, "path") else id
-        if (!result.isEmpty) {
-          (for (recipe <- Try(JsonUtils.getJsonArray(json, "ingredients").asScala.map(IngredientWithCount.getSeq).toSeq);
-                energy <- Try(JsonUtils.getString(json, "energy", "1000").toDouble * APowerTile.MicroJtoMJ);
-                showInJEI <- Try(JsonUtils.getBoolean(json, "showInJEI", true))) yield {
-            new IngredientRecipe(new ResourceLocation(location), result, energy.toLong, showInJEI, recipe)
-          }).toEither.left.map(_.toString)
-        } else {
-          Left("Result item is empty.")
-        }
-      }
-      .filterOrElse(_.energy > 0, "Energy must be over than 0.")
-  }
-
   object Serializer extends IRecipeSerializer[WorkbenchRecipes] {
     override def read(recipeId: ResourceLocation, json: JsonObject): WorkbenchRecipes = {
       json.addProperty("id", recipeId.toString)
-      load(Right(json)) match {
+      parse(json, recipeId) match {
         case Right(value) => value
         case Left(value) if value == conditionMessage => WorkbenchRecipes.dummyRecipe
         case Left(value) => throw new IllegalStateException(s"Recipe loading error. $value, $recipeId")
