@@ -13,3 +13,5 @@ Finished Work
 * QuarryFrame
 * Quarry
 * PumpPlus
+* Replacer
+* Dummy Block
