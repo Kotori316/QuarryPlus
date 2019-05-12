@@ -6,6 +6,7 @@ public interface IAttachable {
     /**
      * @param attachments must have returned true by {@link IAttachable#isValidAttachment(IAttachment.Attachments)}.
      * @param simulate    true to avoid having side effect.
+     * @return true if the attachment is (will be) successfully connected.
      */
     boolean connectAttachment(final EnumFacing facing, final IAttachment.Attachments<? extends APacketTile> attachments, boolean simulate);
 
@@ -26,8 +27,7 @@ public interface IAttachable {
         return isValidAttachment(attachments) && connectAttachment(facing, attachments, true);
     }
 
-    public static final IAttachable dummy = new IAttachable() {
-
+    IAttachable dummy = new IAttachable() {
         @Override
         public boolean connectAttachment(EnumFacing facing, IAttachment.Attachments<? extends APacketTile> attachments, boolean simulate) {
             return false;
@@ -36,6 +36,11 @@ public interface IAttachable {
         @Override
         public boolean isValidAttachment(IAttachment.Attachments<? extends APacketTile> attachments) {
             return false;
+        }
+
+        @Override
+        public String toString() {
+            return "IAttachable Dummy";
         }
     };
 }

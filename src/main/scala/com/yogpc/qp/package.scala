@@ -70,35 +70,6 @@ package object qp {
     }
   }
 
-  /**
-    * Copied from [[https://yuroyoro.hatenablog.com/entry/20110323/1300854858]].
-    *
-    * @tparam A AnyRef
-    */
-  // 入れ物はタッパーです。
-  implicit class Tapper[A](private val obj: A) extends AnyVal {
-    // RubyのObject#tap的な。引数fに自分自身を適用させて自身を返す。
-    // 副作用専用メソッド。nullだったらなにもしなーい
-    def tap(f: A => Unit): A = {
-      if (obj != null)
-        f(obj)
-      obj
-    }
-
-    // 上記の、戻り値Option版。nullだったらNoneが返る
-    def tapOption(f: A => Unit): Option[A] = {
-      Option(tap(f))
-    }
-
-    // いつでもmapできたら便利よね?
-    def map[B](f: A => B): Option[B] = Option(obj).map(f)
-
-    def nnMap[B](f: A => B): Option[B] = Option(obj).flatMap(f.andThen(Option.apply))
-
-    // Option(obj)でもいいけど、何でもメソッドチェーンしたい病の人に
-    def toOption: Option[A] = Option(obj)
-  }
-
   type NBTWrapper[A, NBTType <: INBTBase] = A => NBTType
 
   implicit val Long2NBT: NBTWrapper[Long, NBTTagLong] = (num: Long) => new NBTTagLong(num)

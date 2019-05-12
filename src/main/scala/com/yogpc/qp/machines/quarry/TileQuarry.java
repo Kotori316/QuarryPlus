@@ -31,6 +31,7 @@ import com.yogpc.qp.machines.base.IMarker;
 import com.yogpc.qp.machines.base.QPBlock;
 import com.yogpc.qp.machines.exppump.TileExpPump;
 import com.yogpc.qp.machines.pump.TilePump;
+import com.yogpc.qp.machines.replacer.TileReplacer;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.TileMessage;
 import com.yogpc.qp.packet.quarry.ModeMessage;
@@ -57,6 +58,7 @@ import scala.Symbol;
 
 import static com.yogpc.qp.machines.base.IAttachment.Attachments.EXP_PUMP;
 import static com.yogpc.qp.machines.base.IAttachment.Attachments.FLUID_PUMP;
+import static com.yogpc.qp.machines.base.IAttachment.Attachments.REPLACER;
 import static jp.t2v.lab.syntax.MapStreamSyntax.byEntry;
 import static jp.t2v.lab.syntax.MapStreamSyntax.entryToMap;
 import static jp.t2v.lab.syntax.MapStreamSyntax.not;
@@ -214,7 +216,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     private boolean isBreakableBlock(BlockPos target, IBlockState b, float blockHardness) {
         return blockHardness >= 0 && // Not to break unbreakable
             !b.getBlock().isAir(b, world, target) && // Avoid air
-//            (now == Mode.NOT_NEED_BREAK || !facingMap.containsKey(REPLACER) || b != S_getFillBlock()) && // Avoid dummy block.
+            (now == Mode.NOT_NEED_BREAK || !facingMap.containsKey(REPLACER) || b != S_getFillBlock()) && // Avoid dummy block.
             !(TilePump.isLiquid(b) && !facingMap.containsKey(FLUID_PUMP)); // Fluid when pump isn't connected.
     }
 
@@ -435,15 +437,15 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     }
 
     protected IBlockState S_getFillBlock() {
-//        if (now == Mode.NOT_NEED_BREAK || !facingMap.containsKey(REPLACER))
+        if (now == Mode.NOT_NEED_BREAK || !facingMap.containsKey(REPLACER))
         return Blocks.AIR.getDefaultState();
-//        else {
-//            return Optional.ofNullable(facingMap.get(REPLACER))
-//                .map(pos::offset).map(world::getTileEntity)
-//                .flatMap(REPLACER)
-//                .map(TileReplacer::getReplaceState)
-//                .orElse(Blocks.AIR.getDefaultState());
-//        }
+        else {
+            return Optional.ofNullable(facingMap.get(REPLACER))
+                .map(pos::offset).map(world::getTileEntity)
+                .flatMap(REPLACER)
+                .map(TileReplacer::getReplaceState)
+                .orElse(Blocks.AIR.getDefaultState());
+        }
     }
 
     @SuppressWarnings("Duplicates")

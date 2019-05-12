@@ -115,9 +115,9 @@ object Config {
   class ClientContent(builder: ForgeConfigSpec.Builder) {
     builder.comment("Beginning of QuarryPlus client configuration.").push("client")
 
-
     //--------- Registering config entries. ---------
     val enableRender = builder.comment("True to enable render of machine effect.").define("enableRender", true)
+    val dummyTexture = builder.comment("Not used").define("dummyTexture", "minecraft:glass")
 
     builder.pop()
   }

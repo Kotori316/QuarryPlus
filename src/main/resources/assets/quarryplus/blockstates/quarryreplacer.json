@@ -1,32 +1,18 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "cube",
-    "textures": {
-      "particle": "quarryplus:blocks/replacer_top",
-      "down": "quarryplus:blocks/replacer_bottom",
-      "up": "quarryplus:blocks/replacer_top",
-      "north": "quarryplus:blocks/replacer_side",
-      "east": "quarryplus:blocks/replacer_side",
-      "south": "quarryplus:blocks/replacer_side",
-      "west": "quarryplus:blocks/replacer_side"
-    }
+    "model": "quarryplus:quarryreplacer"
   },
   "variants": {
-    "normal": [
-      {}
-    ],
-    "connected": {
+    "working": {
       "true": {
-        "textures": {
-          "up": "quarryplus:blocks/replacer_top_c"
-        }
+        "model": "quarryplus:quarryreplacer_working"
       },
       "false": {
       }
-    },
-    "inventory": [
-      {}
-    ]
-  }
+    }
+  },
+  "inventory": [
+    {}
+  ]
 }

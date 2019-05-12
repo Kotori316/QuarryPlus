@@ -248,7 +248,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
             i = -2;
         }
         fakePlayer.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
-        return new BI(i, xp, false/*facingMap.containsKey(IAttachment.Attachments.REPLACER)*/);
+        return new BI(i, xp, facingMap.containsKey(IAttachment.Attachments.REPLACER));
     }
 
     /**

@@ -22,7 +22,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -101,7 +100,7 @@ public class TileExpPump extends APacketTile implements IEnchantableTile, IDebug
                 .findFirst()
                 .orElse(Pair.of(null, IAttachable.dummy));
 
-            if (entry.getValue().connectAttachment(entry.getKey(), Attachments.EXP_PUMP, false))
+            if (entry.getKey() == null || entry.getValue().connectAttachment(entry.getKey().getOpposite(), Attachments.EXP_PUMP, false))
                 setConnectTo(entry.getKey());
         }
     }

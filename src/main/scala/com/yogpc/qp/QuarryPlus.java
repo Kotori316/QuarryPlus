@@ -24,6 +24,7 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
@@ -41,8 +42,7 @@ public class QuarryPlus {
 
     public QuarryPlus() {
         initConfig();
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-        MinecraftForge.EVENT_BUS.addListener(this::serverStart);
+        FMLJavaModLoadingContext.get().getModEventBus().register(this);
         proxy.registerEvents(MinecraftForge.EVENT_BUS);
     }
 
@@ -55,6 +55,7 @@ public class QuarryPlus {
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.clientBuild(client).build());
     }
 
+    @SubscribeEvent
     public void setup(FMLCommonSetupEvent event) {
         proxy.registerTextures(event);
         PowerManager.configRegister();
@@ -63,8 +64,9 @@ public class QuarryPlus {
         RecipeSerializers.register(WorkbenchRecipes.Serializer$.MODULE$);
     }
 
-    public void serverStart(FMLServerStartingEvent event) {
-        event.getServer().getResourceManager().addReloadListener(WorkbenchRecipes::onServerReload);
+    @SubscribeEvent
+    public void loadComplete(FMLLoadCompleteEvent event) {
+        proxy.setDummyTexture(Config.client().dummyTexture().get());
     }
 
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -84,6 +86,12 @@ public class QuarryPlus {
         public static void registerTiles(RegistryEvent.Register<TileEntityType<?>> event) {
             JavaConverters.seqAsJavaList(Holder.tiles()).forEach(event.getRegistry()::register);
         }
+
+        @SubscribeEvent
+        public static void serverStart(FMLServerStartingEvent event) {
+            event.getServer().getResourceManager().addReloadListener(WorkbenchRecipes::onServerReload);
+        }
+
     }
 
     @SuppressWarnings({"unused", "WeakerAccess", "SpellCheckingInspection"})

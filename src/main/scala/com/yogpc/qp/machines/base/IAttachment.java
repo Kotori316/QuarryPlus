@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import com.yogpc.qp.machines.exppump.TileExpPump;
 import com.yogpc.qp.machines.pump.TilePump;
+import com.yogpc.qp.machines.replacer.TileReplacer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.tileentity.TileEntity;
@@ -24,7 +25,7 @@ public interface IAttachment {
     class Attachments<T extends APacketTile> implements Predicate<TileEntity>, Function<TileEntity, Optional<T>> {
         public static final Attachments<TilePump> FLUID_PUMP = new Attachments<>("FLUID_PUMP");
         public static final Attachments<TileExpPump> EXP_PUMP = new Attachments<>("EXP_PUMP");
-//        public static final Attachments<TileReplacer> REPLACER = new Attachments<>("REPLACER");
+        public static final Attachments<TileReplacer> REPLACER = new Attachments<>("REPLACER");
         public static final Set<Attachments<? extends APacketTile>> ALL;
 
         static {

@@ -2,14 +2,12 @@ package com.yogpc.qp.utils;
 
 import java.util.Optional;
 
-import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
 public class ProxyCommon {
     public Optional<EntityPlayer> getPacketPlayer(final NetworkEvent.Context context) {
@@ -32,10 +30,6 @@ public class ProxyCommon {
     }
 
     public void registerTextures(FMLCommonSetupEvent event) {
-    }
-
-    public ModelResourceLocation fromEntry(IForgeRegistryEntry<?> entry) {
-        return null;
     }
 
     public void setDummyTexture(String textureName) {
