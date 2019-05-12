@@ -20,11 +20,11 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.compat.FluidStore;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.TranslationKeys;
@@ -47,7 +47,9 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockFlowingFluid;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.fluid.IFluidState;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Fluids;
 import net.minecraft.nbt.INBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -65,18 +67,11 @@ import net.minecraft.world.chunk.ChunkSection;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidEvent;
-import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTank;
-import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.IFluidBlock;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.FluidTankProperties;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
-import net.minecraftforge.fluids.capability.templates.EmptyFluidHandler;
 import scala.Symbol;
 
 public class TilePump extends APacketTile implements IEnchantableTile, ITickable, IDebugSender, IAttachment {
@@ -91,12 +86,12 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     protected boolean silktouch;
     private final List<FluidStack> liquids = new ArrayList<>();
     public final EnumMap<EnumFacing, LinkedList<String>> mapping = new EnumMap<>(EnumFacing.class);
-    public final EnumMap<EnumFacing, PumpTank> tankMap = new EnumMap<>(EnumFacing.class);
+//    public final EnumMap<EnumFacing, PumpTank> tankMap = new EnumMap<>(EnumFacing.class);
 
     public TilePump() {
         super(Holder.pumpTileType());
         for (EnumFacing value : EnumFacing.values()) {
-            tankMap.put(value, new PumpTank(value));
+//            tankMap.put(value, new PumpTank(value));
             mapping.put(value, new LinkedList<>());
         }
     }
@@ -169,7 +164,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     @Override
     public void tick() {
         if (!world.isRemote) {
-            for (EnumFacing facing : EnumFacing.values()) {
+            /*for (EnumFacing facing : EnumFacing.values()) {
                 BlockPos offset = getPos().offset(facing);
                 IBlockState state = world.getBlockState(offset);
                 if (state.getBlock().hasTileEntity(state)) {
@@ -187,7 +182,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                             }
                         });
                 }
-            }
+            }*/
             if (!initialized) {
                 if (connectTo != null) {
                     TileEntity te = world.getTileEntity(getPos().offset(connectTo));
@@ -501,6 +496,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
      */
     public static boolean isLiquid(@Nonnull final IBlockState state, final boolean findSource, final World world, final BlockPos pos) {
         Block block = state.getBlock();
+        if (state.getFluidState() != Fluids.EMPTY.getDefaultState()) return true;
         if (block instanceof IFluidBlock)
             return !findSource || ((IFluidBlock) block).canDrain(world, pos);
         else {
@@ -518,7 +514,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         return Symbol.apply("PumpPlus");
     }
 
-    private class PumpTank extends FluidTank {
+    /*private class PumpTank extends FluidTank {
         final EnumFacing facing;
 
         private PumpTank(EnumFacing facing) {
@@ -619,12 +615,12 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
             FluidEvent.fireEvent(new FluidEvent.FluidDrainingEvent(stack.amount <= 0 ? null : stack, world, getPos(), this, drained));
         }
 
-    }
+    }*/
 
     private void drainBlock(final int bx, final int bz, final IBlockState tb) {
         if (isLiquid(this.storageArray[bx >> 4][bz >> 4][this.py >> 4].get(bx & 0xF, this.py & 0xF, bz & 0xF))) {
             BlockPos blockPos = new BlockPos(bx + xOffset, py, bz + zOffset);
-            FluidUtil.getFluidHandler(world, blockPos, EnumFacing.UP).ifPresent(handler -> {
+            /*FluidUtil.getFluidHandler(world, blockPos, EnumFacing.UP).ifPresent(handler -> {
                 FluidStack stack = handler.drain(Fluid.BUCKET_VOLUME, true);
                 if (stack != null) {
                     final int index = this.liquids.indexOf(stack);
@@ -633,7 +629,10 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                     else
                         this.liquids.add(stack);
                 }
-            });
+            });*/
+            IFluidState fluidState = world.getFluidState(blockPos);
+            if (fluidState.isSource())
+                FluidStore.injectToNearTile(world, pos, fluidState.getFluid());
             world.setBlockState(blockPos, tb);
         }
     }
@@ -709,9 +708,9 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable EnumFacing side) {
-        if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
-            return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.orEmpty(cap, LazyOptional.of(() -> side == null ? tankAll : tankMap.get(side)));
-        }
+//        if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
+//            return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.orEmpty(cap, LazyOptional.of(() -> side == null ? tankAll : tankMap.get(side)));
+//        }
         return super.getCapability(cap, side);
     }
 }

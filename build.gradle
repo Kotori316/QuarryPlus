@@ -76,6 +76,10 @@ repositories {
         name = "Progwml6 maven"
         url = "https://dvs1.progwml6.com/files/maven/"
     }
+    maven{
+        name 'curseforge'
+        url 'https://minecraft.curseforge.com/api/maven/'
+    }
 }
 
 dependencies {
@@ -91,6 +95,7 @@ dependencies {
     // at runtime, use the full JEI jar
     implementation fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
 //    compile "mezz.jei:jei-${mc_version}:${jei_version}:sources"
+    implementation fg.deobf("largefluidtank:LargeFluidTank:5.2")
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..

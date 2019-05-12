@@ -151,15 +151,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         blockState = world.getBlockState(pos);
         if (blockState.getBlock().isAir(blockState, world, pos))
             return true;
-        if (facingMap.containsKey(FLUID_PUMP) && TilePump.isLiquid(blockState)) {
-            final TileEntity te = world.getTileEntity(getPos().offset(facingMap.get(FLUID_PUMP)));
-            if (!(te instanceof TilePump)) {
-                facingMap.remove(FLUID_PUMP);
-                G_renew_powerConfigure();
-                return true;
-            }
-            return ((TilePump) te).S_removeLiquids(this, x, y, z);
-        }
+
         BI bi = S_addDroppedItems(dropped, blockState, pos);
         if (!PowerManager.useEnergyBreak(this, blockState.getBlockHardness(world, pos), bi.b, this.unbreaking, bi.b1))
             return false;
@@ -174,6 +166,19 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
                 }
             });
         this.cacheItems.addAll(dropped);
+
+        if (facingMap.containsKey(FLUID_PUMP) && TilePump.isLiquid(blockState)) {
+            final TileEntity te = world.getTileEntity(getPos().offset(facingMap.get(FLUID_PUMP)));
+            if (!(te instanceof TilePump)) {
+                facingMap.remove(FLUID_PUMP);
+                G_renew_powerConfigure();
+                return true;
+            }
+            boolean b = ((TilePump) te).S_removeLiquids(this, x, y, z);
+            if (blockState.getMaterial().isLiquid()) return b;
+            // fluid should be replaced with air.
+            // other blocks will be replaced with block.
+        }
         // Replace block
         world.playEvent(Constants.WorldEvents.BREAK_BLOCK_EFFECTS, pos, Block.getStateId(blockState));
         world.setBlockState(pos, replace, 3);
