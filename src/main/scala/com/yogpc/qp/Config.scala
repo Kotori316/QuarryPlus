@@ -33,7 +33,7 @@ object Config {
     val fastQuarryHeadMove = builder.comment("Fasten quarry's head moving.").define("FastQuarryHeadMove", false)
     val removeBedrock = builder.comment("True to allow machines to remove bedrock. (Just removing. Not collecting)").define("RemoveBedrock", false)
     val disableFrameChainBreak = builder.comment("DisableFrameChainBreak").define("DisableFrameChainBreak", false)
-    val removeOnlySource=builder.comment("Set false to allow PlumPlus to remove non-source fluid block.").define("RemoveOnlyFluidSource", false)
+    val removeOnlySource = builder.comment("Set false to allow PlumPlus to remove non-source fluid block.").define("RemoveOnlyFluidSource", false)
 
     val powers = powerConfig(builder)
     builder.pop()
@@ -41,68 +41,76 @@ object Config {
     def debug = configDebug.get() || inDev
 
     private def powerConfig(builder: ForgeConfigSpec.Builder): Map[String, ForgeConfigSpec.DoubleValue] = {
-      def get(path: List[String], name: String, defaultValue: Double): (String, ForgeConfigSpec.DoubleValue) = {
-        import scala.collection.JavaConverters._
-        val strings = path :+ name
-        strings.mkString(".") -> builder.defineInRange(strings.asJava, defaultValue, 0d, 2e9)
-      }
-
-      val pf = (p: List[String]) => (s: (String, Double)) => {
-        get(p, s._1, s._2)
+      case class Category(path: List[String]) {
+        def apply(values: (String, Double)*) = {
+          values.map { case (name, defaultValue) =>
+            import scala.collection.JavaConverters._
+            val strings = path :+ name
+            strings.mkString(".") -> builder.defineInRange(strings.asJava, defaultValue, 0d, 2e9)
+          }
+        }
       }
       builder.comment("Quarry PowerSetting [MJ] (min = 0, Max = 2,000,000,000 = 2 billion)").push("PowerSetting")
-      val quarry_break = Seq(
-        ("BasePower", 40d),
-        ("EfficiencyCoefficient", 1.3d),
-        ("UnbreakingCoefficient", 1d),
-        ("FortuneCoefficient", 1.3d),
-        ("SilktouchCoefficient", 2d),
-        ("BaseMaxReceive", 300d),
-        ("BaseMaxStored", 15000d),
-      ).map(pf("Quarry" :: "BreakBlock" :: Nil))
-      val quarry_break_head = Seq(
-        ("BasePower", 200d),
-        ("UnbreakingCoefficient", 1d),
-      ).map(pf("Quarry" :: "BreakBlock" :: "MoveHead" :: Nil))
-      val quarry_makeFrame = Seq(
-        ("BasePower", 25d),
-        ("EfficiencyCoefficient", 1.3d),
-        ("UnbreakingCoefficient", 1d),
-        ("BaseMaxReceive", 100d),
-        ("BaseMaxStored", 15000d),
-      ).map(pf("Quarry" :: "MakeFrame" :: Nil))
-      val pump_drain = Seq(
-        ("BasePower", 10d),
-        ("UnbreakingCoefficient", 1d),
-      ).map(pf("Pump" :: "DrainLiquid" :: Nil))
-      val pump_frame = Seq(
-        ("BasePower", 25d),
-        ("UnbreakingCoefficient", 1d),
-      ).map(pf("Pump" :: "MakeFrame" :: Nil))
-      val mining = Seq(
-        ("BasePower", 40d),
-        ("EfficiencyCoefficient", 1.3d),
-        ("UnbreakingCoefficient", 1d),
-        ("FortuneCoefficient", 1.3d),
-        ("SilktouchCoefficient", 2d),
-        ("BaseMaxReceive", 100d),
-        ("BaseMaxStored", 1000d),
-      ).map(pf("MiningWell" :: Nil))
-      val laser = Seq(
-        ("BasePower", 4d),
-        ("EfficiencyCoefficient", 2d),
-        ("UnbreakingCoefficient", 0.1d),
-        ("FortuneCoefficient", 1.05d),
-        ("SilktouchCoefficient", 1.1d),
-        ("BaseMaxReceive", 100d),
-        ("BaseMaxStored", 1000d),
-      ).map(pf("Laser" :: Nil))
-      val refinery = Seq(
-        ("EfficiencyCoefficient", 1.2d),
-        ("UnbreakingCoefficient", 1d),
-        ("BaseMaxReceive", 6d),
-        ("BaseMaxStored", 1000d),
-      ).map(pf("Refinery" :: Nil))
+      val quarry_break =
+        Category("Quarry" :: "BreakBlock" :: Nil)(
+          ("BasePower", 40d),
+          ("EfficiencyCoefficient", 1.3d),
+          ("UnbreakingCoefficient", 1d),
+          ("FortuneCoefficient", 1.3d),
+          ("SilktouchCoefficient", 2d),
+          ("BaseMaxReceive", 300d),
+          ("BaseMaxStored", 15000d),
+        )
+      val quarry_break_head =
+        Category("Quarry" :: "BreakBlock" :: "MoveHead" :: Nil)(
+          ("BasePower", 200d),
+          ("UnbreakingCoefficient", 1d),
+        )
+      val quarry_makeFrame =
+        Category("Quarry" :: "MakeFrame" :: Nil)(
+          ("BasePower", 25d),
+          ("EfficiencyCoefficient", 1.3d),
+          ("UnbreakingCoefficient", 1d),
+          ("BaseMaxReceive", 100d),
+          ("BaseMaxStored", 15000d),
+        )
+      val pump_drain =
+        Category("Pump" :: "DrainLiquid" :: Nil)(
+          ("BasePower", 10d),
+          ("UnbreakingCoefficient", 1d),
+        )
+      val pump_frame =
+        Category("Pump" :: "MakeFrame" :: Nil)(
+          ("BasePower", 25d),
+          ("UnbreakingCoefficient", 1d),
+        )
+      val mining =
+        Category("MiningWell" :: Nil)(
+          ("BasePower", 40d),
+          ("EfficiencyCoefficient", 1.3d),
+          ("UnbreakingCoefficient", 1d),
+          ("FortuneCoefficient", 1.3d),
+          ("SilktouchCoefficient", 2d),
+          ("BaseMaxReceive", 100d),
+          ("BaseMaxStored", 1000d),
+        )
+      val laser =
+        Category("Laser" :: Nil)(
+          ("BasePower", 4d),
+          ("EfficiencyCoefficient", 2d),
+          ("UnbreakingCoefficient", 0.1d),
+          ("FortuneCoefficient", 1.05d),
+          ("SilktouchCoefficient", 1.1d),
+          ("BaseMaxReceive", 100d),
+          ("BaseMaxStored", 1000d),
+        )
+      val refinery =
+        Category("Refinery" :: Nil)(
+          ("EfficiencyCoefficient", 1.2d),
+          ("UnbreakingCoefficient", 1d),
+          ("BaseMaxReceive", 6d),
+          ("BaseMaxStored", 1000d),
+        )
       builder.pop()
 
       (quarry_break ++ quarry_break_head ++ quarry_makeFrame ++
