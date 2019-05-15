@@ -1,5 +1,6 @@
 package com.yogpc.qp
 
+import net.minecraft.util.ResourceLocation
 import net.minecraftforge.common.ForgeConfigSpec
 
 object Config {
@@ -22,6 +23,9 @@ object Config {
   }
 
   class Content(builder: ForgeConfigSpec.Builder) {
+
+    import scala.collection.JavaConverters._
+
     private[this] val inDev = Option(System.getenv("target")).exists(_.contains("dev"))
 
     builder.comment("Beginning of QuarryPlus configuration.").push("common")
@@ -34,11 +38,16 @@ object Config {
     val removeBedrock = builder.comment("True to allow machines to remove bedrock. (Just removing. Not collecting)").define("RemoveBedrock", false)
     val disableFrameChainBreak = builder.comment("DisableFrameChainBreak").define("DisableFrameChainBreak", false)
     val removeOnlySource = builder.comment("Set false to allow PlumPlus to remove non-source fluid block.").define("RemoveOnlyFluidSource", false)
+    private[this] val spawnerBlacklist_internal = builder.comment("Spawner Controller Blacklist")
+      .defineList("spawnerBlacklist", Seq("minecraft:ender_dragon", "minecraft:wither").asJava, s => s.isInstanceOf[String])
+
 
     val powers = powerConfig(builder)
     builder.pop()
 
-    def debug = configDebug.get() || inDev
+    def debug = inDev || configDebug.get()
+
+    def spawnerBlacklist = spawnerBlacklist_internal.get().asScala.map(new ResourceLocation(_))
 
     private def powerConfig(builder: ForgeConfigSpec.Builder): Map[String, ForgeConfigSpec.DoubleValue] = {
       case class Category(path: List[String]) {

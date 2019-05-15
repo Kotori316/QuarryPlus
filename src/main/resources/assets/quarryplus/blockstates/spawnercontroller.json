@@ -1,25 +1,19 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "cube_all",
-    "textures": {
-      "all": "quarryplus:blocks/spawnctl"
-    },
+    "model": "quarryplus:spawnercontroller",
     "uvlock": true,
     "transform": "forge:default-block"
   },
   "variants": {
-    "normal": [
-      {}
-    ],
-    "acting": {
+    "working": {
       "true": {
       },
       "false": {
       }
-    },
-    "inventory": [
-      {}
-    ]
-  }
+    }
+  },
+  "inventory": [
+    {}
+  ]
 }

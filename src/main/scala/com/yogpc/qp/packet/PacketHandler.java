@@ -1,6 +1,8 @@
 package com.yogpc.qp.packet;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.packet.controller.AvailableEntities;
+import com.yogpc.qp.packet.controller.SetEntity;
 import com.yogpc.qp.packet.marker.LinkMessage;
 import com.yogpc.qp.packet.marker.UpdateBoxMessage;
 import com.yogpc.qp.packet.mover.MoverMessage;
@@ -40,6 +42,8 @@ public class PacketHandler {
         INSTANCE.registerMessage(id++, Mappings.All.class, IMessage::writeToBuffer, IMessage.decode(Mappings.All::new), IMessage::onReceiveInternal);
         INSTANCE.registerMessage(id++, Mappings.Copy.class, IMessage::writeToBuffer, IMessage.decode(Mappings.Copy::new), IMessage::onReceiveInternal);
         INSTANCE.registerMessage(id++, Mappings.Update.class, IMessage::writeToBuffer, IMessage.decode(Mappings.Update::new), IMessage::onReceiveInternal);
+        INSTANCE.registerMessage(id++, SetEntity.class, IMessage::writeToBuffer, IMessage.decode(SetEntity::new), IMessage::onReceiveInternal);
+        INSTANCE.registerMessage(id++, AvailableEntities.class, IMessage::writeToBuffer, IMessage.decode(AvailableEntities::new), IMessage::onReceiveInternal);
 
         assert id > 0;
     }
