@@ -3,8 +3,10 @@ package com.yogpc.qp.utils;
 import java.util.function.BooleanSupplier;
 
 import com.google.gson.JsonObject;
+import com.yogpc.qp.Config;
 import net.minecraft.util.JsonUtils;
 import net.minecraftforge.common.crafting.IConditionSerializer;
+import scala.Symbol;
 
 @SuppressWarnings("unused") // accessed via reflection
 public class EnableCondition implements IConditionSerializer {
@@ -13,6 +15,6 @@ public class EnableCondition implements IConditionSerializer {
     @Override
     public BooleanSupplier parse(JsonObject json) {
         String s = JsonUtils.getString(json, "value");
-        return () -> true;//!Config.content().disableMapJ().getOrDefault(scala.Symbol.apply(s), true);
+        return () -> !Config.common().disabled().getOrElse(Symbol.apply(s), () -> false);
     }
 }
