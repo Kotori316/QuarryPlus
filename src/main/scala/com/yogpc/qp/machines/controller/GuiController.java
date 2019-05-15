@@ -1,6 +1,5 @@
 package com.yogpc.qp.machines.controller;
 
-import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,9 +14,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.input.Keyboard;
+import org.lwjgl.glfw.GLFW;
 
 @OnlyIn(Dist.CLIENT)
 public class GuiController extends GuiScreen {
@@ -37,13 +34,15 @@ public class GuiController extends GuiScreen {
     public void initGui() {
         super.initGui();
         this.slot = new GuiSlotEntityList(this.mc, this.width, this.height, 30, this.height - 30, this);
-        addButton(new GuiButton(-1, this.width / 2 - 125, this.height - 26, 250, 20, I18n.format(TranslationKeys.DONE)){
+        this.children.add(slot);
+        addButton(new GuiButton(-1, this.width / 2 - 125, this.height - 26, 250, 20, I18n.format(TranslationKeys.DONE)) {
             @Override
             public void onClick(double mouseX, double mouseY) {
                 PacketHandler.sendToServer(SetEntity.create(dim, new BlockPos(xc, yc, zc), names.get(slot.selected())));
                 mc.player.closeScreen();
             }
         });
+        setFocused(slot);
     }
 
     @Override
@@ -55,32 +54,24 @@ public class GuiController extends GuiScreen {
         drawCenteredString(this.fontRenderer, I18n.format(TranslationKeys.YOG_SPAWNER_SETTING), this.width / 2, 8, 0xFFFFFF);
     }
 
-    /**
-     * Handles mouse input.
-     */
-    @Override
-    public void handleMouseInput() throws IOException {
-        super.handleMouseInput();
-        this.slot.handleMouseInput();
-    }
-
     @Override
     public boolean doesGuiPauseGame() {
         return false;
     }
 
     @Override
-    public void updateScreen() {
-        super.updateScreen();
-        if (!this.mc.player.isEntityAlive() || this.mc.player.isDead)
+    public void tick() {
+        super.tick();
+        if (!this.mc.player.isAlive())
             this.mc.player.closeScreen();
     }
 
     @Override
-    protected void keyTyped(final char typedChar, final int keyCode) {
-        if (keyCode == Keyboard.KEY_ESCAPE || keyCode == this.mc.gameSettings.keyBindInventory.getKeyCode()) {
-            this.mc.displayGuiScreen(null);
-            this.mc.setIngameFocus();
+    public boolean keyPressed(int keyCode, int p_keyPressed_2_, int p_keyPressed_3_) {
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE || keyCode == this.mc.gameSettings.keyBindInventory.getKey().getKeyCode()) {
+            this.close();
+            return true;
         }
+        return super.keyPressed(keyCode, p_keyPressed_2_, p_keyPressed_3_);
     }
 }

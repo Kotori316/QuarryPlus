@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import com.yogpc.qp.gui.GuiController;
 import com.yogpc.qp.machines.controller.GuiController;
 import com.yogpc.qp.packet.IMessage;
 import net.minecraft.client.Minecraft;
