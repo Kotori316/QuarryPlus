@@ -73,7 +73,7 @@ public class TileSolidQuarry extends TileQuarry implements IInteractionObject {
     }
 
     @Override
-    protected Symbol getSymbol() {
+    public Symbol getSymbol() {
         return BlockSolidQuarry.SYMBOL;
     }
 

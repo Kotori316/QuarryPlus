@@ -17,6 +17,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.BuildcraftHelper;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.machines.TranslationKeys;
+import com.yogpc.qp.machines.base.IDisabled;
 import com.yogpc.qp.machines.base.QPBlock;
 import com.yogpc.qp.utils.Holder;
 import javax.annotation.Nullable;
@@ -45,7 +46,7 @@ import scala.Symbol;
 //@Optional.InterfaceList({
 //    @Optional.Interface(iface = "cofh.api.block.IDismantleable", modid = QuarryPlus.Optionals.COFH_modID),
 //    @Optional.Interface(iface = "ic2.api.tile.IWrenchable", modid = QuarryPlus.Optionals.IC2_modID)})
-public class BlockMover extends Block /*implements IDismantleable, IWrenchable*/ {
+public class BlockMover extends Block implements IDisabled /*IDismantleable, IWrenchable*/ {
     public static final Symbol SYMBOL = Symbol.apply("EnchantMover");
     public static final String GUI_ID = QuarryPlus.modID + ":gui_" + QuarryPlus.Names.mover;
     public final ItemBlock itemBlock;
@@ -80,6 +81,11 @@ public class BlockMover extends Block /*implements IDismantleable, IWrenchable*/
     @Override
     public Item asItem() {
         return itemBlock;
+    }
+
+    @Override
+    public Symbol getSymbol() {
+        return SYMBOL;
     }
 /*
     @Override

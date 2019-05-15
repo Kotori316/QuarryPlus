@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.base.IDisabled;
 import com.yogpc.qp.machines.base.QPBlock;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.controller.AvailableEntities;
@@ -36,9 +37,10 @@ import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.registries.ForgeRegistries;
+import scala.Symbol;
 
 //@net.minecraftforge.fml.common.Optional.Interface(iface = "cofh.api.block.IDismantleable", modid = QuarryPlus.Optionals.COFH_modID)
-public class BlockController extends Block /*implements IDismantleable*/ {
+public class BlockController extends Block implements IDisabled /*IDismantleable*/ {
     private static final Field logic_spawnDelay;
     public static final scala.Symbol SYMBOL = scala.Symbol.apply("SpawnerController");
     public final ItemBlock itemBlock;
@@ -65,6 +67,11 @@ public class BlockController extends Block /*implements IDismantleable*/ {
     }
 
     @Override
+    public Item asItem() {
+        return itemBlock;
+    }
+
+    @Override
     protected void fillStateContainer(StateContainer.Builder<Block, IBlockState> builder) {
         builder.add(QPBlock.WORKING());
     }
@@ -81,7 +88,7 @@ public class BlockController extends Block /*implements IDismantleable*/ {
         if (super.onBlockActivated(state, worldIn, pos, player, hand, side, hitX, hitY, hitZ)) return true;
         if (!player.isSneaking()) {
             if (!worldIn.isRemote) {
-                if (true /*!Config.content().disableMapJ().get(SYMBOL)*/) {
+                if (enabled()) {
                     List<EntityType<?>> entries = ForgeRegistries.ENTITIES.getValues().stream().filter(e ->
                         !Modifier.isAbstract(e.getEntityClass().getModifiers())
                             && !Config.common().spawnerBlacklist().contains(e.getRegistryName())).collect(Collectors.toList());
@@ -136,7 +143,18 @@ public class BlockController extends Block /*implements IDismantleable*/ {
         }
         super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
     }
-/*
+
+    @Override
+    public Symbol getSymbol() {
+        return SYMBOL;
+    }
+
+    @Override
+    public boolean defaultDisableMachine() {
+        return true;
+    }
+
+    /*
     @Override
     @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.COFH_modID)
     public ArrayList<ItemStack> dismantleBlock(World world, BlockPos pos, IBlockState state, EntityPlayer player, boolean returnDrops) {

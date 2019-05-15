@@ -86,7 +86,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     }
 
     @Override
-    protected Symbol getSymbol() {
+    public Symbol getSymbol() {
         return SYMBOL;
     }
 

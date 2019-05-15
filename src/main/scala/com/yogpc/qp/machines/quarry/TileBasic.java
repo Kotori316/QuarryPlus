@@ -223,7 +223,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
             if (block.canSilkHarvest(state, world, pos, fakePlayer) && this.silktouch
                 && silktouchList.contains(new BlockData(state)) == this.silktouchInclude) {
                 NonNullList<ItemStack> list = NonNullList.create();
-                list.add(invoke(createStackedBlock, block, state));
+                list.add(invoke(createStackedBlock, ItemStack.class, block, state));
                 rawItems = new HashSet<>(list);
                 ForgeEventFactory.fireBlockHarvesting(list, world, pos, state, 0, 1.0f, true, fakePlayer);
                 collection.addAll(list);

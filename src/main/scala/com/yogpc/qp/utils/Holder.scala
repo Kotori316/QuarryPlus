@@ -81,4 +81,7 @@ object Holder {
   val itemQuarryDebug = new ItemQuarryDebug
 
   val items: Seq[Item] = Seq(itemStatusChecker, itemListEditor, itemLiquidSelector, itemYSetter, itemQuarryDebug)
+
+  //---------- IDisable ----------
+  val canDisablesSymbols = (tiles.map(_.create()) ++ blocks ++ items).collect { case d: IDisabled => d.getSymbol -> d.defaultDisableMachine }
 }

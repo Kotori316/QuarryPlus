@@ -48,7 +48,7 @@ public class TileExpPump extends APacketTile implements IEnchantableTile, IDebug
     }
 
     @Override
-    protected Symbol getSymbol() {
+    public Symbol getSymbol() {
         return BlockExpPump.SYMBOL;
     }
 

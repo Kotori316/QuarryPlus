@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.TranslationKeys;
+import com.yogpc.qp.machines.base.APacketTile;
 import com.yogpc.qp.machines.base.IDebugSender;
 import com.yogpc.qp.machines.base.IMarker;
 import com.yogpc.qp.packet.PacketHandler;
@@ -29,11 +30,13 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import scala.Symbol;
 
 import static jp.t2v.lab.syntax.MapStreamSyntax.streamCast;
 
-public class TileMarker extends TileEntity implements IMarker, IDebugSender {
+public class TileMarker extends APacketTile implements IMarker, IDebugSender {
     private static final int MAX_SIZE = 256;
+    public static final Symbol SYMBOL = Symbol.apply("MarkerPlus");
 
     public Link link = Link.DEFAULT;
     public Laser laser;
@@ -130,6 +133,11 @@ public class TileMarker extends TileEntity implements IMarker, IDebugSender {
     public List<? extends ITextComponent> getDebugMessages() {
         return Arrays.asList(new TextComponentString("Link : " + link),
             new TextComponentString("Laser : " + laser));
+    }
+
+    @Override
+    public Symbol getSymbol() {
+        return SYMBOL;
     }
 
     public static class Laser {

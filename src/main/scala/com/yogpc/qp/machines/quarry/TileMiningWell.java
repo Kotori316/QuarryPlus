@@ -169,7 +169,7 @@ public class TileMiningWell extends TileBasic implements ITickable {
     }
 
     @Override
-    protected Symbol getSymbol() {
+    public Symbol getSymbol() {
         return SYMBOL;
     }
 }

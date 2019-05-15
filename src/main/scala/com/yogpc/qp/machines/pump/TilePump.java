@@ -510,7 +510,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     }
 
     @Override
-    protected Symbol getSymbol() {
+    public Symbol getSymbol() {
         return Symbol.apply("PumpPlus");
     }
 

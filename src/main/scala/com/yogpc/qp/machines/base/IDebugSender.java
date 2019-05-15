@@ -7,6 +7,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 
+/**
+ * Must be subclass of {@link APacketTile} or implement {@link IDebugSender#getMessage()}.
+ */
 public interface IDebugSender {
     default void sendDebugMessage(EntityPlayer player) {
         getMessage().forEach(t -> player.sendStatusMessage(t, false));

@@ -29,14 +29,15 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraftforge.fml.ModLoadingContext;
 
-public abstract class APacketTile extends TileEntity {
+public abstract class APacketTile extends TileEntity implements IDisabled {
     public static final BinaryOperator<String> combiner = (s, s2) -> s + ", " + s2;
     public static final Function<String, TextComponentString> toComponentString = TextComponentString::new;
     public static final Consumer<IChunkLoadTile> requestTicket = IChunkLoadTile::requestTicket;
 
     private final ITextComponent displayName;
-    protected final boolean machineDisabled = false;
+    protected final boolean machineDisabled;
     protected final boolean isDebugSender = this instanceof IDebugSender;
     protected final List<Runnable> startListener = new ArrayList<>();
     protected final List<Runnable> finishListener = new ArrayList<>();
@@ -53,7 +54,7 @@ public abstract class APacketTile extends TileEntity {
             displayName = new TextComponentString("APacketTile");
         }
 
-//        machineDisabled = Config.content().disableMapJ().get(getSymbol());
+        machineDisabled = ModLoadingContext.get().extension() != null || !enabled();
     }
 
     @Override
@@ -86,12 +87,13 @@ public abstract class APacketTile extends TileEntity {
             finishListener.forEach(Runnable::run);
     }
 
-    protected abstract scala.Symbol getSymbol();
+    @Override
+    public abstract scala.Symbol getSymbol();
 
-    @SuppressWarnings("unchecked")
-    protected static <T> T invoke(Method method, Object ref, Object... param) {
+    @SuppressWarnings({"SameParameterValue"})
+    protected static <T> T invoke(Method method, Class<T> returnType, Object ref, Object... param) {
         try {
-            return (T) method.invoke(ref, param);
+            return returnType.cast(method.invoke(ref, param));
         } catch (ReflectiveOperationException e) {
             QuarryPlus.LOGGER.warn(e);
             return null;

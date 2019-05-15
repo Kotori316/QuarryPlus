@@ -49,7 +49,7 @@ public class TileReplacer extends APacketTile implements IAttachment {
     }
 
     @Override
-    protected Symbol getSymbol() {
+    public Symbol getSymbol() {
         return SYMBOL;
     }
 
@@ -119,5 +119,10 @@ public class TileReplacer extends APacketTile implements IAttachment {
 
     public IBlockState getReplaceState() {
         return toReplaceState;
+    }
+
+    @Override
+    public boolean defaultDisableMachine() {
+        return true;
     }
 }

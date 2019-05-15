@@ -292,7 +292,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
     }
 
     @Override
-    protected Symbol getSymbol() {
+    public Symbol getSymbol() {
         return Symbol.apply("WorkbenchPlus");
     }
 
