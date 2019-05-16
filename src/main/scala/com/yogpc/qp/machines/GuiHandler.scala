@@ -1,6 +1,7 @@
 package com.yogpc.qp.machines
 
 import com.yogpc.qp.QuarryPlus
+import com.yogpc.qp.machines.bookmover.{BlockBookMover, GuiBookMover, TileBookMover}
 import com.yogpc.qp.machines.item.GuiQuarryLevel._
 import com.yogpc.qp.machines.item.{GuiQuarryLevel, YSetterInteractionObject}
 import com.yogpc.qp.machines.mover.{BlockMover, GuiMover}
@@ -23,6 +24,7 @@ object GuiHandler {
         case basic: TileBasic => new GuiQuarryLevel(basic, player)
       }.orNull
       case TileSolidQuarry.GUI_ID => tile.collect { case solidQuarry: TileSolidQuarry => new GuiSolidQuarry(solidQuarry, player) }.orNull
+      case BlockBookMover.GUI_ID => tile.collect { case bookMover: TileBookMover => new GuiBookMover(bookMover, player) }.orNull
       case _ => QuarryPlus.LOGGER.error(s"Unknown GUI ID ${context.getId}."); null
     }
   }

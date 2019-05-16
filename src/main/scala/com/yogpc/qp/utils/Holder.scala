@@ -1,6 +1,7 @@
 package com.yogpc.qp.utils
 
 import com.yogpc.qp.machines.base.IDisabled
+import com.yogpc.qp.machines.bookmover.{BlockBookMover, TileBookMover}
 import com.yogpc.qp.machines.controller.BlockController
 import com.yogpc.qp.machines.exppump.{BlockExpPump, TileExpPump}
 import com.yogpc.qp.machines.item._
@@ -38,8 +39,9 @@ object Holder {
   val pumpTileType = createType(() => new TilePump, QuarryPlus.Names.pump)
   val solidQuarryType = createType(() => new TileSolidQuarry, QuarryPlus.Names.solidquarry)
   val replacerType = createType(() => new TileReplacer, QuarryPlus.Names.replacer)
+  val bookMoverType = createType(() => new TileBookMover, QuarryPlus.Names.moverfrombook)
 
-  val tiles: Seq[TileEntityType[_ <: TileEntity]] = Seq(markerTileType, workbenchTileType, expPumpTileType, miningWellTileType, quarryTileType, pumpTileType, solidQuarryType, replacerType)
+  val tiles: Seq[TileEntityType[_ <: TileEntity]] = Seq(markerTileType, workbenchTileType, expPumpTileType, miningWellTileType, quarryTileType, pumpTileType, solidQuarryType, replacerType, bookMoverType)
 
   //---------- Block ----------
 
@@ -56,6 +58,7 @@ object Holder {
   val blockDummy = new BlockDummy
   val blockReplacer = new BlockReplacer
   val blockController = new BlockController
+  val blockBookMover = new BlockBookMover
 
   val blocks: Seq[Block] = Seq(
     blockQuarry,
@@ -71,6 +74,7 @@ object Holder {
     blockDummy,
     blockReplacer,
     blockController,
+    blockBookMover,
   )
   //---------- Item ----------
 
