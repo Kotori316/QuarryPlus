@@ -3,6 +3,7 @@ package com.yogpc.qp.machines.bookmover;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.machines.base.QPBlock;
+import com.yogpc.qp.utils.Holder;
 import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -51,6 +52,6 @@ public class BlockBookMover extends QPBlock {
     @Nullable
     @Override
     public TileEntity createNewTileEntity(IBlockReader worldIn) {
-        return null;
+        return Holder.bookMoverType().create();
     }
 }
