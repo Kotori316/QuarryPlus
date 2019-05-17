@@ -1,0 +1,66 @@
+{
+  "id": "quarryplus:builtin_spawnercontroller",
+  "type": "quarryplus:workbench_recipe",
+  "ingredients": [
+    {
+      "item": "minecraft:nether_star",
+      "count": 2
+    },
+    {
+      "item": "minecraft:gold_ingot",
+      "count": 80
+    },
+    {
+      "item": "minecraft:iron_ingot",
+      "count": 80
+    },
+    {
+      "item": "minecraft:rotten_flesh",
+      "count": 40
+    },
+    {
+      "item": "minecraft:arrow",
+      "count": 40
+    },
+    {
+      "item": "minecraft:bone",
+      "count": 40
+    },
+    {
+      "item": "minecraft:gunpowder",
+      "count": 40
+    },
+    {
+      "item": "minecraft:ghast_tear",
+      "count": 10
+    },
+    {
+      "item": "minecraft:magma_cream",
+      "count": 20
+    },
+    {
+      "item": "minecraft:blaze_rod",
+      "count": 28
+    },
+    {
+      "item": "minecraft:carrot",
+      "count": 4
+    },
+    {
+      "item": "minecraft:potato",
+      "count": 4
+    }
+  ],
+  "energy": 1000000.0,
+  "showInJEI": true,
+  "result": {
+    "item": "quarryplus:spawnercontroller",
+    "count": 1
+  },
+  "conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "SpawnerController"
+    }
+  ]
+}

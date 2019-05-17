@@ -42,7 +42,7 @@ public class QuarryPlus {
 
     public QuarryPlus() {
         initConfig();
-        FMLJavaModLoadingContext.get().getModEventBus().register(this);
+        MinecraftForge.EVENT_BUS.register(this);
         proxy.registerEvents(MinecraftForge.EVENT_BUS);
     }
 
@@ -56,17 +56,8 @@ public class QuarryPlus {
     }
 
     @SubscribeEvent
-    public void setup(FMLCommonSetupEvent event) {
-        proxy.registerTextures(event);
-        PowerManager.configRegister();
-        PacketHandler.init();
-        CraftingHelper.register(new ResourceLocation(EnableCondition.NAME), new EnableCondition());
-        RecipeSerializers.register(WorkbenchRecipes.Serializer$.MODULE$);
-    }
-
-    @SubscribeEvent
-    public void loadComplete(FMLLoadCompleteEvent event) {
-        proxy.setDummyTexture(Config.client().dummyTexture().get());
+    public void serverStart(FMLServerStartingEvent event) {
+        event.getServer().getResourceManager().addReloadListener(WorkbenchRecipes::onServerReload);
     }
 
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -88,8 +79,18 @@ public class QuarryPlus {
         }
 
         @SubscribeEvent
-        public static void serverStart(FMLServerStartingEvent event) {
-            event.getServer().getResourceManager().addReloadListener(WorkbenchRecipes::onServerReload);
+        public static void setup(FMLCommonSetupEvent event) {
+            proxy.registerTextures(event);
+            PowerManager.configRegister();
+            PacketHandler.init();
+            EnableCondition serializer = new EnableCondition();
+            CraftingHelper.register(new ResourceLocation(serializer.NAME()), serializer);
+            RecipeSerializers.register(WorkbenchRecipes.Serializer$.MODULE$);
+        }
+
+        @SubscribeEvent
+        public static void loadComplete(FMLLoadCompleteEvent event) {
+            proxy.setDummyTexture(Config.client().dummyTexture().get());
         }
 
     }

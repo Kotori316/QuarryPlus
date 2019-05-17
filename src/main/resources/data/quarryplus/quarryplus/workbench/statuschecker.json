@@ -1,0 +1,36 @@
+{
+  "id": "quarryplus:builtin_statuschecker",
+  "type": "quarryplus:workbench_recipe",
+  "ingredients": [
+    {
+      "item": "minecraft:diamond",
+      "count": 4
+    },
+    {
+      "item": "minecraft:gold_ingot",
+      "count": 16
+    },
+    {
+      "item": "minecraft:iron_ingot",
+      "count": 24
+    },
+    {
+      "item": "minecraft:redstone",
+      "count": 32
+    },
+    {
+      "item": "minecraft:lapis_lazuli",
+      "count": 8
+    },
+    {
+      "item": "minecraft:obsidian",
+      "count": 4
+    }
+  ],
+  "energy": 80000.0,
+  "showInJEI": true,
+  "result": {
+    "item": "quarryplus:statuschecker",
+    "count": 1
+  }
+}
