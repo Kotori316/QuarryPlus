@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.machines.PowerManager;
@@ -98,6 +99,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
         }
         boolean broken = false;
         for (int i = 0; i < efficiency + 1 && !broken; i++) {
+            if(!Config.common().fastQuarryHeadMove().get()) broken = true;
             switch (this.now) {
                 case MAKE_FRAME:
                     if (S_makeFrame())

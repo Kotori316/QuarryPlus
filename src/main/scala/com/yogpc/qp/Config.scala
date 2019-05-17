@@ -137,7 +137,7 @@ object Config {
 
     private def disableConfig(builder: ForgeConfigSpec.Builder): Map[Symbol, ForgeConfigSpec.BooleanValue] = {
       builder.comment("Setting of enabling or disabling each machine. True to disable.").push("machines")
-      val s = Holder.canDisablesSymbols.map { case (symbol, b) => symbol -> builder.define(symbol.name, b) }
+      val s = Holder.canDisablesSymbols.map { case (symbol, b) => symbol -> builder.define(symbol.name, !(!b || inDev)) }
       builder.pop()
       s.toMap
     }
