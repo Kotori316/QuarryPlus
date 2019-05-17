@@ -10,13 +10,14 @@ import net.minecraft.init.Items
 import net.minecraft.inventory.ItemStackHelper
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.util.text.TextComponentTranslation
 import net.minecraft.util.{ITickable, NonNullList}
 import net.minecraft.world.IInteractionObject
 import net.minecraftforge.registries.ForgeRegistries
 
 import scala.collection.JavaConverters._
 
-class TileBookMover extends APowerTile(Holder.bookMoverType) with HasInv with ITickable with IInteractionObject with IDisabled {
+class TileBookMover extends APowerTile(Holder.bookMoverType) with HasInv with ITickable with IInteractionObject {
 
   val inv = NonNullList.withSize(getSizeInventory, ItemStack.EMPTY)
   configure(Config.common.workbenchMaxReceive.get() * APowerTile.MicroJtoMJ, 50000 * APowerTile.MicroJtoMJ)
@@ -37,7 +38,7 @@ class TileBookMover extends APowerTile(Holder.bookMoverType) with HasInv with IT
     super.tick()
     if (!world.isRemote && isWorking) {
       startWork()
-      if (!machineDisabled && getStoredEnergy >= getMaxStored) {
+      if (enabled && getStoredEnergy >= getMaxStored) {
         if (!isItemValidForSlot(0, inv.get(0)) || !isItemValidForSlot(1, inv.get(1)))
           return
         val enchList = EnchantmentHelper.getEnchantments(inv.get(1)).asScala
@@ -89,12 +90,12 @@ class TileBookMover extends APowerTile(Holder.bookMoverType) with HasInv with IT
   }
 
   override def isWorking: Boolean = {
-    !inv.get(0).isEmpty && !inv.get(1).isEmpty
+    enabled() && !inv.get(0).isEmpty && !inv.get(1).isEmpty
   }
 
-  override def getSymbol: Symbol = BlockBookMover.SYMBOL
+  override def getName = new TextComponentTranslation(TranslationKeys.moverfrombook)
 
-  override def getName: String = TranslationKeys.moverfrombook
+  override def getDisplayName = getName
 
   override def canReceive: Boolean = isWorking
 
@@ -105,7 +106,7 @@ class TileBookMover extends APowerTile(Holder.bookMoverType) with HasInv with IT
 
 /*
  Test command.
- 1 Fortune /give @p minecraft:enchanted_book 1 0 {StoredEnchantments:[{id:35,lvl:6}]}
- 2 Unbreaking /give @p minecraft:enchanted_book 1 0 {StoredEnchantments:[{id:34,lvl:6}]}
- 3 Fortune and Unbreaking /give @p minecraft:enchanted_book 1 0 {StoredEnchantments:[{id:34,lvl:12}, {id:35,lvl:8}]}
+ 1 Fortune /give @p minecraft:enchanted_book{StoredEnchantments:[{id:"minecraft:fortune",lvl:6}]}
+ 2 Unbreaking /give @p minecraft:enchanted_book{StoredEnchantments:[{id:34,lvl:6}]}
+ 3 Fortune and Unbreaking /give @p minecraft:enchanted_book{StoredEnchantments:[{id:"minecraft:unbreaking",lvl:12}, {id:"minecraft:fortune",lvl:8}]}
  */

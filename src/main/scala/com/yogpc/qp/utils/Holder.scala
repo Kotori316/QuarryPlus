@@ -41,7 +41,17 @@ object Holder {
   val replacerType = createType(() => new TileReplacer, QuarryPlus.Names.replacer)
   val bookMoverType = createType(() => new TileBookMover, QuarryPlus.Names.moverfrombook)
 
-  val tiles: Seq[TileEntityType[_ <: TileEntity]] = Seq(markerTileType, workbenchTileType, expPumpTileType, miningWellTileType, quarryTileType, pumpTileType, solidQuarryType, replacerType, bookMoverType)
+  val tiles: Map[TileEntityType[_ <: TileEntity], TileDisable] = Map(
+    markerTileType -> TileDisable(TileMarker.SYMBOL),
+    workbenchTileType -> TileDisable(TileWorkbench.SYMBOL),
+    expPumpTileType -> TileDisable(BlockExpPump.SYMBOL),
+    miningWellTileType -> TileDisable(TileMiningWell.SYMBOL),
+    quarryTileType -> TileDisable(TileQuarry.SYMBOL),
+    pumpTileType -> TileDisable(TilePump.SYMBOL),
+    solidQuarryType -> TileDisable(BlockSolidQuarry.SYMBOL),
+    replacerType -> TileDisable(TileReplacer.SYMBOL, defaultValue = true),
+    bookMoverType -> TileDisable(BlockBookMover.SYMBOL, defaultValue = true),
+  )
 
   //---------- Block ----------
 
@@ -87,5 +97,11 @@ object Holder {
   val items: Seq[Item] = Seq(itemStatusChecker, itemListEditor, itemLiquidSelector, itemYSetter, itemQuarryDebug)
 
   //---------- IDisable ----------
-  val canDisablesSymbols = (tiles.map(_.create()) ++ blocks ++ items).collect { case d: IDisabled => d.getSymbol -> d.defaultDisableMachine }
+  case class TileDisable(name: Symbol, defaultValue: Boolean = false) extends IDisabled {
+    override def getSymbol = name
+
+    override def defaultDisableMachine = defaultValue
+  }
+
+  val canDisablesSymbols = (tiles.values ++ blocks ++ items).collect { case d: IDisabled => d.getSymbol -> d.defaultDisableMachine }
 }

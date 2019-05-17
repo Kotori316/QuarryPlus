@@ -54,6 +54,7 @@ import scala.Symbol;
 //@net.minecraftforge.fml.common.Optional.Interface(iface = "cofh.api.tileentity.IInventoryConnection", modid = QuarryPlus.Optionals.COFH_modID)
 public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, IInteractionObject {
     public static final String GUI_ID = QuarryPlus.modID + ":gui_" + QuarryPlus.Names.workbench;
+    public static final Symbol SYMBOL = Symbol.apply("WorkbenchPlus");
     public final NonNullList<ItemStack> inventory = NonNullList.withSize(27, ItemStack.EMPTY);
     public final NonNullList<ItemStack> inventory2 = NonNullList.withSize(18, ItemStack.EMPTY);
     public List<WorkbenchRecipes> recipesList = Collections.emptyList();
@@ -95,7 +96,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
 
     @Override
     public boolean isWorking() {
-        return !machineDisabled && currentRecipe.hasContent();
+        return enabled() && currentRecipe.hasContent();
     }
 
     @Override
@@ -289,11 +290,6 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
     @Override
     public ITextComponent getName() {
         return new TextComponentTranslation(getDebugName());
-    }
-
-    @Override
-    public Symbol getSymbol() {
-        return Symbol.apply("WorkbenchPlus");
     }
 
     @Override

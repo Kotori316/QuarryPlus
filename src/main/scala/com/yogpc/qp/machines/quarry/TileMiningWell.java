@@ -76,7 +76,7 @@ public class TileMiningWell extends TileBasic implements ITickable {
     @Override
     public void tick() {
         super.tick();
-        if (!world.isRemote && !machineDisabled) {
+        if (!world.isRemote && enabled()) {
             int depth = getPos().getY() - 1;
             while (!S_checkTarget(depth)) {
                 BlockPos pos = new BlockPos(getPos().getX(), depth, getPos().getZ());
@@ -168,8 +168,4 @@ public class TileMiningWell extends TileBasic implements ITickable {
         }
     }
 
-    @Override
-    public Symbol getSymbol() {
-        return SYMBOL;
-    }
 }

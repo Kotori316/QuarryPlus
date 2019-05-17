@@ -28,7 +28,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Pair;
-import scala.Symbol;
 
 import static jp.t2v.lab.syntax.MapStreamSyntax.byValue;
 import static jp.t2v.lab.syntax.MapStreamSyntax.values;
@@ -45,11 +44,6 @@ public class TileExpPump extends APacketTile implements IEnchantableTile, IDebug
 
     public TileExpPump() {
         super(Holder.expPumpTileType());
-    }
-
-    @Override
-    public Symbol getSymbol() {
-        return BlockExpPump.SYMBOL;
     }
 
     @Override

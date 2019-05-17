@@ -24,7 +24,7 @@ public interface IDebugSender {
      */
     default List<? extends ITextComponent> getMessage() {
         if (((APacketTile) this).machineDisabled) {
-            return Collections.singletonList(new TextComponentString(((APacketTile) this).getSymbol().name() + " is disabled."));
+            return Collections.singletonList(new TextComponentString(this.getClass().getSimpleName() + " is disabled."));
         } else {
             return getDebugMessages();
         }

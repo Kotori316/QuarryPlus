@@ -49,11 +49,6 @@ public class TileReplacer extends APacketTile implements IAttachment {
     }
 
     @Override
-    public Symbol getSymbol() {
-        return SYMBOL;
-    }
-
-    @Override
     public void onLoad() {
         super.onLoad();
         if (loading) {
@@ -71,7 +66,7 @@ public class TileReplacer extends APacketTile implements IAttachment {
     }
 
     private void connection() {
-        if (hasWorld() && !world.isRemote && !machineDisabled) {
+        if (hasWorld() && !world.isRemote && enabled()) {
             Map.Entry<EnumFacing, IAttachable> entry = Stream.of(EnumFacing.values())
                 .map(f -> Pair.of(f, world.getTileEntity(pos.offset(f))))
                 .filter(byValue(IAttachable.class::isInstance))
@@ -121,8 +116,4 @@ public class TileReplacer extends APacketTile implements IAttachment {
         return toReplaceState;
     }
 
-    @Override
-    public boolean defaultDisableMachine() {
-        return true;
-    }
 }

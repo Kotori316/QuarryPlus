@@ -122,7 +122,7 @@ class EnergyDebug(tile: APowerTile) {
     stopWatch.stop()
     if (outputInfo) {
       printInfo()
-      val time = getTime - startTime
+      val time = if(getTime - startTime > 0) getTime - startTime else 1
       QuarryPlus.LOGGER.info(
         s"$tileName finished its work and took ${stopWatch.toString}, $time ticks. Used ${totalUsed / mj} MJ at ${totalUsed * 10 / time / mj} RF/t"
       )

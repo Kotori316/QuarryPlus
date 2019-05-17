@@ -20,7 +20,6 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IInteractionObject;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.wrapper.InvWrapper;
-import scala.Symbol;
 
 public class TileSolidQuarry extends TileQuarry implements IInteractionObject {
     public static final String GUI_ID = QuarryPlus.modID + ":gui_" + QuarryPlus.Names.solidquarry;
@@ -70,11 +69,6 @@ public class TileSolidQuarry extends TileQuarry implements IInteractionObject {
         nbt.setInt("fuelCount", fuelCount);
         nbt.setTag("fuel", fuel.serializeNBT());
         return super.write(nbt);
-    }
-
-    @Override
-    public Symbol getSymbol() {
-        return BlockSolidQuarry.SYMBOL;
     }
 
     @Override

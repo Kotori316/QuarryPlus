@@ -85,11 +85,6 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
         super(type);
     }
 
-    @Override
-    public Symbol getSymbol() {
-        return SYMBOL;
-    }
-
     @SuppressWarnings("fallthrough")
     protected void S_updateEntity() {
         if (machineDisabled) return;

@@ -135,11 +135,6 @@ public class TileMarker extends APacketTile implements IMarker, IDebugSender {
             new TextComponentString("Laser : " + laser));
     }
 
-    @Override
-    public Symbol getSymbol() {
-        return SYMBOL;
-    }
-
     public static class Laser {
         /**
          * index x = 0, 3 , y = 1, 4 , z = 2, 5.

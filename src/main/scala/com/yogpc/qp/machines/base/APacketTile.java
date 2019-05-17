@@ -21,6 +21,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.utils.Holder;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -29,9 +30,8 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraftforge.fml.ModLoadingContext;
 
-public abstract class APacketTile extends TileEntity implements IDisabled {
+public abstract class APacketTile extends TileEntity {
     public static final BinaryOperator<String> combiner = (s, s2) -> s + ", " + s2;
     public static final Function<String, TextComponentString> toComponentString = TextComponentString::new;
     public static final Consumer<IChunkLoadTile> requestTicket = IChunkLoadTile::requestTicket;
@@ -54,7 +54,7 @@ public abstract class APacketTile extends TileEntity implements IDisabled {
             displayName = new TextComponentString("APacketTile");
         }
 
-        machineDisabled = ModLoadingContext.get().extension() != null || !enabled();
+        machineDisabled = !Holder.tiles().apply(type).enabled();
     }
 
     @Override
@@ -87,8 +87,9 @@ public abstract class APacketTile extends TileEntity implements IDisabled {
             finishListener.forEach(Runnable::run);
     }
 
-    @Override
-    public abstract scala.Symbol getSymbol();
+    public final boolean enabled() {
+        return !machineDisabled;
+    }
 
     @SuppressWarnings({"SameParameterValue"})
     protected static <T> T invoke(Method method, Class<T> returnType, Object ref, Object... param) {

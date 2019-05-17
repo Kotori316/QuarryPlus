@@ -75,6 +75,7 @@ import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import scala.Symbol;
 
 public class TilePump extends APacketTile implements IEnchantableTile, ITickable, IDebugSender, IAttachment {
+    public static final Symbol SYMBOL = Symbol.apply("PumpPlus");
     @Nullable
     public EnumFacing connectTo = null;
     private boolean initialized = false;
@@ -507,11 +508,6 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
 
     public static boolean isLiquid(@Nonnull IBlockState state) {
         return isLiquid(state, false, null, null);
-    }
-
-    @Override
-    public Symbol getSymbol() {
-        return Symbol.apply("PumpPlus");
     }
 
     /*private class PumpTank extends FluidTank {

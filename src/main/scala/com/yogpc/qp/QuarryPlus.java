@@ -84,7 +84,7 @@ public class QuarryPlus {
 
         @SubscribeEvent
         public static void registerTiles(RegistryEvent.Register<TileEntityType<?>> event) {
-            JavaConverters.seqAsJavaList(Holder.tiles()).forEach(event.getRegistry()::register);
+            JavaConverters.asJavaCollection(Holder.tiles().keys()).forEach(event.getRegistry()::register);
         }
 
         @SubscribeEvent
