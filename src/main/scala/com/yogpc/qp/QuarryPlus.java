@@ -26,7 +26,6 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scala.collection.JavaConverters;
@@ -146,7 +145,6 @@ public class QuarryPlus {
         public static final String replacer = "quarryreplacer";
         public static final String solidquarry = "solidquarry";
         public static final String statuschecker = "statuschecker";
-        public static final String tool = "tool";
         public static final String ySetter = "y_setter";
         public static final String workbench = "workbenchplus";
     }

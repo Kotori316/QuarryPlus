@@ -163,9 +163,10 @@ public class InvUtils {
 
         @Override
         public Stream<? extends IInjector> getInjector(ItemStack stack, TileEntity entity, EnumFacing facing) {
-            return entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing.getOpposite()).filter(
-                h -> stack.getCount() != ItemHandlerHelper.insertItemStacked(h, stack, true).getCount()
-            )
+            return entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing.getOpposite())
+                .filter(
+                    h -> stack.getCount() != ItemHandlerHelper.insertItemStacked(h, stack, true).getCount()
+                )
                 .map(ForgeInjector::new)
                 .map(Stream::of)
                 .orElse(Stream.empty());

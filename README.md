@@ -15,3 +15,5 @@ Finished Work
 * PumpPlus
 * Replacer
 * Dummy Block
+* Book Mover
+* Spawner Controller

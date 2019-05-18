@@ -49,8 +49,8 @@ object Holder {
     quarryTileType -> TileDisable(TileQuarry.SYMBOL),
     pumpTileType -> TileDisable(TilePump.SYMBOL),
     solidQuarryType -> TileDisable(BlockSolidQuarry.SYMBOL),
-    replacerType -> TileDisable(TileReplacer.SYMBOL, defaultValue = true),
-    bookMoverType -> TileDisable(BlockBookMover.SYMBOL, defaultValue = true),
+    replacerType -> TileDisable(TileReplacer.SYMBOL, defaultDisableMachine = true),
+    bookMoverType -> TileDisable(BlockBookMover.SYMBOL, defaultDisableMachine = true),
   )
 
   //---------- Block ----------
@@ -97,11 +97,7 @@ object Holder {
   val items: Seq[Item] = Seq(itemStatusChecker, itemListEditor, itemLiquidSelector, itemYSetter, itemQuarryDebug)
 
   //---------- IDisable ----------
-  case class TileDisable(name: Symbol, defaultValue: Boolean = false) extends IDisabled {
-    override def getSymbol = name
-
-    override def defaultDisableMachine = defaultValue
-  }
+  case class TileDisable(override val getSymbol: Symbol, override val defaultDisableMachine: Boolean = false) extends IDisabled
 
   val canDisablesSymbols = (tiles.values ++ blocks ++ items).collect { case d: IDisabled => d.getSymbol -> d.defaultDisableMachine }
 }

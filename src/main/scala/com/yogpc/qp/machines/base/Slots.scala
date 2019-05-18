@@ -29,15 +29,12 @@ class SlotMover(inv: IInventory, index: Int, xPosition: Int, yPosition: Int) ext
   override def isItemValid(is: ItemStack): Boolean = {
     this.slotNumber match {
       case 0 =>
-        if (is.getEnchantmentTagList != null) {
-          is.getItem match {
+        !is.getEnchantmentTagList.isEmpty &&
+          (is.getItem match {
             case tool: ItemTool => tool.getTier == ItemTier.DIAMOND
             case _: ItemBow => true
             case _ => false
-          }
-        } else {
-          false
-        }
+          })
       case 1 => is.getItem.isInstanceOf[IEnchantableItem]
       case _ => false
     }
