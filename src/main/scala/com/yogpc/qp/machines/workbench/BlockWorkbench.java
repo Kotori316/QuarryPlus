@@ -4,11 +4,10 @@ import java.util.Optional;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.base.QPBlock;
+import com.yogpc.qp.machines.item.ItemQuarryDebug;
 import com.yogpc.qp.utils.Holder;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.entity.AbstractClientPlayer;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.InventoryHelper;
@@ -35,12 +34,19 @@ public class BlockWorkbench extends QPBlock {
         if (super.onBlockActivated(state, worldIn, pos, player, hand, side, hitX, hitY, hitZ)) {
             return true;
         }
-        if (!player.isSneaking()) {
-            if(!worldIn.isRemote){
+        if (player.getHeldItem(hand).getItem() == Holder.itemStatusChecker()) {
+            if (!worldIn.isRemote) {
                 Optional.ofNullable(worldIn.getTileEntity(pos))
                     .flatMap(optCast(TileWorkbench.class))
-                    .ifPresent(t ->
-                        NetworkHooks.openGui(((EntityPlayerMP) player), t, pos));
+                    .ifPresent(t -> player.sendStatusMessage(ItemQuarryDebug.energyToString(t), false));
+            }
+            return true;
+        }
+        if (!player.isSneaking()) {
+            if (!worldIn.isRemote) {
+                Optional.ofNullable(worldIn.getTileEntity(pos))
+                    .flatMap(optCast(TileWorkbench.class))
+                    .ifPresent(t -> NetworkHooks.openGui(((EntityPlayerMP) player), t, pos));
             }
             return true;
         }

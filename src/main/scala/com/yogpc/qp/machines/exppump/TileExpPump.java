@@ -172,4 +172,9 @@ public class TileExpPump extends APacketTile implements IEnchantableTile, IDebug
     public boolean working() {
         return mConnectTo != null;
     }
+
+    public int getXpAmount() {
+        return xpAmount;
+    }
+
 }

@@ -20,10 +20,12 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import scala.Symbol;
 
+import static jp.t2v.lab.syntax.MapStreamSyntax.optCast;
 import static net.minecraft.state.properties.BlockStateProperties.ENABLED;
 
 /*
@@ -54,6 +56,15 @@ public class BlockExpPump extends QPBlock {
     public boolean onBlockActivated(IBlockState state, World worldIn, BlockPos pos, EntityPlayer player,
                                     EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
         if (super.onBlockActivated(state, worldIn, pos, player, hand, side, hitX, hitY, hitZ)) return true;
+        if (player.getHeldItem(hand).getItem() == Holder.itemStatusChecker()) {
+            if (!worldIn.isRemote) {
+                Optional.ofNullable(worldIn.getTileEntity(pos))
+                    .flatMap(optCast(TileExpPump.class))
+                    .ifPresent(t -> player.sendStatusMessage(new TextComponentString(
+                        "Xp Amount: " + t.getXpAmount()), false));
+            }
+            return true;
+        }
         if (!player.isSneaking()) {
             if (!worldIn.isRemote) {
                 TileEntity tileEntity = worldIn.getTileEntity(pos);
