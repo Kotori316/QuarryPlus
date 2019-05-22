@@ -21,7 +21,6 @@ import java.util.stream.Stream;
 
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.EnergyUsage;
@@ -99,7 +98,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
         }
         boolean broken = false;
         for (int i = 0; i < efficiency + 1 && !broken; i++) {
-            if(!Config.common().fastQuarryHeadMove().get()) broken = true;
+            if (!Config.common().fastQuarryHeadMove().get()) broken = true;
             switch (this.now) {
                 case MAKE_FRAME:
                     if (S_makeFrame())
@@ -435,7 +434,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
 
     protected IBlockState S_getFillBlock() {
         if (now == Mode.NOT_NEED_BREAK || !facingMap.containsKey(REPLACER))
-        return Blocks.AIR.getDefaultState();
+            return Blocks.AIR.getDefaultState();
         else {
             return Optional.ofNullable(facingMap.get(REPLACER))
                 .map(pos::offset).map(world::getTileEntity)
@@ -508,7 +507,8 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
             PacketHandler.sendToAround(ModeMessage.create(this), world, getPos());
             IBlockState state = world.getBlockState(getPos());
             if (state.get(QPBlock.WORKING()) ^ isWorking()) {
-                InvUtils.setNewState(world, getPos(), this, state.with(QPBlock.WORKING(), isWorking()));
+//                InvUtils.setNewState(world, getPos(), this, state.with(QPBlock.WORKING(), isWorking()));
+                world.setBlockState(getPos(), state.with(QPBlock.WORKING(), isWorking()));
                 if (isWorking()) {
                     startWork();
                 } else {
@@ -530,7 +530,12 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     protected void G_destroy() {
         setNow(Mode.NONE);
         G_renew_powerConfigure();
-//        ForgeChunkManager.releaseTicket(this.chunkTicket);
+    }
+
+    @Override
+    public void remove() {
+        IChunkLoadTile.super.releaseTicket();
+        super.remove();
     }
 
     @Override
@@ -544,23 +549,6 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
             PacketHandler.sendToAround(TileMessage.create(this), world, getPos());
         }
     }
-
-//    private Ticket chunkTicket;
-
-    @Override
-    public void requestTicket() {
-//        if (this.chunkTicket != null)
-//            return;
-//        this.chunkTicket = ForgeChunkManager.requestTicket(QuarryPlus.INSTANCE, world, Type.NORMAL);
-//        setTileData(this.chunkTicket, getPos());
-    }
-/*
-    @Override
-    public void forceChunkLoading(final Ticket ticket) {
-        if (this.chunkTicket == null)
-            this.chunkTicket = ticket;
-        ForgeChunkManager.forceChunk(ticket, new ChunkPos(getPos()));
-    }*/
 
     @Override
     public void tick() {

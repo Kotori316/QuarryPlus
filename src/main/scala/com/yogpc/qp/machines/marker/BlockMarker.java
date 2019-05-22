@@ -1,18 +1,22 @@
 package com.yogpc.qp.machines.marker;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.utils.Holder;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
@@ -29,6 +33,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import static jp.t2v.lab.syntax.MapStreamSyntax.optCast;
 import static jp.t2v.lab.syntax.MapStreamSyntax.streamCast;
 import static net.minecraft.state.properties.BlockStateProperties.FACING;
 
@@ -94,6 +99,12 @@ public class BlockMarker extends Block {
                 .forEach(TileMarker::redstoneUpdate);
         }
         super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
+    }
+
+    @Override
+    public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, @Nullable EntityLivingBase placer, ItemStack stack) {
+        super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
+        Optional.ofNullable(worldIn.getTileEntity(pos)).flatMap(optCast(TileMarker.class)).ifPresent(TileMarker.requestTicket);
     }
 
     //---------- Setting of TileEntity ----------

@@ -11,6 +11,7 @@ import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.APacketTile;
+import com.yogpc.qp.machines.base.IChunkLoadTile;
 import com.yogpc.qp.machines.base.IDebugSender;
 import com.yogpc.qp.machines.base.IMarker;
 import com.yogpc.qp.packet.PacketHandler;
@@ -34,7 +35,7 @@ import scala.Symbol;
 
 import static jp.t2v.lab.syntax.MapStreamSyntax.streamCast;
 
-public class TileMarker extends APacketTile implements IMarker, IDebugSender {
+public class TileMarker extends APacketTile implements IMarker, IDebugSender, IChunkLoadTile {
     private static final int MAX_SIZE = 256;
     public static final Symbol SYMBOL = Symbol.apply("MarkerPlus");
 
