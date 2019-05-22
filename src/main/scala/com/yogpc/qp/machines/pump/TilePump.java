@@ -233,7 +233,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         if (hasWorld()) {
             IBlockState state = world.getBlockState(getPos());
             if (connectTo != null ^ state.get(BlockStateProperties.ENABLED)) {
-                InvUtils.setNewState(world, getPos(), this, state.with(BlockStateProperties.ENABLED, connectTo != null));
+                world.setBlockState(getPos(), state.with(BlockStateProperties.ENABLED, connectTo != null));
             }
         }
     }
@@ -246,7 +246,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         }
         if (!world.isRemote) {
             IBlockState state = world.getBlockState(getPos());
-            InvUtils.setNewState(world, getPos(), this, state.with(QPBlock.WORKING(), b));
+            world.setBlockState(getPos(), state.with(QPBlock.WORKING(), b));
         }
     }
 

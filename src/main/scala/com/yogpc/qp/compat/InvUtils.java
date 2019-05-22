@@ -139,21 +139,6 @@ public class InvUtils {
     @ObjectHolder("endercore:autosmelt")
     public static final Enchantment endercore_smelting = DummyEnchantment.DUMMY_ENCHANTMENT;
 
-    public static boolean setNewState(@Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull IBlockState newState) {
-        TileEntity entity = worldIn.getTileEntity(pos);
-        return setNewState(worldIn, pos, entity, newState);
-    }
-
-    public static boolean setNewState(@Nonnull World worldIn, @Nonnull BlockPos pos, @Nullable TileEntity entity, @Nonnull IBlockState newState) {
-        if (entity != null) {
-            entity.validate();
-            worldIn.setBlockState(pos, newState, 3);
-            entity.validate();
-            worldIn.setTileEntity(pos, entity);
-        }
-        return true;
-    }
-
     private static class ForgeInjector implements IInjector {
         private final IItemHandler handler;
 

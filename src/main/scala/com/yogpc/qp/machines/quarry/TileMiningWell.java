@@ -164,7 +164,7 @@ public class TileMiningWell extends TileBasic implements ITickable {
             startWork();
         if (hasWorld()) {
             IBlockState old = world.getBlockState(getPos());
-            InvUtils.setNewState(world, getPos(), this, old.with(QPBlock.WORKING(), working));
+            world.setBlockState(getPos(),  old.with(QPBlock.WORKING(), working));
         }
     }
 

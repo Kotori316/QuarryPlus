@@ -8,7 +8,6 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.machines.base.APacketTile;
 import com.yogpc.qp.machines.base.IAttachable;
 import com.yogpc.qp.machines.base.IAttachment;
@@ -92,9 +91,9 @@ public class TileReplacer extends APacketTile implements IAttachment {
     public void setConnectTo(@Nullable EnumFacing facing) {
         this.facing = facing;
         if (hasWorld()) {
-            IBlockState state = world.getBlockState(pos);
+            IBlockState state = world.getBlockState(getPos());
             if (facing != null ^ state.get(QPBlock.WORKING())) {
-                InvUtils.setNewState(world, pos, this, state.with(QPBlock.WORKING(), facing != null));
+                world.setBlockState(getPos(), state.with(QPBlock.WORKING(), facing != null));
             }
         }
     }
