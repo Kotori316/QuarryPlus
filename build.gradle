@@ -149,6 +149,7 @@ curseforge {
         mainArtifact(jar) {
             displayName = 'v' + project.version
         }
+        addArtifact deobfJar
         addArtifact srcJar
         relations {
             requiredDependency 'scalable-cats-force'
