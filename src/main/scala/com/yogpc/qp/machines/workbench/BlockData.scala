@@ -42,7 +42,7 @@ case class BlockData(name: ResourceLocation) extends Ordered[BlockData] {
   }
 
   def write(nbt: NBTTagCompound): NBTTagCompound = {
-    nbt.setString(BlockData.Name_NBT, name.toString)
+    nbt.putString(BlockData.Name_NBT, name.toString)
     nbt
   }
 

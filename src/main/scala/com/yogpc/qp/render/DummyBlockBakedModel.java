@@ -22,6 +22,7 @@ public class DummyBlockBakedModel implements IBakedModel {
     public IBakedModel model;
 
     @Override
+    @SuppressWarnings("deprecation")
     public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, Random rand) {
         return model.getQuads(state, side, rand);
     }

@@ -592,24 +592,24 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
 
     @Override
     public NBTTagCompound write(final NBTTagCompound nbt) {
-        nbt.setInt("xMin", this.xMin);
-        nbt.setInt("xMax", this.xMax);
-        nbt.setInt("yMin", this.yMin);
-        nbt.setInt("yMax", this.yMax);
-        nbt.setInt("zMin", this.zMin);
-        nbt.setInt("zMax", this.zMax);
-        nbt.setInt("targetX", this.targetX);
-        nbt.setInt("targetY", this.targetY);
-        nbt.setInt("targetZ", this.targetZ);
-        nbt.setBoolean("addZ", this.addZ);
-        nbt.setBoolean("addX", this.addX);
-        nbt.setBoolean("dug", this.dug);
-        nbt.setBoolean("changeZ", this.changeZ);
-        nbt.setByte("now", ((byte) this.now.ordinal()));
-        nbt.setDouble("headPosX", this.headPosX);
-        nbt.setDouble("headPosY", this.headPosY);
-        nbt.setDouble("headPosZ", this.headPosZ);
-        nbt.setBoolean("filler", this.filler);
+        nbt.putInt("xMin", this.xMin);
+        nbt.putInt("xMax", this.xMax);
+        nbt.putInt("yMin", this.yMin);
+        nbt.putInt("yMax", this.yMax);
+        nbt.putInt("zMin", this.zMin);
+        nbt.putInt("zMax", this.zMax);
+        nbt.putInt("targetX", this.targetX);
+        nbt.putInt("targetY", this.targetY);
+        nbt.putInt("targetZ", this.targetZ);
+        nbt.putBoolean("addZ", this.addZ);
+        nbt.putBoolean("addX", this.addX);
+        nbt.putBoolean("dug", this.dug);
+        nbt.putBoolean("changeZ", this.changeZ);
+        nbt.putByte("now", ((byte) this.now.ordinal()));
+        nbt.putDouble("headPosX", this.headPosX);
+        nbt.putDouble("headPosY", this.headPosY);
+        nbt.putDouble("headPosZ", this.headPosZ);
+        nbt.putBoolean("filler", this.filler);
         return super.write(nbt);
     }
 

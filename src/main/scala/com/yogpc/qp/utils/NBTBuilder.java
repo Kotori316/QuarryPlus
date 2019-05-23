@@ -36,8 +36,8 @@ public class NBTBuilder<T extends INBTBase> {
             .map(toEntry(keyFunction.compose(Map.Entry::getKey), valueFunction.compose(Map.Entry::getValue)))
             .map(toAny((k, v) -> {
                 NBTTagCompound compound = new NBTTagCompound();
-                compound.setTag(keyName, ((INBTBase) k));
-                compound.setTag(valueName, ((INBTBase) v));
+                compound.put(keyName, ((INBTBase) k));
+                compound.put(valueName, ((INBTBase) v));
                 return compound;
             }))
             .collect(Collectors.toCollection(NBTTagList::new));
@@ -129,7 +129,7 @@ public class NBTBuilder<T extends INBTBase> {
 
     public NBTTagCompound toTag() {
         NBTTagCompound tag = new NBTTagCompound();
-        map.forEach(tag::setTag);
+        map.forEach(tag::put);
         return tag;
     }
 

@@ -301,17 +301,17 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
 
     @Override
     public NBTTagCompound write(final NBTTagCompound nbt) {
-        nbt.setBoolean("silktouch", this.silktouch);
-        nbt.setByte("fortune", this.fortune);
-        nbt.setByte("efficiency", this.efficiency);
-        nbt.setByte("unbreaking", this.unbreaking);
-        nbt.setBoolean("fortuneInclude", this.fortuneInclude);
-        nbt.setBoolean("silktouchInclude", this.silktouchInclude);
-        nbt.setTag("fortuneList", fortuneList.stream().map(BlockData::toNbt).collect(Collectors.toCollection(NBTTagList::new)));
-        nbt.setTag("silktouchList", silktouchList.stream().map(BlockData::toNbt).collect(Collectors.toCollection(NBTTagList::new)));
-        nbt.setInt("yLevel", this.yLevel);
+        nbt.putBoolean("silktouch", this.silktouch);
+        nbt.putByte("fortune", this.fortune);
+        nbt.putByte("efficiency", this.efficiency);
+        nbt.putByte("unbreaking", this.unbreaking);
+        nbt.putBoolean("fortuneInclude", this.fortuneInclude);
+        nbt.putBoolean("silktouchInclude", this.silktouchInclude);
+        nbt.put("fortuneList", fortuneList.stream().map(BlockData::toNbt).collect(Collectors.toCollection(NBTTagList::new)));
+        nbt.put("silktouchList", silktouchList.stream().map(BlockData::toNbt).collect(Collectors.toCollection(NBTTagList::new)));
+        nbt.putInt("yLevel", this.yLevel);
 
-        nbt.setTag("enchList", ench.entrySet().stream().map(keys(ResourceLocation::toString)).map(values(NBTTagInt::new)).collect(NBTBuilder.toNBTTag()));
+        nbt.put("enchList", ench.entrySet().stream().map(keys(ResourceLocation::toString)).map(values(NBTTagInt::new)).collect(NBTBuilder.toNBTTag()));
         return super.write(nbt);
     }
 

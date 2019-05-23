@@ -126,7 +126,7 @@ public class TileMiningWell extends TileBasic implements ITickable {
 
     @Override
     public NBTTagCompound write(final NBTTagCompound nbt) {
-        nbt.setBoolean("working", this.working);
+        nbt.putBoolean("working", this.working);
         return super.write(nbt);
     }
 

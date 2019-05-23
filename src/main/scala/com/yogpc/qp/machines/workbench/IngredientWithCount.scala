@@ -43,7 +43,7 @@ case class IngredientWithCount(ingredient: Ingredient, count: Int) {
   }
 
   def writeToBuffer(buffer: PacketBuffer): Unit = {
-    ingredient.writeToBuffer(buffer)
+    ingredient.write(buffer)
     buffer.writeInt(count)
   }
 }
@@ -66,7 +66,7 @@ object IngredientWithCount {
   }
 
   def readFromBuffer(buffer: PacketBuffer): IngredientWithCount = {
-    val ingredient = Ingredient.fromBuffer(buffer)
+    val ingredient = Ingredient.read(buffer)
     val count = buffer.readInt()
     IngredientWithCount(ingredient, count)
   }

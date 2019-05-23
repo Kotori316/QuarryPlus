@@ -61,9 +61,9 @@ package object qp {
         }
       }
       Option(stack.getTag).foreach(subtag => {
-        subtag.removeTag(tagName)
+        subtag.remove(tagName)
         if (!list.isEmpty) {
-          subtag.setTag(tagName, list)
+          subtag.put(tagName, list)
         }
         stack.setTag(if (subtag.isEmpty) null else subtag)
       })

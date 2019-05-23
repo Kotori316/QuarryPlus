@@ -66,8 +66,8 @@ public class TileSolidQuarry extends TileQuarry implements IInteractionObject {
 
     @Override
     public NBTTagCompound write(NBTTagCompound nbt) {
-        nbt.setInt("fuelCount", fuelCount);
-        nbt.setTag("fuel", fuel.serializeNBT());
+        nbt.putInt("fuelCount", fuelCount);
+        nbt.put("fuel", fuel.serializeNBT());
         return super.write(nbt);
     }
 
