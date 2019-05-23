@@ -1,10 +1,10 @@
 package com.yogpc.qp.machines.marker;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.yogpc.qp.Config;
@@ -63,8 +63,10 @@ public class TileMarker extends APacketTile implements IMarker, IDebugSender, IC
 
     @Override
     public List<ItemStack> removeFromWorldWithItem() {
-        // TODO IMPLEMENT
-        return Collections.emptyList();
+        return link.edges().filter(p -> world.getTileEntity(p) instanceof TileMarker)
+            .peek(world::removeBlock)
+            .map(x -> new ItemStack(Holder.blockMarker()))
+            .collect(Collectors.toList());
     }
 
     @Override
