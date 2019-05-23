@@ -1,6 +1,7 @@
 package com.yogpc.qp.machines.controller;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Optional;
@@ -9,6 +10,7 @@ import java.util.stream.Stream;
 
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.base.APacketTile;
 import com.yogpc.qp.machines.base.IDisabled;
 import com.yogpc.qp.machines.base.QPBlock;
 import com.yogpc.qp.packet.PacketHandler;
@@ -42,6 +44,7 @@ import scala.Symbol;
 //@net.minecraftforge.fml.common.Optional.Interface(iface = "cofh.api.block.IDismantleable", modid = QuarryPlus.Optionals.COFH_modID)
 public class BlockController extends Block implements IDisabled /*IDismantleable*/ {
     private static final Field logic_spawnDelay;
+    private static final Method logic_getEntityID;
     public static final scala.Symbol SYMBOL = scala.Symbol.apply("SpawnerController");
     public final ItemBlock itemBlock;
 
@@ -55,6 +58,7 @@ public class BlockController extends Block implements IDisabled /*IDismantleable
             throw new RuntimeException(e);
         }
         logic_spawnDelay = field;
+        logic_getEntityID = ObfuscationReflectionHelper.findMethod(MobSpawnerBaseLogic.class, "func_190895_g");
     }
 
     public BlockController() {
@@ -88,7 +92,14 @@ public class BlockController extends Block implements IDisabled /*IDismantleable
         if (super.onBlockActivated(state, worldIn, pos, player, hand, side, hitX, hitY, hitZ)) return true;
         if (!player.isSneaking()) {
             if (!worldIn.isRemote) {
-                if (enabled()) {
+                if (player.getHeldItem(hand).getItem() == Holder.itemStatusChecker()) {
+                    getSpawner(worldIn, pos)
+                        .flatMap(logic -> Optional.ofNullable(APacketTile.invoke(logic_getEntityID, ResourceLocation.class, logic)))
+                        .map(ResourceLocation::toString)
+                        .map(s -> "Spawner Mob: " + s)
+                        .map(TextComponentString::new)
+                        .ifPresent(s -> player.sendStatusMessage(s, false));
+                } else if (enabled()) {
                     List<EntityType<?>> entries = ForgeRegistries.ENTITIES.getValues().stream().filter(e ->
                         !Modifier.isAbstract(e.getEntityClass().getModifiers())
                             && !Config.common().spawnerBlacklist().contains(e.getRegistryName())).collect(Collectors.toList());

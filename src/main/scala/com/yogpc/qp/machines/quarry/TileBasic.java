@@ -276,7 +276,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         return i + (Math.random() < (value - i) ? 1 : 0);
     }
 
-    public static final Method createStackedBlock = ObfuscationReflectionHelper.findMethod(Block.class, "getSilkTouchDrop", IBlockState.class);
+    public static final Method createStackedBlock = ObfuscationReflectionHelper.findMethod(Block.class, "func_180643_i", IBlockState.class);
 
     @Override
     public void read(final NBTTagCompound nbt) {

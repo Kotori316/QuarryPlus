@@ -91,8 +91,7 @@ public abstract class APacketTile extends TileEntity {
         return !machineDisabled;
     }
 
-    @SuppressWarnings({"SameParameterValue"})
-    protected static <T> T invoke(Method method, Class<T> returnType, Object ref, Object... param) {
+    public static <T> T invoke(Method method, Class<T> returnType, Object ref, Object... param) {
         try {
             return returnType.cast(method.invoke(ref, param));
         } catch (ReflectiveOperationException e) {
