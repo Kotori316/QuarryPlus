@@ -3,7 +3,10 @@ package com.yogpc.qp.integration.jei;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.bookmover.BlockBookMover;
+import com.yogpc.qp.machines.bookmover.GuiBookMover;
 import com.yogpc.qp.machines.workbench.GuiWorkbench;
 import com.yogpc.qp.machines.workbench.WorkbenchRecipes;
 import com.yogpc.qp.utils.Holder;
@@ -32,16 +35,21 @@ public class QuarryJeiPlugin implements IModPlugin {
             .sorted(WorkbenchRecipes.recipeOrdering())
             .collect(Collectors.toList());
         registration.addRecipes(recipes, WorkBenchRecipeCategory.UID());
+        registration.addRecipes(BookRecipeCategory.recipes(), BookRecipeCategory.UID());
+        registration.addRecipes(MoverRecipeCategory.recipes(), MoverRecipeCategory.UID());
     }
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
         registration.addRecipeCatalyst(new ItemStack(Holder.blockWorkbench()), WorkBenchRecipeCategory.UID());
+        registration.addRecipeCatalyst(new ItemStack(Holder.blockBookMover()), BookRecipeCategory.UID());
+        registration.addRecipeCatalyst(new ItemStack(Holder.blockMover()), MoverRecipeCategory.UID());
     }
 
     @Override
     public void registerGuiHandlers(IGuiHandlerRegistration registration) {
         registration.addRecipeClickArea(GuiWorkbench.class, 7, 74, 161, 11, WorkBenchRecipeCategory.UID());
+        registration.addRecipeClickArea(GuiBookMover.class, 79, 35, 23, 16, BookRecipeCategory.UID());
     }
 
 //    @Override
@@ -69,12 +77,12 @@ public class QuarryJeiPlugin implements IModPlugin {
     public void registerCategories(IRecipeCategoryRegistration registry) {
         workBenchRecipeCategory = new WorkBenchRecipeCategory(registry.getJeiHelpers().getGuiHelper());
         registry.addRecipeCategories(workBenchRecipeCategory);
-//        moverRecipeCategory = new MoverRecipeCategory(registry.getJeiHelpers().getGuiHelper());
-//        registry.addRecipeCategories(moverRecipeCategory);
-//        if (!Config.content().disableMapJ().get(BlockBookMover.SYMBOL)) {
-//            bookRecipeCategory = new BookRecipeCategory(registry.getJeiHelpers().getGuiHelper());
-//            registry.addRecipeCategories(bookRecipeCategory);
-//        }
+        moverRecipeCategory = new MoverRecipeCategory(registry.getJeiHelpers().getGuiHelper());
+        registry.addRecipeCategories(moverRecipeCategory);
+        if (!Config.common().disabled().apply(BlockBookMover.SYMBOL).get()) {
+            bookRecipeCategory = new BookRecipeCategory(registry.getJeiHelpers().getGuiHelper());
+            registry.addRecipeCategories(bookRecipeCategory);
+        }
     }
 
     @Override

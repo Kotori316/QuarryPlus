@@ -68,6 +68,11 @@ package object qp {
         stack.setTag(if (subtag.isEmpty) null else subtag)
       })
     }
+
+    def enchantmentAdded(enchantment: Enchantment, level: Int): ItemStack = {
+      stack.addEnchantment(enchantment, level)
+      stack
+    }
   }
 
   type NBTWrapper[A, NBTType <: INBTBase] = A => NBTType

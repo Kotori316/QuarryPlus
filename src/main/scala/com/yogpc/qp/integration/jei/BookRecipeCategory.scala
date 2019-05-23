@@ -1,25 +1,42 @@
 package com.yogpc.qp.integration.jei
 
-import com.yogpc.qp.QuarryPlus
-import net.minecraft.util.ResourceLocation
+import java.util.Collections
 
-/*
-class BookRecipeCategory(guiHelper: IGuiHelper) extends IRecipeCategory[BookRecipeWrapper] {
+import com.yogpc.qp.{QuarryPlus, _}
+import com.yogpc.qp.machines.base.IEnchantableItem
+import com.yogpc.qp.utils.Holder
+import mezz.jei.api.constants.VanillaTypes
+import mezz.jei.api.gui.IRecipeLayout
+import mezz.jei.api.gui.drawable.IDrawable
+import mezz.jei.api.gui.drawable.IDrawableAnimated.StartDirection
+import mezz.jei.api.helpers.IGuiHelper
+import mezz.jei.api.ingredients.IIngredients
+import mezz.jei.api.recipe.category.IRecipeCategory
+import net.minecraft.client.Minecraft
+import net.minecraft.client.resources.I18n
+import net.minecraft.enchantment.{EnchantmentData, EnumEnchantmentType}
+import net.minecraft.init.Items
+import net.minecraft.item.{Item, ItemEnchantedBook, ItemStack}
+import net.minecraft.util.ResourceLocation
+import net.minecraftforge.registries.ForgeRegistries
+
+import scala.collection.JavaConverters._
+
+
+class BookRecipeCategory(guiHelper: IGuiHelper) extends IRecipeCategory[BookRecipeCategory.BookRecipe] {
 
   import BookRecipeCategory._
 
   val bar = guiHelper.createDrawable(backGround, 176, 14, 23, 16)
   val animateBar = guiHelper.createAnimatedDrawable(bar, 100, StartDirection.LEFT, false)
 
-  override def getUid: String = UID
+  override def getUid = UID
 
-  override def getTitle: String = QuarryPlusI.blockBookMover.getLocalizedName
-
-  override def getModName: String = QuarryPlus.Mod_Name
+  override def getTitle: String = I18n.format(Holder.blockBookMover.getTranslationKey)
 
   override def getBackground: IDrawable = guiHelper.createDrawable(backGround, xOff, yOff, 167, 77)
 
-  override def setRecipe(recipeLayout: IRecipeLayout, recipeWrapper: BookRecipeWrapper, ingredients: IIngredients): Unit = {
+  override def setRecipe(recipeLayout: IRecipeLayout, recipeWrapper: BookRecipe, ingredients: IIngredients): Unit = {
     val guiItemStack = recipeLayout.getItemStacks
 
     guiItemStack.init(0, true, 8, 30)
@@ -29,15 +46,38 @@ class BookRecipeCategory(guiHelper: IGuiHelper) extends IRecipeCategory[BookReci
     guiItemStack.set(ingredients)
   }
 
-  override def drawExtras(minecraft: Minecraft): Unit = {
-    animateBar.draw(minecraft, 75, 31)
+  override def draw(recipe: BookRecipe, mouseX: Double, mouseY: Double): Unit = {
+    super.draw(recipe, mouseX, mouseY)
+    animateBar.draw(75, 31)
+    Minecraft.getInstance().fontRenderer.drawString(50000 + "MJ", 36 - xOff, 66 - yOff, 0x404040)
+  }
 
+  override def getRecipeClass = classOf[BookRecipe]
+
+  override def getIcon = guiHelper.createDrawableIngredient(new ItemStack(Holder.blockBookMover))
+
+  override def setIngredients(recipe: BookRecipe, ingredients: IIngredients): Unit = {
+    val input = Seq(items.asJava, Collections.singletonList(ItemEnchantedBook.getEnchantedItemStack(recipe.ench))).asJava
+    val output = items.map(_.copy()).map(_.enchantmentAdded(recipe.ench.enchantment, recipe.ench.enchantmentLevel)).asJava
+
+    ingredients.setInputLists(VanillaTypes.ITEM, input)
+    ingredients.setOutputLists(VanillaTypes.ITEM, Collections.singletonList(output))
+  }
 }
-}*/
+
 object BookRecipeCategory {
-  final val UID = "quarryplus.bookmover"
+  final val UID = new ResourceLocation(QuarryPlus.modID, "quarryplus.bookmover")
   val backGround = new ResourceLocation(QuarryPlus.modID, "textures/gui/bookmover_jei.png")
   final val xOff = 0
   final val yOff = 0
   final val o = 18
+
+  val enchTypes = EnumEnchantmentType.values().filter(_.canEnchantItem(Items.DIAMOND_PICKAXE)).toSet
+  val enchantments = ForgeRegistries.ENCHANTMENTS.getValues.asScala.filter(e => enchTypes(e.`type`)).map(e => new EnchantmentData(e, e.getMaxLevel))
+  val items = ForgeRegistries.ITEMS.asScala.collect { case i: Item with IEnchantableItem if i.isValidInBookMover => i }.flatMap(_.stacks).toSeq
+
+  def recipes = enchantments.map(BookRecipe.apply).toSeq.asJava
+
+  case class BookRecipe(ench: EnchantmentData)
+
 }
