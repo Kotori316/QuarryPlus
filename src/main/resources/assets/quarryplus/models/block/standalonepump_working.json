@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "particle": "quarryplus:blocks/standalonepump_top",
+    "down": "quarryplus:blocks/standalonepump_bottom",
+    "up": "quarryplus:blocks/standalonepump_top_w",
+    "north": "quarryplus:blocks/standalonepump_side",
+    "east": "quarryplus:blocks/standalonepump_side",
+    "south": "quarryplus:blocks/standalonepump_side",
+    "west": "quarryplus:blocks/standalonepump_side"
+  }
+}

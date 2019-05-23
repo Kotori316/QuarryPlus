@@ -1,16 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "cube",
-    "textures": {
-      "particle": "quarryplus:blocks/standalonepump_top",
-      "down": "quarryplus:blocks/standalonepump_bottom",
-      "up": "quarryplus:blocks/standalonepump_top",
-      "north": "quarryplus:blocks/standalonepump_side",
-      "east": "quarryplus:blocks/standalonepump_side",
-      "south": "quarryplus:blocks/standalonepump_side",
-      "west": "quarryplus:blocks/standalonepump_side"
-    }
+    "model": "quarryplus:standalonepump"
   },
   "variants": {
     "normal": [
@@ -18,15 +9,13 @@
     ],
     "acting": {
       "true": {
-        "textures": {
-          "up": "quarryplus:blocks/standalonepump_top_w"
-        }
+        "model": "quarryplus:standalonepump_working"
       },
       "false": {
       }
-    },
-    "inventory": [
-      {}
-    ]
-  }
+    }
+  },
+  "inventory": [
+    {}
+  ]
 }
