@@ -75,6 +75,7 @@ public class TileMarker extends APacketTile implements IMarker, IDebugSender, IC
     @Override
     public void remove() {
         removeLink();
+        IChunkLoadTile.super.releaseTicket();
         super.remove();
     }
 
