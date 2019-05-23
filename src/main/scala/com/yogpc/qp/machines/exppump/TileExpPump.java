@@ -140,11 +140,11 @@ public class TileExpPump extends APacketTile implements IEnchantableTile, IDebug
 
     @Override
     public NBTTagCompound write(NBTTagCompound compound) {
-        compound.setByte("mConnectTo", Optional.ofNullable(mConnectTo).map(Enum::ordinal).orElse(-1).byteValue());
-        compound.setInt("xpAmount", xpAmount);
-        compound.setBoolean("silktouch", this.silktouch);
-        compound.setByte("fortune", (byte) this.fortune);
-        compound.setByte("unbreaking", (byte) this.unbreaking);
+        compound.putByte("mConnectTo", Optional.ofNullable(mConnectTo).map(Enum::ordinal).orElse(-1).byteValue());
+        compound.putInt("xpAmount", xpAmount);
+        compound.putBoolean("silktouch", this.silktouch);
+        compound.putByte("fortune", (byte) this.fortune);
+        compound.putByte("unbreaking", (byte) this.unbreaking);
         return super.write(compound);
     }
 

@@ -35,7 +35,7 @@ public interface IChunkLoadTile {
             .flatMap(optCast(WorldServer.class))
             .ifPresent(worldServer -> {
                 ChunkPos pos = new ChunkPos(getPos());
-                worldServer.func_212414_b(pos.x, pos.z, true);
+                worldServer.setChunkForced(pos.x, pos.z, true);
                 QuarryPlus.LOGGER.debug(String.format("QuarryPlus ChunkLoader added [%d, %d] for %s", pos.x, pos.z, this));
             });
     }
@@ -45,12 +45,13 @@ public interface IChunkLoadTile {
      * or {@link TileEntity#remove()}.<br>
      * There is no means to call this in {@link TileEntity#onChunkUnloaded()}.
      */
+    @SuppressWarnings("deprecation")
     default void releaseTicket() {
         Optional.ofNullable(getWorld())
             .flatMap(optCast(WorldServer.class))
             .ifPresent(worldServer -> {
                 ChunkPos pos = new ChunkPos(getPos());
-                worldServer.func_212414_b(pos.x, pos.z, false);
+                worldServer.setChunkForced(pos.x, pos.z, false);
                 QuarryPlus.LOGGER.debug(String.format("QuarryPlus ChunkLoader removed [%d, %d] for %s", pos.x, pos.z, this));
             });
     }

@@ -118,13 +118,13 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
         for (int i = 0; i < inventory.size(); i++) {
             ItemStack stack = inventory.get(i);
             NBTTagCompound nbttagcompound = new NBTTagCompound();
-            nbttagcompound.setByte("Slot", (byte) i);
+            nbttagcompound.putByte("Slot", (byte) i);
             stack.write(nbttagcompound);
-            nbttagcompound.removeTag("Count");
-            nbttagcompound.setInt("Count", stack.getCount());
+            nbttagcompound.remove("Count");
+            nbttagcompound.putInt("Count", stack.getCount());
             list.add(nbttagcompound);
         }
-        nbt.setTag("Items", list);
+        nbt.put("Items", list);
         return super.write(nbt);
     }
 

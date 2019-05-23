@@ -137,15 +137,15 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
         super.read(nbt);
         setStoredEnergy(nbt.getLong(NBT_STORED_ENERGY));
         configure(nbt.getLong(NBT_MAX_RECEIVE), nbt.getLong(NBT_MAX_STORED));
-        outputEnergyInfo = !nbt.hasKey(NBT_OUTPUT_ENERGY_INFO) || nbt.getBoolean(NBT_OUTPUT_ENERGY_INFO);
+        outputEnergyInfo = !nbt.contains(NBT_OUTPUT_ENERGY_INFO) || nbt.getBoolean(NBT_OUTPUT_ENERGY_INFO);
     }
 
     @Override
     public NBTTagCompound write(final NBTTagCompound nbt) {
-        nbt.setLong(NBT_STORED_ENERGY, this.all);
-        nbt.setLong(NBT_MAX_STORED, this.max);
-        nbt.setLong(NBT_MAX_RECEIVE, this.maxGot);
-        nbt.setBoolean(NBT_OUTPUT_ENERGY_INFO, outputEnergyInfo);
+        nbt.putLong(NBT_STORED_ENERGY, this.all);
+        nbt.putLong(NBT_MAX_STORED, this.max);
+        nbt.putLong(NBT_MAX_RECEIVE, this.maxGot);
+        nbt.putBoolean(NBT_OUTPUT_ENERGY_INFO, outputEnergyInfo);
         return super.write(nbt);
     }
 

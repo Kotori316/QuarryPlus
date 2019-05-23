@@ -54,10 +54,10 @@ class ItemListEditor extends Item((new Item.Properties).group(Holder.tab)) with 
     var stackTag = stack.getTag
     val state = worldIn.getBlockState(pos)
     var bd: BlockData = null
-    if (stackTag != null && stackTag.hasKey(ItemListEditor.NAME_key)) {
+    if (stackTag != null && stackTag.contains(ItemListEditor.NAME_key)) {
       bd = new BlockData(stackTag.getString(ItemListEditor.NAME_key))
       if (context.getPlayer.isSneaking && bd == new BlockData(state)) {
-        stackTag.removeTag(ItemListEditor.NAME_key)
+        stackTag.remove(ItemListEditor.NAME_key)
       }
     } else if (!state.getBlock.isAir(state, worldIn, pos)) {
       if (stackTag == null) {
@@ -67,7 +67,7 @@ class ItemListEditor extends Item((new Item.Properties).group(Holder.tab)) with 
       val key = ForgeRegistries.BLOCKS.getKey(state.getBlock)
       require(key != null, "The item must be registered.")
       val name = key.toString
-      stackTag.setString(ItemListEditor.NAME_key, name)
+      stackTag.putString(ItemListEditor.NAME_key, name)
 
     } else {
       worldIn.getTileEntity(pos) match {
@@ -77,7 +77,7 @@ class ItemListEditor extends Item((new Item.Properties).group(Holder.tab)) with 
               val data = if (f) tb.fortuneList else tb.silktouchList
               data.add(bd)
             }
-            stackTag.removeTag(ItemListEditor.NAME_key)
+            stackTag.remove(ItemListEditor.NAME_key)
           } else {
             //            player.openGui(QuarryPlus.INSTANCE, if (f) QuarryPlusI.guiIdFList else QuarryPlusI.guiIdSList, worldIn, pos.getX, pos.getY, pos.getZ)
           }
@@ -114,7 +114,7 @@ class ItemListEditor extends Item((new Item.Properties).group(Holder.tab)) with 
   override def addInformation(stack: ItemStack, worldIn: World, tooltip: util.List[ITextComponent], flagIn: ITooltipFlag): Unit = {
     val tag = stack.getTag
     if (tag != null) {
-      if (tag.hasKey(ItemListEditor.NAME_key)) tooltip.add(new TextComponentString(tag.getString(ItemListEditor.NAME_key)))
+      if (tag.contains(ItemListEditor.NAME_key)) tooltip.add(new TextComponentString(tag.getString(ItemListEditor.NAME_key)))
       val enchantments = EnchantmentHelper.getEnchantments(stack).asScala.mapValues(Int.unbox)
       if (enchantments.getOrElse(Enchantments.FORTUNE, 0) > 0)
         tooltip.add(new TextComponentTranslation(Enchantments.FORTUNE.getName))
@@ -131,7 +131,7 @@ object ItemListEditor {
   def getEditorStack: ItemStack = {
     val stack = new ItemStack(Holder.itemListEditor, 1)
     val compound = new NBTTagCompound
-    compound.setInt("HideFlags", 1)
+    compound.putInt("HideFlags", 1)
     stack.setTag(compound)
     stack
   }

@@ -122,11 +122,11 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         this.silktouch = nbt.getBoolean("silktouch");
         this.fortune = nbt.getByte("fortune");
         this.unbreaking = nbt.getByte("unbreaking");
-        if (nbt.hasKey("connectTo")) {
+        if (nbt.contains("connectTo")) {
             setConnectTo(EnumFacing.byIndex(nbt.getByte("connectTo")));
             preFacing = this.connectTo;
         }
-        if (nbt.getTag("mapping0") instanceof NBTTagList)
+        if (nbt.get("mapping0") instanceof NBTTagList)
             for (int i = 0; i < this.mapping.size(); i++) {
                 LinkedList<String> list = this.mapping.get(EnumFacing.byIndex(i));
                 list.clear();
@@ -145,18 +145,18 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
 
     @Override
     public NBTTagCompound write(final NBTTagCompound nbt) {
-        nbt.setBoolean("silktouch", this.silktouch);
-        nbt.setByte("fortune", this.fortune);
-        nbt.setByte("unbreaking", this.unbreaking);
+        nbt.putBoolean("silktouch", this.silktouch);
+        nbt.putByte("fortune", this.fortune);
+        nbt.putByte("unbreaking", this.unbreaking);
         if (connectTo != null)
-            nbt.setByte("connectTo", (byte) this.connectTo.ordinal());
+            nbt.putByte("connectTo", (byte) this.connectTo.ordinal());
         for (int i = 0; i < this.mapping.size(); i++)
-            nbt.setTag("mapping" + i, this.mapping.get(EnumFacing.byIndex(i)).stream().map(NBTTagString::new).collect(Collectors.toCollection(NBTTagList::new)));
-        nbt.setByte("range", this.range);
-        nbt.setBoolean("quarryRange", this.quarryRange);
-        nbt.setBoolean("autoChangedRange", this.autoChangedRange);
+            nbt.put("mapping" + i, this.mapping.get(EnumFacing.byIndex(i)).stream().map(NBTTagString::new).collect(Collectors.toCollection(NBTTagList::new)));
+        nbt.putByte("range", this.range);
+        nbt.putBoolean("quarryRange", this.quarryRange);
+        nbt.putBoolean("autoChangedRange", this.autoChangedRange);
         if (this.silktouch) {
-            nbt.setTag("liquids",
+            nbt.put("liquids",
                 this.liquids.stream().map(f -> f.writeToNBT(new NBTTagCompound())).collect(Collectors.toCollection(NBTTagList::new)));
         }
         return super.write(nbt);
@@ -352,7 +352,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         for (kx = 0; kx < chunk_side_x; kx++)
             for (kz = 0; kz < chunk_side_z; kz++)
                 this.storageArray[kx][kz] = world.getChunkProvider()
-                    .provideChunk(kx + (this.xOffset >> 4), kz + (this.zOffset >> 4), true, false)
+                    .getChunk(kx + (this.xOffset >> 4), kz + (this.zOffset >> 4), true, false)
                     .getSections();
         S_put(x - this.xOffset, y, z - this.zOffset);
         IBlockState b_c;
@@ -404,7 +404,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
             for (int kx = 0; kx < this.storageArray.length; kx++) {
                 for (int kz = 0; kz < this.storageArray[0].length; kz++) {
                     this.storageArray[kx][kz] = world.getChunkProvider()
-                        .provideChunk(kx + (this.xOffset >> 4), kz + (this.zOffset >> 4), true, false)
+                        .getChunk(kx + (this.xOffset >> 4), kz + (this.zOffset >> 4), true, false)
                         .getSections();
                 }
             }

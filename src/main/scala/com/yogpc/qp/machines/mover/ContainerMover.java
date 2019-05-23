@@ -204,7 +204,7 @@ public class ContainerMover extends Container {
                 if (ForgeRegistries.ENCHANTMENTS.getValue(new ResourceLocation(nbt.getString("id"))) == tuple.enchantment) {
                     short l = nbt.getShort("lvl");
                     if (l < tuple.enchantment.getMaxLevel()) {
-                        nbt.setShort("lvl", (short) (l + 1));
+                        nbt.putShort("lvl", (short) (l + 1));
                         if (tuple.level == 1) {
                             this.list.remove(avail);
                         } else {
@@ -229,7 +229,7 @@ public class ContainerMover extends Container {
                     if (l == 1) {
                         list.removeTag(i);
                     } else {
-                        nbt.setShort("lvl", (short) (l - 1));
+                        nbt.putShort("lvl", (short) (l - 1));
                     }
                     break;
                 }
@@ -237,7 +237,7 @@ public class ContainerMover extends Container {
             if (list.isEmpty()) {
                 NBTTagCompound compound = stack.getTag();
                 if (compound != null) {
-                    compound.removeTag("ench");
+                    compound.remove("ench");
                     if (compound.isEmpty())
                         stack.setTag(null);
                 }
