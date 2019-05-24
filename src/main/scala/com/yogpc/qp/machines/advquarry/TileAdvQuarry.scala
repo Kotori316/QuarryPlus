@@ -333,7 +333,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
             //            }
             val fluidState = getWorld.getFluidState(p)
             if (fluidState.isSource) FluidStore.injectToNearTile(getWorld, getPos, fluidState.getFluid)
-            getWorld.setBlockState(p, Blocks.AIR.getDefaultState, 2)
+            getWorld.setBlockState(p, Blocks.AIR.getDefaultState, 0x10 | 0x2)
           }
           fakePlayer.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY)
           Right(list, reasons)
@@ -418,7 +418,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
             Iterator.iterate(p.down())(_.down()).takeWhile(_.getY > yLevel).filter(p => {
               val state = getWorld.getBlockState(p)
               !state.getBlock.isAir(state, getWorld, p) && TilePump.isLiquid(state)
-            }).foreach(getWorld.removeBlock)
+            }).foreach(pos => getWorld.setBlockState(pos, Blocks.AIR.getDefaultState))
           }
         }
 
@@ -482,7 +482,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
   }
 
   private def setBlock(pos: BlockPos, state: IBlockState): Unit = {
-    val i = if (state == Blocks.AIR.getDefaultState || state.isFullCube) 2 else 3
+    val i = if (state == Blocks.AIR.getDefaultState || state.isFullCube) 0x10 | 0x2 else 3
     getWorld.setBlockState(pos, state, i)
   }
 
@@ -524,14 +524,14 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     target = BlockPos.fromLong(nbt.getLong("NBT_TARGET"))
     mode.readFromNBT(nbt.getCompound(NBT_MODE))
     cacheItems.readFromNBT(nbt.getCompound(NBT_ITEM_LIST))
-    //    nbt.getList("NBT_FLUIDLIST", Constants.NBT.TAG_COMPOUND).forEach(tag => {
+    //    nbt.getList("NBT_FLUID_LIST", Constants.NBT.TAG_COMPOUND).forEach(tag => {
     //      val tank = new QuarryTank(null, 0)
     //      CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.readNBT(tank, null, tag)
     //      if (tank.getFluid != null) {
     //        fluidStacks.put(tank.getFluid, tank)
     //      }
     //    })
-    val l2 = nbt.getList("NBT_CHUNKLOADLIST", Constants.NBT.TAG_LONG)
+    val l2 = nbt.getList("NBT_CHUNK_LOADING_LIST", Constants.NBT.TAG_LONG)
     chunks = Range(0, l2.size()).map(i => new ChunkPos(BlockPos.fromLong(l2.get(i).asInstanceOf[NBTTagLong].getLong))).toList
     yLevel = Math.max(nbt.getInt("yLevel"), 1)
   }
@@ -542,10 +542,10 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     nbt.putLong("NBT_TARGET", target.toLong)
     nbt.put(NBT_MODE, mode.toNBT)
     nbt.put(NBT_ITEM_LIST, cacheItems.toNBT)
-    //    nbt.put("NBT_FLUIDLIST", fluidStacks.map { case (_, tank) =>
+    //    nbt.put("NBT_FLUID_LIST", fluidStacks.map { case (_, tank) =>
     //      CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.writeNBT(tank, null)
     //    }.foldLeft(new NBTTagList) { case (l, t) => l.add(t); l })
-    nbt.put("NBT_CHUNKLOADLIST", chunks.map(_.getBlock(0, 0, 0).toLong.toNBT)
+    nbt.put("NBT_CHUNK_LOADING_LIST", chunks.map(_.getBlock(0, 0, 0).toLong.toNBT)
       .foldLeft(new NBTTagList) { case (l, t) => l.add(t); l })
     nbt.putInt("yLevel", yLevel)
     super.write(nbt)
@@ -895,11 +895,11 @@ object TileAdvQuarry {
     BlockWrapper(Blocks.SMOOTH_RED_SANDSTONE.getDefaultState),
     BlockWrapper(Blocks.CUT_RED_SANDSTONE.getDefaultState),
   )
-  private final val NBT_QUARRY_ENCH = "nbt_qench"
-  private final val NBT_DIG_RANGE = "nbt_digrange"
-  private final val NBT_MODE = "nbt_quarrymode"
-  private final val NBT_ITEM_LIST = "nbt_itemlist"
-  private final val NBT_ITEM_ELEMENTS = "nbt_itemelements"
+  private final val NBT_QUARRY_ENCH = "nbt_q_ench"
+  private final val NBT_DIG_RANGE = "nbt_dig_range"
+  private final val NBT_MODE = "nbt_quarry_mode"
+  private final val NBT_ITEM_LIST = "nbt_item_list"
+  private final val NBT_ITEM_ELEMENTS = "nbt_item_elements"
   final val VALID_ATTACHMENTS: Set[Attachments[_]] = Set(Attachments.EXP_PUMP, Attachments.REPLACER)
 
   val defaultEnch = QEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false)
