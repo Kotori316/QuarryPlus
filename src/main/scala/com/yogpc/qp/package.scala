@@ -3,7 +3,7 @@ package com.yogpc
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt._
-import net.minecraft.util.EnumFacing
+import net.minecraft.util.{EnumFacing, ResourceLocation}
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.TextComponentString
 import net.minecraftforge.common.util.Constants.NBT
@@ -12,8 +12,8 @@ import net.minecraftforge.registries.ForgeRegistries
 
 package object qp {
 
-  val enchantCollector: PartialFunction[(Int, Int), (Integer, Integer)] = {
-    case (a, b) if b > 0 => (Int.box(a), Int.box(b))
+  val enchantCollector: PartialFunction[(ResourceLocation, Int), (ResourceLocation, Integer)] = {
+    case (a, b) if b > 0 => (a, Int.box(b))
   }
   val toComponentString: String => TextComponentString = s => new TextComponentString(s)
   val nonNull: AnyRef => Boolean = obj => obj != null

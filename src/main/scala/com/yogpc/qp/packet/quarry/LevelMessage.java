@@ -2,14 +2,11 @@ package com.yogpc.qp.packet.quarry;
 
 import java.util.function.Supplier;
 
-import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.quarry.TileBasic;
 import com.yogpc.qp.packet.IMessage;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
-
-import static jp.t2v.lab.syntax.MapStreamSyntax.optCast;
 
 /**
  * To both client and server.
@@ -45,11 +42,7 @@ public class LevelMessage implements IMessage<LevelMessage> {
 
     @Override
     public void onReceive(Supplier<NetworkEvent.Context> ctx) {
-        QuarryPlus.proxy.getPacketWorld(ctx.get())
-            .filter(world -> world.getDimension().getType().getId() == dim)
-            .filter(world -> world.isBlockLoaded(pos))
-            .map(world -> world.getTileEntity(pos))
-            .flatMap(optCast(TileBasic.class))
+        IMessage.findTile(ctx, pos, dim, TileBasic.class)
             .ifPresent(tile -> {
                 switch (ctx.get().getDirection().getReceptionSide()) {
                     case CLIENT:

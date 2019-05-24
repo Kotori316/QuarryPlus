@@ -116,7 +116,7 @@ public class InvUtils {
         return false;
     }
 
-    public static IBlockState getStateFromItem(@Nonnull ItemBlock itemBlock, int meta) {
+    public static IBlockState getStateFromItem(@Nonnull ItemBlock itemBlock) {
         Block block = itemBlock.getBlock();
         return block.getDefaultState();
     }

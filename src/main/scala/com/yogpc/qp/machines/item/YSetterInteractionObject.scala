@@ -1,8 +1,10 @@
 package com.yogpc.qp.machines.item
 
 import com.yogpc.qp.QuarryPlus
+import com.yogpc.qp.machines.advquarry.TileAdvQuarry
 import com.yogpc.qp.machines.quarry.TileBasic
 import net.minecraft.entity.player.{EntityPlayer, InventoryPlayer}
+import net.minecraft.inventory.Container
 import net.minecraft.util.INameable
 import net.minecraft.world.IInteractionObject
 
@@ -31,6 +33,10 @@ object YSetterInteractionObject {
 
   private class Basic(basic: TileBasic) extends YSetterInteractionObject(basic) {
     override def createContainer(playerInventory: InventoryPlayer, playerIn: EntityPlayer) = new ContainerQuarryLevel(basic, playerIn)
+  }
+
+  private class AdvQuarry(quarry: TileAdvQuarry) extends YSetterInteractionObject(quarry) {
+    override def createContainer(playerInventory: InventoryPlayer, playerIn: EntityPlayer): Container = new ContainerQuarryLevel(quarry, playerIn)
   }
 
 }

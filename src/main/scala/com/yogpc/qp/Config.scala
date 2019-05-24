@@ -1,5 +1,6 @@
 package com.yogpc.qp
 
+import com.yogpc.qp.machines.advquarry.TileAdvQuarry
 import com.yogpc.qp.utils.Holder
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.common.ForgeConfigSpec
@@ -37,6 +38,7 @@ object Config {
       .defineInRange("WorkbenchMaxReceive", 250, 0, Int.MaxValue)
     val fastQuarryHeadMove = builder.comment("Fasten quarry's head moving.").define("FastQuarryHeadMove", false)
     val removeBedrock = builder.comment("True to allow machines to remove bedrock. (Just removing. Not collecting)").define("RemoveBedrock", false)
+    val collectBedrock = builder.comment("True to enable ChunkDestroyer to collect bedrock as item.").define("CollectBedrock", false)
     val disableFrameChainBreak = builder.comment("DisableFrameChainBreak").define("DisableFrameChainBreak", false)
     val removeOnlySource = builder.comment("Set false to allow PlumPlus to remove non-source fluid block.").define("RemoveOnlyFluidSource", false)
     private[this] final val disabledEntities = Seq(
@@ -55,6 +57,8 @@ object Config {
     builder.pop()
 
     def debug = inDev || configDebug.get()
+
+    def noDigBLOCKS = TileAdvQuarry.noDigBLOCKS
 
     def spawnerBlacklist = spawnerBlacklist_internal.get().asScala.map(new ResourceLocation(_))
 

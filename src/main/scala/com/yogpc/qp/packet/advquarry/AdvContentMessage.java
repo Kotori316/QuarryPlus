@@ -1,0 +1,70 @@
+package com.yogpc.qp.packet.advquarry;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Supplier;
+
+import com.yogpc.qp.machines.advquarry.TileAdvQuarry;
+import com.yogpc.qp.packet.IMessage;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTank;
+import net.minecraftforge.fml.network.NetworkEvent;
+import scala.collection.JavaConverters;
+
+/**
+ * To Client only
+ */
+public class AdvContentMessage implements IMessage<AdvContentMessage> {
+
+    private BlockPos pos;
+    private int dim;
+    private Map<FluidStack, FluidTank> map;
+
+    public static AdvContentMessage create(TileAdvQuarry quarry) {
+        AdvContentMessage message = new AdvContentMessage();
+        message.pos = quarry.getPos();
+        message.dim = IMessage.getDimId(quarry.getWorld());
+        message.map = JavaConverters.mapAsJavaMap(quarry.fluidStacks());
+        return message;
+    }
+
+    @Override
+    public AdvContentMessage readFromBuffer(PacketBuffer buffer) {
+        pos = buffer.readBlockPos();
+        dim = buffer.readInt();
+        map = new HashMap<>();
+        int size = buffer.readInt();
+        for (int i = 0; i < size; i++) {
+            FluidStack stack = FluidStack.loadFluidStackFromNBT(buffer.readCompoundTag());
+            FluidTank tank = new FluidTank(null, 0);
+            Optional.ofNullable(buffer.readCompoundTag()).ifPresent(tank::readFromNBT);
+            if (tank.getFluidAmount() != 0) {
+                map.put(stack, tank);
+            }
+        }
+        return this;
+    }
+
+    @Override
+    public void writeToBuffer(PacketBuffer buffer) {
+        buffer.writeBlockPos(pos).writeInt(dim);
+        buffer.writeInt(map.size());
+        map.forEach((fluidStack, fluidTank) -> {
+            buffer.writeCompoundTag(fluidStack.writeToNBT(new NBTTagCompound()));
+            buffer.writeCompoundTag(fluidTank.writeToNBT(new NBTTagCompound()));
+        });
+    }
+
+    @Override
+    public void onReceive(Supplier<NetworkEvent.Context> ctx) {
+        IMessage.findTile(ctx, pos, dim, TileAdvQuarry.class)
+            .ifPresent(quarry -> {
+                quarry.fluidStacks().clear();
+                map.forEach((fluidStack, fluidTank) -> quarry.fluidStacks().put(fluidStack, fluidTank));
+            });
+    }
+}

@@ -1,6 +1,7 @@
 package com.yogpc.qp.machines
 
 import com.yogpc.qp.QuarryPlus
+import com.yogpc.qp.machines.advquarry.{GuiAdvQuarry, TileAdvQuarry}
 import com.yogpc.qp.machines.bookmover.{BlockBookMover, GuiBookMover, TileBookMover}
 import com.yogpc.qp.machines.item.GuiQuarryLevel._
 import com.yogpc.qp.machines.item.{GuiQuarryLevel, YSetterInteractionObject}
@@ -22,9 +23,11 @@ object GuiHandler {
       case BlockMover.GUI_ID => new GuiMover(player, player.world, pos)
       case YSetterInteractionObject.GUI_ID => tile.collect {
         case basic: TileBasic => new GuiQuarryLevel(basic, player)
+        case quarry: TileAdvQuarry => new GuiQuarryLevel(quarry, player)
       }.orNull
       case TileSolidQuarry.GUI_ID => tile.collect { case solidQuarry: TileSolidQuarry => new GuiSolidQuarry(solidQuarry, player) }.orNull
       case BlockBookMover.GUI_ID => tile.collect { case bookMover: TileBookMover => new GuiBookMover(bookMover, player) }.orNull
+      case TileAdvQuarry.GUI_ID => tile.collect { case quarry: TileAdvQuarry => new GuiAdvQuarry(quarry, player) }.orNull
       case _ => QuarryPlus.LOGGER.error(s"Unknown GUI ID ${context.getId}."); null
     }
   }

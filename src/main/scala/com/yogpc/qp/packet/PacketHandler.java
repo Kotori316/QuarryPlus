@@ -1,6 +1,11 @@
 package com.yogpc.qp.packet;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.packet.advquarry.AdvActionMessage;
+import com.yogpc.qp.packet.advquarry.AdvContentMessage;
+import com.yogpc.qp.packet.advquarry.AdvFilterMessage;
+import com.yogpc.qp.packet.advquarry.AdvLevelMessage;
+import com.yogpc.qp.packet.advquarry.AdvModeMessage;
 import com.yogpc.qp.packet.controller.AvailableEntities;
 import com.yogpc.qp.packet.controller.SetEntity;
 import com.yogpc.qp.packet.marker.LinkMessage;
@@ -44,6 +49,11 @@ public class PacketHandler {
         INSTANCE.registerMessage(id++, Mappings.Update.class, IMessage::writeToBuffer, IMessage.decode(Mappings.Update::new), IMessage::onReceiveInternal);
         INSTANCE.registerMessage(id++, SetEntity.class, IMessage::writeToBuffer, IMessage.decode(SetEntity::new), IMessage::onReceiveInternal);
         INSTANCE.registerMessage(id++, AvailableEntities.class, IMessage::writeToBuffer, IMessage.decode(AvailableEntities::new), IMessage::onReceiveInternal);
+        INSTANCE.registerMessage(id++, AdvModeMessage.class, IMessage::writeToBuffer, IMessage.decode(AdvModeMessage::new), IMessage::onReceiveInternal);
+        INSTANCE.registerMessage(id++, AdvActionMessage.class, IMessage::writeToBuffer, IMessage.decode(AdvActionMessage::new), IMessage::onReceiveInternal);
+        INSTANCE.registerMessage(id++, AdvFilterMessage.class, IMessage::writeToBuffer, IMessage.decode(AdvFilterMessage::new), IMessage::onReceiveInternal);
+        INSTANCE.registerMessage(id++, AdvContentMessage.class, IMessage::writeToBuffer, IMessage.decode(AdvContentMessage::new), IMessage::onReceiveInternal);
+        INSTANCE.registerMessage(id++, AdvLevelMessage.class, IMessage::writeToBuffer, b -> new AdvLevelMessage().readFromBuffer(b), IMessage::onReceiveInternal);
 
         assert id > 0;
     }

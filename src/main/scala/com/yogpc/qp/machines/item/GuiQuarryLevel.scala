@@ -2,10 +2,12 @@ package com.yogpc.qp.machines.item
 
 import com.yogpc.qp.QuarryPlus
 import com.yogpc.qp.machines.TranslationKeys
+import com.yogpc.qp.machines.advquarry.TileAdvQuarry
 import com.yogpc.qp.machines.base.HasInv
 import com.yogpc.qp.machines.item.GuiQuarryLevel.YLevel
 import com.yogpc.qp.machines.quarry.{TileBasic, TileQuarry}
 import com.yogpc.qp.packet.PacketHandler
+import com.yogpc.qp.packet.advquarry.AdvLevelMessage
 import com.yogpc.qp.packet.quarry.LevelMessage
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.inventory.GuiContainer
@@ -87,12 +89,12 @@ object GuiQuarryLevel {
     override def getYLevel(t: TileBasic) = t.yLevel
   }
 
-  /*implicit val AdvY: YLevel[TileAdvQuarry] = new YLevel[TileAdvQuarry] {
+  implicit val AdvY: YLevel[TileAdvQuarry] = new YLevel[TileAdvQuarry] {
     override def setYLevel(t: TileAdvQuarry, yLevel: Int): Unit = t.yLevel = yLevel
 
     override def getYLevel(t: TileAdvQuarry) = t.yLevel
-  }*/
+  }
 
   implicit val basicMessage: TileBasic => LevelMessage = LevelMessage.create
-//  implicit val advMessage: TileAdvQuarry => AdvLevelMessage = AdvLevelMessage.create
+  implicit val advMessage: TileAdvQuarry => AdvLevelMessage = AdvLevelMessage.create
 }

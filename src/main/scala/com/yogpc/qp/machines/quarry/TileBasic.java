@@ -61,6 +61,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
@@ -246,7 +247,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
             if (facingMap.containsKey(EXP_PUMP)) {
                 xp += event.getExpToDrop();
                 if (InvUtils.hasSmelting(fakePlayer.getHeldItemMainhand())) {
-                    xp += getSmeltingXp(collection, rawItems);
+                    xp += getSmeltingXp(collection, rawItems, world);
                 }
             }
         } else {
@@ -259,9 +260,10 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     /**
      * @param stacks read only
      * @param raw    read only
+     * @param world
      * @return The amount of xp by smelting items.
      */
-    public int getSmeltingXp(Collection<ItemStack> stacks, Collection<ItemStack> raw) {
+    public static int getSmeltingXp(Collection<ItemStack> stacks, Collection<ItemStack> raw, World world) {
         InventoryBasic basic = new InventoryBasic(new TextComponentString("Dummy"), 2);
 
         return stacks.stream().filter(not(raw::contains)).mapToInt(stack -> {
@@ -271,7 +273,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         }).sum();
     }
 
-    static int floorFloat(float value) {
+   public static int floorFloat(float value) {
         int i = MathHelper.floor(value);
         return i + (Math.random() < (value - i) ? 1 : 0);
     }
