@@ -5,9 +5,11 @@ import java.util.Optional;
 
 import com.yogpc.qp.Config;
 import com.yogpc.qp.machines.GuiHandler;
+import com.yogpc.qp.machines.advquarry.TileAdvQuarry;
 import com.yogpc.qp.machines.marker.TileMarker;
 import com.yogpc.qp.machines.quarry.TileQuarry;
 import com.yogpc.qp.render.DummyBlockBakedModel;
+import com.yogpc.qp.render.RenderAdvQuarry;
 import com.yogpc.qp.render.RenderMarker;
 import com.yogpc.qp.render.RenderQuarry;
 import com.yogpc.qp.render.Sprites;
@@ -25,7 +27,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -82,6 +83,7 @@ public class ProxyClient extends ProxyCommon {
         if (Config.client().enableRender().get()) {
             ClientRegistry.bindTileEntitySpecialRenderer(TileMarker.class, RenderMarker.instance());
             ClientRegistry.bindTileEntitySpecialRenderer(TileQuarry.class, RenderQuarry.instance());
+            ClientRegistry.bindTileEntitySpecialRenderer(TileAdvQuarry.class, RenderAdvQuarry.instance());
         }
 //        if (!Config.content().disableRendering()) {
 //            if (!Config.content().disableMapJ().get(TileAdvQuarry.SYMBOL()))
