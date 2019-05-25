@@ -50,9 +50,7 @@ abstract sealed class WorkbenchRecipes(val location: ResourceLocation, val outpu
     }
   }
 
-  override def compare(that: WorkbenchRecipes) = {
-    WorkbenchRecipes.recipeOrdering.compare(this, that)
-  }
+  override def compare(that: WorkbenchRecipes) = WorkbenchRecipes.recipeOrdering.compare(this, that)
 
   override def matches(inv: IInventory, worldIn: World): Boolean = {
     val inputInv = Range(0, inv.getSizeInventory).map(inv.getStackInSlot)
@@ -99,9 +97,7 @@ object WorkbenchRecipes {
   private[this] final val conditionMessage = "Condition is false"
 
   def recipes: Map[ResourceLocation, WorkbenchRecipes] = {
-    Option(ServerLifecycleHooks.getCurrentServer).map(_.getRecipeManager.getRecipes.asScala.collect {
-      case recipes: WorkbenchRecipes => (recipes.location, recipes)
-    }.toMap).getOrElse(Map.empty) ++ recipes_internal
+    Option(ServerLifecycleHooks.getCurrentServer).map(_.getRecipeManager.getRecipes(recipeType).asScala.map(r => (r.location, r)).toMap).getOrElse(Map.empty) ++ recipes_internal
   }
 
   def recipeSize: Int = recipes.size

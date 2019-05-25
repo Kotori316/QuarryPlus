@@ -26,9 +26,7 @@ object YSetterInteractionObject {
 
   def apply(tile: INameable): IInteractionObject = tile match {
     case basic: TileBasic => new Basic(basic)
-    case _ => new YSetterInteractionObject(tile) {
-      override def createContainer(playerInventory: InventoryPlayer, playerIn: EntityPlayer) = null
-    }
+    case quarry: TileAdvQuarry => new AdvQuarry(quarry)
   }
 
   private class Basic(basic: TileBasic) extends YSetterInteractionObject(basic) {
