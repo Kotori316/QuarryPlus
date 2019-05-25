@@ -884,7 +884,7 @@ object TileAdvQuarry {
     BlockWrapper(Blocks.POLISHED_ANDESITE.getDefaultState),
     BlockWrapper(Blocks.COBBLESTONE.getDefaultState),
     BlockWrapper(Blocks.DIRT.getDefaultState, ignoreProperty = true),
-    BlockWrapper(Blocks.GRASS.getDefaultState, ignoreProperty = true),
+    BlockWrapper(Blocks.GRASS_BLOCK.getDefaultState, ignoreProperty = true),
     BlockWrapper(Blocks.NETHERRACK.getDefaultState),
     BlockWrapper(Blocks.SANDSTONE.getDefaultState),
     BlockWrapper(Blocks.CHISELED_SANDSTONE.getDefaultState),
