@@ -40,7 +40,6 @@ object BlockWrapper extends JsonDeserializer[BlockWrapper] with JsonSerializer[B
     .create()
   final val KEY_STATE = "blockstate"
   final val KEY_Property = "ignoreProperty"
-  final val KEY_Meta = "ignoreMeta"
 
   def getString(seq: Seq[BlockWrapper]): String = {
     GSON.toJson(seq.toArray, classOf[Array[BlockWrapper]])

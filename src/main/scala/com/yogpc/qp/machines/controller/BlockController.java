@@ -41,6 +41,8 @@ import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 import scala.Symbol;
 
+import static jp.t2v.lab.syntax.MapStreamSyntax.streamCast;
+
 //@net.minecraftforge.fml.common.Optional.Interface(iface = "cofh.api.block.IDismantleable", modid = QuarryPlus.Optionals.COFH_modID)
 public class BlockController extends Block implements IDisabled /*IDismantleable*/ {
     private static final Field logic_spawnDelay;
@@ -81,8 +83,9 @@ public class BlockController extends Block implements IDisabled /*IDismantleable
     }
 
     private static Optional<MobSpawnerBaseLogic> getSpawner(World world, BlockPos pos) {
-        return Stream.of(EnumFacing.values()).map(pos::offset).map(world::getTileEntity).filter(TileEntityMobSpawner.class::isInstance)
-            .map(tileEntity -> ((TileEntityMobSpawner) tileEntity).getSpawnerBaseLogic()).findFirst();
+        return Stream.of(EnumFacing.values()).map(pos::offset).map(world::getTileEntity)
+            .flatMap(streamCast(TileEntityMobSpawner.class))
+            .map(TileEntityMobSpawner::getSpawnerBaseLogic).findFirst();
     }
 
     @Override
@@ -129,7 +132,7 @@ public class BlockController extends Block implements IDisabled /*IDismantleable
     @Override
     @SuppressWarnings("deprecation")
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
-        if (!worldIn.isRemote /*&& !Config.content().disableMapJ().get(SYMBOL)*/) {
+        if (!worldIn.isRemote && !Config.common().disabled().apply(SYMBOL).get()) {
             boolean r = worldIn.isBlockPowered(pos);
             boolean m = state.get(QPBlock.WORKING());
             if (r && !m) {

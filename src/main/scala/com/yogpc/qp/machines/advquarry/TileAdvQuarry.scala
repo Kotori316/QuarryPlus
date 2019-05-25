@@ -5,7 +5,7 @@ import java.util.Collections
 
 import com.yogpc.qp.compat.{FluidStore, InvUtils}
 import com.yogpc.qp.machines.base.IAttachment.Attachments
-import com.yogpc.qp.machines.base.{APacketTile, APowerTile, EnergyUsage, HasInv, IAttachable, IChunkLoadTile, IDebugSender, IEnchantableTile, IMarker, QPBlock}
+import com.yogpc.qp.machines.base._
 import com.yogpc.qp.machines.bookmover.BlockBookMover
 import com.yogpc.qp.machines.exppump.TileExpPump
 import com.yogpc.qp.machines.pump.TilePump
@@ -192,7 +192,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
                 if (blockHardness != -1 && !blockHardness.isInfinity) {
                   (state.getBlock match {
                     case _ if Config.common.noDigBLOCKS.exists(_.contain(state)) => (0, destroy)
-                    //                    case leave: IShearable if leave.isLeaves(state, getWorld, pos) && ench.silktouch => (ench.mode, shear)
+                    //                    case leave: IShear-able if leave.isLeaves(state, getWorld, pos) && ench.silktouch => (ench.mode, shear)
                     case _ => (ench.mode, dig)
                   }) match {
                     case (m, seq) =>
@@ -465,12 +465,12 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
   private def chunkLoad(): Unit = {
     if (chunks.nonEmpty) {
       val chunkPos = chunks.head
-      val bool = getWorld.isChunkLoaded(chunkPos.x, chunkPos.z, false)
-      if (Config.common.debug) {
-        QuarryPlus.LOGGER.debug("Chunk has already loaded : " + bool + chunkPos.x + chunkPos.z)
-      }
-      if (!bool)
+      val loaded = getWorld.isChunkLoaded(chunkPos.x, chunkPos.z, false)
+      if (loaded) {
+        QuarryPlus.LOGGER.debug(s"Chunk has already loaded : ${chunkPos.x}, ${chunkPos.z}")
+      } else {
         getWorld.getChunk(chunkPos.x, chunkPos.z)
+      }
       chunks = chunks.tail
     }
   }
@@ -482,6 +482,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
   }
 
   private def setBlock(pos: BlockPos, state: IBlockState): Unit = {
+    // Prevent block update and neighbor reactions.
     val i = if (state == Blocks.AIR.getDefaultState || state.isFullCube) 0x10 | 0x2 else 3
     getWorld.setBlockState(pos, state, i)
   }
