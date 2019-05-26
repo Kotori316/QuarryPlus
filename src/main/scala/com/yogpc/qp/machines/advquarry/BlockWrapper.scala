@@ -1,8 +1,9 @@
-package com.yogpc.qp.utils
+package com.yogpc.qp.machines.advquarry
 
 import java.lang.reflect.Type
 
 import com.google.gson._
+import com.yogpc.qp.utils.NBTBuilder
 import net.minecraft.block.state.IBlockState
 import net.minecraft.init.Blocks
 import net.minecraft.util.JsonUtils

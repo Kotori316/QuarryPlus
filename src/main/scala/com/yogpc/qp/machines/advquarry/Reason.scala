@@ -1,4 +1,4 @@
-package com.yogpc.qp.utils
+package com.yogpc.qp.machines.advquarry
 
 import com.yogpc.qp.machines.base.EnergyUsage
 import com.yogpc.qp.{Config, QuarryPlus}
