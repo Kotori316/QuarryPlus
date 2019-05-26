@@ -20,28 +20,33 @@ public class FluidStore {
     }
 
     public static void injectToNearTile(World world, BlockPos pos, Fluid fluid) {
-        if (!enabled) return;
-        injectToNearTile_internal(world, pos, fluid);
+        injectToNearTile(world, pos, fluid, FluidAmount.AMOUNT_BUCKET());
     }
 
-    private static void injectToNearTile_internal(World world, BlockPos pos, Fluid fluid) {
+    public static void injectToNearTile(World world, BlockPos pos, Fluid fluid, int amount) {
+        if (!enabled) return;
+        injectToNearTile_internal(world, pos, fluid, amount);
+    }
+
+    private static void injectToNearTile_internal(World world, BlockPos pos, Fluid fluidKind, int amount) {
         if (TANK_CAPABILITY == null) return;
-        FluidAmount[] amount = new FluidAmount[]{FluidAmount.apply(fluid, FluidAmount.AMOUNT_BUCKET())};
+        FluidAmount[] fluidAmounts = new FluidAmount[]{FluidAmount.apply(fluidKind, amount)};
         for (EnumFacing facing : EnumFacing.values()) {
             TileEntity entity = world.getTileEntity(pos.offset(facing));
             if (entity != null) {
                 LazyOptional<FluidAmount.Tank> capability = entity.getCapability(TANK_CAPABILITY, facing.getOpposite());
                 capability.ifPresent(tank -> {
-                    FluidAmount filled = tank.fill(amount[0], false, 0);
+                    FluidAmount filled = tank.fill(fluidAmounts[0], false, 0);
                     if (filled.nonEmpty()) {
-                        tank.fill(amount[0], true, 0);
-                        amount[0] = amount[0].$minus(filled);
+                        tank.fill(fluidAmounts[0], true, 0);
+                        fluidAmounts[0] = fluidAmounts[0].$minus(filled);
                     }
                 });
-                if (amount[0].isEmpty()) break;
+                if (fluidAmounts[0].isEmpty()) break;
             }
         }
     }
+
     @CapabilityInject(FluidAmount.Tank.class)
     public static Capability<FluidAmount.Tank> TANK_CAPABILITY = null;
 

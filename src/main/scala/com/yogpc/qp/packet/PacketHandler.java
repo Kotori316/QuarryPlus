@@ -1,6 +1,8 @@
 package com.yogpc.qp.packet;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.packet.advpump.AdvPumpChangeMessage;
+import com.yogpc.qp.packet.advpump.AdvPumpStatusMessage;
 import com.yogpc.qp.packet.advquarry.AdvActionMessage;
 import com.yogpc.qp.packet.advquarry.AdvContentMessage;
 import com.yogpc.qp.packet.advquarry.AdvFilterMessage;
@@ -54,6 +56,8 @@ public class PacketHandler {
         INSTANCE.registerMessage(id++, AdvFilterMessage.class, IMessage::writeToBuffer, IMessage.decode(AdvFilterMessage::new), IMessage::onReceiveInternal);
         INSTANCE.registerMessage(id++, AdvContentMessage.class, IMessage::writeToBuffer, IMessage.decode(AdvContentMessage::new), IMessage::onReceiveInternal);
         INSTANCE.registerMessage(id++, AdvLevelMessage.class, IMessage::writeToBuffer, b -> new AdvLevelMessage().readFromBuffer(b), IMessage::onReceiveInternal);
+        INSTANCE.registerMessage(id++, AdvPumpChangeMessage.class, IMessage::writeToBuffer, IMessage.decode(AdvPumpChangeMessage::new), IMessage::onReceiveInternal);
+        INSTANCE.registerMessage(id++, AdvPumpStatusMessage.class, IMessage::writeToBuffer, IMessage.decode(AdvPumpStatusMessage::new), IMessage::onReceiveInternal);
 
         assert id > 0;
     }

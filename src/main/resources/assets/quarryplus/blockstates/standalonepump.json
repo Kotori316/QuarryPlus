@@ -7,7 +7,7 @@
     "normal": [
       {}
     ],
-    "acting": {
+    "working": {
       "true": {
         "model": "quarryplus:standalonepump_working"
       },

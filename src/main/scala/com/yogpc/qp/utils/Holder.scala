@@ -1,5 +1,6 @@
 package com.yogpc.qp.utils
 
+import com.yogpc.qp.machines.advpump.{BlockAdvPump, TileAdvPump}
 import com.yogpc.qp.machines.advquarry.{BlockAdvQuarry, TileAdvQuarry}
 import com.yogpc.qp.machines.base.IDisabled
 import com.yogpc.qp.machines.bookmover.{BlockBookMover, TileBookMover}
@@ -42,6 +43,7 @@ object Holder {
   val replacerType = createType(() => new TileReplacer, QuarryPlus.Names.replacer)
   val bookMoverType = createType(() => new TileBookMover, QuarryPlus.Names.moverfrombook)
   val advQuarryType = createType(() => new TileAdvQuarry, QuarryPlus.Names.advquarry)
+  val advPumpType = createType(() => new TileAdvPump, QuarryPlus.Names.advpump)
 
   val tiles: Map[TileEntityType[_ <: TileEntity], TileDisable] = Map(
     markerTileType -> TileDisable(TileMarker.SYMBOL),
@@ -54,6 +56,7 @@ object Holder {
     replacerType -> TileDisable(TileReplacer.SYMBOL, defaultDisableMachine = true),
     bookMoverType -> TileDisable(BlockBookMover.SYMBOL, defaultDisableMachine = true),
     advQuarryType -> TileDisable(TileAdvQuarry.SYMBOL, defaultDisableMachine = true),
+    advPumpType -> TileDisable(TileAdvPump.SYMBOL),
   )
 
   //---------- Block ----------
@@ -73,6 +76,7 @@ object Holder {
   val blockController = new BlockController
   val blockBookMover = new BlockBookMover
   val blockAdvQuarry = new BlockAdvQuarry
+  val blockAdvPump = new BlockAdvPump
 
   val blocks: Seq[Block] = Seq(
     blockQuarry,
@@ -90,6 +94,7 @@ object Holder {
     blockController,
     blockBookMover,
     blockAdvQuarry,
+    blockAdvPump,
   )
   //---------- Item ----------
 

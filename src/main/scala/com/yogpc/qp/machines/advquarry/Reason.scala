@@ -46,7 +46,7 @@ object Reason {
     None
   }
 
-  private[utils] class EnergyReasonImpl(energyUsage: EnergyUsage, required: Long, amount: Long, index: Option[Int] = None) extends Reason {
+  private[advquarry] class EnergyReasonImpl(energyUsage: EnergyUsage, required: Long, amount: Long, index: Option[Int] = None) extends Reason {
     override def isEnergyIssue: Boolean = true
 
     override def usage: Option[EnergyUsage] = Some(energyUsage)
@@ -57,13 +57,13 @@ object Reason {
     }
   }
 
-  private[utils] class BreakCanceledImpl(pos: BlockPos, state: IBlockState) extends Reason {
+  private[advquarry] class BreakCanceledImpl(pos: BlockPos, state: IBlockState) extends Reason {
     override def isEnergyIssue: Boolean = false
 
     override def toString: String = s"Breaking $state at ${pos.getX}, ${pos.getY}, ${pos.getZ} was canceled."
   }
 
-  private[utils] class AllAirImpl(pos: BlockPos, index: Int) extends Reason {
+  private[advquarry] class AllAirImpl(pos: BlockPos, index: Int) extends Reason {
     override def isEnergyIssue: Boolean = false
 
     override def toString: String = s"x = ${pos.getX}, z = ${pos.getZ} has no blocks. index = $index"
