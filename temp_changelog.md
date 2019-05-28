@@ -1,6 +1,6 @@
 # Version 1.0.6
-Internal changes. Use long instead of double to store energy.
-Allowed QuarryPlus to be enchanted with Fortune AND Silktouch at the same time. [#51](https://github.com/Kotori316/QuarryPlus/issues/51)
+* Internal changes. Use long instead of double to store energy.
+* Allowed QuarryPlus to be enchanted with Fortune AND Silktouch at the same time. [#51](https://github.com/Kotori316/QuarryPlus/issues/51)
 
 # Version 1.0.5
 * Sneak and right click with AE's wrench and other mods's one to remove machine.
