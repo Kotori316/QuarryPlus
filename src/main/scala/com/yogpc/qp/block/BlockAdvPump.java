@@ -9,7 +9,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.BuildcraftHelper;
 import com.yogpc.qp.gui.TranslationKeys;
-import com.yogpc.qp.item.ItemBlockAdvPump;
+import com.yogpc.qp.item.ItemBlockAllEnch;
 import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TileAdvPump;
 import javax.annotation.Nullable;
@@ -35,7 +35,7 @@ import net.minecraft.world.World;
 
 public class BlockAdvPump extends ADismCBlock {
     public BlockAdvPump() {
-        super(Material.IRON, QuarryPlus.Names.advpump, ItemBlockAdvPump::new);
+        super(Material.IRON, QuarryPlus.Names.advpump, ItemBlockAllEnch::new);
         setHardness(1.5F);
         setResistance(10F);
         setSoundType(SoundType.STONE);
