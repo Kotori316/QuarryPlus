@@ -63,7 +63,31 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scala.collection.convert.WrapAsJava$;
 
-import static com.yogpc.qp.QuarryPlusI.*;
+import static com.yogpc.qp.QuarryPlusI.blockBookMover;
+import static com.yogpc.qp.QuarryPlusI.blockBreaker;
+import static com.yogpc.qp.QuarryPlusI.blockChunkDestroyer;
+import static com.yogpc.qp.QuarryPlusI.blockController;
+import static com.yogpc.qp.QuarryPlusI.blockExpPump;
+import static com.yogpc.qp.QuarryPlusI.blockFrame;
+import static com.yogpc.qp.QuarryPlusI.blockLaser;
+import static com.yogpc.qp.QuarryPlusI.blockList;
+import static com.yogpc.qp.QuarryPlusI.blockMarker;
+import static com.yogpc.qp.QuarryPlusI.blockMiningWell;
+import static com.yogpc.qp.QuarryPlusI.blockMover;
+import static com.yogpc.qp.QuarryPlusI.blockPlacer;
+import static com.yogpc.qp.QuarryPlusI.blockPlainPipe;
+import static com.yogpc.qp.QuarryPlusI.blockPump;
+import static com.yogpc.qp.QuarryPlusI.blockQuarry;
+import static com.yogpc.qp.QuarryPlusI.blockRefinery;
+import static com.yogpc.qp.QuarryPlusI.blockReplacer;
+import static com.yogpc.qp.QuarryPlusI.blockSolidQuarry;
+import static com.yogpc.qp.QuarryPlusI.blockStandalonePump;
+import static com.yogpc.qp.QuarryPlusI.blockWorkbench;
+import static com.yogpc.qp.QuarryPlusI.debugItem;
+import static com.yogpc.qp.QuarryPlusI.dummyBlock;
+import static com.yogpc.qp.QuarryPlusI.itemTool;
+import static com.yogpc.qp.QuarryPlusI.magicMirror;
+import static com.yogpc.qp.QuarryPlusI.tileIdMap;
 
 @Mod(
     modid = QuarryPlus.modID,
