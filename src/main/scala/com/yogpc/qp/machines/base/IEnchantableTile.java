@@ -37,7 +37,12 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import static jp.t2v.lab.syntax.MapStreamSyntax.*;
+import static jp.t2v.lab.syntax.MapStreamSyntax.byEntry;
+import static jp.t2v.lab.syntax.MapStreamSyntax.byKey;
+import static jp.t2v.lab.syntax.MapStreamSyntax.entry;
+import static jp.t2v.lab.syntax.MapStreamSyntax.keys;
+import static jp.t2v.lab.syntax.MapStreamSyntax.toAny;
+import static jp.t2v.lab.syntax.MapStreamSyntax.toEntry;
 
 public interface IEnchantableTile {
 

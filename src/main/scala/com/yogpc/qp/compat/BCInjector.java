@@ -2,7 +2,6 @@ package com.yogpc.qp.compat;
 
 import java.util.stream.Stream;
 
-import com.yogpc.qp.QuarryPlus;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;

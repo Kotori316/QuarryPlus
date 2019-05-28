@@ -3,9 +3,9 @@ package com.yogpc
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt._
-import net.minecraft.util.{EnumFacing, ResourceLocation}
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.TextComponentString
+import net.minecraft.util.{EnumFacing, ResourceLocation}
 import net.minecraftforge.common.util.Constants.NBT
 import net.minecraftforge.fluids.FluidStack
 import net.minecraftforge.registries.ForgeRegistries

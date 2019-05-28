@@ -25,7 +25,14 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import static com.google.common.collect.Streams.stream;
-import static jp.t2v.lab.syntax.MapStreamSyntax.*;
+import static jp.t2v.lab.syntax.MapStreamSyntax.byKey;
+import static jp.t2v.lab.syntax.MapStreamSyntax.entry;
+import static jp.t2v.lab.syntax.MapStreamSyntax.entryToMap;
+import static jp.t2v.lab.syntax.MapStreamSyntax.keys;
+import static jp.t2v.lab.syntax.MapStreamSyntax.toAny;
+import static jp.t2v.lab.syntax.MapStreamSyntax.toEntry;
+import static jp.t2v.lab.syntax.MapStreamSyntax.values;
+import static jp.t2v.lab.syntax.MapStreamSyntax.valuesBi;
 
 public class NBTBuilder<T extends INBTBase> {
 

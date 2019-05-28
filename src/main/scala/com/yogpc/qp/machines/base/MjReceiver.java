@@ -2,14 +2,15 @@ package com.yogpc.qp.machines.base;
 
 import java.lang.reflect.Constructor;
 
-//import buildcraft.api.mj.IMjConnector;
-//import buildcraft.api.mj.IMjReadable;
-//import buildcraft.api.mj.IMjReceiver;
-//import buildcraft.api.mj.MjAPI;
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import javax.annotation.Nullable;
 import net.minecraftforge.fml.ModList;
+
+//import buildcraft.api.mj.IMjConnector;
+//import buildcraft.api.mj.IMjReadable;
+//import buildcraft.api.mj.IMjReceiver;
+//import buildcraft.api.mj.MjAPI;
 
 //Buildcraft MJ energy api implication
 

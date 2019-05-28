@@ -22,13 +22,9 @@ import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import com.google.common.collect.Maps;
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.utils.Holder;
-
-import static jp.t2v.lab.syntax.MapStreamSyntax.*;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEmptyDrops;
 import net.minecraft.block.BlockSixWay;
@@ -51,7 +47,15 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.tuple.Pair;
 
-import static net.minecraft.state.properties.BlockStateProperties.*;
+import static jp.t2v.lab.syntax.MapStreamSyntax.byKey;
+import static jp.t2v.lab.syntax.MapStreamSyntax.entryToMap;
+import static jp.t2v.lab.syntax.MapStreamSyntax.valueToAny;
+import static net.minecraft.state.properties.BlockStateProperties.DOWN;
+import static net.minecraft.state.properties.BlockStateProperties.EAST;
+import static net.minecraft.state.properties.BlockStateProperties.NORTH;
+import static net.minecraft.state.properties.BlockStateProperties.SOUTH;
+import static net.minecraft.state.properties.BlockStateProperties.UP;
+import static net.minecraft.state.properties.BlockStateProperties.WEST;
 
 public class BlockFrame extends BlockEmptyDrops {
 

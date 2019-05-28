@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.yogpc.qp.Config;
-import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.IAttachment;
@@ -164,7 +163,7 @@ public class TileMiningWell extends TileBasic implements ITickable {
             startWork();
         if (hasWorld()) {
             IBlockState old = world.getBlockState(getPos());
-            world.setBlockState(getPos(),  old.with(QPBlock.WORKING(), working));
+            world.setBlockState(getPos(), old.with(QPBlock.WORKING(), working));
         }
     }
 

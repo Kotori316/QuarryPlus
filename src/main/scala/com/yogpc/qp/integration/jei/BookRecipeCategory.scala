@@ -2,9 +2,9 @@ package com.yogpc.qp.integration.jei
 
 import java.util.Collections
 
-import com.yogpc.qp.{QuarryPlus, _}
 import com.yogpc.qp.machines.base.IEnchantableItem
 import com.yogpc.qp.utils.Holder
+import com.yogpc.qp.{QuarryPlus, _}
 import mezz.jei.api.constants.VanillaTypes
 import mezz.jei.api.gui.IRecipeLayout
 import mezz.jei.api.gui.drawable.IDrawable

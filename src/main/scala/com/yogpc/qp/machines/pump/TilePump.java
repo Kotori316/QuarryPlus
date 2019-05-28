@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.FluidStore;
-import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.APacketTile;

@@ -78,7 +78,12 @@ import net.minecraftforge.registries.ForgeRegistries;
 import static com.yogpc.qp.machines.base.IAttachment.Attachments.ALL;
 import static com.yogpc.qp.machines.base.IAttachment.Attachments.EXP_PUMP;
 import static com.yogpc.qp.machines.base.IAttachment.Attachments.FLUID_PUMP;
-import static jp.t2v.lab.syntax.MapStreamSyntax.*;
+import static jp.t2v.lab.syntax.MapStreamSyntax.byKey;
+import static jp.t2v.lab.syntax.MapStreamSyntax.entryToMap;
+import static jp.t2v.lab.syntax.MapStreamSyntax.keys;
+import static jp.t2v.lab.syntax.MapStreamSyntax.not;
+import static jp.t2v.lab.syntax.MapStreamSyntax.toEntry;
+import static jp.t2v.lab.syntax.MapStreamSyntax.values;
 
 //@net.minecraftforge.fml.common.Optional.Interface(iface = "cofh.api.tileentity.IInventoryConnection", modid = QuarryPlus.Optionals.COFH_modID)
 public abstract class TileBasic extends APowerTile implements IEnchantableTile, HasInv, IAttachable/*, IInventoryConnection*/ {
@@ -260,7 +265,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     /**
      * @param stacks read only
      * @param raw    read only
-     * @param world
+     * @param world  need to get Recipe Manager.
      * @return The amount of xp by smelting items.
      */
     public static int getSmeltingXp(Collection<ItemStack> stacks, Collection<ItemStack> raw, World world) {
@@ -273,7 +278,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         }).sum();
     }
 
-   public static int floorFloat(float value) {
+    public static int floorFloat(float value) {
         int i = MathHelper.floor(value);
         return i + (Math.random() < (value - i) ? 1 : 0);
     }
