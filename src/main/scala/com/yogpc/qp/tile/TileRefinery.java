@@ -140,7 +140,7 @@ public class TileRefinery extends APowerTile implements IEnchantableTile {
             decreaseAnimation();
             return;
         }
-        double v = MjReceiver.getMJFromMicro(cacheEnergy);
+        long v = cacheEnergy;
         if (cacheIn == null || (!Config.content().noEnergy() && getStoredEnergy() < v) ||
             !PowerManager.useEnergyRefinery(this, v, ench.unbreaking, ench.efficiency)) {
             decreaseAnimation();

@@ -51,7 +51,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
   override def isWorking: Boolean = !finished
 
   override def G_ReInit(): Unit = {
-    configure(ench.getReceiveEnergy, 1024d)
+    configure(ench.getReceiveEnergy, 1024 * APowerTile.MicroJtoMJ)
     finished = true
     queueBuilt = false
     skip = false
@@ -518,8 +518,8 @@ object TileAdvPump {
   private final val NBT_FluidHandler = "FluidHandler"
   private final val NBT_pumped = "amountPumped"
   private final val NBT_liquids = "liquds"
-  private[this] final val defaultBaseEnergy = Seq(10, 8, 6, 4)
-  private[this] final val defaultReceiveEnergy = Seq(32, 64, 128, 256, 512, 1024)
+  private[this] final val defaultBaseEnergy = Seq(10, 8, 6, 4).map(_ * APowerTile.MicroJtoMJ)
+  private[this] final val defaultReceiveEnergy = Seq(32, 64, 128, 256, 512, 1024).map(_ * APowerTile.MicroJtoMJ)
   val defaultEnch = PEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false, BlockPos.ORIGIN, BlockPos.ORIGIN)
 
   case class PEnch(efficiency: Int, unbreaking: Int, fortune: Int, silktouch: Boolean, start: BlockPos, end: BlockPos) extends INBTWritable {
@@ -562,11 +562,13 @@ object TileAdvPump {
 
     val maxAmount: Int = 128 * Fluid.BUCKET_VOLUME * (efficiency + 1)
 
-    def getEnergy(placeFrame: Boolean): Double = {
-      defaultBaseEnergy(if (unbreaking >= 3) 3 else unbreaking) * (if (placeFrame) 2.5 else 1)
+    val baseEnergy = defaultBaseEnergy(if (unbreaking >= 3) 3 else unbreaking)
+
+    def getEnergy(placeFrame: Boolean) = {
+      baseEnergy * (if (placeFrame) 2.5 else 1).toLong
     }
 
-    def getReceiveEnergy: Double = if (efficiency >= 5) defaultReceiveEnergy(5) else defaultReceiveEnergy(efficiency)
+    val getReceiveEnergy = if (efficiency >= 5) defaultReceiveEnergy(5) else defaultReceiveEnergy(efficiency)
 
     def inRange(tilePos: BlockPos, pos: BlockPos): Boolean = {
       if (square) {

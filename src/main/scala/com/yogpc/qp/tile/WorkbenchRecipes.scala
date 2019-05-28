@@ -21,6 +21,7 @@ import scala.util.Try
 
 abstract sealed class WorkbenchRecipes(val output: ItemDamage, val energy: Double, val showInJEI: Boolean = true)
   extends Ordered[WorkbenchRecipes] {
+  val microEnergy = (energy * APowerTile.MicroJtoMJ).toLong
   val size: Int
 
   def inputs: Seq[Seq[IngredientWithCount]]
@@ -118,6 +119,7 @@ object WorkbenchRecipes {
 
   val dummyRecipe: WorkbenchRecipes = new WorkbenchRecipes(ItemDamage.invalid, energy = 0, showInJEI = false) {
     override val inputs = Nil
+    override val microEnergy = 0L
     override val inputsJ: java.util.List[java.util.List[IngredientWithCount]] = Collections.emptyList()
     override val size: Int = 0
     override val toString: String = "WorkbenchRecipe NoRecipe"

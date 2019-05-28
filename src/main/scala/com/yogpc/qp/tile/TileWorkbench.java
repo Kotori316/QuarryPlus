@@ -56,8 +56,8 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
         super.update();
         if (!getWorld().isRemote) {
             if (isWorking()) {
-                if (currentRecipe.energy() <= getStoredEnergy() || Config.content().noEnergy()) {
-                    useEnergy(currentRecipe.energy(), currentRecipe.energy(), true, EnergyUsage.WORKBENCH);
+                if (currentRecipe.microEnergy() <= getStoredEnergy() || Config.content().noEnergy()) {
+                    useEnergy(currentRecipe.microEnergy(), currentRecipe.microEnergy(), true, EnergyUsage.WORKBENCH);
                     ItemStack stack = currentRecipe.getOutput();
                     ItemStack inserted = InvUtils.injectToNearTile(getWorld(), getPos(), stack);
                     if (VersionUtil.nonEmpty(inserted)) {
@@ -254,13 +254,13 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
         } else {
             this.currentRecipe = WorkbenchRecipes.dummyRecipe();
         }
-        configure(Config.content().workbenchMaxReceive(), currentRecipe.energy());
+        configure(Config.content().workbenchMaxReceive() * APowerTile.MicroJtoMJ, currentRecipe.microEnergy());
     }
 
     @SideOnly(Side.CLIENT)
     public int getProgressScaled(int scale) {
         if (isWorking())
-            return (int) (getStoredEnergy() * scale / currentRecipe.energy());
+            return (int) (getStoredEnergy() * scale / currentRecipe.microEnergy());
         else
             return 0;
     }

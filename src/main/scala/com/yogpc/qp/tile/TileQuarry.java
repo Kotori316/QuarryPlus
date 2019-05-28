@@ -343,7 +343,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
             class Data {
                 public final int xp;
                 public final TileExpPump pump;
-                public final double energy;
+                public final long energy;
 
                 public Data(int xp, TileExpPump pump) {
                     this.xp = xp;

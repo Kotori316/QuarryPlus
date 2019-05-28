@@ -23,14 +23,27 @@ import net.minecraftforge.common.config.Property;
 @SuppressWarnings("ClassWithTooManyFields")
 public class PowerManager {
     private static double QuarryWork_CF, QuarryWork_CS, MiningWell_CF, MiningWell_CS;
-    private static double QuarryWork_BP, QuarryWork_CE, QuarryWork_CU, QuarryWork_XR, QuarryWork_MS;// Quarry:BreakBlock
-    private static double FrameBuild_BP, FrameBuild_CE, FrameBuild_CU, FrameBuild_XR, FrameBuild_MS;// Quarry:MakeFrame
-    private static double MiningWell_BP, MiningWell_CE, MiningWell_CU, MiningWell_XR, MiningWell_MS;// MiningWell
-    private static double Laser_BP, Laser_CE, Laser_CU, Laser_XR, Laser_MS, Laser_CF, Laser_CS;// Laser
-    private static double Refinery_CE, Refinery_CU, Refinery_XR, Refinery_MS;// Refinery
-    private static double PumpFrame_BP, PumpFrame_CU;// Pump:Frame
-    private static double PumpDrain_BP, PumpDrain_CU;// Pump:Liquid
-    private static double MoveHead_BP, MoveHead_CU;// Quarry:MoveHead
+    private static long QuarryWork_BP;
+    private static double QuarryWork_CE, QuarryWork_CU;
+    private static long QuarryWork_XR, QuarryWork_MS;// Quarry:BreakBlock
+    private static long FrameBuild_BP;
+    private static double FrameBuild_CE, FrameBuild_CU;
+    private static long FrameBuild_XR, FrameBuild_MS;// Quarry:MakeFrame
+    private static long MiningWell_BP;
+    private static double MiningWell_CE, MiningWell_CU;
+    private static long MiningWell_XR, MiningWell_MS;// MiningWell
+    private static long Laser_BP;
+    private static double Laser_CE, Laser_CU;
+    private static long Laser_XR, Laser_MS;
+    private static double Laser_CF, Laser_CS;// Laser
+    private static double Refinery_CE, Refinery_CU;
+    private static long Refinery_XR, Refinery_MS;// Refinery
+    private static long PumpFrame_BP;
+    private static double PumpFrame_CU;// Pump:Frame
+    private static long PumpDrain_BP;
+    private static double PumpDrain_CU;// Pump:Liquid
+    private static long MoveHead_BP;
+    private static double MoveHead_CU;// Quarry:MoveHead
 
     private static final int length = (Configuration.CATEGORY_GENERAL + Configuration.CATEGORY_SPLITTER).length();
 
@@ -61,57 +74,58 @@ public class PowerManager {
         String cn2 = cn + "Quarry" + Configuration.CATEGORY_SPLITTER;
         ConfigCategory c = cg.getCategory(cn2 + "BreakBlock");
 //        c.setComment("Quarry BreakBlock");
-        QuarryWork_BP = get(c, "BasePower", 40);
+        long micro = APowerTile.MicroJtoMJ;
+        QuarryWork_BP = micro * (long) get(c, "BasePower", 40);
         QuarryWork_CE = get(c, "EfficiencyCoefficient", 1.3);
         QuarryWork_CU = get(c, "UnbreakingCoefficient", 1);
         QuarryWork_CF = get(c, "FortuneCoefficient", 1.3);
         QuarryWork_CS = get(c, "SilktouchCoefficient", 2);
-        QuarryWork_XR = get(c, "BaseMaxRecieve", 300);
-        QuarryWork_MS = get(c, "BaseMaxStored", 15000);
+        QuarryWork_XR = micro * (long) get(c, "BaseMaxRecieve", 300);
+        QuarryWork_MS = micro * (long) get(c, "BaseMaxStored", 15000);
 
         c = cg.getCategory(cn2 + "BreakBlock" + Configuration.CATEGORY_SPLITTER + "MoveHead");
-        MoveHead_BP = get(c, "BasePower", 200);
+        MoveHead_BP = micro * (long) get(c, "BasePower", 200);
         MoveHead_CU = get(c, "UnbreakingCoefficient", 1);
 
         c = cg.getCategory(cn2 + "MakeFrame");
-        FrameBuild_BP = get(c, "BasePower", 25);
+        FrameBuild_BP = micro * (long) get(c, "BasePower", 25);
         FrameBuild_CE = get(c, "EfficiencyCoefficient", 1.3);
         FrameBuild_CU = get(c, "UnbreakingCoefficient", 1);
-        FrameBuild_XR = get(c, "BaseMaxRecieve", 100);
-        FrameBuild_MS = get(c, "BaseMaxStored", 15000);
+        FrameBuild_XR = micro * (long) get(c, "BaseMaxRecieve", 100);
+        FrameBuild_MS = micro * (long) get(c, "BaseMaxStored", 15000);
 
         cn2 = cn + "Pump" + Configuration.CATEGORY_SPLITTER;
         c = cg.getCategory(cn2 + "DrainLiquid");
-        PumpDrain_BP = get(c, "BasePower", 10);
+        PumpDrain_BP = micro * (long) get(c, "BasePower", 10);
         PumpDrain_CU = get(c, "UnbreakingCoefficient", 1);
 
         c = cg.getCategory(cn2 + "MakeFrame");
-        PumpFrame_BP = get(c, "BasePower", 25);
+        PumpFrame_BP = micro * (long) get(c, "BasePower", 25);
         PumpFrame_CU = get(c, "UnbreakingCoefficient", 1);
 
         c = cg.getCategory(cn + "MiningWell");
-        MiningWell_BP = get(c, "BasePower", 40);
+        MiningWell_BP = micro * (long) get(c, "BasePower", 40);
         MiningWell_CE = get(c, "EfficiencyCoefficient", 1.3);
         MiningWell_CU = get(c, "UnbreakingCoefficient", 1);
         MiningWell_CF = get(c, "FortuneCoefficient", 1.3);
         MiningWell_CS = get(c, "SilktouchCoefficient", 2);
-        MiningWell_XR = get(c, "BaseMaxRecieve", 100);
-        MiningWell_MS = get(c, "BaseMaxStored", 1000);
+        MiningWell_XR = micro * (long) get(c, "BaseMaxRecieve", 100);
+        MiningWell_MS = micro * (long) get(c, "BaseMaxStored", 1000);
 
         c = cg.getCategory(cn + "Laser");
-        Laser_BP = get(c, "BasePower", 4);
+        Laser_BP = micro * (long) get(c, "BasePower", 4);
         Laser_CE = get(c, "EfficiencyCoefficient", 2);
         Laser_CU = get(c, "UnbreakingCoefficient", 0.1);
         Laser_CF = get(c, "FortuneCoefficient", 1.05);
         Laser_CS = get(c, "SilktouchCoefficient", 1.1);
-        Laser_XR = get(c, "BaseMaxRecieve", 100);
-        Laser_MS = get(c, "BaseMaxStored", 1000);
+        Laser_XR = micro * (long) get(c, "BaseMaxRecieve", 100);
+        Laser_MS = micro * (long) get(c, "BaseMaxStored", 1000);
 
         c = cg.getCategory(cn + "Refinery");
         Refinery_CE = get(c, "EfficiencyCoefficient", 1.2);
         Refinery_CU = get(c, "UnbreakingCoefficient", 1);
-        Refinery_XR = get(c, "BaseMaxRecieve", 6);
-        Refinery_MS = get(c, "BaseMaxStored", 1000);
+        Refinery_XR = micro * (long) get(c, "BaseMaxRecieve", 6);
+        Refinery_MS = micro * (long) get(c, "BaseMaxStored", 1000);
 
     }
 
@@ -120,16 +134,16 @@ public class PowerManager {
     }
 
     private static void configure(final APowerTile pp, final double CE, final byte efficiencyLevel, final byte unbreakingLevel,
-                                  final double CU, final double XR, final double MS, final int pump) {
-        pp.configure(XR * Math.pow(CE, efficiencyLevel) / (unbreakingLevel * CU + 1),
-            MS * Math.pow(CE, efficiencyLevel) / (unbreakingLevel * CU + 1)
-                + (pump > 0 ? 65536 * PumpDrain_BP / (pump * PumpDrain_CU + 1) + 1020 * PumpFrame_BP / (pump * PumpFrame_CU + 1) : 0));
+                                  final double CU, final long maxReceive, final long maxStored, final int pump) {
+        pp.configure((long) (maxReceive * Math.pow(CE, efficiencyLevel) / (unbreakingLevel * CU + 1)),
+            (long) (maxStored * Math.pow(CE, efficiencyLevel) / (unbreakingLevel * CU + 1)
+                + (pump > 0 ? 65536 * PumpDrain_BP / (pump * PumpDrain_CU + 1) + 1020 * PumpFrame_BP / (pump * PumpFrame_CU + 1) : 0)));
     }
 
     //What???
     /*private static void configure15(final APowerTile pp, final double CE, final byte efficiencyLevel, final byte unbreakingLevel,
                                     final double CU, final double XR, final double MS, final byte pump) {
-        pp.configure(XR * Math.pow(CE, efficiencyLevel) / (unbreakingLevel * CU + 1),
+        pp.configure_double(XR * Math.pow(CE, efficiencyLevel) / (unbreakingLevel * CU + 1),
                 MS * Math.pow(CE, efficiencyLevel) / (unbreakingLevel * CU + 1)
                 + (pump > 0 ? 65536 * PumpDrain_BP / (pump * PumpDrain_CU + 1) + 1020 * PumpFrame_BP / (pump * PumpFrame_CU + 1) : 0));
     }*/
@@ -165,7 +179,7 @@ public class PowerManager {
     public static boolean useEnergyBreak(final APowerTile pp, final float hardness, final byte enchantMode, final byte unbreaking, boolean replacer) {
         if (enchantMode == -2)
             return true;
-        final double pw = calcEnergyBreak(pp, hardness, enchantMode, unbreaking) * (replacer ? 1.1 : 1);
+        final long pw = (long) (calcEnergyBreak(pp, hardness, enchantMode, unbreaking) * (replacer ? 1.1 : 1));
         if (pp.useEnergy(pw, pw, false, EnergyUsage.BREAK_BLOCK) != pw)
             return false;
         pp.useEnergy(pw, pw, true, EnergyUsage.BREAK_BLOCK);
@@ -180,7 +194,9 @@ public class PowerManager {
      * @return Require energy.
      */
     private static double calcEnergyBreak(APowerTile pp, float hardness, byte enchantMode, byte unbreaking) {
-        double BP, CU, CSP;
+        long BP;
+        double CU;
+        double CSP;
         if (pp instanceof TileMiningWell) {
             BP = MiningWell_BP;
             CU = MiningWell_CU;
@@ -193,25 +209,30 @@ public class PowerManager {
         return BP * hardness * CSP / (unbreaking * CU + 1);
     }
 
-    public static double calcEnergyBreak(float hardness, int enchantMode, int unbreaking) {
-        double BP = QuarryWork_BP, CU = QuarryWork_CU, CSP = enchantMode < 0 ? QuarryWork_CS : Math.pow(QuarryWork_CF, enchantMode);
-        return BP * hardness * CSP / (unbreaking * CU + 1);
+    /**
+     * Use quarry's values. (BasePower, CoEfficiency, and so on.)
+     */
+    public static long calcEnergyBreak(float hardness, int enchantMode, int unbreaking) {
+        long BP = QuarryWork_BP;
+        double CU = QuarryWork_CU;
+        double CSP = enchantMode < 0 ? QuarryWork_CS : Math.pow(QuarryWork_CF, enchantMode);
+        return (long) (BP * hardness * CSP / (unbreaking * CU + 1));
     }
 
     public static boolean useEnergyPump(final APowerTile pp, final byte U, final long liquidsCount, final long framesToBuild) {
-        final double pw = calcEnergyPumpDrain(U, liquidsCount, framesToBuild);
+        final long pw = calcEnergyPumpDrain(U, liquidsCount, framesToBuild);
         if (pp.useEnergy(pw, pw, false, EnergyUsage.PUMP_FLUID) != pw)
             return false;
         pp.useEnergy(pw, pw, true, EnergyUsage.PUMP_FLUID);
         return true;
     }
 
-    public static double calcEnergyPumpDrain(int unbreaking, long liquids, long frames) {
-        return PumpDrain_BP * liquids / (unbreaking * PumpDrain_CU + 1) + PumpFrame_BP * frames / (unbreaking * PumpFrame_CU + 1);
+    public static long calcEnergyPumpDrain(int unbreaking, long liquids, long frames) {
+        return (long) (PumpDrain_BP * liquids / (unbreaking * PumpDrain_CU + 1) + PumpFrame_BP * frames / (unbreaking * PumpFrame_CU + 1));
     }
 
-    private static boolean useEnergy(final APowerTile pp, final double BP, final int U, final double CU, final int E, final double CE, EnergyUsage usage) {
-        final double pw = BP / Math.pow(CE, E) / (U * CU + 1);
+    private static boolean useEnergy(final APowerTile pp, final long BP, final int U, final double CU, final int E, final double CE, EnergyUsage usage) {
+        final long pw = (long) (BP / Math.pow(CE, E) / (U * CU + 1));
         if (pp.useEnergy(pw, pw, false, usage) != pw)
             return false;
         pp.useEnergy(pw, pw, true, usage);
@@ -222,40 +243,42 @@ public class PowerManager {
         return useEnergy(pp, FrameBuild_BP, U, FrameBuild_CU, 0, 1, EnergyUsage.FRAME_BUILD);
     }
 
-    public static boolean useEnergyRefinery(final APowerTile pp, final double BP, final byte U, final byte E) {
+    public static boolean useEnergyRefinery(final APowerTile pp, final long BP, final byte U, final byte E) {
         return useEnergy(pp, BP, U, Refinery_CU, E, Refinery_CE, EnergyUsage.REFINERY);
     }
 
     public static double useEnergyQuarryHead(final APowerTile pp, final double dist, final byte U) {
+        double bp = (double) MoveHead_BP / APowerTile.MicroJtoMJ;
         double pw;
         if (!Config.content().fastQuarryHeadMove()) {
-            pw = Math.min(2 + pp.getStoredEnergy() / 500, (dist / 2 - 0.05) * MoveHead_BP / (U * MoveHead_CU + 1));
+            pw = Math.min(2 + (double) pp.getStoredEnergy() / 500 / APowerTile.MicroJtoMJ, (dist / 2 - 0.05) * bp / (U * MoveHead_CU + 1));
         } else {
-            pw = (dist / 2 - 0.05) * MoveHead_BP / (U * MoveHead_CU + 1);
+            pw = (dist / 2 - 0.05) *bp / (U * MoveHead_CU + 1);
         }
-        pw = pp.useEnergy(0, pw, true, EnergyUsage.MOVE_HEAD);
-        return pw * (U * MoveHead_CU + 1) / MoveHead_BP + 0.05;
+        pw = (double) pp.useEnergy(0, (long) (pw * APowerTile.MicroJtoMJ), true, EnergyUsage.MOVE_HEAD) / APowerTile.MicroJtoMJ;
+        return pw * (U * MoveHead_CU + 1) / bp + 0.05;
     }
 
-    public static double simulateEnergyLaser(final APowerTile pp, final byte U, final byte F, final boolean S, final byte E) {
-        double pw = Laser_BP * Math.pow(Laser_CF, F) * Math.pow(Laser_CE, E) / (U * Laser_CU + 1);
-        if (S)
-            pw *= Laser_CS;
-        pw = pp.useEnergy(0, pw, false, EnergyUsage.LASER);
-        if (S)
-            pw = pw / Laser_CS;
-        return pw * (U * Laser_CU + 1) / Math.pow(Laser_CF, F);
+    public static long simulateEnergyLaser(final APowerTile pp, final byte U, final byte F, final boolean S, final byte E) {
+        long pw = (long) (Laser_BP * Math.pow(Laser_CF, F) * Math.pow(Laser_CE, E) / (U * Laser_CU + 1));
+        if (S) {
+            long used = pp.useEnergy(0, (long) (pw * Laser_CS), false, EnergyUsage.LASER);
+            return (long) (used / Laser_CS * (U * Laser_CU + 1) / Math.pow(Laser_CF, F));
+        } else {
+            long used = pp.useEnergy(0, pw, false, EnergyUsage.LASER);
+            return (long) (used * (U * Laser_CU + 1) / Math.pow(Laser_CF, F));
+        }
     }
 
-    public static void useEnergyLaser(final APowerTile pp, final double power, final byte U, final byte F, final boolean S, boolean simulate) {
-        double pw = power * Math.pow(Laser_CF, F) * (S ? Laser_CS : 1) / (U * Laser_CU + 1);
+    public static void useEnergyLaser(final APowerTile pp, final long power, final byte U, final byte F, final boolean S, boolean simulate) {
+        long pw = (long) (power * Math.pow(Laser_CF, F) * (S ? Laser_CS : 1) / (U * Laser_CU + 1));
         pp.useEnergy(pw, pw, !simulate, EnergyUsage.LASER);
     }
 
     /**
      * @return required energy to search.
      */
-    public static double calcEnergyAdvSearch(int unbreakingLevel, int targetY) {
-        return MoveHead_BP * targetY / (MoveHead_CU * unbreakingLevel + 1) / 4;
+    public static long calcEnergyAdvSearch(int unbreakingLevel, int targetY) {
+        return (long) (MoveHead_BP * targetY / (MoveHead_CU * unbreakingLevel + 1) / 4);
     }
 }

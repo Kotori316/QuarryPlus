@@ -159,7 +159,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
             .map(getWorld()::getTileEntity)
             .flatMap(EXP_PUMP)
             .ifPresent(t -> {
-                double expEnergy = t.getEnergyUse(bi.i);
+                long expEnergy = t.getEnergyUse(bi.i);
                 if (useEnergy(expEnergy, expEnergy, false, EnergyUsage.PUMP_EXP) == expEnergy) {
                     useEnergy(expEnergy, expEnergy, true, EnergyUsage.PUMP_EXP);
                     t.addXp(bi.i);
