@@ -202,4 +202,9 @@ public class BlockBreaker extends ADismCBlock {
     protected boolean canRotate() {
         return true;
     }
+
+    @Override
+    protected boolean validFacing(EnumFacing facing) {
+        return true;
+    }
 }

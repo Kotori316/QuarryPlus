@@ -94,6 +94,12 @@ public class BlockMover extends Block implements IDismantleable, IWrenchable {
 
     @Override
     @Optional.Method(modid = QuarryPlus.Optionals.IC2_modID)
+    public boolean canSetFacing(World world, BlockPos pos, EnumFacing newDirection, EntityPlayer player) {
+        return false;
+    }
+
+    @Override
+    @Optional.Method(modid = QuarryPlus.Optionals.IC2_modID)
     public boolean setFacing(World world, BlockPos pos, EnumFacing newDirection, EntityPlayer player) {
         return false;
     }

@@ -203,6 +203,11 @@ public class BlockLaser extends ADismCBlock {
 
     @Override
     protected boolean canRotate() {
-        return false;
+        return true;
+    }
+
+    @Override
+    protected boolean validFacing(EnumFacing facing) {
+        return true;
     }
 }

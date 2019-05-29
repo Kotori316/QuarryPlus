@@ -117,6 +117,10 @@ public abstract class ADismCBlock extends QPBlock implements IDismantleable, IWr
 
     protected abstract boolean canRotate();
 
+    protected boolean validFacing(EnumFacing facing) {
+        return EnumFacing.Plane.HORIZONTAL.apply(facing);
+    }
+
     @Override
     @Optional.Method(modid = QuarryPlus.Optionals.IC2_modID)
     public EnumFacing getFacing(World world, BlockPos pos) {
@@ -133,7 +137,7 @@ public abstract class ADismCBlock extends QPBlock implements IDismantleable, IWr
         if (canRotate()) {
             TileEntity entity = world.getTileEntity(pos);
             IBlockState state = world.getBlockState(pos);
-            if (state.getValue(FACING) == newDirection) {
+            if (state.getValue(FACING) == newDirection || !validFacing(newDirection)) {
                 // Remove block. Wrench is used on the side machine is facing.
                 return false;
             } else {
@@ -146,6 +150,12 @@ public abstract class ADismCBlock extends QPBlock implements IDismantleable, IWr
             }
         }
         return false;
+    }
+
+    @Override
+    @Optional.Method(modid = QuarryPlus.Optionals.IC2_modID)
+    public boolean canSetFacing(World world, BlockPos pos, EnumFacing newDirection, EntityPlayer player) {
+        return canRotate() && world.getBlockState(pos).getValue(FACING) != newDirection && validFacing(newDirection);
     }
 
     @Override

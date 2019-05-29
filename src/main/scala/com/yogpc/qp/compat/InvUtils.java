@@ -107,7 +107,7 @@ public class InvUtils {
         ItemStack stack = player.getHeldItem(hand);
         if (nonEmpty(stack)) {
             Item item = stack.getItem();
-            return item == quarryDebug || item == ic2_meter || item == ic2_wrench || item == ic2_electric_wrench;
+            return item == quarryDebug || item == ic2_meter || item == ic2_wrench || item == ic2_electric_wrench || item == ic2_wrench_new;
         }
         return false;
     }
@@ -127,6 +127,8 @@ public class InvUtils {
     public static final Item ic2_meter = new Item();
     @GameRegistry.ObjectHolder(QuarryPlus.Optionals.IC2_modID + ":wrench")
     public static final Item ic2_wrench = new Item();
+    @GameRegistry.ObjectHolder(QuarryPlus.Optionals.IC2_modID + ":wrench_new")
+    public static final Item ic2_wrench_new = new Item();
     @GameRegistry.ObjectHolder(QuarryPlus.Optionals.IC2_modID + ":electric_wrench")
     public static final Item ic2_electric_wrench = new Item();
     @GameRegistry.ObjectHolder(QuarryPlus.modID + ":quarrydebug")
