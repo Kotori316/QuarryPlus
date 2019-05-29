@@ -4,9 +4,6 @@
     "model": "quarryplus:standalonepump"
   },
   "variants": {
-    "normal": [
-      {}
-    ],
     "working": {
       "true": {
         "model": "quarryplus:standalonepump_working"
