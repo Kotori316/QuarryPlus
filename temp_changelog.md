@@ -1,3 +1,8 @@
+# Version 1.0.7
+* PumpPlus can be enchanted with both Fortune and Silktouch is BookEnchMover is enabled.
+* Update for New Wrench of IC2.
+* Use ObfuscationReflectionHelper as refraction helper.
+
 # Version 1.0.6
 * Internal changes. Use long instead of double to store energy.
 * Allowed QuarryPlus to be enchanted with Fortune AND Silktouch at the same time. [#51](https://github.com/Kotori316/QuarryPlus/issues/51)
