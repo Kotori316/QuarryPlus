@@ -4,7 +4,6 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 import com.yogpc.qp.Config;
-import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.quarry.TileQuarry;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.packet.PacketHandler;
@@ -13,8 +12,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.NetworkEvent;
-
-import static jp.t2v.lab.syntax.MapStreamSyntax.optCast;
 
 /**
  * To client only.
@@ -60,11 +57,7 @@ public class MoveHead implements IMessage<MoveHead> {
     @OnlyIn(Dist.CLIENT)
     public void onReceive(Supplier<NetworkEvent.Context> ctx) {
         if (Config.client().enableRender().get()) {
-            QuarryPlus.proxy.getPacketWorld(ctx.get())
-                .filter(world -> world.getDimension().getType().getId() == dim)
-                .filter(world -> world.isBlockLoaded(pos))
-                .map(world -> world.getTileEntity(pos))
-                .flatMap(optCast(TileQuarry.class))
+            IMessage.findTile(ctx, pos, dim, TileQuarry.class)
                 .ifPresent(quarry -> {
                     quarry.headPosX = headPosX;
                     quarry.headPosY = headPosY;

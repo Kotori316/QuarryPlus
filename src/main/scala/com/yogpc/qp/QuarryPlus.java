@@ -1,7 +1,5 @@
 package com.yogpc.qp;
 
-import java.util.Optional;
-
 import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.workbench.WorkbenchRecipes;
 import com.yogpc.qp.packet.PacketHandler;
@@ -47,9 +45,7 @@ public class QuarryPlus {
 
     private void initConfig() {
         ForgeConfigSpec.Builder common = new ForgeConfigSpec.Builder();
-        Optional.of(common)
-            .map(Config::commonBuild)
-            .ifPresent(preloadConfig -> ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, preloadConfig.build()));
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.commonBuild(common).build());
         ForgeConfigSpec.Builder client = new ForgeConfigSpec.Builder();
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.clientBuild(client).build());
     }

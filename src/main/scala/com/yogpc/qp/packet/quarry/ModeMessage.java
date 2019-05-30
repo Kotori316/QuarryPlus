@@ -2,14 +2,11 @@ package com.yogpc.qp.packet.quarry;
 
 import java.util.function.Supplier;
 
-import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.quarry.TileQuarry;
 import com.yogpc.qp.packet.IMessage;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
-
-import static jp.t2v.lab.syntax.MapStreamSyntax.optCast;
 
 /**
  * To client only.
@@ -48,11 +45,7 @@ public class ModeMessage implements IMessage<ModeMessage> {
 
     @Override
     public void onReceive(Supplier<NetworkEvent.Context> ctx) {
-        QuarryPlus.proxy.getPacketWorld(ctx.get())
-            .filter(world -> world.getDimension().getType().getId() == dim)
-            .filter(world -> world.isBlockLoaded(pos))
-            .map(world -> world.getTileEntity(pos))
-            .flatMap(optCast(TileQuarry.class))
+        IMessage.findTile(ctx, pos, dim, TileQuarry.class)
             .ifPresent(quarry -> ctx.get().enqueueWork(() -> {
                 quarry.setNow(mode);
                 quarry.xMin = minPos.getX();

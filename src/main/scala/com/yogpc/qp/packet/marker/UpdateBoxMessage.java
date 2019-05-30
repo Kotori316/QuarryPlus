@@ -1,17 +1,12 @@
 package com.yogpc.qp.packet.marker;
 
-import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.yogpc.qp.machines.marker.TileMarker;
 import com.yogpc.qp.packet.IMessage;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.LogicalSidedProvider;
 import net.minecraftforge.fml.network.NetworkEvent;
-
-import static jp.t2v.lab.syntax.MapStreamSyntax.optCast;
 
 /**
  * To client only.
@@ -45,11 +40,7 @@ public class UpdateBoxMessage implements IMessage<UpdateBoxMessage> {
 
     @Override
     public void onReceive(Supplier<NetworkEvent.Context> ctx) {
-        Optional<World> optionalWorld = LogicalSidedProvider.CLIENTWORLD.get(ctx.get().getDirection().getReceptionSide());
-        optionalWorld.filter(world -> world.getDimension().getType().getId() == dim)
-            .filter(world -> world.isBlockLoaded(pos))
-            .map(world -> world.getTileEntity(pos))
-            .flatMap(optCast(TileMarker.class))
+        IMessage.findTile(ctx, pos, dim, TileMarker.class)
             .ifPresent(marker -> marker.laser.boxUpdate(marker.getWorld(), on));
     }
 }

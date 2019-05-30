@@ -4,15 +4,12 @@ import java.util.EnumMap;
 import java.util.LinkedList;
 import java.util.function.Supplier;
 
-import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.pump.TilePump;
 import com.yogpc.qp.packet.IMessage;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
-
-import static jp.t2v.lab.syntax.MapStreamSyntax.optCast;
 
 public class Mappings {
 
@@ -63,11 +60,7 @@ public class Mappings {
 
         @Override
         public void onReceive(Supplier<NetworkEvent.Context> ctx) {
-            QuarryPlus.proxy.getPacketWorld(ctx.get())
-                .filter(world -> world.getDimension().getType().getId() == dim)
-                .filter(world -> world.isBlockLoaded(pos))
-                .map(world -> world.getTileEntity(pos))
-                .flatMap(optCast(TilePump.class))
+            IMessage.findTile(ctx, pos, dim, TilePump.class)
                 .ifPresent(pump -> {
                     pump.mapping.clear();
                     pump.mapping.putAll(map);
@@ -115,11 +108,7 @@ public class Mappings {
 
         @Override
         public void onReceive(Supplier<NetworkEvent.Context> ctx) {
-            QuarryPlus.proxy.getPacketWorld(ctx.get())
-                .filter(world -> world.getDimension().getType().getId() == dim)
-                .filter(world -> world.isBlockLoaded(pos))
-                .map(world -> world.getTileEntity(pos))
-                .flatMap(optCast(TilePump.class))
+            IMessage.findTile(ctx, pos, dim, TilePump.class)
                 .ifPresent(pump -> ctx.get().enqueueWork(() -> {
                     LinkedList<String> list = pump.mapping.get(facing);
                     typeAction(list, fluidName, type);
@@ -205,11 +194,7 @@ public class Mappings {
 
         @Override
         public void onReceive(Supplier<NetworkEvent.Context> ctx) {
-            QuarryPlus.proxy.getPacketWorld(ctx.get())
-                .filter(world -> world.getDimension().getType().getId() == dim)
-                .filter(world -> world.isBlockLoaded(pos))
-                .map(world -> world.getTileEntity(pos))
-                .flatMap(optCast(TilePump.class))
+            IMessage.findTile(ctx, pos, dim, TilePump.class)
                 .ifPresent(pump -> ctx.get().enqueueWork(() -> pump.mapping.put(dest, list)));
         }
 

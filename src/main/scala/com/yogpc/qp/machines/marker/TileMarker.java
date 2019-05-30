@@ -177,7 +177,7 @@ public class TileMarker extends APacketTile implements IMarker, IDebugSender, IC
         }
 
         public void boxUpdate(World world, boolean on) {
-            if (world.isRemote && Config.client().enableRender().get() && on) {
+            if (world != null && world.isRemote && Config.client().enableRender().get() && on) {
                 boxes = Stream.of(lasers)
                     .filter(Objects::nonNull)
                     .map(range -> Box.apply(range, 1d / 8d, 1d / 8d, 1d / 8d, false, false))
