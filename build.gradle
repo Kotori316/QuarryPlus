@@ -16,7 +16,7 @@ apply plugin: "com.matthewprenger.cursegradle"
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'eclipse'
 
-version = getProperty("modversion")
+version = getProperty("modVersion")
 group = 'com.kotori316' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'AdditionalEnchantedMiner-1.13.2'
 

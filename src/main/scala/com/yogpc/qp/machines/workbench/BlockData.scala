@@ -2,6 +2,7 @@ package com.yogpc.qp.machines.workbench
 
 import java.util.Comparator
 
+import com.yogpc.qp._
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.resources.I18n
 import net.minecraft.nbt.NBTTagCompound
@@ -23,14 +24,18 @@ object BlockData {
 
     override def hashCode = 0
 
-    override def write(nbt: NBTTagCompound): NBTTagCompound = nbt
-
     override def toString = "BlockData@Invaild"
 
     override def getLocalizedName = "Unknown:Dummy"
   }
 
   val comparator: Comparator[BlockData] = Ordering.by((b: BlockData) => b.name)
+
+  implicit val dataToNbt: NBTWrapper[BlockData, NBTTagCompound] = data => {
+    val nbt = new NBTTagCompound
+    nbt.putString(BlockData.Name_NBT, data.name.toString)
+    nbt
+  }
 }
 
 case class BlockData(name: ResourceLocation) extends Ordered[BlockData] {
@@ -42,13 +47,6 @@ case class BlockData(name: ResourceLocation) extends Ordered[BlockData] {
   def this(state: IBlockState) {
     this(ForgeRegistries.BLOCKS.getKey(state.getBlock))
   }
-
-  def write(nbt: NBTTagCompound): NBTTagCompound = {
-    nbt.putString(BlockData.Name_NBT, name.toString)
-    nbt
-  }
-
-  def toNbt = write(new NBTTagCompound)
 
   override def toString: String = name.toString
 

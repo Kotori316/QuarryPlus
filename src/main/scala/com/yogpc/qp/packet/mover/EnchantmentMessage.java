@@ -48,7 +48,7 @@ public class EnchantmentMessage implements IMessage<EnchantmentMessage> {
     @Override
     public void writeToBuffer(PacketBuffer buffer) {
         buffer.writeBlockPos(pos).writeEnumValue(type).writeResourceLocation(Objects.requireNonNull(enchantment.getRegistryName()))
-            .writeCompoundTag(data.write(new NBTTagCompound())).writeInt(dim);
+            .writeCompoundTag(BlockData.dataToNbt().apply(data)).writeInt(dim);
 
     }
 

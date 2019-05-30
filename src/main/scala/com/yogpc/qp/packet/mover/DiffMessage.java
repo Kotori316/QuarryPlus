@@ -9,7 +9,6 @@ import com.yogpc.qp.machines.workbench.BlockData;
 import com.yogpc.qp.packet.IMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.Container;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -39,8 +38,8 @@ public class DiffMessage implements IMessage<DiffMessage> {
     public void writeToBuffer(PacketBuffer buffer) {
         buffer.writeInt(containerId);
         buffer.writeInt(fortuneList.size()).writeInt(silkList.size());
-        fortuneList.stream().map(data -> data.write(new NBTTagCompound())).forEach(buffer::writeCompoundTag);
-        silkList.stream().map(data -> data.write(new NBTTagCompound())).forEach(buffer::writeCompoundTag);
+        fortuneList.stream().map(BlockData.dataToNbt()::apply).forEach(buffer::writeCompoundTag);
+        silkList.stream().map(BlockData.dataToNbt()::apply).forEach(buffer::writeCompoundTag);
 
     }
 
