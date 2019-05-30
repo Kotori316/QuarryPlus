@@ -2,6 +2,7 @@ package com.yogpc.qp.machines.advquarry
 
 import com.yogpc.qp.QuarryPlus
 import com.yogpc.qp.machines.TranslationKeys
+import com.yogpc.qp.machines.base.IHandleButton
 import com.yogpc.qp.packet.PacketHandler
 import com.yogpc.qp.packet.advquarry.AdvActionMessage
 import net.minecraft.client.gui.inventory.GuiContainer
@@ -14,7 +15,7 @@ import net.minecraft.util.{EnumFacing, ResourceLocation}
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 
 @OnlyIn(Dist.CLIENT)
-class GuiAdvQuarry(tile: TileAdvQuarry, player: EntityPlayer) extends GuiContainer(new ContainerAdvQuarry(tile, player)) {
+class GuiAdvQuarry(tile: TileAdvQuarry, player: EntityPlayer) extends GuiContainer(new ContainerAdvQuarry(tile, player)) with IHandleButton {
 
   val LOCATION = new ResourceLocation(QuarryPlus.modID, "textures/gui/chunkdestroyer.png")
 
@@ -36,25 +37,21 @@ class GuiAdvQuarry(tile: TileAdvQuarry, player: EntityPlayer) extends GuiContain
     super.initGui()
     val plus = "+"
     val minus = "-"
-    class Button(buttonId: Int, x: Int, y: Int, widthIn: Int, heightIn: Int, buttonText: String)
-      extends GuiButton(buttonId, x, y, widthIn, heightIn, buttonText) {
-      override def onClick(mouseX: Double, mouseY: Double): Unit = actionPerformed(this)
-    }
-    addButton(new Button(0, guiLeft + 98, guiTop + 16, 10, 8, plus))
-    addButton(new Button(1, guiLeft + 68, guiTop + 16, 10, 8, minus))
-    addButton(new Button(2, guiLeft + 98, guiTop + 62, 10, 8, plus))
-    addButton(new Button(3, guiLeft + 68, guiTop + 62, 10, 8, minus))
-    addButton(new Button(4, guiLeft + 38, guiTop + 39, 10, 8, plus))
-    addButton(new Button(5, guiLeft + 8, guiTop + 39, 10, 8, minus))
-    addButton(new Button(6, guiLeft + 158, guiTop + 39, 10, 8, plus))
-    addButton(new Button(7, guiLeft + 128, guiTop + 39, 10, 8, minus))
+    addButton(new IHandleButton.Button(0, guiLeft + 98, guiTop + 16, 10, 8, plus, this))
+    addButton(new IHandleButton.Button(1, guiLeft + 68, guiTop + 16, 10, 8, minus, this))
+    addButton(new IHandleButton.Button(2, guiLeft + 98, guiTop + 62, 10, 8, plus, this))
+    addButton(new IHandleButton.Button(3, guiLeft + 68, guiTop + 62, 10, 8, minus, this))
+    addButton(new IHandleButton.Button(4, guiLeft + 38, guiTop + 39, 10, 8, plus, this))
+    addButton(new IHandleButton.Button(5, guiLeft + 8, guiTop + 39, 10, 8, minus, this))
+    addButton(new IHandleButton.Button(6, guiLeft + 158, guiTop + 39, 10, 8, plus, this))
+    addButton(new IHandleButton.Button(7, guiLeft + 128, guiTop + 39, 10, 8, minus, this))
 
-    addButton(new Button(8, guiLeft + 108, guiTop + 58, 60, 12, "No Frame"))
+    addButton(new IHandleButton.Button(8, guiLeft + 108, guiTop + 58, 60, 12, "No Frame", this))
   }
 
   private def range = tile.digRange
 
-  def actionPerformed(button: GuiButton): Unit = {
+  override def actionPerformed(button: GuiButton): Unit = {
     if (button.id == 8) {
       if (tile.mode is TileAdvQuarry.NOT_NEED_BREAK) {
         PacketHandler.sendToServer(AdvActionMessage.create(tile, AdvActionMessage.Actions.QUICK_START))
