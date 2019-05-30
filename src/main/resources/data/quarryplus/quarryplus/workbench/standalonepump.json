@@ -1,0 +1,30 @@
+{
+  "id": "quarryplus:builtin_advancedpump",
+  "type": "quarryplus:workbench_recipe",
+  "ingredients": [
+    {
+      "item": "quarryplus:pumpplus",
+      "count": 2
+    },
+    {
+      "item": "quarryplus:miningwellplus",
+      "count": 2
+    },
+    {
+      "item": "quarryplus:markerplus",
+      "count": 3
+    }
+  ],
+  "energy": 3200000.0,
+  "showInJEI": true,
+  "result": {
+    "item": "quarryplus:standalonepump",
+    "count": 1
+  },
+  "conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "AdvancedPump"
+    }
+  ]
+}
