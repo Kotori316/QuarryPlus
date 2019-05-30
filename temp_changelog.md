@@ -1,5 +1,10 @@
 **This mod requires a library, [Scalable Cat's Force](https://minecraft.curseforge.com/projects/scalable-cats-force).**
 
+## Version 2.0.3
+* Refactoring to use cats.
+* Added GUI of ListEditor
+* Changed to beta.
+
 ## Version 2.0.2
 * Update forge.
 * You can use status checker to Spawner Controller to know mob name spawned by adjacent spawner.
