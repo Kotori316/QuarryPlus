@@ -3,8 +3,10 @@ package com.yogpc.qp.machines.workbench
 import java.util.Comparator
 
 import net.minecraft.block.state.IBlockState
+import net.minecraft.client.resources.I18n
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.ResourceLocation
+import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 import net.minecraftforge.registries.ForgeRegistries
 
 object BlockData {
@@ -16,7 +18,7 @@ object BlockData {
     new BlockData(nbt.getString(Name_NBT))
   }
 
-  val Invalid: BlockData = new BlockData("Unknown:Dummy") {
+  val Invalid: BlockData = new BlockData("unknown:dummy") {
     override def equals(o: Any) = false
 
     override def hashCode = 0
@@ -50,10 +52,11 @@ case class BlockData(name: ResourceLocation) extends Ordered[BlockData] {
 
   override def toString: String = name.toString
 
+  @OnlyIn(Dist.CLIENT)
   def getLocalizedName: String = {
     val sb = new StringBuilder
     sb.append(name)
-    sb.append("  ").append(Option(ForgeRegistries.BLOCKS.getValue(name)).fold("")(_.getTranslationKey))
+    sb.append("  ").append(Option(ForgeRegistries.BLOCKS.getValue(name)).map(_.getTranslationKey).fold("")(s => I18n.format(s)))
     sb.toString
   }
 

@@ -3,7 +3,7 @@ package com.yogpc.qp.machines.item
 import com.yogpc.qp.QuarryPlus
 import com.yogpc.qp.machines.TranslationKeys
 import com.yogpc.qp.machines.advquarry.TileAdvQuarry
-import com.yogpc.qp.machines.base.HasInv
+import com.yogpc.qp.machines.base.{HasInv, IHandleButton}
 import com.yogpc.qp.machines.item.GuiQuarryLevel.YLevel
 import com.yogpc.qp.machines.quarry.{TileBasic, TileQuarry}
 import com.yogpc.qp.packet.PacketHandler
@@ -19,7 +19,8 @@ import net.minecraft.util.ResourceLocation
 
 class GuiQuarryLevel[T <: TileEntity with HasInv](private[this] val tile: T, player: EntityPlayer)
                                                  (implicit lA: YLevel[T], func: T => _ <: LevelMessage)
-  extends GuiContainer(new ContainerQuarryLevel(tile, player)) {
+  extends GuiContainer(new ContainerQuarryLevel(tile, player))
+    with IHandleButton {
 
   val LOCATION = new ResourceLocation(QuarryPlus.modID, "textures/gui/advpump.png")
 
@@ -40,12 +41,8 @@ class GuiQuarryLevel[T <: TileEntity with HasInv](private[this] val tile: T, pla
   override def initGui(): Unit = {
     super.initGui()
     val width = 40
-    addButton(new GuiButton(0, guiLeft + this.xSize / 2 - width / 2, guiTop + tp, width, 20, "+") {
-      override def onClick(mouseX: Double, mouseY: Double): Unit = GuiQuarryLevel.this.actionPerformed(this)
-    })
-    addButton(new GuiButton(1, guiLeft + this.xSize / 2 - width / 2, guiTop + tp + 33, width, 20, "-") {
-      override def onClick(mouseX: Double, mouseY: Double): Unit = GuiQuarryLevel.this.actionPerformed(this)
-    })
+    addButton(new IHandleButton.Button(0, guiLeft + this.xSize / 2 - width / 2, guiTop + tp, width, 20, "+", this))
+    addButton(new IHandleButton.Button(1, guiLeft + this.xSize / 2 - width / 2, guiTop + tp + 33, width, 20, "-", this))
   }
 
   override def drawGuiContainerForegroundLayer(mouseX: Int, mouseY: Int): Unit = {
@@ -55,7 +52,7 @@ class GuiQuarryLevel[T <: TileEntity with HasInv](private[this] val tile: T, pla
     this.fontRenderer.drawString(lA.getYLevel(tile).toString, this.xSize / 2 - this.fontRenderer.getStringWidth(lA.getYLevel(tile).toString) / 2, tp + 23, 0x404040)
   }
 
-  def actionPerformed(button: GuiButton): Unit = {
+  override def actionPerformed(button: GuiButton): Unit = {
     val di = if (button.id % 2 == 0) 1 else -1
     val yMin = tile match {
       case quarry: TileQuarry => quarry.yMin

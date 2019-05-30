@@ -1,9 +1,23 @@
 package com.yogpc.qp.packet.mover;
 
+import java.util.Objects;
+import java.util.function.Supplier;
+
+import com.yogpc.qp.machines.quarry.TileBasic;
+import com.yogpc.qp.machines.workbench.BlockData;
+import com.yogpc.qp.packet.IMessage;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.init.Enchantments;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.registries.ForgeRegistries;
+
 /**
  * To server only.
- *//*
-public class EnchantmentMessage implements IMessage {
+ */
+public class EnchantmentMessage implements IMessage<EnchantmentMessage> {
 
     Type type;
     BlockPos pos;
@@ -14,7 +28,7 @@ public class EnchantmentMessage implements IMessage {
     public static EnchantmentMessage create(TileBasic tile, Type type, Enchantment enchantment, BlockData data) {
         EnchantmentMessage message = new EnchantmentMessage();
         message.pos = tile.getPos();
-        message.dim = tile.getWorld().provider.getDimension();
+        message.dim = IMessage.getDimId(tile.getWorld());
         message.type = type;
         message.enchantment = enchantment;
         message.data = data;
@@ -22,46 +36,41 @@ public class EnchantmentMessage implements IMessage {
     }
 
     @Override
-    public void fromBytes(PacketBuffer buffer) throws IOException {
+    public EnchantmentMessage readFromBuffer(PacketBuffer buffer) {
         pos = buffer.readBlockPos();
         type = buffer.readEnumValue(Type.class);
-        enchantment = Enchantment.getEnchantmentByLocation(buffer.readString(Short.MAX_VALUE));
-        data = BlockData.readFromNBT(buffer.readCompoundTag());
+        enchantment = ForgeRegistries.ENCHANTMENTS.getValue(buffer.readResourceLocation());
+        data = BlockData.read(buffer.readCompoundTag());
         dim = buffer.readInt();
+        return this;
     }
 
     @Override
-    public void toBytes(PacketBuffer buffer) {
-        buffer.writeBlockPos(pos).writeEnumValue(type).writeString(VersionUtil.getRegistryName(enchantment).toString())
-            .writeCompoundTag(data.writeToNBT(new NBTTagCompound())).writeInt(dim);
+    public void writeToBuffer(PacketBuffer buffer) {
+        buffer.writeBlockPos(pos).writeEnumValue(type).writeResourceLocation(Objects.requireNonNull(enchantment.getRegistryName()))
+            .writeCompoundTag(data.write(new NBTTagCompound())).writeInt(dim);
+
     }
 
     @Override
-    public IMessage onReceive(IMessage message, MessageContext ctx) {
-        World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
-        MinecraftServer server = world.getMinecraftServer();
-        if (world.provider.getDimension() == dim && server != null) {
-            TileBasic tile = (TileBasic) world.getTileEntity(pos);
-            if (tile != null) {
-                server.addScheduledTask(() -> {
-                    if (type == Type.Toggle) {
-                        if (enchantment == Enchantments.FORTUNE) {
-                            tile.fortuneInclude = !tile.fortuneInclude;
-                        } else if (enchantment == Enchantments.SILK_TOUCH) {
-                            tile.silktouchInclude = !tile.silktouchInclude;
-                        }
-                    } else if (type == Type.Remove) {
-                        if (enchantment == Enchantments.FORTUNE)
-                            tile.fortuneList.remove(data);
-                        else if (enchantment == Enchantments.SILK_TOUCH)
-                            tile.silktouchList.remove(data);
+    public void onReceive(Supplier<NetworkEvent.Context> ctx) {
+        IMessage.findTile(ctx, pos, dim, TileBasic.class).ifPresent(tile ->
+            ctx.get().enqueueWork(() -> {
+                if (type == Type.Toggle) {
+                    if (enchantment == Enchantments.FORTUNE) {
+                        tile.fortuneInclude = !tile.fortuneInclude;
+                    } else if (enchantment == Enchantments.SILK_TOUCH) {
+                        tile.silktouchInclude = !tile.silktouchInclude;
                     }
-                });
-            }
-        }
-        return null;
+                } else if (type == Type.Remove) {
+                    if (enchantment == Enchantments.FORTUNE)
+                        tile.fortuneList.remove(data);
+                    else if (enchantment == Enchantments.SILK_TOUCH)
+                        tile.silktouchList.remove(data);
+                }
+            })
+        );
     }
 
     public enum Type {Toggle, Remove}
 }
-*/
