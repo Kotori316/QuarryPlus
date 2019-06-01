@@ -1,3 +1,6 @@
+# Version 1.0.8
+* Now you can't move enchantments to machines which is incompatible with the enchantment. (e.g. You can't move Silktouch to machine with Smashing or Smelting from CoFHCore, Auto-Smelt from Ender Core.)
+
 # Version 1.0.7
 * PumpPlus can be enchanted with both Fortune and Silktouch is BookEnchMover is enabled.
 * Update for New Wrench of IC2.
