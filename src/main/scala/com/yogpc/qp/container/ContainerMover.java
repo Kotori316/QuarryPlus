@@ -17,15 +17,22 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlusI;
+import com.yogpc.qp.block.BlockBookMover;
 import com.yogpc.qp.item.IEnchantableItem;
 import com.yogpc.qp.utils.LoopList;
 import com.yogpc.qp.version.VersionUtil;
+import jp.t2v.lab.syntax.MapStreamSyntax;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Enchantments;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.IInventory;
@@ -102,9 +109,9 @@ public class ContainerMover extends Container {
             int previousSize = list.size();
             if (nonEmpty(enchTile) && enchTile.getItem() instanceof IEnchantableItem) {
                 IEnchantableItem item = (IEnchantableItem) enchTile.getItem();
+                Predicate<Tuple> predicate = canMovePredicate(item, enchTile).and(lowerEnchantmentPredicate(enchTile)).and(canApply(enchTile));
                 list.setList(enchantments.entrySet().stream().map(Tuple::new)
-                    .filter(tuple -> item.canMove(enchTile, tuple.enchantment) &&
-                        EnchantmentHelper.getEnchantmentLevel(tuple.enchantment, enchTile) < tuple.enchantment.getMaxLevel())
+                    .filter(predicate)
                     .collect(Collectors.toCollection(LinkedList::new)));
             } else {
                 list.setList(enchantments.entrySet().stream().map(Tuple::new).collect(Collectors.toCollection(LinkedList::new)));
@@ -115,6 +122,27 @@ public class ContainerMover extends Container {
         }
         for (IContainerListener listener : this.listeners)
             VersionUtil.sendWindowProperty(listener, this, 0, this.avail);
+    }
+
+    private static Predicate<Tuple> canMovePredicate(IEnchantableItem item, ItemStack enchTile) {
+        return tuple -> item.canMove(enchTile, tuple.enchantment);
+    }
+
+    private static Predicate<Tuple> lowerEnchantmentPredicate(ItemStack enchTile) {
+        return tuple -> EnchantmentHelper.getEnchantmentLevel(tuple.enchantment, enchTile) < tuple.enchantment.getMaxLevel();
+    }
+
+    private static Predicate<Tuple> canApply(ItemStack enchTile) {
+        Set<Enchantment> enchantments = EnchantmentHelper.getEnchantments(enchTile).keySet();
+        Function<Tuple, Predicate<Enchantment>> fortuneAndSilktouch = tuple ->
+            Config.content().disableMapJ().get(BlockBookMover.SYMBOL) ? MapStreamSyntax.always_false() : enchantment ->
+                (tuple.enchantment == Enchantments.SILK_TOUCH && enchantment == Enchantments.FORTUNE)
+                    || (tuple.enchantment == Enchantments.FORTUNE && enchantment == Enchantments.SILK_TOUCH);
+        Function<Tuple, Predicate<Enchantment>> apply = tuple -> tuple.enchantment::isCompatibleWith;
+
+        return tuple -> enchantments.stream().filter(Predicate.isEqual(tuple.enchantment).negate()).allMatch(
+            fortuneAndSilktouch.apply(tuple).or(apply.apply(tuple))
+        );
     }
 
     @Override
