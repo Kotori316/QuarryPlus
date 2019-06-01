@@ -4,6 +4,7 @@ import com.yogpc.qp.machines.advquarry.TileAdvQuarry
 import com.yogpc.qp.utils.Holder
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.common.ForgeConfigSpec
+import net.minecraftforge.fml.config.ModConfig
 
 object Config {
 
@@ -157,4 +158,7 @@ object Config {
     builder.pop()
   }
 
+  val reloadHandler: java.util.function.Consumer[ModConfig.ConfigReloading] = event => {
+    // Just reloading makes Config changed.
+  }
 }

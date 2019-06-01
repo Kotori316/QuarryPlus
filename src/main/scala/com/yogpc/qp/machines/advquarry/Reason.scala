@@ -5,7 +5,7 @@ import com.yogpc.qp.{Config, QuarryPlus}
 import net.minecraft.block.state.IBlockState
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.api.distmarker.Dist
-import net.minecraftforge.fml.loading.FMLEnvironment
+import net.minecraftforge.fml.DistExecutor
 
 trait Reason {
   def isEnergyIssue: Boolean
@@ -33,16 +33,18 @@ object Reason {
   def apply(pos: BlockPos, index: Int) = new AllAirImpl(pos, index)
 
   def printNonEnergy[T]: Reason => Option[T] = r => {
-    if (Config.common.debug && FMLEnvironment.dist == Dist.CLIENT && !r.isEnergyIssue) {
-      r.print()
-    }
+    if (Config.common.debug && !r.isEnergyIssue)
+      DistExecutor.runWhenOn(Dist.CLIENT, () => () => {
+        r.print()
+      })
     None
   }
 
   def print[T]: Reason => Option[T] = r => {
-    if (Config.common.debug && FMLEnvironment.dist == Dist.CLIENT) {
-      r.print()
-    }
+    if (Config.common.debug)
+      DistExecutor.runWhenOn(Dist.CLIENT, () => () => {
+        r.print()
+      })
     None
   }
 

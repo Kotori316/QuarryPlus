@@ -24,6 +24,7 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scala.collection.JavaConverters;
@@ -48,6 +49,7 @@ public class QuarryPlus {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.commonBuild(common).build());
         ForgeConfigSpec.Builder client = new ForgeConfigSpec.Builder();
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.clientBuild(client).build());
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(Config.reloadHandler());
     }
 
     @SubscribeEvent
