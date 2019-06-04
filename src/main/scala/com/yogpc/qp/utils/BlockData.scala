@@ -69,7 +69,7 @@ case class BlockData(name: ResourceLocation, meta: Int) extends INBTWritable wit
   override def toString: String = name + "@" + meta
 
   def getLocalizedName: String = {
-    val sb = new StringBuilder
+    /*val sb = new StringBuilder
     sb.append(name)
     if (meta != OreDictionary.WILDCARD_VALUE) {
       sb.append(" : ").append(meta).append("  ")
@@ -77,7 +77,8 @@ case class BlockData(name: ResourceLocation, meta: Int) extends INBTWritable wit
     } else {
       sb.append("  ").append(Option(ForgeRegistries.BLOCKS.getValue(name)).fold("")(_.getLocalizedName))
     }
-    sb.toString
+    sb.toString*/
+    Option(ForgeRegistries.BLOCKS.getValue(name)).map(new ItemStack(_, 1, meta)).fold("")(_.getDisplayName)
   }
 
   override def compare(that: BlockData): Int = BlockData.comparator.compare(this, that)

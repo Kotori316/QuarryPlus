@@ -15,7 +15,7 @@ package com.yogpc.qp
 import java.util
 
 import com.yogpc.qp.block._
-import com.yogpc.qp.item.{ItemMirror, ItemQuarryDebug, ItemTool}
+import com.yogpc.qp.item.{ItemMirror, ItemQuarryDebug, ItemTemplate, ItemTool}
 import com.yogpc.qp.tile._
 import net.minecraft.block.Block
 import net.minecraft.util.ResourceLocation
@@ -48,6 +48,7 @@ object QuarryPlusI {
   val itemTool = new ItemTool
   val magicMirror = new ItemMirror
   val debugItem = new ItemQuarryDebug
+  val itemTemplate = new ItemTemplate
   final val guiIdWorkbench = 1
   final val guiIdMover = 2
   final val guiIdFList = 3
@@ -59,6 +60,7 @@ object QuarryPlusI {
   final val guiIdSolidQuarry = 9
   final val guiIdQuarryYLevel = 10
   final val guiIdAdvQuarryYLevel = 11
+  final val guiIdListTemplate = 12
 
   val tileIdMap = Map(
     classOf[TileWorkbench] -> QuarryPlus.Names.workbench,

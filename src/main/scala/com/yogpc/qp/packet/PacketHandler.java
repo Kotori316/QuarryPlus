@@ -3,11 +3,11 @@ package com.yogpc.qp.packet;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.advpump.AdvPumpChangeMessage;
 import com.yogpc.qp.packet.advpump.AdvPumpStatusMessage;
+import com.yogpc.qp.packet.advquarry.AdvActionMessage;
 import com.yogpc.qp.packet.advquarry.AdvContentMessage;
 import com.yogpc.qp.packet.advquarry.AdvFilterMessage;
 import com.yogpc.qp.packet.advquarry.AdvLevelMessage;
 import com.yogpc.qp.packet.advquarry.AdvModeMessage;
-import com.yogpc.qp.packet.advquarry.AdvActionMessage;
 import com.yogpc.qp.packet.controller.AvailableEntities;
 import com.yogpc.qp.packet.controller.SetEntity;
 import com.yogpc.qp.packet.distiller.AnimationMessage;
@@ -18,6 +18,7 @@ import com.yogpc.qp.packet.enchantment.MoverMessage;
 import com.yogpc.qp.packet.exppump.ExpPumpMessage;
 import com.yogpc.qp.packet.laser.LaserAverageMessage;
 import com.yogpc.qp.packet.laser.LaserMessage;
+import com.yogpc.qp.packet.listtemplate.TemplateMessage;
 import com.yogpc.qp.packet.marker.LinkReply;
 import com.yogpc.qp.packet.marker.LinkRequest;
 import com.yogpc.qp.packet.marker.LinkUpdate;
@@ -91,6 +92,8 @@ public class PacketHandler {
         wrapper.registerMessage(handler, AnimationMessage.class, i++, Side.CLIENT);
         //exp pump
         wrapper.registerMessage(handler, ExpPumpMessage.class, i++, Side.CLIENT);
+        //template
+        wrapper.registerMessage(handler, TemplateMessage.class, i++, Side.SERVER);
         assert i > 0 : "Dummy Operation";
     }
 

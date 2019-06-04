@@ -61,7 +61,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import scala.collection.convert.WrapAsJava$;
+import scala.collection.JavaConverters;
 
 import static com.yogpc.qp.QuarryPlusI.blockBookMover;
 import static com.yogpc.qp.QuarryPlusI.blockBreaker;
@@ -85,6 +85,7 @@ import static com.yogpc.qp.QuarryPlusI.blockStandalonePump;
 import static com.yogpc.qp.QuarryPlusI.blockWorkbench;
 import static com.yogpc.qp.QuarryPlusI.debugItem;
 import static com.yogpc.qp.QuarryPlusI.dummyBlock;
+import static com.yogpc.qp.QuarryPlusI.itemTemplate;
 import static com.yogpc.qp.QuarryPlusI.itemTool;
 import static com.yogpc.qp.QuarryPlusI.magicMirror;
 import static com.yogpc.qp.QuarryPlusI.tileIdMap;
@@ -169,7 +170,7 @@ public class QuarryPlus {
         event.getRegistry().registerAll(
             blockList().toArray(new Block[0])
         );
-        WrapAsJava$.MODULE$.mapAsJavaMap(tileIdMap()).forEach(GameRegistry::registerTileEntity);
+        JavaConverters.mapAsJavaMapConverter(tileIdMap()).asJava().forEach(GameRegistry::registerTileEntity);
     }
 
     @SubscribeEvent
@@ -197,7 +198,8 @@ public class QuarryPlus {
             blockReplacer().itemBlock(),
             itemTool(),
             magicMirror(),
-            debugItem()
+            debugItem(),
+            itemTemplate()
         );
     }
 
@@ -233,6 +235,7 @@ public class QuarryPlus {
         ModelLoader.setCustomModelResourceLocation(magicMirror(), 1, proxy.fromEntry(magicMirror()));
         ModelLoader.setCustomModelResourceLocation(magicMirror(), 2, proxy.fromEntry(magicMirror()));
         ModelLoader.setCustomModelResourceLocation(debugItem(), 0, proxy.fromEntry(debugItem()));
+        ModelLoader.setCustomModelResourceLocation(itemTemplate(), 0, proxy.fromEntry(itemTemplate()));
     }
 
     @SubscribeEvent
@@ -331,6 +334,7 @@ public class QuarryPlus {
         public static final String refinery = "refineryplus";
         public static final String replacer = "quarryreplacer";
         public static final String solidquarry = "solidquarry";
+        public static final String template = "template";
         public static final String tool = "tool";
         public static final String workbench = "workbenchplus";
     }

@@ -55,6 +55,8 @@ object GuiHandler extends IGuiHandler {
         new GuiQuarryLevel(w.getTileEntity(pos).asInstanceOf[TileBasic], p)
       case QuarryPlusI.guiIdAdvQuarryYLevel =>
         new GuiQuarryLevel(w.getTileEntity(pos).asInstanceOf[TileAdvQuarry], p)
+      case QuarryPlusI.guiIdListTemplate =>
+        new GuiListTemplate(p)
       case _ => null
     }
   }
@@ -84,6 +86,8 @@ object GuiHandler extends IGuiHandler {
         new ContainerQuarryLevel(w.getTileEntity(pos).asInstanceOf[TileBasic], p)
       case QuarryPlusI.guiIdAdvQuarryYLevel =>
         new ContainerQuarryLevel(w.getTileEntity(pos).asInstanceOf[TileAdvQuarry], p)
+      case QuarryPlusI.guiIdListTemplate =>
+        new ContainerListTemplate(p)
       case _ => null
     }
   }
