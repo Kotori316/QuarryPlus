@@ -5,7 +5,7 @@ import java.util.{Collections, Comparator}
 
 import com.google.gson.{Gson, GsonBuilder, JsonArray, JsonObject}
 import com.yogpc.qp.block._
-import com.yogpc.qp.item.ItemTool
+import com.yogpc.qp.item.{ItemTemplate, ItemTool}
 import com.yogpc.qp.utils.{EnableCondition, IngredientWithCount}
 import com.yogpc.qp.version.VersionUtil
 import com.yogpc.qp.{Config, QuarryPlus}
@@ -240,7 +240,7 @@ object WorkbenchRecipes {
       (ItemDamage(ItemTool.getEditorStack), 160000, Seq(F(DIAMOND, 2), F(IRON_INGOT, 8), F(REDSTONE, 2), F(DYE, 8), F(BOOK, 32), F(FEATHER, 1), F(ENDER_PEARL, 1d / 5d))),
       (ItemDamage(itemTool, 2), 320000, Seq(F(IRON_INGOT, 32), F(LAVA_BUCKET, 6d / 5d), F(WATER_BUCKET, 6d / 5d), F(ENDER_PEARL, 3d / 25d))),
       (ItemDamage(itemTool, 3), 80000, Seq(F(GOLD_INGOT, 16), F(REPEATER, 8), F(COMPARATOR, 4), F(QUARTZ, 32))),
-      (ItemDamage(itemTemplate, 0), 80000, Seq(F(itemTool, 1, 1), F(CHEST, 2)))
+      (ItemDamage(ItemTemplate.getTemplateStack), 80000, Seq(F(itemTool, 1, 1), F(CHEST, 2)))
     )
     list1.foreach { case (result, e, recipe) => addSeqRecipe(result, e, recipe) }
   }

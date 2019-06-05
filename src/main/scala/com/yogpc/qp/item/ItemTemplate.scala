@@ -46,7 +46,7 @@ class ItemTemplate extends Item with IEnchantableItem {
     *
     * @return stack which can be enchanted.
     */
-  override def stacks() = Array(getEditorStack)
+  override def stacks() = Array(getTemplateStack)
 
   override def isValidInBookMover = false
 
@@ -60,7 +60,7 @@ class ItemTemplate extends Item with IEnchantableItem {
 
   override def getSubItems(tab: CreativeTabs, items: NonNullList[ItemStack]): Unit = {
     if (this.isInCreativeTab(tab)) {
-      items.add(getEditorStack)
+      items.add(getTemplateStack)
     }
   }
 
@@ -100,7 +100,7 @@ class ItemTemplate extends Item with IEnchantableItem {
 }
 
 object ItemTemplate {
-  def getEditorStack: ItemStack = {
+  def getTemplateStack: ItemStack = {
     val stack = new ItemStack(QuarryPlusI.itemTemplate)
     val compound = new NBTTagCompound
     compound.setInteger("HideFlags", 1)

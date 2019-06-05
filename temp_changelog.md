@@ -1,3 +1,6 @@
+# Version 1.1.0
+* Hide enchantment shown in tooltip of List Template.
+
 # Version 1.0.9
 * Added List Template. Right click any block to open GUI, place block on right slot and click "Add". Then, right click a machine with List Template to move setting.
 
