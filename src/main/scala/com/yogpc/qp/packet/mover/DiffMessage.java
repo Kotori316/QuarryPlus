@@ -47,7 +47,7 @@ public class DiffMessage implements IMessage<DiffMessage> {
     public void onReceive(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             Container container = Minecraft.getInstance().player.openContainer;
-            if (containerId == container.windowId && container instanceof ContainerEnchList) {
+            if (container instanceof ContainerEnchList) {
                 ContainerEnchList enchList = (ContainerEnchList) container;
                 enchList.tile.fortuneList.clear();
                 enchList.tile.fortuneList.addAll(fortuneList);
