@@ -1,3 +1,6 @@
+# Version 1.0.9
+* Added List Template. Right click any block to open GUI, place block on right slot and click "Add". Then, right click a machine with List Template to move setting.
+
 # Version 1.0.8
 * Now you can't move enchantments to machines which is incompatible with the enchantment. (e.g. You can't move Silktouch to machine with Smashing or Smelting from CoFHCore, Auto-Smelt from Ender Core.)
 
