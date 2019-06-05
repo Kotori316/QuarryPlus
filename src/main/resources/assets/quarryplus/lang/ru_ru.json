@@ -31,6 +31,7 @@
   "item.quarryplus.quarrydebug": "Предмет отладки улучшенного карьера",
   "item.quarryplus.statuschecker": "Контролер статуса",
   "item.quarryplus.y_setter": "Quarry Y Setter",
+  "item.quarryplus.template": "List Template",
 
   "chat.changemode": "Режим работы был изменен на %s",
   "chat.currentmode": "Сейчас, работая в %s",

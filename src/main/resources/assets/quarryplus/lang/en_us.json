@@ -30,6 +30,7 @@
   "item.quarryplus.quarrydebug": "QuarryPlus Debug Item",
   "item.quarryplus.statuschecker": "StatusChecker",
   "item.quarryplus.y_setter": "Quarry Y Setter",
+  "item.quarryplus.template": "List Template",
   "chat.changemode": "Working mode was changed to %s",
   "chat.currentmode": "Now, working in %s",
   "chat.fillermode": "Frame Mode",
