@@ -52,6 +52,7 @@ public class TranslationKeys {
     public static final String SELECT_FLUID = "tof.selectfluid";
     public static final String SET_SELECT = "pp.set.select";
     public static final String SOUTH = "FD.south";
+    public static final String TOF_ADDED = "tof.success";
     public static final String TOF_EXCLUDE = "tof.exclude";
     public static final String TOF_INCLUDE = "tof.include";
     public static final String UP = "FD.up";
@@ -64,24 +65,24 @@ public class TranslationKeys {
     public static final String TOOLTIP_REPLACER = "quarryplus.tooltip.replacer";
     public static final String TOOLTIP_ADVPUMP = "quarryplus.tooltip.advpump";
 
-    public static final String advpump = "block.quarryplus." + QuarryPlus.Names.advpump ;
-    public static final String advquarry = "block.quarryplus." + QuarryPlus.Names.advquarry ;
-    public static final String breaker = "block.quarryplus." + QuarryPlus.Names.breaker ;
+    public static final String advpump = "block.quarryplus." + QuarryPlus.Names.advpump;
+    public static final String advquarry = "block.quarryplus." + QuarryPlus.Names.advquarry;
+    public static final String breaker = "block.quarryplus." + QuarryPlus.Names.breaker;
     //    public static final String controller = "block.quarryplus." + QuarryPlus.Names.controller ;
-    public static final String exppump = "block.quarryplus." + QuarryPlus.Names.exppump ;
-    public static final String frame = "block.quarryplus." + QuarryPlus.Names.frame ;
-    public static final String laser = "block.quarryplus." + QuarryPlus.Names.laser ;
-    public static final String marker = "block.quarryplus." + QuarryPlus.Names.marker ;
-    public static final String miningwell = "block.quarryplus." + QuarryPlus.Names.miningwell ;
-    public static final String mover = "block.quarryplus." + QuarryPlus.Names.mover ;
-    public static final String moverfrombook = "block.quarryplus." + QuarryPlus.Names.moverfrombook ;
-    public static final String placer = "block.quarryplus." + QuarryPlus.Names.placer ;
+    public static final String exppump = "block.quarryplus." + QuarryPlus.Names.exppump;
+    public static final String frame = "block.quarryplus." + QuarryPlus.Names.frame;
+    public static final String laser = "block.quarryplus." + QuarryPlus.Names.laser;
+    public static final String marker = "block.quarryplus." + QuarryPlus.Names.marker;
+    public static final String miningwell = "block.quarryplus." + QuarryPlus.Names.miningwell;
+    public static final String mover = "block.quarryplus." + QuarryPlus.Names.mover;
+    public static final String moverfrombook = "block.quarryplus." + QuarryPlus.Names.moverfrombook;
+    public static final String placer = "block.quarryplus." + QuarryPlus.Names.placer;
     //    public static final String plainpipe = "block.quarryplus." + QuarryPlus.Names.plainpipe ;
-    public static final String pump = "block.quarryplus." + QuarryPlus.Names.pump ;
-    public static final String quarry = "block.quarryplus." + QuarryPlus.Names.quarry ;
-    public static final String solidquarry = "block.quarryplus." + QuarryPlus.Names.solidquarry ;
+    public static final String pump = "block.quarryplus." + QuarryPlus.Names.pump;
+    public static final String quarry = "block.quarryplus." + QuarryPlus.Names.quarry;
+    public static final String solidquarry = "block.quarryplus." + QuarryPlus.Names.solidquarry;
     //    public static final String refinery = "block.quarryplus." + QuarryPlus.Names.refinery ;
-    public static final String workbench = "block.quarryplus." + QuarryPlus.Names.workbench ;
+    public static final String workbench = "block.quarryplus." + QuarryPlus.Names.workbench;
 
     public static final Map<Integer, String> ENCHANT_LEVELS;
 

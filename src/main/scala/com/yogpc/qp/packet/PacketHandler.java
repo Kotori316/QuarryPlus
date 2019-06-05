@@ -10,6 +10,7 @@ import com.yogpc.qp.packet.advquarry.AdvLevelMessage;
 import com.yogpc.qp.packet.advquarry.AdvModeMessage;
 import com.yogpc.qp.packet.controller.AvailableEntities;
 import com.yogpc.qp.packet.controller.SetEntity;
+import com.yogpc.qp.packet.listtemplate.TemplateMessage;
 import com.yogpc.qp.packet.marker.LinkMessage;
 import com.yogpc.qp.packet.marker.UpdateBoxMessage;
 import com.yogpc.qp.packet.mover.BlockListRequestMessage;
@@ -64,6 +65,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(id++, AdvLevelMessage.class, IMessage::writeToBuffer, b -> new AdvLevelMessage().readFromBuffer(b), IMessage::onReceiveInternal);
         INSTANCE.registerMessage(id++, AdvPumpChangeMessage.class, IMessage::writeToBuffer, IMessage.decode(AdvPumpChangeMessage::new), IMessage::onReceiveInternal);
         INSTANCE.registerMessage(id++, AdvPumpStatusMessage.class, IMessage::writeToBuffer, IMessage.decode(AdvPumpStatusMessage::new), IMessage::onReceiveInternal);
+        INSTANCE.registerMessage(id++, TemplateMessage.class, IMessage::writeToBuffer, IMessage.decode(TemplateMessage::new), IMessage::onReceiveInternal);
 
         assert id > 0;
     }

@@ -1,6 +1,5 @@
 {
   "_comment": "English lang file.",
-
   "block.quarryplus.breakerplus": "Breaker Plus",
   "block.quarryplus.chunkdestroyer": "Chunk Destroyer",
   "block.quarryplus.exppump": "Experience Pump for Quarry",
@@ -31,7 +30,6 @@
   "item.quarryplus.quarrydebug": "QuarryPlus Debug Item",
   "item.quarryplus.statuschecker": "StatusChecker",
   "item.quarryplus.y_setter": "Quarry Y Setter",
-
   "chat.changemode": "Working mode was changed to %s",
   "chat.currentmode": "Now, working in %s",
   "chat.fillermode": "Frame Mode",
@@ -97,13 +95,13 @@
   "tof.tipsmeta": "Tips: Meta is 0 in most cases",
   "tof.top": "Go to TOP",
   "tof.up": "Go to UP",
+  "tof.success": "Block was successfully added.",
   "trigger.plus_done": "The PlusMachine's work is done.",
   "trigger.plus_working": "The PlusMachine is working.",
   "yog.armor.hover.off": "Hover Mode disabled.",
   "yog.armor.hover.on": "Hover Mode enabled.",
   "yog.pump.liquid": "-    %s: %smB",
   "yog.spanwer.setting": "Please select entity to be spawned by spawner",
-
   "quarryplus.machines.tooltip": "Machines",
   "quarryplus.client.tooltip": "Client",
   "quarryplus.tooltip.blockpump": "This block is an attachment for %1$s.%2$sPlace this next to %1$s.",

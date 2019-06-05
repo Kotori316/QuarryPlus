@@ -46,3 +46,13 @@ class SlotMover(inv: IInventory, index: Int, xPosition: Int, yPosition: Int) ext
 class SlotTile(inv: IInventory, index: Int, xPosition: Int, yPosition: Int) extends Slot(inv, index, xPosition, yPosition) {
   override def isItemValid(stack: ItemStack): Boolean = inv.isItemValidForSlot(index, stack)
 }
+
+class SlotCanTake(val inventoryIn: IInventory, val index: Int, val xPosition: Int, val yPosition: Int, val canTake: EntityPlayer => Boolean)
+  extends Slot(inventoryIn, index, xPosition, yPosition) {
+
+  def this(inventoryIn: IInventory, index: Int, xPosition: Int, yPosition: Int, b: Boolean) {
+    this(inventoryIn, index, xPosition, yPosition, _ => b)
+  }
+
+  override def canTakeStack(playerIn: EntityPlayer): Boolean = canTake(playerIn)
+}

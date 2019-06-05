@@ -52,10 +52,11 @@ case class BlockData(name: ResourceLocation) extends Ordered[BlockData] {
 
   @OnlyIn(Dist.CLIENT)
   def getLocalizedName: String = {
-    val sb = new StringBuilder
-    sb.append(name)
-    sb.append("  ").append(Option(ForgeRegistries.BLOCKS.getValue(name)).map(_.getTranslationKey).fold("")(s => I18n.format(s)))
-    sb.toString
+//    val sb = new StringBuilder
+//    sb.append(name)
+//    sb.append("  ").append(Option(ForgeRegistries.BLOCKS.getValue(name)).map(_.getTranslationKey).fold("")(s => I18n.format(s)))
+//    sb.toString
+    Option(ForgeRegistries.BLOCKS.getValue(name)).map(_.getTranslationKey).fold("")(s => I18n.format(s))
   }
 
   override def compare(that: BlockData): Int = BlockData.comparator.compare(this, that)

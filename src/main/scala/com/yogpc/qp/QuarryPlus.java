@@ -143,6 +143,7 @@ public class QuarryPlus {
         public static final String replacer = "quarryreplacer";
         public static final String solidquarry = "solidquarry";
         public static final String statuschecker = "statuschecker";
+        public static final String template = "template";
         public static final String ySetter = "y_setter";
         public static final String workbench = "workbenchplus";
     }
