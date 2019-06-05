@@ -17,7 +17,7 @@ public class ContainerListTemplate extends Container {
     };
 
     public ContainerListTemplate(EntityPlayer player) {
-        addSlotToContainer(new SlotTile(this.craftMatrix, 0, 141, 98));
+        addSlotToContainer(new SlotTile(this.craftMatrix, 0, 141, 90));
         for (int i = 0; i < 3; ++i) {
             for (int j = 0; j < 9; ++j) {
                 this.addSlotToContainer(new Slot(player.inventory, j + i * 9 + 9, 8 + j * 18, 135 + i * 18));

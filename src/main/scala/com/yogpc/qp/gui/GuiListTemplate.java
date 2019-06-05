@@ -46,10 +46,11 @@ public class GuiListTemplate extends GuiContainer {
         itemList = new ItemList(this.mc, guiLeft + 8, guiLeft + 133, 0, guiTop + 8, guiTop + 114, 18);
 
         int id = 0;
-        int buttonHeight = 16;
-        addButton(new GuiButton(id++, guiLeft + 135, guiTop + 117, 32, buttonHeight, I18n.format(TranslationKeys.ADD)));
-        addButton(new GuiButton(id++, guiLeft + 135, guiTop + 62, 32, buttonHeight, I18n.format(TranslationKeys.DELETE)));
-        addButton(new GuiButton(id++, guiLeft + 135, guiTop + 62 + buttonHeight, 32, buttonHeight, ""));
+        int buttonHeight = 20;
+        int buttonWidth=40;
+        addButton(new GuiButton(id++, guiLeft + 132, guiTop + 110, buttonWidth, buttonHeight, I18n.format(TranslationKeys.ADD)));
+        addButton(new GuiButton(id++, guiLeft + 132, guiTop + 42, buttonWidth, buttonHeight, I18n.format(TranslationKeys.DELETE)));
+        addButton(new GuiButton(id++, guiLeft + 132, guiTop + 42 + buttonHeight, buttonWidth, buttonHeight, ""));
         assert id > 0;
         buttonText();
     }
