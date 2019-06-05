@@ -47,12 +47,14 @@ public class GuiListTemplate extends GuiContainer implements IHandleButton {
         super.initGui();
         itemList = new ItemList(this.mc, guiLeft + 8, guiLeft + 133, 0, guiTop + 8, guiTop + 114, 18);
         this.children.add(itemList);
+        this.focusOn(itemList);
 
         int id = 0;
-        int buttonHeight = 16;
-        addButton(new IHandleButton.Button(id++, guiLeft + 135, guiTop + 117, 32, buttonHeight, I18n.format(TranslationKeys.ADD), this));
-        addButton(new IHandleButton.Button(id++, guiLeft + 135, guiTop + 62, 32, buttonHeight, I18n.format(TranslationKeys.DELETE), this));
-        addButton(new IHandleButton.Button(id++, guiLeft + 135, guiTop + 62 + buttonHeight, 32, buttonHeight, "", this));
+        int buttonHeight = 20;
+        int buttonWidth = 40;
+        addButton(new IHandleButton.Button(id++, guiLeft + 132, guiTop + 110, buttonWidth, buttonHeight, I18n.format(TranslationKeys.ADD), this));
+        addButton(new IHandleButton.Button(id++, guiLeft + 132, guiTop + 42, buttonWidth, buttonHeight, I18n.format(TranslationKeys.DELETE), this));
+        addButton(new IHandleButton.Button(id++, guiLeft + 132, guiTop + 42 + buttonHeight, buttonWidth, buttonHeight, "", this));
         assert id > 0;
         buttonText();
     }
@@ -117,7 +119,7 @@ public class GuiListTemplate extends GuiContainer implements IHandleButton {
         itemList.refresh();
     }
 
-    private <T extends GuiListExtended.IGuiListEntry<T>> void refrehList(Consumer<T> modListViewConsumer, Function<BlockData, T> newEntry) {
+    private <T extends GuiListExtended.IGuiListEntry<T>> void refreshList(Consumer<T> modListViewConsumer, Function<BlockData, T> newEntry) {
         JavaConverters.asJavaCollection(template.items())
             .stream().map(newEntry).forEach(modListViewConsumer);
     }
@@ -135,7 +137,7 @@ public class GuiListTemplate extends GuiContainer implements IHandleButton {
 
         public void refresh() {
             this.clearEntries();
-            GuiListTemplate.this.refrehList(this::addEntry, Entry::new);
+            GuiListTemplate.this.refreshList(this::addEntry, Entry::new);
         }
 
         @Override
@@ -151,7 +153,7 @@ public class GuiListTemplate extends GuiContainer implements IHandleButton {
         @Override
         protected boolean mouseClicked(int index, int button, double mouseX, double mouseY) {
             cursor = index;
-            return super.mouseClicked(index, button, mouseX, mouseY);
+            return true;//super.mouseClicked(index, button, mouseX, mouseY);
         }
 
         @Override
@@ -206,7 +208,7 @@ public class GuiListTemplate extends GuiContainer implements IHandleButton {
             public void drawEntry(int entryWidth, int entryHeight, int mouseX, int mouseY, boolean p_194999_5_, float partialTicks) {
                 drawString(ItemList.this.mc.fontRenderer, data.getLocalizedName(),
                     getX(),
-                    getY()+3, 0xFFFFFF);
+                    getY() + 3, 0xFFFFFF);
             }
         }
 

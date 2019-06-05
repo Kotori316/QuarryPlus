@@ -81,6 +81,8 @@ public class GuiEnchList extends GuiContainer implements GuiYesNoCallback, IHand
             this.width * 2 / 3 + 10, 110, 100, 20, I18n.format(TranslationKeys.DELETE), this));
         this.slot = new GuiSlotEnchList(this.mc, this.width * 3 / 5, this.height - 60, 30, this.height - 30,
             this, getBlockDataList(target));
+        this.children.add(slot);
+        this.setFocused(slot);
     }
 
     @Override

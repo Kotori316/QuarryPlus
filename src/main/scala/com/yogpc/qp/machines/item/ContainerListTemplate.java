@@ -12,7 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextComponentString;
 
 public class ContainerListTemplate extends Container {
-    public final IInventory craftMatrix = new InventoryBasic(new TextComponentString("Matrix"),  1) {
+    public final IInventory craftMatrix = new InventoryBasic(new TextComponentString("Matrix"), 1) {
         @Override
         public boolean isItemValidForSlot(int index, ItemStack stack) {
             return stack.getItem() instanceof ItemBlock;
@@ -20,7 +20,7 @@ public class ContainerListTemplate extends Container {
     };
 
     public ContainerListTemplate(EntityPlayer player) {
-        addSlot(new SlotTile(this.craftMatrix, 0, 141, 98));
+        addSlot(new SlotTile(this.craftMatrix, 0, 141, 90));
         for (int i = 0; i < 3; ++i) {
             for (int j = 0; j < 9; ++j) {
                 this.addSlot(new Slot(player.inventory, j + i * 9 + 9, 8 + j * 18, 135 + i * 18));
