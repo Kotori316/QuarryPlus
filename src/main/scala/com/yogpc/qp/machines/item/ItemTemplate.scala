@@ -2,14 +2,18 @@ package com.yogpc.qp.machines.item
 
 import java.util
 
+import cats._
+import cats.data._
+import cats.implicits._
 import com.yogpc.qp.machines.TranslationKeys
 import com.yogpc.qp.machines.base.IEnchantableItem
+import com.yogpc.qp.machines.item.ItemListEditor._
 import com.yogpc.qp.machines.quarry.TileBasic
 import com.yogpc.qp.machines.workbench.BlockData
 import com.yogpc.qp.utils.Holder
 import com.yogpc.qp.{QuarryPlus, _}
 import net.minecraft.client.util.ITooltipFlag
-import net.minecraft.enchantment.{Enchantment, EnchantmentHelper}
+import net.minecraft.enchantment.Enchantment
 import net.minecraft.entity.player.{EntityPlayer, EntityPlayerMP, InventoryPlayer}
 import net.minecraft.init.Enchantments
 import net.minecraft.inventory.Container
@@ -52,10 +56,8 @@ class ItemTemplate extends Item(new Item.Properties().maxStackSize(1).group(Hold
 
   override def addInformation(stack: ItemStack, worldIn: World, tooltip: util.List[ITextComponent], flagIn: ITooltipFlag): Unit = {
     super.addInformation(stack, worldIn, tooltip, flagIn)
-    if (EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, stack) > 0)
-      tooltip.add(new TextComponentTranslation(Enchantments.SILK_TOUCH.getName))
-    else if (EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, stack) > 0)
-      tooltip.add(new TextComponentTranslation(Enchantments.FORTUNE.getName))
+    val enchantment = ItemTemplate.enchantmentName(stack)
+    enchantment.foreach(tooltip.add)
   }
 
   override def fillItemGroup(group: ItemGroup, items: NonNullList[ItemStack]): Unit = {
@@ -71,19 +73,11 @@ class ItemTemplate extends Item(new Item.Properties().maxStackSize(1).group(Hold
     worldIn.getTileEntity(pos) match {
       case basic: TileBasic =>
         if (!worldIn.isRemote) {
-          val enchantSet = EnchantmentHelper.getEnchantments(stack).keySet()
-          val s = enchantSet.contains(Enchantments.SILK_TOUCH)
-          val f = enchantSet.contains(Enchantments.FORTUNE)
           val template = ItemTemplate.getTemplate(stack)
-          if (s != f && template != ItemTemplate.EmPlate) {
+          if (template != ItemTemplate.EmPlate) {
             import scala.collection.JavaConverters._
-            if (f) {
-              basic.fortuneInclude = template.include
-              basic.fortuneList.addAll(template.items.asJava)
-            } else {
-              basic.silktouchInclude = template.include
-              basic.silktouchList.addAll(template.items.asJava)
-            }
+            blocksList(basic)(stack).addAll(template.items.asJava)
+            includeSetter(basic)(stack).apply(template.include)
             playerIn.sendStatusMessage(new TextComponentTranslation(TranslationKeys.TOF_ADDED), false)
           }
         }
@@ -156,9 +150,12 @@ object ItemTemplate {
   }
 
   def read(compound: Option[NBTTagCompound]): Template = {
-    val list = compound.map(_.getList(NBT_Template_Items, NBT.TAG_COMPOUND))
-    val include = compound.filter(_.contains(NBT_Include)).fold(true)(_.getBoolean(NBT_Include))
-    list.map(t => t.asScala.map(_.asInstanceOf[NBTTagCompound]).map(BlockData.read).toList -> include).fold(EmPlate)(Template.tupled)
+    val opt = for (list <- compound.filter(_.contains(NBT_Template_Items)).map(_.getList(NBT_Template_Items, NBT.TAG_COMPOUND));
+                   include <- compound.filter(_.contains(NBT_Include)).map(_.getBoolean(NBT_Include)).orElse(Some(true))) yield {
+      val data = list.asScala.map(_.asInstanceOf[NBTTagCompound]).map(BlockData.read).toList
+      Template(data, include)
+    }
+    opt.getOrElse(EmPlate)
   }
 
   def setTemplate(stack: ItemStack, template: Template): Unit = {
@@ -167,4 +164,15 @@ object ItemTemplate {
       template.writeToNBT(compound)
     }
   }
+
+  val enchantmentName = Kleisli((stack: ItemStack) => List(silktouchName, fortuneName).flatMap(_.apply(stack)))
+
+  private [this] val silkList = (basic: TileBasic) => onlySilktouch.mapF(b => if (b.value) basic.silktouchList.some else None)
+  private [this] val fList = (basic: TileBasic) => onlyFortune.mapF(b => if (b.value) basic.fortuneList.some else None)
+  val blocksList = (basic: TileBasic) => onlySilktouch.mapF(b => if (b.value) basic.silktouchList.pure[Id] else basic.fortuneList.pure[Id])
+  val includeSetter = (basic: TileBasic) =>
+    onlySilktouch.mapF { b =>
+      if (b.value) ((bool: Boolean) => basic.silktouchInclude = bool).pure[Id]
+      else ((bool: Boolean) => basic.fortuneInclude = bool).pure[Id]
+    }
 }

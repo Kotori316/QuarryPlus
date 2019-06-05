@@ -150,7 +150,18 @@ object ItemListEditor {
   val getBlockData = getTag andThen getName map (new BlockData(_))
   val isFortune = getEnchantments andThen hasFortune
   val isSilktouch = getEnchantments andThen hasSilktouch
-  private[this] val fortuneName = isFortune mapF (b => if (b.value) new TextComponentTranslation(Enchantments.FORTUNE.getName).some else None)
-  private[this] val silktouchName = isSilktouch mapF (b => if (b.value) new TextComponentTranslation(Enchantments.SILK_TOUCH.getName).some else None)
+  val fortuneName = isFortune mapF (b => if (b.value) new TextComponentTranslation(Enchantments.FORTUNE.getName).some else None)
+  val silktouchName = isSilktouch mapF (b => if (b.value) new TextComponentTranslation(Enchantments.SILK_TOUCH.getName).some else None)
   val information: Kleisli[List, ItemStack, ITextComponent] = Kleisli(stack => List(getNameAsText, fortuneName, silktouchName).flatMap(_ (stack)))
+  implicit val bool: Semigroup[Boolean] = (x: Boolean, y: Boolean) => x | y
+  val onlySilktouch = getEnchantments andThen {
+    for (s <- hasSilktouch;
+         f <- NonEmptyList.one(hasFortune).reduce
+    ) yield s & !f
+  }
+  val onlyFortune = getEnchantments andThen {
+    for (s <- NonEmptyList.one(hasSilktouch).reduce;
+         f <- hasFortune
+    ) yield !s & f
+  }
 }
