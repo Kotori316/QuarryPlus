@@ -2,6 +2,8 @@ package com.yogpc.qp.item
 
 import java.util
 
+import com.yogpc.qp.gui.TranslationKeys
+import com.yogpc.qp.tile.{IEnchantableTile, TileBasic}
 import com.yogpc.qp.utils.{BlockData, INBTWritable}
 import com.yogpc.qp.{QuarryPlus, QuarryPlusI, _}
 import net.minecraft.client.resources.I18n
@@ -12,7 +14,9 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Enchantments
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
-import net.minecraft.util.{ActionResult, EnumActionResult, EnumHand, NonNullList}
+import net.minecraft.util.math.BlockPos
+import net.minecraft.util.text.TextComponentTranslation
+import net.minecraft.util.{EnumActionResult, EnumFacing, EnumHand, NonNullList}
 import net.minecraft.world.World
 import net.minecraftforge.common.util.Constants.NBT
 
@@ -48,10 +52,10 @@ class ItemTemplate extends Item with IEnchantableItem {
 
   override def addInformation(stack: ItemStack, worldIn: World, tooltip: util.List[String], flagIn: ITooltipFlag): Unit = {
     super.addInformation(stack, worldIn, tooltip, flagIn)
-    if (EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, stack) > 0)
-      tooltip.add(I18n.format(Enchantments.FORTUNE.getName))
-    else if (EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, stack) > 0)
+    if (EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, stack) > 0)
       tooltip.add(I18n.format(Enchantments.SILK_TOUCH.getName))
+    else if (EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, stack) > 0)
+      tooltip.add(I18n.format(Enchantments.FORTUNE.getName))
   }
 
   override def getSubItems(tab: CreativeTabs, items: NonNullList[ItemStack]): Unit = {
@@ -60,14 +64,37 @@ class ItemTemplate extends Item with IEnchantableItem {
     }
   }
 
-  override def onItemRightClick(worldIn: World, playerIn: EntityPlayer, handIn: EnumHand) = {
-    if (!playerIn.isSneaking && handIn == EnumHand.MAIN_HAND) {
-      val stack = playerIn.getHeldItem(handIn)
-      val pos = playerIn.getPosition
-      playerIn.openGui(QuarryPlus.INSTANCE, QuarryPlusI.guiIdListTemplate, worldIn, pos.getX, pos.getY, pos.getZ)
-      ActionResult.newResult(EnumActionResult.SUCCESS, stack)
-    } else {
-      super.onItemRightClick(worldIn, playerIn, handIn)
+  override def onItemUseFirst(playerIn: EntityPlayer, worldIn: World, pos: BlockPos, side: EnumFacing,
+                              hitX: Float, hitY: Float, hitZ: Float, handIn: EnumHand): EnumActionResult = {
+    val stack = playerIn.getHeldItem(handIn)
+    worldIn.getTileEntity(pos) match {
+      case basic: TileBasic =>
+        if (!worldIn.isRemote) {
+          val enchantSet = stack.getEnchantmentTagList.tagIterator.map(_.getShort("id").toInt).toSet
+          val s = enchantSet.contains(IEnchantableTile.SilktouchID)
+          val f = enchantSet.contains(IEnchantableTile.FortuneID)
+          val template = ItemTemplate.getTemplate(stack)
+          if (s != f && template != ItemTemplate.EmPlate) {
+            import scala.collection.JavaConverters._
+            if (f) {
+              basic.fortuneInclude = template.include
+              basic.fortuneList.addAll(template.items.asJava)
+            } else {
+              basic.silktouchInclude = template.include
+              basic.silktouchList.addAll(template.items.asJava)
+            }
+            playerIn.sendStatusMessage(new TextComponentTranslation(TranslationKeys.TOF_ADDED), false)
+          }
+        }
+        EnumActionResult.SUCCESS
+      case _ =>
+        if (!playerIn.isSneaking && handIn == EnumHand.MAIN_HAND) {
+          val playerPos = playerIn.getPosition
+          playerIn.openGui(QuarryPlus.INSTANCE, QuarryPlusI.guiIdListTemplate, worldIn, playerPos.getX, playerPos.getY, playerPos.getZ)
+          EnumActionResult.SUCCESS
+        } else {
+          super.onItemUseFirst(playerIn, worldIn, pos, side, hitX, hitY, hitZ, handIn)
+        }
     }
   }
 }
@@ -83,19 +110,23 @@ object ItemTemplate {
 
   final val NBT_Template = "template"
   final val NBT_Template_Items = "items"
+  final val NBT_Include = "include"
 
-  final val EmPlate = Template(Nil)
+  final val EmPlate = Template(Nil, include = true)
 
-  case class Template(items: List[BlockData]) extends INBTWritable {
+  case class Template(items: List[BlockData], include: Boolean) extends INBTWritable {
     override def writeToNBT(nbt: NBTTagCompound) = {
       val list = items.map(_.toNBT).foldLeft(new NBTTagList) { (l, tag) => l.appendTag(tag); l }
       nbt.setTag(NBT_Template_Items, list)
+      nbt.setBoolean(NBT_Include, include)
       nbt
     }
 
-    def add(data: BlockData): Template = Template(data :: items)
+    def add(data: BlockData): Template = Template(data :: items, include)
 
-    def remove(data: BlockData): Template = Template(items.filterNot(_ == data))
+    def remove(data: BlockData): Template = Template(items.filterNot(_ == data), include)
+
+    def toggle: Template = Template(items, !include)
   }
 
   def getTemplate(stack: ItemStack): Template = {
@@ -109,7 +140,8 @@ object ItemTemplate {
 
   def read(compound: Option[NBTTagCompound]): Template = {
     val list = compound.map(_.getTagList(NBT_Template_Items, NBT.TAG_COMPOUND))
-    list.map(_.tagIterator.map(BlockData.readFromNBT).toList).map(Template).getOrElse(EmPlate)
+    val include = compound.filter(_.hasKey(NBT_Include)).fold(true)(_.getBoolean(NBT_Include))
+    list.map(t => t.tagIterator.map(BlockData.readFromNBT).toList -> include).fold(EmPlate)(Template.tupled)
   }
 
   def setTemplate(stack: ItemStack, template: Template): Unit = {

@@ -46,9 +46,20 @@ public class GuiListTemplate extends GuiContainer {
         itemList = new ItemList(this.mc, guiLeft + 8, guiLeft + 133, 0, guiTop + 8, guiTop + 114, 18);
 
         int id = 0;
-        addButton(new GuiButton(id++, guiLeft + 135, guiTop + 117, 32, 12, I18n.format(TranslationKeys.ADD)));
-        addButton(new GuiButton(id++, guiLeft + 135, guiTop + 62, 32, 15, I18n.format(TranslationKeys.DELETE)));
+        int buttonHeight = 16;
+        addButton(new GuiButton(id++, guiLeft + 135, guiTop + 117, 32, buttonHeight, I18n.format(TranslationKeys.ADD)));
+        addButton(new GuiButton(id++, guiLeft + 135, guiTop + 62, 32, buttonHeight, I18n.format(TranslationKeys.DELETE)));
+        addButton(new GuiButton(id++, guiLeft + 135, guiTop + 62 + buttonHeight, 32, buttonHeight, ""));
         assert id > 0;
+        buttonText();
+    }
+
+    protected void buttonText() {
+        if (template.include()) {
+            buttonList.get(2).displayString = I18n.format(TranslationKeys.TOF_INCLUDE);
+        } else {
+            buttonList.get(2).displayString = I18n.format(TranslationKeys.TOF_EXCLUDE);
+        }
     }
 
     @Override
@@ -100,6 +111,10 @@ public class GuiListTemplate extends GuiContainer {
                     BlockData data = template.items().apply(cursor);
                     template = template.remove(data);
                 }
+                break;
+            case 2: // TOGGLE INCLUDE
+                template = template.toggle();
+                buttonText();
                 break;
         }
     }
@@ -220,9 +235,5 @@ public class GuiListTemplate extends GuiContainer {
         protected void overlayBackground(int startY, int endY, int startAlpha, int endAlpha) {
         }
 
-        @Override
-        protected void drawBackground() {
-//            GuiListTemplate.this.drawBackground(0);
-        }
     }
 }

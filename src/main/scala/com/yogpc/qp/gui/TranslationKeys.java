@@ -52,6 +52,7 @@ public class TranslationKeys {
     public static final String SELECT_FLUID = "tof.selectfluid";
     public static final String SET_SELECT = "pp.set.select";
     public static final String SOUTH = "FD.south";
+    public static final String TOF_ADDED = "tof.success";
     public static final String TOF_EXCLUDE = "tof.exclude";
     public static final String TOF_INCLUDE = "tof.include";
     public static final String UP = "FD.up";
