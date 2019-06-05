@@ -30,6 +30,7 @@ item.overworldmirror.name=Зеркало верхнего мира
 item.quarrydebug.name=Предмет отладки улучшенного карьера
 item.statuschecker.name=Контролер статуса
 item.y_setter.name=Quarry Y Setter
+item.template.name=List Template
 
 chat.changemode=Режим работы был изменен на %s
 chat.currentmode=Сейчас, работая в %s

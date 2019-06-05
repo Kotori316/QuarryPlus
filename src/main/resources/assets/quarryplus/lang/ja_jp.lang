@@ -30,6 +30,7 @@ item.overworldmirror.name=地上の鏡
 item.quarrydebug.name=改良型状態確認用具(デバッグ用)
 item.statuschecker.name=状態確認用具
 item.y_setter.name=採掘機レベル設定用具
+item.template.name=一括更新テンプレート
 
 chat.changemode=動作モードを%sに切り替えました
 chat.currentmode=現在%sで動作しています

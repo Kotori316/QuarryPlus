@@ -30,6 +30,7 @@ item.overworldmirror.name=OverworldMirror
 item.quarrydebug.name=QuarryPlus Debug Item
 item.statuschecker.name=StatusChecker
 item.y_setter.name=Quarry Y Setter
+item.template.name=List Template
 
 chat.changemode=Working mode was changed to %s
 chat.currentmode=Now, working in %s
