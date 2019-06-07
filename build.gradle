@@ -6,7 +6,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true 
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
         classpath "gradle.plugin.com.matthewprenger:CurseGradle:1.2.0"
     }
 }
@@ -76,7 +76,8 @@ repositories {
         name = "Progwml6 maven"
         url = "https://dvs1.progwml6.com/files/maven/"
     }
-    maven{
+    maven {
+        // Location of LargeFluidTank
         name 'curseforge'
         url 'https://minecraft.curseforge.com/api/maven/'
     }
@@ -96,6 +97,10 @@ dependencies {
     implementation fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
 //    compile "mezz.jei:jei-${mc_version}:${jei_version}:sources"
     implementation fg.deobf("largefluidtank:LargeFluidTank:5.2")
+
+    // Test Dependencies.
+    testCompile("org.junit.jupiter:junit-jupiter-api:5.4.2")
+    testRuntime("org.junit.jupiter:junit-jupiter-engine:5.4.2")
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
@@ -159,4 +164,8 @@ curseforge {
         debug = false // defaults to false
         javaVersionAutoDetect = false
     }
+}
+
+test {
+    useJUnitPlatform()
 }
