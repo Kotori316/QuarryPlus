@@ -1,5 +1,8 @@
 package com.yogpc
 
+import cats._
+import cats.data._
+import cats.implicits._
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt._
@@ -7,10 +10,14 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.TextComponentString
 import net.minecraft.util.{EnumFacing, ResourceLocation}
 import net.minecraftforge.common.util.Constants.NBT
+import net.minecraftforge.common.util.{LazyOptional, NonNullSupplier}
 import net.minecraftforge.fluids.FluidStack
 import net.minecraftforge.registries.ForgeRegistries
 
 package object qp {
+
+  type NBTWrapper[A, NBTType <: INBTBase] = A => NBTType
+  type Cap[T] = OptionT[Eval, T]
 
   val enchantCollector: PartialFunction[(ResourceLocation, Int), (ResourceLocation, Integer)] = {
     case (a, b) if b > 0 => (a, Int.box(b))
@@ -75,8 +82,6 @@ package object qp {
     }
   }
 
-  type NBTWrapper[A, NBTType <: INBTBase] = A => NBTType
-
   implicit val Long2NBT: NBTWrapper[Long, NBTTagLong] = (num: Long) => new NBTTagLong(num)
 
   implicit val Fluid2NBT: NBTWrapper[FluidStack, NBTTagCompound] = (num: FluidStack) => num.writeToNBT(new NBTTagCompound)
@@ -94,4 +99,20 @@ package object qp {
     }
   }
 
+  def transform0[T](cap: LazyOptional[T]) = Eval.always {
+    if (cap.isPresent) {
+      cap.orElseThrow(thrower).some
+    } else {
+      None
+    }
+  }
+
+  implicit class AsScalaLO[T](val cap: LazyOptional[T]) extends AnyVal {
+    def asScala: Cap[T] = OptionT(transform0(cap))
+  }
+
+  private val thrower: NonNullSupplier[AssertionError] = () =>
+    new AssertionError(
+      "LazyOptional has no content " +
+        "though it returned true when isPresent is called.")
 }
