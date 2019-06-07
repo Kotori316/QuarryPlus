@@ -2,7 +2,6 @@ package com.yogpc.qp.machines.item
 
 import java.util
 
-import cats._
 import cats.data._
 import cats.implicits._
 import com.yogpc.qp.machines.TranslationKeys
@@ -76,8 +75,8 @@ class ItemTemplate extends Item(new Item.Properties().maxStackSize(1).group(Hold
           val template = ItemTemplate.getTemplate(stack)
           if (template != ItemTemplate.EmPlate) {
             import scala.collection.JavaConverters._
-            blocksList(basic)(stack).addAll(template.items.asJava)
-            includeSetter(basic)(stack).apply(template.include)
+            blocksList(stack, basic).foreach(_.addAll(template.items.asJava))
+            includeSetter(stack, basic).ap(template.include.some)
             playerIn.sendStatusMessage(new TextComponentTranslation(TranslationKeys.TOF_ADDED), false)
           }
         }
@@ -167,12 +166,16 @@ object ItemTemplate {
 
   val enchantmentName = Kleisli((stack: ItemStack) => List(silktouchName, fortuneName).flatMap(_.apply(stack)))
 
-  private [this] val silkList = (basic: TileBasic) => onlySilktouch.mapF(b => if (b.value) basic.silktouchList.some else None)
-  private [this] val fList = (basic: TileBasic) => onlyFortune.mapF(b => if (b.value) basic.fortuneList.some else None)
-  val blocksList = (basic: TileBasic) => onlySilktouch.mapF(b => if (b.value) basic.silktouchList.pure[Id] else basic.fortuneList.pure[Id])
-  val includeSetter = (basic: TileBasic) =>
-    onlySilktouch.mapF { b =>
-      if (b.value) ((bool: Boolean) => basic.silktouchInclude = bool).pure[Id]
-      else ((bool: Boolean) => basic.fortuneInclude = bool).pure[Id]
-    }
+  private[this] val silkList = onlySilktouch.first[TileBasic].mapF(b => if (b.value._1) b.value._2.silktouchList.some else None)
+  private[this] val fList = onlyFortune.first[TileBasic].mapF(b => if (b.value._1) b.value._2.fortuneList.some else None)
+  private[this] val silkIncSet = onlyFortune.first[TileBasic].mapF(b => if (b.value._1) ((bool: Boolean) => b.value._2.silktouchInclude = bool).some else None)
+  private[this] val fIncSet = onlyFortune.first[TileBasic].mapF(b => if (b.value._1) ((bool: Boolean) => b.value._2.fortuneInclude = bool).some else None)
+  val blocksList = Kleisli((t: (ItemStack, TileBasic)) => {
+    val (stack: ItemStack, basic: TileBasic) = t
+    silkList(stack, basic) orElse fList(stack, basic)
+  })
+  val includeSetter = Kleisli((t: (ItemStack, TileBasic)) => {
+    val (stack: ItemStack, basic: TileBasic) = t
+    silkIncSet(stack, basic) orElse fIncSet(stack, basic)
+  })
 }
