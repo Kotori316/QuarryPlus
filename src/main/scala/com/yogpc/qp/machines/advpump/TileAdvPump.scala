@@ -318,10 +318,6 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
   }
 
   override def read(nbt: NBTTagCompound): Unit = {
-    val NBT_POS = "targetPos"
-    val NBT_FINISHED = "finished"
-    val NBT_PLACE_FRAME = "placeFrame"
-    val NBT_DELETE = "delete"
     super.read(nbt)
     target = BlockPos.fromLong(nbt.getLong(NBT_POS))
     ench = PEnch.readFromNBT(nbt.getCompound(NBT_P_ENCH))
@@ -332,10 +328,6 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
   }
 
   override def write(nbt: NBTTagCompound): NBTTagCompound = {
-    val NBT_POS = "targetPos"
-    val NBT_FINISHED = "finished"
-    val NBT_PLACE_FRAME = "placeFrame"
-    val NBT_DELETE = "delete"
     nbt.putLong(NBT_POS, target.toLong)
     nbt.putBoolean(NBT_FINISHED, finished)
     nbt.putBoolean(NBT_PLACE_FRAME, placeFrame)
@@ -485,6 +477,11 @@ object TileAdvPump {
   private final val NBT_FluidHandler = "FluidHandler"
   private final val NBT_pumped = "amountPumped"
   private final val NBT_liquids = "liquids"
+
+  final val NBT_POS = "targetPos"
+  final val NBT_FINISHED = "finished"
+  final val NBT_PLACE_FRAME = "placeFrame"
+  final val NBT_DELETE = "delete"
   private[this] final val defaultBaseEnergy = Seq(10, 8, 6, 4).map(_ * APowerTile.MicroJtoMJ)
   private[this] final val defaultReceiveEnergy = Seq(32, 64, 128, 256, 512, 1024).map(_ * APowerTile.MicroJtoMJ)
   implicit val pEnchNbt: NBTWrapper[PEnch, NBTTagCompound] = _.writeToNBT(new NBTTagCompound)

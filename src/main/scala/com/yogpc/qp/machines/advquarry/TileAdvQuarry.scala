@@ -37,7 +37,6 @@ import net.minecraftforge.common.{IShearable, MinecraftForge}
 import net.minecraftforge.event.ForgeEventFactory
 import net.minecraftforge.event.world.BlockEvent
 import net.minecraftforge.fluids.{FluidStack, FluidTank}
-import net.minecraftforge.items.wrapper.EmptyHandler
 import net.minecraftforge.items.{CapabilityItemHandler, IItemHandlerModifiable}
 import net.minecraftforge.registries.ForgeRegistries
 
@@ -424,9 +423,10 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
 
       } else if (mode is TileAdvQuarry.FILL_BLOCKS) {
         import cats.implicits._
-        val handlerOpt = getWorld.getTileEntity(getPos.up).pure[Option] >>= { t => t.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.DOWN).orElse(null).pure[Option] }
-        if (handlerOpt.isDefined) {
-          val handler = handlerOpt.get
+        val handlerOpt = Option(getWorld.getTileEntity(getPos.up)).foldMapK(t =>
+          t.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.DOWN).asScala)
+        if (handlerOpt.isDefined.value) {
+          val handler = handlerOpt.value.value.get
           val list = Range(0, handler.getSlots).find(i => {
             val stack = handler.getStackInSlot(i)
             !stack.isEmpty && stack.getItem.isInstanceOf[ItemBlock]
@@ -716,16 +716,15 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
   }
 
   def preparedFiller: Boolean = {
-    val y = if (Config.common.removeBedrock.get()) 1 else 5
+    val y = Math.max(if (Config.common.removeBedrock.get()) 1 else 5, yLevel)
     if (BlockPos.getAllInBoxMutable(new BlockPos(digRange.minX, y, digRange.minZ), new BlockPos(digRange.maxX, y, digRange.maxZ))
       .iterator().asScala.forall(getWorld.isAirBlock)) {
       val need = (digRange.maxX - digRange.minX + 1) * (digRange.maxZ - digRange.minZ + 1)
       import cats.implicits._
-      val stacks = for (tile <- getWorld.getTileEntity(getPos.up).pure[Option].toList;
-                        handler <- tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.DOWN)
-                          .orElse(EmptyHandler.INSTANCE).pure[List];
-                        i <- Range(0, handler.getSlots)) yield handler.getStackInSlot(i)
-
+      val stacks = Option(getWorld.getTileEntity(getPos.up))
+        .foldMapK(_.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.DOWN).asScala)
+        .map(handler => Range(0, handler.getSlots).map(handler.getStackInSlot))
+        .getOrElse(Seq.empty).value
       val blocks = stacks.filter(s => !s.isEmpty && s.getItem.isInstanceOf[ItemBlock])
       blocks.nonEmpty &&
         stacks.forall(stack => !stack.isEmpty || !stack.getItem.isInstanceOf[ItemBlock] || stack.isItemEqual(blocks.head)) &&
