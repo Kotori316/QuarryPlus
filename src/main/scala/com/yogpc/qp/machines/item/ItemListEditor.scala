@@ -54,8 +54,8 @@ class ItemListEditor extends Item((new Item.Properties).group(Holder.tab)) with 
     val worldIn = context.getWorld
     val pos = context.getPos
 
-    val s = ItemListEditor.isSilktouch(stack)
-    val f = ItemListEditor.isFortune(stack)
+    val s = ItemListEditor.onlySilktouch(stack)
+    val f = ItemListEditor.onlyFortune(stack)
     val bd = ItemListEditor.getBlockData(stack)
     if (context.getPlayer.isSneaking && bd.contains(new BlockData(worldIn.getBlockState(pos)))) {
       stack.getTag.remove(ItemListEditor.NAME_key)
@@ -140,28 +140,39 @@ object ItemListEditor {
     stack
   }
 
+  def hasEnchantment(enchantment: Eval[Enchantment]) = Kleisli((ench: List[Enchantment]) => Eval.later(ench.contains(enchantment.value)))
+
+  def enchantmentName(enchantment: Eval[Enchantment]) =
+    getEnchantments andThen hasEnchantment(enchantment) mapF (b => if (b.value) new TextComponentTranslation(enchantment.value.getName).some else None)
+
+  def onlySpecificEnchantment(enchantment: Eval[Enchantment]) = {
+    implicit val bool: Semigroup[Boolean] = (x: Boolean, y: Boolean) => x | y
+    val hasTheEnchantment = hasEnchantment(enchantment)
+    val others = Eval.later(ForgeRegistries.ENCHANTMENTS.asScala.filterNot(_ == enchantment.value).map(Eval.now).map(hasEnchantment).toList)
+    getEnchantments andThen {
+      for (e <- hasTheEnchantment;
+           o <- Semigroup[Kleisli[Eval, List[Enchantment], Boolean]].combineAllOption(others.value).get) yield e & !o
+    }
+  }
+
   private[this] val getTag = Kleisli((stack: ItemStack) => Option(stack.getTag))
   private[this] val getName = Kleisli((tag: NBTTagCompound) => if (tag.contains(NAME_key, NBT.TAG_STRING)) tag.getString(NAME_key).some else None)
   private[this] val getEnchantments = Kleisli((stack: ItemStack) => Eval.now(EnchantmentHelper.getEnchantments(stack).asScala.collect { case (e, level) if level > 0 => e }.toList))
-  private[this] val hasFortune = Kleisli((ench: List[Enchantment]) => Eval.later(ench.contains(Enchantments.FORTUNE)))
-  private[this] val hasSilktouch = Kleisli((ench: List[Enchantment]) => Eval.later(ench.contains(Enchantments.SILK_TOUCH)))
+
+  private[this] val fortuneEval = Eval.later(Enchantments.FORTUNE)
+  private[this] val silktouchEval = Eval.later(Enchantments.SILK_TOUCH)
+  private[this] val hasFortune = hasEnchantment(fortuneEval)
+  private[this] val hasSilktouch = hasEnchantment(silktouchEval)
   private[this] val getNameAsText = getTag andThen getName map (new TextComponentString(_))
 
   val getBlockData = getTag andThen getName map (new BlockData(_))
   val isFortune = getEnchantments andThen hasFortune
   val isSilktouch = getEnchantments andThen hasSilktouch
-  val fortuneName = isFortune mapF (b => if (b.value) new TextComponentTranslation(Enchantments.FORTUNE.getName).some else None)
-  val silktouchName = isSilktouch mapF (b => if (b.value) new TextComponentTranslation(Enchantments.SILK_TOUCH.getName).some else None)
+  val fortuneName = enchantmentName(fortuneEval)
+  val silktouchName = enchantmentName(silktouchEval)
   val information: Kleisli[List, ItemStack, ITextComponent] = Kleisli(stack => List(getNameAsText, fortuneName, silktouchName).flatMap(_ (stack)))
-  implicit val bool: Semigroup[Boolean] = (x: Boolean, y: Boolean) => x | y
-  val onlySilktouch = getEnchantments andThen {
-    for (s <- hasSilktouch;
-         f <- NonEmptyList.one(hasFortune).reduce
-    ) yield s & !f
-  }
-  val onlyFortune = getEnchantments andThen {
-    for (s <- NonEmptyList.one(hasSilktouch).reduce;
-         f <- hasFortune
-    ) yield !s & f
-  }
+
+  val onlySilktouch = onlySpecificEnchantment(silktouchEval)
+  val onlyFortune = onlySpecificEnchantment(fortuneEval)
+
 }
