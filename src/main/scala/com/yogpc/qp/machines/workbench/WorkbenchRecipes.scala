@@ -8,7 +8,7 @@ import cats.data._
 import cats.implicits._
 import com.google.gson._
 import com.yogpc.qp.machines.base.APowerTile
-import com.yogpc.qp.utils.ItemDamage
+import com.yogpc.qp.utils.ItemElement
 import com.yogpc.qp.{QuarryPlus, _}
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.crafting.{IRecipeHidden, IRecipeSerializer}
@@ -24,7 +24,7 @@ import org.apache.commons.io.IOUtils
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 
-abstract sealed class WorkbenchRecipes(val location: ResourceLocation, val output: ItemDamage, val energy: Long, val showInJEI: Boolean = true)
+abstract sealed class WorkbenchRecipes(val location: ResourceLocation, val output: ItemElement, val energy: Long, val showInJEI: Boolean = true)
   extends IRecipeHidden(location) with Ordered[WorkbenchRecipes] {
   val microEnergy = energy
   val size: Int
@@ -35,7 +35,7 @@ abstract sealed class WorkbenchRecipes(val location: ResourceLocation, val outpu
 
   def hasContent: Boolean = true
 
-  def getOutput: ItemStack = output.toStack()
+  def getOutput: ItemStack = output.toStack
 
   override val toString = s"WorkbenchRecipes(output=$output, energy=$energy)"
 
@@ -67,7 +67,7 @@ abstract sealed class WorkbenchRecipes(val location: ResourceLocation, val outpu
 }
 
 private final class IngredientRecipe(location: ResourceLocation, o: ItemStack, e: Long, s: Boolean, seq: Seq[Seq[IngredientWithCount]])
-  extends WorkbenchRecipes(location, ItemDamage(o), e, s) {
+  extends WorkbenchRecipes(location, ItemElement(o), e, s) {
   override val size = seq.size
 
   override def inputs = seq
@@ -80,7 +80,7 @@ object WorkbenchRecipes {
   private[this] val recipes_internal = mutable.Map.empty[ResourceLocation, WorkbenchRecipes]
 
   val dummyRecipe: WorkbenchRecipes = new WorkbenchRecipes(
-    new ResourceLocation(QuarryPlus.modID, "builtin_dummy"), ItemDamage.invalid, energy = 0, showInJEI = false) {
+    new ResourceLocation(QuarryPlus.modID, "builtin_dummy"), ItemElement.invalid, energy = 0, showInJEI = false) {
     override val inputs = Nil
     override val microEnergy = 0L
     override val inputsJ: java.util.List[java.util.List[IngredientWithCount]] = Collections.emptyList()
@@ -90,7 +90,7 @@ object WorkbenchRecipes {
   }
 
   val recipeOrdering: Comparator[WorkbenchRecipes] =
-    Ordering.by((a: WorkbenchRecipes) => a.energy) thenComparing Ordering.by((a: WorkbenchRecipes) => Item.getIdFromItem(a.output.item))
+    Ordering.by((a: WorkbenchRecipes) => a.energy) thenComparing Ordering.by((a: WorkbenchRecipes) => Item.getIdFromItem(a.output.itemDamage.item))
 
   val recipeLocation = new ResourceLocation(QuarryPlus.modID, "workbench_recipe")
   val recipeType = RecipeType.get(recipeLocation, classOf[WorkbenchRecipes])
@@ -102,7 +102,7 @@ object WorkbenchRecipes {
 
   def recipeSize: Int = recipes.size
 
-  def removeRecipe(output: ItemDamage): Unit = recipes_internal.retain { case (_, r) => r.output != output }
+  def removeRecipe(output: ItemElement): Unit = recipes_internal.retain { case (_, r) => r.output =!= output }
 
   def removeRecipe(location: ResourceLocation): Unit = recipes_internal.remove(location)
 
@@ -131,8 +131,8 @@ object WorkbenchRecipes {
 
   def getRecipeFromResult(stack: ItemStack): java.util.Optional[WorkbenchRecipes] = {
     if (stack.isEmpty) return java.util.Optional.empty()
-    val id = ItemDamage(stack)
-    recipes.find { case (_, r) => r.output == id }.map(_._2).asJava
+    val id = ItemElement(stack)
+    recipes.find { case (_, r) => r.output === id }.map(_._2).asJava
   }
 
   private def resource(resourceManager: IResourceManager, location: ResourceLocation): Either[String, IResource] = {

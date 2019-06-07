@@ -1,5 +1,6 @@
 package com.yogpc.qp.utils
 
+import cats.kernel.Eq
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 
@@ -14,4 +15,12 @@ case class ItemElement(itemDamage: ItemDamage, count: Int) {
   }
 
   override def toString: String = itemDamage.toString + " x" + count
+}
+
+object ItemElement {
+  def apply(stack: ItemStack): ItemElement = new ItemElement(ItemDamage(stack), stack.getCount)
+
+  implicit val eq: Eq[ItemElement] = Eq.fromUniversalEquals
+
+  val invalid: ItemElement = ItemElement(ItemDamage.invalid, 0)
 }
