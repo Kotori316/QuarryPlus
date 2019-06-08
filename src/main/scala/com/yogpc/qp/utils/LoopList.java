@@ -3,6 +3,7 @@ package com.yogpc.qp.utils;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
 
@@ -18,12 +19,12 @@ public class LoopList<T> {
         return values.get(getRealIndex(index));
     }
 
-    /*
-        public T getOrDefault(int index, Supplier<T> supplier) {
-            if (size == 0) return supplier.get();
-            return valuesBi.get(getRealIndex(index));
-        }
-    */
+
+    public T getOrDefault(int index, Supplier<T> supplier) {
+        if (size == 0) return supplier.get();
+        return values.get(getRealIndex(index));
+    }
+
     public Optional<T> getOptional(int index) {
         return Optional.ofNullable(get(index));
     }

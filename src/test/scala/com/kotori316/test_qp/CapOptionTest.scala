@@ -41,13 +41,14 @@ class CapOptionTest {
 
   @Test
   def makeInvalid(): Unit = {
-    val opt = LazyOptional.of[String](() => "Tama")
+    val opt = LazyOptional.of[String](() => "Tame")
     val eval = opt.asScala
-    val s = for (st <- eval) yield {
-      st |+| "go"
-    }
+    val s = for (st <- eval) yield st |+| "_go"
+    val s2 = eval.map( _ |+| "_go")
+
     val getter = Kleisli((d: String) => s.getOrElse(d))
-    assertEquals(getter("Valid").value, "Tamago")
+    assertEquals(getter("Valid").value, "Tame_go")
+    assertEquals(s.getOrElse("").value, s2.getOrElse("").value)
 
     opt.invalidate()
     assertEquals(getter("invalidate").value, "invalidate")
