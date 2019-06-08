@@ -1,5 +1,10 @@
 **This mod requires a library, [Scalable Cat's Force](https://minecraft.curseforge.com/projects/scalable-cats-force).**
 
+## Version 2.0.4
+* Added signature to Jar file.
+* Added List Template.
+* Respect stack size of the result of WorkbenchRecipe.
+
 ## Version 2.0.3
 * Refactoring to use cats.
 * Added GUI of ListEditor

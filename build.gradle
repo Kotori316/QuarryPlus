@@ -169,3 +169,18 @@ curseforge {
 test {
     useJUnitPlatform()
 }
+
+task signJar2() << {
+    ant.signjar(
+            jar: jar.archivePath,
+            alias: project.hasProperty('keyStoreAlias') ? project.getProperty('keyStoreAlias') : "",
+            keystore: project.hasProperty('keyStore') ? project.getProperty("keyStore") : "",
+            storepass: project.hasProperty('keyStorePass') ? project.getProperty('keyStorePass') : "",
+            sigalg: "SHA1withRSA",
+            digestalg: "SHA-256",
+            tsaurl: "http://timestamp.digicert.com"
+    )
+}
+
+// Runs this task automatically when build is ran.
+assemble.dependsOn(signJar2)
