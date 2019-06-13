@@ -17,3 +17,5 @@ Finished Work
 * Dummy Block
 * Book Mover
 * Spawner Controller
+* Advanced Pump
+* Chunk Destroyer
