@@ -22,7 +22,9 @@ public interface IAttachment {
      */
     void setConnectTo(@Nullable EnumFacing connectTo);
 
-    class Attachments<T extends APacketTile> implements Predicate<TileEntity>, Function<TileEntity, Optional<T>> {
+    IModule getModule();
+
+    class Attachments<T extends APacketTile & IAttachment> implements Predicate<TileEntity>, Function<TileEntity, Optional<T>> {
         public static final Attachments<TilePump> FLUID_PUMP = new Attachments<>("FLUID_PUMP");
         public static final Attachments<TileExpPump> EXP_PUMP = new Attachments<>("EXP_PUMP");
         public static final Attachments<TileReplacer> REPLACER = new Attachments<>("REPLACER");
@@ -72,5 +74,8 @@ public interface IAttachment {
             return clazz.isInstance(tileEntity);
         }
 
+        public Optional<IModule> module(TileEntity tileEntity){
+            return apply(tileEntity).map(IAttachment::getModule);
+        }
     }
 }

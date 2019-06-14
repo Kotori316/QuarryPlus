@@ -31,11 +31,11 @@ import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.APacketTile;
 import com.yogpc.qp.machines.base.APowerTile;
-import com.yogpc.qp.machines.base.EnergyUsage;
 import com.yogpc.qp.machines.base.HasInv;
 import com.yogpc.qp.machines.base.IAttachable;
 import com.yogpc.qp.machines.base.IAttachment;
 import com.yogpc.qp.machines.base.IEnchantableTile;
+import com.yogpc.qp.machines.base.IModule;
 import com.yogpc.qp.machines.pump.TilePump;
 import com.yogpc.qp.machines.workbench.BlockData;
 import com.yogpc.qp.utils.NBTBuilder;
@@ -105,6 +105,8 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
 
     protected Map<ResourceLocation, Integer> ench = new HashMap<>();
 
+    public List<IModule> modules = new ArrayList<>();
+
     /**
      * Where quarry stops its work. Dig blocks at this value.
      */
@@ -161,16 +163,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         BI bi = S_addDroppedItems(dropped, blockState, pos);
         if (!PowerManager.useEnergyBreak(this, blockState.getBlockHardness(world, pos), bi.b, this.unbreaking, bi.b1))
             return false;
-        Optional.ofNullable(facingMap.get(EXP_PUMP)).map(getPos()::offset)
-            .map(world::getTileEntity)
-            .flatMap(EXP_PUMP)
-            .ifPresent(t -> {
-                long expEnergy = t.getEnergyUse(bi.i);
-                if (useEnergy(expEnergy, expEnergy, false, EnergyUsage.PUMP_EXP) == expEnergy) {
-                    useEnergy(expEnergy, expEnergy, true, EnergyUsage.PUMP_EXP);
-                    t.addXp(bi.i);
-                }
-            });
+        modules.forEach(iModule -> iModule.invoke(IModule.OnBreak.apply(bi.i)));
         this.cacheItems.addAll(dropped);
 
         if (facingMap.containsKey(FLUID_PUMP) && TilePump.isLiquid(blockState)) {
@@ -193,8 +186,8 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
 
     @Override
     public boolean connectAttachment(final EnumFacing facing, IAttachment.Attachments<? extends APacketTile> attachments, boolean simulate) {
+        TileEntity entity = world.getTileEntity(getPos().offset(facingMap.get(attachments)));
         if (facingMap.containsKey(attachments)) {
-            TileEntity entity = world.getTileEntity(getPos().offset(facingMap.get(attachments)));
             if (attachments.test(entity) && facingMap.get(attachments) != facing) {
                 return false;
             }
@@ -202,6 +195,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         if (!simulate) {
             facingMap.put(attachments, facing);
             G_renew_powerConfigure();
+            attachments.module(entity).ifPresent(modules::add);
         }
         return true;
     }
