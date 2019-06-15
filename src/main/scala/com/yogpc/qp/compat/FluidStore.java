@@ -23,13 +23,16 @@ public class FluidStore {
         injectToNearTile(world, pos, fluid, FluidAmount.AMOUNT_BUCKET());
     }
 
-    public static void injectToNearTile(World world, BlockPos pos, Fluid fluid, int amount) {
-        if (!enabled) return;
-        injectToNearTile_internal(world, pos, fluid, amount);
+    /**
+     * @return inserted amount.
+     */
+    public static long injectToNearTile(World world, BlockPos pos, Fluid fluid, long amount) {
+        if (!enabled) return 0;
+        return injectToNearTile_internal(world, pos, fluid, amount);
     }
 
-    private static void injectToNearTile_internal(World world, BlockPos pos, Fluid fluidKind, int amount) {
-        if (TANK_CAPABILITY == null) return;
+    private static long injectToNearTile_internal(World world, BlockPos pos, Fluid fluidKind, long amount) {
+        if (TANK_CAPABILITY == null) return 0;
         FluidAmount[] fluidAmounts = new FluidAmount[]{FluidAmount.apply(fluidKind, amount)};
         for (EnumFacing facing : EnumFacing.values()) {
             TileEntity entity = world.getTileEntity(pos.offset(facing));
@@ -45,6 +48,7 @@ public class FluidStore {
                 if (fluidAmounts[0].isEmpty()) break;
             }
         }
+        return fluidAmounts[0].amount();
     }
 
     @CapabilityInject(FluidAmount.Tank.class)

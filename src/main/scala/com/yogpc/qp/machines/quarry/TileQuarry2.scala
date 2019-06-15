@@ -4,10 +4,12 @@ import com.yogpc.qp._
 import com.yogpc.qp.machines.base._
 import com.yogpc.qp.machines.{PowerManager, TranslationKeys}
 import com.yogpc.qp.utils.Holder
+import net.minecraft.nbt.{NBTTagCompound, NBTTagString}
 import net.minecraft.state.properties.BlockStateProperties
 import net.minecraft.util.math.{BlockPos, Vec3i}
 import net.minecraft.util.text.TextComponentTranslation
 import net.minecraft.util.{EnumFacing, ResourceLocation}
+import org.apache.logging.log4j.{Marker, MarkerManager}
 
 import scala.collection.JavaConverters
 
@@ -23,11 +25,35 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   var area = TileQuarry2.zeroArea
   var mode = TileQuarry2.none
   var target = BlockPos.ORIGIN
+  val storage = new QuarryStorage
+
+  override def tick(): Unit = {
+    super.tick()
+    // Quarry action
+    // Insert items
+    storage.pushItem(world, pos)
+    storage.pushFluid(world, pos)
+  }
 
   override def remove(): Unit = {
     super[IChunkLoadTile].releaseTicket()
     super.remove()
   }
+
+  override def write(nbt: NBTTagCompound) = {
+    nbt.put("enchantments", enchantments.toNBT)
+    nbt.put("area", area.toNBT)
+    nbt.put("mode", mode.toNBT)
+    super.write(nbt)
+  }
+
+  override def read(nbt: NBTTagCompound): Unit = {
+    super.read(nbt)
+    enchantments = TileQuarry2.enchantmentHolderLoad(nbt, "enchantments")
+    area = TileQuarry2.areaLoad(nbt, "area")
+    mode = TileQuarry2.modeLoad(nbt, "mode")
+  }
+
   override protected def isWorking = target != BlockPos.ORIGIN && mode != TileQuarry2.none
 
   /**
@@ -101,11 +127,13 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
 }
 
 object TileQuarry2 {
+  //---------- Constants ----------
   val SYMBOL = Symbol("quarry2")
 
   val noEnch = EnchantmentHolder(0, 0, 0, silktouch = false)
   val zeroArea = Area(0, 0, 0, 0, 0, 0)
 
+  //---------- Data ----------
   case class EnchantmentHolder(efficiency: Int, unbreaking: Int, fortune: Int, silktouch: Boolean, other: Map[ResourceLocation, Int] = Map.empty)
 
   case class Area(xMin: Int, yMin: Int, zMin: Int, xMax: Int, yMax: Int, zMax: Int)
@@ -127,5 +155,77 @@ object TileQuarry2 {
     val edge1 = start.offset(facing.rotateY(), y).up(3)
     val edge2 = start.offset(facing, x).offset(facing.rotateYCCW(), y)
     posToArea(edge1, edge2)
+  }
+
+  //---------- NBT ----------
+  type NBTLoad[A] = (NBTTagCompound, String) => A
+  private[this] final val marker: Marker = MarkerManager.getMarker("QUARRY_NBT")
+  private[this] final val NBT_X_MIN = "xMin"
+  private[this] final val NBT_X_MAX = "xMax"
+  private[this] final val NBT_Y_MIN = "yMin"
+  private[this] final val NBT_Y_MAX = "yMax"
+  private[this] final val NBT_Z_MIN = "zMin"
+  private[this] final val NBT_Z_MAX = "zMax"
+  private[this] final val MODES = Set(none, waiting)
+
+  private[this] def logTo(v: Any): Unit = {
+    QuarryPlus.LOGGER.debug(marker, "To nbt of {}", v)
+  }
+
+  private[this] def logFrom(name: String, v: Any): Unit = {
+    QuarryPlus.LOGGER.debug(marker, "From nbt of {} data:{}", name, v)
+  }
+
+  implicit val toNbt1: EnchantmentHolder NBTWrapper NBTTagCompound = enchantments => {
+    logTo(enchantments)
+    val enchantmentsMap = Map(
+      IEnchantableTile.EfficiencyID -> enchantments.efficiency,
+      IEnchantableTile.UnbreakingID -> enchantments.unbreaking,
+      IEnchantableTile.FortuneID -> enchantments.fortune,
+      IEnchantableTile.SilktouchID -> enchantments.silktouch.compare(false),
+    ) ++ enchantments.other
+    enchantmentsMap.filter(_._2 > 0).foldLeft(new NBTTagCompound) { case (nbt, (id, level)) => nbt.putInt(id.toString, level); nbt }
+  }
+  implicit val toNbt2: Area NBTWrapper NBTTagCompound = area => {
+    logTo(area)
+    val nbt = new NBTTagCompound
+    nbt.putInt(NBT_X_MIN, area.xMin)
+    nbt.putInt(NBT_X_MAX, area.xMax)
+    nbt.putInt(NBT_Y_MIN, area.yMin)
+    nbt.putInt(NBT_Y_MAX, area.yMax)
+    nbt.putInt(NBT_Z_MIN, area.zMin)
+    nbt.putInt(NBT_Z_MAX, area.zMax)
+    nbt
+  }
+  implicit val toNbt3: Mode NBTWrapper NBTTagString = mode => {
+    logTo(mode)
+    new NBTTagString(mode.toString)
+  }
+  val enchantmentHolderLoad: NBTLoad[EnchantmentHolder] = {
+    case (tag, name) =>
+      val nbt = tag.getCompound(name)
+      logFrom("EnchantmentHolder", nbt)
+      JavaConverters.asScalaIterator(nbt.keySet().iterator()).map(key => new ResourceLocation(key) -> nbt.getInt(key))
+        .foldLeft(noEnch) { case (enchantments, (id, value)) =>
+          id match {
+            case IEnchantableTile.EfficiencyID => enchantments.copy(efficiency = value)
+            case IEnchantableTile.UnbreakingID => enchantments.copy(unbreaking = value)
+            case IEnchantableTile.FortuneID => enchantments.copy(fortune = value)
+            case IEnchantableTile.SilktouchID => enchantments.copy(silktouch = value > 0)
+            case _ => enchantments.copy(other = enchantments.other + (id -> value))
+          }
+        }
+  }
+  val areaLoad: NBTLoad[Area] = {
+    case (tag, name) =>
+      val nbt = tag.getCompound(name)
+      logFrom("Area", nbt)
+      Area(nbt.getInt(NBT_X_MIN), nbt.getInt(NBT_Y_MIN), nbt.getInt(NBT_Z_MIN), nbt.getInt(NBT_X_MAX), nbt.getInt(NBT_Y_MAX), nbt.getInt(NBT_Z_MAX))
+  }
+  val modeLoad: NBTLoad[Mode] = {
+    case (tag, name) =>
+      val s = tag.getString(name)
+      logFrom("Mode", s)
+      MODES.collectFirst { case mode if mode.toString == s => mode }.get
   }
 }

@@ -24,6 +24,7 @@ package object qp {
   }
   val toComponentString: String => TextComponentString = s => new TextComponentString(s)
   val nonNull: AnyRef => Boolean = obj => obj != null
+  val facings = Eval.later(EnumFacing.values()).map(_.toList)
 
   def toJavaOption[T](o: Option[T]): java.util.Optional[T] = {
     //I think it's faster than match function.
