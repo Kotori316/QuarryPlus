@@ -6,10 +6,10 @@ import net.minecraft.entity.Entity
 trait IModule {
   type Accessor
 
-  def calledWhen: Set[IModule.CalledWhen]
+  def calledWhen: Set[Class[_ <: IModule.CalledWhen]]
 
   def invoke(when: CalledWhen): Unit = {
-    if (calledWhen(when)) {
+    if (calledWhen(when.getClass)) {
       action(when)
     }
   }

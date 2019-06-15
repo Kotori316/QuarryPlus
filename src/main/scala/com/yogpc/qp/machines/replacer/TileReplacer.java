@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 import com.yogpc.qp.machines.base.APacketTile;
 import com.yogpc.qp.machines.base.IAttachable;
 import com.yogpc.qp.machines.base.IAttachment;
+import com.yogpc.qp.machines.base.IModule;
 import com.yogpc.qp.machines.base.QPBlock;
 import com.yogpc.qp.machines.pump.TilePump;
 import com.yogpc.qp.utils.Holder;
@@ -96,6 +97,11 @@ public class TileReplacer extends APacketTile implements IAttachment {
                 world.setBlockState(getPos(), state.with(QPBlock.WORKING(), facing != null));
             }
         }
+    }
+
+    @Override
+    public IModule getModule() {
+        return null;
     }
 
     @Override

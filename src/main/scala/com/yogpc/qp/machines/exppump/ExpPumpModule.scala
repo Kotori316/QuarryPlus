@@ -10,7 +10,7 @@ class ExpPumpModule(useEnergy: Long => Boolean) extends IModule {
 
   override type Accessor = ExpPumpModule
 
-  override val calledWhen: Set[IModule.CalledWhen] = Set(IModule.DropItem, IModule.OnBreak, IModule.CollectingItem)
+  override val calledWhen = Set(classOf[IModule.CollectingItem], classOf[IModule.OnBreak], classOf[IModule.DropItem])
 
   override val access: Option[ExpPumpModule] = Some(this)
 

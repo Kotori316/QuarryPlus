@@ -335,7 +335,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
 
         if (facingMap.containsKey(EXP_PUMP)) {
             List<EntityXPOrb> xpOrbs = world.getEntitiesWithinAABB(EntityXPOrb.class, axis);
-            modules.forEach(iModule -> iModule.invoke(IModule.CollectingItem.apply(JavaConverters.asScalaBuffer(xpOrbs).toList())));
+            modules.forEach(iModule -> iModule.invoke(new IModule.CollectingItem(JavaConverters.asScalaBuffer(xpOrbs).toList())));
         }
 
     }

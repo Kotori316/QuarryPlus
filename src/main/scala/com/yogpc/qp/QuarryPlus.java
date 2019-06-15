@@ -139,6 +139,7 @@ public class QuarryPlus {
         public static final String plainpipe = "plainpipe";
         public static final String pump = "pumpplus";
         public static final String quarry = "quarryplus";
+        public static final String quarry2 = "quarry";
         public static final String refinery = "refineryplus";
         public static final String replacer = "quarryreplacer";
         public static final String solidquarry = "solidquarry";

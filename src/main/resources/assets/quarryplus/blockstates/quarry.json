@@ -1,0 +1,38 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "quarryplus:quarryplus"
+  },
+  "variants": {
+    "working": {
+      "true": {
+        "model": "quarryplus:quarryplus_working"
+      },
+      "false": {
+      }
+    },
+    "facing": {
+      "north": {
+        "transform": "forge:default-block"
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      },
+      "east": {
+        "y": 90
+      },
+      "up": {
+        "x": 270
+      },
+      "down": {
+        "x": 90
+      }
+    }
+  },
+  "inventory": [
+    {}
+  ]
+}

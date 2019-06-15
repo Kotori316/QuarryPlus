@@ -34,6 +34,7 @@ import com.yogpc.qp.machines.base.IAttachment;
 import com.yogpc.qp.machines.base.IDebugSender;
 import com.yogpc.qp.machines.base.IDummyFluidHandler;
 import com.yogpc.qp.machines.base.IEnchantableTile;
+import com.yogpc.qp.machines.base.IModule;
 import com.yogpc.qp.machines.base.QPBlock;
 import com.yogpc.qp.machines.quarry.TileQuarry;
 import com.yogpc.qp.packet.PacketHandler;
@@ -235,6 +236,11 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                 world.setBlockState(getPos(), state.with(BlockStateProperties.ENABLED, connectTo != null));
             }
         }
+    }
+
+    @Override
+    public IModule getModule() {
+        return null;
     }
 
     public void setWorking(boolean b) {
