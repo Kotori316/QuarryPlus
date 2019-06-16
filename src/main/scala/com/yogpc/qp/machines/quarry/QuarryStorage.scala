@@ -5,11 +5,16 @@ import com.yogpc.qp.compat.FluidStore
 import com.yogpc.qp.utils.{ItemDamage, ItemElement}
 import net.minecraft.fluid.Fluid
 import net.minecraft.item.ItemStack
+import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
+import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.registry.IRegistry
 import net.minecraft.world.World
+import net.minecraftforge.common.util.Constants.NBT
+import net.minecraftforge.common.util.INBTSerializable
 import net.minecraftforge.items.{CapabilityItemHandler, ItemHandlerHelper}
 
-class QuarryStorage {
+class QuarryStorage extends INBTSerializable[NBTTagCompound] {
   private var items = Map.empty[ItemDamage, ItemElement]
   private type FluidUnit = Long
   private var fluids = Map.empty[Fluid, FluidUnit]
@@ -45,5 +50,32 @@ class QuarryStorage {
         fluids = fluids - fluid
       }
     }
+  }
+
+  override def serializeNBT(): NBTTagCompound = {
+    val nbt = new NBTTagCompound
+    val itemList = items.values.map(_.toNBT).foldLeft(new NBTTagList) { case (l, tag) => l.add(tag); l }
+    val fluidList = fluids.map { case (fluid, amount) =>
+      val tag = new NBTTagCompound
+      tag.putString("name", IRegistry.FLUID.getKey(fluid).toString)
+      tag.putLong("amount", amount)
+      tag
+    }.foldLeft(new NBTTagList) { case (l, tag) => l.add(tag); l }
+    nbt.put("items", itemList)
+    nbt.put("fluids", fluidList)
+    nbt
+  }
+
+  override def deserializeNBT(nbt: NBTTagCompound): Unit = {
+    val itemList = nbt.getList("items", NBT.TAG_COMPOUND)
+    val fluidList = nbt.getList("fluids", NBT.TAG_COMPOUND)
+    items = Range(0, itemList.size()).map(itemList.getCompound).map { tag =>
+      val stack = ItemStack.read(tag)
+      stack.setCount(tag.getInt("Count"))
+      stack
+    }.map(ItemElement.apply).map(e => (e.itemDamage, e)).toMap
+    fluids = Range(0, itemList.size()).map(fluidList.getCompound).flatMap{tag =>
+      Option(IRegistry.FLUID.get(new ResourceLocation(tag.getString("name")))).map(f => (f, tag.getLong("amount")))
+    }.toMap
   }
 }

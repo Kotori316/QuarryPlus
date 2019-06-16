@@ -1,5 +1,7 @@
 package com.yogpc.qp.machines.quarry
 
+import cats._
+import cats.implicits._
 import com.yogpc.qp._
 import com.yogpc.qp.machines.base._
 import com.yogpc.qp.machines.{PowerManager, TranslationKeys}
@@ -7,7 +9,7 @@ import com.yogpc.qp.utils.Holder
 import net.minecraft.nbt.{NBTTagCompound, NBTTagString}
 import net.minecraft.state.properties.BlockStateProperties
 import net.minecraft.util.math.{BlockPos, Vec3i}
-import net.minecraft.util.text.TextComponentTranslation
+import net.minecraft.util.text.{TextComponentString, TextComponentTranslation}
 import net.minecraft.util.{EnumFacing, ResourceLocation}
 import org.apache.logging.log4j.{Marker, MarkerManager}
 
@@ -19,11 +21,15 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   with IAttachable
   with IDebugSender
   with IChunkLoadTile {
+  self =>
+
+  import TileQuarry2._
 
   var modules: List[IModule] = Nil
-  var enchantments = TileQuarry2.noEnch
-  var area = TileQuarry2.zeroArea
-  var mode = TileQuarry2.none
+  var attachments: Map[IAttachment.Attachments[_], EnumFacing] = Map.empty
+  var enchantments = noEnch
+  var area = zeroArea
+  var mode = none
   var target = BlockPos.ORIGIN
   val storage = new QuarryStorage
 
@@ -44,26 +50,28 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     nbt.put("enchantments", enchantments.toNBT)
     nbt.put("area", area.toNBT)
     nbt.put("mode", mode.toNBT)
+    nbt.put("storage", storage.serializeNBT())
     super.write(nbt)
   }
 
   override def read(nbt: NBTTagCompound): Unit = {
     super.read(nbt)
-    enchantments = TileQuarry2.enchantmentHolderLoad(nbt, "enchantments")
-    area = TileQuarry2.areaLoad(nbt, "area")
-    mode = TileQuarry2.modeLoad(nbt, "mode")
+    enchantments = enchantmentHolderLoad(nbt, "enchantments")
+    area = areaLoad(nbt, "area")
+    mode = modeLoad(nbt, "mode")
+    storage.deserializeNBT(nbt.getCompound("storage"))
   }
 
-  override protected def isWorking = target != BlockPos.ORIGIN && mode != TileQuarry2.none
+  override protected def isWorking = target != BlockPos.ORIGIN && mode != none
 
   /**
     * Called after enchantment setting.
     */
   override def G_ReInit(): Unit = {
-    if (area == TileQuarry2.zeroArea) {
-      area = TileQuarry2.defaultArea(pos, world.getBlockState(pos).get(BlockStateProperties.FACING).getOpposite)
+    if (area == zeroArea) {
+      area = defaultArea(pos, world.getBlockState(pos).get(BlockStateProperties.FACING).getOpposite)
     }
-    mode = TileQuarry2.waiting
+    mode = waiting
     PowerManager.configureQuarryWork(this, enchantments.efficiency, enchantments.unbreaking, 0)
   }
 
@@ -96,14 +104,21 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   }
 
   /**
-    * @param attachments must have returned true by { @link IAttachable#isValidAttachment(IAttachment.Attachments)}.
-    * @param simulate    true to avoid having side effect.
+    * @param attachment must have returned true by { @link IAttachable#isValidAttachment(IAttachment.Attachments)}.
+    * @param simulate   true to avoid having side effect.
     * @return true if the attachment is (will be) successfully connected.
     */
-  override def connectAttachment(facing: EnumFacing, attachments: IAttachment.Attachments[_ <: APacketTile], simulate: Boolean) = {
+  override def connectAttachment(facing: EnumFacing, attachment: IAttachment.Attachments[_ <: APacketTile], simulate: Boolean) = {
     val tile = world.getTileEntity(pos.offset(facing))
-    modules = modules ++ attachments.module(tile).asScala
-    true
+    if (!attachments.get(attachment).exists(_ != facing) && attachment.test(tile)) {
+      if (!simulate) {
+        attachments = attachments.updated(attachment, facing)
+        refreshModules()
+      }
+      true
+    } else {
+      false
+    }
   }
 
   /**
@@ -112,6 +127,12 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     */
   override def isValidAttachment(attachments: IAttachment.Attachments[_ <: APacketTile]) = IAttachment.Attachments.ALL.contains(attachments)
 
+  def refreshModules(): Unit = {
+    val attachmentModules = attachments.flatMap { case (kind, facing) => kind.module(world.getTileEntity(pos.offset(facing))).asScala }.toList
+    val internalModules = Nil
+    this.modules = attachmentModules ++ internalModules
+  }
+
   override def getDebugName = TranslationKeys.quarry
 
   /**
@@ -119,7 +140,12 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     *
     * @return debug info of valid machine.
     */
-  override def getDebugMessages = JavaConverters.seqAsJavaList(Nil)
+  override def getDebugMessages = JavaConverters.seqAsJavaList(List(
+    s"Mode: $mode",
+    s"Target: ${target.show}",
+    s"Enchantment: $enchantments",
+    s"Area: ${area.show}",
+  ).map(new TextComponentString(_)))
 
   override def getName = new TextComponentTranslation(getDebugName)
 
@@ -137,6 +163,8 @@ object TileQuarry2 {
   case class EnchantmentHolder(efficiency: Int, unbreaking: Int, fortune: Int, silktouch: Boolean, other: Map[ResourceLocation, Int] = Map.empty)
 
   case class Area(xMin: Int, yMin: Int, zMin: Int, xMax: Int, yMax: Int, zMax: Int)
+
+  implicit val showArea: Show[Area] = area => s"(${area.xMin}, ${area.yMin}, ${area.zMin}) -> (${area.xMax}, ${area.yMax}, ${area.zMax})"
 
   sealed class Mode(override val toString: String)
 
@@ -176,7 +204,7 @@ object TileQuarry2 {
     QuarryPlus.LOGGER.debug(marker, "From nbt of {} data:{}", name, v)
   }
 
-  implicit val toNbt1: EnchantmentHolder NBTWrapper NBTTagCompound = enchantments => {
+  implicit val enchantmentHolderToNbt: EnchantmentHolder NBTWrapper NBTTagCompound = enchantments => {
     logTo(enchantments)
     val enchantmentsMap = Map(
       IEnchantableTile.EfficiencyID -> enchantments.efficiency,
@@ -186,7 +214,7 @@ object TileQuarry2 {
     ) ++ enchantments.other
     enchantmentsMap.filter(_._2 > 0).foldLeft(new NBTTagCompound) { case (nbt, (id, level)) => nbt.putInt(id.toString, level); nbt }
   }
-  implicit val toNbt2: Area NBTWrapper NBTTagCompound = area => {
+  implicit val areaToNbt: Area NBTWrapper NBTTagCompound = area => {
     logTo(area)
     val nbt = new NBTTagCompound
     nbt.putInt(NBT_X_MIN, area.xMin)
@@ -197,7 +225,7 @@ object TileQuarry2 {
     nbt.putInt(NBT_Z_MAX, area.zMax)
     nbt
   }
-  implicit val toNbt3: Mode NBTWrapper NBTTagString = mode => {
+  implicit val modeToNbt: Mode NBTWrapper NBTTagString = mode => {
     logTo(mode)
     new NBTTagString(mode.toString)
   }

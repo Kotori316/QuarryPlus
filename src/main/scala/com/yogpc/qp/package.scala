@@ -116,4 +116,6 @@ package object qp {
     new AssertionError(
       "LazyOptional has no content " +
         "though it returned true when isPresent is called.")
+
+  implicit val showPos: Show[BlockPos] = pos => s"(${pos.getX}, ${pos.getY}, ${pos.getZ})"
 }
