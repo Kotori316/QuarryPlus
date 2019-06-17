@@ -21,6 +21,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
+import static jp.t2v.lab.syntax.MapStreamSyntax.optCast;
 import static net.minecraft.state.properties.BlockStateProperties.FACING;
 
 public class BlockQuarry2 extends QPBlock {
@@ -38,7 +39,8 @@ public class BlockQuarry2 extends QPBlock {
             EnumFacing facing = placer.getHorizontalFacing().getOpposite();
             worldIn.setBlockState(pos, state.with(FACING, facing), 2);
             Consumer<TileQuarry2> consumer = IEnchantableTile.Util.initConsumer(stack);
-            Optional.ofNullable((TileQuarry2) worldIn.getTileEntity(pos)).ifPresent(consumer.andThen(TileQuarry2.requestTicket));
+            Optional.ofNullable(worldIn.getTileEntity(pos)).flatMap(optCast(TileQuarry2.class))
+                .ifPresent(consumer.andThen(TileQuarry2.requestTicket));
         }
     }
 
@@ -51,5 +53,14 @@ public class BlockQuarry2 extends QPBlock {
     @Override
     public TileEntity createNewTileEntity(IBlockReader worldIn) {
         return Holder.quarry2().create();
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
+        if (!worldIn.isRemote) {
+            Optional.ofNullable(worldIn.getTileEntity(pos)).flatMap(optCast(TileQuarry2.class))
+                .ifPresent(TileQuarry2::neghborChanged);
+        }
     }
 }

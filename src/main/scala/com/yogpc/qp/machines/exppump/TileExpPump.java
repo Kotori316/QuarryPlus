@@ -37,7 +37,7 @@ import static net.minecraft.state.properties.BlockStateProperties.ENABLED;
 public class TileExpPump extends APacketTile implements IEnchantableTile, IDebugSender, IAttachment {
     @Nullable
     private EnumFacing mConnectTo;
-    private ExpPumpModule module = new ExpPumpModule(v1 -> true);
+    private ExpPumpModule module = ExpPumpModule.apply(v1 -> true, () -> this.unbreaking);
 
     private int fortune = 0;
     private int unbreaking = 0;

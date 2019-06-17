@@ -16,6 +16,8 @@ import javax.annotation.Nullable;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 
+import static jp.t2v.lab.syntax.MapStreamSyntax.optCast;
+
 public interface IAttachment {
     /**
      * Setter method to change field in this class.
@@ -74,8 +76,9 @@ public interface IAttachment {
             return clazz.isInstance(tileEntity);
         }
 
-        public Optional<IModule> module(TileEntity tileEntity){
-            return apply(tileEntity).map(IAttachment::getModule);
+        public Optional<IModule> module(TileEntity tileEntity) {
+            return Optional.ofNullable(tileEntity).flatMap(optCast(IAttachment.class))
+                .map(IAttachment::getModule);
         }
     }
 }

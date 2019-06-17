@@ -29,13 +29,14 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   var attachments: Map[IAttachment.Attachments[_], EnumFacing] = Map.empty
   var enchantments = noEnch
   var area = zeroArea
-  var mode = none
+  var action:QuarryAction = QuarryAction.none
   var target = BlockPos.ORIGIN
   val storage = new QuarryStorage
 
   override def tick(): Unit = {
     super.tick()
     // Quarry action
+
     // Insert items
     storage.pushItem(world, pos)
     storage.pushFluid(world, pos)
@@ -47,22 +48,24 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   }
 
   override def write(nbt: NBTTagCompound) = {
+    nbt.put("target", target.toLong.toNBT)
     nbt.put("enchantments", enchantments.toNBT)
     nbt.put("area", area.toNBT)
-    nbt.put("mode", mode.toNBT)
+    nbt.put("mode", action.toNBT)
     nbt.put("storage", storage.serializeNBT())
     super.write(nbt)
   }
 
   override def read(nbt: NBTTagCompound): Unit = {
     super.read(nbt)
+    target = BlockPos.fromLong(nbt.getLong("target"))
     enchantments = enchantmentHolderLoad(nbt, "enchantments")
     area = areaLoad(nbt, "area")
-    mode = modeLoad(nbt, "mode")
+    action = QuarryAction.load(nbt, "mode")
     storage.deserializeNBT(nbt.getCompound("storage"))
   }
 
-  override protected def isWorking = target != BlockPos.ORIGIN && mode != none
+  override protected def isWorking = target != BlockPos.ORIGIN && action.mode != none
 
   /**
     * Called after enchantment setting.
@@ -71,13 +74,10 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     if (area == zeroArea) {
       area = defaultArea(pos, world.getBlockState(pos).get(BlockStateProperties.FACING).getOpposite)
     }
-    mode = waiting
+    action = QuarryAction.wating
     PowerManager.configureQuarryWork(this, enchantments.efficiency, enchantments.unbreaking, 0)
   }
 
-  /**
-    * @return Map (Enchantment id, level)
-    */
   override def getEnchantments = {
     val enchantmentsMap = Map(
       IEnchantableTile.EfficiencyID -> enchantments.efficiency,
@@ -88,10 +88,6 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     JavaConverters.mapAsJavaMap(enchantmentsMap.collect(enchantCollector))
   }
 
-  /**
-    * @param id    Enchantment id
-    * @param value level
-    */
   override def setEnchantment(id: ResourceLocation, value: Short): Unit = {
     val newEnch = id match {
       case IEnchantableTile.EfficiencyID => enchantments.copy(efficiency = value)
@@ -133,6 +129,11 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     this.modules = attachmentModules ++ internalModules
   }
 
+  def neghborChanged(): Unit = {
+    attachments = attachments.filter { case (kind, facing) => kind.test(world.getTileEntity(pos.offset(facing))) }
+    refreshModules()
+  }
+
   override def getDebugName = TranslationKeys.quarry
 
   /**
@@ -141,10 +142,12 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     * @return debug info of valid machine.
     */
   override def getDebugMessages = JavaConverters.seqAsJavaList(List(
-    s"Mode: $mode",
+    s"Mode: ${action.mode}",
     s"Target: ${target.show}",
     s"Enchantment: $enchantments",
     s"Area: ${area.show}",
+    s"Modules: ${modules.mkString(comma)}",
+    s"Attachments: ${attachments.mkString(comma)}",
   ).map(new TextComponentString(_)))
 
   override def getName = new TextComponentTranslation(getDebugName)
@@ -155,6 +158,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
 object TileQuarry2 {
   //---------- Constants ----------
   val SYMBOL = Symbol("quarry2")
+  final val comma = ","
 
   val noEnch = EnchantmentHolder(0, 0, 0, silktouch = false)
   val zeroArea = Area(0, 0, 0, 0, 0, 0)

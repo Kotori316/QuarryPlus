@@ -1,11 +1,16 @@
 package com.yogpc.qp.machines.exppump
 
+import cats.Eval
+import cats.data.Kleisli
 import com.yogpc.qp.machines.base.{APowerTile, EnergyUsage, IEnchantableTile, IModule}
 import net.minecraft.entity.item.EntityXPOrb
 
-class ExpPumpModule(useEnergy: Long => Boolean) extends IModule {
+final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: Eval[Int]) extends IModule {
   def this(powerTile: APowerTile) = {
-    this(e => e == powerTile.useEnergy(e, e, true, EnergyUsage.PUMP_EXP))
+    this(e => e == powerTile.useEnergy(e, e, true, EnergyUsage.PUMP_EXP),
+      Eval.later(Option(powerTile)
+        .collect { case ench: IEnchantableTile => ench.getEnchantments.get(IEnchantableTile.UnbreakingID).intValue() }
+        .getOrElse(0)))
   }
 
   override type Accessor = ExpPumpModule
@@ -28,16 +33,20 @@ class ExpPumpModule(useEnergy: Long => Boolean) extends IModule {
   }
 
   private def addXp(amount: Int): Unit = {
-    val energy = getEnergy(amount)
+    val energy = getEnergy(amount).value
     if (useEnergy(energy)) {
       this.xp += amount
     }
   }
 
-  private def getEnergy(amount: Int) = {
-    val unbreaking = Option(this)
-      .collect { case ench: IEnchantableTile => ench.getEnchantments.get(IEnchantableTile.UnbreakingID).intValue() }
-      .getOrElse(0)
-    10 * amount * APowerTile.MicroJtoMJ / (1 + unbreaking)
-  }
+  private val getEnergy = Kleisli((amount: Int) => unbreaking.map(u => 10 * amount * APowerTile.MicroJtoMJ / (1 + u)))
+
+  override def toString = s"ExpPumpModule($xp)"
+}
+
+object ExpPumpModule {
+  def apply(useEnergy: java.util.function.LongPredicate, unbreaking: java.util.function.IntSupplier): ExpPumpModule =
+    new ExpPumpModule(l => useEnergy.test(l), Eval.always(unbreaking.getAsInt))
+
+  def fromTile(powerTile: APowerTile) = new ExpPumpModule(powerTile)
 }
