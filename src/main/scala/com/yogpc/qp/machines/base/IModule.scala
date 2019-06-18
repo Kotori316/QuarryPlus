@@ -2,6 +2,8 @@ package com.yogpc.qp.machines.base
 
 import com.yogpc.qp.machines.base.IModule.CalledWhen
 import net.minecraft.entity.Entity
+import net.minecraft.util.math.BlockPos
+import net.minecraft.world.World
 
 trait IModule {
   type Accessor
@@ -23,7 +25,7 @@ object IModule {
 
   sealed trait CalledWhen
 
-  case class OnBreak(xp: Int) extends CalledWhen
+  case class OnBreak(xp: Int, world: World, pos: BlockPos) extends CalledWhen
 
   case class DropItem(xp: Int) extends CalledWhen
 

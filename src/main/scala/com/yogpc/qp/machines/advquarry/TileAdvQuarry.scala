@@ -315,7 +315,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
           }
           if (collectFurnaceXP) {
             val xp = TileBasic.getSmeltingXp(l.list.map(_.toStack).asJavaCollection, Collections.emptyList(), getWorld)
-            modules.foreach(_.invoke(IModule.OnBreak(xp)))
+            modules.foreach(_.invoke(IModule.OnBreak(xp, world, target)))
           }
           for (y <- drain) {
             p.setY(y)

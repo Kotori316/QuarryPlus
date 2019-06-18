@@ -6,11 +6,16 @@ import com.yogpc.qp._
 import com.yogpc.qp.machines.base._
 import com.yogpc.qp.machines.{PowerManager, TranslationKeys}
 import com.yogpc.qp.utils.Holder
+import net.minecraft.item.ItemStack
 import net.minecraft.nbt.{NBTTagCompound, NBTTagString}
 import net.minecraft.state.properties.BlockStateProperties
 import net.minecraft.util.math.{BlockPos, Vec3i}
 import net.minecraft.util.text.{TextComponentString, TextComponentTranslation}
-import net.minecraft.util.{EnumFacing, ResourceLocation}
+import net.minecraft.util.{EnumFacing, EnumHand, NonNullList, ResourceLocation}
+import net.minecraft.world.{World, WorldServer}
+import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.event.ForgeEventFactory
+import net.minecraftforge.event.world.BlockEvent
 import org.apache.logging.log4j.{Marker, MarkerManager}
 
 import scala.collection.JavaConverters
@@ -29,17 +34,32 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   var attachments: Map[IAttachment.Attachments[_], EnumFacing] = Map.empty
   var enchantments = noEnch
   var area = zeroArea
-  var action:QuarryAction = QuarryAction.none
+  var action: QuarryAction = QuarryAction.none
   var target = BlockPos.ORIGIN
   val storage = new QuarryStorage
 
   override def tick(): Unit = {
     super.tick()
-    // Quarry action
-
-    // Insert items
-    storage.pushItem(world, pos)
-    storage.pushFluid(world, pos)
+    if (!world.isRemote) {
+      // Quarry action
+      action.action(target)
+      if (action.canGoNext(self)) {
+        action = action.nextAction(self)
+      }
+      target = action.nextTarget()
+      val nowState = world.getBlockState(pos)
+      if (nowState.get(QPBlock.WORKING) ^ isWorking) {
+        if (isWorking) {
+          startWork()
+        } else {
+          finishWork()
+        }
+        world.setBlockState(pos, nowState.`with`(QPBlock.WORKING, Boolean.box(isWorking)))
+      }
+      // Insert items
+      storage.pushItem(world, pos)
+      storage.pushFluid(world, pos)
+    }
   }
 
   override def remove(): Unit = {
@@ -61,7 +81,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     target = BlockPos.fromLong(nbt.getLong("target"))
     enchantments = enchantmentHolderLoad(nbt, "enchantments")
     area = areaLoad(nbt, "area")
-    action = QuarryAction.load(nbt, "mode")
+    action = QuarryAction.load(self, nbt, "mode")
     storage.deserializeNBT(nbt.getCompound("storage"))
   }
 
@@ -74,7 +94,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     if (area == zeroArea) {
       area = defaultArea(pos, world.getBlockState(pos).get(BlockStateProperties.FACING).getOpposite)
     }
-    action = QuarryAction.wating
+    action = QuarryAction.waiting
     PowerManager.configureQuarryWork(this, enchantments.efficiency, enchantments.unbreaking, 0)
   }
 
@@ -134,6 +154,33 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     refreshModules()
   }
 
+  def breakBlock(world: World, pos: BlockPos): Boolean = {
+    val state = world.getBlockState(pos)
+    val fakePlayer = QuarryFakePlayer.get(world.asInstanceOf[WorldServer])
+    fakePlayer.setHeldItem(EnumHand.MAIN_HAND, getEnchantedPickaxe)
+    val event = new BlockEvent.BreakEvent(world, pos, state, fakePlayer)
+    MinecraftForge.EVENT_BUS.post(event)
+    val drops = if (self.enchantments.silktouch && state.canSilkHarvest(world, pos, fakePlayer)) {
+      val list = NonNullList.create[ItemStack]
+      list.add(APacketTile.invoke(TileBasic.createStackedBlock, classOf[ItemStack], state.getBlock, state))
+      ForgeEventFactory.fireBlockHarvesting(list, world, pos, state, 0, 1.0f, true, fakePlayer)
+      list
+    } else {
+      val list = NonNullList.create[ItemStack]
+      state.getBlock.getDrops(state, list, world, pos, self.enchantments.fortune)
+      ForgeEventFactory.fireBlockHarvesting(list, world, pos, state, self.enchantments.fortune, 1.0f, false, fakePlayer)
+      list
+    }
+    if (PowerManager.useEnergyBreak(self, state.getBlockHardness(world, pos),
+      TileQuarry2.enhcantmentMode(enchantments), enchantments.unbreaking, false)) {
+      modules.foreach(_.invoke(IModule.OnBreak(event.getExpToDrop, world, pos)))
+      drops.forEach(storage.addItem)
+      true
+    } else {
+      false
+    }
+  }
+
   override def getDebugName = TranslationKeys.quarry
 
   /**
@@ -174,6 +221,7 @@ object TileQuarry2 {
 
   val none = new Mode("none")
   val waiting = new Mode("waiting")
+  val buildFrame = new Mode("BuildFrame")
 
   val posToArea: (Vec3i, Vec3i) => Area = {
     case (p1, p2) => Area(Math.min(p1.getX, p2.getX), Math.min(p1.getY, p2.getY), Math.min(p1.getZ, p2.getZ),
@@ -183,11 +231,14 @@ object TileQuarry2 {
   def defaultArea(pos: BlockPos, facing: EnumFacing): Area = {
     val x = 11
     val y = (x - 1) / 2 //5
-    val start = pos.offset(facing)
+    val start = pos.offset(facing, 2)
     val edge1 = start.offset(facing.rotateY(), y).up(3)
     val edge2 = start.offset(facing, x).offset(facing.rotateYCCW(), y)
     posToArea(edge1, edge2)
   }
+
+  val enhcantmentMode: EnchantmentHolder => Int = e =>
+    if (e.silktouch) -1 else e.fortune
 
   //---------- NBT ----------
   type NBTLoad[A] = (NBTTagCompound, String) => A
@@ -198,7 +249,7 @@ object TileQuarry2 {
   private[this] final val NBT_Y_MAX = "yMax"
   private[this] final val NBT_Z_MIN = "zMin"
   private[this] final val NBT_Z_MAX = "zMax"
-  private[this] final val MODES = Set(none, waiting)
+  private[this] final val MODES = Set(none, waiting, buildFrame)
 
   private[this] def logTo(v: Any): Unit = {
     QuarryPlus.LOGGER.debug(marker, "To nbt of {}", v)
