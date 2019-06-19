@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test
 class TileQuarry2Test {
   val m1 = Marker(new BlockPos(-5, 2, 8), new BlockPos(25, 9, 18))
   val m2 = Marker(new BlockPos(-5, 2, 8), new BlockPos(25, 3, 18))
+  val m3 = Marker(new BlockPos(0, 63, 0), new BlockPos(15, 68, 15))
 
   @Test
   def defaultArea(): Unit = {
@@ -36,6 +37,15 @@ class TileQuarry2Test {
       case (_, marker) =>
         assertFalse(marker.isDefined)
     }
+  }
+
+  @Test
+  def digTargets(): Unit = {
+    val pos = new BlockPos(-1, 1, 5)
+    val (area, m) = TileQuarry2.areaFromMarker(EnumFacing.WEST, pos, m3)
+    assertTrue(m.isDefined)
+    val poses = QuarryAction.digTargets(area, pos, 63, log = false)
+    assertEquals((m3.max.getX - m3.min.getX - 1) * (m3.max.getZ - m3.min.getZ - 1), poses.size)
   }
 
   @Test

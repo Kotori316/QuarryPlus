@@ -10,7 +10,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.TextComponentString
 import net.minecraft.util.{EnumFacing, ResourceLocation}
 import net.minecraftforge.common.util.Constants.NBT
-import net.minecraftforge.common.util.{LazyOptional, NonNullSupplier}
+import net.minecraftforge.common.util.{INBTSerializable, LazyOptional, NonNullSupplier}
 import net.minecraftforge.fluids.FluidStack
 import net.minecraftforge.registries.ForgeRegistries
 
@@ -86,6 +86,7 @@ package object qp {
   implicit val Long2NBT: NBTWrapper[Long, NBTTagLong] = (num: Long) => new NBTTagLong(num)
 
   implicit val Fluid2NBT: NBTWrapper[FluidStack, NBTTagCompound] = (num: FluidStack) => num.writeToNBT(new NBTTagCompound)
+  implicit val NBTSerializable2NBT: INBTSerializable[NBTTagCompound] NBTWrapper NBTTagCompound = _.serializeNBT()
 
   implicit class NumberToNbt[A](private val num: A) extends AnyVal {
     def toNBT[B <: INBTBase](implicit wrapper: NBTWrapper[A, B]): B = wrapper apply num

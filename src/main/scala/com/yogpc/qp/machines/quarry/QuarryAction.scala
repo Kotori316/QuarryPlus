@@ -1,8 +1,8 @@
 package com.yogpc.qp.machines.quarry
 
+import com.yogpc.qp._
 import com.yogpc.qp.machines.PowerManager
 import com.yogpc.qp.utils.Holder
-import com.yogpc.qp.{NBTWrapper, QuarryPlus}
 import net.minecraft.block.state.IBlockState
 import net.minecraft.nbt.{NBTDynamicOps, NBTTagCompound, NBTTagList}
 import net.minecraft.util.math.BlockPos
@@ -102,12 +102,11 @@ object QuarryAction {
 
     override def nextTarget(): BlockPos = frameTargets.headOption.getOrElse(BlockPos.ORIGIN)
 
-    override def nextAction(quarry2: TileQuarry2): QuarryAction = none
+    override def nextAction(quarry2: TileQuarry2): QuarryAction = new BreakBlock(quarry2, quarry2.area.yMin - 1)
 
     override def mode: TileQuarry2.Mode = TileQuarry2.buildFrame
 
     override def write(nbt: NBTTagCompound): NBTTagCompound = {
-      import com.yogpc.qp._
       nbt.put(mode_nbt, mode.toNBT)
       val list = frameTargets.map(_.toLong.toNBT).foldLeft(new NBTTagList) { case (l, tag) => l.add(tag); l }
       nbt.put("list", list)
@@ -115,6 +114,50 @@ object QuarryAction {
     }
 
     override def canGoNext(quarry: TileQuarry2): Boolean = frameTargets.isEmpty
+  }
+
+  class BreakBlock(quarry2: TileQuarry2, y: Int) extends QuarryAction {
+    var digTargets: List[BlockPos] = QuarryAction.digTargets(quarry2.area, quarry2.getPos, y)
+
+    var headX: Double = (quarry2.area.xMin + quarry2.area.xMax + 1) / 2
+    var headY: Double = y + 1
+    var headZ: Double = (quarry2.area.zMin + quarry2.area.zMax + 1) / 2
+
+    override def action(target: BlockPos): Unit = {
+
+    }
+
+    override def nextTarget() = digTargets.headOption.getOrElse(BlockPos.ORIGIN)
+
+    override def nextAction(quarry2: TileQuarry2) = none
+
+    override def canGoNext(quarry: TileQuarry2) = digTargets.isEmpty
+
+    override def mode = TileQuarry2.breakBlock
+
+    override def write(nbt: NBTTagCompound) = {
+      nbt.put(mode_nbt, mode.toNBT)
+      val list = digTargets.map(_.toLong.toNBT).foldLeft(new NBTTagList) { case (l, tag) => l.add(tag); l }
+      nbt.put("list", list)
+      nbt.putInt("y", y)
+      nbt.putDouble("headX", headX)
+      nbt.putDouble("headY", headY)
+      nbt.putDouble("headZ", headZ)
+      nbt
+    }
+  }
+
+  def digTargets(r: TileQuarry2.Area, pos: BlockPos, y: Int, log: Boolean = true) = {
+    val firstZ = near(pos.getZ, r.zMin + 1, r.zMax - 1)
+    val lastZ = far(pos.getZ, r.zMin + 1, r.zMax - 1)
+    if (log) QuarryPlus.LOGGER.debug(MARKER, s"Make targets list of breaking blocks. $r, firstZ=$firstZ, lastZ=$lastZ")
+    Range.inclusive(r.xMin + 1, r.xMax - 1)
+      .map(x => Range.inclusive(firstZ, lastZ, (lastZ - firstZ).signum).map(z => new BlockPos(x, y, z)))
+      .zip(Stream.iterate(true)(b => !b))
+      .flatMap {
+        case (p1, true) => p1
+        case (p2, false) => p2.reverse
+      }.toList
   }
 
   def near[A](pos: A, x1: A, x2: A)(implicit proxy: Numeric[A]): A = {
@@ -133,20 +176,35 @@ object QuarryAction {
   }
 
   def load(quarry: TileQuarry2, tag: NBTTagCompound, name: String): QuarryAction = {
-    if (quarry.hasWorld && quarry.getWorld.isRemote) return none
     val nbt = tag.getCompound(name)
     val mode = nbt.getString(mode_nbt)
-    mode match {
+    val action = mode match {
       case TileQuarry2.none.toString => none
       case TileQuarry2.waiting.toString => waiting
-      case TileQuarry2.buildFrame.toString =>
-        import com.yogpc.qp._
-        val task = new MakeFrame(quarry)
-        task.frameTargets = JavaConverters.asScalaBuffer(nbt.getList("list", NBT.TAG_LONG))
-          .flatMap(NBTDynamicOps.INSTANCE.getNumberValue(_).asScala.map(_.longValue()))
-          .map(BlockPos.fromLong).toList
-        task
+      case TileQuarry2.buildFrame.toString => new MakeFrame(quarry)
+      case TileQuarry2.breakBlock.toString => new BreakBlock(quarry, nbt.getInt("y"))
       case _ => none
+    }
+    if (quarry.hasWorld && quarry.getWorld.isRemote) {
+      action
+    } else {
+      action match {
+        case QuarryAction.none | QuarryAction.waiting => action
+        case makeFrame: MakeFrame =>
+          makeFrame.frameTargets = JavaConverters.asScalaBuffer(nbt.getList("list", NBT.TAG_LONG))
+            .flatMap(NBTDynamicOps.INSTANCE.getNumberValue(_).asScala.map(_.longValue()))
+            .map(BlockPos.fromLong).toList
+          makeFrame
+        case breakBlock: BreakBlock =>
+          breakBlock.digTargets = JavaConverters.asScalaBuffer(nbt.getList("list", NBT.TAG_LONG))
+            .flatMap(NBTDynamicOps.INSTANCE.getNumberValue(_).asScala.map(_.longValue()))
+            .map(BlockPos.fromLong).toList
+          breakBlock.headX = nbt.getDouble("headX")
+          breakBlock.headY = nbt.getDouble("headY")
+          breakBlock.headZ = nbt.getDouble("headZ")
+          breakBlock
+        case _ => none
+      }
     }
   }
 

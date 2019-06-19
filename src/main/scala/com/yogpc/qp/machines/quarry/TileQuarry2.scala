@@ -5,6 +5,7 @@ import cats.implicits._
 import com.yogpc.qp._
 import com.yogpc.qp.machines.base._
 import com.yogpc.qp.machines.{PowerManager, TranslationKeys}
+import com.yogpc.qp.packet.{PacketHandler, TileMessage}
 import com.yogpc.qp.utils.Holder
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.{NBTTagCompound, NBTTagString}
@@ -45,6 +46,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
       action.action(target)
       if (action.canGoNext(self)) {
         action = action.nextAction(self)
+        PacketHandler.sendToClient(TileMessage.create(self), world)
       }
       target = action.nextTarget()
       val nowState = world.getBlockState(pos)
@@ -72,7 +74,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     nbt.put("enchantments", enchantments.toNBT)
     nbt.put("area", area.toNBT)
     nbt.put("mode", action.toNBT)
-    nbt.put("storage", storage.serializeNBT())
+    nbt.put("storage", storage.toNBT)
     super.write(nbt)
   }
 
@@ -205,6 +207,8 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   override def getName = new TextComponentTranslation(getDebugName)
 
   override def getDisplayName = super.getDisplayName
+
+  override def hasFastRenderer = true
 }
 
 object TileQuarry2 {
@@ -227,6 +231,7 @@ object TileQuarry2 {
   val none = new Mode("none")
   val waiting = new Mode("waiting")
   val buildFrame = new Mode("BuildFrame")
+  val breakBlock = new Mode("BreakBlock")
 
   val posToArea: (Vec3i, Vec3i) => Area = {
     case (p1, p2) => Area(Math.min(p1.getX, p2.getX), Math.min(p1.getY, p2.getY), Math.min(p1.getZ, p2.getZ),
