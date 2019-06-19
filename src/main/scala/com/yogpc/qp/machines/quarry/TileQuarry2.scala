@@ -92,7 +92,12 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     */
   override def G_ReInit(): Unit = {
     if (area == zeroArea) {
-      area = defaultArea(pos, world.getBlockState(pos).get(BlockStateProperties.FACING).getOpposite)
+      val facing = world.getBlockState(pos).get(BlockStateProperties.FACING)
+      findArea(facing, world, pos) match {
+        case (newArea, markerOpt) =>
+          area = newArea
+          markerOpt.foreach(m => JavaConverters.asScalaBuffer(m.removeFromWorldWithItem()).foreach(storage.addItem))
+      }
     }
     action = QuarryAction.waiting
     PowerManager.configureQuarryWork(this, enchantments.efficiency, enchantments.unbreaking, 0)
@@ -149,7 +154,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     this.modules = attachmentModules ++ internalModules
   }
 
-  def neghborChanged(): Unit = {
+  def neighborChanged(): Unit = {
     attachments = attachments.filter { case (kind, facing) => kind.test(world.getTileEntity(pos.offset(facing))) }
     refreshModules()
   }
@@ -172,7 +177,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
       list
     }
     if (PowerManager.useEnergyBreak(self, state.getBlockHardness(world, pos),
-      TileQuarry2.enhcantmentMode(enchantments), enchantments.unbreaking, false)) {
+      TileQuarry2.enchantmentMode(enchantments), enchantments.unbreaking, false)) {
       modules.foreach(_.invoke(IModule.OnBreak(event.getExpToDrop, world, pos)))
       drops.forEach(storage.addItem)
       true
@@ -232,31 +237,53 @@ object TileQuarry2 {
     val x = 11
     val y = (x - 1) / 2 //5
     val start = pos.offset(facing, 2)
-    val edge1 = start.offset(facing.rotateY(), y).up(3)
+    val edge1 = start.offset(facing.rotateY(), y).up(4)
     val edge2 = start.offset(facing, x).offset(facing.rotateYCCW(), y)
     posToArea(edge1, edge2)
   }
 
-  val enhcantmentMode: EnchantmentHolder => Int = e =>
+  def findArea(facing: EnumFacing, world: World, pos: BlockPos) = {
+    List(pos.offset(facing.getOpposite), pos.offset(facing.rotateY()), pos.offset(facing.rotateYCCW())).map(world.getTileEntity).collectFirst { case m: IMarker if m.hasLink => m } match {
+      case Some(marker) => areaFromMarker(facing, pos, marker)
+      case None => defaultArea(pos, facing.getOpposite) -> None
+    }
+  }
+
+  def areaFromMarker(facing: EnumFacing, pos: BlockPos, marker: IMarker) = {
+    if (marker.min().getX <= pos.getX && marker.max().getX >= pos.getX &&
+      marker.min().getY <= pos.getY && marker.max().getY >= pos.getY &&
+      marker.min().getZ <= pos.getZ && marker.max().getZ >= pos.getZ) {
+      defaultArea(pos, facing.getOpposite) -> None
+    } else {
+      val subs = marker.max().subtract(marker.min())
+      if (subs.getX > 1 && subs.getZ > 1) {
+        val maxY = if (subs.getY > 1) marker.max().getY else marker.min().getY + 3
+        posToArea(marker.min(), marker.max().copy(y = maxY)) -> Some(marker)
+      } else {
+        defaultArea(pos, facing.getOpposite) -> None
+      }
+    }
+  }
+
+  val enchantmentMode: EnchantmentHolder => Int = e =>
     if (e.silktouch) -1 else e.fortune
 
   //---------- NBT ----------
   type NBTLoad[A] = (NBTTagCompound, String) => A
-  private[this] final val marker: Marker = MarkerManager.getMarker("QUARRY_NBT")
+  private[this] final val MARKER: Marker = MarkerManager.getMarker("QUARRY_NBT")
   private[this] final val NBT_X_MIN = "xMin"
   private[this] final val NBT_X_MAX = "xMax"
   private[this] final val NBT_Y_MIN = "yMin"
   private[this] final val NBT_Y_MAX = "yMax"
   private[this] final val NBT_Z_MIN = "zMin"
   private[this] final val NBT_Z_MAX = "zMax"
-  private[this] final val MODES = Set(none, waiting, buildFrame)
 
   private[this] def logTo(v: Any): Unit = {
-    QuarryPlus.LOGGER.debug(marker, "To nbt of {}", v)
+    QuarryPlus.LOGGER.debug(MARKER, "To nbt of {}", v)
   }
 
   private[this] def logFrom(name: String, v: Any): Unit = {
-    QuarryPlus.LOGGER.debug(marker, "From nbt of {} data:{}", name, v)
+    QuarryPlus.LOGGER.debug(MARKER, "From nbt of {} data:{}", name, v)
   }
 
   implicit val enchantmentHolderToNbt: EnchantmentHolder NBTWrapper NBTTagCompound = enchantments => {
@@ -304,11 +331,5 @@ object TileQuarry2 {
       val nbt = tag.getCompound(name)
       logFrom("Area", nbt)
       Area(nbt.getInt(NBT_X_MIN), nbt.getInt(NBT_Y_MIN), nbt.getInt(NBT_Z_MIN), nbt.getInt(NBT_X_MAX), nbt.getInt(NBT_Y_MAX), nbt.getInt(NBT_Z_MAX))
-  }
-  val modeLoad: NBTLoad[Mode] = {
-    case (tag, name) =>
-      val s = tag.getString(name)
-      logFrom("Mode", s)
-      MODES.collectFirst { case mode if mode.toString == s => mode }.get
   }
 }

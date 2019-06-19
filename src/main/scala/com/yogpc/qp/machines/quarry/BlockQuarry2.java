@@ -60,7 +60,7 @@ public class BlockQuarry2 extends QPBlock {
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
         if (!worldIn.isRemote) {
             Optional.ofNullable(worldIn.getTileEntity(pos)).flatMap(optCast(TileQuarry2.class))
-                .ifPresent(TileQuarry2::neghborChanged);
+                .ifPresent(TileQuarry2::neighborChanged);
         }
     }
 }

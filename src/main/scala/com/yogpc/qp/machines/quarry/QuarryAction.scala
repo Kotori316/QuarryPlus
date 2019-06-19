@@ -1,13 +1,14 @@
 package com.yogpc.qp.machines.quarry
 
-import com.yogpc.qp.NBTWrapper
 import com.yogpc.qp.machines.PowerManager
 import com.yogpc.qp.utils.Holder
+import com.yogpc.qp.{NBTWrapper, QuarryPlus}
 import net.minecraft.block.state.IBlockState
 import net.minecraft.nbt.{NBTDynamicOps, NBTTagCompound, NBTTagList}
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import net.minecraftforge.common.util.Constants.NBT
+import org.apache.logging.log4j.MarkerManager
 
 import scala.collection.JavaConverters
 
@@ -27,6 +28,7 @@ trait QuarryAction {
 }
 
 object QuarryAction {
+  final val MARKER = MarkerManager.getMarker("QUARRY_ACTION")
   private[this] final val mode_nbt = "mode"
   val none: QuarryAction = new QuarryAction {
     override def action(target: BlockPos): Unit = ()
@@ -65,10 +67,11 @@ object QuarryAction {
 
     var frameTargets: List[BlockPos] = {
       val r = quarry2.area
+      val firstZ = near(quarry2.getPos.getZ, r.zMin, r.zMax)
+      val lastZ = far(quarry2.getPos.getZ, r.zMin, r.zMax)
+      QuarryPlus.LOGGER.debug(MARKER, s"Make targets list of building frame. $r, firstZ=$firstZ, lastZ=$lastZ")
 
       def a(y: Int) = {
-        val firstZ = near(quarry2.getPos.getZ, r.zMin, r.zMax)
-        val lastZ = far(quarry2.getPos.getZ, r.zMin, r.zMax)
         Range(r.xMin, r.xMax).map(x => new BlockPos(x, y, firstZ)) ++
           Range(firstZ, lastZ, (lastZ - firstZ).signum).map(z => new BlockPos(r.xMax, y, z)) ++
           Range(r.xMax, r.xMin, -1).map(x => new BlockPos(x, y, lastZ)) ++
@@ -86,7 +89,7 @@ object QuarryAction {
     override def action(target: BlockPos): Unit = {
       frameTargets match {
         case head :: til if head == target =>
-          if (checkPlacable(quarry2.getWorld, target, Holder.blockFrame.getDammingState)
+          if (checkPlaceable(quarry2.getWorld, target, Holder.blockFrame.getDammingState)
             || quarry2.breakBlock(quarry2.getWorld, target)) {
             if (PowerManager.useEnergyFrameBuild(quarry2, quarry2.enchantments.unbreaking)) {
               quarry2.getWorld.setBlockState(target, Holder.blockFrame.getDammingState)
@@ -105,6 +108,7 @@ object QuarryAction {
 
     override def write(nbt: NBTTagCompound): NBTTagCompound = {
       import com.yogpc.qp._
+      nbt.put(mode_nbt, mode.toNBT)
       val list = frameTargets.map(_.toLong.toNBT).foldLeft(new NBTTagList) { case (l, tag) => l.add(tag); l }
       nbt.put("list", list)
       nbt
@@ -115,20 +119,21 @@ object QuarryAction {
 
   def near[A](pos: A, x1: A, x2: A)(implicit proxy: Numeric[A]): A = {
     val c = (proxy.minus _).curried(pos) andThen proxy.abs
-    List(x1, x2).minBy(c)
+    List(x1, x2).reduceLeft[A] { case (b, a) => if (proxy.lt(c(a), c(b))) a else b }
   }
 
   def far[A](pos: A, x1: A, x2: A)(implicit proxy: Numeric[A]): A = {
     val c = (proxy.minus _).curried(pos) andThen proxy.abs
-    List(x1, x2).maxBy(c)
+    List(x1, x2).reduceRight[A] { case (a, b) => if (proxy.gt(c(a), c(b))) a else b }
   }
 
-  def checkPlacable(world: World, pos: BlockPos, toPlace: IBlockState): Boolean = {
+  def checkPlaceable(world: World, pos: BlockPos, toPlace: IBlockState): Boolean = {
     val state = world.getBlockState(pos)
     state.isAir(world, pos) || state == toPlace
   }
 
   def load(quarry: TileQuarry2, tag: NBTTagCompound, name: String): QuarryAction = {
+    if (quarry.hasWorld && quarry.getWorld.isRemote) return none
     val nbt = tag.getCompound(name)
     val mode = nbt.getString(mode_nbt)
     mode match {
