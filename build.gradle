@@ -92,7 +92,7 @@ dependencies {
     implementation group: 'org.typelevel', name: "cats-core_2.12", version: '1.6.0'
 
     def mc_version = "1.13.2"
-    def jei_version = "5.0.0.20"
+    def jei_version = "5.0.0.28"
     // at runtime, use the full JEI jar
     implementation fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
 //    compile "mezz.jei:jei-${mc_version}:${jei_version}:sources"
