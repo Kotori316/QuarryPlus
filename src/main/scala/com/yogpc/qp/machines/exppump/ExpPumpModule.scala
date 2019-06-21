@@ -2,6 +2,7 @@ package com.yogpc.qp.machines.exppump
 
 import cats.Eval
 import cats.data.Kleisli
+import com.yogpc.qp.QuarryPlus
 import com.yogpc.qp.machines.base.{APowerTile, EnergyUsage, IEnchantableTile, IModule}
 import net.minecraft.entity.item.EntityXPOrb
 
@@ -24,7 +25,7 @@ final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: Eval[Int]) ext
   override def action(when: IModule.CalledWhen): Unit = {
     val xp = when match {
       case t: IModule.CollectingItem =>
-        t.entities.collect { case orb: EntityXPOrb if orb.isAlive => orb.remove(); orb.xpValue }.sum
+        t.entities.collect { case orb: EntityXPOrb if orb.isAlive => QuarryPlus.proxy.removeEntity(orb); orb.xpValue }.sum
       case s: IModule.OnBreak => s.xp
       case u: IModule.DropItem => u.xp
       case _ => 0

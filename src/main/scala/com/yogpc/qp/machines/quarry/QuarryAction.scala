@@ -29,23 +29,23 @@ trait QuarryAction {
 
   def mode: TileQuarry2.Mode
 
-  def write(nbt: NBTTagCompound): NBTTagCompound
+  def serverWrite(nbt: NBTTagCompound): NBTTagCompound = clientWrite(nbt)
+
+  def clientWrite(nbt: NBTTagCompound): NBTTagCompound = {
+    nbt.put(QuarryAction.mode_nbt, mode.toNBT)
+    nbt
+  }
 }
 
 object QuarryAction {
   final val MARKER = MarkerManager.getMarker("QUARRY_ACTION")
-  private[this] final val mode_nbt = "mode"
+  private final val mode_nbt = "mode"
   val none: QuarryAction = new QuarryAction {
     override def action(target: BlockPos): Unit = ()
 
     override def nextTarget(): BlockPos = BlockPos.ORIGIN
 
     override val mode: TileQuarry2.Mode = TileQuarry2.none
-
-    override def write(nbt: NBTTagCompound) = {
-      nbt.put(mode_nbt, mode.toNBT)
-      nbt
-    }
 
     override def nextAction(quarry2: TileQuarry2): QuarryAction = this
 
@@ -57,11 +57,6 @@ object QuarryAction {
     override def nextTarget(): BlockPos = BlockPos.ORIGIN
 
     override val mode: TileQuarry2.Mode = TileQuarry2.waiting
-
-    override def write(nbt: NBTTagCompound): NBTTagCompound = {
-      nbt.put(mode_nbt, mode.toNBT)
-      nbt
-    }
 
     override def nextAction(quarry2: TileQuarry2): QuarryAction = new MakeFrame(quarry2)
 
@@ -94,11 +89,15 @@ object QuarryAction {
     override def action(target: BlockPos): Unit = {
       frameTargets match {
         case head :: til if head == target =>
-          if (!checkBreakable(quarry2.getWorld, target, quarry2.getWorld.getBlockState(target), quarry2.modules)) {
-            frameTargets = til
+          if (checkPlaceable(quarry2.getWorld, target, Holder.blockFrame.getDammingState)) {
+            if (PowerManager.useEnergyFrameBuild(quarry2, quarry2.enchantments.unbreaking)) {
+              quarry2.getWorld.setBlockState(target, Holder.blockFrame.getDammingState)
+              frameTargets = til
+            }
           } else {
-            if (checkPlaceable(quarry2.getWorld, target, Holder.blockFrame.getDammingState)
-              || quarry2.breakBlock(quarry2.getWorld, target)) {
+            if (!checkBreakable(quarry2.getWorld, target, quarry2.getWorld.getBlockState(target), quarry2.modules)) {
+              frameTargets = til
+            } else if (quarry2.breakBlock(quarry2.getWorld, target)) {
               if (PowerManager.useEnergyFrameBuild(quarry2, quarry2.enchantments.unbreaking)) {
                 quarry2.getWorld.setBlockState(target, Holder.blockFrame.getDammingState)
                 frameTargets = til
@@ -115,11 +114,10 @@ object QuarryAction {
 
     override def mode: TileQuarry2.Mode = TileQuarry2.buildFrame
 
-    override def write(nbt: NBTTagCompound): NBTTagCompound = {
-      nbt.put(mode_nbt, mode.toNBT)
+    override def serverWrite(nbt: NBTTagCompound): NBTTagCompound = {
       val list = frameTargets.map(_.toLong.toNBT).foldLeft(new NBTTagList) { case (l, tag) => l.add(tag); l }
       nbt.put("list", list)
-      nbt
+      super.serverWrite(nbt)
     }
 
     def read(nbt: NBTTagCompound): MakeFrame = {
@@ -133,12 +131,13 @@ object QuarryAction {
   }
 
   class BreakBlock(quarry2: TileQuarry2, y: Int) extends QuarryAction {
-    var digTargets: List[BlockPos] = QuarryAction.digTargets(quarry2.area, quarry2.getPos, y)
+    var digTargets: List[BlockPos] = if (quarry2.hasWorld && !quarry2.getWorld.isRemote) QuarryAction.digTargets(quarry2.area, quarry2.getPos, y) else Nil
+    digTargets = digTargets.dropWhile(p => !checkBreakable(quarry2.getWorld, p, quarry2.getWorld.getBlockState(p), quarry2.modules))
 
     var headX: Double = (quarry2.area.xMin + quarry2.area.xMax + 1) / 2
     var headY: Double = y + 1
     var headZ: Double = (quarry2.area.zMin + quarry2.area.zMax + 1) / 2
-    var movingHead = false
+    var movingHead = true
 
     override def action(target: BlockPos): Unit = {
       if (movingHead) {
@@ -165,9 +164,10 @@ object QuarryAction {
           movingHead = true
         }
       }
-      if (quarry2.breakBlock(quarry2.getWorld, target)) {
+      if (!movingHead && quarry2.breakBlock(quarry2.getWorld, target)) {
         quarry2.getWorld.setBlockState(target, Blocks.AIR.getDefaultState)
         digTargets = digTargets.tail.dropWhile(p => !checkBreakable(quarry2.getWorld, p, quarry2.getWorld.getBlockState(p), quarry2.modules))
+        movingHead = true
       }
     }
 
@@ -179,15 +179,18 @@ object QuarryAction {
 
     override def mode = TileQuarry2.breakBlock
 
-    override def write(nbt: NBTTagCompound) = {
-      nbt.put(mode_nbt, mode.toNBT)
+    override def serverWrite(nbt: NBTTagCompound) = {
       val list = digTargets.map(_.toLong.toNBT).foldLeft(new NBTTagList) { case (l, tag) => l.add(tag); l }
       nbt.put("list", list)
       nbt.putInt("y", y)
+      super.serverWrite(nbt)
+    }
+
+    override def clientWrite(nbt: NBTTagCompound) = {
       nbt.putDouble("headX", headX)
       nbt.putDouble("headY", headY)
       nbt.putDouble("headZ", headZ)
-      nbt
+      super.clientWrite(nbt)
     }
 
     def read(nbt: NBTTagCompound): BreakBlock = {
@@ -204,7 +207,7 @@ object QuarryAction {
   def digTargets(r: TileQuarry2.Area, pos: BlockPos, y: Int, log: Boolean = true) = {
     val firstZ = near(pos.getZ, r.zMin + 1, r.zMax - 1)
     val lastZ = far(pos.getZ, r.zMin + 1, r.zMax - 1)
-    if (log) QuarryPlus.LOGGER.debug(MARKER, s"Make targets list of breaking blocks. $r, firstZ=$firstZ, lastZ=$lastZ")
+    if (log) QuarryPlus.LOGGER.debug(MARKER, s"Make targets list of breaking blocks. y=$y $r, firstZ=$firstZ, lastZ=$lastZ")
     Range.inclusive(r.xMin + 1, r.xMax - 1)
       .map(x => Range.inclusive(firstZ, lastZ, (lastZ - firstZ).signum).map(z => new BlockPos(x, y, z)))
       .zip(Stream.iterate(true)(b => !b))
@@ -231,7 +234,7 @@ object QuarryAction {
 
   def checkBreakable(world: World, pos: BlockPos, state: IBlockState, modules: Seq[IModule]): Boolean = {
     !state.isAir(world, pos) &&
-      state.getBlockHardness(world, pos) != -1 &&
+      state.getBlockHardness(world, pos) >= 0 &&
       !state.getBlockHardness(world, pos).isInfinity &&
       (!TilePump.isLiquid(state) || modules.exists(m => m.isInstanceOf[TilePump]))
   }
@@ -246,17 +249,14 @@ object QuarryAction {
       case TileQuarry2.breakBlock.toString => new BreakBlock(quarry, nbt.getInt("y"))
       case _ => none
     }
-    if (quarry.hasWorld && quarry.getWorld.isRemote) {
-      action
-    } else {
-      action match {
-        case QuarryAction.none | QuarryAction.waiting => action
-        case makeFrame: MakeFrame =>
-          makeFrame.read(nbt)
-        case breakBlock: BreakBlock =>
-          breakBlock.read(nbt)
-        case _ => none
-      }
+    action match {
+      case QuarryAction.none | QuarryAction.waiting => action
+      case makeFrame: MakeFrame =>
+        makeFrame.read(nbt)
+      case breakBlock: BreakBlock =>
+        breakBlock.read(nbt)
+      case _ => none
+
     }
   }
   val load: (TileQuarry2, NBTTagCompound, String) => QuarryAction = {
@@ -264,6 +264,6 @@ object QuarryAction {
   }
 
 
-  implicit val actionToNbt: QuarryAction NBTWrapper NBTTagCompound = action => action.write(new NBTTagCompound)
+  implicit val actionToNbt: QuarryAction NBTWrapper NBTTagCompound = action => action.serverWrite(new NBTTagCompound)
 
 }

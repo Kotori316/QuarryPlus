@@ -15,7 +15,9 @@ import net.minecraftforge.common.util.INBTSerializable
 import net.minecraftforge.items.{CapabilityItemHandler, ItemHandlerHelper}
 
 class QuarryStorage extends INBTSerializable[NBTTagCompound] {
+
   import QuarryAction.MARKER
+
   private var items = Map.empty[ItemDamage, ItemElement]
   private type FluidUnit = Long
   private var fluids = Map.empty[Fluid, FluidUnit]
@@ -36,8 +38,11 @@ class QuarryStorage extends INBTSerializable[NBTTagCompound] {
       ) yield cap)
         .collectFirst { case handler if ItemHandlerHelper.insertItem(handler, element.toStack, true).getCount != element.count => handler }
         .foreach { handler =>
-          ItemHandlerHelper.insertItem(handler, element.toStack, false)
-          items = items - key
+          val remain = ItemHandlerHelper.insertItem(handler, element.toStack, false)
+          if (remain.isEmpty)
+            items = items - key
+          else
+            items = items.updated(key, ItemElement(remain))
         }
     }
   }

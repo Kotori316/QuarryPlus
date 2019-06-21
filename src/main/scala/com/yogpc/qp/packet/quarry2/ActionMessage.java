@@ -22,7 +22,7 @@ public class ActionMessage implements IMessage<ActionMessage> {
         ActionMessage message = new ActionMessage();
         message.dim = IMessage.getDimId(quarry2.getWorld());
         message.pos = quarry2.getPos();
-        message.actionNBT = quarry2.action().write(new NBTTagCompound());
+        message.actionNBT = quarry2.action().clientWrite(new NBTTagCompound());
         return message;
     }
 

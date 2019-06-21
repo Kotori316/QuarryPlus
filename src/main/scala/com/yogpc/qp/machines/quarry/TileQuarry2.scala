@@ -7,6 +7,7 @@ import com.yogpc.qp.machines.base._
 import com.yogpc.qp.machines.{PowerManager, TranslationKeys}
 import com.yogpc.qp.packet.{PacketHandler, TileMessage}
 import com.yogpc.qp.utils.Holder
+import net.minecraft.entity.item.{EntityItem, EntityXPOrb}
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.{NBTTagCompound, NBTTagString}
 import net.minecraft.state.properties.BlockStateProperties
@@ -162,6 +163,18 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   }
 
   def breakBlock(world: World, pos: BlockPos): Boolean = {
+    if (pos.getX % 6 == 0 && pos.getZ % 6 == 0) {
+      // Gather items
+      import scala.collection.JavaConverters._
+      val aabb = new AxisAlignedBB(pos.getX - 4, pos.getY, pos.getZ - 4, pos.getX + 4, pos.getY + 5, pos.getZ + 4)
+      world.getEntitiesWithinAABB(classOf[EntityItem], aabb, e => e.isAlive)
+        .asScala.foreach { e =>
+        this.storage.addItem(e.getItem)
+        QuarryPlus.proxy.removeEntity(e)
+      }
+      val orbs = world.getEntitiesWithinAABB(classOf[EntityXPOrb], aabb).asScala.toList
+      modules.foreach(_.action(IModule.CollectingItem(orbs)))
+    }
     val state = world.getBlockState(pos)
     val fakePlayer = QuarryFakePlayer.get(world.asInstanceOf[WorldServer])
     fakePlayer.setHeldItem(EnumHand.MAIN_HAND, getEnchantedPickaxe)
@@ -198,7 +211,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   override def getDebugMessages = JavaConverters.seqAsJavaList(List(
     s"Mode: ${action.mode}",
     s"Target: ${target.show}",
-    s"Enchantment: $enchantments",
+    s"Enchantment: ${enchantments.show}",
     s"Area: ${area.show}",
     s"Modules: ${modules.mkString(comma)}",
     s"Attachments: ${attachments.mkString(comma)}",
@@ -232,6 +245,9 @@ object TileQuarry2 {
 
   //---------- Data ----------
   case class EnchantmentHolder(efficiency: Int, unbreaking: Int, fortune: Int, silktouch: Boolean, other: Map[ResourceLocation, Int] = Map.empty)
+
+  implicit val showEnchantmentHolder: Show[EnchantmentHolder] = holder =>
+    s"Efficiency=${holder.efficiency} Unbreaking=${holder.unbreaking} Fortune=${holder.fortune} Silktouch=${holder.silktouch} other=${holder.other}"
 
   case class Area(xMin: Int, yMin: Int, zMin: Int, xMax: Int, yMax: Int, zMax: Int)
 
@@ -282,11 +298,11 @@ object TileQuarry2 {
   }
 
   val areaLengthSq: Area => Double = {
-    case Area(xMin, yMin, zMin, xMax, yMax, zMax) =>
-      (xMax - xMin) ^ 2 + (yMax - yMin) ^ 2 + (zMax - zMin) ^ 2
+    case Area(xMin, _, zMin, xMax, yMax, zMax) =>
+      Math.pow(xMax - xMin, 2) + Math.pow(yMax, 2) + Math.pow(zMax - zMin, 2)
   }
   val areaBox: Area => AxisAlignedBB = area =>
-    new AxisAlignedBB(area.xMin, area.yMin, area.zMin, area.xMax, area.yMax, area.zMax)
+    new AxisAlignedBB(area.xMin, 0, area.zMin, area.xMax, area.yMax, area.zMax)
 
   val enchantmentMode: EnchantmentHolder => Int = e =>
     if (e.silktouch) -1 else e.fortune
@@ -301,8 +317,8 @@ object TileQuarry2 {
   private[this] final val NBT_Z_MIN = "zMin"
   private[this] final val NBT_Z_MAX = "zMax"
 
-  private[this] def logTo(v: Any): Unit = {
-    QuarryPlus.LOGGER.debug(MARKER, "To nbt of {}", v)
+  private[this] def logTo[T: Show](v: T): Unit = {
+    QuarryPlus.LOGGER.debug(MARKER, "To nbt of {}", v.show)
   }
 
   private[this] def logFrom(name: String, v: Any): Unit = {
@@ -331,7 +347,6 @@ object TileQuarry2 {
     nbt
   }
   implicit val modeToNbt: Mode NBTWrapper NBTTagString = mode => {
-    logTo(mode)
     new NBTTagString(mode.toString)
   }
   val enchantmentHolderLoad: NBTLoad[EnchantmentHolder] = {
