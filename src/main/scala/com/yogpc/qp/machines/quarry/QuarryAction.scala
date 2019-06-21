@@ -2,8 +2,13 @@ package com.yogpc.qp.machines.quarry
 
 import com.yogpc.qp._
 import com.yogpc.qp.machines.PowerManager
+import com.yogpc.qp.machines.base.IModule
+import com.yogpc.qp.machines.pump.TilePump
+import com.yogpc.qp.packet.PacketHandler
+import com.yogpc.qp.packet.quarry2.ActionMessage
 import com.yogpc.qp.utils.Holder
 import net.minecraft.block.state.IBlockState
+import net.minecraft.init.Blocks
 import net.minecraft.nbt.{NBTDynamicOps, NBTTagCompound, NBTTagList}
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
@@ -89,11 +94,15 @@ object QuarryAction {
     override def action(target: BlockPos): Unit = {
       frameTargets match {
         case head :: til if head == target =>
-          if (checkPlaceable(quarry2.getWorld, target, Holder.blockFrame.getDammingState)
-            || quarry2.breakBlock(quarry2.getWorld, target)) {
-            if (PowerManager.useEnergyFrameBuild(quarry2, quarry2.enchantments.unbreaking)) {
-              quarry2.getWorld.setBlockState(target, Holder.blockFrame.getDammingState)
-              frameTargets = til
+          if (!checkBreakable(quarry2.getWorld, target, quarry2.getWorld.getBlockState(target), quarry2.modules)) {
+            frameTargets = til
+          } else {
+            if (checkPlaceable(quarry2.getWorld, target, Holder.blockFrame.getDammingState)
+              || quarry2.breakBlock(quarry2.getWorld, target)) {
+              if (PowerManager.useEnergyFrameBuild(quarry2, quarry2.enchantments.unbreaking)) {
+                quarry2.getWorld.setBlockState(target, Holder.blockFrame.getDammingState)
+                frameTargets = til
+              }
             }
           }
         case _ =>
@@ -113,6 +122,13 @@ object QuarryAction {
       nbt
     }
 
+    def read(nbt: NBTTagCompound): MakeFrame = {
+      frameTargets = JavaConverters.asScalaBuffer(nbt.getList("list", NBT.TAG_LONG))
+        .flatMap(NBTDynamicOps.INSTANCE.getNumberValue(_).asScala.map(_.longValue()))
+        .map(BlockPos.fromLong).toList
+      this
+    }
+
     override def canGoNext(quarry: TileQuarry2): Boolean = frameTargets.isEmpty
   }
 
@@ -122,14 +138,42 @@ object QuarryAction {
     var headX: Double = (quarry2.area.xMin + quarry2.area.xMax + 1) / 2
     var headY: Double = y + 1
     var headZ: Double = (quarry2.area.zMin + quarry2.area.zMax + 1) / 2
+    var movingHead = false
 
     override def action(target: BlockPos): Unit = {
-
+      if (movingHead) {
+        val x = target.getX - this.headX
+        val y = target.getY + 1 - this.headY
+        val z = target.getZ - this.headZ
+        val distance = Math.sqrt(x * x + y * y + z * z)
+        val blocks = PowerManager.useEnergyQuarryHead(quarry2, distance, quarry2.enchantments.unbreaking)
+        if (blocks * 2 >= distance) {
+          this.headX = target.getX
+          this.headY = target.getY + 1
+          this.headZ = target.getZ
+          movingHead = false
+          if (!quarry2.getWorld.isRemote)
+            PacketHandler.sendToClient(ActionMessage.create(quarry2), quarry2.getWorld)
+        } else {
+          if (blocks > 0) {
+            this.headX += x * blocks / distance
+            this.headY += y * blocks / distance
+            this.headZ += z * blocks / distance
+            if (!quarry2.getWorld.isRemote)
+              PacketHandler.sendToClient(ActionMessage.create(quarry2), quarry2.getWorld)
+          }
+          movingHead = true
+        }
+      }
+      if (quarry2.breakBlock(quarry2.getWorld, target)) {
+        quarry2.getWorld.setBlockState(target, Blocks.AIR.getDefaultState)
+        digTargets = digTargets.tail.dropWhile(p => !checkBreakable(quarry2.getWorld, p, quarry2.getWorld.getBlockState(p), quarry2.modules))
+      }
     }
 
     override def nextTarget() = digTargets.headOption.getOrElse(BlockPos.ORIGIN)
 
-    override def nextAction(quarry2: TileQuarry2) = none
+    override def nextAction(quarry2: TileQuarry2) = if (y > 1) new BreakBlock(quarry2, y - 1) else none
 
     override def canGoNext(quarry: TileQuarry2) = digTargets.isEmpty
 
@@ -144,6 +188,16 @@ object QuarryAction {
       nbt.putDouble("headY", headY)
       nbt.putDouble("headZ", headZ)
       nbt
+    }
+
+    def read(nbt: NBTTagCompound): BreakBlock = {
+      this.digTargets = JavaConverters.asScalaBuffer(nbt.getList("list", NBT.TAG_LONG))
+        .flatMap(NBTDynamicOps.INSTANCE.getNumberValue(_).asScala.map(_.longValue()))
+        .map(BlockPos.fromLong).toList
+      this.headX = nbt.getDouble("headX")
+      this.headY = nbt.getDouble("headY")
+      this.headZ = nbt.getDouble("headZ")
+      this
     }
   }
 
@@ -175,8 +229,15 @@ object QuarryAction {
     state.isAir(world, pos) || state == toPlace
   }
 
-  def load(quarry: TileQuarry2, tag: NBTTagCompound, name: String): QuarryAction = {
-    val nbt = tag.getCompound(name)
+  def checkBreakable(world: World, pos: BlockPos, state: IBlockState, modules: Seq[IModule]): Boolean = {
+    !state.isAir(world, pos) &&
+      state.getBlockHardness(world, pos) != -1 &&
+      !state.getBlockHardness(world, pos).isInfinity &&
+      (!TilePump.isLiquid(state) || modules.exists(m => m.isInstanceOf[TilePump]))
+  }
+
+  val getNamed: (NBTTagCompound, String) => NBTTagCompound = _.getCompound(_)
+  val loadFromNBT: NBTTagCompound => TileQuarry2 => QuarryAction = nbt => quarry => {
     val mode = nbt.getString(mode_nbt)
     val action = mode match {
       case TileQuarry2.none.toString => none
@@ -191,22 +252,17 @@ object QuarryAction {
       action match {
         case QuarryAction.none | QuarryAction.waiting => action
         case makeFrame: MakeFrame =>
-          makeFrame.frameTargets = JavaConverters.asScalaBuffer(nbt.getList("list", NBT.TAG_LONG))
-            .flatMap(NBTDynamicOps.INSTANCE.getNumberValue(_).asScala.map(_.longValue()))
-            .map(BlockPos.fromLong).toList
-          makeFrame
+          makeFrame.read(nbt)
         case breakBlock: BreakBlock =>
-          breakBlock.digTargets = JavaConverters.asScalaBuffer(nbt.getList("list", NBT.TAG_LONG))
-            .flatMap(NBTDynamicOps.INSTANCE.getNumberValue(_).asScala.map(_.longValue()))
-            .map(BlockPos.fromLong).toList
-          breakBlock.headX = nbt.getDouble("headX")
-          breakBlock.headY = nbt.getDouble("headY")
-          breakBlock.headZ = nbt.getDouble("headZ")
-          breakBlock
+          breakBlock.read(nbt)
         case _ => none
       }
     }
   }
+  val load: (TileQuarry2, NBTTagCompound, String) => QuarryAction = {
+    case (q, t, s) => loadFromNBT(getNamed(t, s))(q)
+  }
+
 
   implicit val actionToNbt: QuarryAction NBTWrapper NBTTagCompound = action => action.write(new NBTTagCompound)
 

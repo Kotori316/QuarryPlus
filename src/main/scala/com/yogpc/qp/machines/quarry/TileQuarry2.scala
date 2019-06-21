@@ -10,7 +10,7 @@ import com.yogpc.qp.utils.Holder
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.{NBTTagCompound, NBTTagString}
 import net.minecraft.state.properties.BlockStateProperties
-import net.minecraft.util.math.{BlockPos, Vec3i}
+import net.minecraft.util.math.{AxisAlignedBB, BlockPos, Vec3i}
 import net.minecraft.util.text.{TextComponentString, TextComponentTranslation}
 import net.minecraft.util.{EnumFacing, EnumHand, NonNullList, ResourceLocation}
 import net.minecraft.world.{World, WorldServer}
@@ -209,6 +209,17 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   override def getDisplayName = super.getDisplayName
 
   override def hasFastRenderer = true
+
+  override def getRenderBoundingBox: AxisAlignedBB = {
+    if (area != TileQuarry2.zeroArea) TileQuarry2.areaBox(area)
+    else super.getRenderBoundingBox
+  }
+
+  override def getMaxRenderDistanceSquared: Double = {
+    if (area != TileQuarry2.zeroArea) TileQuarry2.areaLengthSq(area)
+    else super.getMaxRenderDistanceSquared
+  }
+
 }
 
 object TileQuarry2 {
@@ -269,6 +280,13 @@ object TileQuarry2 {
       }
     }
   }
+
+  val areaLengthSq: Area => Double = {
+    case Area(xMin, yMin, zMin, xMax, yMax, zMax) =>
+      (xMax - xMin) ^ 2 + (yMax - yMin) ^ 2 + (zMax - zMin) ^ 2
+  }
+  val areaBox: Area => AxisAlignedBB = area =>
+    new AxisAlignedBB(area.xMin, area.yMin, area.zMin, area.xMax, area.yMax, area.zMax)
 
   val enchantmentMode: EnchantmentHolder => Int = e =>
     if (e.silktouch) -1 else e.fortune
