@@ -71,7 +71,6 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
   //  val fluidHandlers: Map[EnumFacing, FluidHandler] = EnumFacing.values().map(f => f -> new FluidHandler(facing = f)).toMap.withDefaultValue(new FluidHandler(null))
   val fluidExtractFacings: Map[EnumFacing, mutable.Set[FluidStack]] = EnumFacing.values().map(f => f -> scala.collection.mutable.Set.empty[FluidStack]).toMap
   val mode = new Mode
-  var modules:Seq[IModule] = Nil
 
   override def tick(): Unit = {
     super.tick()
@@ -161,7 +160,10 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
               list.add(entity.getItem)
             })
             //remove XPs
-            modules.foreach(_.invoke(IModule.CollectingItem(getWorld.getEntitiesWithinAABB(classOf[EntityXPOrb], axis).asScala.toList)))
+            getWorld.getEntitiesWithinAABB(classOf[EntityXPOrb], axis).asScala.filter(nonNull).filter(_.isAlive).foreach(entityXPOrb => {
+              expPump.foreach(_.addXp(entityXPOrb.xpValue))
+              QuarryPlus.proxy.removeEntity(entityXPOrb)
+            })
             Right(list)
           } else {
             Right(NonNullList.create())
@@ -315,7 +317,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
           }
           if (collectFurnaceXP) {
             val xp = TileBasic.getSmeltingXp(l.list.map(_.toStack).asJavaCollection, Collections.emptyList(), getWorld)
-            modules.foreach(_.invoke(IModule.OnBreak(xp, world, target)))
+            expPump.filter(xpFilter(xp)).foreach(_.addXp(xp))
           }
           for (y <- drain) {
             p.setY(y)
@@ -490,7 +492,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     MinecraftForge.EVENT_BUS.post(event)
     if (!event.isCanceled) {
       action(event)
-      modules.foreach(_.invoke(IModule.DropItem(event.getExpToDrop)))
+      expPump.filter(xpFilter(event.getExpToDrop)).foreach(_.addXp(event.getExpToDrop))
       Nil
     } else {
       Seq(Reason(pos, state))
