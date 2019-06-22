@@ -6,9 +6,9 @@ import com.yogpc.qp.machines.base.IModule.AfterBreak
 import net.minecraft.block.state.IBlockState
 
 class ReplacerModule(val toReplace: Eval[IBlockState]) extends IModule {
-  override def id = ReplacerModule.id
+  override val id = ReplacerModule.id
 
-  override def calledWhen = Set(IModule.TypeAfterBreak)
+  override val calledWhen = Set(IModule.TypeAfterBreak)
 
   override def action(when: IModule.CalledWhen): Unit = {
     when match {

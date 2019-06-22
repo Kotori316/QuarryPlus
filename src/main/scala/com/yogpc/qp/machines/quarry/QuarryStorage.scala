@@ -2,6 +2,7 @@ package com.yogpc.qp.machines.quarry
 
 import com.yogpc.qp._
 import com.yogpc.qp.compat.FluidStore
+import com.yogpc.qp.machines.base.HasStorage
 import com.yogpc.qp.utils.{ItemDamage, ItemElement}
 import net.minecraft.fluid.Fluid
 import net.minecraft.item.ItemStack
@@ -14,7 +15,7 @@ import net.minecraftforge.common.util.Constants.NBT
 import net.minecraftforge.common.util.INBTSerializable
 import net.minecraftforge.items.{CapabilityItemHandler, ItemHandlerHelper}
 
-class QuarryStorage extends INBTSerializable[NBTTagCompound] {
+class QuarryStorage extends INBTSerializable[NBTTagCompound] with HasStorage.Storage {
 
   import QuarryAction.MARKER
 
@@ -90,4 +91,8 @@ class QuarryStorage extends INBTSerializable[NBTTagCompound] {
       Option(IRegistry.FLUID.get(new ResourceLocation(tag.getString("name")))).map(f => (f, tag.getLong("amount")))
     }.toMap
   }
+
+  override def insertItem(stack: ItemStack): Unit = addItem(stack)
+
+  override def insertFluid(fluid: Fluid, amount: Long): Unit = addFluid(fluid, amount)
 }

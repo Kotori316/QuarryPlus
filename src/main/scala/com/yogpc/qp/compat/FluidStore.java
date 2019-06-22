@@ -14,13 +14,14 @@ import com.kotori316.fluidtank.FluidAmount;
 
 public class FluidStore {
     public static final boolean enabled;
+    public static final long AMOUNT = 1000;
 
     static {
         enabled = ModList.get().isLoaded("fluidtank");
     }
 
     public static void injectToNearTile(World world, BlockPos pos, Fluid fluid) {
-        injectToNearTile(world, pos, fluid, FluidAmount.AMOUNT_BUCKET());
+        injectToNearTile(world, pos, fluid, AMOUNT);
     }
 
     /**

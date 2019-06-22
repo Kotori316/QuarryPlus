@@ -2,6 +2,7 @@ package com.yogpc.qp.machines.base
 
 import cats.Show
 import com.yogpc.qp.machines.base.IModule.CalledWhen
+import com.yogpc.qp.machines.pump.PumpModule
 import com.yogpc.qp.machines.replacer.ReplacerModule
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.Entity
@@ -26,8 +27,11 @@ trait IModule {
 
 object IModule {
   implicit val moduleShow: Show[IModule] = Show.fromToString
+  val getId: IModule => String = _.id
   val replaceModuleIDs = Set(ReplacerModule.id)
-  val hasReplaceModule: IModule => Boolean = replaceModuleIDs.compose(_.id)
+  val pumpModuleIDs = Set(PumpModule.ID)
+  val hasReplaceModule: IModule => Boolean = getId andThen replaceModuleIDs
+  val hasPumpModule: IModule => Boolean = getId andThen pumpModuleIDs
 
   sealed trait ModuleType
 

@@ -65,11 +65,11 @@ object QuarryAction {
 
   class MakeFrame(quarry2: TileQuarry2) extends QuarryAction {
 
-    var frameTargets: List[BlockPos] = {
+    var frameTargets: List[BlockPos] = if (quarry2.hasWorld && !quarry2.getWorld.isRemote) {
       val r = quarry2.area
       val firstZ = near(quarry2.getPos.getZ, r.zMin, r.zMax)
       val lastZ = far(quarry2.getPos.getZ, r.zMin, r.zMax)
-      QuarryPlus.LOGGER.debug(MARKER, s"Make targets list of building frame. $r, firstZ=$firstZ, lastZ=$lastZ")
+      QuarryPlus.LOGGER.debug(MARKER, s"Making targets list of building frame. $r, firstZ=$firstZ, lastZ=$lastZ")
 
       def a(y: Int) = {
         Range(r.xMin, r.xMax).map(x => new BlockPos(x, y, firstZ)) ++
@@ -84,6 +84,8 @@ object QuarryAction {
       }
 
       a(r.yMin) ++ Range.inclusive(r.yMin + 1, r.yMax - 1).flatMap(b) ++ a(r.yMax)
+    } else {
+      Nil
     }
 
     override def action(target: BlockPos): Unit = {
@@ -170,7 +172,8 @@ object QuarryAction {
       if (!movingHead) {
         val state = quarry2.getWorld.getBlockState(target)
         if (quarry2.breakBlock(quarry2.getWorld, target, state)) {
-          if (quarry2.modules.exists(IModule.hasReplaceModule)) {
+          // Replacer works for non liquid block.
+          if (!TilePump.isLiquid(state) && quarry2.modules.exists(IModule.hasReplaceModule)) {
             quarry2.modules.foreach(_.action(IModule.AfterBreak(quarry2.getWorld, target, state)))
           } else {
             quarry2.getWorld.setBlockState(target, Blocks.AIR.getDefaultState)
@@ -217,7 +220,7 @@ object QuarryAction {
   def digTargets(r: TileQuarry2.Area, pos: BlockPos, y: Int, reversed: Boolean, log: Boolean = true) = {
     val firstZ = near(pos.getZ, r.zMin + 1, r.zMax - 1)
     val lastZ = far(pos.getZ, r.zMin + 1, r.zMax - 1)
-    if (log) QuarryPlus.LOGGER.debug(MARKER, s"Make targets list of breaking blocks. y=$y $r, firstZ=$firstZ, lastZ=$lastZ")
+    if (log) QuarryPlus.LOGGER.debug(MARKER, s"Making targets list of breaking blocks. y=$y $r, firstZ=$firstZ, lastZ=$lastZ")
     val list = Range.inclusive(r.xMin + 1, r.xMax - 1)
       .map(x => Range.inclusive(firstZ, lastZ, (lastZ - firstZ).signum).map(z => new BlockPos(x, y, z)))
       .zip(Stream.iterate(true)(b => !b))
@@ -249,7 +252,7 @@ object QuarryAction {
     !state.isAir(world, pos) &&
       state.getBlockHardness(world, pos) >= 0 &&
       !state.getBlockHardness(world, pos).isInfinity &&
-      (!TilePump.isLiquid(state) || modules.exists(m => m.isInstanceOf[TilePump]))
+      (!TilePump.isLiquid(state) || modules.exists(IModule.hasPumpModule))
   }
 
   val getNamed: (NBTTagCompound, String) => NBTTagCompound = _.getCompound(_)

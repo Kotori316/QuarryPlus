@@ -37,6 +37,7 @@ import com.yogpc.qp.machines.base.IEnchantableTile;
 import com.yogpc.qp.machines.base.IModule;
 import com.yogpc.qp.machines.base.QPBlock;
 import com.yogpc.qp.machines.quarry.TileQuarry;
+import com.yogpc.qp.machines.quarry.TileQuarry2;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.pump.Mappings;
 import com.yogpc.qp.packet.pump.Now;
@@ -240,7 +241,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
 
     @Override
     public IModule getModule() {
-        return null;
+        return PumpModule.fromTile(this, (APowerTile) G_connected());
     }
 
     public void setWorking(boolean b) {
@@ -282,7 +283,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
 
     public void S_changeRange(final EntityPlayer ep) {
         if (this.range >= (this.fortune + 1) * 2) {
-            if (G_connected() instanceof TileQuarry)
+            if (G_connected() instanceof TileQuarry || G_connected() instanceof TileQuarry2)
                 this.quarryRange = true;
             this.range = 0;
         } else if (this.quarryRange)
@@ -318,9 +319,9 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         this.py = Y_SIZE - 1;
         this.px = -1;
         final IAttachable tb = G_connected();
-        @Nullable TileQuarry b = null;
-        if (tb instanceof TileQuarry)
-            b = (TileQuarry) tb;
+        @Nullable RangeWrapper b = null;
+        if (tb instanceof TileQuarry || tb instanceof TileQuarry2)
+            b = RangeWrapper.of(tb);
         if (b != null && b.yMax != Integer.MIN_VALUE) {
             chunk_side_x = 1 + (b.xMax >> 4) - (b.xMin >> 4);
             chunk_side_z = 1 + (b.zMax >> 4) - (b.zMin >> 4);
@@ -454,18 +455,18 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                     for (bz = 0; bz < this.block_side_z; bz++)
                         if ((this.blocks[this.py - this.yOffset][bx][bz] & 0x40) != 0) {
                             drainBlock(bx, bz, Holder.blockFrame().getDammingState());
-                            if (tile instanceof TileQuarry) {
-                                TileQuarry quarry = (TileQuarry) tile;
+                            if (tile instanceof TileQuarry || tile instanceof TileQuarry2) {
+                                RangeWrapper wrapper = RangeWrapper.of(tile);
                                 int xTarget = bx + xOffset;
                                 int zTarget = bz + zOffset;
-                                if (quarry.G_getNow() != TileQuarry.Mode.NOT_NEED_BREAK) {
+                                if (!wrapper.waiting()) {
                                     if (Config.common().debug()) {
-                                        if ((quarry.xMin < xTarget && xTarget < quarry.xMax) && (quarry.zMin < zTarget && zTarget < quarry.zMax))
+                                        if ((wrapper.xMin < xTarget && xTarget < wrapper.xMax) && (wrapper.zMin < zTarget && zTarget < wrapper.zMax))
                                             QuarryPlus.LOGGER.warn(String.format("Quarry placed frame at %d, %d, %d", xTarget, py, zTarget));
                                     }
                                     autoChange(false);
                                 } else {
-                                    if ((quarry.xMin <= xTarget && xTarget <= quarry.xMax) && (quarry.zMin <= zTarget && zTarget <= quarry.zMax)) {
+                                    if ((wrapper.xMin <= xTarget && xTarget <= wrapper.xMax) && (wrapper.zMin <= zTarget && zTarget <= wrapper.zMax)) {
                                         if (Config.common().debug())
                                             QuarryPlus.LOGGER.warn(String.format("Quarry placed frame at %d, %d, %d", xTarget, py, zTarget));
                                         autoChange(true);
@@ -501,8 +502,8 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
      * @return true if the blockstate is liquid state.
      */
     public static boolean isLiquid(@Nonnull final IBlockState state, final boolean findSource, final World world, final BlockPos pos) {
-        Block block = state.getBlock();
         if (state.getFluidState() != Fluids.EMPTY.getDefaultState()) return true;
+        Block block = state.getBlock();
         if (block instanceof IFluidBlock)
             return !findSource || ((IFluidBlock) block).canDrain(world, pos);
         else {
@@ -632,8 +633,14 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                 }
             });*/
             IFluidState fluidState = world.getFluidState(blockPos);
-            if (fluidState.isSource())
-                FluidStore.injectToNearTile(world, pos, fluidState.getFluid());
+            if (fluidState.isSource()) {
+                if (G_connected() instanceof TileQuarry2) {
+                    TileQuarry2 quarry2 = (TileQuarry2) G_connected();
+                    quarry2.getStorage().insertFluid(fluidState.getFluid(), FluidStore.AMOUNT);
+                } else {
+                    FluidStore.injectToNearTile(world, pos, fluidState.getFluid());
+                }
+            }
             world.setBlockState(blockPos, tb);
         }
     }

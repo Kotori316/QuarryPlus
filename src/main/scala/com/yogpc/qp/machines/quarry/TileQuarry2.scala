@@ -25,7 +25,7 @@ import scala.collection.JavaConverters
 
 class TileQuarry2 extends APowerTile(Holder.quarry2)
   with IEnchantableTile
-  with HasInv
+  with HasStorage
   with IAttachable
   with IDebugSender
   with IChunkLoadTile {
@@ -39,7 +39,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   var area = zeroArea
   var action: QuarryAction = QuarryAction.none
   var target = BlockPos.ORIGIN
-  val storage = new QuarryStorage
+  private val storage = new QuarryStorage
 
   override def tick(): Unit = {
     super.tick()
@@ -100,7 +100,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
       findArea(facing, world, pos) match {
         case (newArea, markerOpt) =>
           area = newArea
-          markerOpt.foreach(m => JavaConverters.asScalaBuffer(m.removeFromWorldWithItem()).foreach(storage.addItem))
+          markerOpt.foreach(m => JavaConverters.asScalaBuffer(m.removeFromWorldWithItem()).foreach(storage.insertItem))
       }
     }
     action = QuarryAction.waiting
@@ -222,7 +222,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     s"Attachments: ${attachments.mkString(comma)}",
   ).map(new TextComponentString(_)))
 
-  override def getName = new TextComponentTranslation(getDebugName)
+  def getName = new TextComponentTranslation(getDebugName)
 
   override def getDisplayName = super.getDisplayName
 
@@ -238,6 +238,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     else super.getMaxRenderDistanceSquared
   }
 
+  override def getStorage = storage
 }
 
 object TileQuarry2 {
