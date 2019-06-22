@@ -89,15 +89,16 @@ object QuarryAction {
     override def action(target: BlockPos): Unit = {
       frameTargets match {
         case head :: til if head == target =>
-          if (checkPlaceable(quarry2.getWorld, target, Holder.blockFrame.getDammingState)) {
+          val state = quarry2.getWorld.getBlockState(target)
+          if (checkPlaceable(quarry2.getWorld, target, state, Holder.blockFrame.getDammingState)) {
             if (PowerManager.useEnergyFrameBuild(quarry2, quarry2.enchantments.unbreaking)) {
               quarry2.getWorld.setBlockState(target, Holder.blockFrame.getDammingState)
               frameTargets = til
             }
           } else {
-            if (!checkBreakable(quarry2.getWorld, target, quarry2.getWorld.getBlockState(target), quarry2.modules)) {
+            if (!checkBreakable(quarry2.getWorld, target, state, quarry2.modules)) {
               frameTargets = til
-            } else if (quarry2.breakBlock(quarry2.getWorld, target)) {
+            } else if (quarry2.breakBlock(quarry2.getWorld, target, state)) {
               if (PowerManager.useEnergyFrameBuild(quarry2, quarry2.enchantments.unbreaking)) {
                 quarry2.getWorld.setBlockState(target, Holder.blockFrame.getDammingState)
                 frameTargets = til
@@ -110,7 +111,7 @@ object QuarryAction {
 
     override def nextTarget(): BlockPos = frameTargets.headOption.getOrElse(BlockPos.ORIGIN)
 
-    override def nextAction(quarry2: TileQuarry2): QuarryAction = new BreakBlock(quarry2, quarry2.area.yMin - 1)
+    override def nextAction(quarry2: TileQuarry2): QuarryAction = new BreakBlock(quarry2, quarry2.area.yMin - 1, false)
 
     override def mode: TileQuarry2.Mode = TileQuarry2.buildFrame
 
@@ -130,13 +131,15 @@ object QuarryAction {
     override def canGoNext(quarry: TileQuarry2): Boolean = frameTargets.isEmpty
   }
 
-  class BreakBlock(quarry2: TileQuarry2, y: Int) extends QuarryAction {
-    var digTargets: List[BlockPos] = if (quarry2.hasWorld && !quarry2.getWorld.isRemote) QuarryAction.digTargets(quarry2.area, quarry2.getPos, y) else Nil
+  class BreakBlock(quarry2: TileQuarry2, y: Int, reversed: Boolean, var headX: Double, var headY: Double, var headZ: Double) extends QuarryAction {
+
+    def this(quarry2: TileQuarry2, y: Int, reversed: Boolean) {
+      this(quarry2, y, reversed, (quarry2.area.xMin + quarry2.area.xMax + 1) / 2, y + 1, (quarry2.area.zMin + quarry2.area.zMax + 1) / 2)
+    }
+
+    var digTargets: List[BlockPos] = if (quarry2.hasWorld && !quarry2.getWorld.isRemote) QuarryAction.digTargets(quarry2.area, quarry2.getPos, y, reversed) else Nil
     digTargets = digTargets.dropWhile(p => !checkBreakable(quarry2.getWorld, p, quarry2.getWorld.getBlockState(p), quarry2.modules))
 
-    var headX: Double = (quarry2.area.xMin + quarry2.area.xMax + 1) / 2
-    var headY: Double = y + 1
-    var headZ: Double = (quarry2.area.zMin + quarry2.area.zMax + 1) / 2
     var movingHead = true
 
     override def action(target: BlockPos): Unit = {
@@ -164,16 +167,23 @@ object QuarryAction {
           movingHead = true
         }
       }
-      if (!movingHead && quarry2.breakBlock(quarry2.getWorld, target)) {
-        quarry2.getWorld.setBlockState(target, Blocks.AIR.getDefaultState)
-        digTargets = digTargets.tail.dropWhile(p => !checkBreakable(quarry2.getWorld, p, quarry2.getWorld.getBlockState(p), quarry2.modules))
-        movingHead = true
+      if (!movingHead) {
+        val state = quarry2.getWorld.getBlockState(target)
+        if (quarry2.breakBlock(quarry2.getWorld, target, state)) {
+          if (quarry2.modules.exists(IModule.hasReplaceModule)) {
+            quarry2.modules.foreach(_.action(IModule.AfterBreak(quarry2.getWorld, target, state)))
+          } else {
+            quarry2.getWorld.setBlockState(target, Blocks.AIR.getDefaultState)
+          }
+          digTargets = digTargets.tail.dropWhile(p => !checkBreakable(quarry2.getWorld, p, quarry2.getWorld.getBlockState(p), quarry2.modules))
+          movingHead = true
+        }
       }
     }
 
     override def nextTarget() = digTargets.headOption.getOrElse(BlockPos.ORIGIN)
 
-    override def nextAction(quarry2: TileQuarry2) = if (y > 1) new BreakBlock(quarry2, y - 1) else none
+    override def nextAction(quarry2: TileQuarry2) = if (y > 1) new BreakBlock(quarry2, y - 1, !reversed, headX, headY, headZ) else none
 
     override def canGoNext(quarry: TileQuarry2) = digTargets.isEmpty
 
@@ -204,17 +214,21 @@ object QuarryAction {
     }
   }
 
-  def digTargets(r: TileQuarry2.Area, pos: BlockPos, y: Int, log: Boolean = true) = {
+  def digTargets(r: TileQuarry2.Area, pos: BlockPos, y: Int, reversed: Boolean, log: Boolean = true) = {
     val firstZ = near(pos.getZ, r.zMin + 1, r.zMax - 1)
     val lastZ = far(pos.getZ, r.zMin + 1, r.zMax - 1)
     if (log) QuarryPlus.LOGGER.debug(MARKER, s"Make targets list of breaking blocks. y=$y $r, firstZ=$firstZ, lastZ=$lastZ")
-    Range.inclusive(r.xMin + 1, r.xMax - 1)
+    val list = Range.inclusive(r.xMin + 1, r.xMax - 1)
       .map(x => Range.inclusive(firstZ, lastZ, (lastZ - firstZ).signum).map(z => new BlockPos(x, y, z)))
       .zip(Stream.iterate(true)(b => !b))
       .flatMap {
         case (p1, true) => p1
         case (p2, false) => p2.reverse
       }.toList
+    if (reversed)
+      list.reverse
+    else
+      list
   }
 
   def near[A](pos: A, x1: A, x2: A)(implicit proxy: Numeric[A]): A = {
@@ -227,8 +241,7 @@ object QuarryAction {
     List(x1, x2).reduceRight[A] { case (a, b) => if (proxy.gt(c(a), c(b))) a else b }
   }
 
-  def checkPlaceable(world: World, pos: BlockPos, toPlace: IBlockState): Boolean = {
-    val state = world.getBlockState(pos)
+  def checkPlaceable(world: World, pos: BlockPos, state: IBlockState, toPlace: IBlockState): Boolean = {
     state.isAir(world, pos) || state == toPlace
   }
 
@@ -246,7 +259,7 @@ object QuarryAction {
       case TileQuarry2.none.toString => none
       case TileQuarry2.waiting.toString => waiting
       case TileQuarry2.buildFrame.toString => new MakeFrame(quarry)
-      case TileQuarry2.breakBlock.toString => new BreakBlock(quarry, nbt.getInt("y"))
+      case TileQuarry2.breakBlock.toString => new BreakBlock(quarry, nbt.getInt("y"), false)
       case _ => none
     }
     action match {

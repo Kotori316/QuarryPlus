@@ -105,7 +105,7 @@ public class TileExpPump extends APacketTile implements IEnchantableTile, IDebug
         }
     }
 
-    private void addXp(int amount) {
+    public void addXp(int amount) {
         module.xp_$eq(module.xp() + amount);
         if (module.xp() > 0 ^ world.getBlockState(pos).get(ENABLED)) {
             IBlockState state = world.getBlockState(pos).with(ENABLED, module.xp() > 0);

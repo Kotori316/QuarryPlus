@@ -6,11 +6,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.APacketTile;
 import com.yogpc.qp.machines.base.IAttachable;
 import com.yogpc.qp.machines.base.IAttachment;
+import com.yogpc.qp.machines.base.IDebugSender;
 import com.yogpc.qp.machines.base.IModule;
 import com.yogpc.qp.machines.base.QPBlock;
 import com.yogpc.qp.machines.pump.TilePump;
@@ -21,6 +24,8 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 import org.apache.commons.lang3.tuple.Pair;
 import scala.Symbol;
 
@@ -31,7 +36,7 @@ import static jp.t2v.lab.syntax.MapStreamSyntax.byValue;
 import static jp.t2v.lab.syntax.MapStreamSyntax.not;
 import static jp.t2v.lab.syntax.MapStreamSyntax.values;
 
-public class TileReplacer extends APacketTile implements IAttachment {
+public class TileReplacer extends APacketTile implements IAttachment, IDebugSender {
 
     public static final Symbol SYMBOL = Symbol.apply("Replacer");
     private static final List<Predicate<IBlockState>> rejects = new ArrayList<>(Arrays.asList(
@@ -43,6 +48,7 @@ public class TileReplacer extends APacketTile implements IAttachment {
     private EnumFacing facing;
     private boolean loading = false;
     private IBlockState toReplaceState = Blocks.AIR.getDefaultState();
+    private final ReplacerModule module = ReplacerModule.apply(this);
 
     public TileReplacer() {
         super(Holder.replacerType());
@@ -101,7 +107,7 @@ public class TileReplacer extends APacketTile implements IAttachment {
 
     @Override
     public IModule getModule() {
-        return null;
+        return this.module;
     }
 
     @Override
@@ -121,4 +127,17 @@ public class TileReplacer extends APacketTile implements IAttachment {
         return toReplaceState;
     }
 
+    @Override
+    public String getDebugName() {
+        return TranslationKeys.replacer;
+    }
+
+    @Override
+    public List<? extends ITextComponent> getDebugMessages() {
+        return Stream.of(
+            "Connect: " + facing,
+            "toReplaceState: " + toReplaceState,
+            "Module: " + module
+        ).map(TextComponentString::new).collect(Collectors.toList());
+    }
 }

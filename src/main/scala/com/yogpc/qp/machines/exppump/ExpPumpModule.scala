@@ -14,11 +14,7 @@ final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: Eval[Int]) ext
         .getOrElse(0)))
   }
 
-  override type Accessor = ExpPumpModule
-
-  override val calledWhen = Set(classOf[IModule.CollectingItem], classOf[IModule.OnBreak], classOf[IModule.DropItem])
-
-  override val access: Option[ExpPumpModule] = Some(this)
+  override val calledWhen = Set(IModule.TypeCollectItem, IModule.TypeBeforeBreak)
 
   var xp: Int = _
 
@@ -26,8 +22,7 @@ final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: Eval[Int]) ext
     val xp = when match {
       case t: IModule.CollectingItem =>
         t.entities.collect { case orb: EntityXPOrb if orb.isAlive => QuarryPlus.proxy.removeEntity(orb); orb.xpValue }.sum
-      case s: IModule.OnBreak => s.xp
-      case u: IModule.DropItem => u.xp
+      case s: IModule.BeforeBreak => s.xp
       case _ => 0
     }
     addXp(xp)
@@ -43,9 +38,13 @@ final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: Eval[Int]) ext
   private val getEnergy = Kleisli((amount: Int) => unbreaking.map(u => 10 * amount * APowerTile.MicroJtoMJ / (1 + u)))
 
   override def toString = s"ExpPumpModule($xp)"
+
+  override val id = ExpPumpModule.id
 }
 
 object ExpPumpModule {
+  final val id = "quarryplus:module_exp"
+
   def apply(useEnergy: java.util.function.LongPredicate, unbreaking: java.util.function.IntSupplier): ExpPumpModule =
     new ExpPumpModule(l => useEnergy.test(l), Eval.always(unbreaking.getAsInt))
 

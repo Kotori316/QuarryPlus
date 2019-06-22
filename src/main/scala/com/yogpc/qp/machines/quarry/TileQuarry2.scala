@@ -7,13 +7,14 @@ import com.yogpc.qp.machines.base._
 import com.yogpc.qp.machines.{PowerManager, TranslationKeys}
 import com.yogpc.qp.packet.{PacketHandler, TileMessage}
 import com.yogpc.qp.utils.Holder
+import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.item.{EntityItem, EntityXPOrb}
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.{NBTTagCompound, NBTTagString}
 import net.minecraft.state.properties.BlockStateProperties
+import net.minecraft.util._
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos, Vec3i}
 import net.minecraft.util.text.{TextComponentString, TextComponentTranslation}
-import net.minecraft.util.{EnumFacing, EnumHand, NonNullList, ResourceLocation}
 import net.minecraft.world.{World, WorldServer}
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.ForgeEventFactory
@@ -162,12 +163,17 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     refreshModules()
   }
 
-  def breakBlock(world: World, pos: BlockPos): Boolean = {
+  /**
+    * This method does not place any blocks.
+    *
+    * @return True if succeeded.
+    */
+  def breakBlock(world: World, pos: BlockPos, state: IBlockState): Boolean = {
     if (pos.getX % 6 == 0 && pos.getZ % 6 == 0) {
       // Gather items
       import scala.collection.JavaConverters._
       val aabb = new AxisAlignedBB(pos.getX - 4, pos.getY, pos.getZ - 4, pos.getX + 4, pos.getY + 5, pos.getZ + 4)
-      world.getEntitiesWithinAABB(classOf[EntityItem], aabb, e => e.isAlive)
+      world.getEntitiesWithinAABB[EntityItem](classOf[EntityItem], aabb, EntitySelectors.IS_ALIVE)
         .asScala.foreach { e =>
         this.storage.addItem(e.getItem)
         QuarryPlus.proxy.removeEntity(e)
@@ -175,7 +181,6 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
       val orbs = world.getEntitiesWithinAABB(classOf[EntityXPOrb], aabb).asScala.toList
       modules.foreach(_.action(IModule.CollectingItem(orbs)))
     }
-    val state = world.getBlockState(pos)
     val fakePlayer = QuarryFakePlayer.get(world.asInstanceOf[WorldServer])
     fakePlayer.setHeldItem(EnumHand.MAIN_HAND, getEnchantedPickaxe)
     val event = new BlockEvent.BreakEvent(world, pos, state, fakePlayer)
@@ -192,8 +197,8 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
       list
     }
     if (PowerManager.useEnergyBreak(self, state.getBlockHardness(world, pos),
-      TileQuarry2.enchantmentMode(enchantments), enchantments.unbreaking, false)) {
-      modules.foreach(_.invoke(IModule.OnBreak(event.getExpToDrop, world, pos)))
+      TileQuarry2.enchantmentMode(enchantments), enchantments.unbreaking, modules.exists(IModule.hasReplaceModule))) {
+      modules.foreach(_.invoke(IModule.BeforeBreak(event.getExpToDrop, world, pos)))
       drops.forEach(storage.addItem)
       true
     } else {
@@ -260,6 +265,7 @@ object TileQuarry2 {
   val buildFrame = new Mode("BuildFrame")
   val breakBlock = new Mode("BreakBlock")
 
+  //---------- Data Functions ----------
   val posToArea: (Vec3i, Vec3i) => Area = {
     case (p1, p2) => Area(Math.min(p1.getX, p2.getX), Math.min(p1.getY, p2.getY), Math.min(p1.getZ, p2.getZ),
       Math.max(p1.getX, p2.getX), Math.max(p1.getY, p2.getY), Math.max(p1.getZ, p2.getZ))

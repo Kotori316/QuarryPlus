@@ -1,34 +1,48 @@
 package com.yogpc.qp.machines.base
 
+import cats.Show
 import com.yogpc.qp.machines.base.IModule.CalledWhen
+import com.yogpc.qp.machines.replacer.ReplacerModule
+import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.Entity
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 
 trait IModule {
-  type Accessor
+  def id: String
 
-  def calledWhen: Set[Class[_ <: IModule.CalledWhen]]
+  def calledWhen: Set[IModule.ModuleType]
 
   def invoke(when: CalledWhen): Unit = {
-    if (calledWhen(when.getClass)) {
+    if (calledWhen(when.moduleType)) {
       action(when)
     }
   }
 
-  def access: Option[Accessor]
-
   def action(when: CalledWhen): Unit
+
+  def toString: String
 }
 
 object IModule {
+  implicit val moduleShow: Show[IModule] = Show.fromToString
+  val replaceModuleIDs = Set(ReplacerModule.id)
+  val hasReplaceModule: IModule => Boolean = replaceModuleIDs.compose(_.id)
 
-  sealed trait CalledWhen
+  sealed trait ModuleType
 
-  case class OnBreak(xp: Int, world: World, pos: BlockPos) extends CalledWhen
+  final case object TypeBeforeBreak extends ModuleType
 
-  case class DropItem(xp: Int) extends CalledWhen
+  final case object TypeCollectItem extends ModuleType
 
-  case class CollectingItem(entities: List[_ <: Entity]) extends CalledWhen
+  final case object TypeAfterBreak extends ModuleType
+
+  sealed abstract class CalledWhen(val moduleType: ModuleType)
+
+  final case class BeforeBreak(xp: Int, world: World, pos: BlockPos) extends CalledWhen(TypeBeforeBreak)
+
+  final case class CollectingItem(entities: List[_ <: Entity]) extends CalledWhen(TypeCollectItem)
+
+  final case class AfterBreak(world: World, pos: BlockPos, before: IBlockState) extends CalledWhen(TypeAfterBreak)
 
 }
