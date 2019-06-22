@@ -101,13 +101,13 @@ public class TileReplacer extends APacketTile implements IAttachment {
     @Override
     public void read(NBTTagCompound compound) {
         super.read(compound);
-        compound.putString("facing", Optional.ofNullable(facing).map(EnumFacing::name).orElse(""));
+        facing = Optional.of(compound.getString("facing")).filter(not(String::isEmpty)).map(EnumFacing::byName).orElse(null);
         loading = true;
     }
 
     @Override
     public NBTTagCompound write(NBTTagCompound compound) {
-        facing = Optional.of(compound.getString("facing")).filter(not(String::isEmpty)).map(EnumFacing::byName).orElse(null);
+        compound.putString("facing", Optional.ofNullable(facing).map(EnumFacing::name).orElse(""));
         return super.write(compound);
     }
 
