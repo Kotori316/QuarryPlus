@@ -26,8 +26,8 @@ class QuarryStorage extends INBTSerializable[NBTTagCompound] with HasStorage.Sto
   def addItem(stack: ItemStack): Unit = {
     val key = ItemDamage(stack)
     val inserting = ItemElement(stack)
-    val element = items.getOrElse(key, ItemElement.invalid) + inserting
-    items = items.updated(key, element)
+    val element = items.getOrElse(key, ItemElement.invalid)
+    items = items.updated(key, element + inserting)
     QuarryPlus.LOGGER.debug(MARKER, s"Inserted $inserting")
   }
 
@@ -48,9 +48,9 @@ class QuarryStorage extends INBTSerializable[NBTTagCompound] with HasStorage.Sto
     }
   }
 
-  def addFluid(fluid: Fluid, amount: FluidUnit): Unit = {
-    val element = fluids.getOrElse(fluid, amount)
-    fluids = fluids.updated(fluid, element)
+  def addFluid(fluid: Fluid, amount: FluidUnit)(implicit proxy: Numeric[FluidUnit]): Unit = {
+    val element = fluids.getOrElse(fluid, proxy.zero)
+    fluids = fluids.updated(fluid, element + amount)
     QuarryPlus.LOGGER.debug(MARKER, s"Inserted $fluid @$amount mB")
   }
 
