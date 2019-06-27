@@ -32,6 +32,9 @@
   "item.quarryplus.statuschecker": "状態確認用具",
   "item.quarryplus.y_setter": "採掘機レベル設定用具",
   "item.quarryplus.template": "一括更新テンプレート",
+  "item.quarryplus.pump_module": "Quarry Pump Module",
+  "item.quarryplus.exppump_module": "Quarry Exp Collect Module",
+  "item.quarryplus.replacer_module": "Quarry Replacing Module",
 
   "chat.changemode": "動作モードを%sに切り替えました",
   "chat.currentmode": "現在%sで動作しています",

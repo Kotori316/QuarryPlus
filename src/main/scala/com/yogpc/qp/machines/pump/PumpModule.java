@@ -1,5 +1,6 @@
 package com.yogpc.qp.machines.pump;
 
+import java.util.function.IntSupplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -42,7 +43,7 @@ public abstract class PumpModule implements IModule {
         return new Tile(pump, tile);
     }
 
-    public static PumpModule fromModule(APowerTile connected, int unbreaking) {
+    public static PumpModule fromModule(APowerTile connected, IntSupplier unbreaking) {
         return new Module(connected, unbreaking);
     }
 
@@ -72,9 +73,9 @@ public abstract class PumpModule implements IModule {
         private final APowerTile tile;
         private final World world;
         private final BlockPos pos;
-        private final int unbreaking;
+        private final IntSupplier unbreaking;
 
-        public Module(APowerTile connected, int unbreaking) {
+        public Module(APowerTile connected, IntSupplier unbreaking) {
             this.tile = connected;
             this.world = connected.getWorld();
             this.pos = connected.getPos();
@@ -268,7 +269,7 @@ public abstract class PumpModule implements IModule {
                 this.px = -1;
 
             } while (--this.py >= this.cy);
-            if (count > 0 && PowerManager.useEnergyPump(tile, this.unbreaking, count, this.px == -1 ? count : 0))
+            if (count > 0 && PowerManager.useEnergyPump(tile, this.unbreaking.getAsInt(), count, this.px == -1 ? count : 0))
                 if (this.px == -1) {
                     int bx;
                     for (bx = 0; bx < this.block_side_x; bx++)

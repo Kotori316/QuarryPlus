@@ -8,6 +8,7 @@ import com.yogpc.qp.machines.controller.BlockController
 import com.yogpc.qp.machines.exppump.{BlockExpPump, TileExpPump}
 import com.yogpc.qp.machines.item._
 import com.yogpc.qp.machines.marker.{BlockMarker, TileMarker}
+import com.yogpc.qp.machines.modules.{ItemExpPumpModule, ItemPumpModule, ItemReplacerModule}
 import com.yogpc.qp.machines.mover.BlockMover
 import com.yogpc.qp.machines.pump.{BlockPump, TilePump}
 import com.yogpc.qp.machines.quarry._
@@ -108,8 +109,12 @@ object Holder {
   val itemYSetter = new Item((new Item.Properties).group(Holder.tab)).setRegistryName(QuarryPlus.modID, QuarryPlus.Names.ySetter)
   val itemQuarryDebug = new ItemQuarryDebug
   val itemTemplate = new ItemTemplate
+  val itemPumpModule = new ItemPumpModule
+  val itemExpPumpModule = new ItemExpPumpModule
+  val itemReplacerModule = new ItemReplacerModule
 
-  val items: Seq[Item] = Seq(itemStatusChecker, itemListEditor, itemLiquidSelector, itemYSetter, itemQuarryDebug, itemTemplate)
+  val items: Seq[Item] = Seq(itemStatusChecker, itemListEditor, itemLiquidSelector, itemYSetter, itemQuarryDebug, itemTemplate,
+    itemPumpModule, itemExpPumpModule, itemReplacerModule)
 
   //---------- IDisable ----------
   case class TileDisable(override val getSymbol: Symbol, override val defaultDisableMachine: Boolean = false) extends IDisabled

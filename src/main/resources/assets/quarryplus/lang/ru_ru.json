@@ -32,6 +32,9 @@
   "item.quarryplus.statuschecker": "Контролер статуса",
   "item.quarryplus.y_setter": "Quarry Y Setter",
   "item.quarryplus.template": "List Template",
+  "item.quarryplus.pump_module": "Quarry Pump Module",
+  "item.quarryplus.exppump_module": "Quarry Exp Collect Module",
+  "item.quarryplus.replacer_module": "Quarry Replacing Module",
 
   "chat.changemode": "Режим работы был изменен на %s",
   "chat.currentmode": "Сейчас, работая в %s",
