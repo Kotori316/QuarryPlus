@@ -40,6 +40,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   var action: QuarryAction = QuarryAction.none
   var target = BlockPos.ORIGIN
   private val storage = new QuarryStorage
+  val moduleInv = new ModuleInventory(new TextComponentString("Modules"), 5, this)
 
   override def tick(): Unit = {
     super.tick()
