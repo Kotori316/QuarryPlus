@@ -50,7 +50,7 @@ class QuarryStorage extends INBTSerializable[NBTTagCompound] with HasStorage.Sto
 
   def addFluid(fluid: Fluid, amount: FluidUnit)(implicit proxy: Numeric[FluidUnit]): Unit = {
     val element = fluids.getOrElse(fluid, proxy.zero)
-    fluids = fluids.updated(fluid, element + amount)
+    fluids = fluids.updated(fluid, proxy.plus(element, amount))
     QuarryPlus.LOGGER.debug(MARKER, s"Inserted $fluid @$amount mB")
   }
 

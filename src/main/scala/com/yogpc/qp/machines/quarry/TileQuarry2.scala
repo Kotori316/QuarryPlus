@@ -9,13 +9,14 @@ import com.yogpc.qp.packet.{PacketHandler, TileMessage}
 import com.yogpc.qp.utils.Holder
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.item.{EntityItem, EntityXPOrb}
+import net.minecraft.entity.player.{EntityPlayer, InventoryPlayer}
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.{NBTTagCompound, NBTTagString}
 import net.minecraft.state.properties.BlockStateProperties
 import net.minecraft.util._
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos, Vec3i}
 import net.minecraft.util.text.{TextComponentString, TextComponentTranslation}
-import net.minecraft.world.{World, WorldServer}
+import net.minecraft.world.{IInteractionObject, World, WorldServer}
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.ForgeEventFactory
 import net.minecraftforge.event.world.BlockEvent
@@ -40,7 +41,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   var action: QuarryAction = QuarryAction.none
   var target = BlockPos.ORIGIN
   private val storage = new QuarryStorage
-  val moduleInv = new ModuleInventory(new TextComponentString("Modules"), 5, this)
+  val moduleInv = new QuarryModuleInventory(new TextComponentString("Modules"), 5, this, _ => refreshModules())
 
   override def tick(): Unit = {
     super.tick()
@@ -78,6 +79,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     nbt.put("area", area.toNBT)
     nbt.put("mode", action.toNBT)
     nbt.put("storage", storage.toNBT)
+    nbt.put("moduleInv", moduleInv.toNBT)
     super.write(nbt)
   }
 
@@ -88,6 +90,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     area = areaLoad(nbt, "area")
     action = QuarryAction.load(self, nbt, "mode")
     storage.deserializeNBT(nbt.getCompound("storage"))
+    moduleInv.deserializeNBT(nbt.getCompound("moduleInv"))
   }
 
   override protected def isWorking = target != BlockPos.ORIGIN && action.mode != none
@@ -268,6 +271,18 @@ object TileQuarry2 {
   val waiting = new Mode("waiting")
   val buildFrame = new Mode("BuildFrame")
   val breakBlock = new Mode("BreakBlock")
+
+  class InteractionObject(quarry2: TileQuarry2) extends IInteractionObject {
+    override def createContainer(playerInventory: InventoryPlayer, playerIn: EntityPlayer) = new ContainerQuarryModule(quarry2, playerIn)
+
+    override def getGuiID = ContainerQuarryModule.GUI_ID
+
+    override val getName = new TextComponentTranslation(TranslationKeys.quarry)
+
+    override def hasCustomName = false
+
+    override def getCustomName = null
+  }
 
   //---------- Data Functions ----------
   val posToArea: (Vec3i, Vec3i) => Area = {

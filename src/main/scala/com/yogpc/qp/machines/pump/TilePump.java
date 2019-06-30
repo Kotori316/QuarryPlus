@@ -209,8 +209,8 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
             for (EnumFacing facing : EnumFacing.values()) {
                 te = world.getTileEntity(getPos().offset(facing));
                 if (te instanceof IAttachable && ((IAttachable) te).connect(facing.getOpposite(), Attachments.FLUID_PUMP)) {
-                    ((IAttachable) te).connectAttachment(facing.getOpposite(), Attachments.FLUID_PUMP, false);
                     setConnectTo(facing);
+                    ((IAttachable) te).connectAttachment(facing.getOpposite(), Attachments.FLUID_PUMP, false);
                     S_sendNowPacket();
                     return;
                 }

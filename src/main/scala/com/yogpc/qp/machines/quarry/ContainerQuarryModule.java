@@ -1,5 +1,6 @@
 package com.yogpc.qp.machines.quarry;
 
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.base.SlotTile;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -7,13 +8,16 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
 public class ContainerQuarryModule extends Container {
-    private final ModuleInventory moduleInventory;
+    public static final String GUI_ID = QuarryPlus.modID + ":gui_quarry_module";
+    private final QuarryModuleInventory moduleInventory;
+    private final int allSlots;
 
     public ContainerQuarryModule(TileQuarry2 quarry, EntityPlayer player) {
         this.moduleInventory = quarry.moduleInv();
+        this.allSlots = moduleInventory.getSizeInventory();
         int oneBox = 18;
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < allSlots; i++) {
             addSlot(new SlotTile(moduleInventory, i, 44 + i * oneBox, 27));
         }
 
@@ -34,7 +38,6 @@ public class ContainerQuarryModule extends Container {
 
     @Override
     public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
-        int allSlots = 1;
         ItemStack src = ItemStack.EMPTY;
         final Slot slot = this.inventorySlots.get(index);
         if (slot != null && slot.getHasStack()) {
@@ -46,7 +49,7 @@ public class ContainerQuarryModule extends Container {
             } else {
                 for (int i = 0; i < allSlots; i++) {
                     if (moduleInventory.isItemValidForSlot(i, remain)) {
-                        if (!mergeItemStack(remain, i, i + 1, false)) {
+                        if (!mergeItemStack(remain, i, i + allSlots, false)) {
                             return ItemStack.EMPTY;
                         }
                         break;

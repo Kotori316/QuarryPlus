@@ -49,7 +49,7 @@ public class FluidStore {
                 if (fluidAmounts[0].isEmpty()) break;
             }
         }
-        return fluidAmounts[0].amount();
+        return amount - fluidAmounts[0].amount();
     }
 
     @CapabilityInject(FluidAmount.Tank.class)

@@ -1,5 +1,6 @@
 package com.yogpc.qp.machines.pump;
 
+import java.util.Objects;
 import java.util.function.IntSupplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -47,13 +48,19 @@ public abstract class PumpModule implements IModule {
         return new Module(connected, unbreaking);
     }
 
+    @Override
+    public String toString() {
+        String simpleName = getClass().getName();
+        return simpleName.substring(simpleName.lastIndexOf(".") + 1);
+    }
+
     private static class Tile extends PumpModule {
         private final TilePump pump;
         private final APowerTile tile;
 
         public Tile(TilePump pump, APowerTile tile) {
-            this.pump = pump;
-            this.tile = tile;
+            this.pump = Objects.requireNonNull(pump);
+            this.tile = Objects.requireNonNull(tile);
         }
 
         @Override
