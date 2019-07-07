@@ -18,7 +18,7 @@ class TileQuarry2Test {
 
   @Test
   def defaultArea(): Unit = {
-    assertEquals(Area(-2, 0, 4, 8, 4, 15), TileQuarry2.defaultArea(new BlockPos(3, 0, 2), EnumFacing.SOUTH))
+    assertEquals(Area(-2, 0, 4, 8, 3, 14), TileQuarry2.defaultArea(new BlockPos(3, 0, 2), EnumFacing.SOUTH))
   }
 
   @Test

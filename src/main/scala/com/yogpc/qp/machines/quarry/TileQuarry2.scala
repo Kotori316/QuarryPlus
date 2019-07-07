@@ -295,8 +295,8 @@ object TileQuarry2 {
     val x = 11
     val y = (x - 1) / 2 //5
     val start = pos.offset(facing, 2)
-    val edge1 = start.offset(facing.rotateY(), y).up(4)
-    val edge2 = start.offset(facing, x).offset(facing.rotateYCCW(), y)
+    val edge1 = start.offset(facing.rotateY(), y).up(3)
+    val edge2 = start.offset(facing, x - 1).offset(facing.rotateYCCW(), y)
     posToArea(edge1, edge2)
   }
 
