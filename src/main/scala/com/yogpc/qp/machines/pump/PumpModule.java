@@ -287,18 +287,18 @@ public abstract class PumpModule implements IModule {
                                     RangeWrapper wrapper = RangeWrapper.of(tile);
                                     int xTarget = bx + xOffset;
                                     int zTarget = bz + zOffset;
-                                    if (!wrapper.waiting()) {
-                                        if (Config.common().debug()) {
-                                            if ((wrapper.xMin < xTarget && xTarget < wrapper.xMax) && (wrapper.zMin < zTarget && zTarget < wrapper.zMax))
-                                                QuarryPlus.LOGGER.warn(String.format("Quarry placed frame at %d, %d, %d", xTarget, py, zTarget));
-                                        }
-                                        autoChange(false);
-                                    } else {
+                                    if (wrapper.waiting()) {
                                         if ((wrapper.xMin <= xTarget && xTarget <= wrapper.xMax) && (wrapper.zMin <= zTarget && zTarget <= wrapper.zMax)) {
                                             if (Config.common().debug())
                                                 QuarryPlus.LOGGER.warn(String.format("Quarry placed frame at %d, %d, %d", xTarget, py, zTarget));
                                             autoChange(true);
                                         }
+                                    } else {
+                                        if (Config.common().debug()) {
+                                            if ((wrapper.xMin < xTarget && xTarget < wrapper.xMax) && (wrapper.zMin < zTarget && zTarget < wrapper.zMax))
+                                                QuarryPlus.LOGGER.warn(String.format("Quarry placed frame at %d, %d, %d", xTarget, py, zTarget));
+                                        }
+                                        autoChange(false);
                                     }
                                 }
                             }

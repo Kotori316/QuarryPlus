@@ -8,6 +8,7 @@ import com.yogpc.qp.machines.{PowerManager, TranslationKeys}
 import com.yogpc.qp.packet.{PacketHandler, TileMessage}
 import com.yogpc.qp.utils.Holder
 import net.minecraft.block.state.IBlockState
+import net.minecraft.entity.Entity
 import net.minecraft.entity.item.{EntityItem, EntityXPOrb}
 import net.minecraft.entity.player.{EntityPlayer, InventoryPlayer}
 import net.minecraft.item.ItemStack
@@ -184,7 +185,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
         this.storage.addItem(e.getItem)
         QuarryPlus.proxy.removeEntity(e)
       }
-      val orbs = world.getEntitiesWithinAABB(classOf[EntityXPOrb], aabb).asScala.toList
+      val orbs = world.getEntitiesWithinAABB(classOf[Entity], aabb).asScala.toList
       modules.foreach(_.action(IModule.CollectingItem(orbs)))
     }
     val fakePlayer = QuarryFakePlayer.get(world.asInstanceOf[WorldServer])

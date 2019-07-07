@@ -38,6 +38,7 @@ import com.yogpc.qp.packet.quarry.MoveHead;
 import com.yogpc.qp.utils.Holder;
 import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.init.Blocks;
@@ -334,7 +335,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
         result.forEach(QuarryPlus.proxy::removeEntity);
 
         if (facingMap.containsKey(EXP_PUMP)) {
-            List<EntityXPOrb> xpOrbs = world.getEntitiesWithinAABB(EntityXPOrb.class, axis);
+            List<Entity> xpOrbs = world.getEntitiesWithinAABB(Entity.class, axis);
             modules.forEach(iModule -> iModule.invoke(new IModule.CollectingItem(JavaConverters.asScalaBuffer(xpOrbs).toList())));
         }
 
