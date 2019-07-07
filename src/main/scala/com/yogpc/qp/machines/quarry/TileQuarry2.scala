@@ -9,7 +9,7 @@ import com.yogpc.qp.packet.{PacketHandler, TileMessage}
 import com.yogpc.qp.utils.Holder
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.Entity
-import net.minecraft.entity.item.{EntityItem, EntityXPOrb}
+import net.minecraft.entity.item.EntityItem
 import net.minecraft.entity.player.{EntityPlayer, InventoryPlayer}
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.{NBTTagCompound, NBTTagString}
@@ -28,6 +28,7 @@ import scala.collection.JavaConverters
 class TileQuarry2 extends APowerTile(Holder.quarry2)
   with IEnchantableTile
   with HasStorage
+  with HasInv
   with IAttachable
   with IDebugSender
   with IChunkLoadTile {
@@ -41,6 +42,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   var area = zeroArea
   var action: QuarryAction = QuarryAction.none
   var target = BlockPos.ORIGIN
+  var yLevel = 1
   private val storage = new QuarryStorage
   val moduleInv = new QuarryModuleInventory(new TextComponentString("Modules"), 5, this, _ => refreshModules())
 
@@ -81,6 +83,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     nbt.put("mode", action.toNBT)
     nbt.put("storage", storage.toNBT)
     nbt.put("moduleInv", moduleInv.toNBT)
+    nbt.put("yLevel", yLevel.toNBT)
     super.write(nbt)
   }
 
@@ -92,6 +95,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     action = QuarryAction.load(self, nbt, "mode")
     storage.deserializeNBT(nbt.getCompound("storage"))
     moduleInv.deserializeNBT(nbt.getCompound("moduleInv"))
+    yLevel = nbt.getInt("yLevel")
   }
 
   override protected def isWorking = target != BlockPos.ORIGIN && action.mode != none

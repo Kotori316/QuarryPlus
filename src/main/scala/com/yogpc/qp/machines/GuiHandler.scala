@@ -26,6 +26,7 @@ object GuiHandler {
       case YSetterInteractionObject.GUI_ID => tile.collect {
         case basic: TileBasic => new GuiQuarryLevel(basic, player)
         case quarry: TileAdvQuarry => new GuiQuarryLevel(quarry, player)
+        case quarry2: TileQuarry2 => new GuiQuarryLevel(quarry2, player)
       }
       case ItemListEditor.GUI_ID_Fortune => tile.collect { case basic: TileBasic => new GuiEnchList(Enchantments.FORTUNE, basic, player) }
       case ItemListEditor.GUI_ID_Silktouch => tile.collect { case basic: TileBasic => new GuiEnchList(Enchantments.SILK_TOUCH, basic, player) }

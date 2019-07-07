@@ -186,7 +186,7 @@ object QuarryAction {
 
     override def nextTarget() = digTargets.headOption.getOrElse(BlockPos.ORIGIN)
 
-    override def nextAction(quarry2: TileQuarry2) = if (y > 1) new BreakBlock(quarry2, y - 1, !reversed, headX, headY, headZ) else none
+    override def nextAction(quarry2: TileQuarry2) = if (y > quarry2.yLevel) new BreakBlock(quarry2, y - 1, !reversed, headX, headY, headZ) else none
 
     override def canGoNext(quarry: TileQuarry2) = digTargets.isEmpty
 

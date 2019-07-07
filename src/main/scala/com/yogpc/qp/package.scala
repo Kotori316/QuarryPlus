@@ -84,6 +84,7 @@ package object qp {
   }
 
   implicit val Long2NBT: NBTWrapper[Long, NBTTagLong] = (num: Long) => new NBTTagLong(num)
+  implicit val int2NBT: NBTWrapper[Int, NBTTagInt] = (num: Int) => new NBTTagInt(num)
 
   implicit val Fluid2NBT: NBTWrapper[FluidStack, NBTTagCompound] = (num: FluidStack) => num.writeToNBT(new NBTTagCompound)
   implicit val NBTSerializable2NBT: INBTSerializable[NBTTagCompound] NBTWrapper NBTTagCompound = _.serializeNBT()
