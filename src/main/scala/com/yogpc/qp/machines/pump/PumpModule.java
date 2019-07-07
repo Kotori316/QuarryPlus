@@ -64,15 +64,16 @@ public abstract class PumpModule implements IModule {
         }
 
         @Override
-        public void action(CalledWhen when) {
+        public boolean action(CalledWhen when) {
             if (when instanceof BeforeBreak) {
                 BeforeBreak beforeBreak = (BeforeBreak) when;
                 BlockPos target = beforeBreak.pos();
                 IBlockState state = beforeBreak.world().getBlockState(target);
                 if (TilePump.isLiquid(state)) {
-                    pump.S_removeLiquids(tile, target.getX(), target.getY(), target.getZ());
+                    return pump.S_removeLiquids(tile, target.getX(), target.getY(), target.getZ());
                 }
             }
+            return true;
         }
     }
 
@@ -90,15 +91,16 @@ public abstract class PumpModule implements IModule {
         }
 
         @Override
-        public void action(CalledWhen when) {
+        public boolean action(CalledWhen when) {
             if (when instanceof BeforeBreak) {
                 BeforeBreak beforeBreak = (BeforeBreak) when;
                 BlockPos target = beforeBreak.pos();
                 IBlockState state = beforeBreak.world().getBlockState(target);
                 if (TilePump.isLiquid(state)) {
-                    S_removeLiquids(tile, target.getX(), target.getY(), target.getZ());
+                    return S_removeLiquids(tile, target.getX(), target.getY(), target.getZ());
                 }
             }
+            return true;
         }
 
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -229,7 +231,7 @@ public abstract class PumpModule implements IModule {
             }
         }
 
-        public void S_removeLiquids(final APowerTile tile, final int x, final int y, final int z) {
+        public boolean S_removeLiquids(final APowerTile tile, final int x, final int y, final int z) {
             if (this.cx != x || this.cy != y || this.cz != z || this.py < this.cy
                 || world.getDayTime() - this.fwt > 200)
                 S_searchLiquid(x, y, z);
@@ -306,6 +308,7 @@ public abstract class PumpModule implements IModule {
                     for (bz = 0; bz < this.block_side_z; bz++)
                         if (this.blocks[this.py - this.yOffset][this.px][bz] != 0)
                             drainBlock(this.px, bz, Blocks.AIR.getDefaultState());
+            return this.py < this.cy;
         }
 
         private void autoChange(boolean on) {

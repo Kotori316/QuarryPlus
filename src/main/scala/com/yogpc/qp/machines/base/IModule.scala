@@ -14,13 +14,18 @@ trait IModule {
 
   def calledWhen: Set[IModule.ModuleType]
 
-  def invoke(when: CalledWhen): Unit = {
+  def invoke(when: CalledWhen): Boolean = {
     if (calledWhen(when.moduleType)) {
       action(when)
+    } else {
+      true
     }
   }
 
-  def action(when: CalledWhen): Unit
+  /**
+    * @return false if work hasn't finished.
+    */
+  def action(when: CalledWhen): Boolean
 
   def toString: String
 }

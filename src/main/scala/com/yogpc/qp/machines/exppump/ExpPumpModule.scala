@@ -20,7 +20,7 @@ final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: Eval[Int], con
 
   var xp: Int = _
 
-  override def action(when: IModule.CalledWhen): Unit = {
+  override def action(when: IModule.CalledWhen): Boolean = {
     val xp = when match {
       case t: IModule.CollectingItem =>
         t.entities.collect { case orb: EntityXPOrb if orb.isAlive => QuarryPlus.proxy.removeEntity(orb); orb.xpValue }.sum
@@ -28,18 +28,20 @@ final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: Eval[Int], con
       case _ => 0
     }
     addXp(xp)
+    true
   }
 
   private def addXp(amount: Int): Unit = {
+    if (amount == 0) return
     val energy = getEnergy(amount).value
     if (useEnergy(energy)) {
       this.xp += amount
-      if(amount != 0)
-      consumer.foreach(_.accept(this.xp))
+      if (amount != 0) // Always true
+        consumer.foreach(_.accept(this.xp))
     }
   }
 
-  private val getEnergy = Kleisli((amount: Int) => unbreaking.map(u => 10 * amount * APowerTile.MicroJtoMJ / (1 + u)))
+  private val getEnergy = Kleisli((amount: Int) => if (amount == 0) ExpPumpModule.zeroL else unbreaking.map(u => 10 * amount * APowerTile.MicroJtoMJ / (1 + u)))
 
   override def toString = s"ExpPumpModule($xp)"
 
@@ -48,6 +50,7 @@ final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: Eval[Int], con
 
 object ExpPumpModule {
   final val id = "quarryplus:module_exp"
+  final val zeroL = Eval.now(0L)
 
   def apply(useEnergy: LongPredicate, unbreaking: IntSupplier): ExpPumpModule =
     new ExpPumpModule(l => useEnergy.test(l), Eval.always(unbreaking.getAsInt), None)

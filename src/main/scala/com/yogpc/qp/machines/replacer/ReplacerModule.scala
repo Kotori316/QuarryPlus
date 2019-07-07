@@ -10,15 +10,17 @@ class ReplacerModule(val toReplace: Eval[IBlockState]) extends IModule {
 
   override val calledWhen = Set(IModule.TypeAfterBreak)
 
-  override def action(when: IModule.CalledWhen): Unit = {
+  override def action(when: IModule.CalledWhen): Boolean = {
     when match {
       case AfterBreak(world, pos, before) =>
         val replaceState = toReplace.value
         if (before != replaceState) {
           world.setBlockState(pos, replaceState)
         }
-      case _ =>
+        true
+      case _ => true
     }
+
   }
 
   override def toString = {

@@ -205,9 +205,9 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     }
     if (PowerManager.useEnergyBreak(self, state.getBlockHardness(world, pos),
       TileQuarry2.enchantmentMode(enchantments), enchantments.unbreaking, modules.exists(IModule.hasReplaceModule))) {
-      modules.foreach(_.invoke(IModule.BeforeBreak(event.getExpToDrop, world, pos)))
+      val returnValue = modules.foldLeft(true) { case (b, m) => m.invoke(IModule.BeforeBreak(event.getExpToDrop, world, pos)) && b }
       drops.forEach(storage.addItem)
-      true
+      returnValue
     } else {
       false
     }
