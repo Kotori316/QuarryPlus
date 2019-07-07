@@ -225,6 +225,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     s"Target: ${target.show}",
     s"Enchantment: ${enchantments.show}",
     s"Area: ${area.show}",
+    s"Storage: ${storage.show}",
     s"Modules: ${modules.mkString(comma)}",
     s"Attachments: ${attachments.mkString(comma)}",
   ).map(new TextComponentString(_)))

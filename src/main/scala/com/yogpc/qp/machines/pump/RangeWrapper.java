@@ -53,4 +53,16 @@ class RangeWrapper {
     public boolean waiting(){
         return isWaiting.getAsBoolean();
     }
+
+    @Override
+    public String toString() {
+        return "RangeWrapper{" +
+            "xMax=" + xMax +
+            ", xMin=" + xMin +
+            ", yMax=" + yMax +
+            ", yMin=" + yMin +
+            ", zMax=" + zMax +
+            ", zMin=" + zMin +
+            '}';
+    }
 }

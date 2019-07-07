@@ -1,5 +1,6 @@
 package com.yogpc.qp.machines.quarry
 
+import cats._
 import com.yogpc.qp._
 import com.yogpc.qp.compat.FluidStore
 import com.yogpc.qp.machines.base.HasStorage
@@ -88,11 +89,18 @@ class QuarryStorage extends INBTSerializable[NBTTagCompound] with HasStorage.Sto
       stack
     }.map(ItemElement.apply).map(e => (e.itemDamage, e)).toMap
     fluids = Range(0, itemList.size()).map(fluidList.getCompound).flatMap { tag =>
-      Option(IRegistry.FLUID.get(new ResourceLocation(tag.getString("name")))).map(f => (f, tag.getLong("amount")))
+      Option(IRegistry.FLUID.get(new ResourceLocation(tag.getString("name")))).map(f => (f, tag.getLong("amount"))).toList
     }.toMap
   }
 
   override def insertItem(stack: ItemStack): Unit = addItem(stack)
 
   override def insertFluid(fluid: Fluid, amount: Long): Unit = addFluid(fluid, amount)
+
+  override def toString = QuarryStorage.ShowQuarryStorage.show(this)
+}
+
+object QuarryStorage {
+  implicit val ShowQuarryStorage: Show[QuarryStorage] = s =>
+    s"QuarryStorage(item: ${s.items.size}, fluids: ${s.fluids.size})"
 }
