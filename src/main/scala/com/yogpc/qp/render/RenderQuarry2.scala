@@ -30,7 +30,8 @@ object RenderQuarry2 extends TileEntityRendererFast[TileQuarry2] {
 
     Minecraft.getInstance.profiler.startSection("quarryplus")
     Minecraft.getInstance.profiler.startSection("quarry")
-    if ((quarry.action.mode == TileQuarry2.waiting || quarry.action.mode == TileQuarry2.buildFrame) && quarry.area != TileQuarry2.zeroArea) {
+    if ((quarry.action.mode == TileQuarry2.waiting || quarry.action.mode == TileQuarry2.buildFrame || quarry.action.mode == TileQuarry2.breakInsideFrame)
+      && quarry.area != TileQuarry2.zeroArea) {
       Minecraft.getInstance.profiler.startSection("frame")
       bufferBuilder.setTranslation(distanceX - pos.getX + .5, distanceY - pos.getY + .5, distanceZ - pos.getZ + .5)
       val minX = quarry.area.xMin

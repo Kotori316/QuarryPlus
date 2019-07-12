@@ -58,7 +58,7 @@ object QuarryAction {
 
     override val mode: TileQuarry2.Mode = TileQuarry2.waiting
 
-    override def nextAction(quarry2: TileQuarry2): QuarryAction = new MakeFrame(quarry2)
+    override def nextAction(quarry2: TileQuarry2): QuarryAction = new BreakInsideFrame(quarry2)
 
     override def canGoNext(quarry: TileQuarry2): Boolean = quarry.getStoredEnergy * 3 > quarry.getMaxStored
   }
@@ -131,6 +131,52 @@ object QuarryAction {
     }
 
     override def canGoNext(quarry: TileQuarry2): Boolean = frameTargets.isEmpty
+  }
+
+  class BreakInsideFrame(quarry2: TileQuarry2) extends QuarryAction {
+    var insideFrame: List[BlockPos] = if (quarry2.hasWorld && !quarry2.getWorld.isRemote) {
+      insideFrameArea(quarry2.area)
+        .dropWhile(p => !checkBreakable(quarry2.getWorld, p, quarry2.getWorld.getBlockState(p), quarry2.modules))
+    } else {
+      Nil
+    }
+
+    override def action(target: BlockPos): Unit = {
+      insideFrame match {
+        case head :: tl if head == target =>
+          val state = quarry2.getWorld.getBlockState(target)
+          if (checkBreakable(quarry2.getWorld, head, state, quarry2.modules)) {
+            if (quarry2.breakBlock(quarry2.getWorld, head, state)) {
+              quarry2.getWorld.setBlockState(target, Blocks.AIR.getDefaultState)
+              insideFrame = tl.dropWhile(p => !checkBreakable(quarry2.getWorld, p, quarry2.getWorld.getBlockState(p), quarry2.modules))
+            }
+          } else {
+            insideFrame = insideFrame.dropWhile(p => !checkBreakable(quarry2.getWorld, p, quarry2.getWorld.getBlockState(p), quarry2.modules))
+          }
+        case _ =>
+      }
+    }
+
+    override def nextTarget() = insideFrame.headOption.getOrElse(BlockPos.ORIGIN)
+
+    override def nextAction(quarry2: TileQuarry2) = if (!quarry2.frameMode) new MakeFrame(quarry2) else none
+
+    override def canGoNext(quarry: TileQuarry2) = insideFrame.isEmpty
+
+    override def mode = TileQuarry2.breakInsideFrame
+
+    override def serverWrite(nbt: NBTTagCompound) = {
+      val list = insideFrame.map(_.toLong.toNBT).foldLeft(new NBTTagList) { case (l, tag) => l.add(tag); l }
+      nbt.put("list", list)
+      super.serverWrite(nbt)
+    }
+
+    def read(nbt: NBTTagCompound): BreakInsideFrame = {
+      insideFrame = JavaConverters.asScalaBuffer(nbt.getList("list", NBT.TAG_LONG))
+        .flatMap(NBTDynamicOps.INSTANCE.getNumberValue(_).asScala.map(_.longValue()))
+        .map(BlockPos.fromLong).toList
+      this
+    }
   }
 
   class BreakBlock(quarry2: TileQuarry2, y: Int, reversed: Boolean, var headX: Double, var headY: Double, var headZ: Double) extends QuarryAction {
@@ -234,6 +280,12 @@ object QuarryAction {
       list
   }
 
+  def insideFrameArea(r: TileQuarry2.Area) = {
+    (for (x <- Range.inclusive(r.xMin, r.xMax);
+          z <- Range.inclusive(r.zMin, r.zMax);
+          y <- Range.inclusive(r.yMax, r.yMin, -1)) yield new BlockPos(x, y, z)).toList
+  }
+
   def near[A](pos: A, x1: A, x2: A)(implicit proxy: Numeric[A]): A = {
     val c = (proxy.minus _).curried(pos) andThen proxy.abs
     List(x1, x2).reduceLeft[A] { case (b, a) => if (proxy.lt(c(a), c(b))) a else b }
@@ -263,6 +315,7 @@ object QuarryAction {
       case TileQuarry2.waiting.toString => waiting
       case TileQuarry2.buildFrame.toString => new MakeFrame(quarry)
       case TileQuarry2.breakBlock.toString => new BreakBlock(quarry, nbt.getInt("y"), false)
+      case TileQuarry2.breakInsideFrame.toString => new BreakInsideFrame(quarry)
       case _ => none
     }
     action match {
@@ -271,6 +324,8 @@ object QuarryAction {
         makeFrame.read(nbt)
       case breakBlock: BreakBlock =>
         breakBlock.read(nbt)
+      case breakInsideFrame: BreakInsideFrame =>
+        breakInsideFrame.read(nbt)
       case _ => none
 
     }
@@ -278,7 +333,6 @@ object QuarryAction {
   val load: (TileQuarry2, NBTTagCompound, String) => QuarryAction = {
     case (q, t, s) => loadFromNBT(getNamed(t, s))(q)
   }
-
 
   implicit val actionToNbt: QuarryAction NBTWrapper NBTTagCompound = action => action.serverWrite(new NBTTagCompound)
 

@@ -49,6 +49,16 @@ class TileQuarry2Test {
   }
 
   @Test
+  def insideFrame(): Unit = {
+    val (area, _) = TileQuarry2.areaFromMarker(EnumFacing.SOUTH, new BlockPos(12, 2, 7), m1)
+    assertEquals(Area(-5, 2, 8, 25, 9, 18), area)
+    val poses = QuarryAction.insideFrameArea(area)
+    assertEquals(m1.max.getX, poses.maxBy(_.getX).getX)
+    assertEquals(m1.max.getZ, poses.maxBy(_.getZ).getZ)
+    assertEquals((m1.max.getX - m1.min.getX + 1) * (m1.max.getZ - m1.min.getZ + 1) * (m1.max.getY - m1.min.getY + 1), poses.size)
+  }
+
+  @Test
   def testShowPos(): Unit = {
     import com.yogpc.qp._
     assertEquals("(0, 0, 0)", BlockPos.ORIGIN.show)

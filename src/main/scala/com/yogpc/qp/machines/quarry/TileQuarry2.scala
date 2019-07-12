@@ -43,6 +43,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   var action: QuarryAction = QuarryAction.none
   var target = BlockPos.ORIGIN
   var yLevel = 1
+  var frameMode = false
   private val storage = new QuarryStorage
   val moduleInv = new QuarryModuleInventory(new TextComponentString("Modules"), 5, this, _ => refreshModules())
 
@@ -50,12 +51,16 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     super.tick()
     if (!world.isRemote) {
       // Quarry action
-      action.action(target)
-      if (action.canGoNext(self)) {
-        action = action.nextAction(self)
-        PacketHandler.sendToClient(TileMessage.create(self), world)
+      var i = 0
+      while (i < enchantments.efficiency + 1) {
+        action.action(target)
+        if (action.canGoNext(self)) {
+          action = action.nextAction(self)
+          PacketHandler.sendToClient(TileMessage.create(self), world)
+        }
+        target = action.nextTarget()
+        i += 1
       }
-      target = action.nextTarget()
       val nowState = world.getBlockState(pos)
       if (nowState.get(QPBlock.WORKING) ^ isWorking) {
         if (isWorking) {
@@ -84,6 +89,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     nbt.put("storage", storage.toNBT)
     nbt.put("moduleInv", moduleInv.toNBT)
     nbt.put("yLevel", yLevel.toNBT)
+    nbt.put("frameMode", frameMode.toNBT)
     super.write(nbt)
   }
 
@@ -96,9 +102,18 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     storage.deserializeNBT(nbt.getCompound("storage"))
     moduleInv.deserializeNBT(nbt.getCompound("moduleInv"))
     yLevel = nbt.getInt("yLevel")
+    frameMode = nbt.getBoolean("frameMode")
   }
 
   override protected def isWorking = target != BlockPos.ORIGIN && action.mode != none
+
+  def onActivated(): Unit = {
+    import com.yogpc.qp.machines.quarry.QuarryAction.BreakInsideFrame
+    this.action match {
+      case QuarryAction.none | QuarryAction.waiting | _: BreakInsideFrame => frameMode = !frameMode
+      case _ => G_ReInit()
+    }
+  }
 
   /**
     * Called after enchantment setting.
@@ -276,6 +291,7 @@ object TileQuarry2 {
   val none = new Mode("none")
   val waiting = new Mode("waiting")
   val buildFrame = new Mode("BuildFrame")
+  val breakInsideFrame = new Mode("BreakInsideFrame")
   val breakBlock = new Mode("BreakBlock")
 
   class InteractionObject(quarry2: TileQuarry2) extends IInteractionObject {
