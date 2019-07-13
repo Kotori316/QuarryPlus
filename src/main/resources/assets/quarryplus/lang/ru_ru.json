@@ -14,7 +14,8 @@
   "block.quarryplus.plainpipe": "Труба улучшенной буровой установки",
   "block.quarryplus.pumpplus": "Улучшенная помпа",
   "block.quarryplus.quarryframe": "Рамка улучшенного карьера",
-  "block.quarryplus.quarryplus": "Улучшенный карьер",
+  "block.quarryplus.quarry": "Улучшенный карьер",
+  "block.quarryplus.quarryplus": "Old Quarry Plus",
   "block.quarryplus.quarryreplacer": "Quarry Replacer",
   "block.quarryplus.refineryplus": "Улучшенный нефтеперерабатывающий завод",
   "block.quarryplus.solidquarry": "Solid Fuel Quarry",
@@ -33,8 +34,8 @@
   "item.quarryplus.pump_module": "Quarry Pump Module",
   "item.quarryplus.exppump_module": "Quarry Exp Collect Module",
   "item.quarryplus.replacer_module": "Quarry Replacing Module",
-
   "item.quarryplus.y_setter": "Quarry Y Setter",
+
   "chat.changemode": "Режим работы был изменен на %s",
   "chat.currentmode": "Сейчас, работая в %s",
   "chat.fillermode": "Режим заполнения",

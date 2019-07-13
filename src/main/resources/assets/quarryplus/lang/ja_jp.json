@@ -34,8 +34,8 @@
   "item.quarryplus.pump_module": "Quarry Pump Module",
   "item.quarryplus.exppump_module": "Quarry Exp Collect Module",
   "item.quarryplus.replacer_module": "Quarry Replacing Module",
-
   "item.quarryplus.y_setter": "採掘機レベル設定用具",
+
   "chat.changemode": "動作モードを%sに切り替えました",
   "chat.currentmode": "現在%sで動作しています",
   "chat.fillermode": "フレームモード",
