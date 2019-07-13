@@ -10,7 +10,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.TextComponentString
 import net.minecraft.util.{EnumFacing, ResourceLocation}
 import net.minecraftforge.common.util.Constants.NBT
-import net.minecraftforge.common.util.{LazyOptional, NonNullSupplier}
+import net.minecraftforge.common.util.{INBTSerializable, LazyOptional, NonNullSupplier}
 import net.minecraftforge.fluids.FluidStack
 import net.minecraftforge.registries.ForgeRegistries
 
@@ -24,6 +24,7 @@ package object qp {
   }
   val toComponentString: String => TextComponentString = s => new TextComponentString(s)
   val nonNull: AnyRef => Boolean = obj => obj != null
+  val facings = Eval.later(EnumFacing.values()).map(_.toList)
 
   def toJavaOption[T](o: Option[T]): java.util.Optional[T] = {
     //I think it's faster than match function.
@@ -83,8 +84,11 @@ package object qp {
   }
 
   implicit val Long2NBT: NBTWrapper[Long, NBTTagLong] = (num: Long) => new NBTTagLong(num)
+  implicit val int2NBT: NBTWrapper[Int, NBTTagInt] = (num: Int) => new NBTTagInt(num)
+  implicit val bool2NBT: NBTWrapper[Boolean, NBTTagByte] = (b: Boolean) => new NBTTagByte(if (b) 1 else 0)
 
   implicit val Fluid2NBT: NBTWrapper[FluidStack, NBTTagCompound] = (num: FluidStack) => num.writeToNBT(new NBTTagCompound)
+  implicit val NBTSerializable2NBT: INBTSerializable[NBTTagCompound] NBTWrapper NBTTagCompound = _.serializeNBT()
 
   implicit class NumberToNbt[A](private val num: A) extends AnyVal {
     def toNBT[B <: INBTBase](implicit wrapper: NBTWrapper[A, B]): B = wrapper apply num
@@ -96,6 +100,14 @@ package object qp {
       val y = facing1.getYOffset + facing2.getYOffset
       val z = facing1.getZOffset + facing2.getZOffset
       blockPos.add(x, y, z)
+    }
+
+    def copy(x: Int = blockPos.getX, y: Int = blockPos.getY, z: Int = blockPos.getZ): BlockPos = {
+      if (x == blockPos.getX && y == blockPos.getY && z == blockPos.getZ) {
+        blockPos.toImmutable
+      } else {
+        new BlockPos(x, y, z)
+      }
     }
   }
 
@@ -115,4 +127,6 @@ package object qp {
     new AssertionError(
       "LazyOptional has no content " +
         "though it returned true when isPresent is called.")
+
+  implicit val showPos: Show[BlockPos] = pos => s"(${pos.getX}, ${pos.getY}, ${pos.getZ})"
 }

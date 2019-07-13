@@ -16,6 +16,7 @@ package com.yogpc.qp.machines.quarry;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -24,6 +25,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.InvUtils;
@@ -31,11 +33,11 @@ import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.APacketTile;
 import com.yogpc.qp.machines.base.APowerTile;
-import com.yogpc.qp.machines.base.EnergyUsage;
 import com.yogpc.qp.machines.base.HasInv;
 import com.yogpc.qp.machines.base.IAttachable;
 import com.yogpc.qp.machines.base.IAttachment;
 import com.yogpc.qp.machines.base.IEnchantableTile;
+import com.yogpc.qp.machines.base.IModule;
 import com.yogpc.qp.machines.pump.TilePump;
 import com.yogpc.qp.machines.workbench.BlockData;
 import com.yogpc.qp.utils.NBTBuilder;
@@ -82,6 +84,7 @@ import static jp.t2v.lab.syntax.MapStreamSyntax.byKey;
 import static jp.t2v.lab.syntax.MapStreamSyntax.entryToMap;
 import static jp.t2v.lab.syntax.MapStreamSyntax.keys;
 import static jp.t2v.lab.syntax.MapStreamSyntax.not;
+import static jp.t2v.lab.syntax.MapStreamSyntax.toAny;
 import static jp.t2v.lab.syntax.MapStreamSyntax.toEntry;
 import static jp.t2v.lab.syntax.MapStreamSyntax.values;
 
@@ -104,6 +107,8 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     protected final IItemHandler handler = createHandler();
 
     protected Map<ResourceLocation, Integer> ench = new HashMap<>();
+
+    public List<IModule> modules = Collections.emptyList();
 
     /**
      * Where quarry stops its work. Dig blocks at this value.
@@ -161,16 +166,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         BI bi = S_addDroppedItems(dropped, blockState, pos);
         if (!PowerManager.useEnergyBreak(this, blockState.getBlockHardness(world, pos), bi.b, this.unbreaking, bi.b1))
             return false;
-        Optional.ofNullable(facingMap.get(EXP_PUMP)).map(getPos()::offset)
-            .map(world::getTileEntity)
-            .flatMap(EXP_PUMP)
-            .ifPresent(t -> {
-                long expEnergy = t.getEnergyUse(bi.i);
-                if (useEnergy(expEnergy, expEnergy, false, EnergyUsage.PUMP_EXP) == expEnergy) {
-                    useEnergy(expEnergy, expEnergy, true, EnergyUsage.PUMP_EXP);
-                    t.addXp(bi.i);
-                }
-            });
+        modules.forEach(iModule -> iModule.invoke(new IModule.BeforeBreak(bi.i, world, pos)));
         this.cacheItems.addAll(dropped);
 
         if (facingMap.containsKey(FLUID_PUMP) && TilePump.isLiquid(blockState)) {
@@ -202,6 +198,12 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         if (!simulate) {
             facingMap.put(attachments, facing);
             G_renew_powerConfigure();
+            modules = facingMap.entrySet().stream()
+                .map(values(pos::offset))
+                .map(values(world::getTileEntity))
+                .map(toAny(IAttachment.Attachments::module))
+                .flatMap(iModule -> iModule.map(Stream::of).orElse(Stream.empty()))
+                .collect(Collectors.toList());
         }
         return true;
     }

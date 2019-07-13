@@ -533,7 +533,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     //      }
     //    })
     val l2 = nbt.getList("NBT_CHUNK_LOADING_LIST", Constants.NBT.TAG_LONG)
-    chunks = Range(0, l2.size()).map(i => new ChunkPos(BlockPos.fromLong(l2.get(i).asInstanceOf[NBTTagLong].getLong))).toList
+    chunks = l2.asScala.toList.map(n => new ChunkPos(BlockPos.fromLong(n.asInstanceOf[NBTTagLong].getLong)))
     yLevel = Math.max(nbt.getInt("yLevel"), 1)
   }
 

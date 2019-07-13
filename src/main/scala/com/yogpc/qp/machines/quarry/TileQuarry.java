@@ -23,13 +23,12 @@ import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.TranslationKeys;
-import com.yogpc.qp.machines.base.EnergyUsage;
 import com.yogpc.qp.machines.base.IAttachment;
 import com.yogpc.qp.machines.base.IChunkLoadTile;
 import com.yogpc.qp.machines.base.IDebugSender;
 import com.yogpc.qp.machines.base.IMarker;
+import com.yogpc.qp.machines.base.IModule;
 import com.yogpc.qp.machines.base.QPBlock;
-import com.yogpc.qp.machines.exppump.TileExpPump;
 import com.yogpc.qp.machines.pump.TilePump;
 import com.yogpc.qp.machines.replacer.TileReplacer;
 import com.yogpc.qp.packet.PacketHandler;
@@ -39,6 +38,7 @@ import com.yogpc.qp.packet.quarry.MoveHead;
 import com.yogpc.qp.utils.Holder;
 import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.init.Blocks;
@@ -55,6 +55,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.BooleanUtils;
 import scala.Symbol;
+import scala.collection.JavaConverters;
 
 import static com.yogpc.qp.machines.base.IAttachment.Attachments.EXP_PUMP;
 import static com.yogpc.qp.machines.base.IAttachment.Attachments.FLUID_PUMP;
@@ -334,26 +335,8 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
         result.forEach(QuarryPlus.proxy::removeEntity);
 
         if (facingMap.containsKey(EXP_PUMP)) {
-            List<EntityXPOrb> xpOrbs = world.getEntitiesWithinAABB(EntityXPOrb.class, axis);
-            class Data {
-                public final int xp;
-                public final TileExpPump pump;
-                public final long energy;
-
-                public Data(int xp, TileExpPump pump) {
-                    this.xp = xp;
-                    this.pump = pump;
-                    this.energy = pump.getEnergyUse(xp);
-                }
-            }
-            Optional.ofNullable(world.getTileEntity(pos.offset(facingMap.get(EXP_PUMP)))).flatMap(EXP_PUMP)
-                .map(p -> new Data(xpOrbs.stream().filter(EntityXPOrb::isAlive).mapToInt(EntityXPOrb::getXpValue).sum(), p))
-                .filter(data -> useEnergy(data.energy, data.energy, false, EnergyUsage.PUMP_EXP) == data.energy)
-                .ifPresent(data -> {
-                    useEnergy(data.energy, data.energy, true, EnergyUsage.PUMP_EXP);
-                    data.pump.addXp(data.xp);
-                    xpOrbs.forEach(QuarryPlus.proxy::removeEntity);
-                });
+            List<Entity> xpOrbs = world.getEntitiesWithinAABB(Entity.class, axis);
+            modules.forEach(iModule -> iModule.invoke(new IModule.CollectingItem(JavaConverters.asScalaBuffer(xpOrbs).toList())));
         }
 
     }

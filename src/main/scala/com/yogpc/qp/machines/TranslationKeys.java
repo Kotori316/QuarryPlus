@@ -82,6 +82,7 @@ public class TranslationKeys {
     public static final String quarry = "block.quarryplus." + QuarryPlus.Names.quarry;
     public static final String solidquarry = "block.quarryplus." + QuarryPlus.Names.solidquarry;
     //    public static final String refinery = "block.quarryplus." + QuarryPlus.Names.refinery ;
+    public static final String replacer = "block.quarryplus." + QuarryPlus.Names.replacer;
     public static final String workbench = "block.quarryplus." + QuarryPlus.Names.workbench;
 
     public static final Map<Integer, String> ENCHANT_LEVELS;

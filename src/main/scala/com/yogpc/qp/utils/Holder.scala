@@ -8,6 +8,7 @@ import com.yogpc.qp.machines.controller.BlockController
 import com.yogpc.qp.machines.exppump.{BlockExpPump, TileExpPump}
 import com.yogpc.qp.machines.item._
 import com.yogpc.qp.machines.marker.{BlockMarker, TileMarker}
+import com.yogpc.qp.machines.modules.{ItemExpPumpModule, ItemPumpModule, ItemReplacerModule}
 import com.yogpc.qp.machines.mover.BlockMover
 import com.yogpc.qp.machines.pump.{BlockPump, TilePump}
 import com.yogpc.qp.machines.quarry._
@@ -44,6 +45,7 @@ object Holder {
   val bookMoverType = createType(() => new TileBookMover, QuarryPlus.Names.moverfrombook)
   val advQuarryType = createType(() => new TileAdvQuarry, QuarryPlus.Names.advquarry)
   val advPumpType = createType(() => new TileAdvPump, QuarryPlus.Names.advpump)
+  val quarry2 = createType(() => new TileQuarry2, QuarryPlus.Names.quarry2)
 
   val tiles: Map[TileEntityType[_ <: TileEntity], TileDisable] = Map(
     markerTileType -> TileDisable(TileMarker.SYMBOL),
@@ -57,6 +59,7 @@ object Holder {
     bookMoverType -> TileDisable(BlockBookMover.SYMBOL, defaultDisableMachine = true),
     advQuarryType -> TileDisable(TileAdvQuarry.SYMBOL, defaultDisableMachine = true),
     advPumpType -> TileDisable(TileAdvPump.SYMBOL),
+    quarry2 -> TileDisable(TileQuarry2.SYMBOL),
   )
 
   //---------- Block ----------
@@ -77,6 +80,7 @@ object Holder {
   val blockBookMover = new BlockBookMover
   val blockAdvQuarry = new BlockAdvQuarry
   val blockAdvPump = new BlockAdvPump
+  val blockQuarry2 = new BlockQuarry2
 
   val blocks: Seq[Block] = Seq(
     blockQuarry,
@@ -95,6 +99,7 @@ object Holder {
     blockBookMover,
     blockAdvQuarry,
     blockAdvPump,
+    blockQuarry2,
   )
   //---------- Item ----------
 
@@ -104,8 +109,12 @@ object Holder {
   val itemYSetter = new Item((new Item.Properties).group(Holder.tab)).setRegistryName(QuarryPlus.modID, QuarryPlus.Names.ySetter)
   val itemQuarryDebug = new ItemQuarryDebug
   val itemTemplate = new ItemTemplate
+  val itemPumpModule = new ItemPumpModule
+  val itemExpPumpModule = new ItemExpPumpModule
+  val itemReplacerModule = new ItemReplacerModule
 
-  val items: Seq[Item] = Seq(itemStatusChecker, itemListEditor, itemLiquidSelector, itemYSetter, itemQuarryDebug, itemTemplate)
+  val items: Seq[Item] = Seq(itemStatusChecker, itemListEditor, itemLiquidSelector, itemYSetter, itemQuarryDebug, itemTemplate,
+    itemPumpModule, itemExpPumpModule, itemReplacerModule)
 
   //---------- IDisable ----------
   case class TileDisable(override val getSymbol: Symbol, override val defaultDisableMachine: Boolean = false) extends IDisabled

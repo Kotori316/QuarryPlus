@@ -14,22 +14,26 @@ import com.kotori316.fluidtank.FluidAmount;
 
 public class FluidStore {
     public static final boolean enabled;
+    public static final long AMOUNT = 1000;
 
     static {
         enabled = ModList.get().isLoaded("fluidtank");
     }
 
     public static void injectToNearTile(World world, BlockPos pos, Fluid fluid) {
-        injectToNearTile(world, pos, fluid, FluidAmount.AMOUNT_BUCKET());
+        injectToNearTile(world, pos, fluid, AMOUNT);
     }
 
-    public static void injectToNearTile(World world, BlockPos pos, Fluid fluid, int amount) {
-        if (!enabled) return;
-        injectToNearTile_internal(world, pos, fluid, amount);
+    /**
+     * @return inserted amount.
+     */
+    public static long injectToNearTile(World world, BlockPos pos, Fluid fluid, long amount) {
+        if (!enabled) return 0;
+        return injectToNearTile_internal(world, pos, fluid, amount);
     }
 
-    private static void injectToNearTile_internal(World world, BlockPos pos, Fluid fluidKind, int amount) {
-        if (TANK_CAPABILITY == null) return;
+    private static long injectToNearTile_internal(World world, BlockPos pos, Fluid fluidKind, long amount) {
+        if (TANK_CAPABILITY == null) return 0;
         FluidAmount[] fluidAmounts = new FluidAmount[]{FluidAmount.apply(fluidKind, amount)};
         for (EnumFacing facing : EnumFacing.values()) {
             TileEntity entity = world.getTileEntity(pos.offset(facing));
@@ -45,6 +49,7 @@ public class FluidStore {
                 if (fluidAmounts[0].isEmpty()) break;
             }
         }
+        return amount - fluidAmounts[0].amount();
     }
 
     @CapabilityInject(FluidAmount.Tank.class)

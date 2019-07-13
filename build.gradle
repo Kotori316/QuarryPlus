@@ -87,12 +87,12 @@ dependencies {
     // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
     // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
-    minecraft 'net.minecraftforge:forge:1.13.2-25.0.214'
+    minecraft 'net.minecraftforge:forge:1.13.2-25.0.219'
     implementation "org.scala-lang:scala-library:2.12.8"
     implementation group: 'org.typelevel', name: "cats-core_2.12", version: '1.6.0'
 
     def mc_version = "1.13.2"
-    def jei_version = "5.0.0.20"
+    def jei_version = "5.0.0.28"
     // at runtime, use the full JEI jar
     implementation fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
 //    compile "mezz.jei:jei-${mc_version}:${jei_version}:sources"

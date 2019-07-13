@@ -14,6 +14,7 @@ import com.yogpc.qp.machines.base.IAttachable;
 import com.yogpc.qp.machines.base.IAttachment;
 import com.yogpc.qp.machines.base.IDebugSender;
 import com.yogpc.qp.machines.base.IEnchantableTile;
+import com.yogpc.qp.machines.base.IModule;
 import com.yogpc.qp.machines.base.QPBlock;
 import com.yogpc.qp.utils.Holder;
 import javax.annotation.Nonnull;
@@ -36,7 +37,7 @@ import static net.minecraft.state.properties.BlockStateProperties.ENABLED;
 public class TileExpPump extends APacketTile implements IEnchantableTile, IDebugSender, IAttachment {
     @Nullable
     private EnumFacing mConnectTo;
-    private int xpAmount = 0;
+    private ExpPumpModule module = ExpPumpModule.apply(v1 -> true, () -> this.unbreaking);
 
     private int fortune = 0;
     private int unbreaking = 0;
@@ -58,6 +59,11 @@ public class TileExpPump extends APacketTile implements IEnchantableTile, IDebug
     }
 
     @Override
+    public IModule getModule() {
+        return module;
+    }
+
+    @Override
     public String getDebugName() {
         return TranslationKeys.exppump;
     }
@@ -67,7 +73,7 @@ public class TileExpPump extends APacketTile implements IEnchantableTile, IDebug
         return Stream.of(
             "Connection -> " + mConnectTo,
             Stream.of("Unbreaking -> " + unbreaking, "Fortune -> " + fortune, "Silktouch -> " + silktouch).reduce(combiner).get(),
-            "XpAmount -> " + xpAmount)
+            "XpAmount -> " + module.xp())
             .map(toComponentString)
             .collect(Collectors.toList());
     }
@@ -100,9 +106,9 @@ public class TileExpPump extends APacketTile implements IEnchantableTile, IDebug
     }
 
     public void addXp(int amount) {
-        xpAmount += amount;
-        if (xpAmount > 0 ^ world.getBlockState(pos).get(ENABLED)) {
-            IBlockState state = world.getBlockState(pos).with(ENABLED, xpAmount > 0);
+        module.xp_$eq(module.xp() + amount);
+        if (module.xp() > 0 ^ world.getBlockState(pos).get(ENABLED)) {
+            IBlockState state = world.getBlockState(pos).with(ENABLED, module.xp() > 0);
             world.setBlockState(pos, state);
         }
     }
@@ -112,8 +118,8 @@ public class TileExpPump extends APacketTile implements IEnchantableTile, IDebug
     }
 
     public void onActivated(World worldIn, BlockPos pos, EntityPlayer playerIn) {
-        if (xpAmount > 0) {
-            int xp = EntityXPOrb.getXPSplit(xpAmount);
+        if (module.xp() > 0) {
+            int xp = EntityXPOrb.getXPSplit(module.xp());
             EntityXPOrb orb = new EntityXPOrb(worldIn, playerIn.posX, playerIn.posY, playerIn.posZ, xp);
             worldIn.spawnEntity(orb);
             addXp(-xp);
@@ -121,8 +127,8 @@ public class TileExpPump extends APacketTile implements IEnchantableTile, IDebug
     }
 
     public void onBreak(World worldIn) {
-        if (xpAmount > 0) {
-            EntityXPOrb xpOrb = new EntityXPOrb(worldIn, pos.getX(), pos.getY(), pos.getZ(), xpAmount);
+        if (module.xp() > 0) {
+            EntityXPOrb xpOrb = new EntityXPOrb(worldIn, pos.getX(), pos.getY(), pos.getZ(), module.xp());
             worldIn.spawnEntity(xpOrb);
         }
     }
@@ -132,7 +138,7 @@ public class TileExpPump extends APacketTile implements IEnchantableTile, IDebug
         super.read(compound);
         int connectID = compound.getByte("mConnectTo");
         mConnectTo = connectID < 0 ? null : EnumFacing.byIndex(connectID);
-        xpAmount = compound.getInt("xpAmount");
+        module.xp_$eq(compound.getInt("xpAmount"));
         this.silktouch = compound.getBoolean("silktouch");
         this.fortune = compound.getByte("fortune");
         this.unbreaking = compound.getByte("unbreaking");
@@ -141,7 +147,7 @@ public class TileExpPump extends APacketTile implements IEnchantableTile, IDebug
     @Override
     public NBTTagCompound write(NBTTagCompound compound) {
         compound.putByte("mConnectTo", Optional.ofNullable(mConnectTo).map(Enum::ordinal).orElse(-1).byteValue());
-        compound.putInt("xpAmount", xpAmount);
+        compound.putInt("xpAmount", module.xp());
         compound.putBoolean("silktouch", this.silktouch);
         compound.putByte("fortune", (byte) this.fortune);
         compound.putByte("unbreaking", (byte) this.unbreaking);
@@ -174,7 +180,7 @@ public class TileExpPump extends APacketTile implements IEnchantableTile, IDebug
     }
 
     public int getXpAmount() {
-        return xpAmount;
+        return module.xp();
     }
 
 }
