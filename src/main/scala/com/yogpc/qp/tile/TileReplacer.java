@@ -3,6 +3,7 @@ package com.yogpc.qp.tile;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -38,6 +39,7 @@ public class TileReplacer extends APacketTile implements IAttachment {
     private EnumFacing facing;
     private boolean loading = false;
     private IBlockState toReplaceState = Blocks.AIR.getDefaultState();
+    private final ReplacerModule module = ReplacerModule.apply(this);
 
     @Override
     protected Symbol getSymbol() {
@@ -63,15 +65,16 @@ public class TileReplacer extends APacketTile implements IAttachment {
 
     private void connection() {
         if (hasWorld() && !world.isRemote && !machineDisabled) {
-            EnumFacing enumFacing = Stream.of(EnumFacing.VALUES)
+            Map.Entry<EnumFacing, IAttachable> entry = Stream.of(EnumFacing.values())
                 .map(f -> Pair.of(f, world.getTileEntity(pos.offset(f))))
                 .filter(byValue(IAttachable.class::isInstance))
                 .map(values(IAttachable.class::cast))
                 .filter(byEntry((facing, t) -> t.connect(facing.getOpposite(), REPLACER)))
-                .map(keyToAny(Function.identity()))
                 .findFirst()
-                .orElse(null);
-            setConnectTo(enumFacing);
+                .orElse(Pair.of(null, IAttachable.dummy));
+            if (entry.getKey() == null || entry.getValue().connectAttachment(entry.getKey().getOpposite(), REPLACER, false))
+                setConnectTo(entry.getKey());
+
             // Blocks should not be replaced with TileEntities.
             // Material.CIRCUITS is for blocks which isn't normal.
             // Liquid block cause crash.
@@ -94,6 +97,11 @@ public class TileReplacer extends APacketTile implements IAttachment {
     }
 
     @Override
+    public IModule getModule() {
+        return this.module;
+    }
+
+    @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
         facing = Optional.of(compound.getString("facing")).filter(not(String::isEmpty)).map(EnumFacing::byName).orElse(null);
@@ -108,5 +116,19 @@ public class TileReplacer extends APacketTile implements IAttachment {
 
     public IBlockState getReplaceState() {
         return toReplaceState;
+    }
+
+    @Override
+    public String getDebugName() {
+        return TranslationKeys.replacer;
+    }
+
+    @Override
+    public List<? extends ITextComponent> getDebugMessages() {
+        return Stream.of(
+            "Connect: " + facing,
+            "toReplaceState: " + toReplaceState,
+            "Module: " + module
+        ).map(TextComponentString::new).collect(Collectors.toList());
     }
 }

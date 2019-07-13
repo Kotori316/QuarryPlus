@@ -89,7 +89,13 @@ object GuiQuarryLevel {
 
     override def getYLevel(t: TileAdvQuarry) = t.yLevel
   }
+  implicit val NQuarryY: YLevel[TileQuarry2] = new YLevel[TileQuarry2] {
+    override def setYLevel(t: TileQuarry2, yLevel: Int): Unit = t.yLevel = yLevel
+
+    override def getYLevel(t: TileQuarry2) = t.yLevel
+  }
 
   implicit val basicMessage: TileBasic => LevelMessage = LevelMessage.create
   implicit val advMessage: TileAdvQuarry => AdvLevelMessage = AdvLevelMessage.create
+  implicit val quarryMessage:TileQuarry2 => Level2Message = Level2Message.create
 }

@@ -141,6 +141,14 @@ package object qp {
       val z = facing1.getFrontOffsetZ + facing2.getFrontOffsetZ
       blockPos.add(x, y, z)
     }
+
+    def copy(x: Int = blockPos.getX, y: Int = blockPos.getY, z: Int = blockPos.getZ): BlockPos = {
+      if (x == blockPos.getX && y == blockPos.getY && z == blockPos.getZ) {
+        blockPos.toImmutable
+      } else {
+        new BlockPos(x, y, z)
+      }
+    }
   }
 
 }

@@ -76,8 +76,8 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     private static final Set<IAttachment.Attachments<?>> VALID_ATTACHMENTS = ALL;
     protected final Map<IAttachment.Attachments<?>, EnumFacing> facingMap = new HashMap<>();
 
-    public final NoDuplicateList<BlockData> fortuneList = NoDuplicateList.create(ArrayList::new);
-    public final NoDuplicateList<BlockData> silktouchList = NoDuplicateList.create(ArrayList::new);
+    public NoDuplicateList<BlockData> fortuneList = NoDuplicateList.create(ArrayList::new);
+    public NoDuplicateList<BlockData> silktouchList = NoDuplicateList.create(ArrayList::new);
     public boolean fortuneInclude, silktouchInclude;
 
     protected byte unbreaking;
@@ -89,6 +89,8 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     protected final IItemHandler handler = createHandler();
 
     protected Map<Integer, Integer> ench = new HashMap<>();
+
+    public List<IModule> modules = Collections.emptyList();
 
     /**
      * Where quarry stops its work. Dig blocks at this value.
@@ -143,29 +145,25 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         }
         if (blockState.getBlock().isAir(blockState, getWorld(), pos))
             return true;
+
+        BI bi = S_addDroppedItems(dropped, blockState, pos);
+        if (!PowerManager.useEnergyBreak(this, blockState.getBlockHardness(getWorld(), pos), bi.b, this.unbreaking, bi.b1))
+            return false;
+        modules.forEach(iModule -> iModule.invoke(new IModule.BeforeBreak(bi.i, world, pos)));
+        this.cacheItems.addAll(dropped);
+
         if (facingMap.containsKey(FLUID_PUMP) && TilePump.isLiquid(blockState)) {
-            final TileEntity te = getWorld().getTileEntity(getPos().offset(facingMap.get(FLUID_PUMP)));
+            final TileEntity te = world.getTileEntity(getPos().offset(facingMap.get(FLUID_PUMP)));
             if (!(te instanceof TilePump)) {
                 facingMap.remove(FLUID_PUMP);
                 G_renew_powerConfigure();
                 return true;
             }
-            return ((TilePump) te).S_removeLiquids(this, x, y, z);
+            boolean b = ((TilePump) te).S_removeLiquids(this, x, y, z);
+            if (blockState.getMaterial().isLiquid()) return b;
+            // fluid should be replaced with air.
+            // other blocks will be replaced with block.
         }
-        BI bi = S_addDroppedItems(dropped, blockState, pos);
-        if (!PowerManager.useEnergyBreak(this, blockState.getBlockHardness(getWorld(), pos), bi.b, this.unbreaking, bi.b1))
-            return false;
-        Optional.ofNullable(facingMap.get(EXP_PUMP)).map(getPos()::offset)
-            .map(getWorld()::getTileEntity)
-            .flatMap(EXP_PUMP)
-            .ifPresent(t -> {
-                long expEnergy = t.getEnergyUse(bi.i);
-                if (useEnergy(expEnergy, expEnergy, false, EnergyUsage.PUMP_EXP) == expEnergy) {
-                    useEnergy(expEnergy, expEnergy, true, EnergyUsage.PUMP_EXP);
-                    t.addXp(bi.i);
-                }
-            });
-        this.cacheItems.addAll(dropped);
         // Replace block
         getWorld().playEvent(2001, pos, Block.getStateId(blockState));
         getWorld().setBlockState(pos, replace, 3);
@@ -173,15 +171,23 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     }
 
     @Override
-    public boolean connectAttachment(final EnumFacing facing, IAttachment.Attachments<? extends APacketTile> attachments) {
+    public boolean connectAttachment(final EnumFacing facing, IAttachment.Attachments<? extends APacketTile> attachments, boolean simulate) {
         if (facingMap.containsKey(attachments)) {
             TileEntity entity = getWorld().getTileEntity(getPos().offset(facingMap.get(attachments)));
             if (attachments.test(entity) && facingMap.get(attachments) != facing) {
                 return false;
             }
         }
-        facingMap.put(attachments, facing);
-        G_renew_powerConfigure();
+        if (!simulate) {
+            facingMap.put(attachments, facing);
+            G_renew_powerConfigure();
+            modules = facingMap.entrySet().stream()
+                .map(values(pos::offset))
+                .map(values(world::getTileEntity))
+                .map(toAny(IAttachment.Attachments::module))
+                .flatMap(iModule -> iModule.map(Stream::of).orElse(Stream.empty()))
+                .collect(Collectors.toList());
+        }
         return true;
     }
 

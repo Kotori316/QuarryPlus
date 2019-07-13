@@ -320,6 +320,7 @@ public class QuarryPlus {
         public static final String debug = "quarrydebug";
         public static final String dummyblock = "dummyblock";
         public static final String exppump = "exppump";
+        public static final String exppumpModule = "exppump_module";
         public static final String frame = "quarryframe";
         public static final String laser = "laserplus";
         public static final String marker = "markerplus";
@@ -330,9 +331,12 @@ public class QuarryPlus {
         public static final String placer = "placerplus";
         public static final String plainpipe = "plainpipe";
         public static final String pump = "pumpplus";
+        public static final String pumpModule = "pump_module";
         public static final String quarry = "quarryplus";
+        public static final String quarry2 = "quarry";
         public static final String refinery = "refineryplus";
         public static final String replacer = "quarryreplacer";
+        public static final String replacerModule = "replacer_module";
         public static final String solidquarry = "solidquarry";
         public static final String template = "template";
         public static final String tool = "tool";

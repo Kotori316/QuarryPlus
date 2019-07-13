@@ -133,7 +133,7 @@ public class PowerManager {
         pp.configure(0, pp.getMaxStored());
     }
 
-    private static void configure(final APowerTile pp, final double CE, final byte efficiencyLevel, final byte unbreakingLevel,
+    private static void configure(final APowerTile pp, final double CE, final int efficiencyLevel, final int unbreakingLevel,
                                   final double CU, final long maxReceive, final long maxStored, final int pump) {
         pp.configure((long) (maxReceive * Math.pow(CE, efficiencyLevel) / (unbreakingLevel * CU + 1)),
             (long) (maxStored * Math.pow(CE, efficiencyLevel) / (unbreakingLevel * CU + 1)
@@ -141,30 +141,30 @@ public class PowerManager {
     }
 
     //What???
-    /*private static void configure15(final APowerTile pp, final double CE, final byte efficiencyLevel, final byte unbreakingLevel,
-                                    final double CU, final double XR, final double MS, final byte pump) {
+    /*private static void configure15(final APowerTile pp, final double CE, final int efficiencyLevel, final int unbreakingLevel,
+                                    final double CU, final double XR, final double MS, final int pump) {
         pp.configure_double(XR * Math.pow(CE, efficiencyLevel) / (unbreakingLevel * CU + 1),
                 MS * Math.pow(CE, efficiencyLevel) / (unbreakingLevel * CU + 1)
                 + (pump > 0 ? 65536 * PumpDrain_BP / (pump * PumpDrain_CU + 1) + 1020 * PumpFrame_BP / (pump * PumpFrame_CU + 1) : 0));
     }*/
 
-    public static void configureQuarryWork(final APowerTile pp, final byte efficiencyLevel, final byte unbreakingLevel, final int pump) {
+    public static void configureQuarryWork(final APowerTile pp, final int efficiencyLevel, final int unbreakingLevel, final int pump) {
         configure(pp, QuarryWork_CE, efficiencyLevel, unbreakingLevel, QuarryWork_CU, QuarryWork_XR, QuarryWork_MS, pump);
     }
 
-    public static void configureMiningWell(final APowerTile pp, final byte efficiencyLevel, final byte unbreakingLevel, final int pump) {
+    public static void configureMiningWell(final APowerTile pp, final int efficiencyLevel, final int unbreakingLevel, final int pump) {
         configure(pp, MiningWell_CE, efficiencyLevel, unbreakingLevel, MiningWell_CU, MiningWell_XR, MiningWell_MS, pump);
     }
 
-    public static void configureLaser(final APowerTile pp, final byte efficiencyLevel, final byte unbreakingLevel) {
+    public static void configureLaser(final APowerTile pp, final int efficiencyLevel, final int unbreakingLevel) {
         configure(pp, Laser_CE, efficiencyLevel, unbreakingLevel, Laser_CU, Laser_XR, Laser_MS, 0);
     }
 
-    public static void configureFrameBuild(final APowerTile pp, final byte efficiencyLevel, final byte unbreakingLevel, final int pump) {
+    public static void configureFrameBuild(final APowerTile pp, final int efficiencyLevel, final int unbreakingLevel, final int pump) {
         configure(pp, FrameBuild_CE, efficiencyLevel, unbreakingLevel, FrameBuild_CU, FrameBuild_XR, FrameBuild_MS, pump);
     }
 
-    public static void configureRefinery(final APowerTile pp, final byte efficiencyLevel, final byte unbreakingLevel) {
+    public static void configureRefinery(final APowerTile pp, final int efficiencyLevel, final int unbreakingLevel) {
         configure(pp, Refinery_CE, efficiencyLevel, unbreakingLevel, Refinery_CU, Refinery_XR, Refinery_MS, 0);
     }
 
@@ -176,7 +176,7 @@ public class PowerManager {
      * @param replacer    True if replacer is working.
      * @return Whether the tile used energy.
      */
-    public static boolean useEnergyBreak(final APowerTile pp, final float hardness, final byte enchantMode, final byte unbreaking, boolean replacer) {
+    public static boolean useEnergyBreak(final APowerTile pp, final float hardness, final int enchantMode, final int unbreaking, boolean replacer) {
         if (enchantMode == -2)
             return true;
         final long pw = (long) (calcEnergyBreak(pp, hardness, enchantMode, unbreaking) * (replacer ? 1.1 : 1));
@@ -193,7 +193,7 @@ public class PowerManager {
      * @param unbreaking  unbreaking level
      * @return Require energy.
      */
-    private static double calcEnergyBreak(APowerTile pp, float hardness, byte enchantMode, byte unbreaking) {
+    private static double calcEnergyBreak(APowerTile pp, float hardness, int enchantMode, int unbreaking) {
         long BP;
         double CU;
         double CSP;
@@ -219,7 +219,7 @@ public class PowerManager {
         return (long) (BP * hardness * CSP / (unbreaking * CU + 1));
     }
 
-    public static boolean useEnergyPump(final APowerTile pp, final byte U, final long liquidsCount, final long framesToBuild) {
+    public static boolean useEnergyPump(final APowerTile pp, final int U, final long liquidsCount, final long framesToBuild) {
         final long pw = calcEnergyPumpDrain(U, liquidsCount, framesToBuild);
         if (pp.useEnergy(pw, pw, false, EnergyUsage.PUMP_FLUID) != pw)
             return false;
@@ -243,11 +243,11 @@ public class PowerManager {
         return useEnergy(pp, FrameBuild_BP, U, FrameBuild_CU, 0, 1, EnergyUsage.FRAME_BUILD);
     }
 
-    public static boolean useEnergyRefinery(final APowerTile pp, final long BP, final byte U, final byte E) {
+    public static boolean useEnergyRefinery(final APowerTile pp, final long BP, final int U, final int E) {
         return useEnergy(pp, BP, U, Refinery_CU, E, Refinery_CE, EnergyUsage.REFINERY);
     }
 
-    public static double useEnergyQuarryHead(final APowerTile pp, final double dist, final byte U) {
+    public static double useEnergyQuarryHead(final APowerTile pp, final double dist, final int U) {
         double bp = (double) MoveHead_BP / APowerTile.MicroJtoMJ;
         double pw;
         if (!Config.content().fastQuarryHeadMove()) {
@@ -259,7 +259,7 @@ public class PowerManager {
         return pw * (U * MoveHead_CU + 1) / bp + 0.05;
     }
 
-    public static long simulateEnergyLaser(final APowerTile pp, final byte U, final byte F, final boolean S, final byte E) {
+    public static long simulateEnergyLaser(final APowerTile pp, final int U, final int F, final boolean S, final int E) {
         long pw = (long) (Laser_BP * Math.pow(Laser_CF, F) * Math.pow(Laser_CE, E) / (U * Laser_CU + 1));
         if (S) {
             long used = pp.useEnergy(0, (long) (pw * Laser_CS), false, EnergyUsage.LASER);
@@ -270,7 +270,7 @@ public class PowerManager {
         }
     }
 
-    public static void useEnergyLaser(final APowerTile pp, final long power, final byte U, final byte F, final boolean S, boolean simulate) {
+    public static void useEnergyLaser(final APowerTile pp, final long power, final int U, final int F, final boolean S, boolean simulate) {
         long pw = (long) (power * Math.pow(Laser_CF, F) * (S ? Laser_CS : 1) / (U * Laser_CU + 1));
         pp.useEnergy(pw, pw, !simulate, EnergyUsage.LASER);
     }
