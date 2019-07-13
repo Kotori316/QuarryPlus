@@ -37,7 +37,7 @@ class RangeWrapper {
         this.yMin = area.yMin();
         this.zMax = area.zMax();
         this.zMin = area.zMin();
-        isWaiting = () -> quarry2.action().mode() == TileQuarry2.waiting();
+        isWaiting = () -> quarry2.action().mode() == TileQuarry2.waiting() || quarry2.action().mode() == TileQuarry2.breakInsideFrame();
     }
 
     public static RangeWrapper of(Object tb) {

@@ -72,7 +72,8 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
       }
       // Insert items
       storage.pushItem(world, pos)
-      storage.pushFluid(world, pos)
+      if (world.getGameTime % 20 == 0) // Insert fluid every 1 second.
+        storage.pushFluid(world, pos)
     }
   }
 
@@ -107,11 +108,15 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
 
   override protected def isWorking = target != BlockPos.ORIGIN && action.mode != none
 
-  def onActivated(): Unit = {
+  def onActivated(player: EntityPlayer): Unit = {
+    // Called in server world.
     import com.yogpc.qp.machines.quarry.QuarryAction.BreakInsideFrame
     this.action match {
       case QuarryAction.none | QuarryAction.waiting | _: BreakInsideFrame => frameMode = !frameMode
+        player.sendStatusMessage(new TextComponentTranslation(TranslationKeys.CHANGEMODE,
+          new TextComponentTranslation(if (frameMode) TranslationKeys.FILLER_MODE else TranslationKeys.QUARRY_MODE)), false)
       case _ => G_ReInit()
+        player.sendStatusMessage(new TextComponentString("Quarry Restarted."), false)
     }
   }
 
@@ -245,6 +250,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     s"Enchantment: ${enchantments.show}",
     s"Area: ${area.show}",
     s"Storage: ${storage.show}",
+    s"FrameMode: $frameMode",
     s"Modules: ${modules.mkString(comma)}",
     s"Attachments: ${attachments.mkString(comma)}",
   ).map(new TextComponentString(_)))

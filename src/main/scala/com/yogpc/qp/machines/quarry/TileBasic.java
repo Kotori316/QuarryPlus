@@ -16,6 +16,7 @@ package com.yogpc.qp.machines.quarry;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -24,6 +25,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.InvUtils;
@@ -82,6 +84,7 @@ import static jp.t2v.lab.syntax.MapStreamSyntax.byKey;
 import static jp.t2v.lab.syntax.MapStreamSyntax.entryToMap;
 import static jp.t2v.lab.syntax.MapStreamSyntax.keys;
 import static jp.t2v.lab.syntax.MapStreamSyntax.not;
+import static jp.t2v.lab.syntax.MapStreamSyntax.toAny;
 import static jp.t2v.lab.syntax.MapStreamSyntax.toEntry;
 import static jp.t2v.lab.syntax.MapStreamSyntax.values;
 
@@ -105,7 +108,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
 
     protected Map<ResourceLocation, Integer> ench = new HashMap<>();
 
-    public List<IModule> modules = new ArrayList<>();
+    public List<IModule> modules = Collections.emptyList();
 
     /**
      * Where quarry stops its work. Dig blocks at this value.
@@ -186,7 +189,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
 
     @Override
     public boolean connectAttachment(final EnumFacing facing, IAttachment.Attachments<? extends APacketTile> attachments, boolean simulate) {
-      if (facingMap.containsKey(attachments)) {
+        if (facingMap.containsKey(attachments)) {
             TileEntity entity = world.getTileEntity(getPos().offset(facingMap.get(attachments)));
             if (attachments.test(entity) && facingMap.get(attachments) != facing) {
                 return false;
@@ -195,8 +198,12 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         if (!simulate) {
             facingMap.put(attachments, facing);
             G_renew_powerConfigure();
-            TileEntity entity = world.getTileEntity(getPos().offset(facingMap.get(attachments)));
-            attachments.module(entity).ifPresent(modules::add);
+            modules = facingMap.entrySet().stream()
+                .map(values(pos::offset))
+                .map(values(world::getTileEntity))
+                .map(toAny(IAttachment.Attachments::module))
+                .flatMap(iModule -> iModule.map(Stream::of).orElse(Stream.empty()))
+                .collect(Collectors.toList());
         }
         return true;
     }

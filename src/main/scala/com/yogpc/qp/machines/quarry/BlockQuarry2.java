@@ -78,7 +78,7 @@ public class BlockQuarry2 extends QPBlock {
         if (super.onBlockActivated(state, worldIn, pos, player, hand, side, hitX, hitY, hitZ)) return true;
         ItemStack stack = player.getHeldItem(hand);
         if (BuildcraftHelper.isWrench(player, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), side, pos))) {
-            Optional.ofNullable((TileQuarry2) worldIn.getTileEntity(pos)).ifPresent(TileQuarry2::onActivated);
+            Optional.ofNullable((TileQuarry2) worldIn.getTileEntity(pos)).ifPresent(tileQuarry2 -> tileQuarry2.onActivated(player));
             return true;
         }
         if (!player.isSneaking()) {
