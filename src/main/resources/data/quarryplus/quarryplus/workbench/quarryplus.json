@@ -26,13 +26,13 @@
   "energy": 320000.0,
   "showInJEI": true,
   "result": {
-    "item": "quarryplus:quarryplus",
+    "item": "quarryplus:quarry",
     "count": 1
   },
   "conditions": [
     {
       "type": "quarryplus:machine_enabled",
-      "value": "QuarryPlus"
+      "value": "NewQuarry"
     }
   ]
 }

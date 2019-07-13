@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "group": "quarryplus:group_module",
+  "ingredients": [
+    {
+      "item": "quarryplus:exppump"
+    }
+  ],
+  "result": {
+    "item": "quarryplus:exppump_module",
+    "count": 1
+  }
+}

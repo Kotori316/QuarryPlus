@@ -276,7 +276,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
 
 object TileQuarry2 {
   //---------- Constants ----------
-  val SYMBOL = Symbol("quarry2")
+  val SYMBOL = Symbol("NewQuarry")
   final val comma = ","
 
   val noEnch = EnchantmentHolder(0, 0, 0, silktouch = false)
