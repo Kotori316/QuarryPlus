@@ -1,5 +1,10 @@
 **This mod requires a library, [Scalable Cat's Force](https://minecraft.curseforge.com/projects/scalable-cats-force).**
 
+## Version 13.3.0
+* Added new quarry and module system. To enhance old quarry function, you need to place block next to the machine.
+In module system, you can put a module item to quarry inventory to enhance the function.
+* Changed version. (mc version).(major).(minor)
+
 ## Version 2.0.4
 * Added signature to Jar file.
 * Added List Template.
