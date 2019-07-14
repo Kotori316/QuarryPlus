@@ -16,12 +16,14 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.fluid.IFluidState;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
@@ -104,6 +106,29 @@ public class BlockQuarry2 extends QPBlock {
                 }
             }
             super.onReplaced(state, worldIn, pos, newState, isMoving);
+        }
+    }
+
+    @Override
+    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos,
+                                   EntityPlayer player, boolean willHarvest, IFluidState fluid) {
+        return willHarvest || super.removedByPlayer(state, world, pos, player, false, fluid);
+    }
+
+    @Override
+    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack) {
+        super.harvestBlock(worldIn, player, pos, state, te, stack);
+        worldIn.removeBlock(pos);
+    }
+
+    @Override
+    public void getDrops(IBlockState state, NonNullList<ItemStack> drops, World world, BlockPos pos, int fortune) {
+        TileEntity entity = world.getTileEntity(pos);
+        if (entity instanceof TileQuarry2) {
+            TileQuarry2 quarry = (TileQuarry2) entity;
+            ItemStack stack = new ItemStack(itemBlock(), 1);
+            IEnchantableTile.Util.enchantmentToIS(quarry, stack);
+            drops.add(stack);
         }
     }
 
