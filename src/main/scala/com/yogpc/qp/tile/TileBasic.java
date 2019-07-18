@@ -16,6 +16,7 @@ package com.yogpc.qp.tile;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -24,6 +25,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import cofh.api.tileentity.IInventoryConnection;
 import com.yogpc.qp.Config;
@@ -69,6 +72,8 @@ import static com.yogpc.qp.tile.IAttachment.Attachments.EXP_PUMP;
 import static com.yogpc.qp.tile.IAttachment.Attachments.FLUID_PUMP;
 import static jp.t2v.lab.syntax.MapStreamSyntax.always_true;
 import static jp.t2v.lab.syntax.MapStreamSyntax.not;
+import static jp.t2v.lab.syntax.MapStreamSyntax.toAny;
+import static jp.t2v.lab.syntax.MapStreamSyntax.values;
 
 @net.minecraftforge.fml.common.Optional.Interface(iface = "cofh.api.tileentity.IInventoryConnection", modid = QuarryPlus.Optionals.COFH_modID)
 public abstract class TileBasic extends APowerTile implements IEnchantableTile, HasInv, IInventoryConnection, IAttachable {

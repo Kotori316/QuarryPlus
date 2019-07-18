@@ -11,12 +11,14 @@ import com.yogpc.qp.render.RenderDistiller;
 import com.yogpc.qp.render.RenderLaser;
 import com.yogpc.qp.render.RenderMarker;
 import com.yogpc.qp.render.RenderQuarry;
+import com.yogpc.qp.render.RenderQuarry2;
 import com.yogpc.qp.render.Sprites;
 import com.yogpc.qp.tile.TileAdvQuarry;
 import com.yogpc.qp.tile.TileLaser;
 import com.yogpc.qp.tile.TileMarker;
 import com.yogpc.qp.tile.TilePump;
 import com.yogpc.qp.tile.TileQuarry;
+import com.yogpc.qp.tile.TileQuarry2;
 import com.yogpc.qp.tile.TileRefinery;
 import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.client.Minecraft;
@@ -94,6 +96,7 @@ public class ProxyClient extends ProxyCommon {
     public void registerTextures() {
         if (!Config.content().disableRendering()) {
             ClientRegistry.bindTileEntitySpecialRenderer(TileQuarry.class, RenderQuarry.instance());
+            ClientRegistry.bindTileEntitySpecialRenderer(TileQuarry2.class, RenderQuarry2.instance());
             ClientRegistry.bindTileEntitySpecialRenderer(TileMarker.class, RenderMarker.instance());
             if (!Config.content().disableMapJ().get(TileAdvQuarry.SYMBOL()))
                 ClientRegistry.bindTileEntitySpecialRenderer(TileAdvQuarry.class, RenderAdvQuarry.instance());

@@ -4,7 +4,7 @@
     "model": "quarryplus:quarryplus"
   },
   "variants": {
-    "working": {
+    "acting": {
       "true": {
         "model": "quarryplus:quarryplus_working"
       },

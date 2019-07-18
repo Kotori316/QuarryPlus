@@ -1,10 +1,10 @@
-package com.yogpc.qp.machines.modules;
+package com.yogpc.qp.modules;
 
 import java.util.function.Function;
 
-import com.yogpc.qp.machines.base.APowerTile;
-import com.yogpc.qp.machines.base.HasStorage;
-import com.yogpc.qp.machines.base.IModule;
+import com.yogpc.qp.tile.APowerTile;
+import com.yogpc.qp.tile.HasStorage;
+import com.yogpc.qp.tile.IModule;
 import net.minecraft.item.ItemStack;
 
 public interface IModuleItem {

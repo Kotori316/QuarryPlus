@@ -1,50 +1,63 @@
 package com.yogpc.qp.packet.quarry2;
 
-import java.util.function.Supplier;
+import java.io.IOException;
 
-import com.yogpc.qp.machines.quarry.QuarryAction;
-import com.yogpc.qp.machines.quarry.TileQuarry2;
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
+import com.yogpc.qp.tile.QuarryAction;
+import com.yogpc.qp.tile.QuarryAction$;
+import com.yogpc.qp.tile.TileQuarry2;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 /**
  * To client only.
  */
-public class ActionMessage implements IMessage<ActionMessage> {
+public class ActionMessage implements IMessage {
     int dim;
     BlockPos pos;
     NBTTagCompound actionNBT;
 
     public static ActionMessage create(TileQuarry2 quarry2) {
         ActionMessage message = new ActionMessage();
-        message.dim = IMessage.getDimId(quarry2.getWorld());
+        message.dim = quarry2.getWorld().provider.getDimension();
         message.pos = quarry2.getPos();
         message.actionNBT = quarry2.action().clientWrite(new NBTTagCompound());
         return message;
     }
 
     @Override
-    public ActionMessage readFromBuffer(PacketBuffer buffer) {
+    public void fromBytes(PacketBuffer buffer) throws IOException {
         pos = buffer.readBlockPos();
         dim = buffer.readInt();
         actionNBT = buffer.readCompoundTag();
-        return this;
     }
 
     @Override
-    public void writeToBuffer(PacketBuffer buffer) {
+    public void toBytes(PacketBuffer buffer) {
         buffer.writeBlockPos(pos).writeInt(dim);
         buffer.writeCompoundTag(actionNBT);
     }
 
     @Override
-    public void onReceive(Supplier<NetworkEvent.Context> ctx) {
-        IMessage.findTile(ctx, pos, dim, TileQuarry2.class).ifPresent(quarry2 -> ctx.get().enqueueWork(() -> {
-            QuarryAction action = QuarryAction.loadFromNBT().apply(actionNBT).apply(quarry2);
-            quarry2.action_$eq(action);
-        }));
+    public IMessage onReceive(IMessage message, MessageContext ctx) {
+        World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
+        if (world.provider.getDimension() == dim) {
+            TileEntity entity = world.getTileEntity(pos);
+            if (entity instanceof TileQuarry2) {
+                TileQuarry2 quarry2 = (TileQuarry2) entity;
+                FMLCommonHandler.instance().getWorldThread(ctx.netHandler)
+                    .addScheduledTask(() -> {
+                        QuarryAction action = QuarryAction$.MODULE$.loadFromNBT().apply(actionNBT).apply(quarry2);
+                        quarry2.action_$eq(action);
+                    });
+            }
+        }
+        return null;
     }
 }

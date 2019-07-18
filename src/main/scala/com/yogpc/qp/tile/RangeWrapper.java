@@ -1,9 +1,6 @@
-package com.yogpc.qp.machines.pump;
+package com.yogpc.qp.tile;
 
 import java.util.function.BooleanSupplier;
-
-import com.yogpc.qp.machines.quarry.TileQuarry;
-import com.yogpc.qp.machines.quarry.TileQuarry2;
 
 class RangeWrapper {
     static final RangeWrapper infinity = new RangeWrapper(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, () -> false);

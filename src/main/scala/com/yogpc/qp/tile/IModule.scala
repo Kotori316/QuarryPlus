@@ -1,9 +1,6 @@
-package com.yogpc.qp.machines.base
+package com.yogpc.qp.tile
 
-import cats.Show
-import com.yogpc.qp.machines.base.IModule.CalledWhen
-import com.yogpc.qp.machines.pump.PumpModule
-import com.yogpc.qp.machines.replacer.ReplacerModule
+import com.yogpc.qp.tile.IModule.CalledWhen
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.Entity
 import net.minecraft.util.math.BlockPos
@@ -31,7 +28,6 @@ trait IModule {
 }
 
 object IModule {
-  implicit val moduleShow: Show[IModule] = Show.fromToString
   val getId: IModule => String = _.id
   val replaceModuleIDs = Set(ReplacerModule.id)
   val pumpModuleIDs = Set(PumpModule.ID)

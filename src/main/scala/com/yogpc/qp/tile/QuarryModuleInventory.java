@@ -1,4 +1,4 @@
-package com.yogpc.qp.machines.quarry;
+package com.yogpc.qp.tile;
 
 import java.util.List;
 import java.util.Map;
@@ -9,7 +9,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import com.yogpc.qp.machines.modules.IModuleItem;
+import com.yogpc.qp.modules.IModuleItem;
 import jp.t2v.lab.syntax.MapStreamSyntax;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryBasic;
@@ -26,9 +26,15 @@ public class QuarryModuleInventory extends InventoryBasic implements INBTSeriali
     private final Consumer<QuarryModuleInventory> onUpdate;
 
     public QuarryModuleInventory(ITextComponent title, int slotCount, TileEntity entity, Consumer<QuarryModuleInventory> onUpdate) {
-        super(title, slotCount);
+        super(title.getUnformattedText(), true, slotCount);
         this.tile = Objects.requireNonNull(entity);
         this.onUpdate = Objects.requireNonNull(onUpdate);
+    }
+
+    public QuarryModuleInventory(ITextComponent title, int slotCount, TileEntity entity, scala.Function1<QuarryModuleInventory, scala.Unit> onUpdate) {
+        super(title.getUnformattedText(), true, slotCount);
+        this.tile = Objects.requireNonNull(entity);
+        this.onUpdate = onUpdate::apply;
     }
 
     public List<Map.Entry<IModuleItem, ItemStack>> moduleItems() {

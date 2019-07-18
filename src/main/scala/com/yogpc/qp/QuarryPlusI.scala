@@ -16,6 +16,7 @@ import java.util
 
 import com.yogpc.qp.block._
 import com.yogpc.qp.item.{ItemMirror, ItemQuarryDebug, ItemTemplate, ItemTool}
+import com.yogpc.qp.modules.{ItemExpPumpModule, ItemPumpModule, ItemReplacerModule}
 import com.yogpc.qp.tile._
 import net.minecraft.block.Block
 import net.minecraft.util.ResourceLocation
@@ -45,10 +46,14 @@ object QuarryPlusI {
   val blockSolidQuarry: BlockSolidQuarry = register(new BlockSolidQuarry)
   val dummyBlock: DummyBlock = register(new DummyBlock)
   val blockReplacer: BlockReplacer = register(new BlockReplacer)
+  val blockQuarry2: BlockQuarry2 = register(new BlockQuarry2)
   val itemTool = new ItemTool
   val magicMirror = new ItemMirror
   val debugItem = new ItemQuarryDebug
   val itemTemplate = new ItemTemplate
+  val pumpModule = new ItemPumpModule
+  val expPumpModule = new ItemExpPumpModule
+  val replacerModule = new ItemReplacerModule
   final val guiIdWorkbench = 1
   final val guiIdMover = 2
   final val guiIdFList = 3
@@ -61,6 +66,7 @@ object QuarryPlusI {
   final val guiIdQuarryYLevel = 10
   final val guiIdAdvQuarryYLevel = 11
   final val guiIdListTemplate = 12
+  final val guiIdQuarry2 = 13
 
   val tileIdMap = Map(
     classOf[TileWorkbench] -> QuarryPlus.Names.workbench,
@@ -77,7 +83,8 @@ object QuarryPlusI {
     classOf[TileBookMover] -> QuarryPlus.Names.moverfrombook,
     classOf[TileExpPump] -> QuarryPlus.Names.exppump,
     classOf[TileSolidQuarry] -> QuarryPlus.Names.solidquarry,
-    classOf[TileReplacer] -> QuarryPlus.Names.replacer
+    classOf[TileReplacer] -> QuarryPlus.Names.replacer,
+    classOf[TileQuarry2] -> QuarryPlus.Names.quarry2
   ).mapValues(s => new ResourceLocation(QuarryPlus.modID, s))
 
   val tileIdSet = tileIdMap.map { case (_, s) => s.toString }.toSet

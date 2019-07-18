@@ -1,7 +1,9 @@
-package com.yogpc.qp.machines.quarry;
+package com.yogpc.qp.gui;
 
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.machines.TranslationKeys;
+import com.yogpc.qp.container.ContainerQuarryModule;
+import com.yogpc.qp.gui.TranslationKeys;
+import com.yogpc.qp.tile.TileQuarry2;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
@@ -17,15 +19,15 @@ public class GuiQuarryModule extends GuiContainer {
     }
 
     @Override
-    public void render(final int mouseX, final int mouseY, final float partialTicks) {
+    public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
         this.drawDefaultBackground();
-        super.render(mouseX, mouseY, partialTicks);
+        super.drawScreen(mouseX, mouseY, partialTicks);
         this.renderHoveredToolTip(mouseX, mouseY);
     }
 
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         this.mc.getTextureManager().bindTexture(LOCATION);
         this.drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
     }

@@ -698,14 +698,14 @@ class TileAdvQuarry extends APowerTile
     }
   }
 
-  override def connectAttachment(facing: EnumFacing, attachments: Attachments[_ <: APacketTile]): Boolean = {
+  override def connectAttachment(facing: EnumFacing, attachments: Attachments[_ <: APacketTile], simulate:Boolean): Boolean = {
     if (!facingMap.contains(attachments)) {
-      facingMap = facingMap.updated(attachments, facing)
+      if (!simulate) facingMap = facingMap.updated(attachments, facing)
       true
     } else {
       val t = getWorld.getTileEntity(getPos.offset(facingMap(attachments)))
       if (!attachments.test(t)) {
-        facingMap = facingMap.updated(attachments, facing)
+        if (!simulate) facingMap = facingMap.updated(attachments, facing)
         true
       } else {
         facingMap(attachments) == facing

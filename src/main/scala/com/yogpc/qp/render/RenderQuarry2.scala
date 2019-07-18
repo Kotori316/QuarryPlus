@@ -1,12 +1,12 @@
 package com.yogpc.qp.render
 
-import com.yogpc.qp.machines.quarry.{QuarryAction, TileQuarry2}
+import com.yogpc.qp.tile.{QuarryAction, TileQuarry2}
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.BufferBuilder
 import net.minecraft.util.math.{MathHelper, Vec3i}
-import net.minecraftforge.client.model.animation.TileEntityRendererFast
+import net.minecraftforge.client.model.animation.FastTESR
 
-object RenderQuarry2 extends TileEntityRendererFast[TileQuarry2] {
+object RenderQuarry2 extends FastTESR[TileQuarry2] {
   val instance = this
 
   private[this] final val d1 = 1d / 16d
@@ -21,18 +21,18 @@ object RenderQuarry2 extends TileEntityRendererFast[TileQuarry2] {
   private[this] var bufferInstance = new Buffer(null)
 
   override def renderTileEntityFast(quarry: TileQuarry2, distanceX: Double, distanceY: Double, distanceZ: Double,
-                                    partialTicks: Float, destroyStage: Int, bufferBuilder: BufferBuilder): Unit = {
+                                    partialTicks: Float, destroyStage: Int, partial: Float, bufferBuilder: BufferBuilder): Unit = {
     val pos = quarry.getPos
     if (!(bufferInstance bufferEq bufferBuilder)) {
       bufferInstance = new Buffer(bufferBuilder)
     }
     val buffer = bufferInstance
 
-    Minecraft.getInstance.profiler.startSection("quarryplus")
-    Minecraft.getInstance.profiler.startSection("quarry")
+    Minecraft.getMinecraft.mcProfiler.startSection("quarryplus")
+    Minecraft.getMinecraft.mcProfiler.startSection("quarry")
     if ((quarry.action.mode == TileQuarry2.waiting || quarry.action.mode == TileQuarry2.buildFrame || quarry.action.mode == TileQuarry2.breakInsideFrame)
       && quarry.area != TileQuarry2.zeroArea) {
-      Minecraft.getInstance.profiler.startSection("frame")
+      Minecraft.getMinecraft.mcProfiler.startSection("frame")
       bufferBuilder.setTranslation(distanceX - pos.getX + .5, distanceY - pos.getY + .5, distanceZ - pos.getZ + .5)
       val minX = quarry.area.xMin
       val minY = quarry.area.yMin
@@ -409,11 +409,11 @@ object RenderQuarry2 extends TileEntityRendererFast[TileQuarry2] {
       buffer.pos(MXm, MYP, MZm).colored().tex(B_maxU, B_maxV).lightedAndEnd()
       buffer.pos(MXP, MYP, MZm).colored().tex(B_minU, B_maxV).lightedAndEnd()
 
-      Minecraft.getInstance.profiler.endSection()
+      Minecraft.getMinecraft.mcProfiler.endSection()
     }
 
     if (quarry.action.mode == TileQuarry2.breakBlock) {
-      Minecraft.getInstance.profiler.startSection("drill")
+      Minecraft.getMinecraft.mcProfiler.startSection("drill")
       bufferBuilder.setTranslation(distanceX - pos.getX + .5, distanceY - pos.getY + .5, distanceZ - pos.getZ + .5)
       val minX = quarry.area.xMin
       val minZ = quarry.area.zMin
@@ -666,11 +666,11 @@ object RenderQuarry2 extends TileEntityRendererFast[TileQuarry2] {
       bufferBuilder.setTranslation(distanceX - pos.getX + .5, distanceY - pos.getY, distanceZ - pos.getZ + .5)
       yLine(y_floor, y_length)
 
-      Minecraft.getInstance.profiler.endSection()
+      Minecraft.getMinecraft.mcProfiler.endSection()
     }
 
-    Minecraft.getInstance.profiler.endSection()
-    Minecraft.getInstance.profiler.endSection()
+    Minecraft.getMinecraft.mcProfiler.endSection()
+    Minecraft.getMinecraft.mcProfiler.endSection()
   }
 
   override def isGlobalRenderer(te: TileQuarry2): Boolean = true

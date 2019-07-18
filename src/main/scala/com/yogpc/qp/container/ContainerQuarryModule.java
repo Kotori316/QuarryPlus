@@ -1,7 +1,8 @@
-package com.yogpc.qp.machines.quarry;
+package com.yogpc.qp.container;
 
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.machines.base.SlotTile;
+import com.yogpc.qp.tile.QuarryModuleInventory;
+import com.yogpc.qp.tile.TileQuarry2;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
@@ -18,16 +19,16 @@ public class ContainerQuarryModule extends Container {
         int oneBox = 18;
 
         for (int i = 0; i < allSlots; i++) {
-            addSlot(new SlotTile(moduleInventory, i, 44 + i * oneBox, 27));
+            addSlotToContainer(new SlotTile(moduleInventory, i, 44 + i * oneBox, 27));
         }
 
         for (int h = 0; h < 3; h++) {
             for (int v = 0; v < 9; v++) {
-                this.addSlot(new Slot(player.inventory, v + h * 9 + 9, 8 + v * oneBox, 84 + h * oneBox));
+                this.addSlotToContainer(new Slot(player.inventory, v + h * 9 + 9, 8 + v * oneBox, 84 + h * oneBox));
             }
         }
         for (int vertical = 0; vertical < 9; vertical++) {
-            this.addSlot(new Slot(player.inventory, vertical, 8 + vertical * oneBox, 142));
+            this.addSlotToContainer(new Slot(player.inventory, vertical, 8 + vertical * oneBox, 142));
         }
     }
 

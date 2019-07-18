@@ -1,7 +1,7 @@
-package com.yogpc.qp.machines.base;
+package com.yogpc.qp.tile;
 
-import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.FluidStack;
 
 public interface HasStorage {
     Storage getStorage();
@@ -20,9 +20,10 @@ public interface HasStorage {
 
         /**
          * Add the fluid to inventory.
-         * @param fluid the kind.
+         *
+         * @param fluid  the kind.
          * @param amount the amount.
          */
-        void insertFluid(Fluid fluid, long amount);
+        void insertFluid(FluidStack fluid, long amount);
     }
 }

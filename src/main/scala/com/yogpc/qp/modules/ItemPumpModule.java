@@ -1,14 +1,13 @@
-package com.yogpc.qp.machines.modules;
+package com.yogpc.qp.modules;
 
 import java.util.function.Function;
 
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.machines.base.APowerTile;
-import com.yogpc.qp.machines.base.HasStorage;
-import com.yogpc.qp.machines.base.IDisabled;
-import com.yogpc.qp.machines.base.IModule;
-import com.yogpc.qp.machines.pump.PumpModule;
-import com.yogpc.qp.utils.Holder;
+import com.yogpc.qp.QuarryPlusI;
+import com.yogpc.qp.tile.APowerTile;
+import com.yogpc.qp.tile.HasStorage;
+import com.yogpc.qp.tile.IModule;
+import com.yogpc.qp.tile.PumpModule;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.init.Enchantments;
 import net.minecraft.item.EnumRarity;
@@ -20,8 +19,15 @@ public class ItemPumpModule extends Item implements IDisabled, IModuleItem {
     public static final Symbol SYMBOL = Symbol.apply("ModulePump");
 
     public ItemPumpModule() {
-        super(new Properties().group(Holder.tab()).rarity(EnumRarity.UNCOMMON));
+        setUnlocalizedName(QuarryPlus.Names.pumpModule);
+        setCreativeTab(QuarryPlusI.creativeTab());
         setRegistryName(QuarryPlus.modID, QuarryPlus.Names.pumpModule);
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public EnumRarity getRarity(ItemStack stack) {
+        return EnumRarity.UNCOMMON;
     }
 
     @Override

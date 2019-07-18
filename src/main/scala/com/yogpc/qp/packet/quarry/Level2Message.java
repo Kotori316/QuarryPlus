@@ -1,39 +1,41 @@
 package com.yogpc.qp.packet.quarry;
 
-import java.util.function.Supplier;
-
-import com.yogpc.qp.machines.quarry.TileQuarry2;
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import com.yogpc.qp.tile.TileQuarry2;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public class Level2Message extends LevelMessage {
-    @Override
-    public Level2Message readFromBuffer(PacketBuffer buffer) {
-        super.readFromBuffer(buffer);
-        return this;
-    }
 
     public static Level2Message create(TileQuarry2 quarry) {
         Level2Message message = new Level2Message();
         message.yLevel = quarry.yLevel();
         message.pos = quarry.getPos();
-        message.dim = IMessage.getDimId(quarry.getWorld());
+        message.dim = quarry.getWorld().provider.getDimension();
         return message;
     }
 
     @Override
-    public void onReceive(Supplier<NetworkEvent.Context> ctx) {
-        IMessage.findTile(ctx, pos, dim, TileQuarry2.class)
-            .ifPresent(quarry -> {
-                switch (ctx.get().getDirection().getReceptionSide()) {
+    public IMessage onReceive(IMessage message, MessageContext ctx) {
+        World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
+        if (world.provider.getDimension() == dim) {
+            TileEntity entity = world.getTileEntity(pos);
+            if (entity instanceof TileQuarry2) {
+                TileQuarry2 quarry = (TileQuarry2) entity;
+                switch (ctx.side) {
                     case CLIENT:
                         quarry.yLevel_$eq(yLevel);
                         break;
                     case SERVER:
-                        ctx.get().enqueueWork(() -> quarry.yLevel_$eq(yLevel));
+                        FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() ->
+                            quarry.yLevel_$eq(yLevel));
                         break;
                 }
-            });
+            }
+        }
+        return null;
     }
 }

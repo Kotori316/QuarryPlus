@@ -5,8 +5,8 @@ import com.yogpc.qp.container.ContainerQuarryLevel
 import com.yogpc.qp.gui.GuiQuarryLevel.YLevel
 import com.yogpc.qp.packet.PacketHandler
 import com.yogpc.qp.packet.advquarry.AdvLevelMessage
-import com.yogpc.qp.packet.quarry.LevelMessage
-import com.yogpc.qp.tile.{HasInv, TileAdvQuarry, TileBasic, TileQuarry}
+import com.yogpc.qp.packet.quarry.{Level2Message, LevelMessage}
+import com.yogpc.qp.tile.{HasInv, TileAdvQuarry, TileBasic, TileQuarry, TileQuarry2}
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.renderer.GlStateManager

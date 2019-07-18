@@ -21,12 +21,12 @@ import scala.collection.JavaConverters._
 
 class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender with IAttachment {
   private[this] var mConnectTo: EnumFacing = _
-  private[this] var xpAmount = 0
   private[this] var loading = false
 
   private[this] var fortune = 0
   private[this] var unbreaking = 0
   private[this] var silktouch = false
+  private val module: ExpPumpModule = new ExpPumpModule((_: Long) => true, () => this.unbreaking, None)
 
   override protected def getSymbol: Symbol = BlockExpPump.SYMBOL
 
@@ -36,6 +36,8 @@ class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender wi
   override def G_ReInit(): Unit = {
     refreshConnection()
   }
+
+  def getModule = module
 
   override def onLoad(): Unit = {
     super.onLoad()
@@ -47,12 +49,14 @@ class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender wi
 
   private def refreshConnection(): Unit = {
     if (hasWorld && !world.isRemote) {
-      val facing = EnumFacing.VALUES
+      val entry = EnumFacing.VALUES
         .map(f => (f, getWorld.getTileEntity(getPos.offset(f))))
         .collectFirst {
-          case (f: EnumFacing, t: IAttachable) if t.connect(f.getOpposite, IAttachment.Attachments.EXP_PUMP) => f
-        }.orNull
-      setConnectTo(facing)
+          case (f: EnumFacing, t: IAttachable) if t.connect(f.getOpposite, IAttachment.Attachments.EXP_PUMP) => f -> t
+        }.getOrElse((null, IAttachable.dummy))
+
+      if (entry._1 != null && entry._2.connectAttachment(entry._1.getOpposite, IAttachment.Attachments.EXP_PUMP, false))
+        setConnectTo(entry._1)
       S_sendNowPacket()
     }
   }
@@ -74,9 +78,9 @@ class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender wi
   def working: Boolean = mConnectTo != null
 
   def addXp(amount: Int): Unit = {
-    xpAmount += amount
-    if (xpAmount > 0 ^ getWorld.getBlockState(getPos).getValue(ADismCBlock.ACTING)) {
-      val state = getWorld.getBlockState(getPos).withProperty(ADismCBlock.ACTING, Boolean.box(xpAmount > 0))
+    module.xp += amount
+    if (module.xp > 0 ^ getWorld.getBlockState(getPos).getValue(ADismCBlock.ACTING)) {
+      val state = getWorld.getBlockState(getPos).withProperty(ADismCBlock.ACTING, Boolean.box(module.xp > 0))
       InvUtils.setNewState(getWorld, getPos, this, state)
     }
   }
@@ -87,8 +91,8 @@ class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender wi
 
   def onActivated(worldIn: World, pos: BlockPos, playerIn: EntityPlayer): Unit = {
     //on Server side
-    if (xpAmount > 0) {
-      val xp = EntityXPOrb.getXPSplit(xpAmount)
+    if (module.xp > 0) {
+      val xp = EntityXPOrb.getXPSplit(module.xp)
       val orb = new EntityXPOrb(worldIn, playerIn.posX, playerIn.posY, playerIn.posZ, xp)
       worldIn.spawnEntity(orb)
       addXp(-xp)
@@ -96,8 +100,8 @@ class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender wi
   }
 
   def onBreak(worldIn: World): Unit = {
-    if (xpAmount > 0) {
-      val xpOrb = new EntityXPOrb(worldIn, getPos.getX, getPos.getY, getPos.getZ, xpAmount)
+    if (module.xp > 0) {
+      val xpOrb = new EntityXPOrb(worldIn, getPos.getX, getPos.getY, getPos.getZ, module.xp)
       worldIn.spawnEntity(xpOrb)
     }
   }
@@ -127,7 +131,7 @@ class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender wi
 
   override def writeToNBT(compound: NBTTagCompound): NBTTagCompound = {
     compound.setByte("mConnectTo", mConnectTo.map(_.ordinal().toByte).getOrElse(-1))
-    compound.setInteger("xpAmount", xpAmount)
+    compound.setInteger("xpAmount", module.xp)
     compound.setBoolean("silktouch", this.silktouch)
     compound.setByte("fortune", this.fortune.toByte)
     compound.setByte("unbreaking", this.unbreaking.toByte)
@@ -138,7 +142,7 @@ class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender wi
     super.readFromNBT(compound)
     val connectID = compound.getByte("mConnectTo")
     mConnectTo = if (connectID < 0) null else EnumFacing.getFront(connectID)
-    xpAmount = compound.getInteger("xpAmount")
+    module.xp = compound.getInteger("xpAmount")
     this.silktouch = compound.getBoolean("silktouch")
     this.fortune = compound.getByte("fortune")
     this.unbreaking = compound.getByte("unbreaking")
@@ -157,13 +161,13 @@ class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender wi
     "Unbreaking -> " + unbreaking,
     "Fortune -> " + fortune,
     "Silktouch -> " + silktouch,
-    "XpAmount -> " + xpAmount
+    "XpAmount -> " + module.xp
   ).map(toComponentString).asJava
 
   def writeToPacket(message: ExpPumpMessage): ExpPumpMessage = {
     message.pos = getPos
     message.dim = getWorld.provider.getDimension
-    message.xpAmount = xpAmount
+    message.xpAmount = module.xp
     message.facingOrdinal = Option(mConnectTo).fold(-1)(_.ordinal())
     message
   }
@@ -173,6 +177,6 @@ class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender wi
       case i if i >= 0 => EnumFacing.getFront(i)
       case _ => null
     }.get
-    xpAmount = message.xpAmount
+    module.xp = message.xpAmount
   }
 }

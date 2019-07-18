@@ -20,7 +20,9 @@ public interface IAttachment {
      * Setter method to change field in this class.
      */
     void setConnectTo(@Nullable EnumFacing connectTo);
+
     IModule getModule();
+
     class Attachments<T extends APacketTile & IAttachment> implements Predicate<TileEntity>, Function<TileEntity, Optional<T>> {
         public static final Attachments<TilePump> FLUID_PUMP = new Attachments<>("FLUID_PUMP");
         public static final Attachments<TileExpPump> EXP_PUMP = new Attachments<>("EXP_PUMP");

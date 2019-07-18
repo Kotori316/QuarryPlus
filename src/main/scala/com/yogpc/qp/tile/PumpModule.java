@@ -1,34 +1,37 @@
-package com.yogpc.qp.machines.pump;
+package com.yogpc.qp.tile;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.IntSupplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.yogpc.qp.Config;
+import com.yogpc.qp.PowerManager;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.FluidStore;
-import com.yogpc.qp.machines.PowerManager;
-import com.yogpc.qp.machines.base.APowerTile;
-import com.yogpc.qp.machines.base.HasStorage;
-import com.yogpc.qp.machines.base.IModule;
-import com.yogpc.qp.machines.quarry.TileQuarry;
-import com.yogpc.qp.machines.quarry.TileQuarry2;
-import com.yogpc.qp.utils.Holder;
 import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.fluid.IFluidState;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.ChunkSection;
+import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidUtil;
 import scala.collection.JavaConverters;
 import scala.collection.immutable.Set;
 
 public abstract class PumpModule implements IModule {
     public static final String ID = QuarryPlus.modID + ":" + "module_pump";
-    private static final Set<ModuleType> TYPE_SET =
-        JavaConverters.asScalaSet(Stream.of(TypeBeforeBreak$.MODULE$).collect(Collectors.toSet())).toSet();
+    private static final Set<ModuleType> TYPE_SET;
+
+    static {
+        Set<?> set = JavaConverters.asScalaSetConverter(Stream.of(TypeBeforeBreak$.MODULE$).collect(Collectors.toSet())).asScala().toSet();
+        TYPE_SET = (Set<ModuleType>) set;
+    }
 
     @Override
     public String id() {
@@ -36,7 +39,16 @@ public abstract class PumpModule implements IModule {
     }
 
     @Override
-    public Set<ModuleType> calledWhen() {
+    public final boolean invoke(CalledWhen when) {
+        if (calledWhen().apply(when.moduleType())) {
+            return action(when);
+        } else {
+            return true;
+        }
+    }
+
+    @Override
+    public final Set<ModuleType> calledWhen() {
         return TYPE_SET;
     }
 
@@ -108,7 +120,7 @@ public abstract class PumpModule implements IModule {
         private static final int CHUNK_SCALE = 16;
 
         private byte[][][] blocks;
-        private ChunkSection[][][] storageArray;
+        private ExtendedBlockStorage[][][] storageArray;
         private int xOffset, yOffset, zOffset, px, py = Integer.MIN_VALUE;
         private int cx, cy = -1, cz;
         private boolean quarryRange = true;
@@ -138,7 +150,7 @@ public abstract class PumpModule implements IModule {
 
         @SuppressWarnings("ConditionalCanBeOptional")
         private void S_searchLiquid(final int x, final int y, final int z) {
-            this.fwt = world.getDayTime();
+            this.fwt = world.getTotalWorldTime();
             int cg;
             cp = cg = 0;
             int chunk_side_x, chunk_side_z;
@@ -184,16 +196,16 @@ public abstract class PumpModule implements IModule {
             this.block_side_x = chunk_side_x * CHUNK_SCALE;
             this.block_side_z = chunk_side_z * CHUNK_SCALE;
             this.blocks = new byte[Y_SIZE - this.yOffset][this.block_side_x][this.block_side_z];
-            this.storageArray = new ChunkSection[chunk_side_x][chunk_side_z][];
+            this.storageArray = new ExtendedBlockStorage[chunk_side_x][chunk_side_z][];
             int kx, kz;
             for (kx = 0; kx < chunk_side_x; kx++)
                 for (kz = 0; kz < chunk_side_z; kz++)
                     this.storageArray[kx][kz] = world.getChunkProvider()
-                        .getChunk(kx + (this.xOffset >> 4), kz + (this.zOffset >> 4), true, false)
-                        .getSections();
+                        .getLoadedChunk(kx + (this.xOffset >> 4), kz + (this.zOffset >> 4))
+                        .getBlockStorageArray();
             S_put(x - this.xOffset, y, z - this.zOffset);
             IBlockState b_c;
-            ChunkSection ebs_c;
+            ExtendedBlockStorage ebs_c;
             while (cp != cg) {
                 ebs_c = this.storageArray[xb[cg] >> 4][zb[cg] >> 4][yb[cg] >> 4];
                 if (ebs_c != null) {
@@ -233,15 +245,15 @@ public abstract class PumpModule implements IModule {
 
         public boolean S_removeLiquids(final APowerTile tile, final int x, final int y, final int z) {
             if (this.cx != x || this.cy != y || this.cz != z || this.py < this.cy
-                || world.getDayTime() - this.fwt > 200)
+                || world.getTotalWorldTime() - this.fwt > 200)
                 S_searchLiquid(x, y, z);
             else {
-                this.storageArray = new ChunkSection[this.storageArray.length][this.storageArray[0].length][];
+                this.storageArray = new ExtendedBlockStorage[this.storageArray.length][this.storageArray[0].length][];
                 for (int kx = 0; kx < this.storageArray.length; kx++) {
                     for (int kz = 0; kz < this.storageArray[0].length; kz++) {
                         this.storageArray[kx][kz] = world.getChunkProvider()
-                            .getChunk(kx + (this.xOffset >> 4), kz + (this.zOffset >> 4), true, false)
-                            .getSections();
+                            .getLoadedChunk(kx + (this.xOffset >> 4), kz + (this.zOffset >> 4))
+                            .getBlockStorageArray();
                     }
                 }
             }
@@ -266,7 +278,7 @@ public abstract class PumpModule implements IModule {
                             if (this.blocks[this.py - this.yOffset][this.px][bz] != 0) {
                                 bb = this.storageArray[this.px >> 4][bz >> 4][this.py >> 4].get(this.px & 0xF, this.py & 0xF, bz & 0xF);
                                 mutableBlockPos.setPos(this.px + this.xOffset, this.py, bz + this.zOffset);
-                                if (TilePump.isLiquid(bb, Config.common().removeOnlySource().get(), world, mutableBlockPos))
+                                if (TilePump.isLiquid(bb, Config.content().removeOnlySource(), world, mutableBlockPos))
                                     count++;
                             }
                     }
@@ -284,19 +296,19 @@ public abstract class PumpModule implements IModule {
                     for (bx = 0; bx < this.block_side_x; bx++)
                         for (bz = 0; bz < this.block_side_z; bz++)
                             if ((this.blocks[this.py - this.yOffset][bx][bz] & 0x40) != 0) {
-                                drainBlock(bx, bz, Holder.blockFrame().getDammingState());
+                                drainBlock(bx, bz, QuarryPlusI.blockFrame().getDammingState());
                                 if (tile instanceof TileQuarry || tile instanceof TileQuarry2) {
                                     RangeWrapper wrapper = RangeWrapper.of(tile);
                                     int xTarget = bx + xOffset;
                                     int zTarget = bz + zOffset;
                                     if (wrapper.waiting()) {
                                         if ((wrapper.xMin <= xTarget && xTarget <= wrapper.xMax) && (wrapper.zMin <= zTarget && zTarget <= wrapper.zMax)) {
-                                            if (Config.common().debug())
+                                            if (Config.content().debug())
                                                 QuarryPlus.LOGGER.warn(String.format("Quarry placed frame at %d, %d, %d", xTarget, py, zTarget));
                                             autoChange(true);
                                         }
                                     } else {
-                                        if (Config.common().debug()) {
+                                        if (Config.content().debug()) {
                                             if ((wrapper.xMin < xTarget && xTarget < wrapper.xMax) && (wrapper.zMin < zTarget && zTarget < wrapper.zMax))
                                                 QuarryPlus.LOGGER.warn(String.format("Quarry placed frame at %d, %d, %d", xTarget, py, zTarget));
                                         }
@@ -324,25 +336,17 @@ public abstract class PumpModule implements IModule {
         private void drainBlock(final int bx, final int bz, final IBlockState tb) {
             if (TilePump.isLiquid(this.storageArray[bx >> 4][bz >> 4][this.py >> 4].get(bx & 0xF, this.py & 0xF, bz & 0xF))) {
                 BlockPos blockPos = new BlockPos(bx + xOffset, py, bz + zOffset);
-            /*FluidUtil.getFluidHandler(world, blockPos, EnumFacing.UP).ifPresent(handler -> {
-                FluidStack stack = handler.drain(Fluid.BUCKET_VOLUME, true);
-                if (stack != null) {
-                    final int index = this.liquids.indexOf(stack);
-                    if (index != -1)
-                        this.liquids.get(index).amount += stack.amount;
-                    else
-                        this.liquids.add(stack);
-                }
-            });*/
-                IFluidState fluidState = world.getFluidState(blockPos);
-                if (fluidState.isSource()) {
-                    if (tile instanceof HasStorage) {
-                        HasStorage.Storage storage = ((HasStorage) tile).getStorage();
-                        storage.insertFluid(fluidState.getFluid(), FluidStore.AMOUNT);
-                    } else
-                        FluidStore.injectToNearTile(world, pos, fluidState.getFluid());
-                }
-                world.setBlockState(blockPos, tb);
+                Optional.ofNullable(FluidUtil.getFluidHandler(world, blockPos, EnumFacing.UP)).ifPresent(handler -> {
+                    FluidStack stack = handler.drain(Fluid.BUCKET_VOLUME, true);
+                    if (stack != null) {
+                        if (tile instanceof HasStorage) {
+                            HasStorage.Storage storage = ((HasStorage) tile).getStorage();
+                            storage.insertFluid(stack, FluidStore.AMOUNT);
+                        } else
+                            FluidStore.injectToNearTile(world, pos, stack);
+                    }
+                    world.setBlockState(blockPos, tb);
+                });
             }
         }
 

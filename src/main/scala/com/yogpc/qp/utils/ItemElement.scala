@@ -28,3 +28,9 @@ case class ItemElement(itemDamage: ItemDamage, count: Int) {
     }
   }
 }
+
+object ItemElement {
+  def apply(stack: ItemStack): ItemElement = new ItemElement(ItemDamage(stack), stack.getCount)
+
+  val invalid: ItemElement = ItemElement(ItemDamage.invalid, 0)
+}

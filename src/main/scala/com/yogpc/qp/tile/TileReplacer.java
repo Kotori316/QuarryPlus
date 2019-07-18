@@ -7,11 +7,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.block.BlockPump;
 import com.yogpc.qp.compat.InvUtils;
+import com.yogpc.qp.gui.TranslationKeys;
 import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -20,13 +22,15 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 import org.apache.commons.lang3.tuple.Pair;
 import scala.Symbol;
 
 import static com.yogpc.qp.tile.IAttachment.Attachments.REPLACER;
 import static jp.t2v.lab.syntax.MapStreamSyntax.*;
 
-public class TileReplacer extends APacketTile implements IAttachment {
+public class TileReplacer extends APacketTile implements IAttachment, IDebugSender {
 
     public static final Symbol SYMBOL = Symbol.apply("Replacer");
     private static final List<Predicate<IBlockState>> rejects = new ArrayList<>(Arrays.asList(

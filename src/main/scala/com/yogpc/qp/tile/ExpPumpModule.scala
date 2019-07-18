@@ -1,14 +1,11 @@
-package com.yogpc.qp.machines.exppump
+package com.yogpc.qp.tile
 
 import java.util.function.{IntConsumer, IntSupplier, LongPredicate}
 
-import cats.Eval
-import cats.data.Kleisli
 import com.yogpc.qp.QuarryPlus
-import com.yogpc.qp.machines.base.{APowerTile, EnergyUsage, IEnchantableTile, IModule}
 import net.minecraft.entity.item.EntityXPOrb
 
-final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: Eval[Int], consumer: Option[IntConsumer]) extends IModule {
+final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: () => Int, consumer: Option[IntConsumer]) extends IModule {
   def this(powerTile: APowerTile, consumer: Option[IntConsumer] = None) = {
     this(e => e == powerTile.useEnergy(e, e, true, EnergyUsage.PUMP_EXP),
       Eval.later(Option(powerTile)
@@ -16,14 +13,14 @@ final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: Eval[Int], con
         .getOrElse(0)), consumer)
   }
 
-  override val calledWhen = Set(IModule.TypeCollectItem, IModule.TypeBeforeBreak)
+  override val calledWhen: Set[IModule.ModuleType] = Set(IModule.TypeCollectItem, IModule.TypeBeforeBreak)
 
   var xp: Int = _
 
   override def action(when: IModule.CalledWhen): Boolean = {
     val xp = when match {
       case t: IModule.CollectingItem =>
-        t.entities.collect { case orb: EntityXPOrb if orb.isAlive => QuarryPlus.proxy.removeEntity(orb); orb.xpValue }.sum
+        t.entities.collect { case orb: EntityXPOrb if orb.isEntityAlive => QuarryPlus.proxy.removeEntity(orb); orb.xpValue }.sum
       case s: IModule.BeforeBreak => s.xp
       case _ => 0
     }
@@ -33,7 +30,7 @@ final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: Eval[Int], con
 
   private def addXp(amount: Int): Unit = {
     if (amount == 0) return
-    val energy = getEnergy(amount).value
+    val energy = getEnergy(amount)
     if (useEnergy(energy)) {
       this.xp += amount
       if (amount != 0) // Always true
@@ -41,7 +38,7 @@ final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: Eval[Int], con
     }
   }
 
-  private val getEnergy = Kleisli((amount: Int) => if (amount == 0) ExpPumpModule.zeroL else unbreaking.map(u => 10 * amount * APowerTile.MicroJtoMJ / (1 + u)))
+  private val getEnergy = (amount: Int) => if (amount == 0) 0L else 10 * amount * APowerTile.MicroJtoMJ / (1 + unbreaking.apply())
 
   override def toString = s"ExpPumpModule($xp)"
 
@@ -50,10 +47,9 @@ final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: Eval[Int], con
 
 object ExpPumpModule {
   final val id = "quarryplus:module_exp"
-  final val zeroL = Eval.now(0L)
 
   def apply(useEnergy: LongPredicate, unbreaking: IntSupplier): ExpPumpModule =
-    new ExpPumpModule(l => useEnergy.test(l), Eval.always(unbreaking.getAsInt), None)
+    new ExpPumpModule(l => useEnergy.test(l), () => unbreaking.getAsInt, None)
 
   def fromTile(powerTile: APowerTile, consumer: IntConsumer) = new ExpPumpModule(powerTile, Option(consumer))
 }
