@@ -230,7 +230,7 @@ object QuarryAction {
       }
     }
 
-    override def nextTarget() = digTargets.headOption.getOrElse(BlockPos.ORIGIN)
+    override def nextTarget() = digTargets.headOption.getOrElse(new BlockPos(quarry2.area.xMin + 1, y, quarry2.area.zMin + 1))
 
     override def nextAction(quarry2: TileQuarry2) = if (y > quarry2.yLevel) new BreakBlock(quarry2, y - 1, quarry2.target, headX, headY, headZ) else none
 
