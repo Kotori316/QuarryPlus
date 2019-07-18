@@ -212,19 +212,20 @@ object QuarryAction {
         }
       }
       if (!movingHead) {
-        val state = quarry2.getWorld.getBlockState(target)
-        if (quarry2.breakBlock(quarry2.getWorld, target, state)) {
-          // Replacer works for non liquid block.
-          if (!TilePump.isLiquid(state) && quarry2.modules.exists(IModule.hasReplaceModule)) {
-            quarry2.modules.foreach(_.action(IModule.AfterBreak(quarry2.getWorld, target, state)))
-          } else {
-            quarry2.getWorld.setBlockState(target, Blocks.AIR.getDefaultState)
-          }
-          digTargets = digTargets match {
-            case Nil => Nil
-            case _ :: tl => tl.dropWhile(p => !checkBreakable(quarry2.getWorld, p, quarry2.getWorld.getBlockState(p), quarry2.modules))
-          }
-          movingHead = true
+        digTargets match {
+          case Nil =>
+          case head :: tl if target == head =>
+            val state = quarry2.getWorld.getBlockState(target)
+            if (quarry2.breakBlock(quarry2.getWorld, target, state)) {
+              // Replacer works for non liquid block.
+              if (!TilePump.isLiquid(state) && quarry2.modules.exists(IModule.hasReplaceModule)) {
+                quarry2.modules.foreach(_.action(IModule.AfterBreak(quarry2.getWorld, target, state)))
+              } else {
+                quarry2.getWorld.setBlockState(target, Blocks.AIR.getDefaultState)
+              }
+              digTargets = tl.dropWhile(p => !checkBreakable(quarry2.getWorld, p, quarry2.getWorld.getBlockState(p), quarry2.modules))
+              movingHead = true
+            }
         }
       }
     }

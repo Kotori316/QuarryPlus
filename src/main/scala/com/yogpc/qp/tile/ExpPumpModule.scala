@@ -8,9 +8,11 @@ import net.minecraft.entity.item.EntityXPOrb
 final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: () => Int, consumer: Option[IntConsumer]) extends IModule {
   def this(powerTile: APowerTile, consumer: Option[IntConsumer] = None) = {
     this(e => e == powerTile.useEnergy(e, e, true, EnergyUsage.PUMP_EXP),
-      Eval.later(Option(powerTile)
-        .collect { case ench: IEnchantableTile => ench.getEnchantments.get(IEnchantableTile.UnbreakingID).intValue() }
-        .getOrElse(0)), consumer)
+      () => Option(powerTile)
+        .collect { case ench: IEnchantableTile => ench.getEnchantments }
+        .flatMap(m => Option(m.get(IEnchantableTile.UnbreakingID)))
+        .map(_.intValue())
+        .getOrElse(0), consumer)
   }
 
   override val calledWhen: Set[IModule.ModuleType] = Set(IModule.TypeCollectItem, IModule.TypeBeforeBreak)
