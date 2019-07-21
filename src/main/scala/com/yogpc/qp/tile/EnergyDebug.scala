@@ -62,7 +62,8 @@ class EnergyDebug(tile: APowerTile) {
     val tick = getTime
     val energy = Math.round(amount)
     if (tick == gLastTick) {
-      got(gotCount - 1) += energy
+      if (gotCount > 0)
+        got(gotCount - 1) += energy
     } else {
       gotCount += 1
       if (gotCount > 100) {
@@ -121,7 +122,7 @@ class EnergyDebug(tile: APowerTile) {
     stopWatch.stop()
     if (outputInfo) {
       printInfo()
-      val time = if(getTime - startTime > 0) getTime - startTime else 1
+      val time = if (getTime - startTime > 0) getTime - startTime else 1
       QuarryPlus.LOGGER.info(
         s"$tileName finished its work and took ${stopWatch.toString}, $time ticks. Used ${totalUsed / mj} MJ at ${totalUsed * 10 / time / mj} RF/t"
       )
