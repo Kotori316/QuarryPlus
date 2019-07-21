@@ -1,3 +1,6 @@
+# Version 1.1.1
+* Fixed bug where quarry is reset when work finished if BC's pipe is connected.
+
 # Version 1.1.0
 * Hide enchantment shown in tooltip of List Template.
 * Fixed bug of saving nbt of Replacer.
