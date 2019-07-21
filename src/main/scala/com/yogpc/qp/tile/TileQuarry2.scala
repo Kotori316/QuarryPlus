@@ -114,7 +114,7 @@ class TileQuarry2 extends APowerTile()
     // Called in server world.
     import com.yogpc.qp.tile.QuarryAction.BreakInsideFrame
     this.action match {
-      case QuarryAction.none | QuarryAction.waiting | _: BreakInsideFrame => frameMode = !frameMode
+      case QuarryAction.waiting | _: BreakInsideFrame => frameMode = !frameMode
         player.sendStatusMessage(new TextComponentTranslation(TranslationKeys.CHANGEMODE,
           new TextComponentTranslation(if (frameMode) TranslationKeys.FILLER_MODE else TranslationKeys.QUARRY_MODE)), false)
       case _ => G_ReInit()
@@ -290,8 +290,6 @@ class TileQuarry2 extends APowerTile()
   }
 
   override protected def getSymbol = TileQuarry2.SYMBOL
-
-  override def shouldRefresh(world: World, pos: BlockPos, oldState: IBlockState, newState: IBlockState) = oldState.getBlock ne newState.getBlock
 }
 
 object TileQuarry2 {

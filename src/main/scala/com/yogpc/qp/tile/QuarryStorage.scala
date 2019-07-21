@@ -1,17 +1,16 @@
 package com.yogpc.qp.tile
 
 import com.yogpc.qp._
-import com.yogpc.qp.compat.FluidStore
+import com.yogpc.qp.compat.{FluidStore, InvUtils}
 import com.yogpc.qp.utils.ItemElement
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
-import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import net.minecraftforge.common.util.Constants.NBT
 import net.minecraftforge.common.util.INBTSerializable
 import net.minecraftforge.fluids.{FluidRegistry, FluidStack}
-import net.minecraftforge.items.{CapabilityItemHandler, ItemHandlerHelper}
+import net.minecraftforge.items.ItemHandlerHelper
 
 class QuarryStorage extends INBTSerializable[NBTTagCompound] with HasStorage.Storage {
 
@@ -31,18 +30,24 @@ class QuarryStorage extends INBTSerializable[NBTTagCompound] with HasStorage.Sto
 
   def pushItem(world: World, pos: BlockPos): Unit = {
     items.headOption.foreach { case (key, element) =>
-      (for (f <- EnumFacing.VALUES.toList;
-            t <- Option(world.getTileEntity(pos.offset(f))).toList;
-            cap <- Option(t.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, f.getOpposite)).toList
-      ) yield cap)
-        .collectFirst { case handler if ItemHandlerHelper.insertItem(handler, element.toStack, true).getCount != element.count => handler }
-        .foreach { handler =>
-          val remain = ItemHandlerHelper.insertItem(handler, element.toStack, false)
-          if (remain.isEmpty)
-            items = items - key
-          else
-            items = items.updated(key, ItemElement(remain))
-        }
+      //      (for (f <- EnumFacing.VALUES.toList;
+      //            t <- Option(world.getTileEntity(pos.offset(f))).toList;
+      //            cap <- Option(t.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, f.getOpposite)).toList
+      //      ) yield cap)
+      //        .collectFirst { case handler if ItemHandlerHelper.insertItem(handler, element.toStack, true).getCount != element.count => handler }
+      //        .foreach { handler =>
+      //          val remain = ItemHandlerHelper.insertItem(handler, element.toStack, false)
+      //          if (remain.isEmpty)
+      //            items = items - key
+      //          else
+      //            items = items.updated(key, ItemElement(remain))
+      //        }
+      val remain = InvUtils.injectToNearTile(world, pos, element.toStack)
+      if (remain.isEmpty)
+        items = items - key
+      else
+        items = items.updated(key, ItemElement(remain))
+
     }
   }
 
