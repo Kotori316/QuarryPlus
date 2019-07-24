@@ -7,6 +7,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.BuildcraftHelper;
 import com.yogpc.qp.item.ItemBlockEnchantable;
+import com.yogpc.qp.item.ItemTool;
 import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TileQuarry2;
 import javax.annotation.Nullable;
@@ -71,7 +72,10 @@ public class BlockQuarry2 extends ADismCBlock {
                 Optional.ofNullable((TileQuarry2) worldIn.getTileEntity(pos)).ifPresent(tileQuarry2 -> tileQuarry2.onActivated(player));
             return true;
         }
-        if (!player.isSneaking()) {
+        if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == ItemTool.meta_YSetter()) {
+            player.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdQuarry2YLevel(), worldIn, pos.getX(), pos.getY(), pos.getZ()); return true;
+        }
+        if (!player.isSneaking() ) {
 //            if (!worldIn.isRemote) {
 //                Optional.ofNullable((TileQuarry2) worldIn.getTileEntity(pos)).ifPresent(t ->
 //                    NetworkHooks.openGui(((EntityPlayerMP) player), new TileQuarry2.InteractionObject(t), pos)

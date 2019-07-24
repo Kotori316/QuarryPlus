@@ -2,7 +2,6 @@ package com.yogpc.qp.gui;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.container.ContainerQuarryModule;
-import com.yogpc.qp.gui.TranslationKeys;
 import com.yogpc.qp.tile.TileQuarry2;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -34,7 +33,7 @@ public class GuiQuarryModule extends GuiContainer {
 
     @Override
     protected void drawGuiContainerForegroundLayer(final int mouseX, final int mouseY) {
-        this.fontRenderer.drawString(I18n.format(TranslationKeys.quarry), 8, 6, 0x404040);
+        this.fontRenderer.drawString(I18n.format(TranslationKeys.quarry2), 8, 6, 0x404040);
         this.fontRenderer.drawString(I18n.format(TranslationKeys.CONTAINER_INVENTORY), 8, this.ySize - 96 + 2, 0x404040);
     }
 }

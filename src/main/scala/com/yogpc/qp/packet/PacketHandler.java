@@ -30,6 +30,7 @@ import com.yogpc.qp.packet.quarry.LevelMessage;
 import com.yogpc.qp.packet.quarry.ModeMessage;
 import com.yogpc.qp.packet.quarry.MoveHead;
 import com.yogpc.qp.packet.quarry2.ActionMessage;
+import com.yogpc.qp.packet.quarry2.Level2Message;
 import com.yogpc.qp.packet.workbench.WorkbenchMessage;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.BlockPos;
@@ -97,6 +98,8 @@ public class PacketHandler {
         wrapper.registerMessage(handler, TemplateMessage.class, i++, Side.SERVER);
         //new quarry
         wrapper.registerMessage(handler, ActionMessage.class, i++, Side.CLIENT);
+        wrapper.registerMessage(handler, Level2Message.class, i++, Side.CLIENT);
+        wrapper.registerMessage(handler, Level2Message.class, i++, Side.SERVER);
         assert i > 0 : "Dummy Operation";
     }
 

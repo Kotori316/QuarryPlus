@@ -1,7 +1,8 @@
-package com.yogpc.qp.packet.quarry;
+package com.yogpc.qp.packet.quarry2;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
+import com.yogpc.qp.packet.quarry.LevelMessage;
 import com.yogpc.qp.tile.TileQuarry2;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
