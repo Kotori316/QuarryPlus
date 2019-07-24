@@ -10,6 +10,7 @@ import com.yogpc.qp.utils.Holder
 import net.minecraft.block.state.IBlockState
 import net.minecraft.init.Blocks
 import net.minecraft.nbt.{NBTDynamicOps, NBTTagCompound, NBTTagList}
+import net.minecraft.util.SoundCategory
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import net.minecraftforge.common.util.Constants.NBT
@@ -148,6 +149,7 @@ object QuarryAction {
           if (checkBreakable(quarry2.getWorld, head, state, quarry2.modules)) {
             if (quarry2.breakBlock(quarry2.getWorld, head, state)) {
               quarry2.getWorld.setBlockState(target, Blocks.AIR.getDefaultState)
+              playSound(state, quarry2.getWorld, head)
               insideFrame = tl.dropWhile(p => !checkBreakable(quarry2.getWorld, p, quarry2.getWorld.getBlockState(p), quarry2.modules))
             }
           } else {
@@ -226,6 +228,7 @@ object QuarryAction {
                 quarry2.modules.foreach(_.action(IModule.AfterBreak(quarry2.getWorld, target, state)))
               } else {
                 quarry2.getWorld.setBlockState(target, Blocks.AIR.getDefaultState)
+                playSound(state, quarry2.getWorld, target)
               }
               digTargets = tl.dropWhile(p => !checkBreakable(quarry2.getWorld, p, quarry2.getWorld.getBlockState(p), quarry2.modules))
               movingHead = true
@@ -308,6 +311,11 @@ object QuarryAction {
       state.getBlockHardness(world, pos) >= 0 &&
       !state.getBlockHardness(world, pos).isInfinity &&
       (!TilePump.isLiquid(state) || modules.exists(IModule.hasPumpModule))
+  }
+
+  def playSound(state: IBlockState, world: World, pos: BlockPos): Unit = {
+    val sound = state.getBlock.getSoundType(state, world, pos, null)
+    world.playSound(null, pos, sound.getBreakSound, SoundCategory.BLOCKS, (sound.getVolume + 1.0F) / 2.0F, sound.getPitch * 0.8F)
   }
 
   val getNamed: (NBTTagCompound, String) => NBTTagCompound = _.getCompound(_)
