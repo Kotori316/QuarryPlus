@@ -1,3 +1,7 @@
+# Version 12.2.0
+* Changed version to {mcVersion}.{major}.{minor}
+* Added new quarry, which has module system to enhance its function.
+
 # Version 1.1.0
 * Hide enchantment shown in tooltip of List Template.
 * Fixed bug of saving nbt of Replacer.
