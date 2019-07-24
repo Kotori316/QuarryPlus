@@ -102,7 +102,7 @@ object Config {
     'WorkbenchPlus,
     'SolidFuleQuarry,
     'Replacer,
-    'NewQuarry)
+    'NewQuarry) ++ QuarryPlusI.itemSymbols
   private val DisableBC = Map(
     'LaserPlus -> QuarryPlus.Optionals.Buildcraft_silicon_modID,
     'RefineryPlus -> QuarryPlus.Optionals.Buildcraft_factory_modID

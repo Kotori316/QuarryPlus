@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "group": "quarryplus:group_module",
+  "ingredients": [
+    {
+      "item": "quarryplus:replacer_module"
+    }
+  ],
+  "conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "Replacer"
+    }
+  ],
+  "result": {
+    "item": "quarryplus:quarryreplacer",
+    "count": 1
+  }
+}

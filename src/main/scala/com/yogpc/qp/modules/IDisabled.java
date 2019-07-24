@@ -2,7 +2,7 @@ package com.yogpc.qp.modules;
 
 import com.yogpc.qp.Config;
 
-interface IDisabled {
+public interface IDisabled {
     scala.Symbol getSymbol();
 
     default boolean enabled() {
