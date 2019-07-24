@@ -106,8 +106,6 @@ class TileQuarry2 extends APowerTile()
     frameMode = nbt.getBoolean("frameMode")
   }
 
-  override def setWorldCreate(worldIn: World): Unit = setWorld(worldIn)
-
   override protected def isWorking = target != BlockPos.ORIGIN && action.mode != none
 
   def onActivated(player: EntityPlayer): Unit = {
@@ -185,8 +183,8 @@ class TileQuarry2 extends APowerTile()
 
   def refreshModules(): Unit = {
     val attachmentModules = attachments.flatMap { case (kind, facing) => kind.module(world.getTileEntity(pos.offset(facing))).asScala }.toList
-    val internalModules = moduleInv.moduleItems().asScala.map { e =>
-      e.getKey.getModule(e.getValue).apply(self)
+    val internalModules = moduleInv.moduleItems().asScala.flatMap { e =>
+      e.getKey.apply(e.getValue, self).toList
     }
     this.modules = attachmentModules ++ internalModules
   }
@@ -239,7 +237,7 @@ class TileQuarry2 extends APowerTile()
     }
   }
 
-  override def getDebugName = TranslationKeys.quarry
+  override def getDebugName = TranslationKeys.quarry2
 
   /**
     * For internal use only.
@@ -253,6 +251,7 @@ class TileQuarry2 extends APowerTile()
     s"Area: $area",
     s"Storage: $storage",
     s"FrameMode: $frameMode",
+    s"Digs to y = $yLevel",
     s"Modules: ${modules.mkString(comma)}",
     s"Attachments: ${attachments.mkString(comma)}"
   ).map(new TextComponentString(_)).asJava
@@ -324,7 +323,7 @@ object TileQuarry2 {
 
     override def getGuiID = ContainerQuarryModule.GUI_ID
 
-    override val getName = TranslationKeys.quarry
+    override val getName = TranslationKeys.quarry2
 
     override def hasCustomName = false
 
