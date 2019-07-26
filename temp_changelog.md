@@ -1,3 +1,6 @@
+# Version 12.2.1
+* Fixed - wrong reading config option
+
 # Version 12.2.0
 * Changed version to {mcVersion}.{major}.{minor}
 * Added new quarry, which has module system to enhance its function.
