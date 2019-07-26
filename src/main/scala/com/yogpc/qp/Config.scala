@@ -102,13 +102,14 @@ object Config {
     'WorkbenchPlus,
     'SolidFuleQuarry,
     'Replacer,
-    'NewQuarry) ++ QuarryPlusI.itemSymbols
+    'NewQuarry) ++ QuarryPlusI.itemDisableInfo.map(_.getSymbol)
   private val DisableBC = Map(
     'LaserPlus -> QuarryPlus.Optionals.Buildcraft_silicon_modID,
     'RefineryPlus -> QuarryPlus.Optionals.Buildcraft_factory_modID
   )
 
-  private val defaultDisables = Set('EnchantMoverFromBook, 'Replacer)
+  private val defaultDisables = Set('EnchantMoverFromBook, 'Replacer) ++
+    QuarryPlusI.itemDisableInfo.collect { case m if m.defaultDisableMachine => m.getSymbol }
 
   final val CATEGORY_MACHINES = "machines"
   final val CATEGORY_HIDDEN = "hidden"

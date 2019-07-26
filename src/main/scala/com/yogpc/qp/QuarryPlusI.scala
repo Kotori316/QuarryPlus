@@ -107,7 +107,7 @@ object QuarryPlusI {
     new util.ArrayList[Block](blocks.asJava)
   }
 
-  def itemSymbols: Set[Symbol]={
-    items.collect{case i: IDisabled => i.getSymbol}.toSet
+  def itemDisableInfo: Set[IDisabled] = {
+    items.collect { case i: IDisabled => i }.toSet
   }
 }
