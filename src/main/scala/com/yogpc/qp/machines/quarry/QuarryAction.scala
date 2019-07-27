@@ -273,8 +273,8 @@ object QuarryAction {
     val firstZ = near(pos.getZ, r.zMin + 1, r.zMax - 1)
     val lastZ = far(pos.getZ, r.zMin + 1, r.zMax - 1)
     if (log) QuarryPlus.LOGGER.debug(MARKER, s"Making targets list of breaking blocks. y=$y $r, firstX=$firstX, lastX=$lastX firstZ=$firstZ, lastZ=$lastZ")
-    val list = Range.inclusive(firstX, lastX, signum(firstX, lastX))
-      .map(x => Range.inclusive(firstZ, lastZ, signum(firstZ, lastZ)).map(z => new BlockPos(x, y, z)))
+    val list = Range.inclusive(firstZ, lastZ, signum(firstZ, lastZ))
+      .map(z => Range.inclusive(firstX, lastX, signum(firstX, lastX)).map(x => new BlockPos(x, y, z)))
       .zip(Stream.iterate(true)(b => !b))
       .flatMap {
         case (p1, true) => p1
