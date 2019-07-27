@@ -224,7 +224,7 @@ object QuarryAction {
             val state = quarry2.getWorld.getBlockState(target)
             if (quarry2.breakBlock(quarry2.getWorld, target, state)) {
               // Replacer works for non liquid block.
-              if (!TilePump.isLiquid(state) && quarry2.modules.exists(IModule.hasReplaceModule)) {
+              if (!TilePump.isLiquid(state) && !state.getBlock.isAir(state, quarry2.getWorld, target) && quarry2.modules.exists(IModule.hasReplaceModule)) {
                 quarry2.modules.foreach(_.action(IModule.AfterBreak(quarry2.getWorld, target, state)))
               } else {
                 quarry2.getWorld.setBlockState(target, Blocks.AIR.getDefaultState)
