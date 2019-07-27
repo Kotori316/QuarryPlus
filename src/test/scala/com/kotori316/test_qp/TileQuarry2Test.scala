@@ -15,6 +15,7 @@ class TileQuarry2Test {
   val m1 = Marker(new BlockPos(-5, 2, 8), new BlockPos(25, 9, 18))
   val m2 = Marker(new BlockPos(-5, 2, 8), new BlockPos(25, 3, 18))
   val m3 = Marker(new BlockPos(0, 63, 0), new BlockPos(15, 68, 15))
+  val m4 = Marker(new BlockPos(8, 5, 8), new BlockPos(10, 5, 16))
 
   @Test
   def defaultArea(): Unit = {
@@ -46,6 +47,37 @@ class TileQuarry2Test {
     assertTrue(m.isDefined)
     val poses = QuarryAction.digTargets(area, pos, 63, log = false)
     assertEquals((m3.max.getX - m3.min.getX - 1) * (m3.max.getZ - m3.min.getZ - 1), poses.size)
+  }
+
+  @Test
+  def nearDigTargets(): Unit = {
+    {
+      val marker = m4.copy(max = m4.max.east())
+      val pos = new BlockPos(7, 5, 8)
+      val (area, m) = TileQuarry2.areaFromMarker(EnumFacing.EAST, pos, marker)
+      assertTrue(m.isDefined)
+      val poses = QuarryAction.digTargets(area, pos, pos.getY, log = false)
+      assertFalse(poses.isEmpty)
+      assertEquals(14, poses.size)
+    }
+    {
+      val marker = m4
+      val pos = new BlockPos(7, 5, 8)
+      val (area, m) = TileQuarry2.areaFromMarker(EnumFacing.EAST, pos, marker)
+      assertTrue(m.isDefined)
+      val poses = QuarryAction.digTargets(area, pos, pos.getY, log = false)
+      assertFalse(poses.isEmpty)
+      assertEquals(7, poses.size)
+      assertEquals(9, poses.head.getX)
+    }
+  }
+
+  @Test
+  def signum(): Unit = {
+    val signum = QuarryAction.signum
+    assertEquals(1, signum(1, 5))
+    assertEquals(-1, signum(-1, -5))
+    assertEquals(1, signum(5, 5))
   }
 
   @Test

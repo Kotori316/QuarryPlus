@@ -179,7 +179,7 @@ object QuarryAction {
     }
   }
 
-  class BreakBlock(quarry2: TileQuarry2, y: Int, targetBefore:BlockPos, var headX: Double, var headY: Double, var headZ: Double) extends QuarryAction {
+  class BreakBlock(quarry2: TileQuarry2, y: Int, targetBefore: BlockPos, var headX: Double, var headY: Double, var headZ: Double) extends QuarryAction {
 
     def this(quarry2: TileQuarry2, y: Int) {
       this(quarry2, y, quarry2.getPos, (quarry2.area.xMin + quarry2.area.xMax + 1) / 2, y + 1, (quarry2.area.zMin + quarry2.area.zMax + 1) / 2)
@@ -264,13 +264,13 @@ object QuarryAction {
   }
 
   def digTargets(r: TileQuarry2.Area, pos: BlockPos, y: Int, log: Boolean = true) = {
-    val firstX = near(pos.getX, r.xMin+1, r.xMax-1)
-    val lastX = far(pos.getX, r.xMin+1, r.xMax-1)
+    val firstX = near(pos.getX, r.xMin + 1, r.xMax - 1)
+    val lastX = far(pos.getX, r.xMin + 1, r.xMax - 1)
     val firstZ = near(pos.getZ, r.zMin + 1, r.zMax - 1)
     val lastZ = far(pos.getZ, r.zMin + 1, r.zMax - 1)
     if (log) QuarryPlus.LOGGER.debug(MARKER, s"Making targets list of breaking blocks. y=$y $r, firstX=$firstX, lastX=$lastX firstZ=$firstZ, lastZ=$lastZ")
-    val list = Range.inclusive(firstX, lastX, (lastX - firstX).signum)
-      .map(x => Range.inclusive(firstZ, lastZ, (lastZ - firstZ).signum).map(z => new BlockPos(x, y, z)))
+    val list = Range.inclusive(firstX, lastX, signum(firstX, lastX))
+      .map(x => Range.inclusive(firstZ, lastZ, signum(firstZ, lastZ)).map(z => new BlockPos(x, y, z)))
       .zip(Stream.iterate(true)(b => !b))
       .flatMap {
         case (p1, true) => p1
@@ -332,6 +332,8 @@ object QuarryAction {
   val load: (TileQuarry2, NBTTagCompound, String) => QuarryAction = {
     case (q, t, s) => loadFromNBT(getNamed(t, s))(q)
   }
+
+  val signum = (a: Int, b: Int) => if (a == b) 1 else (b - a).signum
 
   implicit val actionToNbt: QuarryAction NBTWrapper NBTTagCompound = action => action.serverWrite(new NBTTagCompound)
 
