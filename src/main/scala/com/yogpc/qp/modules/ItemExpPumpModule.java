@@ -6,8 +6,8 @@ import java.util.function.Function;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
-import com.yogpc.qp.tile.ExpPumpModule;
 import com.yogpc.qp.tile.APowerTile;
+import com.yogpc.qp.tile.ExpPumpModule;
 import com.yogpc.qp.tile.HasStorage;
 import com.yogpc.qp.tile.IModule;
 import javax.annotation.Nullable;
@@ -75,6 +75,7 @@ public class ItemExpPumpModule extends Item implements IDisabled, IModuleItem {
             int xp = getXp(stack).orElse(0);
             if (xp > 0) {
                 Optional.ofNullable(stack.getTagCompound()).ifPresent(t -> t.removeTag(Key_xp));
+                stack.setTagCompound(Optional.ofNullable(stack.getTagCompound()).filter(t -> !t.hasNoTags()).orElse(null));
                 if (!worldIn.isRemote) {
                     EntityXPOrb orb = new EntityXPOrb(worldIn, playerIn.posX, playerIn.posY, playerIn.posZ, xp);
                     worldIn.spawnEntity(orb);
