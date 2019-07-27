@@ -17,9 +17,12 @@ import net.minecraft.util.math.{AxisAlignedBB, BlockPos, ChunkPos, Vec3i}
 import net.minecraft.util.text.{TextComponentString, TextComponentTranslation}
 import net.minecraft.world.{IInteractionObject, World, WorldServer}
 import net.minecraftforge.common.ForgeChunkManager.Type
+import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.{ForgeChunkManager, MinecraftForge}
 import net.minecraftforge.event.ForgeEventFactory
 import net.minecraftforge.event.world.BlockEvent
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler
+import net.minecraftforge.fluids.capability.templates.EmptyFluidHandler
 import org.apache.logging.log4j.{Marker, MarkerManager}
 
 import scala.collection.JavaConverters._
@@ -289,6 +292,14 @@ class TileQuarry2 extends APowerTile()
   }
 
   override protected def getSymbol = TileQuarry2.SYMBOL
+
+  override def hasCapability(capability: Capability[_], facing: EnumFacing) =
+    capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY || super.hasCapability(capability, facing)
+
+  override def getCapability[T](capability: Capability[T], facing: EnumFacing) = {
+    if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(EmptyFluidHandler.INSTANCE)
+    else super.getCapability(capability, facing)
+  }
 }
 
 object TileQuarry2 {
