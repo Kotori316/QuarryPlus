@@ -1,3 +1,12 @@
+# Version 12.2.2
+* Fixed - NPE when pump module is loaded.
+* Improvement - reduced energy to remove fluids.
+* Fixed #60
+* New quarry connects to fluid pipe.
+* Fixed - fluid in new quarry is lost when loading
+* Fixed - fluid is replacer to dummy block
+* Remove nbt tag when xp is extracted.
+
 # Version 12.2.1
 * Fixed - wrong reading config option
 
