@@ -272,8 +272,8 @@ object QuarryAction {
     val firstZ = near(pos.getZ, r.zMin + 1, r.zMax - 1)
     val lastZ = far(pos.getZ, r.zMin + 1, r.zMax - 1)
     if (log) QuarryPlus.LOGGER.debug(MARKER, s"Making targets list of breaking blocks. y=$y $r, firstX=$firstX, lastX=$lastX firstZ=$firstZ, lastZ=$lastZ")
-    val list = Range.inclusive(firstZ, lastZ, (lastZ - firstZ).signum)
-      .map(z => Range.inclusive(firstX, lastX, (lastX - firstX).signum).map(x => new BlockPos(x, y, z)))
+    val list = Range.inclusive(firstZ, lastZ, signum(firstZ, lastZ))
+      .map(z => Range.inclusive(firstX, lastX, signum(firstX, lastX)).map(x => new BlockPos(x, y, z)))
       .zip(Stream.iterate(true)(b => !b))
       .flatMap {
         case (p1, true) => p1
@@ -340,6 +340,8 @@ object QuarryAction {
   val load: (TileQuarry2, NBTTagCompound, String) => QuarryAction = {
     case (q, t, s) => loadFromNBT(getNamed(t, s))(q)
   }
+
+  val signum = (a: Int, b: Int) => if (a == b) 1 else (b - a).signum
 
   implicit val actionToNbt: QuarryAction NBTWrapper NBTTagCompound = action => action.serverWrite(new NBTTagCompound)
 
