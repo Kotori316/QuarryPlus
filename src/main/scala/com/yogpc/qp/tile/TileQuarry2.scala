@@ -227,7 +227,7 @@ class TileQuarry2 extends APowerTile()
       ForgeEventFactory.fireBlockHarvesting(list, world, pos, state, self.enchantments.fortune, 1.0f, false, fakePlayer)
       list
     }
-    if (PowerManager.useEnergyBreak(self, state.getBlockHardness(world, pos),
+    if (TilePump.isLiquid(state) || PowerManager.useEnergyBreak(self, state.getBlockHardness(world, pos),
       TileQuarry2.enchantmentMode(enchantments), enchantments.unbreaking, modules.exists(IModule.hasReplaceModule))) {
       val returnValue = modules.foldLeft(true) { case (b, m) => m.invoke(IModule.BeforeBreak(event.getExpToDrop, world, pos)) && b }
       drops.asScala.foreach(storage.addItem)
