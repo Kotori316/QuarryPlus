@@ -23,6 +23,7 @@ import com.yogpc.qp.packet.quarry.LevelMessage;
 import com.yogpc.qp.packet.quarry.ModeMessage;
 import com.yogpc.qp.packet.quarry.MoveHead;
 import com.yogpc.qp.packet.quarry2.ActionMessage;
+import com.yogpc.qp.packet.quarry2.Level2Message;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -68,6 +69,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(id++, AdvPumpStatusMessage.class, IMessage::writeToBuffer, IMessage.decode(AdvPumpStatusMessage::new), IMessage::onReceiveInternal);
         INSTANCE.registerMessage(id++, TemplateMessage.class, IMessage::writeToBuffer, IMessage.decode(TemplateMessage::new), IMessage::onReceiveInternal);
         INSTANCE.registerMessage(id++, ActionMessage.class, IMessage::writeToBuffer, IMessage.decode(ActionMessage::new), IMessage::onReceiveInternal);
+        INSTANCE.registerMessage(id++, Level2Message.class, IMessage::writeToBuffer, b -> new Level2Message().readFromBuffer(b), IMessage::onReceiveInternal);
 
         assert id > 0;
     }

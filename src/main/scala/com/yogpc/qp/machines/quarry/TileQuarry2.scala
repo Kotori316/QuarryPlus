@@ -237,7 +237,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     }
   }
 
-  override def getDebugName = TranslationKeys.quarry
+  override def getDebugName = TranslationKeys.quarry2
 
   /**
     * For internal use only.

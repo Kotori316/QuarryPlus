@@ -80,6 +80,7 @@ public class TranslationKeys {
     //    public static final String plainpipe = "block.quarryplus." + QuarryPlus.Names.plainpipe ;
     public static final String pump = "block.quarryplus." + QuarryPlus.Names.pump;
     public static final String quarry = "block.quarryplus." + QuarryPlus.Names.quarry;
+    public static final String quarry2 = "block.quarryplus." + QuarryPlus.Names.quarry2;
     public static final String solidquarry = "block.quarryplus." + QuarryPlus.Names.solidquarry;
     //    public static final String refinery = "block.quarryplus." + QuarryPlus.Names.refinery ;
     public static final String replacer = "block.quarryplus." + QuarryPlus.Names.replacer;

@@ -7,6 +7,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.BuildcraftHelper;
 import com.yogpc.qp.machines.base.IEnchantableTile;
 import com.yogpc.qp.machines.base.QPBlock;
+import com.yogpc.qp.machines.item.YSetterInteractionObject;
 import com.yogpc.qp.utils.Holder;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -86,9 +87,10 @@ public class BlockQuarry2 extends QPBlock {
         }
         if (!player.isSneaking()) {
             if (!worldIn.isRemote) {
-                Optional.ofNullable((TileQuarry2) worldIn.getTileEntity(pos)).ifPresent(t ->
-                    NetworkHooks.openGui(((EntityPlayerMP) player), new TileQuarry2.InteractionObject(t), pos)
-                );
+                Optional.ofNullable((TileQuarry2) worldIn.getTileEntity(pos)).map(t -> {
+                    if (stack.getItem() == Holder.itemYSetter()) return YSetterInteractionObject.apply(t);
+                    else return new TileQuarry2.InteractionObject(t);
+                }).ifPresent(o -> NetworkHooks.openGui(((EntityPlayerMP) player), o, pos));
             }
             return true;
         }

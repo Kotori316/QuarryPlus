@@ -1,9 +1,10 @@
-package com.yogpc.qp.packet.quarry;
+package com.yogpc.qp.packet.quarry2;
 
 import java.util.function.Supplier;
 
 import com.yogpc.qp.machines.quarry.TileQuarry2;
 import com.yogpc.qp.packet.IMessage;
+import com.yogpc.qp.packet.quarry.LevelMessage;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 
