@@ -183,8 +183,8 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
 
   def refreshModules(): Unit = {
     val attachmentModules = attachments.flatMap { case (kind, facing) => kind.module(world.getTileEntity(pos.offset(facing))).asScala }.toList
-    val internalModules = JavaConverters.asScalaBuffer(moduleInv.moduleItems()).map { e =>
-      e.getKey.getModule(e.getValue).apply(self)
+    val internalModules = JavaConverters.asScalaBuffer(moduleInv.moduleItems()).toList >>= { e =>
+      e.getKey.apply(e.getValue, self).toList
     }
     this.modules = attachmentModules ++ internalModules
   }
