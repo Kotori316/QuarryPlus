@@ -12,7 +12,7 @@ final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: Eval[Int], con
   def this(powerTile: APowerTile, consumer: Option[IntConsumer] = None) = {
     this(e => e == powerTile.useEnergy(e, e, true, EnergyUsage.PUMP_EXP),
       Eval.later(Option(powerTile)
-        .collect { case ench: IEnchantableTile => ench.getEnchantments.get(IEnchantableTile.UnbreakingID).intValue() }
+        .collect { case ench: IEnchantableTile => ench.getEnchantments.getOrDefault(IEnchantableTile.UnbreakingID, 0).intValue() }
         .getOrElse(0)), consumer)
   }
 
