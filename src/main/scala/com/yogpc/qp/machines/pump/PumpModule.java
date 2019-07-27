@@ -79,7 +79,7 @@ public abstract class PumpModule implements IModule {
 
     private static class Module extends PumpModule {
         private final APowerTile tile;
-        private final World world;
+        private World world;
         private final BlockPos pos;
         private final IntSupplier unbreaking;
 
@@ -97,6 +97,7 @@ public abstract class PumpModule implements IModule {
                 BlockPos target = beforeBreak.pos();
                 IBlockState state = beforeBreak.world().getBlockState(target);
                 if (TilePump.isLiquid(state)) {
+                    world = tile.getWorld();
                     return S_removeLiquids(tile, target.getX(), target.getY(), target.getZ());
                 }
             }
