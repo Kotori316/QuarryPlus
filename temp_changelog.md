@@ -1,5 +1,22 @@
 **This mod requires a library, [Scalable Cat's Force](https://minecraft.curseforge.com/projects/scalable-cats-force).**
 
+## Version 13.3.1
+Ported fixes from 1.12.2
+* Fixed - fluid is replacer to dummy block.
+* Log name
+* Not to replace fluid
+* Faster fluid removal
+* Configurable modules
+* Breaking sound
+* Fixed - NPE when pump module is loaded.
+* Y Setter for new quarry
+* Fixed that onActivate is called in client.
+* Fixed quarry drill head went to (0, 0, 0).
+* Changed order of breaking blocks
+* Fix NEP if unbreaking isn't provided. Fix (0, 0, 0) block is removed by quarry.
+* Fixed step is 0 when x size or z side of area is 1. #60
+* drops enchanted item when removed
+
 ## Version 13.3.0
 * Added new quarry and module system. To enhance old quarry function, you need to place block next to the machine.
 In module system, you can put a module item to quarry inventory to enhance the function.

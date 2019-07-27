@@ -1,6 +1,7 @@
 {
   "homepage": "https://minecraft.curseforge.com/projects/additional-enchanted-miner",
   "promos": {
-    "1.13.2-latest": "2.0.2"
+    "1.13.2-recommend": "2.0.2",
+    "1.13.2-latest": "13.3.1"
   }
 }
