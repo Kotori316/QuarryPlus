@@ -4,6 +4,7 @@ import cats._
 import cats.implicits._
 import com.yogpc.qp._
 import com.yogpc.qp.machines.base._
+import com.yogpc.qp.machines.pump.TilePump
 import com.yogpc.qp.machines.{PowerManager, TranslationKeys}
 import com.yogpc.qp.packet.{PacketHandler, TileMessage}
 import com.yogpc.qp.utils.Holder
@@ -251,6 +252,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     s"Area: ${area.show}",
     s"Storage: ${storage.show}",
     s"FrameMode: $frameMode",
+    s"Digs to y = $yLevel",
     s"Modules: ${modules.mkString(comma)}",
     s"Attachments: ${attachments.mkString(comma)}",
   ).map(new TextComponentString(_)))
@@ -305,7 +307,7 @@ object TileQuarry2 {
 
     override def getGuiID = ContainerQuarryModule.GUI_ID
 
-    override val getName = new TextComponentTranslation(TranslationKeys.quarry)
+    override val getName = new TextComponentTranslation(TranslationKeys.quarry2)
 
     override def hasCustomName = false
 
