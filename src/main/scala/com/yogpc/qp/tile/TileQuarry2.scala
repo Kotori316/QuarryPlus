@@ -74,8 +74,7 @@ class TileQuarry2 extends APowerTile()
       }
       // Insert items
       storage.pushItem(world, pos)
-      if (world.getTotalWorldTime % 20 == 0) // Insert fluid every 1 second.
-        storage.pushFluid(world, pos)
+      storage.pushFluid(world, pos)
     }
   }
 
