@@ -113,7 +113,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     // Called in server world.
     import com.yogpc.qp.machines.quarry.QuarryAction.BreakInsideFrame
     this.action match {
-      case QuarryAction.none | QuarryAction.waiting | _: BreakInsideFrame => frameMode = !frameMode
+      case QuarryAction.waiting | _: BreakInsideFrame => frameMode = !frameMode
         player.sendStatusMessage(new TextComponentTranslation(TranslationKeys.CHANGEMODE,
           new TextComponentTranslation(if (frameMode) TranslationKeys.FILLER_MODE else TranslationKeys.QUARRY_MODE)), false)
       case _ => G_ReInit()
