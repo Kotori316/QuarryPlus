@@ -1,5 +1,7 @@
 package com.yogpc.qp.tile
 
+import buildcraft.api.core.IAreaProvider
+import buildcraft.api.tiles.TilesAPI
 import com.yogpc.qp._
 import com.yogpc.qp.block.ADismCBlock
 import com.yogpc.qp.container.ContainerQuarryModule
@@ -12,6 +14,7 @@ import net.minecraft.entity.item.EntityItem
 import net.minecraft.entity.player.{EntityPlayer, InventoryPlayer}
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.{NBTTagCompound, NBTTagString}
+import net.minecraft.tileentity.TileEntity
 import net.minecraft.util._
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos, ChunkPos, Vec3i}
 import net.minecraft.util.text.{TextComponentString, TextComponentTranslation}
@@ -23,6 +26,7 @@ import net.minecraftforge.event.ForgeEventFactory
 import net.minecraftforge.event.world.BlockEvent
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler
 import net.minecraftforge.fluids.capability.templates.EmptyFluidHandler
+import net.minecraftforge.fml.common.Loader
 import org.apache.logging.log4j.{Marker, MarkerManager}
 
 import scala.collection.JavaConverters._
@@ -356,7 +360,14 @@ object TileQuarry2 {
   }
 
   def findArea(facing: EnumFacing, world: World, pos: BlockPos) = {
-    List(pos.offset(facing.getOpposite), pos.offset(facing.rotateY()), pos.offset(facing.rotateYCCW())).map(world.getTileEntity).collectFirst { case m: IMarker if m.hasLink => m } match {
+    val pf: PartialFunction[TileEntity, IMarker] = if (Loader.isModLoaded(QuarryPlus.Optionals.BuildCraft_core)) {
+      case provider: IAreaProvider => new IMarker.BCWrapper(provider)
+      case m: IMarker if m.hasLink => m
+      case t: TileEntity if t.hasCapability(TilesAPI.CAP_TILE_AREA_PROVIDER, facing) => new IMarker.BCWrapper(t.getCapability(TilesAPI.CAP_TILE_AREA_PROVIDER, facing))
+    } else {
+      case m: IMarker if m.hasLink => m
+    }
+    List(pos.offset(facing.getOpposite), pos.offset(facing.rotateY()), pos.offset(facing.rotateYCCW())).map(world.getTileEntity).collectFirst(pf) match {
       case Some(marker) => areaFromMarker(facing, pos, marker)
       case None => defaultArea(pos, facing.getOpposite) -> None
     }

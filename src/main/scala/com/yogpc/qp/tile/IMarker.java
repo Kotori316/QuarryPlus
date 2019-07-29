@@ -1,7 +1,9 @@
 package com.yogpc.qp.tile;
 
+import java.util.Collections;
 import java.util.List;
 
+import buildcraft.api.core.IAreaProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -28,4 +30,35 @@ public interface IMarker {
      */
     List<ItemStack> removeFromWorldWithItem();
 
+    class BCWrapper implements IMarker {
+
+        private final IAreaProvider provider;
+
+        public BCWrapper(IAreaProvider provider) {
+            this.provider = provider;
+        }
+
+        @Override
+        public boolean hasLink() {
+            BlockPos min = min();
+            BlockPos max = max();
+            return min.getX() != max.getX() && min.getZ() != max.getZ();
+        }
+
+        @Override
+        public BlockPos min() {
+            return provider.min();
+        }
+
+        @Override
+        public BlockPos max() {
+            return provider.max();
+        }
+
+        @Override
+        public List<ItemStack> removeFromWorldWithItem() {
+            provider.removeFromWorld();
+            return Collections.emptyList();
+        }
+    }
 }
