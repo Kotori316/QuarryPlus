@@ -39,13 +39,14 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldProviderEnd;
 import net.minecraft.world.end.DragonFightManager;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 public class ItemMirror extends ItemFood {
 
     public static final int Dimension_Meta = 1;
     public static final int OverWorld_Meta = 2;
-    private static final Method UPDATE_PLAYERS = ObfuscationReflectionHelper.findMethod(DragonFightManager.class, "func_186100_j", Void.TYPE);
+    private static final Method UPDATE_PLAYERS
+        = ReflectionHelper.findMethod(DragonFightManager.class, "updateplayers", "func_186100_j");
 
     public ItemMirror() {
         super(0, 0, false);
