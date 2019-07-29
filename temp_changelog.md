@@ -1,3 +1,6 @@
+# Version 1.1.2
+* Reverted [272a28bc](https://github.com/Kotori316/QuarryPlus/commit/272a28bcf97149a24f79f3411a1b6f866b5db518) to avoid crash with old forge.
+
 # Version 1.1.1
 * Fixed bug where quarry is reset when work finished if BC's pipe is connected.
 
