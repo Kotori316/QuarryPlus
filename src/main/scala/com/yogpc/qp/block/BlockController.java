@@ -43,7 +43,7 @@ import static com.yogpc.qp.block.ADismCBlock.ACTING;
 
 @net.minecraftforge.fml.common.Optional.Interface(iface = "cofh.api.block.IDismantleable", modid = QuarryPlus.Optionals.COFH_modID)
 public class BlockController extends Block implements IDismantleable {
-    private static final Field logic_spawnDelay = ReflectionHelper.findField(MobSpawnerBaseLogic.class, "spawnDelay", "field_98286_b");
+    private static final Field logic_spawnDelay = ReflectionHelper.findField(MobSpawnerBaseLogic.class, new String[]{"spawnDelay", "field_98286_b"});
     public static final scala.Symbol SYMBOL = scala.Symbol.apply("SpawnerController");
     public final ItemBlock itemBlock;
 
