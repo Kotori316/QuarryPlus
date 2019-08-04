@@ -203,7 +203,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         Block block = state.getBlock();
         byte i;
         int xp = 0;
-        QuarryFakePlayer fakePlayer = QuarryFakePlayer.get(((WorldServer) getWorld()));
+        QuarryFakePlayer fakePlayer = QuarryFakePlayer.get(((WorldServer) getWorld()), pos);
         fakePlayer.setHeldItem(EnumHand.MAIN_HAND, getEnchantedPickaxe());
         BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(world, pos, state, fakePlayer);
         MinecraftForge.EVENT_BUS.post(event);

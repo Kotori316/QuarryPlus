@@ -256,7 +256,7 @@ class TileAdvQuarry extends APowerTile
           val (list, destroy, dig, drain, shear) = c
           val expPump = facingMap.get(Attachments.EXP_PUMP).map(f => getWorld.getTileEntity(getPos.offset(f)))
             .collect { case pump: TileExpPump => pump }
-          val fakePlayer = QuarryFakePlayer.get(getWorld.asInstanceOf[WorldServer])
+          val fakePlayer = QuarryFakePlayer.get(getWorld.asInstanceOf[WorldServer], target)
           fakePlayer.setHeldItem(EnumHand.MAIN_HAND, getEnchantedPickaxe)
           val collectFurnaceXP = InvUtils.hasSmelting(fakePlayer.getHeldItemMainhand) && expPump.isDefined
           val tempList = new NotNullList(new ArrayBuffer[ItemStack]())
@@ -416,6 +416,11 @@ class TileAdvQuarry extends APowerTile
               val state = getWorld.getBlockState(p)
               !state.getBlock.isAir(state, getWorld, p) && TilePump.isLiquid(state)
             }).foreach(getWorld.setBlockToAir)
+          val drops=  getWorld.getEntitiesWithinAABB(classOf[EntityItem], new AxisAlignedBB(p.getX - 3, 0, p.getZ - 3, p.getX + 3, p.getY, p.getZ + 3))
+            drops.asScala.filter(_.getItem.getCount > 0).foreach(entity => {
+              QuarryPlus.proxy.removeEntity(entity)
+              cacheItems.add(entity.getItem)
+            })
           }
         }
 
@@ -982,7 +987,7 @@ object TileAdvQuarry {
     def chunkSeq: List[ChunkPos] = {
       val a = for (x <- Range(minX, maxX, 16) :+ maxX;
                    z <- Range(minZ, maxZ, 16) :+ maxZ
-      ) yield new ChunkPos(x >> 4, z >> 4)
+                   ) yield new ChunkPos(x >> 4, z >> 4)
       a.toList
     }
 
