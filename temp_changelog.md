@@ -1,3 +1,7 @@
+# Version 1.1.3
+* The position of Quarry dummy player is set to the point quarry is removing.
+* Added support of chain break of [MCAssistant](https://www.curseforge.com/minecraft/mc-mods/mcassistant).
+
 # Version 1.1.2
 * Reverted [272a28bc](https://github.com/Kotori316/QuarryPlus/commit/272a28bcf97149a24f79f3411a1b6f866b5db518) to avoid crash with old forge.
 
