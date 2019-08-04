@@ -40,7 +40,7 @@ class TilePlacer extends TileEntity with HasInv {
     val state = world.getBlockState(pos)
     state.getBlock.isAir(state, world, pos)
   }
-  private[this] lazy val fakePlayer = QuarryFakePlayer.get(getWorld.asInstanceOf[WorldServer])
+  private[this] lazy val fakePlayer = QuarryFakePlayer.get(getWorld.asInstanceOf[WorldServer], getPos)
 
   def updateTick(): Unit = {
     val facing = getWorld.getBlockState(getPos).getValue(ADismCBlock.FACING)
