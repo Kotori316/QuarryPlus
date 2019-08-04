@@ -222,7 +222,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         Block block = state.getBlock();
         byte i;
         int xp = 0;
-        QuarryFakePlayer fakePlayer = QuarryFakePlayer.get(((WorldServer) world));
+        QuarryFakePlayer fakePlayer = QuarryFakePlayer.get(((WorldServer) world), pos);
         fakePlayer.setHeldItem(EnumHand.MAIN_HAND, getEnchantedPickaxe());
         BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(world, pos, state, fakePlayer);
         MinecraftForge.EVENT_BUS.post(event);
@@ -240,7 +240,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
                 boolean b = fortuneList.contains(new BlockData(state)) == this.fortuneInclude;
                 byte fortuneLevel = b ? this.fortune : 0;
                 NonNullList<ItemStack> list = NonNullList.create();
-                block.getDrops(state, list, world, pos, (int) fortuneLevel);
+                block.getDrops(state, list, world, pos, fortuneLevel);
 
                 //                if (list.isEmpty() && Config.content().debug())
 //                    ReflectionHelper.checkGetDrops(world, pos, state, block, fortuneLevel, list);

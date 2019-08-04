@@ -213,7 +213,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
       val orbs = world.getEntitiesWithinAABB(classOf[Entity], aabb).asScala.toList
       modules.foreach(_.invoke(IModule.CollectingItem(orbs)))
     }
-    val fakePlayer = QuarryFakePlayer.get(world.asInstanceOf[WorldServer])
+    val fakePlayer = QuarryFakePlayer.get(world.asInstanceOf[WorldServer], pos)
     fakePlayer.setHeldItem(EnumHand.MAIN_HAND, getEnchantedPickaxe)
     val event = new BlockEvent.BreakEvent(world, pos, state, fakePlayer)
     MinecraftForge.EVENT_BUS.post(event)

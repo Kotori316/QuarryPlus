@@ -258,7 +258,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
           val (list, destroy, dig, drain, shear) = c
           val expPump = facingMap.get(Attachments.EXP_PUMP).map(f => getWorld.getTileEntity(getPos.offset(f)))
             .collect { case pump: TileExpPump => pump }
-          val fakePlayer = QuarryFakePlayer.get(getWorld.asInstanceOf[WorldServer])
+          val fakePlayer = QuarryFakePlayer.get(getWorld.asInstanceOf[WorldServer], target)
           fakePlayer.setHeldItem(EnumHand.MAIN_HAND, getEnchantedPickaxe)
           val collectFurnaceXP = InvUtils.hasSmelting(fakePlayer.getHeldItemMainhand) && expPump.isDefined
           val tempList = new NotNullList(new ArrayBuffer[ItemStack]())

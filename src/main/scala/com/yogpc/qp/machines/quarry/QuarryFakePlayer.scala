@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.potion.PotionEffect
 import net.minecraft.tileentity.{TileEntityCommandBlock, TileEntitySign}
 import net.minecraft.util.EnumHand
+import net.minecraft.util.math.BlockPos
 import net.minecraft.world.dimension.DimensionType
 import net.minecraft.world.{IInteractionObject, WorldServer}
 import net.minecraftforge.common.MinecraftForge
@@ -61,10 +62,13 @@ object QuarryFakePlayer {
   private var players = Map.empty[GameProfile, QuarryFakePlayer]
   MinecraftForge.EVENT_BUS.register(this)
 
-  def get(server: WorldServer): QuarryFakePlayer = {
+  @scala.annotation.tailrec
+  def get(server: WorldServer, pos: BlockPos): QuarryFakePlayer = {
     players.get(profile) match {
-      case Some(value) => value
-      case None => players = players.updated(profile, new QuarryFakePlayer(server)); get(server)
+      case Some(player) =>
+        player.setPosition(pos.getX, pos.getY, pos.getZ)
+        player
+      case None => players = players.updated(profile, new QuarryFakePlayer(server)); get(server, pos)
     }
   }
 
