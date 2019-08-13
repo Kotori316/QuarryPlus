@@ -18,7 +18,7 @@ apply plugin: 'eclipse'
 
 version = getProperty("modVersion")
 group = 'com.kotori316' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'AdditionalEnchantedMiner-1.13.2'
+archivesBaseName = 'AdditionalEnchantedMiner-1.14.2'
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 compileScala.sourceCompatibility = compileScala.targetCompatibility = '1.8'
@@ -29,7 +29,7 @@ minecraft {
     // stable_#            Stables are built at the discretion of the MCP team.
     // Use non-default mappings at your own risk. they may not always work.
     // Simply re-run your setup task after changing the mappings to update your workspace.
-    mappings channel: 'snapshot', version: '20190522-1.13.2'
+    mappings channel: 'snapshot', version: '20190719-1.14.3'
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 
     // accessTransformer = file('build/resources/main/META-INF/accesstransformer.cfg')
@@ -87,16 +87,16 @@ dependencies {
     // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
     // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
-    minecraft 'net.minecraftforge:forge:1.13.2-25.0.219'
+    minecraft 'net.minecraftforge:forge:1.14.4-28.0.45'
     implementation "org.scala-lang:scala-library:2.12.8"
     implementation group: 'org.typelevel', name: "cats-core_2.12", version: '1.6.0'
 
-    def mc_version = "1.13.2"
-    def jei_version = "5.0.0.28"
+    def mc_version = "1.14.4"
+    def jei_version = "6.0.0.10"
     // at runtime, use the full JEI jar
     implementation fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
 //    compile "mezz.jei:jei-${mc_version}:${jei_version}:sources"
-    implementation fg.deobf("largefluidtank:LargeFluidTank:5.2")
+//    implementation fg.deobf("largefluidtank:LargeFluidTank:14.6.6")
 
     // Test Dependencies.
     testCompile("org.junit.jupiter:junit-jupiter-api:5.4.2")
@@ -150,7 +150,7 @@ curseforge {
         changelogType = 'markdown'
         changelog = new File("temp_changelog.md")
         releaseType = 'beta'
-        addGameVersion '1.13.2'
+        addGameVersion '1.14.4'
         mainArtifact(jar) {
             displayName = 'v' + project.version
         }
