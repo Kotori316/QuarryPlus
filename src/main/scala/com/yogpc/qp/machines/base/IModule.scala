@@ -1,7 +1,8 @@
 package com.yogpc.qp.machines.base
 
-import cats.Show
-import com.yogpc.qp.machines.base.IModule.CalledWhen
+import cats._
+import cats.implicits._
+import com.yogpc.qp.machines.base.IModule.{CalledWhen, Result}
 import com.yogpc.qp.machines.pump.PumpModule
 import com.yogpc.qp.machines.replacer.ReplacerModule
 import net.minecraft.block.state.IBlockState
@@ -14,18 +15,18 @@ trait IModule {
 
   def calledWhen: Set[IModule.ModuleType]
 
-  def invoke(when: CalledWhen): Boolean = {
+  def invoke(when: CalledWhen): Result = {
     if (calledWhen(when.moduleType)) {
       action(when)
     } else {
-      true
+      IModule.NoAction
     }
   }
 
   /**
-    * @return false if work hasn't finished.
+    * @return false if work hasn't finished. true if work has done or did nothing.
     */
-  def action(when: CalledWhen): Boolean
+  protected def action(when: CalledWhen): Result
 
   def toString: String
 }
@@ -53,5 +54,32 @@ object IModule {
   final case class CollectingItem(entities: List[Entity]) extends CalledWhen(TypeCollectItem)
 
   final case class AfterBreak(world: World, pos: BlockPos, before: IBlockState) extends CalledWhen(TypeAfterBreak)
+
+  sealed trait Result {
+    def canGoNext: Boolean = this =!= NotFinished
+
+    def done: Boolean = this === Done
+  }
+
+  case object NoAction extends Result
+
+  case object NotFinished extends Result
+
+  case object Done extends Result
+
+  object Result {
+    implicit val eqOfResult: Eq[Result] = Eq.fromUniversalEquals
+    implicit val monoidOfResult: Monoid[Result] = new Monoid[Result] {
+      override def empty: Result = NoAction
+
+      override def combine(x: Result, y: Result): Result = x match {
+        case NoAction => y
+        case NotFinished => x
+        case Done =>
+          if (y === NoAction) x
+          else y
+      }
+    }
+  }
 
 }

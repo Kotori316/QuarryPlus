@@ -1,5 +1,6 @@
 package com.yogpc.qp.machines.quarry
 
+import cats.implicits._
 import com.yogpc.qp._
 import com.yogpc.qp.machines.PowerManager
 import com.yogpc.qp.machines.base.IModule
@@ -77,7 +78,7 @@ object QuarryAction {
           Range(firstZ, lastZ, (lastZ - firstZ).signum).map(z => new BlockPos(r.xMax, y, z)) ++
           Range(r.xMax, r.xMin, -1).map(x => new BlockPos(x, y, lastZ)) ++
           Range(lastZ, firstZ, (firstZ - lastZ).signum).map(z => new BlockPos(r.xMin, y, z))
-      }.toList
+        }.toList
 
       def b(y: Int) = {
         for (x <- List(r.xMin, r.xMax);
@@ -224,8 +225,12 @@ object QuarryAction {
             val state = quarry2.getWorld.getBlockState(target)
             if (quarry2.breakBlock(quarry2.getWorld, target, state)) {
               // Replacer works for non liquid block.
-              if (!TilePump.isLiquid(state) && !state.getBlock.isAir(state, quarry2.getWorld, target) && quarry2.modules.exists(IModule.hasReplaceModule)) {
-                quarry2.modules.foreach(_.action(IModule.AfterBreak(quarry2.getWorld, target, state)))
+              if (!TilePump.isLiquid(state) && !state.getBlock.isAir(state, quarry2.getWorld, target)) {
+                val replaced = quarry2.modules.foldMap(_.invoke(IModule.AfterBreak(quarry2.getWorld, target, state)))
+                if (!replaced.done) { // Not replaced
+                  quarry2.getWorld.setBlockState(target, Blocks.AIR.getDefaultState)
+                  playSound(state, quarry2.getWorld, target)
+                }
               } else {
                 quarry2.getWorld.setBlockState(target, Blocks.AIR.getDefaultState)
                 playSound(state, quarry2.getWorld, target)

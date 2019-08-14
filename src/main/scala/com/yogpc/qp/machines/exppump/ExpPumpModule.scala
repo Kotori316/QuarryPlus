@@ -5,6 +5,7 @@ import java.util.function.{IntConsumer, IntSupplier, LongPredicate}
 import cats.Eval
 import cats.data.Kleisli
 import com.yogpc.qp.QuarryPlus
+import com.yogpc.qp.machines.base.IModule.{Done, Result}
 import com.yogpc.qp.machines.base.{APowerTile, EnergyUsage, IEnchantableTile, IModule}
 import net.minecraft.entity.item.EntityXPOrb
 
@@ -20,7 +21,7 @@ final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: Eval[Int], con
 
   var xp: Int = _
 
-  override def action(when: IModule.CalledWhen): Boolean = {
+  override def action(when: IModule.CalledWhen): Result = {
     val xp = when match {
       case t: IModule.CollectingItem =>
         t.entities.collect { case orb: EntityXPOrb if orb.isAlive => QuarryPlus.proxy.removeEntity(orb); orb.xpValue }.sum
@@ -28,7 +29,7 @@ final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: Eval[Int], con
       case _ => 0
     }
     addXp(xp)
-    true
+    Done
   }
 
   private def addXp(amount: Int): Unit = {

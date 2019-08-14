@@ -211,7 +211,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
         QuarryPlus.proxy.removeEntity(e)
       }
       val orbs = world.getEntitiesWithinAABB(classOf[Entity], aabb).asScala.toList
-      modules.foreach(_.action(IModule.CollectingItem(orbs)))
+      modules.foreach(_.invoke(IModule.CollectingItem(orbs)))
     }
     val fakePlayer = QuarryFakePlayer.get(world.asInstanceOf[WorldServer])
     fakePlayer.setHeldItem(EnumHand.MAIN_HAND, getEnchantedPickaxe)
@@ -230,9 +230,9 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     }
     if (TilePump.isLiquid(state) || PowerManager.useEnergyBreak(self, state.getBlockHardness(world, pos),
       TileQuarry2.enchantmentMode(enchantments), enchantments.unbreaking, modules.exists(IModule.hasReplaceModule))) {
-      val returnValue = modules.foldLeft(true) { case (b, m) => m.invoke(IModule.BeforeBreak(event.getExpToDrop, world, pos)) && b }
+      val returnValue = modules.foldMap(m => m.invoke(IModule.BeforeBreak(event.getExpToDrop, world, pos)))
       drops.forEach(storage.addItem)
-      returnValue
+      returnValue.canGoNext // true means work is finished.
     } else {
       false
     }

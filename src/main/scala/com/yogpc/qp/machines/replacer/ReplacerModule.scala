@@ -2,7 +2,7 @@ package com.yogpc.qp.machines.replacer
 
 import cats.{Always, Eval, Now}
 import com.yogpc.qp.machines.base.IModule
-import com.yogpc.qp.machines.base.IModule.AfterBreak
+import com.yogpc.qp.machines.base.IModule.{AfterBreak, Done, NoAction}
 import net.minecraft.block.state.IBlockState
 
 class ReplacerModule(val toReplace: Eval[IBlockState]) extends IModule {
@@ -10,15 +10,17 @@ class ReplacerModule(val toReplace: Eval[IBlockState]) extends IModule {
 
   override val calledWhen = Set(IModule.TypeAfterBreak)
 
-  override def action(when: IModule.CalledWhen): Boolean = {
+  override def action(when: IModule.CalledWhen): IModule.Result = {
     when match {
       case AfterBreak(world, pos, before) =>
         val replaceState = toReplace.value
         if (before != replaceState) {
           world.setBlockState(pos, replaceState)
+          Done
+        } else {
+          NoAction
         }
-        true
-      case _ => true
+      case _ => NoAction
     }
 
   }
