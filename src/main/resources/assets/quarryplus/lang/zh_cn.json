@@ -34,6 +34,7 @@
   "item.quarryplus.pump_module": "Quarry Pump Module",
   "item.quarryplus.exppump_module": "Quarry Exp Collect Module",
   "item.quarryplus.replacer_module": "Quarry Replacing Module",
+  "item.quarryplus.torch_module": "Quarry Torch Module",
   "item.quarryplus.y_setter": "采石场 Y 设定器",
 
   "chat.changemode": "工作模式被修改为 %s",

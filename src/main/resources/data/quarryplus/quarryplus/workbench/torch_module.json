@@ -1,0 +1,28 @@
+{
+  "id": "quarryplus:builtin_item.torch_module",
+  "type": "quarryplus:workbench_recipe",
+  "ingredients": [
+    {
+      "item": "minecraft:dispenser",
+      "count": 16
+    },
+    {
+      "item": "minecraft:daylight_detector",
+      "count": 64
+    },
+    {
+      "item": "minecraft:comparator",
+      "count": 64
+    },
+    {
+      "item": "minecraft:torch",
+      "count": 1024
+    }
+  ],
+  "energy": 640000.0,
+  "showInJEI": true,
+  "result": {
+    "item": "quarryplus:torch_module",
+    "count": 1
+  }
+}
