@@ -1,3 +1,16 @@
+# Version 12.2.3
+* Added torch module and fuel module. [#61](https://github.com/Kotori316/QuarryPlus/issues/61)
+* Gather drops before finishing quarry work.
+* Added a predicate that prevent from inserting same kind of module.
+* Unique return type
+* Added tick event
+* Changed field name
+* Inline Symbol instance
+* Send localized name when quarry restarted
+* Update lang file
+* Support chain breaking of MCAssistant.
+* Use BC's marker to make dig area
+
 # Version 12.2.2
 * Fixed - NPE when pump module is loaded.
 * Improvement - reduced energy to remove fluids.
