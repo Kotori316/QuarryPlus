@@ -21,7 +21,7 @@ import scala.util.Try
 
 abstract sealed class WorkbenchRecipes(val output: ItemDamage, val energy: Double, val showInJEI: Boolean = true)
   extends Ordered[WorkbenchRecipes] {
-  val microEnergy = (energy * APowerTile.MicroJtoMJ).toLong
+  val microEnergy = (energy * APowerTile.MJToMicroMJ).toLong
   val size: Int
 
   def inputs: Seq[Seq[IngredientWithCount]]

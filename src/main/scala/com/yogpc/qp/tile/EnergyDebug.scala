@@ -12,14 +12,14 @@ class EnergyDebug(tile: APowerTile) {
   private[this] val used = Array.ofDim[Long](100)
   private[this] var gotCount = 0
   private[this] var usedCount = 0
-  private[this] var totalUsed = 0l
+  private[this] var totalUsed = 0L
 
-  private[this] var uLastTick = 0l
-  private[this] var gLastTick = 0l
-  private[this] var lastOutput = 0l
-  private[this] final val mj = APowerTile.MicroJtoMJ
+  private[this] var uLastTick = 0L
+  private[this] var gLastTick = 0L
+  private[this] var lastOutput = 0L
+  private[this] final val mj = APowerTile.MJToMicroMJ
   private[this] val stopWatch = Stopwatch.createUnstarted()
-  private[this] var startTime = 0l
+  private[this] var startTime = 0L
   private[this] val usageMap = mutable.Map.empty[EnergyUsage, Long]
 
   def started: Boolean = stopWatch.isRunning
@@ -54,7 +54,7 @@ class EnergyDebug(tile: APowerTile) {
       uLastTick = tick
     }
     totalUsed += energy
-    usageMap(usage) = usageMap.getOrElse(usage, 0l) + energy
+    usageMap(usage) = usageMap.getOrElse(usage, 0L) + energy
   }
 
   def get(amount: Long): Unit = {
@@ -77,7 +77,7 @@ class EnergyDebug(tile: APowerTile) {
 
   def tick(): Unit = {
     if (getTime - lastOutput >= 100) {
-      if (lastOutput == 0l) {
+      if (lastOutput == 0L) {
         usedCount = 0
         gotCount = 0
         lastOutput = getTime
@@ -128,11 +128,11 @@ class EnergyDebug(tile: APowerTile) {
       )
       usageMap.foreach { case (usage, amount) => QuarryPlus.LOGGER.info(usage + " used " + amount / mj + "MJ.") }
       usageMap.clear()
-      totalUsed = 0l
-      startTime = 0l
-      uLastTick = 0l
-      gLastTick = 0l
-      lastOutput = 0l
+      totalUsed = 0L
+      startTime = 0L
+      uLastTick = 0L
+      gLastTick = 0L
+      lastOutput = 0L
     }
     stopWatch.reset()
   }

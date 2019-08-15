@@ -74,7 +74,7 @@ public class PowerManager {
         String cn2 = cn + "Quarry" + Configuration.CATEGORY_SPLITTER;
         ConfigCategory c = cg.getCategory(cn2 + "BreakBlock");
 //        c.setComment("Quarry BreakBlock");
-        long micro = APowerTile.MicroJtoMJ;
+        long micro = APowerTile.MJToMicroMJ;
         QuarryWork_BP = micro * (long) get(c, "BasePower", 40);
         QuarryWork_CE = get(c, "EfficiencyCoefficient", 1.3);
         QuarryWork_CU = get(c, "UnbreakingCoefficient", 1);
@@ -248,14 +248,14 @@ public class PowerManager {
     }
 
     public static double useEnergyQuarryHead(final APowerTile pp, final double dist, final int U) {
-        double bp = (double) MoveHead_BP / APowerTile.MicroJtoMJ;
+        double bp = (double) MoveHead_BP / APowerTile.MJToMicroMJ;
         double pw;
         if (!Config.content().fastQuarryHeadMove()) {
-            pw = Math.min(2 + (double) pp.getStoredEnergy() / 500 / APowerTile.MicroJtoMJ, (dist / 2 - 0.05) * bp / (U * MoveHead_CU + 1));
+            pw = Math.min(2 + (double) pp.getStoredEnergy() / 500 / APowerTile.MJToMicroMJ, (dist / 2 - 0.05) * bp / (U * MoveHead_CU + 1));
         } else {
             pw = (dist / 2 - 0.05) *bp / (U * MoveHead_CU + 1);
         }
-        pw = (double) pp.useEnergy(0, (long) (pw * APowerTile.MicroJtoMJ), true, EnergyUsage.MOVE_HEAD) / APowerTile.MicroJtoMJ;
+        pw = (double) pp.useEnergy(0, (long) (pw * APowerTile.MJToMicroMJ), true, EnergyUsage.MOVE_HEAD) / APowerTile.MJToMicroMJ;
         return pw * (U * MoveHead_CU + 1) / bp + 0.05;
     }
 

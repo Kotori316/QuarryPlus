@@ -933,7 +933,7 @@ object TileAdvQuarry {
     def getMap: Map[Int, Int] = Map(EfficiencyID -> efficiency, UnbreakingID -> unbreaking,
       FortuneID -> fortune, SilktouchID -> silktouch.compare(false)) ++ other
 
-    val maxStore = MAX_STORED * (efficiency + 1) * APowerTile.MicroJtoMJ
+    val maxStore = MAX_STORED * (efficiency + 1) * APowerTile.MJToMicroMJ
 
     val maxReceive = if (efficiency >= 5) maxStore else if (efficiency == 0) maxStore / 1000 else (maxStore * Math.pow(efficiency.toDouble / 5.0, 3)).toLong
 

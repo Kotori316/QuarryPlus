@@ -17,9 +17,9 @@ object FixData {
           val stored = nbt.getDouble(NBT_STORED_ENERGY)
           val receive = nbt.getDouble(NBT_MAX_RECEIVE)
           val capacity = nbt.getDouble(NBT_MAX_STORED)
-          nbt.setLong(NBT_STORED_ENERGY, (stored * MicroJtoMJ).toLong)
-          nbt.setLong(NBT_MAX_RECEIVE, (receive * MicroJtoMJ).toLong)
-          nbt.setLong(NBT_MAX_STORED, (capacity * MicroJtoMJ).toLong)
+          nbt.setLong(NBT_STORED_ENERGY, (stored * MJToMicroMJ).toLong)
+          nbt.setLong(NBT_MAX_RECEIVE, (receive * MJToMicroMJ).toLong)
+          nbt.setLong(NBT_MAX_STORED, (capacity * MJToMicroMJ).toLong)
         }
       }
       nbt

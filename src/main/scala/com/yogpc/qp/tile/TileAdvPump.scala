@@ -51,7 +51,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
   override def isWorking: Boolean = !finished
 
   override def G_ReInit(): Unit = {
-    configure(ench.getReceiveEnergy, 1024 * APowerTile.MicroJtoMJ)
+    configure(ench.getReceiveEnergy, 1024 * APowerTile.MJToMicroMJ)
     finished = true
     queueBuilt = false
     skip = false
@@ -406,7 +406,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
   private object FluidHandler extends IFluidHandler with INBTWritable with INBTReadable[IFluidHandler] {
 
     private[this] final val fluidStacks = new ListBuffer[FluidStack]
-    var amountPumped = 0l
+    var amountPumped = 0L
 
     override def fill(resource: FluidStack, doFill: Boolean): Int = 0
 
@@ -518,8 +518,8 @@ object TileAdvPump {
   private final val NBT_FluidHandler = "FluidHandler"
   private final val NBT_pumped = "amountPumped"
   private final val NBT_liquids = "liquds"
-  private[this] final val defaultBaseEnergy = Seq(10, 8, 6, 4).map(_ * APowerTile.MicroJtoMJ)
-  private[this] final val defaultReceiveEnergy = Seq(32, 64, 128, 256, 512, 1024).map(_ * APowerTile.MicroJtoMJ)
+  private[this] final val defaultBaseEnergy = Seq(10, 8, 6, 4).map(_ * APowerTile.MJToMicroMJ)
+  private[this] final val defaultReceiveEnergy = Seq(32, 64, 128, 256, 512, 1024).map(_ * APowerTile.MJToMicroMJ)
   val defaultEnch = PEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false, BlockPos.ORIGIN, BlockPos.ORIGIN)
 
   case class PEnch(efficiency: Int, unbreaking: Int, fortune: Int, silktouch: Boolean, start: BlockPos, end: BlockPos) extends INBTWritable {

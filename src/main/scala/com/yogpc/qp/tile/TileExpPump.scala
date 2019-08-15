@@ -86,7 +86,7 @@ class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender wi
   }
 
   def getEnergyUse(amount: Int): Long = {
-    amount * 10 * APowerTile.MicroJtoMJ / (1 + unbreaking)
+    amount * 10 * APowerTile.MJToMicroMJ / (1 + unbreaking)
   }
 
   def onActivated(worldIn: World, pos: BlockPos, playerIn: EntityPlayer): Unit = {

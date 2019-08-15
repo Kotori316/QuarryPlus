@@ -40,7 +40,7 @@ final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: () => Int, con
     }
   }
 
-  private val getEnergy = (amount: Int) => if (amount == 0) 0L else 10 * amount * APowerTile.MicroJtoMJ / (1 + unbreaking.apply())
+  private val getEnergy = (amount: Int) => if (amount == 0) 0L else 10 * amount * APowerTile.MJToMicroMJ / (1 + unbreaking.apply())
 
   override def toString = s"ExpPumpModule($xp)"
 
