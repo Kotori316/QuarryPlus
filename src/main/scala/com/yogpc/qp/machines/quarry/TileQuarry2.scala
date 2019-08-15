@@ -119,7 +119,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
         player.sendStatusMessage(new TextComponentTranslation(TranslationKeys.CHANGEMODE,
           new TextComponentTranslation(if (frameMode) TranslationKeys.FILLER_MODE else TranslationKeys.QUARRY_MODE)), false)
       case _ => G_ReInit()
-        player.sendStatusMessage(new TextComponentString("Quarry Restarted."), false)
+        player.sendStatusMessage(new TextComponentTranslation(TranslationKeys.QUARRY_RESTART), false)
     }
   }
 

@@ -50,6 +50,7 @@
   "chat.pumpcontainno": "---- 这个泵内没有液体",
   "chat.pumpmapping": "---- 在此处进行方向和流体映射的设置",
   "chat.quarrymode": "采石场模式",
+  "chat.quarry.restart": "Quarry Restarted",
   "chat.ylevel": "采石场挖掘到 %s。",
   "container.yog.basic": "机器缓存",
   "FD.UNKNOWN": "未知方向",

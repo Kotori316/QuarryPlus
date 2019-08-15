@@ -50,6 +50,7 @@
   "chat.pumpcontainno": "---- This PumpPlus contains NO liquids",
   "chat.pumpmapping": "---- Direction and liquid mapping is here",
   "chat.quarrymode": "Quarry Mode",
+  "chat.quarry.restart": "Quarry Restarted",
   "chat.ylevel": "Quarry digs to %s.",
   "container.yog.basic": "Machine Buffer",
   "FD.UNKNOWN": "UNKNOWN Direction",
