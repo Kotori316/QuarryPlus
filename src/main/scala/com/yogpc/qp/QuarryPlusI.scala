@@ -16,7 +16,7 @@ import java.util
 
 import com.yogpc.qp.block._
 import com.yogpc.qp.item.{ItemMirror, ItemQuarryDebug, ItemTemplate, ItemTool}
-import com.yogpc.qp.modules.{IDisabled, ItemExpPumpModule, ItemPumpModule, ItemReplacerModule}
+import com.yogpc.qp.modules._
 import com.yogpc.qp.tile._
 import net.minecraft.block.Block
 import net.minecraft.item.Item
@@ -56,6 +56,9 @@ object QuarryPlusI {
   val pumpModule = registerI(new ItemPumpModule)
   val expPumpModule = registerI(new ItemExpPumpModule)
   val replacerModule = registerI(new ItemReplacerModule)
+  val torchModule = registerI(new ItemTorchModule)
+  val fuelModuleNormal = registerI(new ItemFuelModule(FuelModule.Normal))
+  val fuelModuleCreative = registerI(new ItemFuelModule(FuelModule.Creative))
   final val guiIdWorkbench = 1
   final val guiIdMover = 2
   final val guiIdFList = 3
@@ -105,6 +108,11 @@ object QuarryPlusI {
   def blockList(): util.List[Block] = {
     import scala.collection.JavaConverters._
     new util.ArrayList[Block](blocks.asJava)
+  }
+
+  def itemList(): util.List[Item] = {
+    import scala.collection.JavaConverters._
+    new util.ArrayList[Item](items.asJava)
   }
 
   def itemDisableInfo: Set[IDisabled] = {

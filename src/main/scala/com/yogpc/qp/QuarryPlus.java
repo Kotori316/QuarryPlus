@@ -87,12 +87,16 @@ import static com.yogpc.qp.QuarryPlusI.blockWorkbench;
 import static com.yogpc.qp.QuarryPlusI.debugItem;
 import static com.yogpc.qp.QuarryPlusI.dummyBlock;
 import static com.yogpc.qp.QuarryPlusI.expPumpModule;
+import static com.yogpc.qp.QuarryPlusI.fuelModuleCreative;
+import static com.yogpc.qp.QuarryPlusI.fuelModuleNormal;
+import static com.yogpc.qp.QuarryPlusI.itemList;
 import static com.yogpc.qp.QuarryPlusI.itemTemplate;
 import static com.yogpc.qp.QuarryPlusI.itemTool;
 import static com.yogpc.qp.QuarryPlusI.magicMirror;
 import static com.yogpc.qp.QuarryPlusI.pumpModule;
 import static com.yogpc.qp.QuarryPlusI.replacerModule;
 import static com.yogpc.qp.QuarryPlusI.tileIdMap;
+import static com.yogpc.qp.QuarryPlusI.torchModule;
 
 @Mod(
     modid = QuarryPlus.modID,
@@ -200,14 +204,10 @@ public class QuarryPlus {
             blockSolidQuarry().itemBlock(),
             dummyBlock().itemBlock(),
             blockReplacer().itemBlock(),
-            blockQuarry2().itemBlock(),
-            itemTool(),
-            magicMirror(),
-            debugItem(),
-            itemTemplate(),
-            pumpModule(),
-            expPumpModule(),
-            replacerModule()
+            blockQuarry2().itemBlock()
+        );
+        event.getRegistry().registerAll(
+            itemList().toArray(new Item[0])
         );
     }
 
@@ -248,6 +248,9 @@ public class QuarryPlus {
         ModelLoader.setCustomModelResourceLocation(pumpModule(), 0, proxy.fromEntry(pumpModule()));
         ModelLoader.setCustomModelResourceLocation(expPumpModule(), 0, proxy.fromEntry(expPumpModule()));
         ModelLoader.setCustomModelResourceLocation(replacerModule(), 0, proxy.fromEntry(replacerModule()));
+        ModelLoader.setCustomModelResourceLocation(torchModule(), 0, proxy.fromEntry(torchModule()));
+        ModelLoader.setCustomModelResourceLocation(fuelModuleNormal(), 0, proxy.fromEntry(fuelModuleNormal()));
+        ModelLoader.setCustomModelResourceLocation(fuelModuleCreative(), 0, proxy.fromEntry(fuelModuleCreative()));
     }
 
     @SubscribeEvent
@@ -334,6 +337,7 @@ public class QuarryPlus {
         public static final String exppump = "exppump";
         public static final String exppumpModule = "exppump_module";
         public static final String frame = "quarryframe";
+        public static final String fuelModule = "fuel_module";
         public static final String laser = "laserplus";
         public static final String marker = "markerplus";
         public static final String miningwell = "miningwellplus";
@@ -352,6 +356,7 @@ public class QuarryPlus {
         public static final String solidquarry = "solidquarry";
         public static final String template = "template";
         public static final String tool = "tool";
+        public static final String torchModule = "torch_module";
         public static final String workbench = "workbenchplus";
     }
 }
