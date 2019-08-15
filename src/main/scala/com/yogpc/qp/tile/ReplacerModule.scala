@@ -1,6 +1,6 @@
 package com.yogpc.qp.tile
 
-import com.yogpc.qp.tile.IModule.AfterBreak
+import com.yogpc.qp.tile.IModule.{AfterBreak, Done, NoAction}
 import net.minecraft.block.state.IBlockState
 
 class ReplacerModule(val toReplace: () => IBlockState) extends IModule {
@@ -8,15 +8,17 @@ class ReplacerModule(val toReplace: () => IBlockState) extends IModule {
 
   override val calledWhen: Set[IModule.ModuleType] = Set(IModule.TypeAfterBreak)
 
-  override def action(when: IModule.CalledWhen): Boolean = {
+  override def action(when: IModule.CalledWhen): IModule.Result = {
     when match {
       case AfterBreak(world, pos, before) =>
         val replaceState = toReplace()
         if (before != replaceState) {
           world.setBlockState(pos, replaceState)
+          Done
+        } else {
+          NoAction
         }
-        true
-      case _ => true
+      case _ => NoAction
     }
 
   }

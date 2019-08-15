@@ -208,9 +208,9 @@ class TileQuarry2 extends APowerTile()
     * @return True if succeeded.
     */
   def breakBlock(world: World, pos: BlockPos, state: IBlockState): Boolean = {
+    import scala.collection.JavaConverters._
     if (pos.getX % 6 == 0 && pos.getZ % 6 == 0) {
       // Gather items
-      import scala.collection.JavaConverters._
       val aabb = new AxisAlignedBB(pos.getX - 4, pos.getY, pos.getZ - 4, pos.getX + 4, pos.getY + 5, pos.getZ + 4)
       world.getEntitiesWithinAABB[EntityItem](classOf[EntityItem], aabb, EntitySelectors.IS_ALIVE)
         .asScala.foreach { e =>
@@ -218,9 +218,9 @@ class TileQuarry2 extends APowerTile()
         QuarryPlus.proxy.removeEntity(e)
       }
       val orbs = world.getEntitiesWithinAABB(classOf[Entity], aabb).asScala.toList
-      modules.foreach(_.action(IModule.CollectingItem(orbs)))
+      modules.foreach(_.invoke(IModule.CollectingItem(orbs)))
     }
-    val fakePlayer = QuarryFakePlayer.get(world.asInstanceOf[WorldServer])
+    val fakePlayer = QuarryFakePlayer.get(world.asInstanceOf[WorldServer], pos)
     fakePlayer.setHeldItem(EnumHand.MAIN_HAND, getEnchantedPickaxe)
     val event = new BlockEvent.BreakEvent(world, pos, state, fakePlayer)
     MinecraftForge.EVENT_BUS.post(event)
@@ -237,9 +237,9 @@ class TileQuarry2 extends APowerTile()
     }
     if (TilePump.isLiquid(state) || PowerManager.useEnergyBreak(self, state.getBlockHardness(world, pos),
       TileQuarry2.enchantmentMode(enchantments), enchantments.unbreaking, modules.exists(IModule.hasReplaceModule))) {
-      val returnValue = modules.foldLeft(true) { case (b, m) => m.invoke(IModule.BeforeBreak(event.getExpToDrop, world, pos)) && b }
-      drops.asScala.foreach(storage.addItem)
-      returnValue
+      val returnValue = modules.foldLeft(IModule.NoAction: IModule.Result){case (r, m) => IModule.Result.combine(r, m.invoke(IModule.BeforeBreak(event.getExpToDrop, world, pos)))}
+      drops.asScala.groupBy(ItemDamage.apply).mapValues(_.map(_.getCount).sum).map { case (damage, i) => damage.toStack(i) }.foreach(storage.addItem)
+      returnValue.canGoNext // true means work is finished.
     } else {
       false
     }

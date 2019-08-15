@@ -1,6 +1,6 @@
 package com.yogpc.qp.tile
 
-import com.yogpc.qp.tile.IModule.CalledWhen
+import com.yogpc.qp.tile.IModule.{CalledWhen, Result}
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.Entity
 import net.minecraft.util.math.BlockPos
@@ -11,18 +11,18 @@ trait IModule {
 
   def calledWhen: Set[IModule.ModuleType]
 
-  def invoke(when: CalledWhen): Boolean = {
+  def invoke(when: CalledWhen): Result = {
     if (calledWhen(when.moduleType)) {
       action(when)
     } else {
-      true
+      IModule.NoAction
     }
   }
 
   /**
-    * @return false if work hasn't finished.
+    * @return false if work hasn't finished. true if work has done or did nothing.
     */
-  def action(when: CalledWhen): Boolean
+  protected def action(when: CalledWhen): Result
 
   def toString: String
 }

@@ -3,6 +3,7 @@ package com.yogpc.qp.tile
 import java.util.function.{IntConsumer, IntSupplier, LongPredicate}
 
 import com.yogpc.qp.QuarryPlus
+import com.yogpc.qp.tile.IModule.{Done, Result}
 import net.minecraft.entity.item.EntityXPOrb
 
 final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: () => Int, consumer: Option[IntConsumer]) extends IModule {
@@ -19,7 +20,7 @@ final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: () => Int, con
 
   var xp: Int = _
 
-  override def action(when: IModule.CalledWhen): Boolean = {
+  override def action(when: IModule.CalledWhen): Result = {
     val xp = when match {
       case t: IModule.CollectingItem =>
         t.entities.collect { case orb: EntityXPOrb if orb.isEntityAlive => QuarryPlus.proxy.removeEntity(orb); orb.xpValue }.sum
@@ -27,7 +28,7 @@ final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: () => Int, con
       case _ => 0
     }
     addXp(xp)
-    true
+    Done
   }
 
   private def addXp(amount: Int): Unit = {
