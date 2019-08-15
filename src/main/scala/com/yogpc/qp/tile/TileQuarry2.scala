@@ -211,14 +211,8 @@ class TileQuarry2 extends APowerTile()
     import scala.collection.JavaConverters._
     if (pos.getX % 6 == 0 && pos.getZ % 6 == 0) {
       // Gather items
-      val aabb = new AxisAlignedBB(pos.getX - 4, pos.getY, pos.getZ - 4, pos.getX + 4, pos.getY + 5, pos.getZ + 4)
-      world.getEntitiesWithinAABB[EntityItem](classOf[EntityItem], aabb, EntitySelectors.IS_ALIVE)
-        .asScala.foreach { e =>
-        this.storage.addItem(e.getItem)
-        QuarryPlus.proxy.removeEntity(e)
-      }
-      val orbs = world.getEntitiesWithinAABB(classOf[Entity], aabb).asScala.toList
-      modules.foreach(_.invoke(IModule.CollectingItem(orbs)))
+      val aabb = new AxisAlignedBB(pos.getX - 8, pos.getY, pos.getZ - 8, pos.getX + 8, pos.getY + 5, pos.getZ + 8)
+      gatherDrops(world, aabb)
     }
     val fakePlayer = QuarryFakePlayer.get(world.asInstanceOf[WorldServer], pos)
     fakePlayer.setHeldItem(EnumHand.MAIN_HAND, getEnchantedPickaxe)
@@ -243,6 +237,17 @@ class TileQuarry2 extends APowerTile()
     } else {
       false
     }
+  }
+
+  def gatherDrops(world: World, aabb: AxisAlignedBB): Unit = {
+    import scala.collection.JavaConverters._
+    world.getEntitiesWithinAABB[EntityItem](classOf[EntityItem], aabb, EntitySelectors.IS_ALIVE)
+      .asScala.foreach { e =>
+      this.storage.addItem(e.getItem)
+      QuarryPlus.proxy.removeEntity(e)
+    }
+    val orbs = world.getEntitiesWithinAABB(classOf[Entity], aabb).asScala.toList
+    modules.foreach(_.invoke(IModule.CollectingItem(orbs)))
   }
 
   override def getDebugName = TranslationKeys.quarry2
@@ -333,6 +338,7 @@ object TileQuarry2 {
   val buildFrame = new Mode("BuildFrame")
   val breakInsideFrame = new Mode("BreakInsideFrame")
   val breakBlock = new Mode("BreakBlock")
+  val checkDrops = new Mode("CheckDrops")
 
   class InteractionObject(quarry2: TileQuarry2) extends IInteractionObject {
     override def createContainer(playerInventory: InventoryPlayer, playerIn: EntityPlayer) = new ContainerQuarryModule(quarry2, playerIn)

@@ -7,7 +7,7 @@ import net.minecraft.block.state.IBlockState
 import net.minecraft.init.Blocks
 import net.minecraft.nbt.{NBTPrimitive, NBTTagCompound, NBTTagList}
 import net.minecraft.util.SoundCategory
-import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.{AxisAlignedBB, BlockPos}
 import net.minecraft.world.World
 import net.minecraftforge.common.util.Constants.NBT
 import org.apache.logging.log4j.MarkerManager
@@ -239,7 +239,8 @@ object QuarryAction {
 
     override def nextTarget() = digTargets.headOption.getOrElse(new BlockPos(quarry2.area.xMin + 1, y, quarry2.area.zMin + 1))
 
-    override def nextAction(quarry2: TileQuarry2) = if (y > quarry2.yLevel) new BreakBlock(quarry2, y - 1, quarry2.target, headX, headY, headZ) else none
+    override def nextAction(quarry2: TileQuarry2) =
+      if (y > quarry2.yLevel) new BreakBlock(quarry2, y - 1, quarry2.target, headX, headY, headZ) else new CheckDrops(quarry2, quarry2.yLevel)
 
     override def canGoNext(quarry: TileQuarry2) = digTargets.isEmpty
 
@@ -267,6 +268,30 @@ object QuarryAction {
       this.headY = nbt.getDouble("headY")
       this.headZ = nbt.getDouble("headZ")
       this
+    }
+  }
+
+  class CheckDrops(quarry2: TileQuarry2, y: Int) extends QuarryAction {
+    var finished = false
+
+    override def action(target: BlockPos): Unit = {
+      val r = quarry2.area
+      quarry2.gatherDrops(quarry2.getWorld,
+        new AxisAlignedBB(r.xMin - 2, y - 3, r.zMin - 2, r.xMax + 2, y + 2, r.zMax + 2))
+      finished = true
+    }
+
+    override def nextTarget() = BlockPos.ORIGIN
+
+    override def nextAction(quarry2: TileQuarry2) = none
+
+    override def canGoNext(quarry: TileQuarry2) = finished
+
+    override def mode = TileQuarry2.checkDrops
+
+    override def serverWrite(nbt: NBTTagCompound) = {
+      nbt.setInteger("y", y)
+      super.serverWrite(nbt)
     }
   }
 
@@ -327,6 +352,7 @@ object QuarryAction {
       case TileQuarry2.buildFrame.toString => new MakeFrame(quarry)
       case TileQuarry2.breakBlock.toString => new BreakBlock(quarry, nbt.getInteger("y"))
       case TileQuarry2.breakInsideFrame.toString => new BreakInsideFrame(quarry)
+      case TileQuarry2.checkDrops.toString => new CheckDrops(quarry, nbt.getInteger("y"))
       case _ => none
     }
     action match {

@@ -148,6 +148,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
             case MOVE_HEAD:
                 if (this.targetY < yLevel) {
                     G_destroy();
+                    S_checkDropItem(new AxisAlignedBB(xMin - 2, yLevel - 3, zMin - 2, xMax + 2, yLevel + 2, zMax + 2));
                     PacketHandler.sendToAround(ModeMessage.create(this), getWorld(), getPos());
                     return true;
                 }
@@ -323,7 +324,8 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     private boolean S_breakBlock() {
         this.dug = true;
         if (S_breakBlock(this.targetX, this.targetY, this.targetZ, S_getFillBlock())) {
-            S_checkDropItem();
+            S_checkDropItem(new AxisAlignedBB(this.targetX - 4, this.targetY - 4, this.targetZ - 4,
+                this.targetX + 5, this.targetY + 3, this.targetZ + 5));
             if (this.now == BREAK_BLOCK)
                 setNow(MOVE_HEAD);
             S_setNextTarget();
@@ -332,9 +334,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
         return false;
     }
 
-    private void S_checkDropItem() {
-        final AxisAlignedBB axis = new AxisAlignedBB(this.targetX - 4, this.targetY - 4, this.targetZ - 4,
-            this.targetX + 5, this.targetY + 3, this.targetZ + 5);
+    private void S_checkDropItem(AxisAlignedBB axis) {
         final List<EntityItem> result = getWorld().getEntitiesWithinAABB(EntityItem.class, axis);
         result.stream().filter(EntityItem::isEntityAlive).map(EntityItem::getItem).filter(VersionUtil::nonEmpty).forEach(this.cacheItems::add);
         result.forEach(QuarryPlus.proxy::removeEntity);
