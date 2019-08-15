@@ -24,6 +24,8 @@
   "block.quarryplus.workbenchplus": "增强型工作台",
   "item.quarryplus.dimensionmirror": "维度之镜",
   "item.quarryplus.electric_armor": "充能增强型盔甲",
+  "item.quarryplus.fuel_module_normal": "Quarry Fuel Module",
+  "item.quarryplus.fuel_module_creative": "Quarry Creative Energy Module",
   "item.quarryplus.liquidselector": "液体选择器",
   "item.quarryplus.listeditor": "列表编辑器",
   "item.quarryplus.magicmirror": "魔力之镜",

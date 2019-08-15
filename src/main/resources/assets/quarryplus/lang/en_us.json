@@ -24,6 +24,8 @@
   "block.quarryplus.workbenchplus": "Workbench Plus",
   "item.quarryplus.dimensionmirror": "DimensionalMirror",
   "item.quarryplus.electric_armor": "ElectricArmorPlus",
+  "item.quarryplus.fuel_module_normal": "Quarry Fuel Module",
+  "item.quarryplus.fuel_module_creative": "Quarry Creative Energy Module",
   "item.quarryplus.liquidselector": "LiquidSelector",
   "item.quarryplus.listeditor": "ListEditor",
   "item.quarryplus.magicmirror": "MagicMirror",

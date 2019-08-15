@@ -128,6 +128,7 @@ public class QuarryPlus {
         public static final String exppump = "exppump";
         public static final String exppumpModule = "exppump_module";
         public static final String frame = "quarryframe";
+        public static final String fuelModule = "fuel_module";
         public static final String laser = "laserplus";
         public static final String listeditor = "listeditor";
         public static final String liquidselector = "liquidselector";

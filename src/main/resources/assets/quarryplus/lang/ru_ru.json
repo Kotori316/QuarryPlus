@@ -24,6 +24,8 @@
   "block.quarryplus.workbenchplus": "Улучшенный верстак",
   "item.quarryplus.dimensionmirror": "Зеркало измерения",
   "item.quarryplus.electric_armor": "Электрическая улучшенная броня",
+  "item.quarryplus.fuel_module_normal": "Quarry Fuel Module",
+  "item.quarryplus.fuel_module_creative": "Quarry Creative Energy Module",
   "item.quarryplus.liquidselector": "Жидкостный селектор",
   "item.quarryplus.listeditor": "Редактор списков",
   "item.quarryplus.magicmirror": "Магическое зеркало",
