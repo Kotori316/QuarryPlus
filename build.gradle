@@ -7,7 +7,7 @@ buildscript {
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
-        classpath "gradle.plugin.com.matthewprenger:CurseGradle:1.2.0"
+        classpath "gradle.plugin.com.matthewprenger:CurseGradle:1.4.0"
     }
 }
 apply plugin: 'scala'
@@ -170,16 +170,18 @@ test {
     useJUnitPlatform()
 }
 
-task signJar2() << {
-    ant.signjar(
-            jar: jar.archivePath,
-            alias: project.hasProperty('keyStoreAlias') ? project.getProperty('keyStoreAlias') : "",
-            keystore: project.hasProperty('keyStore') ? project.getProperty("keyStore") : "",
-            storepass: project.hasProperty('keyStorePass') ? project.getProperty('keyStorePass') : "",
-            sigalg: "SHA1withRSA",
-            digestalg: "SHA-256",
-            tsaurl: "http://timestamp.digicert.com"
-    )
+task signJar2(){
+    doLast {
+        ant.signjar(
+                jar: jar.archivePath,
+                alias: project.hasProperty('keyStoreAlias') ? project.getProperty('keyStoreAlias') : "",
+                keystore: project.hasProperty('keyStore') ? project.getProperty("keyStore") : "",
+                storepass: project.hasProperty('keyStorePass') ? project.getProperty('keyStorePass') : "",
+                sigalg: "SHA1withRSA",
+                digestalg: "SHA-256",
+                tsaurl: "http://timestamp.digicert.com"
+        )
+    }
 }
 
 // Runs this task automatically when build is ran.
