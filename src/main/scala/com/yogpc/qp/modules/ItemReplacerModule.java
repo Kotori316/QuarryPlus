@@ -19,7 +19,6 @@ import net.minecraft.item.ItemStack;
 import scala.Symbol;
 
 public class ItemReplacerModule extends Item implements IDisabled, IModuleItem {
-    public static final Symbol SYMBOL = Symbol.apply("ModuleReplacer");
     public static final String Key_state = "state";
     private final Gson gson = new Gson();
 
@@ -31,7 +30,7 @@ public class ItemReplacerModule extends Item implements IDisabled, IModuleItem {
 
     @Override
     public Symbol getSymbol() {
-        return SYMBOL;
+        return Symbol.apply("ModuleReplacer");
     }
 
     @SuppressWarnings("deprecation")
