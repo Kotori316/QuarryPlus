@@ -47,6 +47,8 @@ object IModule {
 
   final case object TypeAfterBreak extends ModuleType
 
+  final case object TypeTick extends ModuleType
+
   sealed abstract class CalledWhen(val moduleType: ModuleType)
 
   final case class BeforeBreak(xp: Int, world: World, pos: BlockPos) extends CalledWhen(TypeBeforeBreak)
@@ -54,6 +56,8 @@ object IModule {
   final case class CollectingItem(entities: List[Entity]) extends CalledWhen(TypeCollectItem)
 
   final case class AfterBreak(world: World, pos: BlockPos, before: IBlockState) extends CalledWhen(TypeAfterBreak)
+
+  final case class Tick(tile: APowerTile) extends CalledWhen(TypeTick)
 
   sealed trait Result {
     def canGoNext: Boolean = this =!= NotFinished
