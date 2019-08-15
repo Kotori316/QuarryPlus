@@ -7,7 +7,7 @@ import com.yogpc.qp.machines.base._
 import com.yogpc.qp.machines.pump.TilePump
 import com.yogpc.qp.machines.{PowerManager, TranslationKeys}
 import com.yogpc.qp.packet.{PacketHandler, TileMessage}
-import com.yogpc.qp.utils.Holder
+import com.yogpc.qp.utils.{Holder, ItemDamage}
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityItem
@@ -201,9 +201,9 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     * @return True if succeeded.
     */
   def breakBlock(world: World, pos: BlockPos, state: IBlockState): Boolean = {
+    import scala.collection.JavaConverters._
     if (pos.getX % 6 == 0 && pos.getZ % 6 == 0) {
       // Gather items
-      import scala.collection.JavaConverters._
       val aabb = new AxisAlignedBB(pos.getX - 4, pos.getY, pos.getZ - 4, pos.getX + 4, pos.getY + 5, pos.getZ + 4)
       world.getEntitiesWithinAABB[EntityItem](classOf[EntityItem], aabb, EntitySelectors.IS_ALIVE)
         .asScala.foreach { e =>
@@ -231,7 +231,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     if (TilePump.isLiquid(state) || PowerManager.useEnergyBreak(self, state.getBlockHardness(world, pos),
       TileQuarry2.enchantmentMode(enchantments), enchantments.unbreaking, modules.exists(IModule.hasReplaceModule))) {
       val returnValue = modules.foldMap(m => m.invoke(IModule.BeforeBreak(event.getExpToDrop, world, pos)))
-      drops.forEach(storage.addItem)
+      drops.asScala.groupBy(ItemDamage.apply).mapValues(_.map(_.getCount).sum).map { case (damage, i) => damage.toStack(i) }.foreach(storage.addItem)
       returnValue.canGoNext // true means work is finished.
     } else {
       false
