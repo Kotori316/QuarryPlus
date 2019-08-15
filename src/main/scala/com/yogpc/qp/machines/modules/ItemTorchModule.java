@@ -14,7 +14,6 @@ import net.minecraft.item.ItemStack;
 import scala.Symbol;
 
 public class ItemTorchModule extends Item implements IDisabled, IModuleItem {
-    public static final Symbol SYMBOL = Symbol.apply("ModuleTorch");
 
     public ItemTorchModule() {
         super(new Item.Properties().group(Holder.tab()).rarity(EnumRarity.UNCOMMON));
@@ -28,7 +27,7 @@ public class ItemTorchModule extends Item implements IDisabled, IModuleItem {
 
     @Override
     public Symbol getSymbol() {
-        return SYMBOL;
+        return Symbol.apply("ModuleTorch");
     }
 
 }

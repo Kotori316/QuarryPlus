@@ -28,7 +28,6 @@ import net.minecraft.world.World;
 import scala.Symbol;
 
 public class ItemExpPumpModule extends Item implements IDisabled, IModuleItem {
-    public static final Symbol SYMBOL = Symbol.apply("ModuleExpPump");
     public static final String Key_xp = "xp";
 
     public ItemExpPumpModule() {
@@ -38,7 +37,7 @@ public class ItemExpPumpModule extends Item implements IDisabled, IModuleItem {
 
     @Override
     public Symbol getSymbol() {
-        return SYMBOL;
+        return Symbol.apply("ModuleExpPump");
     }
 
     @Override

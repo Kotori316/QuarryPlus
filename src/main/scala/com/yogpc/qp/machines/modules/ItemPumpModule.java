@@ -17,7 +17,6 @@ import net.minecraft.item.ItemStack;
 import scala.Symbol;
 
 public class ItemPumpModule extends Item implements IDisabled, IModuleItem {
-    public static final Symbol SYMBOL = Symbol.apply("ModulePump");
 
     public ItemPumpModule() {
         super(new Properties().group(Holder.tab()).rarity(EnumRarity.UNCOMMON));
@@ -26,7 +25,7 @@ public class ItemPumpModule extends Item implements IDisabled, IModuleItem {
 
     @Override
     public Symbol getSymbol() {
-        return SYMBOL;
+        return Symbol.apply("ModulePump");
     }
 
     @Override
