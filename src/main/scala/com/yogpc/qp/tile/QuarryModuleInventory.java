@@ -14,6 +14,7 @@ import jp.t2v.lab.syntax.MapStreamSyntax;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.inventory.ItemStackHelper;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -51,10 +52,12 @@ public class QuarryModuleInventory extends InventoryBasic implements INBTSeriali
     public boolean isItemValidForSlot(int index, ItemStack stack) {
         if (stack.getItem() instanceof IModuleItem) {
             IModuleItem item = (IModuleItem) stack.getItem();
+            Predicate<Item> equal = Predicate.isEqual(item);
+            Predicate<Item> id = item1 -> item1 instanceof IModuleItem && ((IModuleItem) item1).getSymbol().equals(item.getSymbol());
             return IntStream.range(0, getSizeInventory())
                 .mapToObj(this::getStackInSlot)
                 .map(ItemStack::getItem)
-                .noneMatch(Predicate.isEqual(item));
+                .noneMatch(equal.or(id));
         }
         return false;
     }
