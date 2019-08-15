@@ -17,7 +17,7 @@ class EnergyDebug(tile: APowerTile) {
   private[this] var uLastTick = 0l
   private[this] var gLastTick = 0l
   private[this] var lastOutput = 0l
-  private[this] final val mj = APowerTile.MicroJtoMJ
+  private[this] final val mj = APowerTile.MJToMicroMJ
   private[this] val stopWatch = Stopwatch.createUnstarted()
   private[this] var startTime = 0l
   private[this] val usageMap = mutable.Map.empty[EnergyUsage, Long]

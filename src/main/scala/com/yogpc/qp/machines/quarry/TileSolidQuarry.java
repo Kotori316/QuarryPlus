@@ -23,7 +23,7 @@ import net.minecraftforge.items.wrapper.InvWrapper;
 
 public class TileSolidQuarry extends TileQuarry implements IInteractionObject {
     public static final String GUI_ID = QuarryPlus.modID + ":gui_" + QuarryPlus.Names.solidquarry;
-    private static final long fuelEfficiency = 4 * APowerTile.MicroJtoMJ; // 40 RF/t
+    private static final long fuelEfficiency = 4 * APowerTile.MJToMicroMJ; // 40 RF/t
     private ItemStack fuel = ItemStack.EMPTY;
     private int fuelCount = 0;
 

@@ -34,7 +34,7 @@ import net.minecraftforge.fml.ModList;
     @Optional.Interface(iface = "buildcraft.api.tiles.IDebuggable", modid = QuarryPlus.Optionals.Buildcraft_tiles),
     @Optional.Interface(iface = "ic2.api.energy.tile.IEnergySink", modid = QuarryPlus.Optionals.IC2_modID)})*/
 public abstract class APowerTile extends APacketTile implements ITickable, IEnergyStorage {//, IEnergyReceiver, IEnergySink, IDebuggable {
-    public static final long MicroJtoMJ = 1_000_000L;
+    public static final long MJToMicroMJ = 1_000_000L;
     public static final String NBT_STORED_ENERGY = "storedEnergy";
     public static final String NBT_MAX_STORED = "MAX_stored";
     public static final String NBT_MAX_RECEIVE = "MAX_receive";

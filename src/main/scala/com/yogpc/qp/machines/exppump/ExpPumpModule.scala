@@ -42,7 +42,7 @@ final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: Eval[Int], con
     }
   }
 
-  private val getEnergy = Kleisli((amount: Int) => if (amount == 0) ExpPumpModule.zeroL else unbreaking.map(u => 10 * amount * APowerTile.MicroJtoMJ / (1 + u)))
+  private val getEnergy = Kleisli((amount: Int) => if (amount == 0) ExpPumpModule.zeroL else unbreaking.map(u => 10 * amount * APowerTile.MJToMicroMJ / (1 + u)))
 
   override def toString = s"ExpPumpModule($xp)"
 
