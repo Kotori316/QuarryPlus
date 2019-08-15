@@ -56,6 +56,8 @@ class TileQuarry2 extends APowerTile()
   override def update(): Unit = {
     super.update()
     if (!world.isRemote) {
+      // Module Tick Action
+      modules.foreach(_.invoke(IModule.Tick(self)))
       // Quarry action
       var i = 0
       while (i < enchantments.efficiency + 1) {
