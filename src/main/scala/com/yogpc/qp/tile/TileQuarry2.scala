@@ -211,7 +211,7 @@ class TileQuarry2 extends APowerTile()
     import scala.collection.JavaConverters._
     if (pos.getX % 6 == 0 && pos.getZ % 6 == 0) {
       // Gather items
-      val aabb = new AxisAlignedBB(pos.getX - 8, pos.getY, pos.getZ - 8, pos.getX + 8, pos.getY + 5, pos.getZ + 8)
+      val aabb = new AxisAlignedBB(pos.getX - 8, pos.getY - 3, pos.getZ - 8, pos.getX + 8, pos.getY + 5, pos.getZ + 8)
       gatherDrops(world, aabb)
     }
     val fakePlayer = QuarryFakePlayer.get(world.asInstanceOf[WorldServer], pos)
@@ -231,7 +231,7 @@ class TileQuarry2 extends APowerTile()
     }
     if (TilePump.isLiquid(state) || PowerManager.useEnergyBreak(self, state.getBlockHardness(world, pos),
       TileQuarry2.enchantmentMode(enchantments), enchantments.unbreaking, modules.exists(IModule.hasReplaceModule))) {
-      val returnValue = modules.foldLeft(IModule.NoAction: IModule.Result){case (r, m) => IModule.Result.combine(r, m.invoke(IModule.BeforeBreak(event.getExpToDrop, world, pos)))}
+      val returnValue = modules.foldLeft(IModule.NoAction: IModule.Result) { case (r, m) => IModule.Result.combine(r, m.invoke(IModule.BeforeBreak(event.getExpToDrop, world, pos))) }
       drops.asScala.groupBy(ItemDamage.apply).mapValues(_.map(_.getCount).sum).map { case (damage, i) => damage.toStack(i) }.foreach(storage.addItem)
       returnValue.canGoNext // true means work is finished.
     } else {
