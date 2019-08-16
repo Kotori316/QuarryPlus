@@ -211,7 +211,7 @@ public abstract class PumpModule implements IModule {
             for (kx = 0; kx < chunk_side_x; kx++)
                 for (kz = 0; kz < chunk_side_z; kz++)
                     this.storageArray[kx][kz] = world.getChunkProvider()
-                        .getLoadedChunk(kx + (this.xOffset >> 4), kz + (this.zOffset >> 4))
+                        .provideChunk(kx + (this.xOffset >> 4), kz + (this.zOffset >> 4))
                         .getBlockStorageArray();
             S_put(x - this.xOffset, y, z - this.zOffset);
             IBlockState b_c;
@@ -262,7 +262,7 @@ public abstract class PumpModule implements IModule {
                 for (int kx = 0; kx < this.storageArray.length; kx++) {
                     for (int kz = 0; kz < this.storageArray[0].length; kz++) {
                         this.storageArray[kx][kz] = world.getChunkProvider()
-                            .getLoadedChunk(kx + (this.xOffset >> 4), kz + (this.zOffset >> 4))
+                            .provideChunk(kx + (this.xOffset >> 4), kz + (this.zOffset >> 4))
                             .getBlockStorageArray();
                     }
                 }
