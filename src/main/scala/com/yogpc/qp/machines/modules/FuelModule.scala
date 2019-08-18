@@ -20,11 +20,19 @@ class FuelModule(mode: FuelModule.Mode) extends IModule {
       IModule.Done
     case _ => IModule.NoAction
   }
+
+
+  override def toString = {
+    mode match {
+      case FuelModule.Normal => s"FuelModule(${FuelModule.RFInTick} RF/t)"
+      case FuelModule.Creative => "FuelModule(Creative)"
+    }
+  }
 }
 
 object FuelModule {
   final val id = "quarryplus:module_fuel"
-  final val RFInTick = 10
+  final val RFInTick = 40
 
   sealed abstract class Mode(val name: String)
 
