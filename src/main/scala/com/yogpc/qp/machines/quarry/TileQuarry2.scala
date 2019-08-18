@@ -59,6 +59,9 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
         action.action(target)
         if (action.canGoNext(self)) {
           action = action.nextAction(self)
+          if (action == QuarryAction.none) {
+            PowerManager.configure0(self)
+          }
           PacketHandler.sendToClient(TileMessage.create(self), world)
         }
         target = action.nextTarget()
