@@ -145,6 +145,7 @@ class TileQuarry2 extends APowerTile()
     }
     action = QuarryAction.waiting
     PowerManager.configureQuarryWork(this, enchantments.efficiency, enchantments.unbreaking, 0)
+    configure(getMaxStored, getMaxStored)
   }
 
   override def getEnchantments = {
