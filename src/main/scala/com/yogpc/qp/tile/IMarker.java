@@ -24,7 +24,7 @@ public interface IMarker {
 
     /**
      * Called to remove this marker from the world.
-     * In this method, you must destroy this block by calling World#setBlockToAir(BlockPos) and so on.
+     * In this method, you must destroy this block by calling {@link net.minecraft.world.World#setBlockToAir(BlockPos)} and so on.
      *
      * @return a list of drop items.
      */
