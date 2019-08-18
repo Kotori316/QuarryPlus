@@ -201,7 +201,7 @@ object QuarryAction {
           this.headZ = target.getZ
           movingHead = false
           if (!quarry2.getWorld.isRemote)
-            PacketHandler.sendToAround(ActionMessage.create(quarry2), quarry2.getWorld, quarry2.getPos)
+            PacketHandler.sendToDimension(ActionMessage.create(quarry2), quarry2.getWorld.provider.getDimension)
         } else {
           if (blocks > 0) {
             this.headX += x * blocks / distance

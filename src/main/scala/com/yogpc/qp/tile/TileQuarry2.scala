@@ -64,7 +64,7 @@ class TileQuarry2 extends APowerTile()
         action.action(target)
         if (action.canGoNext(self)) {
           action = action.nextAction(self)
-          PacketHandler.sendToAround(TileMessage.create(self), world, pos)
+          PacketHandler.sendToDimension(TileMessage.create(self), world.provider.getDimension)
         }
         target = action.nextTarget()
         i += 1
