@@ -3,10 +3,12 @@ package com.yogpc.qp.machines.base
 import cats._
 import cats.implicits._
 import com.yogpc.qp.machines.base.IModule.{CalledWhen, Result}
+import com.yogpc.qp.machines.modules.TorchModule
 import com.yogpc.qp.machines.pump.PumpModule
 import com.yogpc.qp.machines.replacer.ReplacerModule
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.Entity
+import net.minecraft.init.Blocks
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 
@@ -34,10 +36,15 @@ trait IModule {
 object IModule {
   implicit val moduleShow: Show[IModule] = Show.fromToString
   val getId: IModule => String = _.id
-  val replaceModuleIDs = Set(ReplacerModule.id)
+  val replaceModuleIDs = Set(ReplacerModule.id, TorchModule.id)
   val pumpModuleIDs = Set(PumpModule.ID)
   val hasReplaceModule: IModule => Boolean = getId andThen replaceModuleIDs
   val hasPumpModule: IModule => Boolean = getId andThen pumpModuleIDs
+  val replaceBlocks: Int => PartialFunction[IModule, List[IBlockState]] = y => {
+    case t: TorchModule if t.y.contains_(y) => List(Blocks.TORCH.getDefaultState)
+    case r: ReplacerModule => r.toReplace.toList
+    case _ => Nil
+  }
 
   sealed trait ModuleType
 

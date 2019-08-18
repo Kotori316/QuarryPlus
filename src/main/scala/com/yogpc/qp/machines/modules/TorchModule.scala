@@ -11,7 +11,7 @@ import net.minecraft.init.Blocks
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.world.EnumLightType
 
-class TorchModule(y: Eval[Int]) extends IModule {
+class TorchModule(val y: Eval[Int]) extends IModule {
   override def id = TorchModule.id
 
   override val calledWhen = Set(IModule.TypeAfterBreak)
