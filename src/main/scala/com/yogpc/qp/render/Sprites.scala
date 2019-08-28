@@ -16,14 +16,17 @@ object Sprites {
   def getMap = map.toMap
 
   def registerTexture(event: TextureStitchEvent.Pre): Unit = {
-    val textureMap = event.getMap
-    LaserType.values().foreach(laserType => textureMap.registerSprite(null, laserType.location()))
-    symbols.foreach(s => textureMap.registerSprite(null, new ResourceLocation(QuarryPlus.modID, "entities/" + s.name)))
+    if (event.getMap.getBasePath == "textures") {
+      LaserType.values().foreach(laserType => event.addSprite(laserType.location()))
+      symbols.foreach(s => event.addSprite(new ResourceLocation(QuarryPlus.modID, "entities/" + s.name)))
+    }
   }
 
   def putTexture(event: TextureStitchEvent.Post): Unit = {
     val textureMap = event.getMap
-    LaserType.values().foreach(laserType => map.put(laserType.symbol, textureMap.getSprite(laserType.location())))
-    symbols.foreach(s => map.put(s, textureMap.getSprite(new ResourceLocation(QuarryPlus.modID, "entities/" + s.name))))
+    if (textureMap.getBasePath == "textures") {
+      LaserType.values().foreach(laserType => map.put(laserType.symbol, textureMap.getSprite(laserType.location())))
+      symbols.foreach(s => map.put(s, textureMap.getSprite(new ResourceLocation(QuarryPlus.modID, "entities/" + s.name))))
+    }
   }
 }

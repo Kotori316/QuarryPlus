@@ -4,33 +4,28 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.yogpc.qp.Config;
-import com.yogpc.qp.machines.GuiHandler;
-import com.yogpc.qp.machines.advquarry.TileAdvQuarry;
+import com.yogpc.qp.machines.bookmover.GuiBookMover;
 import com.yogpc.qp.machines.marker.TileMarker;
-import com.yogpc.qp.machines.quarry.TileQuarry;
-import com.yogpc.qp.machines.quarry.TileQuarry2;
+import com.yogpc.qp.machines.mover.GuiMover;
+import com.yogpc.qp.machines.workbench.GuiWorkbench;
 import com.yogpc.qp.render.DummyBlockBakedModel;
-import com.yogpc.qp.render.RenderAdvQuarry;
 import com.yogpc.qp.render.RenderMarker;
-import com.yogpc.qp.render.RenderQuarry;
-import com.yogpc.qp.render.RenderQuarry2;
 import com.yogpc.qp.render.Sprites;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelManager;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.ExtensionPoint;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -41,7 +36,7 @@ public class ProxyClient extends ProxyCommon {
     private DummyBlockBakedModel dummyItemBakedModel;
 
     @Override
-    public Optional<EntityPlayer> getPacketPlayer(final NetworkEvent.Context context) {
+    public Optional<PlayerEntity> getPacketPlayer(final NetworkEvent.Context context) {
         if (context.getSender() != null) {
             return Optional.of(context.getSender());
         } else {
@@ -51,7 +46,7 @@ public class ProxyClient extends ProxyCommon {
 
     @Override
     public Optional<World> getPacketWorld(NetworkEvent.Context context) {
-        EntityPlayerMP sender = context.getSender();
+        ServerPlayerEntity sender = context.getSender();
         if (sender == null) {
             return Optional.of(getClientWorld());
         } else {
@@ -60,19 +55,24 @@ public class ProxyClient extends ProxyCommon {
     }
 
     @Override
-    public void registerEvents(IEventBus bus) {
-        super.registerEvents(bus);
-        bus.addListener(Sprites::putTexture);
-        bus.addListener(Sprites::registerTexture);
-        bus.addListener(this::onBake);
-        ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.GUIFACTORY, () -> GuiHandler::getGui);
+    public void registerEvents(IEventBus forgeBus) {
+        super.registerEvents(forgeBus);
+//        ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.GUIFACTORY, () -> GuiHandler::getGui);
+    }
+
+    @Override
+    public void registerModBus(IEventBus modBus) {
+        super.registerModBus(modBus);
+        modBus.addListener(this::onBake);
+        modBus.addListener(Sprites::putTexture);
+        modBus.addListener(Sprites::registerTexture);
     }
 
     @Override
     public void removeEntity(final Entity e) {
-        e.world.removeEntity(e);
+        e.remove();
         if (e.world.isRemote)
-            ((WorldClient) e.world).removeEntityFromWorld(e.getEntityId());
+            ((ClientWorld) e.world).removeEntityFromWorld(e.getEntityId());
     }
 
     @Override
@@ -82,6 +82,7 @@ public class ProxyClient extends ProxyCommon {
 
     @Override
     public void registerTextures(FMLCommonSetupEvent event) {
+        // Register TileEntity Special Render
         if (Config.client().enableRender().get()) {
             ClientRegistry.bindTileEntitySpecialRenderer(TileMarker.class, RenderMarker.instance());
             ClientRegistry.bindTileEntitySpecialRenderer(TileQuarry.class, RenderQuarry.instance());
@@ -95,6 +96,10 @@ public class ProxyClient extends ProxyCommon {
 //                ClientRegistry.bindTileEntitySpecialRenderer(TileLaser.class, RenderLaser.instance());
 //            ClientRegistry.bindTileEntitySpecialRenderer(TileRefinery.class, RenderDistiller.instance());
 //        }
+        // Register GUI
+        ScreenManager.registerFactory(Holder.moverContainerType(), GuiMover::new);
+        ScreenManager.registerFactory(Holder.workbenchContainerType(), GuiWorkbench::new);
+        ScreenManager.registerFactory(Holder.bookMoverContainerType(), GuiBookMover::new);
     }
 
     public void onBake(ModelBakeEvent event) {
@@ -108,23 +113,6 @@ public class ProxyClient extends ProxyCommon {
         ResourceLocation pathIn = Objects.requireNonNull(Holder.blockDummy().getRegistryName());
         event.getModelRegistry().put(new ModelResourceLocation(pathIn.toString()), dummyBlockBakedModel);
         event.getModelRegistry().put(new ModelResourceLocation(pathIn, "inventory"), dummyItemBakedModel);
-    }
-
-    @Override
-    public void setDummyTexture(String textureName) {
-        /*String itemTexName = Optional.of(textureName)
-            .map(ResourceLocation::new)
-            .filter(ForgeRegistries.BLOCKS::containsKey)
-            .map(ForgeRegistries.BLOCKS::getValue)
-            // Null check is inside of Optional.
-            .map(Block::getRegistryName)
-            .map(ResourceLocation::toString)
-            .orElse("minecraft:glass");*/
-        String itemTexName = textureName.split("#")[0];
-
-        ModelManager manager = Minecraft.getInstance().getItemRenderer().getItemModelMesher().getModelManager();
-        dummyBlockBakedModel.model = getModel(manager, new ModelResourceLocation(textureName));
-        dummyItemBakedModel.model = getModel(manager, new ModelResourceLocation(itemTexName, "inventory"));
     }
 
     private IBakedModel getModel(ModelManager manager, ModelResourceLocation location) {

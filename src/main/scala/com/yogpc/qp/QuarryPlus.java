@@ -1,6 +1,7 @@
 package com.yogpc.qp;
 
 import com.yogpc.qp.machines.PowerManager;
+import com.yogpc.qp.machines.base.IEnchantableTile;
 import com.yogpc.qp.machines.workbench.WorkbenchRecipes;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.EnableCondition;
@@ -8,10 +9,12 @@ import com.yogpc.qp.utils.Holder;
 import com.yogpc.qp.utils.ProxyClient;
 import com.yogpc.qp.utils.ProxyCommon;
 import net.minecraft.block.Block;
+import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.Item;
-import net.minecraft.item.crafting.RecipeSerializers;
+import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.storage.loot.functions.LootFunctionManager;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
@@ -23,7 +26,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
+import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -42,6 +45,7 @@ public class QuarryPlus {
         initConfig();
         MinecraftForge.EVENT_BUS.register(this);
         proxy.registerEvents(MinecraftForge.EVENT_BUS);
+        proxy.registerModBus(FMLJavaModLoadingContext.get().getModEventBus());
     }
 
     private void initConfig() {
@@ -53,8 +57,8 @@ public class QuarryPlus {
     }
 
     @SubscribeEvent
-    public void serverStart(FMLServerStartingEvent event) {
-        event.getServer().getResourceManager().addReloadListener(WorkbenchRecipes::onServerReload);
+    public void serverStart(FMLServerAboutToStartEvent event) {
+        event.getServer().getResourceManager().addReloadListener(WorkbenchRecipes.Reload$.MODULE$);
     }
 
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -76,13 +80,23 @@ public class QuarryPlus {
         }
 
         @SubscribeEvent
+        public static void registerContainers(RegistryEvent.Register<ContainerType<?>> event) {
+            JavaConverters.asJavaCollection(Holder.containers()).forEach(event.getRegistry()::register);
+        }
+
+        @SubscribeEvent
+        public static void registerRecipe(RegistryEvent.Register<IRecipeSerializer<?>> event) {
+            event.getRegistry().register(WorkbenchRecipes.Serializer$.MODULE$);
+        }
+
+        @SubscribeEvent
         public static void setup(FMLCommonSetupEvent event) {
             proxy.registerTextures(event);
             PowerManager.configRegister();
             PacketHandler.init();
             EnableCondition serializer = new EnableCondition();
             CraftingHelper.register(new ResourceLocation(serializer.NAME()), serializer);
-            RecipeSerializers.register(WorkbenchRecipes.Serializer$.MODULE$);
+            LootFunctionManager.registerFunction(new IEnchantableTile.DropFunction.Serializer());
         }
 
         @SubscribeEvent
