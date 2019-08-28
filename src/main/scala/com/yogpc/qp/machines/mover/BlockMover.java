@@ -20,24 +20,21 @@ import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.IDisabled;
 import com.yogpc.qp.machines.base.QPBlock;
 import com.yogpc.qp.utils.Holder;
-import javax.annotation.Nullable;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.world.IInteractionObject;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 import scala.Symbol;
@@ -48,29 +45,29 @@ import scala.Symbol;
 public class BlockMover extends Block implements IDisabled /*IDismantleable, IWrenchable*/ {
     public static final Symbol SYMBOL = Symbol.apply("EnchantMover");
     public static final String GUI_ID = QuarryPlus.modID + ":gui_" + QuarryPlus.Names.mover;
-    public final ItemBlock itemBlock;
+    public final BlockItem itemBlock;
 
     public BlockMover() {
         super(Properties.create(Material.IRON).hardnessAndResistance(1.2f));
         setRegistryName(QuarryPlus.modID, QuarryPlus.Names.mover);
-        itemBlock = new ItemBlock(this, new Item.Properties().group(Holder.tab()));
+        itemBlock = new BlockItem(this, new Item.Properties().group(Holder.tab()));
         itemBlock.setRegistryName(QuarryPlus.modID, QuarryPlus.Names.mover);
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public boolean onBlockActivated(IBlockState state, World worldIn, BlockPos pos, EntityPlayer player,
-                                    EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
+    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos,
+                                    PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
         if (InvUtils.isDebugItem(player, hand)) return true;
         if (player.isSneaking()
-            && BuildcraftHelper.isWrench(player, hand, player.getHeldItem(hand), new RayTraceResult(new Vec3d(hitX, hitY, hitZ), side, pos))) {
+            && BuildcraftHelper.isWrench(player, hand, player.getHeldItem(hand), hit)) {
             if (!worldIn.isRemote)
                 QPBlock.dismantle(worldIn, pos, state, false);
             return true;
         }
         if (!player.isSneaking()) {
             if (!worldIn.isRemote) {
-                NetworkHooks.openGui(((EntityPlayerMP) player), new InteractionObject(pos), pos);
+                NetworkHooks.openGui(((ServerPlayerEntity) player), new InteractionObject(pos), pos);
             }
             return true;
         }
@@ -125,7 +122,7 @@ public class BlockMover extends Block implements IDisabled /*IDismantleable, IWr
         return list;
     }*/
 
-    private static class InteractionObject implements IInteractionObject {
+    private static class InteractionObject implements INamedContainerProvider {
         private final BlockPos pos;
 
         public InteractionObject(BlockPos pos) {
@@ -133,29 +130,13 @@ public class BlockMover extends Block implements IDisabled /*IDismantleable, IWr
         }
 
         @Override
-        public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn) {
-            return new ContainerMover(playerInventory, playerIn.getEntityWorld(), pos);
+        public ITextComponent getDisplayName() {
+            return new TranslationTextComponent(TranslationKeys.mover);
         }
 
         @Override
-        public String getGuiID() {
-            return GUI_ID;
-        }
-
-        @Override
-        public ITextComponent getName() {
-            return new TextComponentTranslation(TranslationKeys.mover);
-        }
-
-        @Override
-        public boolean hasCustomName() {
-            return false;
-        }
-
-        @Nullable
-        @Override
-        public ITextComponent getCustomName() {
-            return null;
+        public Container createMenu(int id, PlayerInventory inventory, PlayerEntity player) {
+            return new ContainerMover(id, player, pos);
         }
     }
 }

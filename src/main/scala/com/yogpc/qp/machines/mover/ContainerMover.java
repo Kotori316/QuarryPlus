@@ -27,26 +27,25 @@ import com.yogpc.qp.utils.LoopList;
 import jp.t2v.lab.syntax.MapStreamSyntax;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.IContainerListener;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.InventoryBasic;
-import net.minecraft.inventory.Slot;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.util.IntReferenceHolder;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class ContainerMover extends Container {
-    public final IInventory craftMatrix = new InventoryBasic(new TextComponentString("Matrix"), 2) {
+    public final IInventory craftMatrix = new Inventory(2) {
         @Override
         public void markDirty() {
             super.markDirty();
@@ -54,12 +53,14 @@ public class ContainerMover extends Container {
         }
     };
     private final World worldObj;
-    private final BlockPos pos;
+    public final BlockPos pos;
     private final LoopList<Tuple> list = new LoopList<>();
-    private int avail = 0;
+    private IntReferenceHolder avail = trackInt(IntReferenceHolder.single());
 
-    public ContainerMover(final IInventory player, final World w, BlockPos pos) {
-        this.worldObj = w;
+    public ContainerMover(int id, PlayerEntity player, BlockPos pos) {
+        super(Holder.moverContainerType(), id);
+        PlayerInventory inv = player.inventory;
+        this.worldObj = player.getEntityWorld();
         this.pos = pos;
         int row;
         int col;
@@ -68,14 +69,15 @@ public class ContainerMover extends Container {
 
         for (row = 0; row < 3; ++row)
             for (col = 0; col < 9; ++col)
-                addSlot(new Slot(player, col + row * 9 + 9, 8 + col * 18, 84 + row * 18));
+                addSlot(new Slot(inv, col + row * 9 + 9, 8 + col * 18, 84 + row * 18));
 
         for (col = 0; col < 9; ++col)
-            addSlot(new Slot(player, col, 8 + col * 18, 142));
+            addSlot(new Slot(inv, col, 8 + col * 18, 142));
+        avail.set(0);
     }
 
     @Override
-    public void onContainerClosed(final EntityPlayer playerIn) {
+    public void onContainerClosed(final PlayerEntity playerIn) {
         super.onContainerClosed(playerIn);
         if (!worldObj.isRemote) {
             IntStream.range(0, craftMatrix.getSizeInventory())
@@ -86,18 +88,17 @@ public class ContainerMover extends Container {
     }
 
     @Override
-    public boolean canInteractWith(final EntityPlayer playerIn) {
-        return this.worldObj.getBlockState(pos).getBlock() == Holder.blockMover() && playerIn.getDistanceSqToCenter(pos) <= 64.0D;
+    public boolean canInteractWith(final PlayerEntity playerIn) {
+        return this.worldObj.getBlockState(pos).getBlock() == Holder.blockMover() && playerIn.getDistanceSq(new Vec3d(pos)) <= 64.0D;
     }
 
     @Override
     public void detectAndSendChanges() {
-        super.detectAndSendChanges();
         ItemStack pickaxe = craftMatrix.getStackInSlot(0);
         Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(pickaxe);
         ItemStack enchTile = craftMatrix.getStackInSlot(1);
         if (enchantments.isEmpty() || enchTile.isEmpty()) {
-            avail = 0;
+            avail.set(0);
             list.setList(Collections.emptyList());
         } else {
             int previousSize = list.size();
@@ -110,40 +111,27 @@ public class ContainerMover extends Container {
             } else {
                 list.setList(enchantments.entrySet().stream().map(Tuple::new).collect(Collectors.toCollection(LinkedList::new)));
             }
-            if (avail % (previousSize == 0 ? 1 : previousSize) > list.size()) {
-                avail = 0;
+            if (avail.get() % (previousSize == 0 ? 1 : previousSize) > list.size()) {
+                avail.set(0);
             }
         }
-        for (IContainerListener listener : this.listeners)
-            listener.sendWindowProperty(this, 0, this.avail);
+        super.detectAndSendChanges();
     }
 
-    @Override
-    public void addListener(IContainerListener listener) {
-        super.addListener(listener);
-        listener.sendWindowProperty(this, 0, this.avail);
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public void updateProgressBar(final int i, final int data) {
-        this.avail = data;
-    }
 
     public void setAvail(D d) {
-        avail += d.offset;
+        avail.set(avail.get() + d.offset);
         if (!worldObj.isRemote) {
-            for (IContainerListener listener : this.listeners)
-                listener.sendWindowProperty(this, 0, this.avail);
+            detectAndSendChanges();
         }
     }
 
     public Optional<Enchantment> getEnchantment() {
-        return list.getOptional(avail).map(tuple -> tuple.enchantment);
+        return list.getOptional(avail.get()).map(tuple -> tuple.enchantment);
     }
 
     @Override
-    public ItemStack transferStackInSlot(final EntityPlayer playerIn, final int index) {
+    public ItemStack transferStackInSlot(final PlayerEntity playerIn, final int index) {
         ItemStack src = ItemStack.EMPTY;
         final Slot slot = this.inventorySlots.get(index);
         if (slot != null && slot.getHasStack()) {
@@ -183,32 +171,32 @@ public class ContainerMover extends Container {
     }
 
     public void moveEnchant() {
-        Tuple tuple = list.get(avail);
+        Tuple tuple = list.get(avail.get());
         ItemStack tileItem = craftMatrix.getStackInSlot(1);
         if (tuple == null || tileItem.isEmpty() || !((IEnchantableItem) tileItem.getItem()).canMove(tileItem, tuple.enchantment)) {
             return;
         }
-        NBTTagList list = tileItem.getEnchantmentTagList();
+        ListNBT list = tileItem.getEnchantmentTagList();
         if (/*list == null ||*/ EnchantmentHelper.getEnchantmentLevel(tuple.enchantment, tileItem) == 0) {
             //add new enchantment (Level 1)
             tileItem.addEnchantment(tuple.enchantment, 1);
             if (tuple.level == 1) {
-                this.list.remove(avail);
+                this.list.remove(avail.get());
             } else {
-                this.list.set(avail, tuple.levelDown());
+                this.list.set(avail.get(), tuple.levelDown());
             }
             downLevel(tuple.enchantment, craftMatrix.getStackInSlot(0));
         } else {
             for (int i = 0; i < list.size(); i++) {
-                NBTTagCompound nbt = list.getCompound(i);
+                CompoundNBT nbt = list.getCompound(i);
                 if (ForgeRegistries.ENCHANTMENTS.getValue(new ResourceLocation(nbt.getString("id"))) == tuple.enchantment) {
                     short l = nbt.getShort("lvl");
                     if (l < tuple.enchantment.getMaxLevel()) {
                         nbt.putShort("lvl", (short) (l + 1));
                         if (tuple.level == 1) {
-                            this.list.remove(avail);
+                            this.list.remove(avail.get());
                         } else {
-                            this.list.set(avail, tuple.levelDown());
+                            this.list.set(avail.get(), tuple.levelDown());
                         }
                         downLevel(tuple.enchantment, craftMatrix.getStackInSlot(0));
                     }
@@ -219,15 +207,15 @@ public class ContainerMover extends Container {
     }
 
     private static void downLevel(Enchantment enchantment, ItemStack stack) {
-        NBTTagList list = stack.getEnchantmentTagList();
+        ListNBT list = stack.getEnchantmentTagList();
         /*if (list != null) */
         {
             for (int i = 0; i < list.size(); i++) {
-                NBTTagCompound nbt = list.getCompound(i);
+                CompoundNBT nbt = list.getCompound(i);
                 if (ForgeRegistries.ENCHANTMENTS.getValue(new ResourceLocation(nbt.getString("id"))) == enchantment) {
                     short l = nbt.getShort("lvl");
                     if (l == 1) {
-                        list.removeTag(i);
+                        list.remove(i);
                     } else {
                         nbt.putShort("lvl", (short) (l - 1));
                     }
@@ -235,7 +223,7 @@ public class ContainerMover extends Container {
                 }
             }
             if (list.isEmpty()) {
-                NBTTagCompound compound = stack.getTag();
+                CompoundNBT compound = stack.getTag();
                 if (compound != null) {
                     compound.remove("ench");
                     if (compound.isEmpty())
