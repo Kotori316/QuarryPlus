@@ -1,21 +1,22 @@
-# QuarryPlus for 1.13.2
+# QuarryPlus for 1.14.4
 ===========
 
-Now, this project is WIP.
+Now, this project is WIP. See commit page for details.
 
 Finished Work
 * Marker
 * Workbench
 * ExpPump
 * EnchantMover
-* Miningwell
-* PlainPipe
+* ~~Miningwell~~
+* ~~PlainPipe~~
 * QuarryFrame
-* Quarry
-* PumpPlus
-* Replacer
+* ~~Quarry~~
+* ~~Solid Fuel Quarry~~
+* ~~PumpPlus~~
+* ~~Replacer~~
 * Dummy Block
 * Book Mover
 * Spawner Controller
-* Advanced Pump
-* Chunk Destroyer
+* ~~Advanced Pump~~
+* ~~Chunk Destroyer~~

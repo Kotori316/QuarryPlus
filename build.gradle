@@ -18,7 +18,7 @@ apply plugin: 'eclipse'
 
 version = getProperty("modVersion")
 group = 'com.kotori316' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'AdditionalEnchantedMiner-1.14.2'
+archivesBaseName = 'AdditionalEnchantedMiner-1.14.4'
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 compileScala.sourceCompatibility = compileScala.targetCompatibility = '1.8'
@@ -170,16 +170,18 @@ test {
     useJUnitPlatform()
 }
 
-task signJar2() << {
-    ant.signjar(
-            jar: jar.archivePath,
-            alias: project.hasProperty('keyStoreAlias') ? project.getProperty('keyStoreAlias') : "",
-            keystore: project.hasProperty('keyStore') ? project.getProperty("keyStore") : "",
-            storepass: project.hasProperty('keyStorePass') ? project.getProperty('keyStorePass') : "",
-            sigalg: "SHA1withRSA",
-            digestalg: "SHA-256",
-            tsaurl: "http://timestamp.digicert.com"
-    )
+task signJar2() {
+    doLast {
+        ant.signjar(
+                jar: jar.archivePath,
+                alias: project.hasProperty('keyStoreAlias') ? project.getProperty('keyStoreAlias') : "",
+                keystore: project.hasProperty('keyStore') ? project.getProperty("keyStore") : "",
+                storepass: project.hasProperty('keyStorePass') ? project.getProperty('keyStorePass') : "",
+                sigalg: "SHA1withRSA",
+                digestalg: "SHA-256",
+                tsaurl: "http://timestamp.digicert.com"
+        )
+    }
 }
 
 // Runs this task automatically when build is ran.
