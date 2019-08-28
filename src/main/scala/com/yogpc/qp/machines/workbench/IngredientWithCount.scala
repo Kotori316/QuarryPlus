@@ -4,13 +4,13 @@ import com.google.gson.{JsonElement, JsonObject}
 import net.minecraft.item.ItemStack
 import net.minecraft.item.crafting.Ingredient
 import net.minecraft.network.PacketBuffer
-import net.minecraft.util.JsonUtils
+import net.minecraft.util.JSONUtils
 import net.minecraftforge.common.crafting.CraftingHelper
 
 case class IngredientWithCount(ingredient: Ingredient, count: Int) {
 
   def this(json: JsonObject) = {
-    this(CraftingHelper.getIngredient(json), JsonUtils.getInt(json, "count"))
+    this(CraftingHelper.getIngredient(json), JSONUtils.getInt(json, "count"))
   }
 
   def this(stack: ItemStack) = {

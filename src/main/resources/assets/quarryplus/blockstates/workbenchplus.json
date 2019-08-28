@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "quarryplus:workbenchplus",
+    "model": "quarryplus:block/workbenchplus",
     "textures": {
       "all": "quarryplus:blocks/workbench"
     },

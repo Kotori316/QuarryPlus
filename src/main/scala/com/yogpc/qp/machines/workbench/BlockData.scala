@@ -3,9 +3,9 @@ package com.yogpc.qp.machines.workbench
 import java.util.Comparator
 
 import com.yogpc.qp._
-import net.minecraft.block.state.IBlockState
+import net.minecraft.block.BlockState
 import net.minecraft.client.resources.I18n
-import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.nbt.CompoundNBT
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 import net.minecraftforge.registries.ForgeRegistries
@@ -15,7 +15,7 @@ object BlockData {
   //  final val Meta_NBT = "meta"
   final val BlockData_NBT = "blockdata"
 
-  def read(nbt: NBTTagCompound): BlockData = {
+  def read(nbt: CompoundNBT): BlockData = {
     new BlockData(nbt.getString(Name_NBT))
   }
 
@@ -31,8 +31,8 @@ object BlockData {
 
   val comparator: Comparator[BlockData] = Ordering.by((b: BlockData) => b.name)
 
-  implicit val dataToNbt: NBTWrapper[BlockData, NBTTagCompound] = data => {
-    val nbt = new NBTTagCompound
+  implicit val dataToNbt: NBTWrapper[BlockData, CompoundNBT] = data => {
+    val nbt = new CompoundNBT
     nbt.putString(BlockData.Name_NBT, data.name.toString)
     nbt
   }
@@ -44,7 +44,7 @@ case class BlockData(name: ResourceLocation) extends Ordered[BlockData] {
     this(new ResourceLocation(resourceName))
   }
 
-  def this(state: IBlockState) {
+  def this(state: BlockState) {
     this(ForgeRegistries.BLOCKS.getKey(state.getBlock))
   }
 
@@ -52,10 +52,10 @@ case class BlockData(name: ResourceLocation) extends Ordered[BlockData] {
 
   @OnlyIn(Dist.CLIENT)
   def getLocalizedName: String = {
-//    val sb = new StringBuilder
-//    sb.append(name)
-//    sb.append("  ").append(Option(ForgeRegistries.BLOCKS.getValue(name)).map(_.getTranslationKey).fold("")(s => I18n.format(s)))
-//    sb.toString
+    //    val sb = new StringBuilder
+    //    sb.append(name)
+    //    sb.append("  ").append(Option(ForgeRegistries.BLOCKS.getValue(name)).map(_.getTranslationKey).fold("")(s => I18n.format(s)))
+    //    sb.toString
     Option(ForgeRegistries.BLOCKS.getValue(name)).map(_.getTranslationKey).fold("")(s => I18n.format(s))
   }
 

@@ -27,20 +27,20 @@ import com.yogpc.qp.machines.base.IDebugSender;
 import com.yogpc.qp.utils.Holder;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.ItemStackHelper;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.world.IInteractionObject;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
@@ -52,7 +52,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import scala.Symbol;
 
 //@net.minecraftforge.fml.common.Optional.Interface(iface = "cofh.api.tileentity.IInventoryConnection", modid = QuarryPlus.Optionals.COFH_modID)
-public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, IInteractionObject {
+public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, INamedContainerProvider {
     public static final String GUI_ID = QuarryPlus.modID + ":gui_" + QuarryPlus.Names.workbench;
     public static final Symbol SYMBOL = Symbol.apply("WorkbenchPlus");
     public final NonNullList<ItemStack> inventory = NonNullList.withSize(27, ItemStack.EMPTY);
@@ -100,10 +100,10 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
     }
 
     @Override
-    public void read(NBTTagCompound nbt) {
+    public void read(CompoundNBT nbt) {
         super.read(nbt);
-        NBTTagList list = nbt.getList("Items", Constants.NBT.TAG_COMPOUND);
-        list.stream().map(b -> (NBTTagCompound) b).forEach(nbtTagCompound -> {
+        ListNBT list = nbt.getList("Items", Constants.NBT.TAG_COMPOUND);
+        list.stream().map(b -> (CompoundNBT) b).forEach(nbtTagCompound -> {
             int j = nbtTagCompound.getByte("Slot") & 255;
             ItemStack stack = ItemStack.read(nbtTagCompound);
             stack.setCount(nbtTagCompound.getInt("Count"));
@@ -113,16 +113,16 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
     }
 
     @Override
-    public NBTTagCompound write(NBTTagCompound nbt) {
-        NBTTagList list = new NBTTagList();
+    public CompoundNBT write(CompoundNBT nbt) {
+        ListNBT list = new ListNBT();
         for (int i = 0; i < inventory.size(); i++) {
             ItemStack stack = inventory.get(i);
-            NBTTagCompound nbttagcompound = new NBTTagCompound();
-            nbttagcompound.putByte("Slot", (byte) i);
-            stack.write(nbttagcompound);
-            nbttagcompound.remove("Count");
-            nbttagcompound.putInt("Count", stack.getCount());
-            list.add(nbttagcompound);
+            CompoundNBT compoundNBT = new CompoundNBT();
+            compoundNBT.putByte("Slot", (byte) i);
+            stack.write(compoundNBT);
+            compoundNBT.remove("Count");
+            compoundNBT.putInt("Count", stack.getCount());
+            list.add(compoundNBT);
         }
         nbt.put("Items", list);
         return super.write(nbt);
@@ -174,8 +174,8 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
     }
 
     @Override
-    public boolean isUsableByPlayer(EntityPlayer player) {
-        return world != null && world.getTileEntity(getPos()) == this && player.getDistanceSqToCenter(getPos()) <= 64;
+    public boolean isUsableByPlayer(PlayerEntity player) {
+        return world != null && world.getTileEntity(getPos()) == this && player.getDistanceSq(pos.getX(), pos.getY(), pos.getZ()) <= 64;
     }
 
     @Override
@@ -200,47 +200,14 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
     }
 
     @Override
-    public int getField(int id) {
-        switch (id) {
-            case 0:
-                return getRecipeIndex();
-            case 1:
-                return 0;//(int) getStoredEnergy();
-            case 2:
-                return workContinue ? 1 : 0;
-        }
-        return 0;
-    }
-
-    @Override
-    public void setField(int id, int value) {
-        switch (id) {
-            case 0:
-                setCurrentRecipeIndex(value);
-                break;
-            case 1:
-//                setStoredEnergy(value);
-                break;
-            case 2:
-                workContinue = value == 1;
-                break;
-        }
-    }
-
-    @Override
-    public int getFieldCount() {
-        return 3;
-    }
-
-    @Override
     public void clear() {
         inventory.clear();
     }
 
     @Override
-    public List<TextComponentString> getDebugMessages() {
-        return Arrays.asList(new TextComponentString(currentRecipe.toString()),
-            new TextComponentString("Work mode : " + (workContinue ? "Continue" : "Only once")));
+    public List<StringTextComponent> getDebugMessages() {
+        return Arrays.asList(new StringTextComponent(currentRecipe.toString()),
+            new StringTextComponent("Work mode : " + (workContinue ? "Continue" : "Only once")));
     }
 
     @Override
@@ -250,7 +217,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
 
     @Nonnull
     @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable EnumFacing side) {
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
         if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
             return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.orEmpty(cap, LazyOptional.of(() -> itemHandler));
         }
@@ -284,22 +251,14 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
 //        return ConnectionType.FORCE;
 //    }
 
-    /**
-     * Get the name of this object. For players this returns their username
-     */
+    @Override
+    public Container createMenu(int p_createMenu_1_, PlayerInventory p_createMenu_2_, PlayerEntity p_createMenu_3_) {
+        return new ContainerWorkbench(p_createMenu_1_, p_createMenu_3_, pos);
+    }
+
     @Override
     public ITextComponent getName() {
-        return new TextComponentTranslation(getDebugName());
-    }
-
-    @Override
-    public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn) {
-        return new ContainerWorkbench(playerIn, this);
-    }
-
-    @Override
-    public String getGuiID() {
-        return GUI_ID;
+        return new TranslationTextComponent(getDebugName());
     }
 
     private class ItemHandler implements IItemHandlerModifiable {

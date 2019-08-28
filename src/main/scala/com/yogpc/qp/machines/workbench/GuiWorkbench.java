@@ -1,28 +1,29 @@
 package com.yogpc.qp.machines.workbench;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.TranslationKeys;
 import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.fonts.Font;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.renderer.model.ModelManager;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
 
 @OnlyIn(Dist.CLIENT)
-public class GuiWorkbench extends GuiContainer {
+public class GuiWorkbench extends ContainerScreen<ContainerWorkbench> {
     private static final class MyFontRenderer extends FontRenderer {
         private FontRenderer p;
 
@@ -66,7 +67,7 @@ public class GuiWorkbench extends GuiContainer {
         boolean t = true;
 
         @Override
-        public void renderItemAndEffectIntoGUI(@Nullable EntityLivingBase livingBase, ItemStack stack, int xPosition, int yPosition) {
+        public void renderItemAndEffectIntoGUI(@Nullable LivingEntity livingBase, ItemStack stack, int xPosition, int yPosition) {
             if (t)
                 Minecraft.getInstance().getItemRenderer().renderItemAndEffectIntoGUI(livingBase, stack, xPosition, yPosition);
             else
@@ -90,38 +91,38 @@ public class GuiWorkbench extends GuiContainer {
     private static final ResourceLocation gui = new ResourceLocation(QuarryPlus.modID, "textures/gui/workbench.png");
     private final TileWorkbench tile;
 
-    public GuiWorkbench(EntityPlayer player, final TileWorkbench tw) {
-        super(new ContainerWorkbench(player, tw));
+    public GuiWorkbench(ContainerWorkbench workbench, PlayerInventory inv, ITextComponent component) {
+        super(workbench, inv, component);
         this.xSize = 176;
         this.ySize = 222;
-        this.tile = tw;
+        this.tile = workbench.tile;
     }
 
     @Override
     protected void drawGuiContainerForegroundLayer(final int mouseX, final int mouseY) {
-        this.fontRenderer.drawString(I18n.format(TranslationKeys.workbench), 8, 6, 0x404040);
-        this.fontRenderer.drawString(I18n.format(TranslationKeys.CONTAINER_INVENTORY), 8, this.ySize - 96 + 2, 0x404040);
+        this.font.drawString(I18n.format(TranslationKeys.workbench), 8, 6, 0x404040);
+        this.font.drawString(I18n.format(TranslationKeys.CONTAINER_INVENTORY), 8, this.ySize - 96 + 2, 0x404040);
     }
 
     @Override
     protected void drawGuiContainerBackgroundLayer(final float partialTicks, final int mouseX, final int mouseY) {
         GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.getTextureManager().bindTexture(gui);
+        this.getMinecraft().getTextureManager().bindTexture(gui);
         final int xf = this.width - this.xSize >> 1;
         final int yf = this.height - this.ySize >> 1;
-        drawTexturedModalRect(xf, yf, 0, 0, this.xSize, this.ySize);
-        if (tile.isWorking()) {
-            drawTexturedModalRect(xf + 8, yf + 78, 0, this.ySize, this.tile.getProgressScaled(160), 4);
+        blit(xf, yf, 0, 0, this.xSize, this.ySize);
+        if (container.isWorking.get() == 1) {
+            blit(xf + 8, yf + 78, 0, this.ySize, container.progress.get(), 4);
             int cur_recipe = 27 + tile.getRecipeIndex();
-            int i = (tile.workContinue ? 16 : 0);
-            drawTexturedModalRect(xf + 8 + cur_recipe % 9 * 18, yf + 90 + (cur_recipe / 9 - 3) * 18, this.xSize + i, 0, 16, 16);
+            int i = (container.workContinue.get() == 1 ? 16 : 0);
+            blit(xf + 8 + cur_recipe % 9 * 18, yf + 90 + (cur_recipe / 9 - 3) * 18, this.xSize + i, 0, 16, 16);
         }
     }
 
     @Override
     public void render(final int mouseX, final int mouseY, final float partialTicks) {
         handlePre();
-        this.drawDefaultBackground();
+        this.renderBackground();
         super.render(mouseX, mouseY, partialTicks);
         this.renderHoveredToolTip(mouseX, mouseY);
         handlePost();
@@ -131,13 +132,13 @@ public class GuiWorkbench extends GuiContainer {
     private ItemRenderer preItem;
 
     public void handlePre() {
-        preItem = itemRender;
-        itemRender = myItem;
+        preItem = itemRenderer;
+        itemRenderer = myItem;
     }
 
     public void handlePost() {
         if (preItem != null) {
-            itemRender = preItem;
+            itemRenderer = preItem;
             preItem = null;
         }
     }

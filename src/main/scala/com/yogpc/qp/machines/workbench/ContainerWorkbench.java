@@ -1,47 +1,44 @@
 package com.yogpc.qp.machines.workbench;
 
-import java.util.Objects;
-
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.base.SlotUnlimited;
 import com.yogpc.qp.machines.base.SlotWorkbench;
-import com.yogpc.qp.packet.PacketHandler;
-import com.yogpc.qp.packet.TileMessage;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.ClickType;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.IContainerListener;
-import net.minecraft.inventory.Slot;
+import com.yogpc.qp.utils.Holder;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.ClickType;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.util.IntReferenceHolder;
+import net.minecraft.util.math.BlockPos;
 
 public class ContainerWorkbench extends Container {
 
-    private final TileWorkbench tile;
-    private final EntityPlayer player;
+    final TileWorkbench tile;
     private static final int sourceSlot = 27;
     private static final int recipeSlot = 18;
     private static final int playerSlot = 36;
+    final IntReferenceHolder progress = this.trackInt(IntReferenceHolder.single());
+    final IntReferenceHolder isWorking = this.trackInt(IntReferenceHolder.single());
+    final IntReferenceHolder workContinue = this.trackInt(IntReferenceHolder.single());
 
-    public ContainerWorkbench(final EntityPlayer player, final TileWorkbench tw) {
-        this.tile = tw;
-        this.player = player;
+    public ContainerWorkbench(int id, final PlayerEntity player, BlockPos pos) {
+        super(Holder.workbenchContainerType(), id);
+        this.tile = ((TileWorkbench) player.getEntityWorld().getTileEntity(pos));
         int row;
         int col;
 
         //0-26
         for (row = 0; row < 3; ++row)
             for (col = 0; col < 9; ++col)
-                addSlot(new SlotUnlimited(tw, col + row * 9, 8 + col * 18, 18 + row * 18));
+                addSlot(new SlotUnlimited(tile, col + row * 9, 8 + col * 18, 18 + row * 18));
 
         //27-44
         for (row = 0; row < 2; ++row)
             for (col = 0; col < 9; ++col)
-                addSlot(new SlotWorkbench(tw, col + row * 9 + sourceSlot, 8 + col * 18, 90 + row * 18));
+                addSlot(new SlotWorkbench(tile, col + row * 9 + sourceSlot, 8 + col * 18, 90 + row * 18));
 
         //45-62
         for (row = 0; row < 3; ++row)
@@ -51,10 +48,16 @@ public class ContainerWorkbench extends Container {
         //63-71
         for (col = 0; col < 9; ++col)
             addSlot(new Slot(player.inventory, col, 8 + col * 18, 198));
+
+        if (!player.world.isRemote && this.tile != null) {
+            progress.set(this.tile.getProgressScaled(160));
+            isWorking.set(this.tile.isWorking() ? 1 : 0);
+            workContinue.set(this.tile.workContinue ? 1 : 0);
+        }
     }
 
     @Override
-    public boolean canInteractWith(final EntityPlayer playerIn) {
+    public boolean canInteractWith(final PlayerEntity playerIn) {
         return this.tile.isUsableByPlayer(playerIn);
     }
 
@@ -62,7 +65,7 @@ public class ContainerWorkbench extends Container {
      * @param index The index of clicked slot, the source.
      */
     @Override
-    public ItemStack transferStackInSlot(final EntityPlayer playerIn, final int index) {
+    public ItemStack transferStackInSlot(final PlayerEntity playerIn, final int index) {
         if (sourceSlot <= index && index < sourceSlot + recipeSlot)
             return ItemStack.EMPTY;
         ItemStack src = ItemStack.EMPTY;
@@ -85,7 +88,7 @@ public class ContainerWorkbench extends Container {
                             destinationSlot.putStack(remain.split(maxSize));
                         } else {
                             ItemStack dest = destinationSlot.getStack();
-                            if (areStackable(dest, remain)) {
+                            if (areStack_Able(dest, remain)) {
                                 int newSize = dest.getCount() + remain.getCount();
                                 int maxSize = Math.min(slot.getSlotStackLimit(), remain.getMaxStackSize());
 
@@ -118,55 +121,14 @@ public class ContainerWorkbench extends Container {
         return src;
     }
 
-    /**
-     * Called on server side. (!world.isRemote must be true.)
-     *
-     * @param listener player?
-     */
-    @Override
-    public void addListener(IContainerListener listener) {
-        if (this.listeners.contains(listener)) {
-            throw new IllegalArgumentException("Listener already listening");
-        } else {
-            this.listeners.add(listener);
-            // This method send byte as stack count.
-            //listener.sendAllContents(this, this.getInventory());
-            if (listener instanceof EntityPlayerMP) {
-                EntityPlayerMP playerMP = (EntityPlayerMP) listener;
-                PacketHandler.sendToClient(TileMessage.create(tile), playerMP.getServerWorld());
-            }
-            this.detectAndSendChanges();
-        }
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public void updateProgressBar(int id, int data) {
-        tile.setField(id, data);
-    }
-
     @Override
     public void detectAndSendChanges() {
-        //super.detectAndSendChanges();
-        for (int i = sourceSlot + recipeSlot; i < this.inventorySlots.size(); ++i) {
-            ItemStack itemStack = this.inventorySlots.get(i).getStack();
-            ItemStack itemStack1 = this.inventoryItemStacks.get(i);
-
-            if (!ItemStack.areItemStacksEqual(itemStack1, itemStack)) {
-                boolean clientStackChanged = !ItemStack.areItemStacksEqual(itemStack1, itemStack);
-                itemStack1 = itemStack.isEmpty() ? ItemStack.EMPTY : itemStack.copy();
-                this.inventoryItemStacks.set(i, itemStack1);
-
-                if (clientStackChanged)
-                    for (IContainerListener listener : this.listeners) {
-                        listener.sendSlotContents(this, i, itemStack1);
-                    }
-            }
+        if (this.tile != null) {
+            progress.set(this.tile.getProgressScaled(160));
+            isWorking.set(this.tile.isWorking() ? 1 : 0);
+            workContinue.set(this.tile.workContinue ? 1 : 0);
         }
-        if (!Objects.requireNonNull(tile.getWorld()).isRemote)
-            PacketHandler.sendToClient(TileMessage.create(tile), tile.getWorld());
-
-        listeners.forEach(listener -> listener.sendAllWindowProperties(this, tile));
+        super.detectAndSendChanges();
     }
 
     /**
@@ -177,7 +139,7 @@ public class ContainerWorkbench extends Container {
      * @return ???
      */
     @Override
-    public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player) {
+    public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, PlayerEntity player) {
         if (sourceSlot <= slotId && slotId < sourceSlot + recipeSlot && clickTypeIn == ClickType.PICKUP) {
             int index = slotId - sourceSlot;
             if (index < tile.recipesList.size()) {
@@ -194,14 +156,14 @@ public class ContainerWorkbench extends Container {
             return ItemStack.EMPTY;
         } else if (0 <= slotId && slotId < sourceSlot && clickTypeIn == ClickType.PICKUP) {
 
-            InventoryPlayer inventoryplayer = player.inventory;
+            PlayerInventory playerInventory = player.inventory;
             ItemStack itemstack = ItemStack.EMPTY;
 
             Slot slot = this.inventorySlots.get(slotId);
 
             if (slot != null) {
                 ItemStack slotStack = slot.getStack();
-                ItemStack playerStack = inventoryplayer.getItemStack();
+                ItemStack playerStack = playerInventory.getItemStack();
 
                 if (!slotStack.isEmpty()) {
                     itemstack = slotStack.copy();
@@ -226,16 +188,16 @@ public class ContainerWorkbench extends Container {
                         } else {
                             k2 = Math.min((slotStack.getCount() + 1) / 2, slotStack.getMaxStackSize());
                         }
-                        inventoryplayer.setItemStack(slot.decrStackSize(k2));
+                        playerInventory.setItemStack(slot.decrStackSize(k2));
 
                         if (slotStack.isEmpty()) {
                             slot.putStack(ItemStack.EMPTY);
                         }
 
-                        slot.onTake(player, inventoryplayer.getItemStack());
+                        slot.onTake(player, playerInventory.getItemStack());
                     } else {
                         //put TO workbench.
-                        if (areStackable(slotStack, playerStack)) {
+                        if (areStack_Able(slotStack, playerStack)) {
                             int j2 = dragType == 0 ? playerStack.getCount() : 1;
 
                             playerStack.shrink(j2);
@@ -245,7 +207,7 @@ public class ContainerWorkbench extends Container {
                         /*else if (playerStack.getCount() <= slot.getItemStackLimit(playerStack)) {
 
                             slot.putStack(playerStack);
-                            inventoryplayer.setItemStack(slotStack);
+                            playerInventory.setItemStack(slotStack);
                         }*/
                     }
                 }
@@ -263,7 +225,7 @@ public class ContainerWorkbench extends Container {
             Slot slot = this.inventorySlots.get(i);
             ItemStack itemstack = slot.getStack();
 
-            if (!itemstack.isEmpty() && areStackable(stack, itemstack)) {
+            if (!itemstack.isEmpty() && areStack_Able(stack, itemstack)) {
                 int j = itemstack.getCount() + stack.getCount();
                 int maxSize = slot.getSlotStackLimit();// ignore limit of stack. Math.min(slot.getSlotStackLimit(), stack.getMaxStackSize());
 
@@ -304,7 +266,7 @@ public class ContainerWorkbench extends Container {
         return flag;
     }
 
-    private static boolean areStackable(ItemStack stack1, ItemStack stack2) {
+    private static boolean areStack_Able(ItemStack stack1, ItemStack stack2) {
         return ItemStack.areItemsEqual(stack1, stack2) && ItemStack.areItemStackTagsEqual(stack1, stack2);
     }
 }

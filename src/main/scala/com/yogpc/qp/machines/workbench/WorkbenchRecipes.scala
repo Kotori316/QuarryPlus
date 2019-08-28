@@ -1,6 +1,8 @@
 package com.yogpc.qp.machines.workbench
 
 import java.nio.charset.StandardCharsets
+import java.util
+import java.util.concurrent.{CompletableFuture, Executor}
 import java.util.{Collections, Comparator}
 
 import cats._
@@ -10,14 +12,16 @@ import com.google.gson._
 import com.yogpc.qp.machines.base.APowerTile
 import com.yogpc.qp.utils.ItemElement
 import com.yogpc.qp.{QuarryPlus, _}
-import net.minecraft.inventory.IInventory
-import net.minecraft.item.crafting.{IRecipeHidden, IRecipeSerializer}
+import net.minecraft.client.resources.JsonReloadListener
+import net.minecraft.inventory.CraftingInventory
+import net.minecraft.item.crafting.{IRecipeSerializer, IRecipeType, SpecialRecipe}
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.network.PacketBuffer
-import net.minecraft.resources.{IResource, IResourceManager}
-import net.minecraft.util.{JsonUtils, ResourceLocation}
+import net.minecraft.profiler.IProfiler
+import net.minecraft.resources.{IFutureReloadListener, IResource, IResourceManager}
+import net.minecraft.util.{JSONUtils, ResourceLocation}
 import net.minecraft.world.World
-import net.minecraftforge.common.crafting.{CraftingHelper, RecipeType}
+import net.minecraftforge.common.crafting.CraftingHelper
 import net.minecraftforge.fml.server.ServerLifecycleHooks
 import org.apache.commons.io.IOUtils
 
@@ -25,7 +29,7 @@ import scala.collection.JavaConverters._
 import scala.collection.mutable
 
 abstract sealed class WorkbenchRecipes(val location: ResourceLocation, val output: ItemElement, val energy: Long, val showInJEI: Boolean = true)
-  extends IRecipeHidden(location) with Ordered[WorkbenchRecipes] {
+  extends SpecialRecipe(location) with Ordered[WorkbenchRecipes] {
   val microEnergy = energy
   val size: Int
 
@@ -52,12 +56,12 @@ abstract sealed class WorkbenchRecipes(val location: ResourceLocation, val outpu
 
   override def compare(that: WorkbenchRecipes) = WorkbenchRecipes.recipeOrdering.compare(this, that)
 
-  override def matches(inv: IInventory, worldIn: World): Boolean = {
+  override def matches(inv: CraftingInventory, worldIn: World) = {
     val inputInv = Range(0, inv.getSizeInventory).map(inv.getStackInSlot)
     hasContent && inputs.forall(in => inputInv.exists(invStack => in.exists(_.matches(invStack))))
   }
 
-  override def getCraftingResult(inv: IInventory) = getOutput
+  override def getCraftingResult(inv: CraftingInventory) = getOutput
 
   override def canFit(width: Int, height: Int) = true
 
@@ -93,11 +97,12 @@ object WorkbenchRecipes {
     Ordering.by((a: WorkbenchRecipes) => a.energy) thenComparing Ordering.by((a: WorkbenchRecipes) => Item.getIdFromItem(a.output.itemDamage.item))
 
   val recipeLocation = new ResourceLocation(QuarryPlus.modID, "workbench_recipe")
-  val recipeType = RecipeType.get(recipeLocation, classOf[WorkbenchRecipes])
+  val recipeType = IRecipeType.register[WorkbenchRecipes](recipeLocation.toString)
   private[this] final val conditionMessage = "Condition is false"
 
   def recipes: Map[ResourceLocation, WorkbenchRecipes] = {
-    Option(ServerLifecycleHooks.getCurrentServer).map(_.getRecipeManager.getRecipes(recipeType).asScala.map(r => (r.location, r)).toMap).getOrElse(Map.empty) ++ recipes_internal
+    Option(ServerLifecycleHooks.getCurrentServer).map(_.getRecipeManager.getRecipes().asScala
+      .collect { case r: WorkbenchRecipes => (r.location, r) }.toMap).getOrElse(Map.empty) ++ recipes_internal
   }
 
   def recipeSize: Int = recipes.size
@@ -145,7 +150,7 @@ object WorkbenchRecipes {
       .withApply(readEx => Left(readEx.toString))
       .andFinally(stream.close()) {
         val st = IOUtils.toString(stream, StandardCharsets.UTF_8)
-        Right(JsonUtils.fromJson(gson, st, classOf[JsonObject]))
+        Right(JSONUtils.fromJson(gson, st, classOf[JsonObject]))
       }
   }
 
@@ -157,21 +162,21 @@ object WorkbenchRecipes {
       override def product[A, B](fa: EOR[A], fb: EOR[B]): EOR[(A, B)] = fa product fb
     }
     val cond: EOR[Unit] = Validated.condNel(CraftingHelper.processConditions(json, "conditions"), (), conditionMessage)
-    val recipeType: EOR[Unit] = Validated.condNel(JsonUtils.getString(json, "type") == recipeLocation.toString, (), "Not a workbench recipe")
-    val energy: EOR[Double] = Validated.catchNonFatal(JsonUtils.getString(json, "energy", "1000").toDouble)
+    val recipeType: EOR[Unit] = Validated.condNel(JSONUtils.getString(json, "type") == recipeLocation.toString, (), "Not a workbench recipe")
+    val energy: EOR[Double] = Validated.catchNonFatal(JSONUtils.getString(json, "energy", "1000").toDouble)
       .leftMap(e => NonEmptyList.of(e.toString))
       .andThen(d => Validated.condNel(d > 0, d * APowerTile.MicroJtoMJ, "Energy must be over than 0"))
-    val item: EOR[ItemStack] = Validated.catchNonFatal(CraftingHelper.getItemStack(JsonUtils.getJsonObject(json, "result"), true))
+    val item: EOR[ItemStack] = Validated.catchNonFatal(CraftingHelper.getItemStack(JSONUtils.getJsonObject(json, "result"), true))
       .leftMap {
         case jsonEx: JsonParseException => NonEmptyList.of(jsonEx.getMessage)
         case ex => NonEmptyList.of(ex.toString)
       }
       .andThen(i => Validated.condNel(!i.isEmpty, i, "Result item is empty"))
-    val seq: EOR[Seq[Seq[IngredientWithCount]]] = Validated.catchNonFatal(JsonUtils.getJsonArray(json, "ingredients").asScala.map(IngredientWithCount.getSeq).toSeq)
+    val seq: EOR[Seq[Seq[IngredientWithCount]]] = Validated.catchNonFatal(JSONUtils.getJsonArray(json, "ingredients").asScala.map(IngredientWithCount.getSeq).toSeq)
       .leftMap(e => NonEmptyList.of(e.toString))
     val value = (cond, recipeType, energy, item, seq).mapN { case (_, _, e, stack, recipe) =>
-      val showInJei = JsonUtils.getBoolean(json, "showInJEI", true)
-      val id = JsonUtils.getString(json, "id", "").some.filter(_.nonEmpty).map(new ResourceLocation(_)).getOrElse(location)
+      val showInJei = JSONUtils.getBoolean(json, "showInJEI", true)
+      val id = JSONUtils.getString(json, "id", "").some.filter(_.nonEmpty).map(new ResourceLocation(_)).getOrElse(location)
       new IngredientRecipe(id, stack, e.toLong, showInJei, recipe)
     }
     value.leftMap(_.mkString_(", ")).toEither
@@ -230,12 +235,34 @@ object WorkbenchRecipes {
       }
     }
 
-    override def getName = recipeLocation
+    override def setRegistryName(name: ResourceLocation) = throw new UnsupportedOperationException("Changing registry name is not allowed.")
+
+    override def getRegistryName = recipeLocation
+
+    override def getRegistryType = classOf[IRecipeSerializer[_]]
   }
 
-  def onServerReload(resourceManager: IResourceManager): Unit = {
-    recipes_internal.clear()
-    registerJsonRecipe(resourceManager)
-    QuarryPlus.LOGGER.debug("Recipe loaded.")
+  object Reload extends JsonReloadListener(new GsonBuilder().setPrettyPrinting().disableHtmlEscaping.create, QuarryPlus.modID + "/workbench") {
+    override def apply(splashList: util.Map[ResourceLocation, JsonObject], resourceManagerIn: IResourceManager, profilerIn: IProfiler): Unit = {
+      recipes_internal.clear()
+
+      for ((location, jsonObject) <- splashList.asScala) {
+        parse(jsonObject, location) match {
+          case Left(value) if value == conditionMessage =>
+          case Left(value) => QuarryPlus.LOGGER.error(s"Error in loading $location, $value")
+          case Right(r) => recipes_internal.put(r.location, r)
+        }
+      }
+
+      QuarryPlus.LOGGER.debug("Recipe loaded.")
+    }
   }
+
+  def onServerReload(stage: IFutureReloadListener.IStage, resourceManager: IResourceManager, preparationsProfiler: IProfiler,
+                     reloadProfiler: IProfiler, backgroundExecutor: Executor, gameExecutor: Executor): CompletableFuture[Void] =
+    stage.markCompleteAwaitingOthers(net.minecraft.util.Unit.INSTANCE).thenRunAsync(() => {
+
+      registerJsonRecipe(resourceManager)
+
+    }, backgroundExecutor)
 }
