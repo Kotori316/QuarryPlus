@@ -4,7 +4,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.yogpc.qp.QuarryPlus;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -15,11 +15,11 @@ import net.minecraftforge.fml.network.NetworkEvent;
  * To both client and server.
  */
 public class TileMessage implements IMessage<TileMessage> {
-    private NBTTagCompound compound;
+    private CompoundNBT compound;
 
     public static TileMessage create(TileEntity entity) {
         TileMessage message = new TileMessage();
-        message.compound = entity.write(new NBTTagCompound());
+        message.compound = entity.write(new CompoundNBT());
         return message;
     }
 
