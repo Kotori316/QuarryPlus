@@ -13,8 +13,9 @@
 
 package com.yogpc.qp.machines.base
 
-import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.inventory.{IInventory, Slot}
+import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.inventory.IInventory
+import net.minecraft.inventory.container.Slot
 import net.minecraft.item._
 
 class SlotUnlimited(inv: IInventory, num: Int, x: Int, y: Int) extends Slot(inv, num, x, y)
@@ -22,7 +23,7 @@ class SlotUnlimited(inv: IInventory, num: Int, x: Int, y: Int) extends Slot(inv,
 class SlotWorkbench(inv: IInventory, index: Int, xPosition: Int, yPosition: Int) extends Slot(inv, index, xPosition, yPosition) {
   override def isItemValid(is: ItemStack) = false
 
-  override def canTakeStack(playerIn: EntityPlayer) = false
+  override def canTakeStack(playerIn: PlayerEntity) = false
 }
 
 class SlotMover(inv: IInventory, index: Int, xPosition: Int, yPosition: Int) extends Slot(inv, index, xPosition, yPosition) {
@@ -31,8 +32,8 @@ class SlotMover(inv: IInventory, index: Int, xPosition: Int, yPosition: Int) ext
       case 0 =>
         !is.getEnchantmentTagList.isEmpty &&
           (is.getItem match {
-            case tool: ItemTool => tool.getTier == ItemTier.DIAMOND
-            case _: ItemBow => true
+            case tool: ToolItem => tool.getTier == ItemTier.DIAMOND
+            case _: BowItem => true
             case _ => false
           })
       case 1 => is.getItem.isInstanceOf[IEnchantableItem]
@@ -47,12 +48,12 @@ class SlotTile(inv: IInventory, index: Int, xPosition: Int, yPosition: Int) exte
   override def isItemValid(stack: ItemStack): Boolean = inv.isItemValidForSlot(index, stack)
 }
 
-class SlotCanTake(val inventoryIn: IInventory, val index: Int, val xPosition: Int, val yPosition: Int, val canTake: EntityPlayer => Boolean)
+class SlotCanTake(val inventoryIn: IInventory, val index: Int, val xPosition: Int, val yPosition: Int, val canTake: PlayerEntity => Boolean)
   extends Slot(inventoryIn, index, xPosition, yPosition) {
 
   def this(inventoryIn: IInventory, index: Int, xPosition: Int, yPosition: Int, b: Boolean) {
     this(inventoryIn, index, xPosition, yPosition, _ => b)
   }
 
-  override def canTakeStack(playerIn: EntityPlayer): Boolean = canTake(playerIn)
+  override def canTakeStack(playerIn: PlayerEntity): Boolean = canTake(playerIn)
 }

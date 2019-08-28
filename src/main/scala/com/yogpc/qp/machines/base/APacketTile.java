@@ -22,18 +22,18 @@ import java.util.function.Function;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.utils.Holder;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
 public abstract class APacketTile extends TileEntity {
     public static final BinaryOperator<String> combiner = (s, s2) -> s + ", " + s2;
-    public static final Function<String, TextComponentString> toComponentString = TextComponentString::new;
+    public static final Function<String, StringTextComponent> toComponentString = StringTextComponent::new;
     public static final Consumer<IChunkLoadTile> requestTicket = IChunkLoadTile::requestTicket;
 
     private final ITextComponent displayName;
@@ -49,28 +49,28 @@ public abstract class APacketTile extends TileEntity {
             displayName = hasInv.getName();
         } else if (isDebugSender) {
             IDebugSender sender = (IDebugSender) this;
-            displayName = new TextComponentTranslation(sender.getDebugName());
+            displayName = new TranslationTextComponent(sender.getDebugName());
         } else {
-            displayName = new TextComponentString("APacketTile");
+            displayName = new StringTextComponent("APacketTile");
         }
 
         machineDisabled = !Holder.tiles().apply(type).enabled();
     }
 
     @Override
-    public SPacketUpdateTileEntity getUpdatePacket() {
-        return new SPacketUpdateTileEntity(getPos(), 0, getUpdateTag());
+    public SUpdateTileEntityPacket getUpdatePacket() {
+        return new SUpdateTileEntityPacket(getPos(), 0, getUpdateTag());
     }
 
     @Override
-    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
+    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
         super.onDataPacket(net, pkt);
         read(pkt.getNbtCompound());
     }
 
     @Override
-    public NBTTagCompound getUpdateTag() {
-        return write(new NBTTagCompound());
+    public CompoundNBT getUpdateTag() {
+        return write(new CompoundNBT());
     }
 
     public ITextComponent getDisplayName() {

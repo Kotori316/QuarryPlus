@@ -18,10 +18,10 @@ import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
@@ -33,7 +33,7 @@ import net.minecraftforge.fml.ModList;
     @Optional.Interface(iface = "cofh.redstoneflux.api.IEnergyReceiver", modid = QuarryPlus.Optionals.RedstoneFlux_modID),
     @Optional.Interface(iface = "buildcraft.api.tiles.IDebuggable", modid = QuarryPlus.Optionals.Buildcraft_tiles),
     @Optional.Interface(iface = "ic2.api.energy.tile.IEnergySink", modid = QuarryPlus.Optionals.IC2_modID)})*/
-public abstract class APowerTile extends APacketTile implements ITickable, IEnergyStorage {//, IEnergyReceiver, IEnergySink, IDebuggable {
+public abstract class APowerTile extends APacketTile implements ITickableTileEntity, IEnergyStorage {//, IEnergyReceiver, IEnergySink, IDebuggable {
     public static final long MicroJtoMJ = 1_000_000L;
     public static final String NBT_STORED_ENERGY = "storedEnergy";
     public static final String NBT_MAX_STORED = "MAX_stored";
@@ -108,7 +108,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
 //        }
     }
 
-    protected final BlockPos[] getNeighbors(EnumFacing facing) {
+    protected final BlockPos[] getNeighbors(Direction facing) {
         return new BlockPos[]{pos.offset(facing), pos.offset(facing.rotateYCCW()), pos.offset(facing.rotateY())};
     }
 
@@ -133,7 +133,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
 //    }
 
     @Override
-    public void read(final NBTTagCompound nbt) {
+    public void read(final CompoundNBT nbt) {
         super.read(nbt);
         setStoredEnergy(nbt.getLong(NBT_STORED_ENERGY));
         configure(nbt.getLong(NBT_MAX_RECEIVE), nbt.getLong(NBT_MAX_STORED));
@@ -141,7 +141,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
     }
 
     @Override
-    public NBTTagCompound write(final NBTTagCompound nbt) {
+    public CompoundNBT write(final CompoundNBT nbt) {
         nbt.putLong(NBT_STORED_ENERGY, this.all);
         nbt.putLong(NBT_MAX_STORED, this.max);
         nbt.putLong(NBT_MAX_RECEIVE, this.maxGot);
@@ -333,7 +333,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
 
     @Nonnull
     @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable EnumFacing side) {
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
         if (cap == CapabilityEnergy.ENERGY) {
             return LazyOptional.of(() -> this).cast();
         }

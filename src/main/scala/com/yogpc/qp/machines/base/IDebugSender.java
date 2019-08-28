@@ -3,15 +3,15 @@ package com.yogpc.qp.machines.base;
 import java.util.Collections;
 import java.util.List;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.StringTextComponent;
 
 /**
  * Must be subclass of {@link APacketTile} or implement {@link IDebugSender#getMessage()}.
  */
 public interface IDebugSender {
-    default void sendDebugMessage(EntityPlayer player) {
+    default void sendDebugMessage(PlayerEntity player) {
         getMessage().forEach(t -> player.sendStatusMessage(t, false));
     }
 
@@ -24,7 +24,7 @@ public interface IDebugSender {
      */
     default List<? extends ITextComponent> getMessage() {
         if (((APacketTile) this).machineDisabled) {
-            return Collections.singletonList(new TextComponentString(this.getClass().getSimpleName() + " is disabled."));
+            return Collections.singletonList(new StringTextComponent(this.getClass().getSimpleName() + " is disabled."));
         } else {
             return getDebugMessages();
         }

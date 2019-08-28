@@ -22,7 +22,7 @@ public interface IAttachment {
     /**
      * Setter method to change field in this class.
      */
-    void setConnectTo(@Nullable EnumFacing connectTo);
+    void setConnectTo(@Nullable Direction connectTo);
 
     IModule getModule();
 

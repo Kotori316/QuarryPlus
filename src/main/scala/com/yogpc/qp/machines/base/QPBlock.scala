@@ -3,62 +3,61 @@ package com.yogpc.qp.machines.base
 import com.yogpc.qp.QuarryPlus
 import com.yogpc.qp.compat.InvUtils
 import com.yogpc.qp.utils.Holder
-import net.minecraft.block.state.IBlockState
-import net.minecraft.block.{Block, BlockContainer}
-import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.entity.{EntityLiving, EntitySpawnPlacementRegistry, EntityType}
+import net.minecraft.block.{Block, BlockRenderType, BlockState, ContainerBlock}
+import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.entity.{EntitySpawnPlacementRegistry, EntityType}
 import net.minecraft.inventory.InventoryHelper
-import net.minecraft.item.{Item, ItemBlock, ItemStack}
+import net.minecraft.item.{BlockItem, Item, ItemStack}
 import net.minecraft.state.BooleanProperty
-import net.minecraft.util.math.{BlockPos, RayTraceResult}
-import net.minecraft.util.{EnumBlockRenderType, EnumFacing, EnumHand, NonNullList}
-import net.minecraft.world.{IBlockReader, IWorldReaderBase, World}
+import net.minecraft.util.math.{BlockPos, BlockRayTraceResult, RayTraceResult}
+import net.minecraft.util.{Hand, NonNullList, ResourceLocation}
+import net.minecraft.world.server.ServerWorld
+import net.minecraft.world.{IBlockReader, World}
 
-abstract class QPBlock(builder: Block.Properties, name: String, generator: java.util.function.BiFunction[QPBlock, Item.Properties, _ <: ItemBlock]) extends BlockContainer(builder) {
+abstract class QPBlock(builder: Block.Properties, name: String, generator: java.util.function.BiFunction[QPBlock, Item.Properties, _ <: BlockItem]) extends ContainerBlock(builder) {
 
   setRegistryName(QuarryPlus.modID, name)
-  val itemBlock = generator.apply(this, new Item.Properties().group(Holder.tab))
-  itemBlock.setRegistryName(QuarryPlus.modID, name)
+  val BlockItem = generator.apply(this, new Item.Properties().group(Holder.tab))
+  BlockItem.setRegistryName(QuarryPlus.modID, name)
 
-  override def asItem() = itemBlock
+  override def asItem() = BlockItem
 
-  override def getRenderType(state: IBlockState): EnumBlockRenderType = EnumBlockRenderType.MODEL
+  override def getRenderType(state: BlockState): BlockRenderType = BlockRenderType.MODEL
 
-  override def canCreatureSpawn(state: IBlockState, world: IWorldReaderBase, pos: BlockPos,
-                                t: EntitySpawnPlacementRegistry.SpawnPlacementType, entityType: EntityType[_ <: EntityLiving]) = {
+  override def canCreatureSpawn(state: BlockState, world: IBlockReader, pos: BlockPos, t: EntitySpawnPlacementRegistry.PlacementType, entityType: EntityType[_]) = {
     false
   }
 
-  override def getPickBlock(state: IBlockState, target: RayTraceResult, world: IBlockReader, pos: BlockPos, player: EntityPlayer) = {
+  override def getPickBlock(state: BlockState, target: RayTraceResult, world: IBlockReader, pos: BlockPos, player: PlayerEntity) = {
     val tile = world.getTileEntity(pos)
     tile match {
       case enchantable: IEnchantableTile =>
-        val stack = new ItemStack(itemBlock, 1)
+        val stack = new ItemStack(BlockItem, 1)
         IEnchantableTile.Util.enchantmentToIS(enchantable, stack)
         stack
       case _ => super.getPickBlock(state, target, world, pos, player)
     }
   }
 
-  override def onBlockActivated(state: IBlockState, worldIn: World, pos: BlockPos, player: EntityPlayer,
-                                hand: EnumHand, side: EnumFacing, hitX: Float, hitY: Float, hitZ: Float) = {
+  override def onBlockActivated(state: BlockState, worldIn: World, pos: BlockPos, player: PlayerEntity, hand: Hand, hit: BlockRayTraceResult) = {
     InvUtils.isDebugItem(player, hand) // super method return false.
   }
 
-  override def getComparatorInputOverride(blockState: IBlockState, worldIn: World, pos: BlockPos): Int = {
+  override def getComparatorInputOverride(blockState: BlockState, worldIn: World, pos: BlockPos): Int = {
     if (blockState.get(QPBlock.WORKING)) 15 else 0
   }
 
-  override def hasComparatorInputOverride(state: IBlockState): Boolean = state.getProperties.contains(QPBlock.WORKING)
+  override def hasComparatorInputOverride(state: BlockState): Boolean = state.getProperties.contains(QPBlock.WORKING)
 }
 
 object QPBlock {
   val WORKING = BooleanProperty.create("working")
+  val contentLocation = new ResourceLocation(QuarryPlus.modID, "content")
 
-  def dismantle(world: World, pos: BlockPos, state: IBlockState, returnDrops: Boolean): NonNullList[ItemStack] = {
+  def dismantle(world: World, pos: BlockPos, state: BlockState, returnDrops: Boolean): NonNullList[ItemStack] = {
     val list = NonNullList.create[ItemStack]
-    state.getBlock.getDrops(state, list, world, pos, 0)
-    world.removeBlock(pos)
+    Block.getDrops(state, world.asInstanceOf[ServerWorld], pos, world.getTileEntity(pos))
+    world.removeBlock(pos, false)
     if (!returnDrops) {
       import scala.collection.JavaConverters._
       for (drop <- list.asScala) {

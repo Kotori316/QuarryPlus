@@ -1,6 +1,6 @@
 package com.yogpc.qp.machines.base;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 
 public interface IAttachable {
     /**
@@ -8,7 +8,7 @@ public interface IAttachable {
      * @param simulate    true to avoid having side effect.
      * @return true if the attachment is (will be) successfully connected.
      */
-    boolean connectAttachment(final EnumFacing facing, final IAttachment.Attachments<? extends APacketTile> attachments, boolean simulate);
+    boolean connectAttachment(final Direction facing, final IAttachment.Attachments<? extends APacketTile> attachments, boolean simulate);
 
     /**
      * @param attachments that you're trying to add.
@@ -23,13 +23,13 @@ public interface IAttachable {
      * @param attachments you want to add.
      * @return true if the attachment was connected successfully.
      */
-    default boolean connect(final EnumFacing facing, final IAttachment.Attachments<? extends APacketTile> attachments) {
+    default boolean connect(final Direction facing, final IAttachment.Attachments<? extends APacketTile> attachments) {
         return isValidAttachment(attachments) && connectAttachment(facing, attachments, true);
     }
 
     IAttachable dummy = new IAttachable() {
         @Override
-        public boolean connectAttachment(EnumFacing facing, IAttachment.Attachments<? extends APacketTile> attachments, boolean simulate) {
+        public boolean connectAttachment(Direction facing, IAttachment.Attachments<? extends APacketTile> attachments, boolean simulate) {
             return false;
         }
 

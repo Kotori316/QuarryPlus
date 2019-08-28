@@ -18,7 +18,7 @@ import java.util.function.Predicate;
 import javax.annotation.Nonnull;
 import jp.t2v.lab.syntax.MapStreamSyntax;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.init.Enchantments;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 

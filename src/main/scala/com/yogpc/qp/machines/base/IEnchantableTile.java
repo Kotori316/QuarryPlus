@@ -18,29 +18,36 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import com.yogpc.qp.Config;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonObject;
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.TranslationKeys;
-import com.yogpc.qp.machines.bookmover.BlockBookMover;
 import javax.annotation.Nonnull;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Enchantments;
-import net.minecraft.init.Items;
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.item.Items;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.storage.loot.LootContext;
+import net.minecraft.world.storage.loot.LootFunction;
+import net.minecraft.world.storage.loot.LootParameters;
+import net.minecraft.world.storage.loot.conditions.ILootCondition;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import static jp.t2v.lab.syntax.MapStreamSyntax.byEntry;
 import static jp.t2v.lab.syntax.MapStreamSyntax.byKey;
 import static jp.t2v.lab.syntax.MapStreamSyntax.entry;
 import static jp.t2v.lab.syntax.MapStreamSyntax.keys;
+import static jp.t2v.lab.syntax.MapStreamSyntax.optCast;
 import static jp.t2v.lab.syntax.MapStreamSyntax.toAny;
 import static jp.t2v.lab.syntax.MapStreamSyntax.toEntry;
 
@@ -76,14 +83,14 @@ public interface IEnchantableTile {
      */
     void setEnchantment(ResourceLocation id, short val);
 
-    default void sendEnchantMassage(EntityPlayer player) {
+    default void sendEnchantMassage(PlayerEntity player) {
         Util.getEnchantmentsChat(this).forEach(c -> player.sendStatusMessage(c, false));
     }
 
     default ItemStack getEnchantedPickaxe() {
         ItemStack stack = new ItemStack(Items.DIAMOND_PICKAXE);
         getEnchantments().entrySet().stream()
-            .filter(byEntry(Config.common().disabled().apply(BlockBookMover.SYMBOL).get() ? isValidEnch : (k, v) -> true))
+            .filter(byEntry(/*Config.common().disabled().apply(BlockBookMover.SYMBOL).get()*/ false ? isValidEnch : (k, v) -> true))
             .map(keys(ForgeRegistries.ENCHANTMENTS::getValue))
             .filter(byKey(Objects::nonNull))
             .forEach(entry(stack::addEnchantment));
@@ -93,9 +100,9 @@ public interface IEnchantableTile {
     //Move static methods to this inner class because static method in an interface is not supported by Scala 2.11.1.
     class Util {
 
-        public static void init(@Nonnull final IEnchantableTile te, @Nonnull final NBTTagList tagList) {
+        public static void init(@Nonnull final IEnchantableTile te, @Nonnull final ListNBT tagList) {
             tagList.stream()
-                .map(NBTTagCompound.class::cast)
+                .map(CompoundNBT.class::cast)
                 .map(toEntry(n -> n.getString("id"), n -> n.getShort("lvl")))
                 .map(keys(ResourceLocation::new))
                 .forEach(entry(te::setEnchantment));
@@ -105,16 +112,16 @@ public interface IEnchantableTile {
         static List<ITextComponent> getEnchantmentsChat(@Nonnull final IEnchantableTile te) {
             final Map<ResourceLocation, Integer> enchantments = te.getEnchantments();
             if (enchantments.size() <= 0) {
-                return Collections.singletonList(new TextComponentTranslation(TranslationKeys.PLUSENCHANTNO));
+                return Collections.singletonList(new TranslationTextComponent(TranslationKeys.PLUSENCHANTNO));
             } else {
                 LinkedList<ITextComponent> collect = enchantments.entrySet().stream()
                     .map(keys(ForgeRegistries.ENCHANTMENTS::getValue))
                     .filter(byKey(Objects::nonNull)).map(toAny((enchantment, level) ->
-                        new TextComponentTranslation(TranslationKeys.INDENT, new TextComponentTranslation(enchantment.getName()),
+                        new TranslationTextComponent(TranslationKeys.INDENT, new TranslationTextComponent(enchantment.getName()),
                             enchantment.getMaxLevel() != 1
-                                ? new TextComponentTranslation(TranslationKeys.ENCHANT_LEVELS.getOrDefault(level, level.toString()))
+                                ? new TranslationTextComponent(TranslationKeys.ENCHANT_LEVELS.getOrDefault(level, level.toString()))
                                 : ""))).collect(Collectors.toCollection(LinkedList::new));
-                collect.addFirst(new TextComponentTranslation(TranslationKeys.PLUSENCHANT));
+                collect.addFirst(new TranslationTextComponent(TranslationKeys.PLUSENCHANT));
                 return collect;
             }
         }
@@ -132,4 +139,30 @@ public interface IEnchantableTile {
         }
     }
 
+    class DropFunction extends LootFunction {
+        public static final ResourceLocation LOCATION = new ResourceLocation(QuarryPlus.modID, "drop_function");
+
+        protected DropFunction(ILootCondition[] conditionsIn) {
+            super(conditionsIn);
+        }
+
+        @Override
+        protected ItemStack doApply(ItemStack stack, LootContext context) {
+            Optional.ofNullable(context.get(LootParameters.BLOCK_ENTITY))
+                .flatMap(optCast(IEnchantableTile.class))
+                .ifPresent(t -> IEnchantableTile.Util.enchantmentToIS(t, stack));
+            return stack;
+        }
+
+        public static class Serializer extends LootFunction.Serializer<DropFunction> {
+            public Serializer() {
+                super(DropFunction.LOCATION, DropFunction.class);
+            }
+
+            @Override
+            public DropFunction deserialize(JsonObject object, JsonDeserializationContext deserializationContext, ILootCondition[] conditionsIn) {
+                return new DropFunction(conditionsIn);
+            }
+        }
+    }
 }
