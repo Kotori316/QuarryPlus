@@ -14,8 +14,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory
 import net.minecraft.client.Minecraft
 import net.minecraft.client.resources.I18n
 import net.minecraft.enchantment.Enchantment
-import net.minecraft.init.Items
-import net.minecraft.item.{Item, ItemStack}
+import net.minecraft.item.{Item, ItemStack, Items}
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.registries.ForgeRegistries
 
@@ -75,7 +74,7 @@ object MoverRecipeCategory {
 
   case class MoverRecipe(item: Item with IEnchantableItem, stack: ItemStack) extends (Enchantment => Boolean) {
 
-    import net.minecraft.init.Enchantments._
+    import net.minecraft.enchantment.Enchantments._
 
     val enchantments = Seq(EFFICIENCY, UNBREAKING, FORTUNE, SILK_TOUCH).filter(this)
 

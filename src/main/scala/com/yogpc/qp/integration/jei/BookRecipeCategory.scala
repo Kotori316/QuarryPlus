@@ -14,14 +14,12 @@ import mezz.jei.api.ingredients.IIngredients
 import mezz.jei.api.recipe.category.IRecipeCategory
 import net.minecraft.client.Minecraft
 import net.minecraft.client.resources.I18n
-import net.minecraft.enchantment.{EnchantmentData, EnumEnchantmentType}
-import net.minecraft.init.Items
-import net.minecraft.item.{Item, ItemEnchantedBook, ItemStack}
+import net.minecraft.enchantment.{EnchantmentData, EnchantmentType}
+import net.minecraft.item.{EnchantedBookItem, Item, ItemStack, Items}
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.registries.ForgeRegistries
 
 import scala.collection.JavaConverters._
-
 
 class BookRecipeCategory(guiHelper: IGuiHelper) extends IRecipeCategory[BookRecipeCategory.BookRecipe] {
 
@@ -57,7 +55,7 @@ class BookRecipeCategory(guiHelper: IGuiHelper) extends IRecipeCategory[BookReci
   override def getIcon = guiHelper.createDrawableIngredient(new ItemStack(Holder.blockBookMover))
 
   override def setIngredients(recipe: BookRecipe, ingredients: IIngredients): Unit = {
-    val input = Seq(items.asJava, Collections.singletonList(ItemEnchantedBook.getEnchantedItemStack(recipe.ench))).asJava
+    val input = Seq(items.asJava, Collections.singletonList(EnchantedBookItem.getEnchantedItemStack(recipe.ench))).asJava
     val output = items.map(_.copy()).map(_.enchantmentAdded(recipe.ench.enchantment, recipe.ench.enchantmentLevel)).asJava
 
     ingredients.setInputLists(VanillaTypes.ITEM, input)
@@ -72,7 +70,7 @@ object BookRecipeCategory {
   final val yOff = 0
   final val o = 18
 
-  val enchTypes = EnumEnchantmentType.values().filter(_.canEnchantItem(Items.DIAMOND_PICKAXE)).toSet
+  val enchTypes = EnchantmentType.values().filter(_.canEnchantItem(Items.DIAMOND_PICKAXE)).toSet
   val enchantments = ForgeRegistries.ENCHANTMENTS.getValues.asScala.filter(e => enchTypes(e.`type`)).map(e => new EnchantmentData(e, e.getMaxLevel))
   val items = ForgeRegistries.ITEMS.asScala.collect { case i: Item with IEnchantableItem if i.isValidInBookMover => i }.flatMap(_.stacks).toSeq
 
