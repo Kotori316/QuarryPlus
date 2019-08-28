@@ -1,14 +1,14 @@
 package com.yogpc.qp.compat;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumHand;
+import net.minecraft.item.Items;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.RayTraceResult;
 
 public class BuildcraftHelper {
 
-    public static boolean isWrench(EntityPlayer player, EnumHand hand, ItemStack wrench, RayTraceResult rayTrace) {
+    public static boolean isWrench(PlayerEntity player, Hand hand, ItemStack wrench, RayTraceResult rayTrace) {
         /*if (Loader.isModLoaded(QuarryPlus.Optionals.COFH_modID)) {
             if (wrench.getItem() instanceof IToolHammer) {
                 IToolHammer wrenchItem = (IToolHammer) wrench.getItem();

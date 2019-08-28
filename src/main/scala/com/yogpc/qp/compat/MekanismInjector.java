@@ -4,7 +4,7 @@ import java.util.stream.Stream;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -19,7 +19,7 @@ class MekanismInjector implements IInjector {
 
     // TEMP METHODS START
     @Override
-    public Stream<? extends IInjector> getInjector(ItemStack stack, TileEntity entity, EnumFacing facing) {
+    public Stream<? extends IInjector> getInjector(ItemStack stack, TileEntity entity, Direction facing) {
         return Stream.empty();
     }
 

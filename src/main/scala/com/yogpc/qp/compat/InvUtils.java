@@ -11,20 +11,20 @@ import com.yogpc.qp.QuarryPlus;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.EnumEnchantmentType;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.enchantment.EnchantmentType;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryHelper;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
@@ -69,7 +69,7 @@ public class InvUtils {
      */
     public static ItemStack injectToNearTile(@Nonnull final World w, @Nonnull BlockPos pos, final ItemStack is) {
 
-        List<? extends IInjector> injectors = Stream.of(EnumFacing.values()).flatMap(enumFacing -> {
+        List<? extends IInjector> injectors = Stream.of(Direction.values()).flatMap(enumFacing -> {
             TileEntity t = w.getTileEntity(pos.offset(enumFacing));
             return INJECTORS.stream().filter(Objects::nonNull).filter(i -> t != null).flatMap(i -> i.getInjector(is, t, enumFacing));
         }).collect(Collectors.toList());
@@ -86,7 +86,7 @@ public class InvUtils {
     }
 
     @Deprecated
-    public static Option<IItemHandler> findItemHandler(@Nonnull World world, @Nonnull BlockPos pos, @Nullable EnumFacing from) {
+    public static Option<IItemHandler> findItemHandler(@Nonnull World world, @Nonnull BlockPos pos, @Nullable Direction from) {
         TileEntity entity = world.getTileEntity(pos);
         if (entity == null) {
             return Option.empty();
@@ -107,7 +107,7 @@ public class InvUtils {
         }
     }
 
-    public static boolean isDebugItem(@Nonnull EntityPlayer player, @Nonnull EnumHand hand) {
+    public static boolean isDebugItem(@Nonnull PlayerEntity player, @Nonnull Hand hand) {
         ItemStack stack = player.getHeldItem(hand);
         if (!stack.isEmpty()) {
             Item item = stack.getItem();
@@ -116,7 +116,7 @@ public class InvUtils {
         return false;
     }
 
-    public static IBlockState getStateFromItem(@Nonnull ItemBlock itemBlock) {
+    public static BlockState getStateFromItem(@Nonnull BlockItem itemBlock) {
         Block block = itemBlock.getBlock();
         return block.getDefaultState();
     }
@@ -147,7 +147,7 @@ public class InvUtils {
         }
 
         @Override
-        public Stream<? extends IInjector> getInjector(ItemStack stack, TileEntity entity, EnumFacing facing) {
+        public Stream<? extends IInjector> getInjector(ItemStack stack, TileEntity entity, Direction facing) {
             return entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing.getOpposite())
                 .filter(
                     h -> stack.getCount() != ItemHandlerHelper.insertItemStacked(h, stack, true).getCount()
@@ -167,7 +167,7 @@ public class InvUtils {
         private static final DummyEnchantment DUMMY_ENCHANTMENT = new DummyEnchantment();
 
         DummyEnchantment() {
-            super(Rarity.COMMON, EnumEnchantmentType.ALL, new EntityEquipmentSlot[]{});
+            super(Rarity.COMMON, EnchantmentType.ALL, new EquipmentSlotType[]{});
         }
     }
 }
