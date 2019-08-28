@@ -2,7 +2,6 @@ package com.yogpc.qp.machines.controller;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -18,23 +17,24 @@ import com.yogpc.qp.packet.controller.AvailableEntities;
 import com.yogpc.qp.utils.Holder;
 import cpw.mods.modlauncher.api.INameMappingService;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.MobSpawnerBaseLogic;
+import net.minecraft.tileentity.MobSpawnerTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityMobSpawner;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
+import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.spawner.AbstractSpawner;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
@@ -48,27 +48,27 @@ public class BlockController extends Block implements IDisabled /*IDismantleable
     private static final Field logic_spawnDelay;
     private static final Method logic_getEntityID;
     public static final scala.Symbol SYMBOL = scala.Symbol.apply("SpawnerController");
-    public final ItemBlock itemBlock;
+    public final BlockItem itemBlock;
 
     static {
         String fieldName = ObfuscationReflectionHelper.remapName(INameMappingService.Domain.FIELD, "field_98286_b");
         Field field;
         try {
-            field = MobSpawnerBaseLogic.class.getDeclaredField(fieldName);
+            field = AbstractSpawner.class.getDeclaredField(fieldName);
             field.setAccessible(true);
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
         logic_spawnDelay = field;
-        logic_getEntityID = ObfuscationReflectionHelper.findMethod(MobSpawnerBaseLogic.class, "func_190895_g");
+        logic_getEntityID = ObfuscationReflectionHelper.findMethod(AbstractSpawner.class, "func_190895_g");
     }
 
     public BlockController() {
-        super(Properties.create(Material.CIRCUITS)
+        super(Properties.create(Material.MISCELLANEOUS)
             .hardnessAndResistance(1.0f));
         setRegistryName(QuarryPlus.modID, QuarryPlus.Names.controller);
         setDefaultState(getStateContainer().getBaseState().with(QPBlock.WORKING(), false));
-        itemBlock = new ItemBlock(this, new Item.Properties().group(Holder.tab()));
+        itemBlock = new BlockItem(this, new Item.Properties().group(Holder.tab()));
         itemBlock.setRegistryName(QuarryPlus.modID, QuarryPlus.Names.controller);
     }
 
@@ -78,21 +78,21 @@ public class BlockController extends Block implements IDisabled /*IDismantleable
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, IBlockState> builder) {
+    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
         builder.add(QPBlock.WORKING());
     }
 
-    private static Optional<MobSpawnerBaseLogic> getSpawner(World world, BlockPos pos) {
-        return Stream.of(EnumFacing.values()).map(pos::offset).map(world::getTileEntity)
-            .flatMap(streamCast(TileEntityMobSpawner.class))
-            .map(TileEntityMobSpawner::getSpawnerBaseLogic).findFirst();
+    private static Optional<AbstractSpawner> getSpawner(World world, BlockPos pos) {
+        return Stream.of(Direction.values()).map(pos::offset).map(world::getTileEntity)
+            .flatMap(streamCast(MobSpawnerTileEntity.class))
+            .map(MobSpawnerTileEntity::getSpawnerBaseLogic).findFirst();
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public boolean onBlockActivated(IBlockState state, World worldIn, BlockPos pos, EntityPlayer player,
-                                    EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
-        if (super.onBlockActivated(state, worldIn, pos, player, hand, side, hitX, hitY, hitZ)) return true;
+    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
+                                    Hand hand, BlockRayTraceResult hit) {
+        if (super.onBlockActivated(state, worldIn, pos, player, hand, hit)) return true;
         if (!player.isSneaking()) {
             if (!worldIn.isRemote) {
                 if (player.getHeldItem(hand).getItem() == Holder.itemStatusChecker()) {
@@ -100,16 +100,15 @@ public class BlockController extends Block implements IDisabled /*IDismantleable
                         .flatMap(logic -> Optional.ofNullable(APacketTile.invoke(logic_getEntityID, ResourceLocation.class, logic)))
                         .map(ResourceLocation::toString)
                         .map(s -> "Spawner Mob: " + s)
-                        .map(TextComponentString::new)
+                        .map(StringTextComponent::new)
                         .ifPresent(s -> player.sendStatusMessage(s, false));
                 } else if (enabled()) {
                     List<EntityType<?>> entries = ForgeRegistries.ENTITIES.getValues().stream().filter(e ->
-                        !Modifier.isAbstract(e.getEntityClass().getModifiers())
-                            && !Config.common().spawnerBlacklist().contains(e.getRegistryName())).collect(Collectors.toList());
+                        !Config.common().spawnerBlacklist().contains(e.getRegistryName())).collect(Collectors.toList());
 
                     PacketHandler.sendToClient(AvailableEntities.create(pos, worldIn, entries), worldIn);
                 } else {
-                    player.sendStatusMessage(new TextComponentString("Spawner Controller is disabled."), true);
+                    player.sendStatusMessage(new StringTextComponent("Spawner Controller is disabled."), true);
                 }
             }
             return true;
@@ -124,18 +123,18 @@ public class BlockController extends Block implements IDisabled /*IDismantleable
                 .map(ForgeRegistries.ENTITIES::getValue)
                 .ifPresent(logic::setEntityType);
             Optional.ofNullable(logic.getWorld().getTileEntity(logic.getSpawnerPosition())).ifPresent(TileEntity::markDirty);
-            IBlockState state = logic.getWorld().getBlockState(logic.getSpawnerPosition());
+            BlockState state = logic.getWorld().getBlockState(logic.getSpawnerPosition());
             logic.getWorld().notifyBlockUpdate(logic.getSpawnerPosition(), state, state, 3);
         });
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
+    public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
         if (!worldIn.isRemote && !Config.common().disabled().apply(SYMBOL).get()) {
-            boolean r = worldIn.isBlockPowered(pos);
+            boolean powered = worldIn.isBlockPowered(pos);
             boolean m = state.get(QPBlock.WORKING());
-            if (r && !m) {
+            if (powered && !m) {
                 getSpawner(worldIn, pos).ifPresent(logic -> {
                     try {
                         logic_spawnDelay.setInt(logic, 0);
@@ -143,19 +142,17 @@ public class BlockController extends Block implements IDisabled /*IDismantleable
                         e.printStackTrace();
                         return;
                     }
-                    FakePlayer fakePlayer = FakePlayerFactory.getMinecraft((WorldServer) worldIn);
+                    FakePlayer fakePlayer = FakePlayerFactory.getMinecraft((ServerWorld) worldIn);
                     fakePlayer.setWorld(logic.getWorld());
                     fakePlayer.setPosition(logic.getSpawnerPosition().getX(), logic.getSpawnerPosition().getY(), logic.getSpawnerPosition().getZ());
-                    logic.getWorld().playerEntities.add(fakePlayer);
+//                    logic.getWorld().players.add(fakePlayer);
                     logic.tick();
-                    logic.getWorld().playerEntities.remove(fakePlayer);
+//                    logic.getWorld().players.remove(fakePlayer);
                 });
-                worldIn.setBlockState(pos, state.with(QPBlock.WORKING(), true));
-            } else if (!r && m) {
-                worldIn.setBlockState(pos, state.with(QPBlock.WORKING(), false));
             }
+            worldIn.setBlockState(pos, state.with(QPBlock.WORKING(), powered));
         }
-        super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
+        super.neighborChanged(state, worldIn, pos, blockIn, fromPos, isMoving);
     }
 
     @Override

@@ -56,7 +56,7 @@ public class AvailableEntities implements IMessage<AvailableEntities> {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void onReceive(Supplier<NetworkEvent.Context> ctx) {
-        Minecraft.getInstance().addScheduledTask(() ->
+        ctx.get().enqueueWork(() ->
             Minecraft.getInstance().displayGuiScreen(new GuiController(dim, pos.getX(), pos.getY(), pos.getZ(), entities))
         );
     }
