@@ -2,14 +2,13 @@ package com.yogpc.qp.utils
 
 import java.util.Objects
 
-import net.minecraft.block.Block
-import net.minecraft.init.Blocks
-import net.minecraft.item.{Item, ItemBlock, ItemStack}
-import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.block.{Block, Blocks}
+import net.minecraft.item.{BlockItem, Item, ItemStack}
+import net.minecraft.nbt.CompoundNBT
 
 sealed abstract class ItemDamage extends Ordered[ItemDamage] {
   val item: Item
-  val tag: NBTTagCompound
+  val tag: CompoundNBT
 
   def equals(any: Any): Boolean
 
@@ -33,7 +32,7 @@ sealed abstract class ItemDamage extends Ordered[ItemDamage] {
 case class OK(itemStack: ItemStack) extends ItemDamage {
 
   val item: Item = itemStack.getItem
-  val tag: NBTTagCompound = itemStack.getTag
+  val tag: CompoundNBT = itemStack.getTag
 
   override def toString: String = item.getTranslationKey
 
@@ -61,7 +60,7 @@ case class OK(itemStack: ItemStack) extends ItemDamage {
 
 case class BlockOK(itemStack: ItemStack, block: Block) extends ItemDamage {
   val item: Item = block.asItem()
-  val tag: NBTTagCompound = itemStack.getTag
+  val tag = itemStack.getTag
 
   override def toString: String = block.getTranslationKey
 
@@ -79,7 +78,7 @@ case class BlockOK(itemStack: ItemStack, block: Block) extends ItemDamage {
 }
 
 case object NG extends ItemDamage {
-  override val tag: NBTTagCompound = null
+  override val tag: CompoundNBT = null
   override val item: Item = Blocks.AIR.asItem()
 
   override def equals(any: Any): Boolean = false
@@ -97,7 +96,7 @@ object ItemDamage {
   def apply(itemStack: ItemStack): ItemDamage = {
     if (itemStack.isEmpty) NG
     else itemStack.getItem match {
-      case block: ItemBlock => BlockOK(itemStack, block.getBlock)
+      case block: BlockItem => BlockOK(itemStack, block.getBlock)
       case _ => OK(itemStack)
     }
   }

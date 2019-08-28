@@ -2,12 +2,12 @@ package com.yogpc.qp.utils
 
 import cats.kernel.Eq
 import net.minecraft.item.ItemStack
-import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.nbt.CompoundNBT
 
 case class ItemElement(itemDamage: ItemDamage, count: Int) {
   def toStack: ItemStack = itemDamage.toStack(count)
 
-  def toNBT: NBTTagCompound = {
+  def toNBT: CompoundNBT = {
     val nbt = toStack.serializeNBT()
     nbt.remove("Count")
     nbt.putInt("Count", count)
