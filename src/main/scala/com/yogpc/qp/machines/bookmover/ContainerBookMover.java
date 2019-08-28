@@ -1,24 +1,35 @@
 package com.yogpc.qp.machines.bookmover;
 
 import com.yogpc.qp.machines.base.SlotTile;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
+import com.yogpc.qp.utils.Holder;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IntReferenceHolder;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class ContainerBookMover extends Container {
 
     private final TileBookMover mover;
-    private int progress;
+    private final IntReferenceHolder progress = this.trackInt(IntReferenceHolder.single());
+    private final IntReferenceHolder isWorking = this.trackInt(IntReferenceHolder.single());
 
-    public ContainerBookMover(TileBookMover mover, EntityPlayer player) {
-        this.mover = mover;
+    public ContainerBookMover(int id, PlayerEntity player, BlockPos pos) {
+        super(Holder.bookMoverContainerType(), id);
+        this.mover = (TileBookMover) player.getEntityWorld().getTileEntity(pos);
 
-        addSlot(new SlotTile(mover, 0, 13, 35));
-        addSlot(new SlotTile(mover, 1, 55, 35));
-        addSlot(new SlotTile(mover, 2, 116, 35));
+        if (mover != null) {
+            addSlot(new SlotTile(mover, 0, 13, 35));
+            addSlot(new SlotTile(mover, 1, 55, 35));
+            addSlot(new SlotTile(mover, 2, 116, 35));
+            if (!player.getEntityWorld().isRemote) {
+                this.progress.set((int) (mover.getStoredEnergy() / mover.getMaxStored() * 1000));
+                this.isWorking.set(mover.isWorking() ? 1 : 0);
+            }
+        }
 
         for (int i = 0; i < 3; ++i) {
             for (int j = 0; j < 9; ++j) {
@@ -32,12 +43,12 @@ public class ContainerBookMover extends Container {
     }
 
     @Override
-    public boolean canInteractWith(EntityPlayer playerIn) {
+    public boolean canInteractWith(PlayerEntity playerIn) {
         return mover.isUsableByPlayer(playerIn);
     }
 
     @Override
-    public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
+    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
         int allSlots = 3;
         ItemStack src = ItemStack.EMPTY;
         final Slot slot = this.inventorySlots.get(index);
@@ -70,22 +81,19 @@ public class ContainerBookMover extends Container {
 
     @Override
     public void detectAndSendChanges() {
-        super.detectAndSendChanges();
         int progress = (int) (mover.getStoredEnergy() / mover.getMaxStored() * 1000);
-        listeners.forEach(listener -> listener.sendWindowProperty(this, 0, progress));
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public void updateProgressBar(int id, int data) {
-        super.updateProgressBar(id, data);
-        if (id == 0) {
-            this.progress = data;
-        }
+        this.progress.set(progress);
+        this.isWorking.set(mover.isWorking() ? 1 : 0);
+        super.detectAndSendChanges();
     }
 
     @OnlyIn(Dist.CLIENT)
     public int getProgress() {
-        return progress;
+        return progress.get();
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public boolean moverIsWorking() {
+        return this.isWorking.get() == 1;
     }
 }

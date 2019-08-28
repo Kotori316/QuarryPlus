@@ -4,32 +4,32 @@ import com.yogpc.qp.machines.TranslationKeys
 import com.yogpc.qp.machines.base._
 import com.yogpc.qp.utils.Holder
 import com.yogpc.qp.{Config, _}
-import net.minecraft.enchantment.{EnchantmentHelper, EnumEnchantmentType}
-import net.minecraft.entity.player.{EntityPlayer, InventoryPlayer}
-import net.minecraft.init.Items
+import net.minecraft.enchantment.{EnchantmentHelper, EnchantmentType}
+import net.minecraft.entity.player.{PlayerEntity, PlayerInventory}
 import net.minecraft.inventory.ItemStackHelper
-import net.minecraft.item.ItemStack
-import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.text.TextComponentTranslation
-import net.minecraft.util.{ITickable, NonNullList}
-import net.minecraft.world.IInteractionObject
+import net.minecraft.inventory.container.{Container, INamedContainerProvider}
+import net.minecraft.item.{ItemStack, Items}
+import net.minecraft.nbt.CompoundNBT
+import net.minecraft.tileentity.ITickableTileEntity
+import net.minecraft.util.NonNullList
+import net.minecraft.util.text.TranslationTextComponent
 import net.minecraftforge.registries.ForgeRegistries
 
 import scala.collection.JavaConverters._
 
-class TileBookMover extends APowerTile(Holder.bookMoverType) with HasInv with ITickable with IInteractionObject {
+class TileBookMover extends APowerTile(Holder.bookMoverType) with HasInv with ITickableTileEntity with INamedContainerProvider {
 
   val inv = NonNullList.withSize(getSizeInventory, ItemStack.EMPTY)
   configure(Config.common.workbenchMaxReceive.get() * APowerTile.MicroJtoMJ, 50000 * APowerTile.MicroJtoMJ)
-  val enchTypes = EnumEnchantmentType.values().filter(_.canEnchantItem(Items.DIAMOND_PICKAXE)).toSet
+  val enchTypes = EnchantmentType.values().filter(_.canEnchantItem(Items.DIAMOND_PICKAXE)).toSet
   val validEnch = ForgeRegistries.ENCHANTMENTS.getValues.asScala.filter(e => enchTypes(e.`type`)).toSet
 
-  override def write(nbt: NBTTagCompound): NBTTagCompound = {
+  override def write(nbt: CompoundNBT): CompoundNBT = {
     ItemStackHelper.saveAllItems(nbt, inv)
     super.write(nbt)
   }
 
-  override def read(nbt: NBTTagCompound): Unit = {
+  override def read(nbt: CompoundNBT): Unit = {
     super.read(nbt)
     ItemStackHelper.loadAllItems(nbt, inv)
   }
@@ -93,15 +93,15 @@ class TileBookMover extends APowerTile(Holder.bookMoverType) with HasInv with IT
     enabled() && !inv.get(0).isEmpty && !inv.get(1).isEmpty
   }
 
-  override def getName = new TextComponentTranslation(TranslationKeys.moverfrombook)
+  override def getName = new TranslationTextComponent(TranslationKeys.moverfrombook)
 
   override def getDisplayName = getName
 
   override def canReceive: Boolean = isWorking
 
-  override def createContainer(playerInventory: InventoryPlayer, playerIn: EntityPlayer) = new ContainerBookMover(this, playerIn)
-
-  override def getGuiID = BlockBookMover.GUI_ID
+  override def createMenu(id: Int, i: PlayerInventory, player: PlayerEntity): Container = {
+    new ContainerBookMover(id, player, pos)
+  }
 }
 
 /*
