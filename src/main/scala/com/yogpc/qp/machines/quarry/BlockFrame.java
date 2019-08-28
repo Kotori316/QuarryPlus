@@ -26,18 +26,18 @@ import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.utils.Holder;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockEmptyDrops;
-import net.minecraft.block.BlockSixWay;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.SixWayBlock;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
@@ -57,7 +57,7 @@ import static net.minecraft.state.properties.BlockStateProperties.SOUTH;
 import static net.minecraft.state.properties.BlockStateProperties.UP;
 import static net.minecraft.state.properties.BlockStateProperties.WEST;
 
-public class BlockFrame extends BlockEmptyDrops {
+public class BlockFrame extends Block {
 
     /**
      * Whether this fence connects in the northern direction
@@ -79,19 +79,19 @@ public class BlockFrame extends BlockEmptyDrops {
         Pair.of(DOWN, Down_AABB)
     ).collect(entryToMap());
     private static final BiPredicate<World, BlockPos> HAS_NEIGHBOUR_LIQUID = (world, pos) ->
-        Stream.of(EnumFacing.values()).map(pos::offset).map(world::getBlockState)
-            .anyMatch(state -> !state.isFullCube() && state.getMaterial().isLiquid());
+        Stream.of(Direction.values()).map(pos::offset).map(world::getBlockState)
+            .anyMatch(state -> state.getMaterial().isLiquid());
 
-    public final ItemBlock itemBlock;
+    public final BlockItem itemBlock;
 
     public BlockFrame() {
-        super(Properties.create(Material.GLASS).hardnessAndResistance(0.5f));
+        super(Properties.create(Material.GLASS).hardnessAndResistance(0.5f).noDrops());
         setRegistryName(QuarryPlus.modID, QuarryPlus.Names.frame);
         this.setDefaultState(this.getStateContainer().getBaseState()
             .with(NORTH, false).with(EAST, false).with(SOUTH, false)
             .with(WEST, false).with(UP, false).with(DOWN, false)
             .with(DAMMING, false));
-        itemBlock = new ItemBlock(this, new Item.Properties().group(Holder.tab()));
+        itemBlock = new BlockItem(this, new Item.Properties().group(Holder.tab()));
         itemBlock.setRegistryName(QuarryPlus.modID, QuarryPlus.Names.frame);
     }
 
@@ -101,12 +101,12 @@ public class BlockFrame extends BlockEmptyDrops {
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, IBlockState> builder) {
+    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
         builder.add(NORTH, EAST, SOUTH, WEST, UP, DOWN, DAMMING);
     }
 
     @Override
-    public IBlockState getStateForPlacement(BlockItemUseContext context) {
+    public BlockState getStateForPlacement(BlockItemUseContext context) {
         World worldIn = context.getWorld();
         BlockPos pos = context.getPos();
         return this.getDefaultState()
@@ -120,16 +120,16 @@ public class BlockFrame extends BlockEmptyDrops {
 
     @Override
     @SuppressWarnings("deprecation")
-    public IBlockState updatePostPlacement(IBlockState stateIn, EnumFacing facing, IBlockState facingState,
-                                           IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
-        return stateIn.with(BlockSixWay.FACING_TO_PROPERTY_MAP.get(facing), canConnectTo(worldIn, currentPos.offset(facing)));
+    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState,
+                                          IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+        return stateIn.with(SixWayBlock.FACING_TO_PROPERTY_MAP.get(facing), canConnectTo(worldIn, currentPos.offset(facing)));
     }
 
     private boolean breaking = false;
 
     @Override
     @SuppressWarnings("deprecation")
-    public void onReplaced(IBlockState state, World worldIn, BlockPos pos, IBlockState newState, boolean isMoving) {
+    public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
         if (state.getBlock() != newState.getBlock()) {
             if (!Config.common().disableFrameChainBreak().get()) {
                 boolean firstBreak;
@@ -163,9 +163,9 @@ public class BlockFrame extends BlockEmptyDrops {
                 List<BlockPos> list = (List<BlockPos>) nextCheck.clone();
                 nextCheck.clear();
                 for (BlockPos pos : list) {
-                    for (EnumFacing dir : EnumFacing.values()) {
+                    for (Direction dir : Direction.values()) {
                         BlockPos nPos = pos.offset(dir);
-                        IBlockState nBlock = world.getBlockState(nPos);
+                        BlockState nBlock = world.getBlockState(nPos);
                         if (nBlock.getBlock() == this) {
                             if (!HAS_NEIGHBOUR_LIQUID.test(world, nPos) && set.add(nPos))
                                 nextCheck.add(nPos);
@@ -173,7 +173,7 @@ public class BlockFrame extends BlockEmptyDrops {
                     }
                 }
             }
-            set.forEach(world::removeBlock);
+            set.forEach(pos -> world.removeBlock(pos, false));
         }
     }
 
@@ -184,11 +184,11 @@ public class BlockFrame extends BlockEmptyDrops {
     @Override
     @SuppressWarnings("deprecation")
     @OnlyIn(Dist.CLIENT)
-    public boolean isSideInvisible(IBlockState state, IBlockState adjacentBlockState, EnumFacing side) {
+    public boolean isSideInvisible(BlockState state, BlockState adjacentBlockState, Direction side) {
         return true;
     }
 
-    public IBlockState getDammingState() {
+    public BlockState getDammingState() {
         return getDefaultState().with(DAMMING, true);
     }
 
@@ -200,13 +200,7 @@ public class BlockFrame extends BlockEmptyDrops {
 
     @Override
     @SuppressWarnings("deprecation")
-    public boolean isFullCube(IBlockState state) {
-        return false;
-    }
-
-    @Override
-    @SuppressWarnings("deprecation")
-    public VoxelShape getShape(IBlockState state, IBlockReader worldIn, BlockPos pos) {
+    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
         return SHAPE_MAP.entrySet().stream()
             .filter(byKey(state::get))
             .map(valueToAny(Function.identity()))
@@ -215,8 +209,8 @@ public class BlockFrame extends BlockEmptyDrops {
 
     @Override
     @SuppressWarnings("deprecation")
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
-        super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
+    public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
+        super.neighborChanged(state, worldIn, pos, blockIn, fromPos, isMoving);
         if (!Config.common().disableFrameChainBreak().get() && state.get(DAMMING)) {
             worldIn.setBlockState(pos, state.with(DAMMING, HAS_NEIGHBOUR_LIQUID.test(worldIn, pos)), 2);
         }

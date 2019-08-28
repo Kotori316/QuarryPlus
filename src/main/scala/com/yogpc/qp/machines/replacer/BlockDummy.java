@@ -2,35 +2,27 @@ package com.yogpc.qp.machines.replacer;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.utils.Holder;
-import javax.annotation.Nullable;
+import net.minecraft.block.AbstractGlassBlock;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockEmptyDrops;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntitySpawnPlacementRegistry;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.IWorldReaderBase;
 
-public class BlockDummy extends BlockEmptyDrops {
-    private final ItemBlock mItemBlock;
+public class BlockDummy extends AbstractGlassBlock {
+    private final BlockItem mItemBlock;
 
     public BlockDummy() {
         super(Block.Properties.create(Material.GLASS)
             .hardnessAndResistance(1f)
-            .lightValue(15));
+            .lightValue(15)
+            .noDrops());
         setRegistryName(QuarryPlus.modID, QuarryPlus.Names.dummyblock);
-        mItemBlock = new ItemBlock(this, new Item.Properties().group(Holder.tab()));
+        mItemBlock = new BlockItem(this, new Item.Properties().group(Holder.tab()));
         mItemBlock.setRegistryName(QuarryPlus.modID, QuarryPlus.Names.dummyblock);
     }
 
@@ -39,26 +31,9 @@ public class BlockDummy extends BlockEmptyDrops {
         return mItemBlock;
     }
 
-    @Override
-    public boolean canCreatureSpawn(IBlockState state, IWorldReaderBase world, BlockPos pos,
-                                    EntitySpawnPlacementRegistry.SpawnPlacementType type,
-                                    @Nullable EntityType<? extends EntityLiving> entityType) {
-        return false;
-    }
 
     @Override
-    @SuppressWarnings("deprecation")
-    public boolean canEntitySpawn(IBlockState state, Entity entityIn) {
-        return false;
-    }
-
-    @Override
-    public boolean canSilkHarvest(IBlockState state, IWorldReader world, BlockPos pos, EntityPlayer player) {
-        return false;
-    }
-
-    @Override
-    public boolean propagatesSkylightDown(IBlockState state, IBlockReader reader, BlockPos pos) {
+    public boolean propagatesSkylightDown(BlockState state, IBlockReader reader, BlockPos pos) {
         return true;
     }
 
@@ -69,17 +44,6 @@ public class BlockDummy extends BlockEmptyDrops {
 
     @Override
     @SuppressWarnings("deprecation")
-    public boolean isFullCube(IBlockState state) {
-        return false;
-    }
-
-    @Override
-    @SuppressWarnings("deprecation")
-    public boolean isSideInvisible(IBlockState state, IBlockState adjacentBlockState, EnumFacing side) {
-        return adjacentBlockState.getBlock() == this || super.isSideInvisible(state, adjacentBlockState, side);
-    }
-
-    @Override
     public boolean canDropFromExplosion(Explosion explosionIn) {
         return false;
     }
