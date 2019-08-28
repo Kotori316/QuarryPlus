@@ -13,17 +13,17 @@ import com.yogpc.qp.machines.exppump.ExpPumpModule;
 import com.yogpc.qp.utils.Holder;
 import javax.annotation.Nullable;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.item.EntityXPOrb;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.EnumRarity;
+import net.minecraft.entity.item.ExperienceOrbEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Rarity;
 import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import scala.Symbol;
 
@@ -32,7 +32,7 @@ public class ItemExpPumpModule extends Item implements IDisabled, IModuleItem {
     public static final String Key_xp = "xp";
 
     public ItemExpPumpModule() {
-        super(new Item.Properties().group(Holder.tab()).rarity(EnumRarity.UNCOMMON));
+        super(new Item.Properties().group(Holder.tab()).rarity(Rarity.UNCOMMON));
         setRegistryName(QuarryPlus.modID, QuarryPlus.Names.exppumpModule);
     }
 
@@ -62,11 +62,11 @@ public class ItemExpPumpModule extends Item implements IDisabled, IModuleItem {
             .map(tag -> tag.get(Key_xp))
             .flatMap(NBTDynamicOps.INSTANCE::getNumberValue)
             .map(Number::intValue)
-            .ifPresent(integer -> tooltip.add(new TextComponentString("xp: " + integer)));
+            .ifPresent(integer -> tooltip.add(new StringTextComponent("xp: " + integer)));
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
         if (!playerIn.isSneaking()) {
             ItemStack stack = playerIn.getHeldItem(handIn);
             int xp = Optional.ofNullable(stack.getTag())
@@ -77,10 +77,10 @@ public class ItemExpPumpModule extends Item implements IDisabled, IModuleItem {
             if (xp > 0) {
                 stack.removeChildTag(Key_xp);
                 if (!worldIn.isRemote) {
-                    EntityXPOrb orb = new EntityXPOrb(worldIn, playerIn.posX, playerIn.posY, playerIn.posZ, xp);
-                    worldIn.spawnEntity(orb);
+                    ExperienceOrbEntity orb = new ExperienceOrbEntity(worldIn, playerIn.posX, playerIn.posY, playerIn.posZ, xp);
+                    worldIn.addEntity(orb);
                 }
-                return ActionResult.newResult(EnumActionResult.SUCCESS, stack);
+                return ActionResult.newResult(ActionResultType.SUCCESS, stack);
             }
         }
         return super.onItemRightClick(worldIn, playerIn, handIn);

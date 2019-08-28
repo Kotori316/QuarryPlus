@@ -6,7 +6,7 @@ import cats.Eval
 import cats.data.Kleisli
 import com.yogpc.qp.QuarryPlus
 import com.yogpc.qp.machines.base.{APowerTile, EnergyUsage, IEnchantableTile, IModule}
-import net.minecraft.entity.item.EntityXPOrb
+import net.minecraft.entity.item.ExperienceOrbEntity
 
 final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: Eval[Int], consumer: Option[IntConsumer]) extends IModule {
   def this(powerTile: APowerTile, consumer: Option[IntConsumer] = None) = {
@@ -23,7 +23,7 @@ final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: Eval[Int], con
   override def action(when: IModule.CalledWhen): Boolean = {
     val xp = when match {
       case t: IModule.CollectingItem =>
-        t.entities.collect { case orb: EntityXPOrb if orb.isAlive => QuarryPlus.proxy.removeEntity(orb); orb.xpValue }.sum
+        t.entities.collect { case orb: ExperienceOrbEntity if orb.isAlive => QuarryPlus.proxy.removeEntity(orb); orb.xpValue }.sum
       case s: IModule.BeforeBreak => s.xp
       case _ => 0
     }

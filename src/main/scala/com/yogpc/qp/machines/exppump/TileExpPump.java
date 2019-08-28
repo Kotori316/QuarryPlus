@@ -19,11 +19,11 @@ import com.yogpc.qp.machines.base.QPBlock;
 import com.yogpc.qp.utils.Holder;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.item.EntityXPOrb;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.item.ExperienceOrbEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
@@ -36,7 +36,7 @@ import static net.minecraft.state.properties.BlockStateProperties.ENABLED;
 
 public class TileExpPump extends APacketTile implements IEnchantableTile, IDebugSender, IAttachment {
     @Nullable
-    private EnumFacing mConnectTo;
+    private Direction mConnectTo;
     private ExpPumpModule module = ExpPumpModule.apply(v1 -> true, () -> this.unbreaking);
 
     private int fortune = 0;
@@ -48,10 +48,11 @@ public class TileExpPump extends APacketTile implements IEnchantableTile, IDebug
     }
 
     @Override
-    public void setConnectTo(@Nullable EnumFacing connectTo) {
+    public void setConnectTo(@Nullable Direction connectTo) {
         mConnectTo = connectTo;
         if (hasWorld()) {
-            IBlockState state = world.getBlockState(getPos());
+            assert world != null;
+            BlockState state = world.getBlockState(getPos());
             if (!working() == state.get(QPBlock.WORKING())) {
                 world.setBlockState(pos, state.with(QPBlock.WORKING(), working()));
             }
@@ -90,7 +91,7 @@ public class TileExpPump extends APacketTile implements IEnchantableTile, IDebug
 
     private void refreshConnection() {
         if (hasWorld() && !world.isRemote) {
-            Map.Entry<EnumFacing, IAttachable> entry = Stream.of(EnumFacing.values())
+            Map.Entry<Direction, IAttachable> entry = Stream.of(Direction.values())
                 .map(f -> Pair.of(f, world.getTileEntity(pos.offset(f))))
                 .filter(byValue(t -> t instanceof IAttachable))
                 .map(values(t -> ((IAttachable) t)))
@@ -108,7 +109,7 @@ public class TileExpPump extends APacketTile implements IEnchantableTile, IDebug
     public void addXp(int amount) {
         module.xp_$eq(module.xp() + amount);
         if (module.xp() > 0 ^ world.getBlockState(pos).get(ENABLED)) {
-            IBlockState state = world.getBlockState(pos).with(ENABLED, module.xp() > 0);
+            BlockState state = world.getBlockState(pos).with(ENABLED, module.xp() > 0);
             world.setBlockState(pos, state);
         }
     }
@@ -117,27 +118,27 @@ public class TileExpPump extends APacketTile implements IEnchantableTile, IDebug
         return amount * 10 * APowerTile.MicroJtoMJ / (1 + unbreaking);
     }
 
-    public void onActivated(World worldIn, BlockPos pos, EntityPlayer playerIn) {
+    public void onActivated(World worldIn, BlockPos pos, PlayerEntity playerIn) {
         if (module.xp() > 0) {
-            int xp = EntityXPOrb.getXPSplit(module.xp());
-            EntityXPOrb orb = new EntityXPOrb(worldIn, playerIn.posX, playerIn.posY, playerIn.posZ, xp);
-            worldIn.spawnEntity(orb);
+            int xp = ExperienceOrbEntity.getXPSplit(module.xp());
+            ExperienceOrbEntity orb = new ExperienceOrbEntity(worldIn, playerIn.posX, playerIn.posY, playerIn.posZ, xp);
+            worldIn.addEntity(orb);
             addXp(-xp);
         }
     }
 
     public void onBreak(World worldIn) {
         if (module.xp() > 0) {
-            EntityXPOrb xpOrb = new EntityXPOrb(worldIn, pos.getX(), pos.getY(), pos.getZ(), module.xp());
-            worldIn.spawnEntity(xpOrb);
+            ExperienceOrbEntity xpOrb = new ExperienceOrbEntity(worldIn, pos.getX(), pos.getY(), pos.getZ(), module.xp());
+            worldIn.addEntity(xpOrb);
         }
     }
 
     @Override
-    public void read(NBTTagCompound compound) {
+    public void read(CompoundNBT compound) {
         super.read(compound);
         int connectID = compound.getByte("mConnectTo");
-        mConnectTo = connectID < 0 ? null : EnumFacing.byIndex(connectID);
+        mConnectTo = connectID < 0 ? null : Direction.byIndex(connectID);
         module.xp_$eq(compound.getInt("xpAmount"));
         this.silktouch = compound.getBoolean("silktouch");
         this.fortune = compound.getByte("fortune");
@@ -145,7 +146,7 @@ public class TileExpPump extends APacketTile implements IEnchantableTile, IDebug
     }
 
     @Override
-    public NBTTagCompound write(NBTTagCompound compound) {
+    public CompoundNBT write(CompoundNBT compound) {
         compound.putByte("mConnectTo", Optional.ofNullable(mConnectTo).map(Enum::ordinal).orElse(-1).byteValue());
         compound.putInt("xpAmount", module.xp());
         compound.putBoolean("silktouch", this.silktouch);
