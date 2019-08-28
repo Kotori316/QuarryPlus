@@ -17,27 +17,27 @@ object RenderMarker extends TileEntityRendererFast[TileMarker] {
 
   override def renderTileEntityFast(te: TileMarker, x: Double, y: Double, z: Double, partialTicks: Float, destroyStage: Int, buffer: BufferBuilder): Unit = {
     if (Config.client.enableRender.get()) {
-      Minecraft.getInstance.profiler.startSection("quarryplus")
-      Minecraft.getInstance.profiler.startSection("marker")
+      Minecraft.getInstance.getProfiler.startSection("quarryplus")
+      Minecraft.getInstance.getProfiler.startSection("marker")
 
       val pos = te.getPos
       buffer.setTranslation(x - pos.getX, y - pos.getY, z - pos.getZ)
       if (te.laser != null) {
-        Minecraft.getInstance.profiler.startSection("laser")
+        Minecraft.getInstance.getProfiler.startSection("laser")
         if (te.laser.boxes != null) {
           te.laser.boxes.foreach(_.render(buffer, sprite_B))
         }
-        Minecraft.getInstance.profiler.endSection()
+        Minecraft.getInstance.getProfiler.endSection()
       }
       if (te.link != null) {
-        Minecraft.getInstance.profiler.startSection("link")
+        Minecraft.getInstance.getProfiler.startSection("link")
         if (te.link.boxes != null) {
           te.link.boxes.foreach(_.render(buffer, sprite_R))
         }
-        Minecraft.getInstance.profiler.endSection()
+        Minecraft.getInstance.getProfiler.endSection()
       }
-      Minecraft.getInstance.profiler.endSection()
-      Minecraft.getInstance.profiler.endSection()
+      Minecraft.getInstance.getProfiler.endSection()
+      Minecraft.getInstance.getProfiler.endSection()
     }
   }
 

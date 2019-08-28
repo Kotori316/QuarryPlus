@@ -7,28 +7,30 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.utils.Holder;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.WallTorchBlock;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.BlockFaceShape;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.IWorldReaderBase;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -44,14 +46,14 @@ public class BlockMarker extends Block {
     private static final VoxelShape SOUTH_Shape = VoxelShapes.create(.35, .35, 0, .65, .65, .65);
     private static final VoxelShape WEST_Shape = VoxelShapes.create(.35, .35, .35, 1, .65, .65);
     private static final VoxelShape EAST_Shape = VoxelShapes.create(0.0D, .35, .35, .65, .65, .65);
-    public final ItemBlock itemBlock;
+    public final BlockItem itemBlock;
 
     public BlockMarker() {
-        super(Block.Properties.create(Material.CIRCUITS).lightValue(7));
+        super(Block.Properties.create(Material.MISCELLANEOUS).lightValue(7));
         setRegistryName(QuarryPlus.modID, QuarryPlus.Names.marker);
-        itemBlock = new ItemBlock(this, new Item.Properties().group(Holder.tab()));
+        itemBlock = new BlockItem(this, new Item.Properties().group(Holder.tab()));
         itemBlock.setRegistryName(QuarryPlus.modID, QuarryPlus.Names.marker);
-        setDefaultState(getStateContainer().getBaseState().with(FACING, EnumFacing.NORTH));
+        setDefaultState(getStateContainer().getBaseState().with(FACING, Direction.NORTH));
     }
 
     @Override
@@ -61,12 +63,12 @@ public class BlockMarker extends Block {
 
     //---------- Setting of BlockState ----------
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, IBlockState> builder) {
+    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
         builder.add(FACING);
     }
 
     @Override
-    public IBlockState getStateForPlacement(BlockItemUseContext context) {
+    public BlockState getStateForPlacement(BlockItemUseContext context) {
         return getDefaultState().with(FACING, context.getFace());
     }
 
@@ -74,8 +76,8 @@ public class BlockMarker extends Block {
 
     @Override
     @SuppressWarnings("deprecation")
-    public boolean onBlockActivated(IBlockState state, World worldIn, BlockPos pos, EntityPlayer player,
-                                    EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
+    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos,
+                                    PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
         if (!worldIn.isRemote) {
             TileEntity entity = worldIn.getTileEntity(pos);
             if (entity instanceof TileMarker) {
@@ -83,7 +85,7 @@ public class BlockMarker extends Block {
                 if (!marker.hasLink()) {
                     marker.activated();
                 } else {
-                    player.sendStatusMessage(new TextComponentString(marker.link.toString()), false);
+                    player.sendStatusMessage(new StringTextComponent(marker.link.toString()), false);
                 }
             }
         }
@@ -92,38 +94,33 @@ public class BlockMarker extends Block {
 
     @Override
     @SuppressWarnings("deprecation")
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
+    public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
         if (!worldIn.isRemote) {
             Stream.of(worldIn.getTileEntity(pos))
                 .flatMap(streamCast(TileMarker.class))
                 .forEach(TileMarker::redstoneUpdate);
         }
-        super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
+        super.neighborChanged(state, worldIn, pos, blockIn, fromPos, isMoving);
     }
 
     @Override
-    public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, @Nullable EntityLivingBase placer, ItemStack stack) {
+    public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
         Optional.ofNullable(worldIn.getTileEntity(pos)).flatMap(optCast(TileMarker.class)).ifPresent(TileMarker.requestTicket);
     }
 
     //---------- Setting of TileEntity ----------
     @Override
-    public boolean hasTileEntity(IBlockState state) {
+    public boolean hasTileEntity(BlockState state) {
         return true;
     }
 
     @Override
-    public TileEntity createTileEntity(IBlockState state, IBlockReader world) {
+    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
         return Holder.markerTileType().create();
     }
 
     //---------- Setting of Render ----------
-    @Override
-    @SuppressWarnings("deprecation")
-    public boolean isFullCube(IBlockState state) {
-        return false;
-    }
 
     @Override
     public BlockRenderLayer getRenderLayer() {
@@ -131,15 +128,10 @@ public class BlockMarker extends Block {
     }
 
     //---------- Setting of Block ----------
-    @Override
-    @SuppressWarnings("deprecation")
-    public BlockFaceShape getBlockFaceShape(IBlockReader worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
-        return BlockFaceShape.UNDEFINED;
-    }
 
     @Override
     @SuppressWarnings("deprecation")
-    public VoxelShape getShape(IBlockState state, IBlockReader worldIn, BlockPos pos) {
+    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
         switch (state.get(FACING)) {
             default:
             case UP:
@@ -159,34 +151,34 @@ public class BlockMarker extends Block {
 
     @Override
     @SuppressWarnings("deprecation")
-    public VoxelShape getCollisionShape(IBlockState state, IBlockReader worldIn, BlockPos pos) {
+    public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
         return VoxelShapes.empty();
     }
 
     @Override
     @OnlyIn(Dist.CLIENT)
     @SuppressWarnings("deprecation")
-    public boolean isSideInvisible(IBlockState state, IBlockState adjacentBlockState, EnumFacing side) {
+    public boolean isSideInvisible(BlockState state, BlockState adjacentBlockState, Direction side) {
         return true;
     }
 
     //---------- Setting of Placing block ----------
 
     /**
-     * Just copied from {@link net.minecraft.block.BlockTorchWall}.
+     * Just copied from {@link WallTorchBlock}.
      */
     @Override
     @SuppressWarnings("deprecation")
-    public boolean isValidPosition(IBlockState state, IWorldReaderBase worldIn, BlockPos pos) {
-        EnumFacing enumfacing = state.get(FACING);
-        BlockPos blockpos = pos.offset(enumfacing.getOpposite());
-        IBlockState iblockstate = worldIn.getBlockState(blockpos);
-        return iblockstate.getBlockFaceShape(worldIn, blockpos, enumfacing) == BlockFaceShape.SOLID;
+    public boolean isValidPosition(BlockState state, IWorldReader worldIn, BlockPos pos) {
+        Direction direction = state.get(FACING);
+        BlockPos blockpos = pos.offset(direction.getOpposite());
+        BlockState floorState = worldIn.getBlockState(blockpos);
+        return floorState.func_224755_d(worldIn, blockpos, direction);
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public IBlockState updatePostPlacement(IBlockState stateIn, EnumFacing facing, IBlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
         return !stateIn.isValidPosition(worldIn, currentPos) ? Blocks.AIR.getDefaultState() : stateIn;
     }
 }

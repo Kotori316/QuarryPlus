@@ -53,7 +53,7 @@ public class LinkMessage implements IMessage<LinkMessage> {
             TileMarker.Link boxed = link.setWorld(world);
             ctx.get().enqueueWork(() ->
                 boxed.edges()
-                    .filter(world::isBlockLoaded)
+                    .filter(p -> world.isAreaLoaded(p, 1))
                     .map(world::getTileEntity)
                     .flatMap(streamCast(TileMarker.class))
                     .forEach(marker -> marker.setLink(boxed)));

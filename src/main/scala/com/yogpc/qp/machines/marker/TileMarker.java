@@ -25,7 +25,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -63,15 +63,16 @@ public class TileMarker extends APacketTile implements IMarker, IDebugSender, IC
 
     @Override
     public List<ItemStack> removeFromWorldWithItem() {
+        assert world != null;
         return link.edges().filter(p -> world.getTileEntity(p) instanceof TileMarker)
-            .peek(world::removeBlock)
+            .peek(p -> world.removeBlock(p, false))
             .map(x -> new ItemStack(Holder.blockMarker()))
             .collect(Collectors.toList());
     }
 
     @Override
     public void onLoad() {
-        laser = new Laser(getWorld(), getPos(), this.link);
+        laser = new Laser(getWorld(), getPos(), this.link, false);
     }
 
     @Override
@@ -104,6 +105,7 @@ public class TileMarker extends APacketTile implements IMarker, IDebugSender, IC
 
     public void activated() {
         Link.updateLinks(getWorld(), getPos());
+        assert world != null;
         if (!world.isRemote) {
             PacketHandler.sendToClient(LinkMessage.create(this), getWorld());
         }
@@ -111,17 +113,18 @@ public class TileMarker extends APacketTile implements IMarker, IDebugSender, IC
     }
 
     public void redstoneUpdate() {
-        if (!world.isRemote) {
+        if (world != null && !world.isRemote) {
             PacketHandler.sendToClient(UpdateBoxMessage.create(this, world.isBlockPowered(pos)), getWorld());
         }
     }
 
     public void setLink(Link link) {
         this.link = link;
-        this.laser = new Laser(getWorld(), getPos(), this.link);
+        this.laser = new Laser(getWorld(), getPos(), this.link, true);
     }
 
     public void removeLink() {
+        assert world != null;
         this.link.edges()
             .map(world::getTileEntity)
             .flatMap(streamCast(TileMarker.class))
@@ -135,8 +138,8 @@ public class TileMarker extends APacketTile implements IMarker, IDebugSender, IC
 
     @Override
     public List<? extends ITextComponent> getDebugMessages() {
-        return Arrays.asList(new TextComponentString("Link : " + link),
-            new TextComponentString("Laser : " + laser));
+        return Arrays.asList(new StringTextComponent("Link : " + link),
+            new StringTextComponent("Laser : " + laser));
     }
 
     public static class Laser {
@@ -147,7 +150,7 @@ public class TileMarker extends APacketTile implements IMarker, IDebugSender, IC
         @Nullable // Null in server world.
         public Box[] boxes;
 
-        public Laser(World world, BlockPos pos, @Nullable Link definedLink) {
+        public Laser(World world, BlockPos pos, @Nullable Link definedLink, boolean checkPowered) {
             int px = pos.getX(), py = pos.getY(), pz = pos.getZ();
             final double b = 10d / 16d, c = 6d / 16d;
             if (definedLink == null || !definedLink.hasXLink()) {
@@ -163,7 +166,7 @@ public class TileMarker extends APacketTile implements IMarker, IDebugSender, IC
                 lasers[5] = new AxisAlignedBB(px + 0.5, py + 0.5, pz + b, px + 0.5, py + 0.5, pz + c + MAX_SIZE);
             }
 
-            boxUpdate(world, world.isBlockPowered(pos));
+            boxUpdate(world, checkPowered && world.isBlockPowered(pos));
         }
 
         @Override
@@ -197,12 +200,12 @@ public class TileMarker extends APacketTile implements IMarker, IDebugSender, IC
 
             @Override
             public BlockPos min() {
-                return BlockPos.ORIGIN;
+                return BlockPos.ZERO;
             }
 
             @Override
             public BlockPos max() {
-                return BlockPos.ORIGIN;
+                return BlockPos.ZERO;
             }
 
             @Override
