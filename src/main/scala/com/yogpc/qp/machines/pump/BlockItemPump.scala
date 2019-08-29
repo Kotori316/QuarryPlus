@@ -12,14 +12,13 @@
  */
 package com.yogpc.qp.machines.pump
 
+import com.yogpc.qp.machines.base.BlockItemEnchantable
 import com.yogpc.qp.machines.base.IEnchantableItem.{FORTUNE, SILKTOUCH, UNBREAKING}
-import com.yogpc.qp.machines.base.ItemBlockEnchantable
 import net.minecraft.block.Block
-import net.minecraft.enchantment.EnchantmentHelper
-import net.minecraft.init.Enchantments
+import net.minecraft.enchantment.{EnchantmentHelper, Enchantments}
 import net.minecraft.item.{Item, ItemStack}
 
-class ItemBlockPump(b: Block, prop: Item.Properties) extends ItemBlockEnchantable(b, prop) {
+class BlockItemPump(b: Block, prop: Item.Properties) extends BlockItemEnchantable(b, prop) {
   override def tester(is: ItemStack) =
     if (EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, is) > 0) {
       FORTUNE.negate() and (UNBREAKING or SILKTOUCH)

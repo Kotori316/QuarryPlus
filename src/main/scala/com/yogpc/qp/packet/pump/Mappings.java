@@ -7,7 +7,7 @@ import java.util.function.Supplier;
 import com.yogpc.qp.machines.pump.TilePump;
 import com.yogpc.qp.packet.IMessage;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -19,10 +19,10 @@ public class Mappings {
     public static class All implements IMessage<All> {
         BlockPos pos;
         int dim;
-        EnumFacing facing;
-        EnumMap<EnumFacing, LinkedList<String>> map = new EnumMap<>(EnumFacing.class);
+        Direction facing;
+        EnumMap<Direction, LinkedList<String>> map = new EnumMap<>(Direction.class);
 
-        public static All create(TilePump pump, EnumFacing facing) {
+        public static All create(TilePump pump, Direction facing) {
             All message = new All();
             message.pos = pump.getPos();
             message.dim = IMessage.getDimId(pump.getWorld());
@@ -35,8 +35,8 @@ public class Mappings {
         public All readFromBuffer(PacketBuffer buffer) {
             pos = buffer.readBlockPos();
             dim = buffer.readInt();
-            facing = buffer.readEnumValue(EnumFacing.class);
-            for (EnumFacing VALUE : EnumFacing.values()) {
+            facing = buffer.readEnumValue(Direction.class);
+            for (Direction VALUE : Direction.values()) {
                 int l = buffer.readInt();
                 LinkedList<String> strings = new LinkedList<>();
                 for (int j = 0; j < l; j++) {
@@ -75,12 +75,12 @@ public class Mappings {
     public static class Update implements IMessage<Update> {
 
         Type type;
-        EnumFacing facing;
+        Direction facing;
         BlockPos pos;
         int dim;
         String fluidName;
 
-        public static Update create(TilePump pump, EnumFacing facing, Type type, String fluidName) {
+        public static Update create(TilePump pump, Direction facing, Type type, String fluidName) {
             Update update = new Update();
             update.facing = facing;
             update.pos = pump.getPos();
@@ -93,7 +93,7 @@ public class Mappings {
         @Override
         public Update readFromBuffer(PacketBuffer buffer) {
             pos = buffer.readBlockPos();
-            facing = buffer.readEnumValue(EnumFacing.class);
+            facing = buffer.readEnumValue(Direction.class);
             type = buffer.readEnumValue(Type.class);
             fluidName = buffer.readString(Short.MAX_VALUE);
             dim = buffer.readInt();
@@ -161,10 +161,10 @@ public class Mappings {
 
         BlockPos pos;
         int dim;
-        EnumFacing dest;
+        Direction dest;
         LinkedList<String> list;
 
-        public static Copy create(TilePump pump, EnumFacing dest, LinkedList<String> list) {
+        public static Copy create(TilePump pump, Direction dest, LinkedList<String> list) {
             Copy copy = new Copy();
             copy.dest = dest;
             copy.pos = pump.getPos();
@@ -176,7 +176,7 @@ public class Mappings {
         @Override
         public Copy readFromBuffer(PacketBuffer buffer) {
             pos = buffer.readBlockPos();
-            dest = buffer.readEnumValue(EnumFacing.class);
+            dest = buffer.readEnumValue(Direction.class);
             dim = buffer.readInt();
             int length = buffer.readInt();
             list = new LinkedList<>();

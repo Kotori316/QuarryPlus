@@ -1,19 +1,19 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "quarryplus:pumpplus"
+    "model": "quarryplus:block/pumpplus"
   },
   "variants": {
     "working": {
       "true": {
-        "model": "quarryplus:pumpplus_working"
+        "model": "quarryplus:block/pumpplus_working"
       },
       "false": {
       }
     },
     "enabled": {
       "true": {
-        "model": "quarryplus:pumpplus_enabled"
+        "model": "quarryplus:block/pumpplus_enabled"
       },
       "false": {
       }

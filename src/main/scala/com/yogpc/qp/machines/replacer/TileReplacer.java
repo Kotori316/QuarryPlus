@@ -17,6 +17,7 @@ import com.yogpc.qp.machines.base.IAttachment;
 import com.yogpc.qp.machines.base.IDebugSender;
 import com.yogpc.qp.machines.base.IModule;
 import com.yogpc.qp.machines.base.QPBlock;
+import com.yogpc.qp.machines.pump.TilePump;
 import com.yogpc.qp.utils.Holder;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
@@ -42,7 +43,7 @@ public class TileReplacer extends APacketTile implements IAttachment, IDebugSend
     private static final List<Predicate<BlockState>> rejects = new ArrayList<>(Arrays.asList(
         state -> state.getBlock().hasTileEntity(state),
         state -> state.getMaterial() == Material.MISCELLANEOUS,
-//        TilePump::isLiquid,
+        TilePump::isLiquid,
         always_false()
     ));
     private Direction facing;

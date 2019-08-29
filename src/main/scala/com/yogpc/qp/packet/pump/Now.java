@@ -6,7 +6,7 @@ import com.yogpc.qp.machines.pump.TilePump;
 import com.yogpc.qp.packet.IMessage;
 import javax.annotation.Nullable;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -16,7 +16,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
 public class Now implements IMessage<Now> {
 
     @Nullable
-    EnumFacing facing;
+    Direction facing;
     boolean working;
     BlockPos pos;
     int dim;
@@ -38,7 +38,7 @@ public class Now implements IMessage<Now> {
         if (i == -1) {
             facing = null;
         } else {
-            facing = EnumFacing.byIndex(i);
+            facing = Direction.byIndex(i);
         }
         working = buffer.readBoolean();
         return this;

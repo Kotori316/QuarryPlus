@@ -12,13 +12,11 @@ import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.base.APowerTile;
 import com.yogpc.qp.machines.base.HasStorage;
 import com.yogpc.qp.machines.base.IModule;
-import com.yogpc.qp.machines.quarry.TileQuarry;
-import com.yogpc.qp.machines.quarry.TileQuarry2;
 import com.yogpc.qp.utils.Holder;
 import javax.annotation.Nullable;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.fluid.IFluidState;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkSection;
@@ -68,7 +66,7 @@ public abstract class PumpModule implements IModule {
             if (when instanceof BeforeBreak) {
                 BeforeBreak beforeBreak = (BeforeBreak) when;
                 BlockPos target = beforeBreak.pos();
-                IBlockState state = beforeBreak.world().getBlockState(target);
+                BlockState state = beforeBreak.world().getBlockState(target);
                 if (TilePump.isLiquid(state)) {
                     return pump.S_removeLiquids(tile, target.getX(), target.getY(), target.getZ());
                 }
@@ -95,7 +93,7 @@ public abstract class PumpModule implements IModule {
             if (when instanceof BeforeBreak) {
                 BeforeBreak beforeBreak = (BeforeBreak) when;
                 BlockPos target = beforeBreak.pos();
-                IBlockState state = beforeBreak.world().getBlockState(target);
+                BlockState state = beforeBreak.world().getBlockState(target);
                 if (TilePump.isLiquid(state)) {
                     world = tile.getWorld();
                     return S_removeLiquids(tile, target.getX(), target.getY(), target.getZ());
@@ -151,8 +149,8 @@ public abstract class PumpModule implements IModule {
             this.px = -1;
             final APowerTile tb = G_connected();
             @Nullable RangeWrapper b = null;
-            if (tb instanceof TileQuarry || tb instanceof TileQuarry2)
-                b = RangeWrapper.of(tb);
+//            if (tb instanceof TileQuarry || tb instanceof TileQuarry2)
+//                b = RangeWrapper.of(tb);
             int range = 0;
             if (b != null && b.yMax != Integer.MIN_VALUE) {
                 chunk_side_x = 1 + (b.xMax >> 4) - (b.xMin >> 4);
@@ -190,15 +188,15 @@ public abstract class PumpModule implements IModule {
             for (kx = 0; kx < chunk_side_x; kx++)
                 for (kz = 0; kz < chunk_side_z; kz++)
                     this.storageArray[kx][kz] = world.getChunkProvider()
-                        .getChunk(kx + (this.xOffset >> 4), kz + (this.zOffset >> 4), true, false)
+                        .getChunk(kx + (this.xOffset >> 4), kz + (this.zOffset >> 4), true)
                         .getSections();
             S_put(x - this.xOffset, y, z - this.zOffset);
-            IBlockState b_c;
+            BlockState b_c;
             ChunkSection ebs_c;
             while (cp != cg) {
                 ebs_c = this.storageArray[xb[cg] >> 4][zb[cg] >> 4][yb[cg] >> 4];
                 if (ebs_c != null) {
-                    b_c = ebs_c.get(xb[cg] & 0xF, yb[cg] & 0xF, zb[cg] & 0xF);
+                    b_c = ebs_c.getBlockState(xb[cg] & 0xF, yb[cg] & 0xF, zb[cg] & 0xF);
                     if (this.blocks[yb[cg] - this.yOffset][xb[cg]][zb[cg]] == 0 && TilePump.isLiquid(b_c)) {
                         this.blocks[yb[cg] - this.yOffset][xb[cg]][zb[cg]] = 0x3F;
 
@@ -241,14 +239,14 @@ public abstract class PumpModule implements IModule {
                 for (int kx = 0; kx < this.storageArray.length; kx++) {
                     for (int kz = 0; kz < this.storageArray[0].length; kz++) {
                         this.storageArray[kx][kz] = world.getChunkProvider()
-                            .getChunk(kx + (this.xOffset >> 4), kz + (this.zOffset >> 4), true, false)
+                            .getChunk(kx + (this.xOffset >> 4), kz + (this.zOffset >> 4), true)
                             .getSections();
                     }
                 }
             }
 
             int count = 0;
-            IBlockState bb;
+            BlockState bb;
             int bz;
             do {
                 do {
@@ -257,7 +255,7 @@ public abstract class PumpModule implements IModule {
                         for (bx = 0; bx < this.block_side_x; bx++)
                             for (bz = 0; bz < this.block_side_z; bz++)
                                 if ((this.blocks[this.py - this.yOffset][bx][bz] & 0x40) != 0) {
-                                    bb = this.storageArray[bx >> 4][bz >> 4][this.py >> 4].get(bx & 0xF, this.py & 0xF, bz & 0xF);
+                                    bb = this.storageArray[bx >> 4][bz >> 4][this.py >> 4].getBlockState(bx & 0xF, this.py & 0xF, bz & 0xF);
                                     if (TilePump.isLiquid(bb))
                                         count++;
                                 }
@@ -265,7 +263,7 @@ public abstract class PumpModule implements IModule {
                         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
                         for (bz = 0; bz < this.block_side_z; bz++)
                             if (this.blocks[this.py - this.yOffset][this.px][bz] != 0) {
-                                bb = this.storageArray[this.px >> 4][bz >> 4][this.py >> 4].get(this.px & 0xF, this.py & 0xF, bz & 0xF);
+                                bb = this.storageArray[this.px >> 4][bz >> 4][this.py >> 4].getBlockState(this.px & 0xF, this.py & 0xF, bz & 0xF);
                                 mutableBlockPos.setPos(this.px + this.xOffset, this.py, bz + this.zOffset);
                                 if (TilePump.isLiquid(bb, Config.common().removeOnlySource().get(), world, mutableBlockPos))
                                     count++;
@@ -286,7 +284,7 @@ public abstract class PumpModule implements IModule {
                         for (bz = 0; bz < this.block_side_z; bz++)
                             if ((this.blocks[this.py - this.yOffset][bx][bz] & 0x40) != 0) {
                                 drainBlock(bx, bz, Holder.blockFrame().getDammingState());
-                                if (tile instanceof TileQuarry || tile instanceof TileQuarry2) {
+                                /*if (tile instanceof TileQuarry || tile instanceof TileQuarry2) {
                                     RangeWrapper wrapper = RangeWrapper.of(tile);
                                     int xTarget = bx + xOffset;
                                     int zTarget = bz + zOffset;
@@ -303,7 +301,7 @@ public abstract class PumpModule implements IModule {
                                         }
                                         autoChange(false);
                                     }
-                                }
+                                }*/
                             }
                 } else
                     for (bz = 0; bz < this.block_side_z; bz++)
@@ -322,8 +320,8 @@ public abstract class PumpModule implements IModule {
             }
         }
 
-        private void drainBlock(final int bx, final int bz, final IBlockState tb) {
-            if (TilePump.isLiquid(this.storageArray[bx >> 4][bz >> 4][this.py >> 4].get(bx & 0xF, this.py & 0xF, bz & 0xF))) {
+        private void drainBlock(final int bx, final int bz, final BlockState tb) {
+            if (TilePump.isLiquid(this.storageArray[bx >> 4][bz >> 4][this.py >> 4].getBlockState(bx & 0xF, this.py & 0xF, bz & 0xF))) {
                 BlockPos blockPos = new BlockPos(bx + xOffset, py, bz + zOffset);
             /*FluidUtil.getFluidHandler(world, blockPos, EnumFacing.UP).ifPresent(handler -> {
                 FluidStack stack = handler.drain(Fluid.BUCKET_VOLUME, true);

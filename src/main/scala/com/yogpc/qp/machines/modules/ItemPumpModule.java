@@ -10,17 +10,17 @@ import com.yogpc.qp.machines.base.IModule;
 import com.yogpc.qp.machines.pump.PumpModule;
 import com.yogpc.qp.utils.Holder;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.init.Enchantments;
-import net.minecraft.item.EnumRarity;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Rarity;
 import scala.Symbol;
 
 public class ItemPumpModule extends Item implements IDisabled, IModuleItem {
     public static final Symbol SYMBOL = Symbol.apply("ModulePump");
 
     public ItemPumpModule() {
-        super(new Properties().group(Holder.tab()).rarity(EnumRarity.UNCOMMON));
+        super(new Properties().group(Holder.tab()).rarity(Rarity.UNCOMMON));
         setRegistryName(QuarryPlus.modID, QuarryPlus.Names.pumpModule);
     }
 

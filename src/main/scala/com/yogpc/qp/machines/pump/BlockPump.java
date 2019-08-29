@@ -13,7 +13,6 @@
 
 package com.yogpc.qp.machines.pump;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,22 +24,19 @@ import com.yogpc.qp.machines.base.QPBlock;
 import com.yogpc.qp.utils.Holder;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.NonNullList;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
@@ -49,16 +45,14 @@ import static net.minecraft.state.properties.BlockStateProperties.ENABLED;
 public class BlockPump extends QPBlock {
 
     public BlockPump() {
-        super(Properties.create(Material.IRON).hardnessAndResistance(5f), QuarryPlus.Names.pump, ItemBlockPump::new);
+        super(Properties.create(Material.IRON).hardnessAndResistance(5f), QuarryPlus.Names.pump, BlockItemPump::new);
         setDefaultState(getStateContainer().getBaseState().with(QPBlock.WORKING(), false).with(ENABLED, false));
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, IBlockState> builder) {
+    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
         builder.add(QPBlock.WORKING(), ENABLED);
     }
-
-    private final ArrayList<ItemStack> drop = new ArrayList<>();
 
     @Nullable
     @Override
@@ -67,41 +61,24 @@ public class BlockPump extends QPBlock {
     }
 
     @Override
-    public void onReplaced(IBlockState state, World worldIn, BlockPos pos, IBlockState newState, boolean isMoving) {
-        if (state.getBlock() != newState.getBlock()) {
-            this.drop.clear();
-            Optional.ofNullable((TilePump) worldIn.getTileEntity(pos)).ifPresent(pump -> {
-                ItemStack stack = new ItemStack(this, 1);
-                IEnchantableTile.Util.enchantmentToIS(pump, stack);
-                drop.add(stack);
-            });
-            super.onReplaced(state, worldIn, pos, newState, isMoving);
-        }
-    }
-
-    @Override
-    public void getDrops(IBlockState state, NonNullList<ItemStack> drops, World world, BlockPos pos, int fortune) {
-        drops.addAll(this.drop);
-    }
-
-    @Override
-    public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+    public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
         Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(IEnchantableTile.Util.initConsumer(stack));
     }
 
-    @SuppressWarnings({"deprecation"})
     @Override
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
-        super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
+    @SuppressWarnings({"deprecation"})
+    public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean b) {
+        super.neighborChanged(state, worldIn, pos, blockIn, fromPos, b);
         Optional.ofNullable((TilePump) worldIn.getTileEntity(pos)).ifPresent(TilePump::G_ReInit);
     }
 
     @Override
-    public boolean onBlockActivated(IBlockState state, World worldIn, BlockPos pos, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
-        if (super.onBlockActivated(state, worldIn, pos, player, hand, side, hitX, hitY, hitZ)) return true;
+    @SuppressWarnings({"deprecation"})
+    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+        if (super.onBlockActivated(state, worldIn, pos, player, hand, hit)) return true;
         ItemStack stack = player.getHeldItem(hand);
-        if (BuildcraftHelper.isWrench(player, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), side, pos))) {
+        if (BuildcraftHelper.isWrench(player, hand, stack, hit)) {
             if (!worldIn.isRemote)
                 Optional.ofNullable((TilePump) worldIn.getTileEntity(pos)).ifPresent(pump -> pump.S_changeRange(player));
             return true;
@@ -116,7 +93,7 @@ public class BlockPump extends QPBlock {
             }
             return true;
         } else if (stack.getItem() == Holder.itemLiquidSelector()) {
-            if(!worldIn.isRemote){
+            if (!worldIn.isRemote) {
                 TilePump pump = (TilePump) worldIn.getTileEntity(pos);
                 if (pump != null) {
 //                QuarryPlus.proxy.openPumpGui(worldIn, playerIn, facing, pump);
@@ -130,7 +107,7 @@ public class BlockPump extends QPBlock {
     @Override
     public void addInformation(ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         super.addInformation(stack, worldIn, tooltip, flagIn);
-        tooltip.add(new TextComponentTranslation(TranslationKeys.TOOLTIP_PUMP, new TextComponentTranslation(TranslationKeys.quarry), ' '));
+        tooltip.add(new TranslationTextComponent(TranslationKeys.TOOLTIP_PUMP, new TranslationTextComponent(TranslationKeys.quarry), ' '));
     }
 
 }

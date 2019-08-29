@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.yogpc.qp.Config;
-import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.FluidStore;
 import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.TranslationKeys;
@@ -36,8 +35,6 @@ import com.yogpc.qp.machines.base.IDummyFluidHandler;
 import com.yogpc.qp.machines.base.IEnchantableTile;
 import com.yogpc.qp.machines.base.IModule;
 import com.yogpc.qp.machines.base.QPBlock;
-import com.yogpc.qp.machines.quarry.TileQuarry;
-import com.yogpc.qp.machines.quarry.TileQuarry2;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.pump.Mappings;
 import com.yogpc.qp.packet.pump.Now;
@@ -45,24 +42,24 @@ import com.yogpc.qp.utils.Holder;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockFlowingFluid;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.FlowingFluidBlock;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.fluid.IFluidState;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Fluids;
-import net.minecraft.nbt.INBTBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagString;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.StringNBT;
 import net.minecraft.state.properties.BlockStateProperties;
+import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraftforge.common.capabilities.Capability;
@@ -75,24 +72,24 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import scala.Symbol;
 
-public class TilePump extends APacketTile implements IEnchantableTile, ITickable, IDebugSender, IAttachment {
+public class TilePump extends APacketTile implements IEnchantableTile, ITickableTileEntity, IDebugSender, IAttachment {
     public static final Symbol SYMBOL = Symbol.apply("PumpPlus");
     @Nullable
-    public EnumFacing connectTo = null;
+    public Direction connectTo = null;
     private boolean initialized = false;
 
-    private EnumFacing preFacing;
+    private Direction preFacing;
 
     public byte unbreaking;
     protected byte fortune;
     protected boolean silktouch;
     private final List<FluidStack> liquids = new ArrayList<>();
-    public final EnumMap<EnumFacing, LinkedList<String>> mapping = new EnumMap<>(EnumFacing.class);
+    public final EnumMap<Direction, LinkedList<String>> mapping = new EnumMap<>(Direction.class);
 //    public final EnumMap<EnumFacing, PumpTank> tankMap = new EnumMap<>(EnumFacing.class);
 
     public TilePump() {
         super(Holder.pumpTileType());
-        for (EnumFacing value : EnumFacing.values()) {
+        for (Direction value : Direction.values()) {
 //            tankMap.put(value, new PumpTank(value));
             mapping.put(value, new LinkedList<>());
         }
@@ -118,47 +115,47 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     }
 
     @Override
-    public void read(final NBTTagCompound nbt) {
+    public void read(final CompoundNBT nbt) {
         super.read(nbt);
         this.silktouch = nbt.getBoolean("silktouch");
         this.fortune = nbt.getByte("fortune");
         this.unbreaking = nbt.getByte("unbreaking");
         if (nbt.contains("connectTo")) {
-            setConnectTo(EnumFacing.byIndex(nbt.getByte("connectTo")));
+            setConnectTo(Direction.byIndex(nbt.getByte("connectTo")));
             preFacing = this.connectTo;
         }
-        if (nbt.get("mapping0") instanceof NBTTagList)
+        if (nbt.get("mapping0") instanceof ListNBT)
             for (int i = 0; i < this.mapping.size(); i++) {
-                LinkedList<String> list = this.mapping.get(EnumFacing.byIndex(i));
+                LinkedList<String> list = this.mapping.get(Direction.byIndex(i));
                 list.clear();
-                list.addAll(nbt.getList("mapping" + i, Constants.NBT.TAG_STRING).stream().map(INBTBase::getString).collect(Collectors.toList()));
+                list.addAll(nbt.getList("mapping" + i, Constants.NBT.TAG_STRING).stream().map(INBT::getString).collect(Collectors.toList()));
             }
         this.range = nbt.getByte("range");
         this.quarryRange = nbt.getBoolean("quarryRange");
         this.autoChangedRange = nbt.getBoolean("autoChangedRange");
         if (this.silktouch) {
             this.liquids.clear();
-            final NBTTagList liquids = nbt.getList("liquids", Constants.NBT.TAG_COMPOUND);
+            final ListNBT liquids = nbt.getList("liquids", Constants.NBT.TAG_COMPOUND);
             for (int i = 0; i < liquids.size(); i++)
                 this.liquids.add(FluidStack.loadFluidStackFromNBT(liquids.getCompound(i)));
         }
     }
 
     @Override
-    public NBTTagCompound write(final NBTTagCompound nbt) {
+    public CompoundNBT write(final CompoundNBT nbt) {
         nbt.putBoolean("silktouch", this.silktouch);
         nbt.putByte("fortune", this.fortune);
         nbt.putByte("unbreaking", this.unbreaking);
         if (connectTo != null)
             nbt.putByte("connectTo", (byte) this.connectTo.ordinal());
         for (int i = 0; i < this.mapping.size(); i++)
-            nbt.put("mapping" + i, this.mapping.get(EnumFacing.byIndex(i)).stream().map(NBTTagString::new).collect(Collectors.toCollection(NBTTagList::new)));
+            nbt.put("mapping" + i, this.mapping.get(Direction.byIndex(i)).stream().map(StringNBT::new).collect(Collectors.toCollection(ListNBT::new)));
         nbt.putByte("range", this.range);
         nbt.putBoolean("quarryRange", this.quarryRange);
         nbt.putBoolean("autoChangedRange", this.autoChangedRange);
         if (this.silktouch) {
             nbt.put("liquids",
-                this.liquids.stream().map(f -> f.writeToNBT(new NBTTagCompound())).collect(Collectors.toCollection(NBTTagList::new)));
+                this.liquids.stream().map(f -> f.writeToNBT(new CompoundNBT())).collect(Collectors.toCollection(ListNBT::new)));
         }
         return super.write(nbt);
     }
@@ -206,7 +203,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     public void G_ReInit() {
         if (!world.isRemote) {
             TileEntity te;
-            for (EnumFacing facing : EnumFacing.values()) {
+            for (Direction facing : Direction.values()) {
                 te = world.getTileEntity(getPos().offset(facing));
                 if (te instanceof IAttachable && ((IAttachable) te).connect(facing.getOpposite(), Attachments.FLUID_PUMP)) {
                     setConnectTo(facing);
@@ -229,10 +226,10 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     }
 
     @Override
-    public void setConnectTo(@Nullable EnumFacing connectTo) {
+    public void setConnectTo(@Nullable Direction connectTo) {
         this.connectTo = connectTo;
         if (hasWorld()) {
-            IBlockState state = world.getBlockState(getPos());
+            BlockState state = world.getBlockState(getPos());
             if (connectTo != null ^ state.get(BlockStateProperties.ENABLED)) {
                 world.setBlockState(getPos(), state.with(BlockStateProperties.ENABLED, connectTo != null));
             }
@@ -251,12 +248,12 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
             this.py = Integer.MIN_VALUE;
         }
         if (!world.isRemote) {
-            IBlockState state = world.getBlockState(getPos());
+            BlockState state = world.getBlockState(getPos());
             world.setBlockState(getPos(), state.with(QPBlock.WORKING(), b));
         }
     }
 
-    public void S_OpenGUI(EnumFacing facing, final EntityPlayer ep) {
+    public void S_OpenGUI(Direction facing, final PlayerEntity ep) {
         PacketHandler.sendToClient(Mappings.All.create(this, facing), world);
     }
 
@@ -281,19 +278,19 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     private static int cp = 0;
     private long fwt;
 
-    public void S_changeRange(final EntityPlayer ep) {
+    public void S_changeRange(final PlayerEntity ep) {
         if (this.range >= (this.fortune + 1) * 2) {
-            if (G_connected() instanceof TileQuarry || G_connected() instanceof TileQuarry2)
-                this.quarryRange = true;
+//            if (G_connected() instanceof TileQuarry || G_connected() instanceof TileQuarry2)
+//                this.quarryRange = true;
             this.range = 0;
         } else if (this.quarryRange)
             this.quarryRange = false;
         else
             this.range++;
         if (this.quarryRange)
-            ep.sendStatusMessage(new TextComponentTranslation(TranslationKeys.PUMP_RTOGGLE_QUARRY), false);
+            ep.sendStatusMessage(new TranslationTextComponent(TranslationKeys.PUMP_RTOGGLE_QUARRY), false);
         else
-            ep.sendStatusMessage(new TextComponentTranslation(TranslationKeys.PUMP_RTOGGLE_NUM, Integer.toString(this.range * 2 + 1)), false);
+            ep.sendStatusMessage(new TranslationTextComponent(TranslationKeys.PUMP_RTOGGLE_NUM, Integer.toString(this.range * 2 + 1)), false);
         this.fwt = 0;
     }
 
@@ -320,8 +317,8 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         this.px = -1;
         final IAttachable tb = G_connected();
         @Nullable RangeWrapper b = null;
-        if (tb instanceof TileQuarry || tb instanceof TileQuarry2)
-            b = RangeWrapper.of(tb);
+//        if (tb instanceof TileQuarry || tb instanceof TileQuarry2)
+//            b = RangeWrapper.of(tb);
         if (b != null && b.yMax != Integer.MIN_VALUE) {
             chunk_side_x = 1 + (b.xMax >> 4) - (b.xMin >> 4);
             chunk_side_z = 1 + (b.zMax >> 4) - (b.zMin >> 4);
@@ -358,15 +355,15 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         for (kx = 0; kx < chunk_side_x; kx++)
             for (kz = 0; kz < chunk_side_z; kz++)
                 this.storageArray[kx][kz] = world.getChunkProvider()
-                    .getChunk(kx + (this.xOffset >> 4), kz + (this.zOffset >> 4), true, false)
+                    .getChunk(kx + (this.xOffset >> 4), kz + (this.zOffset >> 4), true)
                     .getSections();
         S_put(x - this.xOffset, y, z - this.zOffset);
-        IBlockState b_c;
+        BlockState b_c;
         ChunkSection ebs_c;
         while (cp != cg) {
             ebs_c = this.storageArray[xb[cg] >> 4][zb[cg] >> 4][yb[cg] >> 4];
             if (ebs_c != null) {
-                b_c = ebs_c.get(xb[cg] & 0xF, yb[cg] & 0xF, zb[cg] & 0xF);
+                b_c = ebs_c.getBlockState(xb[cg] & 0xF, yb[cg] & 0xF, zb[cg] & 0xF);
                 if (this.blocks[yb[cg] - this.yOffset][xb[cg]][zb[cg]] == 0 && isLiquid(b_c)) {
                     this.blocks[yb[cg] - this.yOffset][xb[cg]][zb[cg]] = 0x3F;
 
@@ -410,14 +407,14 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
             for (int kx = 0; kx < this.storageArray.length; kx++) {
                 for (int kz = 0; kz < this.storageArray[0].length; kz++) {
                     this.storageArray[kx][kz] = world.getChunkProvider()
-                        .getChunk(kx + (this.xOffset >> 4), kz + (this.zOffset >> 4), true, false)
+                        .getChunk(kx + (this.xOffset >> 4), kz + (this.zOffset >> 4), true)
                         .getSections();
                 }
             }
         }
 
         int count = 0;
-        IBlockState bb;
+        BlockState bb;
         int bz;
         do {
             do {
@@ -426,7 +423,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                     for (bx = 0; bx < this.block_side_x; bx++)
                         for (bz = 0; bz < this.block_side_z; bz++)
                             if ((this.blocks[this.py - this.yOffset][bx][bz] & 0x40) != 0) {
-                                bb = this.storageArray[bx >> 4][bz >> 4][this.py >> 4].get(bx & 0xF, this.py & 0xF, bz & 0xF);
+                                bb = this.storageArray[bx >> 4][bz >> 4][this.py >> 4].getBlockState(bx & 0xF, this.py & 0xF, bz & 0xF);
                                 if (isLiquid(bb))
                                     count++;
                             }
@@ -434,7 +431,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                     BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
                     for (bz = 0; bz < this.block_side_z; bz++)
                         if (this.blocks[this.py - this.yOffset][this.px][bz] != 0) {
-                            bb = this.storageArray[this.px >> 4][bz >> 4][this.py >> 4].get(this.px & 0xF, this.py & 0xF, bz & 0xF);
+                            bb = this.storageArray[this.px >> 4][bz >> 4][this.py >> 4].getBlockState(this.px & 0xF, this.py & 0xF, bz & 0xF);
                             mutableBlockPos.setPos(this.px + this.xOffset, this.py, bz + this.zOffset);
                             if (isLiquid(bb, Config.common().removeOnlySource().get(), world, mutableBlockPos))
                                 count++;
@@ -455,7 +452,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                     for (bz = 0; bz < this.block_side_z; bz++)
                         if ((this.blocks[this.py - this.yOffset][bx][bz] & 0x40) != 0) {
                             drainBlock(bx, bz, Holder.blockFrame().getDammingState());
-                            if (tile instanceof TileQuarry || tile instanceof TileQuarry2) {
+                            /*if (tile instanceof TileQuarry || tile instanceof TileQuarry2) {
                                 RangeWrapper wrapper = RangeWrapper.of(tile);
                                 int xTarget = bx + xOffset;
                                 int zTarget = bz + zOffset;
@@ -472,7 +469,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                                     }
                                     autoChange(false);
                                 }
-                            }
+                            }*/
                         }
             } else
                 for (bz = 0; bz < this.block_side_z; bz++)
@@ -501,18 +498,18 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
      * @param pos        When source is false, it can be any value.
      * @return true if the blockstate is liquid state.
      */
-    public static boolean isLiquid(@Nonnull final IBlockState state, final boolean findSource, final World world, final BlockPos pos) {
+    public static boolean isLiquid(@Nonnull final BlockState state, final boolean findSource, final World world, final BlockPos pos) {
         if (state.getFluidState() != Fluids.EMPTY.getDefaultState()) return true;
         Block block = state.getBlock();
         if (block instanceof IFluidBlock)
             return !findSource || ((IFluidBlock) block).canDrain(world, pos);
         else {
             return (block == Blocks.WATER || block == Blocks.LAVA || state.getMaterial().isLiquid())
-                && (!findSource || state.get(BlockFlowingFluid.LEVEL) == 0);
+                && (!findSource || state.get(FlowingFluidBlock.LEVEL) == 0);
         }
     }
 
-    public static boolean isLiquid(@Nonnull IBlockState state) {
+    public static boolean isLiquid(@Nonnull BlockState state) {
         return isLiquid(state, false, null, null);
     }
 
@@ -619,8 +616,8 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
 
     }*/
 
-    private void drainBlock(final int bx, final int bz, final IBlockState tb) {
-        if (isLiquid(this.storageArray[bx >> 4][bz >> 4][this.py >> 4].get(bx & 0xF, this.py & 0xF, bz & 0xF))) {
+    private void drainBlock(final int bx, final int bz, final BlockState tb) {
+        if (isLiquid(this.storageArray[bx >> 4][bz >> 4][this.py >> 4].getBlockState(bx & 0xF, this.py & 0xF, bz & 0xF))) {
             BlockPos blockPos = new BlockPos(bx + xOffset, py, bz + zOffset);
             /*FluidUtil.getFluidHandler(world, blockPos, EnumFacing.UP).ifPresent(handler -> {
                 FluidStack stack = handler.drain(Fluid.BUCKET_VOLUME, true);
@@ -634,10 +631,11 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
             });*/
             IFluidState fluidState = world.getFluidState(blockPos);
             if (fluidState.isSource()) {
-                if (G_connected() instanceof TileQuarry2) {
+                /*if (G_connected() instanceof TileQuarry2) {
                     TileQuarry2 quarry2 = (TileQuarry2) G_connected();
                     quarry2.getStorage().insertFluid(fluidState.getFluid(), FluidStore.AMOUNT);
-                } else {
+                } else */
+                {
                     FluidStore.injectToNearTile(world, pos, fluidState.getFluid());
                 }
             }
@@ -648,12 +646,12 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     public List<ITextComponent> C_getNames() {
         if (!liquids.isEmpty()) {
             List<ITextComponent> list = new ArrayList<>(liquids.size() + 1);
-            list.add(new TextComponentTranslation(TranslationKeys.PUMP_CONTAIN));
-            liquids.forEach(s -> list.add(new TextComponentTranslation(TranslationKeys.LIQUID_FORMAT,
-                new TextComponentTranslation(s.getUnlocalizedName()), Integer.toString(s.amount))));
+            list.add(new TranslationTextComponent(TranslationKeys.PUMP_CONTAIN));
+            liquids.forEach(s -> list.add(new TranslationTextComponent(TranslationKeys.LIQUID_FORMAT,
+                new TranslationTextComponent(s.getUnlocalizedName()), Integer.toString(s.amount))));
             return list;
         } else {
-            return Collections.singletonList(new TextComponentTranslation(TranslationKeys.PUMP_CONTAIN_NO));
+            return Collections.singletonList(new TranslationTextComponent(TranslationKeys.PUMP_CONTAIN_NO));
         }
     }
 
@@ -661,18 +659,18 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     public List<ITextComponent> getDebugMessages() {
         ArrayList<ITextComponent> list = new ArrayList<>();
         list.add(toComponentString.apply("Connection : " + this.connectTo));
-        for (EnumFacing facing : EnumFacing.values()) {
+        for (Direction facing : Direction.values()) {
             this.mapping.get(facing).stream()
                 .reduce(combiner).map(toComponentString)
                 .ifPresent(list::add);
         }
         if (!liquids.isEmpty()) {
-            list.add(new TextComponentTranslation(TranslationKeys.PUMP_CONTAIN));
+            list.add(new TranslationTextComponent(TranslationKeys.PUMP_CONTAIN));
             liquids.stream().map(fluidStack -> fluidStack.getLocalizedName() + fluidStack.amount + "mB")
                 .reduce(combiner).map(toComponentString)
                 .ifPresent(list::add);
         } else {
-            list.add(new TextComponentTranslation(TranslationKeys.PUMP_CONTAIN_NO));
+            list.add(new TranslationTextComponent(TranslationKeys.PUMP_CONTAIN_NO));
         }
         return list;
     }
@@ -715,7 +713,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
 
     @Nonnull
     @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable EnumFacing side) {
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
 //        if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
 //            return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.orEmpty(cap, LazyOptional.of(() -> side == null ? tankAll : tankMap.get(side)));
 //        }
