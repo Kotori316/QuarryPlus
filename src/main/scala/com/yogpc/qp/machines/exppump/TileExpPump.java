@@ -23,6 +23,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.item.ExperienceOrbEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -34,7 +35,7 @@ import static jp.t2v.lab.syntax.MapStreamSyntax.byValue;
 import static jp.t2v.lab.syntax.MapStreamSyntax.values;
 import static net.minecraft.state.properties.BlockStateProperties.ENABLED;
 
-public class TileExpPump extends APacketTile implements IEnchantableTile, IDebugSender, IAttachment {
+public class TileExpPump extends APacketTile implements IEnchantableTile, IDebugSender, IAttachment, ITickableTileEntity {
     @Nullable
     private Direction mConnectTo;
     private ExpPumpModule module = ExpPumpModule.apply(v1 -> true, () -> this.unbreaking);
@@ -42,6 +43,7 @@ public class TileExpPump extends APacketTile implements IEnchantableTile, IDebug
     private int fortune = 0;
     private int unbreaking = 0;
     private boolean silktouch = false;
+    private boolean loading = false;
 
     public TileExpPump() {
         super(Holder.expPumpTileType());
@@ -138,6 +140,7 @@ public class TileExpPump extends APacketTile implements IEnchantableTile, IDebug
         this.silktouch = compound.getBoolean("silktouch");
         this.fortune = compound.getByte("fortune");
         this.unbreaking = compound.getByte("unbreaking");
+        loading = true;
     }
 
     @Override
@@ -179,4 +182,11 @@ public class TileExpPump extends APacketTile implements IEnchantableTile, IDebug
         return module.xp();
     }
 
+    @Override
+    public void tick() {
+        if (loading) {
+            loading = false;
+            refreshConnection();
+        }
+    }
 }

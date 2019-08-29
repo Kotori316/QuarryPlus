@@ -22,6 +22,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -35,7 +36,7 @@ import static jp.t2v.lab.syntax.MapStreamSyntax.byValue;
 import static jp.t2v.lab.syntax.MapStreamSyntax.not;
 import static jp.t2v.lab.syntax.MapStreamSyntax.values;
 
-public class TileReplacer extends APacketTile implements IAttachment, IDebugSender {
+public class TileReplacer extends APacketTile implements IAttachment, IDebugSender, ITickableTileEntity {
 
     public static final Symbol SYMBOL = Symbol.apply("Replacer");
     private static final List<Predicate<BlockState>> rejects = new ArrayList<>(Arrays.asList(
@@ -126,5 +127,13 @@ public class TileReplacer extends APacketTile implements IAttachment, IDebugSend
             "toReplaceState: " + getReplaceState(),
             "Module: " + module
         ).map(StringTextComponent::new).collect(Collectors.toList());
+    }
+
+    @Override
+    public void tick() {
+        if (loading) {
+            loading = false;
+            connection();
+        }
     }
 }
