@@ -25,8 +25,10 @@ import java.util.stream.Collectors;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
+import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.TranslationKeys;
+import com.yogpc.qp.machines.bookmover.BlockBookMover;
 import javax.annotation.Nonnull;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.player.PlayerEntity;
@@ -90,7 +92,7 @@ public interface IEnchantableTile {
     default ItemStack getEnchantedPickaxe() {
         ItemStack stack = new ItemStack(Items.DIAMOND_PICKAXE);
         getEnchantments().entrySet().stream()
-            .filter(byEntry(/*Config.common().disabled().apply(BlockBookMover.SYMBOL).get()*/ false ? isValidEnch : (k, v) -> true))
+            .filter(byEntry(Config.common().disabled().apply(BlockBookMover.SYMBOL).get() ? isValidEnch : (k, v) -> true))
             .map(keys(ForgeRegistries.ENCHANTMENTS::getValue))
             .filter(byKey(Objects::nonNull))
             .forEach(entry(stack::addEnchantment));
