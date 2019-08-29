@@ -14,7 +14,7 @@ import com.yogpc.qp.machines.replacer.TileReplacer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 
 import static jp.t2v.lab.syntax.MapStreamSyntax.optCast;
 
