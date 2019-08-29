@@ -2,7 +2,6 @@ package com.yogpc.qp.machines.workbench
 
 import java.nio.charset.StandardCharsets
 import java.util
-import java.util.concurrent.{CompletableFuture, Executor}
 import java.util.{Collections, Comparator}
 
 import cats._
@@ -17,7 +16,7 @@ import net.minecraft.item.crafting.{IRecipe, IRecipeSerializer, IRecipeType}
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.network.PacketBuffer
 import net.minecraft.profiler.IProfiler
-import net.minecraft.resources.{IFutureReloadListener, IResource, IResourceManager}
+import net.minecraft.resources.{IResource, IResourceManager}
 import net.minecraft.util.{JSONUtils, ResourceLocation}
 import net.minecraft.world.World
 import net.minecraftforge.common.crafting.CraftingHelper
@@ -263,11 +262,4 @@ object WorkbenchRecipes {
     }
   }
 
-  def onServerReload(stage: IFutureReloadListener.IStage, resourceManager: IResourceManager, preparationsProfiler: IProfiler,
-                     reloadProfiler: IProfiler, backgroundExecutor: Executor, gameExecutor: Executor): CompletableFuture[Void] =
-    stage.markCompleteAwaitingOthers(net.minecraft.util.Unit.INSTANCE).thenRunAsync(() => {
-
-      registerJsonRecipe(resourceManager)
-
-    }, backgroundExecutor)
 }
