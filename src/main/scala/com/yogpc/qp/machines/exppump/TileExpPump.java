@@ -80,11 +80,6 @@ public class TileExpPump extends APacketTile implements IEnchantableTile, IDebug
     }
 
     @Override
-    public void onLoad() {
-        refreshConnection();
-    }
-
-    @Override
     public void G_ReInit() {
         refreshConnection();
     }
