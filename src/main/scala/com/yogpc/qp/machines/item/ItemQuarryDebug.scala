@@ -14,7 +14,7 @@ class ItemQuarryDebug extends Item((new Item.Properties).group(Holder.tab)) {
 
   setRegistryName(QuarryPlus.modID, QuarryPlus.Names.debug)
 
-  override def onItemUseFirst(stack: ItemStack, context: ItemUseContext): ActionResultType = {
+  override def onItemUse(context: ItemUseContext): ActionResultType = {
     val worldIn = context.getWorld
     val pos = context.getPos
     val player = context.getPlayer
@@ -57,11 +57,11 @@ class ItemQuarryDebug extends Item((new Item.Properties).group(Holder.tab)) {
               pump.sendDebugMessage(player)
             }
             EnumActionResult.SUCCESS*/
-          case _ => super.onItemUseFirst(stack, context)
+          case _ => super.onItemUse(context)
         }
       } else {
         player.sendStatusMessage(new StringTextComponent("QuarryPlus debug is not enabled"), true)
-        super.onItemUseFirst(stack, context)
+        super.onItemUse(context)
       }
     }
   }

@@ -27,9 +27,10 @@ public class BlockBookMover extends QPBlock {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
                                     Hand hand, BlockRayTraceResult hit) {
-        if (super.onBlockActivated(state, worldIn, pos, player, hand, hit)) return true;
+        if (InvUtils.isDebugItem(player, hand)) return false;
         TileBookMover mover = ((TileBookMover) worldIn.getTileEntity(pos));
         if (!player.isSneaking() && mover != null && mover.enabled()) {
             if (!worldIn.isRemote) {
