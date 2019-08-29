@@ -9,12 +9,12 @@ Finished Work
 * ExpPump
 * EnchantMover
 * ~~Miningwell~~
-* ~~PlainPipe~~
+* PlainPipe
 * QuarryFrame
 * ~~Quarry~~
 * ~~Solid Fuel Quarry~~
-* ~~PumpPlus~~
-* ~~Replacer~~
+* PumpPlus
+* Replacer
 * Dummy Block
 * Book Mover
 * Spawner Controller
