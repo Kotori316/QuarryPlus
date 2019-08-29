@@ -3,9 +3,9 @@ package com.yogpc.qp.machines.replacer
 import cats.{Always, Eval, Now}
 import com.yogpc.qp.machines.base.IModule
 import com.yogpc.qp.machines.base.IModule.AfterBreak
-import net.minecraft.block.state.IBlockState
+import net.minecraft.block.BlockState
 
-class ReplacerModule(val toReplace: Eval[IBlockState]) extends IModule {
+class ReplacerModule(val toReplace: Eval[BlockState]) extends IModule {
   override val id = ReplacerModule.id
 
   override val calledWhen = Set(IModule.TypeAfterBreak)
@@ -35,7 +35,7 @@ class ReplacerModule(val toReplace: Eval[IBlockState]) extends IModule {
 object ReplacerModule {
   final val id = "quarryplus:module_replacer"
 
-  def apply(toReplace: IBlockState): ReplacerModule = new ReplacerModule(Eval.now(toReplace))
+  def apply(toReplace: BlockState): ReplacerModule = new ReplacerModule(Eval.now(toReplace))
 
   def apply(replacer: TileReplacer): ReplacerModule = new ReplacerModule(Eval.always(replacer.getReplaceState))
 }

@@ -14,10 +14,10 @@ import com.yogpc.qp.machines.base.IModule;
 import com.yogpc.qp.machines.replacer.ReplacerModule;
 import com.yogpc.qp.utils.Holder;
 import com.yogpc.qp.utils.NBTBuilder;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.item.EnumRarity;
+import net.minecraft.block.BlockState;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Rarity;
 import scala.Symbol;
 
 public class ItemReplacerModule extends Item implements IDisabled, IModuleItem {
@@ -26,7 +26,7 @@ public class ItemReplacerModule extends Item implements IDisabled, IModuleItem {
     private final Gson gson = new Gson();
 
     public ItemReplacerModule() {
-        super(new Item.Properties().group(Holder.tab()).rarity(EnumRarity.UNCOMMON));
+        super(new Item.Properties().group(Holder.tab()).rarity(Rarity.UNCOMMON));
         setRegistryName(QuarryPlus.modID, QuarryPlus.Names.replacerModule);
     }
 
@@ -37,7 +37,7 @@ public class ItemReplacerModule extends Item implements IDisabled, IModuleItem {
 
     @Override
     public <T extends APowerTile & HasStorage> Function<T, IModule> getModule(ItemStack stack) {
-        IBlockState state = Optional.ofNullable(stack.getTag())
+        BlockState state = Optional.ofNullable(stack.getTag())
             .map(tag -> tag.getString(Key_state))
             .map(s -> gson.fromJson(s, JsonObject.class))
             .flatMap(NBTBuilder::getStateFromJson)

@@ -1,12 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "quarryplus:quarryreplacer"
+    "model": "quarryplus:block/quarryreplacer"
   },
   "variants": {
     "working": {
       "true": {
-        "model": "quarryplus:quarryreplacer_working"
+        "model": "quarryplus:block/quarryreplacer_working"
       },
       "false": {
       }
