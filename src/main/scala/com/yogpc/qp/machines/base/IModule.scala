@@ -4,7 +4,7 @@ import cats.Show
 import com.yogpc.qp.machines.base.IModule.CalledWhen
 import com.yogpc.qp.machines.pump.PumpModule
 import com.yogpc.qp.machines.replacer.ReplacerModule
-import net.minecraft.block.state.IBlockState
+import net.minecraft.block.BlockState
 import net.minecraft.entity.Entity
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
@@ -23,8 +23,8 @@ trait IModule {
   }
 
   /**
-    * @return false if work hasn't finished.
-    */
+   * @return false if work hasn't finished.
+   */
   def action(when: CalledWhen): Boolean
 
   def toString: String
@@ -52,6 +52,6 @@ object IModule {
 
   final case class CollectingItem(entities: List[Entity]) extends CalledWhen(TypeCollectItem)
 
-  final case class AfterBreak(world: World, pos: BlockPos, before: IBlockState) extends CalledWhen(TypeAfterBreak)
+  final case class AfterBreak(world: World, pos: BlockPos, before: BlockState) extends CalledWhen(TypeAfterBreak)
 
 }
