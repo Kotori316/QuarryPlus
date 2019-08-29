@@ -25,19 +25,19 @@ import com.yogpc.qp.machines.pump.TilePump;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.TileMessage;
 import com.yogpc.qp.utils.Holder;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.StringTextComponent;
 import scala.Symbol;
 
 import static jp.t2v.lab.syntax.MapStreamSyntax.byEntry;
 import static jp.t2v.lab.syntax.MapStreamSyntax.entryToMap;
 
-public class TileMiningWell extends TileBasic implements ITickable {
+public class TileMiningWell extends TileBasic implements ITickableTileEntity {
     public static final Symbol SYMBOL = Symbol.apply("MiningwellPlus");
 
     private boolean working;
@@ -50,7 +50,8 @@ public class TileMiningWell extends TileBasic implements ITickable {
     public void G_renew_powerConfigure() {
         byte pmp = 0;
         if (hasWorld()) {
-            Map<IAttachment.Attachments<?>, EnumFacing> map = facingMap.entrySet().stream()
+            assert world != null;
+            Map<IAttachment.Attachments<?>, Direction> map = facingMap.entrySet().stream()
                 .filter(byEntry((attachments, facing) -> attachments.test(world.getTileEntity(getPos().offset(facing)))))
                 .collect(entryToMap());
             facingMap.putAll(map);
@@ -68,14 +69,14 @@ public class TileMiningWell extends TileBasic implements ITickable {
     }
 
     @Override
-    public TextComponentString getName() {
-        return new TextComponentString(TranslationKeys.miningwell);
+    public StringTextComponent getName() {
+        return new StringTextComponent(TranslationKeys.miningwell);
     }
 
     @Override
     public void tick() {
         super.tick();
-        if (!world.isRemote && enabled()) {
+        if (world != null && !world.isRemote && enabled()) {
             int depth = getPos().getY() - 1;
             while (!S_checkTarget(depth)) {
                 BlockPos pos = new BlockPos(getPos().getX(), depth, getPos().getZ());
@@ -102,7 +103,8 @@ public class TileMiningWell extends TileBasic implements ITickable {
             return true;
         }
         BlockPos pos = new BlockPos(getPos().getX(), depth, getPos().getZ());
-        final IBlockState b = world.getBlockState(pos);
+        assert world != null;
+        final BlockState b = world.getBlockState(pos);
         final float h = b.getBlockHardness(world, pos);
         if (h < 0 || b.getBlock() == Holder.blockPlainPipe() || b.getBlock().isAir(b, world, pos)) {
             return false;
@@ -117,14 +119,14 @@ public class TileMiningWell extends TileBasic implements ITickable {
     }
 
     @Override
-    public void read(final NBTTagCompound nbt) {
+    public void read(final CompoundNBT nbt) {
         super.read(nbt);
         setWorking(nbt.getBoolean("working"));
         G_renew_powerConfigure();
     }
 
     @Override
-    public NBTTagCompound write(final NBTTagCompound nbt) {
+    public CompoundNBT write(final CompoundNBT nbt) {
         nbt.putBoolean("working", this.working);
         return super.write(nbt);
     }
@@ -133,13 +135,13 @@ public class TileMiningWell extends TileBasic implements ITickable {
     public void G_ReInit() {
         setWorking(true);
         G_renew_powerConfigure();
-        if (!world.isRemote)
+        if (world != null && !world.isRemote)
             PacketHandler.sendToAround(TileMessage.create(this), world, getPos());
     }
 
     @Override
     protected void G_destroy() {
-        if (!world.isRemote) {
+        if (world != null && !world.isRemote) {
             working = false; //TODO method cause loop. -> check.
             G_renew_powerConfigure();
             PacketHandler.sendToAround(TileMessage.create(this), world, getPos());
@@ -148,12 +150,13 @@ public class TileMiningWell extends TileBasic implements ITickable {
     }
 
     public void removePipes() {
+        assert world != null;
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(getPos());
         for (int depth = getPos().getY() - 1; depth > 0; depth--) {
             pos.setY(depth);
             if (world.getBlockState(pos).getBlock() != Holder.blockPlainPipe())
                 break;
-            world.removeBlock(pos);
+            world.removeBlock(pos, false);
         }
     }
 
@@ -161,8 +164,8 @@ public class TileMiningWell extends TileBasic implements ITickable {
         this.working = working;
         if (working)
             startWork();
-        if (hasWorld()) {
-            IBlockState old = world.getBlockState(getPos());
+        if (world != null) {
+            BlockState old = world.getBlockState(getPos());
             world.setBlockState(getPos(), old.with(QPBlock.WORKING(), working));
         }
     }

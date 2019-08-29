@@ -18,32 +18,26 @@ import java.util.Optional;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.BuildcraftHelper;
+import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.machines.base.IEnchantableTile;
 import com.yogpc.qp.machines.base.QPBlock;
-import com.yogpc.qp.machines.item.YSetterInteractionObject;
 import com.yogpc.qp.utils.Holder;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.Item;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.NonNullList;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkHooks;
 
-import static jp.t2v.lab.syntax.MapStreamSyntax.optCast;
 import static net.minecraft.state.properties.BlockStateProperties.FACING;
 
 public class BlockMiningWell extends QPBlock {
@@ -54,16 +48,17 @@ public class BlockMiningWell extends QPBlock {
         super(Block.Properties.create(Material.IRON)
                 .hardnessAndResistance(1.5f, 10f)
                 .sound(SoundType.STONE),
-            QuarryPlus.Names.miningwell, ItemBlockEnchantable::new);
-        setDefaultState(getStateContainer().getBaseState().with(FACING, EnumFacing.NORTH).with(QPBlock.WORKING(), false));
+            QuarryPlus.Names.miningwell, BlockItemEnchantable::new);
+        setDefaultState(getStateContainer().getBaseState().with(FACING, Direction.NORTH).with(QPBlock.WORKING(), false));
     }
 
     @Override
-    public boolean onBlockActivated(IBlockState state, World worldIn, BlockPos pos, EntityPlayer player,
-                                    EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
-        if (super.onBlockActivated(state, worldIn, pos, player, hand, side, hitX, hitY, hitZ)) return true;
+    @SuppressWarnings("deprecation")
+    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
+                                    Hand hand, BlockRayTraceResult hit) {
+        if (InvUtils.isDebugItem(player, hand)) return false;
         ItemStack stack = player.getHeldItem(hand);
-        if (BuildcraftHelper.isWrench(player, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), side, pos))) {
+        if (BuildcraftHelper.isWrench(player, hand, stack, hit)) {
             Optional.ofNullable((TileMiningWell) worldIn.getTileEntity(pos)).ifPresent(TileMiningWell::G_ReInit);
             return true;
         }
@@ -75,9 +70,9 @@ public class BlockMiningWell extends QPBlock {
             return true;
         } else if (stack.getItem() == Holder.itemYSetter()) {
             if (!worldIn.isRemote) {
-                Optional.ofNullable(worldIn.getTileEntity(pos))
-                    .flatMap(optCast(TileMiningWell.class))
-                    .ifPresent(t -> NetworkHooks.openGui(((EntityPlayerMP) player), YSetterInteractionObject.apply(t), pos));
+//                Optional.ofNullable(worldIn.getTileEntity(pos))
+//                    .flatMap(optCast(TileMiningWell.class))
+//                    .ifPresent(t -> NetworkHooks.openGui(((ServerPlayerEntity) player), YSetterInteractionObject.apply(t, pos), pos));
             }
             return true;
         }
@@ -85,34 +80,28 @@ public class BlockMiningWell extends QPBlock {
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, IBlockState> builder) {
+    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
         builder.add(FACING, QPBlock.WORKING());
     }
 
     @Override
-    public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+    public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
         if (!worldIn.isRemote) {
-            EnumFacing facing = placer.getAdjustedHorizontalFacing().getOpposite();
+            Direction facing = placer.getAdjustedHorizontalFacing().getOpposite();
             worldIn.setBlockState(pos, state.with(FACING, facing), 2);
             Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(IEnchantableTile.Util.initConsumer(stack));
         }
     }
 
     @Override
-    public void onReplaced(IBlockState state, World worldIn, BlockPos pos, IBlockState newState, boolean isMoving) {
+    @SuppressWarnings("deprecation")
+    public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
         if (state.getBlock() != newState.getBlock()) {
             this.drops.clear();
             if (!worldIn.isRemote) {
                 TileMiningWell tile = (TileMiningWell) worldIn.getTileEntity(pos);
                 if (tile != null) {
                     tile.removePipes();
-                    final int count = getItemsToDropCount(state, 0, worldIn, pos, worldIn.rand);
-                    final Item it = getItemDropped(state, worldIn, pos, 0).asItem();
-                    for (int i = 0; i < count; i++) {
-                        final ItemStack is = new ItemStack(it, 1);
-                        IEnchantableTile.Util.enchantmentToIS(tile, is);
-                        this.drops.add(is);
-                    }
                 }
             }
             super.onReplaced(state, worldIn, pos, newState, isMoving);
@@ -120,14 +109,9 @@ public class BlockMiningWell extends QPBlock {
     }
 
     @Override
-    public void getDrops(IBlockState state, NonNullList<ItemStack> drops, World world, BlockPos pos, int fortune) {
-        drops.addAll(this.drops);
-    }
-
-    @Override
     @SuppressWarnings("deprecation")
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
-        super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
+    public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean b) {
+        super.neighborChanged(state, worldIn, pos, blockIn, fromPos, b);
         if (!worldIn.isRemote)
             Optional.ofNullable((TileMiningWell) worldIn.getTileEntity(pos)).ifPresent(TileMiningWell::G_renew_powerConfigure);
     }

@@ -1,25 +1,25 @@
 package com.yogpc.qp.machines.quarry
 
 import java.io.File
-import java.util.UUID
+import java.util.{OptionalInt, UUID}
 
 import com.mojang.authlib.GameProfile
 import net.minecraft.advancements.{Advancement, AdvancementProgress, PlayerAdvancements}
-import net.minecraft.entity.IMerchant
-import net.minecraft.entity.passive.AbstractHorse
+import net.minecraft.entity.passive.horse.AbstractHorseEntity
 import net.minecraft.inventory.IInventory
+import net.minecraft.inventory.container.INamedContainerProvider
 import net.minecraft.item.ItemStack
-import net.minecraft.potion.PotionEffect
-import net.minecraft.tileentity.{TileEntityCommandBlock, TileEntitySign}
-import net.minecraft.util.EnumHand
+import net.minecraft.potion.EffectInstance
+import net.minecraft.tileentity.{CommandBlockTileEntity, SignTileEntity}
+import net.minecraft.util.Hand
 import net.minecraft.world.dimension.DimensionType
-import net.minecraft.world.{IInteractionObject, WorldServer}
+import net.minecraft.world.server.ServerWorld
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.common.util.FakePlayer
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 
-class QuarryFakePlayer private(worldServer: WorldServer) extends FakePlayer(worldServer, QuarryFakePlayer.profile) {
+class QuarryFakePlayer private(worldServer: ServerWorld) extends FakePlayer(worldServer, QuarryFakePlayer.profile) {
   this.connection = new FakeHandler(this)
 
   private[this] val advancements = new PlayerAdvancements(
@@ -33,19 +33,15 @@ class QuarryFakePlayer private(worldServer: WorldServer) extends FakePlayer(worl
     }
   }
 
-  override def openSignEditor(signTile: TileEntitySign): Unit = ()
+  override def openSignEditor(signTile: SignTileEntity): Unit = ()
 
-  override def openHorseInventory(horse: AbstractHorse, inventoryIn: IInventory): Unit = ()
+  override def openHorseInventory(horse: AbstractHorseEntity, inventoryIn: IInventory): Unit = ()
 
-  override def openCommandBlock(commandBlock: TileEntityCommandBlock): Unit = ()
+  override def openCommandBlock(commandBlock: CommandBlockTileEntity): Unit = ()
 
-  override def displayGUIChest(chestInventory: IInventory): Unit = ()
+  override def openContainer(p_213829_1_ : INamedContainerProvider) = OptionalInt.empty()
 
-  override def displayGui(guiOwner: IInteractionObject): Unit = ()
-
-  override def displayVillagerTradeGui(villager: IMerchant): Unit = ()
-
-  override def openBook(stack: ItemStack, hand: EnumHand): Unit = ()
+  override def openBook(stack: ItemStack, hand: Hand): Unit = ()
 
   override def playEquipSound(stack: ItemStack): Unit = ()
 
@@ -53,7 +49,7 @@ class QuarryFakePlayer private(worldServer: WorldServer) extends FakePlayer(worl
 
   override def getAdvancements: PlayerAdvancements = advancements
 
-  override def isPotionApplicable(effect: PotionEffect): Boolean = false
+  override def isPotionApplicable(effect: EffectInstance): Boolean = false
 }
 
 object QuarryFakePlayer {
@@ -61,7 +57,8 @@ object QuarryFakePlayer {
   private var players = Map.empty[GameProfile, QuarryFakePlayer]
   MinecraftForge.EVENT_BUS.register(this)
 
-  def get(server: WorldServer): QuarryFakePlayer = {
+  @scala.annotation.tailrec
+  def get(server: ServerWorld): QuarryFakePlayer = {
     players.get(profile) match {
       case Some(value) => value
       case None => players = players.updated(profile, new QuarryFakePlayer(server)); get(server)
@@ -70,7 +67,7 @@ object QuarryFakePlayer {
 
   @SubscribeEvent
   def onUnload(event: WorldEvent.Unload): Unit = {
-    if (event.getWorld.isInstanceOf[WorldServer]) {
+    if (event.getWorld.isInstanceOf[ServerWorld]) {
       players = players.filter { case (_, p) => p.world != event.getWorld }
     }
   }

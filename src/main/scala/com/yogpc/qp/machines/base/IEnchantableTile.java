@@ -21,6 +21,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.google.gson.JsonDeserializationContext;
@@ -30,6 +31,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.bookmover.BlockBookMover;
 import javax.annotation.Nonnull;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -45,6 +47,7 @@ import net.minecraft.world.storage.loot.LootParameters;
 import net.minecraft.world.storage.loot.conditions.ILootCondition;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import static jp.t2v.lab.syntax.MapStreamSyntax.always_true;
 import static jp.t2v.lab.syntax.MapStreamSyntax.byEntry;
 import static jp.t2v.lab.syntax.MapStreamSyntax.byKey;
 import static jp.t2v.lab.syntax.MapStreamSyntax.entry;
@@ -90,11 +93,16 @@ public interface IEnchantableTile {
     }
 
     default ItemStack getEnchantedPickaxe() {
+        return getEnchantedPickaxe(always_true());
+    }
+
+    default ItemStack getEnchantedPickaxe(Predicate<? super Enchantment> predicate) {
         ItemStack stack = new ItemStack(Items.DIAMOND_PICKAXE);
         getEnchantments().entrySet().stream()
             .filter(byEntry(Config.common().disabled().apply(BlockBookMover.SYMBOL).get() ? isValidEnch : (k, v) -> true))
             .map(keys(ForgeRegistries.ENCHANTMENTS::getValue))
             .filter(byKey(Objects::nonNull))
+            .filter(byKey(predicate))
             .forEach(entry(stack::addEnchantment));
         return stack;
     }

@@ -1,12 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "quarryplus:miningwellplus"
+    "model": "quarryplus:block/miningwellplus"
   },
   "variants": {
     "working": {
       "true": {
-        "model": "quarryplus:miningwellplus_working"
+        "model": "quarryplus:block/miningwellplus_working"
       },
       "false": {
       }

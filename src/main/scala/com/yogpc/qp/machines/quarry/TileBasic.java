@@ -13,7 +13,6 @@
 
 package com.yogpc.qp.machines.quarry;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -45,34 +44,33 @@ import com.yogpc.qp.utils.NoDuplicateList;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.InventoryBasic;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipe;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagInt;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.item.crafting.IRecipeType;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.IntNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.crafting.VanillaRecipeTypes;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.world.BlockEvent;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -80,6 +78,8 @@ import net.minecraftforge.registries.ForgeRegistries;
 import static com.yogpc.qp.machines.base.IAttachment.Attachments.ALL;
 import static com.yogpc.qp.machines.base.IAttachment.Attachments.EXP_PUMP;
 import static com.yogpc.qp.machines.base.IAttachment.Attachments.FLUID_PUMP;
+import static com.yogpc.qp.machines.base.IEnchantableItem.FORTUNE;
+import static com.yogpc.qp.machines.base.IEnchantableItem.SILKTOUCH;
 import static jp.t2v.lab.syntax.MapStreamSyntax.byKey;
 import static jp.t2v.lab.syntax.MapStreamSyntax.entryToMap;
 import static jp.t2v.lab.syntax.MapStreamSyntax.keys;
@@ -92,7 +92,7 @@ import static jp.t2v.lab.syntax.MapStreamSyntax.values;
 public abstract class TileBasic extends APowerTile implements IEnchantableTile, HasInv, IAttachable/*, IInventoryConnection*/ {
 
     private static final Set<IAttachment.Attachments<?>> VALID_ATTACHMENTS = ALL;
-    protected final Map<IAttachment.Attachments<?>, EnumFacing> facingMap = new HashMap<>();
+    protected final Map<IAttachment.Attachments<?>, Direction> facingMap = new HashMap<>();
 
     public NoDuplicateList<BlockData> fortuneList = NoDuplicateList.create(ArrayList::new);
     public NoDuplicateList<BlockData> silktouchList = NoDuplicateList.create(ArrayList::new);
@@ -139,6 +139,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
      * Insert as much items as possible to near inventory .
      */
     protected void S_pollItems() {
+        assert world != null;
         ItemStack is;
         while (null != (is = this.cacheItems.poll())) {
             ItemStack stack = InvUtils.injectToNearTile(world, getPos(), is);
@@ -155,9 +156,10 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
      * @param replace to which the block will be replaced.
      * @return true if you should get next target, false if you should try to break again.
      */
-    protected boolean S_breakBlock(final int x, final int y, final int z, IBlockState replace) {
+    protected boolean S_breakBlock(final int x, final int y, final int z, BlockState replace) {
+        assert world != null;
         final List<ItemStack> dropped = new ArrayList<>(2);
-        final IBlockState blockState;
+        final BlockState blockState;
         BlockPos pos = new BlockPos(x, y, z);
         blockState = world.getBlockState(pos);
         if (blockState.getBlock().isAir(blockState, world, pos))
@@ -188,7 +190,8 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     }
 
     @Override
-    public boolean connectAttachment(final EnumFacing facing, IAttachment.Attachments<? extends APacketTile> attachments, boolean simulate) {
+    public boolean connectAttachment(final Direction facing, IAttachment.Attachments<? extends APacketTile> attachments, boolean simulate) {
+        assert world != null;
         if (facingMap.containsKey(attachments)) {
             TileEntity entity = world.getTileEntity(getPos().offset(facingMap.get(attachments)));
             if (attachments.test(entity) && facingMap.get(attachments) != facing) {
@@ -218,39 +221,35 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         QuarryPlus.LOGGER.debug("Quarry yLevel is set to " + yLevel + ".");
     }
 
-    private BI S_addDroppedItems(final Collection<ItemStack> collection, final IBlockState state, final BlockPos pos) {
-        Block block = state.getBlock();
+    private BI S_addDroppedItems(final Collection<ItemStack> collection, final BlockState state, final BlockPos pos) {
+        assert world != null;
         byte i;
         int xp = 0;
-        QuarryFakePlayer fakePlayer = QuarryFakePlayer.get(((WorldServer) world));
-        fakePlayer.setHeldItem(EnumHand.MAIN_HAND, getEnchantedPickaxe());
+        QuarryFakePlayer fakePlayer = QuarryFakePlayer.get(((ServerWorld) world));
+        ItemStack pickaxe;
+        if (this.silktouch && silktouchList.contains(new BlockData(state)) == this.silktouchInclude) {
+            pickaxe = getEnchantedPickaxe(FORTUNE.negate());
+            i = -1;
+        } else if (fortuneList.contains(new BlockData(state)) == this.fortuneInclude) {
+            pickaxe = getEnchantedPickaxe(SILKTOUCH.negate());
+            i = this.fortune;
+        } else {
+            pickaxe = getEnchantedPickaxe(SILKTOUCH.negate().and(FORTUNE.negate()));
+            i = 0;
+        }
+        fakePlayer.setHeldItem(Hand.MAIN_HAND, pickaxe);
         BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(world, pos, state, fakePlayer);
         MinecraftForge.EVENT_BUS.post(event);
         if (!event.isCanceled()) {
             Set<ItemStack> rawItems;
-            if (block.canSilkHarvest(state, world, pos, fakePlayer) && this.silktouch
-                && silktouchList.contains(new BlockData(state)) == this.silktouchInclude) {
-                NonNullList<ItemStack> list = NonNullList.create();
-                list.add(invoke(createStackedBlock, ItemStack.class, block, state));
-                rawItems = new HashSet<>(list);
-                ForgeEventFactory.fireBlockHarvesting(list, world, pos, state, 0, 1.0f, true, fakePlayer);
-                collection.addAll(list);
-                i = -1;
-            } else {
-                boolean b = fortuneList.contains(new BlockData(state)) == this.fortuneInclude;
-                byte fortuneLevel = b ? this.fortune : 0;
-                NonNullList<ItemStack> list = NonNullList.create();
-                block.getDrops(state, list, world, pos, (int) fortuneLevel);
 
-                //                if (list.isEmpty() && Config.content().debug())
-//                    ReflectionHelper.checkGetDrops(world, pos, state, block, fortuneLevel, list);
-                rawItems = new HashSet<>(list);
-                ForgeEventFactory.fireBlockHarvesting(list, world, pos, state, fortuneLevel, 1.0f, false, fakePlayer);
-//                if (!rawItems.isEmpty() && list.isEmpty() && Config.content().debug())
-//                    QuarryPlus.LOGGER.info("Drop items were removed during BlockHarvestingEvent.");
-                collection.addAll(list);
-                i = fortuneLevel;
-            }
+            NonNullList<ItemStack> list = NonNullList.create();
+            list.addAll(Block.getDrops(state, ((ServerWorld) world), pos, world.getTileEntity(pos), fakePlayer, fakePlayer.getHeldItem(Hand.MAIN_HAND)));
+
+            rawItems = new HashSet<>(list);
+            ForgeEventFactory.fireBlockHarvesting(list, world, pos, state, Math.max(0, i), 1.0f, i == -1, fakePlayer);
+            collection.addAll(list);
+
             if (facingMap.containsKey(EXP_PUMP)) {
                 xp += event.getExpToDrop();
                 if (InvUtils.hasSmelting(fakePlayer.getHeldItemMainhand())) {
@@ -260,7 +259,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         } else {
             i = -2;
         }
-        fakePlayer.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
+        fakePlayer.setHeldItem(Hand.MAIN_HAND, ItemStack.EMPTY);
         return new BI(i, xp, facingMap.containsKey(IAttachment.Attachments.REPLACER));
     }
 
@@ -271,11 +270,11 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
      * @return The amount of xp by smelting items.
      */
     public static int getSmeltingXp(Collection<ItemStack> stacks, Collection<ItemStack> raw, World world) {
-        InventoryBasic basic = new InventoryBasic(new TextComponentString("Dummy"), 2);
+        Inventory basic = new Inventory(2);
 
         return stacks.stream().filter(not(raw::contains)).mapToInt(stack -> {
             basic.setInventorySlotContents(0, stack);
-            Optional<FurnaceRecipe> recipe = Optional.ofNullable(world.getRecipeManager().getRecipe(basic, world, VanillaRecipeTypes.SMELTING));
+            Optional<FurnaceRecipe> recipe = world.getRecipeManager().getRecipe(IRecipeType.SMELTING, basic, world);
             return floorFloat(recipe.map(FurnaceRecipe::getExperience).orElse(0f) * stack.getCount());
         }).sum();
     }
@@ -285,10 +284,8 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         return i + (Math.random() < (value - i) ? 1 : 0);
     }
 
-    public static final Method createStackedBlock = ObfuscationReflectionHelper.findMethod(Block.class, "func_180643_i", IBlockState.class);
-
     @Override
-    public void read(final NBTTagCompound nbt) {
+    public void read(final CompoundNBT nbt) {
         super.read(nbt);
         this.silktouch = nbt.getBoolean("silktouch");
         this.fortune = nbt.getByte("fortune");
@@ -297,11 +294,11 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         this.fortuneInclude = nbt.getBoolean("fortuneInclude");
         this.silktouchInclude = nbt.getBoolean("silktouchInclude");
         this.yLevel = Math.max(nbt.getInt("yLevel"), 1);
-        fortuneList = nbt.getList("fortuneList", Constants.NBT.TAG_COMPOUND).stream().map(NBTTagCompound.class::cast)
+        fortuneList = nbt.getList("fortuneList", Constants.NBT.TAG_COMPOUND).stream().map(CompoundNBT.class::cast)
             .map(BlockData::read).collect(Collectors.toCollection(NoDuplicateList::create));
-        silktouchList = nbt.getList("silktouchList", Constants.NBT.TAG_COMPOUND).stream().map(NBTTagCompound.class::cast)
+        silktouchList = nbt.getList("silktouchList", Constants.NBT.TAG_COMPOUND).stream().map(CompoundNBT.class::cast)
             .map(BlockData::read).collect(Collectors.toCollection(NoDuplicateList::create));
-        ench = nbt.getList("enchList", Constants.NBT.TAG_COMPOUND).stream().map(NBTTagCompound.class::cast)
+        ench = nbt.getList("enchList", Constants.NBT.TAG_COMPOUND).stream().map(CompoundNBT.class::cast)
             .map(toEntry(n -> n.getString("id"), n -> n.getInt("value")))
             .map(keys(ResourceLocation::new))
             .filter(byKey(ForgeRegistries.ENCHANTMENTS::containsKey))
@@ -309,18 +306,18 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     }
 
     @Override
-    public NBTTagCompound write(final NBTTagCompound nbt) {
+    public CompoundNBT write(final CompoundNBT nbt) {
         nbt.putBoolean("silktouch", this.silktouch);
         nbt.putByte("fortune", this.fortune);
         nbt.putByte("efficiency", this.efficiency);
         nbt.putByte("unbreaking", this.unbreaking);
         nbt.putBoolean("fortuneInclude", this.fortuneInclude);
         nbt.putBoolean("silktouchInclude", this.silktouchInclude);
-        nbt.put("fortuneList", fortuneList.stream().map(BlockData.dataToNbt()::apply).collect(Collectors.toCollection(NBTTagList::new)));
-        nbt.put("silktouchList", silktouchList.stream().map(BlockData.dataToNbt()::apply).collect(Collectors.toCollection(NBTTagList::new)));
+        nbt.put("fortuneList", fortuneList.stream().map(BlockData.dataToNbt()::apply).collect(Collectors.toCollection(ListNBT::new)));
+        nbt.put("silktouchList", silktouchList.stream().map(BlockData.dataToNbt()::apply).collect(Collectors.toCollection(ListNBT::new)));
         nbt.putInt("yLevel", this.yLevel);
 
-        nbt.put("enchList", ench.entrySet().stream().map(keys(ResourceLocation::toString)).map(values(NBTTagInt::new)).collect(NBTBuilder.toNBTTag()));
+        nbt.put("enchList", ench.entrySet().stream().map(keys(ResourceLocation::toString)).map(values(IntNBT::new)).collect(NBTBuilder.toNBTTag()));
         return super.write(nbt);
     }
 
@@ -373,7 +370,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
             return ItemStack.EMPTY;
         final ItemStack from = this.cacheItems.get(index);
         final ItemStack res = new ItemStack(from.getItem(), Math.min(count, from.getCount()));
-        Optional.ofNullable(from.getTag()).map(NBTTagCompound::copy).ifPresent(res::setTag);
+        Optional.ofNullable(from.getTag()).map(CompoundNBT::copy).ifPresent(res::setTag);
         from.shrink(res.getCount());
         if (from.isEmpty())
             this.cacheItems.remove(index);
@@ -395,11 +392,11 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
 
     @Override
     public ITextComponent getName() {
-        return new TextComponentString(TranslationKeys.MACHINE_BUFFER);
+        return new StringTextComponent(TranslationKeys.MACHINE_BUFFER);
     }
 
     @Override
-    public boolean isUsableByPlayer(EntityPlayer player) {
+    public boolean isUsableByPlayer(PlayerEntity player) {
         return false;
     }
 
@@ -415,7 +412,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
 
     @Nonnull
     @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable EnumFacing side) {
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
         if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
             return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.orEmpty(cap, LazyOptional.of(() -> handler));
         }

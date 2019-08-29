@@ -9,40 +9,40 @@ import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import javax.annotation.Nullable;
 import javax.crypto.SecretKey;
-import net.minecraft.network.EnumConnectionState;
-import net.minecraft.network.EnumPacketDirection;
 import net.minecraft.network.INetHandler;
-import net.minecraft.network.NetHandlerPlayServer;
+import net.minecraft.network.IPacket;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.client.CPacketAnimation;
-import net.minecraft.network.play.client.CPacketChatMessage;
-import net.minecraft.network.play.client.CPacketClickWindow;
-import net.minecraft.network.play.client.CPacketClientSettings;
-import net.minecraft.network.play.client.CPacketClientStatus;
-import net.minecraft.network.play.client.CPacketCloseWindow;
-import net.minecraft.network.play.client.CPacketConfirmTeleport;
-import net.minecraft.network.play.client.CPacketConfirmTransaction;
-import net.minecraft.network.play.client.CPacketCreativeInventoryAction;
-import net.minecraft.network.play.client.CPacketCustomPayload;
-import net.minecraft.network.play.client.CPacketEnchantItem;
-import net.minecraft.network.play.client.CPacketEntityAction;
-import net.minecraft.network.play.client.CPacketHeldItemChange;
-import net.minecraft.network.play.client.CPacketInput;
-import net.minecraft.network.play.client.CPacketKeepAlive;
-import net.minecraft.network.play.client.CPacketPlayer;
-import net.minecraft.network.play.client.CPacketPlayerAbilities;
-import net.minecraft.network.play.client.CPacketPlayerDigging;
-import net.minecraft.network.play.client.CPacketPlayerTryUseItem;
-import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
-import net.minecraft.network.play.client.CPacketResourcePackStatus;
-import net.minecraft.network.play.client.CPacketSpectate;
-import net.minecraft.network.play.client.CPacketSteerBoat;
-import net.minecraft.network.play.client.CPacketTabComplete;
-import net.minecraft.network.play.client.CPacketUpdateSign;
-import net.minecraft.network.play.client.CPacketUseEntity;
-import net.minecraft.network.play.client.CPacketVehicleMove;
-import net.minecraft.network.play.server.SPacketPlayerPosLook;
+import net.minecraft.network.PacketDirection;
+import net.minecraft.network.ProtocolType;
+import net.minecraft.network.play.ServerPlayNetHandler;
+import net.minecraft.network.play.client.CAnimateHandPacket;
+import net.minecraft.network.play.client.CChatMessagePacket;
+import net.minecraft.network.play.client.CClickWindowPacket;
+import net.minecraft.network.play.client.CClientSettingsPacket;
+import net.minecraft.network.play.client.CClientStatusPacket;
+import net.minecraft.network.play.client.CCloseWindowPacket;
+import net.minecraft.network.play.client.CConfirmTeleportPacket;
+import net.minecraft.network.play.client.CConfirmTransactionPacket;
+import net.minecraft.network.play.client.CCreativeInventoryActionPacket;
+import net.minecraft.network.play.client.CCustomPayloadPacket;
+import net.minecraft.network.play.client.CEnchantItemPacket;
+import net.minecraft.network.play.client.CEntityActionPacket;
+import net.minecraft.network.play.client.CHeldItemChangePacket;
+import net.minecraft.network.play.client.CInputPacket;
+import net.minecraft.network.play.client.CKeepAlivePacket;
+import net.minecraft.network.play.client.CMoveVehiclePacket;
+import net.minecraft.network.play.client.CPlayerAbilitiesPacket;
+import net.minecraft.network.play.client.CPlayerDiggingPacket;
+import net.minecraft.network.play.client.CPlayerPacket;
+import net.minecraft.network.play.client.CPlayerTryUseItemOnBlockPacket;
+import net.minecraft.network.play.client.CPlayerTryUseItemPacket;
+import net.minecraft.network.play.client.CResourcePackStatusPacket;
+import net.minecraft.network.play.client.CSpectatePacket;
+import net.minecraft.network.play.client.CSteerBoatPacket;
+import net.minecraft.network.play.client.CTabCompletePacket;
+import net.minecraft.network.play.client.CUpdateSignPacket;
+import net.minecraft.network.play.client.CUseEntityPacket;
+import net.minecraft.network.play.server.SPlayerPositionLookPacket;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.util.FakePlayer;
 
@@ -50,7 +50,7 @@ import net.minecraftforge.common.util.FakePlayer;
  * A dummy class for FakePlayers. Implemented to prevent crashing due to {@link NullPointerException} of connection.
  * Copied from {@link cofh.core.entity.NetServerHandlerFake}.
  */
-public class FakeHandler extends NetHandlerPlayServer {
+public class FakeHandler extends ServerPlayNetHandler {
 
     public FakeHandler(FakePlayer fakePlayer) {
         super(fakePlayer.server, new FakeNetworkManager(), fakePlayer);
@@ -62,7 +62,7 @@ public class FakeHandler extends NetHandlerPlayServer {
     private static class FakeNetworkManager extends NetworkManager {
 
         public FakeNetworkManager() {
-            super(EnumPacketDirection.CLIENTBOUND);
+            super(PacketDirection.CLIENTBOUND);
         }
 
         @Override
@@ -70,7 +70,7 @@ public class FakeHandler extends NetHandlerPlayServer {
         }
 
         @Override
-        public void setConnectionState(EnumConnectionState newState) {
+        public void setConnectionState(ProtocolType newState) {
         }
 
         @Override
@@ -86,11 +86,11 @@ public class FakeHandler extends NetHandlerPlayServer {
         }
 
         @Override
-        public void sendPacket(Packet<?> packetIn) {
+        public void sendPacket(IPacket<?> packetIn) {
         }
 
         @Override
-        public void sendPacket(Packet<?> packetIn, @Nullable GenericFutureListener<? extends Future<? super Void>> p_201058_2_) {
+        public void sendPacket(IPacket<?> packetIn, @Nullable GenericFutureListener<? extends Future<? super Void>> p_201058_2_) {
 
         }
 
@@ -150,19 +150,19 @@ public class FakeHandler extends NetHandlerPlayServer {
     }
 
     @Override
-    public void processInput(CPacketInput packetIn) {
+    public void processInput(CInputPacket packetIn) {
     }
 
     @Override
-    public void processVehicleMove(CPacketVehicleMove packetIn) {
+    public void processVehicleMove(CMoveVehiclePacket packetIn) {
     }
 
     @Override
-    public void processConfirmTeleport(CPacketConfirmTeleport packetIn) {
+    public void processConfirmTeleport(CConfirmTeleportPacket packetIn) {
     }
 
     @Override
-    public void processPlayer(CPacketPlayer packetIn) {
+    public void processPlayer(CPlayerPacket packetIn) {
     }
 
     @Override
@@ -170,31 +170,31 @@ public class FakeHandler extends NetHandlerPlayServer {
     }
 
     @Override
-    public void setPlayerLocation(double x, double y, double z, float yaw, float pitch, Set<SPacketPlayerPosLook.EnumFlags> relativeSet) {
+    public void setPlayerLocation(double x, double y, double z, float yaw, float pitch, Set<SPlayerPositionLookPacket.Flags> relativeSet) {
     }
 
     @Override
-    public void processPlayerDigging(CPacketPlayerDigging packetIn) {
+    public void processPlayerDigging(CPlayerDiggingPacket packetIn) {
     }
 
     @Override
-    public void processTryUseItemOnBlock(CPacketPlayerTryUseItemOnBlock packetIn) {
+    public void processTryUseItemOnBlock(CPlayerTryUseItemOnBlockPacket packetIn) {
     }
 
     @Override
-    public void processTryUseItem(CPacketPlayerTryUseItem packetIn) {
+    public void processTryUseItem(CPlayerTryUseItemPacket packetIn) {
     }
 
     @Override
-    public void handleSpectate(CPacketSpectate packetIn) {
+    public void handleSpectate(CSpectatePacket packetIn) {
     }
 
     @Override
-    public void handleResourcePackStatus(CPacketResourcePackStatus packetIn) {
+    public void handleResourcePackStatus(CResourcePackStatusPacket packetIn) {
     }
 
     @Override
-    public void processSteerBoat(CPacketSteerBoat packetIn) {
+    public void processSteerBoat(CSteerBoatPacket packetIn) {
     }
 
     @Override
@@ -202,75 +202,75 @@ public class FakeHandler extends NetHandlerPlayServer {
     }
 
     @Override
-    public void sendPacket(final Packet<?> packetIn) {
+    public void sendPacket(final IPacket<?> packetIn) {
     }
 
     @Override
-    public void processHeldItemChange(CPacketHeldItemChange packetIn) {
+    public void processHeldItemChange(CHeldItemChangePacket packetIn) {
     }
 
     @Override
-    public void processChatMessage(CPacketChatMessage packetIn) {
+    public void processChatMessage(CChatMessagePacket packetIn) {
     }
 
     @Override
-    public void handleAnimation(CPacketAnimation packetIn) {
+    public void handleAnimation(CAnimateHandPacket packetIn) {
     }
 
     @Override
-    public void processEntityAction(CPacketEntityAction packetIn) {
+    public void processEntityAction(CEntityActionPacket packetIn) {
     }
 
     @Override
-    public void processUseEntity(CPacketUseEntity packetIn) {
+    public void processUseEntity(CUseEntityPacket packetIn) {
     }
 
     @Override
-    public void processClientStatus(CPacketClientStatus packetIn) {
+    public void processClientStatus(CClientStatusPacket packetIn) {
     }
 
     @Override
-    public void processCloseWindow(CPacketCloseWindow packetIn) {
+    public void processCloseWindow(CCloseWindowPacket packetIn) {
     }
 
     @Override
-    public void processClickWindow(CPacketClickWindow packetIn) {
+    public void processClickWindow(CClickWindowPacket packetIn) {
     }
 
     @Override
-    public void processEnchantItem(CPacketEnchantItem packetIn) {
+    public void processEnchantItem(CEnchantItemPacket packetIn) {
     }
 
     @Override
-    public void processCreativeInventoryAction(CPacketCreativeInventoryAction packetIn) {
+    public void processCreativeInventoryAction(CCreativeInventoryActionPacket packetIn) {
     }
 
     @Override
-    public void processConfirmTransaction(CPacketConfirmTransaction packetIn) {
+    public void processConfirmTransaction(CConfirmTransactionPacket packetIn) {
     }
 
     @Override
-    public void processUpdateSign(CPacketUpdateSign packetIn) {
+    public void processUpdateSign(CUpdateSignPacket packetIn) {
     }
 
     @Override
-    public void processKeepAlive(CPacketKeepAlive packetIn) {
+    public void processKeepAlive(CKeepAlivePacket packetIn) {
     }
 
     @Override
-    public void processPlayerAbilities(CPacketPlayerAbilities packetIn) {
+    public void processPlayerAbilities(CPlayerAbilitiesPacket packetIn) {
     }
 
     @Override
-    public void processTabComplete(CPacketTabComplete packetIn) {
+    public void processTabComplete(CTabCompletePacket packetIn) {
     }
 
     @Override
-    public void processClientSettings(CPacketClientSettings packetIn) {
+    public void processClientSettings(CClientSettingsPacket packetIn) {
     }
 
     @Override
-    public void processCustomPayload(CPacketCustomPayload packetIn) {
+    public void processCustomPayload(CCustomPayloadPacket packetIn) {
     }
 
 
