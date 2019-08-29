@@ -10,11 +10,10 @@ import cats.data._
 import cats.implicits._
 import com.google.gson._
 import com.yogpc.qp.machines.base.APowerTile
-import com.yogpc.qp.utils.ItemElement
+import com.yogpc.qp.utils.{Holder, ItemElement, RecipeGetter}
 import com.yogpc.qp.{QuarryPlus, _}
 import net.minecraft.client.resources.JsonReloadListener
-import net.minecraft.inventory.CraftingInventory
-import net.minecraft.item.crafting.{IRecipeSerializer, IRecipeType, SpecialRecipe}
+import net.minecraft.item.crafting.{IRecipe, IRecipeSerializer, IRecipeType}
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.network.PacketBuffer
 import net.minecraft.profiler.IProfiler
@@ -29,7 +28,7 @@ import scala.collection.JavaConverters._
 import scala.collection.mutable
 
 abstract sealed class WorkbenchRecipes(val location: ResourceLocation, val output: ItemElement, val energy: Long, val showInJEI: Boolean = true)
-  extends SpecialRecipe(location) with Ordered[WorkbenchRecipes] {
+  extends IRecipe[TileWorkbench] with Ordered[WorkbenchRecipes] {
   val microEnergy = energy
   val size: Int
 
@@ -56,18 +55,24 @@ abstract sealed class WorkbenchRecipes(val location: ResourceLocation, val outpu
 
   override def compare(that: WorkbenchRecipes) = WorkbenchRecipes.recipeOrdering.compare(this, that)
 
-  override def matches(inv: CraftingInventory, worldIn: World) = {
+  override def matches(inv: TileWorkbench, worldIn: World) = {
     val inputInv = Range(0, inv.getSizeInventory).map(inv.getStackInSlot)
     hasContent && inputs.forall(in => inputInv.exists(invStack => in.exists(_.matches(invStack))))
   }
 
-  override def getCraftingResult(inv: CraftingInventory) = getOutput
+  override def getCraftingResult(inv: TileWorkbench) = getOutput
+
+  override def getRecipeOutput = getOutput
 
   override def canFit(width: Int, height: Int) = true
 
   override def getSerializer = WorkbenchRecipes.Serializer
 
+  override def getId = location
+
   override def getType = WorkbenchRecipes.recipeType
+
+  override def getIcon = new ItemStack(Holder.blockWorkbench)
 }
 
 private final class IngredientRecipe(location: ResourceLocation, o: ItemStack, e: Long, s: Boolean, seq: Seq[Seq[IngredientWithCount]])
@@ -101,8 +106,8 @@ object WorkbenchRecipes {
   private[this] final val conditionMessage = "Condition is false"
 
   def recipes: Map[ResourceLocation, WorkbenchRecipes] = {
-    Option(ServerLifecycleHooks.getCurrentServer).map(_.getRecipeManager.getRecipes().asScala
-      .collect { case r: WorkbenchRecipes => (r.location, r) }.toMap).getOrElse(Map.empty) ++ recipes_internal
+    Option(ServerLifecycleHooks.getCurrentServer)
+      .map(s => RecipeGetter.getRecipes(s.getRecipeManager, recipeType).asScala.toMap).getOrElse(Map.empty) ++ recipes_internal
   }
 
   def recipeSize: Int = recipes.size
