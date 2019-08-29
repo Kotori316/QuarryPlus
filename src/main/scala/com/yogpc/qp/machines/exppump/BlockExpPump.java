@@ -6,6 +6,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.machines.base.IEnchantableTile;
 import com.yogpc.qp.machines.base.QPBlock;
+import com.yogpc.qp.machines.pump.BlockItemPump;
 import com.yogpc.qp.utils.Holder;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -36,7 +37,7 @@ public class BlockExpPump extends QPBlock {
     public static final Symbol SYMBOL = Symbol.apply("ExpPump");
 
     public BlockExpPump() {
-        super(Properties.create(Material.ANVIL).hardnessAndResistance(5.0f), QuarryPlus.Names.exppump, BlockItemExpPump::new);
+        super(Properties.create(Material.ANVIL).hardnessAndResistance(5.0f), QuarryPlus.Names.exppump, BlockItemPump::new);
         setDefaultState(getStateContainer().getBaseState().with(ENABLED, false).with(QPBlock.WORKING(), false));
     }
 

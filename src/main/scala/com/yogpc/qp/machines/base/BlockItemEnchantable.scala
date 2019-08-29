@@ -2,6 +2,8 @@ package com.yogpc.qp.machines.base
 
 import java.util.function.Predicate
 
+import com.yogpc.qp.Config
+import com.yogpc.qp.machines.bookmover.BlockBookMover
 import net.minecraft.block.Block
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.item.{BlockItem, BlockItemUseContext, Item, ItemStack}
@@ -11,7 +13,7 @@ abstract class BlockItemEnchantable(b: Block, prop: Item.Properties) extends Blo
   def tester(is: ItemStack): Predicate[Enchantment]
 
   override def canMove(is: ItemStack, enchantment: Enchantment) = {
-    val stack = is // if (Config.common.disabled(BlockBookMover.SYMBOL).get()) is else new ItemStack(is.getItem.asItem(), is.getCount)
+    val stack =  if (Config.common.disabled(BlockBookMover.SYMBOL).get()) is else new ItemStack(is.getItem.asItem(), is.getCount)
     tester(stack).test(enchantment)
   }
 

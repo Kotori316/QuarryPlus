@@ -10,22 +10,25 @@
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.yogpc.qp.machines.exppump
+package com.yogpc.qp.machines.quarry
 
-import com.yogpc.qp.machines.base.BlockItemEnchantable
-import com.yogpc.qp.machines.base.IEnchantableItem.{FORTUNE, SILKTOUCH, UNBREAKING}
+import com.yogpc.qp.Config
+import com.yogpc.qp.machines.base.IEnchantableItem.{EFFICIENCY, FORTUNE, SILKTOUCH, UNBREAKING}
+import com.yogpc.qp.machines.bookmover.BlockBookMover
 import net.minecraft.block.Block
 import net.minecraft.enchantment.{EnchantmentHelper, Enchantments}
 import net.minecraft.item.{Item, ItemStack}
 
-class BlockItemExpPump(b: Block, prop: Item.Properties) extends BlockItemEnchantable(b, prop) {
+class BlockItemEnchantable(b: Block, prop: Item.Properties) extends com.yogpc.qp.machines.base.BlockItemEnchantable(b, prop) {
   override def tester(is: ItemStack) = {
-    if (EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, is) > 0) {
-      FORTUNE.negate() and (UNBREAKING or SILKTOUCH)
+    if (!Config.common.disabled(BlockBookMover.SYMBOL).get()) {
+      SILKTOUCH or FORTUNE or UNBREAKING or EFFICIENCY
+    } else if (EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, is) > 0) {
+      FORTUNE.negate() and (UNBREAKING or EFFICIENCY or SILKTOUCH)
     } else if (EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, is) > 0) {
-      SILKTOUCH.negate() and (UNBREAKING or FORTUNE)
+      SILKTOUCH.negate() and (UNBREAKING or EFFICIENCY or FORTUNE)
     } else {
-      SILKTOUCH or FORTUNE or UNBREAKING
+      SILKTOUCH or FORTUNE or UNBREAKING or EFFICIENCY
     }
   }
 }
