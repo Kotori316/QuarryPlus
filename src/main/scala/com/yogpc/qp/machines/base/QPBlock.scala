@@ -1,6 +1,7 @@
 package com.yogpc.qp.machines.base
 
 import com.yogpc.qp.QuarryPlus
+import com.yogpc.qp.compat.InvUtils
 import com.yogpc.qp.utils.Holder
 import net.minecraft.block.{Block, BlockRenderType, BlockState, ContainerBlock}
 import net.minecraft.entity.player.PlayerEntity
@@ -8,8 +9,8 @@ import net.minecraft.entity.{EntitySpawnPlacementRegistry, EntityType}
 import net.minecraft.inventory.InventoryHelper
 import net.minecraft.item.{BlockItem, Item, ItemStack}
 import net.minecraft.state.BooleanProperty
-import net.minecraft.util.math.{BlockPos, RayTraceResult}
-import net.minecraft.util.{NonNullList, ResourceLocation}
+import net.minecraft.util.math.{BlockPos, BlockRayTraceResult, RayTraceResult}
+import net.minecraft.util.{Hand, NonNullList, ResourceLocation}
 import net.minecraft.world.server.ServerWorld
 import net.minecraft.world.{IBlockReader, World}
 
@@ -36,6 +37,10 @@ abstract class QPBlock(builder: Block.Properties, name: String, generator: java.
         stack
       case _ => super.getPickBlock(state, target, world, pos, player)
     }
+  }
+
+  override def onBlockActivated(state: BlockState, worldIn: World, pos: BlockPos, player: PlayerEntity, hand: Hand, hit: BlockRayTraceResult) = {
+    InvUtils.isDebugItem(player, hand) // super method return false.
   }
 
   override def getComparatorInputOverride(blockState: BlockState, worldIn: World, pos: BlockPos): Int = {

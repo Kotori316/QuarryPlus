@@ -74,7 +74,6 @@ public class BlockPump extends QPBlock {
     }
 
     @Override
-    @SuppressWarnings({"deprecation"})
     public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
         if (super.onBlockActivated(state, worldIn, pos, player, hand, hit)) return true;
         ItemStack stack = player.getHeldItem(hand);

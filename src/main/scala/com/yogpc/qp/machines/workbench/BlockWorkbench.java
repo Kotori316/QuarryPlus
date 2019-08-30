@@ -3,7 +3,6 @@ package com.yogpc.qp.machines.workbench;
 import java.util.Optional;
 
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.machines.base.QPBlock;
 import com.yogpc.qp.machines.item.ItemQuarryDebug;
 import com.yogpc.qp.utils.Holder;
@@ -30,9 +29,8 @@ public class BlockWorkbench extends QPBlock {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
-        if (InvUtils.isDebugItem(player, hand)) return false;
+        if (super.onBlockActivated(state, worldIn, pos, player, hand, hit)) return true;
         if (player.getHeldItem(hand).getItem() == Holder.itemStatusChecker()) {
             if (!worldIn.isRemote) {
                 Optional.ofNullable(worldIn.getTileEntity(pos))

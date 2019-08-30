@@ -18,7 +18,6 @@ import java.util.Optional;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.BuildcraftHelper;
-import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.machines.base.IEnchantableTile;
 import com.yogpc.qp.machines.base.QPBlock;
 import com.yogpc.qp.utils.Holder;
@@ -53,10 +52,9 @@ public class BlockMiningWell extends QPBlock {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
                                     Hand hand, BlockRayTraceResult hit) {
-        if (InvUtils.isDebugItem(player, hand)) return false;
+        if (super.onBlockActivated(state, worldIn, pos, player, hand, hit)) return true;
         ItemStack stack = player.getHeldItem(hand);
         if (BuildcraftHelper.isWrench(player, hand, stack, hit)) {
             Optional.ofNullable((TileMiningWell) worldIn.getTileEntity(pos)).ifPresent(TileMiningWell::G_ReInit);
