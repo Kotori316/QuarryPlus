@@ -28,10 +28,10 @@ object RenderQuarry extends TileEntityRendererFast[TileQuarry] {
     }
     val buffer = bufferInstance
 
-    Minecraft.getInstance.profiler.startSection("quarryplus")
-    Minecraft.getInstance.profiler.startSection("quarry")
+    Minecraft.getInstance.getProfiler.startSection("quarryplus")
+    Minecraft.getInstance.getProfiler.startSection("quarry")
     if ((quarry.G_getNow == TileQuarry.Mode.NOT_NEED_BREAK || quarry.G_getNow == TileQuarry.Mode.MAKE_FRAME) && quarry.yMax != Integer.MIN_VALUE) {
-      Minecraft.getInstance.profiler.startSection("frame")
+      Minecraft.getInstance.getProfiler.startSection("frame")
       bufferBuilder.setTranslation(distanceX - pos.getX + .5, distanceY - pos.getY + .5, distanceZ - pos.getZ + .5)
       val minPos = quarry.getMinPos
       val maxPos = quarry.getMaxPos
@@ -410,11 +410,11 @@ object RenderQuarry extends TileEntityRendererFast[TileQuarry] {
       buffer.pos(MXm, MYP, MZm).colored().tex(B_maxU, B_maxV).lightedAndEnd()
       buffer.pos(MXP, MYP, MZm).colored().tex(B_minU, B_maxV).lightedAndEnd()
 
-      Minecraft.getInstance.profiler.endSection()
+      Minecraft.getInstance.getProfiler.endSection()
     }
 
     if (quarry.G_getNow() == TileQuarry.Mode.BREAK_BLOCK || quarry.G_getNow() == TileQuarry.Mode.MOVE_HEAD) {
-      Minecraft.getInstance.profiler.startSection("drill")
+      Minecraft.getInstance.getProfiler.startSection("drill")
       bufferBuilder.setTranslation(distanceX - pos.getX + .5, distanceY - pos.getY + .5, distanceZ - pos.getZ + .5)
       //render crossed frame
       val D_minU = drillStripe.getMinU
@@ -658,11 +658,11 @@ object RenderQuarry extends TileEntityRendererFast[TileQuarry] {
       bufferBuilder.setTranslation(distanceX - pos.getX + .5, distanceY - pos.getY, distanceZ - pos.getZ + .5)
       yLine(y_floor, y_length)
 
-      Minecraft.getInstance.profiler.endSection()
+      Minecraft.getInstance.getProfiler.endSection()
     }
 
-    Minecraft.getInstance.profiler.endSection()
-    Minecraft.getInstance.profiler.endSection()
+    Minecraft.getInstance.getProfiler.endSection()
+    Minecraft.getInstance.getProfiler.endSection()
   }
 
   override def isGlobalRenderer(te: TileQuarry): Boolean = true

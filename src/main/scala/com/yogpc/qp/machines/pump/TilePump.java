@@ -23,11 +23,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.yogpc.qp.Config;
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.FluidStore;
 import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.APacketTile;
 import com.yogpc.qp.machines.base.APowerTile;
+import com.yogpc.qp.machines.base.HasStorage;
 import com.yogpc.qp.machines.base.IAttachable;
 import com.yogpc.qp.machines.base.IAttachment;
 import com.yogpc.qp.machines.base.IDebugSender;
@@ -35,6 +37,7 @@ import com.yogpc.qp.machines.base.IDummyFluidHandler;
 import com.yogpc.qp.machines.base.IEnchantableTile;
 import com.yogpc.qp.machines.base.IModule;
 import com.yogpc.qp.machines.base.QPBlock;
+import com.yogpc.qp.machines.quarry.TileQuarry;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.pump.Mappings;
 import com.yogpc.qp.packet.pump.Now;
@@ -96,7 +99,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     }
 
     public IAttachable G_connected() {
-        if (connectTo != null) {
+        if (world != null && connectTo != null) {
             final TileEntity te = world.getTileEntity(getPos().offset(connectTo));
             if (te instanceof IAttachable)
                 return (IAttachable) te;
@@ -162,7 +165,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
 
     @Override
     public void tick() {
-        if (!world.isRemote) {
+        if (world != null && !world.isRemote) {
             /*for (EnumFacing facing : EnumFacing.values()) {
                 BlockPos offset = getPos().offset(facing);
                 IBlockState state = world.getBlockState(offset);
@@ -201,7 +204,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
 
     @Override
     public void G_ReInit() {
-        if (!world.isRemote) {
+        if (world != null && !world.isRemote) {
             TileEntity te;
             for (Direction facing : Direction.values()) {
                 te = world.getTileEntity(getPos().offset(facing));
@@ -218,6 +221,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     }
 
     private void S_sendNowPacket() {
+        assert world != null;
         //when connection changed or working changed
         if (preFacing != connectTo || world.getBlockState(getPos()).get(QPBlock.WORKING()) != G_working()) {
             preFacing = connectTo;
@@ -228,7 +232,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     @Override
     public void setConnectTo(@Nullable Direction connectTo) {
         this.connectTo = connectTo;
-        if (hasWorld()) {
+        if (world != null) {
             BlockState state = world.getBlockState(getPos());
             if (connectTo != null ^ state.get(BlockStateProperties.ENABLED)) {
                 world.setBlockState(getPos(), state.with(BlockStateProperties.ENABLED, connectTo != null));
@@ -247,7 +251,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         } else {
             this.py = Integer.MIN_VALUE;
         }
-        if (!world.isRemote) {
+        if (world != null && !world.isRemote) {
             BlockState state = world.getBlockState(getPos());
             world.setBlockState(getPos(), state.with(QPBlock.WORKING(), b));
         }
@@ -305,6 +309,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
 
     @SuppressWarnings("ConditionalCanBeOptional")
     private void S_searchLiquid(final int x, final int y, final int z) {
+        assert world != null;
         this.fwt = world.getDayTime();
         int cg;
         cp = cg = 0;
@@ -317,8 +322,8 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         this.px = -1;
         final IAttachable tb = G_connected();
         @Nullable RangeWrapper b = null;
-//        if (tb instanceof TileQuarry || tb instanceof TileQuarry2)
-//            b = RangeWrapper.of(tb);
+        if (tb instanceof TileQuarry /* TODO|| tb instanceof TileQuarry2*/)
+            b = RangeWrapper.of(tb);
         if (b != null && b.yMax != Integer.MIN_VALUE) {
             chunk_side_x = 1 + (b.xMax >> 4) - (b.xMin >> 4);
             chunk_side_z = 1 + (b.zMax >> 4) - (b.zMin >> 4);
@@ -399,6 +404,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
 
     public boolean S_removeLiquids(final APowerTile tile, final int x, final int y, final int z) {
         S_sendNowPacket();
+        assert world != null;
         if (this.cx != x || this.cy != y || this.cz != z || this.py < this.cy
             || world.getDayTime() - this.fwt > 200)
             S_searchLiquid(x, y, z);
@@ -452,7 +458,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                     for (bz = 0; bz < this.block_side_z; bz++)
                         if ((this.blocks[this.py - this.yOffset][bx][bz] & 0x40) != 0) {
                             drainBlock(bx, bz, Holder.blockFrame().getDammingState());
-                            /*if (tile instanceof TileQuarry || tile instanceof TileQuarry2) {
+                            if (tile instanceof TileQuarry /* TODO || tile instanceof TileQuarry2*/) {
                                 RangeWrapper wrapper = RangeWrapper.of(tile);
                                 int xTarget = bx + xOffset;
                                 int zTarget = bz + zOffset;
@@ -469,7 +475,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                                     }
                                     autoChange(false);
                                 }
-                            }*/
+                            }
                         }
             } else
                 for (bz = 0; bz < this.block_side_z; bz++)
@@ -617,6 +623,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     }*/
 
     private void drainBlock(final int bx, final int bz, final BlockState tb) {
+        assert world != null;
         if (isLiquid(this.storageArray[bx >> 4][bz >> 4][this.py >> 4].getBlockState(bx & 0xF, this.py & 0xF, bz & 0xF))) {
             BlockPos blockPos = new BlockPos(bx + xOffset, py, bz + zOffset);
             /*FluidUtil.getFluidHandler(world, blockPos, EnumFacing.UP).ifPresent(handler -> {
@@ -631,11 +638,10 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
             });*/
             IFluidState fluidState = world.getFluidState(blockPos);
             if (fluidState.isSource()) {
-                /*if (G_connected() instanceof TileQuarry2) {
-                    TileQuarry2 quarry2 = (TileQuarry2) G_connected();
-                    quarry2.getStorage().insertFluid(fluidState.getFluid(), FluidStore.AMOUNT);
-                } else */
-                {
+                if (G_connected() instanceof HasStorage) {
+                    HasStorage.Storage storage = ((HasStorage) G_connected()).getStorage();
+                    storage.insertFluid(fluidState.getFluid(), FluidStore.AMOUNT);
+                } else {
                     FluidStore.injectToNearTile(world, pos, fluidState.getFluid());
                 }
             }

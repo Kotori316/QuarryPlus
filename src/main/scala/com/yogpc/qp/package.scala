@@ -62,7 +62,7 @@ package object qp {
       val list = Option(stack.getTag).fold(new ListNBT)(_.getList(tagName, NBT.TAG_COMPOUND))
 
       import scala.collection.JavaConverters._
-      val copied = list.asScala.zipWithIndex.map { case (t, i) => (t.asInstanceOf[CompoundNBT], i) }
+      val copied = list.asScala.zipWithIndex.collect { case (t:CompoundNBT, i) => (t, i) }
       for ((tag, i) <- copied) {
         if (tag.getString("id") == id.toString) {
           list.remove(i)

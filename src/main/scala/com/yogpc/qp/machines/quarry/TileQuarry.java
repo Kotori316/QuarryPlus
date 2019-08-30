@@ -37,20 +37,19 @@ import com.yogpc.qp.packet.quarry.ModeMessage;
 import com.yogpc.qp.packet.quarry.MoveHead;
 import com.yogpc.qp.utils.Holder;
 import javax.annotation.Nullable;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.item.EntityXPOrb;
-import net.minecraft.init.Blocks;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.BooleanUtils;
@@ -133,10 +132,11 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     }
 
     private boolean S_checkTarget() {
+        assert world != null;
         if (this.targetY > this.yMax)
             this.targetY = this.yMax;
         BlockPos target = new BlockPos(this.targetX, this.targetY, this.targetZ);
-        final IBlockState b = world.getBlockState(target);
+        final BlockState b = world.getBlockState(target);
         final float blockHardness = b.getBlockHardness(world, target);
         switch (this.now) {
             case BREAK_BLOCK:
@@ -210,7 +210,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
         return true;
     }
 
-    private boolean isBreakableBlock(BlockPos target, IBlockState b, float blockHardness) {
+    private boolean isBreakableBlock(BlockPos target, BlockState b, float blockHardness) {
         return blockHardness >= 0 && // Not to break unbreakable
             !b.getBlock().isAir(b, world, target) && // Avoid air
             (now == Mode.NOT_NEED_BREAK || !facingMap.containsKey(REPLACER) || b != S_getFillBlock()) && // Avoid dummy block.
@@ -307,6 +307,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     }
 
     private boolean S_makeFrame() {
+        assert world != null;
         this.dug = true;
         if (!PowerManager.useEnergyFrameBuild(this, this.unbreaking))
             return false;
@@ -328,10 +329,11 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     }
 
     private void S_checkDropItem() {
+        assert world != null;
         final AxisAlignedBB axis = new AxisAlignedBB(this.targetX - 4, this.targetY - 4, this.targetZ - 4,
             this.targetX + 5, this.targetY + 3, this.targetZ + 5);
-        final List<EntityItem> result = world.getEntitiesWithinAABB(EntityItem.class, axis);
-        result.stream().filter(EntityItem::isAlive).map(EntityItem::getItem).filter(not(ItemStack::isEmpty)).forEach(this.cacheItems::add);
+        final List<ItemEntity> result = world.getEntitiesWithinAABB(ItemEntity.class, axis);
+        result.stream().filter(ItemEntity::isAlive).map(ItemEntity::getItem).filter(not(ItemStack::isEmpty)).forEach(this.cacheItems::add);
         result.forEach(QuarryPlus.proxy::removeEntity);
 
         if (facingMap.containsKey(EXP_PUMP)) {
@@ -343,10 +345,11 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
 
     @SuppressWarnings("Duplicates") // To avoid BC's library error.
     private void S_createBox() {
+        assert world != null;
         if (this.yMax != Integer.MIN_VALUE)
             return;
 
-        EnumFacing facing = world.getBlockState(getPos()).get(FACING).getOpposite();
+        Direction facing = world.getBlockState(getPos()).get(FACING).getOpposite();
         /*if (bcLoaded) {
             Optional<IAreaProvider> marker = Stream.of(getNeighbors(facing))
                 .map(world::getTileEntity).filter(Objects::nonNull)
@@ -415,7 +418,8 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
         }
     }
 
-    protected IBlockState S_getFillBlock() {
+    protected BlockState S_getFillBlock() {
+        assert world != null;
         if (now == Mode.NOT_NEED_BREAK || !facingMap.containsKey(REPLACER))
             return Blocks.AIR.getDefaultState();
         else {
@@ -428,7 +432,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     }
 
     @SuppressWarnings("Duplicates")
-    public void setDefaultRange(BlockPos pos, EnumFacing facing) {
+    public void setDefaultRange(BlockPos pos, Direction facing) {
         final int x = 11;
         final int y = (x - 1) / 2;//5
         pos = pos.offset(facing);
@@ -436,12 +440,12 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
         BlockPos pos2 = pos.offset(facing, x);
         BlockPos pos3 = pos.offset(facing.rotateY(), y);
         BlockPos pos4 = pos.offset(facing.rotateYCCW(), y);
-        if (facing.getAxis() == EnumFacing.Axis.X) {
+        if (facing.getAxis() == Direction.Axis.X) {
             xMin = Math.min(pos1.getX(), pos2.getX());
             xMax = Math.max(pos1.getX(), pos2.getX());
             zMin = Math.min(pos3.getZ(), pos4.getZ());
             zMax = Math.max(pos3.getZ(), pos4.getZ());
-        } else if (facing.getAxis() == EnumFacing.Axis.Z) {
+        } else if (facing.getAxis() == Direction.Axis.Z) {
             xMin = Math.min(pos3.getX(), pos4.getX());
             xMax = Math.max(pos3.getX(), pos4.getX());
             zMin = Math.min(pos1.getZ(), pos2.getZ());
@@ -486,9 +490,9 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
 
     public void setNow(Mode now) {
         this.now = now;
-        if (!world.isRemote) {
+        if (world != null && !world.isRemote) {
             PacketHandler.sendToAround(ModeMessage.create(this), world, getPos());
-            IBlockState state = world.getBlockState(getPos());
+            BlockState state = world.getBlockState(getPos());
             if (state.get(QPBlock.WORKING()) ^ isWorking()) {
 //                InvUtils.setNewState(world, getPos(), this, state.with(QPBlock.WORKING(), isWorking()));
                 world.setBlockState(getPos(), state.with(QPBlock.WORKING(), isWorking()));
@@ -523,11 +527,11 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
 
     @Override
     public void G_ReInit() {
-        if (this.yMax == Integer.MIN_VALUE && !world.isRemote)
+        if (this.yMax == Integer.MIN_VALUE && world != null && !world.isRemote)
             S_createBox();
         setNow(Mode.NOT_NEED_BREAK);
         G_renew_powerConfigure();
-        if (!world.isRemote) {
+        if (world != null && !world.isRemote) {
             S_setFirstPos();
             PacketHandler.sendToAround(TileMessage.create(this), world, getPos());
         }
@@ -540,7 +544,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
             G_renew_powerConfigure();
             this.initialized = true;
         }
-        if (!world.isRemote)
+        if (world != null && !world.isRemote)
             S_updateEntity();
     }
 
@@ -550,7 +554,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     }
 
     @Override
-    public void read(final NBTTagCompound nbt) {
+    public void read(final CompoundNBT nbt) {
         super.read(nbt);
         this.xMin = nbt.getInt("xMin");
         this.xMax = nbt.getInt("xMax");
@@ -574,7 +578,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     }
 
     @Override
-    public NBTTagCompound write(final NBTTagCompound nbt) {
+    public CompoundNBT write(final CompoundNBT nbt) {
         nbt.putInt("xMin", this.xMin);
         nbt.putInt("xMax", this.xMax);
         nbt.putInt("yMin", this.yMin);
@@ -602,8 +606,8 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     }
 
     @Override
-    public TextComponentTranslation getName() {
-        return new TextComponentTranslation(getDebugName());
+    public TranslationTextComponent getName() {
+        return new TranslationTextComponent(getDebugName());
     }
 
     /**
@@ -618,9 +622,10 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
 
     @Override
     public void G_renew_powerConfigure() {
+        assert world != null;
         byte pmp = 0;
         if (hasWorld()) {
-            Map<IAttachment.Attachments<?>, EnumFacing> map = facingMap.entrySet().stream()
+            Map<IAttachment.Attachments<?>, Direction> map = facingMap.entrySet().stream()
                 .filter(byEntry((attachments, facing) -> attachments.test(world.getTileEntity(getPos().offset(facing)))))
                 .collect(entryToMap());
             facingMap.putAll(map);
@@ -693,14 +698,14 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
 
     @Override
     public List<ITextComponent> getDebugMessages() {
-        ArrayList<ITextComponent> list = new ArrayList<>();
-        list.add(new TextComponentTranslation(TranslationKeys.CURRENT_MODE, G_getNow()));
-        list.add(new TextComponentString(String.format("Next target : (%d, %d, %d)", targetX, targetY, targetZ)));
-        list.add(new TextComponentString(String.format("Head Pos : (%s, %s, %s)", headPosX, headPosY, headPosZ)));
-        list.add(new TextComponentString("X : " + xMin + " to " + xMax));
-        list.add(new TextComponentString("Z : " + zMin + " to " + zMax));
-        list.add(new TextComponentTranslation(filler ? TranslationKeys.FILLER_MODE : TranslationKeys.QUARRY_MODE));
-        list.add(new TextComponentTranslation(TranslationKeys.Y_LEVEL, this.yLevel));
+        List<ITextComponent> list = new ArrayList<>();
+        list.add(new TranslationTextComponent(TranslationKeys.CURRENT_MODE, G_getNow()));
+        list.add(new StringTextComponent(String.format("Next target : (%d, %d, %d)", targetX, targetY, targetZ)));
+        list.add(new StringTextComponent(String.format("Head Pos : (%s, %s, %s)", headPosX, headPosY, headPosZ)));
+        list.add(new StringTextComponent("X : " + xMin + " to " + xMax));
+        list.add(new StringTextComponent("Z : " + zMin + " to " + zMax));
+        list.add(new TranslationTextComponent(filler ? TranslationKeys.FILLER_MODE : TranslationKeys.QUARRY_MODE));
+        list.add(new TranslationTextComponent(TranslationKeys.Y_LEVEL, this.yLevel));
         return list;
     }
 
