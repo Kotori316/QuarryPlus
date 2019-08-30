@@ -1,32 +1,29 @@
 package com.yogpc.qp.machines.base;
 
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidTankProperties;
-import net.minecraftforge.fluids.capability.templates.EmptyFluidHandler;
 
 public interface IDummyFluidHandler extends IFluidHandler {
-
-    IFluidTankProperties[] emptyPropertyArray = EmptyFluidHandler.EMPTY_TANK_PROPERTIES_ARRAY;
+    @Override
+    default boolean isFluidValid(int tank, @Nonnull FluidStack stack) {
+        return true;
+    }
 
     @Override
-    IFluidTankProperties[] getTankProperties();
-
-    @Override
-    default int fill(FluidStack resource, boolean doFill) {
+    default int fill(FluidStack resource, FluidAction action) {
         return 0;
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    default FluidStack drain(FluidStack resource, boolean doDrain) {
-        return null;
+    default FluidStack drain(FluidStack resource, FluidAction action) {
+        return FluidStack.EMPTY;
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    default FluidStack drain(int maxDrain, boolean doDrain) {
-        return null;
+    default FluidStack drain(int maxDrain, FluidAction action) {
+        return FluidStack.EMPTY;
     }
 }

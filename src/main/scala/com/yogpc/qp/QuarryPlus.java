@@ -13,7 +13,6 @@ import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.Item;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.loot.functions.LootFunctionManager;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
@@ -94,8 +93,7 @@ public class QuarryPlus {
             proxy.registerTextures(event);
             PowerManager.configRegister();
             PacketHandler.init();
-            EnableCondition serializer = new EnableCondition();
-            CraftingHelper.register(new ResourceLocation(serializer.NAME()), serializer);
+            CraftingHelper.register(new EnableCondition.Serializer());
             LootFunctionManager.registerFunction(new IEnchantableTile.DropFunction.Serializer());
         }
 

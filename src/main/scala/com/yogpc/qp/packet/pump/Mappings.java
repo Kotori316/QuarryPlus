@@ -1,15 +1,24 @@
 package com.yogpc.qp.packet.pump;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.function.Supplier;
 
+import com.yogpc.qp.machines.pump.TankPump;
 import com.yogpc.qp.machines.pump.TilePump;
 import com.yogpc.qp.packet.IMessage;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fluids.FluidAttributes;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class Mappings {
 
@@ -20,14 +29,14 @@ public class Mappings {
         BlockPos pos;
         int dim;
         Direction facing;
-        EnumMap<Direction, LinkedList<String>> map = new EnumMap<>(Direction.class);
+        EnumMap<Direction, List<FluidStack>> map = new EnumMap<>(Direction.class);
 
         public static All create(TilePump pump, Direction facing) {
             All message = new All();
             message.pos = pump.getPos();
             message.dim = IMessage.getDimId(pump.getWorld());
             message.facing = facing;
-            message.map = new EnumMap<>(pump.mapping);
+            message.map = new EnumMap<>(((TankPump) pump.getStorage()).mapping);
             return message;
         }
 
@@ -36,13 +45,13 @@ public class Mappings {
             pos = buffer.readBlockPos();
             dim = buffer.readInt();
             facing = buffer.readEnumValue(Direction.class);
-            for (Direction VALUE : Direction.values()) {
+            for (Direction direction : Direction.values()) {
                 int l = buffer.readInt();
-                LinkedList<String> strings = new LinkedList<>();
+                List<FluidStack> stacks = new ArrayList<>(l);
                 for (int j = 0; j < l; j++) {
-                    strings.add(buffer.readString(Short.MAX_VALUE));
+                    stacks.add(FluidStack.loadFluidStackFromNBT(buffer.readCompoundTag()));
                 }
-                map.put(VALUE, strings);
+                map.put(direction, stacks);
             }
 
             return this;
@@ -52,9 +61,9 @@ public class Mappings {
         public void writeToBuffer(PacketBuffer buffer) {
             buffer.writeBlockPos(pos).writeInt(dim);
             buffer.writeEnumValue(facing);
-            for (LinkedList<String> strings : map.values()) {
-                buffer.writeInt(strings.size());
-                strings.forEach(buffer::writeString);
+            for (List<FluidStack> stacks : map.values()) {
+                buffer.writeInt(stacks.size());
+                stacks.forEach(s -> buffer.writeCompoundTag(s.writeToNBT(new CompoundNBT())));
             }
         }
 
@@ -62,8 +71,8 @@ public class Mappings {
         public void onReceive(Supplier<NetworkEvent.Context> ctx) {
             IMessage.findTile(ctx, pos, dim, TilePump.class)
                 .ifPresent(pump -> {
-                    pump.mapping.clear();
-                    pump.mapping.putAll(map);
+                    ((TankPump) pump.getStorage()).mapping.clear();
+                    ((TankPump) pump.getStorage()).mapping.putAll(map);
                 });
         }
 
@@ -78,9 +87,9 @@ public class Mappings {
         Direction facing;
         BlockPos pos;
         int dim;
-        String fluidName;
+        ResourceLocation fluidName;
 
-        public static Update create(TilePump pump, Direction facing, Type type, String fluidName) {
+        public static Update create(TilePump pump, Direction facing, Type type, ResourceLocation fluidName) {
             Update update = new Update();
             update.facing = facing;
             update.pos = pump.getPos();
@@ -95,14 +104,14 @@ public class Mappings {
             pos = buffer.readBlockPos();
             facing = buffer.readEnumValue(Direction.class);
             type = buffer.readEnumValue(Type.class);
-            fluidName = buffer.readString(Short.MAX_VALUE);
+            fluidName = buffer.readResourceLocation();
             dim = buffer.readInt();
             return this;
         }
 
         @Override
         public void writeToBuffer(PacketBuffer buffer) {
-            buffer.writeBlockPos(pos).writeEnumValue(facing).writeEnumValue(type).writeString(fluidName).writeInt(dim);
+            buffer.writeBlockPos(pos).writeEnumValue(facing).writeEnumValue(type).writeResourceLocation(fluidName).writeInt(dim);
 
         }
 
@@ -110,47 +119,52 @@ public class Mappings {
         public void onReceive(Supplier<NetworkEvent.Context> ctx) {
             IMessage.findTile(ctx, pos, dim, TilePump.class)
                 .ifPresent(pump -> ctx.get().enqueueWork(() -> {
-                    LinkedList<String> list = pump.mapping.get(facing);
+                    List<FluidStack> list = ((TankPump) pump.getStorage()).mapping.get(facing);
                     typeAction(list, fluidName, type);
                 }));
         }
 
-        public static void typeAction(LinkedList<String> list, String fluidName, Type type) {
-            int i = list.indexOf(fluidName);
-            switch (type) {
-                case Add:
-                    list.add(fluidName);
-                    break;
-                case Remove:
-                    list.remove(fluidName);
-                    break;
-                case Up:
-                    if (i > 0) {
-                        list.remove(i);
-                        list.add(i - 1, fluidName);
-                    }
-                    break;
-                case Top:
-                    if (i > 0) {
-                        list.remove(i);
-                        list.addFirst(fluidName);
-                    }
-                    break;
-                case Down:
-                    if (i >= 0 && i != list.size() - 1) {
-                        list.remove(i);
-                        list.add(i + 1, fluidName);
-                    }
-                    break;
-                case Bottom:
-                    if (i >= 0 && i != list.size() - 1) {
-                        list.remove(i);
-                        list.addLast(fluidName);
-                    }
-                    break;
-                case None:
-                    break;
+        public static void typeAction(List<FluidStack> list, ResourceLocation fluidName, Type type) {
+            Fluid fluid = ForgeRegistries.FLUIDS.getValue(fluidName);
+            if (fluid != null) {
+                FluidStack e = new FluidStack(fluid, FluidAttributes.BUCKET_VOLUME);
+                int i = list.indexOf(e);
+                switch (type) {
+                    case Add:
+                        list.add(e);
+                        break;
+                    case Remove:
+                        list.remove(e);
+                        break;
+                    case Up:
+                        if (i > 0) {
+                            list.remove(i);
+                            list.add(i - 1, e);
+                        }
+                        break;
+                    case Top:
+                        if (i > 0) {
+                            list.remove(i);
+                            list.add(0, e);
+                        }
+                        break;
+                    case Down:
+                        if (i >= 0 && i != list.size() - 1) {
+                            list.remove(i);
+                            list.add(i + 1, e);
+                        }
+                        break;
+                    case Bottom:
+                        if (i >= 0 && i != list.size() - 1) {
+                            list.remove(i);
+                            list.add(e);
+                        }
+                        break;
+                    case None:
+                        break;
+                }
             }
+
         }
     }
 
@@ -162,9 +176,9 @@ public class Mappings {
         BlockPos pos;
         int dim;
         Direction dest;
-        LinkedList<String> list;
+        List<FluidStack> list;
 
-        public static Copy create(TilePump pump, Direction dest, LinkedList<String> list) {
+        public static Copy create(TilePump pump, Direction dest, List<FluidStack> list) {
             Copy copy = new Copy();
             copy.dest = dest;
             copy.pos = pump.getPos();
@@ -181,7 +195,7 @@ public class Mappings {
             int length = buffer.readInt();
             list = new LinkedList<>();
             for (int i = 0; i < length; i++) {
-                list.add(buffer.readString(Short.MAX_VALUE));
+                list.add(FluidStack.loadFluidStackFromNBT(buffer.readCompoundTag()));
             }
             return this;
         }
@@ -189,13 +203,13 @@ public class Mappings {
         @Override
         public void writeToBuffer(PacketBuffer buffer) {
             buffer.writeBlockPos(pos).writeEnumValue(dest).writeInt(dim).writeInt(list.size());
-            list.forEach(buffer::writeString);
+            list.stream().map(s -> s.writeToNBT(new CompoundNBT())).forEach(buffer::writeCompoundTag);
         }
 
         @Override
         public void onReceive(Supplier<NetworkEvent.Context> ctx) {
             IMessage.findTile(ctx, pos, dim, TilePump.class)
-                .ifPresent(pump -> ctx.get().enqueueWork(() -> pump.mapping.put(dest, list)));
+                .ifPresent(pump -> ctx.get().enqueueWork(() -> ((TankPump) pump.getStorage()).mapping.put(dest, list)));
         }
 
     }

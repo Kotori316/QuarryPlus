@@ -14,17 +14,14 @@
 package com.yogpc.qp.machines.pump;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.compat.FluidStore;
 import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.APacketTile;
@@ -33,7 +30,6 @@ import com.yogpc.qp.machines.base.HasStorage;
 import com.yogpc.qp.machines.base.IAttachable;
 import com.yogpc.qp.machines.base.IAttachment;
 import com.yogpc.qp.machines.base.IDebugSender;
-import com.yogpc.qp.machines.base.IDummyFluidHandler;
 import com.yogpc.qp.machines.base.IEnchantableTile;
 import com.yogpc.qp.machines.base.IModule;
 import com.yogpc.qp.machines.base.QPBlock;
@@ -52,9 +48,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.StringNBT;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
@@ -66,16 +59,13 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidBlock;
-import net.minecraftforge.fluids.capability.FluidTankProperties;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import scala.Symbol;
 
-public class TilePump extends APacketTile implements IEnchantableTile, ITickableTileEntity, IDebugSender, IAttachment {
+public class TilePump extends APacketTile implements IEnchantableTile, ITickableTileEntity, IDebugSender, IAttachment, HasStorage {
     public static final Symbol SYMBOL = Symbol.apply("PumpPlus");
     @Nullable
     public Direction connectTo = null;
@@ -86,16 +76,11 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     public byte unbreaking;
     protected byte fortune;
     protected boolean silktouch;
-    private final List<FluidStack> liquids = new ArrayList<>();
-    public final EnumMap<Direction, LinkedList<String>> mapping = new EnumMap<>(Direction.class);
-//    public final EnumMap<EnumFacing, PumpTank> tankMap = new EnumMap<>(EnumFacing.class);
+
+    private final TankPump tankPump = new TankPump();
 
     public TilePump() {
         super(Holder.pumpTileType());
-        for (Direction value : Direction.values()) {
-//            tankMap.put(value, new PumpTank(value));
-            mapping.put(value, new LinkedList<>());
-        }
     }
 
     public IAttachable G_connected() {
@@ -127,21 +112,11 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
             setConnectTo(Direction.byIndex(nbt.getByte("connectTo")));
             preFacing = this.connectTo;
         }
-        if (nbt.get("mapping0") instanceof ListNBT)
-            for (int i = 0; i < this.mapping.size(); i++) {
-                LinkedList<String> list = this.mapping.get(Direction.byIndex(i));
-                list.clear();
-                list.addAll(nbt.getList("mapping" + i, Constants.NBT.TAG_STRING).stream().map(INBT::getString).collect(Collectors.toList()));
-            }
+
         this.range = nbt.getByte("range");
         this.quarryRange = nbt.getBoolean("quarryRange");
         this.autoChangedRange = nbt.getBoolean("autoChangedRange");
-        if (this.silktouch) {
-            this.liquids.clear();
-            final ListNBT liquids = nbt.getList("liquids", Constants.NBT.TAG_COMPOUND);
-            for (int i = 0; i < liquids.size(); i++)
-                this.liquids.add(FluidStack.loadFluidStackFromNBT(liquids.getCompound(i)));
-        }
+        this.tankPump.deserializeNBT(nbt.getCompound("tankPump"), this.silktouch);
     }
 
     @Override
@@ -151,15 +126,10 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         nbt.putByte("unbreaking", this.unbreaking);
         if (connectTo != null)
             nbt.putByte("connectTo", (byte) this.connectTo.ordinal());
-        for (int i = 0; i < this.mapping.size(); i++)
-            nbt.put("mapping" + i, this.mapping.get(Direction.byIndex(i)).stream().map(StringNBT::new).collect(Collectors.toCollection(ListNBT::new)));
         nbt.putByte("range", this.range);
         nbt.putBoolean("quarryRange", this.quarryRange);
         nbt.putBoolean("autoChangedRange", this.autoChangedRange);
-        if (this.silktouch) {
-            nbt.put("liquids",
-                this.liquids.stream().map(f -> f.writeToNBT(new CompoundNBT())).collect(Collectors.toCollection(ListNBT::new)));
-        }
+        nbt.put("tankPump", tankPump.serializeNBT(this.silktouch));
         return super.write(nbt);
     }
 
@@ -519,109 +489,6 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         return isLiquid(state, false, null, null);
     }
 
-    /*private class PumpTank extends FluidTank {
-        final EnumFacing facing;
-
-        private PumpTank(EnumFacing facing) {
-            super(Integer.MAX_VALUE);
-            this.facing = facing;
-            setCanFill(false);
-            setTileEntity(TilePump.this);
-        }
-
-        @Override
-        public int fill(FluidStack resource, boolean doFill) {
-            return 0;
-        }
-
-        @Override
-        public FluidStack drain(FluidStack resource, boolean doDrain) {
-            if (resource == null || resource.amount <= 0) {
-                return null;
-            }
-            final int index = liquids.indexOf(resource);
-            if (index == -1)
-                return null;
-            final FluidStack fs = liquids.get(index);
-            if (fs == null)
-                return null;
-
-            int drained = Math.min(fs.amount, resource.amount);
-            final FluidStack ret = new FluidStack(fs, drained);
-            if (doDrain) {
-                doDrain(() -> liquids.remove(fs), fs, ret.amount);
-            }
-            return ret;
-        }
-
-        @Override
-        public IFluidTankProperties[] getTankProperties() {
-            final LinkedList<FluidTankProperties> ret = new LinkedList<>();
-            if (mapping.get(facing).isEmpty()) {
-                if (liquids.isEmpty())
-                    return IDummyFluidHandler.emptyPropertyArray;
-                else
-                    for (final FluidStack fs : liquids)
-                        ret.add(new FluidTankProperties(fs, Integer.MAX_VALUE, false, true));
-            } else {
-                for (final String s : mapping.get(facing)) {
-                    Optional.ofNullable(getFluidStack(s, 0)).ifPresent(fluidStack -> {
-                        int index = liquids.indexOf(fluidStack);
-                        if (index != -1)
-                            ret.add(new FluidTankProperties(liquids.get(index), Integer.MAX_VALUE, false, true));
-                        else
-                            ret.add(new FluidTankProperties(fluidStack, Integer.MAX_VALUE, false, true));
-                    });
-                }
-            }
-            return ret.toArray(new FluidTankProperties[0]);
-        }
-
-        @Override
-        public FluidStack drain(int maxDrain, boolean doDrain) {
-            if (mapping.get(facing).isEmpty()) {
-                return liquids.isEmpty() ? null : drainI(0, maxDrain, doDrain);
-            }
-            int index;
-            FluidStack fs;
-            for (final String s : mapping.get(facing)) {
-                fs = getFluidStack(s, maxDrain);
-                if (fs != null) {
-                    index = liquids.indexOf(fs);
-                    if (index != -1) {
-                        return drainI(index, maxDrain, doDrain);
-                    }
-                }
-            }
-            return null;
-        }
-
-        //TODO change to better code.
-        private FluidStack getFluidStack(String name, int amount) {
-            return null;
-        }
-
-        private FluidStack drainI(int index, int maxDrain, boolean doDrain) {
-            FluidStack stack = liquids.get(index);
-            int drained = Math.min(maxDrain, stack.amount);
-            FluidStack ret = new FluidStack(stack, drained);
-            if (doDrain) {
-                doDrain(() -> liquids.remove(index), stack, drained);
-            }
-            return ret;
-        }
-
-        private void doDrain(Runnable remove, FluidStack stack, int drained) {
-            stack.amount -= drained;
-            if (stack.amount <= 0) {
-                remove.run();
-            }
-            onContentsChanged();
-            FluidEvent.fireEvent(new FluidEvent.FluidDrainingEvent(stack.amount <= 0 ? null : stack, world, getPos(), this, drained));
-        }
-
-    }*/
-
     private void drainBlock(final int bx, final int bz, final BlockState tb) {
         assert world != null;
         if (isLiquid(this.storageArray[bx >> 4][bz >> 4][this.py >> 4].getBlockState(bx & 0xF, this.py & 0xF, bz & 0xF))) {
@@ -638,23 +505,20 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
             });*/
             IFluidState fluidState = world.getFluidState(blockPos);
             if (fluidState.isSource()) {
-                if (G_connected() instanceof HasStorage) {
-                    HasStorage.Storage storage = ((HasStorage) G_connected()).getStorage();
-                    storage.insertFluid(fluidState.getFluid(), FluidStore.AMOUNT);
-                } else {
-                    FluidStore.injectToNearTile(world, pos, fluidState.getFluid());
-                }
+                HasStorage.Storage storage = G_connected() instanceof HasStorage ? ((HasStorage) G_connected()).getStorage() : getStorage();
+                storage.insertFluid(new FluidStack(fluidState.getFluid(), FluidAttributes.BUCKET_VOLUME));
             }
             world.setBlockState(blockPos, tb);
         }
     }
 
     public List<ITextComponent> C_getNames() {
-        if (!liquids.isEmpty()) {
-            List<ITextComponent> list = new ArrayList<>(liquids.size() + 1);
+        Collection<FluidStack> allContents = tankPump.getAllContents();
+        if (!allContents.isEmpty()) {
+            List<ITextComponent> list = new ArrayList<>(allContents.size() + 1);
             list.add(new TranslationTextComponent(TranslationKeys.PUMP_CONTAIN));
-            liquids.forEach(s -> list.add(new TranslationTextComponent(TranslationKeys.LIQUID_FORMAT,
-                new TranslationTextComponent(s.getUnlocalizedName()), Integer.toString(s.amount))));
+            allContents.forEach(s -> list.add(new TranslationTextComponent(TranslationKeys.LIQUID_FORMAT,
+                s.getDisplayName(), Integer.toString(s.getAmount()))));
             return list;
         } else {
             return Collections.singletonList(new TranslationTextComponent(TranslationKeys.PUMP_CONTAIN_NO));
@@ -665,14 +529,15 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     public List<ITextComponent> getDebugMessages() {
         ArrayList<ITextComponent> list = new ArrayList<>();
         list.add(toComponentString.apply("Connection : " + this.connectTo));
-        for (Direction facing : Direction.values()) {
-            this.mapping.get(facing).stream()
-                .reduce(combiner).map(toComponentString)
-                .ifPresent(list::add);
-        }
-        if (!liquids.isEmpty()) {
+//        for (Direction facing : Direction.values()) {
+//            this.mapping.get(facing).stream()
+//                .reduce(combiner).map(toComponentString)
+//                .ifPresent(list::add);
+//        }
+        Collection<FluidStack> allContents = tankPump.getAllContents();
+        if (!allContents.isEmpty()) {
             list.add(new TranslationTextComponent(TranslationKeys.PUMP_CONTAIN));
-            liquids.stream().map(fluidStack -> fluidStack.getLocalizedName() + fluidStack.amount + "mB")
+            allContents.stream().map(fluidStack -> fluidStack.getDisplayName().getFormattedText() + fluidStack.getAmount() + "mB")
                 .reduce(combiner).map(toComponentString)
                 .ifPresent(list::add);
         } else {
@@ -710,19 +575,16 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
 
     }
 
-    private final IFluidHandler tankAll = (IDummyFluidHandler) () -> {
-        IFluidTankProperties[] array = TilePump.this.liquids.stream()
-            .map(fluidStack -> new FluidTankProperties(fluidStack, fluidStack.amount, false, false))
-            .toArray(IFluidTankProperties[]::new);
-        return array.length == 0 ? IDummyFluidHandler.emptyPropertyArray : array;
-    };
-
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-//        if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
-//            return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.orEmpty(cap, LazyOptional.of(() -> side == null ? tankAll : tankMap.get(side)));
-//        }
-        return super.getCapability(cap, side);
+        LazyOptional<T> pumpCapability = tankPump.getCapability(cap, side);
+        if (pumpCapability.isPresent()) return pumpCapability;
+        else return super.getCapability(cap, side);
+    }
+
+    @Override
+    public Storage getStorage() {
+        return tankPump;
     }
 }

@@ -21,6 +21,8 @@ import net.minecraft.fluid.IFluidState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkSection;
+import net.minecraftforge.fluids.FluidAttributes;
+import net.minecraftforge.fluids.FluidStack;
 import scala.collection.JavaConverters;
 import scala.collection.immutable.Set;
 
@@ -338,7 +340,7 @@ public abstract class PumpModule implements IModule {
                 if (fluidState.isSource()) {
                     if (tile instanceof HasStorage) {
                         HasStorage.Storage storage = ((HasStorage) tile).getStorage();
-                        storage.insertFluid(fluidState.getFluid(), FluidStore.AMOUNT);
+                        storage.insertFluid(new FluidStack(fluidState.getFluid(), FluidAttributes.BUCKET_VOLUME));
                     } else
                         FluidStore.injectToNearTile(world, pos, fluidState.getFluid());
                 }
