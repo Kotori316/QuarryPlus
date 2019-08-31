@@ -342,7 +342,7 @@ public abstract class PumpModule implements IModule {
                         HasStorage.Storage storage = ((HasStorage) tile).getStorage();
                         storage.insertFluid(new FluidStack(fluidState.getFluid(), FluidAttributes.BUCKET_VOLUME));
                     } else
-                        FluidStore.injectToNearTile(world, pos, fluidState.getFluid());
+                        FluidStore.injectToNearTile(world, pos, new FluidStack(fluidState.getFluid(), FluidAttributes.BUCKET_VOLUME));
                 }
                 world.setBlockState(blockPos, tb);
             }

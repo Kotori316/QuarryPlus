@@ -62,7 +62,9 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.IFluidBlock;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import scala.Symbol;
 
 public class TilePump extends APacketTile implements IEnchantableTile, ITickableTileEntity, IDebugSender, IAttachment, HasStorage {
@@ -136,25 +138,13 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     @Override
     public void tick() {
         if (world != null && !world.isRemote) {
-            /*for (EnumFacing facing : EnumFacing.values()) {
+            for (Direction facing : Direction.values()) {
                 BlockPos offset = getPos().offset(facing);
-                IBlockState state = world.getBlockState(offset);
-                if (state.getBlock().hasTileEntity(state)) {
-                    Optional.ofNullable(world.getTileEntity(offset))
-                        .map(t -> t.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing.getOpposite()))
-                        .ifPresent(handlerOpt -> {
-                            IFluidHandler handler = handlerOpt.orElse(EmptyFluidHandler.INSTANCE);
-                            PumpTank tank = tankMap.get(facing);
-                            FluidStack resource = tank.drain(Fluid.BUCKET_VOLUME, false);
-                            if (resource != null) {
-                                int fill = handler.fill(resource, false);
-                                if (fill > 0) {
-                                    handler.fill(tank.drain(fill, true), true);
-                                }
-                            }
-                        });
-                }
-            }*/
+                FluidUtil.getFluidHandler(world, offset, facing.getOpposite()).ifPresent(destination -> {
+                    IFluidHandler pumpTank = tankPump.pumpTankEnumMap.get(facing);
+                    FluidUtil.tryFluidTransfer(destination, pumpTank, Integer.MAX_VALUE, true);
+                });
+            }
             if (!initialized) {
                 if (connectTo != null) {
                     TileEntity te = world.getTileEntity(getPos().offset(connectTo));
@@ -584,7 +574,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     }
 
     @Override
-    public Storage getStorage() {
+    public TankPump getStorage() {
         return tankPump;
     }
 }

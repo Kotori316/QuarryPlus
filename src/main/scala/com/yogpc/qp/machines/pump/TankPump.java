@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import com.yogpc.qp.machines.base.HasStorage;
 import com.yogpc.qp.machines.base.IDummyFluidHandler;
+import com.yogpc.qp.utils.FluidElement;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.item.ItemStack;
@@ -21,7 +22,6 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -30,10 +30,10 @@ public class TankPump implements HasStorage.Storage, ICapabilityProvider {
 
     All all = new All();
     // The equal method of FluidStack checks the kind of fluid, not the amount of stack.
-    Map<FluidStack, FluidStack> stacks = new HashMap<>();
-    List<FluidStack> keys = new ArrayList<>();
+    Map<FluidElement, FluidStack> stacks = new HashMap<>();
+    List<FluidElement> keys = new ArrayList<>();
     // The stacks in list doesn't show actual stack, just the kind.
-    public EnumMap<Direction, List<FluidStack>> mapping = new EnumMap<>(Direction.class);
+    public EnumMap<Direction, List<FluidElement>> mapping = new EnumMap<>(Direction.class);
     EnumMap<Direction, PumpTank> pumpTankEnumMap = new EnumMap<>(Direction.class);
 
     public TankPump() {
@@ -50,8 +50,7 @@ public class TankPump implements HasStorage.Storage, ICapabilityProvider {
 
     @Override
     public void insertFluid(FluidStack fluidStack) {
-        FluidStack key = fluidStack.copy();
-        key.setAmount(FluidAttributes.BUCKET_VOLUME);
+        FluidElement key = FluidElement.fromStack(fluidStack);
         stacks.merge(key, fluidStack, (fluidStack1, fluidStack2) -> {
             FluidStack newOne = fluidStack1.copy();
             newOne.setAmount(newOne.getAmount() + fluidStack2.getAmount());
@@ -86,11 +85,11 @@ public class TankPump implements HasStorage.Storage, ICapabilityProvider {
         CompoundNBT allNbt = new CompoundNBT();
         CompoundNBT mappingNbt = new CompoundNBT();
         mapping.forEach((direction, fluidStacks) -> {
-            ListNBT fss = fluidStacks.stream().map(fs -> fs.writeToNBT(new CompoundNBT())).collect(Collectors.toCollection(ListNBT::new));
+            ListNBT fss = fluidStacks.stream().map(FluidElement::toCompoundTag).collect(Collectors.toCollection(ListNBT::new));
             mappingNbt.put(direction.getName(), fss);
         });
         if (writeContents) {
-            ListNBT keysNbt = keys.stream().map(fs -> fs.writeToNBT(new CompoundNBT())).collect(Collectors.toCollection(ListNBT::new));
+            ListNBT keysNbt = keys.stream().map(FluidElement::toCompoundTag).collect(Collectors.toCollection(ListNBT::new));
             ListNBT stacksNbt = stacks.values().stream().map(fs -> fs.writeToNBT(new CompoundNBT())).collect(Collectors.toCollection(ListNBT::new));
             allNbt.put("keys", keysNbt);
             allNbt.put("stacks", stacksNbt);
@@ -104,17 +103,17 @@ public class TankPump implements HasStorage.Storage, ICapabilityProvider {
         CompoundNBT mappingNbt = allNbt.getCompound("mapping");
         for (Direction direction : Direction.values()) {
             ListNBT fss = mappingNbt.getList(direction.getName(), Constants.NBT.TAG_COMPOUND);
-            mapping.put(direction, fss.stream().map(CompoundNBT.class::cast).map(FluidStack::loadFluidStackFromNBT).collect(Collectors.toList()));
+            mapping.put(direction, fss.stream().map(CompoundNBT.class::cast).map(FluidElement::fromNBT).collect(Collectors.toList()));
         }
         if (readContents) {
             ListNBT keysNbt = allNbt.getList("keys", Constants.NBT.TAG_COMPOUND);
             ListNBT stacksNbt = allNbt.getList("stacks", Constants.NBT.TAG_COMPOUND);
-            keys = keysNbt.stream().map(CompoundNBT.class::cast).map(FluidStack::loadFluidStackFromNBT).collect(Collectors.toList());
+            keys = keysNbt.stream().map(CompoundNBT.class::cast).map(FluidElement::fromNBT).collect(Collectors.toList());
             stacks.clear();
             stacksNbt.stream().map(CompoundNBT.class::cast)
                 .map(FluidStack::loadFluidStackFromNBT)
-                .filter(keys::contains)
-                .forEach(fluidStack -> stacks.put(new FluidStack(fluidStack, FluidAttributes.BUCKET_VOLUME), fluidStack));
+                .filter(s -> keys.contains(FluidElement.fromStack(s)))
+                .forEach(s -> stacks.put(FluidElement.fromStack(s), s));
         }
     }
 
@@ -145,7 +144,7 @@ public class TankPump implements HasStorage.Storage, ICapabilityProvider {
             this.facing = facing;
         }
 
-        private List<FluidStack> getList() {
+        private List<FluidElement> getList() {
             return mapping.get(facing);
         }
 
@@ -157,7 +156,7 @@ public class TankPump implements HasStorage.Storage, ICapabilityProvider {
         @Nonnull
         @Override
         public FluidStack getFluidInTank(int tank) {
-            return getList().get(tank);
+            return stacks.get(getList().get(tank));
         }
 
         @Override
@@ -178,21 +177,22 @@ public class TankPump implements HasStorage.Storage, ICapabilityProvider {
         @Nonnull
         @Override
         public FluidStack drain(FluidStack resource, FluidAction action) {
-            if (resource.isEmpty() || !stacks.containsKey(resource)) {
+            FluidElement key = FluidElement.fromStack(resource);
+            if (resource.isEmpty() || !stacks.containsKey(key)) {
                 return FluidStack.EMPTY;
             }
-            FluidStack source = stacks.get(resource);
+            FluidStack source = stacks.get(key);
             if (source.getAmount() > resource.getAmount()) {
                 // just reduce the amount
                 if (action.execute()) {
-                    stacks.put(resource, new FluidStack(source, source.getAmount() - resource.getAmount()));
+                    stacks.put(key, new FluidStack(source, source.getAmount() - resource.getAmount()));
                 }
                 return resource.copy();
             } else {
                 // remove the fluid from list.
                 if (action.execute()) {
-                    stacks.remove(resource);
-                    keys.remove(resource);
+                    stacks.remove(key);
+                    keys.remove(key);
                 }
                 return source.copy();
             }
@@ -210,13 +210,10 @@ public class TankPump implements HasStorage.Storage, ICapabilityProvider {
                 source = stacks.get(keys.get(0));
             } else {
                 // Drain from direction-separated tank.
-                source = getList().get(0);
+                source = stacks.get(getList().get(0));
             }
             FluidStack resource = new FluidStack(source, maxDrain);
             return this.drain(resource, action);
         }
-
-
     }
-
 }
