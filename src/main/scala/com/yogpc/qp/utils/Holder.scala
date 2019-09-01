@@ -101,6 +101,42 @@ object Holder {
     blockAdvPump,
     blockQuarry2,
   )
+
+  //---------- TileEntity ----------
+  private def createTileType[T <: TileEntity](supplier: () => T, name: String, block: Block): TileEntityType[T] = {
+    val t = TileEntityType.Builder.create[T](() => supplier(), block).build(null)
+    t.setRegistryName(QuarryPlus.modID, name)
+    t
+  }
+
+  val markerTileType = createTileType(() => new TileMarker, QuarryPlus.Names.marker, blockMarker)
+  val workbenchTileType = createTileType(() => new TileWorkbench, QuarryPlus.Names.workbench, blockWorkbench)
+  val expPumpTileType = createTileType(() => new TileExpPump, QuarryPlus.Names.exppump, blockExpPump)
+  val miningWellTileType = createTileType(() => new TileMiningWell, QuarryPlus.Names.miningwell, blockMiningWell)
+  val quarryTileType = createTileType(() => new TileQuarry, QuarryPlus.Names.quarry, blockQuarry)
+  val pumpTileType = createTileType(() => new TilePump, QuarryPlus.Names.pump, blockPump)
+  val solidQuarryType = createTileType(() => new TileSolidQuarry, QuarryPlus.Names.solidquarry, blockSolidQuarry)
+  val replacerType = createTileType(() => new TileReplacer, QuarryPlus.Names.replacer, blockReplacer)
+  val bookMoverType = createTileType(() => new TileBookMover, QuarryPlus.Names.moverfrombook, blockBookMover)
+  //  val advQuarryType = createTileType(() => new TileAdvQuarry, QuarryPlus.Names.advquarry, blockAdvQuarry)
+  //  val advPumpType = createTileType(() => new TileAdvPump, QuarryPlus.Names.advpump, blockAdvPump)
+  //  val quarry2 = createTileType(() => new TileQuarry2, QuarryPlus.Names.quarry2, blockQuarry2)
+
+  val tiles: Map[TileEntityType[_ <: TileEntity], TileDisable] = Map(
+    markerTileType -> TileDisable(TileMarker.SYMBOL),
+    workbenchTileType -> TileDisable(TileWorkbench.SYMBOL),
+    expPumpTileType -> TileDisable(BlockExpPump.SYMBOL),
+    miningWellTileType -> TileDisable(TileMiningWell.SYMBOL),
+    quarryTileType -> TileDisable(TileQuarry.SYMBOL, defaultDisableMachine = true),
+    pumpTileType -> TileDisable(TilePump.SYMBOL),
+    solidQuarryType -> TileDisable(BlockSolidQuarry.SYMBOL),
+    replacerType -> TileDisable(TileReplacer.SYMBOL, defaultDisableMachine = true),
+    bookMoverType -> TileDisable(BlockBookMover.SYMBOL, defaultDisableMachine = true),
+    //    advQuarryType -> TileDisable(TileAdvQuarry.SYMBOL, defaultDisableMachine = true),
+    //    advPumpType -> TileDisable(TileAdvPump.SYMBOL),
+    //    quarry2 -> TileDisable(TileQuarry2.SYMBOL),
+  )
+
   //---------- Item ----------
 
   val itemListEditor = new ItemListEditor
