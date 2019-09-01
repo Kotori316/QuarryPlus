@@ -1,45 +1,39 @@
 package com.yogpc.qp.machines.item
 
 import com.yogpc.qp.QuarryPlus
-import com.yogpc.qp.machines.advquarry.TileAdvQuarry
-import com.yogpc.qp.machines.quarry.{TileBasic, TileQuarry2}
-import net.minecraft.entity.player.{EntityPlayer, InventoryPlayer}
-import net.minecraft.inventory.Container
+import com.yogpc.qp.machines.quarry.TileBasic
+import net.minecraft.entity.player.{PlayerEntity, PlayerInventory}
+import net.minecraft.inventory.container.INamedContainerProvider
 import net.minecraft.util.INameable
-import net.minecraft.world.IInteractionObject
+import net.minecraft.util.math.BlockPos
 
-abstract class YSetterInteractionObject(nameable: INameable) extends IInteractionObject {
+abstract class YSetterInteractionObject(nameable: INameable) extends INamedContainerProvider {
 
-  override def getGuiID = YSetterInteractionObject.GUI_ID
+  def getGuiID = YSetterInteractionObject.GUI_ID
 
-  override def getName = nameable.getName
+  override def getDisplayName = nameable.getName
 
-  override def hasCustomName = nameable.hasCustomName
-
-  override def getCustomName = nameable.getCustomName
 }
 
 object YSetterInteractionObject {
   final val GUI_ID = QuarryPlus.modID + ":gui_" + QuarryPlus.Names.ySetter
 
-  import GuiQuarryLevel._
-
-  def apply(tile: INameable): IInteractionObject = tile match {
-    case basic: TileBasic => new Basic(basic)
-    case quarry: TileAdvQuarry => new AdvQuarry(quarry)
-    case quarry2: TileQuarry2 => new Quarry2(quarry2)
+  def apply(tile: INameable, pos: BlockPos): YSetterInteractionObject = tile match {
+    case basic: TileBasic => new Basic(basic, pos)
+    /*case quarry: TileAdvQuarry => new AdvQuarry(quarry, pos)
+    case quarry2: TileQuarry2 => new Quarry2(quarry2, pos)*/
   }
 
-  private class Basic(basic: TileBasic) extends YSetterInteractionObject(basic) {
-    override def createContainer(playerInventory: InventoryPlayer, playerIn: EntityPlayer) = new ContainerQuarryLevel(basic, playerIn)
+  private class Basic(basic: TileBasic, pos: BlockPos) extends YSetterInteractionObject(basic) {
+    override def createMenu(id: Int, p_createMenu_2_ : PlayerInventory, playerIn: PlayerEntity) = new ContainerQuarryLevel(id, playerIn, pos)
   }
 
-  private class AdvQuarry(quarry: TileAdvQuarry) extends YSetterInteractionObject(quarry) {
-    override def createContainer(playerInventory: InventoryPlayer, playerIn: EntityPlayer): Container = new ContainerQuarryLevel(quarry, playerIn)
+  /*private class AdvQuarry(quarry: TileAdvQuarry, pos: BlockPos) extends YSetterInteractionObject(quarry) {
+    override def createMenu(id: Int, p_createMenu_2_ : PlayerInventory, playerIn: PlayerEntity) = new ContainerQuarryLevel(id, quarry, playerIn, pos)
   }
 
-  private class Quarry2(quarry: TileQuarry2) extends YSetterInteractionObject(quarry) {
-    override def createContainer(playerInventory: InventoryPlayer, playerIn: EntityPlayer): Container = new ContainerQuarryLevel(quarry, playerIn)
-  }
+  private class Quarry2(quarry: TileQuarry2, pos: BlockPos) extends YSetterInteractionObject(quarry) {
+    override def createMenu(id: Int, p_createMenu_2_ : PlayerInventory, playerIn: PlayerEntity) = new ContainerQuarryLevel(id, quarry, playerIn, pos)
+  }*/
 
 }

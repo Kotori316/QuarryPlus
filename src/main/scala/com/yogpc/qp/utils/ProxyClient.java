@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import com.yogpc.qp.Config;
 import com.yogpc.qp.machines.bookmover.GuiBookMover;
+import com.yogpc.qp.machines.item.GuiQuarryLevel;
 import com.yogpc.qp.machines.marker.TileMarker;
 import com.yogpc.qp.machines.mover.GuiMover;
 import com.yogpc.qp.machines.quarry.TileQuarry;
@@ -102,6 +103,7 @@ public class ProxyClient extends ProxyCommon {
         ScreenManager.registerFactory(Holder.moverContainerType(), GuiMover::new);
         ScreenManager.registerFactory(Holder.workbenchContainerType(), GuiWorkbench::new);
         ScreenManager.registerFactory(Holder.bookMoverContainerType(), GuiBookMover::new);
+        ScreenManager.registerFactory(Holder.ySetterContainerType(), GuiQuarryLevel::new);
     }
 
     public void onBake(ModelBakeEvent event) {

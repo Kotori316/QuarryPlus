@@ -1,17 +1,27 @@
 package com.yogpc.qp.machines.item
 
-import com.yogpc.qp.machines.base.HasInv
+import com.yogpc.qp.machines.item.GuiQuarryLevel._
+import com.yogpc.qp.machines.quarry.TileBasic
 import com.yogpc.qp.packet.PacketHandler
 import com.yogpc.qp.packet.quarry.LevelMessage
-import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.inventory.{Container, Slot}
+import com.yogpc.qp.utils.Holder
+import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.inventory.container.{Container, Slot}
 import net.minecraft.item.ItemStack
 import net.minecraft.tileentity.TileEntity
+import net.minecraft.util.math.BlockPos
 
-class ContainerQuarryLevel[T <: TileEntity with HasInv](tile: T, player: EntityPlayer)
-                                                       (implicit messageFunc: T => _ <: LevelMessage)
-  extends Container {
+class ContainerQuarryLevel(id: Int, player: PlayerEntity, pos: BlockPos)
+  extends Container(Holder.ySetterContainerType, id) {
+  type Message[T <: TileEntity] = T => _ <: LevelMessage
+  val tile = player.getEntityWorld.getTileEntity(pos)
   val oneBox = 18
+  val messageFunc: Message[TileEntity] = (tile match {
+    case _: TileBasic => implicitly[Message[TileBasic]]
+//    case _: TileQuarry2 => implicitly[Message[TileQuarry2]]
+//    case _: TileAdvQuarry => implicitly[Message[TileAdvQuarry]]
+    case _ => null
+  }).asInstanceOf[Message[TileEntity]]
 
   for (h <- 0 until 3; v <- 0 until 9) {
     this.addSlot(new Slot(player.inventory, v + h * 9 + 9, 8 + v * oneBox, 84 + h * oneBox))
@@ -24,7 +34,7 @@ class ContainerQuarryLevel[T <: TileEntity with HasInv](tile: T, player: EntityP
   if (!tile.getWorld.isRemote)
     PacketHandler.sendToClient(messageFunc(tile), tile.getWorld)
 
-  override def canInteractWith(playerIn: EntityPlayer) = tile.getWorld.getTileEntity(tile.getPos) eq tile
+  override def canInteractWith(playerIn: PlayerEntity) = tile.getWorld.getTileEntity(tile.getPos) eq tile
 
-  override def transferStackInSlot(playerIn: EntityPlayer, index: Int) = ItemStack.EMPTY
+  override def transferStackInSlot(playerIn: PlayerEntity, index: Int) = ItemStack.EMPTY
 }

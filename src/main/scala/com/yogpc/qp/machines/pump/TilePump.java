@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
@@ -527,7 +528,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         Collection<FluidStack> allContents = tankPump.getAllContents();
         if (!allContents.isEmpty()) {
             list.add(new TranslationTextComponent(TranslationKeys.PUMP_CONTAIN));
-            allContents.stream().map(fluidStack -> fluidStack.getDisplayName().getFormattedText() + fluidStack.getAmount() + "mB")
+            allContents.stream().map(fluidStack -> Objects.toString(fluidStack.getFluid().getRegistryName()) + fluidStack.getAmount() + "mB")
                 .reduce(combiner).map(toComponentString)
                 .ifPresent(list::add);
         } else {
