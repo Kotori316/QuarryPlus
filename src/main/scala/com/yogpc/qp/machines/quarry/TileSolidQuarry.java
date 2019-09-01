@@ -7,21 +7,22 @@ import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.APowerTile;
 import com.yogpc.qp.utils.Holder;
 import javax.annotation.Nonnull;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.inventory.Container;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntityFurnace;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.FurnaceTileEntity;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.world.IInteractionObject;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
-public class TileSolidQuarry extends TileQuarry implements IInteractionObject {
+public class TileSolidQuarry extends TileQuarry implements INamedContainerProvider {
     public static final String GUI_ID = QuarryPlus.modID + ":gui_" + QuarryPlus.Names.solidquarry;
     private static final long fuelEfficiency = 4 * APowerTile.MicroJtoMJ; // 40 RF/t
     private ItemStack fuel = ItemStack.EMPTY;
@@ -40,12 +41,15 @@ public class TileSolidQuarry extends TileQuarry implements IInteractionObject {
     protected void S_updateEntity() {
         if (machineDisabled) return;
         if (fuelCount > 0) {
-            fuelCount -= 1;
-            getEnergy(fuelEfficiency, true);
+            if (getEnergy(fuelEfficiency, false) == fuelEfficiency) {
+                fuelCount -= 1;
+                getEnergy(fuelEfficiency, true);
+            }
         } else {
-            int burn = TileEntityFurnace.getBurnTimes().getOrDefault(fuel.getItem(), 0) / 5;
+            int burn = fuel.getBurnTime();
+            burn = ForgeEventFactory.getItemBurnTime(fuel, burn == -1 ? FurnaceTileEntity.getBurnTimes().getOrDefault(fuel.getItem(), 0) : burn);
             if (burn > 0) {
-                fuelCount += burn;
+                fuelCount += burn / 5;
                 decrStackSize(0, 1);
             }
         }
@@ -53,19 +57,19 @@ public class TileSolidQuarry extends TileQuarry implements IInteractionObject {
     }
 
     @Override
-    protected IBlockState S_getFillBlock() {
+    protected BlockState S_getFillBlock() {
         return Blocks.AIR.getDefaultState(); // Replace with dummy block is not allowed.
     }
 
     @Override
-    public void read(NBTTagCompound nbt) {
+    public void read(CompoundNBT nbt) {
         super.read(nbt);
         fuelCount = nbt.getInt("fuelCount");
         fuel = ItemStack.read(nbt.getCompound("fuel"));
     }
 
     @Override
-    public NBTTagCompound write(NBTTagCompound nbt) {
+    public CompoundNBT write(CompoundNBT nbt) {
         nbt.putInt("fuelCount", fuelCount);
         nbt.put("fuel", fuel.serializeNBT());
         return super.write(nbt);
@@ -77,8 +81,8 @@ public class TileSolidQuarry extends TileQuarry implements IInteractionObject {
     }
 
     @Override
-    public boolean isUsableByPlayer(EntityPlayer player) {
-        return world.getTileEntity(getPos()) == this;
+    public boolean isUsableByPlayer(PlayerEntity player) {
+        return player.world.getTileEntity(getPos()) == this;
     }
 
     @Override
@@ -126,7 +130,7 @@ public class TileSolidQuarry extends TileQuarry implements IInteractionObject {
 
     @Override
     public boolean isItemValidForSlot(int index, ItemStack stack) {
-        return index == 0 && TileEntityFurnace.isItemFuel(stack);
+        return index == 0 && FurnaceTileEntity.isFuel(stack);
     }
 
     @Override
@@ -160,17 +164,12 @@ public class TileSolidQuarry extends TileQuarry implements IInteractionObject {
     public List<ITextComponent> getDebugMessages() {
         List<ITextComponent> list = super.getDebugMessages();
         // I know super.getDebugMessages returns ArrayList.
-        list.add(new TextComponentString("FuelCount : " + fuelCount));
+        list.add(new StringTextComponent("FuelCount : " + fuelCount));
         return list;
     }
 
     @Override
-    public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn) {
-        return new ContainerSolidQuarry(this, playerIn);
-    }
-
-    @Override
-    public String getGuiID() {
-        return GUI_ID;
+    public Container createMenu(int id, PlayerInventory i, PlayerEntity p) {
+        return new ContainerSolidQuarry(id, p, pos);
     }
 }

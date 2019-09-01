@@ -1,16 +1,19 @@
 package com.yogpc.qp.machines.quarry;
 
 import com.yogpc.qp.machines.base.SlotTile;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
+import com.yogpc.qp.utils.Holder;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
 
 public class ContainerSolidQuarry extends Container {
     private final TileSolidQuarry quarry;
 
-    public ContainerSolidQuarry(TileSolidQuarry quarry, EntityPlayer player) {
-        this.quarry = quarry;
+    public ContainerSolidQuarry(int id, PlayerEntity player, BlockPos pos) {
+        super(Holder.solidQuarryContainerType(), id);
+        this.quarry = ((TileSolidQuarry) player.getEntityWorld().getTileEntity(pos));
 
         addSlot(new SlotTile(quarry, 0, 44, 27));
 
@@ -26,12 +29,12 @@ public class ContainerSolidQuarry extends Container {
     }
 
     @Override
-    public boolean canInteractWith(EntityPlayer playerIn) {
+    public boolean canInteractWith(PlayerEntity playerIn) {
         return quarry.isUsableByPlayer(playerIn);
     }
 
     @Override
-    public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
+    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
         int allSlots = 1;
         ItemStack src = ItemStack.EMPTY;
         final Slot slot = this.inventorySlots.get(index);

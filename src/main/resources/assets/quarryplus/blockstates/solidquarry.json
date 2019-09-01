@@ -1,12 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "quarryplus:solidquarry"
+    "model": "quarryplus:block/solidquarry"
   },
   "variants": {
     "working": {
       "true": {
-        "model": "quarryplus:solidquarry_working"
+        "model": "quarryplus:block/solidquarry_working"
       },
       "false": {
       }
