@@ -12,7 +12,9 @@
  */
 package com.yogpc.qp.machines.quarry
 
+import com.yogpc.qp.Config
 import com.yogpc.qp.machines.base.IEnchantableItem.{EFFICIENCY, FORTUNE, SILKTOUCH, UNBREAKING}
+import com.yogpc.qp.machines.bookmover.BlockBookMover
 import net.minecraft.block.Block
 import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.init.Enchantments
@@ -20,7 +22,9 @@ import net.minecraft.item.{Item, ItemStack}
 
 class ItemBlockEnchantable(b: Block, prop: Item.Properties) extends com.yogpc.qp.machines.base.ItemBlockEnchantable(b, prop) {
   override def tester(is: ItemStack) = {
-    if (EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, is) > 0) {
+    if (!Config.common.disabled(BlockBookMover.SYMBOL).get()) {
+      SILKTOUCH or FORTUNE or UNBREAKING or EFFICIENCY
+    } else if (EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, is) > 0) {
       FORTUNE.negate() and (UNBREAKING or EFFICIENCY or SILKTOUCH)
     } else if (EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, is) > 0) {
       SILKTOUCH.negate() and (UNBREAKING or EFFICIENCY or FORTUNE)
