@@ -2,10 +2,16 @@
   "id": "quarryplus:builtin_chunkdestroyer",
   "type": "quarryplus:workbench_recipe",
   "ingredients": [
-    {
-      "item": "quarryplus:quarryplus",
-      "count": 3
-    },
+    [
+      {
+        "item": "quarryplus:quarryplus",
+        "count": 3
+      },
+      {
+        "item": "quarryplus:quarry",
+        "count": 3
+      }
+    ],
     {
       "item": "quarryplus:pumpplus",
       "count": 2

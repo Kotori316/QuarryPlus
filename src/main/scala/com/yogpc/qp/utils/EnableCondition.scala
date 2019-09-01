@@ -10,6 +10,6 @@ class EnableCondition extends IConditionSerializer {
 
   override def parse(json: JsonObject) = {
     val s = JsonUtils.getString(json, "value")
-    () => !Config.common.disabled.get(Symbol(s)).exists(_.get().booleanValue())
+    () => !Config.common.disabled.get(Symbol(s)).forall(_.get().booleanValue())
   }
 }
