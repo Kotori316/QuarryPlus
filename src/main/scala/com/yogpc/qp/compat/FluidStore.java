@@ -12,13 +12,13 @@ public class FluidStore {
     /**
      * @return inserted amount.
      */
-    public static long injectToNearTile(World world, BlockPos pos, FluidStack fluid) {
+    public static int injectToNearTile(World world, BlockPos pos, FluidStack fluid) {
         return injectToNearTile_internal(world, pos, fluid);
     }
 
-    private static long injectToNearTile_internal(World world, BlockPos pos, FluidStack fluid) {
+    private static int injectToNearTile_internal(World world, BlockPos pos, FluidStack fluid) {
         if (fluid.isEmpty()) {
-            return 0L;
+            return 0;
         }
         int source = fluid.getAmount();
         for (Direction facing : Direction.values()) {

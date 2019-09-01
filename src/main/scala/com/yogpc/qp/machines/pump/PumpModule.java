@@ -13,6 +13,7 @@ import com.yogpc.qp.machines.base.APowerTile;
 import com.yogpc.qp.machines.base.HasStorage;
 import com.yogpc.qp.machines.base.IModule;
 import com.yogpc.qp.machines.quarry.TileQuarry;
+import com.yogpc.qp.machines.quarry.TileQuarry2;
 import com.yogpc.qp.utils.Holder;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
@@ -152,7 +153,7 @@ public abstract class PumpModule implements IModule {
             this.px = -1;
             final APowerTile tb = G_connected();
             @Nullable RangeWrapper b = null;
-            if (tb instanceof TileQuarry /* TODO || tb instanceof TileQuarry2*/)
+            if (tb instanceof TileQuarry || tb instanceof TileQuarry2)
                 b = RangeWrapper.of(tb);
             int range = 0;
             if (b != null && b.yMax != Integer.MIN_VALUE) {
@@ -287,7 +288,7 @@ public abstract class PumpModule implements IModule {
                         for (bz = 0; bz < this.block_side_z; bz++)
                             if ((this.blocks[this.py - this.yOffset][bx][bz] & 0x40) != 0) {
                                 drainBlock(bx, bz, Holder.blockFrame().getDammingState());
-                                if (tile instanceof TileQuarry/* TODO || tile instanceof TileQuarry2*/) {
+                                if (tile instanceof TileQuarry|| tile instanceof TileQuarry2) {
                                     RangeWrapper wrapper = RangeWrapper.of(tile);
                                     int xTarget = bx + xOffset;
                                     int zTarget = bz + zOffset;

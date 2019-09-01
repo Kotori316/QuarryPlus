@@ -8,17 +8,19 @@ import com.yogpc.qp.machines.pump.TilePump
 import com.yogpc.qp.machines.{PowerManager, TranslationKeys}
 import com.yogpc.qp.packet.{PacketHandler, TileMessage}
 import com.yogpc.qp.utils.Holder
-import net.minecraft.block.state.IBlockState
+import net.minecraft.block.{Block, BlockState}
 import net.minecraft.entity.Entity
-import net.minecraft.entity.item.EntityItem
-import net.minecraft.entity.player.{EntityPlayer, InventoryPlayer}
+import net.minecraft.entity.item.ItemEntity
+import net.minecraft.entity.player.{PlayerEntity, PlayerInventory}
+import net.minecraft.inventory.container.INamedContainerProvider
 import net.minecraft.item.ItemStack
-import net.minecraft.nbt.{NBTTagCompound, NBTTagString}
+import net.minecraft.nbt.{CompoundNBT, StringNBT}
 import net.minecraft.state.properties.BlockStateProperties
-import net.minecraft.util._
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos, Vec3i}
-import net.minecraft.util.text.{TextComponentString, TextComponentTranslation}
-import net.minecraft.world.{IInteractionObject, World, WorldServer}
+import net.minecraft.util.text.{StringTextComponent, TranslationTextComponent}
+import net.minecraft.util.{Unit => _, _}
+import net.minecraft.world.World
+import net.minecraft.world.server.ServerWorld
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.ForgeEventFactory
 import net.minecraftforge.event.world.BlockEvent
@@ -38,15 +40,15 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   import TileQuarry2._
 
   var modules: List[IModule] = Nil
-  var attachments: Map[IAttachment.Attachments[_], EnumFacing] = Map.empty
+  var attachments: Map[IAttachment.Attachments[_], Direction] = Map.empty
   var enchantments = noEnch
   var area = zeroArea
   var action: QuarryAction = QuarryAction.none
-  var target = BlockPos.ORIGIN
+  var target = BlockPos.ZERO
   var yLevel = 1
   var frameMode = false
   private val storage = new QuarryStorage
-  val moduleInv = new QuarryModuleInventory(new TextComponentString("Modules"), 5, this, _ => refreshModules())
+  val moduleInv = new QuarryModuleInventory( 5, this, _ => refreshModules())
 
   override def tick(): Unit = {
     super.tick()
@@ -83,7 +85,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     super.remove()
   }
 
-  override def write(nbt: NBTTagCompound) = {
+  override def write(nbt: CompoundNBT) = {
     nbt.put("target", target.toLong.toNBT)
     nbt.put("enchantments", enchantments.toNBT)
     nbt.put("area", area.toNBT)
@@ -95,7 +97,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     super.write(nbt)
   }
 
-  override def read(nbt: NBTTagCompound): Unit = {
+  override def read(nbt: CompoundNBT): Unit = {
     super.read(nbt)
     target = BlockPos.fromLong(nbt.getLong("target"))
     enchantments = enchantmentHolderLoad(nbt, "enchantments")
@@ -107,23 +109,23 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     frameMode = nbt.getBoolean("frameMode")
   }
 
-  override protected def isWorking = target != BlockPos.ORIGIN && action.mode != none
+  override protected def isWorking = target != BlockPos.ZERO && action.mode != none
 
-  def onActivated(player: EntityPlayer): Unit = {
+  def onActivated(player: PlayerEntity): Unit = {
     // Called in server world.
     import com.yogpc.qp.machines.quarry.QuarryAction.BreakInsideFrame
     this.action match {
       case QuarryAction.waiting | _: BreakInsideFrame => frameMode = !frameMode
-        player.sendStatusMessage(new TextComponentTranslation(TranslationKeys.CHANGEMODE,
-          new TextComponentTranslation(if (frameMode) TranslationKeys.FILLER_MODE else TranslationKeys.QUARRY_MODE)), false)
+        player.sendStatusMessage(new TranslationTextComponent(TranslationKeys.CHANGEMODE,
+          new TranslationTextComponent(if (frameMode) TranslationKeys.FILLER_MODE else TranslationKeys.QUARRY_MODE)), false)
       case _ => G_ReInit()
-        player.sendStatusMessage(new TextComponentString("Quarry Restarted."), false)
+        player.sendStatusMessage(new StringTextComponent("Quarry Restarted."), false)
     }
   }
 
   /**
-    * Called after enchantment setting.
-    */
+   * Called after enchantment setting.
+   */
   override def G_ReInit(): Unit = {
     if (area == zeroArea) {
       val facing = world.getBlockState(pos).get(BlockStateProperties.FACING)
@@ -159,11 +161,11 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   }
 
   /**
-    * @param attachment must have returned true by { @link IAttachable#isValidAttachment(IAttachment.Attachments)}.
-    * @param simulate   true to avoid having side effect.
-    * @return true if the attachment is (will be) successfully connected.
-    */
-  override def connectAttachment(facing: EnumFacing, attachment: IAttachment.Attachments[_ <: APacketTile], simulate: Boolean) = {
+   * @param attachment must have returned true by { @link IAttachable#isValidAttachment(IAttachment.Attachments)}.
+   * @param simulate   true to avoid having side effect.
+   * @return true if the attachment is (will be) successfully connected.
+   */
+  override def connectAttachment(facing: Direction, attachment: IAttachment.Attachments[_ <: APacketTile], simulate: Boolean) = {
     val tile = world.getTileEntity(pos.offset(facing))
     if (!attachments.get(attachment).exists(_ != facing) && attachment.test(tile)) {
       if (!simulate) {
@@ -177,9 +179,9 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   }
 
   /**
-    * @param attachments that you're trying to add.
-    * @return whether this machine can accept the attachment.
-    */
+   * @param attachments that you're trying to add.
+   * @return whether this machine can accept the attachment.
+   */
   override def isValidAttachment(attachments: IAttachment.Attachments[_ <: APacketTile]) = IAttachment.Attachments.ALL.contains(attachments)
 
   def refreshModules(): Unit = {
@@ -196,16 +198,16 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   }
 
   /**
-    * This method does not place any blocks.
-    *
-    * @return True if succeeded.
-    */
-  def breakBlock(world: World, pos: BlockPos, state: IBlockState): Boolean = {
+   * This method does not place any blocks.
+   *
+   * @return True if succeeded.
+   */
+  def breakBlock(world: ServerWorld, pos: BlockPos, state: BlockState): Boolean = {
     if (pos.getX % 6 == 0 && pos.getZ % 6 == 0) {
       // Gather items
       import scala.collection.JavaConverters._
       val aabb = new AxisAlignedBB(pos.getX - 4, pos.getY, pos.getZ - 4, pos.getX + 4, pos.getY + 5, pos.getZ + 4)
-      world.getEntitiesWithinAABB[EntityItem](classOf[EntityItem], aabb, EntitySelectors.IS_ALIVE)
+      world.getEntitiesWithinAABB[ItemEntity](classOf[ItemEntity], aabb, EntityPredicates.IS_ALIVE)
         .asScala.foreach { e =>
         this.storage.addItem(e.getItem)
         QuarryPlus.proxy.removeEntity(e)
@@ -213,38 +215,38 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
       val orbs = world.getEntitiesWithinAABB(classOf[Entity], aabb).asScala.toList
       modules.foreach(_.action(IModule.CollectingItem(orbs)))
     }
-    val fakePlayer = QuarryFakePlayer.get(world.asInstanceOf[WorldServer])
-    fakePlayer.setHeldItem(EnumHand.MAIN_HAND, getEnchantedPickaxe)
+    val fakePlayer = QuarryFakePlayer.get(world)
+    val pickaxe = getEnchantedPickaxe
+    fakePlayer.setHeldItem(Hand.MAIN_HAND, pickaxe)
     val event = new BlockEvent.BreakEvent(world, pos, state, fakePlayer)
     MinecraftForge.EVENT_BUS.post(event)
-    val drops = if (self.enchantments.silktouch && state.canSilkHarvest(world, pos, fakePlayer)) {
-      val list = NonNullList.create[ItemStack]
-      list.add(APacketTile.invoke(TileBasic.createStackedBlock, classOf[ItemStack], state.getBlock, state))
-      ForgeEventFactory.fireBlockHarvesting(list, world, pos, state, 0, 1.0f, true, fakePlayer)
-      list
-    } else {
-      val list = NonNullList.create[ItemStack]
-      state.getBlock.getDrops(state, list, world, pos, self.enchantments.fortune)
-      ForgeEventFactory.fireBlockHarvesting(list, world, pos, state, self.enchantments.fortune, 1.0f, false, fakePlayer)
-      list
-    }
-    if (TilePump.isLiquid(state) || PowerManager.useEnergyBreak(self, state.getBlockHardness(world, pos),
-      TileQuarry2.enchantmentMode(enchantments), enchantments.unbreaking, modules.exists(IModule.hasReplaceModule))) {
-      val returnValue = modules.foldLeft(true) { case (b, m) => m.invoke(IModule.BeforeBreak(event.getExpToDrop, world, pos)) && b }
-      drops.forEach(storage.addItem)
-      returnValue
+    if (!event.isCanceled) {
+      val drops = NonNullList.create[ItemStack]
+      drops.addAll(Block.getDrops(state, world, pos, world.getTileEntity(pos), fakePlayer, pickaxe))
+      ForgeEventFactory.fireBlockHarvesting(drops, world, pos, state, self.enchantments.fortune, 1.0f, self.enchantments.silktouch, fakePlayer)
+      fakePlayer.setHeldItem(Hand.MAIN_HAND, ItemStack.EMPTY)
+
+      if (TilePump.isLiquid(state) || PowerManager.useEnergyBreak(self, state.getBlockHardness(world, pos),
+        TileQuarry2.enchantmentMode(enchantments), enchantments.unbreaking, modules.exists(IModule.hasReplaceModule))) {
+        val returnValue = modules.foldLeft(true) { case (b, m) => m.invoke(IModule.BeforeBreak(event.getExpToDrop, world, pos)) && b }
+        drops.forEach(storage.addItem)
+        returnValue
+      } else {
+        false
+      }
     } else {
       false
     }
+
   }
 
   override def getDebugName = TranslationKeys.quarry2
 
   /**
-    * For internal use only.
-    *
-    * @return debug info of valid machine.
-    */
+   * For internal use only.
+   *
+   * @return debug info of valid machine.
+   */
   override def getDebugMessages = JavaConverters.seqAsJavaList(List(
     s"Mode: ${action.mode}",
     s"Target: ${target.show}",
@@ -255,9 +257,9 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     s"Digs to y = $yLevel",
     s"Modules: ${modules.mkString(comma)}",
     s"Attachments: ${attachments.mkString(comma)}",
-  ).map(new TextComponentString(_)))
+  ).map(new StringTextComponent(_)))
 
-  def getName = new TextComponentTranslation(getDebugName)
+  def getName = new TranslationTextComponent(getDebugName)
 
   override def getDisplayName = super.getDisplayName
 
@@ -302,16 +304,14 @@ object TileQuarry2 {
   val breakInsideFrame = new Mode("BreakInsideFrame")
   val breakBlock = new Mode("BreakBlock")
 
-  class InteractionObject(quarry2: TileQuarry2) extends IInteractionObject {
-    override def createContainer(playerInventory: InventoryPlayer, playerIn: EntityPlayer) = new ContainerQuarryModule(quarry2, playerIn)
+  class InteractionObject(quarry2: TileQuarry2) extends INamedContainerProvider {
 
-    override def getGuiID = ContainerQuarryModule.GUI_ID
+    override def getDisplayName = new TranslationTextComponent(TranslationKeys.quarry2)
 
-    override val getName = new TextComponentTranslation(TranslationKeys.quarry2)
+    override def createMenu(id: Int, p_createMenu_2_ : PlayerInventory, player: PlayerEntity) = {
+      new ContainerQuarryModule(id, player, quarry2.getPos)
+    }
 
-    override def hasCustomName = false
-
-    override def getCustomName = null
   }
 
   //---------- Data Functions ----------
@@ -320,7 +320,7 @@ object TileQuarry2 {
       Math.max(p1.getX, p2.getX), Math.max(p1.getY, p2.getY), Math.max(p1.getZ, p2.getZ))
   }
 
-  def defaultArea(pos: BlockPos, facing: EnumFacing): Area = {
+  def defaultArea(pos: BlockPos, facing: Direction): Area = {
     val x = 11
     val y = (x - 1) / 2 //5
     val start = pos.offset(facing, 2)
@@ -329,14 +329,14 @@ object TileQuarry2 {
     posToArea(edge1, edge2)
   }
 
-  def findArea(facing: EnumFacing, world: World, pos: BlockPos) = {
+  def findArea(facing: Direction, world: World, pos: BlockPos) = {
     List(pos.offset(facing.getOpposite), pos.offset(facing.rotateY()), pos.offset(facing.rotateYCCW())).map(world.getTileEntity).collectFirst { case m: IMarker if m.hasLink => m } match {
       case Some(marker) => areaFromMarker(facing, pos, marker)
       case None => defaultArea(pos, facing.getOpposite) -> None
     }
   }
 
-  def areaFromMarker(facing: EnumFacing, pos: BlockPos, marker: IMarker) = {
+  def areaFromMarker(facing: Direction, pos: BlockPos, marker: IMarker) = {
     if (marker.min().getX <= pos.getX && marker.max().getX >= pos.getX &&
       marker.min().getY <= pos.getY && marker.max().getY >= pos.getY &&
       marker.min().getZ <= pos.getZ && marker.max().getZ >= pos.getZ) {
@@ -363,7 +363,7 @@ object TileQuarry2 {
     if (e.silktouch) -1 else e.fortune
 
   //---------- NBT ----------
-  type NBTLoad[A] = (NBTTagCompound, String) => A
+  type NBTLoad[A] = (CompoundNBT, String) => A
   private[this] final val MARKER: Marker = MarkerManager.getMarker("QUARRY_NBT")
   private[this] final val NBT_X_MIN = "xMin"
   private[this] final val NBT_X_MAX = "xMax"
@@ -380,7 +380,7 @@ object TileQuarry2 {
     QuarryPlus.LOGGER.debug(MARKER, "From nbt of {} data:{}", name, v)
   }
 
-  implicit val enchantmentHolderToNbt: EnchantmentHolder NBTWrapper NBTTagCompound = enchantments => {
+  implicit val enchantmentHolderToNbt: EnchantmentHolder NBTWrapper CompoundNBT = enchantments => {
     logTo(enchantments)
     val enchantmentsMap = Map(
       IEnchantableTile.EfficiencyID -> enchantments.efficiency,
@@ -388,11 +388,11 @@ object TileQuarry2 {
       IEnchantableTile.FortuneID -> enchantments.fortune,
       IEnchantableTile.SilktouchID -> enchantments.silktouch.compare(false),
     ) ++ enchantments.other
-    enchantmentsMap.filter(_._2 > 0).foldLeft(new NBTTagCompound) { case (nbt, (id, level)) => nbt.putInt(id.toString, level); nbt }
+    enchantmentsMap.filter(_._2 > 0).foldLeft(new CompoundNBT) { case (nbt, (id, level)) => nbt.putInt(id.toString, level); nbt }
   }
-  implicit val areaToNbt: Area NBTWrapper NBTTagCompound = area => {
+  implicit val areaToNbt: Area NBTWrapper CompoundNBT = area => {
     logTo(area)
-    val nbt = new NBTTagCompound
+    val nbt = new CompoundNBT
     nbt.putInt(NBT_X_MIN, area.xMin)
     nbt.putInt(NBT_X_MAX, area.xMax)
     nbt.putInt(NBT_Y_MIN, area.yMin)
@@ -401,8 +401,8 @@ object TileQuarry2 {
     nbt.putInt(NBT_Z_MAX, area.zMax)
     nbt
   }
-  implicit val modeToNbt: Mode NBTWrapper NBTTagString = mode => {
-    new NBTTagString(mode.toString)
+  implicit val modeToNbt: Mode NBTWrapper StringNBT = mode => {
+    new StringNBT(mode.toString)
   }
   val enchantmentHolderLoad: NBTLoad[EnchantmentHolder] = {
     case (tag, name) =>

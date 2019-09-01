@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 import com.yogpc.qp.machines.quarry.QuarryAction;
 import com.yogpc.qp.machines.quarry.TileQuarry2;
 import com.yogpc.qp.packet.IMessage;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -16,13 +16,13 @@ import net.minecraftforge.fml.network.NetworkEvent;
 public class ActionMessage implements IMessage<ActionMessage> {
     int dim;
     BlockPos pos;
-    NBTTagCompound actionNBT;
+    CompoundNBT actionNBT;
 
     public static ActionMessage create(TileQuarry2 quarry2) {
         ActionMessage message = new ActionMessage();
         message.dim = IMessage.getDimId(quarry2.getWorld());
         message.pos = quarry2.getPos();
-        message.actionNBT = quarry2.action().clientWrite(new NBTTagCompound());
+        message.actionNBT = quarry2.action().clientWrite(new CompoundNBT());
         return message;
     }
 

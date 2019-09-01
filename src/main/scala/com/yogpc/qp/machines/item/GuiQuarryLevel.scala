@@ -4,9 +4,10 @@ import com.mojang.blaze3d.platform.GlStateManager
 import com.yogpc.qp.QuarryPlus
 import com.yogpc.qp.machines.TranslationKeys
 import com.yogpc.qp.machines.base.{IDebugSender, IHandleButton}
-import com.yogpc.qp.machines.quarry.{TileBasic, TileQuarry}
+import com.yogpc.qp.machines.quarry.{TileBasic, TileQuarry, TileQuarry2}
 import com.yogpc.qp.packet.PacketHandler
 import com.yogpc.qp.packet.quarry.LevelMessage
+import com.yogpc.qp.packet.quarry2.Level2Message
 import net.minecraft.client.gui.screen.inventory.ContainerScreen
 import net.minecraft.client.resources.I18n
 import net.minecraft.entity.player.PlayerInventory
@@ -62,7 +63,7 @@ class GuiQuarryLevel(c: ContainerQuarryLevel, inv: PlayerInventory, t: ITextComp
       //      case quarry2: TileQuarry2 => quarry2.area.yMin
       case _ => tile.getPos.getY
     }
-    if (yMin > lA.getYLevel(tile) + di) {
+    if (yMin > lA.getYLevel(tile) + di && lA.getYLevel(tile) + di >= GuiQuarryLevel.y_min) {
       lA.add(tile, di)
       PacketHandler.sendToServer(func(tile))
     }
@@ -75,6 +76,7 @@ class GuiQuarryLevel(c: ContainerQuarryLevel, inv: PlayerInventory, t: ITextComp
 }
 
 object GuiQuarryLevel {
+  val y_min = 0
 
   trait YLevel[-T] {
     def setYLevel(t: T, yLevel: Int): Unit
@@ -91,7 +93,7 @@ object GuiQuarryLevel {
       tile match {
         case _: TileBasic => implicitly[YLevel[TileBasic]]
         //        case _:TileAdvQuarry => implicitly[YLevel[TileAdvQuarry]]
-        //        case _:TileQuarry2 => implicitly[YLevel[TileQuarry2]]
+        case _: TileQuarry2 => implicitly[YLevel[TileQuarry2]]
       }
       }.asInstanceOf[YLevel[TileEntity]]
   }
@@ -106,14 +108,14 @@ object GuiQuarryLevel {
     override def setYLevel(t: TileAdvQuarry, yLevel: Int): Unit = t.yLevel = yLevel
 
     override def getYLevel(t: TileAdvQuarry) = t.yLevel
-  }
+  }*/
   implicit val NQuarryY: YLevel[TileQuarry2] = new YLevel[TileQuarry2] {
     override def setYLevel(t: TileQuarry2, yLevel: Int): Unit = t.yLevel = yLevel
 
     override def getYLevel(t: TileQuarry2) = t.yLevel
-  }*/
+  }
 
   implicit val basicMessage: TileBasic => LevelMessage = LevelMessage.create
   //  implicit val advMessage: TileAdvQuarry => AdvLevelMessage = AdvLevelMessage.create
-  //  implicit val quarryMessage: TileQuarry2 => Level2Message = Level2Message.create
+  implicit val quarryMessage: TileQuarry2 => Level2Message = Level2Message.create
 }

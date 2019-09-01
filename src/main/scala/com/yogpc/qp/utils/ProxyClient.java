@@ -8,12 +8,15 @@ import com.yogpc.qp.machines.bookmover.GuiBookMover;
 import com.yogpc.qp.machines.item.GuiQuarryLevel;
 import com.yogpc.qp.machines.marker.TileMarker;
 import com.yogpc.qp.machines.mover.GuiMover;
+import com.yogpc.qp.machines.quarry.GuiQuarryModule;
 import com.yogpc.qp.machines.quarry.GuiSolidQuarry;
 import com.yogpc.qp.machines.quarry.TileQuarry;
+import com.yogpc.qp.machines.quarry.TileQuarry2;
 import com.yogpc.qp.machines.workbench.GuiWorkbench;
 import com.yogpc.qp.render.DummyBlockBakedModel;
 import com.yogpc.qp.render.RenderMarker;
 import com.yogpc.qp.render.RenderQuarry;
+import com.yogpc.qp.render.RenderQuarry2;
 import com.yogpc.qp.render.Sprites;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
@@ -106,6 +109,7 @@ public class ProxyClient extends ProxyCommon {
         ScreenManager.registerFactory(Holder.bookMoverContainerType(), GuiBookMover::new);
         ScreenManager.registerFactory(Holder.ySetterContainerType(), GuiQuarryLevel::new);
         ScreenManager.registerFactory(Holder.solidQuarryContainerType(), GuiSolidQuarry::new);
+        ScreenManager.registerFactory(Holder.quarryModuleContainerType(), GuiQuarryModule::new);
     }
 
     public void onBake(ModelBakeEvent event) {

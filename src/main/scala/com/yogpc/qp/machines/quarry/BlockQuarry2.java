@@ -11,23 +11,20 @@ import com.yogpc.qp.machines.item.YSetterInteractionObject;
 import com.yogpc.qp.utils.Holder;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.fluid.IFluidState;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.NonNullList;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
@@ -39,15 +36,15 @@ public class BlockQuarry2 extends QPBlock {
     public BlockQuarry2() {
         super(Properties.create(Material.IRON)
             .hardnessAndResistance(1.5f, 10f)
-            .sound(SoundType.STONE), QuarryPlus.Names.quarry2, ItemBlockEnchantable::new);
-        setDefaultState(getStateContainer().getBaseState().with(FACING, EnumFacing.NORTH).with(QPBlock.WORKING(), false));
+            .sound(SoundType.STONE), QuarryPlus.Names.quarry2, BlockItemEnchantable::new);
+        setDefaultState(getStateContainer().getBaseState().with(FACING, Direction.NORTH).with(QPBlock.WORKING(), false));
     }
 
     @Override
-    public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+    public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
         if (!worldIn.isRemote) {
-            EnumFacing facing = placer.getHorizontalFacing().getOpposite();
+            Direction facing = placer.getHorizontalFacing().getOpposite();
             worldIn.setBlockState(pos, state.with(FACING, facing), 2);
             Consumer<TileQuarry2> consumer = IEnchantableTile.Util.initConsumer(stack);
             Optional.ofNullable(worldIn.getTileEntity(pos)).flatMap(optCast(TileQuarry2.class))
@@ -56,7 +53,7 @@ public class BlockQuarry2 extends QPBlock {
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, IBlockState> builder) {
+    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
         builder.add(FACING, QPBlock.WORKING());
     }
 
@@ -68,7 +65,8 @@ public class BlockQuarry2 extends QPBlock {
 
     @Override
     @SuppressWarnings("deprecation")
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
+    public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
+        super.neighborChanged(state, worldIn, pos, blockIn, fromPos, isMoving);
         if (!worldIn.isRemote) {
             Optional.ofNullable(worldIn.getTileEntity(pos)).flatMap(optCast(TileQuarry2.class))
                 .ifPresent(TileQuarry2::neighborChanged);
@@ -76,11 +74,11 @@ public class BlockQuarry2 extends QPBlock {
     }
 
     @Override
-    public boolean onBlockActivated(IBlockState state, World worldIn, BlockPos pos, EntityPlayer player,
-                                    EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
-        if (super.onBlockActivated(state, worldIn, pos, player, hand, side, hitX, hitY, hitZ)) return true;
+    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
+                                    Hand hand, BlockRayTraceResult hit) {
+        if (super.onBlockActivated(state, worldIn, pos, player, hand, hit)) return true;
         ItemStack stack = player.getHeldItem(hand);
-        if (BuildcraftHelper.isWrench(player, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), side, pos))) {
+        if (BuildcraftHelper.isWrench(player, hand, stack, hit)) {
             if (!worldIn.isRemote)
                 Optional.ofNullable((TileQuarry2) worldIn.getTileEntity(pos)).ifPresent(tileQuarry2 -> tileQuarry2.onActivated(player));
             return true;
@@ -88,9 +86,9 @@ public class BlockQuarry2 extends QPBlock {
         if (!player.isSneaking()) {
             if (!worldIn.isRemote) {
                 Optional.ofNullable((TileQuarry2) worldIn.getTileEntity(pos)).map(t -> {
-                    if (stack.getItem() == Holder.itemYSetter()) return YSetterInteractionObject.apply(t);
+                    if (stack.getItem() == Holder.itemYSetter()) return YSetterInteractionObject.apply(t, pos);
                     else return new TileQuarry2.InteractionObject(t);
-                }).ifPresent(o -> NetworkHooks.openGui(((EntityPlayerMP) player), o, pos));
+                }).ifPresent(o -> NetworkHooks.openGui(((ServerPlayerEntity) player), o, pos));
             }
             return true;
         }
@@ -98,7 +96,8 @@ public class BlockQuarry2 extends QPBlock {
     }
 
     @Override
-    public void onReplaced(IBlockState state, World worldIn, BlockPos pos, IBlockState newState, boolean isMoving) {
+    @SuppressWarnings("deprecation")
+    public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
         if (state.getBlock() != newState.getBlock()) {
             if (!worldIn.isRemote) {
                 TileEntity entity = worldIn.getTileEntity(pos);
@@ -109,29 +108,6 @@ public class BlockQuarry2 extends QPBlock {
                 }
             }
             super.onReplaced(state, worldIn, pos, newState, isMoving);
-        }
-    }
-
-    @Override
-    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos,
-                                   EntityPlayer player, boolean willHarvest, IFluidState fluid) {
-        return willHarvest || super.removedByPlayer(state, world, pos, player, false, fluid);
-    }
-
-    @Override
-    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack) {
-        super.harvestBlock(worldIn, player, pos, state, te, stack);
-        worldIn.removeBlock(pos);
-    }
-
-    @Override
-    public void getDrops(IBlockState state, NonNullList<ItemStack> drops, World world, BlockPos pos, int fortune) {
-        TileEntity entity = world.getTileEntity(pos);
-        if (entity instanceof TileQuarry2) {
-            TileQuarry2 quarry = (TileQuarry2) entity;
-            ItemStack stack = new ItemStack(itemBlock(), 1);
-            IEnchantableTile.Util.enchantmentToIS(quarry, stack);
-            drops.add(stack);
         }
     }
 

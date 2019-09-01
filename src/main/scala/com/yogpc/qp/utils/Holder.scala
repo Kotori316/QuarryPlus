@@ -120,7 +120,7 @@ object Holder {
   val bookMoverType = createTileType(() => new TileBookMover, QuarryPlus.Names.moverfrombook, blockBookMover)
   //  val advQuarryType = createTileType(() => new TileAdvQuarry, QuarryPlus.Names.advquarry, blockAdvQuarry)
   //  val advPumpType = createTileType(() => new TileAdvPump, QuarryPlus.Names.advpump, blockAdvPump)
-  //  val quarry2 = createTileType(() => new TileQuarry2, QuarryPlus.Names.quarry2, blockQuarry2)
+  val quarry2 = createTileType(() => new TileQuarry2, QuarryPlus.Names.quarry2, blockQuarry2)
 
   val tiles: Map[TileEntityType[_ <: TileEntity], TileDisable] = Map(
     markerTileType -> TileDisable(TileMarker.SYMBOL),
@@ -134,7 +134,7 @@ object Holder {
     bookMoverType -> TileDisable(BlockBookMover.SYMBOL, defaultDisableMachine = true),
     //    advQuarryType -> TileDisable(TileAdvQuarry.SYMBOL, defaultDisableMachine = true),
     //    advPumpType -> TileDisable(TileAdvPump.SYMBOL),
-    //    quarry2 -> TileDisable(TileQuarry2.SYMBOL),
+    quarry2 -> TileDisable(TileQuarry2.SYMBOL),
   )
 
   //---------- Item ----------

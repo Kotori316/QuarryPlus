@@ -35,6 +35,7 @@ import com.yogpc.qp.machines.base.IEnchantableTile;
 import com.yogpc.qp.machines.base.IModule;
 import com.yogpc.qp.machines.base.QPBlock;
 import com.yogpc.qp.machines.quarry.TileQuarry;
+import com.yogpc.qp.machines.quarry.TileQuarry2;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.pump.Mappings;
 import com.yogpc.qp.packet.pump.Now;
@@ -245,8 +246,8 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
 
     public void S_changeRange(final PlayerEntity ep) {
         if (this.range >= (this.fortune + 1) * 2) {
-//            if (G_connected() instanceof TileQuarry || G_connected() instanceof TileQuarry2)
-//                this.quarryRange = true;
+            if (G_connected() instanceof TileQuarry || G_connected() instanceof TileQuarry2)
+                this.quarryRange = true;
             this.range = 0;
         } else if (this.quarryRange)
             this.quarryRange = false;
@@ -283,7 +284,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         this.px = -1;
         final IAttachable tb = G_connected();
         @Nullable RangeWrapper b = null;
-        if (tb instanceof TileQuarry /* TODO|| tb instanceof TileQuarry2*/)
+        if (tb instanceof TileQuarry || tb instanceof TileQuarry2)
             b = RangeWrapper.of(tb);
         if (b != null && b.yMax != Integer.MIN_VALUE) {
             chunk_side_x = 1 + (b.xMax >> 4) - (b.xMin >> 4);
@@ -419,7 +420,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                     for (bz = 0; bz < this.block_side_z; bz++)
                         if ((this.blocks[this.py - this.yOffset][bx][bz] & 0x40) != 0) {
                             drainBlock(bx, bz, Holder.blockFrame().getDammingState());
-                            if (tile instanceof TileQuarry /* TODO || tile instanceof TileQuarry2*/) {
+                            if (tile instanceof TileQuarry || tile instanceof TileQuarry2) {
                                 RangeWrapper wrapper = RangeWrapper.of(tile);
                                 int xTarget = bx + xOffset;
                                 int zTarget = bz + zOffset;

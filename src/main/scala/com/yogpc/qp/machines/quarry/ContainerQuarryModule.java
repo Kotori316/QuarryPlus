@@ -1,18 +1,25 @@
 package com.yogpc.qp.machines.quarry;
 
+import java.util.Objects;
+
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.base.SlotTile;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
+import com.yogpc.qp.utils.Holder;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
 
 public class ContainerQuarryModule extends Container {
     public static final String GUI_ID = QuarryPlus.modID + ":gui_quarry_module";
     private final QuarryModuleInventory moduleInventory;
     private final int allSlots;
 
-    public ContainerQuarryModule(TileQuarry2 quarry, EntityPlayer player) {
+    public ContainerQuarryModule(int id, PlayerEntity player, BlockPos pos) {
+        super(Holder.quarryModuleContainerType(), id);
+        TileQuarry2 quarry = (TileQuarry2) player.getEntityWorld().getTileEntity(pos);
+        Objects.requireNonNull(quarry);
         this.moduleInventory = quarry.moduleInv();
         this.allSlots = moduleInventory.getSizeInventory();
         int oneBox = 18;
@@ -32,12 +39,12 @@ public class ContainerQuarryModule extends Container {
     }
 
     @Override
-    public boolean canInteractWith(EntityPlayer playerIn) {
+    public boolean canInteractWith(PlayerEntity playerIn) {
         return moduleInventory.isUsableByPlayer(playerIn);
     }
 
     @Override
-    public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
+    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
         ItemStack src = ItemStack.EMPTY;
         final Slot slot = this.inventorySlots.get(index);
         if (slot != null && slot.getHasStack()) {

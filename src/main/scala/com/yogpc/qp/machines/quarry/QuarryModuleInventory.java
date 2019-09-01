@@ -11,22 +11,22 @@ import java.util.stream.IntStream;
 
 import com.yogpc.qp.machines.modules.IModuleItem;
 import jp.t2v.lab.syntax.MapStreamSyntax;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.InventoryBasic;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.INBTSerializable;
 
-public class QuarryModuleInventory extends InventoryBasic implements INBTSerializable<NBTTagCompound> {
+public class QuarryModuleInventory extends Inventory implements INBTSerializable<CompoundNBT> {
     private final TileEntity tile;
     private final Consumer<QuarryModuleInventory> onUpdate;
 
-    public QuarryModuleInventory(ITextComponent title, int slotCount, TileEntity entity, Consumer<QuarryModuleInventory> onUpdate) {
-        super(title, slotCount);
+    public QuarryModuleInventory(int slotCount, TileEntity entity, Consumer<QuarryModuleInventory> onUpdate) {
+        super(slotCount);
         this.tile = Objects.requireNonNull(entity);
         this.onUpdate = Objects.requireNonNull(onUpdate);
     }
@@ -54,8 +54,9 @@ public class QuarryModuleInventory extends InventoryBasic implements INBTSeriali
     }
 
     @Override
-    public boolean isUsableByPlayer(EntityPlayer player) {
-        return player.getDistanceSq(tile.getPos()) <= 64;
+    public boolean isUsableByPlayer(PlayerEntity player) {
+        BlockPos pos = tile.getPos();
+        return player.getDistanceSq(pos.getX(), pos.getY(), pos.getZ()) <= 64;
     }
 
     @Override
@@ -69,8 +70,8 @@ public class QuarryModuleInventory extends InventoryBasic implements INBTSeriali
     }
 
     @Override
-    public NBTTagCompound serializeNBT() {
-        NBTTagCompound nbtTagCompound = new NBTTagCompound();
+    public CompoundNBT serializeNBT() {
+        CompoundNBT nbtTagCompound = new CompoundNBT();
         NonNullList<ItemStack> list = IntStream.range(0, getSizeInventory())
             .mapToObj(this::getStackInSlot).collect(Collectors.toCollection(NonNullList::create));
         ItemStackHelper.saveAllItems(nbtTagCompound, list);
@@ -78,7 +79,7 @@ public class QuarryModuleInventory extends InventoryBasic implements INBTSeriali
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
+    public void deserializeNBT(CompoundNBT nbt) {
         NonNullList<ItemStack> list = NonNullList.withSize(5, ItemStack.EMPTY);
         ItemStackHelper.loadAllItems(nbt, list);
         for (int i = 0; i < list.size(); i++) {

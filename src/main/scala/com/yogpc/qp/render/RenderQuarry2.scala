@@ -28,11 +28,11 @@ object RenderQuarry2 extends TileEntityRendererFast[TileQuarry2] {
     }
     val buffer = bufferInstance
 
-    Minecraft.getInstance.profiler.startSection("quarryplus")
-    Minecraft.getInstance.profiler.startSection("quarry")
+    Minecraft.getInstance.getProfiler.startSection("quarryplus")
+    Minecraft.getInstance.getProfiler.startSection("quarry")
     if ((quarry.action.mode == TileQuarry2.waiting || quarry.action.mode == TileQuarry2.buildFrame || quarry.action.mode == TileQuarry2.breakInsideFrame)
       && quarry.area != TileQuarry2.zeroArea) {
-      Minecraft.getInstance.profiler.startSection("frame")
+      Minecraft.getInstance.getProfiler.startSection("frame")
       bufferBuilder.setTranslation(distanceX - pos.getX + .5, distanceY - pos.getY + .5, distanceZ - pos.getZ + .5)
       val minX = quarry.area.xMin
       val minY = quarry.area.yMin
@@ -409,11 +409,11 @@ object RenderQuarry2 extends TileEntityRendererFast[TileQuarry2] {
       buffer.pos(MXm, MYP, MZm).colored().tex(B_maxU, B_maxV).lightedAndEnd()
       buffer.pos(MXP, MYP, MZm).colored().tex(B_minU, B_maxV).lightedAndEnd()
 
-      Minecraft.getInstance.profiler.endSection()
+      Minecraft.getInstance.getProfiler.endSection()
     }
 
     if (quarry.action.mode == TileQuarry2.breakBlock) {
-      Minecraft.getInstance.profiler.startSection("drill")
+      Minecraft.getInstance.getProfiler.startSection("drill")
       bufferBuilder.setTranslation(distanceX - pos.getX + .5, distanceY - pos.getY + .5, distanceZ - pos.getZ + .5)
       val minX = quarry.area.xMin
       val minZ = quarry.area.zMin
@@ -666,11 +666,11 @@ object RenderQuarry2 extends TileEntityRendererFast[TileQuarry2] {
       bufferBuilder.setTranslation(distanceX - pos.getX + .5, distanceY - pos.getY, distanceZ - pos.getZ + .5)
       yLine(y_floor, y_length)
 
-      Minecraft.getInstance.profiler.endSection()
+      Minecraft.getInstance.getProfiler.endSection()
     }
 
-    Minecraft.getInstance.profiler.endSection()
-    Minecraft.getInstance.profiler.endSection()
+    Minecraft.getInstance.getProfiler.endSection()
+    Minecraft.getInstance.getProfiler.endSection()
   }
 
   override def isGlobalRenderer(te: TileQuarry2): Boolean = true

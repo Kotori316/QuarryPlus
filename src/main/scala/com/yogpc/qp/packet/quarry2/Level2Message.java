@@ -2,6 +2,7 @@ package com.yogpc.qp.packet.quarry2;
 
 import java.util.function.Supplier;
 
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.quarry.TileQuarry2;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.packet.quarry.LevelMessage;
@@ -33,6 +34,7 @@ public class Level2Message extends LevelMessage {
                         break;
                     case SERVER:
                         ctx.get().enqueueWork(() -> quarry.yLevel_$eq(yLevel));
+                        QuarryPlus.LOGGER.debug("Quarry yLevel is set to " + yLevel + ".");
                         break;
                 }
             });
