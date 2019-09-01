@@ -4,9 +4,9 @@ import java.util.Comparator
 
 import com.yogpc.qp._
 import net.minecraft.block.BlockState
-import net.minecraft.client.resources.I18n
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.util.ResourceLocation
+import net.minecraft.util.text.{ITextComponent, StringTextComponent}
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 import net.minecraftforge.registries.ForgeRegistries
 
@@ -26,7 +26,7 @@ object BlockData {
 
     override def toString = "BlockData@Invaild"
 
-    override def getLocalizedName = "Unknown:Dummy"
+    override def getDisplayText = new StringTextComponent("Unknown:Dummy")
   }
 
   val comparator: Comparator[BlockData] = Ordering.by((b: BlockData) => b.name)
@@ -51,12 +51,12 @@ case class BlockData(name: ResourceLocation) extends Ordered[BlockData] {
   override def toString: String = name.toString
 
   @OnlyIn(Dist.CLIENT)
-  def getLocalizedName: String = {
+  def getDisplayText: ITextComponent = {
     //    val sb = new StringBuilder
     //    sb.append(name)
     //    sb.append("  ").append(Option(ForgeRegistries.BLOCKS.getValue(name)).map(_.getTranslationKey).fold("")(s => I18n.format(s)))
     //    sb.toString
-    Option(ForgeRegistries.BLOCKS.getValue(name)).map(_.getTranslationKey).fold("")(s => I18n.format(s))
+    Option(ForgeRegistries.BLOCKS.getValue(name)).map(_.getNameTextComponent).getOrElse(new StringTextComponent(name.toString))
   }
 
   override def compare(that: BlockData): Int = BlockData.comparator.compare(this, that)

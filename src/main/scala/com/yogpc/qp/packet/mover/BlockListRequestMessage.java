@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 import com.yogpc.qp.machines.item.ContainerEnchList;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.packet.PacketHandler;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -37,11 +37,11 @@ public class BlockListRequestMessage implements IMessage<BlockListRequestMessage
 
     @Override
     public void onReceive(Supplier<NetworkEvent.Context> ctx) {
-        EntityPlayerMP player = ctx.get().getSender();
+        ServerPlayerEntity player = ctx.get().getSender();
         assert player != null; // Executed in server thread.
         if (player.openContainer instanceof ContainerEnchList) {
             ContainerEnchList container = (ContainerEnchList) player.openContainer;
-            PacketHandler.sendToClient(DiffMessage.create(container, container.tile.fortuneList, container.tile.silktouchList), player.world);
+            PacketHandler.INSTANCE.reply(DiffMessage.create(container, container.tile.fortuneList, container.tile.silktouchList), ctx.get());
         }
     }
 }

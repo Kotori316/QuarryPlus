@@ -11,7 +11,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.yogpc.qp.machines.item
-
+/*
 import com.yogpc.qp.machines.workbench.BlockData
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.{GuiScreen, GuiSlot}
@@ -37,3 +37,4 @@ class GuiSlotEnchList(mc: Minecraft, w: Int, h: Int, t: Int, b: Int, val parent:
       (this.parent.width * 3 / 5 - Minecraft.getInstance().fontRenderer.getStringWidth(name)) / 2, yPos + 2, 0xFFFFFF)
   }
 }
+*/

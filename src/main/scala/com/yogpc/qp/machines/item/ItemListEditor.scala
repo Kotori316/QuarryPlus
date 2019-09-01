@@ -5,20 +5,21 @@ import java.util
 import cats._
 import cats.data._
 import cats.implicits._
-import com.yogpc.qp.machines.base.IEnchantableItem
+import com.yogpc.qp.machines.base.{IEnchantableItem, IEnchantableTile}
 import com.yogpc.qp.machines.quarry.TileBasic
 import com.yogpc.qp.machines.workbench.BlockData
 import com.yogpc.qp.utils.Holder
 import com.yogpc.qp.{Config, QuarryPlus}
 import net.minecraft.client.util.ITooltipFlag
-import net.minecraft.enchantment.{Enchantment, EnchantmentHelper}
-import net.minecraft.entity.player.{EntityPlayer, EntityPlayerMP, InventoryPlayer}
-import net.minecraft.init.{Enchantments, Items}
-import net.minecraft.item.{Item, ItemGroup, ItemStack, ItemUseContext}
-import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.text.{ITextComponent, TextComponentString, TextComponentTranslation}
-import net.minecraft.util.{EnumActionResult, NonNullList}
-import net.minecraft.world.{IInteractionObject, World}
+import net.minecraft.enchantment.{Enchantment, EnchantmentHelper, Enchantments}
+import net.minecraft.entity.player.{PlayerEntity, PlayerInventory, ServerPlayerEntity}
+import net.minecraft.inventory.container.INamedContainerProvider
+import net.minecraft.item._
+import net.minecraft.nbt.CompoundNBT
+import net.minecraft.util.math.BlockPos
+import net.minecraft.util.text.{ITextComponent, StringTextComponent, TranslationTextComponent}
+import net.minecraft.util.{ActionResultType, NonNullList}
+import net.minecraft.world.World
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 import net.minecraftforge.common.util.Constants.NBT
 import net.minecraftforge.fml.network.NetworkHooks
@@ -30,22 +31,22 @@ class ItemListEditor extends Item((new Item.Properties).group(Holder.tab)) with 
   setRegistryName(QuarryPlus.modID, QuarryPlus.Names.listeditor)
 
   /**
-    * You should not think max enchantment level in this method
-    *
-    * @param is          target ItemStack. It is never null.
-    * @param enchantment target enchantment
-    * @return that ItemStack can move enchantment on EnchantMover
-    */
+   * You should not think max enchantment level in this method
+   *
+   * @param is          target ItemStack. It is never null.
+   * @param enchantment target enchantment
+   * @return that ItemStack can move enchantment on EnchantMover
+   */
   override def canMove(is: ItemStack, enchantment: Enchantment) = {
     val l = is.getEnchantmentTagList
     (l == null || l.isEmpty) && ((enchantment == Enchantments.SILK_TOUCH) || (enchantment == Enchantments.FORTUNE))
   }
 
   /**
-    * Called to get which items to show in JEI.
-    *
-    * @return stack which can be enchanted.
-    */
+   * Called to get which items to show in JEI.
+   *
+   * @return stack which can be enchanted.
+   */
   override def stacks() = Array(ItemListEditor.getEditorStack)
 
   override def isValidInBookMover = false
@@ -71,18 +72,21 @@ class ItemListEditor extends Item((new Item.Properties).group(Holder.tab)) with 
               stack.getTag.remove(ItemListEditor.NAME_key)
             case None =>
               if (!worldIn.isRemote)
-                NetworkHooks.openGui(context.getPlayer.asInstanceOf[EntityPlayerMP], new ItemListEditor.InteractionObject(f.value, tb), pos)
+                NetworkHooks.openGui(context.getPlayer.asInstanceOf[ServerPlayerEntity], new ItemListEditor.InteractionObject(f.value, tb.getName, pos), b => {
+                  b.writeBlockPos(pos)
+                  b.writeResourceLocation(f.map(bool => if (bool) IEnchantableTile.FortuneID else IEnchantableTile.SilktouchID).value)
+                })
           }
         case _ =>
           if (!worldIn.isAirBlock(pos)) {
-            if (!stack.hasTag) stack.setTag(new NBTTagCompound)
+            if (!stack.hasTag) stack.setTag(new CompoundNBT)
             val tag = stack.getTag
             val name = ForgeRegistries.BLOCKS.getKey(worldIn.getBlockState(pos).getBlock).toString
             tag.putString(ItemListEditor.NAME_key, name)
           }
       }
     }
-    EnumActionResult.SUCCESS
+    ActionResultType.SUCCESS
   }
 
   override def fillItemGroup(group: ItemGroup, items: NonNullList[ItemStack]): Unit = {
@@ -92,13 +96,12 @@ class ItemListEditor extends Item((new Item.Properties).group(Holder.tab)) with 
         val stack = new ItemStack(Items.DIAMOND_PICKAXE)
         stack.addEnchantment(Enchantments.EFFICIENCY, 5)
         stack.addEnchantment(Enchantments.UNBREAKING, 3)
-
-        {
+        locally {
           val stack1 = stack.copy
           stack1.addEnchantment(Enchantments.FORTUNE, 3)
           items.add(stack1)
         }
-        {
+        locally {
           val stack1 = stack.copy
           stack1.addEnchantment(Enchantments.SILK_TOUCH, 1)
           items.add(stack1)
@@ -116,39 +119,35 @@ class ItemListEditor extends Item((new Item.Properties).group(Holder.tab)) with 
 
 object ItemListEditor {
 
-  class InteractionObject(fortune: Boolean, tileBasic: TileBasic) extends IInteractionObject {
-    override def createContainer(playerInventory: InventoryPlayer, playerIn: EntityPlayer) = new ContainerEnchList(tileBasic, playerIn)
+  class InteractionObject(f: Boolean, text: ITextComponent, pos: BlockPos) extends INamedContainerProvider {
+    val enchantmentName = f.pure[Id].map(bool => if (bool) IEnchantableTile.FortuneID else IEnchantableTile.SilktouchID)
 
-    override def getGuiID = if (fortune) GUI_ID_Fortune else GUI_ID_Silktouch
+    override def getDisplayName = text
 
-    override def getName = tileBasic.getName
+    override def createMenu(id: Int, i: PlayerInventory, playerIn: PlayerEntity) = new ContainerEnchList(id, playerIn, pos, enchantmentName)
 
-    override def hasCustomName = tileBasic.hasCustomName
-
-    override def getCustomName = tileBasic.getCustomName
   }
 
-  final val GUI_ID_Fortune = QuarryPlus.modID + ":gui_" + QuarryPlus.Names.listeditor + "_fortune"
-  final val GUI_ID_Silktouch = QuarryPlus.modID + ":gui_" + QuarryPlus.Names.listeditor + "_silktouch"
+  final val GUI_ID = QuarryPlus.modID + ":gui_" + QuarryPlus.Names.listeditor
   final val NAME_key = "name"
 
   def getEditorStack: ItemStack = {
     val stack = new ItemStack(Holder.itemListEditor, 1)
-    val compound = new NBTTagCompound
+    val compound = new CompoundNBT
     compound.putInt("HideFlags", 1)
     stack.setTag(compound)
     stack
   }
 
-  def hasEnchantment(enchantment: Eval[Enchantment]) = Kleisli((ench: List[Enchantment]) => Eval.later(ench.contains(enchantment.value)))
+  def hasEnchantment(enchantment: Eval[Enchantment]) = Kleisli((ench: List[Enchantment]) => enchantment.map(ench.contains))
 
   def enchantmentName(enchantment: Eval[Enchantment]) =
-    getEnchantments andThen hasEnchantment(enchantment) mapF (b => if (b.value) new TextComponentTranslation(enchantment.value.getName).some else None)
+    getEnchantments andThen hasEnchantment(enchantment) mapF (b => if (b.value) new TranslationTextComponent(enchantment.value.getName).some else None)
 
   def onlySpecificEnchantment(enchantment: Eval[Enchantment]) = {
     implicit val bool: Semigroup[Boolean] = (x: Boolean, y: Boolean) => x | y
     val hasTheEnchantment = hasEnchantment(enchantment)
-    val others = Eval.later(ForgeRegistries.ENCHANTMENTS.asScala.filterNot(_ == enchantment.value).map(Eval.now).map(hasEnchantment).toList)
+    val others = enchantment.map(e => ForgeRegistries.ENCHANTMENTS.asScala.filterNot(_ == e).map(Eval.now).map(hasEnchantment).toList)
     getEnchantments andThen {
       for (e <- hasTheEnchantment;
            o <- Semigroup[Kleisli[Eval, List[Enchantment], Boolean]].combineAllOption(others.value).get) yield e & !o
@@ -156,14 +155,14 @@ object ItemListEditor {
   }
 
   private[this] val getTag = Kleisli((stack: ItemStack) => Option(stack.getTag))
-  private[this] val getName = Kleisli((tag: NBTTagCompound) => if (tag.contains(NAME_key, NBT.TAG_STRING)) tag.getString(NAME_key).some else None)
+  private[this] val getName = Kleisli((tag: CompoundNBT) => if (tag.contains(NAME_key, NBT.TAG_STRING)) tag.getString(NAME_key).some else None)
   private[this] val getEnchantments = Kleisli((stack: ItemStack) => Eval.now(EnchantmentHelper.getEnchantments(stack).asScala.collect { case (e, level) if level > 0 => e }.toList))
 
   private[this] val fortuneEval = Eval.later(Enchantments.FORTUNE)
   private[this] val silktouchEval = Eval.later(Enchantments.SILK_TOUCH)
   private[this] val hasFortune = hasEnchantment(fortuneEval)
   private[this] val hasSilktouch = hasEnchantment(silktouchEval)
-  private[this] val getNameAsText = getTag andThen getName map (new TextComponentString(_))
+  private[this] val getNameAsText = getTag andThen getName map (new StringTextComponent(_))
 
   val getBlockData = getTag andThen getName map (new BlockData(_))
   val isFortune = getEnchantments andThen hasFortune

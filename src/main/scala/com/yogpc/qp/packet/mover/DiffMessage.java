@@ -5,10 +5,12 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import com.yogpc.qp.machines.item.ContainerEnchList;
+import com.yogpc.qp.machines.item.GuiEnchList;
 import com.yogpc.qp.machines.workbench.BlockData;
 import com.yogpc.qp.packet.IMessage;
 import net.minecraft.client.Minecraft;
-import net.minecraft.inventory.Container;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.inventory.container.Container;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -46,13 +48,14 @@ public class DiffMessage implements IMessage<DiffMessage> {
     @Override
     public void onReceive(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            Container container = Minecraft.getInstance().player.openContainer;
-            if (container instanceof ContainerEnchList) {
-                ContainerEnchList enchList = (ContainerEnchList) container;
+            Screen screen = Minecraft.getInstance().currentScreen;
+            if (screen instanceof GuiEnchList) {
+                ContainerEnchList enchList = ((GuiEnchList) screen).getContainer();
                 enchList.tile.fortuneList.clear();
                 enchList.tile.fortuneList.addAll(fortuneList);
                 enchList.tile.silktouchList.clear();
                 enchList.tile.silktouchList.addAll(silkList);
+                ((GuiEnchList) screen).refreshList();
             }
         });
     }

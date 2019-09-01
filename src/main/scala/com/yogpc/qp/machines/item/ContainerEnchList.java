@@ -1,26 +1,39 @@
 package com.yogpc.qp.machines.item;
 
+import java.util.Objects;
+
 import com.yogpc.qp.machines.quarry.TileBasic;
 import com.yogpc.qp.packet.PacketHandler;
-import com.yogpc.qp.packet.mover.DiffMessage;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.IContainerListener;
+import com.yogpc.qp.packet.mover.BlockListRequestMessage;
+import com.yogpc.qp.utils.Holder;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.IContainerListener;
+import net.minecraft.util.IntReferenceHolder;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 
 public class ContainerEnchList extends Container {
 
     public final TileBasic tile;
-    private int includeFlag = 0;
+    private final IntReferenceHolder includeFlag = this.trackInt(IntReferenceHolder.single());
+    public final ResourceLocation enchantmentName;
 
-    public ContainerEnchList(TileBasic tile, EntityPlayer player) {
-        this.tile = tile;
-        if (!player.world.isRemote)
-            PacketHandler.sendToClient(DiffMessage.create(this, tile.fortuneList, tile.silktouchList), player.world);
+    public ContainerEnchList(int id, PlayerEntity player, BlockPos pos, ResourceLocation enchantmentName) {
+        super(Holder.enchListContainerType(), id);
+        this.enchantmentName = enchantmentName;
+        this.tile = Objects.requireNonNull(((TileBasic) player.getEntityWorld().getTileEntity(pos)));
+        if (!player.world.isRemote) {
+            includeFlag.set(getInclude());
+        } else {
+            PacketHandler.sendToServer(BlockListRequestMessage.create(id));
+        }
     }
 
     @Override
-    public boolean canInteractWith(EntityPlayer playerIn) {
-        return playerIn.getDistanceSqToCenter(tile.getPos()) <= 64;
+    public boolean canInteractWith(PlayerEntity playerIn) {
+        BlockPos pos = tile.getPos();
+        return playerIn.getDistanceSq(pos.getX(), pos.getY(), pos.getZ()) <= 64;
     }
 
     @Override
@@ -31,12 +44,8 @@ public class ContainerEnchList extends Container {
 
     @Override
     public void detectAndSendChanges() {
+        includeFlag.set(getInclude());
         super.detectAndSendChanges();
-        int include = getInclude();
-        if (includeFlag != include) {
-            includeFlag = include;
-            listeners.forEach(listener -> listener.sendWindowProperty(this, 0, include));
-        }
     }
 
     @Override

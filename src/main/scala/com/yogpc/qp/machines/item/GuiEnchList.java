@@ -15,6 +15,9 @@ package com.yogpc.qp.machines.item;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.TranslationKeys;
@@ -23,31 +26,31 @@ import com.yogpc.qp.machines.quarry.TileBasic;
 import com.yogpc.qp.machines.workbench.BlockData;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.mover.EnchantmentMessage;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiYesNo;
-import net.minecraft.client.gui.GuiYesNoCallback;
-import net.minecraft.client.gui.inventory.GuiContainer;
+import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
+import net.minecraft.client.gui.screen.ConfirmScreen;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Enchantments;
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.registries.ForgeRegistries;
 
 @OnlyIn(Dist.CLIENT)
-public class GuiEnchList extends GuiContainer implements GuiYesNoCallback, IHandleButton {
+public class GuiEnchList extends ContainerScreen<ContainerEnchList> implements BooleanConsumer, IHandleButton {
     public static final int Toggle_id = 10, Remove_id = 12;
     private GuiSlotEnchList slot;
     private final TileBasic tile;
     private final Enchantment target;
 
-    /**
-     * @param ench must be either Fortune or Silktouch.
-     */
-    public GuiEnchList(Enchantment ench, final TileBasic tq, EntityPlayer player) {
-        super(new ContainerEnchList(tq, player));
-        this.target = ench;
-        this.tile = tq;
+    public GuiEnchList(ContainerEnchList c, PlayerInventory i, ITextComponent t) {
+        super(c, i, t);
+        this.target = ForgeRegistries.ENCHANTMENTS.getValue(c.enchantmentName);
+        this.tile = c.tile;
     }
 
     public boolean include() {
@@ -68,10 +71,10 @@ public class GuiEnchList extends GuiContainer implements GuiYesNoCallback, IHand
     }
 
     @Override
-    public void initGui() {
+    public void init() {
         this.xSize = this.width;
         this.ySize = this.height;
-        super.initGui(); // must be here!
+        super.init(); // must be here!
 //        PacketHandler.sendToServer(BlockListRequestMessage.create(inventorySlots.windowId));
         addButton(new IHandleButton.Button(-1,
             this.width / 2 - 125, this.height - 26, 250, 20, I18n.format(TranslationKeys.DONE), this));
@@ -79,21 +82,21 @@ public class GuiEnchList extends GuiContainer implements GuiYesNoCallback, IHand
             this.width * 2 / 3 + 10, 140, 100, 20, "", this));
         addButton(new IHandleButton.Button(Remove_id,
             this.width * 2 / 3 + 10, 110, 100, 20, I18n.format(TranslationKeys.DELETE), this));
-        this.slot = new GuiSlotEnchList(this.mc, this.width * 3 / 5, this.height - 60, 30, this.height - 30,
-            this, getBlockDataList(target));
+        this.slot = new GuiSlotEnchList(this.getMinecraft(), this.width * 3 / 5, this.height - 60, 30, this.height - 30,
+            18, this);
         this.children.add(slot);
         this.setFocused(slot);
     }
 
     @Override
-    public void actionPerformed(final GuiButton par1) {
+    public void actionPerformed(final IHandleButton.Button par1) {
         switch (par1.id) {
             case -1:
-                this.mc.player.closeScreen();
+                this.getMinecraft().player.closeScreen();
                 break;
             case Remove_id:
-                this.mc.displayGuiScreen(new GuiYesNo(this, I18n.format(TranslationKeys.DELETE_BLOCK_SURE),
-                    getBlockDataList(target).get(this.slot.currentOre()).getLocalizedName(), par1.id));
+                this.getMinecraft().displayGuiScreen(new ConfirmScreen(this, new TranslationTextComponent(TranslationKeys.DELETE_BLOCK_SURE),
+                    Optional.ofNullable(this.slot.getSelected()).map(GuiSlotEnchList.Entry::getData).map(BlockData::getDisplayText).orElse(new StringTextComponent("None"))));
                 break;
             default: //maybe toggle
                 PacketHandler.sendToServer(EnchantmentMessage.create(tile, EnchantmentMessage.Type.Toggle, target, BlockData.Invalid()));
@@ -102,21 +105,27 @@ public class GuiEnchList extends GuiContainer implements GuiYesNoCallback, IHand
     }
 
     @Override
-    public void confirmResult(final boolean result, final int id) {
-        if (result) {
-            final BlockData bd = this.slot.target().get(this.slot.currentOre());
+    public void accept(boolean result) {
+        GuiSlotEnchList.Entry selected = this.slot.getSelected();
+        if (selected != null && result) {
+            final BlockData bd = selected.getData();
             PacketHandler.sendToServer(EnchantmentMessage.create(tile, EnchantmentMessage.Type.Remove, target, bd));
 
             getBlockDataList(target).remove(bd);
-            slot.target().remove(bd);
+            refreshList();
         }
-        this.mc.displayGuiScreen(this);
+        this.getMinecraft().displayGuiScreen(this);
+    }
+
+    public void refreshList() {
+        this.slot.refreshList();
+        this.slot.setSelected(null);
     }
 
     @Override
     protected void drawGuiContainerBackgroundLayer(final float k, final int i, final int j) {
         if (slot != null)
-            this.slot.drawScreen(i, j, k);
+            this.slot.render(i, j, k);
     }
 
     @Override
@@ -126,14 +135,18 @@ public class GuiEnchList extends GuiContainer implements GuiYesNoCallback, IHand
 
     @Override
     protected void drawGuiContainerForegroundLayer(final int i, final int j) {
-        drawCenteredString(this.fontRenderer, I18n.format(TranslationKeys.QP_ENABLE_LIST, I18n.format(this.target.getName())),
+        drawCenteredString(this.font, I18n.format(TranslationKeys.QP_ENABLE_LIST, I18n.format(this.target.getName())),
             this.xSize / 2, 8, 0xFFFFFF);
     }
 
     @Override
     public void tick() {
         super.tick();
-        this.buttons.get(1).displayString = I18n.format(include() ? TranslationKeys.TOF_INCLUDE : TranslationKeys.TOF_EXCLUDE);
-        this.buttons.get(2).enabled = !getBlockDataList(target).isEmpty();
+        this.buttons.get(1).setMessage(I18n.format(include() ? TranslationKeys.TOF_INCLUDE : TranslationKeys.TOF_EXCLUDE));
+        this.buttons.get(2).active = !getBlockDataList(target).isEmpty();
+    }
+
+    public void buildModList(Consumer<GuiSlotEnchList.Entry> modListViewConsumer, Function<BlockData, GuiSlotEnchList.Entry> newEntry) {
+        getBlockDataList(target).stream().map(newEntry).forEach(modListViewConsumer);
     }
 }
