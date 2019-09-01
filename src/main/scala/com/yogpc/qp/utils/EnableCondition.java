@@ -24,7 +24,7 @@ public class EnableCondition implements ICondition {
 
     @Override
     public boolean test() {
-        return !Config.common().disabled().get(value).exists(ForgeConfigSpec.ConfigValue::get);
+        return !Config.common().disabled().get(value).forall(ForgeConfigSpec.ConfigValue::get);
     }
 
     public static class Serializer implements IConditionSerializer<EnableCondition> {
