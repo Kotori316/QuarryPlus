@@ -149,7 +149,7 @@ curseforge {
         id = '282837'
         changelogType = 'markdown'
         changelog = new File("temp_changelog.md")
-        releaseType = 'beta'
+        releaseType = 'alpha'
         addGameVersion '1.14.4'
         mainArtifact(jar) {
             displayName = 'v' + project.version

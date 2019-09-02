@@ -1,5 +1,7 @@
 package com.yogpc.qp;
 
+import java.lang.reflect.Method;
+
 import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.base.IEnchantableTile;
 import com.yogpc.qp.machines.workbench.WorkbenchRecipes;
@@ -18,6 +20,7 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -26,7 +29,6 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scala.collection.JavaConverters;
@@ -41,18 +43,20 @@ public class QuarryPlus {
     public static final ProxyCommon proxy = DistExecutor.runForDist(() -> () -> new ProxyClient(), () -> () -> new ProxyCommon());
 
     public QuarryPlus() {
-        initConfig();
+        IEventBus modBus = QuarryPlus.modBus();
+        initConfig(modBus);
         MinecraftForge.EVENT_BUS.register(this);
         proxy.registerEvents(MinecraftForge.EVENT_BUS);
-        proxy.registerModBus(FMLJavaModLoadingContext.get().getModEventBus());
+        proxy.registerModBus(modBus);
+        modBus.register(Register.class);
     }
 
-    private void initConfig() {
+    private void initConfig(IEventBus modEventBus) {
         ForgeConfigSpec.Builder common = new ForgeConfigSpec.Builder();
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.commonBuild(common).build());
         ForgeConfigSpec.Builder client = new ForgeConfigSpec.Builder();
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.clientBuild(client).build());
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(Config.reloadHandler());
+        modEventBus.addListener(Config.reloadHandler());
     }
 
     @SubscribeEvent
@@ -60,7 +64,7 @@ public class QuarryPlus {
         event.getServer().getResourceManager().addReloadListener(WorkbenchRecipes.Reload$.MODULE$);
     }
 
-    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
+//    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class Register {
         @SubscribeEvent
         public static void registerBlocks(RegistryEvent.Register<Block> event) {
@@ -104,6 +108,15 @@ public class QuarryPlus {
 
     }
 
+    private static IEventBus modBus() {
+        Object o = ModLoadingContext.get().extension();
+        try {
+            Method busGetter = o.getClass().getMethod("getModEventBus");
+            return (IEventBus) busGetter.invoke(o);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException("Error in getting event bus.", e);
+        }
+    }
     @SuppressWarnings({"unused", "WeakerAccess", "SpellCheckingInspection"})
     public static class Optionals {
         public static final String Buildcraft_modID = "buildcraftlib";

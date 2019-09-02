@@ -8,11 +8,11 @@ Finished Work
 * Workbench
 * ExpPump
 * EnchantMover
-* ~~Miningwell~~
+* Miningwell
 * PlainPipe
 * QuarryFrame
-* ~~Quarry~~
-* ~~Solid Fuel Quarry~~
+* Quarry
+* Solid Fuel Quarry
 * PumpPlus
 * Replacer
 * Dummy Block
