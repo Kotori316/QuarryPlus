@@ -68,6 +68,7 @@ public class QuarryModuleInventory extends InventoryBasic implements INBTSeriali
 
     @Override
     public void markDirty() {
+        super.markDirty();
         onUpdate.accept(this);
     }
 
@@ -82,7 +83,7 @@ public class QuarryModuleInventory extends InventoryBasic implements INBTSeriali
 
     @Override
     public void deserializeNBT(NBTTagCompound nbt) {
-        NonNullList<ItemStack> list = NonNullList.withSize(5, ItemStack.EMPTY);
+        NonNullList<ItemStack> list = NonNullList.withSize(getSizeInventory(), ItemStack.EMPTY);
         ItemStackHelper.loadAllItems(nbt, list);
         for (int i = 0; i < list.size(); i++) {
             setInventorySlotContents(i, list.get(i));
