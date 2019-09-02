@@ -35,21 +35,24 @@ public class QuarryJeiPlugin implements IModPlugin {
             .sorted(WorkbenchRecipes.recipeOrdering())
             .collect(Collectors.toList());
         registration.addRecipes(recipes, WorkBenchRecipeCategory.UID());
-        registration.addRecipes(BookRecipeCategory.recipes(), BookRecipeCategory.UID());
         registration.addRecipes(MoverRecipeCategory.recipes(), MoverRecipeCategory.UID());
+        if (!Config.common().disabled().apply(BlockBookMover.SYMBOL).get())
+            registration.addRecipes(BookRecipeCategory.recipes(), BookRecipeCategory.UID());
     }
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
         registration.addRecipeCatalyst(new ItemStack(Holder.blockWorkbench()), WorkBenchRecipeCategory.UID());
-        registration.addRecipeCatalyst(new ItemStack(Holder.blockBookMover()), BookRecipeCategory.UID());
         registration.addRecipeCatalyst(new ItemStack(Holder.blockMover()), MoverRecipeCategory.UID());
+        if (!Config.common().disabled().apply(BlockBookMover.SYMBOL).get())
+            registration.addRecipeCatalyst(new ItemStack(Holder.blockBookMover()), BookRecipeCategory.UID());
     }
 
     @Override
     public void registerGuiHandlers(IGuiHandlerRegistration registration) {
         registration.addRecipeClickArea(GuiWorkbench.class, 7, 74, 161, 11, WorkBenchRecipeCategory.UID());
-        registration.addRecipeClickArea(GuiBookMover.class, 79, 35, 23, 16, BookRecipeCategory.UID());
+        if (!Config.common().disabled().apply(BlockBookMover.SYMBOL).get())
+            registration.addRecipeClickArea(GuiBookMover.class, 79, 35, 23, 16, BookRecipeCategory.UID());
     }
 
 //    @Override

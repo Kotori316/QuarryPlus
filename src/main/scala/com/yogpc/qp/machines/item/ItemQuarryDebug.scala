@@ -8,6 +8,8 @@ import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.text.{ITextComponent, StringTextComponent, TranslationTextComponent}
 import net.minecraft.util.{ActionResultType, NonNullList}
 
+import scala.util.Try
+
 class ItemQuarryDebug extends Item((new Item.Properties).group(Holder.tab)) {
 
   import ItemQuarryDebug._
@@ -67,7 +69,7 @@ class ItemQuarryDebug extends Item((new Item.Properties).group(Holder.tab)) {
   }
 
   override def fillItemGroup(group: ItemGroup, items: NonNullList[ItemStack]): Unit = {
-    if (Config.common.debug) super.fillItemGroup(group, items)
+    if (Try(Config.common.debug).getOrElse(false)) super.fillItemGroup(group, items)
   }
 
 }
