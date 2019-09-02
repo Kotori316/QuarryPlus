@@ -9,6 +9,10 @@ import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
 public class FluidStore {
+
+    private FluidStore() {
+    }
+
     /**
      * @return inserted amount.
      */

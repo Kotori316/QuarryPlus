@@ -4,32 +4,31 @@ import java.lang.reflect.Type
 
 import com.google.gson._
 import com.yogpc.qp.utils.NBTBuilder
-import net.minecraft.block.state.IBlockState
-import net.minecraft.init.Blocks
-import net.minecraft.util.JsonUtils
+import net.minecraft.block.{BlockState, Blocks}
+import net.minecraft.util.JSONUtils
 
 import scala.util.Try
 
 /**
-  *
-  * @param state          the state
-  * @param ignoreProperty whether distinguish north-faced chest from south-faced chest.
-  */
-case class BlockWrapper(state: IBlockState,
+ *
+ * @param state          the state
+ * @param ignoreProperty whether distinguish north-faced chest from south-faced chest.
+ */
+case class BlockWrapper(state: BlockState,
                         ignoreProperty: Boolean = false)
-  extends java.util.function.Predicate[IBlockState] {
+  extends java.util.function.Predicate[BlockState] {
 
-  def apply(v1: IBlockState): Boolean = contain(v1)
+  def apply(v1: BlockState): Boolean = contain(v1)
 
-  def contain(that: IBlockState): Boolean = {
-     if (ignoreProperty) {
+  def contain(that: BlockState): Boolean = {
+    if (ignoreProperty) {
       state.getBlock == that.getBlock
     } else {
       state == that
     }
   }
 
-  override def test(t: IBlockState): Boolean = contain(t)
+  override def test(t: BlockState): Boolean = contain(t)
 }
 
 object BlockWrapper extends JsonDeserializer[BlockWrapper] with JsonSerializer[BlockWrapper] {
@@ -57,8 +56,8 @@ object BlockWrapper extends JsonDeserializer[BlockWrapper] with JsonSerializer[B
   }
 
   override def deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): BlockWrapper = {
-    val maybeWrapper = for (state <- NBTBuilder.getStateFromJson(JsonUtils.getJsonObject(json.getAsJsonObject, KEY_STATE)).asScala;
-                            property <- Try(JsonUtils.getBoolean(json.getAsJsonObject, KEY_Property, false)).toOption)
+    val maybeWrapper = for (state <- NBTBuilder.getStateFromJson(JSONUtils.getJsonObject(json.getAsJsonObject, KEY_STATE)).asScala;
+                            property <- Try(JSONUtils.getBoolean(json.getAsJsonObject, KEY_Property, false)).toOption)
       yield BlockWrapper(state, ignoreProperty = property)
     maybeWrapper.getOrElse(BlockWrapper(Blocks.AIR.getDefaultState))
   }

@@ -2,7 +2,7 @@ package com.yogpc.qp.machines.advquarry
 
 import com.yogpc.qp.machines.base.EnergyUsage
 import com.yogpc.qp.{Config, QuarryPlus}
-import net.minecraft.block.state.IBlockState
+import net.minecraft.block.BlockState
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.fml.DistExecutor
@@ -12,15 +12,15 @@ trait Reason {
 
   def usage: Option[EnergyUsage] = None
 
-  override def toString: String
+  def toString: String
 
   def print(): Unit = QuarryPlus.LOGGER.info(toString)
 }
 
 object Reason {
 
-  private[this] final val Nano = 1000000000l
-  private[this] final val toNano = 1000000000l
+  private[this] final val Nano = 1000000000L
+  private[this] final val toNano = 1000000000L
 
   def apply(energyUsage: EnergyUsage, required: Double, amount: Double): Reason =
     new EnergyReasonImpl(energyUsage, (required * toNano).toLong, (amount * toNano).toLong)
@@ -28,7 +28,7 @@ object Reason {
   def apply(energyUsage: EnergyUsage, required: Double, amount: Double, index: Int): Reason =
     new EnergyReasonImpl(energyUsage, (required * toNano).toLong, (amount * toNano).toLong, Some(index))
 
-  def apply(pos: BlockPos, state: IBlockState): Reason = new BreakCanceledImpl(pos, state)
+  def apply(pos: BlockPos, state: BlockState): Reason = new BreakCanceledImpl(pos, state)
 
   def apply(pos: BlockPos, index: Int) = new AllAirImpl(pos, index)
 
@@ -59,7 +59,7 @@ object Reason {
     }
   }
 
-  private[advquarry] class BreakCanceledImpl(pos: BlockPos, state: IBlockState) extends Reason {
+  private[advquarry] class BreakCanceledImpl(pos: BlockPos, state: BlockState) extends Reason {
     override def isEnergyIssue: Boolean = false
 
     override def toString: String = s"Breaking $state at ${pos.getX}, ${pos.getY}, ${pos.getZ} was canceled."

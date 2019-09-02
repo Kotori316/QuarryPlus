@@ -9,7 +9,9 @@ import net.minecraftforge.fluids.{FluidAttributes, FluidStack}
 import net.minecraftforge.registries.ForgeRegistries
 
 case class FluidElement(fluid: Fluid, tag: Option[CompoundNBT]) {
-  def toStack = new FluidStack(fluid, FluidAttributes.BUCKET_VOLUME, tag.orNull)
+  def toStack = withAmount(FluidAttributes.BUCKET_VOLUME)
+
+  def withAmount(amount: Int) = new FluidStack(fluid, amount, tag.orNull)
 
   def toCompoundTag: CompoundNBT = this.toNBT
 }

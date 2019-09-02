@@ -9,6 +9,7 @@ import net.minecraft.nbt._
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.StringTextComponent
 import net.minecraft.util.{Direction, ResourceLocation}
+import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.util.Constants.NBT
 import net.minecraftforge.common.util.{INBTSerializable, LazyOptional, NonNullSupplier}
 import net.minecraftforge.fluids.FluidStack
@@ -62,7 +63,7 @@ package object qp {
       val list = Option(stack.getTag).fold(new ListNBT)(_.getList(tagName, NBT.TAG_COMPOUND))
 
       import scala.collection.JavaConverters._
-      val copied = list.asScala.zipWithIndex.collect { case (t:CompoundNBT, i) => (t, i) }
+      val copied = list.asScala.zipWithIndex.collect { case (t: CompoundNBT, i) => (t, i) }
       for ((tag, i) <- copied) {
         if (tag.getString("id") == id.toString) {
           list.remove(i)
@@ -121,6 +122,20 @@ package object qp {
 
   implicit class AsScalaLO[T](val cap: LazyOptional[T]) extends AnyVal {
     def asScala: Cap[T] = OptionT(transform0(cap))
+  }
+
+  object Cap {
+    def make[T, G](parameterCap: Capability[T], obj: G, cap: Capability[G]): Cap[T] = {
+      OptionT.liftF(Eval.now(obj)).filter(_ => parameterCap == cap).map(_.asInstanceOf[T])
+    }
+
+    def asJava[A](cap: Cap[A]): LazyOptional[A] = {
+      cap.value.value.foldl(LazyOptional.empty[A]()) { case (_, a) => LazyOptional.of[A](() => a) }
+    }
+
+    def empty[A]: Cap[A] = {
+      OptionT.none
+    }
   }
 
   private val thrower: NonNullSupplier[AssertionError] = () =>
