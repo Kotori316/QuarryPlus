@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "quarryplus:laserplus",
+    "model": "quarryplus:block/laserplus",
     "textures": {
       "particle": "quarryplus:blocks/laser_top",
       "texture": "quarryplus:blocks/laser_top"
