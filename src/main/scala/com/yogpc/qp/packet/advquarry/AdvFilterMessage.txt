@@ -6,10 +6,10 @@ import java.util.stream.Collectors;
 import com.yogpc.qp.machines.advquarry.TileAdvQuarry;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.utils.NBTBuilder;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fluids.FluidStack;
@@ -27,7 +27,7 @@ public class AdvFilterMessage implements IMessage<AdvFilterMessage> {
 
     private int dim;
     private BlockPos pos;
-    private NBTTagCompound filter;
+    private CompoundNBT filter;
 
     public static AdvFilterMessage create(TileAdvQuarry quarry) {
         AdvFilterMessage message = new AdvFilterMessage();
@@ -35,9 +35,9 @@ public class AdvFilterMessage implements IMessage<AdvFilterMessage> {
         message.pos = quarry.getPos();
         message.filter = JavaConverters.mapAsJavaMap(quarry.fluidExtractFacings()).entrySet().stream()
             .map(values(s -> JavaConverters.setAsJavaSet(s).stream()
-                .map(f -> f.writeToNBT(new NBTTagCompound()))
-                .collect(Collectors.toCollection(NBTTagList::new))))
-            .map(keys(EnumFacing::toString))
+                .map(f -> f.writeToNBT(new CompoundNBT()))
+                .collect(Collectors.toCollection(ListNBT::new))))
+            .map(keys(Direction::toString))
             .collect(NBTBuilder.toNBTTag());
         return message;
     }
@@ -60,11 +60,11 @@ public class AdvFilterMessage implements IMessage<AdvFilterMessage> {
     public void onReceive(Supplier<NetworkEvent.Context> ctx) {
         IMessage.findTile(ctx, pos, dim, TileAdvQuarry.class)
             .ifPresent(quarry -> ctx.get().enqueueWork(() -> {
-                for (EnumFacing facing : EnumFacing.values()) {
+                for (Direction facing : Direction.values()) {
                     Set<FluidStack> set = quarry.fluidExtractFacings().apply(facing);
                     set.clear();
                     filter.getList(facing.toString(), Constants.NBT.TAG_COMPOUND).stream()
-                        .map(b -> (NBTTagCompound) b)
+                        .map(b -> (CompoundNBT) b)
                         .map(FluidStack::loadFluidStackFromNBT).forEach(set::add);
                 }
             }));

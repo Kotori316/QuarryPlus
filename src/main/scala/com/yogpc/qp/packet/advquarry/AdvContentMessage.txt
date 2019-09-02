@@ -7,7 +7,7 @@ import java.util.function.Supplier;
 
 import com.yogpc.qp.machines.advquarry.TileAdvQuarry;
 import com.yogpc.qp.packet.IMessage;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fluids.FluidStack;
@@ -54,8 +54,8 @@ public class AdvContentMessage implements IMessage<AdvContentMessage> {
         buffer.writeBlockPos(pos).writeInt(dim);
         buffer.writeInt(map.size());
         map.forEach((fluidStack, fluidTank) -> {
-            buffer.writeCompoundTag(fluidStack.writeToNBT(new NBTTagCompound()));
-            buffer.writeCompoundTag(fluidTank.writeToNBT(new NBTTagCompound()));
+            buffer.writeCompoundTag(fluidStack.writeToNBT(new CompoundNBT()));
+            buffer.writeCompoundTag(fluidTank.writeToNBT(new CompoundNBT()));
         });
     }
 

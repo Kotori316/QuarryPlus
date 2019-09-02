@@ -16,21 +16,19 @@ import com.yogpc.qp.packet.advquarry.AdvModeMessage
 import com.yogpc.qp.utils._
 import com.yogpc.qp.{Config, QuarryPlus, _}
 import javax.annotation.Nonnull
-import net.minecraft.block.Block
-import net.minecraft.block.state.IBlockState
+import net.minecraft.block.{Block, BlockState, Blocks}
 import net.minecraft.enchantment.{Enchantment, EnchantmentHelper}
-import net.minecraft.entity.item.{EntityItem, EntityXPOrb}
-import net.minecraft.entity.player.{EntityPlayer, InventoryPlayer}
-import net.minecraft.init.Blocks
-import net.minecraft.inventory.Container
-import net.minecraft.item.{ItemBlock, ItemStack}
-import net.minecraft.nbt.{NBTTagCompound, NBTTagList, NBTTagLong}
+import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.item.{BlockItem, ItemStack}
+import net.minecraft.nbt.{CompoundNBT, ListNBT, LongNBT}
 import net.minecraft.state.properties.BlockStateProperties
-import net.minecraft.util._
+import net.minecraft.tileentity.ITickableTileEntity
+import net.minecraft.util.{Direction, Hand, ResourceLocation}
 import net.minecraft.util.math.BlockPos.MutableBlockPos
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos, ChunkPos}
-import net.minecraft.util.text.{ITextComponent, TextComponentString, TextComponentTranslation}
-import net.minecraft.world.{IInteractionObject, World, WorldServer}
+import net.minecraft.util.text.{ITextComponent, StringTextComponent, TranslationTextComponent}
+import net.minecraft.world.World
+import net.minecraft.world.server.ServerWorld
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.util.{Constants, LazyOptional}
 import net.minecraftforge.common.{IShearable, MinecraftForge}
@@ -49,7 +47,7 @@ import scala.reflect.ClassTag
 class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
   with IEnchantableTile
   with HasInv
-  with ITickable
+  with ITickableTileEntity
   with IDebugSender
   with IChunkLoadTile
   with IAttachable
@@ -59,17 +57,17 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
   import TileAdvQuarry._
 
   private[this] var mDigRange = TileAdvQuarry.defaultRange
-  private[this] var facingMap: Map[Attachments[_ <: APacketTile], EnumFacing] = Map.empty
+  private[this] var facingMap: Map[Attachments[_ <: APacketTile], Direction] = Map.empty
   var ench: QEnch = TileAdvQuarry.defaultEnch
-  var target: BlockPos = BlockPos.ORIGIN
+  var target: BlockPos = BlockPos.ZERO
   var framePoses = List.empty[BlockPos]
   var chunks = List.empty[ChunkPos]
   var yLevel = 1
   val fluidStacks = scala.collection.mutable.Map.empty[FluidStack, FluidTank]
   val cacheItems = new ItemList
   val itemHandler = new ItemHandler
-  //  val fluidHandlers: Map[EnumFacing, FluidHandler] = EnumFacing.values().map(f => f -> new FluidHandler(facing = f)).toMap.withDefaultValue(new FluidHandler(null))
-  val fluidExtractFacings: Map[EnumFacing, mutable.Set[FluidStack]] = EnumFacing.values().map(f => f -> scala.collection.mutable.Set.empty[FluidStack]).toMap
+  //  val fluidHandlers: Map[Direction, FluidHandler] = Direction.values().map(f => f -> new FluidHandler(facing = f)).toMap.withDefaultValue(new FluidHandler(null))
+  val fluidExtractFacings: Map[Direction, mutable.Set[FluidStack]] = Direction.values().map(f => f -> scala.collection.mutable.Set.empty[FluidStack]).toMap
   val mode = new Mode
 
   override def tick(): Unit = {
@@ -208,35 +206,35 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
                     destroy += y
                   }
                 } else if (state.getBlock == Blocks.NETHER_PORTAL) {
-                  getWorld.removeBlock(pos)
+                  getWorld.removeBlock(pos, false)
                   requireEnergy += 20
                 }
               }
             }
             if (flags.exists(identity)) {
               if (flags(0)) { //-x
-                checkAndSetFrame(getWorld, pos.offset(EnumFacing.WEST))
+                checkAndSetFrame(getWorld, pos.offset(Direction.WEST))
                 if (flags(2)) { //-z, -x
-                  checkAndSetFrame(getWorld, pos.offset(EnumFacing.NORTH, EnumFacing.WEST))
+                  checkAndSetFrame(getWorld, pos.offset(Direction.NORTH, Direction.WEST))
                 }
                 else if (flags(3)) { //+z, -x
-                  checkAndSetFrame(getWorld, pos.offset(EnumFacing.SOUTH, EnumFacing.WEST))
+                  checkAndSetFrame(getWorld, pos.offset(Direction.SOUTH, Direction.WEST))
                 }
               }
               else if (flags(1)) { //+x
-                checkAndSetFrame(getWorld, pos.offset(EnumFacing.EAST))
+                checkAndSetFrame(getWorld, pos.offset(Direction.EAST))
                 if (flags(2)) { //-z, +x
-                  checkAndSetFrame(getWorld, pos.offset(EnumFacing.NORTH, EnumFacing.EAST))
+                  checkAndSetFrame(getWorld, pos.offset(Direction.NORTH, Direction.EAST))
                 }
                 else if (flags(3)) { //+z, +x
-                  checkAndSetFrame(getWorld, pos.offset(EnumFacing.SOUTH, EnumFacing.EAST))
+                  checkAndSetFrame(getWorld, pos.offset(Direction.SOUTH, Direction.EAST))
                 }
               }
               if (flags(2)) { //-z
-                checkAndSetFrame(getWorld, pos.offset(EnumFacing.NORTH))
+                checkAndSetFrame(getWorld, pos.offset(Direction.NORTH))
               }
               else if (flags(3)) { //+z
-                checkAndSetFrame(getWorld, pos.offset(EnumFacing.SOUTH))
+                checkAndSetFrame(getWorld, pos.offset(Direction.SOUTH))
               }
             }
             y -= 1
@@ -258,8 +256,8 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
           val (list, destroy, dig, drain, shear) = c
           val expPump = facingMap.get(Attachments.EXP_PUMP).map(f => getWorld.getTileEntity(getPos.offset(f)))
             .collect { case pump: TileExpPump => pump }
-          val fakePlayer = QuarryFakePlayer.get(getWorld.asInstanceOf[WorldServer], target)
-          fakePlayer.setHeldItem(EnumHand.MAIN_HAND, getEnchantedPickaxe)
+          val fakePlayer = QuarryFakePlayer.get(getWorld.asInstanceOf[ServerWorld], target)
+          fakePlayer.setHeldItem(Hand.MAIN_HAND, getEnchantedPickaxe)
           val collectFurnaceXP = InvUtils.hasSmelting(fakePlayer.getHeldItemMainhand) && expPump.isDefined
           val tempList = new NotNullList(new ArrayBuffer[ItemStack]())
           val toReplace = getFillBlock
@@ -321,20 +319,20 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
           }
           for (y <- drain) {
             p.setY(y)
-            //            val handler = Option(FluidUtil.getFluidHandler(getWorld, p, EnumFacing.UP).orElse(EmptyFluidHandler.INSTANCE))
+            //            val handler = Option(FluidUtil.getFluidHandler(getWorld, p, Direction.UP).orElse(EmptyFluidHandler.INSTANCE))
             //            val fluidOp = handler.flatMap(h => Option(h.getTankProperties.apply(0))).map(_.getContents)
             //            fluidOp match {
             //              case Some(fluidStack) => handler.flatMap(s => Option(s.drain(fluidStack.amount, false))).foreach(s => fluidStacks.get(fluidStack) match {
             //                case Some(tank) => tank.fill(s, true)
             //                case None => fluidStacks.put(fluidStack, new QuarryTank(s, Int.MaxValue))
             //              })
-            //              case None => //QuarryPlus.LOGGER.error(s"Adv Fluid null, ${getWorld.getBlockState(p)}, ${FluidUtil.getFluidHandler(getWorld, p, EnumFacing.UP)}")
+            //              case None => //QuarryPlus.LOGGER.error(s"Adv Fluid null, ${getWorld.getBlockState(p)}, ${FluidUtil.getFluidHandler(getWorld, p, Direction.UP)}")
             //            }
             val fluidState = getWorld.getFluidState(p)
             if (fluidState.isSource) FluidStore.injectToNearTile(getWorld, getPos, fluidState.getFluid)
             getWorld.setBlockState(p, Blocks.AIR.getDefaultState, 0x10 | 0x2)
           }
-          fakePlayer.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY)
+          fakePlayer.setHeldItem(Hand.MAIN_HAND, ItemStack.EMPTY)
           Right(list, reasons)
         }
 
@@ -353,7 +351,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
               stream match {
                 case ((pre, newPos), index) #:: rest =>
                   if (pre == newPos) {
-                    Some(BlockPos.ORIGIN) -> reasons
+                    Some(BlockPos.ZERO) -> reasons
                   } else {
                     val energy = PowerManager.calcEnergyAdvSearch(ench.unbreaking, newPos.getY - yLevel + 1)
                     if (notEnoughEnergy || useEnergy(energy, energy, false, EnergyUsage.ADV_CHECK_BLOCK) != energy) {
@@ -391,7 +389,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
               }
               nextPos.foreach { p =>
                 target = p
-                if (p == BlockPos.ORIGIN) {
+                if (p == BlockPos.ZERO) {
                   //Finished.
                   target = digRange.min
                   finishWork()
@@ -411,7 +409,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
       } else if (mode is TileAdvQuarry.CHECK_LIQUID) {
         nextPoses(digRange, target, inclusive = true).take(32 * digRange.timeInTick).foreach { case (_, p) =>
           target = p
-          if (p == BlockPos.ORIGIN) {
+          if (p == BlockPos.ZERO) {
             mode set TileAdvQuarry.NONE
           } else if (mode is TileAdvQuarry.CHECK_LIQUID) {
             Iterator.iterate(p.down())(_.down()).takeWhile(_.getY > yLevel).filter(p => {
@@ -424,25 +422,25 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
       } else if (mode is TileAdvQuarry.FILL_BLOCKS) {
         import cats.implicits._
         val handlerOpt = Option(getWorld.getTileEntity(getPos.up)).foldMapK(t =>
-          t.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.DOWN).asScala)
+          t.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, Direction.DOWN).asScala)
         if (handlerOpt.isDefined.value) {
           val handler = handlerOpt.value.value.get
           val list = Range(0, handler.getSlots).find(i => {
             val stack = handler.getStackInSlot(i)
-            !stack.isEmpty && stack.getItem.isInstanceOf[ItemBlock]
+            !stack.isEmpty && stack.getItem.isInstanceOf[BlockItem]
           }).map(handler.extractItem(_, 1, false)).toList
           val y = Math.max(if (Config.common.removeBedrock.get()) 1 else 5, yLevel)
           nextPoses(digRange, target).take(list.map(_.getCount).sum).foreach { case (_, p) =>
             target = p
-            if (p == BlockPos.ORIGIN) {
+            if (p == BlockPos.ZERO) {
               mode set TileAdvQuarry.NONE
             } else {
-              val state = InvUtils.getStateFromItem(list.head.getItem.asInstanceOf[ItemBlock])
+              val state = InvUtils.getStateFromItem(list.head.getItem.asInstanceOf[BlockItem])
               getWorld.setBlockState(new BlockPos(p.getX, y, p.getZ), state)
             }
           }
         } else {
-          target = BlockPos.ORIGIN
+          target = BlockPos.ZERO
           mode set TileAdvQuarry.NONE
         }
       }
@@ -481,13 +479,13 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     }
   }
 
-  private def setBlock(pos: BlockPos, state: IBlockState): Unit = {
+  private def setBlock(pos: BlockPos, state: BlockState): Unit = {
     // Prevent block update and neighbor reactions.
     val i = if (state == Blocks.AIR.getDefaultState || state.isFullCube) 0x10 | 0x2 else 3
     getWorld.setBlockState(pos, state, i)
   }
 
-  def breakEvent(pos: BlockPos, state: IBlockState, player: EntityPlayer, expPump: Option[TileExpPump])(action: BlockEvent.BreakEvent => Unit): Seq[Reason] = {
+  def breakEvent(pos: BlockPos, state: BlockState, player: PlayerEntity, expPump: Option[TileExpPump])(action: BlockEvent.BreakEvent => Unit): Seq[Reason] = {
     val event = new BlockEvent.BreakEvent(getWorld, pos, state, player)
     MinecraftForge.EVENT_BUS.post(event)
     if (!event.isCanceled) {
@@ -518,7 +516,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     }
   }
 
-  override def read(nbt: NBTTagCompound): Unit = {
+  override def read(nbt: CompoundNBT): Unit = {
     super.read(nbt)
     ench = QEnch.readFromNBT(nbt.getCompound(NBT_QUARRY_ENCH))
     digRange = DigRange.readFromNBT(nbt.getCompound(NBT_DIG_RANGE))
@@ -533,11 +531,11 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     //      }
     //    })
     val l2 = nbt.getList("NBT_CHUNK_LOADING_LIST", Constants.NBT.TAG_LONG)
-    chunks = l2.asScala.toList.map(n => new ChunkPos(BlockPos.fromLong(n.asInstanceOf[NBTTagLong].getLong)))
+    chunks = l2.asScala.toList.map(n => new ChunkPos(BlockPos.fromLong(n.asInstanceOf[LongNBT].getLong)))
     yLevel = Math.max(nbt.getInt("yLevel"), 1)
   }
 
-  override def write(nbt: NBTTagCompound): NBTTagCompound = {
+  override def write(nbt: CompoundNBT): CompoundNBT = {
     nbt.put(NBT_QUARRY_ENCH, ench.toNBT)
     nbt.put(NBT_DIG_RANGE, digRange.toNBT)
     nbt.putLong("NBT_TARGET", target.toLong)
@@ -547,20 +545,20 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     //      CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.writeNBT(tank, null)
     //    }.foldLeft(new NBTTagList) { case (l, t) => l.add(t); l })
     nbt.put("NBT_CHUNK_LOADING_LIST", chunks.map(_.getBlock(0, 0, 0).toLong.toNBT)
-      .foldLeft(new NBTTagList) { case (l, t) => l.add(t); l })
+      .foldLeft(new ListNBT) { case (l, t) => l.add(t); l })
     nbt.putInt("yLevel", yLevel)
     super.write(nbt)
   }
 
   /**
-    * @return Map (Enchantment id, level)
-    */
+   * @return Map (Enchantment id, level)
+   */
   override def getEnchantments: util.Map[ResourceLocation, Integer] = ench.getMap.collect(enchantCollector).asJava
 
   /**
-    * @param id    Enchantment id
-    * @param value level
-    */
+   * @param id    Enchantment id
+   * @param value level
+   */
   override def setEnchantment(id: ResourceLocation, value: Short): Unit = ench = ench.set(id, value)
 
   override def getEnchantedPickaxe: ItemStack = ench.pickaxe
@@ -589,9 +587,9 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
 
   override def getDebugName: String = TranslationKeys.advquarry
 
-  override def isUsableByPlayer(player: EntityPlayer): Boolean = self.getWorld.getTileEntity(self.getPos) eq this
+  override def isUsableByPlayer(player: PlayerEntity): Boolean = self.getWorld.getTileEntity(self.getPos) eq this
 
-  override def getDebugMessages: util.List[TextComponentString] = {
+  override def getDebugMessages: util.List[StringTextComponent] = {
     import scala.collection.JavaConverters._
     List("Items to extract = " + cacheItems.list.size,
       "Liquid to extract = " + fluidStacks.size,
@@ -602,7 +600,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
       "YLevel = " + yLevel).map(toComponentString).asJava
   }
 
-  override def getCapability[T](cap: Capability[T], side: EnumFacing): LazyOptional[T] = {
+  override def getCapability[T](cap: Capability[T], side: Direction): LazyOptional[T] = {
     if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
       CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.orEmpty(cap, LazyOptional.of(() => itemHandler))
     //    else if(cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY)
@@ -638,7 +636,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     super.onChunkUnloaded()
   }
 
-  override def createContainer(playerInventory: InventoryPlayer, playerIn: EntityPlayer): Container = new ContainerAdvQuarry(this, playerIn)
+  override def createContainer(playerInventory: InventoryPlayer, playerIn: PlayerEntity): Container = new ContainerAdvQuarry(this, playerIn)
 
   override def getGuiID: String = GUI_ID
 
@@ -666,10 +664,10 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     mDigRange = digRange
   }
 
-  def stickActivated(player: EntityPlayer): Unit = {
+  def stickActivated(player: PlayerEntity): Unit = {
     //Called when noEnergy is true and block is right clicked with stick (item)
     if (machineDisabled) {
-      player.sendStatusMessage(new TextComponentString("ChunkDestroyer is disabled."), true)
+      player.sendStatusMessage(new StringTextComponent("ChunkDestroyer is disabled."), true)
     } else if (mode is TileAdvQuarry.NOT_NEED_BREAK) {
       mode set TileAdvQuarry.MAKE_FRAME
       startWork()
@@ -691,7 +689,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     }
   }
 
-  override def connectAttachment(facing: EnumFacing, attachments: Attachments[_ <: APacketTile], simulate: Boolean): Boolean = {
+  override def connectAttachment(facing: Direction, attachments: Attachments[_ <: APacketTile], simulate: Boolean): Boolean = {
     if (!facingMap.contains(attachments)) {
       if (!simulate) facingMap = facingMap.updated(attachments, facing)
       true
@@ -708,7 +706,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
 
   override def isValidAttachment(attachments: Attachments[_ <: APacketTile]): Boolean = TileAdvQuarry.VALID_ATTACHMENTS(attachments)
 
-  private def getFillBlock: IBlockState = {
+  private def getFillBlock: BlockState = {
     facingMap.get(Attachments.REPLACER)
       .flatMap(f => Option(getWorld.getTileEntity(getPos.offset(f))))
       .flatMap(t => Attachments.REPLACER.apply(t).asScala)
@@ -722,12 +720,12 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
       val need = (digRange.maxX - digRange.minX + 1) * (digRange.maxZ - digRange.minZ + 1)
       import cats.implicits._
       val stacks = Option(getWorld.getTileEntity(getPos.up))
-        .foldMapK(_.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.DOWN).asScala)
+        .foldMapK(_.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, Direction.DOWN).asScala)
         .map(handler => Range(0, handler.getSlots).map(handler.getStackInSlot))
         .getOrElse(Seq.empty).value
-      val blocks = stacks.filter(s => !s.isEmpty && s.getItem.isInstanceOf[ItemBlock])
+      val blocks = stacks.filter(s => !s.isEmpty && s.getItem.isInstanceOf[BlockItem])
       blocks.nonEmpty &&
-        stacks.forall(stack => !stack.isEmpty || !stack.getItem.isInstanceOf[ItemBlock] || stack.isItemEqual(blocks.head)) &&
+        stacks.forall(stack => !stack.isEmpty || !stack.getItem.isInstanceOf[BlockItem] || stack.isItemEqual(blocks.head)) &&
         blocks.map(_.getCount).sum >= need
     } else false
   }
@@ -756,7 +754,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     override def isItemValid(slot: Int, stack: ItemStack): Boolean = isItemValidForSlot(slot, stack)
   }
 
-  /*private[TileAdvQuarry] class FluidHandler(val facing: EnumFacing) extends IFluidHandler {
+  /*private[TileAdvQuarry] class FluidHandler(val facing: Direction) extends IFluidHandler {
     //FluidHandlerFluidMap(fluidStacks.asJava) {
 
     def fluids = if (facing != null) fluidStacks.filterKeys(fluidExtractFacings(facing)) else fluidStacks.toMap
@@ -847,12 +845,12 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
 
     override def toString: String = "ChunkDestroyer mode = " + mode
 
-    def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
+    def writeToNBT(nbt: CompoundNBT): CompoundNBT = {
       nbt.putInt("mode", mode.index)
       nbt
     }
 
-    def readFromNBT(tag: NBTTagCompound): Mode = {
+    def readFromNBT(tag: CompoundNBT): Mode = {
       this.mode = tag.getInt("mode") match {
         case 0 => NONE
         case 1 => NOT_NEED_BREAK
@@ -866,7 +864,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     }
   }
 
-  override def getName = new TextComponentTranslation(getDebugName)
+  def getName = new TranslationTextComponent(getDebugName)
 }
 
 object TileAdvQuarry {
@@ -903,18 +901,18 @@ object TileAdvQuarry {
   final val VALID_ATTACHMENTS: Set[Attachments[_]] = Set(Attachments.EXP_PUMP, Attachments.REPLACER)
 
   val defaultEnch = QEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false)
-  val defaultRange: DigRange = new DigRange(BlockPos.ORIGIN, BlockPos.ORIGIN) {
+  val defaultRange: DigRange = new DigRange(BlockPos.ZERO, BlockPos.ZERO) {
     override val defined: Boolean = false
     override val toString: String = "Dig Range Not Defined"
     override val timeInTick = 0
 
-    override def min: BlockPos = BlockPos.ORIGIN
+    override def min: BlockPos = BlockPos.ZERO
   }
 
-  implicit val digRangeNbt: NBTWrapper[DigRange, NBTTagCompound] = _.writeToNBT(new NBTTagCompound)
-  implicit val qEnchNbt: NBTWrapper[QEnch, NBTTagCompound] = _.writeToNBT(new NBTTagCompound)
-  implicit val itemListNbt: NBTWrapper[ItemList, NBTTagCompound] = _.writeToNBT(new NBTTagCompound)
-  implicit val modeNbt: NBTWrapper[TileAdvQuarry#Mode, NBTTagCompound] = _.writeToNBT(new NBTTagCompound)
+  implicit val digRangeNbt: NBTWrapper[DigRange, CompoundNBT] = _.writeToNBT(new CompoundNBT)
+  implicit val qEnchNbt: NBTWrapper[QEnch, CompoundNBT] = _.writeToNBT(new CompoundNBT)
+  implicit val itemListNbt: NBTWrapper[ItemList, CompoundNBT] = _.writeToNBT(new CompoundNBT)
+  implicit val modeNbt: NBTWrapper[TileAdvQuarry#Mode, CompoundNBT] = _.writeToNBT(new CompoundNBT)
 
   case class QEnch(efficiency: Int, unbreaking: Int, fortune: Int, silktouch: Boolean, other: Map[ResourceLocation, Int] = Map.empty) {
 
@@ -922,7 +920,7 @@ object TileAdvQuarry {
 
     require(efficiency >= 0 && unbreaking >= 0 && fortune >= 0,
       s"Chunk Destroyer Enchantment error with Efficiency $efficiency, Unbreaking $unbreaking, Fortune $fortune, Silktouch $silktouch, other $other")
-    val pickaxe = new ItemStack(net.minecraft.init.Items.DIAMOND_PICKAXE)
+    val pickaxe = new ItemStack(net.minecraft.item.Items.DIAMOND_PICKAXE)
     private val pf: PartialFunction[(ResourceLocation, Int), (Enchantment, Integer)] = {
       case (id, level) if level > 0 && (!Config.common.disabled(BlockBookMover.SYMBOL).get() || IEnchantableTile.isValidEnch.test(id, level))
       => (ForgeRegistries.ENCHANTMENTS.getValue(id), Int.box(level))
@@ -948,12 +946,12 @@ object TileAdvQuarry {
 
     val mode: Int = if (silktouch) -1 else fortune
 
-    def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
+    def writeToNBT(nbt: CompoundNBT): CompoundNBT = {
       nbt.putInt("efficiency", efficiency)
       nbt.putInt("unbreaking", unbreaking)
       nbt.putInt("fortune", fortune)
       nbt.putBoolean("silktouch", silktouch)
-      val o = new NBTTagCompound
+      val o = new CompoundNBT
       other.map { case (id, l) => Option(ForgeRegistries.ENCHANTMENTS.getValue(id)) -> l }.foreach {
         case (Some(e), l) => o.putInt(e.getRegistryName.toString, l)
         case _ =>
@@ -964,7 +962,7 @@ object TileAdvQuarry {
   }
 
   object QEnch {
-    def readFromNBT(tag: NBTTagCompound): QEnch = {
+    def readFromNBT(tag: CompoundNBT): QEnch = {
       if (!tag.isEmpty) {
         val o = tag.getCompound("other")
         val otherMap = o.keySet().asScala
@@ -988,7 +986,7 @@ object TileAdvQuarry {
 
     final val renderBox = new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ)
 
-    final val lengthSq = min.distanceSq(maxZ, maxY, maxZ)
+    final val lengthSq = min.distanceSq(maxX, maxY, maxZ, true)
 
     val timeInTick: Int = {
       val length = (maxX + maxZ - minX - minZ + 2) / 2
@@ -998,13 +996,13 @@ object TileAdvQuarry {
     def chunkSeq: List[ChunkPos] = {
       val a = for (x <- Range(minX, maxX, 16) :+ maxX;
                    z <- Range(minZ, maxZ, 16) :+ maxZ
-      ) yield new ChunkPos(x >> 4, z >> 4)
+                   ) yield new ChunkPos(x >> 4, z >> 4)
       a.toList
     }
 
     override val toString: String = s"Dig Range from ($minX, $minY, $minZ) to ($maxX, $maxY, $maxZ). $timeInTick times a tick."
 
-    def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
+    def writeToNBT(nbt: CompoundNBT): CompoundNBT = {
       nbt.putBoolean("defined", defined)
       nbt.putInt("minX", minX)
       nbt.putInt("minY", minY)
@@ -1017,7 +1015,7 @@ object TileAdvQuarry {
   }
 
   object DigRange {
-    def readFromNBT(tag: NBTTagCompound): DigRange = {
+    def readFromNBT(tag: CompoundNBT): DigRange = {
       if (tag.getBoolean("defined")) {
         DigRange(tag.getInt("minX"), tag.getInt("minY"), tag.getInt("minZ"),
           tag.getInt("maxX"), tag.getInt("maxY"), tag.getInt("maxZ"))
@@ -1080,15 +1078,15 @@ object TileAdvQuarry {
 
     override def toString: String = "ItemList size = " + list.size
 
-    def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
+    def writeToNBT(nbt: CompoundNBT): CompoundNBT = {
       nbt.put(NBT_ITEM_ELEMENTS,
-        list.map(_.toNBT).foldLeft(new NBTTagList) { case (b, t) => b.add(t); b })
+        list.map(_.toNBT).foldLeft(new ListNBT) { case (b, t) => b.add(t); b })
       nbt
     }
 
-    def readFromNBT(tag: NBTTagCompound): ItemList = {
+    def readFromNBT(tag: CompoundNBT): ItemList = {
       val l = tag.getList(NBT_ITEM_ELEMENTS, Constants.NBT.TAG_COMPOUND)
-      l.asScala.map(_.asInstanceOf[NBTTagCompound]).map(ItemStack.read).foreach(this.add)
+      l.asScala.map(_.asInstanceOf[CompoundNBT]).map(ItemStack.read).foreach(this.add)
       this
     }
   }
@@ -1144,15 +1142,15 @@ object TileAdvQuarry {
   def nextPoses(range: DigRange, previous: BlockPos, inclusive: Boolean = false): Stream[(BlockPos, BlockPos)] = {
     val getNext: ((BlockPos, BlockPos)) => (BlockPos, BlockPos) = (t: (BlockPos, BlockPos)) => {
       val (_, pos) = t
-      if (pos == BlockPos.ORIGIN)
-        pos -> BlockPos.ORIGIN
+      if (pos == BlockPos.ZERO)
+        pos -> BlockPos.ZERO
       else {
         val x = pos.getX + 1
         if (x > range.maxX) {
           val z = pos.getZ + 1
           if (z > range.maxZ) {
             // Finished. Update Status
-            pos -> BlockPos.ORIGIN
+            pos -> BlockPos.ZERO
           } else {
             pos -> new BlockPos(range.minX, pos.getY, z)
           }

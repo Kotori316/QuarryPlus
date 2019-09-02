@@ -13,10 +13,10 @@ object RenderAdvQuarry extends TileEntityRendererFast[TileAdvQuarry] {
   override def renderTileEntityFast(te: TileAdvQuarry, x: Double, y: Double, z: Double,
                                     partialTicks: Float, destroyStage: Int, buffer: BufferBuilder): Unit = {
 
-    Minecraft.getInstance.profiler.startSection("quarryplus")
+    Minecraft.getInstance.getProfiler.startSection("quarryplus")
 
     if ((te.mode is TileAdvQuarry.MAKE_FRAME) || (te.mode is TileAdvQuarry.NOT_NEED_BREAK)) {
-      Minecraft.getInstance.profiler.startSection("chunkdestroyer")
+      Minecraft.getInstance.getProfiler.startSection("chunkdestroyer")
       val range = te.digRange
       if (range.defined) {
         val pos = te.getPos
@@ -37,10 +37,10 @@ object RenderAdvQuarry extends TileEntityRendererFast[TileAdvQuarry] {
         if (b3) Box(range.minX - 0.5, range.minY, minZ, range.minX - 0.5, range.maxY, maxZ, d, d, d, firstSide = false, endSide = false).render(buffer, sprite)
         if (b4) Box(range.maxX + 1.5, range.minY, minZ, range.maxX + 1.5, range.maxY, maxZ, d, d, d, firstSide = false, endSide = false).render(buffer, sprite)
       }
-      Minecraft.getInstance.profiler.endSection()
+      Minecraft.getInstance.getProfiler.endSection()
     }
 
-    Minecraft.getInstance.profiler.endSection()
+    Minecraft.getInstance.getProfiler.endSection()
   }
 
   override def isGlobalRenderer(te: TileAdvQuarry): Boolean = true

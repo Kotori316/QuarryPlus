@@ -1,12 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "quarryplus:chunkdestroyer"
+    "model": "quarryplus:block/chunkdestroyer"
   },
   "variants": {
     "working": {
       "true": {
-        "model": "quarryplus:chunkdestroyer_working"
+        "model": "quarryplus:block/chunkdestroyer_working"
       },
       "false": {
       }

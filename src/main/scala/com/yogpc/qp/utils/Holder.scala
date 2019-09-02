@@ -1,23 +1,25 @@
 package com.yogpc.qp.utils
 
-import com.yogpc.qp.machines.advpump.{BlockAdvPump, TileAdvPump}
-import com.yogpc.qp.machines.advquarry.{BlockAdvQuarry, TileAdvQuarry}
 import com.yogpc.qp.machines.base.IDisabled
-import com.yogpc.qp.machines.bookmover.{BlockBookMover, TileBookMover}
+import com.yogpc.qp.machines.bookmover.{BlockBookMover, ContainerBookMover, TileBookMover}
 import com.yogpc.qp.machines.controller.BlockController
 import com.yogpc.qp.machines.exppump.{BlockExpPump, TileExpPump}
 import com.yogpc.qp.machines.item._
 import com.yogpc.qp.machines.marker.{BlockMarker, TileMarker}
 import com.yogpc.qp.machines.modules._
-import com.yogpc.qp.machines.mover.BlockMover
+import com.yogpc.qp.machines.mover.{BlockMover, ContainerMover}
 import com.yogpc.qp.machines.pump.{BlockPump, TilePump}
 import com.yogpc.qp.machines.quarry._
 import com.yogpc.qp.machines.replacer.{BlockDummy, BlockReplacer, TileReplacer}
-import com.yogpc.qp.machines.workbench.{BlockWorkbench, TileWorkbench}
+import com.yogpc.qp.machines.workbench.{BlockWorkbench, ContainerWorkbench, TileWorkbench}
 import com.yogpc.qp.{CreativeTabQuarryPlus, QuarryPlus}
 import net.minecraft.block.Block
+import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.inventory.container.{Container, ContainerType}
 import net.minecraft.item.Item
 import net.minecraft.tileentity.{TileEntity, TileEntityType}
+import net.minecraft.util.math.BlockPos
+import net.minecraftforge.common.extensions.IForgeContainerType
 import net.minecraftforge.fml.ModLoadingContext
 
 object Holder {
@@ -26,42 +28,6 @@ object Holder {
   }
   //---------- Item Group ----------
   val tab = new CreativeTabQuarryPlus
-
-  //---------- TileEntity ----------
-  private def createType[T <: TileEntity](supplier: () => T, name: String): TileEntityType[T] = {
-    val t = TileEntityType.Builder.create[T](() => supplier()).build(null)
-    t.setRegistryName(QuarryPlus.modID, name)
-    t
-  }
-
-  val markerTileType = createType(() => new TileMarker, QuarryPlus.Names.marker)
-  val workbenchTileType = createType(() => new TileWorkbench, QuarryPlus.Names.workbench)
-  val expPumpTileType = createType(() => new TileExpPump, QuarryPlus.Names.exppump)
-  val miningWellTileType = createType(() => new TileMiningWell, QuarryPlus.Names.miningwell)
-  val quarryTileType = createType(() => new TileQuarry, QuarryPlus.Names.quarry)
-  val pumpTileType = createType(() => new TilePump, QuarryPlus.Names.pump)
-  val solidQuarryType = createType(() => new TileSolidQuarry, QuarryPlus.Names.solidquarry)
-  val replacerType = createType(() => new TileReplacer, QuarryPlus.Names.replacer)
-  val bookMoverType = createType(() => new TileBookMover, QuarryPlus.Names.moverfrombook)
-  val advQuarryType = createType(() => new TileAdvQuarry, QuarryPlus.Names.advquarry)
-  val advPumpType = createType(() => new TileAdvPump, QuarryPlus.Names.advpump)
-  val quarry2 = createType(() => new TileQuarry2, QuarryPlus.Names.quarry2)
-
-  val tiles: Map[TileEntityType[_ <: TileEntity], TileDisable] = Map(
-    markerTileType -> TileDisable(TileMarker.SYMBOL),
-    workbenchTileType -> TileDisable(TileWorkbench.SYMBOL),
-    expPumpTileType -> TileDisable(BlockExpPump.SYMBOL),
-    miningWellTileType -> TileDisable(TileMiningWell.SYMBOL),
-    quarryTileType -> TileDisable(TileQuarry.SYMBOL),
-    pumpTileType -> TileDisable(TilePump.SYMBOL),
-    solidQuarryType -> TileDisable(BlockSolidQuarry.SYMBOL),
-    replacerType -> TileDisable(TileReplacer.SYMBOL, defaultDisableMachine = true),
-    bookMoverType -> TileDisable(BlockBookMover.SYMBOL, defaultDisableMachine = true),
-    advQuarryType -> TileDisable(TileAdvQuarry.SYMBOL, defaultDisableMachine = true),
-    advPumpType -> TileDisable(TileAdvPump.SYMBOL),
-    quarry2 -> TileDisable(TileQuarry2.SYMBOL),
-  )
-
   //---------- Block ----------
 
   val blockMarker = new BlockMarker
@@ -78,8 +44,8 @@ object Holder {
   val blockReplacer = new BlockReplacer
   val blockController = new BlockController
   val blockBookMover = new BlockBookMover
-  val blockAdvQuarry = new BlockAdvQuarry
-  val blockAdvPump = new BlockAdvPump
+  //  val blockAdvQuarry = new BlockAdvQuarry
+  //  val blockAdvPump = new BlockAdvPump
   val blockQuarry2 = new BlockQuarry2
 
   val blocks: Seq[Block] = Seq(
@@ -97,8 +63,8 @@ object Holder {
     blockReplacer,
     blockController,
     blockBookMover,
-    blockAdvQuarry,
-    blockAdvPump,
+    //    blockAdvQuarry,
+    //    blockAdvPump,
     blockQuarry2,
   )
 
@@ -152,11 +118,52 @@ object Holder {
   val itemFuelModuleNormal = new ItemFuelModule(FuelModule.Normal)
   val itemFuelModuleCreative = new ItemFuelModule(FuelModule.Creative)
 
-  val items: Seq[Item] = Seq(itemStatusChecker, itemListEditor, itemLiquidSelector, itemYSetter, itemQuarryDebug, itemTemplate,
-    itemPumpModule, itemExpPumpModule, itemReplacerModule, itemTorchModule, itemFuelModuleNormal, itemFuelModuleCreative)
+  val items: Seq[Item] = Seq(
+    itemStatusChecker,
+    itemListEditor,
+    itemLiquidSelector,
+    itemYSetter,
+    itemQuarryDebug,
+    itemTemplate,
+    itemPumpModule,
+    itemExpPumpModule,
+    itemReplacerModule, itemTorchModule, itemFuelModuleNormal, itemFuelModuleCreative
+  )
 
   //---------- IDisable ----------
   case class TileDisable(override val getSymbol: Symbol, override val defaultDisableMachine: Boolean = false) extends IDisabled
 
   val canDisablesSymbols = (tiles.values ++ blocks ++ items).collect { case d: IDisabled => d.getSymbol -> d.defaultDisableMachine }
+
+  //---------- Container ----------
+  val moverContainerType = createContainerType((windowId, p, pos) => new ContainerMover(windowId, p, pos), BlockMover.GUI_ID)
+  val workbenchContainerType = createContainerType(new ContainerWorkbench(_, _, _), TileWorkbench.GUI_ID)
+  val bookMoverContainerType = createContainerType(new ContainerBookMover(_, _, _), BlockBookMover.GUI_ID)
+  val ySetterContainerType = createContainerType(new ContainerQuarryLevel(_, _, _), YSetterInteractionObject.GUI_ID)
+  val solidQuarryContainerType = createContainerType(new ContainerSolidQuarry(_, _, _), TileSolidQuarry.GUI_ID)
+  val quarryModuleContainerType = createContainerType(new ContainerQuarryModule(_, _, _), ContainerQuarryModule.GUI_ID)
+  val enchListContainerType = {
+    val value = IForgeContainerType.create[ContainerEnchList]((id, inv, data) =>
+      new ContainerEnchList(id, inv.player, data.readBlockPos(), data.readResourceLocation()))
+    value.setRegistryName(ItemListEditor.GUI_ID)
+    value
+  }
+  val templateContainerType = createContainerType(new ContainerListTemplate(_, _, _), ItemTemplate.GUI_ID)
+
+  val containers: Set[ContainerType[_ <: Container]] = Set(
+    moverContainerType,
+    workbenchContainerType,
+    bookMoverContainerType,
+    ySetterContainerType,
+    solidQuarryContainerType,
+    quarryModuleContainerType,
+    enchListContainerType,
+    templateContainerType,
+  )
+
+  private def createContainerType[T <: Container](supplier: (Int, PlayerEntity, BlockPos) => T, name: String): ContainerType[T] = {
+    val value = IForgeContainerType.create[T]((windowId, inv, data) => supplier(windowId, inv.player, data.readBlockPos()))
+    value.setRegistryName(name)
+    value
+  }
 }

@@ -1,6 +1,6 @@
 package com.yogpc.qp
 
-import com.yogpc.qp.machines.advquarry.TileAdvQuarry
+//import com.yogpc.qp.machines.advquarry.TileAdvQuarry
 import com.yogpc.qp.utils.Holder
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.common.ForgeConfigSpec
@@ -59,7 +59,7 @@ object Config {
 
     def debug = inDev || configDebug.get()
 
-    def noDigBLOCKS = TileAdvQuarry.noDigBLOCKS
+//    def noDigBLOCKS = TileAdvQuarry.noDigBLOCKS
 
     def spawnerBlacklist = spawnerBlacklist_internal.get().asScala.map(new ResourceLocation(_))
 
@@ -142,7 +142,7 @@ object Config {
 
     private def disableConfig(builder: ForgeConfigSpec.Builder): Map[Symbol, ForgeConfigSpec.BooleanValue] = {
       builder.comment("Setting of enabling or disabling each machine. True to disable.").push("machines")
-      val s = Holder.canDisablesSymbols.map { case (symbol, b) => symbol -> builder.define(symbol.name, !(!b || inDev)) }
+      val s = Holder.canDisablesSymbols.map { case (symbol, b) => symbol -> builder.define(symbol.name, b && !inDev) }
       builder.pop()
       s.toMap
     }

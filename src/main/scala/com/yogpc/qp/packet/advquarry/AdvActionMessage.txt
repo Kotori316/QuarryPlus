@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 
 import com.yogpc.qp.machines.advquarry.TileAdvQuarry;
 import com.yogpc.qp.packet.IMessage;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -18,13 +18,13 @@ public class AdvActionMessage implements IMessage<AdvActionMessage> {
     private BlockPos pos;
     private int dim;
     private Actions action;
-    private NBTTagCompound tag;
+    private CompoundNBT tag;
 
     public static AdvActionMessage create(TileAdvQuarry quarry, Actions action) {
-        return create(quarry, action, new NBTTagCompound());
+        return create(quarry, action, new CompoundNBT());
     }
 
-    public static AdvActionMessage create(TileAdvQuarry quarry, Actions action, NBTTagCompound compound) {
+    public static AdvActionMessage create(TileAdvQuarry quarry, Actions action, CompoundNBT compound) {
         AdvActionMessage message = new AdvActionMessage();
         message.pos = quarry.getPos();
         message.dim = IMessage.getDimId(quarry.getWorld());
@@ -60,17 +60,17 @@ public class AdvActionMessage implements IMessage<AdvActionMessage> {
         CHANGE_RANGE((quarry, rangeNBT) ->
             quarry.digRange_$eq(TileAdvQuarry.DigRange$.MODULE$.readFromNBT(rangeNBT))
         );
-        private final BiConsumer<TileAdvQuarry, NBTTagCompound> consumer;
+        private final BiConsumer<TileAdvQuarry, CompoundNBT> consumer;
 
         Actions(Consumer<TileAdvQuarry> consumer) {
             this.consumer = (quarry, nbtTagCompound) -> consumer.accept(quarry);
         }
 
-        Actions(BiConsumer<TileAdvQuarry, NBTTagCompound> consumer) {
+        Actions(BiConsumer<TileAdvQuarry, CompoundNBT> consumer) {
             this.consumer = consumer;
         }
 
-        Runnable runnable(TileAdvQuarry quarry, NBTTagCompound compound) {
+        Runnable runnable(TileAdvQuarry quarry, CompoundNBT compound) {
             return () -> consumer.accept(quarry, compound);
         }
     }

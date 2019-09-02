@@ -4,7 +4,7 @@ import java.util.function.Supplier;
 
 import com.yogpc.qp.machines.advpump.TileAdvPump;
 import com.yogpc.qp.packet.IMessage;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -17,7 +17,7 @@ public class AdvPumpStatusMessage implements IMessage<AdvPumpStatusMessage> {
     int dim;
     BlockPos pos;
     boolean placeFrame;
-    NBTTagCompound nbtTagCompound;
+    CompoundNBT nbtTagCompound;
 
     public static AdvPumpStatusMessage create(TileAdvPump pump) {
         AdvPumpStatusMessage message = new AdvPumpStatusMessage();

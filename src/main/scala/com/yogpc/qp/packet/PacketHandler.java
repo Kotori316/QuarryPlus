@@ -1,13 +1,6 @@
 package com.yogpc.qp.packet;
 
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.packet.advpump.AdvPumpChangeMessage;
-import com.yogpc.qp.packet.advpump.AdvPumpStatusMessage;
-import com.yogpc.qp.packet.advquarry.AdvActionMessage;
-import com.yogpc.qp.packet.advquarry.AdvContentMessage;
-import com.yogpc.qp.packet.advquarry.AdvFilterMessage;
-import com.yogpc.qp.packet.advquarry.AdvLevelMessage;
-import com.yogpc.qp.packet.advquarry.AdvModeMessage;
 import com.yogpc.qp.packet.controller.AvailableEntities;
 import com.yogpc.qp.packet.controller.SetEntity;
 import com.yogpc.qp.packet.listtemplate.TemplateMessage;
@@ -60,13 +53,13 @@ public class PacketHandler {
         INSTANCE.registerMessage(id++, Mappings.Update.class, IMessage::writeToBuffer, IMessage.decode(Mappings.Update::new), IMessage::onReceiveInternal);
         INSTANCE.registerMessage(id++, SetEntity.class, IMessage::writeToBuffer, IMessage.decode(SetEntity::new), IMessage::onReceiveInternal);
         INSTANCE.registerMessage(id++, AvailableEntities.class, IMessage::writeToBuffer, IMessage.decode(AvailableEntities::new), IMessage::onReceiveInternal);
-        INSTANCE.registerMessage(id++, AdvModeMessage.class, IMessage::writeToBuffer, IMessage.decode(AdvModeMessage::new), IMessage::onReceiveInternal);
-        INSTANCE.registerMessage(id++, AdvActionMessage.class, IMessage::writeToBuffer, IMessage.decode(AdvActionMessage::new), IMessage::onReceiveInternal);
-        INSTANCE.registerMessage(id++, AdvFilterMessage.class, IMessage::writeToBuffer, IMessage.decode(AdvFilterMessage::new), IMessage::onReceiveInternal);
-        INSTANCE.registerMessage(id++, AdvContentMessage.class, IMessage::writeToBuffer, IMessage.decode(AdvContentMessage::new), IMessage::onReceiveInternal);
-        INSTANCE.registerMessage(id++, AdvLevelMessage.class, IMessage::writeToBuffer, b -> new AdvLevelMessage().readFromBuffer(b), IMessage::onReceiveInternal);
-        INSTANCE.registerMessage(id++, AdvPumpChangeMessage.class, IMessage::writeToBuffer, IMessage.decode(AdvPumpChangeMessage::new), IMessage::onReceiveInternal);
-        INSTANCE.registerMessage(id++, AdvPumpStatusMessage.class, IMessage::writeToBuffer, IMessage.decode(AdvPumpStatusMessage::new), IMessage::onReceiveInternal);
+//        INSTANCE.registerMessage(id++, AdvModeMessage.class, IMessage::writeToBuffer, IMessage.decode(AdvModeMessage::new), IMessage::onReceiveInternal);
+//        INSTANCE.registerMessage(id++, AdvActionMessage.class, IMessage::writeToBuffer, IMessage.decode(AdvActionMessage::new), IMessage::onReceiveInternal);
+//        INSTANCE.registerMessage(id++, AdvFilterMessage.class, IMessage::writeToBuffer, IMessage.decode(AdvFilterMessage::new), IMessage::onReceiveInternal);
+//        INSTANCE.registerMessage(id++, AdvContentMessage.class, IMessage::writeToBuffer, IMessage.decode(AdvContentMessage::new), IMessage::onReceiveInternal);
+//        INSTANCE.registerMessage(id++, AdvLevelMessage.class, IMessage::writeToBuffer, b -> new AdvLevelMessage().readFromBuffer(b), IMessage::onReceiveInternal);
+//        INSTANCE.registerMessage(id++, AdvPumpChangeMessage.class, IMessage::writeToBuffer, IMessage.decode(AdvPumpChangeMessage::new), IMessage::onReceiveInternal);
+//        INSTANCE.registerMessage(id++, AdvPumpStatusMessage.class, IMessage::writeToBuffer, IMessage.decode(AdvPumpStatusMessage::new), IMessage::onReceiveInternal);
         INSTANCE.registerMessage(id++, TemplateMessage.class, IMessage::writeToBuffer, IMessage.decode(TemplateMessage::new), IMessage::onReceiveInternal);
         INSTANCE.registerMessage(id++, ActionMessage.class, IMessage::writeToBuffer, IMessage.decode(ActionMessage::new), IMessage::onReceiveInternal);
         INSTANCE.registerMessage(id++, Level2Message.class, IMessage::writeToBuffer, b -> new Level2Message().readFromBuffer(b), IMessage::onReceiveInternal);

@@ -4,7 +4,7 @@ import java.util.function.Supplier;
 
 import com.yogpc.qp.machines.advquarry.TileAdvQuarry;
 import com.yogpc.qp.packet.IMessage;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -15,7 +15,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
 public class AdvModeMessage implements IMessage<AdvModeMessage> {
     int dim;
     BlockPos pos;
-    NBTTagCompound modeNBT;
+    CompoundNBT modeNBT;
 
     public static AdvModeMessage create(TileAdvQuarry quarry) {
         AdvModeMessage message = new AdvModeMessage();
@@ -23,7 +23,7 @@ public class AdvModeMessage implements IMessage<AdvModeMessage> {
         message.pos = quarry.getPos();
         TileAdvQuarry.Mode mode = quarry.mode();
         TileAdvQuarry.DigRange digRange = quarry.digRange();
-        NBTTagCompound nbt = new NBTTagCompound();
+        CompoundNBT nbt = new CompoundNBT();
         message.modeNBT = digRange.writeToNBT(mode.writeToNBT(nbt));
 
         return message;
