@@ -6,7 +6,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.item.ItemTemplate;
 import com.yogpc.qp.packet.IMessage;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 import scala.Option;
@@ -36,7 +36,7 @@ public class TemplateMessage implements IMessage<TemplateMessage> {
     @Override
     public void writeToBuffer(PacketBuffer buffer) {
         buffer.writeInt(itemIndex);
-        buffer.writeCompoundTag(template.writeToNBT(new NBTTagCompound()));
+        buffer.writeCompoundTag(template.writeToNBT(new CompoundNBT()));
 
     }
 
