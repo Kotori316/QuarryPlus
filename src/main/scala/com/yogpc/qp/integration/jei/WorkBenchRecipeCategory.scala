@@ -51,7 +51,7 @@ class WorkBenchRecipeCategory(guiHelper: IGuiHelper) extends IRecipeCategory[Wor
 
   override def draw(recipe: WorkbenchRecipes, mouseX: Double, mouseY: Double): Unit = {
     animateBar.draw(4, 60)
-    Minecraft.getInstance().fontRenderer.drawString((recipe.energy.toDouble / APowerTile.MicroJtoMJ).toString + "MJ", 36 - xOff, 70 - yOff, 0x404040)
+    Minecraft.getInstance().fontRenderer.drawString((recipe.energy.toDouble / APowerTile.MJToMicroMJ).toString + "MJ", 36 - xOff, 70 - yOff, 0x404040)
   }
 
   override def getRecipeClass = classOf[WorkbenchRecipes]

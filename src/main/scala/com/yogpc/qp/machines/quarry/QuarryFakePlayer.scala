@@ -58,10 +58,12 @@ object QuarryFakePlayer {
   MinecraftForge.EVENT_BUS.register(this)
 
   @scala.annotation.tailrec
-  def get(server: ServerWorld): QuarryFakePlayer = {
+  def get(server: ServerWorld, pos: BlockPos): QuarryFakePlayer = {
     players.get(profile) match {
-      case Some(value) => value
-      case None => players = players.updated(profile, new QuarryFakePlayer(server)); get(server)
+      case Some(player) =>
+        player.setPosition(pos.getX, pos.getY, pos.getZ)
+        player
+      case None => players = players.updated(profile, new QuarryFakePlayer(server)); get(server, pos)
     }
   }
 

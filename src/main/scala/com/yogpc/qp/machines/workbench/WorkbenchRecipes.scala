@@ -128,7 +128,7 @@ object WorkbenchRecipes {
 
   def addIngredientRecipe(location: ResourceLocation, output: ItemStack, energy: Double, inputs: java.util.List[java.util.List[IngredientWithCount]]): Unit = {
     val scalaInput = inputs.asScala.map(_.asScala.toSeq)
-    val newRecipe = new IngredientRecipe(location, output, (energy * APowerTile.MicroJtoMJ).toLong, s = true, scalaInput)
+    val newRecipe = new IngredientRecipe(location, output, (energy * APowerTile.MJToMicroMJ).toLong, s = true, scalaInput)
     if (energy > 0) {
       recipes_internal put(location, newRecipe)
     } else {
@@ -169,7 +169,7 @@ object WorkbenchRecipes {
     val recipeType: EOR[Unit] = Validated.condNel(JSONUtils.getString(json, "type") == recipeLocation.toString, (), "Not a workbench recipe")
     val energy: EOR[Double] = Validated.catchNonFatal(JSONUtils.getString(json, "energy", "1000").toDouble)
       .leftMap(e => NonEmptyList.of(e.toString))
-      .andThen(d => Validated.condNel(d > 0, d * APowerTile.MicroJtoMJ, "Energy must be over than 0"))
+      .andThen(d => Validated.condNel(d > 0, d * APowerTile.MJToMicroMJ, "Energy must be over than 0"))
     val item: EOR[ItemStack] = Validated.catchNonFatal(CraftingHelper.getItemStack(JSONUtils.getJsonObject(json, "result"), true))
       .leftMap {
         case jsonEx: JsonParseException => NonEmptyList.of(jsonEx.getMessage)

@@ -258,7 +258,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
           val (list, destroy, dig, drain, shear) = c
           val expPump = facingMap.get(Attachments.EXP_PUMP).map(f => getWorld.getTileEntity(getPos.offset(f)))
             .collect { case pump: TileExpPump => pump }
-          val fakePlayer = QuarryFakePlayer.get(getWorld.asInstanceOf[WorldServer])
+          val fakePlayer = QuarryFakePlayer.get(getWorld.asInstanceOf[WorldServer], target)
           fakePlayer.setHeldItem(EnumHand.MAIN_HAND, getEnchantedPickaxe)
           val collectFurnaceXP = InvUtils.hasSmelting(fakePlayer.getHeldItemMainhand) && expPump.isDefined
           val tempList = new NotNullList(new ArrayBuffer[ItemStack]())
@@ -942,7 +942,7 @@ object TileAdvQuarry {
     def getMap: Map[ResourceLocation, Int] = Map(EfficiencyID -> efficiency, UnbreakingID -> unbreaking,
       FortuneID -> fortune, SilktouchID -> silktouch.compare(false)) ++ other
 
-    val maxStore = MAX_STORED * (efficiency + 1) * APowerTile.MicroJtoMJ
+    val maxStore = MAX_STORED * (efficiency + 1) * APowerTile.MJToMicroMJ
 
     val maxReceive = if (efficiency >= 5) maxStore else if (efficiency == 0) maxStore / 1000 else (maxStore * Math.pow(efficiency.toDouble / 5.0, 3)).toLong
 

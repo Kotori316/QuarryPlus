@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.BuildcraftHelper;
+import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.QPBlock;
 import com.yogpc.qp.utils.Holder;
 import net.minecraft.block.Block;
@@ -72,6 +73,7 @@ public class BlockSolidQuarry extends QPBlock {
         ItemStack stack = playerIn.getHeldItem(hand);
         if (BuildcraftHelper.isWrench(playerIn, hand, stack, hit)) {
             Optional.ofNullable((TileSolidQuarry) worldIn.getTileEntity(pos)).ifPresent(TileSolidQuarry::G_ReInit);
+            playerIn.sendStatusMessage(new TextComponentTranslation(TranslationKeys.QUARRY_RESTART), false);
             return true;
         }
         if (!playerIn.isSneaking()) {

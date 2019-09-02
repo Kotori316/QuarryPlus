@@ -225,7 +225,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         assert world != null;
         byte i;
         int xp = 0;
-        QuarryFakePlayer fakePlayer = QuarryFakePlayer.get(((ServerWorld) world));
+        QuarryFakePlayer fakePlayer = QuarryFakePlayer.get(((ServerWorld) world), pos);
         ItemStack pickaxe;
         if (this.silktouch && silktouchList.contains(new BlockData(state)) == this.silktouchInclude) {
             pickaxe = getEnchantedPickaxe(FORTUNE.negate());

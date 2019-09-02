@@ -66,16 +66,20 @@ public abstract class PumpModule implements IModule {
         }
 
         @Override
-        public boolean action(CalledWhen when) {
+        public Result action(CalledWhen when) {
             if (when instanceof BeforeBreak) {
                 BeforeBreak beforeBreak = (BeforeBreak) when;
                 BlockPos target = beforeBreak.pos();
                 BlockState state = beforeBreak.world().getBlockState(target);
                 if (TilePump.isLiquid(state)) {
-                    return pump.S_removeLiquids(tile, target.getX(), target.getY(), target.getZ());
+                    if (pump.S_removeLiquids(tile, target.getX(), target.getY(), target.getZ())) {
+                        return Done$.MODULE$;
+                    } else {
+                        return NotFinished$.MODULE$;
+                    }
                 }
             }
-            return true;
+            return NoAction$.MODULE$;
         }
     }
 
@@ -93,17 +97,21 @@ public abstract class PumpModule implements IModule {
         }
 
         @Override
-        public boolean action(CalledWhen when) {
+        public Result action(CalledWhen when) {
             if (when instanceof BeforeBreak) {
                 BeforeBreak beforeBreak = (BeforeBreak) when;
                 BlockPos target = beforeBreak.pos();
                 BlockState state = beforeBreak.world().getBlockState(target);
                 if (TilePump.isLiquid(state)) {
                     world = tile.getWorld();
-                    return S_removeLiquids(tile, target.getX(), target.getY(), target.getZ());
+                    if (S_removeLiquids(tile, target.getX(), target.getY(), target.getZ())) {
+                        return Done$.MODULE$;
+                    } else {
+                        return NotFinished$.MODULE$;
+                    }
                 }
             }
-            return true;
+            return NoAction$.MODULE$;
         }
 
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -80,6 +80,6 @@ object ItemQuarryDebug {
 
   def energyToString(tile: APowerTile): ITextComponent = {
     if (Config.common.noEnergy.get()) new StringTextComponent("No Energy Required.")
-    else new StringTextComponent(tile.getStoredEnergy / APowerTile.MicroJtoMJ + " / " + tile.getMaxStored / APowerTile.MicroJtoMJ + " MJ")
+    else new StringTextComponent(tile.getStoredEnergy / APowerTile.MJToMicroMJ + " / " + tile.getMaxStored / APowerTile.MJToMicroMJ + " MJ")
   }
 }

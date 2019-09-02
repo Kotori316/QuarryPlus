@@ -7,7 +7,7 @@ import com.yogpc.qp.machines.base._
 import com.yogpc.qp.machines.pump.TilePump
 import com.yogpc.qp.machines.{PowerManager, TranslationKeys}
 import com.yogpc.qp.packet.{PacketHandler, TileMessage}
-import com.yogpc.qp.utils.Holder
+import com.yogpc.qp.utils.{Holder, ItemDamage}
 import net.minecraft.block.{Block, BlockState}
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.ItemEntity
@@ -53,12 +53,17 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   override def tick(): Unit = {
     super.tick()
     if (!world.isRemote) {
+      // Module Tick Action
+      modules.foreach(_.invoke(IModule.Tick(self)))
       // Quarry action
       var i = 0
       while (i < enchantments.efficiency + 1) {
         action.action(target)
         if (action.canGoNext(self)) {
           action = action.nextAction(self)
+          if (action == QuarryAction.none) {
+            PowerManager.configure0(self)
+          }
           PacketHandler.sendToClient(TileMessage.create(self), world)
         }
         target = action.nextTarget()
@@ -119,7 +124,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
         player.sendStatusMessage(new TranslationTextComponent(TranslationKeys.CHANGEMODE,
           new TranslationTextComponent(if (frameMode) TranslationKeys.FILLER_MODE else TranslationKeys.QUARRY_MODE)), false)
       case _ => G_ReInit()
-        player.sendStatusMessage(new StringTextComponent("Quarry Restarted."), false)
+        player.sendStatusMessage(new TranslationTextComponent(TranslationKeys.QUARRY_RESTART), false)
     }
   }
 
@@ -137,6 +142,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     }
     action = QuarryAction.waiting
     PowerManager.configureQuarryWork(this, enchantments.efficiency, enchantments.unbreaking, 0)
+    configure(getMaxStored, getMaxStored)
   }
 
   override def getEnchantments = {
@@ -203,19 +209,13 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
    * @return True if succeeded.
    */
   def breakBlock(world: ServerWorld, pos: BlockPos, state: BlockState): Boolean = {
+    import scala.collection.JavaConverters._
     if (pos.getX % 6 == 0 && pos.getZ % 6 == 0) {
       // Gather items
-      import scala.collection.JavaConverters._
       val aabb = new AxisAlignedBB(pos.getX - 4, pos.getY, pos.getZ - 4, pos.getX + 4, pos.getY + 5, pos.getZ + 4)
-      world.getEntitiesWithinAABB[ItemEntity](classOf[ItemEntity], aabb, EntityPredicates.IS_ALIVE)
-        .asScala.foreach { e =>
-        this.storage.addItem(e.getItem)
-        QuarryPlus.proxy.removeEntity(e)
-      }
-      val orbs = world.getEntitiesWithinAABB(classOf[Entity], aabb).asScala.toList
-      modules.foreach(_.action(IModule.CollectingItem(orbs)))
+      gatherDrops(world, aabb)
     }
-    val fakePlayer = QuarryFakePlayer.get(world)
+    val fakePlayer = QuarryFakePlayer.get(world, pos)
     val pickaxe = getEnchantedPickaxe
     fakePlayer.setHeldItem(Hand.MAIN_HAND, pickaxe)
     val event = new BlockEvent.BreakEvent(world, pos, state, fakePlayer)
@@ -237,6 +237,17 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     } else {
       true // Once event is canceled, you should think the block is unbreakable.
     }
+  }
+
+  def gatherDrops(world: World, aabb: AxisAlignedBB): Unit = {
+    import scala.collection.JavaConverters._
+    world.getEntitiesWithinAABB[EntityItem](classOf[EntityItem], aabb, EntitySelectors.IS_ALIVE)
+      .asScala.foreach { e =>
+      this.storage.addItem(e.getItem)
+      QuarryPlus.proxy.removeEntity(e)
+    }
+    val orbs = world.getEntitiesWithinAABB(classOf[Entity], aabb).asScala.toList
+    modules.foreach(_.invoke(IModule.CollectingItem(orbs)))
   }
 
   override def getDebugName = TranslationKeys.quarry2
@@ -302,6 +313,7 @@ object TileQuarry2 {
   val buildFrame = new Mode("BuildFrame")
   val breakInsideFrame = new Mode("BreakInsideFrame")
   val breakBlock = new Mode("BreakBlock")
+  val checkDrops = new Mode("CheckDrops")
 
   class InteractionObject(quarry2: TileQuarry2) extends INamedContainerProvider {
 

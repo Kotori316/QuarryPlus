@@ -1,5 +1,15 @@
 **This mod requires a library, [Scalable Cat's Force](https://minecraft.curseforge.com/projects/scalable-cats-force).**
 
+## Version 13.3.3
+* Added Fuel Module, which supply 10 RF/t every tick without resources.
+* Localized message shown up when you restart quarry.
+* Added Creative Energy Source Module.
+
+## Version 13.3.2
+* Added Torch Module, which automatically places torch if the floor is dark enough monsters can spawn.
+* Refactoring.
+* Support chain breaking of MCAssistant. (Imported from 1.12.2)
+
 ## Version 13.3.1
 Ported fixes from 1.12.2
 * Fixed - fluid is replacer to dummy block.

@@ -112,7 +112,7 @@ public class TileExpPump extends APacketTile implements IEnchantableTile, IDebug
     }
 
     public long getEnergyUse(int amount) {
-        return amount * 10 * APowerTile.MicroJtoMJ / (1 + unbreaking);
+        return amount * 10 * APowerTile.MJToMicroMJ / (1 + unbreaking);
     }
 
     public void onActivated(World worldIn, BlockPos pos, PlayerEntity playerIn) {

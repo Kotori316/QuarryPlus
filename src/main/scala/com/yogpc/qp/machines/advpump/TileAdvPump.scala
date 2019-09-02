@@ -52,7 +52,7 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
   override def isWorking: Boolean = !finished
 
   override def G_ReInit(): Unit = {
-    configure(ench.getReceiveEnergy, 1024 * APowerTile.MicroJtoMJ)
+    configure(ench.getReceiveEnergy, 1024 * APowerTile.MJToMicroMJ)
     finished = true
     queueBuilt = false
     skip = false
@@ -482,8 +482,8 @@ object TileAdvPump {
   final val NBT_FINISHED = "finished"
   final val NBT_PLACE_FRAME = "placeFrame"
   final val NBT_DELETE = "delete"
-  private[this] final val defaultBaseEnergy = Seq(10, 8, 6, 4).map(_ * APowerTile.MicroJtoMJ)
-  private[this] final val defaultReceiveEnergy = Seq(32, 64, 128, 256, 512, 1024).map(_ * APowerTile.MicroJtoMJ)
+  private[this] final val defaultBaseEnergy = Seq(10, 8, 6, 4).map(_ * APowerTile.MJToMicroMJ)
+  private[this] final val defaultReceiveEnergy = Seq(32, 64, 128, 256, 512, 1024).map(_ * APowerTile.MJToMicroMJ)
   implicit val pEnchNbt: NBTWrapper[PEnch, NBTTagCompound] = _.writeToNBT(new NBTTagCompound)
 
   case class PEnch(efficiency: Int, unbreaking: Int, fortune: Int, silktouch: Boolean, start: BlockPos, end: BlockPos) {
