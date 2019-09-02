@@ -217,24 +217,28 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     fakePlayer.setHeldItem(EnumHand.MAIN_HAND, getEnchantedPickaxe)
     val event = new BlockEvent.BreakEvent(world, pos, state, fakePlayer)
     MinecraftForge.EVENT_BUS.post(event)
-    val drops = if (self.enchantments.silktouch && state.canSilkHarvest(world, pos, fakePlayer)) {
-      val list = NonNullList.create[ItemStack]
-      list.add(APacketTile.invoke(TileBasic.createStackedBlock, classOf[ItemStack], state.getBlock, state))
-      ForgeEventFactory.fireBlockHarvesting(list, world, pos, state, 0, 1.0f, true, fakePlayer)
-      list
+    if (!event.isCanceled) {
+      val drops = if (self.enchantments.silktouch && state.canSilkHarvest(world, pos, fakePlayer)) {
+        val list = NonNullList.create[ItemStack]
+        list.add(APacketTile.invoke(TileBasic.createStackedBlock, classOf[ItemStack], state.getBlock, state))
+        ForgeEventFactory.fireBlockHarvesting(list, world, pos, state, 0, 1.0f, true, fakePlayer)
+        list
+      } else {
+        val list = NonNullList.create[ItemStack]
+        state.getBlock.getDrops(state, list, world, pos, self.enchantments.fortune)
+        ForgeEventFactory.fireBlockHarvesting(list, world, pos, state, self.enchantments.fortune, 1.0f, false, fakePlayer)
+        list
+      }
+      if (TilePump.isLiquid(state) || PowerManager.useEnergyBreak(self, state.getBlockHardness(world, pos),
+        TileQuarry2.enchantmentMode(enchantments), enchantments.unbreaking, modules.exists(IModule.hasReplaceModule))) {
+        val returnValue = modules.foldMap(m => m.invoke(IModule.BeforeBreak(event.getExpToDrop, world, pos)))
+        drops.asScala.groupBy(ItemDamage.apply).mapValues(_.map(_.getCount).sum).map { case (damage, i) => damage.toStack(i) }.foreach(storage.addItem)
+        returnValue.canGoNext // true means work is finished.
+      } else {
+        false
+      }
     } else {
-      val list = NonNullList.create[ItemStack]
-      state.getBlock.getDrops(state, list, world, pos, self.enchantments.fortune)
-      ForgeEventFactory.fireBlockHarvesting(list, world, pos, state, self.enchantments.fortune, 1.0f, false, fakePlayer)
-      list
-    }
-    if (TilePump.isLiquid(state) || PowerManager.useEnergyBreak(self, state.getBlockHardness(world, pos),
-      TileQuarry2.enchantmentMode(enchantments), enchantments.unbreaking, modules.exists(IModule.hasReplaceModule))) {
-      val returnValue = modules.foldMap(m => m.invoke(IModule.BeforeBreak(event.getExpToDrop, world, pos)))
-      drops.asScala.groupBy(ItemDamage.apply).mapValues(_.map(_.getCount).sum).map { case (damage, i) => damage.toStack(i) }.foreach(storage.addItem)
-      returnValue.canGoNext // true means work is finished.
-    } else {
-      false
+      true // Once event is canceled, you should think the block is unbreakable.
     }
   }
 
