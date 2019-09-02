@@ -212,7 +212,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     import scala.collection.JavaConverters._
     if (pos.getX % 6 == 0 && pos.getZ % 6 == 0) {
       // Gather items
-      val aabb = new AxisAlignedBB(pos.getX - 4, pos.getY, pos.getZ - 4, pos.getX + 4, pos.getY + 5, pos.getZ + 4)
+      val aabb = new AxisAlignedBB(pos.getX - 8, pos.getY - 3, pos.getZ - 8, pos.getX + 8, pos.getY + 5, pos.getZ + 8)
       gatherDrops(world, aabb)
     }
     val fakePlayer = QuarryFakePlayer.get(world, pos)

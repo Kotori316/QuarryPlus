@@ -9,12 +9,11 @@ import com.yogpc.qp.packet.PacketHandler
 import com.yogpc.qp.packet.quarry2.ActionMessage
 import com.yogpc.qp.utils.Holder
 import net.minecraft.block.{BlockState, Blocks}
-import net.minecraft.nbt.{CompoundNBT, ListNBT, NBTDynamicOps}
+import net.minecraft.nbt.CompoundNBT
 import net.minecraft.util.SoundCategory
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos}
 import net.minecraft.world.World
 import net.minecraft.world.server.ServerWorld
-import net.minecraftforge.common.util.Constants.NBT
 import org.apache.logging.log4j.MarkerManager
 
 trait QuarryAction {
