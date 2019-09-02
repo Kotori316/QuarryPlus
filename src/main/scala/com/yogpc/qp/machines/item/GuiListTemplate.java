@@ -1,8 +1,10 @@
 package com.yogpc.qp.machines.item;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.IHandleButton;
@@ -11,29 +13,26 @@ import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.listtemplate.TemplateMessage;
 import com.yogpc.qp.utils.Holder;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiListExtended;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.client.gui.widget.list.ExtendedList;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemBlock;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import scala.collection.JavaConverters;
 
-public class GuiListTemplate extends GuiContainer implements IHandleButton {
+public class GuiListTemplate extends ContainerScreen<ContainerListTemplate> implements IHandleButton {
     private static final ResourceLocation LOCATION = new ResourceLocation(QuarryPlus.modID, "textures/gui/template.png");
-    private final EntityPlayer player;
+    private final PlayerEntity player;
     private ItemList itemList;
     private ItemTemplate.Template template = ItemTemplate.EmPlate();
 
-    public GuiListTemplate(EntityPlayer player) {
-        super(new ContainerListTemplate(player));
-        this.player = player;
+    public GuiListTemplate(ContainerListTemplate c, PlayerInventory i, ITextComponent t) {
+        super(c, i, t);
+        this.player = i.player;
         this.xSize = 176;
         this.ySize = 217;
         ItemStack stack = player.inventory.getCurrentItem();
@@ -43,11 +42,11 @@ public class GuiListTemplate extends GuiContainer implements IHandleButton {
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
-        itemList = new ItemList(this.mc, guiLeft + 8, guiLeft + 133, 0, guiTop + 8, guiTop + 114, 18);
+    public void init() {
+        super.init();
+        itemList = new ItemList(this.getMinecraft(), guiLeft + 8, guiLeft + 133, 0, guiTop + 8, guiTop + 114, 18);
         this.children.add(itemList);
-        this.focusOn(itemList);
+        this.setFocused(itemList);
 
         int id = 0;
         int buttonHeight = 20;
@@ -61,15 +60,15 @@ public class GuiListTemplate extends GuiContainer implements IHandleButton {
 
     protected void buttonText() {
         if (template.include()) {
-            buttons.get(2).displayString = I18n.format(TranslationKeys.TOF_INCLUDE);
+            buttons.get(2).setMessage(I18n.format(TranslationKeys.TOF_INCLUDE));
         } else {
-            buttons.get(2).displayString = I18n.format(TranslationKeys.TOF_EXCLUDE);
+            buttons.get(2).setMessage(I18n.format(TranslationKeys.TOF_EXCLUDE));
         }
     }
 
     @Override
     public void render(int mouseX, int mouseY, float partialTicks) {
-        this.drawDefaultBackground();
+        this.renderBackground();
         super.render(mouseX, mouseY, partialTicks);
         this.renderHoveredToolTip(mouseX, mouseY);
     }
@@ -77,39 +76,43 @@ public class GuiListTemplate extends GuiContainer implements IHandleButton {
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
         GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.getTextureManager().bindTexture(LOCATION);
-        drawTexturedModalRect(this.width - this.xSize >> 1, this.height - this.ySize >> 1, 0, 0, this.xSize, this.ySize);
-        itemList.drawScreen(mouseX, mouseY, partialTicks);
+        this.getMinecraft().getTextureManager().bindTexture(LOCATION);
+        blit(this.width - this.xSize >> 1, this.height - this.ySize >> 1, 0, 0, this.xSize, this.ySize);
+        itemList.render(mouseX, mouseY, partialTicks);
     }
 
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        this.fontRenderer.drawString(I18n.format(TranslationKeys.CONTAINER_INVENTORY), 8, this.ySize - 96 + 2, 0x404040);
+        this.font.drawString(I18n.format(TranslationKeys.CONTAINER_INVENTORY), 8, this.ySize - 96 + 2, 0x404040);
     }
 
     @Override
-    public void onGuiClosed() {
-        super.onGuiClosed();
+    public void removed() {
         PacketHandler.sendToServer(TemplateMessage.create(player.inventory.currentItem, template));
+        super.removed();
     }
 
     @Override
-    public void actionPerformed(GuiButton button) {
+    public void onClose() {
+        PacketHandler.sendToServer(TemplateMessage.create(player.inventory.currentItem, template));
+        super.onClose();
+    }
+
+    @Override
+    public void actionPerformed(IHandleButton.Button button) {
         switch (button.id) {
             case 0: //ADD
-                ItemStack stack = this.inventorySlots.getInventory().get(0);
-                if (!stack.isEmpty() && stack.getItem() instanceof ItemBlock) {
+                ItemStack stack = this.getContainer().getInventory().get(0);
+                if (!stack.isEmpty() && stack.getItem() instanceof BlockItem) {
                     BlockData data = BlockData.apply(stack.getItem().getRegistryName());
                     if (!template.items().contains(data))
                         template = template.add(data);
                 }
                 break;
             case 1: //DELETE
-                int cursor = itemList.cursor;
-                if (0 <= cursor && cursor < itemList.getChildren().size()) {
-                    BlockData data = template.items().apply(cursor);
-                    template = template.remove(data);
-                }
+                Optional.ofNullable(itemList.getSelected())
+                    .map(entry -> entry.data)
+                    .ifPresent(data -> template = template.remove(data));
                 break;
             case 2: // TOGGLE INCLUDE
                 template = template.toggle();
@@ -119,19 +122,17 @@ public class GuiListTemplate extends GuiContainer implements IHandleButton {
         itemList.refresh();
     }
 
-    private <T extends GuiListExtended.IGuiListEntry<T>> void refreshList(Consumer<T> modListViewConsumer, Function<BlockData, T> newEntry) {
-        JavaConverters.asJavaCollection(template.items())
-            .stream().map(newEntry).forEach(modListViewConsumer);
+    private <T extends ExtendedList.AbstractListEntry<T>> void refreshList(Consumer<T> modListViewConsumer, Function<BlockData, T> newEntry) {
+        JavaConverters.asJavaCollection(template.items()).stream().map(newEntry).forEach(modListViewConsumer);
     }
 
-    private class ItemList extends GuiListExtended<ItemList.Entry> {
-        int cursor = 0;
+    private class ItemList extends ExtendedList<ItemList.Entry> {
 
         public ItemList(Minecraft mcIn, int left, int right, int height, int topIn, int bottomIn, int slotHeightIn) {
             super(mcIn, -left + right, height, topIn, bottomIn, slotHeightIn);
             assert right > left;
-            this.left = left;
-            this.right = right;
+            this.x0 = left;
+            this.x1 = right;
             refresh();
         }
 
@@ -141,20 +142,11 @@ public class GuiListTemplate extends GuiContainer implements IHandleButton {
         }
 
         @Override
-        public int getListWidth() {
-            return this.right - this.left;
+        public int getRowWidth() {
+            return this.x1 - this.x0;
         }
 
-        @Override
-        protected boolean isSelected(int slotIndex) {
-            return cursor == slotIndex;
-        }
-
-        @Override
-        protected boolean mouseClicked(int index, int button, double mouseX, double mouseY) {
-            cursor = index;
-            return true;//super.mouseClicked(index, button, mouseX, mouseY);
-        }
+/*
 
         @Override
         protected void drawSelectionBox(int insideLeft, int insideTop, int mouseXIn, int mouseYIn, float partialTicks) {
@@ -167,7 +159,7 @@ public class GuiListTemplate extends GuiContainer implements IHandleButton {
                 int l = this.slotHeight - 4;
 
                 if (yPos >= ItemList.this.top && yPos + l <= ItemList.this.bottom) {
-                    if (this.showSelectionBox && this.isSelected(j)) {
+                    if (this.showSelectionBox && this.isSelectedItem(j)) {
                         int i1 = this.left + (this.width / 2 - this.getListWidth() / 2);
                         int j1 = this.left + this.width / 2 + this.getListWidth() / 2;
                         GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -190,31 +182,35 @@ public class GuiListTemplate extends GuiContainer implements IHandleButton {
 
             }
         }
+*/
 
         @Override
-        protected int getScrollBarX() {
-            return this.right - 6;
+        protected int getScrollbarPosition() {
+            return this.x1 - 6;
         }
 
-        private class Entry extends GuiListExtended.IGuiListEntry<Entry> {
+        private class Entry extends ExtendedList.AbstractListEntry<Entry> {
             private final BlockData data;
 
             public Entry(BlockData data) {
                 this.data = data;
-                this.list = ItemList.this;
             }
 
             @Override
-            public void drawEntry(int entryWidth, int entryHeight, int mouseX, int mouseY, boolean p_194999_5_, float partialTicks) {
-                drawString(ItemList.this.mc.fontRenderer, data.getLocalizedName(),
-                    getX(),
-                    getY() + 3, 0xFFFFFF);
+            public void render(int entryIdx, int top, int left, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean p_render_8_, float partialTicks) {
+                drawString(ItemList.this.minecraft.fontRenderer, data.getDisplayText().getFormattedText(),
+                    left, top + 3, 0xFFFFFF);
+            }
+
+            @Override
+            public boolean mouseClicked(double p_mouseClicked_1_, double p_mouseClicked_3_, int p_mouseClicked_5_) {
+                ItemList.this.setSelected(this);
+                return false;
             }
         }
 
         @Override
-        protected void overlayBackground(int startY, int endY, int startAlpha, int endAlpha) {
+        protected void renderHoleBackground(int p_renderHoleBackground_1_, int p_renderHoleBackground_2_, int p_renderHoleBackground_3_, int p_renderHoleBackground_4_) {
         }
-
     }
 }

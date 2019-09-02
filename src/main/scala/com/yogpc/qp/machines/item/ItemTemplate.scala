@@ -12,15 +12,15 @@ import com.yogpc.qp.machines.workbench.BlockData
 import com.yogpc.qp.utils.Holder
 import com.yogpc.qp.{QuarryPlus, _}
 import net.minecraft.client.util.ITooltipFlag
-import net.minecraft.enchantment.Enchantment
-import net.minecraft.entity.player.{EntityPlayer, EntityPlayerMP, InventoryPlayer}
-import net.minecraft.init.Enchantments
-import net.minecraft.inventory.Container
+import net.minecraft.enchantment.{Enchantment, Enchantments}
+import net.minecraft.entity.player.{PlayerEntity, PlayerInventory, ServerPlayerEntity}
+import net.minecraft.inventory.container.INamedContainerProvider
 import net.minecraft.item.{Item, ItemGroup, ItemStack, ItemUseContext}
-import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
-import net.minecraft.util.text.{ITextComponent, TextComponentString, TextComponentTranslation}
-import net.minecraft.util.{EnumActionResult, NonNullList}
-import net.minecraft.world.{IInteractionObject, World}
+import net.minecraft.nbt.{CompoundNBT, ListNBT}
+import net.minecraft.util.math.BlockPos
+import net.minecraft.util.text.{ITextComponent, TranslationTextComponent}
+import net.minecraft.util.{ActionResultType, NonNullList}
+import net.minecraft.world.World
 import net.minecraftforge.common.util.Constants.NBT
 import net.minecraftforge.fml.network.NetworkHooks
 
@@ -33,22 +33,22 @@ class ItemTemplate extends Item(new Item.Properties().maxStackSize(1).group(Hold
   setRegistryName(QuarryPlus.modID, QuarryPlus.Names.template)
 
   /**
-    * You should not think max enchantment level in this method
-    *
-    * @param is          target ItemStack. It is never null.
-    * @param enchantment target enchantment
-    * @return that ItemStack can move enchantment on EnchantMover
-    */
+   * You should not think max enchantment level in this method
+   *
+   * @param is          target ItemStack. It is never null.
+   * @param enchantment target enchantment
+   * @return that ItemStack can move enchantment on EnchantMover
+   */
   override def canMove(is: ItemStack, enchantment: Enchantment) = {
     val l = is.getEnchantmentTagList
     (l == null || l.isEmpty) && ((enchantment eq Enchantments.SILK_TOUCH) || (enchantment eq Enchantments.FORTUNE))
   }
 
   /**
-    * Called to get which items to show in JEI.
-    *
-    * @return stack which can be enchanted.
-    */
+   * Called to get which items to show in JEI.
+   *
+   * @return stack which can be enchanted.
+   */
   override def stacks() = Array(getEditorStack)
 
   override def isValidInBookMover = false
@@ -65,7 +65,7 @@ class ItemTemplate extends Item(new Item.Properties().maxStackSize(1).group(Hold
     }
   }
 
-  override def onItemUseFirst(stack: ItemStack, context: ItemUseContext): EnumActionResult = {
+  override def onItemUseFirst(stack: ItemStack, context: ItemUseContext): ActionResultType = {
     val worldIn = context.getWorld
     val pos = context.getPos
     val playerIn = context.getPlayer
@@ -77,17 +77,17 @@ class ItemTemplate extends Item(new Item.Properties().maxStackSize(1).group(Hold
             import scala.collection.JavaConverters._
             blocksList(stack, basic).foreach(_.addAll(template.items.asJava))
             includeSetter(stack, basic).ap(template.include.some)
-            playerIn.sendStatusMessage(new TextComponentTranslation(TranslationKeys.TOF_ADDED), false)
+            playerIn.sendStatusMessage(new TranslationTextComponent(TranslationKeys.TOF_ADDED), false)
           }
         }
-        EnumActionResult.SUCCESS
+        ActionResultType.SUCCESS
       case _ =>
         if (!context.isPlacerSneaking) {
           if (!worldIn.isRemote) {
             val playerPos = playerIn.getPosition
-            NetworkHooks.openGui(playerIn.asInstanceOf[EntityPlayerMP], ItemTemplate.InteractionObject, playerPos)
+            NetworkHooks.openGui(playerIn.asInstanceOf[ServerPlayerEntity], ItemTemplate.InteractionObject, playerPos)
           }
-          EnumActionResult.SUCCESS
+          ActionResultType.SUCCESS
         } else {
           super.onItemUseFirst(stack, context)
         }
@@ -98,21 +98,16 @@ class ItemTemplate extends Item(new Item.Properties().maxStackSize(1).group(Hold
 object ItemTemplate {
   final val GUI_ID = QuarryPlus.modID + ":gui_" + QuarryPlus.Names.template
 
-  object InteractionObject extends IInteractionObject {
-    override def createContainer(playerInventory: InventoryPlayer, playerIn: EntityPlayer): Container = new ContainerListTemplate(playerIn)
+  object InteractionObject extends INamedContainerProvider {
 
-    override def getGuiID: String = GUI_ID
+    override def getDisplayName = new TranslationTextComponent(QuarryPlus.Names.template)
 
-    override def getName: ITextComponent = new TextComponentString(QuarryPlus.Names.template)
-
-    override def hasCustomName: Boolean = false
-
-    override def getCustomName: ITextComponent = getName
+    override def createMenu(id: Int, i: PlayerInventory, p: PlayerEntity) = new ContainerListTemplate(id, p, BlockPos.ZERO)
   }
 
   def getEditorStack: ItemStack = {
     val stack = new ItemStack(Holder.itemTemplate)
-    val compound = new NBTTagCompound
+    val compound = new CompoundNBT
     compound.putInt("HideFlags", 1)
     stack.setTag(compound)
     stack
@@ -125,8 +120,8 @@ object ItemTemplate {
   final val EmPlate = Template(Nil, include = true)
 
   case class Template(items: List[BlockData], include: Boolean) {
-    def writeToNBT(nbt: NBTTagCompound) = {
-      val list = items.map(_.toNBT).foldLeft(new NBTTagList) { (l, tag) => l.add(tag); l }
+    def writeToNBT(nbt: CompoundNBT) = {
+      val list = items.map(_.toNBT).foldLeft(new ListNBT) { (l, tag) => l.add(tag); l }
       nbt.put(NBT_Template_Items, list)
       nbt.putBoolean(NBT_Include, include)
       nbt
@@ -148,11 +143,13 @@ object ItemTemplate {
     }
   }
 
-  def read(compound: Option[NBTTagCompound]): Template = {
-    val opt = for (list <- compound.filter(_.contains(NBT_Template_Items)).map(_.getList(NBT_Template_Items, NBT.TAG_COMPOUND));
-                   include <- compound.filter(_.contains(NBT_Include)).map(_.getBoolean(NBT_Include)).orElse(Some(true))) yield {
-      val data = list.asScala.map(_.asInstanceOf[NBTTagCompound]).map(BlockData.read).toList
-      Template(data, include)
+  def read(compound: Option[CompoundNBT]): Template = {
+    val maybeTemplate = compound.filter(_.contains(NBT_Template_Items)).map(_.getList(NBT_Template_Items, NBT.TAG_COMPOUND))
+    val mustBeBoolean = compound.filter(_.contains(NBT_Include)).map(_.getBoolean(NBT_Include)).orElse(Some(true))
+    val opt = (maybeTemplate, mustBeBoolean).mapN {
+      case (list, include) =>
+        val data = list.asScala.map(_.asInstanceOf[CompoundNBT]).map(BlockData.read).toList
+        Template(data, include)
     }
     opt.getOrElse(EmPlate)
   }

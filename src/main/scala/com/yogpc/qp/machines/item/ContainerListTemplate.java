@@ -2,24 +2,26 @@ package com.yogpc.qp.machines.item;
 
 import com.yogpc.qp.machines.base.SlotCanTake;
 import com.yogpc.qp.machines.base.SlotTile;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
+import com.yogpc.qp.utils.Holder;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.InventoryBasic;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemBlock;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.Slot;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.math.BlockPos;
 
 public class ContainerListTemplate extends Container {
-    public final IInventory craftMatrix = new InventoryBasic(new TextComponentString("Matrix"), 1) {
+    public final IInventory craftMatrix = new Inventory(1) {
         @Override
         public boolean isItemValidForSlot(int index, ItemStack stack) {
-            return stack.getItem() instanceof ItemBlock;
+            return stack.getItem() instanceof BlockItem;
         }
     };
 
-    public ContainerListTemplate(EntityPlayer player) {
+    public ContainerListTemplate(int id, PlayerEntity player, BlockPos pos) {
+        super(Holder.templateContainerType(), id);
         addSlot(new SlotTile(this.craftMatrix, 0, 141, 90));
         for (int i = 0; i < 3; ++i) {
             for (int j = 0; j < 9; ++j) {
@@ -32,18 +34,18 @@ public class ContainerListTemplate extends Container {
     }
 
     @Override
-    public void onContainerClosed(EntityPlayer playerIn) {
+    public void onContainerClosed(PlayerEntity playerIn) {
         super.onContainerClosed(playerIn);
         playerIn.inventory.placeItemBackInInventory(playerIn.world, craftMatrix.getStackInSlot(0));
     }
 
     @Override
-    public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
+    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
         return ItemStack.EMPTY;
     }
 
     @Override
-    public boolean canInteractWith(EntityPlayer playerIn) {
+    public boolean canInteractWith(PlayerEntity playerIn) {
         return true;
     }
 }
