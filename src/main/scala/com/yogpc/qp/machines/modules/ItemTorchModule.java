@@ -30,4 +30,8 @@ public class ItemTorchModule extends Item implements IDisabled, IModuleItem {
         return Symbol.apply("ModuleTorch");
     }
 
+    @Override
+    public boolean defaultDisableMachine() {
+        return true; // 1.14.4 need more update
+    }
 }

@@ -26,6 +26,7 @@ import net.minecraftforge.fml.network.NetworkHooks
 import net.minecraftforge.registries.ForgeRegistries
 
 import scala.collection.JavaConverters._
+import scala.util.Try
 
 class ItemListEditor extends Item((new Item.Properties).group(Holder.tab)) with IEnchantableItem {
   setRegistryName(QuarryPlus.modID, QuarryPlus.Names.listeditor)
@@ -92,7 +93,7 @@ class ItemListEditor extends Item((new Item.Properties).group(Holder.tab)) with 
   override def fillItemGroup(group: ItemGroup, items: NonNullList[ItemStack]): Unit = {
     if (this.isInGroup(group)) {
       items.add(ItemListEditor.getEditorStack)
-      if (Config.common.debug) {
+      if (Try(Config.common.debug).getOrElse(false)) {
         val stack = new ItemStack(Items.DIAMOND_PICKAXE)
         stack.addEnchantment(Enchantments.EFFICIENCY, 5)
         stack.addEnchantment(Enchantments.UNBREAKING, 3)

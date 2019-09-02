@@ -17,24 +17,16 @@ import static jp.t2v.lab.syntax.MapStreamSyntax.optCast;
  * Implemented by a sub class of {@link TileEntity} which has ability to keep chunk loaded.
  */
 public interface IChunkLoadTile {
-    /**
-     * Default method implemented in {@link TileEntity#getWorld()}.
-     */
-    World getWorld();
-
-    /**
-     * Default method implemented in {@link TileEntity#getPos()}.
-     */
-    BlockPos getPos();
 
     /**
      * Called when tile is placed. <strong>No need to call this when world is loaded.</strong>
      */
     default void requestTicket() {
-        Optional.ofNullable(getWorld())
+        Optional.ofNullable(((TileEntity) this).getWorld())
             .flatMap(optCast(ServerWorld.class))
             .ifPresent(worldServer -> {
-                ChunkPos pos = new ChunkPos(getPos());
+                BlockPos blockPos = ((TileEntity) this).getPos();
+                ChunkPos pos = new ChunkPos(blockPos);
                 worldServer.forceChunk(pos.x, pos.z, true);
                 QuarryPlus.LOGGER.debug(String.format("QuarryPlus ChunkLoader added [%d, %d] for %s", pos.x, pos.z, this));
             });
@@ -47,10 +39,11 @@ public interface IChunkLoadTile {
      */
     @SuppressWarnings("deprecation")
     default void releaseTicket() {
-        Optional.ofNullable(getWorld())
+        Optional.ofNullable(((TileEntity) this).getWorld())
             .flatMap(optCast(ServerWorld.class))
             .ifPresent(worldServer -> {
-                ChunkPos pos = new ChunkPos(getPos());
+                BlockPos blockPos = ((TileEntity) this).getPos();
+                ChunkPos pos = new ChunkPos(blockPos);
                 worldServer.forceChunk(pos.x, pos.z, false);
                 QuarryPlus.LOGGER.debug(String.format("QuarryPlus ChunkLoader removed [%d, %d] for %s", pos.x, pos.z, this));
             });

@@ -8,6 +8,7 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.item.crafting.RecipeManager;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 public class RecipeGetter {
     private static final Method getRecipes;
@@ -15,9 +16,8 @@ public class RecipeGetter {
     static {
         Method getRecipesMethod;
         try {
-            getRecipesMethod = RecipeManager.class.getDeclaredMethod("getRecipes", IRecipeType.class);
-            getRecipesMethod.setAccessible(true);
-        } catch (ReflectiveOperationException e) {
+            getRecipesMethod = ObfuscationReflectionHelper.findMethod(RecipeManager.class, "func_215366_a", IRecipeType.class);
+        } catch (Exception e) {
             e.printStackTrace();
             getRecipesMethod = null;
         }
