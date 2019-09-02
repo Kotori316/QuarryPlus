@@ -60,7 +60,7 @@ public class BlockQuarry extends QPBlock {
         ItemStack stack = player.getHeldItem(hand);
         if (BuildcraftHelper.isWrench(player, hand, stack, hit)) {
             Optional.ofNullable((TileQuarry) worldIn.getTileEntity(pos)).ifPresent(TileQuarry::G_ReInit);
-            player.sendStatusMessage(new TextComponentTranslation(TranslationKeys.QUARRY_RESTART), false);
+            player.sendStatusMessage(new TranslationTextComponent(TranslationKeys.QUARRY_RESTART), false);
             return true;
         }
         if (!worldIn.isRemote) {

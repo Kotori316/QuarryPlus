@@ -2,14 +2,15 @@ package com.yogpc.qp.machines.modules
 
 import cats._
 import cats.implicits._
-import com.yogpc.qp.machines.advquarry.TileAdvQuarry
+import net.minecraft.block.Blocks
+import net.minecraft.world.LightType
+//import com.yogpc.qp.machines.advquarry.TileAdvQuarry
 import com.yogpc.qp.machines.base.IModule
 import com.yogpc.qp.machines.base.IModule.{AfterBreak, Done, NoAction, Result}
 import com.yogpc.qp.machines.item.GuiQuarryLevel
 import com.yogpc.qp.machines.quarry.{TileQuarry, TileQuarry2}
-import net.minecraft.init.Blocks
 import net.minecraft.tileentity.TileEntity
-import net.minecraft.world.EnumLightType
+
 
 class TorchModule(val y: Eval[Int]) extends IModule {
   override def id = TorchModule.id
@@ -24,8 +25,8 @@ class TorchModule(val y: Eval[Int]) extends IModule {
       case AfterBreak(world, pos, _) =>
         if (pos.getY === y.value) {
           // Check light value
-          val light = world.getLightFor(EnumLightType.BLOCK, pos.up())
-          if (light < 9 && world.getBlockState(pos.down()).canPlaceTorchOnTop(world, pos.down())) {
+          val light = world.getLightFor(LightType.BLOCK, pos.up())
+          if (light < 9 && Blocks.TORCH.getDefaultState.isValidPosition(world,pos.down())) {
             world.setBlockState(pos, Blocks.TORCH.getDefaultState)
             Done
           } else {
@@ -50,7 +51,7 @@ object TorchModule {
     val getter = t match {
       case quarry2: TileQuarry2 => Eval.always(implicitly[YLevel[TileQuarry2]].getYLevel(quarry2))
       case quarry: TileQuarry => Eval.always(implicitly[YLevel[TileQuarry]].getYLevel(quarry))
-      case adv: TileAdvQuarry => Eval.always(implicitly[YLevel[TileAdvQuarry]].getYLevel(adv))
+//      case adv: TileAdvQuarry => Eval.always(implicitly[YLevel[TileAdvQuarry]].getYLevel(adv))
       case _ => Eval.Zero
     }
     new TorchModule(getter)

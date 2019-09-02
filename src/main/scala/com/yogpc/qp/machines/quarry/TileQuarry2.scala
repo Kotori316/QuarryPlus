@@ -228,9 +228,9 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
 
       if (TilePump.isLiquid(state) || PowerManager.useEnergyBreak(self, state.getBlockHardness(world, pos),
         TileQuarry2.enchantmentMode(enchantments), enchantments.unbreaking, modules.exists(IModule.hasReplaceModule))) {
-        val returnValue = modules.foldLeft(true) { case (b, m) => m.invoke(IModule.BeforeBreak(event.getExpToDrop, world, pos)) && b }
-        drops.forEach(storage.addItem)
-        returnValue
+        val returnValue = modules.foldMap(m => m.invoke(IModule.BeforeBreak(event.getExpToDrop, world, pos)))
+        drops.asScala.groupBy(ItemDamage.apply).mapValues(_.map(_.getCount).sum).map { case (damage, i) => damage.toStack(i) }.foreach(storage.addItem)
+        returnValue.canGoNext // true means work is finished.
       } else {
         false
       }
@@ -241,7 +241,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
 
   def gatherDrops(world: World, aabb: AxisAlignedBB): Unit = {
     import scala.collection.JavaConverters._
-    world.getEntitiesWithinAABB[EntityItem](classOf[EntityItem], aabb, EntitySelectors.IS_ALIVE)
+    world.getEntitiesWithinAABB[ItemEntity](classOf[ItemEntity], aabb, EntityPredicates.IS_ALIVE)
       .asScala.foreach { e =>
       this.storage.addItem(e.getItem)
       QuarryPlus.proxy.removeEntity(e)

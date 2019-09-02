@@ -6,9 +6,8 @@ import com.yogpc.qp.machines.base.IModule.{CalledWhen, Result}
 import com.yogpc.qp.machines.modules.TorchModule
 import com.yogpc.qp.machines.pump.PumpModule
 import com.yogpc.qp.machines.replacer.ReplacerModule
-import net.minecraft.block.BlockState
+import net.minecraft.block.{BlockState, Blocks}
 import net.minecraft.entity.Entity
-import net.minecraft.init.Blocks
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 
@@ -40,7 +39,7 @@ object IModule {
   val pumpModuleIDs = Set(PumpModule.ID)
   val hasReplaceModule: IModule => Boolean = getId andThen replaceModuleIDs
   val hasPumpModule: IModule => Boolean = getId andThen pumpModuleIDs
-  val replaceBlocks: Int => PartialFunction[IModule, List[IBlockState]] = y => {
+  val replaceBlocks: Int => PartialFunction[IModule, List[BlockState]] = y => {
     case t: TorchModule if t.y.contains_(y) => List(Blocks.TORCH.getDefaultState)
     case r: ReplacerModule => r.toReplace.toList
     case _ => Nil

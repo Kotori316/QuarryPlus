@@ -22,6 +22,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
@@ -73,7 +74,7 @@ public class BlockSolidQuarry extends QPBlock {
         ItemStack stack = playerIn.getHeldItem(hand);
         if (BuildcraftHelper.isWrench(playerIn, hand, stack, hit)) {
             Optional.ofNullable((TileSolidQuarry) worldIn.getTileEntity(pos)).ifPresent(TileSolidQuarry::G_ReInit);
-            playerIn.sendStatusMessage(new TextComponentTranslation(TranslationKeys.QUARRY_RESTART), false);
+            playerIn.sendStatusMessage(new TranslationTextComponent(TranslationKeys.QUARRY_RESTART), false);
             return true;
         }
         if (!playerIn.isSneaking()) {

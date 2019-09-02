@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.potion.EffectInstance
 import net.minecraft.tileentity.{CommandBlockTileEntity, SignTileEntity}
 import net.minecraft.util.Hand
+import net.minecraft.util.math.BlockPos
 import net.minecraft.world.dimension.DimensionType
 import net.minecraft.world.server.ServerWorld
 import net.minecraftforge.common.MinecraftForge
