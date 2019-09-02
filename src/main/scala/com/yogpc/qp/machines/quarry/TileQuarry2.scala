@@ -235,9 +235,8 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
         false
       }
     } else {
-      false
+      true // Once event is canceled, you should think the block is unbreakable.
     }
-
   }
 
   override def getDebugName = TranslationKeys.quarry2
