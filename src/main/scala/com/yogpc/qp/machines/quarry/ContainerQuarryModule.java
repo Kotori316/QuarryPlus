@@ -25,7 +25,9 @@ public class ContainerQuarryModule extends Container {
         int oneBox = 18;
 
         for (int i = 0; i < allSlots; i++) {
-            addSlot(new SlotTile(moduleInventory, i, 44 + i * oneBox, 27));
+            int verticalFix = i < 5 ? i : i - 5;
+            int horizontalFix = i / 5;
+            addSlot(new SlotTile(moduleInventory, i, 44 + verticalFix * oneBox, 27 + horizontalFix * oneBox));
         }
 
         for (int h = 0; h < 3; h++) {
