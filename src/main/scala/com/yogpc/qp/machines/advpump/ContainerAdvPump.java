@@ -1,17 +1,23 @@
 package com.yogpc.qp.machines.advpump;
 
+import java.util.Objects;
+
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.advpump.AdvPumpStatusMessage;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
+import com.yogpc.qp.utils.Holder;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
 
 public class ContainerAdvPump extends Container {
-    private final TileAdvPump tile;
+    public final TileAdvPump tile;
 
-    public ContainerAdvPump(TileAdvPump tile, EntityPlayer player) {
-        this.tile = tile;
+    public ContainerAdvPump(int id, PlayerEntity player, BlockPos pos) {
+        super(Holder.advPumpContainerType(), id);
+        this.tile = ((TileAdvPump) player.getEntityWorld().getTileEntity(pos));
+        Objects.requireNonNull(this.tile);
         int oneBox = 18;
         for (int h = 0; h < 3; h++) {
             for (int v = 0; v < 9; v++) {
@@ -26,12 +32,12 @@ public class ContainerAdvPump extends Container {
     }
 
     @Override
-    public boolean canInteractWith(EntityPlayer playerIn) {
+    public boolean canInteractWith(PlayerEntity playerIn) {
         return playerIn.world.getTileEntity(tile.getPos()) == tile;
     }
 
     @Override
-    public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
+    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
         return ItemStack.EMPTY;
     }
 

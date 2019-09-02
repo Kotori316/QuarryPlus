@@ -467,7 +467,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
      * @return true if the blockstate is liquid state.
      */
     public static boolean isLiquid(@Nonnull final BlockState state, final boolean findSource, final World world, final BlockPos pos) {
-        if (state.getFluidState() != Fluids.EMPTY.getDefaultState()) return true;
+        if (state.getFluidState() != Fluids.EMPTY.getDefaultState()) return !findSource || state.getFluidState().isSource();
         Block block = state.getBlock();
         if (block instanceof IFluidBlock)
             return !findSource || ((IFluidBlock) block).canDrain(world, pos);

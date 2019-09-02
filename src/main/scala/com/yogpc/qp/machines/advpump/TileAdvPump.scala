@@ -2,52 +2,54 @@ package com.yogpc.qp.machines.advpump
 
 import java.util
 
-import com.yogpc.qp.compat.FluidStore
+import cats.Eval
+import cats.implicits._
 import com.yogpc.qp.machines.TranslationKeys
 import com.yogpc.qp.machines.base._
 import com.yogpc.qp.machines.pump.TilePump
 import com.yogpc.qp.utils.Holder
 import com.yogpc.qp.{Config, QuarryPlus, _}
-import net.minecraft.block.IBucketPickupHandler
-import net.minecraft.block.state.IBlockState
-import net.minecraft.entity.player.{EntityPlayer, InventoryPlayer}
-import net.minecraft.fluid.Fluid
-import net.minecraft.init.{Blocks, Fluids}
+import net.minecraft.block.{BlockState, Blocks, IBucketPickupHandler}
+import net.minecraft.entity.player.{PlayerEntity, PlayerInventory}
+import net.minecraft.fluid.{Fluid, Fluids}
 import net.minecraft.inventory.InventoryHelper
-import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.inventory.container.INamedContainerProvider
+import net.minecraft.nbt.CompoundNBT
+import net.minecraft.tileentity.ITickableTileEntity
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.text.{TextComponentString, TextComponentTranslation}
-import net.minecraft.util.{EnumFacing, ITickable, ResourceLocation}
-import net.minecraft.world.IInteractionObject
+import net.minecraft.util.text.{StringTextComponent, TranslationTextComponent}
+import net.minecraft.util.{Direction, ResourceLocation}
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 import net.minecraftforge.common.capabilities.Capability
+import net.minecraftforge.fluids.capability.{CapabilityFluidHandler, IFluidHandler}
+import net.minecraftforge.fluids.{FluidAttributes, FluidStack}
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
 /**
-  * @see [buildcraft.factory.tile.TilePump]
-  */
+ * @see [buildcraft.factory.tile.TilePump]
+ */
 class TileAdvPump extends APowerTile(Holder.advPumpType)
-  with IEnchantableTile with ITickable with IDebugSender with IChunkLoadTile with IInteractionObject {
+  with IEnchantableTile with ITickableTileEntity with IDebugSender with IChunkLoadTile with INamedContainerProvider {
 
   import TileAdvPump._
 
   var placeFrame = true
   var delete = false
   private[this] var finished = true
-  private[this] var toStart = false
-  //Config.content.pumpAutoStart
+  private[this] var toStart = false //Config.content.pumpAutoStart
   private[this] var queueBuilt = false
   private[this] var skip = false
   private[this] var ench = TileAdvPump.PEnch.defaultEnch
-  private[this] var target: BlockPos = BlockPos.ORIGIN
+  private[this] var target: BlockPos = BlockPos.ZERO
   private[this] var toDig: List[BlockPos] = Nil
   private[this] var toDelete: List[BlockPos] = Nil
   private[this] var inRange: Set[BlockPos] = Set.empty
   private[this] val paths = mutable.Map.empty[BlockPos, List[BlockPos]]
-  private[this] val FACINGS = List(EnumFacing.UP, EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST)
+  private[this] val FACINGS = List(Direction.UP, Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST)
+  private[this] val storage = new TankAdvPump(Eval.always(ench.maxAmount))
 
   override def isWorking: Boolean = !finished
 
@@ -56,11 +58,11 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
     finished = true
     queueBuilt = false
     skip = false
-    target = BlockPos.ORIGIN
+    target = BlockPos.ZERO
     toDig = Nil
     paths.clear()
     if (!ench.square && ench.fortune >= 3) {
-      EnumFacing.Plane.HORIZONTAL.iterator().asScala.map(f => getWorld.getTileEntity(getPos.offset(f))).collectFirst {
+      Direction.Plane.HORIZONTAL.iterator().asScala.map(f => getWorld.getTileEntity(getPos.offset(f))).collectFirst {
         case marker: IMarker if marker.hasLink => marker
       }.foreach(marker => {
         ench = ench.copy(start = marker.min(), end = marker.max())
@@ -95,13 +97,14 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
           skip = false
           nextPos()
         } else {
-          if (target == BlockPos.ORIGIN) {
+          if (target == BlockPos.ZERO) {
             buildWay()
             nextPos()
           }
           pump()
         }
       }
+      push()
     }
   }
 
@@ -143,7 +146,7 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
             } else
               nextPos(i + 1)
           }
-        case Nil => target = BlockPos.ORIGIN
+        case Nil => target = BlockPos.ZERO
       }
     }
   }
@@ -155,7 +158,7 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
     toDig = Nil
     paths.clear()
 
-    getWorld.profiler.startSection("Depth")
+    getWorld.getProfiler.startSection("Depth")
 
     var downPos = ench.firstPos(getPos).down
     var flag = true
@@ -187,11 +190,11 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
       if (state.get(QPBlock.WORKING)) {
         changeState(working = false, state)
       }
-      getWorld.profiler.endSection()
+      getWorld.getProfiler.endSection()
       return
     }
 
-    getWorld.profiler.endStartSection("Wide")
+    getWorld.getProfiler.endStartSection("Wide")
     while (nextPosesToCheck.nonEmpty) {
       val copied = nextPosesToCheck.toArray
       nextPosesToCheck.clear()
@@ -200,7 +203,7 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
         if (ench.inRange(getPos, offsetPos)) {
           if (checked.add(offsetPos)) {
             val state = getWorld.getBlockState(offsetPos)
-            if (findFluid(state) == fluid) {
+            if (findFluid(state) isEquivalentTo fluid) {
               paths += ((offsetPos, offsetPos :: paths(posToCheck)))
               nextPosesToCheck += offsetPos
               if (TilePump.isLiquid(state, true, getWorld, offsetPos))
@@ -213,15 +216,12 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
       }
     }
     inRange = checked.toSet
-    getWorld.profiler.endSection()
+    getWorld.getProfiler.endSection()
   }
 
   def pump(): Unit = {
     var break = false
-    var fluid = Fluids.EMPTY
-    var amount = 0
-    var counter = 0
-    while (!break && counter < ench.maxAmount / 1000) {
+    while (!break && storage.canPump) {
       paths.get(target) match {
         case Some(posList) =>
           val energy = ench.getEnergy(placeFrame)
@@ -229,16 +229,14 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
           val isLiquid = TilePump.isLiquid(state)
           val isSource = TilePump.isLiquid(state, true, getWorld, target)
           if (isLiquid && !isSource) {
-            getWorld.removeBlock(target)
+            getWorld.removeBlock(target, false)
             nextPos()
           } else if (useEnergy(energy, energy, true, EnergyUsage.ADV_PUMP_FLUID) == energy) {
-            //TODO rewrite
             if (isSource && posList.forall(pos => TilePump.isLiquid(getWorld.getBlockState(pos)))) {
-              fluid = state.getFluidState.getFluid
-              amount += 1000
+              val stack = new FluidStack(state.getFluidState.getFluid, FluidAttributes.BUCKET_VOLUME)
+              storage.insertFluid(stack)
               replaceFluidBlock(target)
               nextPos()
-              counter += 1
             } else {
               buildWay()
               nextPos()
@@ -253,12 +251,24 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
           break = true
       }
     }
-    push(fluid, amount)
   }
 
-  def push(fluid: Fluid, amount: Int): Unit = {
-    if (!delete)
-      FluidStore.injectToNearTile(getWorld, getPos, fluid, amount)
+  def push(): Unit = {
+    if (delete) {
+      storage.drain(Int.MaxValue, IFluidHandler.FluidAction.EXECUTE)
+      return
+    }
+    val stack = storage.drain(Int.MaxValue, IFluidHandler.FluidAction.SIMULATE)
+    if (!stack.isEmpty) {
+      for (facing <- facings.value;
+           tile <- Option(getWorld.getTileEntity(getPos.offset(facing)));
+           handler <- tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing.getOpposite).asScala.value.value.toList) {
+        val used = handler.fill(stack, IFluidHandler.FluidAction.EXECUTE)
+        if (used > 0) {
+          storage.drain(new FluidStack(stack, used), IFluidHandler.FluidAction.EXECUTE)
+        }
+      }
+    }
   }
 
   def start(): Unit = {
@@ -273,7 +283,7 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
       case _ => getWorld.setBlockState(pos, Blocks.AIR.getDefaultState)
     }
     if (placeFrame)
-      EnumFacing.Plane.HORIZONTAL.iterator().asScala.foreach(facing => {
+      Direction.Plane.HORIZONTAL.iterator().asScala.foreach(facing => {
         val offset = pos.offset(facing)
         // TODO CHECK
         if (!inRange.contains(offset) && TilePump.isLiquid(getWorld.getBlockState(offset))) {
@@ -282,62 +292,62 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
       })
   }
 
-  private def changeState(working: Boolean, state: IBlockState): Unit = {
+  private def changeState(working: Boolean, state: BlockState): Unit = {
     getWorld.setBlockState(getPos, state.`with`(QPBlock.WORKING, Boolean.box(working)))
   }
 
-  private def findFluid(state: IBlockState) = {
+  private def findFluid(state: BlockState) = {
     state.getFluidState.getFluid
   }
 
   /**
-    * @return Map (Enchantment id, level)
-    */
+   * @return Map (Enchantment id, level)
+   */
   override def getEnchantments: util.Map[ResourceLocation, Integer] = ench.getMap.collect(enchantCollector).asJava
 
   /**
-    * @param id    Enchantment id
-    * @param value level
-    */
+   * @param id    Enchantment id
+   * @param value level
+   */
   override def setEnchantment(id: ResourceLocation, value: Short): Unit = ench = ench.set(id, value)
 
   override def getDebugName: String = TranslationKeys.advpump
 
-  override def getDebugMessages: java.util.List[TextComponentString] = {
+  override def getDebugMessages: java.util.List[StringTextComponent] = {
     List("Range = " + ench.distance,
       "target : " + target,
       "Finished : " + finished,
       "Ench : " + ench,
-      //      "FluidType : " + FluidHandler.getFluidType,
-      //      "FluidAmount : " + FluidHandler.getAmount,
-      //      "Pumped : " + FluidHandler.amountPumped,
+      "FluidType : " + storage.getFluidInTank(0).show,
+      "Pumped : " + storage.amountPumped / 1000 + "B",
       "Delete : " + delete,
       "To Start : " + toStart,
       "Start pos : " + ench.start,
       "End pos : " + ench.end).map(toComponentString).asJava
   }
 
-  override def read(nbt: NBTTagCompound): Unit = {
+  override def read(nbt: CompoundNBT): Unit = {
     super.read(nbt)
     target = BlockPos.fromLong(nbt.getLong(NBT_POS))
     ench = PEnch.readFromNBT(nbt.getCompound(NBT_P_ENCH))
     finished = nbt.getBoolean(NBT_FINISHED)
     placeFrame = nbt.getBoolean(NBT_PLACE_FRAME)
     delete = nbt.getBoolean(NBT_DELETE)
-    //    FluidHandler.readFromNBT(nbt.getCompound(NBT_FluidHandler))
+    storage.deserializeNBT(nbt.getCompound(NBT_FluidHandler))
   }
 
-  override def write(nbt: NBTTagCompound): NBTTagCompound = {
+  override def write(nbt: CompoundNBT): CompoundNBT = {
     nbt.putLong(NBT_POS, target.toLong)
     nbt.putBoolean(NBT_FINISHED, finished)
     nbt.putBoolean(NBT_PLACE_FRAME, placeFrame)
     nbt.putBoolean(NBT_DELETE, delete)
     nbt.put(NBT_P_ENCH, ench.toNBT)
-    //    nbt.put(NBT_FluidHandler, FluidHandler.toNBT)
+    nbt.put(NBT_FluidHandler, storage.toNBT)
     super.write(nbt)
   }
 
-  override def getCapability[T](cap: Capability[T], side: EnumFacing) = super.getCapability(cap, side)
+  override def getCapability[T](cap: Capability[T], side: Direction) =
+    Cap.asJava(storage.getCapability(cap) orElse super.getCapability(cap, side).asScala)
 
   override def remove(): Unit = {
     releaseTicket()
@@ -345,128 +355,16 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
   }
 
   @OnlyIn(Dist.CLIENT)
-  def receiveStatusMessage(placeFrame: Boolean, nbt: NBTTagCompound): Runnable = () => {
+  def receiveStatusMessage(placeFrame: Boolean, nbt: CompoundNBT): Runnable = () => {
     TileAdvPump.this.placeFrame = placeFrame
     TileAdvPump.this.read(nbt)
   }
 
   def toggleDelete(): Unit = delete = !delete
 
-  /*private object FluidHandler extends IFluidHandler with INBTWritable with INBTReadable[IFluidHandler] {
+  override def getDisplayName = new TranslationTextComponent(getDebugName)
 
-    private[this] final val fluidStacks = new ListBuffer[FluidStack]
-    var amountPumped = 0l
-
-    override def fill(resource: FluidStack, doFill: Boolean): Int = 0
-
-    def fillInternal(resource: FluidStack, doFill: Boolean): Int = {
-      if (resource == null || resource.amount <= 0)
-        return 0
-      fluidStacks.find(_ == resource) match {
-        case Some(stack) =>
-          val nAmount = stack.amount + resource.amount
-          if (nAmount <= ench.maxAmount) {
-            if (doFill) {
-              stack.amount = nAmount
-              amountPumped += resource.amount
-            }
-            resource.amount
-          } else {
-            if (doFill) {
-              stack.amount = ench.maxAmount
-              amountPumped += nAmount - ench.maxAmount
-            }
-            nAmount - stack.amount
-          }
-        case None =>
-          if (doFill) {
-            fluidStacks += resource.copy()
-            amountPumped += resource.amount
-          }
-          resource.amount
-      }
-    }
-
-    override def drain(resource: FluidStack, doDrain: Boolean): FluidStack = {
-      fluidStacks.find(_ == resource) match {
-        case None => null
-        case Some(stack) => drainInternal(resource, stack, doDrain)
-      }
-    }
-
-    override def drain(maxDrain: Int, doDrain: Boolean): FluidStack = {
-      fluidStacks.headOption match {
-        case None => null
-        case Some(stack) => drainInternal(stack.copyWithAmount(maxDrain), stack, doDrain)
-      }
-    }
-
-    private def drainInternal(kind: FluidStack, source: FluidStack, doDrain: Boolean): FluidStack = {
-      if (kind == null || kind.amount <= 0) {
-        return null
-      }
-      if (kind.amount >= source.amount) {
-        val extract = source.amount
-        if (doDrain) fluidStacks.remove(fluidStacks.indexOf(kind))
-        kind.copyWithAmount(extract)
-      } else {
-        val nAmount = source.amount - kind.amount
-        if (doDrain) source.setAmount(nAmount)
-        kind
-      }
-    }
-
-    override def getTankProperties: Array[IFluidTankProperties] = {
-      if (fluidStacks.isEmpty) {
-        IDummyFluidHandler.emptyPropertyArray
-      } else {
-        fluidStacks.map(s => new FluidTankProperties(s, ench.maxAmount, false, true)).toArray
-      }
-    }
-
-    def getFluidType: String = {
-      val str = fluidStacks.flatMap(s => Option(s.getFluid).toList).map(_.getName).mkString(", ")
-      if (str.isEmpty) {
-        "None"
-      } else {
-        str
-      }
-    }
-
-    def getAmount: Int =
-      if (fluidStacks.nonEmpty) fluidStacks.head.amount
-      else 0
-
-    def canPump: Boolean =
-      if (fluidStacks.isEmpty) true
-      else fluidStacks.forall(_.amount <= ench.maxAmount / 2)
-
-    override def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
-      nbt.setTag(NBT_pumped, amountPumped.toNBT)
-      nbt.setTag(NBT_liquids, fluidStacks.map(_.toNBT).foldLeft(NBTBuilder.empty) { case (l, t) => l.appendTag(t) }.toList)
-      nbt
-    }
-
-    override def readFromNBT(nbt: NBTTagCompound): IFluidHandler = {
-      amountPumped = nbt.getLong(NBT_pumped)
-      val list = nbt.getTagList(NBT_liquids, NBT.TAG_COMPOUND)
-      for (t <- list.tagIterator;
-           f <- FluidStack.loadFluidStackFromNBT(t).toOption)
-        fluidStacks += f
-      this
-    }
-  }*/
-  override def createContainer(playerInventory: InventoryPlayer, playerIn: EntityPlayer) = new ContainerAdvPump(this, playerIn)
-
-  override def getGuiID = GUI_ID
-
-  override def getName = new TextComponentTranslation(getDebugName)
-
-  override def hasCustomName = false
-
-  override def getCustomName = getName
-
-  override def getDisplayName = getName
+  override def createMenu(id: Int, i: PlayerInventory, p: PlayerEntity) = new ContainerAdvPump(id, p, getPos)
 }
 
 object TileAdvPump {
@@ -475,8 +373,6 @@ object TileAdvPump {
   final val SYMBOL = Symbol("AdvancedPump")
   private final val NBT_P_ENCH = "nbt_pump_ench"
   private final val NBT_FluidHandler = "FluidHandler"
-  private final val NBT_pumped = "amountPumped"
-  private final val NBT_liquids = "liquids"
 
   final val NBT_POS = "targetPos"
   final val NBT_FINISHED = "finished"
@@ -484,15 +380,15 @@ object TileAdvPump {
   final val NBT_DELETE = "delete"
   private[this] final val defaultBaseEnergy = Seq(10, 8, 6, 4).map(_ * APowerTile.MJToMicroMJ)
   private[this] final val defaultReceiveEnergy = Seq(32, 64, 128, 256, 512, 1024).map(_ * APowerTile.MJToMicroMJ)
-  implicit val pEnchNbt: NBTWrapper[PEnch, NBTTagCompound] = _.writeToNBT(new NBTTagCompound)
+  implicit val pEnchNbt: NBTWrapper[PEnch, CompoundNBT] = _.writeToNBT(new CompoundNBT)
 
   case class PEnch(efficiency: Int, unbreaking: Int, fortune: Int, silktouch: Boolean, start: BlockPos, end: BlockPos) {
     require(efficiency >= 0)
     require(unbreaking >= 0)
     require(fortune >= 0)
-    val square: Boolean = start != BlockPos.ORIGIN && end != BlockPos.ORIGIN
+    val square: Boolean = start != BlockPos.ZERO && end != BlockPos.ZERO
 
-    def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
+    def writeToNBT(nbt: CompoundNBT): CompoundNBT = {
       nbt.putInt("efficiency", efficiency)
       nbt.putInt("unbreaking", unbreaking)
       nbt.putInt("fortune", fortune)
@@ -566,14 +462,14 @@ object TileAdvPump {
   }
 
   object PEnch {
-    val defaultEnch = PEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false, BlockPos.ORIGIN, BlockPos.ORIGIN)
+    val defaultEnch = PEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false, BlockPos.ZERO, BlockPos.ZERO)
 
-    def readFromNBT(tag: NBTTagCompound): PEnch = {
+    def readFromNBT(tag: CompoundNBT): PEnch = {
       if (!tag.isEmpty) {
         PEnch(tag.getInt("efficiency"), tag.getInt("unbreaking"), tag.getInt("fortune"), tag.getBoolean("silktouch"),
           BlockPos.fromLong(tag.getLong("start")), BlockPos.fromLong(tag.getLong("end")))
       } else
-        PEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false, BlockPos.ORIGIN, BlockPos.ORIGIN)
+        PEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false, BlockPos.ZERO, BlockPos.ZERO)
     }
   }
 

@@ -144,4 +144,5 @@ package object qp {
         "though it returned true when isPresent is called.")
 
   implicit val showPos: Show[BlockPos] = pos => s"(${pos.getX}, ${pos.getY}, ${pos.getZ})"
+  implicit val showFluidStack: Show[FluidStack] = stack => s"${stack.getFluid.getRegistryName} @${stack.getAmount}mB"
 }
