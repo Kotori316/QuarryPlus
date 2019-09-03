@@ -12,7 +12,7 @@ class ReplacerModule(val toReplace: Eval[BlockState]) extends IModule {
 
   override def action(when: IModule.CalledWhen): IModule.Result = {
     when match {
-      case AfterBreak(world, pos, before) =>
+      case AfterBreak(world, pos, before, _) =>
         val replaceState = toReplace.value
         if (before != replaceState) {
           world.setBlockState(pos, replaceState)

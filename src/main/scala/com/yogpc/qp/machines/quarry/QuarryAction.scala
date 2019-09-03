@@ -229,7 +229,7 @@ object QuarryAction {
             if (quarry2.breakBlock(quarry2.getWorld.asInstanceOf[ServerWorld], target, state)) {
               // Replacer works for non liquid block.
               if (!TilePump.isLiquid(state) && !state.getBlock.isAir(state, quarry2.getWorld, target)) {
-                val replaced = quarry2.modules.foldMap(_.invoke(IModule.AfterBreak(quarry2.getWorld, target, state)))
+                val replaced = quarry2.modules.foldMap(_.invoke(IModule.AfterBreak(quarry2.getWorld, target, state, quarry2.getWorld.getGameTime)))
                 if (!replaced.done) { // Not replaced
                   quarry2.getWorld.setBlockState(target, Blocks.AIR.getDefaultState)
                   playSound(state, quarry2.getWorld, target)
