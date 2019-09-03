@@ -1,5 +1,6 @@
 package com.yogpc.qp.render
 
+import com.yogpc.qp.machines.base.Area
 import com.yogpc.qp.machines.quarry.{QuarryAction, TileQuarry2}
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.BufferBuilder
@@ -31,7 +32,7 @@ object RenderQuarry2 extends TileEntityRendererFast[TileQuarry2] {
     Minecraft.getInstance.getProfiler.startSection("quarryplus")
     Minecraft.getInstance.getProfiler.startSection("quarry")
     if ((quarry.action.mode == TileQuarry2.waiting || quarry.action.mode == TileQuarry2.buildFrame || quarry.action.mode == TileQuarry2.breakInsideFrame)
-      && quarry.area != TileQuarry2.zeroArea) {
+      && quarry.area != Area.zeroArea) {
       Minecraft.getInstance.getProfiler.startSection("frame")
       bufferBuilder.setTranslation(distanceX - pos.getX + .5, distanceY - pos.getY + .5, distanceZ - pos.getZ + .5)
       val minX = quarry.area.xMin

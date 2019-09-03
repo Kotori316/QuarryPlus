@@ -2,6 +2,7 @@ package com.yogpc.qp.machines.pump;
 
 import java.util.function.BooleanSupplier;
 
+import com.yogpc.qp.machines.base.Area;
 import com.yogpc.qp.machines.quarry.TileQuarry;
 import com.yogpc.qp.machines.quarry.TileQuarry2;
 
@@ -31,14 +32,17 @@ class RangeWrapper {
     }
 
     public RangeWrapper(TileQuarry2 quarry2) {
-        TileQuarry2.Area area = quarry2.area();
+        this(quarry2.area(), () -> quarry2.action().mode() == TileQuarry2.waiting() || quarry2.action().mode() == TileQuarry2.breakInsideFrame());
+    }
+
+    public RangeWrapper(Area area, BooleanSupplier isWaiting) {
         this.xMax = area.xMax();
         this.xMin = area.xMin();
         this.yMax = area.yMax();
         this.yMin = area.yMin();
         this.zMax = area.zMax();
         this.zMin = area.zMin();
-        isWaiting = () -> quarry2.action().mode() == TileQuarry2.waiting() || quarry2.action().mode() == TileQuarry2.breakInsideFrame();
+        this.isWaiting = isWaiting;
     }
 
     public static RangeWrapper of(Object tb) {

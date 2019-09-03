@@ -1,6 +1,5 @@
 package com.yogpc.qp.machines.quarry
 
-import cats._
 import cats.implicits._
 import com.yogpc.qp._
 import com.yogpc.qp.machines.base._
@@ -16,7 +15,7 @@ import net.minecraft.inventory.container.INamedContainerProvider
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.{CompoundNBT, StringNBT}
 import net.minecraft.state.properties.BlockStateProperties
-import net.minecraft.util.math.{AxisAlignedBB, BlockPos, Vec3i}
+import net.minecraft.util.math.{AxisAlignedBB, BlockPos}
 import net.minecraft.util.text.{StringTextComponent, TranslationTextComponent}
 import net.minecraft.util.{Unit => _, _}
 import net.minecraft.world.World
@@ -24,7 +23,6 @@ import net.minecraft.world.server.ServerWorld
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.ForgeEventFactory
 import net.minecraftforge.event.world.BlockEvent
-import org.apache.logging.log4j.{Marker, MarkerManager}
 
 import scala.collection.JavaConverters
 
@@ -41,14 +39,14 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
 
   var modules: List[IModule] = Nil
   var attachments: Map[IAttachment.Attachments[_], Direction] = Map.empty
-  var enchantments = noEnch
-  var area = zeroArea
+  var enchantments = EnchantmentHolder.noEnch
+  var area = Area.zeroArea
   var action: QuarryAction = QuarryAction.none
   var target = BlockPos.ZERO
   var yLevel = 1
   var frameMode = false
   private val storage = new QuarryStorage
-  val moduleInv = new QuarryModuleInventory( 5, this, _ => refreshModules())
+  val moduleInv = new QuarryModuleInventory(5, this, _ => refreshModules())
 
   override def tick(): Unit = {
     super.tick()
@@ -105,8 +103,8 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   override def read(nbt: CompoundNBT): Unit = {
     super.read(nbt)
     target = BlockPos.fromLong(nbt.getLong("target"))
-    enchantments = enchantmentHolderLoad(nbt, "enchantments")
-    area = areaLoad(nbt, "area")
+    enchantments = EnchantmentHolder.enchantmentHolderLoad(nbt, "enchantments")
+    area = Area.areaLoad(nbt, "area")
     action = QuarryAction.load(self, nbt, "mode")
     storage.deserializeNBT(nbt.getCompound("storage"))
     moduleInv.deserializeNBT(nbt.getCompound("moduleInv"))
@@ -132,9 +130,9 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
    * Called after enchantment setting.
    */
   override def G_ReInit(): Unit = {
-    if (area == zeroArea) {
+    if (area == Area.zeroArea) {
       val facing = world.getBlockState(pos).get(BlockStateProperties.FACING)
-      findArea(facing, world, pos) match {
+      Area.findArea(facing, world, pos) match {
         case (newArea, markerOpt) =>
           area = newArea
           markerOpt.foreach(m => JavaConverters.asScalaBuffer(m.removeFromWorldWithItem()).foreach(storage.insertItem))
@@ -227,7 +225,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
       fakePlayer.setHeldItem(Hand.MAIN_HAND, ItemStack.EMPTY)
 
       if (TilePump.isLiquid(state) || PowerManager.useEnergyBreak(self, state.getBlockHardness(world, pos),
-        TileQuarry2.enchantmentMode(enchantments), enchantments.unbreaking, modules.exists(IModule.hasReplaceModule))) {
+        EnchantmentHolder.enchantmentMode(enchantments), enchantments.unbreaking, modules.exists(IModule.hasReplaceModule))) {
         val returnValue = modules.foldMap(m => m.invoke(IModule.BeforeBreak(event.getExpToDrop, world, pos)))
         drops.asScala.groupBy(ItemDamage.apply).mapValues(_.map(_.getCount).sum).map { case (damage, i) => damage.toStack(i) }.foreach(storage.addItem)
         returnValue.canGoNext // true means work is finished.
@@ -276,12 +274,12 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   override def hasFastRenderer = true
 
   override def getRenderBoundingBox: AxisAlignedBB = {
-    if (area != TileQuarry2.zeroArea) TileQuarry2.areaBox(area)
+    if (area != Area.zeroArea) Area.areaBox(area)
     else super.getRenderBoundingBox
   }
 
   override def getMaxRenderDistanceSquared: Double = {
-    if (area != TileQuarry2.zeroArea) TileQuarry2.areaLengthSq(area)
+    if (area != Area.zeroArea) Area.areaLengthSq(area)
     else super.getMaxRenderDistanceSquared
   }
 
@@ -293,18 +291,7 @@ object TileQuarry2 {
   val SYMBOL = Symbol("NewQuarry")
   final val comma = ","
 
-  val noEnch = EnchantmentHolder(0, 0, 0, silktouch = false)
-  val zeroArea = Area(0, 0, 0, 0, 0, 0)
-
   //---------- Data ----------
-  case class EnchantmentHolder(efficiency: Int, unbreaking: Int, fortune: Int, silktouch: Boolean, other: Map[ResourceLocation, Int] = Map.empty)
-
-  implicit val showEnchantmentHolder: Show[EnchantmentHolder] = holder =>
-    s"Efficiency=${holder.efficiency} Unbreaking=${holder.unbreaking} Fortune=${holder.fortune} Silktouch=${holder.silktouch} other=${holder.other}"
-
-  case class Area(xMin: Int, yMin: Int, zMin: Int, xMax: Int, yMax: Int, zMax: Int)
-
-  implicit val showArea: Show[Area] = area => s"(${area.xMin}, ${area.yMin}, ${area.zMin}) -> (${area.xMax}, ${area.yMax}, ${area.zMax})"
 
   sealed class Mode(override val toString: String)
 
@@ -325,115 +312,10 @@ object TileQuarry2 {
 
   }
 
-  //---------- Data Functions ----------
-  val posToArea: (Vec3i, Vec3i) => Area = {
-    case (p1, p2) => Area(Math.min(p1.getX, p2.getX), Math.min(p1.getY, p2.getY), Math.min(p1.getZ, p2.getZ),
-      Math.max(p1.getX, p2.getX), Math.max(p1.getY, p2.getY), Math.max(p1.getZ, p2.getZ))
-  }
-
-  def defaultArea(pos: BlockPos, facing: Direction): Area = {
-    val x = 11
-    val y = (x - 1) / 2 //5
-    val start = pos.offset(facing, 2)
-    val edge1 = start.offset(facing.rotateY(), y).up(3)
-    val edge2 = start.offset(facing, x - 1).offset(facing.rotateYCCW(), y)
-    posToArea(edge1, edge2)
-  }
-
-  def findArea(facing: Direction, world: World, pos: BlockPos) = {
-    List(pos.offset(facing.getOpposite), pos.offset(facing.rotateY()), pos.offset(facing.rotateYCCW())).map(world.getTileEntity).collectFirst { case m: IMarker if m.hasLink => m } match {
-      case Some(marker) => areaFromMarker(facing, pos, marker)
-      case None => defaultArea(pos, facing.getOpposite) -> None
-    }
-  }
-
-  def areaFromMarker(facing: Direction, pos: BlockPos, marker: IMarker) = {
-    if (marker.min().getX <= pos.getX && marker.max().getX >= pos.getX &&
-      marker.min().getY <= pos.getY && marker.max().getY >= pos.getY &&
-      marker.min().getZ <= pos.getZ && marker.max().getZ >= pos.getZ) {
-      defaultArea(pos, facing.getOpposite) -> None
-    } else {
-      val subs = marker.max().subtract(marker.min())
-      if (subs.getX > 1 && subs.getZ > 1) {
-        val maxY = if (subs.getY > 1) marker.max().getY else marker.min().getY + 3
-        posToArea(marker.min(), marker.max().copy(y = maxY)) -> Some(marker)
-      } else {
-        defaultArea(pos, facing.getOpposite) -> None
-      }
-    }
-  }
-
-  val areaLengthSq: Area => Double = {
-    case Area(xMin, _, zMin, xMax, yMax, zMax) =>
-      Math.pow(xMax - xMin, 2) + Math.pow(yMax, 2) + Math.pow(zMax - zMin, 2)
-  }
-  val areaBox: Area => AxisAlignedBB = area =>
-    new AxisAlignedBB(area.xMin, 0, area.zMin, area.xMax, area.yMax, area.zMax)
-
-  val enchantmentMode: EnchantmentHolder => Int = e =>
-    if (e.silktouch) -1 else e.fortune
-
   //---------- NBT ----------
-  type NBTLoad[A] = (CompoundNBT, String) => A
-  private[this] final val MARKER: Marker = MarkerManager.getMarker("QUARRY_NBT")
-  private[this] final val NBT_X_MIN = "xMin"
-  private[this] final val NBT_X_MAX = "xMax"
-  private[this] final val NBT_Y_MIN = "yMin"
-  private[this] final val NBT_Y_MAX = "yMax"
-  private[this] final val NBT_Z_MIN = "zMin"
-  private[this] final val NBT_Z_MAX = "zMax"
+  //  private[this] final val MARKER: Marker = MarkerManager.getMarker("QUARRY_NBT")
 
-  private[this] def logTo[T: Show](v: T): Unit = {
-    QuarryPlus.LOGGER.debug(MARKER, "To nbt of {}", v.show)
-  }
-
-  private[this] def logFrom(name: String, v: Any): Unit = {
-    QuarryPlus.LOGGER.debug(MARKER, "From nbt of {} data:{}", name, v)
-  }
-
-  implicit val enchantmentHolderToNbt: EnchantmentHolder NBTWrapper CompoundNBT = enchantments => {
-    logTo(enchantments)
-    val enchantmentsMap = Map(
-      IEnchantableTile.EfficiencyID -> enchantments.efficiency,
-      IEnchantableTile.UnbreakingID -> enchantments.unbreaking,
-      IEnchantableTile.FortuneID -> enchantments.fortune,
-      IEnchantableTile.SilktouchID -> enchantments.silktouch.compare(false),
-    ) ++ enchantments.other
-    enchantmentsMap.filter(_._2 > 0).foldLeft(new CompoundNBT) { case (nbt, (id, level)) => nbt.putInt(id.toString, level); nbt }
-  }
-  implicit val areaToNbt: Area NBTWrapper CompoundNBT = area => {
-    logTo(area)
-    val nbt = new CompoundNBT
-    nbt.putInt(NBT_X_MIN, area.xMin)
-    nbt.putInt(NBT_X_MAX, area.xMax)
-    nbt.putInt(NBT_Y_MIN, area.yMin)
-    nbt.putInt(NBT_Y_MAX, area.yMax)
-    nbt.putInt(NBT_Z_MIN, area.zMin)
-    nbt.putInt(NBT_Z_MAX, area.zMax)
-    nbt
-  }
   implicit val modeToNbt: Mode NBTWrapper StringNBT = mode => {
     new StringNBT(mode.toString)
-  }
-  val enchantmentHolderLoad: NBTLoad[EnchantmentHolder] = {
-    case (tag, name) =>
-      val nbt = tag.getCompound(name)
-      logFrom("EnchantmentHolder", nbt)
-      JavaConverters.asScalaIterator(nbt.keySet().iterator()).map(key => new ResourceLocation(key) -> nbt.getInt(key))
-        .foldLeft(noEnch) { case (enchantments, (id, value)) =>
-          id match {
-            case IEnchantableTile.EfficiencyID => enchantments.copy(efficiency = value)
-            case IEnchantableTile.UnbreakingID => enchantments.copy(unbreaking = value)
-            case IEnchantableTile.FortuneID => enchantments.copy(fortune = value)
-            case IEnchantableTile.SilktouchID => enchantments.copy(silktouch = value > 0)
-            case _ => enchantments.copy(other = enchantments.other + (id -> value))
-          }
-        }
-  }
-  val areaLoad: NBTLoad[Area] = {
-    case (tag, name) =>
-      val nbt = tag.getCompound(name)
-      logFrom("Area", nbt)
-      Area(nbt.getInt(NBT_X_MIN), nbt.getInt(NBT_Y_MIN), nbt.getInt(NBT_Z_MIN), nbt.getInt(NBT_X_MAX), nbt.getInt(NBT_Y_MAX), nbt.getInt(NBT_Z_MAX))
   }
 }

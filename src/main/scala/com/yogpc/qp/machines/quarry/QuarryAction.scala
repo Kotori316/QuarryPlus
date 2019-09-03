@@ -3,7 +3,7 @@ package com.yogpc.qp.machines.quarry
 import cats.implicits._
 import com.yogpc.qp._
 import com.yogpc.qp.machines.PowerManager
-import com.yogpc.qp.machines.base.IModule
+import com.yogpc.qp.machines.base.{Area, IModule}
 import com.yogpc.qp.machines.pump.TilePump
 import com.yogpc.qp.packet.PacketHandler
 import com.yogpc.qp.packet.quarry2.ActionMessage
@@ -313,7 +313,7 @@ object QuarryAction {
     }
   }
 
-  def digTargets(r: TileQuarry2.Area, pos: BlockPos, y: Int, log: Boolean = true) = {
+  def digTargets(r: Area, pos: BlockPos, y: Int, log: Boolean = true) = {
     val firstX = near(pos.getX, r.xMin + 1, r.xMax - 1)
     val lastX = far(pos.getX, r.xMin + 1, r.xMax - 1)
     val firstZ = near(pos.getZ, r.zMin + 1, r.zMax - 1)
@@ -329,7 +329,7 @@ object QuarryAction {
     list
   }
 
-  def insideFrameArea(r: TileQuarry2.Area) = {
+  def insideFrameArea(r: Area) = {
     (for (x <- Range.inclusive(r.xMin, r.xMax).reverse;
           z <- Range.inclusive(r.zMin, r.zMax);
           y <- Range.inclusive(r.yMin, r.yMax).reverse) yield new BlockPos(x, y, z)).toList
