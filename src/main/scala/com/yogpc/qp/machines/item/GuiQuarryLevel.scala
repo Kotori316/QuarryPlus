@@ -8,6 +8,7 @@ import com.yogpc.qp.machines.quarry.{TileBasic, TileQuarry, TileQuarry2}
 import com.yogpc.qp.packet.PacketHandler
 import com.yogpc.qp.packet.quarry.LevelMessage
 import com.yogpc.qp.packet.quarry2.Level2Message
+import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.gui.screen.inventory.ContainerScreen
 import net.minecraft.client.resources.I18n
 import net.minecraft.entity.player.PlayerInventory
@@ -57,7 +58,7 @@ class GuiQuarryLevel(c: ContainerQuarryLevel, inv: PlayerInventory, t: ITextComp
   }
 
   override def actionPerformed(button: IHandleButton.Button): Unit = {
-    val di = if (button.id % 2 == 0) 1 else -1
+    val di = (if (button.id % 2 == 0) 1 else -1) * (if (Screen.hasControlDown) 10 else 1)
     val yMin = tile match {
       case quarry: TileQuarry => quarry.yMin
       //      case quarry2: TileQuarry2 => quarry2.area.yMin
@@ -76,7 +77,7 @@ class GuiQuarryLevel(c: ContainerQuarryLevel, inv: PlayerInventory, t: ITextComp
 }
 
 object GuiQuarryLevel {
-  val y_min = 0
+  final val y_min = 0
 
   trait YLevel[-T] {
     def setYLevel(t: T, yLevel: Int): Unit
