@@ -28,7 +28,7 @@ class TorchModule(val y: Eval[Int]) extends IModule {
         if (pos.getY === y.value && lastPlaced =!= time) {
           // Check light value
           val light = world.getLightFor(LightType.BLOCK, pos.up())
-          if (light < 9 && Blocks.TORCH.getDefaultState.isValidPosition(world, pos.down())) {
+          if (light < 9 && Blocks.TORCH.getDefaultState.isValidPosition(world, pos)) {
             world.setBlockState(pos, Blocks.TORCH.getDefaultState)
             lastPlaced = time
             QuarryPlus.LOGGER.debug(IModule.MARKER, f"Torch Module found light=$light%02d at ${pos.show} and placed torch")
