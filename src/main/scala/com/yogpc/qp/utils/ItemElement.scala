@@ -4,13 +4,13 @@ import cats.kernel.Eq
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.CompoundNBT
 
-case class ItemElement(itemDamage: ItemDamage, count: Int) {
-  def toStack: ItemStack = itemDamage.toStack(count)
+case class ItemElement(itemDamage: ItemDamage, count: Long) {
+  def toStack: ItemStack = itemDamage.toStack(ProxyCommon.toInt(count))
 
   def toNBT: CompoundNBT = {
     val nbt = toStack.serializeNBT()
     nbt.remove("Count")
-    nbt.putInt("Count", count)
+    nbt.putLong("Count", count)
     nbt
   }
 
