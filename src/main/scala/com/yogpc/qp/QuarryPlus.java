@@ -45,19 +45,18 @@ public class QuarryPlus {
 
     public QuarryPlus() {
         IEventBus modBus = QuarryPlus.modBus();
-        initConfig(modBus);
+        initConfig();
         MinecraftForge.EVENT_BUS.register(this);
         proxy.registerEvents(MinecraftForge.EVENT_BUS);
         proxy.registerModBus(modBus);
         modBus.register(Register.class);
     }
 
-    private void initConfig(IEventBus modEventBus) {
+    private void initConfig() {
         ForgeConfigSpec.Builder common = new ForgeConfigSpec.Builder();
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.commonBuild(common).build());
         ForgeConfigSpec.Builder client = new ForgeConfigSpec.Builder();
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.clientBuild(client).build());
-        modEventBus.addListener(Config.reloadHandler());
     }
 
     @SubscribeEvent
