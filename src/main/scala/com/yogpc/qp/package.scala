@@ -143,6 +143,10 @@ package object qp {
       "LazyOptional has no content " +
         "though it returned true when isPresent is called.")
 
+  implicit class AsScalaPredicate[T](val javaPredicate: java.util.function.Predicate[T]) extends AnyVal {
+    def asScala: T => Boolean = p => javaPredicate test p
+  }
+
   implicit val showPos: Show[BlockPos] = pos => s"(${pos.getX}, ${pos.getY}, ${pos.getZ})"
   implicit val showFluidStack: Show[FluidStack] = stack => s"${stack.getFluid.getRegistryName} @${stack.getAmount}mB"
 }

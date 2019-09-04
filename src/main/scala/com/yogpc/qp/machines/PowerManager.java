@@ -15,8 +15,10 @@ package com.yogpc.qp.machines;
 
 import com.yogpc.qp.Config;
 import com.yogpc.qp.machines.base.APowerTile;
+import com.yogpc.qp.machines.base.EnchantmentHolder;
 import com.yogpc.qp.machines.base.EnergyUsage;
 import com.yogpc.qp.machines.quarry.TileMiningWell;
+import net.minecraft.util.math.BlockPos;
 
 @SuppressWarnings("ClassWithTooManyFields")
 public class PowerManager {
@@ -139,21 +141,38 @@ public class PowerManager {
     }
 
     /**
-     * @param pp          power tile
-     * @param hardness    block hardness
-     * @param enchantMode no enchantment -> 0, silktouch -> -1, fortune -> fortune level, break canceled -> -2
-     * @param unbreaking  unbreaking level
-     * @param replacer    True if replacer is working.
+     * @param pp              power tile
+     * @param hardness        block hardness
+     * @param enchantmentMode no enchantment -> 0, silktouch -> -1, fortune -> fortune level, break canceled -> -2
+     * @param unbreaking      unbreaking level
+     * @param replacer        True if replacer is working.
      * @return Whether the tile used energy.
      */
-    public static boolean useEnergyBreak(final APowerTile pp, final float hardness, final int enchantMode, final int unbreaking, boolean replacer) {
-        if (enchantMode == -2)
+    public static boolean useEnergyBreak(final APowerTile pp, final float hardness, final int enchantmentMode, final int unbreaking, boolean replacer) {
+        if (enchantmentMode == -2)
             return true;
-        final long pw = (long) (calcEnergyBreak(pp, hardness, enchantMode, unbreaking) * (replacer ? 1.1 : 1));
+        final long pw = (long) (calcEnergyBreak(pp, hardness, enchantmentMode, unbreaking) * (replacer ? 1.1 : 1));
         if (pp.useEnergy(pw, pw, false, EnergyUsage.BREAK_BLOCK) != pw)
             return false;
         pp.useEnergy(pw, pw, true, EnergyUsage.BREAK_BLOCK);
         return true;
+    }
+
+    /**
+     * @param pp          power tile which energy come from.
+     * @param pos         the position of block which will be removed.
+     * @param enchantment enchantment of the tile.
+     * @param replacer    whether tile has replacer module.
+     * @return {@code true} if succeeded and {@code false} means there isn't enough energy to break block.
+     */
+    public static boolean useEnergyBreak(final APowerTile pp, final BlockPos pos, final EnchantmentHolder enchantment, boolean replacer) {
+        if (pp.getWorld() != null) {
+            float blockHardness = pp.getWorld().getBlockState(pos).getBlockHardness(pp.getWorld(), pos);
+            int mode = EnchantmentHolder.enchantmentMode(enchantment);
+            return useEnergyBreak(pp, blockHardness, mode, enchantment.unbreaking(), replacer);
+        } else {
+            return true;
+        }
     }
 
     /**
@@ -223,7 +242,7 @@ public class PowerManager {
         if (!Config.common().fastQuarryHeadMove().get()) {
             pw = Math.min(2 + (double) pp.getStoredEnergy() / 500 / APowerTile.MJToMicroMJ, (dist / 2 - 0.05) * bp / (U * MoveHead_CU + 1));
         } else {
-            pw = (dist / 2 - 0.05) *bp / (U * MoveHead_CU + 1);
+            pw = (dist / 2 - 0.05) * bp / (U * MoveHead_CU + 1);
         }
         pw = (double) pp.useEnergy(0, (long) (pw * APowerTile.MJToMicroMJ), true, EnergyUsage.MOVE_HEAD) / APowerTile.MJToMicroMJ;
         return pw * (U * MoveHead_CU + 1) / bp + 0.05;

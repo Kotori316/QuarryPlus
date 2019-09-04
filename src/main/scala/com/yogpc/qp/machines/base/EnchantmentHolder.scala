@@ -11,8 +11,8 @@ case class EnchantmentHolder(efficiency: Int, unbreaking: Int, fortune: Int, sil
 
 object EnchantmentHolder {
   val noEnch = EnchantmentHolder(0, 0, 0, silktouch = false)
-  val enchantmentMode: EnchantmentHolder => Int = e =>
-    if (e.silktouch) -1 else e.fortune
+
+  def enchantmentMode(e: EnchantmentHolder): Int = if (e.silktouch) -1 else e.fortune
 
   implicit val showEnchantmentHolder: Show[EnchantmentHolder] = holder =>
     s"Efficiency=${holder.efficiency} Unbreaking=${holder.unbreaking} Fortune=${holder.fortune} Silktouch=${holder.silktouch} other=${holder.other}"

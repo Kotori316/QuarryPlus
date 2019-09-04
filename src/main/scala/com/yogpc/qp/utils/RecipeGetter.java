@@ -16,6 +16,9 @@ public class RecipeGetter {
     static {
         Method getRecipesMethod;
         try {
+            /*
+             * The real signature is private <C extends IInventory, T extends IRecipe<C>> Map<ResourceLocation, IRecipe<C>> getRecipes(IRecipeType<T> recipeTypeIn)
+             */
             getRecipesMethod = ObfuscationReflectionHelper.findMethod(RecipeManager.class, "func_215366_a", IRecipeType.class);
         } catch (Exception e) {
             e.printStackTrace();

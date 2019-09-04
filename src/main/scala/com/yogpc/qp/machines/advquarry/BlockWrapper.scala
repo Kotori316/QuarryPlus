@@ -10,6 +10,7 @@ import net.minecraft.profiler.IProfiler
 import net.minecraft.resources.IResourceManager
 import net.minecraft.tags.{BlockTags, Tag}
 import net.minecraft.util.{JSONUtils, ResourceLocation}
+import net.minecraftforge.common.Tags
 
 import scala.collection.JavaConverters
 import scala.util.Try
@@ -30,6 +31,20 @@ object BlockWrapper extends JsonDeserializer[BlockWrapper] with JsonSerializer[B
   def apply(state: BlockState, ignoreProperty: Boolean = false): BlockWrapper = new State(state, ignoreProperty)
 
   def apply(tag: Tag[Block]): BlockWrapper = new TagPredicate(tag)
+
+  val example = Set(
+    BlockWrapper(Tags.Blocks.STONE),
+    BlockWrapper(Tags.Blocks.COBBLESTONE),
+    BlockWrapper(Blocks.DIRT.getDefaultState, ignoreProperty = true),
+    BlockWrapper(Blocks.GRASS.getDefaultState, ignoreProperty = true),
+    BlockWrapper(Blocks.NETHERRACK.getDefaultState),
+    BlockWrapper(Blocks.SANDSTONE.getDefaultState),
+    BlockWrapper(Blocks.CHISELED_SANDSTONE.getDefaultState),
+    BlockWrapper(Blocks.CUT_SANDSTONE.getDefaultState),
+    BlockWrapper(Blocks.RED_SANDSTONE.getDefaultState),
+    BlockWrapper(Blocks.CHISELED_RED_SANDSTONE.getDefaultState),
+    BlockWrapper(Blocks.CUT_RED_SANDSTONE.getDefaultState),
+  )
 
   import com.yogpc.qp._
 

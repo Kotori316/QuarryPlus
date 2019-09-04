@@ -78,4 +78,47 @@ object Area {
   def areaLoad(nbt: CompoundNBT) = {
     Area(nbt.getInt(NBT_X_MIN), nbt.getInt(NBT_Y_MIN), nbt.getInt(NBT_Z_MIN), nbt.getInt(NBT_X_MAX), nbt.getInt(NBT_Y_MAX), nbt.getInt(NBT_Z_MAX))
   }
+
+  def posesInArea(area: Area, xFilter: Int => Boolean, yFilter: Int => Boolean, zFilter: Int => Boolean): List[BlockPos] = {
+    val poses = for {
+      x <- Range.inclusive(area.xMin, area.xMax) if xFilter(x)
+      z <- Range.inclusive(area.zMin, area.zMax) if zFilter(z)
+      y <- Range.inclusive(area.yMin, area.yMax).reverse if yFilter(y)
+    } yield new BlockPos(x, y, z)
+    poses.toList
+  }
+
+  def getFramePoses(area: Area): List[BlockPos] = {
+    val builder = List.newBuilder[BlockPos]
+    val minX = area.xMin
+    val maxX = area.xMax
+    val maxY = area.yMax
+    val minZ = area.zMin
+    val maxZ = area.zMax
+    var i = 0
+    while (i <= 4) {
+      builder += new BlockPos(minX - 1, maxY + 4 - i, minZ - 1)
+      builder += new BlockPos(minX - 1, maxY + 4 - i, maxZ + 1)
+      builder += new BlockPos(maxX + 1, maxY + 4 - i, maxZ + 1)
+      builder += new BlockPos(maxX + 1, maxY + 4 - i, minZ - 1)
+      i += 1
+    }
+    var x = minX
+    while (x <= maxX) {
+      builder += new BlockPos(x, maxY + 4, minZ - 1)
+      builder += new BlockPos(x, maxY + 0, minZ - 1)
+      builder += new BlockPos(x, maxY + 0, maxZ + 1)
+      builder += new BlockPos(x, maxY + 4, maxZ + 1)
+      x += 1
+    }
+    var z = minZ
+    while (z <= maxZ) {
+      builder += new BlockPos(minX - 1, maxY + 4, z)
+      builder += new BlockPos(minX - 1, maxY + 0, z)
+      builder += new BlockPos(maxX + 1, maxY + 0, z)
+      builder += new BlockPos(maxX + 1, maxY + 4, z)
+      z += 1
+    }
+    builder.result()
+  }
 }
