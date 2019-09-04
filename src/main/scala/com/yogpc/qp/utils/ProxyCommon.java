@@ -37,4 +37,10 @@ public class ProxyCommon {
 
     public void setDummyTexture(String textureName) {
     }
+
+    public static int toInt(long l) {
+        if (l > Integer.MAX_VALUE) return Integer.MAX_VALUE;
+        else if (l < Integer.MIN_VALUE) return Integer.MIN_VALUE;
+        else return (int) l;
+    }
 }
