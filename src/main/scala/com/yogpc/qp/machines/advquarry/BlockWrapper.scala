@@ -1,71 +1,121 @@
 package com.yogpc.qp.machines.advquarry
 
-import java.lang.reflect.Type
+import java.lang.reflect.{GenericArrayType, Type}
 
 import com.google.gson._
-import com.yogpc.qp.utils.NBTBuilder
-import net.minecraft.block.{BlockState, Blocks}
-import net.minecraft.util.JSONUtils
+import com.mojang.datafixers.types.JsonOps
+import com.yogpc.qp.utils.JsonReloadListener
+import net.minecraft.block.{Block, BlockState, Blocks}
+import net.minecraft.profiler.IProfiler
+import net.minecraft.resources.IResourceManager
+import net.minecraft.tags.{BlockTags, Tag}
+import net.minecraft.util.{JSONUtils, ResourceLocation}
 
+import scala.collection.JavaConverters
 import scala.util.Try
 
-/**
- *
- * @param state          the state
- * @param ignoreProperty whether distinguish north-faced chest from south-faced chest.
- */
-case class BlockWrapper(state: BlockState,
-                        ignoreProperty: Boolean = false)
+abstract class BlockWrapper(val name: String)
   extends java.util.function.Predicate[BlockState] {
 
   def apply(v1: BlockState): Boolean = contain(v1)
 
-  def contain(that: BlockState): Boolean = {
-    if (ignoreProperty) {
-      state.getBlock == that.getBlock
-    } else {
-      state == that
-    }
-  }
+  def contain(that: BlockState): Boolean
 
   override def test(t: BlockState): Boolean = contain(t)
+
+  def serialize(obj: JsonObject, typeOfSrc: Type, context: JsonSerializationContext): JsonElement
 }
 
 object BlockWrapper extends JsonDeserializer[BlockWrapper] with JsonSerializer[BlockWrapper] {
+  def apply(state: BlockState, ignoreProperty: Boolean = false): BlockWrapper = new State(state, ignoreProperty)
+
+  def apply(tag: Tag[Block]): BlockWrapper = new TagPredicate(tag)
 
   import com.yogpc.qp._
 
-  private[this] val GSON = (new GsonBuilder).setPrettyPrinting().disableHtmlEscaping()
-    .registerTypeAdapter(classOf[BlockWrapper], this)
-    .create()
-  final val KEY_STATE = "blockstate"
-  final val KEY_Property = "ignoreProperty"
+  private var wrappers = Set.empty[BlockWrapper]
 
-  def getString(seq: Seq[BlockWrapper]): String = {
-    GSON.toJson(seq.toArray, classOf[Array[BlockWrapper]])
+  def getWrappers = wrappers
+
+  private[this] final val arrayDeserializer = new JsonDeserializer[Array[BlockWrapper]] {
+    override def deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): Array[BlockWrapper] = {
+      val componentType = typeOfT.asInstanceOf[GenericArrayType].getGenericComponentType
+      if (json.isJsonArray) JavaConverters.asScalaIterator(json.getAsJsonArray.iterator()).map(j => context.deserialize[BlockWrapper](j, componentType)).toArray
+      else Array(context.deserialize[BlockWrapper](json, componentType))
+    }
   }
 
-  def getWrapper(s: String): Set[BlockWrapper] = {
-    import scala.collection.JavaConverters._
-    val value = GSON.fromJson(s, classOf[JsonElement])
-    if (value.isJsonArray) {
-      value.getAsJsonArray.asScala.map(GSON.fromJson(_, classOf[BlockWrapper])).toSet
-    } else {
-      Set(GSON.fromJson(value.getAsJsonObject, classOf[BlockWrapper]))
+  private final val GSON = (new GsonBuilder).setPrettyPrinting().disableHtmlEscaping()
+    .registerTypeHierarchyAdapter(classOf[BlockWrapper], this)
+    .registerTypeHierarchyAdapter(classOf[Array[BlockWrapper]], arrayDeserializer)
+    .create()
+  final val KEY_NAME = "name"
+  final val KEY_STATE = "blockstate"
+  final val KEY_Property = "ignoreProperty"
+  final val KEY_Tag = "tag"
+
+  private val NAME_NoMatch = QuarryPlus.modID + ":wrapper_none"
+  private val NAME_State = QuarryPlus.modID + ":wrapper_state"
+  private val NAME_Tag = QuarryPlus.modID + ":wrapper_tag"
+
+  private object NoMatch extends BlockWrapper(NAME_NoMatch) {
+    override def contain(that: BlockState) = false
+
+    override def serialize(obj: JsonObject, typeOfSrc: Type, context: JsonSerializationContext) = obj
+  }
+
+  private class State(state: BlockState, ignoreProperty: Boolean = false) extends BlockWrapper(NAME_State) {
+    def contain(that: BlockState): Boolean = {
+      if (ignoreProperty) {
+        state.getBlock == that.getBlock
+      } else {
+        state == that
+      }
+    }
+
+    override def serialize(obj: JsonObject, typeOfSrc: Type, context: JsonSerializationContext) = {
+      obj.addProperty(KEY_NAME, name)
+      obj.add(KEY_STATE, BlockState.serialize(JsonOps.INSTANCE, state).getValue)
+      obj.addProperty(KEY_Property, ignoreProperty)
+      obj
+    }
+  }
+
+  private class TagPredicate(tag: Tag[Block]) extends BlockWrapper(NAME_Tag) {
+    override def contain(that: BlockState) = tag.contains(that.getBlock)
+
+    override def serialize(obj: JsonObject, typeOfSrc: Type, context: JsonSerializationContext) = {
+      obj.addProperty(KEY_NAME, name)
+      obj.addProperty(KEY_Tag, tag.getId.toString)
+      obj
     }
   }
 
   override def deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): BlockWrapper = {
-    val maybeWrapper = for (state <- NBTBuilder.getStateFromJson(JSONUtils.getJsonObject(json.getAsJsonObject, KEY_STATE)).asScala;
-                            property <- Try(JSONUtils.getBoolean(json.getAsJsonObject, KEY_Property, false)).toOption)
-      yield BlockWrapper(state, ignoreProperty = property)
-    maybeWrapper.getOrElse(BlockWrapper(Blocks.AIR.getDefaultState))
+    import com.mojang.datafixers.Dynamic
+    val jsonObj = JSONUtils.getJsonObject(json, "wrapper")
+    val name = JSONUtils.getString(jsonObj, KEY_NAME, NAME_NoMatch)
+    name match {
+      case NAME_State =>
+        val maybeWrapper = for (state <- Try(BlockState.deserialize(new Dynamic(JsonOps.INSTANCE, JSONUtils.getJsonObject(json.getAsJsonObject, KEY_STATE))));
+                                property <- Try(JSONUtils.getBoolean(json.getAsJsonObject, KEY_Property, false)))
+          yield new State(state, property)
+        maybeWrapper.getOrElse(new State(Blocks.AIR.getDefaultState))
+      case NAME_Tag =>
+        val tagName = JSONUtils.getString(jsonObj, KEY_Tag)
+        Option(BlockTags.getCollection.get(new ResourceLocation(tagName))).map(new TagPredicate(_)).getOrElse(NoMatch)
+      case _ => NoMatch
+    }
   }
 
-  override def serialize(src: BlockWrapper, typeOfSrc: Type, context: JsonSerializationContext): JsonElement = {
-    val obj = new JsonObject
-    obj.add(KEY_STATE, NBTBuilder.fromBlockState(src.state))
-    obj.addProperty(KEY_Property, src.ignoreProperty)
-    obj
+  override def serialize(src: BlockWrapper, typeOfSrc: Type, context: JsonSerializationContext): JsonElement =
+    src.serialize(new JsonObject, typeOfSrc, context)
+
+  object Reload extends JsonReloadListener(BlockWrapper.GSON, QuarryPlus.modID + "/adv_quarry") {
+    override def apply(splashList: java.util.Map[ResourceLocation, JsonElement], resourceManagerIn: IResourceManager, profilerIn: IProfiler): Unit = {
+      BlockWrapper.wrappers = JavaConverters.mapAsScalaMap(splashList).collect { case (_, j) => GSON.fromJson(j, classOf[Array[BlockWrapper]]) }.flatten.toSet
+      QuarryPlus.LOGGER.debug("Adv Quarry loaded.")
+    }
   }
+
 }

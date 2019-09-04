@@ -3,6 +3,7 @@ package com.yogpc.qp;
 import java.lang.reflect.Method;
 
 import com.yogpc.qp.machines.PowerManager;
+import com.yogpc.qp.machines.advquarry.BlockWrapper;
 import com.yogpc.qp.machines.base.IEnchantableTile;
 import com.yogpc.qp.machines.workbench.WorkbenchRecipes;
 import com.yogpc.qp.packet.PacketHandler;
@@ -62,6 +63,7 @@ public class QuarryPlus {
     @SubscribeEvent
     public void serverStart(FMLServerAboutToStartEvent event) {
         event.getServer().getResourceManager().addReloadListener(WorkbenchRecipes.Reload$.MODULE$);
+        event.getServer().getResourceManager().addReloadListener(BlockWrapper.Reload$.MODULE$);
     }
 
 //    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)

@@ -1,0 +1,73 @@
+[
+  {
+    "name": "quarryplus:wrapper_tag",
+    "tag": "forge:stone"
+  },
+  {
+    "name": "quarryplus:wrapper_tag",
+    "tag": "forge:cobblestone"
+  },
+  {
+    "name": "quarryplus:wrapper_state",
+    "blockstate": {
+      "Name": "minecraft:dirt"
+    },
+    "ignoreProperty": true
+  },
+  {
+    "name": "quarryplus:wrapper_state",
+    "blockstate": {
+      "Name": "minecraft:grass"
+    },
+    "ignoreProperty": true
+  },
+  {
+    "name": "quarryplus:wrapper_state",
+    "blockstate": {
+      "Name": "minecraft:netherrack"
+    },
+    "ignoreProperty": false
+  },
+  {
+    "name": "quarryplus:wrapper_state",
+    "blockstate": {
+      "Name": "minecraft:sandstone"
+    },
+    "ignoreProperty": false
+  },
+  {
+    "name": "quarryplus:wrapper_state",
+    "blockstate": {
+      "Name": "minecraft:chiseled_sandstone"
+    },
+    "ignoreProperty": false
+  },
+  {
+    "name": "quarryplus:wrapper_state",
+    "blockstate": {
+      "Name": "minecraft:cut_sandstone"
+    },
+    "ignoreProperty": false
+  },
+  {
+    "name": "quarryplus:wrapper_state",
+    "blockstate": {
+      "Name": "minecraft:red_sandstone"
+    },
+    "ignoreProperty": false
+  },
+  {
+    "name": "quarryplus:wrapper_state",
+    "blockstate": {
+      "Name": "minecraft:chiseled_red_sandstone"
+    },
+    "ignoreProperty": false
+  },
+  {
+    "name": "quarryplus:wrapper_state",
+    "blockstate": {
+      "Name": "minecraft:cut_red_sandstone"
+    },
+    "ignoreProperty": false
+  }
+]
