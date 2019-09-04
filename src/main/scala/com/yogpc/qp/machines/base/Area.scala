@@ -75,8 +75,7 @@ object Area {
     }
   }
 
-  def areaLoad(tag: CompoundNBT, name: String) = {
-    val nbt = tag.getCompound(name)
+  def areaLoad(nbt: CompoundNBT) = {
     Area(nbt.getInt(NBT_X_MIN), nbt.getInt(NBT_Y_MIN), nbt.getInt(NBT_Z_MIN), nbt.getInt(NBT_X_MAX), nbt.getInt(NBT_Y_MAX), nbt.getInt(NBT_Z_MAX))
   }
 }
