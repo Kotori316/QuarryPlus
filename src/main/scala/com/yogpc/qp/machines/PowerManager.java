@@ -208,6 +208,10 @@ public class PowerManager {
         return (long) (BP * hardness * CSP / (unbreaking * CU + 1));
     }
 
+    public static long calcEnergyBreak(float hardness, EnchantmentHolder enchantmentHolder) {
+        return calcEnergyBreak(hardness, EnchantmentHolder.enchantmentMode(enchantmentHolder), enchantmentHolder.unbreaking());
+    }
+
     public static boolean useEnergyPump(final APowerTile pp, final int U, final long liquidsCount, final long framesToBuild) {
         final long pw = calcEnergyPumpDrain(U, liquidsCount, framesToBuild);
         if (pp.useEnergy(pw, pw, false, EnergyUsage.PUMP_FLUID) != pw)

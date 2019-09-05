@@ -14,7 +14,7 @@ trait Reason {
 
   def toString: String
 
-  def print(): Unit = QuarryPlus.LOGGER.info(toString)
+  def print(): Unit = QuarryPlus.LOGGER.debug(AdvQuarryWork.MARKER, toString)
 }
 
 object Reason {
@@ -22,15 +22,19 @@ object Reason {
   private[this] final val Nano = 1000000000L
   private[this] final val toNano = 1000000000L
 
-  def apply(energyUsage: EnergyUsage, required: Double, amount: Double): Reason =
+  def energy(energyUsage: EnergyUsage, required: Double, amount: Double): Reason =
     new EnergyReasonImpl(energyUsage, (required * toNano).toLong, (amount * toNano).toLong)
 
-  def apply(energyUsage: EnergyUsage, required: Double, amount: Double, index: Int): Reason =
+  def energy(energyUsage: EnergyUsage, required: Double, amount: Double, index: Int): Reason =
     new EnergyReasonImpl(energyUsage, (required * toNano).toLong, (amount * toNano).toLong, Some(index))
 
-  def apply(pos: BlockPos, state: BlockState): Reason = new BreakCanceledImpl(pos, state)
+  def energy(state: BlockState, amount: Long): Reason = new EnergyReason2Impl(state, amount)
 
-  def apply(pos: BlockPos, index: Int) = new AllAirImpl(pos, index)
+  def canceled(pos: BlockPos, state: BlockState): Reason = new BreakCanceledImpl(pos, state)
+
+  def allAir(pos: BlockPos, index: Int) = new AllAirImpl(pos, index)
+
+  def message(s: String): Reason = new Message(s)
 
   def printNonEnergy[T]: Reason => Option[T] = r => {
     if (Config.common.debug && !r.isEnergyIssue)
@@ -59,6 +63,14 @@ object Reason {
     }
   }
 
+  private[advquarry] class EnergyReason2Impl(state: BlockState, amount: Long) extends Reason {
+    override def isEnergyIssue = true
+
+    override def usage: Option[EnergyUsage] = Some(EnergyUsage.BREAK_BLOCK)
+
+    override def toString: String = s"Tried to break $state but machine has ${amount * 10 / Nano} RF."
+  }
+
   private[advquarry] class BreakCanceledImpl(pos: BlockPos, state: BlockState) extends Reason {
     override def isEnergyIssue: Boolean = false
 
@@ -71,6 +83,12 @@ object Reason {
     override def toString: String = s"x = ${pos.getX}, z = ${pos.getZ} has no blocks. index = $index"
 
     override def print(): Unit = ()
+  }
+
+  private[advquarry] class Message(s: String) extends Reason {
+    override def isEnergyIssue: Boolean = false
+
+    override def toString: String = s
   }
 
 }
