@@ -4,7 +4,7 @@ import cats.Show
 import com.yogpc.qp._
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.util.Direction
-import net.minecraft.util.math.{AxisAlignedBB, BlockPos, Vec3i}
+import net.minecraft.util.math.{AxisAlignedBB, BlockPos, ChunkPos, Vec3i}
 import net.minecraft.world.World
 
 case class Area(xMin: Int, yMin: Int, zMin: Int, xMax: Int, yMax: Int, zMax: Int)
@@ -43,7 +43,7 @@ object Area {
       Math.max(p1.getX, p2.getX), Math.max(p1.getY, p2.getY), Math.max(p1.getZ, p2.getZ))
   }
 
-  def defaultArea(pos: BlockPos, facing: Direction): Area = {
+  def defaultQuarryArea(pos: BlockPos, facing: Direction): Area = {
     val x = 11
     val y = (x - 1) / 2 //5
     val start = pos.offset(facing, 2)
@@ -52,10 +52,10 @@ object Area {
     posToArea(edge1, edge2)
   }
 
-  def findArea(facing: Direction, world: World, pos: BlockPos) = {
+  def findQuarryArea(facing: Direction, world: World, pos: BlockPos) = {
     List(pos.offset(facing.getOpposite), pos.offset(facing.rotateY()), pos.offset(facing.rotateYCCW())).map(world.getTileEntity).collectFirst { case m: IMarker if m.hasLink => m } match {
       case Some(marker) => areaFromMarker(facing, pos, marker)
-      case None => defaultArea(pos, facing.getOpposite) -> None
+      case None => defaultQuarryArea(pos, facing.getOpposite) -> None
     }
   }
 
@@ -63,14 +63,14 @@ object Area {
     if (marker.min().getX <= pos.getX && marker.max().getX >= pos.getX &&
       marker.min().getY <= pos.getY && marker.max().getY >= pos.getY &&
       marker.min().getZ <= pos.getZ && marker.max().getZ >= pos.getZ) {
-      defaultArea(pos, facing.getOpposite) -> None
+      defaultQuarryArea(pos, facing.getOpposite) -> None
     } else {
       val subs = marker.max().subtract(marker.min())
       if (subs.getX > 1 && subs.getZ > 1) {
         val maxY = if (subs.getY > 1) marker.max().getY else marker.min().getY + 3
         posToArea(marker.min(), marker.max().copy(y = maxY)) -> Some(marker)
       } else {
-        defaultArea(pos, facing.getOpposite) -> None
+        defaultQuarryArea(pos, facing.getOpposite) -> None
       }
     }
   }
@@ -79,11 +79,12 @@ object Area {
     Area(nbt.getInt(NBT_X_MIN), nbt.getInt(NBT_Y_MIN), nbt.getInt(NBT_Z_MIN), nbt.getInt(NBT_X_MAX), nbt.getInt(NBT_Y_MAX), nbt.getInt(NBT_Z_MAX))
   }
 
-  def posesInArea(area: Area, xFilter: Int => Boolean, yFilter: Int => Boolean, zFilter: Int => Boolean): List[BlockPos] = {
+  def posesInArea(area: Area, filter: (Int, Int, Int) => Boolean): List[BlockPos] = {
     val poses = for {
-      x <- Range.inclusive(area.xMin, area.xMax) if xFilter(x)
-      z <- Range.inclusive(area.zMin, area.zMax) if zFilter(z)
-      y <- Range.inclusive(area.yMin, area.yMax).reverse if yFilter(y)
+      x <- Range.inclusive(area.xMin, area.xMax)
+      z <- Range.inclusive(area.zMin, area.zMax)
+      y <- Range.inclusive(area.yMin, area.yMax).reverse
+      if filter(x, y, z)
     } yield new BlockPos(x, y, z)
     poses.toList
   }
@@ -120,5 +121,15 @@ object Area {
       z += 1
     }
     builder.result()
+  }
+
+  def findAdvQuarryArea(facing: Direction, world: World, pos: BlockPos): (Area, Option[IMarker]) = {
+    findQuarryArea(facing, world, pos) match {
+      case marked@(_, Some(_)) => marked
+      case (_, None) =>
+        val chunkPos = new ChunkPos(pos)
+        val y = pos.getY
+        Area(chunkPos.getXStart, y, chunkPos.getZStart, chunkPos.getXEnd, y, chunkPos.getZEnd) -> None
+    }
   }
 }

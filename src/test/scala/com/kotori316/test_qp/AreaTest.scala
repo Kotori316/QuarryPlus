@@ -1,16 +1,18 @@
 package com.kotori316.test_qp
 
-import com.yogpc.qp._
 import com.yogpc.qp.machines.base.Area
-import jp.t2v.lab.syntax.MapStreamSyntax
 import net.minecraft.util.math.BlockPos
 import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.Test
 
 class AreaTest {
 
-  val alwaysTrue = MapStreamSyntax.always_true[Any]().asScala
-  val alwaysFalse = MapStreamSyntax.always_false[Any]().asScala
+  val alwaysTrue: (Int, Int, Int) => Boolean = {
+    case (_, _, _) => true
+  }
+  val alwaysFalse: (Int, Int, Int) => Boolean = {
+    case (_, _, _) => false
+  }
   val area = Area(8, 16, 9, 12, 16, 29)
 
   @Test
@@ -22,17 +24,17 @@ class AreaTest {
 
   @Test
   def poses(): Unit = {
-    val zeroPoses = Area.posesInArea(Area.zeroArea, alwaysTrue, alwaysTrue, alwaysTrue)
+    val zeroPoses = Area.posesInArea(Area.zeroArea, filter = alwaysTrue)
     assertTrue(zeroPoses.nonEmpty)
     assertEquals(1, zeroPoses.size)
-    val inArea = Area.posesInArea(area, alwaysTrue, alwaysTrue, alwaysTrue)
+    val inArea = Area.posesInArea(area, alwaysTrue)
     assertTrue(inArea.nonEmpty)
   }
 
   @Test
   def emptyArea(): Unit = {
-    assertTrue(Area.posesInArea(area, alwaysFalse, alwaysFalse, alwaysFalse).isEmpty)
-    assertTrue(Area.posesInArea(area, _ > 15, alwaysTrue, alwaysTrue).isEmpty)
+    assertTrue(Area.posesInArea(area, alwaysFalse).isEmpty)
+    assertTrue(Area.posesInArea(area, (x, _, _) => x > 15).isEmpty)
   }
 
   @Test
@@ -40,10 +42,18 @@ class AreaTest {
     val a = new BlockPos(14, 80, 65)
     val b = new BlockPos(36, 80, 91)
     val area = Area.posToArea(a, b)
-    val poses = Area.posesInArea(area, alwaysTrue, alwaysTrue, alwaysTrue)
+    val poses = Area.posesInArea(area, alwaysTrue)
     assertTrue(poses forall (_.getY == 80))
     assertTrue(poses contains a)
     assertTrue(poses contains b)
     assertTrue(poses contains new BlockPos(24, 80, 76))
+  }
+
+  @Test
+  def filter2(): Unit = {
+    val poses = Area.posesInArea(area, (x, _, z) => z > 19 || x >= 10)
+    assertFalse(poses contains new BlockPos(9, 16, 16))
+    assertTrue(poses contains new BlockPos(9, 16, 20))
+    assertTrue(poses contains new BlockPos(10, 16, 19))
   }
 }

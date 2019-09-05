@@ -132,7 +132,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   override def G_ReInit(): Unit = {
     if (area == Area.zeroArea) {
       val facing = world.getBlockState(pos).get(BlockStateProperties.FACING)
-      Area.findArea(facing, world, pos) match {
+      Area.findQuarryArea(facing, world, pos) match {
         case (newArea, markerOpt) =>
           area = newArea
           markerOpt.foreach(m => JavaConverters.asScalaBuffer(m.removeFromWorldWithItem()).foreach(storage.insertItem))
