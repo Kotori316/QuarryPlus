@@ -9,6 +9,7 @@ import com.yogpc.qp.machines.pump.TilePump
 import com.yogpc.qp.machines.quarry.QuarryFakePlayer
 import com.yogpc.qp.utils.Holder
 import net.minecraft.block.{BlockState, Blocks}
+import net.minecraft.enchantment.{EnchantmentHelper, Enchantments}
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.ItemEntity
 import net.minecraft.item.ItemStack
@@ -280,7 +281,7 @@ object AdvQuarryWork {
       }
     }
 
-    def removeUnbreakable(state: BlockState, world: World, pos: BlockPos, stack: ItemStack, toReplace: => BlockState): Ior[Reason, AdvStorage] = {
+    def removeUnbreakable(state: BlockState, world: World, pos: BlockPos, pickaxe: ItemStack, toReplace: => BlockState): Ior[Reason, AdvStorage] = {
       val storage = new AdvStorage
       state.getBlock match {
         case Blocks.BEDROCK =>
@@ -291,7 +292,7 @@ object AdvQuarryWork {
           }
 
           if (Config.common.removeBedrock.get() && toRemove) {
-            if (Config.common.collectBedrock.get()) {
+            if (Config.common.collectBedrock.get() && EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, pickaxe) > 0) {
               storage.insertItem(new ItemStack(state.getBlock))
             }
             world.setBlockState(pos, toReplace, 0x10 | 0x2)
