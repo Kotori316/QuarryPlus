@@ -18,6 +18,7 @@ import com.yogpc.qp.utils.Holder;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.IBucketPickupHandler;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -333,7 +334,8 @@ public abstract class PumpModule implements IModule {
         }
 
         private void drainBlock(final int bx, final int bz, final BlockState tb) {
-            if (TilePump.isLiquid(this.storageArray[bx >> 4][bz >> 4][this.py >> 4].getBlockState(bx & 0xF, this.py & 0xF, bz & 0xF))) {
+            BlockState blockState = this.storageArray[bx >> 4][bz >> 4][this.py >> 4].getBlockState(bx & 0xF, this.py & 0xF, bz & 0xF);
+            if (TilePump.isLiquid(blockState)) {
                 BlockPos blockPos = new BlockPos(bx + xOffset, py, bz + zOffset);
             /*FluidUtil.getFluidHandler(world, blockPos, EnumFacing.UP).ifPresent(handler -> {
                 FluidStack stack = handler.drain(Fluid.BUCKET_VOLUME, true);
@@ -353,7 +355,16 @@ public abstract class PumpModule implements IModule {
                     } else
                         FluidStore.injectToNearTile(world, pos, new FluidStack(fluidState.getFluid(), FluidAttributes.BUCKET_VOLUME));
                 }
-                world.setBlockState(blockPos, tb);
+                if (blockState.getMaterial().isLiquid())
+                    world.setBlockState(blockPos, tb);
+                else {
+                    if (blockState.getBlock() instanceof IBucketPickupHandler) {
+                        ((IBucketPickupHandler) blockState.getBlock()).pickupFluid(world, blockPos, blockState);
+                    } else {
+                        world.setBlockState(blockPos, tb);
+                    }
+                }
+
             }
         }
 

@@ -46,6 +46,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FlowingFluidBlock;
+import net.minecraft.block.IBucketPickupHandler;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.fluid.IFluidState;
@@ -467,7 +468,8 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
      * @return true if the blockstate is liquid state.
      */
     public static boolean isLiquid(@Nonnull final BlockState state, final boolean findSource, final World world, final BlockPos pos) {
-        if (state.getFluidState() != Fluids.EMPTY.getDefaultState()) return !findSource || state.getFluidState().isSource();
+        if (state.getFluidState() != Fluids.EMPTY.getDefaultState())
+            return !findSource || state.getFluidState().isSource();
         Block block = state.getBlock();
         if (block instanceof IFluidBlock)
             return !findSource || ((IFluidBlock) block).canDrain(world, pos);
@@ -483,7 +485,8 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
 
     private void drainBlock(final int bx, final int bz, final BlockState tb) {
         assert world != null;
-        if (isLiquid(this.storageArray[bx >> 4][bz >> 4][this.py >> 4].getBlockState(bx & 0xF, this.py & 0xF, bz & 0xF))) {
+        BlockState blockState = this.storageArray[bx >> 4][bz >> 4][this.py >> 4].getBlockState(bx & 0xF, this.py & 0xF, bz & 0xF);
+        if (isLiquid(blockState)) {
             BlockPos blockPos = new BlockPos(bx + xOffset, py, bz + zOffset);
             /*FluidUtil.getFluidHandler(world, blockPos, EnumFacing.UP).ifPresent(handler -> {
                 FluidStack stack = handler.drain(Fluid.BUCKET_VOLUME, true);
@@ -500,7 +503,16 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                 HasStorage.Storage storage = G_connected() instanceof HasStorage ? ((HasStorage) G_connected()).getStorage() : getStorage();
                 storage.insertFluid(new FluidStack(fluidState.getFluid(), FluidAttributes.BUCKET_VOLUME));
             }
-            world.setBlockState(blockPos, tb);
+            if (blockState.getMaterial().isLiquid())
+                world.setBlockState(blockPos, tb);
+            else {
+                if (blockState.getBlock() instanceof IBucketPickupHandler) {
+                    ((IBucketPickupHandler) blockState.getBlock()).pickupFluid(world, blockPos, blockState);
+                } else {
+                    world.setBlockState(blockPos, tb);
+                }
+            }
+
         }
     }
 
