@@ -1,5 +1,6 @@
 package com.yogpc.qp.utils
 
+import cats.Show
 import com.yogpc.qp.NBTWrapper
 import net.minecraft.fluid.{Fluid, Fluids}
 import net.minecraft.nbt.CompoundNBT
@@ -40,4 +41,6 @@ object FluidElement {
     e.tag.foreach(tag => nbt.put("Tag", tag))
     nbt
   }
+
+  implicit val showFluidElement: Show[FluidElement] = e => s"${e.fluid.getRegistryName} ${e.tag.fold("""""")(_ => """with NBT""")}"
 }
