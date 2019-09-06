@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.BuildcraftHelper;
+import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.IEnchantableTile;
 import com.yogpc.qp.machines.base.QPBlock;
 import com.yogpc.qp.machines.item.YSetterInteractionObject;
@@ -87,7 +88,7 @@ public class BlockQuarry2 extends QPBlock {
             if (!worldIn.isRemote) {
                 Optional.ofNullable((TileQuarry2) worldIn.getTileEntity(pos)).map(t -> {
                     if (stack.getItem() == Holder.itemYSetter()) return YSetterInteractionObject.apply(t, pos);
-                    else return new TileQuarry2.InteractionObject(t);
+                    else return new ContainerQuarryModule.InteractionObject(pos, TranslationKeys.quarry2);
                 }).ifPresent(o -> NetworkHooks.openGui(((ServerPlayerEntity) player), o, pos));
             }
             return true;

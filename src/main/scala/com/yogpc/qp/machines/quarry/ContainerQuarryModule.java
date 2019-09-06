@@ -7,10 +7,14 @@ import com.yogpc.qp.machines.base.QuarryModuleInventory;
 import com.yogpc.qp.machines.base.SlotTile;
 import com.yogpc.qp.utils.Holder;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
 public class ContainerQuarryModule extends Container {
     public static final String GUI_ID = QuarryPlus.modID + ":gui_quarry_module";
@@ -79,5 +83,25 @@ public class ContainerQuarryModule extends Container {
 
     public interface HasModuleInventory {
         QuarryModuleInventory moduleInv();
+    }
+
+    public static class InteractionObject implements INamedContainerProvider {
+        private final BlockPos pos;
+        private final String name;
+
+        public InteractionObject(BlockPos pos, String name) {
+            this.pos = pos;
+            this.name = name;
+        }
+
+        @Override
+        public ITextComponent getDisplayName() {
+            return new TranslationTextComponent(name);
+        }
+
+        @Override
+        public Container createMenu(int id, PlayerInventory i, PlayerEntity p) {
+            return new ContainerQuarryModule(id, p, pos);
+        }
     }
 }

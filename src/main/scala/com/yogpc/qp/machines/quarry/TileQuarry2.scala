@@ -10,8 +10,7 @@ import com.yogpc.qp.utils.{Holder, ItemDamage}
 import net.minecraft.block.{Block, BlockState}
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.ItemEntity
-import net.minecraft.entity.player.{PlayerEntity, PlayerInventory}
-import net.minecraft.inventory.container.INamedContainerProvider
+import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.{CompoundNBT, StringNBT}
 import net.minecraft.state.properties.BlockStateProperties
@@ -301,16 +300,6 @@ object TileQuarry2 {
   val breakInsideFrame = new Mode("BreakInsideFrame")
   val breakBlock = new Mode("BreakBlock")
   val checkDrops = new Mode("CheckDrops")
-
-  class InteractionObject(quarry2: TileQuarry2) extends INamedContainerProvider {
-
-    override def getDisplayName = new TranslationTextComponent(TranslationKeys.quarry2)
-
-    override def createMenu(id: Int, p_createMenu_2_ : PlayerInventory, player: PlayerEntity) = {
-      new ContainerQuarryModule(id, player, quarry2.getPos)
-    }
-
-  }
 
   //---------- NBT ----------
   //  private[this] final val MARKER: Marker = MarkerManager.getMarker("QUARRY_NBT")

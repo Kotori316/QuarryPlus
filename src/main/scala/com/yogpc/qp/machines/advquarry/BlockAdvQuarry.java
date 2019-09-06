@@ -20,6 +20,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -118,5 +119,21 @@ public class BlockAdvQuarry extends QPBlock {
     @Override
     public TileEntity createNewTileEntity(IBlockReader worldIn) {
         return Holder.advQuarryType().create();
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (state.getBlock() != newState.getBlock()) {
+            if (!worldIn.isRemote) {
+                TileEntity entity = worldIn.getTileEntity(pos);
+                if (entity instanceof TileAdvQuarry) {
+                    TileAdvQuarry inventory = (TileAdvQuarry) entity;
+                    InventoryHelper.dropInventoryItems(worldIn, pos, inventory.moduleInv());
+                    worldIn.updateComparatorOutputLevel(pos, state.getBlock());
+                }
+            }
+            super.onReplaced(state, worldIn, pos, newState, isMoving);
+        }
     }
 }

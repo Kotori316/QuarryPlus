@@ -48,6 +48,7 @@ class GuiAdvQuarry(c: ContainerAdvQuarry, i: PlayerInventory, t: ITextComponent)
     addButton(new IHandleButton.Button(7, guiLeft + 128, guiTop + 39, 10, 8, minus, this))
 
     addButton(new IHandleButton.Button(8, guiLeft + 108, guiTop + 58, 60, 12, "No Frame", this))
+    addButton(new IHandleButton.Button(9, guiLeft + 8, guiTop + 58, 60, 12, "Modules", this))
   }
 
   private def range = tile.area
@@ -57,6 +58,9 @@ class GuiAdvQuarry(c: ContainerAdvQuarry, i: PlayerInventory, t: ITextComponent)
       if (tile.action == AdvQuarryWork.waiting) {
         PacketHandler.sendToServer(AdvActionMessage.create(tile, AdvActionMessage.Actions.QUICK_START))
       }
+    } else if (button.id == 9) {
+      PacketHandler.sendToServer(AdvActionMessage.create(tile, AdvActionMessage.Actions.MODULE_INV))
+      //      onClose()
     } else if (tile.action == AdvQuarryWork.waiting) {
       val direction = Direction.byIndex(button.id / 2 + 2)
       val increase = if (button.id % 2 == 0) 1 else -1

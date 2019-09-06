@@ -7,10 +7,12 @@ import java.util.function.Supplier;
 import com.yogpc.qp.machines.advquarry.TileAdvQuarry;
 import com.yogpc.qp.machines.base.Area;
 import com.yogpc.qp.packet.IMessage;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fml.util.ThreeConsumer;
 
 /**
  * To Server only.
@@ -53,26 +55,31 @@ public class AdvActionMessage implements IMessage<AdvActionMessage> {
     @Override
     public void onReceive(Supplier<NetworkEvent.Context> ctx) {
         IMessage.findTile(ctx, pos, dim, TileAdvQuarry.class)
-            .ifPresent(quarry -> ctx.get().enqueueWork(action.runnable(quarry, tag)));
+            .ifPresent(quarry -> ctx.get().enqueueWork(action.runnable(quarry, tag, ctx.get().getSender())));
     }
 
     public enum Actions {
         QUICK_START(TileAdvQuarry::noFrameStart),
         CHANGE_RANGE((quarry, rangeNBT) ->
             quarry.area_$eq(Area.areaLoad(rangeNBT))
-        );
-        private final BiConsumer<TileAdvQuarry, CompoundNBT> consumer;
+        ),
+        MODULE_INV((q, t, p) -> q.openModuleInv(p));
+        private final ThreeConsumer<TileAdvQuarry, CompoundNBT, ServerPlayerEntity> consumer;
 
         Actions(Consumer<TileAdvQuarry> consumer) {
-            this.consumer = (quarry, nbtTagCompound) -> consumer.accept(quarry);
+            this.consumer = (quarry, nbtTagCompound, player) -> consumer.accept(quarry);
         }
 
         Actions(BiConsumer<TileAdvQuarry, CompoundNBT> consumer) {
+            this.consumer = (quarry, nbtTagCompound, player) -> consumer.accept(quarry, nbtTagCompound);
+        }
+
+        Actions(ThreeConsumer<TileAdvQuarry, CompoundNBT, ServerPlayerEntity> consumer) {
             this.consumer = consumer;
         }
 
-        Runnable runnable(TileAdvQuarry quarry, CompoundNBT compound) {
-            return () -> consumer.accept(quarry, compound);
+        Runnable runnable(TileAdvQuarry quarry, CompoundNBT compound, ServerPlayerEntity player) {
+            return () -> consumer.accept(quarry, compound, player);
         }
     }
 }
