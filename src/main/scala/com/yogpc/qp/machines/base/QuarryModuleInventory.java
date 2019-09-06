@@ -1,4 +1,4 @@
-package com.yogpc.qp.machines.quarry;
+package com.yogpc.qp.machines.base;
 
 import java.util.List;
 import java.util.Map;

@@ -33,7 +33,7 @@ public class GuiQuarryModule extends ContainerScreen<ContainerQuarryModule> {
 
     @Override
     protected void drawGuiContainerForegroundLayer(final int mouseX, final int mouseY) {
-        this.font.drawString(I18n.format(TranslationKeys.quarry2), 8, 6, 0x404040);
+        this.font.drawString(title.getFormattedText(), 8, 6, 0x404040);
         this.font.drawString(I18n.format(TranslationKeys.CONTAINER_INVENTORY), 8, this.ySize - 96 + 2, 0x404040);
     }
 }

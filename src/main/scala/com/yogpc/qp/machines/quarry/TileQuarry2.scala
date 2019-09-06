@@ -32,7 +32,8 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   with HasInv
   with IAttachable
   with IDebugSender
-  with IChunkLoadTile {
+  with IChunkLoadTile
+  with ContainerQuarryModule.HasModuleInventory {
   self =>
 
   import TileQuarry2._

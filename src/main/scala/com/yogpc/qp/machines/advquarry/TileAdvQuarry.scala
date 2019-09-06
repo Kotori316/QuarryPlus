@@ -8,7 +8,7 @@ import com.yogpc.qp._
 import com.yogpc.qp.machines.advquarry.AdvQuarryWork._
 import com.yogpc.qp.machines.base._
 import com.yogpc.qp.machines.pump.TilePump
-import com.yogpc.qp.machines.quarry.{QuarryFakePlayer, QuarryModuleInventory}
+import com.yogpc.qp.machines.quarry.{ContainerQuarryModule, QuarryFakePlayer}
 import com.yogpc.qp.machines.{PowerManager, TranslationKeys}
 import com.yogpc.qp.packet.PacketHandler
 import com.yogpc.qp.packet.advquarry.AdvModeMessage
@@ -39,7 +39,8 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
   with IDebugSender
   with IAttachable
   with IChunkLoadTile
-  with INamedContainerProvider {
+  with INamedContainerProvider
+  with ContainerQuarryModule.HasModuleInventory {
   self =>
 
   var yLevel = 1

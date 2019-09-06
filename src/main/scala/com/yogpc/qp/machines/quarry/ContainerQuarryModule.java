@@ -3,6 +3,7 @@ package com.yogpc.qp.machines.quarry;
 import java.util.Objects;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.base.QuarryModuleInventory;
 import com.yogpc.qp.machines.base.SlotTile;
 import com.yogpc.qp.utils.Holder;
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,9 +19,9 @@ public class ContainerQuarryModule extends Container {
 
     public ContainerQuarryModule(int id, PlayerEntity player, BlockPos pos) {
         super(Holder.quarryModuleContainerType(), id);
-        TileQuarry2 quarry = (TileQuarry2) player.getEntityWorld().getTileEntity(pos);
-        Objects.requireNonNull(quarry);
-        this.moduleInventory = quarry.moduleInv();
+        HasModuleInventory inventory = (HasModuleInventory) player.getEntityWorld().getTileEntity(pos);
+        Objects.requireNonNull(inventory);
+        this.moduleInventory = inventory.moduleInv();
         this.allSlots = moduleInventory.getSizeInventory();
         int oneBox = 18;
 
@@ -74,5 +75,9 @@ public class ContainerQuarryModule extends Container {
             slot.onTake(playerIn, remain);
         }
         return src;
+    }
+
+    public interface HasModuleInventory {
+        QuarryModuleInventory moduleInv();
     }
 }
