@@ -3,6 +3,7 @@ package com.yogpc.qp.machines.modules
 import cats._
 import cats.implicits._
 import com.yogpc.qp._
+import com.yogpc.qp.machines.advquarry.TileAdvQuarry
 import com.yogpc.qp.machines.base.IModule
 import com.yogpc.qp.machines.base.IModule.{AfterBreak, Done, NoAction, Result}
 import com.yogpc.qp.machines.item.GuiQuarryLevel
@@ -56,7 +57,7 @@ object TorchModule {
     val getter = t match {
       case quarry2: TileQuarry2 => Eval.always(implicitly[YLevel[TileQuarry2]].getYLevel(quarry2))
       case quarry: TileQuarry => Eval.always(implicitly[YLevel[TileQuarry]].getYLevel(quarry))
-      //      case adv: TileAdvQuarry => Eval.always(implicitly[YLevel[TileAdvQuarry]].getYLevel(adv))
+      case adv: TileAdvQuarry => Eval.always(implicitly[YLevel[TileAdvQuarry]].getYLevel(adv))
       case _ => Eval.Zero
     }
     new TorchModule(getter)
