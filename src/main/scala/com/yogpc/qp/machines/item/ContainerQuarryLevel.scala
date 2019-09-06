@@ -1,5 +1,6 @@
 package com.yogpc.qp.machines.item
 
+import com.yogpc.qp.machines.advquarry.TileAdvQuarry
 import com.yogpc.qp.machines.item.GuiQuarryLevel._
 import com.yogpc.qp.machines.quarry.{TileBasic, TileQuarry2}
 import com.yogpc.qp.packet.PacketHandler
@@ -19,7 +20,7 @@ class ContainerQuarryLevel(id: Int, player: PlayerEntity, pos: BlockPos)
   val messageFunc: Message[TileEntity] = (tile match {
     case _: TileBasic => implicitly[Message[TileBasic]]
     case _: TileQuarry2 => implicitly[Message[TileQuarry2]]
-//    case _: TileAdvQuarry => implicitly[Message[TileAdvQuarry]]
+    case _: TileAdvQuarry => implicitly[Message[TileAdvQuarry]]
     case _ => null
   }).asInstanceOf[Message[TileEntity]]
 

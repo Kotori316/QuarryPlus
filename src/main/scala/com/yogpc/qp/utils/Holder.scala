@@ -1,6 +1,7 @@
 package com.yogpc.qp.utils
 
 import com.yogpc.qp.machines.advpump.{BlockAdvPump, ContainerAdvPump, TileAdvPump}
+import com.yogpc.qp.machines.advquarry.{BlockAdvQuarry, ContainerAdvQuarry, TileAdvQuarry}
 import com.yogpc.qp.machines.base.IDisabled
 import com.yogpc.qp.machines.bookmover.{BlockBookMover, ContainerBookMover, TileBookMover}
 import com.yogpc.qp.machines.controller.BlockController
@@ -46,7 +47,7 @@ object Holder {
   val blockReplacer = new BlockReplacer
   val blockController = new BlockController
   val blockBookMover = new BlockBookMover
-  //  val blockAdvQuarry = new BlockAdvQuarry
+  val blockAdvQuarry = new BlockAdvQuarry
   val blockAdvPump = new BlockAdvPump
   val blockQuarry2 = new BlockQuarry2
 
@@ -65,7 +66,7 @@ object Holder {
     blockReplacer,
     blockController,
     blockBookMover,
-    //    blockAdvQuarry,
+    blockAdvQuarry,
     blockAdvPump,
     blockQuarry2,
   )
@@ -86,7 +87,7 @@ object Holder {
   val solidQuarryType = createTileType(() => new TileSolidQuarry, QuarryPlus.Names.solidquarry, blockSolidQuarry)
   val replacerType = createTileType(() => new TileReplacer, QuarryPlus.Names.replacer, blockReplacer)
   val bookMoverType = createTileType(() => new TileBookMover, QuarryPlus.Names.moverfrombook, blockBookMover)
-  //  val advQuarryType = createTileType(() => new TileAdvQuarry, QuarryPlus.Names.advquarry, blockAdvQuarry)
+  val advQuarryType = createTileType(() => new TileAdvQuarry, QuarryPlus.Names.advquarry, blockAdvQuarry)
   val advPumpType = createTileType(() => new TileAdvPump, QuarryPlus.Names.advpump, blockAdvPump)
   val quarry2 = createTileType(() => new TileQuarry2, QuarryPlus.Names.quarry2, blockQuarry2)
 
@@ -100,7 +101,7 @@ object Holder {
     solidQuarryType -> TileDisable(BlockSolidQuarry.SYMBOL),
     replacerType -> TileDisable(TileReplacer.SYMBOL, defaultDisableMachine = true),
     bookMoverType -> TileDisable(BlockBookMover.SYMBOL, defaultDisableMachine = true),
-    //    advQuarryType -> TileDisable(TileAdvQuarry.SYMBOL, defaultDisableMachine = true),
+    advQuarryType -> TileDisable(TileAdvQuarry.SYMBOL, defaultDisableMachine = true),
     advPumpType -> TileDisable(TileAdvPump.SYMBOL),
     quarry2 -> TileDisable(TileQuarry2.SYMBOL),
   )
@@ -155,6 +156,7 @@ object Holder {
   }
   val templateContainerType = createContainerType(new ContainerListTemplate(_, _, _), ItemTemplate.GUI_ID)
   val advPumpContainerType = createContainerType(new ContainerAdvPump(_, _, _), TileAdvPump.GUI_ID)
+  val advQuarryContainerType = createContainerType(new ContainerAdvQuarry(_, _, _), TileAdvQuarry.GUI_ID)
 
   val containers: Set[ContainerType[_ <: Container]] = Set(
     quarryModuleContainerType,
@@ -166,6 +168,7 @@ object Holder {
     enchListContainerType,
     templateContainerType,
     advPumpContainerType,
+    advQuarryContainerType
   )
 
   private def createContainerType[T <: Container](supplier: (Int, PlayerEntity, BlockPos) => T, name: String): ContainerType[T] = {

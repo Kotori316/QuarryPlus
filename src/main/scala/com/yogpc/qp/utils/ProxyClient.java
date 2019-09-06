@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import com.yogpc.qp.Config;
 import com.yogpc.qp.machines.advpump.GuiAdvPump;
+import com.yogpc.qp.machines.advquarry.GuiAdvQuarry;
+import com.yogpc.qp.machines.advquarry.TileAdvQuarry;
 import com.yogpc.qp.machines.bookmover.GuiBookMover;
 import com.yogpc.qp.machines.item.GuiEnchList;
 import com.yogpc.qp.machines.item.GuiListTemplate;
@@ -17,6 +19,7 @@ import com.yogpc.qp.machines.quarry.TileQuarry;
 import com.yogpc.qp.machines.quarry.TileQuarry2;
 import com.yogpc.qp.machines.workbench.GuiWorkbench;
 import com.yogpc.qp.render.DummyBlockBakedModel;
+import com.yogpc.qp.render.RenderAdvQuarry;
 import com.yogpc.qp.render.RenderMarker;
 import com.yogpc.qp.render.RenderQuarry;
 import com.yogpc.qp.render.RenderQuarry2;
@@ -116,6 +119,7 @@ public class ProxyClient extends ProxyCommon {
         ScreenManager.registerFactory(Holder.enchListContainerType(), GuiEnchList::new);
         ScreenManager.registerFactory(Holder.templateContainerType(), GuiListTemplate::new);
         ScreenManager.registerFactory(Holder.advPumpContainerType(), GuiAdvPump::new);
+        ScreenManager.registerFactory(Holder.advQuarryContainerType(), GuiAdvQuarry::new);
     }
 
     public void onBake(ModelBakeEvent event) {

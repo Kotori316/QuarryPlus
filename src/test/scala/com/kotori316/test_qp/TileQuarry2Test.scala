@@ -3,9 +3,8 @@ package com.kotori316.test_qp
 import java.util.Collections
 
 import cats.implicits._
-import com.yogpc.qp.machines.base.IMarker
-import com.yogpc.qp.machines.quarry.TileQuarry2.Area
-import com.yogpc.qp.machines.quarry.{QuarryAction, TileQuarry2}
+import com.yogpc.qp.machines.base.{Area, IMarker}
+import com.yogpc.qp.machines.quarry.QuarryAction
 import net.minecraft.util.Direction
 import net.minecraft.util.math.BlockPos
 import org.junit.jupiter.api.Assertions._
@@ -19,22 +18,22 @@ class TileQuarry2Test {
 
   @Test
   def defaultArea(): Unit = {
-    assertEquals(Area(-2, 0, 4, 8, 3, 14), TileQuarry2.defaultArea(new BlockPos(3, 0, 2), Direction.SOUTH))
+    assertEquals(Area(-2, 0, 4, 8, 3, 14), Area.defaultQuarryArea(new BlockPos(3, 0, 2), Direction.SOUTH))
   }
 
   @Test
   def posArea(): Unit = {
-    TileQuarry2.areaFromMarker(Direction.SOUTH, new BlockPos(12, 2, 7), m1) match {
+    Area.areaFromMarker(Direction.SOUTH, new BlockPos(12, 2, 7), m1) match {
       case (area, marker) =>
         assertEquals(Area(-5, 2, 8, 25, 9, 18), area)
         assertTrue(marker.isDefined)
     }
-    TileQuarry2.areaFromMarker(Direction.SOUTH, new BlockPos(12, 2, 7), m2) match {
+    Area.areaFromMarker(Direction.SOUTH, new BlockPos(12, 2, 7), m2) match {
       case (area, marker) =>
         assertEquals(Area(-5, 2, 8, 25, 5, 18), area)
         assertTrue(marker.isDefined)
     }
-    TileQuarry2.areaFromMarker(Direction.SOUTH, new BlockPos(12, 2, 12), m2) match {
+    Area.areaFromMarker(Direction.SOUTH, new BlockPos(12, 2, 12), m2) match {
       case (_, marker) =>
         assertFalse(marker.isDefined)
     }
@@ -43,7 +42,7 @@ class TileQuarry2Test {
   @Test
   def digTargets(): Unit = {
     val pos = new BlockPos(-1, 1, 5)
-    val (area, m) = TileQuarry2.areaFromMarker(Direction.WEST, pos, m3)
+    val (area, m) = Area.areaFromMarker(Direction.WEST, pos, m3)
     assertTrue(m.isDefined)
     val poses = QuarryAction.digTargets(area, pos, 63, log = false)
     assertEquals((m3.max.getX - m3.min.getX - 1) * (m3.max.getZ - m3.min.getZ - 1), poses.size)
@@ -54,7 +53,7 @@ class TileQuarry2Test {
     {
       val marker = m4.copy(max = m4.max.east())
       val pos = new BlockPos(7, 5, 8)
-      val (area, m) = TileQuarry2.areaFromMarker(Direction.EAST, pos, marker)
+      val (area, m) = Area.areaFromMarker(Direction.EAST, pos, marker)
       assertTrue(m.isDefined)
       val poses = QuarryAction.digTargets(area, pos, pos.getY, log = false)
       assertFalse(poses.isEmpty)
@@ -63,7 +62,7 @@ class TileQuarry2Test {
     {
       val marker = m4
       val pos = new BlockPos(7, 5, 8)
-      val (area, m) = TileQuarry2.areaFromMarker(Direction.EAST, pos, marker)
+      val (area, m) = Area.areaFromMarker(Direction.EAST, pos, marker)
       assertTrue(m.isDefined)
       val poses = QuarryAction.digTargets(area, pos, pos.getY, log = false)
       assertFalse(poses.isEmpty)
@@ -82,7 +81,7 @@ class TileQuarry2Test {
 
   @Test
   def insideFrame(): Unit = {
-    val (area, _) = TileQuarry2.areaFromMarker(Direction.SOUTH, new BlockPos(12, 2, 7), m1)
+    val (area, _) = Area.areaFromMarker(Direction.SOUTH, new BlockPos(12, 2, 7), m1)
     assertEquals(Area(-5, 2, 8, 25, 9, 18), area)
     val poses = QuarryAction.insideFrameArea(area)
     assertEquals(m1.max.getX, poses.maxBy(_.getX).getX)

@@ -12,18 +12,23 @@
  */
 package com.yogpc.qp.machines.advquarry;
 
+import java.util.Objects;
+
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.advquarry.AdvModeMessage;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
+import com.yogpc.qp.utils.Holder;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
 
 public class ContainerAdvQuarry extends Container {
-    private final TileAdvQuarry tile;
+    public final TileAdvQuarry tile;
 
-    public ContainerAdvQuarry(TileAdvQuarry tile, EntityPlayer player) {
-        this.tile = tile;
+    public ContainerAdvQuarry(int id, PlayerEntity player, BlockPos pos) {
+        super(Holder.advQuarryContainerType(), id);
+        this.tile = (TileAdvQuarry) (Objects.requireNonNull(player.getEntityWorld().getTileEntity(pos)));
         int oneBox = 18;
         for (int h = 0; h < 3; h++) {
             for (int v = 0; v < 9; v++) {
@@ -37,12 +42,12 @@ public class ContainerAdvQuarry extends Container {
     }
 
     @Override
-    public boolean canInteractWith(EntityPlayer playerIn) {
+    public boolean canInteractWith(PlayerEntity playerIn) {
         return tile.isUsableByPlayer(playerIn);
     }
 
     @Override
-    public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
+    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
         return ItemStack.EMPTY;
     }
 }

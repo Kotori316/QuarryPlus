@@ -3,9 +3,11 @@ package com.yogpc.qp.machines.item
 import com.mojang.blaze3d.platform.GlStateManager
 import com.yogpc.qp.QuarryPlus
 import com.yogpc.qp.machines.TranslationKeys
+import com.yogpc.qp.machines.advquarry.TileAdvQuarry
 import com.yogpc.qp.machines.base.{IDebugSender, IHandleButton}
 import com.yogpc.qp.machines.quarry.{TileBasic, TileQuarry, TileQuarry2}
 import com.yogpc.qp.packet.PacketHandler
+import com.yogpc.qp.packet.advquarry.AdvLevelMessage
 import com.yogpc.qp.packet.quarry.LevelMessage
 import com.yogpc.qp.packet.quarry2.Level2Message
 import net.minecraft.client.gui.screen.Screen
@@ -93,7 +95,7 @@ object GuiQuarryLevel {
     def get(tile: TileEntity): YLevel[TileEntity] = {
       tile match {
         case _: TileBasic => implicitly[YLevel[TileBasic]]
-        //        case _:TileAdvQuarry => implicitly[YLevel[TileAdvQuarry]]
+        case _: TileAdvQuarry => implicitly[YLevel[TileAdvQuarry]]
         case _: TileQuarry2 => implicitly[YLevel[TileQuarry2]]
       }
       }.asInstanceOf[YLevel[TileEntity]]
@@ -105,11 +107,11 @@ object GuiQuarryLevel {
     override def getYLevel(t: TileBasic) = t.yLevel
   }
 
-  /*implicit val AdvY: YLevel[TileAdvQuarry] = new YLevel[TileAdvQuarry] {
+  implicit val AdvY: YLevel[TileAdvQuarry] = new YLevel[TileAdvQuarry] {
     override def setYLevel(t: TileAdvQuarry, yLevel: Int): Unit = t.yLevel = yLevel
 
     override def getYLevel(t: TileAdvQuarry) = t.yLevel
-  }*/
+  }
   implicit val NQuarryY: YLevel[TileQuarry2] = new YLevel[TileQuarry2] {
     override def setYLevel(t: TileQuarry2, yLevel: Int): Unit = t.yLevel = yLevel
 
@@ -117,6 +119,6 @@ object GuiQuarryLevel {
   }
 
   implicit val basicMessage: TileBasic => LevelMessage = LevelMessage.create
-  //  implicit val advMessage: TileAdvQuarry => AdvLevelMessage = AdvLevelMessage.create
+  implicit val advMessage: TileAdvQuarry => AdvLevelMessage = AdvLevelMessage.create
   implicit val quarryMessage: TileQuarry2 => Level2Message = Level2Message.create
 }

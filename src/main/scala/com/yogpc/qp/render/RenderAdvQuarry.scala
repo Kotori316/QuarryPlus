@@ -1,6 +1,8 @@
 package com.yogpc.qp.render
 
-import com.yogpc.qp.machines.advquarry.TileAdvQuarry
+import com.yogpc.qp.machines.advquarry.AdvQuarryWork.MakeFrame
+import com.yogpc.qp.machines.advquarry.{AdvQuarryWork, TileAdvQuarry}
+import com.yogpc.qp.machines.base.Area
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.BufferBuilder
 import net.minecraftforge.client.model.animation.TileEntityRendererFast
@@ -13,34 +15,34 @@ object RenderAdvQuarry extends TileEntityRendererFast[TileAdvQuarry] {
   override def renderTileEntityFast(te: TileAdvQuarry, x: Double, y: Double, z: Double,
                                     partialTicks: Float, destroyStage: Int, buffer: BufferBuilder): Unit = {
 
-    Minecraft.getInstance.profiler.startSection("quarryplus")
+    Minecraft.getInstance.getProfiler.startSection("quarryplus")
 
-    if ((te.mode is TileAdvQuarry.MAKE_FRAME) || (te.mode is TileAdvQuarry.NOT_NEED_BREAK)) {
-      Minecraft.getInstance.profiler.startSection("chunkdestroyer")
-      val range = te.digRange
-      if (range.defined) {
+    if (te.action.isInstanceOf[MakeFrame] || (te.action == AdvQuarryWork.waiting)) {
+      Minecraft.getInstance.getProfiler.startSection("chunkdestroyer")
+      val range = te.area
+      if (range != Area.zeroArea) {
         val pos = te.getPos
         val playerX = pos.getX - x
         val playerY = pos.getY - y
         val playerZ = pos.getZ - z
         buffer.setTranslation(-playerX, -playerY, -playerZ)
-        val b1 = (playerZ - range.minZ - 0.5).abs < 256
-        val b2 = (playerZ - range.maxZ + 1.5).abs < 256
-        val b3 = (playerX - range.minX - 0.5).abs < 256
-        val b4 = (playerX - range.maxX + 1.5).abs < 256
-        val minX = math.max(range.minX - 0.5, playerX - 128)
-        val maxX = math.min(range.maxX + 1.5, playerX + 128)
-        val minZ = math.max(range.minZ - 0.5, playerZ - 128)
-        val maxZ = math.min(range.maxZ + 1.5, playerZ + 128)
-        if (b1) Box(minX, range.minY, range.minZ - 0.5, maxX, range.maxY, range.minZ - 0.5, d, d, d, firstSide = false, endSide = false).render(buffer, sprite)
-        if (b2) Box(minX, range.minY, range.maxZ + 1.5, maxX, range.maxY, range.maxZ + 1.5, d, d, d, firstSide = false, endSide = false).render(buffer, sprite)
-        if (b3) Box(range.minX - 0.5, range.minY, minZ, range.minX - 0.5, range.maxY, maxZ, d, d, d, firstSide = false, endSide = false).render(buffer, sprite)
-        if (b4) Box(range.maxX + 1.5, range.minY, minZ, range.maxX + 1.5, range.maxY, maxZ, d, d, d, firstSide = false, endSide = false).render(buffer, sprite)
+        val b1 = (playerZ - range.zMin - 0.5).abs < 256
+        val b2 = (playerZ - range.zMax + 1.5).abs < 256
+        val b3 = (playerX - range.xMin - 0.5).abs < 256
+        val b4 = (playerX - range.xMax + 1.5).abs < 256
+        val xMin = math.max(range.xMin - 0.5, playerX - 128)
+        val xMax = math.min(range.xMax + 1.5, playerX + 128)
+        val zMin = math.max(range.zMin - 0.5, playerZ - 128)
+        val zMax = math.min(range.zMax + 1.5, playerZ + 128)
+        if (b1) Box(xMin, range.yMin, range.zMin - 0.5, xMax, range.yMax, range.zMin - 0.5, d, d, d, firstSide = false, endSide = false).render(buffer, sprite)
+        if (b2) Box(xMin, range.yMin, range.zMax + 1.5, xMax, range.yMax, range.zMax + 1.5, d, d, d, firstSide = false, endSide = false).render(buffer, sprite)
+        if (b3) Box(range.xMin - 0.5, range.yMin, zMin, range.xMin - 0.5, range.yMax, zMax, d, d, d, firstSide = false, endSide = false).render(buffer, sprite)
+        if (b4) Box(range.xMax + 1.5, range.yMin, zMin, range.xMax + 1.5, range.yMax, zMax, d, d, d, firstSide = false, endSide = false).render(buffer, sprite)
       }
-      Minecraft.getInstance.profiler.endSection()
+      Minecraft.getInstance.getProfiler.endSection()
     }
 
-    Minecraft.getInstance.profiler.endSection()
+    Minecraft.getInstance.getProfiler.endSection()
   }
 
   override def isGlobalRenderer(te: TileAdvQuarry): Boolean = true

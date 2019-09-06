@@ -22,11 +22,11 @@ object Reason {
   private[this] final val Nano = 1000000000L
   private[this] final val toNano = 1000000000L
 
-  def energy(energyUsage: EnergyUsage, required: Double, amount: Double): Reason =
-    new EnergyReasonImpl(energyUsage, (required * toNano).toLong, (amount * toNano).toLong)
+  def energy(energyUsage: EnergyUsage, required: Long, amount: Long): Reason =
+    new EnergyReasonImpl(energyUsage, required, amount)
 
-  def energy(energyUsage: EnergyUsage, required: Double, amount: Double, index: Int): Reason =
-    new EnergyReasonImpl(energyUsage, (required * toNano).toLong, (amount * toNano).toLong, Some(index))
+  def energy(energyUsage: EnergyUsage, required: Long, amount: Long, index: Int): Reason =
+    new EnergyReasonImpl(energyUsage, required, amount, Some(index))
 
   def energy(state: BlockState, amount: Long): Reason = new EnergyReason2Impl(state, amount)
 
