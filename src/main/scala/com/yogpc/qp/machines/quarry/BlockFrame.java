@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.pump.TilePump;
 import com.yogpc.qp.utils.Holder;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -80,7 +81,7 @@ public class BlockFrame extends Block {
     ).collect(entryToMap());
     private static final BiPredicate<World, BlockPos> HAS_NEIGHBOUR_LIQUID = (world, pos) ->
         Stream.of(Direction.values()).map(pos::offset).map(world::getBlockState)
-            .anyMatch(state -> state.getMaterial().isLiquid());
+            .anyMatch(TilePump::isLiquid);
 
     public final BlockItem itemBlock;
 
