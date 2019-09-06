@@ -4,11 +4,11 @@ import net.minecraft.util.Direction;
 
 public interface IAttachable {
     /**
-     * @param attachments must have returned true by {@link IAttachable#isValidAttachment(IAttachment.Attachments)}.
+     * @param attachment must have returned true by {@link IAttachable#isValidAttachment(IAttachment.Attachments)}.
      * @param simulate    true to avoid having side effect.
      * @return true if the attachment is (will be) successfully connected.
      */
-    boolean connectAttachment(final Direction facing, final IAttachment.Attachments<? extends APacketTile> attachments, boolean simulate);
+    boolean connectAttachment(final Direction facing, final IAttachment.Attachments<? extends APacketTile> attachment, boolean simulate);
 
     /**
      * @param attachments that you're trying to add.
@@ -29,7 +29,7 @@ public interface IAttachable {
 
     IAttachable dummy = new IAttachable() {
         @Override
-        public boolean connectAttachment(Direction facing, IAttachment.Attachments<? extends APacketTile> attachments, boolean simulate) {
+        public boolean connectAttachment(Direction facing, IAttachment.Attachments<? extends APacketTile> attachment, boolean simulate) {
             return false;
         }
 
