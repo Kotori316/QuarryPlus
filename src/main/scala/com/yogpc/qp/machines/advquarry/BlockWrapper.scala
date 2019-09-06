@@ -36,7 +36,7 @@ object BlockWrapper extends JsonDeserializer[BlockWrapper] with JsonSerializer[B
     BlockWrapper(Tags.Blocks.STONE),
     BlockWrapper(Tags.Blocks.COBBLESTONE),
     BlockWrapper(Blocks.DIRT.getDefaultState, ignoreProperty = true),
-    BlockWrapper(Blocks.GRASS.getDefaultState, ignoreProperty = true),
+    BlockWrapper(Blocks.GRASS_BLOCK.getDefaultState, ignoreProperty = true),
     BlockWrapper(Blocks.NETHERRACK.getDefaultState),
     BlockWrapper(Blocks.SANDSTONE.getDefaultState),
     BlockWrapper(Blocks.CHISELED_SANDSTONE.getDefaultState),

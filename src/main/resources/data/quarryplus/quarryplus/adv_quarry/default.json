@@ -17,7 +17,7 @@
   {
     "name": "quarryplus:wrapper_state",
     "blockstate": {
-      "Name": "minecraft:grass"
+      "Name": "minecraft:grass_block"
     },
     "ignoreProperty": true
   },
