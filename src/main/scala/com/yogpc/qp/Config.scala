@@ -1,8 +1,14 @@
 package com.yogpc.qp
 
+import java.nio.file.{Files, Path}
+
+import com.yogpc.qp.machines.PowerManager
+import com.yogpc.qp.machines.base.{APowerTile, EnchantmentHolder}
 import com.yogpc.qp.utils.Holder
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.common.ForgeConfigSpec
+
+import scala.collection.JavaConverters
 
 object Config {
 
@@ -141,6 +147,25 @@ object Config {
       val s = Holder.canDisablesSymbols.map { case (symbol, b) => symbol -> builder.define(symbol.name, !(!b || inDev)) }
       builder.pop()
       s.toMap
+    }
+
+    def outputPowerDetail(logDirectory: Path): Unit = {
+      if (inDev && Files.exists(logDirectory)) {
+        def getEnergyMap(ench: EnchantmentHolder): IndexedSeq[String] = {
+          BigDecimal("0").to(BigDecimal("100"), BigDecimal("0.1"))
+            .map(f => f -> PowerManager.calcEnergyBreak(f.floatValue(), ench))
+            .map { case (decimal, l) => s"$decimal,${l.toDouble / APowerTile.MJToMicroMJ}" }
+        }
+
+        val seq = Seq(
+          "quarryWithNoEnchantment" -> getEnergyMap(EnchantmentHolder.noEnch),
+          "quarryWithFortune3" -> getEnergyMap(EnchantmentHolder(0, 0, 3, silktouch = false)),
+          "quarryWithSilktouch" -> getEnergyMap(EnchantmentHolder(0, 0, 0, silktouch = true)),
+          "quarryWithU3Fortune3" -> getEnergyMap(EnchantmentHolder(0, 3, 3, silktouch = false)),
+          "quarryWithU3Silktouch" -> getEnergyMap(EnchantmentHolder(0, 3, 0, silktouch = true)),
+        )
+        seq.foreach { case (str, strings) => Files.write(logDirectory.resolve(str + ".csv"), JavaConverters.asJavaIterable(strings)) }
+      }
     }
   }
 

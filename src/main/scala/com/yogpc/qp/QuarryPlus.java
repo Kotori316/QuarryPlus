@@ -1,6 +1,7 @@
 package com.yogpc.qp;
 
 import java.lang.reflect.Method;
+import java.nio.file.Paths;
 
 import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.advquarry.BlockWrapper;
@@ -100,6 +101,7 @@ public class QuarryPlus {
             PacketHandler.init();
             CraftingHelper.register(new EnableCondition.Serializer());
             LootFunctionManager.registerFunction(new IEnchantableTile.DropFunction.Serializer());
+            Config.common().outputPowerDetail(Paths.get("config\\quarryplus"));
         }
 
         @SubscribeEvent
