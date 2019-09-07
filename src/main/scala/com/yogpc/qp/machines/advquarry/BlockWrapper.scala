@@ -129,7 +129,7 @@ object BlockWrapper extends JsonDeserializer[BlockWrapper] with JsonSerializer[B
   object Reload extends JsonReloadListener(BlockWrapper.GSON, QuarryPlus.modID + "/adv_quarry") {
     override def apply(splashList: java.util.Map[ResourceLocation, JsonElement], resourceManagerIn: IResourceManager, profilerIn: IProfiler): Unit = {
       BlockWrapper.wrappers = JavaConverters.mapAsScalaMap(splashList).collect { case (_, j) => GSON.fromJson(j, classOf[Array[BlockWrapper]]) }.flatten.toSet
-      QuarryPlus.LOGGER.debug("Adv Quarry loaded.")
+      QuarryPlus.LOGGER.debug("Loaded BlockWrapper objects.")
     }
   }
 

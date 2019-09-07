@@ -1,5 +1,15 @@
 **This mod requires a library, [Scalable Cat's Force](https://minecraft.curseforge.com/projects/scalable-cats-force).**
 
+## Version 14.0.2
+* Added Chunk Destroyer, with module system.
+
+## Version 14.0.1
+* Added Advanced Pump
+* Internal changes
+
+## Version 14.0.0
+* Update for Minecraft 1.14.4
+
 ## Version 13.3.3
 * Added Fuel Module, which supply 10 RF/t every tick without resources.
 * Localized message shown up when you restart quarry.
