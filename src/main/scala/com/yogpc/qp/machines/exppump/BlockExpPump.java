@@ -17,11 +17,11 @@ import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import scala.Symbol;
 
@@ -48,8 +48,8 @@ public class BlockExpPump extends QPBlock {
 
     //---------- Setting of TileEntity ----------
     @Override
-    public TileEntity createNewTileEntity(IBlockReader worldIn) {
-        return Holder.expPumpTileType().create();
+    public TileEntityType<? extends TileEntity> getTileType() {
+        return Holder.expPumpTileType();
     }
 
     @Override

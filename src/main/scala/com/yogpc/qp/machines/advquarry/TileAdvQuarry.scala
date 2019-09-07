@@ -56,9 +56,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
 
   def stickActivated(playerEntity: PlayerEntity): Unit = {
     //Called when noEnergy is true and block is right clicked with stick (item)
-    if (machineDisabled) {
-      playerEntity.sendStatusMessage(new StringTextComponent("ChunkDestroyer is disabled."), true)
-    } else if (action == AdvQuarryWork.waiting) {
+    if (action == AdvQuarryWork.waiting) {
       action = action.next(self)
       startWork()
     } else if (action == AdvQuarryWork.none) {
@@ -174,7 +172,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
 
   override def tick(): Unit = {
     super.tick()
-    if (!world.isRemote) {
+    if (!world.isRemote && !machineDisabled) {
       modules.foreach(_.invoke(IModule.Tick(self)))
 
       action.tick(self)

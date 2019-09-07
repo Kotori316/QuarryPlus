@@ -32,6 +32,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -54,10 +55,9 @@ public class BlockPump extends QPBlock {
         builder.add(QPBlock.WORKING(), ENABLED);
     }
 
-    @Nullable
     @Override
-    public TileEntity createNewTileEntity(IBlockReader worldIn) {
-        return Holder.pumpTileType().create();
+    public TileEntityType<? extends TileEntity> getTileType() {
+        return Holder.pumpTileType();
     }
 
     @Override

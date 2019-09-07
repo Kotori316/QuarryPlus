@@ -24,6 +24,7 @@ public class TranslationKeys {
     public static final String DELETE = "selectServer.delete";
     public static final String DELETE_BLOCK_SURE = "tof.deleteblocksure";
     public static final String DELETE_FLUID_SURE = "tof.deletefluidsure";
+    public static final String DISABLE_MESSAGE = "chat.disable_message";
     public static final String DONE = "gui.done";
     public static final String DOWN = "FD.down";
     public static final String EAST = "FD.east";

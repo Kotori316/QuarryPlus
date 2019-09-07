@@ -41,6 +41,7 @@
 
   "chat.changemode": "Working mode was changed to %s",
   "chat.currentmode": "Now, working in %s",
+  "chat.disable_message": "%s is disabled.",
   "chat.fillermode": "Frame Mode",
   "chat.indent": "-    %s%s",
   "chat.markerarea": "This marker's Area is:",
