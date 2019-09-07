@@ -7,6 +7,7 @@ import cats.implicits._
 import com.yogpc.qp._
 import com.yogpc.qp.machines.advquarry.AdvQuarryWork._
 import com.yogpc.qp.machines.base._
+import com.yogpc.qp.machines.modules.IModuleItem
 import com.yogpc.qp.machines.pump.TilePump
 import com.yogpc.qp.machines.quarry.{ContainerQuarryModule, QuarryFakePlayer}
 import com.yogpc.qp.machines.{PowerManager, TranslationKeys}
@@ -51,7 +52,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
   var modules: List[IModule] = List.empty
   var attachments: Map[IAttachment.Attachments[_], Direction] = Map.empty
   val storage = new AdvStorage
-  val moduleInv = new QuarryModuleInventory(5, this, _ => refreshModules())
+  val moduleInv = new QuarryModuleInventory(5, this, _ => refreshModules(), TileAdvQuarry.moduleFilter)
 
   def stickActivated(playerEntity: PlayerEntity): Unit = {
     //Called when noEnergy is true and block is right clicked with stick (item)
@@ -327,4 +328,10 @@ object TileAdvQuarry {
     }
   }
 
+  private[this] final lazy val nonAcceptableModule = Set(
+    Holder.itemPumpModule.getSymbol,
+    Holder.itemTorchModule.getSymbol,
+  )
+
+  val moduleFilter: java.util.function.Predicate[IModuleItem] = item => !nonAcceptableModule.contains(item.getSymbol)
 }

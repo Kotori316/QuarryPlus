@@ -46,7 +46,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   var yLevel = 1
   var frameMode = false
   private val storage = new QuarryStorage
-  val moduleInv = new QuarryModuleInventory(5, this, _ => refreshModules())
+  val moduleInv = new QuarryModuleInventory(5, this, _ => refreshModules(), jp.t2v.lab.syntax.MapStreamSyntax.always_true())
 
   override def tick(): Unit = {
     super.tick()
