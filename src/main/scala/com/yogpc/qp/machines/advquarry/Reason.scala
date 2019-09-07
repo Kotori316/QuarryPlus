@@ -1,6 +1,6 @@
 package com.yogpc.qp.machines.advquarry
 
-import com.yogpc.qp.machines.base.EnergyUsage
+import com.yogpc.qp.machines.base.{APowerTile, EnergyUsage}
 import com.yogpc.qp.{Config, QuarryPlus}
 import net.minecraft.block.BlockState
 import net.minecraft.util.math.BlockPos
@@ -19,8 +19,7 @@ trait Reason {
 
 object Reason {
 
-  private[this] final val Nano = 1000000000L
-  private[this] final val toNano = 1000000000L
+  private[this] final val Nano = APowerTile.MJToMicroMJ
 
   def energy(energyUsage: EnergyUsage, required: Long, amount: Long): Reason =
     new EnergyReasonImpl(energyUsage, required, amount)
