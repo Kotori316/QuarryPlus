@@ -1,5 +1,8 @@
 **This mod requires a library, [Scalable Cat's Force](https://minecraft.curseforge.com/projects/scalable-cats-force).**
 
+## Version 14.0.3
+* Improved the action of disabled machines
+
 ## Version 14.0.2
 * Added Chunk Destroyer, with module system.
 
