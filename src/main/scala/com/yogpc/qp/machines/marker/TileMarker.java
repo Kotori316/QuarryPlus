@@ -113,7 +113,7 @@ public class TileMarker extends APacketTile implements IMarker, IDebugSender, IC
     }
 
     public void redstoneUpdate() {
-        if (world != null && !world.isRemote) {
+        if (world != null && !world.isRemote && enabled()) {
             PacketHandler.sendToClient(UpdateBoxMessage.create(this, world.isBlockPowered(pos)), getWorld());
         }
     }

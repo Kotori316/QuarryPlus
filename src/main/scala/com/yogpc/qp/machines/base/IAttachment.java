@@ -4,10 +4,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import com.yogpc.qp.Config;
+import com.yogpc.qp.machines.exppump.BlockExpPump;
 import com.yogpc.qp.machines.exppump.TileExpPump;
 import com.yogpc.qp.machines.pump.TilePump;
 import com.yogpc.qp.machines.replacer.TileReplacer;
@@ -27,9 +30,9 @@ public interface IAttachment {
     IModule getModule();
 
     class Attachments<T extends APacketTile & IAttachment> implements Predicate<TileEntity>, Function<TileEntity, Optional<T>> {
-        public static final Attachments<TilePump> FLUID_PUMP = new Attachments<>("FLUID_PUMP");
-        public static final Attachments<TileExpPump> EXP_PUMP = new Attachments<>("EXP_PUMP");
-        public static final Attachments<TileReplacer> REPLACER = new Attachments<>("REPLACER");
+        public static final Attachments<TilePump> FLUID_PUMP = new Attachments<>("FLUID_PUMP", () -> Config.common().disabled().apply(TilePump.SYMBOL).get());
+        public static final Attachments<TileExpPump> EXP_PUMP = new Attachments<>("EXP_PUMP", () -> Config.common().disabled().apply(BlockExpPump.SYMBOL).get());
+        public static final Attachments<TileReplacer> REPLACER = new Attachments<>("REPLACER", () -> Config.common().disabled().apply(TileReplacer.SYMBOL).get());
         public static final Set<Attachments<? extends APacketTile>> ALL;
 
         static {
@@ -50,11 +53,14 @@ public interface IAttachment {
         @Nonnull
         private final String name;
         @Nonnull
+        private final BooleanSupplier isDisabled;
+        @Nonnull
         private final Class<T> clazz;
 
         @SuppressWarnings("unchecked")
-        private Attachments(@Nonnull String name, T... ts) {
+        private Attachments(@Nonnull String name, @Nonnull BooleanSupplier isDisabled, T... ts) {
             this.name = name;
+            this.isDisabled = isDisabled;
             this.clazz = ((Class<T>) ts.getClass().getComponentType());
         }
 
@@ -65,7 +71,7 @@ public interface IAttachment {
 
         @Override
         public Optional<T> apply(TileEntity tileEntity) {
-            if (clazz.isInstance(tileEntity)) {
+            if (test(tileEntity)) {
                 return Optional.of(clazz.cast(tileEntity));
             }
             return Optional.empty();
@@ -73,7 +79,7 @@ public interface IAttachment {
 
         @Override
         public boolean test(TileEntity tileEntity) {
-            return clazz.isInstance(tileEntity);
+            return clazz.isInstance(tileEntity) && !isDisabled.getAsBoolean();
         }
 
         public Optional<IModule> module(TileEntity tileEntity) {

@@ -34,7 +34,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
@@ -69,7 +68,7 @@ public class BlockMover extends Block implements IDisabled /*IDismantleable, IWr
         if (!player.isSneaking()) {
             if (!worldIn.isRemote) {
                 if (!enabled()) {
-                    player.sendStatusMessage(new StringTextComponent(SYMBOL.name() + " is disabled."), true);
+                    player.sendStatusMessage(new TranslationTextComponent(TranslationKeys.DISABLE_MESSAGE, getNameTextComponent()), true);
                 } else {
                     NetworkHooks.openGui(((ServerPlayerEntity) player), new InteractionObject(pos), pos);
                 }

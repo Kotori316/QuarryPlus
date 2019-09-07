@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.utils.Holder;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -28,6 +29,7 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
@@ -82,10 +84,14 @@ public class BlockMarker extends Block {
             TileEntity entity = worldIn.getTileEntity(pos);
             if (entity instanceof TileMarker) {
                 TileMarker marker = (TileMarker) entity;
-                if (!marker.hasLink()) {
-                    marker.activated();
+                if (marker.enabled()) {
+                    if (!marker.hasLink()) {
+                        marker.activated();
+                    } else {
+                        player.sendStatusMessage(new StringTextComponent(marker.link.toString()), false);
+                    }
                 } else {
-                    player.sendStatusMessage(new StringTextComponent(marker.link.toString()), false);
+                    player.sendStatusMessage(new TranslationTextComponent(TranslationKeys.DISABLE_MESSAGE, getNameTextComponent()), true);
                 }
             }
         }
