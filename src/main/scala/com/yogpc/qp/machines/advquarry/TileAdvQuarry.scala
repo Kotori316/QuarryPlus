@@ -135,7 +135,6 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
         val tile = getWorld.getTileEntity(target)
         drops.addAll(Block.getDrops(state, world.asInstanceOf[ServerWorld], target, tile, fakePlayer, pickaxe))
         ForgeEventFactory.fireBlockHarvesting(drops, getWorld, target, state, self.enchantments.fortune, 1.0f, self.enchantments.silktouch, fakePlayer)
-        fakePlayer.setHeldItem(Hand.MAIN_HAND, ItemStack.EMPTY)
         storage.insertItems(drops.seq)
       }
 
@@ -239,8 +238,8 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
       }
     }
     action = AdvQuarryWork.waiting
-    PowerManager.configureQuarryWork(this, enchantments.efficiency, enchantments.unbreaking, 0)
-    configure(getMaxStored, getMaxStored)
+    val maxReceive = TileAdvQuarry.maxReceiveEnergy(enchantments)
+    configure(maxReceive, maxReceive)
     if (!world.isRemote) {
       PacketHandler.sendToAround(AdvModeMessage.create(self), world, pos)
     }
@@ -307,6 +306,10 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
 object TileAdvQuarry {
   final val SYMBOL = Symbol("ChunkDestroyer")
   final val GUI_ID = QuarryPlus.modID + ":gui_" + QuarryPlus.Names.advquarry
+
+  private[this] final val MAX_STORED = 300 * 256
+
+  def maxReceiveEnergy(enchantment: EnchantmentHolder): Long = (enchantment.efficiency + 1) * MAX_STORED * APowerTile.MJToMicroMJ
 
   def isUnbreakable(hardness: Float, state: BlockState): Boolean = {
     hardness < 0 || hardness.isInfinity
