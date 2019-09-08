@@ -10,7 +10,6 @@ import com.yogpc.qp.machines.workbench.WorkbenchRecipes;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.EnableCondition;
 import com.yogpc.qp.utils.Holder;
-import com.yogpc.qp.utils.ProxyClient;
 import com.yogpc.qp.utils.ProxyCommon;
 import net.minecraft.block.Block;
 import net.minecraft.inventory.container.ContainerType;
@@ -18,6 +17,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.world.storage.loot.functions.LootFunctionManager;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
@@ -42,7 +42,14 @@ public class QuarryPlus {
     public static final Logger LOGGER = LogManager.getLogger(Mod_Name);
 
     @SuppressWarnings("Convert2MethodRef") // To avoid class loading error.
-    public static final ProxyCommon proxy = DistExecutor.runForDist(() -> () -> new ProxyClient(), () -> () -> new ProxyCommon());
+    public static final ProxyCommon proxy = DistExecutor.runForDist(() -> () -> {
+        try {
+            return ((ProxyCommon) Class.forName("com.yogpc.qp.utils.ProxyClient").newInstance());
+        } catch (ReflectiveOperationException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }, () -> () -> new ProxyCommon());
 
     public QuarryPlus() {
         IEventBus modBus = QuarryPlus.modBus();
@@ -66,7 +73,7 @@ public class QuarryPlus {
         event.getServer().getResourceManager().addReloadListener(BlockWrapper.Reload$.MODULE$);
     }
 
-//    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
+    //    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class Register {
         @SubscribeEvent
         public static void registerBlocks(RegistryEvent.Register<Block> event) {
@@ -106,7 +113,7 @@ public class QuarryPlus {
 
         @SubscribeEvent
         public static void loadComplete(FMLLoadCompleteEvent event) {
-            proxy.setDummyTexture(Config.client().dummyTexture().get());
+            DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> proxy.setDummyTexture(Config.client().dummyTexture().get()));
         }
 
     }
@@ -120,6 +127,7 @@ public class QuarryPlus {
             throw new RuntimeException("Error in getting event bus.", e);
         }
     }
+
     @SuppressWarnings({"unused", "WeakerAccess", "SpellCheckingInspection"})
     public static class Optionals {
         public static final String Buildcraft_modID = "buildcraftlib";
