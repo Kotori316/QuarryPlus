@@ -49,10 +49,10 @@ object AdvQuarryWork {
   final val NBT_name_break = "BreakBlock"
   final val NBT_name_liquid = "RemoveLiquid"
 
-  val none: AdvQuarryWork = new AdvQuarryWork {
+  object none extends AdvQuarryWork {
     override val target = BlockPos.ZERO
 
-    override def next(tile: TileAdvQuarry) = none
+    override def next(tile: TileAdvQuarry): AdvQuarryWork = none
 
     def goNext(tile: TileAdvQuarry): Boolean = false
 
@@ -60,7 +60,8 @@ object AdvQuarryWork {
 
     override val name = NBT_name_none
   }
-  val waiting: AdvQuarryWork = new AdvQuarryWork {
+
+  object waiting extends AdvQuarryWork {
     override val target = BlockPos.ZERO
 
     override def next(tile: TileAdvQuarry) = new MakeFrame(tile.area)
@@ -322,7 +323,7 @@ object AdvQuarryWork {
 
     override def target = targetList.headOption.getOrElse(BlockPos.ZERO)
 
-    override def next(tile: TileAdvQuarry) = none
+    override def next(tile: TileAdvQuarry): AdvQuarryWork = none
 
     override def serverWrite(nbt: CompoundNBT) = {
       super.serverWrite(nbt)
@@ -331,6 +332,15 @@ object AdvQuarryWork {
     }
 
     override def tick(tile: TileAdvQuarry): Unit = {
+      import scala.collection.JavaConverters._
+      val aabb = new AxisAlignedBB(area.xMin - 6, tile.yLevel - 3, area.zMin - 6, area.xMax + 6, area.yMax, area.zMax + 6)
+      tile.getWorld.getEntitiesWithinAABB[ItemEntity](classOf[ItemEntity], aabb, EntityPredicates.IS_ALIVE)
+        .forEach { e =>
+          tile.storage.insertItem(e.getItem)
+          QuarryPlus.proxy.removeEntity(e)
+        }
+      val orbs = tile.getWorld.getEntitiesWithinAABB(classOf[Entity], aabb).asScala.toList
+      tile.modules.foreach(_.invoke(IModule.CollectingItem(orbs)))
       var i = 0
       var poses = 0
       while (i < numberInTick * 32) {
