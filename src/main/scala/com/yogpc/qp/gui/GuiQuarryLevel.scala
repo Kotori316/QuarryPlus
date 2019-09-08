@@ -8,8 +8,8 @@ import com.yogpc.qp.packet.advquarry.AdvLevelMessage
 import com.yogpc.qp.packet.quarry.LevelMessage
 import com.yogpc.qp.packet.quarry2.Level2Message
 import com.yogpc.qp.tile._
-import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.inventory.GuiContainer
+import net.minecraft.client.gui.{GuiButton, GuiScreen}
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.resources.I18n
 import net.minecraft.entity.player.EntityPlayer
@@ -52,7 +52,7 @@ class GuiQuarryLevel[T <: TileEntity with HasInv](private[this] val tile: T, pla
 
   override def actionPerformed(button: GuiButton): Unit = {
     super.actionPerformed(button)
-    val di = if (button.id % 2 == 0) 1 else -1
+    val di = (if (button.id % 2 == 0) 1 else -1) * (if (GuiScreen.isCtrlKeyDown) 10 else 1)
     val yMin = tile match {
       case quarry: TileQuarry => quarry.yMin
       case quarry2: TileQuarry2 => quarry2.area.yMin

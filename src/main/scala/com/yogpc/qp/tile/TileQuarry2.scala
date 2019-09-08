@@ -5,6 +5,7 @@ import buildcraft.api.tiles.TilesAPI
 import com.yogpc.qp._
 import com.yogpc.qp.block.ADismCBlock
 import com.yogpc.qp.container.ContainerQuarryModule
+import com.yogpc.qp.container.ContainerQuarryModule.HasModuleInventory
 import com.yogpc.qp.gui.TranslationKeys
 import com.yogpc.qp.packet.{PacketHandler, TileMessage}
 import com.yogpc.qp.utils.ReflectionHelper
@@ -37,7 +38,8 @@ class TileQuarry2 extends APowerTile()
   with HasInv
   with IAttachable
   with IDebugSender
-  with IChunkLoadTile {
+  with IChunkLoadTile
+  with HasModuleInventory {
   self =>
 
   import TileQuarry2._
@@ -51,11 +53,11 @@ class TileQuarry2 extends APowerTile()
   var yLevel = 1
   var frameMode = false
   private val storage = new QuarryStorage
-  val moduleInv = new QuarryModuleInventory(new TextComponentString("Modules"), 5, this, _ => refreshModules())
+  val moduleInv = new QuarryModuleInventory(new TextComponentString("Modules"), 5, this, _ => refreshModules(), jp.t2v.lab.syntax.MapStreamSyntax.always_true())
 
   override def update(): Unit = {
     super.update()
-    if (!world.isRemote) {
+    if (!world.isRemote && !machineDisabled) {
       // Module Tick Action
       modules.foreach(_.invoke(IModule.Tick(self)))
       // Quarry action

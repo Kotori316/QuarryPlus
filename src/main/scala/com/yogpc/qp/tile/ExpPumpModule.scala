@@ -6,14 +6,14 @@ import com.yogpc.qp.QuarryPlus
 import com.yogpc.qp.tile.IModule.{Done, Result}
 import net.minecraft.entity.item.EntityXPOrb
 
-final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: () => Int, consumer: Option[IntConsumer]) extends IModule {
-  def this(powerTile: APowerTile, consumer: Option[IntConsumer] = None) = {
+final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: () => Int, consumer: Option[Int => Unit]) extends IModule {
+  def this(powerTile: APowerTile, consumer: Option[IntConsumer]) = {
     this(e => e == powerTile.useEnergy(e, e, true, EnergyUsage.PUMP_EXP),
       () => Option(powerTile)
         .collect { case ench: IEnchantableTile => ench.getEnchantments }
         .flatMap(m => Option(m.get(IEnchantableTile.UnbreakingID)))
         .map(_.intValue())
-        .getOrElse(0), consumer)
+        .getOrElse(0), consumer.map(_.accept))
   }
 
   override val calledWhen: Set[IModule.ModuleType] = Set(IModule.TypeCollectItem, IModule.TypeBeforeBreak)
@@ -31,13 +31,13 @@ final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: () => Int, con
     Done
   }
 
-  private def addXp(amount: Int): Unit = {
+  def addXp(amount: Int): Unit = {
     if (amount == 0) return
     val energy = getEnergy(amount)
     if (useEnergy(energy)) {
       this.xp += amount
       if (amount != 0) // Always true
-        consumer.foreach(_.accept(this.xp))
+        consumer.foreach(_.apply(this.xp))
     }
   }
 
@@ -45,11 +45,11 @@ final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: () => Int, con
 
   override def toString = s"ExpPumpModule($xp)"
 
-  override val id = ExpPumpModule.id
+  override val id = ExpPumpModule.ID
 }
 
 object ExpPumpModule {
-  final val id = "quarryplus:module_exp"
+  final val ID = "quarryplus:module_exp"
 
   def apply(useEnergy: LongPredicate, unbreaking: IntSupplier): ExpPumpModule =
     new ExpPumpModule(l => useEnergy.test(l), () => unbreaking.getAsInt, None)

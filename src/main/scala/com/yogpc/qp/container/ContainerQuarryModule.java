@@ -13,7 +13,7 @@ public class ContainerQuarryModule extends Container {
     private final QuarryModuleInventory moduleInventory;
     private final int allSlots;
 
-    public ContainerQuarryModule(TileQuarry2 quarry, EntityPlayer player) {
+    public ContainerQuarryModule(HasModuleInventory quarry, EntityPlayer player) {
         this.moduleInventory = quarry.moduleInv();
         this.allSlots = moduleInventory.getSizeInventory();
         int oneBox = 18;
@@ -68,5 +68,9 @@ public class ContainerQuarryModule extends Container {
             slot.onTake(playerIn, remain);
         }
         return src;
+    }
+
+    public interface HasModuleInventory {
+        QuarryModuleInventory moduleInv();
     }
 }

@@ -1,8 +1,10 @@
 package com.yogpc.qp.tile
 
+import com.yogpc.qp.modules.TorchModule
 import com.yogpc.qp.tile.IModule.{CalledWhen, Result}
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.Entity
+import net.minecraft.init.Blocks
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 
@@ -29,10 +31,17 @@ trait IModule {
 
 object IModule {
   val getId: IModule => String = _.id
-  val replaceModuleIDs = Set(ReplacerModule.id)
+  val replaceModuleIDs = Set(ReplacerModule.id, TorchModule.id)
   val pumpModuleIDs = Set(PumpModule.ID)
+  val expPumpModuleIDs = Set(ExpPumpModule.ID)
   val hasReplaceModule: IModule => Boolean = getId andThen replaceModuleIDs
   val hasPumpModule: IModule => Boolean = getId andThen pumpModuleIDs
+  val hasExpPumpModule: IModule => Boolean = getId andThen expPumpModuleIDs
+  val replaceBlocks: Int => PartialFunction[IModule, List[IBlockState]] = y => {
+    case t: TorchModule if t.y() == y => List(Blocks.TORCH.getDefaultState)
+    case r: ReplacerModule => List(r.toReplace())
+    case _ => Nil
+  }
 
   sealed trait ModuleType
 

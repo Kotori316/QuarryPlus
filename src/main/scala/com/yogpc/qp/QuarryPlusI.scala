@@ -71,7 +71,7 @@ object QuarryPlusI {
   final val guiIdQuarryYLevel = 10
   final val guiIdAdvQuarryYLevel = 11
   final val guiIdListTemplate = 12
-  final val guiIdQuarry2 = 13
+  final val guiIdQuarryModule = 13
   final val guiIdQuarry2YLevel = 14
 
   val tileIdMap = Map(

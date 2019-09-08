@@ -7,6 +7,7 @@ import java.util.function.Consumer;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.tile.TileAdvQuarry;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
@@ -14,6 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import org.apache.logging.log4j.util.TriConsumer;
 
 /**
  * To Server only.
@@ -61,7 +63,7 @@ public class AdvActionMessage implements IMessage {
             if (entity instanceof TileAdvQuarry) {
                 TileAdvQuarry quarry = (TileAdvQuarry) entity;
                 FMLCommonHandler.instance().getWorldThread(ctx.netHandler)
-                    .addScheduledTask(action.runnable(quarry, tag));
+                    .addScheduledTask(action.runnable(quarry, tag, QuarryPlus.proxy.getPacketPlayer(ctx.netHandler)));
             }
         }
         return null;
@@ -71,19 +73,24 @@ public class AdvActionMessage implements IMessage {
         QUICK_START(TileAdvQuarry::noFrameStart),
         CHANGE_RANGE((quarry, rangeNBT) ->
             quarry.digRange_$eq(TileAdvQuarry.DigRange$.MODULE$.readFromNBT(rangeNBT))
-        );
-        private final BiConsumer<TileAdvQuarry, NBTTagCompound> consumer;
+        ),
+        MODULE_INV((q, t, p) -> q.openModuleInv(p));;
+        private final TriConsumer<TileAdvQuarry, NBTTagCompound, EntityPlayer> consumer;
 
         Actions(Consumer<TileAdvQuarry> consumer) {
-            this.consumer = (quarry, nbtTagCompound) -> consumer.accept(quarry);
+            this.consumer = (quarry, nbtTagCompound, p) -> consumer.accept(quarry);
         }
 
         Actions(BiConsumer<TileAdvQuarry, NBTTagCompound> consumer) {
+            this.consumer = (q, t, p) -> consumer.accept(q, t);
+        }
+
+        Actions(TriConsumer<TileAdvQuarry, NBTTagCompound, EntityPlayer> consumer) {
             this.consumer = consumer;
         }
 
-        Runnable runnable(TileAdvQuarry quarry, NBTTagCompound compound) {
-            return () -> consumer.accept(quarry, compound);
+        Runnable runnable(TileAdvQuarry quarry, NBTTagCompound compound, EntityPlayer player) {
+            return () -> consumer.accept(quarry, compound, player);
         }
     }
 }

@@ -7,7 +7,7 @@ import net.minecraft.init.Blocks
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.world.EnumSkyBlock
 
-class TorchModule(y: () => Int) extends IModule {
+class TorchModule(val y: () => Int) extends IModule {
   override def id = TorchModule.id
 
   override val calledWhen: Set[IModule.ModuleType] = Set(IModule.TypeAfterBreak)
@@ -22,7 +22,7 @@ class TorchModule(y: () => Int) extends IModule {
           // Check light value
           val light = world.getLightFor(EnumSkyBlock.BLOCK, pos.up())
           val state = world.getBlockState(pos.down())
-          if (light < 9 && state.getBlock.canPlaceTorchOnTop(state, world, pos.down())) {
+          if (light < 9 && state.getBlock.canPlaceTorchOnTop(state, world, pos)) {
             world.setBlockState(pos, Blocks.TORCH.getDefaultState)
             Done
           } else {

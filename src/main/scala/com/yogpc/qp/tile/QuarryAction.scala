@@ -182,8 +182,8 @@ object QuarryAction {
       this(quarry2, y, targetBefore, (quarry2.area.xMin + quarry2.area.xMax + 1) / 2, y + 1, (quarry2.area.zMin + quarry2.area.zMax + 1) / 2)
     }
 
-    var digTargets: List[BlockPos] = if (quarry2.hasWorld && !quarry2.getWorld.isRemote) QuarryAction.digTargets(quarry2.area, targetBefore, y) else Nil
-    digTargets = digTargets.dropWhile(p => !checkBreakable(quarry2.getWorld, p, quarry2.getWorld.getBlockState(p), quarry2.modules))
+    var digTargets: List[BlockPos] = (if (quarry2.hasWorld && !quarry2.getWorld.isRemote) QuarryAction.digTargets(quarry2.area, targetBefore, y) else Nil)
+      .dropWhile(p => !checkBreakable(quarry2.getWorld, p, quarry2.getWorld.getBlockState(p), quarry2.modules))
 
     var movingHead = true
 
@@ -215,7 +215,7 @@ object QuarryAction {
       if (!movingHead) {
         digTargets match {
           case Nil =>
-            val poses = QuarryAction.digTargets(quarry2.area, targetBefore, y).dropWhile(p => !checkBreakable(quarry2.getWorld, p, quarry2.getWorld.getBlockState(p), quarry2.modules))
+            val poses = QuarryAction.digTargets(quarry2.area, targetBefore, y, log = false).dropWhile(p => !checkBreakable(quarry2.getWorld, p, quarry2.getWorld.getBlockState(p), quarry2.modules))
             if (poses.nonEmpty) {
               digTargets = poses
             }
@@ -245,8 +245,16 @@ object QuarryAction {
     override def nextAction(quarry2: TileQuarry2) =
       if (y > quarry2.yLevel) new BreakBlock(quarry2, y - 1, quarry2.target, headX, headY, headZ) else new CheckDrops(quarry2, quarry2.yLevel)
 
-    override def canGoNext(quarry: TileQuarry2) = digTargets.isEmpty &&
-      QuarryAction.digTargets(quarry2.area, targetBefore, y).dropWhile(p => !checkBreakable(quarry2.getWorld, p, quarry2.getWorld.getBlockState(p), quarry2.modules)).isEmpty
+    override def canGoNext(quarry: TileQuarry2): Boolean = {
+      if (digTargets.isEmpty) {
+        val set = quarry.modules.flatMap(IModule.replaceBlocks(y)).toSet
+        val list = QuarryAction.digTargets(quarry2.area, targetBefore, y, log = false)
+          .filter(p => checkBreakable(quarry2.getWorld, p, quarry2.getWorld.getBlockState(p), quarry2.modules))
+        list.forall(quarry.getWorld.getBlockState _ andThen set)
+      } else {
+        false
+      }
+    }
 
     override def mode = TileQuarry2.breakBlock
 
@@ -305,7 +313,7 @@ object QuarryAction {
     val lastX = far(pos.getX, r.xMin + 1, r.xMax - 1)
     val firstZ = near(pos.getZ, r.zMin + 1, r.zMax - 1)
     val lastZ = far(pos.getZ, r.zMin + 1, r.zMax - 1)
-    if (log) QuarryPlus.LOGGER.debug(MARKER, s"Making targets list of breaking blocks. y=$y $r, firstX=$firstX, lastX=$lastX firstZ=$firstZ, lastZ=$lastZ")
+    if (log) QuarryPlus.LOGGER.info(MARKER, s"Making targets list of breaking blocks. y=$y $r, firstX=$firstX, lastX=$lastX firstZ=$firstZ, lastZ=$lastZ")
     val list = Range.inclusive(firstZ, lastZ, signum(firstZ, lastZ))
       .map(z => Range.inclusive(firstX, lastX, signum(firstX, lastX)).map(x => new BlockPos(x, y, z)))
       .zip(Stream.iterate(true)(b => !b))
@@ -340,6 +348,7 @@ object QuarryAction {
     !world.isAirBlock(pos) &&
       state.getBlockHardness(world, pos) >= 0 &&
       !state.getBlockHardness(world, pos).isInfinity &&
+      !modules.flatMap(IModule.replaceBlocks(pos.getY)).contains(state) &&
       (!TilePump.isLiquid(state) || modules.exists(IModule.hasPumpModule))
   }
 

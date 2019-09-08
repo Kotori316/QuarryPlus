@@ -25,17 +25,20 @@ import net.minecraftforge.common.util.INBTSerializable;
 public class QuarryModuleInventory extends InventoryBasic implements INBTSerializable<NBTTagCompound> {
     private final TileEntity tile;
     private final Consumer<QuarryModuleInventory> onUpdate;
+    private final Predicate<IModuleItem> moduleFilter;
 
-    public QuarryModuleInventory(ITextComponent title, int slotCount, TileEntity entity, Consumer<QuarryModuleInventory> onUpdate) {
+    public QuarryModuleInventory(ITextComponent title, int slotCount, TileEntity entity, Consumer<QuarryModuleInventory> onUpdate, Predicate<IModuleItem> moduleFilter) {
         super(title.getUnformattedText(), true, slotCount);
         this.tile = Objects.requireNonNull(entity);
         this.onUpdate = Objects.requireNonNull(onUpdate);
+        this.moduleFilter = moduleFilter;
     }
 
-    public QuarryModuleInventory(ITextComponent title, int slotCount, TileEntity entity, scala.Function1<QuarryModuleInventory, scala.Unit> onUpdate) {
+    public QuarryModuleInventory(ITextComponent title, int slotCount, TileEntity entity, scala.Function1<QuarryModuleInventory, scala.Unit> onUpdate, Predicate<IModuleItem> moduleFilter) {
         super(title.getUnformattedText(), true, slotCount);
         this.tile = Objects.requireNonNull(entity);
         this.onUpdate = onUpdate::apply;
+        this.moduleFilter = moduleFilter;
     }
 
     public List<Map.Entry<IModuleItem, ItemStack>> moduleItems() {
@@ -45,6 +48,7 @@ public class QuarryModuleInventory extends InventoryBasic implements INBTSeriali
             .map(MapStreamSyntax.toEntry(ItemStack::getItem, Function.identity()))
             .filter(MapStreamSyntax.byKey(IModuleItem.class::isInstance))
             .map(MapStreamSyntax.keys(IModuleItem.class::cast))
+            .filter(MapStreamSyntax.byKey(this.moduleFilter))
             .collect(Collectors.toList());
     }
 
@@ -52,6 +56,8 @@ public class QuarryModuleInventory extends InventoryBasic implements INBTSeriali
     public boolean isItemValidForSlot(int index, ItemStack stack) {
         if (stack.getItem() instanceof IModuleItem) {
             IModuleItem item = (IModuleItem) stack.getItem();
+            if (!moduleFilter.test(item))
+                return false;
             Predicate<Item> equal = Predicate.isEqual(item);
             Predicate<Item> id = item1 -> item1 instanceof IModuleItem && ((IModuleItem) item1).getSymbol().equals(item.getSymbol());
             return IntStream.range(0, getSizeInventory())

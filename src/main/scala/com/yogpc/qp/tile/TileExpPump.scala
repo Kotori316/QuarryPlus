@@ -26,7 +26,7 @@ class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender wi
   private[this] var fortune = 0
   private[this] var unbreaking = 0
   private[this] var silktouch = false
-  private val module: ExpPumpModule = new ExpPumpModule((_: Long) => true, () => this.unbreaking, None)
+  private val module: ExpPumpModule = new ExpPumpModule((_: Long) => true, () => this.unbreaking, Option(_ => updateState()))
 
   override protected def getSymbol: Symbol = BlockExpPump.SYMBOL
 
@@ -79,6 +79,10 @@ class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender wi
 
   def addXp(amount: Int): Unit = {
     module.xp += amount
+    updateState()
+  }
+
+  private def updateState(): Unit = {
     if (module.xp > 0 ^ getWorld.getBlockState(getPos).getValue(ADismCBlock.ACTING)) {
       val state = getWorld.getBlockState(getPos).withProperty(ADismCBlock.ACTING, Boolean.box(module.xp > 0))
       InvUtils.setNewState(getWorld, getPos, this, state)

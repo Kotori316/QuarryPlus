@@ -2,7 +2,6 @@ package com.yogpc.qp.gui;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.container.ContainerQuarryModule;
-import com.yogpc.qp.tile.TileQuarry2;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
@@ -12,9 +11,11 @@ import net.minecraft.util.ResourceLocation;
 public class GuiQuarryModule extends GuiContainer {
 
     private static final ResourceLocation LOCATION = new ResourceLocation(QuarryPlus.modID, "textures/gui/quarry_module.png");
+    private final String name;
 
-    public GuiQuarryModule(TileQuarry2 quarry, EntityPlayer player) {
+    public GuiQuarryModule(ContainerQuarryModule.HasModuleInventory quarry, EntityPlayer player, String name) {
         super(new ContainerQuarryModule(quarry, player));
+        this.name = name;
     }
 
     @Override
@@ -33,7 +34,7 @@ public class GuiQuarryModule extends GuiContainer {
 
     @Override
     protected void drawGuiContainerForegroundLayer(final int mouseX, final int mouseY) {
-        this.fontRenderer.drawString(I18n.format(TranslationKeys.quarry2), 8, 6, 0x404040);
+        this.fontRenderer.drawString(I18n.format(name), 8, 6, 0x404040);
         this.fontRenderer.drawString(I18n.format(TranslationKeys.CONTAINER_INVENTORY), 8, this.ySize - 96 + 2, 0x404040);
     }
 }

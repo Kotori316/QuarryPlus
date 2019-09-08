@@ -13,6 +13,7 @@
 package com.yogpc.qp.gui
 
 import com.yogpc.qp.QuarryPlusI
+import com.yogpc.qp.container.ContainerQuarryModule.HasModuleInventory
 import com.yogpc.qp.container._
 import com.yogpc.qp.gui.GuiQuarryLevel._
 import com.yogpc.qp.tile._
@@ -59,8 +60,8 @@ object GuiHandler extends IGuiHandler {
         new GuiQuarryLevel(w.getTileEntity(pos).asInstanceOf[TileAdvQuarry], p)
       case QuarryPlusI.guiIdListTemplate =>
         new GuiListTemplate(p)
-      case QuarryPlusI.guiIdQuarry2 =>
-        new GuiQuarryModule(w.getTileEntity(pos).asInstanceOf[TileQuarry2], p)
+      case QuarryPlusI.guiIdQuarryModule =>
+        new GuiQuarryModule(w.getTileEntity(pos).asInstanceOf[HasModuleInventory], p, w.getTileEntity(pos).getDisplayName.getFormattedText)
       case _ => null
     }
   }
@@ -94,8 +95,8 @@ object GuiHandler extends IGuiHandler {
         new ContainerQuarryLevel(w.getTileEntity(pos).asInstanceOf[TileQuarry2], p)
       case QuarryPlusI.guiIdListTemplate =>
         new ContainerListTemplate(p)
-      case QuarryPlusI.guiIdQuarry2 =>
-        new ContainerQuarryModule(w.getTileEntity(pos).asInstanceOf[TileQuarry2], p)
+      case QuarryPlusI.guiIdQuarryModule =>
+        new ContainerQuarryModule(w.getTileEntity(pos).asInstanceOf[HasModuleInventory], p)
       case _ => null
     }
   }

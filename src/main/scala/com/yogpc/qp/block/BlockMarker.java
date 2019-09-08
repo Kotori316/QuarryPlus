@@ -15,6 +15,7 @@ package com.yogpc.qp.block;
 
 import java.util.Optional;
 
+import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.InvUtils;
@@ -198,6 +199,10 @@ public class BlockMarker extends Block implements ITileEntityProvider {//BlockCo
             Item item = playerIn.getHeldItem(hand).getItem();
             TileMarker marker = (TileMarker) worldIn.getTileEntity(pos);
             if (marker != null) {
+                if (Config.content().disableMapJ().get(TileMarker.SYMBOL)) {
+                    VersionUtil.sendMessage(playerIn, new TextComponentString("Marker is disabled."), true);
+                    return true;
+                }
                 if (item == QuarryPlusI.itemTool() && playerIn.getHeldItem(hand).getItemDamage() == 0) {
                     final TileMarker.Link l = marker.link;
                     if (l == null)

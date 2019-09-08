@@ -7,6 +7,7 @@ import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.BuildcraftHelper;
+import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.item.ItemBlockEnchantable;
 import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TileAdvQuarry;
@@ -160,5 +161,15 @@ public class BlockAdvQuarry extends ADismCBlock {
     @Override
     protected boolean canRotate() {
         return true;
+    }
+
+    @Override
+    public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+        TileEntity entity = worldIn.getTileEntity(pos);
+        if (entity instanceof TileAdvQuarry) {
+            TileAdvQuarry q = (TileAdvQuarry) entity;
+            InvUtils.dropAndUpdateInv(worldIn, pos, q.moduleInv(), this);
+        }
+        super.breakBlock(worldIn, pos, state);
     }
 }

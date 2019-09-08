@@ -47,6 +47,7 @@ class GuiAdvQuarry(tile: TileAdvQuarry, player: EntityPlayer) extends GuiContain
     buttonList.add(new GuiButton(7, guiLeft + 128, guiTop + 39, 10, 8, minus))
 
     buttonList.add(new GuiButton(8, guiLeft + 108, guiTop + 58, 60, 12, "No Frame"))
+    buttonList.add(new GuiButton(9, guiLeft + 8, guiTop + 58, 60, 12, "Modules"))
   }
 
   private def range = tile.digRange
@@ -57,6 +58,9 @@ class GuiAdvQuarry(tile: TileAdvQuarry, player: EntityPlayer) extends GuiContain
       if (tile.mode is TileAdvQuarry.NOT_NEED_BREAK) {
         PacketHandler.sendToServer(AdvActionMessage.create(tile, AdvActionMessage.Actions.QUICK_START))
       }
+    } else if (button.id == 9) {
+      PacketHandler.sendToServer(AdvActionMessage.create(tile, AdvActionMessage.Actions.MODULE_INV))
+      //      onClose()
     } else if (tile.mode is TileAdvQuarry.NOT_NEED_BREAK) {
       val direction = EnumFacing.getFront(button.id / 2 + 2)
       val increase = if (button.id % 2 == 0) 1 else -1

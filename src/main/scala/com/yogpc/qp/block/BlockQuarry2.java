@@ -81,7 +81,7 @@ public class BlockQuarry2 extends ADismCBlock {
 //                    NetworkHooks.openGui(((EntityPlayerMP) player), new TileQuarry2.InteractionObject(t), pos)
 //                );
 //            }
-            player.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdQuarry2(), worldIn, pos.getX(), pos.getY(), pos.getZ());
+            player.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdQuarryModule(), worldIn, pos.getX(), pos.getY(), pos.getZ());
             return true;
         }
         return false;
