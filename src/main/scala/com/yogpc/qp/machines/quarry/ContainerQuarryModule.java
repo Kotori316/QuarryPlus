@@ -20,10 +20,11 @@ public class ContainerQuarryModule extends Container {
     public static final String GUI_ID = QuarryPlus.modID + ":gui_quarry_module";
     private final QuarryModuleInventory moduleInventory;
     private final int allSlots;
+    final HasModuleInventory inventory;
 
     public ContainerQuarryModule(int id, PlayerEntity player, BlockPos pos) {
         super(Holder.quarryModuleContainerType(), id);
-        HasModuleInventory inventory = (HasModuleInventory) player.getEntityWorld().getTileEntity(pos);
+        inventory = (HasModuleInventory) player.getEntityWorld().getTileEntity(pos);
         Objects.requireNonNull(inventory);
         this.moduleInventory = inventory.moduleInv();
         this.allSlots = moduleInventory.getSizeInventory();
