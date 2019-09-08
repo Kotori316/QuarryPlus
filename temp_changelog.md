@@ -1,9 +1,13 @@
 **This mod requires a library, [Scalable Cat's Force](https://minecraft.curseforge.com/projects/scalable-cats-force).**
 
+## Version 14.0.5
+- Fixed - Crashes of loading client-only classes in multi player server (Dedicated Server). #63
+- Improvement - Show y level of the machine on its GUI.
+
 ## Version 14.0.4
-・Collect items and exp when removing liquid Kotori316 2019/09/08 20:52<br>
-・Reduced log Kotori316 2019/09/08 20:50<br>
-・Fixed a bug where New Quarry skips many blocks when world is loaded. Kotori316 2019/09/08 16:47<br>
+- Improvement - Collect items and exp when removing liquid
+- Reduced log
+- Fixed - A bug where New Quarry skips many blocks when world is loaded.
 
 ## Version 14.0.3
 * Improved the action of disabled machines
@@ -19,7 +23,7 @@
 * Update for Minecraft 1.14.4
 
 ## Version 13.3.3
-* Added Fuel Module, which supply 10 RF/t every tick without resources.
+* Added Fuel Module, which supply 40 RF/t every tick without resources.
 * Localized message shown up when you restart quarry.
 * Added Creative Energy Source Module.
 
