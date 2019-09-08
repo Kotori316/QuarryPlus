@@ -1,3 +1,7 @@
+# Version 12.2.4
+- Added -  module system for Chunk Destroyer. (#53)
+- Improvement - You can get the y-level of machine in tile's inventory GUI.
+
 # Version 12.2.3
 * Added torch module and fuel module. [#61](https://github.com/Kotori316/QuarryPlus/issues/61)
 * Gather drops before finishing quarry work.
