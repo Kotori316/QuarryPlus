@@ -15,4 +15,22 @@ case class ItemElement(itemDamage: ItemDamage, count: Int) {
   }
 
   override def toString: String = itemDamage.toString + " x" + count
+
+  def +(that: ItemElement): ItemElement = {
+    if (that == ItemElement.invalid) this
+    else if (this == ItemElement.invalid) that
+    else {
+      if (this.itemDamage != that.itemDamage) {
+        throw new IllegalArgumentException(s"Tries to combine different kind of items. $this, $that")
+      } else {
+        ItemElement(this.itemDamage, this.count + that.count)
+      }
+    }
+  }
+}
+
+object ItemElement {
+  def apply(stack: ItemStack): ItemElement = new ItemElement(ItemDamage(stack), stack.getCount)
+
+  val invalid: ItemElement = ItemElement(ItemDamage.invalid, 0)
 }

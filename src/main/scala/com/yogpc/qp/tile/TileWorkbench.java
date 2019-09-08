@@ -254,7 +254,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
         } else {
             this.currentRecipe = WorkbenchRecipes.dummyRecipe();
         }
-        configure(Config.content().workbenchMaxReceive() * APowerTile.MicroJtoMJ, currentRecipe.microEnergy());
+        configure(Config.content().workbenchMaxReceive() * APowerTile.MJToMicroMJ, currentRecipe.microEnergy());
     }
 
     @SideOnly(Side.CLIENT)

@@ -81,6 +81,7 @@ public class BlockQuarry extends ADismCBlock {
         ItemStack stack = playerIn.getHeldItem(hand);
         if (BuildcraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
             Optional.ofNullable((TileQuarry) worldIn.getTileEntity(pos)).ifPresent(TileQuarry::G_ReInit);
+            playerIn.sendStatusMessage(new TextComponentTranslation(TranslationKeys.QUARRY_RESTART), false);
             return true;
         }
         if (!worldIn.isRemote) {

@@ -16,39 +16,49 @@ import java.util
 
 import com.yogpc.qp.block._
 import com.yogpc.qp.item.{ItemMirror, ItemQuarryDebug, ItemTemplate, ItemTool}
+import com.yogpc.qp.modules._
 import com.yogpc.qp.tile._
 import net.minecraft.block.Block
+import net.minecraft.item.Item
 import net.minecraft.util.ResourceLocation
 
 import scala.collection.mutable.ListBuffer
 
 object QuarryPlusI {
   private[this] val blocks = new ListBuffer[Block]
+  private[this] val items = new ListBuffer[Item]
   val creativeTab = new CreativeTabQuarryPlus
-  val blockQuarry: BlockQuarry = register(new BlockQuarry)
-  val blockMarker: BlockMarker = register(new BlockMarker)
-  val blockMover: BlockMover = register(new BlockMover)
-  val blockMiningWell: BlockMiningWell = register(new BlockMiningWell)
-  val blockPump: BlockPump = register(new BlockPump)
-  val blockRefinery: BlockRefinery = register(new BlockRefinery)
-  val blockPlacer: BlockPlacer = register(new BlockPlacer)
-  val blockBreaker: BlockBreaker = register(new BlockBreaker)
-  val blockLaser: BlockLaser = register(new BlockLaser)
-  val blockPlainPipe: BlockPlainPipe = register(new BlockPlainPipe)
-  val blockFrame: BlockFrame = register(new BlockFrame)
-  val blockWorkbench: BlockWorkbench = register(new BlockWorkbench)
-  val blockController: BlockController = register(new BlockController)
-  val blockChunkDestroyer: BlockAdvQuarry = register(new BlockAdvQuarry)
-  val blockStandalonePump: BlockAdvPump = register(new BlockAdvPump)
-  val blockBookMover: BlockBookMover = register(new BlockBookMover)
-  val blockExpPump: BlockExpPump = register(new BlockExpPump())
-  val blockSolidQuarry: BlockSolidQuarry = register(new BlockSolidQuarry)
-  val dummyBlock: DummyBlock = register(new DummyBlock)
-  val blockReplacer: BlockReplacer = register(new BlockReplacer)
-  val itemTool = new ItemTool
-  val magicMirror = new ItemMirror
-  val debugItem = new ItemQuarryDebug
-  val itemTemplate = new ItemTemplate
+  val blockQuarry: BlockQuarry = registerB(new BlockQuarry)
+  val blockMarker: BlockMarker = registerB(new BlockMarker)
+  val blockMover: BlockMover = registerB(new BlockMover)
+  val blockMiningWell: BlockMiningWell = registerB(new BlockMiningWell)
+  val blockPump: BlockPump = registerB(new BlockPump)
+  val blockRefinery: BlockRefinery = registerB(new BlockRefinery)
+  val blockPlacer: BlockPlacer = registerB(new BlockPlacer)
+  val blockBreaker: BlockBreaker = registerB(new BlockBreaker)
+  val blockLaser: BlockLaser = registerB(new BlockLaser)
+  val blockPlainPipe: BlockPlainPipe = registerB(new BlockPlainPipe)
+  val blockFrame: BlockFrame = registerB(new BlockFrame)
+  val blockWorkbench: BlockWorkbench = registerB(new BlockWorkbench)
+  val blockController: BlockController = registerB(new BlockController)
+  val blockChunkDestroyer: BlockAdvQuarry = registerB(new BlockAdvQuarry)
+  val blockStandalonePump: BlockAdvPump = registerB(new BlockAdvPump)
+  val blockBookMover: BlockBookMover = registerB(new BlockBookMover)
+  val blockExpPump: BlockExpPump = registerB(new BlockExpPump())
+  val blockSolidQuarry: BlockSolidQuarry = registerB(new BlockSolidQuarry)
+  val dummyBlock: DummyBlock = registerB(new DummyBlock)
+  val blockReplacer: BlockReplacer = registerB(new BlockReplacer)
+  val blockQuarry2: BlockQuarry2 = registerB(new BlockQuarry2)
+  val itemTool = registerI(new ItemTool)
+  val magicMirror = registerI(new ItemMirror)
+  val debugItem = registerI(new ItemQuarryDebug)
+  val itemTemplate = registerI(new ItemTemplate)
+  val pumpModule = registerI(new ItemPumpModule)
+  val expPumpModule = registerI(new ItemExpPumpModule)
+  val replacerModule = registerI(new ItemReplacerModule)
+  val torchModule = registerI(new ItemTorchModule)
+  val fuelModuleNormal = registerI(new ItemFuelModule(FuelModule.Normal))
+  val fuelModuleCreative = registerI(new ItemFuelModule(FuelModule.Creative))
   final val guiIdWorkbench = 1
   final val guiIdMover = 2
   final val guiIdFList = 3
@@ -61,6 +71,8 @@ object QuarryPlusI {
   final val guiIdQuarryYLevel = 10
   final val guiIdAdvQuarryYLevel = 11
   final val guiIdListTemplate = 12
+  final val guiIdQuarryModule = 13
+  final val guiIdQuarry2YLevel = 14
 
   val tileIdMap = Map(
     classOf[TileWorkbench] -> QuarryPlus.Names.workbench,
@@ -77,18 +89,33 @@ object QuarryPlusI {
     classOf[TileBookMover] -> QuarryPlus.Names.moverfrombook,
     classOf[TileExpPump] -> QuarryPlus.Names.exppump,
     classOf[TileSolidQuarry] -> QuarryPlus.Names.solidquarry,
-    classOf[TileReplacer] -> QuarryPlus.Names.replacer
+    classOf[TileReplacer] -> QuarryPlus.Names.replacer,
+    classOf[TileQuarry2] -> QuarryPlus.Names.quarry2
   ).mapValues(s => new ResourceLocation(QuarryPlus.modID, s))
 
   val tileIdSet = tileIdMap.map { case (_, s) => s.toString }.toSet
 
-  private def register[T <: Block](block: T): T = {
+  private def registerB[T <: Block](block: T): T = {
     blocks += block
+    block
+  }
+
+  private def registerI[T <: Item](block: T): T = {
+    items += block
     block
   }
 
   def blockList(): util.List[Block] = {
     import scala.collection.JavaConverters._
     new util.ArrayList[Block](blocks.asJava)
+  }
+
+  def itemList(): util.List[Item] = {
+    import scala.collection.JavaConverters._
+    new util.ArrayList[Item](items.asJava)
+  }
+
+  def itemDisableInfo: Set[IDisabled] = {
+    items.collect { case i: IDisabled => i }.toSet
   }
 }

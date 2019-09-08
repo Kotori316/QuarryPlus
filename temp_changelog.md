@@ -1,3 +1,36 @@
+# Version 12.2.4
+- Added -  module system for Chunk Destroyer. (#53)
+- Improvement - You can get the y-level of machine in tile's inventory GUI.
+
+# Version 12.2.3
+* Added torch module and fuel module. [#61](https://github.com/Kotori316/QuarryPlus/issues/61)
+* Gather drops before finishing quarry work.
+* Added a predicate that prevent from inserting same kind of module.
+* Unique return type
+* Added tick event
+* Changed field name
+* Inline Symbol instance
+* Send localized name when quarry restarted
+* Update lang file
+* Support chain breaking of MCAssistant.
+* Use BC's marker to make dig area
+
+# Version 12.2.2
+* Fixed - NPE when pump module is loaded.
+* Improvement - reduced energy to remove fluids.
+* Fixed #60
+* New quarry connects to fluid pipe.
+* Fixed - fluid in new quarry is lost when loading
+* Fixed - fluid is replacer to dummy block
+* Remove nbt tag when xp is extracted.
+
+# Version 12.2.1
+* Fixed - wrong reading config option
+
+# Version 12.2.0
+* Changed version to {mcVersion}.{major}.{minor}
+* Added new quarry, which has module system to enhance its function.
+
 # Version 1.1.3
 * The position of Quarry dummy player is set to the point quarry is removing.
 * Added support of chain break of [MCAssistant](https://www.curseforge.com/minecraft/mc-mods/mcassistant).

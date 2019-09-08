@@ -49,6 +49,7 @@ public class TranslationKeys {
     public static final String PUMP_RTOGGLE_QUARRY = "chat.pump_rtoggle.quarry";
     public static final String QP_ENABLE_LIST = "qp.list.setting";
     public static final String QUARRY_MODE = "chat.quarrymode";
+    public static final String QUARRY_RESTART = "chat.quarry.restart";
     public static final String SELECT_FLUID = "tof.selectfluid";
     public static final String SET_SELECT = "pp.set.select";
     public static final String SOUTH = "FD.south";
@@ -80,8 +81,10 @@ public class TranslationKeys {
     //    public static final String plainpipe = "tile." + QuarryPlus.Names.plainpipe + ".name";
     public static final String pump = "tile." + QuarryPlus.Names.pump + ".name";
     public static final String quarry = "tile." + QuarryPlus.Names.quarry + ".name";
+    public static final String quarry2 = "tile." + QuarryPlus.Names.quarry2 + ".name";
     public static final String solidquarry = "tile." + QuarryPlus.Names.solidquarry + ".name";
     //    public static final String refinery = "tile." + QuarryPlus.Names.refinery + ".name";
+    public static final String replacer = "tile." + QuarryPlus.Names.replacer + ".name";
     public static final String workbench = "tile." + QuarryPlus.Names.workbench + ".name";
 
     public static final Map<Integer, String> ENCHANT_LEVELS;

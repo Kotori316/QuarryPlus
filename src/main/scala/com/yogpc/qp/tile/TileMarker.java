@@ -215,7 +215,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
             this.laser.destructor();
             this.laser = null;
         }
-        if (!this.getWorld().isRemote) {
+        if (!this.getWorld().isRemote && !Config.content().disableMapJ().get(TileMarker.SYMBOL)) {
             if (getWorld().isBlockPowered(getPos()) && (this.link == null ||
                 this.link.xMin == this.link.xMax || this.link.yMin == this.link.yMax || this.link.zMin == this.link.zMax)) {
                 //create

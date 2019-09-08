@@ -5,6 +5,7 @@ import java.util.Optional;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.compat.BuildcraftHelper;
+import com.yogpc.qp.gui.TranslationKeys;
 import com.yogpc.qp.tile.TileSolidQuarry;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -21,6 +22,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import scala.Symbol;
 
@@ -69,6 +71,7 @@ public class BlockSolidQuarry extends ADismCBlock {
         ItemStack stack = playerIn.getHeldItem(hand);
         if (BuildcraftHelper.isWrench(playerIn, hand, stack, new RayTraceResult(new Vec3d(hitX, hitY, hitZ), facing, pos))) {
             Optional.ofNullable((TileSolidQuarry) worldIn.getTileEntity(pos)).ifPresent(TileSolidQuarry::G_ReInit);
+            playerIn.sendStatusMessage(new TextComponentTranslation(TranslationKeys.QUARRY_RESTART), false);
             return true;
         }
         if (!playerIn.isSneaking()) {

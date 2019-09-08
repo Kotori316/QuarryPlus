@@ -78,6 +78,7 @@ import static com.yogpc.qp.QuarryPlusI.blockPlacer;
 import static com.yogpc.qp.QuarryPlusI.blockPlainPipe;
 import static com.yogpc.qp.QuarryPlusI.blockPump;
 import static com.yogpc.qp.QuarryPlusI.blockQuarry;
+import static com.yogpc.qp.QuarryPlusI.blockQuarry2;
 import static com.yogpc.qp.QuarryPlusI.blockRefinery;
 import static com.yogpc.qp.QuarryPlusI.blockReplacer;
 import static com.yogpc.qp.QuarryPlusI.blockSolidQuarry;
@@ -85,10 +86,17 @@ import static com.yogpc.qp.QuarryPlusI.blockStandalonePump;
 import static com.yogpc.qp.QuarryPlusI.blockWorkbench;
 import static com.yogpc.qp.QuarryPlusI.debugItem;
 import static com.yogpc.qp.QuarryPlusI.dummyBlock;
+import static com.yogpc.qp.QuarryPlusI.expPumpModule;
+import static com.yogpc.qp.QuarryPlusI.fuelModuleCreative;
+import static com.yogpc.qp.QuarryPlusI.fuelModuleNormal;
+import static com.yogpc.qp.QuarryPlusI.itemList;
 import static com.yogpc.qp.QuarryPlusI.itemTemplate;
 import static com.yogpc.qp.QuarryPlusI.itemTool;
 import static com.yogpc.qp.QuarryPlusI.magicMirror;
+import static com.yogpc.qp.QuarryPlusI.pumpModule;
+import static com.yogpc.qp.QuarryPlusI.replacerModule;
 import static com.yogpc.qp.QuarryPlusI.tileIdMap;
+import static com.yogpc.qp.QuarryPlusI.torchModule;
 
 @Mod(
     modid = QuarryPlus.modID,
@@ -196,10 +204,10 @@ public class QuarryPlus {
             blockSolidQuarry().itemBlock(),
             dummyBlock().itemBlock(),
             blockReplacer().itemBlock(),
-            itemTool(),
-            magicMirror(),
-            debugItem(),
-            itemTemplate()
+            blockQuarry2().itemBlock()
+        );
+        event.getRegistry().registerAll(
+            itemList().toArray(new Item[0])
         );
     }
 
@@ -227,6 +235,7 @@ public class QuarryPlus {
         ModelLoader.setCustomModelResourceLocation(blockSolidQuarry().itemBlock(), 0, proxy.fromEntry(blockSolidQuarry()));
         ModelLoader.setCustomModelResourceLocation(dummyBlock().itemBlock(), 0, proxy.fromEntry(dummyBlock()));
         ModelLoader.setCustomModelResourceLocation(blockReplacer().itemBlock(), 0, proxy.fromEntry(blockReplacer()));
+        ModelLoader.setCustomModelResourceLocation(blockQuarry2().itemBlock(), 0, proxy.fromEntry(blockQuarry2()));
         ModelLoader.setCustomModelResourceLocation(itemTool(), ItemTool.meta_StatusChecker(), ModelLoader.getInventoryVariant(prefix + ItemTool.statuschecker()));
         ModelLoader.setCustomModelResourceLocation(itemTool(), ItemTool.meta_ListEditor(), ModelLoader.getInventoryVariant(prefix + ItemTool.listeditor()));
         ModelLoader.setCustomModelResourceLocation(itemTool(), ItemTool.meta_LiquidSelector(), ModelLoader.getInventoryVariant(prefix + ItemTool.liquidselector()));
@@ -236,6 +245,12 @@ public class QuarryPlus {
         ModelLoader.setCustomModelResourceLocation(magicMirror(), 2, proxy.fromEntry(magicMirror()));
         ModelLoader.setCustomModelResourceLocation(debugItem(), 0, proxy.fromEntry(debugItem()));
         ModelLoader.setCustomModelResourceLocation(itemTemplate(), 0, proxy.fromEntry(itemTemplate()));
+        ModelLoader.setCustomModelResourceLocation(pumpModule(), 0, proxy.fromEntry(pumpModule()));
+        ModelLoader.setCustomModelResourceLocation(expPumpModule(), 0, proxy.fromEntry(expPumpModule()));
+        ModelLoader.setCustomModelResourceLocation(replacerModule(), 0, proxy.fromEntry(replacerModule()));
+        ModelLoader.setCustomModelResourceLocation(torchModule(), 0, proxy.fromEntry(torchModule()));
+        ModelLoader.setCustomModelResourceLocation(fuelModuleNormal(), 0, proxy.fromEntry(fuelModuleNormal()));
+        ModelLoader.setCustomModelResourceLocation(fuelModuleCreative(), 0, proxy.fromEntry(fuelModuleCreative()));
     }
 
     @SubscribeEvent
@@ -320,7 +335,9 @@ public class QuarryPlus {
         public static final String debug = "quarrydebug";
         public static final String dummyblock = "dummyblock";
         public static final String exppump = "exppump";
+        public static final String exppumpModule = "exppump_module";
         public static final String frame = "quarryframe";
+        public static final String fuelModule = "fuel_module";
         public static final String laser = "laserplus";
         public static final String marker = "markerplus";
         public static final String miningwell = "miningwellplus";
@@ -330,12 +347,16 @@ public class QuarryPlus {
         public static final String placer = "placerplus";
         public static final String plainpipe = "plainpipe";
         public static final String pump = "pumpplus";
+        public static final String pumpModule = "pump_module";
         public static final String quarry = "quarryplus";
+        public static final String quarry2 = "quarry";
         public static final String refinery = "refineryplus";
         public static final String replacer = "quarryreplacer";
+        public static final String replacerModule = "replacer_module";
         public static final String solidquarry = "solidquarry";
         public static final String template = "template";
         public static final String tool = "tool";
+        public static final String torchModule = "torch_module";
         public static final String workbench = "workbenchplus";
     }
 }

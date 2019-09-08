@@ -36,8 +36,8 @@ import com.yogpc.qp.packet.quarry.MoveHead;
 import com.yogpc.qp.version.VersionUtil;
 import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -55,6 +55,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.BooleanUtils;
 import scala.Symbol;
+import scala.collection.JavaConverters;
 
 import static com.yogpc.qp.tile.IAttachment.Attachments.EXP_PUMP;
 import static com.yogpc.qp.tile.IAttachment.Attachments.FLUID_PUMP;
@@ -147,6 +148,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
             case MOVE_HEAD:
                 if (this.targetY < yLevel) {
                     G_destroy();
+                    S_checkDropItem(new AxisAlignedBB(xMin - 2, yLevel - 3, zMin - 2, xMax + 2, yLevel + 2, zMax + 2));
                     PacketHandler.sendToAround(ModeMessage.create(this), getWorld(), getPos());
                     return true;
                 }
@@ -322,7 +324,8 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     private boolean S_breakBlock() {
         this.dug = true;
         if (S_breakBlock(this.targetX, this.targetY, this.targetZ, S_getFillBlock())) {
-            S_checkDropItem();
+            S_checkDropItem(new AxisAlignedBB(this.targetX - 4, this.targetY - 4, this.targetZ - 4,
+                this.targetX + 5, this.targetY + 3, this.targetZ + 5));
             if (this.now == BREAK_BLOCK)
                 setNow(MOVE_HEAD);
             S_setNextTarget();
@@ -331,34 +334,14 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
         return false;
     }
 
-    private void S_checkDropItem() {
-        final AxisAlignedBB axis = new AxisAlignedBB(this.targetX - 4, this.targetY - 4, this.targetZ - 4,
-            this.targetX + 5, this.targetY + 3, this.targetZ + 5);
+    private void S_checkDropItem(AxisAlignedBB axis) {
         final List<EntityItem> result = getWorld().getEntitiesWithinAABB(EntityItem.class, axis);
         result.stream().filter(EntityItem::isEntityAlive).map(EntityItem::getItem).filter(VersionUtil::nonEmpty).forEach(this.cacheItems::add);
         result.forEach(QuarryPlus.proxy::removeEntity);
 
         if (facingMap.containsKey(EXP_PUMP)) {
-            List<EntityXPOrb> xpOrbs = getWorld().getEntitiesWithinAABB(EntityXPOrb.class, axis);
-            class Data {
-                public final int xp;
-                public final TileExpPump pump;
-                public final long energy;
-
-                public Data(int xp, TileExpPump pump) {
-                    this.xp = xp;
-                    this.pump = pump;
-                    this.energy = pump.getEnergyUse(xp);
-                }
-            }
-            Optional.ofNullable(world.getTileEntity(pos.offset(facingMap.get(EXP_PUMP)))).flatMap(EXP_PUMP)
-                .map(p -> new Data(xpOrbs.stream().filter(EntityXPOrb::isEntityAlive).mapToInt(EntityXPOrb::getXpValue).sum(), p))
-                .filter(data -> useEnergy(data.energy, data.energy, false, EnergyUsage.PUMP_EXP) == data.energy)
-                .ifPresent(data -> {
-                    useEnergy(data.energy, data.energy, true, EnergyUsage.PUMP_EXP);
-                    data.pump.addXp(data.xp);
-                    xpOrbs.forEach(QuarryPlus.proxy::removeEntity);
-                });
+            List<Entity> xpOrbs = world.getEntitiesWithinAABB(Entity.class, axis);
+            modules.forEach(iModule -> iModule.invoke(new IModule.CollectingItem(JavaConverters.asScalaBufferConverter(xpOrbs).asScala().toList())));
         }
 
     }

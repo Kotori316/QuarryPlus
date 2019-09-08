@@ -6,9 +6,10 @@ import com.yogpc.qp.gui.GuiQuarryLevel.YLevel
 import com.yogpc.qp.packet.PacketHandler
 import com.yogpc.qp.packet.advquarry.AdvLevelMessage
 import com.yogpc.qp.packet.quarry.LevelMessage
-import com.yogpc.qp.tile.{HasInv, TileAdvQuarry, TileBasic, TileQuarry}
-import net.minecraft.client.gui.GuiButton
+import com.yogpc.qp.packet.quarry2.Level2Message
+import com.yogpc.qp.tile._
 import net.minecraft.client.gui.inventory.GuiContainer
+import net.minecraft.client.gui.{GuiButton, GuiScreen}
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.resources.I18n
 import net.minecraft.entity.player.EntityPlayer
@@ -51,13 +52,16 @@ class GuiQuarryLevel[T <: TileEntity with HasInv](private[this] val tile: T, pla
 
   override def actionPerformed(button: GuiButton): Unit = {
     super.actionPerformed(button)
-    val di = if (button.id % 2 == 0) 1 else -1
+    val di = (if (button.id % 2 == 0) 1 else -1) * (if (GuiScreen.isCtrlKeyDown) 10 else 1)
     val yMin = tile match {
       case quarry: TileQuarry => quarry.yMin
+      case quarry2: TileQuarry2 => quarry2.area.yMin
       case _ => tile.getPos.getY
     }
-    if (yMin > lA.getYLevel(tile) + di)
+    if (yMin > lA.getYLevel(tile) + di) {
       lA.add(tile, di)
+      PacketHandler.sendToServer(func(tile))
+    }
   }
 
   override def onGuiClosed(): Unit = {
@@ -89,7 +93,13 @@ object GuiQuarryLevel {
 
     override def getYLevel(t: TileAdvQuarry) = t.yLevel
   }
+  implicit val NQuarryY: YLevel[TileQuarry2] = new YLevel[TileQuarry2] {
+    override def setYLevel(t: TileQuarry2, yLevel: Int): Unit = t.yLevel = yLevel
+
+    override def getYLevel(t: TileQuarry2) = t.yLevel
+  }
 
   implicit val basicMessage: TileBasic => LevelMessage = LevelMessage.create
   implicit val advMessage: TileAdvQuarry => AdvLevelMessage = AdvLevelMessage.create
+  implicit val quarryMessage: TileQuarry2 => Level2Message = Level2Message.create
 }

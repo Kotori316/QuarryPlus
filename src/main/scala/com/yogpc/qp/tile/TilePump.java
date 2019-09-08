@@ -75,7 +75,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
 
     private EnumFacing preFacing;
 
-    protected byte unbreaking;
+    public byte unbreaking;
     protected byte fortune;
     protected boolean silktouch;
     private final List<FluidStack> liquids = new ArrayList<>();
@@ -186,6 +186,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                 if (connectTo != null) {
                     TileEntity te = getWorld().getTileEntity(getPos().offset(connectTo));
                     if (te instanceof IAttachable && ((IAttachable) te).connect(this.connectTo.getOpposite(), Attachments.FLUID_PUMP)) {
+                        ((IAttachable) te).connectAttachment(this.connectTo.getOpposite(), Attachments.FLUID_PUMP, false);
                         S_sendNowPacket();
                         this.initialized = true;
                     } else if (getWorld().isAirBlock(getPos().offset(connectTo))) {
@@ -206,6 +207,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                 te = getWorld().getTileEntity(getPos().offset(facing));
                 if (te instanceof IAttachable && ((IAttachable) te).connect(facing.getOpposite(), Attachments.FLUID_PUMP)) {
                     setConnectTo(facing);
+                    ((IAttachable) te).connectAttachment(facing.getOpposite(), Attachments.FLUID_PUMP, false);
                     S_sendNowPacket();
                     return;
                 }
@@ -232,6 +234,11 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                 InvUtils.setNewState(getWorld(), getPos(), this, state.withProperty(BlockPump.CONNECTED, connectTo != null));
             }
         }
+    }
+
+    @Override
+    public IModule getModule() {
+        return PumpModule.fromTile(this, (APowerTile) G_connected());
     }
 
     public void setWorking(boolean b) {
@@ -273,7 +280,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
 
     public void S_changeRange(final EntityPlayer ep) {
         if (this.range >= (this.fortune + 1) * 2) {
-            if (G_connected() instanceof TileQuarry)
+            if (G_connected() instanceof TileQuarry || G_connected() instanceof TileQuarry2)
                 this.quarryRange = true;
             this.range = 0;
         } else if (this.quarryRange)
@@ -309,9 +316,9 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         this.py = Y_SIZE - 1;
         this.px = -1;
         final IAttachable tb = G_connected();
-        @Nullable TileQuarry b = null;
-        if (tb instanceof TileQuarry)
-            b = (TileQuarry) tb;
+        @Nullable RangeWrapper b = null;
+        if (tb instanceof TileQuarry || tb instanceof TileQuarry2)
+            b = RangeWrapper.of(tb);
         if (b != null && b.yMax != Integer.MIN_VALUE) {
             chunk_side_x = 1 + (b.xMax >> 4) - (b.xMin >> 4);
             chunk_side_z = 1 + (b.zMax >> 4) - (b.zMin >> 4);
@@ -445,22 +452,22 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                     for (bz = 0; bz < this.block_side_z; bz++)
                         if ((this.blocks[this.py - this.yOffset][bx][bz] & 0x40) != 0) {
                             drainBlock(bx, bz, QuarryPlusI.blockFrame().getDammingState());
-                            if (tile instanceof TileQuarry) {
-                                TileQuarry quarry = (TileQuarry) tile;
+                            if (tile instanceof TileQuarry || tile instanceof TileQuarry2) {
+                                RangeWrapper wrapper = RangeWrapper.of(tile);
                                 int xTarget = bx + xOffset;
                                 int zTarget = bz + zOffset;
-                                if (quarry.G_getNow() != TileQuarry.Mode.NOT_NEED_BREAK) {
-                                    if (Config.content().debug()) {
-                                        if ((quarry.xMin < xTarget && xTarget < quarry.xMax) && (quarry.zMin < zTarget && zTarget < quarry.zMax))
-                                            QuarryPlus.LOGGER.warn(String.format("Quarry placed frame at %d, %d, %d", xTarget, py, zTarget));
-                                    }
-                                    autoChange(false);
-                                } else {
-                                    if ((quarry.xMin <= xTarget && xTarget <= quarry.xMax) && (quarry.zMin <= zTarget && zTarget <= quarry.zMax)) {
+                                if (wrapper.waiting()) {
+                                    if ((wrapper.xMin <= xTarget && xTarget <= wrapper.xMax) && (wrapper.zMin <= zTarget && zTarget <= wrapper.zMax)) {
                                         if (Config.content().debug())
                                             QuarryPlus.LOGGER.warn(String.format("Quarry placed frame at %d, %d, %d", xTarget, py, zTarget));
                                         autoChange(true);
                                     }
+                                } else {
+                                    if (Config.content().debug()) {
+                                        if ((wrapper.xMin < xTarget && xTarget < wrapper.xMax) && (wrapper.zMin < zTarget && zTarget < wrapper.zMax))
+                                            QuarryPlus.LOGGER.warn(String.format("Quarry placed frame at %d, %d, %d", xTarget, py, zTarget));
+                                    }
+                                    autoChange(false);
                                 }
                             }
                         }
