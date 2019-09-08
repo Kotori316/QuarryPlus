@@ -220,7 +220,7 @@ object QuarryAction {
       if (!movingHead) {
         digTargets match {
           case Nil =>
-            val poses = QuarryAction.digTargets(quarry2.area, targetBefore, y).dropWhile(p => !checkBreakable(quarry2.getWorld, p, quarry2.getWorld.getBlockState(p), quarry2.modules))
+            val poses = QuarryAction.digTargets(quarry2.area, targetBefore, y, log = false).dropWhile(p => !checkBreakable(quarry2.getWorld, p, quarry2.getWorld.getBlockState(p), quarry2.modules))
             if (poses.nonEmpty) {
               digTargets = poses
             }
@@ -253,7 +253,7 @@ object QuarryAction {
     override def canGoNext(quarry: TileQuarry2): Boolean = {
       if (digTargets.isEmpty) {
         val set = quarry.modules.flatMap(IModule.replaceBlocks(y)).toSet
-        val list = QuarryAction.digTargets(quarry2.area, targetBefore, y)
+        val list = QuarryAction.digTargets(quarry2.area, targetBefore, y, log = false)
           .filter(p => checkBreakable(quarry2.getWorld, p, quarry2.getWorld.getBlockState(p), quarry2.modules))
         list.forall(quarry.getWorld.getBlockState _ andThen set)
       } else {
