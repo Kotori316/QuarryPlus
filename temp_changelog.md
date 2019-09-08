@@ -1,5 +1,10 @@
 **This mod requires a library, [Scalable Cat's Force](https://minecraft.curseforge.com/projects/scalable-cats-force).**
 
+## Version 14.0.4
+・Collect items and exp when removing liquid Kotori316 2019/09/08 20:52<br>
+・Reduced log Kotori316 2019/09/08 20:50<br>
+・Fixed a bug where New Quarry skips many blocks when world is loaded. Kotori316 2019/09/08 16:47<br>
+
 ## Version 14.0.3
 * Improved the action of disabled machines
 
