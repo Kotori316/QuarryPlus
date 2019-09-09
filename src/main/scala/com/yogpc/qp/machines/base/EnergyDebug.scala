@@ -43,33 +43,31 @@ class EnergyDebug(tile: APowerTile) {
     if (!started)
       start()
     val tick = getTime
-    val energy = Math.round(amount)
     if (tick == uLastTick) {
-      used(usedCount - 1) += energy
+      used(usedCount - 1) += amount
     } else {
       usedCount += 1
       if (usedCount <= 100)
-        used(usedCount - 1) = energy
+        used(usedCount - 1) = amount
       uLastTick = tick
     }
-    totalUsed += energy
-    usageMap(usage) = usageMap.getOrElse(usage, 0L) + energy
+    totalUsed += amount
+    usageMap(usage) = usageMap.getOrElse(usage, 0L) + amount
   }
 
   def get(amount: Long): Unit = {
     if (!outputInfo) return
     val tick = getTime
-    val energy = Math.round(amount)
     if (tick == gLastTick) {
       if (gotCount > 0)
-        got(gotCount - 1) += energy
+        got(gotCount - 1) += amount
     } else {
       gotCount += 1
       if (gotCount > 100) {
         print(gotCount)
         return
       }
-      got(gotCount - 1) = energy
+      got(gotCount - 1) = amount
       gLastTick = tick
     }
   }
