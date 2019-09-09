@@ -71,8 +71,10 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
         super.tick();
         if (world != null && !world.isRemote) {
             if (isWorking()) {
-                if (currentRecipe.microEnergy() <= getStoredEnergy() || Config.common().noEnergy().get()) {
+                if (currentRecipe.microEnergy() <= getStoredEnergy()) {
                     useEnergy(currentRecipe.microEnergy(), currentRecipe.microEnergy(), true, EnergyUsage.WORKBENCH);
+                    if (Config.common().noEnergy().get())
+                        this.setStoredEnergy(0); // Set current energy to 0 to make waiting time.
                     ItemStack stack = currentRecipe.getOutput();
                     ItemStack inserted = InvUtils.injectToNearTile(world, getPos(), stack);
                     if (!inserted.isEmpty()) {
@@ -89,6 +91,8 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
                     }
                     markDirty();
                     setCurrentRecipeIndex(workContinue ? getRecipeIndex() : -1);
+                } else if (Config.common().noEnergy().get()) {
+                    getEnergy(currentRecipe.microEnergy() / 200, true, true); // 10 second to full.
                 }
             }
         }
@@ -231,6 +235,9 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
             this.currentRecipe = WorkbenchRecipes.dummyRecipe();
         }
         configure(Config.common().workbenchMaxReceive().get() * APowerTile.MJToMicroMJ, currentRecipe.microEnergy());
+        if (Config.common().noEnergy().get()) {
+            this.setStoredEnergy(0); // Prevent item from being created as soon as clicked.
+        }
     }
 
     @OnlyIn(Dist.CLIENT)
