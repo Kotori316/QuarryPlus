@@ -14,6 +14,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.FurnaceTileEntity;
 import net.minecraft.util.text.ITextComponent;
@@ -50,7 +51,11 @@ public class TileSolidQuarry extends TileQuarry implements INamedContainerProvid
             burn = ForgeEventFactory.getItemBurnTime(fuel, burn == -1 ? FurnaceTileEntity.getBurnTimes().getOrDefault(fuel.getItem(), 0) : burn);
             if (burn > 0) {
                 fuelCount += burn / 5;
-                decrStackSize(0, 1);
+                if (fuel.hasContainerItem() && fuel.getCount() == 1) {
+                    setInventorySlotContents(0, fuel.getContainerItem());
+                } else {
+                    decrStackSize(0, 1);
+                }
             }
         }
         super.S_updateEntity();
@@ -150,7 +155,28 @@ public class TileSolidQuarry extends TileQuarry implements INamedContainerProvid
             @Nonnull
             @Override
             public ItemStack extractItem(int slot, int amount, boolean simulate) {
-                return slot == 0 ? ItemStack.EMPTY : super.extractItem(slot, amount, simulate);
+                if (slot == 0) {
+                    ItemStack stackInSlot = getInv().getStackInSlot(slot);
+                    if (stackInSlot.getItem() == Items.BUCKET) {
+                        if (simulate) {
+                            if (stackInSlot.getCount() < amount) {
+                                return stackInSlot.copy();
+                            } else {
+                                ItemStack copy = stackInSlot.copy();
+                                copy.setCount(amount);
+                                return copy;
+                            }
+                        } else {
+                            int m = Math.min(stackInSlot.getCount(), amount);
+                            ItemStack decrStackSize = getInv().decrStackSize(slot, m);
+                            getInv().markDirty();
+                            return decrStackSize;
+                        }
+                    } else {
+                        return ItemStack.EMPTY;
+                    }
+                }
+                return super.extractItem(slot, amount, simulate);
             }
         };
     }
