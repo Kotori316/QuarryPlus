@@ -1,5 +1,12 @@
 **This mod requires a library, [Scalable Cat's Force](https://minecraft.curseforge.com/projects/scalable-cats-force).**
 
+## Version 14.0.6
+- Fixed - the amount of received or used energy was not treated correctly.
+- Improvement - Solid Fuel Quarry drops fuel item when removed.
+- Improvement - Solid Fuel Quarry shows fuel count on its GUI.
+- Improvement - Workbench act as receiving energy for 10 seconds when NoEnergy is true.
+- Fixed - Solid Fuel Quarry consumed not only lava but also bucket.
+
 ## Version 14.0.5
 - Fixed - Crashes of loading client-only classes in multi player server (Dedicated Server). #63
 - Improvement - Show y level of the machine on its GUI.
