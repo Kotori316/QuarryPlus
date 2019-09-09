@@ -17,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.FurnaceTileEntity;
+import net.minecraft.util.IIntArray;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.event.ForgeEventFactory;
@@ -28,9 +29,26 @@ public class TileSolidQuarry extends TileQuarry implements INamedContainerProvid
     private static final long fuelEfficiency = 4 * APowerTile.MJToMicroMJ; // 40 RF/t
     private ItemStack fuel = ItemStack.EMPTY;
     private int fuelCount = 0;
+    public final IIntArray fuelCountAccessor;
 
     public TileSolidQuarry() {
         super(Holder.solidQuarryType());
+        fuelCountAccessor = new IIntArray() {
+            @Override
+            public int get(int index) {
+                return fuelCount;
+            }
+
+            @Override
+            public void set(int index, int value) {
+                fuelCount = value;
+            }
+
+            @Override
+            public int size() {
+                return 1;
+            }
+        };
     }
 
     @Override

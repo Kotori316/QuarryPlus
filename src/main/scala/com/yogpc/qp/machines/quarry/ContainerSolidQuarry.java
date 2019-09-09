@@ -1,19 +1,24 @@
 package com.yogpc.qp.machines.quarry;
 
+import java.util.Objects;
+
 import com.yogpc.qp.machines.base.SlotTile;
 import com.yogpc.qp.utils.Holder;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IntReferenceHolder;
 import net.minecraft.util.math.BlockPos;
 
 public class ContainerSolidQuarry extends Container {
     private final TileSolidQuarry quarry;
+    public final IntReferenceHolder fuelCount;
 
     public ContainerSolidQuarry(int id, PlayerEntity player, BlockPos pos) {
         super(Holder.solidQuarryContainerType(), id);
         this.quarry = ((TileSolidQuarry) player.getEntityWorld().getTileEntity(pos));
+        Objects.requireNonNull(quarry);
 
         addSlot(new SlotTile(quarry, 0, 44, 27));
 
@@ -26,6 +31,7 @@ public class ContainerSolidQuarry extends Container {
         for (int vertical = 0; vertical < 9; vertical++) {
             this.addSlot(new Slot(player.inventory, vertical, 8 + vertical * oneBox, 142));
         }
+        fuelCount = this.trackInt(IntReferenceHolder.create(quarry.fuelCountAccessor, 0));
     }
 
     @Override

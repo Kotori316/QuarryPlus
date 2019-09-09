@@ -14,6 +14,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateContainer;
@@ -92,4 +93,21 @@ public class BlockSolidQuarry extends QPBlock {
     public TileEntityType<? extends TileEntity> getTileType() {
         return Holder.solidQuarryType();
     }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (state.getBlock() != newState.getBlock()) {
+            if (!worldIn.isRemote) {
+                TileEntity entity = worldIn.getTileEntity(pos);
+                if (entity instanceof TileSolidQuarry) {
+                    TileSolidQuarry inventory = (TileSolidQuarry) entity;
+                    InventoryHelper.spawnItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), inventory.getStackInSlot(0));
+                    worldIn.updateComparatorOutputLevel(pos, state.getBlock());
+                }
+            }
+            super.onReplaced(state, worldIn, pos, newState, isMoving);
+        }
+    }
+
 }

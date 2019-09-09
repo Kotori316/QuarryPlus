@@ -34,6 +34,7 @@ public class GuiSolidQuarry extends ContainerScreen<ContainerSolidQuarry> {
     @Override
     protected void drawGuiContainerForegroundLayer(final int mouseX, final int mouseY) {
         this.font.drawString(I18n.format(TranslationKeys.solidquarry), 8, 6, 0x404040);
+        this.font.drawString("Fuel: " + getContainer().fuelCount.get(), 110, 6, 0x404040);
         this.font.drawString(I18n.format(TranslationKeys.CONTAINER_INVENTORY), 8, this.ySize - 96 + 2, 0x404040);
     }
 }
