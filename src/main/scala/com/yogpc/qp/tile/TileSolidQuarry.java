@@ -9,6 +9,7 @@ import javax.annotation.Nonnull;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntityFurnace;
@@ -38,7 +39,11 @@ public class TileSolidQuarry extends TileQuarry {
             int burn = TileEntityFurnace.getItemBurnTime(fuel) / 5;
             if (burn > 0) {
                 fuelCount += burn;
-                decrStackSize(0, 1);
+                if (fuel.getItem().hasContainerItem(fuel) && fuel.getCount() == 1) {
+                    setInventorySlotContents(0, fuel.getItem().getContainerItem(fuel));
+                } else {
+                    decrStackSize(0, 1);
+                }
             }
         }
         super.S_updateEntity();
@@ -148,7 +153,28 @@ public class TileSolidQuarry extends TileQuarry {
             @Nonnull
             @Override
             public ItemStack extractItem(int slot, int amount, boolean simulate) {
-                return slot == 0 ? ItemStack.EMPTY : super.extractItem(slot, amount, simulate);
+                if (slot == 0) {
+                    ItemStack stackInSlot = getInv().getStackInSlot(slot);
+                    if (stackInSlot.getItem() == Items.BUCKET) {
+                        if (simulate) {
+                            if (stackInSlot.getCount() < amount) {
+                                return stackInSlot.copy();
+                            } else {
+                                ItemStack copy = stackInSlot.copy();
+                                copy.setCount(amount);
+                                return copy;
+                            }
+                        } else {
+                            int m = Math.min(stackInSlot.getCount(), amount);
+                            ItemStack decrStackSize = getInv().decrStackSize(slot, m);
+                            getInv().markDirty();
+                            return decrStackSize;
+                        }
+                    } else {
+                        return ItemStack.EMPTY;
+                    }
+                }
+                return super.extractItem(slot, amount, simulate);
             }
         };
     }
