@@ -47,7 +47,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
     public static final String NBT_MAX_STORED = "MAX_stored";
     public static final String NBT_MAX_RECEIVE = "MAX_receive";
     public static final String NBT_OUTPUT_ENERGY_INFO = "outputEnergyInfo";
-    private long all, maxGot, max, got;
+    /*package-private*/ long all, maxGot, max, got;
     private boolean ic2ok = false;
     public boolean bcLoaded;
     public final boolean ic2Loaded;

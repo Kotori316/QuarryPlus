@@ -29,9 +29,7 @@ public abstract class PumpModule implements IModule {
     private static final Set<ModuleType> TYPE_SET;
 
     static {
-        Set<?> set = JavaConverters.asScalaSetConverter(Stream.of(TypeBeforeBreak$.MODULE$).collect(Collectors.toSet())).asScala().toSet();
-        //noinspection unchecked
-        TYPE_SET = (Set<ModuleType>) set;
+        TYPE_SET = JavaConverters.asScalaSetConverter(Stream.of(TypeBeforeBreak$.MODULE$).collect(Collectors.toSet())).asScala().toSet();
     }
 
     @Override
