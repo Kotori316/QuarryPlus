@@ -101,7 +101,7 @@ class EnergyDebug(tile: APowerTile) {
           QuarryPlus.LOGGER.info(s"$tileName used $allUsed MJ in $usedCount ticks (${allUsed * 10 / usedCount} RF/t), got 0 MJ")
         else
           QuarryPlus.LOGGER.info(
-            s"$tileName used $allUsed MJ in $usedCount ticks (${allUsed * 10 / usedCount} RF/t), got $allGot in $gotCount ticks (${allGot * 10 / gotCount} RF/t)"
+            s"$tileName used $allUsed MJ in $usedCount ticks (${allUsed * 10 / usedCount} RF/t), got $allGot NJ in $gotCount ticks (${allGot * 10 / gotCount} RF/t)"
           )
       }
     }
