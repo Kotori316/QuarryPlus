@@ -1,5 +1,10 @@
 **This mod requires a library, [Scalable Cat's Force](https://minecraft.curseforge.com/projects/scalable-cats-force).**
 
+## Version 14.0.7
+- **Made `NoEnergy` true in default.** There a few mods that can provide FE or RF with Forge.
+This change will reduce confusion of not working machines.
+- Internal changes.
+
 ## Version 14.0.6
 - Fixed - the amount of received or used energy was not treated correctly.
 - Improvement - Solid Fuel Quarry drops fuel item when removed.
