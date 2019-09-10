@@ -1020,7 +1020,7 @@ object TileAdvQuarry {
       Math.max(length / 128, 1)
     }
 
-    val dropWidth: Int = Math.max(1, (maxX - minX) / 32)
+    val dropWidth: Int = Math.max(6, (maxX - minX) / 32)
 
     def chunkSeq: List[ChunkPos] = {
       val a = for (x <- Range(minX, maxX, 16) :+ maxX;
