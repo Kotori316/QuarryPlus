@@ -47,7 +47,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
     public static final String NBT_MAX_STORED = "MAX_stored";
     public static final String NBT_MAX_RECEIVE = "MAX_receive";
     public static final String NBT_OUTPUT_ENERGY_INFO = "outputEnergyInfo";
-    /*package-private*/ long all, maxGot, max, got;
+    private long all, maxGot, max, got;
     private boolean ic2ok = false;
     public boolean bcLoaded;
     public final boolean ic2Loaded;
@@ -192,6 +192,16 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
         if (real)
             this.got += ret;
         return ret;
+    }
+
+    protected final void getEnergy(final long a, final boolean real, boolean force) {
+        if (!force) {
+            getEnergy(a, real);
+            return;
+        }
+        final long ret = Math.min(this.max - this.all - this.got, a);
+        if (real)
+            this.got += ret;
     }
 
     public final long getStoredEnergy() {
