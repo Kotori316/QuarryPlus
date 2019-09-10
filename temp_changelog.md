@@ -1,6 +1,17 @@
+# Version 12.2.5
+- Fixed - Solid Fuel Quarry consumed lava bucket.
+- Improvement - Workbench act as receiving energy for 10 seconds when `NoEnergy` is `true`.
+- Improvement - Solid Fuel Quarry drops fuel item when removed.
+- Improvement - Solid Fuel Quarry shows fuel count on its GUI.
+- Improvement - gather items from wider area.
+- Improvement - TorchModule place torch only once a tick.
+
 # Version 12.2.4
-- Added -  module system for Chunk Destroyer. (#53)
+- Added -  module system for Chunk Destroyer. [#53](https://github.com/Kotori316/QuarryPlus/issues/53)
 - Improvement - You can get the y-level of machine in tile's inventory GUI.
+- Fixed - TorchModule placed torch at invalid position.
+- Fixed - The state of ExpPump wasn't changed when xps are collected.
+- Fixed - Now all machines respect setting option `Disabled`.
 
 # Version 12.2.3
 * Added torch module and fuel module. [#61](https://github.com/Kotori316/QuarryPlus/issues/61)
