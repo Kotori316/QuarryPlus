@@ -12,18 +12,21 @@ class TorchModule(val y: () => Int) extends IModule {
 
   override val calledWhen: Set[IModule.ModuleType] = Set(IModule.TypeAfterBreak)
 
+  private[this] var lastPlaced = 0L
+
   /**
     * @return false if work hasn't finished.
     */
   override def action(when: IModule.CalledWhen): Result = {
     when match {
-      case AfterBreak(world, pos, _) =>
-        if (pos.getY == y.apply()) {
+      case AfterBreak(world, pos, _, time) =>
+        if (pos.getY == y.apply() && time != lastPlaced) {
           // Check light value
           val light = world.getLightFor(EnumSkyBlock.BLOCK, pos.up())
           val state = world.getBlockState(pos.down())
           if (light < 9 && state.getBlock.canPlaceTorchOnTop(state, world, pos)) {
             world.setBlockState(pos, Blocks.TORCH.getDefaultState)
+            lastPlaced = time
             Done
           } else {
             NoAction

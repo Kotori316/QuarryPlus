@@ -157,7 +157,7 @@ class TileAdvQuarry extends APowerTile
           val z = target.getZ
           if (x % 3 == 0) {
             val list = NonNullList.create[ItemStack]()
-            val axis = new AxisAlignedBB(new BlockPos(x - 6, 1, z - 6), target.add(6, 0, 6))
+            val axis = new AxisAlignedBB(new BlockPos(x - digRange.dropWidth, 1, z - digRange.dropWidth), target.add(digRange.dropWidth, 4, digRange.dropWidth))
             //catch dropped items
             getWorld.getEntitiesWithinAABB(classOf[EntityItem], axis).asScala.filter(nonNull).filter(!_.isDead)
               .filter(_.getItem.getCount > 0).foreach(entity => {
@@ -270,7 +270,7 @@ class TileAdvQuarry extends APowerTile
           dig.foreach { y =>
             p.setY(y)
             val state = getWorld.getBlockState(p)
-            breakEvent(p, state, fakePlayer) { event =>
+            breakEvent(p, state, fakePlayer) { _ =>
               if (ench.silktouch && state.getBlock.canSilkHarvest(getWorld, p, state, fakePlayer)) {
                 tempList.add(ReflectionHelper.invoke(TileBasic.createStackedBlock, state.getBlock, state).asInstanceOf[ItemStack])
               } else {
@@ -410,7 +410,7 @@ class TileAdvQuarry extends APowerTile
             startWork()
           }
       } else if (mode is TileAdvQuarry.CHECK_LIQUID) {
-        val aabb = new AxisAlignedBB(digRange.minX - 6, 0, digRange.minZ - 6, digRange.maxX + 6, digRange.maxY + 3, digRange.maxZ + 6)
+        val aabb = new AxisAlignedBB(digRange.minX - digRange.dropWidth, 0, digRange.minZ - digRange.dropWidth, digRange.maxX + digRange.dropWidth, digRange.maxY + 3, digRange.maxZ + digRange.dropWidth)
         val drops = getWorld.getEntitiesWithinAABB(classOf[EntityItem], aabb)
         drops.asScala.filter(_.getItem.getCount > 0).foreach(entity => {
           QuarryPlus.proxy.removeEntity(entity)
@@ -488,7 +488,7 @@ class TileAdvQuarry extends APowerTile
   }
 
   private def setBlock(pos: BlockPos, state: IBlockState): Unit = {
-    val replaced = modules.foldLeft(IModule.NoAction: IModule.Result) { case (r, m) => IModule.Result.combine(r, m.invoke(IModule.AfterBreak(getWorld, pos, state))) }
+    val replaced = modules.foldLeft(IModule.NoAction: IModule.Result) { case (r, m) => IModule.Result.combine(r, m.invoke(IModule.AfterBreak(getWorld, pos, state, self.getWorld.getTotalWorldTime))) }
     if (!replaced.done) {
       val i = 0x10 | 0x2
       getWorld.setBlockState(pos, Blocks.AIR.getDefaultState, i)
@@ -1019,6 +1019,8 @@ object TileAdvQuarry {
       val length = (maxX + maxZ - minX - minZ + 2) / 2
       Math.max(length / 128, 1)
     }
+
+    val dropWidth: Int = Math.max(1, (maxX - minX) / 32)
 
     def chunkSeq: List[ChunkPos] = {
       val a = for (x <- Range(minX, maxX, 16) :+ maxX;

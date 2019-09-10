@@ -59,7 +59,7 @@ object IModule {
 
   final case class CollectingItem(entities: List[Entity]) extends CalledWhen(TypeCollectItem)
 
-  final case class AfterBreak(world: World, pos: BlockPos, before: IBlockState) extends CalledWhen(TypeAfterBreak)
+  final case class AfterBreak(world: World, pos: BlockPos, before: IBlockState, worldTime: Long) extends CalledWhen(TypeAfterBreak)
 
   final case class Tick(tile: APowerTile) extends CalledWhen(TypeTick)
 
