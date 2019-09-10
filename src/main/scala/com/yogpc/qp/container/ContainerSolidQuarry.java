@@ -4,11 +4,15 @@ import com.yogpc.qp.tile.TileSolidQuarry;
 import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
+import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ContainerSolidQuarry extends Container {
     private final TileSolidQuarry quarry;
+    public int fuelCount;
 
     public ContainerSolidQuarry(TileSolidQuarry quarry, EntityPlayer player) {
         this.quarry = quarry;
@@ -61,5 +65,19 @@ public class ContainerSolidQuarry extends Container {
             VersionUtil.onTake(slot, playerIn, remain);
         }
         return src;
+    }
+
+    @Override
+    public void detectAndSendChanges() {
+        super.detectAndSendChanges();
+        this.fuelCount = quarry.getFuelCount();
+        for (IContainerListener listener : this.listeners)
+            VersionUtil.sendWindowProperty(listener, this, 0, this.fuelCount);
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void updateProgressBar(int id, int data) {
+        this.fuelCount = data;
     }
 }

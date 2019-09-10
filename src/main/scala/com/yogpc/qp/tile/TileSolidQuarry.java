@@ -191,4 +191,8 @@ public class TileSolidQuarry extends TileQuarry {
         list.add(new TextComponentString("FuelCount : " + fuelCount));
         return list;
     }
+
+    public int getFuelCount() {
+        return fuelCount;
+    }
 }

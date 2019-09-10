@@ -14,6 +14,7 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -103,4 +104,18 @@ public class BlockSolidQuarry extends ADismCBlock {
     public TileEntity createNewTileEntity(World worldIn, int meta) {
         return new TileSolidQuarry();
     }
+
+    @Override
+    public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+        if (!worldIn.isRemote) {
+            TileEntity entity = worldIn.getTileEntity(pos);
+            if (entity instanceof TileSolidQuarry) {
+                TileSolidQuarry inventory = (TileSolidQuarry) entity;
+                InventoryHelper.spawnItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), inventory.getStackInSlot(0));
+                worldIn.updateComparatorOutputLevel(pos, state.getBlock());
+            }
+        }
+        super.breakBlock(worldIn, pos, state);
+    }
+
 }
