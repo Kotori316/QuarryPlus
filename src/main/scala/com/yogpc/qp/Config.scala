@@ -34,7 +34,7 @@ object Config {
     builder.comment("Beginning of QuarryPlus configuration.").push("common")
     //--------- Registering config entries. ---------
     private[this] val configDebug = builder.comment("True to enable debug mode.").define("debug", inDev)
-    val noEnergy = builder.comment("True to make machines work with no energy.").define("NoEnergy", inDev)
+    val noEnergy = builder.comment("True to make machines work with no energy.").define("NoEnergy", true)
     val workbenchMaxReceive = builder.comment("Amount of energy WorkbenchPlus can receive in a tick. [MJ]")
       .defineInRange("WorkbenchMaxReceive", 250, 0, Int.MaxValue)
     val fastQuarryHeadMove = builder.comment("Fasten quarry's head moving.").define("FastQuarryHeadMove", false)
