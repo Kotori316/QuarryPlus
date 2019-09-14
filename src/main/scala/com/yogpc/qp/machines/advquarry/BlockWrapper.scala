@@ -38,12 +38,7 @@ object BlockWrapper extends JsonDeserializer[BlockWrapper] with JsonSerializer[B
     BlockWrapper(Blocks.DIRT.getDefaultState, ignoreProperty = true),
     BlockWrapper(Blocks.GRASS_BLOCK.getDefaultState, ignoreProperty = true),
     BlockWrapper(Blocks.NETHERRACK.getDefaultState),
-    BlockWrapper(Blocks.SANDSTONE.getDefaultState),
-    BlockWrapper(Blocks.CHISELED_SANDSTONE.getDefaultState),
-    BlockWrapper(Blocks.CUT_SANDSTONE.getDefaultState),
-    BlockWrapper(Blocks.RED_SANDSTONE.getDefaultState),
-    BlockWrapper(Blocks.CHISELED_RED_SANDSTONE.getDefaultState),
-    BlockWrapper(Blocks.CUT_RED_SANDSTONE.getDefaultState),
+    BlockWrapper(Tags.Blocks.SANDSTONE),
   )
 
   import com.yogpc.qp._
