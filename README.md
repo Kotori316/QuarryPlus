@@ -1,5 +1,6 @@
 # QuarryPlus for 1.14.4
 ===========
+
 CurseForge - https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner
 
 Now, this project is WIP. See commit page for details.
@@ -20,4 +21,4 @@ Finished Work
 * Book Mover
 * Spawner Controller
 * Advanced Pump
-* ~~Chunk Destroyer~~
+* Chunk Destroyer
