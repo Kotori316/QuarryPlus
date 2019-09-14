@@ -64,14 +64,14 @@ object BlockWrapper extends JsonDeserializer[BlockWrapper] with JsonSerializer[B
     .registerTypeHierarchyAdapter(classOf[BlockWrapper], this)
     .registerTypeHierarchyAdapter(classOf[Array[BlockWrapper]], arrayDeserializer)
     .create()
-  final val KEY_NAME = "name"
-  final val KEY_STATE = "blockstate"
-  final val KEY_Property = "ignoreProperty"
-  final val KEY_Tag = "tag"
+  private[this] final val KEY_NAME = "name"
+  private[this] final val KEY_STATE = "blockstate"
+  private[this] final val KEY_Property = "ignoreProperty"
+  private[this] final val KEY_Tag = "tag"
 
-  private val NAME_NoMatch = QuarryPlus.modID + ":wrapper_none"
-  private val NAME_State = QuarryPlus.modID + ":wrapper_state"
-  private val NAME_Tag = QuarryPlus.modID + ":wrapper_tag"
+  private[this] final val NAME_NoMatch = QuarryPlus.modID + ":wrapper_none"
+  private[this] final val NAME_State = QuarryPlus.modID + ":wrapper_state"
+  private[this] final val NAME_Tag = QuarryPlus.modID + ":wrapper_tag"
 
   private object NoMatch extends BlockWrapper(NAME_NoMatch) {
     override def contain(that: BlockState) = false
