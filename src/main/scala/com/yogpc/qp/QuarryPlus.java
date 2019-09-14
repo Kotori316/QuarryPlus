@@ -10,6 +10,7 @@ import com.yogpc.qp.machines.workbench.WorkbenchRecipes;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.EnableCondition;
 import com.yogpc.qp.utils.Holder;
+import com.yogpc.qp.utils.ProxyClient;
 import com.yogpc.qp.utils.ProxyCommon;
 import net.minecraft.block.Block;
 import net.minecraft.inventory.container.ContainerType;
@@ -41,15 +42,7 @@ public class QuarryPlus {
     public static final String modID = "quarryplus";
     public static final Logger LOGGER = LogManager.getLogger(Mod_Name);
 
-    @SuppressWarnings("Convert2MethodRef") // To avoid class loading error.
-    public static final ProxyCommon proxy = DistExecutor.runForDist(() -> () -> {
-        try {
-            return ((ProxyCommon) Class.forName("com.yogpc.qp.utils.ProxyClient").newInstance());
-        } catch (ReflectiveOperationException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }, () -> () -> new ProxyCommon());
+    public static final ProxyCommon proxy = DistExecutor.runForDist(() -> ProxyClient::new, () -> ProxyCommon::new);
 
     public QuarryPlus() {
         IEventBus modBus = QuarryPlus.modBus();
