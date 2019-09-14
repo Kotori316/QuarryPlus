@@ -42,7 +42,7 @@ public interface IMessage<T extends IMessage<T>> {
     static <T extends TileEntity> Optional<T> findTile(Supplier<NetworkEvent.Context> ctx, BlockPos pos, int dim, Class<T> aClass){
         return QuarryPlus.proxy.getPacketWorld(ctx.get())
             .filter(world -> world.getDimension().getType().getId() == dim)
-            .filter(world -> world.isBlockLoaded(pos))
+            .filter(world -> world.isBlockPresent(pos))
             .map(world -> world.getTileEntity(pos))
             .flatMap(MapStreamSyntax.optCast(aClass));
     }

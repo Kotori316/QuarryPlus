@@ -45,7 +45,7 @@ public class SetEntity implements IMessage<SetEntity> {
     public void onReceive(Supplier<NetworkEvent.Context> ctx) {
         QuarryPlus.proxy.getPacketWorld(ctx.get())
             .filter(world -> world.getDimension().getType().getId() == dim)
-            .filter(world -> world.isAreaLoaded(pos, 1))
+            .filter(world -> world.isBlockPresent(pos))
             .ifPresent(world -> BlockController.setSpawnerEntity(world, pos, location));
     }
 }

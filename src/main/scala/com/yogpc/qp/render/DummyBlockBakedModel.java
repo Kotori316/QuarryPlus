@@ -43,6 +43,7 @@ public class DummyBlockBakedModel implements IBakedModel {
     }
 
     @Override
+    @SuppressWarnings("deprecation") // Just Overriding
     public TextureAtlasSprite getParticleTexture() {
         return model.getParticleTexture();
     }
