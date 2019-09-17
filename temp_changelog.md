@@ -1,5 +1,8 @@
 **This mod requires a library, [Scalable Cat's Force](https://minecraft.curseforge.com/projects/scalable-cats-force).**
 
+## Version 14.0.8
+- Fixed - a crash of WorkbenchPlus in dedicated server due to an access to client only method. (#64)
+
 ## Version 14.0.7
 - **Made `NoEnergy` true in default.** There a few mods that can provide FE or RF with Forge.
 This change will reduce confusion of not working machines.
