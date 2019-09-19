@@ -88,8 +88,8 @@ dependencies {
     // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft 'net.minecraftforge:forge:1.14.4-28.1.1'
-    implementation "org.scala-lang:scala-library:2.12.9"
-    implementation group: 'org.typelevel', name: "cats-core_2.12", version: '1.6.1'
+    implementation "org.scala-lang:scala-library:2.13.1"
+    implementation group: 'org.typelevel', name: "cats-core_2.13", version: '2.0.0'
 
     def mc_version = "1.14.4"
     def jei_version = "6.0.0.10"
