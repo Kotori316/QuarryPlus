@@ -11,7 +11,8 @@ object Sprites {
 
   val instance = this
   private[this] val map = mutable.Map.empty[Symbol, TextureAtlasSprite]
-  private[this] final val symbols = List('laser_1, 'laser_2, 'laser_3, 'laser_4, 'yellow, 'stripes_h, 'stripes_v, 'stripes_b, 'stripes_refinery)
+  private[this] final val symbols = List("laser_1", "laser_2", "laser_3", "laser_4", "yellow", "stripes_h", "stripes_v", "stripes_b", "stripes_refinery")
+    .map(Symbol.apply)
 
   def getMap = map.toMap
 

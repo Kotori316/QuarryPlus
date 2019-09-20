@@ -25,13 +25,13 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
-import scala.collection.JavaConverters;
 import scala.collection.immutable.Set;
+import scala.jdk.javaapi.CollectionConverters;
 
 public abstract class PumpModule implements IModule {
     public static final String ID = QuarryPlus.modID + ":" + "module_pump";
     private static final Set<ModuleType> TYPE_SET =
-        JavaConverters.asScalaSet(Stream.of(TypeBeforeBreak$.MODULE$).collect(Collectors.toSet())).toSet();
+        CollectionConverters.asScala(Stream.of(TypeBeforeBreak$.MODULE$).collect(Collectors.toSet())).toSet();
 
     @Override
     public String id() {
@@ -297,7 +297,7 @@ public abstract class PumpModule implements IModule {
                         for (bz = 0; bz < this.block_side_z; bz++)
                             if ((this.blocks[this.py - this.yOffset][bx][bz] & 0x40) != 0) {
                                 drainBlock(bx, bz, Holder.blockFrame().getDammingState());
-                                if (tile instanceof TileQuarry|| tile instanceof TileQuarry2) {
+                                if (tile instanceof TileQuarry || tile instanceof TileQuarry2) {
                                     RangeWrapper wrapper = RangeWrapper.of(tile);
                                     int xTarget = bx + xOffset;
                                     int zTarget = bz + zOffset;

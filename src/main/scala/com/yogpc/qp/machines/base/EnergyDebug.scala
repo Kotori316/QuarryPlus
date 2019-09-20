@@ -124,7 +124,7 @@ class EnergyDebug(tile: APowerTile) {
       QuarryPlus.LOGGER.info(
         s"$tileName finished its work and took ${stopWatch.toString}, $time ticks. Used ${totalUsed / mj} MJ at ${totalUsed * 10 / time / mj} RF/t"
       )
-      usageMap.foreach { case (usage, amount) => QuarryPlus.LOGGER.info(usage + " used " + amount / mj + "MJ.") }
+      usageMap.foreach { case (usage, amount) => QuarryPlus.LOGGER.info(s"$usage used ${amount / mj}MJ.") }
       usageMap.clear()
       totalUsed = 0L
       startTime = 0L

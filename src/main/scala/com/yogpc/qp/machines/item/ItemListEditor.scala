@@ -25,7 +25,7 @@ import net.minecraftforge.common.util.Constants.NBT
 import net.minecraftforge.fml.network.NetworkHooks
 import net.minecraftforge.registries.ForgeRegistries
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.util.Try
 
 class ItemListEditor extends Item((new Item.Properties).group(Holder.tab)) with IEnchantableItem {
@@ -157,7 +157,7 @@ object ItemListEditor {
 
   private[this] val getTag = Kleisli((stack: ItemStack) => Option(stack.getTag))
   private[this] val getName = Kleisli((tag: CompoundNBT) => if (tag.contains(NAME_key, NBT.TAG_STRING)) tag.getString(NAME_key).some else None)
-  private[this] val getEnchantments = Kleisli((stack: ItemStack) => Eval.now(EnchantmentHelper.getEnchantments(stack).asScala.collect { case (e, level) if level > 0 => e }.toList))
+  private[this] val getEnchantments = Kleisli((stack: ItemStack) => Eval.now(EnchantmentHelper.getEnchantments(stack).asScala.toList.collect { case (e, level) if level > 0 => e }))
 
   private[this] val fortuneEval = Eval.later(Enchantments.FORTUNE)
   private[this] val silktouchEval = Eval.later(Enchantments.SILK_TOUCH)

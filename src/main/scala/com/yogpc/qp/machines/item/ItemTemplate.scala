@@ -24,7 +24,7 @@ import net.minecraft.world.World
 import net.minecraftforge.common.util.Constants.NBT
 import net.minecraftforge.fml.network.NetworkHooks
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 class ItemTemplate extends Item(new Item.Properties().maxStackSize(1).group(Holder.tab)) with IEnchantableItem {
 
@@ -74,7 +74,7 @@ class ItemTemplate extends Item(new Item.Properties().maxStackSize(1).group(Hold
         if (!worldIn.isRemote) {
           val template = ItemTemplate.getTemplate(stack)
           if (template != ItemTemplate.EmPlate) {
-            import scala.collection.JavaConverters._
+            import scala.jdk.CollectionConverters._
             blocksList(stack, basic).foreach(_.addAll(template.items.asJava))
             includeSetter(stack, basic).ap(template.include.some)
             playerIn.sendStatusMessage(new TranslationTextComponent(TranslationKeys.TOF_ADDED), false)

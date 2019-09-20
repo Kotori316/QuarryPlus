@@ -10,7 +10,7 @@ import net.minecraftforge.client.model.animation.TileEntityRendererFast
 object RenderAdvQuarry extends TileEntityRendererFast[TileAdvQuarry] {
   private[this] final val d = 1d / 16d
   val instance = this
-  lazy val sprite = Sprites.getMap('yellow)
+  lazy val sprite = Sprites.getMap(Symbol("yellow"))
 
   override def renderTileEntityFast(te: TileAdvQuarry, x: Double, y: Double, z: Double,
                                     partialTicks: Float, destroyStage: Int, buffer: BufferBuilder): Unit = {

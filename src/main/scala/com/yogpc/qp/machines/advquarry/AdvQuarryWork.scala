@@ -165,7 +165,7 @@ object AdvQuarryWork {
         checkWater(tile.getWorld, targets)
         val storage1 = new AdvStorage
         if (pos.getX % 3 == 0) {
-          import scala.collection.JavaConverters._
+          import scala.jdk.CollectionConverters._
           // drop check
           val aabb = new AxisAlignedBB(pos.getX - 6, tile.yLevel - 3, pos.getZ - 6, pos.getX + 6, pos.getY, pos.getZ + 6)
           tile.getWorld.getEntitiesWithinAABB[ItemEntity](classOf[ItemEntity], aabb, EntityPredicates.IS_ALIVE)
@@ -332,7 +332,7 @@ object AdvQuarryWork {
     }
 
     override def tick(tile: TileAdvQuarry): Unit = {
-      import scala.collection.JavaConverters._
+      import scala.jdk.CollectionConverters._
       val aabb = new AxisAlignedBB(area.xMin - 6, tile.yLevel - 3, area.zMin - 6, area.xMax + 6, area.yMax, area.zMax + 6)
       tile.getWorld.getEntitiesWithinAABB[ItemEntity](classOf[ItemEntity], aabb, EntityPredicates.IS_ALIVE)
         .forEach { e =>

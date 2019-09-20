@@ -31,7 +31,8 @@ import net.minecraftforge.event.world.BlockEvent
 import net.minecraftforge.fluids.{FluidAttributes, FluidStack}
 import net.minecraftforge.fml.network.NetworkHooks
 
-import scala.collection.{JavaConverters, mutable}
+import scala.collection.mutable
+import scala.jdk.CollectionConverters._
 
 class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
   with IEnchantableTile
@@ -157,8 +158,8 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
   }
 
   def refreshModules(): Unit = {
-    val attachmentModules = attachments.flatMap { case (kind, facing) => kind.module(world.getTileEntity(pos.offset(facing))).asScala }.toList
-    val internalModules = JavaConverters.asScalaBuffer(moduleInv.moduleItems()).toList >>= { e =>
+    val attachmentModules = attachments.toList >>= { case (kind, facing) => kind.module(world.getTileEntity(pos.offset(facing))).asScala.toList }
+    val internalModules = moduleInv.moduleItems().asScala.toList >>= { e =>
       e.getKey.apply(e.getValue, self).toList
     }
     this.modules = attachmentModules ++ internalModules
@@ -232,7 +233,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
       Area.findAdvQuarryArea(facing, world, pos) match {
         case (newArea, markerOpt) =>
           area = newArea
-          markerOpt.foreach(m => JavaConverters.asScalaBuffer(m.removeFromWorldWithItem()).foreach(storage.insertItem))
+          markerOpt.foreach(m => m.removeFromWorldWithItem().forEach(storage.insertItem))
       }
     }
     action = AdvQuarryWork.waiting
@@ -250,7 +251,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
       IEnchantableTile.FortuneID -> enchantments.fortune,
       IEnchantableTile.SilktouchID -> enchantments.silktouch.compare(false),
     ) ++ enchantments.other
-    JavaConverters.mapAsJavaMap(enchantmentsMap.collect(enchantCollector))
+    enchantmentsMap.collect(enchantCollector).asJava
   }
 
   override def setEnchantment(id: ResourceLocation, value: Short): Unit = {
@@ -268,7 +269,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
 
   override def getDebugName = TranslationKeys.advquarry
 
-  override def getDebugMessages: util.List[_ <: ITextComponent] = JavaConverters.seqAsJavaList(List(
+  override def getDebugMessages: util.List[_ <: ITextComponent] = List(
     s"Mode: ${action.name}",
     s"Target: ${action.target.show}",
     s"Enchantment: ${enchantments.show}",
@@ -276,7 +277,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     s"Storage: ${storage.show}",
     s"Digs to y = $yLevel",
     s"Modules: ${modules.mkString(""",""")}",
-  ).map(new StringTextComponent(_)))
+  ).map(new StringTextComponent(_)).asJava
 
   override def getDisplayName = super.getDisplayName
 

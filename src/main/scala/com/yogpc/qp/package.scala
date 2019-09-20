@@ -62,7 +62,7 @@ package object qp {
       val tagName = if (stack.getItem == net.minecraft.item.Items.ENCHANTED_BOOK) "StoredEnchantments" else "ench"
       val list = Option(stack.getTag).fold(new ListNBT)(_.getList(tagName, NBT.TAG_COMPOUND))
 
-      import scala.collection.JavaConverters._
+      import scala.jdk.CollectionConverters._
       val copied = list.asScala.zipWithIndex.collect { case (t: CompoundNBT, i) => (t, i) }
       for ((tag, i) <- copied) {
         if (tag.getString("id") == id.toString) {

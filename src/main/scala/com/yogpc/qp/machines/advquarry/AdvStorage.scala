@@ -33,7 +33,7 @@ class AdvStorage extends HasStorage.Storage with INBTSerializable[CompoundNBT] {
     }
   }
 
-  def insertItems(stacks: Seq[ItemStack], log: Boolean = false): Unit = {
+  def insertItems(stacks: scala.collection.Seq[ItemStack], log: Boolean = false): Unit = {
     stacks.foreach(insertItem)
     if (log && stacks.nonEmpty)
       QuarryPlus.LOGGER.debug(MARKER, s"Inserted ${stacks.mkString(""",""")}")
@@ -101,7 +101,7 @@ class AdvStorage extends HasStorage.Storage with INBTSerializable[CompoundNBT] {
     val nbt = new CompoundNBT
     val itemList = this.itemMap.values.map(_.toNBT).foldLeft(new ListNBT) { case (l, data) => l.add(data); l }
     nbt.put("items", itemList)
-    val fluidList = this.fluidMap.map { case (element, l) =>
+    val fluidList = this.fluidMap.toSeq.map { case (element, l) =>
       val data = element.toNBT
       data.putLong("amount", l)
       data
@@ -113,7 +113,7 @@ class AdvStorage extends HasStorage.Storage with INBTSerializable[CompoundNBT] {
   override def deserializeNBT(nbt: CompoundNBT): Unit = {
     this.itemMap.clear()
     this.fluidMap.clear()
-    import scala.collection.JavaConverters._
+    import scala.jdk.CollectionConverters._
     val itemList = nbt.getList("items", NBT.TAG_COMPOUND)
     itemList.asScala.map { case tag: CompoundNBT =>
       val stack = ItemStack.read(tag)

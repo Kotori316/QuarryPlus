@@ -54,7 +54,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.BooleanUtils;
 import scala.Symbol;
-import scala.collection.JavaConverters;
+import scala.jdk.javaapi.CollectionConverters;
 
 import static com.yogpc.qp.machines.base.IAttachment.Attachments.EXP_PUMP;
 import static com.yogpc.qp.machines.base.IAttachment.Attachments.FLUID_PUMP;
@@ -331,13 +331,14 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     }
 
     private void S_checkDropItem(AxisAlignedBB axis) {
+        assert world != null;
         final List<ItemEntity> result = world.getEntitiesWithinAABB(ItemEntity.class, axis);
         result.stream().filter(ItemEntity::isAlive).map(ItemEntity::getItem).filter(not(ItemStack::isEmpty)).forEach(this.cacheItems::add);
         result.forEach(QuarryPlus.proxy::removeEntity);
 
         if (facingMap.containsKey(EXP_PUMP)) {
             List<Entity> xpOrbs = world.getEntitiesWithinAABB(Entity.class, axis);
-            modules.forEach(iModule -> iModule.invoke(new IModule.CollectingItem(JavaConverters.asScalaBuffer(xpOrbs).toList())));
+            modules.forEach(iModule -> iModule.invoke(new IModule.CollectingItem(CollectionConverters.asScala(xpOrbs).toList())));
         }
 
     }

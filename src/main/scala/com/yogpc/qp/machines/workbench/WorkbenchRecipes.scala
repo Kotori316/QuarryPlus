@@ -23,7 +23,7 @@ import net.minecraftforge.common.crafting.CraftingHelper
 import net.minecraftforge.fml.server.ServerLifecycleHooks
 import org.apache.commons.io.IOUtils
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.collection.mutable
 
 abstract sealed class WorkbenchRecipes(val location: ResourceLocation, val output: ItemElement, val energy: Long, val showInJEI: Boolean = true)
@@ -111,7 +111,7 @@ object WorkbenchRecipes {
 
   def recipeSize: Int = recipes.size
 
-  def removeRecipe(output: ItemElement): Unit = recipes_internal.retain { case (_, r) => r.output =!= output }
+  def removeRecipe(output: ItemElement): Unit = recipes_internal.filterInPlace { case (_, r) => r.output =!= output }
 
   def removeRecipe(location: ResourceLocation): Unit = recipes_internal.remove(location)
 
@@ -127,7 +127,7 @@ object WorkbenchRecipes {
   }
 
   def addIngredientRecipe(location: ResourceLocation, output: ItemStack, energy: Double, inputs: java.util.List[java.util.List[IngredientWithCount]]): Unit = {
-    val scalaInput = inputs.asScala.map(_.asScala.toSeq)
+    val scalaInput = inputs.asScala.map(_.asScala.toSeq).toSeq
     val newRecipe = new IngredientRecipe(location, output, (energy * APowerTile.MJToMicroMJ).toLong, s = true, scalaInput)
     if (energy > 0) {
       recipes_internal put(location, newRecipe)

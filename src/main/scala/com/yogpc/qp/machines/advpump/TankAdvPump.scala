@@ -13,14 +13,15 @@ import net.minecraftforge.common.util.INBTSerializable
 import net.minecraftforge.fluids.FluidStack
 import net.minecraftforge.fluids.capability.{CapabilityFluidHandler, IFluidHandler}
 
-import scala.collection.{JavaConverters, mutable}
+import scala.collection.immutable.ListMap
+import scala.jdk.CollectionConverters._
 import scala.language.postfixOps
 
 class TankAdvPump(capacity: Eval[Int]) extends HasStorage.Storage with IFluidHandler with INBTSerializable[CompoundNBT] {
 
   import TankAdvPump._
 
-  private[this] final val fluidStacks = new mutable.ListMap[FluidElement, Int]
+  private[this] final var fluidStacks = new ListMap[FluidElement, Int]
   private[this] final val allUnder = capacity.map(c => fluidStacks.forall { case (_, i) => i <= c / 2 })
   var amountPumped = 0L
 
@@ -39,7 +40,7 @@ class TankAdvPump(capacity: Eval[Int]) extends HasStorage.Storage with IFluidHan
     if (!fluidStack.isEmpty) {
       val key = FluidElement.fromStack(fluidStack)
       val amount = fluidStacks.getOrElse(key, 0) + fluidStack.getAmount
-      fluidStacks.update(key, amount)
+      fluidStacks = fluidStacks.updated(key, amount)
       amountPumped += fluidStack.getAmount
     }
   }
@@ -66,7 +67,7 @@ class TankAdvPump(capacity: Eval[Int]) extends HasStorage.Storage with IFluidHan
     if (action.execute() && drainAmount > 0) {
       val amount = current - drainAmount
       if (amount > 0)
-        fluidStacks.update(key, amount)
+        fluidStacks = fluidStacks.updated(key, amount)
       else
         fluidStacks -= key
     }
@@ -81,7 +82,7 @@ class TankAdvPump(capacity: Eval[Int]) extends HasStorage.Storage with IFluidHan
         if (action.execute() && drainAmount > 0) {
           val amount = current - drainAmount
           if (amount > 0)
-            fluidStacks.update(key, amount)
+            fluidStacks = fluidStacks.updated(key, amount)
           else
             fluidStacks -= key
         }
@@ -94,7 +95,7 @@ class TankAdvPump(capacity: Eval[Int]) extends HasStorage.Storage with IFluidHan
 
   override def serializeNBT(): CompoundNBT = {
     val nbt = new CompoundNBT
-    val list = fluidStacks.map { case (element, i) => element.withAmount(i).toNBT }.foldLeft(new ListNBT) { case (l, c) => l.add(c); l }
+    val list = fluidStacks.toSeq.map { case (element, i) => element.withAmount(i).toNBT }.foldLeft(new ListNBT) { case (l, c) => l.add(c); l }
     nbt.put(NBT_fluidStacks, list)
     nbt.put(NBT_amountPumped, amountPumped.toNBT)
     nbt
@@ -102,8 +103,8 @@ class TankAdvPump(capacity: Eval[Int]) extends HasStorage.Storage with IFluidHan
 
   override def deserializeNBT(nbt: CompoundNBT): Unit = {
     val list = nbt.getList(NBT_fluidStacks, NBT.TAG_COMPOUND)
-    fluidStacks.clear()
-    fluidStacks ++= JavaConverters.asScalaBuffer(list).map(cast andThen loadStack andThen separate run)
+    fluidStacks = fluidStacks.empty
+    fluidStacks ++= list.asScala.map(cast andThen loadStack andThen separate run)
     amountPumped = nbt.getLong(NBT_amountPumped)
   }
 }

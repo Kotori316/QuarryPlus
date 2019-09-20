@@ -34,7 +34,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import scala.collection.JavaConverters;
+import scala.jdk.javaapi.CollectionConverters;
 
 @Mod(QuarryPlus.modID)
 public class QuarryPlus {
@@ -70,23 +70,23 @@ public class QuarryPlus {
     public static class Register {
         @SubscribeEvent
         public static void registerBlocks(RegistryEvent.Register<Block> event) {
-            JavaConverters.seqAsJavaList(Holder.blocks()).forEach(event.getRegistry()::register);
+            CollectionConverters.asJava(Holder.blocks()).forEach(event.getRegistry()::register);
         }
 
         @SubscribeEvent
         public static void registerItems(RegistryEvent.Register<Item> event) {
-            JavaConverters.seqAsJavaList(Holder.blocks()).stream().map(Block::asItem).forEach(event.getRegistry()::register);
-            JavaConverters.seqAsJavaList(Holder.items()).forEach(event.getRegistry()::register);
+            CollectionConverters.asJava(Holder.blocks()).stream().map(Block::asItem).forEach(event.getRegistry()::register);
+            CollectionConverters.asJava(Holder.items()).forEach(event.getRegistry()::register);
         }
 
         @SubscribeEvent
         public static void registerTiles(RegistryEvent.Register<TileEntityType<?>> event) {
-            JavaConverters.asJavaCollection(Holder.tiles().keys()).forEach(event.getRegistry()::register);
+            CollectionConverters.asJava(Holder.tiles().keys()).forEach(event.getRegistry()::register);
         }
 
         @SubscribeEvent
         public static void registerContainers(RegistryEvent.Register<ContainerType<?>> event) {
-            JavaConverters.asJavaCollection(Holder.containers()).forEach(event.getRegistry()::register);
+            CollectionConverters.asJava(Holder.containers()).forEach(event.getRegistry()::register);
         }
 
         @SubscribeEvent

@@ -3,7 +3,7 @@ package com.yogpc.qp.machines.advpump
 import java.util
 
 import cats.Eval
-import cats.implicits._
+import cats.syntax.show._
 import com.yogpc.qp.machines.TranslationKeys
 import com.yogpc.qp.machines.base._
 import com.yogpc.qp.machines.pump.TilePump
@@ -24,7 +24,7 @@ import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.fluids.capability.{CapabilityFluidHandler, IFluidHandler}
 import net.minecraftforge.fluids.{FluidAttributes, FluidStack}
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 

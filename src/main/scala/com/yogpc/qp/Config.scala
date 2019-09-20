@@ -8,8 +8,6 @@ import com.yogpc.qp.utils.Holder
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.common.ForgeConfigSpec
 
-import scala.collection.JavaConverters
-
 object Config {
 
   private var mContent: Content = _
@@ -31,7 +29,7 @@ object Config {
 
   class Content(builder: ForgeConfigSpec.Builder) {
 
-    import scala.collection.JavaConverters._
+    import scala.jdk.CollectionConverters._
 
     private[this] val inDev = Option(System.getenv("target")).exists(_.contains("dev"))
 
@@ -153,7 +151,7 @@ object Config {
       if (inDev && Files.exists(logDirectory)) {
         def getEnergyMap(ench: EnchantmentHolder): IndexedSeq[String] = {
           BigDecimal("0").to(BigDecimal("100"), BigDecimal("0.1"))
-            .map(f => f -> PowerManager.calcEnergyBreak(f.floatValue(), ench))
+            .map(f => f -> PowerManager.calcEnergyBreak(f.floatValue, ench))
             .map { case (decimal, l) => s"$decimal,${l.toDouble / APowerTile.MJToMicroMJ}" }
         }
 
@@ -164,7 +162,7 @@ object Config {
           "quarryWithU3Fortune3" -> getEnergyMap(EnchantmentHolder(0, 3, 3, silktouch = false)),
           "quarryWithU3Silktouch" -> getEnergyMap(EnchantmentHolder(0, 3, 0, silktouch = true)),
         )
-        seq.foreach { case (str, strings) => Files.write(logDirectory.resolve(str + ".csv"), JavaConverters.asJavaIterable(strings)) }
+        seq.foreach { case (str, strings) => Files.write(logDirectory.resolve(str + ".csv"), strings.asJava) }
       }
     }
   }

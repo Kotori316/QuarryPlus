@@ -74,9 +74,9 @@ object QuarryAction {
 
       def a(y: Int) = {
         Range(r.xMin, r.xMax).map(x => new BlockPos(x, y, firstZ)) ++
-          Range(firstZ, lastZ, (lastZ - firstZ).signum).map(z => new BlockPos(r.xMax, y, z)) ++
+          Range(firstZ, lastZ, (lastZ - firstZ).sign).map(z => new BlockPos(r.xMax, y, z)) ++
           Range(r.xMax, r.xMin, -1).map(x => new BlockPos(x, y, lastZ)) ++
-          Range(lastZ, firstZ, (firstZ - lastZ).signum).map(z => new BlockPos(r.xMin, y, z))
+          Range(lastZ, firstZ, (firstZ - lastZ).sign).map(z => new BlockPos(r.xMin, y, z))
         }.toList
 
       def b(y: Int) = {
@@ -321,7 +321,7 @@ object QuarryAction {
     if (log) QuarryPlus.LOGGER.debug(MARKER, s"Making targets list of breaking blocks. y=$y $r, firstX=$firstX, lastX=$lastX firstZ=$firstZ, lastZ=$lastZ")
     val list = Range.inclusive(firstZ, lastZ, signum(firstZ, lastZ))
       .map(z => Range.inclusive(firstX, lastX, signum(firstX, lastX)).map(x => new BlockPos(x, y, z)))
-      .zip(Stream.iterate(true)(b => !b))
+      .zip(LazyList.iterate(true)(b => !b))
       .flatMap {
         case (p1, true) => p1
         case (p2, false) => p2.reverse
@@ -390,7 +390,7 @@ object QuarryAction {
     case (q, t, s) => loadFromNBT(getNamed(t, s))(q)
   }
 
-  val signum = (a: Int, b: Int) => if (a == b) 1 else (b - a).signum
+  val signum = (a: Int, b: Int) => if (a == b) 1 else (b - a).sign
 
   implicit val actionToNbt: QuarryAction NBTWrapper CompoundNBT = action => action.serverWrite(new CompoundNBT)
 

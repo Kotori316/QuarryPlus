@@ -7,6 +7,8 @@ import net.minecraft.network.PacketBuffer
 import net.minecraft.util.JSONUtils
 import net.minecraftforge.common.crafting.CraftingHelper
 
+import scala.collection.immutable.ArraySeq
+
 case class IngredientWithCount(ingredient: Ingredient, count: Int) {
 
   def this(json: JsonObject) = {
@@ -22,7 +24,8 @@ case class IngredientWithCount(ingredient: Ingredient, count: Int) {
   }
 
   def stackList: Seq[ItemStack] = {
-    ingredient.getMatchingStacks.map(_.copy()).filter(s => !s.isEmpty).map { s =>
+    ArraySeq.unsafeWrapArray(ingredient.getMatchingStacks)
+      .map(_.copy()).filter(s => !s.isEmpty).map { s =>
       s.setCount(count)
       s
     }
@@ -54,7 +57,7 @@ object IngredientWithCount {
   def getSeq(json: JsonElement): Seq[IngredientWithCount] = {
     val factory: JsonObject => IngredientWithCount = new IngredientWithCount(_)
     if (json.isJsonArray) {
-      import scala.collection.JavaConverters._
+      import scala.jdk.CollectionConverters._
       json.getAsJsonArray.asScala.map(changer andThen factory).toSeq
     } else {
       Seq(factory(json.getAsJsonObject))

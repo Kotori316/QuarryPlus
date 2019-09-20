@@ -72,7 +72,7 @@ object QPBlock {
     Block.getDrops(state, world.asInstanceOf[ServerWorld], pos, world.getTileEntity(pos))
     world.removeBlock(pos, false)
     if (!returnDrops) {
-      import scala.collection.JavaConverters._
+      import scala.jdk.CollectionConverters._
       for (drop <- list.asScala) {
         InventoryHelper.spawnItemStack(world, pos.getX, pos.getY, pos.getZ, drop)
       }

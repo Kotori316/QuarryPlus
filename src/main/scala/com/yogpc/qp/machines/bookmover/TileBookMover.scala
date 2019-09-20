@@ -15,7 +15,7 @@ import net.minecraft.util.NonNullList
 import net.minecraft.util.text.TranslationTextComponent
 import net.minecraftforge.registries.ForgeRegistries
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 class TileBookMover extends APowerTile(Holder.bookMoverType) with HasInv with ITickableTileEntity with INamedContainerProvider {
 

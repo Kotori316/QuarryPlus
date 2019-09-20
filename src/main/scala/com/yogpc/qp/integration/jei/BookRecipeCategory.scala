@@ -19,7 +19,7 @@ import net.minecraft.item.{EnchantedBookItem, Item, ItemStack, Items}
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.registries.ForgeRegistries
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 class BookRecipeCategory(guiHelper: IGuiHelper) extends IRecipeCategory[BookRecipeCategory.BookRecipe] {
 
@@ -47,7 +47,7 @@ class BookRecipeCategory(guiHelper: IGuiHelper) extends IRecipeCategory[BookReci
   override def draw(recipe: BookRecipe, mouseX: Double, mouseY: Double): Unit = {
     super.draw(recipe, mouseX, mouseY)
     animateBar.draw(75, 31)
-    Minecraft.getInstance().fontRenderer.drawString(50000 + "MJ", 36 - xOff, 66 - yOff, 0x404040)
+    Minecraft.getInstance().fontRenderer.drawString("50000MJ", 36 - xOff, 66 - yOff, 0x404040)
   }
 
   override def getRecipeClass = classOf[BookRecipe]

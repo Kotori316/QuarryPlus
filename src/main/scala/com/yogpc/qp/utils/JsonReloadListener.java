@@ -47,7 +47,7 @@ public abstract class JsonReloadListener extends ReloadListener<Map<ResourceLoca
             try (
                 IResource iresource = resourceManagerIn.getResource(dataPath);
                 InputStream inputstream = iresource.getInputStream();
-                Reader reader = new BufferedReader(new InputStreamReader(inputstream, StandardCharsets.UTF_8));
+                Reader reader = new BufferedReader(new InputStreamReader(inputstream, StandardCharsets.UTF_8))
             ) {
                 JsonElement element = JSONUtils.fromJson(this.gson, reader, JsonElement.class);
                 if (element != null) {

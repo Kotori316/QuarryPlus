@@ -12,7 +12,7 @@ import net.minecraft.tags.{BlockTags, Tag}
 import net.minecraft.util.{JSONUtils, ResourceLocation}
 import net.minecraftforge.common.Tags
 
-import scala.collection.JavaConverters
+import scala.jdk.CollectionConverters._
 import scala.util.Try
 
 abstract class BlockWrapper(val name: String)
@@ -50,7 +50,7 @@ object BlockWrapper extends JsonDeserializer[BlockWrapper] with JsonSerializer[B
   private[this] final val arrayDeserializer = new JsonDeserializer[Array[BlockWrapper]] {
     override def deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): Array[BlockWrapper] = {
       val componentType = typeOfT.asInstanceOf[GenericArrayType].getGenericComponentType
-      if (json.isJsonArray) JavaConverters.asScalaIterator(json.getAsJsonArray.iterator()).map(j => context.deserialize[BlockWrapper](j, componentType)).toArray
+      if (json.isJsonArray) json.getAsJsonArray.iterator().asScala.map(j => context.deserialize[BlockWrapper](j, componentType)).toArray
       else Array(context.deserialize[BlockWrapper](json, componentType))
     }
   }
@@ -123,7 +123,7 @@ object BlockWrapper extends JsonDeserializer[BlockWrapper] with JsonSerializer[B
 
   object Reload extends JsonReloadListener(BlockWrapper.GSON, QuarryPlus.modID + "/adv_quarry") {
     override def apply(splashList: java.util.Map[ResourceLocation, JsonElement], resourceManagerIn: IResourceManager, profilerIn: IProfiler): Unit = {
-      BlockWrapper.wrappers = JavaConverters.mapAsScalaMap(splashList).collect { case (_, j) => GSON.fromJson(j, classOf[Array[BlockWrapper]]) }.flatten.toSet
+      BlockWrapper.wrappers = splashList.asScala.toSeq.collect { case (_, j) => GSON.fromJson(j, classOf[Array[BlockWrapper]]) }.flatten.toSet
       QuarryPlus.LOGGER.debug("Loaded BlockWrapper objects.")
     }
   }

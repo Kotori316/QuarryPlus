@@ -18,7 +18,7 @@ import net.minecraft.item.{Item, ItemStack, Items}
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.registries.ForgeRegistries
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 class MoverRecipeCategory(guiHelper: IGuiHelper) extends IRecipeCategory[MoverRecipeCategory.MoverRecipe] {
 

@@ -19,7 +19,7 @@ import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import scala.collection.JavaConverters;
+import scala.jdk.javaapi.CollectionConverters;
 
 @JeiPlugin
 public class QuarryJeiPlugin implements IModPlugin {
@@ -30,7 +30,7 @@ public class QuarryJeiPlugin implements IModPlugin {
 
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
-        List<WorkbenchRecipes> recipes = JavaConverters.mapAsJavaMap(WorkbenchRecipes.recipes()).values().stream()
+        List<WorkbenchRecipes> recipes = CollectionConverters.asJava(WorkbenchRecipes.recipes()).values().stream()
             .filter(WorkbenchRecipes::showInJEI)
             .sorted(WorkbenchRecipes.recipeOrdering())
             .collect(Collectors.toList());

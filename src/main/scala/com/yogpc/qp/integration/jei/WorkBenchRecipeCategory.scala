@@ -19,7 +19,7 @@ import net.minecraft.client.resources.I18n
 import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 class WorkBenchRecipeCategory(guiHelper: IGuiHelper) extends IRecipeCategory[WorkbenchRecipes] {
   //4, 13 => 175, 94

@@ -11,9 +11,9 @@ object RenderQuarry extends TileEntityRendererFast[TileQuarry] {
 
   private[this] final val d1 = 1d / 16d
   private[this] final val d4 = 4d / 16d
-  private lazy val spriteV = Sprites.getMap('stripes_v)
-  private lazy val spriteH = Sprites.getMap('stripes_h)
-  private lazy val boxStripe = Sprites.getMap('stripes_b)
+  private lazy val spriteV = Sprites.getMap(Symbol("stripes_v"))
+  private lazy val spriteH = Sprites.getMap(Symbol("stripes_h"))
+  private lazy val boxStripe = Sprites.getMap(Symbol("stripes_b"))
   private lazy val drillStripe = Sprites.getMap(LaserType.DRILL.symbol)
   private lazy val headSprite = Sprites.getMap(LaserType.DRILL_HEAD.symbol)
   private[this] final val plusF: (Double, Double) => Double = (double1, double2) => double1 + double2

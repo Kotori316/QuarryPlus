@@ -5,7 +5,7 @@ import com.yogpc.qp.NBTWrapper
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.util.ResourceLocation
 
-import scala.collection.JavaConverters
+import scala.jdk.CollectionConverters._
 
 case class EnchantmentHolder(efficiency: Int, unbreaking: Int, fortune: Int, silktouch: Boolean, other: Map[ResourceLocation, Int] = Map.empty)
 
@@ -29,7 +29,7 @@ object EnchantmentHolder {
 
   def enchantmentHolderLoad(tag: CompoundNBT, name: String): EnchantmentHolder = {
     val nbt = tag.getCompound(name)
-    JavaConverters.asScalaIterator(nbt.keySet().iterator()).map(key => new ResourceLocation(key) -> nbt.getInt(key))
+    nbt.keySet().iterator().asScala.map(key => new ResourceLocation(key) -> nbt.getInt(key))
       .foldLeft(noEnch) { case (enchantments, (id, value)) =>
         id match {
           case IEnchantableTile.EfficiencyID => enchantments.copy(efficiency = value)

@@ -23,7 +23,7 @@ import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.ForgeEventFactory
 import net.minecraftforge.event.world.BlockEvent
 
-import scala.collection.JavaConverters
+import scala.jdk.CollectionConverters._
 
 class TileQuarry2 extends APowerTile(Holder.quarry2)
   with IEnchantableTile
@@ -135,7 +135,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
       Area.findQuarryArea(facing, world, pos) match {
         case (newArea, markerOpt) =>
           area = newArea
-          markerOpt.foreach(m => JavaConverters.asScalaBuffer(m.removeFromWorldWithItem()).foreach(storage.insertItem))
+          markerOpt.foreach(m => m.removeFromWorldWithItem().asScala.foreach(storage.insertItem))
       }
     }
     action = QuarryAction.waiting
@@ -150,7 +150,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
       IEnchantableTile.FortuneID -> enchantments.fortune,
       IEnchantableTile.SilktouchID -> enchantments.silktouch.compare(false),
     ) ++ enchantments.other
-    JavaConverters.mapAsJavaMap(enchantmentsMap.collect(enchantCollector))
+    enchantmentsMap.collect(enchantCollector).asJava
   }
 
   override def setEnchantment(id: ResourceLocation, value: Short): Unit = {
@@ -189,8 +189,8 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   override def isValidAttachment(attachments: IAttachment.Attachments[_ <: APacketTile]) = IAttachment.Attachments.ALL.contains(attachments)
 
   def refreshModules(): Unit = {
-    val attachmentModules = attachments.flatMap { case (kind, facing) => kind.module(world.getTileEntity(pos.offset(facing))).asScala }.toList
-    val internalModules = JavaConverters.asScalaBuffer(moduleInv.moduleItems()).toList >>= { e =>
+    val attachmentModules = attachments.toList.flatMap { case (kind, facing) => kind.module(world.getTileEntity(pos.offset(facing))).asScala }
+    val internalModules = moduleInv.moduleItems().asScala.toList >>= { e =>
       e.getKey.apply(e.getValue, self).toList
     }
     this.modules = attachmentModules ++ internalModules
@@ -207,7 +207,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
    * @return True if succeeded.
    */
   def breakBlock(world: ServerWorld, pos: BlockPos, state: BlockState): Boolean = {
-    import scala.collection.JavaConverters._
+    import scala.jdk.CollectionConverters._
     if (pos.getX % 6 == 0 && pos.getZ % 6 == 0) {
       // Gather items
       val aabb = new AxisAlignedBB(pos.getX - 8, pos.getY - 3, pos.getZ - 8, pos.getX + 8, pos.getY + 5, pos.getZ + 8)
@@ -226,7 +226,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
 
       if (TilePump.isLiquid(state) || PowerManager.useEnergyBreak(self, pos, enchantments, modules.exists(IModule.hasReplaceModule))) {
         val returnValue = modules.foldMap(m => m.invoke(IModule.BeforeBreak(event.getExpToDrop, world, pos)))
-        drops.asScala.groupBy(ItemDamage.apply).mapValues(_.map(_.getCount).sum).map { case (damage, i) => damage.toStack(i) }.foreach(storage.addItem)
+        drops.asScala.groupBy(ItemDamage.apply).view.mapValues(_.map(_.getCount).sum).toList.map { case (damage, i) => damage.toStack(i) }.foreach(storage.addItem)
         returnValue.canGoNext // true means work is finished.
       } else {
         false
@@ -237,7 +237,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   }
 
   def gatherDrops(world: World, aabb: AxisAlignedBB): Unit = {
-    import scala.collection.JavaConverters._
+    import scala.jdk.CollectionConverters._
     world.getEntitiesWithinAABB[ItemEntity](classOf[ItemEntity], aabb, EntityPredicates.IS_ALIVE)
       .asScala.foreach { e =>
       this.storage.addItem(e.getItem)
@@ -254,7 +254,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
    *
    * @return debug info of valid machine.
    */
-  override def getDebugMessages = JavaConverters.seqAsJavaList(List(
+  override def getDebugMessages = List(
     s"Mode: ${action.mode}",
     s"Target: ${target.show}",
     s"Enchantment: ${enchantments.show}",
@@ -264,7 +264,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     s"Digs to y = $yLevel",
     s"Modules: ${modules.mkString(comma)}",
     s"Attachments: ${attachments.mkString(comma)}",
-  ).map(new StringTextComponent(_)))
+  ).map(new StringTextComponent(_)).asJava
 
   def getName = new TranslationTextComponent(getDebugName)
 
