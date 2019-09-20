@@ -158,10 +158,8 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
   }
 
   def refreshModules(): Unit = {
-    val attachmentModules = attachments.toList >>= { case (kind, facing) => kind.module(world.getTileEntity(pos.offset(facing))).asScala.toList }
-    val internalModules = moduleInv.moduleItems().asScala.toList >>= { e =>
-      e.getKey.apply(e.getValue, self).toList
-    }
+    val attachmentModules = attachments.toList >>= { case (kind, facing) => kind.module(world.getTileEntity(pos.offset(facing))).toList }
+    val internalModules = moduleInv.moduleItems().asScala.toList >>= (e => e.getKey.apply(e.getValue, self).toList)
     this.modules = attachmentModules ++ internalModules
   }
 

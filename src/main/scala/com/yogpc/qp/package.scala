@@ -50,6 +50,8 @@ package object qp {
     def scalaFilter(p: T => Boolean): Option[T] = toScalaOption(o).filter(p)
 
     def asScala: Option[T] = toScalaOption(o)
+
+    def toList: List[T] = if(o.isPresent) List(o.get()) else Nil
   }
 
   implicit class JOS[T](val o: Option[T]) extends AnyVal {
