@@ -169,33 +169,29 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     super.remove()
   }
 
-  override def tick(): Unit = {
-    super.tick()
-    if (!world.isRemote && !machineDisabled) {
-      modules.foreach(_.invoke(IModule.Tick(self)))
+  override def workInTick(): Unit = {
+    modules.foreach(_.invoke(IModule.Tick(self)))
 
-      action.tick(self)
-      if (action.goNext(self)) {
-        action = action.next(self)
-        if (!world.isRemote) {
-          PacketHandler.sendToAround(AdvModeMessage.create(self), world, pos)
-        }
-      }
+    action.tick(self)
+    if (action.goNext(self)) {
+      action = action.next(self)
+      // Always in server world.
+      PacketHandler.sendToAround(AdvModeMessage.create(self), world, pos)
+    }
 
-      val nowState = world.getBlockState(pos)
-      if (nowState.get(QPBlock.WORKING) ^ isWorking) {
-        if (isWorking) {
-          startWork()
-        } else {
-          finishWork()
-        }
-        world.setBlockState(pos, nowState.`with`(QPBlock.WORKING, Boolean.box(isWorking)))
+    val nowState = world.getBlockState(pos)
+    if (nowState.get(QPBlock.WORKING) ^ isWorking) {
+      if (isWorking) {
+        startWork()
+      } else {
+        finishWork()
       }
+      world.setBlockState(pos, nowState.`with`(QPBlock.WORKING, Boolean.box(isWorking)))
+    }
 
-      storage.pushItem(getWorld, getPos)
-      if (getWorld.getGameTime % 20 == 0) {
-        storage.pushFluid(getWorld, getPos)
-      }
+    storage.pushItem(getWorld, getPos)
+    if (getWorld.getGameTime % 20 == 0) {
+      storage.pushFluid(getWorld, getPos)
     }
   }
 

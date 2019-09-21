@@ -48,39 +48,36 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   private val storage = new QuarryStorage
   val moduleInv = new QuarryModuleInventory(5, this, _ => refreshModules(), jp.t2v.lab.syntax.MapStreamSyntax.always_true())
 
-  override def tick(): Unit = {
-    super.tick()
-    if (!world.isRemote && enabled()) {
-      // Module Tick Action
-      modules.foreach(_.invoke(IModule.Tick(self)))
-      // Quarry action
-      var i = 0
-      while (i < enchantments.efficiency + 1) {
-        action.action(target)
-        if (action.canGoNext(self)) {
-          action = action.nextAction(self)
-          if (action == QuarryAction.none) {
-            PowerManager.configure0(self)
-          }
-          PacketHandler.sendToClient(TileMessage.create(self), world)
+  override def workInTick(): Unit = {
+    // Module Tick Action
+    modules.foreach(_.invoke(IModule.Tick(self)))
+    // Quarry action
+    var i = 0
+    while (i < enchantments.efficiency + 1) {
+      action.action(target)
+      if (action.canGoNext(self)) {
+        action = action.nextAction(self)
+        if (action == QuarryAction.none) {
+          PowerManager.configure0(self)
         }
-        target = action.nextTarget()
-        i += 1
+        PacketHandler.sendToClient(TileMessage.create(self), world)
       }
-      val nowState = world.getBlockState(pos)
-      if (nowState.get(QPBlock.WORKING) ^ isWorking) {
-        if (isWorking) {
-          startWork()
-        } else {
-          finishWork()
-        }
-        world.setBlockState(pos, nowState.`with`(QPBlock.WORKING, Boolean.box(isWorking)))
-      }
-      // Insert items
-      storage.pushItem(world, pos)
-      if (world.getGameTime % 20 == 0) // Insert fluid every 1 second.
-        storage.pushFluid(world, pos)
+      target = action.nextTarget()
+      i += 1
     }
+    val nowState = world.getBlockState(pos)
+    if (nowState.get(QPBlock.WORKING) ^ isWorking) {
+      if (isWorking) {
+        startWork()
+      } else {
+        finishWork()
+      }
+      world.setBlockState(pos, nowState.`with`(QPBlock.WORKING, Boolean.box(isWorking)))
+    }
+    // Insert items
+    storage.pushItem(world, pos)
+    if (world.getGameTime % 20 == 0) // Insert fluid every 1 second.
+      storage.pushFluid(world, pos)
   }
 
   override def remove(): Unit = {

@@ -24,9 +24,9 @@ import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.fluids.capability.{CapabilityFluidHandler, IFluidHandler}
 import net.minecraftforge.fluids.{FluidAttributes, FluidStack}
 
-import scala.jdk.CollectionConverters._
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
+import scala.jdk.CollectionConverters._
 
 /**
  * @see [buildcraft.factory.tile.TilePump]
@@ -72,40 +72,37 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
     }
   }
 
-  override def tick(): Unit = {
-    super.tick()
-    if (!getWorld.isRemote && !machineDisabled) {
-      if (finished) {
-        if (toStart) {
-          toStart = false
-          buildWay()
-          if (toDig.nonEmpty) {
-            finished = false
-            startWork()
-            val state = getWorld.getBlockState(getPos)
-            if (!state.get(QPBlock.WORKING)) {
-              changeState(working = true, state)
-            }
+  override def workInTick(): Unit = {
+    if (finished) {
+      if (toStart) {
+        toStart = false
+        buildWay()
+        if (toDig.nonEmpty) {
+          finished = false
+          startWork()
+          val state = getWorld.getBlockState(getPos)
+          if (!state.get(QPBlock.WORKING)) {
+            changeState(working = true, state)
           }
-        }
-      } else {
-        if (!queueBuilt) {
-          buildWay()
-          queueBuilt = true
-        }
-        if (skip) {
-          skip = false
-          nextPos()
-        } else {
-          if (target == BlockPos.ZERO) {
-            buildWay()
-            nextPos()
-          }
-          pump()
         }
       }
-      push()
+    } else {
+      if (!queueBuilt) {
+        buildWay()
+        queueBuilt = true
+      }
+      if (skip) {
+        skip = false
+        nextPos()
+      } else {
+        if (target == BlockPos.ZERO) {
+          buildWay()
+          nextPos()
+        }
+        pump()
+      }
     }
+    push()
   }
 
   def nextPos(i: Int = 0): Unit = {

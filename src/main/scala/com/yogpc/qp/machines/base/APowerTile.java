@@ -62,13 +62,17 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
     }
 
     @Override
-    public void tick() {
+    public final void tick() {
         postLoadEvent();
         this.all += this.got;
         if (hasWorld() && !Objects.requireNonNull(getWorld()).isRemote && isWorking())
             debug.getAndTick(got);
         this.got = 0;
+        if (world != null && !world.isRemote && enabled())
+            workInTick();
     }
+
+    protected abstract void workInTick();
 
     @Override
     public void remove() {
@@ -187,6 +191,7 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
         return ret;
     }
 
+    @SuppressWarnings("SameParameterValue")
     protected final void getEnergy(final long a, final boolean real, boolean force) {
         if (!force) {
             getEnergy(a, real);

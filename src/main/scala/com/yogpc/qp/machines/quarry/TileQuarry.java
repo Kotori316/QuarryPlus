@@ -87,7 +87,6 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
 
     @SuppressWarnings("fallthrough")
     protected void S_updateEntity() {
-        if (machineDisabled) return;
         if (this.areaProvider != null) {
             if (this.areaProvider instanceof IMarker)
                 this.cacheItems.addAll(((IMarker) this.areaProvider).removeFromWorldWithItem());
@@ -538,14 +537,12 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void workInTick() {
         if (!this.initialized) {
             G_renew_powerConfigure();
             this.initialized = true;
         }
-        if (world != null && !world.isRemote)
-            S_updateEntity();
+        S_updateEntity();
     }
 
     @Override

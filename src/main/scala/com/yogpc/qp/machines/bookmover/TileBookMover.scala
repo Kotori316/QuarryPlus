@@ -34,9 +34,8 @@ class TileBookMover extends APowerTile(Holder.bookMoverType) with HasInv with IT
     ItemStackHelper.loadAllItems(nbt, inv)
   }
 
-  override def tick(): Unit = {
-    super.tick()
-    if (!world.isRemote && isWorking) {
+  override def workInTick(): Unit = {
+    if (isWorking) {
       startWork()
       if (enabled && getStoredEnergy >= getMaxStored) {
         if (!isItemValidForSlot(0, inv.get(0)) || !isItemValidForSlot(1, inv.get(1)))

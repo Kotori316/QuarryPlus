@@ -41,8 +41,6 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
@@ -67,33 +65,30 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
     }
 
     @Override
-    public void tick() {
-        super.tick();
-        if (world != null && !world.isRemote) {
-            if (isWorking()) {
-                if (currentRecipe.microEnergy() <= getStoredEnergy()) {
-                    useEnergy(currentRecipe.microEnergy(), currentRecipe.microEnergy(), true, EnergyUsage.WORKBENCH);
-                    if (Config.common().noEnergy().get())
-                        this.setStoredEnergy(0); // Set current energy to 0 to make waiting time.
-                    ItemStack stack = currentRecipe.getOutput();
-                    ItemStack inserted = InvUtils.injectToNearTile(world, getPos(), stack);
-                    if (!inserted.isEmpty()) {
-                        InventoryHelper.spawnItemStack(world, getPos().getX(), getPos().getY(), getPos().getZ(), stack);
-                    }
-                    currentRecipe.inputsJ().forEach(inputList -> {
-                        for (IngredientWithCount i : inputList) {
-                            if (inventory.stream().anyMatch(i::shrink)) break;
-                        }
-                    });
-                    for (int i = 0; i < inventory.size(); i++) {
-                        if (inventory.get(i).isEmpty())
-                            inventory.set(i, ItemStack.EMPTY);
-                    }
-                    markDirty();
-                    setCurrentRecipeIndex(workContinue ? getRecipeIndex() : -1);
-                } else if (Config.common().noEnergy().get()) {
-                    getEnergy(currentRecipe.microEnergy() / 200, true, true); // 10 second to full.
+    public void workInTick() {
+        if (isWorking()) {
+            if (currentRecipe.microEnergy() <= getStoredEnergy()) {
+                useEnergy(currentRecipe.microEnergy(), currentRecipe.microEnergy(), true, EnergyUsage.WORKBENCH);
+                if (Config.common().noEnergy().get())
+                    this.setStoredEnergy(0); // Set current energy to 0 to make waiting time.
+                ItemStack stack = currentRecipe.getOutput();
+                ItemStack inserted = InvUtils.injectToNearTile(world, getPos(), stack);
+                if (!inserted.isEmpty()) {
+                    InventoryHelper.spawnItemStack(world, getPos().getX(), getPos().getY(), getPos().getZ(), stack);
                 }
+                currentRecipe.inputsJ().forEach(inputList -> {
+                    for (IngredientWithCount i : inputList) {
+                        if (inventory.stream().anyMatch(i::shrink)) break;
+                    }
+                });
+                for (int i = 0; i < inventory.size(); i++) {
+                    if (inventory.get(i).isEmpty())
+                        inventory.set(i, ItemStack.EMPTY);
+                }
+                markDirty();
+                setCurrentRecipeIndex(workContinue ? getRecipeIndex() : -1);
+            } else if (Config.common().noEnergy().get()) {
+                getEnergy(currentRecipe.microEnergy() / 200, true, true); // 10 second to full.
             }
         }
     }

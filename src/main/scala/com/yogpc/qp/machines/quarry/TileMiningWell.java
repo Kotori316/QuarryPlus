@@ -74,21 +74,19 @@ public class TileMiningWell extends TileBasic implements ITickableTileEntity {
     }
 
     @Override
-    public void tick() {
-        super.tick();
-        if (world != null && !world.isRemote && enabled()) {
-            int depth = getPos().getY() - 1;
-            while (!S_checkTarget(depth)) {
-                BlockPos pos = new BlockPos(getPos().getX(), depth, getPos().getZ());
-                if (this.working && (Config.common().removeBedrock().get() || world.getBlockState(pos).getBlockHardness(world, pos) >= 0)) {
-                    world.setBlockState(pos, Holder.blockPlainPipe().getDefaultState());
-                }
-                depth--;
+    public void workInTick() {
+        assert world != null;
+        int depth = getPos().getY() - 1;
+        while (!S_checkTarget(depth)) {
+            BlockPos pos = new BlockPos(getPos().getX(), depth, getPos().getZ());
+            if (this.working && (Config.common().removeBedrock().get() || world.getBlockState(pos).getBlockHardness(world, pos) >= 0)) {
+                world.setBlockState(pos, Holder.blockPlainPipe().getDefaultState());
             }
-            if (this.working)
-                S_breakBlock(getPos().getX(), depth, getPos().getZ(), Blocks.AIR.getDefaultState());
-            S_pollItems();
+            depth--;
         }
+        if (this.working)
+            S_breakBlock(getPos().getX(), depth, getPos().getZ(), Blocks.AIR.getDefaultState());
+        S_pollItems();
     }
 
     @Override
