@@ -127,7 +127,10 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
     protected abstract boolean isWorking();
 
     protected boolean enabledByRS() {
-        return world != null && !world.isBlockPowered(pos);
+        if (Config.common().enableRSControl().get())
+            return world != null && !world.isBlockPowered(pos);
+        else
+            return true;
     }
 
 //    @Optional.Method(modid = QuarryPlus.Optionals.IC2_modID)

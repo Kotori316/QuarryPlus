@@ -44,6 +44,7 @@ object Config {
     val collectBedrock = builder.comment("True to enable ChunkDestroyer to collect bedrock as item.").define("CollectBedrock", false)
     val disableFrameChainBreak = builder.comment("DisableFrameChainBreak").define("DisableFrameChainBreak", false)
     val removeOnlySource = builder.comment("Set false to allow PlumPlus to remove non-source fluid block.").define("RemoveOnlyFluidSource", false)
+    val enableRSControl = builder.comment("True to enable RS control of machines.").define("EnableRSControl", false)
     private[this] final val disabledEntities = Seq(
       "minecraft:ender_dragon",
       "minecraft:wither",
