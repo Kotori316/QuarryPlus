@@ -58,7 +58,7 @@ public class TileSolidQuarry extends TileQuarry implements INamedContainerProvid
 
     @Override
     protected void S_updateEntity() {
-        if (machineDisabled) return;
+        if (!enabled()) return;
         if (fuelCount > 0) {
             if (getEnergy(fuelEfficiency, false) == fuelEfficiency) {
                 fuelCount -= 1;

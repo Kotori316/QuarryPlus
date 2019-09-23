@@ -68,7 +68,7 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
         if (hasWorld() && !Objects.requireNonNull(getWorld()).isRemote && isWorking())
             debug.getAndTick(got);
         this.got = 0;
-        if (world != null && !world.isRemote && enabled())
+        if (world != null && !world.isRemote && enabled() && enabledByRS())
             workInTick();
     }
 
@@ -125,6 +125,10 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
     }
 
     protected abstract boolean isWorking();
+
+    protected boolean enabledByRS() {
+        return world != null && !world.isBlockPowered(pos);
+    }
 
 //    @Optional.Method(modid = QuarryPlus.Optionals.IC2_modID)
 //    private void ic2load() {
