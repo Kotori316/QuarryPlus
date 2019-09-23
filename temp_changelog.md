@@ -1,4 +1,9 @@
-**This mod requires a library, [Scalable Cat's Force](https://minecraft.curseforge.com/projects/scalable-cats-force).**
+**This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).**
+
+## Version 14.0.9
+- Update for new Forge.
+- Update for new Scala (**Requires 2.13.1 version of library.**)
+- Added option to stop machines with RS signal. (Need to change config option `EnableRSontrol`)
 
 ## Version 14.0.8
 - Fixed - a crash of WorkbenchPlus in dedicated server due to an access to client only method. (#64)
