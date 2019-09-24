@@ -1,3 +1,5 @@
+import java.util.concurrent.TimeUnit
+
 buildscript {
     repositories {
         maven { url = 'https://files.minecraftforge.net/maven' }
@@ -113,7 +115,8 @@ jar {
                 "Implementation-Title"    : project.name,
                 "Implementation-Version"  : "${version}",
                 "Implementation-Vendor"   : "Kotori316",
-                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                "Commit"                  : getCommit("1.14.4")
         ])
     }
 }
@@ -186,3 +189,13 @@ task signJar2() {
 
 // Runs this task automatically when build is ran.
 assemble.dependsOn(signJar2)
+
+static String getCommit(String branch) {
+    ProcessBuilder builder = new ProcessBuilder("git", "rev-parse", branch)
+    def process = builder.start()
+    process.waitFor(1L, TimeUnit.SECONDS)
+    def reader = new BufferedReader(new InputStreamReader(process.getInputStream()))
+    def commit = reader.readLine()
+    reader.close()
+    return commit
+}
