@@ -38,6 +38,7 @@ object RenderAdvQuarry extends TileEntityRendererFast[TileAdvQuarry] {
         if (b2) Box(xMin, range.yMin, range.zMax + 1.5, xMax, range.yMax, range.zMax + 1.5, d, d, d, firstSide = false, endSide = false).render(buffer, sprite)
         if (b3) Box(range.xMin - 0.5, range.yMin, zMin, range.xMin - 0.5, range.yMax, zMax, d, d, d, firstSide = false, endSide = false).render(buffer, sprite)
         if (b4) Box(range.xMax + 1.5, range.yMin, zMin, range.xMax + 1.5, range.yMax, zMax, d, d, d, firstSide = false, endSide = false).render(buffer, sprite)
+        buffer.setTranslation(0, 0, 0)
       }
       Minecraft.getInstance.getProfiler.endSection()
     }

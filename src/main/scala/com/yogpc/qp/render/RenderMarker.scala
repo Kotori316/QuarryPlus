@@ -39,6 +39,7 @@ object RenderMarker extends TileEntityRendererFast[TileMarker] {
       Minecraft.getInstance.getProfiler.endSection()
       Minecraft.getInstance.getProfiler.endSection()
     }
+    buffer.setTranslation(0, 0, 0)
   }
 
 }
