@@ -1,3 +1,7 @@
+# Version 12.2.6
+- Fixed a render issue with other moms.
+- Added git hush to jar file.
+
 # Version 12.2.5
 - Fixed - Solid Fuel Quarry consumed lava bucket.
 - Improvement - Workbench act as receiving energy for 10 seconds when `NoEnergy` is `true`.
