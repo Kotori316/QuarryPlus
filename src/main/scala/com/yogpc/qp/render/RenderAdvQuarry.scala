@@ -36,6 +36,7 @@ object RenderAdvQuarry extends FastTESR[TileAdvQuarry] {
         if (b2) Box(minX, range.minY, range.maxZ + 1.5, maxX, range.maxY, range.maxZ + 1.5, d, d, d, firstSide = false, endSide = false).render(buffer, sprite)
         if (b3) Box(range.minX - 0.5, range.minY, minZ, range.minX - 0.5, range.maxY, maxZ, d, d, d, firstSide = false, endSide = false).render(buffer, sprite)
         if (b4) Box(range.maxX + 1.5, range.minY, minZ, range.maxX + 1.5, range.maxY, maxZ, d, d, d, firstSide = false, endSide = false).render(buffer, sprite)
+        buffer.setTranslation(0, 0, 0)
       }
       Minecraft.getMinecraft.mcProfiler.endSection()
     }

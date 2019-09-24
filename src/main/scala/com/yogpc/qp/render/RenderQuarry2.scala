@@ -409,6 +409,7 @@ object RenderQuarry2 extends FastTESR[TileQuarry2] {
       buffer.pos(MXm, MYP, MZm).colored().tex(B_maxU, B_maxV).lightedAndEnd()
       buffer.pos(MXP, MYP, MZm).colored().tex(B_minU, B_maxV).lightedAndEnd()
 
+      bufferBuilder.setTranslation(0, 0, 0)
       Minecraft.getMinecraft.mcProfiler.endSection()
     }
 
@@ -666,6 +667,7 @@ object RenderQuarry2 extends FastTESR[TileQuarry2] {
       bufferBuilder.setTranslation(distanceX - pos.getX + .5, distanceY - pos.getY, distanceZ - pos.getZ + .5)
       yLine(y_floor, y_length)
 
+      bufferBuilder.setTranslation(0, 0, 0)
       Minecraft.getMinecraft.mcProfiler.endSection()
     }
 

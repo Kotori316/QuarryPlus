@@ -45,6 +45,7 @@ object RenderLaser extends TileEntitySpecialRenderer[TileLaser] {
           vector.x, vector.y, vector.z, d, d, d, firstSide = false, endSide = false).render(buffer, textureArray(index))
         i += 1
       }
+      buffer.setTranslation(0, 0, 0)
     }
 
     Minecraft.getMinecraft.mcProfiler.endSection()

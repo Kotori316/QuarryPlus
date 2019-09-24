@@ -43,6 +43,7 @@ object RenderMarker extends FastTESR[TileMarker] {
       }
       Minecraft.getMinecraft.mcProfiler.endSection()
     }
+    buffer.setTranslation(0, 0, 0)
     Minecraft.getMinecraft.mcProfiler.endSection()
     Minecraft.getMinecraft.mcProfiler.endSection()
   }
