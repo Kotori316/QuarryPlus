@@ -1,3 +1,5 @@
+import java.util.concurrent.TimeUnit
+
 buildscript {
     repositories {
         jcenter()
@@ -112,6 +114,18 @@ jar {
     classifier = 'universal'
     from sourceSets.main.output
     exclude("*.md")
+    manifest {
+        attributes([
+                "Specification-Title"     : project.name,
+                "Specification-Vendor"    : "Kotori316",
+                "Specification-Version"   : "1", // We are version 1 of ourselves
+                "Implementation-Title"    : project.name,
+                "Implementation-Version"  : "${version}",
+                "Implementation-Vendor"   : "Kotori316",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                "Commit"                  : getCommit("1.12")
+        ])
+    }
 }
 
 task signJar(type: SignJar, dependsOn: reobfJar) {
@@ -166,4 +180,14 @@ curseforge {
         debug = false // defaults to false
         javaVersionAutoDetect = false
     }
+}
+
+static String getCommit(String branch) {
+    ProcessBuilder builder = new ProcessBuilder("git", "rev-parse", branch)
+    def process = builder.start()
+    process.waitFor(1L, TimeUnit.SECONDS)
+    def reader = new BufferedReader(new InputStreamReader(process.getInputStream()))
+    def commit = reader.readLine()
+    reader.close()
+    return commit
 }
