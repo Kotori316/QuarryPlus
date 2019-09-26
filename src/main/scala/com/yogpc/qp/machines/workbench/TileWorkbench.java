@@ -59,6 +59,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
     private WorkbenchRecipes currentRecipe = WorkbenchRecipes.dummyRecipe();
     private ItemHandler itemHandler = new ItemHandler();
     public boolean workContinue;
+    public boolean noEnergy = false;
 
     public TileWorkbench() {
         super(Holder.workbenchTileType());
@@ -66,7 +67,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
 
     @Override
     public void workInTick() {
-        if (isWorking()) {
+        if (isWorking() && world != null) {
             if (currentRecipe.microEnergy() <= getStoredEnergy()) {
                 useEnergy(currentRecipe.microEnergy(), currentRecipe.microEnergy(), true, EnergyUsage.WORKBENCH);
                 if (Config.common().noEnergy().get())
@@ -87,7 +88,8 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
                 }
                 markDirty();
                 setCurrentRecipeIndex(workContinue ? getRecipeIndex() : -1);
-            } else if (Config.common().noEnergy().get()) {
+                noEnergy = false;
+            } else if (Config.common().noEnergy().get() || noEnergy) {
                 getEnergy(currentRecipe.microEnergy() / 200, true, true); // 10 second to full.
             }
         }

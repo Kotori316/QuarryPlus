@@ -2,6 +2,7 @@ package com.yogpc.qp.machines.workbench;
 
 import java.util.Optional;
 
+import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.base.QPBlock;
 import com.yogpc.qp.machines.item.ItemQuarryDebug;
@@ -13,6 +14,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Hand;
@@ -36,6 +38,14 @@ public class BlockWorkbench extends QPBlock {
                 Optional.ofNullable(worldIn.getTileEntity(pos))
                     .flatMap(optCast(TileWorkbench.class))
                     .ifPresent(t -> player.sendStatusMessage(ItemQuarryDebug.energyToString(t), false));
+            }
+            return true;
+        }
+        if (Config.common().debug() && player.getHeldItem(hand).getItem() == Items.STICK) {
+            if (!worldIn.isRemote) {
+                Optional.ofNullable(worldIn.getTileEntity(pos))
+                    .flatMap(optCast(TileWorkbench.class))
+                    .ifPresent(t -> t.noEnergy = true);
             }
             return true;
         }
