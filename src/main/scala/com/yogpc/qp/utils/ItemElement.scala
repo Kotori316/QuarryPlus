@@ -1,6 +1,7 @@
 package com.yogpc.qp.utils
 
 import com.yogpc.qp.tile.ItemDamage
+import com.yogpc.qp.version.VersionUtil
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 
@@ -30,7 +31,10 @@ case class ItemElement(itemDamage: ItemDamage, count: Int) {
 }
 
 object ItemElement {
-  def apply(stack: ItemStack): ItemElement = new ItemElement(ItemDamage(stack), stack.getCount)
+  def apply(stack: ItemStack): ItemElement =
+  // ItemDamage constructor does empty check of stack. Do it before creating new instance to avoid combining error.
+    if (VersionUtil.nonEmpty(stack)) new ItemElement(ItemDamage(stack), stack.getCount)
+    else invalid
 
   val invalid: ItemElement = ItemElement(ItemDamage.invalid, 0)
 }
