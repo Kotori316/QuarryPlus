@@ -1,5 +1,8 @@
+# Version 12.2.7
+- Trying to fix a crash of `IllegalArgumentException` in using new quarry. [#68](https://github.com/Kotori316/QuarryPlus/issues/68)
+
 # Version 12.2.6
-- Fixed a render issue with other moms.
+- Fixed a render issue with other mods.
 - Added git hush to jar file.
 
 # Version 12.2.5
@@ -11,7 +14,7 @@
 - Improvement - TorchModule place torch only once a tick.
 
 # Version 12.2.4
-- Added -  module system for Chunk Destroyer. [#53](https://github.com/Kotori316/QuarryPlus/issues/53)
+- Added - module system for Chunk Destroyer. [#53](https://github.com/Kotori316/QuarryPlus/issues/53)
 - Improvement - You can get the y-level of machine in tile's inventory GUI.
 - Fixed - TorchModule placed torch at invalid position.
 - Fixed - The state of ExpPump wasn't changed when xps are collected.
