@@ -1,6 +1,5 @@
 package com.yogpc.qp.compat;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -40,25 +39,25 @@ public class InvUtils {
     private static final List<IInjector> INJECTORS;
 
     static {
-        List<IInjector> injectors = new ArrayList<>();
+        Stream.Builder<IInjector> builder = Stream.builder();
         // TODO change to net.minecraftforge.fml.common.ModAPIManager
         if (ModList.get().isLoaded(QuarryPlus.Optionals.Buildcraft_transport)) {
             try {
-                injectors.add((IInjector) Class.forName("com.yogpc.qp.compat.BCInjector").getMethod("init").invoke(null));
+                builder.add((IInjector) Class.forName("com.yogpc.qp.compat.BCInjector").getMethod("init").invoke(null));
             } catch (ReflectiveOperationException e) {
                 e.printStackTrace();
             }
         }
         if (ModList.get().isLoaded(QuarryPlus.Optionals.Mekanism_modID)) {
             try {
-                injectors.add((IInjector) Class.forName("com.yogpc.qp.compat.MekanismInjector").getMethod("init").invoke(null));
+                builder.add((IInjector) Class.forName("com.yogpc.qp.compat.MekanismInjector").getMethod("init").invoke(null));
             } catch (ReflectiveOperationException e) {
                 e.printStackTrace();
             }
         }
-        injectors.add(new ForgeInjector(EmptyHandler.INSTANCE));
+        builder.add(new ForgeInjector(EmptyHandler.INSTANCE));
 
-        INJECTORS = Collections.unmodifiableList(injectors);
+        INJECTORS = Collections.unmodifiableList(builder.build().filter(Objects::nonNull).collect(Collectors.toList()));
     }
 
     /**
@@ -69,10 +68,11 @@ public class InvUtils {
      */
     public static ItemStack injectToNearTile(@Nonnull final World w, @Nonnull BlockPos pos, final ItemStack is) {
 
-        List<? extends IInjector> injectors = Stream.of(Direction.values()).flatMap(enumFacing -> {
-            TileEntity t = w.getTileEntity(pos.offset(enumFacing));
-            return INJECTORS.stream().filter(Objects::nonNull).filter(i -> t != null).flatMap(i -> i.getInjector(is, t, enumFacing));
-        }).collect(Collectors.toList());
+        List<? extends IInjector> injectors = Stream.of(Direction.values()).flatMap(enumFacing ->
+            Stream.of(w.getTileEntity(pos.offset(enumFacing)))
+                .filter(Objects::nonNull)
+                .flatMap(tile -> INJECTORS.stream().flatMap(i -> i.getInjector(is, tile, enumFacing)))
+        ).collect(Collectors.toList());
 
         ItemStack inserted = is.copy();
         for (IInjector injector : injectors) {

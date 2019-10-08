@@ -2,7 +2,7 @@ package com.yogpc.qp.machines.quarry
 
 import cats._
 import com.yogpc.qp._
-import com.yogpc.qp.compat.FluidStore
+import com.yogpc.qp.compat.{FluidStore, InvUtils}
 import com.yogpc.qp.machines.base.HasStorage
 import com.yogpc.qp.utils.{FluidElement, ItemDamage, ItemElement}
 import net.minecraft.item.ItemStack
@@ -12,7 +12,6 @@ import net.minecraft.world.World
 import net.minecraftforge.common.util.Constants.NBT
 import net.minecraftforge.common.util.INBTSerializable
 import net.minecraftforge.fluids.FluidStack
-import net.minecraftforge.items.{CapabilityItemHandler, ItemHandlerHelper}
 
 class QuarryStorage extends INBTSerializable[CompoundNBT] with HasStorage.Storage {
 
@@ -31,18 +30,11 @@ class QuarryStorage extends INBTSerializable[CompoundNBT] with HasStorage.Storag
 
   def pushItem(world: World, pos: BlockPos): Unit = {
     items.headOption.foreach { case (key, element) =>
-      (for (f <- facings.value;
-            t <- Option(world.getTileEntity(pos.offset(f))).toList;
-            cap <- t.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, f.getOpposite).asScala.value.value.toList
-            ) yield cap)
-        .collectFirst { case handler if ItemHandlerHelper.insertItem(handler, element.toStack, true).getCount != element.count => handler }
-        .foreach { handler =>
-          val remain = ItemHandlerHelper.insertItem(handler, element.toStack, false)
-          if (remain.isEmpty)
-            items = items - key
-          else
-            items = items.updated(key, ItemElement(remain))
-        }
+      val remain = InvUtils.injectToNearTile(world, pos, element.toStack)
+      if (remain.isEmpty)
+        items = items - key
+      else
+        items = items.updated(key, ItemElement(remain))
     }
   }
 
