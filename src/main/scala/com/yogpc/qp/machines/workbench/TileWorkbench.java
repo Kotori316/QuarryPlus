@@ -73,8 +73,8 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
                 if (Config.common().noEnergy().get())
                     this.setStoredEnergy(0); // Set current energy to 0 to make waiting time.
                 ItemStack stack = currentRecipe.getOutput();
-                ItemStack inserted = InvUtils.injectToNearTile(world, getPos(), stack);
-                if (!inserted.isEmpty()) {
+                ItemStack remain = InvUtils.injectToNearTile(world, getPos(), stack);
+                if (!remain.isEmpty()) {
                     InventoryHelper.spawnItemStack(world, getPos().getX(), getPos().getY(), getPos().getZ(), stack);
                 }
                 currentRecipe.inputsJ().forEach(inputList -> {

@@ -1,6 +1,7 @@
 package com.yogpc.qp.utils
 
-import cats.kernel.Eq
+import cats._
+import cats.implicits._
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.CompoundNBT
 
@@ -17,10 +18,10 @@ case class ItemElement(itemDamage: ItemDamage, count: Long) {
   override def toString: String = itemDamage.toString + " x" + count
 
   def +(that: ItemElement): ItemElement = {
-    if (that == ItemElement.invalid) this
-    else if (this == ItemElement.invalid) that
+    if (that === ItemElement.invalid) this
+    else if (this === ItemElement.invalid) that
     else {
-      if (this.itemDamage != that.itemDamage) {
+      if (this.itemDamage =!= that.itemDamage) {
         throw new IllegalArgumentException(s"Tries to combine different kind of items. $this, $that")
       } else {
         ItemElement(this.itemDamage, this.count + that.count)
@@ -30,7 +31,9 @@ case class ItemElement(itemDamage: ItemDamage, count: Long) {
 }
 
 object ItemElement {
-  def apply(stack: ItemStack): ItemElement = new ItemElement(ItemDamage(stack), stack.getCount)
+  def apply(stack: ItemStack): ItemElement =
+    if (!stack.isEmpty) new ItemElement(ItemDamage(stack), stack.getCount)
+    else invalid // No reasons to combine empty items. Its result should be also empty.
 
   implicit val eq: Eq[ItemElement] = Eq.fromUniversalEquals
 
