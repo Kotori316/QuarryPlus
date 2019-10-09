@@ -44,7 +44,9 @@ object ItemDamage {
   def invalid: ItemDamage = ItemDamageNG
 
   private case class ItemDamageImpl(override val item: Item,
-                                    override val tag: CompoundNBT) extends ItemDamage
+                                    override val tag: CompoundNBT) extends ItemDamage {
+    override def toString = item.getTranslationKey
+  }
 
   private case object ItemDamageNG extends ItemDamage {
     override val item: Item = null
@@ -53,6 +55,8 @@ object ItemDamage {
     override def toStack(amount: Int): ItemStack = ItemStack.EMPTY
 
     override def itemStackLimit: Int = 64
+
+    override def toString = "null_item"
   }
 
   implicit val eqItemDamage: Eq[ItemDamage] = (x: ItemDamage, y: ItemDamage) =>

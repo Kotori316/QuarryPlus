@@ -35,7 +35,8 @@ object ItemElement {
     if (!stack.isEmpty) new ItemElement(ItemDamage(stack), stack.getCount)
     else invalid // No reasons to combine empty items. Its result should be also empty.
 
-  implicit val eq: Eq[ItemElement] = Eq.fromUniversalEquals
+  implicit val eqItemElement: Eq[ItemElement] = Eq.fromUniversalEquals
+  implicit val showItemElement:Show[ItemElement] = Show.fromToString
 
   val invalid: ItemElement = ItemElement(ItemDamage.invalid, 0)
 }

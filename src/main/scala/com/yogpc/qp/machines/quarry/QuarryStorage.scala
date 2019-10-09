@@ -59,10 +59,10 @@ class QuarryStorage extends INBTSerializable[CompoundNBT] with HasStorage.Storag
   override def serializeNBT(): CompoundNBT = {
     val nbt = new CompoundNBT
     val itemList = items.values.map(_.toNBT).foldLeft(new ListNBT) { case (l, tag) => l.add(tag); l }
-    val fluidList = fluids.map { case (key, value) =>
+    val fluidList = fluids.toSeq.map { case (key, value) =>
       val tag = new CompoundNBT
-      tag.put("name", key)
-      tag.put("amount", value)
+      tag.put("name", key.toNBT)
+      tag.put("amount", value.toNBT)
       tag
     }.foldLeft(new ListNBT) { case (l, tag) => l.add(tag); l }
     nbt.put("items", itemList)
