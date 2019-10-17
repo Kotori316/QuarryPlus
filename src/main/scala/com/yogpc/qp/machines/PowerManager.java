@@ -200,6 +200,7 @@ public class PowerManager {
 
     /**
      * Use quarry's values. (BasePower, CoEfficiency, and so on.)
+     * @return Energy required to break such block. (Micro MJ)
      */
     public static long calcEnergyBreak(float hardness, int enchantMode, int unbreaking) {
         long BP = QuarryWork_BP;
@@ -208,6 +209,9 @@ public class PowerManager {
         return (long) (BP * hardness * CSP / (unbreaking * CU + 1));
     }
 
+    /**
+     * @return Energy required to break such block. (Micro MJ)
+     */
     public static long calcEnergyBreak(float hardness, EnchantmentHolder enchantmentHolder) {
         return calcEnergyBreak(hardness, EnchantmentHolder.enchantmentMode(enchantmentHolder), enchantmentHolder.unbreaking());
     }

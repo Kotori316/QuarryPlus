@@ -14,17 +14,21 @@ object EnchantmentHolder {
 
   def enchantmentMode(e: EnchantmentHolder): Int = if (e.silktouch) -1 else e.fortune
 
-  implicit val showEnchantmentHolder: Show[EnchantmentHolder] = holder =>
-    s"Efficiency=${holder.efficiency} Unbreaking=${holder.unbreaking} Fortune=${holder.fortune} Silktouch=${holder.silktouch} other=${holder.other}"
-
-  implicit val enchantmentHolderToNbt: EnchantmentHolder NBTWrapper CompoundNBT = enchantments => {
+  def getEnchantmentMap(enchantments: EnchantmentHolder): Map[ResourceLocation, Int] = {
     val enchantmentsMap = Map(
       IEnchantableTile.EfficiencyID -> enchantments.efficiency,
       IEnchantableTile.UnbreakingID -> enchantments.unbreaking,
       IEnchantableTile.FortuneID -> enchantments.fortune,
       IEnchantableTile.SilktouchID -> enchantments.silktouch.compare(false),
     ) ++ enchantments.other
-    enchantmentsMap.filter(_._2 > 0).foldLeft(new CompoundNBT) { case (nbt, (id, level)) => nbt.putInt(id.toString, level); nbt }
+    enchantmentsMap
+  }
+
+  implicit val showEnchantmentHolder: Show[EnchantmentHolder] = holder =>
+    s"Efficiency=${holder.efficiency} Unbreaking=${holder.unbreaking} Fortune=${holder.fortune} Silktouch=${holder.silktouch} other=${holder.other}"
+
+  implicit val enchantmentHolderToNbt: EnchantmentHolder NBTWrapper CompoundNBT = enchantments => {
+    getEnchantmentMap(enchantments).filter(_._2 > 0).foldLeft(new CompoundNBT) { case (nbt, (id, level)) => nbt.putInt(id.toString, level); nbt }
   }
 
   def enchantmentHolderLoad(tag: CompoundNBT, name: String): EnchantmentHolder = {

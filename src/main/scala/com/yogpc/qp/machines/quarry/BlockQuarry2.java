@@ -8,6 +8,7 @@ import com.yogpc.qp.compat.BuildcraftHelper;
 import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.IEnchantableTile;
 import com.yogpc.qp.machines.base.QPBlock;
+import com.yogpc.qp.machines.base.StatusContainer;
 import com.yogpc.qp.machines.item.YSetterInteractionObject;
 import com.yogpc.qp.utils.Holder;
 import net.minecraft.block.Block;
@@ -86,6 +87,8 @@ public class BlockQuarry2 extends QPBlock {
             if (!worldIn.isRemote) {
                 Optional.ofNullable((TileQuarry2) worldIn.getTileEntity(pos)).map(t -> {
                     if (stack.getItem() == Holder.itemYSetter()) return YSetterInteractionObject.apply(t, pos);
+                    else if (stack.getItem() == Holder.itemStatusChecker())
+                        return new StatusContainer.ContainerProvider(pos);
                     else return new ContainerQuarryModule.InteractionObject(pos, TranslationKeys.quarry2);
                 }).ifPresent(o -> NetworkHooks.openGui(((ServerPlayerEntity) player), o, pos));
             }

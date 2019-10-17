@@ -2,7 +2,7 @@ package com.yogpc.qp.utils
 
 import com.yogpc.qp.machines.advpump.{BlockAdvPump, ContainerAdvPump, TileAdvPump}
 import com.yogpc.qp.machines.advquarry.{BlockAdvQuarry, ContainerAdvQuarry, TileAdvQuarry}
-import com.yogpc.qp.machines.base.IDisabled
+import com.yogpc.qp.machines.base.{IDisabled, StatusContainer}
 import com.yogpc.qp.machines.bookmover.{BlockBookMover, ContainerBookMover, TileBookMover}
 import com.yogpc.qp.machines.controller.BlockController
 import com.yogpc.qp.machines.exppump.{BlockExpPump, TileExpPump}
@@ -157,6 +157,7 @@ object Holder {
   val templateContainerType = createContainerType(new ContainerListTemplate(_, _, _), ItemTemplate.GUI_ID)
   val advPumpContainerType = createContainerType(new ContainerAdvPump(_, _, _), TileAdvPump.GUI_ID)
   val advQuarryContainerType = createContainerType(new ContainerAdvQuarry(_, _, _), TileAdvQuarry.GUI_ID)
+  val statusContainerType = createContainerType(new StatusContainer(_, _, _), StatusContainer.GUI_ID)
 
   val containers: Set[ContainerType[_ <: Container]] = Set(
     quarryModuleContainerType,
@@ -168,7 +169,8 @@ object Holder {
     enchListContainerType,
     templateContainerType,
     advPumpContainerType,
-    advQuarryContainerType
+    advQuarryContainerType,
+    statusContainerType,
   )
 
   private def createContainerType[T <: Container](supplier: (Int, PlayerEntity, BlockPos) => T, name: String): ContainerType[T] = {

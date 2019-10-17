@@ -7,6 +7,7 @@ import com.yogpc.qp.Config;
 import com.yogpc.qp.machines.advpump.GuiAdvPump;
 import com.yogpc.qp.machines.advquarry.GuiAdvQuarry;
 import com.yogpc.qp.machines.advquarry.TileAdvQuarry;
+import com.yogpc.qp.machines.base.StatusGui;
 import com.yogpc.qp.machines.bookmover.GuiBookMover;
 import com.yogpc.qp.machines.item.GuiEnchList;
 import com.yogpc.qp.machines.item.GuiListTemplate;
@@ -120,6 +121,7 @@ public class ProxyClient extends ProxyCommon {
         ScreenManager.registerFactory(Holder.templateContainerType(), GuiListTemplate::new);
         ScreenManager.registerFactory(Holder.advPumpContainerType(), GuiAdvPump::new);
         ScreenManager.registerFactory(Holder.advQuarryContainerType(), GuiAdvQuarry::new);
+        ScreenManager.registerFactory(Holder.statusContainerType(), StatusGui::new);
     }
 
     public void onBake(ModelBakeEvent event) {

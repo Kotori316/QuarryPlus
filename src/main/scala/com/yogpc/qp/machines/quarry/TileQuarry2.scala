@@ -32,7 +32,8 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   with IAttachable
   with IDebugSender
   with IChunkLoadTile
-  with ContainerQuarryModule.HasModuleInventory {
+  with ContainerQuarryModule.HasModuleInventory
+  with StatusContainer.StatusProvider {
   self =>
 
   import TileQuarry2._
@@ -278,6 +279,14 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   }
 
   override def getStorage = storage
+
+  override def getStatusStrings: Seq[String] = {
+    val enchantmentStrings = EnchantmentHolder.getEnchantmentMap(this.enchantments).toSeq
+      .collect { case (location, i) if i > 0 => s"$location -> $i" }.prepended("Enchantments")
+    val requiresEnergy = 2 * PowerManager.calcEnergyBreak(1.5f, this.enchantments) / APowerTile.MJToMicroMJ * (enchantments.efficiency + 1)
+    val energyStrings = Seq("Requires", s"$requiresEnergy FE/t")
+    enchantmentStrings ++ energyStrings
+  }
 }
 
 object TileQuarry2 {
