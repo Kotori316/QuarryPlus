@@ -1,5 +1,8 @@
 **This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).**
 
+## Version 14.1.0
+- Added -  GUI of Status Checker for new quarry. [#69](https://github.com/Kotori316/QuarryPlus/issues/69)
+
 ## Version 14.0.9
 - Update for new Forge.
 - Update for new Scala (**Requires 2.13.1 version of library.**)
