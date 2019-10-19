@@ -91,6 +91,15 @@ class QuarryStorage extends INBTSerializable[CompoundNBT] with HasStorage.Storag
   override def insertFluid(fluidStack: FluidStack): Unit = addFluid(fluidStack)(QuarryStorage.monoidFluidStack)
 
   override def toString = QuarryStorage.ShowQuarryStorage.show(this)
+
+  def itemSize: Int = clamp(items.valuesIterator.map(_.count).sum)
+
+  def fluidSize: Int = clamp(fluids.valuesIterator.map(_.getAmount.toLong).sum)
+
+  private def clamp(l: Long): Int =
+    if (l > Int.MaxValue) Int.MaxValue
+    else if (l < Int.MinValue) Int.MinValue
+    else l.toInt
 }
 
 object QuarryStorage {

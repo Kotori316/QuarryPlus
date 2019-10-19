@@ -6,13 +6,15 @@ import com.yogpc.qp.machines.TranslationKeys
 import net.minecraft.client.resources.I18n
 import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.util.ResourceLocation
-import net.minecraft.util.text.ITextComponent
+import net.minecraft.util.text.{ITextComponent, TextFormatting}
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 
 @OnlyIn(Dist.CLIENT)
 class StatusGui(c: StatusContainer, inv: PlayerInventory, t: ITextComponent)
   extends net.minecraft.client.gui.screen.inventory.ContainerScreen[StatusContainer](c, inv, t) {
-  val LOCATION = new ResourceLocation(QuarryPlus.modID, "textures/gui/advpump.png")
+  val LOCATION = new ResourceLocation(QuarryPlus.modID, "textures/gui/status.png")
+  xSize = 176
+  ySize = 226
 
   override def drawGuiContainerBackgroundLayer(partialTicks: Float, mouseX: Int, mouseY: Int): Unit = {
     GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F)
@@ -35,6 +37,6 @@ class StatusGui(c: StatusContainer, inv: PlayerInventory, t: ITextComponent)
   }
 
   def listContent(): Seq[String] = {
-    Option(getContainer.tile).collect { case p: StatusContainer.StatusProvider => p.getStatusStrings }.getOrElse(Nil)
+    Option(getContainer.tile).collect { case p: StatusContainer.StatusProvider => p.getStatusStrings(p.tracks).map(TextFormatting.getTextWithoutFormattingCodes) }.getOrElse(Nil)
   }
 }
