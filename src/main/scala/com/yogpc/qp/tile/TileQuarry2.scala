@@ -4,12 +4,14 @@ import buildcraft.api.core.IAreaProvider
 import buildcraft.api.tiles.TilesAPI
 import com.yogpc.qp._
 import com.yogpc.qp.block.ADismCBlock
-import com.yogpc.qp.container.ContainerQuarryModule
 import com.yogpc.qp.container.ContainerQuarryModule.HasModuleInventory
+import com.yogpc.qp.container.{ContainerQuarryModule, StatusContainer}
 import com.yogpc.qp.gui.TranslationKeys
 import com.yogpc.qp.packet.{PacketHandler, TileMessage}
 import com.yogpc.qp.utils.ReflectionHelper
 import net.minecraft.block.state.IBlockState
+import net.minecraft.client.resources.I18n
+import net.minecraft.enchantment.Enchantment
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.entity.player.{EntityPlayer, InventoryPlayer}
@@ -28,6 +30,7 @@ import net.minecraftforge.event.world.BlockEvent
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler
 import net.minecraftforge.fluids.capability.templates.EmptyFluidHandler
 import net.minecraftforge.fml.common.Loader
+import net.minecraftforge.fml.common.registry.ForgeRegistries
 import org.apache.logging.log4j.{Marker, MarkerManager}
 
 import scala.collection.JavaConverters._
@@ -39,7 +42,8 @@ class TileQuarry2 extends APowerTile()
   with IAttachable
   with IDebugSender
   with IChunkLoadTile
-  with HasModuleInventory {
+  with HasModuleInventory
+  with StatusContainer.StatusProvider {
   self =>
 
   import TileQuarry2._
@@ -320,6 +324,19 @@ class TileQuarry2 extends APowerTile()
     if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(EmptyFluidHandler.INSTANCE)
     else super.getCapability(capability, facing)
   }
+
+  override def getStatusStrings = {
+    val enchantmentStrings = TileQuarry2.getEnchantmentMap(this.enchantments).toList
+      .collect { case (location, i) if i > 0 => Option(Enchantment.getEnchantmentByID(location)).map(_.getTranslatedName(i)).getOrElse(s"$location -> $i") } match {
+      case Nil => Nil
+      case l => I18n.format(TranslationKeys.ENCHANTMENT) :: l
+    }
+    val requiresEnergy = 2 * PowerManager.calcEnergyBreak(1.5f, TileQuarry2.enchantmentMode(enchantments), enchantments.unbreaking) / APowerTile.MJToMicroMJ * (enchantments.efficiency + 1)
+    val energyStrings = Seq(I18n.format(TranslationKeys.REQUIRES), s"$requiresEnergy FE/t")
+    val containItems = if (storage.itemSize <= 0) I18n.format(TranslationKeys.EMPTY_ITEM) else I18n.format(TranslationKeys.CONTAIN_ITEM, storage.itemSize.toString)
+    val containFluids = if (storage.fluidSize <= 0) I18n.format(TranslationKeys.EMPTY_FLUID) else I18n.format(TranslationKeys.CONTAIN_FLUID, storage.fluidSize.toString)
+    enchantmentStrings ++ energyStrings :+ containItems :+ containFluids
+  }
 }
 
 object TileQuarry2 {
@@ -427,13 +444,17 @@ object TileQuarry2 {
   private[this] final val NBT_Z_MIN = "zMin"
   private[this] final val NBT_Z_MAX = "zMax"
 
-  implicit val enchantmentHolderToNbt: EnchantmentHolder NBTWrapper NBTTagCompound = enchantments => {
-    val enchantmentsMap = Map(
+  def getEnchantmentMap(enchantments: EnchantmentHolder): Map[Int, Int] = {
+    Map(
       IEnchantableTile.EfficiencyID -> enchantments.efficiency,
       IEnchantableTile.UnbreakingID -> enchantments.unbreaking,
       IEnchantableTile.FortuneID -> enchantments.fortune,
       IEnchantableTile.SilktouchID -> enchantments.silktouch.compare(false)
     ) ++ enchantments.other
+  }
+
+  implicit val enchantmentHolderToNbt: EnchantmentHolder NBTWrapper NBTTagCompound = enchantments => {
+    val enchantmentsMap = getEnchantmentMap(enchantments)
     enchantmentsMap.filter(_._2 > 0).foldLeft(new NBTTagCompound) { case (nbt, (id, level)) => nbt.setInteger(id.toString, level); nbt }
   }
   implicit val areaToNbt: Area NBTWrapper NBTTagCompound = area => {

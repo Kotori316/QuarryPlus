@@ -73,6 +73,7 @@ object QuarryPlusI {
   final val guiIdListTemplate = 12
   final val guiIdQuarryModule = 13
   final val guiIdQuarry2YLevel = 14
+  final val guiIdStatus = 15
 
   val tileIdMap = Map(
     classOf[TileWorkbench] -> QuarryPlus.Names.workbench,

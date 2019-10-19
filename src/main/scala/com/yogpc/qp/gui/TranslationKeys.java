@@ -17,6 +17,8 @@ public class TranslationKeys {
     public static final String CANCEL = "gui.cancel";
     public static final String CHANGEMODE = "chat.changemode";
     public static final String CHANGE_DIRECTION = "pp.change";
+    public static final String CONTAIN_ITEM = "quarryplus.status.item";
+    public static final String CONTAIN_FLUID = "quarryplus.status.fluid";
     public static final String CONTAINER_INVENTORY = "container.inventory";
     public static final String COPY_FROM_OTHER_DIRECTION = "pp.copy";
     public static final String COPY_SELECT = "pp.copy.select";
@@ -24,9 +26,13 @@ public class TranslationKeys {
     public static final String DELETE = "selectServer.delete";
     public static final String DELETE_BLOCK_SURE = "tof.deleteblocksure";
     public static final String DELETE_FLUID_SURE = "tof.deletefluidsure";
+    public static final String DISABLE_MESSAGE = "chat.disable_message";
     public static final String DONE = "gui.done";
     public static final String DOWN = "FD.down";
     public static final String EAST = "FD.east";
+    public static final String EMPTY_ITEM = "quarryplus.status.item_empty";
+    public static final String EMPTY_FLUID = "quarryplus.status.fluid_empty";
+    public static final String ENCHANTMENT = "quarryplus.status.enchantment";
     public static final String FILLER_MODE = "chat.fillermode";
     public static final String FLUID_ID = "tof.fluidid";
     public static final String FROM_LIST = "tof.fromlist";
@@ -50,6 +56,7 @@ public class TranslationKeys {
     public static final String QP_ENABLE_LIST = "qp.list.setting";
     public static final String QUARRY_MODE = "chat.quarrymode";
     public static final String QUARRY_RESTART = "chat.quarry.restart";
+    public static final String REQUIRES = "quarryplus.status.require";
     public static final String SELECT_FLUID = "tof.selectfluid";
     public static final String SET_SELECT = "pp.set.select";
     public static final String SOUTH = "FD.south";

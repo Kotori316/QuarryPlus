@@ -62,6 +62,8 @@ object GuiHandler extends IGuiHandler {
         new GuiListTemplate(p)
       case QuarryPlusI.guiIdQuarryModule =>
         new GuiQuarryModule(w.getTileEntity(pos).asInstanceOf[HasModuleInventory], p, w.getTileEntity(pos).getDisplayName.getFormattedText)
+      case QuarryPlusI.guiIdStatus =>
+        new StatusGui(p, pos)
       case _ => null
     }
   }
@@ -97,6 +99,8 @@ object GuiHandler extends IGuiHandler {
         new ContainerListTemplate(p)
       case QuarryPlusI.guiIdQuarryModule =>
         new ContainerQuarryModule(w.getTileEntity(pos).asInstanceOf[HasModuleInventory], p)
+      case QuarryPlusI.guiIdStatus =>
+        new StatusContainer(0, p, pos)
       case _ => null
     }
   }

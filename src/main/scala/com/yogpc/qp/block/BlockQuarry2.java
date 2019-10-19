@@ -75,6 +75,10 @@ public class BlockQuarry2 extends ADismCBlock {
         if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == ItemTool.meta_YSetter()) {
             player.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdQuarry2YLevel(), worldIn, pos.getX(), pos.getY(), pos.getZ()); return true;
         }
+        if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == ItemTool.meta_StatusChecker()) {
+            player.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdStatus(), worldIn, pos.getX(), pos.getY(), pos.getZ());
+            return true;
+        }
         if (!player.isSneaking() ) {
 //            if (!worldIn.isRemote) {
 //                Optional.ofNullable((TileQuarry2) worldIn.getTileEntity(pos)).ifPresent(t ->

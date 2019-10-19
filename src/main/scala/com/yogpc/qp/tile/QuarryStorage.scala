@@ -100,4 +100,13 @@ class QuarryStorage extends INBTSerializable[NBTTagCompound] with HasStorage.Sto
   override def insertFluid(fluid: FluidStack, amount: Long): Unit = addFluid(fluid, amount)
 
   override def toString = s"QuarryStorage(item: ${items.size}, fluids: ${fluids.size})"
+
+  def itemSize: Int = clamp(items.valuesIterator.map(_.count).sum)
+
+  def fluidSize: Int = clamp(fluids.valuesIterator.sum)
+
+  private def clamp(l: Long): Int =
+    if (l > Int.MaxValue) Int.MaxValue
+    else if (l < Int.MinValue) Int.MinValue
+    else l.toInt
 }
