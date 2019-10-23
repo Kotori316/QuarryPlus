@@ -29,45 +29,7 @@
     "ignoreProperty": false
   },
   {
-    "name": "quarryplus:wrapper_state",
-    "blockstate": {
-      "Name": "minecraft:sandstone"
-    },
-    "ignoreProperty": false
-  },
-  {
-    "name": "quarryplus:wrapper_state",
-    "blockstate": {
-      "Name": "minecraft:chiseled_sandstone"
-    },
-    "ignoreProperty": false
-  },
-  {
-    "name": "quarryplus:wrapper_state",
-    "blockstate": {
-      "Name": "minecraft:cut_sandstone"
-    },
-    "ignoreProperty": false
-  },
-  {
-    "name": "quarryplus:wrapper_state",
-    "blockstate": {
-      "Name": "minecraft:red_sandstone"
-    },
-    "ignoreProperty": false
-  },
-  {
-    "name": "quarryplus:wrapper_state",
-    "blockstate": {
-      "Name": "minecraft:chiseled_red_sandstone"
-    },
-    "ignoreProperty": false
-  },
-  {
-    "name": "quarryplus:wrapper_state",
-    "blockstate": {
-      "Name": "minecraft:cut_red_sandstone"
-    },
-    "ignoreProperty": false
+    "name": "quarryplus:wrapper_tag",
+    "tag": "forge:sandstone"
   }
 ]
