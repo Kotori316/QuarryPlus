@@ -23,8 +23,8 @@ import net.minecraftforge.common.crafting.CraftingHelper
 import net.minecraftforge.fml.server.ServerLifecycleHooks
 import org.apache.commons.io.IOUtils
 
-import scala.jdk.CollectionConverters._
 import scala.collection.mutable
+import scala.jdk.CollectionConverters._
 
 abstract sealed class WorkbenchRecipes(val location: ResourceLocation, val output: ItemElement, val energy: Long, val showInJEI: Boolean = true)
   extends IRecipe[TileWorkbench] with Ordered[WorkbenchRecipes] {
@@ -83,19 +83,24 @@ private final class IngredientRecipe(location: ResourceLocation, o: ItemStack, e
   override def getOutput = o.copy()
 }
 
+private object DummyRecipe extends WorkbenchRecipes(
+  new ResourceLocation(QuarryPlus.modID, "builtin_dummy"), ItemElement.invalid, energy = 0, showInJEI = false) {
+  override val inputs = Nil
+  override val microEnergy = 0L
+  override val inputsJ: java.util.List[java.util.List[IngredientWithCount]] = Collections.emptyList()
+  override val size: Int = 0
+  override val toString: String = "WorkbenchRecipe NoRecipe"
+  override val hasContent: Boolean = false
+}
+
 object WorkbenchRecipes {
 
+  /**
+   * JVM static instance. Need to be reset when world is changed or entered into multi player world.
+   */
   private[this] val recipes_internal = mutable.Map.empty[ResourceLocation, WorkbenchRecipes]
 
-  val dummyRecipe: WorkbenchRecipes = new WorkbenchRecipes(
-    new ResourceLocation(QuarryPlus.modID, "builtin_dummy"), ItemElement.invalid, energy = 0, showInJEI = false) {
-    override val inputs = Nil
-    override val microEnergy = 0L
-    override val inputsJ: java.util.List[java.util.List[IngredientWithCount]] = Collections.emptyList()
-    override val size: Int = 0
-    override val toString: String = "WorkbenchRecipe NoRecipe"
-    override val hasContent: Boolean = false
-  }
+  val dummyRecipe: WorkbenchRecipes = DummyRecipe
 
   val recipeOrdering: Comparator[WorkbenchRecipes] =
     Ordering.by((a: WorkbenchRecipes) => a.energy) thenComparing Ordering.by((a: WorkbenchRecipes) => Item.getIdFromItem(a.output.itemDamage.item))
