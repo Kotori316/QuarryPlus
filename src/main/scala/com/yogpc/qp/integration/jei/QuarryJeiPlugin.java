@@ -2,6 +2,7 @@ package com.yogpc.qp.integration.jei;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
@@ -10,6 +11,7 @@ import com.yogpc.qp.machines.bookmover.GuiBookMover;
 import com.yogpc.qp.machines.workbench.GuiWorkbench;
 import com.yogpc.qp.machines.workbench.WorkbenchRecipes;
 import com.yogpc.qp.utils.Holder;
+import com.yogpc.qp.utils.RecipeGetter;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
@@ -17,6 +19,7 @@ import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
+import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import scala.jdk.javaapi.CollectionConverters;
@@ -30,7 +33,9 @@ public class QuarryJeiPlugin implements IModPlugin {
 
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
-        List<WorkbenchRecipes> recipes = CollectionConverters.asJava(WorkbenchRecipes.recipes()).values().stream()
+        List<WorkbenchRecipes> recipes = Stream.concat(
+            CollectionConverters.asJava(WorkbenchRecipes.getRecipeMap()).values().stream(), // Internal recipes.
+            RecipeGetter.getRecipes(Minecraft.getInstance().world.getRecipeManager(), WorkbenchRecipes.recipeType()).values().stream()) // Synced by server.
             .filter(WorkbenchRecipes::showInJEI)
             .sorted(WorkbenchRecipes.recipeOrdering())
             .collect(Collectors.toList());

@@ -9,9 +9,12 @@ import cats.data._
 import cats.implicits._
 import com.google.gson._
 import com.yogpc.qp.machines.base.APowerTile
+import com.yogpc.qp.packet.PacketHandler
+import com.yogpc.qp.packet.workbench.RecipeSyncMessage
 import com.yogpc.qp.utils.{Holder, ItemElement, RecipeGetter}
 import com.yogpc.qp.{QuarryPlus, _}
 import net.minecraft.client.resources.JsonReloadListener
+import net.minecraft.entity.player.ServerPlayerEntity
 import net.minecraft.item.crafting.{IRecipe, IRecipeSerializer, IRecipeType}
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.network.PacketBuffer
@@ -19,7 +22,13 @@ import net.minecraft.profiler.IProfiler
 import net.minecraft.resources.{IResource, IResourceManager}
 import net.minecraft.util.{JSONUtils, ResourceLocation}
 import net.minecraft.world.World
+import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
+import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.common.crafting.CraftingHelper
+import net.minecraftforge.event.entity.player.PlayerEvent
+import net.minecraftforge.eventbus.api.SubscribeEvent
+import net.minecraftforge.fml.DistExecutor
+import net.minecraftforge.fml.network.PacketDistributor
 import net.minecraftforge.fml.server.ServerLifecycleHooks
 import org.apache.commons.io.IOUtils
 
@@ -109,6 +118,9 @@ object WorkbenchRecipes {
   val recipeType = IRecipeType.register[WorkbenchRecipes](recipeLocation.toString)
   private[this] final val conditionMessage = "Condition is false"
 
+  /**
+   * @return Recipes of workbench, including data pack and vanilla recipe system.
+   */
   def recipes: Map[ResourceLocation, WorkbenchRecipes] = {
     Option(ServerLifecycleHooks.getCurrentServer)
       .map(s => RecipeGetter.getRecipes(s.getRecipeManager, recipeType).asScala.toMap).getOrElse(Map.empty) ++ recipes_internal
@@ -142,7 +154,10 @@ object WorkbenchRecipes {
     }
   }
 
-  def getRecipeMap: Map[ResourceLocation, WorkbenchRecipes] = recipes
+  /**
+   * @return Only internal recipe. (Registered via data.quarryplus.workbench)
+   */
+  def getRecipeMap: Map[ResourceLocation, WorkbenchRecipes] = recipes_internal.toMap
 
   def getRecipeFromResult(stack: ItemStack): java.util.Optional[WorkbenchRecipes] = {
     if (stack.isEmpty) return java.util.Optional.empty()
@@ -253,6 +268,7 @@ object WorkbenchRecipes {
   }
 
   object Reload extends JsonReloadListener(new GsonBuilder().setPrettyPrinting().disableHtmlEscaping.create, QuarryPlus.modID + "/workbench") {
+
     override def apply(splashList: util.Map[ResourceLocation, JsonObject], resourceManagerIn: IResourceManager, profilerIn: IProfiler): Unit = {
       recipes_internal.clear()
 
@@ -265,6 +281,19 @@ object WorkbenchRecipes {
       }
 
       QuarryPlus.LOGGER.debug("Recipe loaded.")
+    }
+
+    @SubscribeEvent
+    def loggedIn(event: PlayerEvent.PlayerLoggedInEvent): Unit = {
+      DistExecutor.runWhenOn(Dist.DEDICATED_SERVER, () => () =>
+        PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.`with`(() => event.getPlayer.asInstanceOf[ServerPlayerEntity]),
+          RecipeSyncMessage.create(WorkbenchRecipes.recipes)))
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    def receiveRecipeFromServer(recipe: scala.collection.Map[ResourceLocation, WorkbenchRecipes]): Unit = {
+      recipes_internal.clear()
+      recipes_internal.addAll(recipe)
     }
   }
 

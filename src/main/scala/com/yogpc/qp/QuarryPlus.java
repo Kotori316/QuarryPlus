@@ -63,6 +63,7 @@ public class QuarryPlus {
     @SubscribeEvent
     public void serverStart(FMLServerAboutToStartEvent event) {
         event.getServer().getResourceManager().addReloadListener(WorkbenchRecipes.Reload$.MODULE$);
+        MinecraftForge.EVENT_BUS.register(WorkbenchRecipes.Reload$.MODULE$);
         event.getServer().getResourceManager().addReloadListener(BlockWrapper.Reload$.MODULE$);
     }
 
