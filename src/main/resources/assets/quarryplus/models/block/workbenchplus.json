@@ -1,6 +1,12 @@
 {
-  "parent": "block/cube_all",
+  "parent": "block/cube",
   "textures": {
-    "all": "quarryplus:blocks/workbench"
+    "particle": "quarryplus:blocks/workbench",
+    "down": "quarryplus:blocks/workbench",
+    "up": "quarryplus:blocks/workbench",
+    "north": "quarryplus:blocks/workbench",
+    "east": "quarryplus:blocks/workbench",
+    "south": "quarryplus:blocks/workbench",
+    "west": "quarryplus:blocks/workbench"
   }
 }

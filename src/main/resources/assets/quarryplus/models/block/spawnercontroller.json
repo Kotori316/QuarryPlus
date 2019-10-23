@@ -1,6 +1,12 @@
 {
-  "parent": "block/cube_all",
+  "parent": "block/cube",
   "textures": {
-    "all": "quarryplus:blocks/spawnctl"
+    "particle": "quarryplus:blocks/spawnctl",
+    "down": "quarryplus:blocks/spawnctl",
+    "up": "quarryplus:blocks/spawnctl",
+    "north": "quarryplus:blocks/spawnctl",
+    "east": "quarryplus:blocks/spawnctl",
+    "south": "quarryplus:blocks/spawnctl",
+    "west": "quarryplus:blocks/spawnctl"
   }
 }
