@@ -1,5 +1,14 @@
 **This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).**
 
+## Version 14.1.1
+- Fixed items in workbench slots has incorrect count. (Dedicated server)
+- Use vanilla data pack system for workbench recipe. Sync recipes with client.
+- Extracted dummy recipe to object
+- Working on an issue of server recipe loading
+- Use sand stone tag in exclude list of ChunkDestroyer.
+- Fixed waring of texture.
+- Forge version up to 28.1.61
+
 ## Version 14.1.0
 - Added -  GUI of Status Checker for new quarry. [#69](https://github.com/Kotori316/QuarryPlus/issues/69)
 
