@@ -89,13 +89,11 @@ public class GuiWorkbench extends ContainerScreen<ContainerWorkbench> {
         Minecraft.getInstance().getItemColors());
 
     private static final ResourceLocation gui = new ResourceLocation(QuarryPlus.modID, "textures/gui/workbench.png");
-    private final TileWorkbench tile;
 
     public GuiWorkbench(ContainerWorkbench workbench, PlayerInventory inv, ITextComponent component) {
         super(workbench, inv, component);
         this.xSize = 176;
         this.ySize = 222;
-        this.tile = workbench.tile;
     }
 
     @Override
@@ -113,7 +111,7 @@ public class GuiWorkbench extends ContainerScreen<ContainerWorkbench> {
         blit(xf, yf, 0, 0, this.xSize, this.ySize);
         if (container.isWorking.get() == 1) {
             blit(xf + 8, yf + 78, 0, this.ySize, container.progress.get(), 4);
-            int cur_recipe = 27 + tile.getRecipeIndex();
+            int cur_recipe = 27 + container.recipeIndex.get();
             int i = (container.workContinue.get() == 1 ? 16 : 0);
             blit(xf + 8 + cur_recipe % 9 * 18, yf + 90 + (cur_recipe / 9 - 3) * 18, this.xSize + i, 0, 16, 16);
         }

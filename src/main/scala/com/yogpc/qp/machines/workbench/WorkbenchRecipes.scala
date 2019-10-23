@@ -117,13 +117,14 @@ object WorkbenchRecipes {
 
   def getRecipe(inputs: java.util.List[ItemStack]): java.util.List[WorkbenchRecipes] = {
     val asScala = inputs.asScala
-    recipes.filter {
+    val sorted = recipes.filter {
       case (_, workRecipe) if workRecipe.hasContent =>
         workRecipe.inputs.forall(i => {
           asScala.exists(t => i.exists(_.matches(t)))
         })
       case _ => false
-    }.values.toList.sorted.asJava
+    }.values.toList.sorted
+    sorted.asJava
   }
 
   def addIngredientRecipe(location: ResourceLocation, output: ItemStack, energy: Double, inputs: java.util.List[java.util.List[IngredientWithCount]]): Unit = {

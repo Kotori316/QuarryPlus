@@ -23,6 +23,7 @@ public class ContainerWorkbench extends Container {
     final IntReferenceHolder progress = this.trackInt(IntReferenceHolder.single());
     final IntReferenceHolder isWorking = this.trackInt(IntReferenceHolder.single());
     final IntReferenceHolder workContinue = this.trackInt(IntReferenceHolder.single());
+    final IntReferenceHolder recipeIndex = this.trackInt(IntReferenceHolder.single());
 
     public ContainerWorkbench(int id, final PlayerEntity player, BlockPos pos) {
         super(Holder.workbenchContainerType(), id);
@@ -50,10 +51,15 @@ public class ContainerWorkbench extends Container {
             addSlot(new Slot(player.inventory, col, 8 + col * 18, 198));
 
         if (!player.world.isRemote && this.tile != null) {
-            progress.set(this.tile.getProgressScaled(160));
-            isWorking.set(this.tile.isWorking() ? 1 : 0);
-            workContinue.set(this.tile.workContinue ? 1 : 0);
+            setTrackValues();
         }
+    }
+
+    private void setTrackValues() {
+        progress.set(this.tile.getProgressScaled(160));
+        isWorking.set(this.tile.isWorking() ? 1 : 0);
+        workContinue.set(this.tile.workContinue ? 1 : 0);
+        recipeIndex.set(this.tile.getRecipeIndex());
     }
 
     @Override
@@ -124,9 +130,7 @@ public class ContainerWorkbench extends Container {
     @Override
     public void detectAndSendChanges() {
         if (this.tile != null) {
-            progress.set(this.tile.getProgressScaled(160));
-            isWorking.set(this.tile.isWorking() ? 1 : 0);
-            workContinue.set(this.tile.workContinue ? 1 : 0);
+            setTrackValues();
         }
         super.detectAndSendChanges();
     }
