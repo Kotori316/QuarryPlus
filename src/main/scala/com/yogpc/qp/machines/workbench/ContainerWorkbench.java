@@ -52,6 +52,7 @@ public class ContainerWorkbench extends Container {
 
         if (!player.world.isRemote && this.tile != null) {
             setTrackValues();
+            tile.openInventory(player);
         }
     }
 
@@ -272,5 +273,11 @@ public class ContainerWorkbench extends Container {
 
     private static boolean areStack_Able(ItemStack stack1, ItemStack stack2) {
         return ItemStack.areItemsEqual(stack1, stack2) && ItemStack.areItemStackTagsEqual(stack1, stack2);
+    }
+
+    @Override
+    public void onContainerClosed(PlayerEntity playerIn) {
+        super.onContainerClosed(playerIn);
+        this.tile.closeInventory(playerIn);
     }
 }

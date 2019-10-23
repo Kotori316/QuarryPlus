@@ -12,9 +12,11 @@
  */
 package com.yogpc.qp.machines.workbench;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
@@ -24,6 +26,8 @@ import com.yogpc.qp.machines.base.APowerTile;
 import com.yogpc.qp.machines.base.EnergyUsage;
 import com.yogpc.qp.machines.base.HasInv;
 import com.yogpc.qp.machines.base.IDebugSender;
+import com.yogpc.qp.packet.PacketHandler;
+import com.yogpc.qp.packet.TileMessage;
 import com.yogpc.qp.utils.Holder;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -92,6 +96,9 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
             } else if (Config.common().noEnergy().get() || noEnergy) {
                 getEnergy(currentRecipe.microEnergy() / 200, true, true); // 10 second to full.
             }
+        }
+        if (!openPlayers.isEmpty() /*&& !world.isRemote */) {
+            PacketHandler.sendToAround(TileMessage.create(this), Objects.requireNonNull(this.getWorld()), this.getPos());
         }
     }
 
@@ -193,6 +200,9 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
         } else {
             startWork();
         }
+        if (world != null && !world.isRemote()) {
+            PacketHandler.sendToAround(TileMessage.create(this), world, pos);
+        }
     }
 
     @Override
@@ -262,6 +272,18 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
     @Override
     public ITextComponent getName() {
         return new TranslationTextComponent(getDebugName());
+    }
+
+    private final List<PlayerEntity> openPlayers = new ArrayList<>();
+
+    @Override
+    public void openInventory(PlayerEntity player) {
+        openPlayers.add(player);
+    }
+
+    @Override
+    public void closeInventory(PlayerEntity player) {
+        openPlayers.remove(player);
     }
 
     private class ItemHandler implements IItemHandlerModifiable {
