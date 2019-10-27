@@ -1,3 +1,6 @@
+# Version 12.2.9
+- Working on an issue where quarry stops when removing sea.
+
 # Version 12.2.8
 - Added - Status Checker GUI for QuarryPlus. Enchantments, requiring energy and internal storage info will be shown. 
 [#69](https://github.com/Kotori316/QuarryPlus/issues/69)
