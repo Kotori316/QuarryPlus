@@ -170,6 +170,15 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
         if (Config.common().noEnergy().get()) {
             debug.use(amount, !real, usage);
             return amount;
+        } else if (this.max < min) {
+            // In case of tile can never supply required energy.
+            // This means tile stops and will never restart.
+            if (real) {
+                this.all = 0;
+                QuarryPlus.LOGGER.debug(String.format("%d energy requested for %s but it's over machine capacity.", min, usage));
+                debug.use(amount, false, usage);
+            }
+            return amount;
         }
         long res = 0;
         if (this.all >= min) {
