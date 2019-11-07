@@ -37,14 +37,17 @@ object IModule {
   val MARKER = MarkerManager.getMarker("QUARRY_MODULE")
   implicit val moduleShow: Show[IModule] = Show.fromToString
   val getId: IModule => String = _.id
-  val replaceModuleIDs = Set(ReplacerModule.id, TorchModule.id)
-  val pumpModuleIDs = Set(PumpModule.ID)
-  val hasReplaceModule: IModule => Boolean = getId andThen replaceModuleIDs
-  val hasPumpModule: IModule => Boolean = getId andThen pumpModuleIDs
+  val hasReplaceModule: IModule => Boolean = has(ReplacerModule.id, TorchModule.id)
+  val hasPumpModule: IModule => Boolean = has(PumpModule.ID)
   val replaceBlocks: Int => PartialFunction[IModule, List[BlockState]] = y => {
     case t: TorchModule if t.y.contains_(y) => List(Blocks.TORCH.getDefaultState)
     case r: ReplacerModule => r.toReplace.toList
     case _ => Nil
+  }
+
+  def has(id: String, ids: String*): IModule => Boolean = {
+    val set = ids.toSet + id
+    getId andThen set
   }
 
   sealed trait ModuleType

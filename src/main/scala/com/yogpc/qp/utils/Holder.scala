@@ -120,6 +120,7 @@ object Holder {
   val itemTorchModule = new ItemTorchModule
   val itemFuelModuleNormal = new ItemFuelModule(FuelModule.Normal)
   val itemFuelModuleCreative = new ItemFuelModule(FuelModule.Creative)
+  val itemRemoveBedrockModule = new ItemBedrockModule
 
   val items: Seq[Item] = Seq(
     itemStatusChecker,
@@ -134,6 +135,7 @@ object Holder {
     itemTorchModule,
     itemFuelModuleNormal,
     itemFuelModuleCreative,
+    itemRemoveBedrockModule,
   )
 
   //---------- IDisable ----------

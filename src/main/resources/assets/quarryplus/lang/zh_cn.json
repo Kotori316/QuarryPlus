@@ -22,6 +22,7 @@
   "block.quarryplus.spawnercontroller": "刷怪控制器",
   "block.quarryplus.standalonepump": "高级泵",
   "block.quarryplus.workbenchplus": "增强型工作台",
+  "item.quarryplus.remove_bedrock_module": "Remove Bedrock Module",
   "item.quarryplus.dimensionmirror": "维度之镜",
   "item.quarryplus.electric_armor": "充能增强型盔甲",
   "item.quarryplus.fuel_module_normal": "Quarry Fuel Module",

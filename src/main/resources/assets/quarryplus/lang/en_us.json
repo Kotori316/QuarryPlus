@@ -22,6 +22,7 @@
   "block.quarryplus.spawnercontroller": "Spawner Controller",
   "block.quarryplus.standalonepump": "Advanced Pump",
   "block.quarryplus.workbenchplus": "Workbench Plus",
+  "item.quarryplus.remove_bedrock_module": "Remove Bedrock Module",
   "item.quarryplus.dimensionmirror": "DimensionalMirror",
   "item.quarryplus.electric_armor": "ElectricArmorPlus",
   "item.quarryplus.fuel_module_normal": "Quarry Fuel Module",

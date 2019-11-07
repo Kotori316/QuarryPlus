@@ -153,6 +153,7 @@ public class QuarryPlus {
     public static class Names {
         public static final String advpump = "standalonepump";
         public static final String advquarry = "chunkdestroyer";
+        public static final String bedrockModule = "remove_bedrock_module";
         public static final String breaker = "breakerplus";
         public static final String controller = "spawnercontroller";
         public static final String debug = "quarrydebug";
