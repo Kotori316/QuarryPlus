@@ -152,7 +152,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
    *
    * @return True if succeeded.
    */
-  def breakBlock(world: ServerWorld, pos: BlockPos, state: BlockState): Boolean = {
+  def breakBlock(world: ServerWorld, pos: BlockPos, stateToBreak: BlockState): Boolean = {
     import scala.jdk.CollectionConverters._
     if (pos.getX % 6 == 0 && pos.getZ % 6 == 0) {
       // Gather items
@@ -162,20 +162,25 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     val fakePlayer = QuarryFakePlayer.get(world, pos)
     val pickaxe = getEnchantedPickaxe
     fakePlayer.setHeldItem(Hand.MAIN_HAND, pickaxe)
-    val event = new BlockEvent.BreakEvent(world, pos, state, fakePlayer)
+    val event = new BlockEvent.BreakEvent(world, pos, stateToBreak, fakePlayer)
     MinecraftForge.EVENT_BUS.post(event)
     if (!event.isCanceled) {
-      val drops = NonNullList.create[ItemStack]
-      drops.addAll(Block.getDrops(state, world, pos, world.getTileEntity(pos), fakePlayer, pickaxe))
-      ForgeEventFactory.fireBlockHarvesting(drops, world, pos, state, self.enchantments.fortune, 1.0f, self.enchantments.silktouch, fakePlayer)
-      fakePlayer.setHeldItem(Hand.MAIN_HAND, ItemStack.EMPTY)
+      val returnValue = modules.foldMap(m => m.invoke(IModule.BeforeBreak(event.getExpToDrop, world, pos)))
+      if (returnValue.canGoNext) {
+        val drops = NonNullList.create[ItemStack]
+        val state = world.getBlockState(pos)
+        drops.addAll(Block.getDrops(state, world, pos, world.getTileEntity(pos), fakePlayer, pickaxe))
+        ForgeEventFactory.fireBlockHarvesting(drops, world, pos, state, self.enchantments.fortune, 1.0f, self.enchantments.silktouch, fakePlayer)
+        fakePlayer.setHeldItem(Hand.MAIN_HAND, ItemStack.EMPTY)
 
-      if (TilePump.isLiquid(state) || PowerManager.useEnergyBreak(self, pos, enchantments, modules.exists(IModule.hasReplaceModule))) {
-        val returnValue = modules.foldMap(m => m.invoke(IModule.BeforeBreak(event.getExpToDrop, world, pos)))
-        drops.asScala.groupBy(ItemDamage.apply).view.mapValues(_.map(_.getCount).sum).toList.map { case (damage, i) => damage.toStack(i) }.foreach(storage.addItem)
-        returnValue.canGoNext // true means work is finished.
+        if (TilePump.isLiquid(state) || PowerManager.useEnergyBreak(self, pos, enchantments, modules.exists(IModule.hasReplaceModule))) {
+          drops.asScala.groupBy(ItemDamage.apply).view.mapValues(_.map(_.getCount).sum).toList.map { case (damage, i) => damage.toStack(i) }.foreach(storage.addItem)
+          true // true means work is finished.
+        } else {
+          false
+        }
       } else {
-        false
+        false // Module work is not finished.
       }
     } else {
       true // Once event is canceled, you should think the block is unbreakable.

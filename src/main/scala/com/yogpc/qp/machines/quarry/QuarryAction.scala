@@ -4,6 +4,7 @@ import cats.implicits._
 import com.yogpc.qp._
 import com.yogpc.qp.machines.PowerManager
 import com.yogpc.qp.machines.base.{Area, IModule}
+import com.yogpc.qp.machines.modules.RemoveBedrockModule
 import com.yogpc.qp.machines.pump.TilePump
 import com.yogpc.qp.packet.PacketHandler
 import com.yogpc.qp.packet.quarry2.ActionMessage
@@ -350,9 +351,10 @@ object QuarryAction {
   }
 
   def checkBreakable(world: World, pos: BlockPos, state: BlockState, modules: Seq[IModule]): Boolean = {
+    val unbreakable = (state.getBlock == Blocks.BEDROCK && !modules.exists(IModule.has(RemoveBedrockModule.id))) &&
+      (state.getBlockHardness(world, pos) < 0 || state.getBlockHardness(world, pos).isInfinity)
     !state.isAir(world, pos) &&
-      state.getBlockHardness(world, pos) >= 0 &&
-      !state.getBlockHardness(world, pos).isInfinity &&
+      !unbreakable &&
       !modules.flatMap(IModule.replaceBlocks(pos.getY)).contains(state) &&
       (!TilePump.isLiquid(state) || modules.exists(IModule.hasPumpModule))
   }

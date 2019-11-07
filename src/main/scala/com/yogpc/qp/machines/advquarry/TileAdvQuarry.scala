@@ -24,6 +24,7 @@ import net.minecraft.tileentity.ITickableTileEntity
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.{ITextComponent, StringTextComponent, TranslationTextComponent}
 import net.minecraft.util.{Hand, ResourceLocation}
+import net.minecraft.world.World
 import net.minecraft.world.server.ServerWorld
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.ForgeEventFactory
@@ -108,17 +109,18 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     }
   }
 
-  def gatherItemDrops(target: BlockPos, searchReplacer: Boolean, state: BlockState, fakePlayer: QuarryFakePlayer, pickaxe: ItemStack): Ior[Reason, AdvStorage] = {
-    val storage = new AdvStorage
-    if (state.isAir(getWorld, target)) {
+  def gatherItemDrops(target: BlockPos, searchReplacer: Boolean, stateBefore: BlockState, fakePlayer: QuarryFakePlayer, pickaxe: ItemStack): Ior[Reason, AdvStorage] = {
+    val storage = removeUnbreakable(stateBefore, self.getWorld, target, pickaxe, self.modules.flatMap(IModule.replaceBlocks(target.getY)).headOption.getOrElse(Blocks.AIR.getDefaultState))
+    if (getWorld.isAirBlock(target)) {
       return storage.rightIor
     }
-    val breakEvent = new BlockEvent.BreakEvent(getWorld, target, state, fakePlayer)
+    val breakEvent = new BlockEvent.BreakEvent(getWorld, target, stateBefore, fakePlayer)
     if (!MinecraftForge.EVENT_BUS.post(breakEvent)) {
-      val returnValue = modules.foldMap(m => m.invoke(IModule.BeforeBreak(breakEvent.getExpToDrop, world, pos)))
+      val returnValue = modules.foldMap(m => m.invoke(IModule.BeforeBreak(breakEvent.getExpToDrop, world, target)))
       if (!returnValue.canGoNext) {
         return Reason.message("Module work has not finished yet.").leftIor
       }
+      val state = getWorld.getBlockState(target)
       if (TilePump.isLiquid(state)) {
         // Pump fluids
         val fluidState = state.getFluidState
@@ -146,10 +148,33 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
       }
       storage.rightIor
     } else {
-      Reason.canceled(target, state).leftIor
+      Reason.canceled(target, stateBefore).leftIor
     }
   }
 
+  def removeUnbreakable(state: BlockState, world: World, pos: BlockPos, pickaxe: ItemStack, toReplace: => BlockState): AdvStorage = {
+    val storage = new AdvStorage
+    state.getBlock match {
+      /*case Blocks.BEDROCK =>
+
+        val toRemove = world.getDimension.getType match {
+          case DimensionType.THE_NETHER => (pos.getY > 0 && pos.getY < 5) || (pos.getY > 122 && pos.getY < 127)
+          case _ => pos.getY > 0 && pos.getY < 5
+        }
+
+        if (Config.common.removeBedrock.get() && toRemove) {
+          if (Config.common.collectBedrock.get() && EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, pickaxe) > 0) {
+            storage.insertItem(new ItemStack(state.getBlock))
+          }
+          world.setBlockState(pos, toReplace, 0x10 | 0x2)
+        }*/
+      case Blocks.NETHER_PORTAL =>
+        // Cause block update to remove other nether portal.
+        world.setBlockState(pos, Blocks.AIR.getDefaultState, 3)
+      case _ =>
+    }
+    storage
+  }
   // Overrides
   override def remove(): Unit = {
     super[IChunkLoadTile].releaseTicket()
@@ -261,21 +286,6 @@ object TileAdvQuarry {
     hardness < 0 || hardness.isInfinity
   }
 
-  def calcUnbreakableEnergy(state: BlockState): Long = {
-    if (state.getBlock == Blocks.BEDROCK) {
-      if (Config.common.removeBedrock.get()) {
-        if (Config.common.collectBedrock.get()) {
-          PowerManager.calcEnergyBreak(50f, EnchantmentHolder.noEnch)
-        } else {
-          PowerManager.calcEnergyBreak(100f, EnchantmentHolder.noEnch) * 2
-        }
-      } else {
-        0L
-      }
-    } else {
-      0L
-    }
-  }
 
   private[this] final lazy val nonAcceptableModule = Set(
     Holder.itemPumpModule.getSymbol,

@@ -8,16 +8,13 @@ import com.yogpc.qp.machines.base.{Area, EnergyUsage, IModule}
 import com.yogpc.qp.machines.pump.TilePump
 import com.yogpc.qp.machines.quarry.QuarryFakePlayer
 import com.yogpc.qp.utils.Holder
-import net.minecraft.block.{BlockState, Blocks}
-import net.minecraft.enchantment.{EnchantmentHelper, Enchantments}
+import net.minecraft.block.Blocks
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.ItemEntity
-import net.minecraft.item.ItemStack
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos}
 import net.minecraft.util.{Direction, EntityPredicates, Hand}
 import net.minecraft.world.World
-import net.minecraft.world.dimension.DimensionType
 import net.minecraft.world.server.ServerWorld
 import net.minecraftforge.common.util.Constants.NBT
 import org.apache.logging.log4j.MarkerManager
@@ -197,8 +194,8 @@ object AdvQuarryWork {
             .map { p =>
               val state = tile.getWorld.getBlockState(p)
               state.getBlockHardness(tile.getWorld, p) match {
-                case h if TileAdvQuarry.isUnbreakable(h, state) => TileAdvQuarry.calcUnbreakableEnergy(state)
-                case _ if state.getMaterial.isLiquid => PowerManager.calcEnergyPumpDrain(tile.enchantments.unbreaking, 0L, 0L)
+                case h if TileAdvQuarry.isUnbreakable(h, state) => 0
+                case _ if state.getMaterial.isLiquid => PowerManager.calcEnergyPumpDrain(tile.enchantments.unbreaking, 1L, 0L)
                 case hardness => PowerManager.calcEnergyBreak(hardness, tile.enchantments)
               }
             }.sum
@@ -209,11 +206,7 @@ object AdvQuarryWork {
             fakePlayer.setHeldItem(Hand.MAIN_HAND, pickaxe)
             targets.map { p =>
               val state = tile.getWorld.getBlockState(p)
-              if (TileAdvQuarry.isUnbreakable(state.getBlockHardness(tile.getWorld, p), state)) {
-                removeUnbreakable(state, tile.getWorld, p, pickaxe, tile.modules.flatMap(IModule.replaceBlocks(p.getY)).headOption.getOrElse(Blocks.AIR.getDefaultState))
-              } else {
-                tile.gatherItemDrops(p, searchReplacer = true, state, fakePlayer, pickaxe)
-              }
+              tile.gatherItemDrops(p, searchReplacer = true, state, fakePlayer, pickaxe)
             }.foldRight((List.empty[Reason], storage1)) { case (ior, (l, s)) =>
               ior.foreach(s.addAll(_, log = false)); (ior.left.toList ::: l) -> s
             } match {
@@ -280,30 +273,6 @@ object AdvQuarryWork {
       if (TilePump.isLiquid(world.getBlockState(thatPos))) {
         world.setBlockState(thatPos, Holder.blockFrame.getDammingState)
       }
-    }
-
-    def removeUnbreakable(state: BlockState, world: World, pos: BlockPos, pickaxe: ItemStack, toReplace: => BlockState): Ior[Reason, AdvStorage] = {
-      val storage = new AdvStorage
-      state.getBlock match {
-        case Blocks.BEDROCK =>
-
-          val toRemove = world.getDimension.getType match {
-            case DimensionType.THE_NETHER => (pos.getY > 0 && pos.getY < 5) || (pos.getY > 122 && pos.getY < 127)
-            case _ => pos.getY > 0 && pos.getY < 5
-          }
-
-          if (Config.common.removeBedrock.get() && toRemove) {
-            if (Config.common.collectBedrock.get() && EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, pickaxe) > 0) {
-              storage.insertItem(new ItemStack(state.getBlock))
-            }
-            world.setBlockState(pos, toReplace, 0x10 | 0x2)
-          }
-        case Blocks.NETHER_PORTAL =>
-          // Cause block update to remove other nether portal.
-          world.setBlockState(pos, Blocks.AIR.getDefaultState, 3)
-        case _ =>
-      }
-      Ior.right(storage)
     }
 
     override def goNext(tile: TileAdvQuarry) = targetList.isEmpty
