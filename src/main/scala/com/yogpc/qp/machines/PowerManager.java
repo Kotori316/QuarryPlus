@@ -206,7 +206,8 @@ public class PowerManager {
         long BP = QuarryWork_BP;
         double CU = QuarryWork_CU;
         double CSP = enchantMode < 0 ? QuarryWork_CS : Math.pow(QuarryWork_CF, enchantMode);
-        return (long) (BP * hardness * CSP / (unbreaking * CU + 1));
+        double fixedHardness = Math.pow(hardness, 1.1);
+        return (long) (BP * fixedHardness * CSP / (unbreaking * CU + 1));
     }
 
     /**
