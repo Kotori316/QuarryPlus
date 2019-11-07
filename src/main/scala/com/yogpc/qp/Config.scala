@@ -151,9 +151,10 @@ object Config {
     def outputPowerDetail(logDirectory: Path): Unit = {
       if (inDev && Files.exists(logDirectory)) {
         def getEnergyMap(ench: EnchantmentHolder): IndexedSeq[String] = {
-          BigDecimal("0").to(BigDecimal("100"), BigDecimal("0.1"))
-            .map(f => f -> PowerManager.calcEnergyBreak(f.floatValue, ench))
-            .map { case (decimal, l) => s"$decimal,${l.toDouble / APowerTile.MJToMicroMJ}" }
+          "Hardness,Energy" +:
+            BigDecimal("0").to(BigDecimal("100"), BigDecimal("0.1"))
+              .map(f => f -> PowerManager.calcEnergyBreak(f.floatValue, ench))
+              .map { case (decimal, l) => s"$decimal,${l.toDouble / APowerTile.MJToMicroMJ}" }
         }
 
         val seq = Seq(

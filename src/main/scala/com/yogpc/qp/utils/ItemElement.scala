@@ -36,7 +36,7 @@ object ItemElement {
     else invalid // No reasons to combine empty items. Its result should be also empty.
 
   implicit val eqItemElement: Eq[ItemElement] = Eq.fromUniversalEquals
-  implicit val showItemElement:Show[ItemElement] = Show.fromToString
+  implicit val showItemElement: Show[ItemElement] = Show.fromToString
 
   val invalid: ItemElement = ItemElement(ItemDamage.invalid, 0)
 }
