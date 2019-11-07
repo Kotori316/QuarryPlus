@@ -8,7 +8,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
 /**
- * Must be subclass of {@link APacketTile} or implement {@link IDebugSender#getMessage()}.
+ * Must be subclass of {@link APacketTile} or override {@link IDebugSender#getMessage()}.
  */
 public interface IDebugSender {
     default void sendDebugMessage(PlayerEntity player) {
@@ -31,7 +31,7 @@ public interface IDebugSender {
     }
 
     /**
-     * For internal use only.
+     * For internal use only. Called when machine is valid.
      *
      * @return debug info of valid machine.
      */

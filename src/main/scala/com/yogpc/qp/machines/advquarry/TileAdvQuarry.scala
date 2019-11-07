@@ -23,7 +23,7 @@ import net.minecraft.state.properties.BlockStateProperties
 import net.minecraft.tileentity.ITickableTileEntity
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.{ITextComponent, StringTextComponent, TranslationTextComponent}
-import net.minecraft.util.{Direction, Hand, ResourceLocation}
+import net.minecraft.util.{Hand, ResourceLocation}
 import net.minecraft.world.server.ServerWorld
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.ForgeEventFactory
@@ -40,7 +40,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
   with HasStorage
   with ITickableTileEntity
   with IDebugSender
-  with IAttachable
+  with IAttachableWithModuleScalaImpl
   with IChunkLoadTile
   with INamedContainerProvider
   with ContainerQuarryModule.HasModuleInventory {
@@ -50,8 +50,6 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
   var area = Area.zeroArea
   var enchantments = EnchantmentHolder.noEnch
   var action: AdvQuarryWork = AdvQuarryWork.none
-  var modules: List[IModule] = List.empty
-  var attachments: Map[IAttachment.Attachments[_], Direction] = Map.empty
   val storage = new AdvStorage
   val moduleInv = new QuarryModuleInventory(5, this, _ => refreshModules(), TileAdvQuarry.moduleFilter)
 
@@ -152,17 +150,6 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     }
   }
 
-  def neighborChanged(): Unit = {
-    attachments = attachments.filter { case (kind, facing) => kind.test(world.getTileEntity(pos.offset(facing))) }
-    refreshModules()
-  }
-
-  def refreshModules(): Unit = {
-    val attachmentModules = attachments.toList >>= { case (kind, facing) => kind.module(world.getTileEntity(pos.offset(facing))).toList }
-    val internalModules = moduleInv.moduleItems().asScala.toList >>= (e => e.getKey.apply(e.getValue, self).toList)
-    this.modules = attachmentModules ++ internalModules
-  }
-
   // Overrides
   override def remove(): Unit = {
     super[IChunkLoadTile].releaseTicket()
@@ -179,18 +166,10 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
       PacketHandler.sendToAround(AdvModeMessage.create(self), world, pos)
     }
 
-    val nowState = world.getBlockState(pos)
-    if (nowState.get(QPBlock.WORKING) ^ isWorking) {
-      if (isWorking) {
-        startWork()
-      } else {
-        finishWork()
-      }
-      world.setBlockState(pos, nowState.`with`(QPBlock.WORKING, Boolean.box(isWorking)))
-    }
+    updateWorkingState()
 
     storage.pushItem(getWorld, getPos)
-    if (getWorld.getGameTime % 20 == 0) {
+    if (getWorld.getGameTime % 10 == 0) {
       storage.pushFluid(getWorld, getPos)
     }
   }
@@ -239,24 +218,11 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
   }
 
   override def getEnchantments = {
-    val enchantmentsMap = Map(
-      IEnchantableTile.EfficiencyID -> enchantments.efficiency,
-      IEnchantableTile.UnbreakingID -> enchantments.unbreaking,
-      IEnchantableTile.FortuneID -> enchantments.fortune,
-      IEnchantableTile.SilktouchID -> enchantments.silktouch.compare(false),
-    ) ++ enchantments.other
-    enchantmentsMap.collect(enchantCollector).asJava
+    EnchantmentHolder.getEnchantmentMap(enchantments).collect(enchantCollector).asJava
   }
 
   override def setEnchantment(id: ResourceLocation, value: Short): Unit = {
-    val newEnch = id match {
-      case IEnchantableTile.EfficiencyID => enchantments.copy(efficiency = value)
-      case IEnchantableTile.UnbreakingID => enchantments.copy(unbreaking = value)
-      case IEnchantableTile.FortuneID => enchantments.copy(fortune = value)
-      case IEnchantableTile.SilktouchID => enchantments.copy(silktouch = value > 0)
-      case _ => enchantments.copy(other = enchantments.other + (id -> value))
-    }
-    enchantments = newEnch
+    enchantments = EnchantmentHolder.updateEnchantment(enchantments, id, value)
   }
 
   override def getStorage = storage
@@ -278,19 +244,6 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
   override def getName = new TranslationTextComponent(getDebugName)
 
   override def createMenu(id: Int, i: PlayerInventory, player: PlayerEntity) = new ContainerAdvQuarry(id, player, getPos)
-
-  override def connectAttachment(facing: Direction, attachment: IAttachment.Attachments[_ <: APacketTile], simulate: Boolean): Boolean = {
-    val tile = world.getTileEntity(pos.offset(facing))
-    if (!attachments.get(attachment).exists(_ != facing) && attachment.test(tile)) {
-      if (!simulate) {
-        attachments = attachments.updated(attachment, facing)
-        refreshModules()
-      }
-      true
-    } else {
-      false
-    }
-  }
 
   override def isValidAttachment(attachments: IAttachment.Attachments[_ <: APacketTile]) =
     attachments == IAttachment.Attachments.EXP_PUMP || attachments == IAttachment.Attachments.REPLACER

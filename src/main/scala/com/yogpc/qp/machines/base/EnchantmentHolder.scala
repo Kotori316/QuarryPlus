@@ -33,15 +33,20 @@ object EnchantmentHolder {
 
   def enchantmentHolderLoad(tag: CompoundNBT, name: String): EnchantmentHolder = {
     val nbt = tag.getCompound(name)
-    nbt.keySet().iterator().asScala.map(key => new ResourceLocation(key) -> nbt.getInt(key))
+    nbt.keySet().iterator().asScala
+      .map(key => new ResourceLocation(key) -> nbt.getInt(key))
       .foldLeft(noEnch) { case (enchantments, (id, value)) =>
-        id match {
-          case IEnchantableTile.EfficiencyID => enchantments.copy(efficiency = value)
-          case IEnchantableTile.UnbreakingID => enchantments.copy(unbreaking = value)
-          case IEnchantableTile.FortuneID => enchantments.copy(fortune = value)
-          case IEnchantableTile.SilktouchID => enchantments.copy(silktouch = value > 0)
-          case _ => enchantments.copy(other = enchantments.other + (id -> value))
-        }
+        updateEnchantment(enchantments, id, value)
       }
+  }
+
+  def updateEnchantment(enchantments: EnchantmentHolder, id: ResourceLocation, value: Int): EnchantmentHolder = {
+    id match {
+      case IEnchantableTile.EfficiencyID => enchantments.copy(efficiency = value)
+      case IEnchantableTile.UnbreakingID => enchantments.copy(unbreaking = value)
+      case IEnchantableTile.FortuneID => enchantments.copy(fortune = value)
+      case IEnchantableTile.SilktouchID => enchantments.copy(silktouch = value > 0)
+      case _ => enchantments.copy(other = enchantments.other + (id -> value))
+    }
   }
 }

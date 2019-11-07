@@ -67,6 +67,7 @@ public class TileSolidQuarry extends TileQuarry implements INamedContainerProvid
         } else {
             int burn = fuel.getBurnTime();
             burn = ForgeEventFactory.getItemBurnTime(fuel, burn == -1 ? FurnaceTileEntity.getBurnTimes().getOrDefault(fuel.getItem(), 0) : burn);
+            // int burn = ForgeHooks.getBurnTime(fuel);
             if (burn > 0) {
                 fuelCount += burn / 5;
                 if (fuel.hasContainerItem() && fuel.getCount() == 1) {

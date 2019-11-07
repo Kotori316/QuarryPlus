@@ -18,6 +18,7 @@ import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntityType;
@@ -124,6 +125,9 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
         this.outputEnergyInfo = !this.outputEnergyInfo;
     }
 
+    /**
+     * @return Whether the machine is working, that means machine accepts energy and ready to work immediately.
+     */
     protected abstract boolean isWorking();
 
     protected boolean enabledByRS() {
@@ -133,6 +137,21 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
             return true;
     }
 
+    /**
+     * If block state isn't equal to {@link APowerTile#isWorking()}, update the state and mark tile as started ot finished.
+     */
+    protected void updateWorkingState() {
+        assert world != null;
+        BlockState nowState = world.getBlockState(pos);
+        if (nowState.get(QPBlock.WORKING()) ^ isWorking()) {
+            if (isWorking()) {
+                startWork();
+            } else {
+                finishWork();
+            }
+            world.setBlockState(pos, nowState.with(QPBlock.WORKING(), isWorking()));
+        }
+    }
 //    @Optional.Method(modid = QuarryPlus.Optionals.IC2_modID)
 //    private void ic2load() {
 //        MinecraftForge.EVENT_BUS.post(new EnergyTileLoadEvent(this));
@@ -196,7 +215,6 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
         return res;
     }
 
-    /*package-private*/
     protected final long getEnergy(final long a, final boolean real) {
         if (Config.common().noEnergy().get()) {
             return 0;

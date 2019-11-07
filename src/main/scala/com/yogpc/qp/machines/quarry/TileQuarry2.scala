@@ -31,7 +31,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   with IEnchantableTile
   with HasStorage
   with HasInv
-  with IAttachable
+  with IAttachableWithModuleScalaImpl
   with IDebugSender
   with IChunkLoadTile
   with ContainerQuarryModule.HasModuleInventory
@@ -40,8 +40,6 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
 
   import TileQuarry2._
 
-  var modules: List[IModule] = Nil
-  var attachments: Map[IAttachment.Attachments[_], Direction] = Map.empty
   var enchantments = EnchantmentHolder.noEnch
   var area = Area.zeroArea
   var action: QuarryAction = QuarryAction.none
@@ -68,15 +66,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
       target = action.nextTarget()
       i += 1
     }
-    val nowState = world.getBlockState(pos)
-    if (nowState.get(QPBlock.WORKING) ^ isWorking) {
-      if (isWorking) {
-        startWork()
-      } else {
-        finishWork()
-      }
-      world.setBlockState(pos, nowState.`with`(QPBlock.WORKING, Boolean.box(isWorking)))
-    }
+    updateWorkingState()
     // Insert items
     storage.pushItem(world, pos)
     if (world.getGameTime % 20 == 0) // Insert fluid every 1 second.
@@ -105,10 +95,10 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     target = BlockPos.fromLong(nbt.getLong("target"))
     enchantments = EnchantmentHolder.enchantmentHolderLoad(nbt, "enchantments")
     area = Area.areaLoad(nbt.getCompound("area"))
-    action = QuarryAction.load(self, nbt, "mode")
     storage.deserializeNBT(nbt.getCompound("storage"))
     moduleInv.deserializeNBT(nbt.getCompound("moduleInv"))
     yLevel = nbt.getInt("yLevel")
+    action = QuarryAction.load(self, nbt, "mode")
     frameMode = nbt.getBoolean("frameMode")
   }
 
@@ -144,42 +134,11 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   }
 
   override def getEnchantments = {
-    val enchantmentsMap = Map(
-      IEnchantableTile.EfficiencyID -> enchantments.efficiency,
-      IEnchantableTile.UnbreakingID -> enchantments.unbreaking,
-      IEnchantableTile.FortuneID -> enchantments.fortune,
-      IEnchantableTile.SilktouchID -> enchantments.silktouch.compare(false),
-    ) ++ enchantments.other
-    enchantmentsMap.collect(enchantCollector).asJava
+    EnchantmentHolder.getEnchantmentMap(enchantments).collect(enchantCollector).asJava
   }
 
   override def setEnchantment(id: ResourceLocation, value: Short): Unit = {
-    val newEnch = id match {
-      case IEnchantableTile.EfficiencyID => enchantments.copy(efficiency = value)
-      case IEnchantableTile.UnbreakingID => enchantments.copy(unbreaking = value)
-      case IEnchantableTile.FortuneID => enchantments.copy(fortune = value)
-      case IEnchantableTile.SilktouchID => enchantments.copy(silktouch = value > 0)
-      case _ => enchantments.copy(other = enchantments.other + (id -> value))
-    }
-    enchantments = newEnch
-  }
-
-  /**
-   * @param attachment must have returned true by { @link IAttachable#isValidAttachment(IAttachment.Attachments)}.
-   * @param simulate   true to avoid having side effect.
-   * @return true if the attachment is (will be) successfully connected.
-   */
-  override def connectAttachment(facing: Direction, attachment: IAttachment.Attachments[_ <: APacketTile], simulate: Boolean) = {
-    val tile = world.getTileEntity(pos.offset(facing))
-    if (!attachments.get(attachment).exists(_ != facing) && attachment.test(tile)) {
-      if (!simulate) {
-        attachments = attachments.updated(attachment, facing)
-        refreshModules()
-      }
-      true
-    } else {
-      false
-    }
+    enchantments = EnchantmentHolder.updateEnchantment(enchantments, id, value)
   }
 
   /**
@@ -187,17 +146,6 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
    * @return whether this machine can accept the attachment.
    */
   override def isValidAttachment(attachments: IAttachment.Attachments[_ <: APacketTile]) = IAttachment.Attachments.ALL.contains(attachments)
-
-  def refreshModules(): Unit = {
-    val attachmentModules = attachments.toList >>= { case (kind, facing) => kind.module(world.getTileEntity(pos.offset(facing))).toList }
-    val internalModules = moduleInv.moduleItems().asScala.toList >>= (e => e.getKey.apply(e.getValue, self).toList)
-    this.modules = attachmentModules ++ internalModules
-  }
-
-  def neighborChanged(): Unit = {
-    attachments = attachments.filter { case (kind, facing) => kind.test(world.getTileEntity(pos.offset(facing))) }
-    refreshModules()
-  }
 
   /**
    * This method does not place any blocks.

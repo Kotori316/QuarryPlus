@@ -37,7 +37,7 @@ public interface IChunkLoadTile {
      * or {@link TileEntity#remove()}.<br>
      * There is no means to call this in {@link TileEntity#onChunkUnloaded()}.
      */
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings("deprecation") //Just here to suppress JavaDoc waring.
     default void releaseTicket() {
         Optional.ofNullable(((TileEntity) this).getWorld())
             .flatMap(optCast(ServerWorld.class))
