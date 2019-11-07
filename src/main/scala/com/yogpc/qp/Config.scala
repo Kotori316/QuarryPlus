@@ -31,20 +31,21 @@ object Config {
 
     import scala.jdk.CollectionConverters._
 
+    private[this] val booleanMap: scala.collection.mutable.Map[String, java.util.function.BooleanSupplier] = scala.collection.mutable.Map.empty
     private[this] val inDev = Option(System.getenv("target")).exists(_.contains("dev"))
 
     builder.comment("Beginning of QuarryPlus configuration.").push("common")
     //--------- Registering config entries. ---------
     private[this] val configDebug = builder.comment("True to enable debug mode.").define("debug", inDev)
-    val noEnergy = builder.comment("True to make machines work with no energy.").define("NoEnergy", true)
+    val noEnergy = addBoolOption(builder.comment("True to make machines work with no energy.").define("NoEnergy", true))
     val workbenchMaxReceive = builder.comment("Amount of energy WorkbenchPlus can receive in a tick. [MJ]")
       .defineInRange("WorkbenchMaxReceive", 250, 0, Int.MaxValue)
-    val fastQuarryHeadMove = builder.comment("Fasten quarry's head moving.").define("FastQuarryHeadMove", false)
-    val removeBedrock = builder.comment("True to allow machines to remove bedrock. (Just removing. Not collecting)").define("RemoveBedrock", false)
-    val collectBedrock = builder.comment("True to enable ChunkDestroyer to collect bedrock as item.").define("CollectBedrock", false)
-    val disableFrameChainBreak = builder.comment("DisableFrameChainBreak").define("DisableFrameChainBreak", false)
-    val removeOnlySource = builder.comment("Set false to allow PlumPlus to remove non-source fluid block.").define("RemoveOnlyFluidSource", false)
-    val enableRSControl = builder.comment("True to enable RS control of machines.").define("EnableRSControl", false)
+    val fastQuarryHeadMove = addBoolOption(builder.comment("Fasten quarry's head moving.").define("FastQuarryHeadMove", false))
+    val removeBedrock = addBoolOption(builder.comment("True to allow machines to remove bedrock. (Just removing. Not collecting)").define("RemoveBedrock", false))
+    val collectBedrock = addBoolOption(builder.comment("True to enable ChunkDestroyer to collect bedrock as item.").define("CollectBedrock", false))
+    val disableFrameChainBreak = addBoolOption(builder.comment("DisableFrameChainBreak").define("DisableFrameChainBreak", false))
+    val removeOnlySource = addBoolOption(builder.comment("Set false to allow PlumPlus to remove non-source fluid block.").define("RemoveOnlyFluidSource", false))
+    val enableRSControl = addBoolOption(builder.comment("True to enable RS control of machines.").define("EnableRSControl", false))
     private[this] final val disabledEntities = Seq(
       "minecraft:ender_dragon",
       "minecraft:wither",
@@ -148,6 +149,11 @@ object Config {
       s.toMap
     }
 
+    private def addBoolOption(value: ForgeConfigSpec.BooleanValue): ForgeConfigSpec.BooleanValue = {
+      booleanMap.put(value.getPath.asScala.last, () => value.get().booleanValue())
+      value
+    }
+
     def outputPowerDetail(logDirectory: Path): Unit = {
       if (inDev && Files.exists(logDirectory)) {
         def getEnergyMap(ench: EnchantmentHolder): IndexedSeq[String] = {
@@ -167,6 +173,8 @@ object Config {
         seq.foreach { case (str, strings) => Files.write(logDirectory.resolve(str + ".csv"), strings.asJava) }
       }
     }
+
+    def isOptionTrue(key: String): Boolean = booleanMap.get(key).exists(_.getAsBoolean)
   }
 
   class ClientContent(builder: ForgeConfigSpec.Builder) {

@@ -12,6 +12,7 @@ import com.yogpc.qp.utils.EnableCondition;
 import com.yogpc.qp.utils.Holder;
 import com.yogpc.qp.utils.ProxyClient;
 import com.yogpc.qp.utils.ProxyCommon;
+import com.yogpc.qp.utils.QuarryConfigCondition;
 import net.minecraft.block.Block;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.Item;
@@ -101,6 +102,7 @@ public class QuarryPlus {
             PowerManager.configRegister();
             PacketHandler.init();
             CraftingHelper.register(new EnableCondition.Serializer());
+            CraftingHelper.register(new QuarryConfigCondition.Serializer());
             LootFunctionManager.registerFunction(new IEnchantableTile.DropFunction.Serializer());
             Config.common().outputPowerDetail(Paths.get("config\\quarryplus"));
         }

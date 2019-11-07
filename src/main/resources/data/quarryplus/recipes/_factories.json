@@ -1,5 +1,6 @@
 {
   "conditions": {
-    "machine_enabled": "com.yogpc.qp.utils.EnableCondition"
+    "machine_enabled": "com.yogpc.qp.utils.EnableCondition",
+    "is_config_true": "com.yogpc.qp.utils.QuarryConfigCondition"
   }
 }
