@@ -9,6 +9,7 @@ import com.yogpc.qp.machines.base.IEnchantableTile;
 import com.yogpc.qp.machines.workbench.WorkbenchRecipes;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.EnableCondition;
+import com.yogpc.qp.utils.EnchantmentIngredient;
 import com.yogpc.qp.utils.Holder;
 import com.yogpc.qp.utils.ProxyClient;
 import com.yogpc.qp.utils.ProxyCommon;
@@ -18,6 +19,7 @@ import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.Item;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.loot.functions.LootFunctionManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -93,6 +95,7 @@ public class QuarryPlus {
 
         @SubscribeEvent
         public static void registerRecipe(RegistryEvent.Register<IRecipeSerializer<?>> event) {
+            CraftingHelper.register(new ResourceLocation(modID, "enchantment_ingredient"), EnchantmentIngredient.Serializer.INSTANCE);
             event.getRegistry().register(WorkbenchRecipes.Serializer$.MODULE$);
         }
 
