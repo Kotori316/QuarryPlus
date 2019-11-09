@@ -351,7 +351,7 @@ object QuarryAction {
   }
 
   def checkBreakable(world: World, pos: BlockPos, state: BlockState, modules: Seq[IModule]): Boolean = {
-    val unbreakable = (state.getBlock == Blocks.BEDROCK && !modules.exists(IModule.has(RemoveBedrockModule.id))) &&
+    val unbreakable = (state.getBlock == Blocks.BEDROCK && !(Config.common.removeBedrock.get() && modules.exists(IModule.has(RemoveBedrockModule.id)))) &&
       (state.getBlockHardness(world, pos) < 0 || state.getBlockHardness(world, pos).isInfinity)
     !state.isAir(world, pos) &&
       !unbreakable &&

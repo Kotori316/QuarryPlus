@@ -90,7 +90,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     } else {
       val hardness = state.getBlockHardness(getWorld, target)
       val energy = PowerManager.calcEnergyBreak(hardness, enchantments)
-      if (hardness < 0 || hardness.isInfinity || energy > getMaxStored) {
+      if (TileAdvQuarry.isUnbreakable(hardness, state) || energy > getMaxStored) {
         // Not breakable
         Ior.both(Reason.message(s"$state is too hard to break. Requiring $energy."), ())
       } else {
@@ -112,7 +112,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
   def gatherItemDrops(target: BlockPos, searchReplacer: Boolean, stateBefore: BlockState, fakePlayer: QuarryFakePlayer, pickaxe: ItemStack): Ior[Reason, AdvStorage] = {
     val storage = removeUnbreakable(stateBefore, self.getWorld, target, pickaxe, self.modules.flatMap(IModule.replaceBlocks(target.getY)).headOption.getOrElse(Blocks.AIR.getDefaultState))
     if (getWorld.isAirBlock(target)) {
-      return storage.rightIor
+      return storage.rightIor // Early return for unbreakable blocks that can be broken by above method. (Nether portal)
     }
     val breakEvent = new BlockEvent.BreakEvent(getWorld, target, stateBefore, fakePlayer)
     if (!MinecraftForge.EVENT_BUS.post(breakEvent)) {
@@ -121,6 +121,9 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
         return Reason.message("Module work has not finished yet.").leftIor
       }
       val state = getWorld.getBlockState(target)
+      if (TileAdvQuarry.isUnbreakable(state.getBlockHardness(getWorld, target), state)) {
+        return storage.rightIor // Early return for unbreakable blocks such as Bedrock.
+      }
       if (TilePump.isLiquid(state)) {
         // Pump fluids
         val fluidState = state.getFluidState
@@ -175,6 +178,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     }
     storage
   }
+
   // Overrides
   override def remove(): Unit = {
     super[IChunkLoadTile].releaseTicket()

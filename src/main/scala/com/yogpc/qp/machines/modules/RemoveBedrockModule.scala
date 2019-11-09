@@ -40,6 +40,8 @@ class RemoveBedrockModule(tile: APowerTile with HasStorage) extends IModule {
       case _ => IModule.NoAction
     }
   }
+
+  override def toString = "RemoveBedrockModule"
 }
 
 object RemoveBedrockModule {
@@ -47,14 +49,10 @@ object RemoveBedrockModule {
 
   def calcUnbreakableEnergy(state: BlockState, modules: List[IModule]): Long = {
     if (state.getBlock == Blocks.BEDROCK && modules.exists(IModule.has(RemoveBedrockModule.id))) {
-      if (Config.common.removeBedrock.get()) {
-        if (Config.common.collectBedrock.get()) {
-          PowerManager.calcEnergyBreak(50f, EnchantmentHolder.noEnch)
-        } else {
-          PowerManager.calcEnergyBreak(100f, EnchantmentHolder.noEnch) * 2
-        }
+      if (Config.common.collectBedrock.get()) {
+        PowerManager.calcEnergyBreak(50f, EnchantmentHolder.noEnch)
       } else {
-        0L
+        PowerManager.calcEnergyBreak(100f, EnchantmentHolder.noEnch) * 2
       }
     } else {
       0L
