@@ -200,6 +200,7 @@ public class PowerManager {
 
     /**
      * Use quarry's values. (BasePower, CoEfficiency, and so on.)
+     *
      * @return Energy required to break such block. (Micro MJ)
      */
     public static long calcEnergyBreak(float hardness, int enchantMode, int unbreaking) {
@@ -255,6 +256,17 @@ public class PowerManager {
         }
         pw = (double) pp.useEnergy(0, (long) (pw * APowerTile.MJToMicroMJ), true, EnergyUsage.MOVE_HEAD) / APowerTile.MJToMicroMJ;
         return pw * (U * MoveHead_CU + 1) / bp + 0.05;
+    }
+
+    public static long calcEnergyQuarryHead(final APowerTile pp, final double dist, final int U) {
+        long bp = MoveHead_BP;
+        long pw;
+        if (!Config.common().fastQuarryHeadMove().get()) {
+            pw = Math.min(2 + pp.getStoredEnergy() / 500, (long) ((dist / 2 - 0.05) * bp / (U * MoveHead_CU + 1)));
+        } else {
+            pw = (long) ((dist / 2 - 0.05) * bp / (U * MoveHead_CU + 1));
+        }
+        return pw;
     }
 
     public static long simulateEnergyLaser(final APowerTile pp, final int U, final int F, final boolean S, final int E) {

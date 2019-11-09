@@ -320,7 +320,7 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
 
     //Forge energy api implication
 
-    private static final long FEtoMicroJ = 100_000L;
+    public static final long FEtoMicroJ = 100_000L;
 
     /**
      * Energy unit is RF.

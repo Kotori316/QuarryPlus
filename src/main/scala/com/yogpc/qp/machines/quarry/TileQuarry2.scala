@@ -243,7 +243,8 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
       case Nil => Nil
       case l => I18n.format(TranslationKeys.ENCHANTMENT) :: l
     }
-    val requiresEnergy = 2 * PowerManager.calcEnergyBreak(1.5f, this.enchantments) / APowerTile.MJToMicroMJ * (enchantments.efficiency + 1)
+    val requiresEnergy = (PowerManager.calcEnergyBreak(1.5f, this.enchantments) + PowerManager.calcEnergyQuarryHead(this, 1, enchantments.unbreaking)) /
+      APowerTile.FEtoMicroJ * (enchantments.efficiency + 1)
     val energyStrings = Seq(I18n.format(TranslationKeys.REQUIRES), s"$requiresEnergy FE/t")
     val containItems = if (trackInts(0).get() <= 0) I18n.format(TranslationKeys.EMPTY_ITEM) else I18n.format(TranslationKeys.CONTAIN_ITEM, trackInts(0).get().toString)
     val containFluids = if (trackInts(1).get() <= 0) I18n.format(TranslationKeys.EMPTY_FLUID) else I18n.format(TranslationKeys.CONTAIN_FLUID, trackInts(1).get().toString)
