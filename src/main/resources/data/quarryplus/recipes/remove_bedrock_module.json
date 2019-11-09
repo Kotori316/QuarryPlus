@@ -14,14 +14,6 @@
       "type": "quarryplus:enchantment_ingredient",
       "item": "minecraft:diamond_pickaxe",
       "count": 1,
-      "nbt": {
-        "Enchantments": [
-          {
-            "id": "minecraft:silk_touch",
-            "lvl": 1
-          }
-        ]
-      },
       "enchantments": [
         {
           "id": "minecraft:silk_touch",
@@ -35,5 +27,15 @@
   "result": {
     "item": "quarryplus:remove_bedrock_module",
     "count": 1
-  }
+  },
+  "conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "ModuleRemoveBedrock"
+    },
+    {
+      "type": "quarryplus:is_config_true",
+      "key": "RemoveBedrock"
+    }
+  ]
 }
