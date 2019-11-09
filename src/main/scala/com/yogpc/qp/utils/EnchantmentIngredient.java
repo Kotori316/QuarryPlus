@@ -33,7 +33,7 @@ public class EnchantmentIngredient extends Ingredient {
     private final CompoundNBT withoutEnchantment;
 
     public EnchantmentIngredient(ItemStack stack, List<EnchantmentData> enchantments) {
-        super(Stream.of(new Ingredient.SingleItemList(stack)));
+        super(Stream.of(new Ingredient.SingleItemList(addEnchantments(stack, enchantments))));
         this.stack = stack;
         this.enchantments = enchantments;
         this.withoutEnchantment = Optional.ofNullable(stack.getShareTag()).map(CompoundNBT::copy).map(c -> {
@@ -71,6 +71,12 @@ public class EnchantmentIngredient extends Ingredient {
             return c;
         }).filter(c -> !c.isEmpty()).orElse(null);
         return Objects.equals(this.withoutEnchantment, nbt);
+    }
+
+    private static ItemStack addEnchantments(ItemStack stack, List<EnchantmentData> enchantments) {
+        ItemStack toEnchantment = stack.copy();
+        enchantments.forEach(d -> toEnchantment.addEnchantment(d.enchantment, d.enchantmentLevel));
+        return toEnchantment;
     }
 
     public static class Serializer implements IIngredientSerializer<EnchantmentIngredient> {
