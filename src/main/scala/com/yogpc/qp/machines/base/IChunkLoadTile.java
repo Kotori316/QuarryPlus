@@ -8,8 +8,12 @@ import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.eventbus.api.Cancelable;
 
 import static jp.t2v.lab.syntax.MapStreamSyntax.optCast;
 
@@ -27,6 +31,7 @@ public interface IChunkLoadTile {
             .ifPresent(worldServer -> {
                 BlockPos blockPos = ((TileEntity) this).getPos();
                 ChunkPos pos = new ChunkPos(blockPos);
+                MinecraftForge.EVENT_BUS.register(this);
                 worldServer.forceChunk(pos.x, pos.z, true);
                 QuarryPlus.LOGGER.debug(String.format("QuarryPlus ChunkLoader added [%d, %d] for %s", pos.x, pos.z, this));
             });
@@ -44,8 +49,22 @@ public interface IChunkLoadTile {
             .ifPresent(worldServer -> {
                 BlockPos blockPos = ((TileEntity) this).getPos();
                 ChunkPos pos = new ChunkPos(blockPos);
-                worldServer.forceChunk(pos.x, pos.z, false);
-                QuarryPlus.LOGGER.debug(String.format("QuarryPlus ChunkLoader removed [%d, %d] for %s", pos.x, pos.z, this));
+                MinecraftForge.EVENT_BUS.unregister(this);
+                if (!MinecraftForge.EVENT_BUS.post(new ReleaseChunkLoadEvent(worldServer, pos))) {
+                    worldServer.forceChunk(pos.x, pos.z, false);
+                    QuarryPlus.LOGGER.debug(String.format("QuarryPlus ChunkLoader removed [%d, %d] for %s", pos.x, pos.z, this));
+                }
             });
+    }
+
+    @Cancelable
+    class ReleaseChunkLoadEvent extends WorldEvent {
+
+        public final ChunkPos pos;
+
+        public ReleaseChunkLoadEvent(IWorld world, ChunkPos pos) {
+            super(world);
+            this.pos = pos;
+        }
     }
 }

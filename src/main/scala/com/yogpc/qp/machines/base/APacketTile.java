@@ -27,9 +27,13 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.World;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public abstract class APacketTile extends TileEntity {
     public static final BinaryOperator<String> combiner = (s, s2) -> s + ", " + s2;
@@ -89,6 +93,17 @@ public abstract class APacketTile extends TileEntity {
 
     public final boolean enabled() {
         return !machineDisabled;
+    }
+
+    @SubscribeEvent
+    public void releaseChunkLoad(IChunkLoadTile.ReleaseChunkLoadEvent event) {
+        World world = this.getWorld();
+        BlockPos pos = this.getPos();
+        if (event.pos.equals(new ChunkPos(pos)) &&
+            (world != null && world.getDimension().getType() == event.getWorld().getDimension().getType())) {
+            // Someone is trying to stop forcing this chunk.
+            event.setCanceled(true);
+        }
     }
 
     public static <T> T invoke(Method method, Class<T> returnType, Object ref, Object... param) {

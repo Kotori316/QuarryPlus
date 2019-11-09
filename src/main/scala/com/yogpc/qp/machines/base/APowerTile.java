@@ -24,6 +24,7 @@ import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -41,7 +42,7 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
     public static final String NBT_MAX_RECEIVE = "MAX_receive";
     public static final String NBT_OUTPUT_ENERGY_INFO = "outputEnergyInfo";
     private long all, maxGot, max, got;
-    private boolean ic2ok = false;
+    private boolean ic2ok = false, chunkLoadRegistered = false;
     public boolean bcLoaded;
     public final boolean ic2Loaded;
     /**
@@ -88,29 +89,46 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
     }
 
     private void postLoadEvent() {
-//        if (!getWorld().isRemote && !this.ic2ok) {
-//            if (ic2Loaded) {
-//                try {
-//                    ic2load();
-//                } catch (final Throwable e) {
-//                    e.printStackTrace();
+        if (!Objects.requireNonNull(getWorld()).isRemote) {
+//            if (!this.ic2ok) {
+//                if (ic2Loaded) {
+//                    try {
+//                        ic2load();
+//                    } catch (final Throwable e) {
+//                        e.printStackTrace();
+//                    }
 //                }
+//                this.ic2ok = true;
 //            }
-//            this.ic2ok = true;
-//        }
+            if (!this.chunkLoadRegistered) {
+                if (this instanceof IChunkLoadTile) {
+                    MinecraftForge.EVENT_BUS.register(this);
+                }
+                this.chunkLoadRegistered = true;
+            }
+        }
     }
 
     private void postUnLoadEvent() {
-//        if (this.ic2ok && !getWorld().isRemote) {
-//            if (ic2Loaded) {
-//                try {
-//                    ic2unload();
-//                } catch (final Throwable e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//            this.ic2ok = false;
-//        }
+        if (!Objects.requireNonNull(getWorld()).isRemote) {
+//         if (this.ic2ok) {
+//             if (ic2Loaded) {
+//                 try {
+//                     ic2unload();
+//                 } catch (final Throwable e) {
+//                     e.printStackTrace();
+//                 }
+//             }
+//             this.ic2ok = false;
+//         }
+            if (this.chunkLoadRegistered) {
+                if (this instanceof IChunkLoadTile) {
+                    MinecraftForge.EVENT_BUS.unregister(this);
+                }
+                this.chunkLoadRegistered = false;
+            }
+        }
+
     }
 
     protected final BlockPos[] getNeighbors(Direction facing) {
