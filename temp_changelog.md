@@ -1,5 +1,18 @@
 **This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).**
 
+## Version 14.1.2
+- Added - new condition for recipe, "Config". Used in recipe of RemoveBedrockModule.
+- Added - new module, "Remove Bedrock Module". You need this module to break/collect bedrock with quarries.
+- Added - new recipe ingredient for enchanted items.
+- Added - ReleaseChunkLoadEvent to avoid release forced chunks when machine is removed.
+- Changed - allow QuarryPlus to remove bedrock with above module.
+- Changed - quarry requires more energy to break hard blocks. before: linear, after $ hardness ^ 1.1 $ .
+- Fixed - a bug that machines stop when the work need more energy than the capacity of machine.
+e.g. pump plus works with very large lake.
+- Fixed the calculation of quarry energy shown in GUI of StatusChecker was wrong.
+- Refactoring - removed duplicated codes.
+- Update forge to 1.14.4-28.1.87
+
 ## Version 14.1.1
 - Fixed items in workbench slots has incorrect count. (Dedicated server)
 - Use vanilla data pack system for workbench recipe. Sync recipes with client.
