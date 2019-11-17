@@ -21,7 +21,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.state.properties.BlockStateProperties
 import net.minecraft.tileentity.ITickableTileEntity
-import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.{AxisAlignedBB, BlockPos}
 import net.minecraft.util.text.{ITextComponent, StringTextComponent, TranslationTextComponent}
 import net.minecraft.util.{Hand, IntReferenceHolder, ResourceLocation}
 import net.minecraft.world.World
@@ -225,6 +225,16 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     super.write(nbt)
   }
 
+  override def getRenderBoundingBox: AxisAlignedBB = {
+    if (area != Area.zeroArea) Area.areaBox(area)
+    else super.getRenderBoundingBox
+  }
+
+  override def getMaxRenderDistanceSquared: Double = {
+    if (area != Area.zeroArea) Area.areaLengthSq(area)
+    else super.getMaxRenderDistanceSquared
+  }
+
   // Interface implementation
   override protected def isWorking = action.target != BlockPos.ZERO && action != AdvQuarryWork.none
 
@@ -285,7 +295,8 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     val enchantmentStrings = EnchantmentHolder.getEnchantmentStringSeq(this.enchantments)
     val containItems = if (trackIntSeq(0).get() <= 0) I18n.format(TranslationKeys.EMPTY_ITEM) else I18n.format(TranslationKeys.CONTAIN_ITEM, trackIntSeq(0).get().toString)
     val containFluids = if (trackIntSeq(1).get() <= 0) I18n.format(TranslationKeys.EMPTY_FLUID) else I18n.format(TranslationKeys.CONTAIN_FLUID, trackIntSeq(1).get().toString)
-    enchantmentStrings :+ containItems :+ containFluids
+    val modules = if (this.modules.nonEmpty) "Modules" :: this.modules.map("  " + _.toString) else Nil
+    enchantmentStrings ++ modules :+ containItems :+ containFluids
   }
 
   override lazy val tracks: Seq[IntReferenceHolder] = {

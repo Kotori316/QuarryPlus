@@ -31,7 +31,8 @@ object EnchantmentHolder {
   def getEnchantmentStringSeq(enchantments: EnchantmentHolder): List[String] = {
     import net.minecraft.client.resources.I18n
     EnchantmentHolder.getEnchantmentMap(enchantments).toList
-      .collect { case (location, i) if i > 0 => Option(ForgeRegistries.ENCHANTMENTS.getValue(location)).map(_.getDisplayName(i).getFormattedText).getOrElse(s"$location -> $i") } match {
+      .collect { case (location, i) if i > 0 => Option(ForgeRegistries.ENCHANTMENTS.getValue(location)).map(_.getDisplayName(i).getFormattedText).getOrElse(s"$location -> $i") }
+      .map("  " + _) match {
       case Nil => Nil
       case l => I18n.format(TranslationKeys.ENCHANTMENT) :: l
     }
