@@ -5,11 +5,13 @@
 - Added - new module, "Remove Bedrock Module". You need this module to break/collect bedrock with quarries.
 - Added - new recipe ingredient for enchanted items.
 - Added - ReleaseChunkLoadEvent to avoid release forced chunks when machine is removed.
+- Added -  status GUI for ChunkDestroyer.
 - Changed - allow QuarryPlus to remove bedrock with above module.
 - Changed - quarry requires more energy to break hard blocks. before: linear, after $ hardness ^ 1.1 $ .
 - Fixed - a bug that machines stop when the work need more energy than the capacity of machine.
 e.g. pump plus works with very large lake.
 - Fixed the calculation of quarry energy shown in GUI of StatusChecker was wrong.
+- Fixed - Lines of ChunkDestroyer can't be seen from far place.
 - Refactoring - removed duplicated codes.
 - Update forge to 1.14.4-28.1.87
 
