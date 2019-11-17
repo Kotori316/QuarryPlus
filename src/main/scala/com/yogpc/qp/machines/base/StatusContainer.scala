@@ -51,11 +51,11 @@ object StatusContainer {
 
   trait StatusProvider {
     @OnlyIn(Dist.CLIENT)
-    def getStatusStrings(trackInts: Seq[IntReferenceHolder]): Seq[String]
+    def getStatusStrings(trackIntSeq: Seq[IntReferenceHolder]): Seq[String]
 
     lazy val tracks: Seq[IntReferenceHolder] = Nil
 
-    def updateIntRef(trackingInts: Seq[IntReferenceHolder]): Unit = ()
+    def updateIntRef(trackingIntSeq: Seq[IntReferenceHolder]): Unit = ()
   }
 
   class ContainerProvider(pos: BlockPos) extends INamedContainerProvider {

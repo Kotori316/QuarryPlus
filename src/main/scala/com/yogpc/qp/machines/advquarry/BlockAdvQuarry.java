@@ -8,6 +8,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.BuildcraftHelper;
 import com.yogpc.qp.machines.base.IEnchantableTile;
 import com.yogpc.qp.machines.base.QPBlock;
+import com.yogpc.qp.machines.base.StatusContainer;
 import com.yogpc.qp.machines.item.YSetterInteractionObject;
 import com.yogpc.qp.machines.quarry.BlockItemEnchantable;
 import com.yogpc.qp.utils.Holder;
@@ -68,8 +69,7 @@ public class BlockAdvQuarry extends QPBlock {
             return true;
         } else if (stack.getItem() == Holder.itemStatusChecker()) {
             if (!worldIn.isRemote)
-                Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t ->
-                    t.sendEnchantMassage(player));
+                NetworkHooks.openGui(((ServerPlayerEntity) player), new StatusContainer.ContainerProvider(pos), pos);
             return true;
         } else if (stack.getItem() == Holder.itemLiquidSelector()) {
             // Not implemented.

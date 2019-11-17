@@ -23,9 +23,10 @@ import net.minecraft.state.properties.BlockStateProperties
 import net.minecraft.tileentity.ITickableTileEntity
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.{ITextComponent, StringTextComponent, TranslationTextComponent}
-import net.minecraft.util.{Hand, ResourceLocation}
+import net.minecraft.util.{Hand, IntReferenceHolder, ResourceLocation}
 import net.minecraft.world.World
 import net.minecraft.world.server.ServerWorld
+import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.ForgeEventFactory
 import net.minecraftforge.event.world.BlockEvent
@@ -44,7 +45,8 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
   with IAttachableWithModuleScalaImpl
   with IChunkLoadTile
   with INamedContainerProvider
-  with ContainerQuarryModule.HasModuleInventory {
+  with ContainerQuarryModule.HasModuleInventory
+  with StatusContainer.StatusProvider {
   self =>
 
   var yLevel = 1
@@ -276,6 +278,28 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
 
   override def isValidAttachment(attachments: IAttachment.Attachments[_ <: APacketTile]) =
     attachments == IAttachment.Attachments.EXP_PUMP || attachments == IAttachment.Attachments.REPLACER
+
+  @OnlyIn(Dist.CLIENT)
+  override def getStatusStrings(trackIntSeq: Seq[IntReferenceHolder]): Seq[String] = {
+    import net.minecraft.client.resources.I18n
+    val enchantmentStrings = EnchantmentHolder.getEnchantmentStringSeq(this.enchantments)
+    val containItems = if (trackIntSeq(0).get() <= 0) I18n.format(TranslationKeys.EMPTY_ITEM) else I18n.format(TranslationKeys.CONTAIN_ITEM, trackIntSeq(0).get().toString)
+    val containFluids = if (trackIntSeq(1).get() <= 0) I18n.format(TranslationKeys.EMPTY_FLUID) else I18n.format(TranslationKeys.CONTAIN_FLUID, trackIntSeq(1).get().toString)
+    enchantmentStrings :+ containItems :+ containFluids
+  }
+
+  override lazy val tracks: Seq[IntReferenceHolder] = {
+    val item = IntReferenceHolder.single()
+    val fluid = IntReferenceHolder.single()
+    val seq = Seq(item, fluid)
+    this.updateIntRef(seq)
+    seq
+  }
+
+  override def updateIntRef(trackIntSeq: Seq[IntReferenceHolder]): Unit = {
+    trackIntSeq(0).set(storage.itemSize)
+    trackIntSeq(1).set(storage.fluidSize)
+  }
 }
 
 object TileAdvQuarry {

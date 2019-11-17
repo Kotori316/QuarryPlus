@@ -2,8 +2,11 @@ package com.yogpc.qp.machines.base
 
 import cats.Show
 import com.yogpc.qp.NBTWrapper
+import com.yogpc.qp.machines.TranslationKeys
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.util.ResourceLocation
+import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
+import net.minecraftforge.registries.ForgeRegistries
 
 import scala.jdk.CollectionConverters._
 
@@ -22,6 +25,16 @@ object EnchantmentHolder {
       IEnchantableTile.SilktouchID -> enchantments.silktouch.compare(false),
     ) ++ enchantments.other
     enchantmentsMap
+  }
+
+  @OnlyIn(Dist.CLIENT)
+  def getEnchantmentStringSeq(enchantments: EnchantmentHolder): List[String] = {
+    import net.minecraft.client.resources.I18n
+    EnchantmentHolder.getEnchantmentMap(enchantments).toList
+      .collect { case (location, i) if i > 0 => Option(ForgeRegistries.ENCHANTMENTS.getValue(location)).map(_.getDisplayName(i).getFormattedText).getOrElse(s"$location -> $i") } match {
+      case Nil => Nil
+      case l => I18n.format(TranslationKeys.ENCHANTMENT) :: l
+    }
   }
 
   implicit val showEnchantmentHolder: Show[EnchantmentHolder] = holder =>

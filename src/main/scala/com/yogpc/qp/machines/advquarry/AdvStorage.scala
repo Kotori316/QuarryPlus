@@ -121,6 +121,15 @@ class AdvStorage extends HasStorage.Storage with INBTSerializable[CompoundNBT] {
         key -> amount
       }
   }
+
+  def itemSize: Int = clamp(itemMap.valuesIterator.map(_.count).sum)
+
+  def fluidSize: Int = clamp(fluidMap.valuesIterator.sum)
+
+  private def clamp(l: Long): Int =
+    if (l > Int.MaxValue) Int.MaxValue
+    else if (l < Int.MinValue) Int.MinValue
+    else l.toInt
 }
 
 object AdvStorage {

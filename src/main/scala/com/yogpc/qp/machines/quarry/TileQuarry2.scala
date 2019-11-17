@@ -23,7 +23,6 @@ import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.ForgeEventFactory
 import net.minecraftforge.event.world.BlockEvent
-import net.minecraftforge.registries.ForgeRegistries
 
 import scala.jdk.CollectionConverters._
 
@@ -236,19 +235,16 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   override def getStorage = storage
 
   @OnlyIn(Dist.CLIENT)
-  override def getStatusStrings(trackInts: Seq[IntReferenceHolder]): Seq[String] = {
+  override def getStatusStrings(trackIntSeq: Seq[IntReferenceHolder]): Seq[String] = {
     import net.minecraft.client.resources.I18n
-    val enchantmentStrings = EnchantmentHolder.getEnchantmentMap(this.enchantments).toList
-      .collect { case (location, i) if i > 0 => Option(ForgeRegistries.ENCHANTMENTS.getValue(location)).map(_.getDisplayName(i).getFormattedText).getOrElse(s"$location -> $i") } match {
-      case Nil => Nil
-      case l => I18n.format(TranslationKeys.ENCHANTMENT) :: l
-    }
+    val enchantmentStrings = EnchantmentHolder.getEnchantmentStringSeq(this.enchantments)
     val requiresEnergy = (PowerManager.calcEnergyBreak(1.5f, this.enchantments) + PowerManager.calcEnergyQuarryHead(this, 1, enchantments.unbreaking)) /
       APowerTile.FEtoMicroJ * (enchantments.efficiency + 1)
     val energyStrings = Seq(I18n.format(TranslationKeys.REQUIRES), s"$requiresEnergy FE/t")
-    val containItems = if (trackInts(0).get() <= 0) I18n.format(TranslationKeys.EMPTY_ITEM) else I18n.format(TranslationKeys.CONTAIN_ITEM, trackInts(0).get().toString)
-    val containFluids = if (trackInts(1).get() <= 0) I18n.format(TranslationKeys.EMPTY_FLUID) else I18n.format(TranslationKeys.CONTAIN_FLUID, trackInts(1).get().toString)
-    enchantmentStrings ++ energyStrings :+ containItems :+ containFluids
+    val containItems = if (trackIntSeq(0).get() <= 0) I18n.format(TranslationKeys.EMPTY_ITEM) else I18n.format(TranslationKeys.CONTAIN_ITEM, trackIntSeq(0).get().toString)
+    val containFluids = if (trackIntSeq(1).get() <= 0) I18n.format(TranslationKeys.EMPTY_FLUID) else I18n.format(TranslationKeys.CONTAIN_FLUID, trackIntSeq(1).get().toString)
+    val modules = "Modules" :: this.modules.map(_.toString)
+    enchantmentStrings ++ energyStrings ++ modules :+ containItems :+ containFluids
   }
 
   override lazy val tracks: Seq[IntReferenceHolder] = {
@@ -259,9 +255,9 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     seq
   }
 
-  override def updateIntRef(trackingInts: Seq[IntReferenceHolder]): Unit = {
-    trackingInts(0).set(storage.itemSize)
-    trackingInts(1).set(storage.fluidSize)
+  override def updateIntRef(trackingIntSeq: Seq[IntReferenceHolder]): Unit = {
+    trackingIntSeq(0).set(storage.itemSize)
+    trackingIntSeq(1).set(storage.fluidSize)
   }
 }
 
