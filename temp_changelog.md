@@ -1,5 +1,8 @@
 **This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).**
 
+## Version 14.1.3
+- Log messages sent to quarry fake player in debug mode.
+
 ## Version 14.1.2
 - Added - new condition for recipe, "Config". Used in recipe of RemoveBedrockModule.
 - Added - new module, "Remove Bedrock Module". You need this module to break/collect bedrock with quarries.
@@ -30,7 +33,7 @@ e.g. pump plus works with very large lake.
 ## Version 14.0.9
 - Update for new Forge.
 - Update for new Scala (**Requires 2.13.1 version of library.**)
-- Added option to stop machines with RS signal. (Need to change config option `EnableRSontrol`)
+- Added option to stop machines with RS signal. (Need to change config option `EnableRSControl`)
 
 ## Version 14.0.8
 - Fixed - a crash of WorkbenchPlus in dedicated server due to an access to client only method. (#64)
@@ -121,7 +124,7 @@ In module system, you can put a module item to quarry inventory to enhance the f
 
 ## Version 2.0.1
 * Added function of chunk loading to QuarryPlus, Solid Fuel Quarry and MarkerPlus.
-This chunk loading uses vanilla method, World#func_212414_b(int, int, boolean). See source of /forceload (net.minecraft.command.impl.ForceLoadCommand).
+This chunk loading uses vanilla method, World#func_212414_b(int, int, boolean). See source of `/forceload` (net.minecraft.command.impl.ForceLoadCommand).
 * Refactoring.
 
 ## Version 2.0.0
