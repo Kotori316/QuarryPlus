@@ -1,3 +1,5 @@
+import org.gradle.api.tasks.scala.ScalaCompileOptions
+
 import java.util.concurrent.TimeUnit
 
 buildscript {
@@ -24,6 +26,7 @@ archivesBaseName = 'AdditionalEnchantedMiner-1.14.4'
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 compileScala.sourceCompatibility = compileScala.targetCompatibility = '1.8'
+compileScala.options.compilerArgs.add("-Xlint:all")
 
 minecraft {
     // The mappings can be changed at any time, and must be in the following format.
@@ -198,4 +201,12 @@ static String getCommit(String branch) {
     def commit = reader.readLine()
     reader.close()
     return commit
+}
+
+task CheckCompileOption() {
+    doLast {
+        def argsScala = compileScala.options.compilerArgs
+        println(argsScala)
+        println(argsScala.getClass())
+    }
 }

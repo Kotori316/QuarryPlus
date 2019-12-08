@@ -24,6 +24,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
       - name: Precompile
-        run: chmod +x ./gradlew && ./gradlew compileScala --continue
+        run: chmod +x ./gradlew && ./gradlew compileScala --continue --warning-mode all
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
