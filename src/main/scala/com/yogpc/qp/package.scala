@@ -51,7 +51,7 @@ package object qp {
 
     def asScala: Option[T] = toScalaOption(o)
 
-    def toList: List[T] = if(o.isPresent) List(o.get()) else Nil
+    def toList: List[T] = if (o.isPresent) List(o.get()) else Nil
   }
 
   implicit class JOS[T](val o: Option[T]) extends AnyVal {
@@ -68,7 +68,8 @@ package object qp {
       val copied = list.asScala.zipWithIndex.collect { case (t: CompoundNBT, i) => (t, i) }
       for ((tag, i) <- copied) {
         if (tag.getString("id") == id.toString) {
-          list.remove(i)
+          //noinspection ScalaUnusedSymbol
+          val unused: INBT = list.remove(i)
         }
       }
       Option(stack.getTag).foreach(subtag => {
