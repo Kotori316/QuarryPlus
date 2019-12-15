@@ -6,7 +6,7 @@ on:
       - 1.14.4
 
 jobs:
-  build:
+  pr-check:
     runs-on: ubuntu-latest
 
     steps:
