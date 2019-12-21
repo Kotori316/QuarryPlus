@@ -219,7 +219,8 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
 
     private void S_sendNowPacket() {
         //when connection changed or working changed
-        if (preFacing != connectTo || getWorld().getBlockState(getPos()).getValue(BlockPump.ACTING) != G_working()) {
+        IBlockState blockState = getWorld().getBlockState(getPos());
+        if (preFacing != connectTo || blockState.getBlock() == QuarryPlusI.blockPump() && blockState.getValue(BlockPump.ACTING) != G_working()) {
             preFacing = connectTo;
             PacketHandler.sendToAround(Now.create(this), getWorld(), getPos());
         }
