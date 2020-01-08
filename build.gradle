@@ -22,7 +22,7 @@ apply plugin: 'eclipse'
 
 version = getProperty("modVersion")
 group = 'com.kotori316' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'AdditionalEnchantedMiner-1.14.4'
+archivesBaseName = 'AdditionalEnchantedMiner-1.15.1'
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 compileScala.sourceCompatibility = compileScala.targetCompatibility = '1.8'
@@ -92,14 +92,15 @@ dependencies {
     // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
     // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
-    minecraft 'net.minecraftforge:forge:1.14.4-28.1.108'
+    def forge_prop = loadProperties("forge_version.properties")
+    minecraft(forge_prop.getProperty("forge_version"))
     implementation "org.scala-lang:scala-library:2.13.1"
     implementation group: 'org.typelevel', name: "cats-core_2.13", version: '2.0.0'
 
-    def mc_version = "1.14.4"
+    def mc_version = "1.15.1"
     def jei_version = "6.0.0.18"
     // at runtime, use the full JEI jar
-    implementation fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
+//    implementation fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
 //    compile "mezz.jei:jei-${mc_version}:${jei_version}:sources"
 //    implementation fg.deobf("largefluidtank:LargeFluidTank:14.6.6")
 
@@ -119,7 +120,7 @@ jar {
                 "Implementation-Version"  : "${version}",
                 "Implementation-Vendor"   : "Kotori316",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-                "Commit"                  : getCommit("1.14.4")
+                "Commit"                  : getCommit("1.15.1")
         ])
     }
 }
@@ -132,6 +133,14 @@ def reobfFile = file("$buildDir/reobfJar/output.jar")
 def reobfArtifact = artifacts.add('default', reobfFile) {
     type 'jar'
     builtBy 'reobfJar'
+}
+
+def loadProperties(String filename) {
+    def props = new Properties()
+    file(filename).withInputStream {
+        props.load(it)
+    }
+    return props
 }
 
 task srcJar(type: Jar) {
@@ -156,7 +165,7 @@ curseforge {
         changelogType = 'markdown'
         changelog = new File("temp_changelog.md")
         releaseType = 'beta'
-        addGameVersion '1.14.4'
+        addGameVersion '1.15.1'
         mainArtifact(jar) {
             displayName = 'v' + project.version
         }
