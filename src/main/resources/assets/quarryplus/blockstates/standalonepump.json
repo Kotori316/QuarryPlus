@@ -1,18 +1,6 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "quarryplus:block/standalonepump"
-  },
   "variants": {
-    "working": {
-      "true": {
-        "model": "quarryplus:block/standalonepump_working"
-      },
-      "false": {
-      }
-    }
-  },
-  "inventory": [
-    {}
-  ]
+    "working=true": {"model": "quarryplus:block/standalonepump_working"},
+    "working=false": {"model": "quarryplus:block/standalonepump"}
+  }
 }

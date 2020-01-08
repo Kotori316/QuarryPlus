@@ -1,19 +1,6 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "quarryplus:block/spawnercontroller",
-    "uvlock": true,
-    "transform": "forge:default-block"
-  },
   "variants": {
-    "working": {
-      "true": {
-      },
-      "false": {
-      }
-    }
-  },
-  "inventory": [
-    {}
-  ]
+    "working=true": {"model": "quarryplus:block/spawnercontroller"},
+    "working=false": {"model": "quarryplus:block/spawnercontroller"}
+  }
 }

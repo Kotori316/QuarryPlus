@@ -1,36 +1,10 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "quarryplus:block/markerplus_post",
-    "textures": {
-      "texture": "quarryplus:blocks/marker"
-    }
-  },
   "variants": {
-    "facing": {
-      "north": {
-        "x": 90
-      },
-      "south": {
-        "x": 270
-      },
-      "west": {
-        "x": 90,
-        "y": 270
-      },
-      "east": {
-        "x": 90,
-        "y": 90
-      },
-      "up": {
-        "transform": "forge:default-block"
-      },
-      "down": {
-        "x": 180
-      }
-    }
-  },
-  "inventory": [
-    {}
-  ]
+    "facing=down": {"model": "quarryplus:block/markerplus_post", "x": 180},
+    "facing=up": {"model": "quarryplus:block/markerplus_post"},
+    "facing=north": {"model": "quarryplus:block/markerplus_post", "x": 90},
+    "facing=south": {"model": "quarryplus:block/markerplus_post", "x": 270},
+    "facing=west": {"model": "quarryplus:block/markerplus_post", "x": 90, "y": 270},
+    "facing=east": {"model": "quarryplus:block/markerplus_post", "x": 90, "y": 90}
+  }
 }

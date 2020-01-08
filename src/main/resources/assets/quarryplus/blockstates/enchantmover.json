@@ -1,23 +1,5 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "quarryplus:block/enchantmover",
-    "textures": {
-      "particle": "quarryplus:blocks/mover",
-      "down": "quarryplus:blocks/mover_bottom",
-      "up": "quarryplus:blocks/mover_top",
-      "north": "quarryplus:blocks/mover",
-      "east": "quarryplus:blocks/mover",
-      "south": "quarryplus:blocks/mover",
-      "west": "quarryplus:blocks/mover"
-    }
-  },
   "variants": {
-    "": [
-      {}
-    ]
-  },
-  "inventory": [
-    {}
-  ]
+    "": {"model": "quarryplus:block/enchantmover"}
+  }
 }
