@@ -1,25 +1,8 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "quarryplus:block/exppump"
-  },
   "variants": {
-    "working": {
-      "true": {
-        "model": "quarryplus:block/exppump_working"
-      },
-      "false": {
-      }
-    },
-    "enabled": {
-      "true": {
-        "model": "quarryplus:block/exppump_enabled"
-      },
-      "false": {
-      }
-    }
-  },
-  "inventory": [
-    {}
-  ]
+    "enabled=true,working=false": {"model": "quarryplus:block/exppump_enabled"},
+    "enabled=true,working=true": {"model": "quarryplus:block/exppump_enabled"},
+    "enabled=false,working=true": {"model": "quarryplus:block/exppump_working"},
+    "enabled=false,working=false": {"model": "quarryplus:block/exppump"}
+  }
 }

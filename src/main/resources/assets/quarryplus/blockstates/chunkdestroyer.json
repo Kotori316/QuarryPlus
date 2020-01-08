@@ -1,38 +1,16 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "quarryplus:block/chunkdestroyer"
-  },
   "variants": {
-    "working": {
-      "true": {
-        "model": "quarryplus:block/chunkdestroyer_working"
-      },
-      "false": {
-      }
-    },
-    "facing": {
-      "north": {
-        "transform": "forge:default-block"
-      },
-      "south": {
-        "y": 180
-      },
-      "west": {
-        "y": 270
-      },
-      "east": {
-        "y": 90
-      },
-      "up": {
-        "x": 270
-      },
-      "down": {
-        "x": 90
-      }
-    }
-  },
-  "inventory": [
-    {}
-  ]
+    "facing=down,working=false": {"model": "quarryplus:block/chunkdestroyer", "x": 90},
+    "facing=up,working=false": {"model": "quarryplus:block/chunkdestroyer", "x": 270},
+    "facing=north,working=false": {"model": "quarryplus:block/chunkdestroyer"},
+    "facing=south,working=false": {"model": "quarryplus:block/chunkdestroyer", "y": 180},
+    "facing=west,working=false": {"model": "quarryplus:block/chunkdestroyer", "y": 270},
+    "facing=east,working=false": {"model": "quarryplus:block/chunkdestroyer", "y": 90},
+    "facing=down,working=true": {"model": "quarryplus:block/chunkdestroyer_working", "x": 90},
+    "facing=up,working=true": {"model": "quarryplus:block/chunkdestroyer_working", "x": 270},
+    "facing=north,working=true": {"model": "quarryplus:block/chunkdestroyer_working"},
+    "facing=south,working=true": {"model": "quarryplus:block/chunkdestroyer_working", "y": 180},
+    "facing=west,working=true": {"model": "quarryplus:block/chunkdestroyer_working", "y": 270},
+    "facing=east,working=true": {"model": "quarryplus:block/chunkdestroyer_working", "y": 90}
+  }
 }

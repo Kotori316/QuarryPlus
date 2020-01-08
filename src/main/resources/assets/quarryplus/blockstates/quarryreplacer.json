@@ -1,18 +1,6 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "quarryplus:block/quarryreplacer"
-  },
   "variants": {
-    "working": {
-      "true": {
-        "model": "quarryplus:block/quarryreplacer_working"
-      },
-      "false": {
-      }
-    }
-  },
-  "inventory": [
-    {}
-  ]
+    "working=true": {"model": "quarryplus:block/quarryreplacer_working"},
+    "working=false": {"model": "quarryplus:block/quarryreplacer"}
+  }
 }
