@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - 1.14.4
+      - 1.15.1
 
 jobs:
   pr-check:
@@ -18,9 +19,7 @@ jobs:
     - uses: actions/cache@v1
       with:
         path: ~/.gradle/caches
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
-        restore-keys: |
-          ${{ runner.os }}-gradle-
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/forge_version.properties') }}
     - name: Compile and Test
       run: chmod +x ./gradlew && ./gradlew compileScala test --continue
       
