@@ -88,7 +88,7 @@ public class TileExpPump extends APacketTile implements IEnchantableTile, IDebug
     }
 
     private void refreshConnection() {
-        if (hasWorld() && !world.isRemote) {
+        if (hasWorld() && world != null && !world.isRemote) {
             Map.Entry<Direction, IAttachable> entry = Stream.of(Direction.values())
                 .map(f -> Pair.of(f, world.getTileEntity(pos.offset(f))))
                 .filter(byValue(t -> t instanceof IAttachable))
@@ -107,6 +107,7 @@ public class TileExpPump extends APacketTile implements IEnchantableTile, IDebug
     public void addXp(int amount) {
         if (enabled()) {
             module.xp_$eq(module.xp() + amount);
+            assert world != null;
             if (module.xp() > 0 ^ world.getBlockState(pos).get(ENABLED)) {
                 BlockState state = world.getBlockState(pos).with(ENABLED, module.xp() > 0);
                 world.setBlockState(pos, state);
@@ -149,7 +150,7 @@ public class TileExpPump extends APacketTile implements IEnchantableTile, IDebug
 
     @Override
     public CompoundNBT write(CompoundNBT compound) {
-        compound.putByte("mConnectTo", Optional.ofNullable(mConnectTo).map(Enum::ordinal).orElse(-1).byteValue());
+        compound.putByte("mConnectTo", Optional.ofNullable(mConnectTo).map(Direction::ordinal).orElse(-1).byteValue());
         compound.putInt("xpAmount", module.xp());
         compound.putBoolean("silktouch", this.silktouch);
         compound.putByte("fortune", (byte) this.fortune);
