@@ -16,6 +16,7 @@ import net.minecraft.entity.player.{PlayerEntity, PlayerInventory, ServerPlayerE
 import net.minecraft.inventory.container.INamedContainerProvider
 import net.minecraft.item._
 import net.minecraft.nbt.CompoundNBT
+import net.minecraft.network.PacketBuffer
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.{ITextComponent, StringTextComponent, TranslationTextComponent}
 import net.minecraft.util.{ActionResultType, NonNullList}
@@ -59,7 +60,7 @@ class ItemListEditor extends Item((new Item.Properties).group(Holder.tab)) with 
     val s = ItemListEditor.onlySilktouch(stack)
     val f = ItemListEditor.onlyFortune(stack)
     val bd = ItemListEditor.getBlockData(stack)
-    if (context.getPlayer.isSneaking && bd.contains(new BlockData(worldIn.getBlockState(pos)))) {
+    if (context.getPlayer.isCrouching && bd.contains(new BlockData(worldIn.getBlockState(pos)))) {
       stack.getTag.remove(ItemListEditor.NAME_key)
     } else {
       worldIn.getTileEntity(pos) match {
@@ -73,7 +74,7 @@ class ItemListEditor extends Item((new Item.Properties).group(Holder.tab)) with 
               stack.getTag.remove(ItemListEditor.NAME_key)
             case None =>
               if (!worldIn.isRemote)
-                NetworkHooks.openGui(context.getPlayer.asInstanceOf[ServerPlayerEntity], new ItemListEditor.InteractionObject(f.value, tb.getName, pos), b => {
+                NetworkHooks.openGui(context.getPlayer.asInstanceOf[ServerPlayerEntity], new ItemListEditor.InteractionObject(f.value, tb.getName, pos), (b: PacketBuffer) => {
                   b.writeBlockPos(pos)
                   b.writeResourceLocation(f.map(bool => if (bool) IEnchantableTile.FortuneID else IEnchantableTile.SilktouchID).value)
                 })

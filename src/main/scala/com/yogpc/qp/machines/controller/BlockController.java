@@ -26,6 +26,7 @@ import net.minecraft.item.Item;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.MobSpawnerTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
@@ -90,10 +91,10 @@ public class BlockController extends Block implements IDisabled /*IDismantleable
 
     @Override
     @SuppressWarnings("deprecation")
-    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
-                                    Hand hand, BlockRayTraceResult hit) {
-        if (super.onBlockActivated(state, worldIn, pos, player, hand, hit)) return true;
-        if (!player.isSneaking()) {
+    public ActionResultType func_225533_a_(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
+                                           Hand hand, BlockRayTraceResult hit) {
+        if (super.func_225533_a_(state, worldIn, pos, player, hand, hit).func_226247_b_()) return ActionResultType.SUCCESS;
+        if (!player.isCrouching()) {
             if (!worldIn.isRemote) {
                 if (player.getHeldItem(hand).getItem() == Holder.itemStatusChecker()) {
                     getSpawner(worldIn, pos)
@@ -111,9 +112,9 @@ public class BlockController extends Block implements IDisabled /*IDismantleable
                     player.sendStatusMessage(new StringTextComponent("Spawner Controller is disabled."), true);
                 }
             }
-            return true;
+            return ActionResultType.SUCCESS;
         }
-        return false;
+        return ActionResultType.PASS;
     }
 
     public static void setSpawnerEntity(World world, BlockPos pos, ResourceLocation name) {

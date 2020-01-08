@@ -13,7 +13,7 @@ import net.minecraft.state.BooleanProperty
 import net.minecraft.tileentity.{TileEntity, TileEntityType}
 import net.minecraft.util.math.{BlockPos, BlockRayTraceResult, RayTraceResult}
 import net.minecraft.util.text.TranslationTextComponent
-import net.minecraft.util.{Hand, NonNullList, ResourceLocation}
+import net.minecraft.util.{ActionResultType, Hand, NonNullList, ResourceLocation}
 import net.minecraft.world.server.ServerWorld
 import net.minecraft.world.{IBlockReader, World}
 
@@ -42,11 +42,11 @@ abstract class QPBlock(builder: Block.Properties, name: String, generator: java.
     }
   }
 
-  override def onBlockActivated(state: BlockState, worldIn: World, pos: BlockPos, player: PlayerEntity, hand: Hand, hit: BlockRayTraceResult): Boolean = {
+  override def func_225533_a_(state: BlockState, worldIn: World, pos: BlockPos, player: PlayerEntity, hand: Hand, hit: BlockRayTraceResult): ActionResultType = {
     if (Holder.tiles.get(getTileType).fold(false)(!_.enabled)) {
       if (worldIn.isRemote)
         player.sendStatusMessage(new TranslationTextComponent(TranslationKeys.DISABLE_MESSAGE, getNameTextComponent), true)
-      true // Skip other operations because this tile is DISABLED.
+      ActionResultType.SUCCESS // Skip other operations because this tile is DISABLED.
     } else {
       InvUtils.isDebugItem(player, hand) // super method return false.
     }

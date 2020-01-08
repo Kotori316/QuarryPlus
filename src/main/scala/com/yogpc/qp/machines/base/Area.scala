@@ -46,9 +46,11 @@ object Area {
   def defaultQuarryArea(pos: BlockPos, facing: Direction): Area = {
     val x = 11
     val y = (x - 1) / 2 //5
-    val start = pos.offset(facing, 2)
-    val edge1 = start.offset(facing.rotateY(), y).up(3)
-    val edge2 = start.offset(facing, x - 1).offset(facing.rotateYCCW(), y)
+    val start: BlockPos = pos.offset(facing, 2)
+    val front: BlockPos = start.offset(facing.rotateY(), y)
+    val edge1: BlockPos = front.up(3)
+    val pos1: BlockPos = start.offset(facing, x - 1)
+    val edge2: BlockPos = pos1.offset(facing.rotateYCCW(), y)
     posToArea(edge1, edge2)
   }
 

@@ -27,6 +27,7 @@ import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Pair;
@@ -120,7 +121,8 @@ public class TileExpPump extends APacketTile implements IEnchantableTile, IDebug
     public void onActivated(World worldIn, BlockPos pos, PlayerEntity playerIn) {
         if (module.xp() > 0) {
             int xp = ExperienceOrbEntity.getXPSplit(module.xp());
-            ExperienceOrbEntity orb = new ExperienceOrbEntity(worldIn, playerIn.posX, playerIn.posY, playerIn.posZ, xp);
+            Vec3d vec = playerIn.getPositionVec();
+            ExperienceOrbEntity orb = new ExperienceOrbEntity(worldIn, vec.getX(), vec.getY(), vec.getZ(), xp);
             worldIn.addEntity(orb);
             addXp(-xp);
         }

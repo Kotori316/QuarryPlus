@@ -29,7 +29,7 @@ class ItemQuarryDebug extends Item((new Item.Properties).group(Holder.tab)) {
         tile match {
           case plusMachine: APowerTile with IDebugSender =>
             if (!worldIn.isRemote) {
-              if (player.isSneaking) {
+              if (player.isCreative) {
                 plusMachine.toggleOutputEnergyInfo()
               } else {
                 player.sendStatusMessage(new TranslationTextComponent(plusMachine.getDebugName), false)

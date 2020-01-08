@@ -1,5 +1,5 @@
 package com.yogpc.qp.render
-
+/*
 import com.yogpc.qp.machines.base.Area
 import com.yogpc.qp.machines.quarry.{QuarryAction, TileQuarry2}
 import net.minecraft.client.Minecraft
@@ -678,3 +678,4 @@ object RenderQuarry2 extends TileEntityRendererFast[TileQuarry2] {
 
   override def isGlobalRenderer(te: TileQuarry2): Boolean = true
 }
+*/

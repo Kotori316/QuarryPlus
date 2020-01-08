@@ -33,6 +33,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -74,13 +75,13 @@ public class BlockPump extends QPBlock {
     }
 
     @Override
-    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
-        if (super.onBlockActivated(state, worldIn, pos, player, hand, hit)) return true;
+    public ActionResultType func_225533_a_(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+        if (super.func_225533_a_(state, worldIn, pos, player, hand, hit).func_226247_b_()) return ActionResultType.SUCCESS;
         ItemStack stack = player.getHeldItem(hand);
         if (BuildcraftHelper.isWrench(player, hand, stack, hit)) {
             if (!worldIn.isRemote)
                 Optional.ofNullable((TilePump) worldIn.getTileEntity(pos)).ifPresent(pump -> pump.S_changeRange(player));
-            return true;
+            return ActionResultType.SUCCESS;
         }
         if (stack.getItem() == Holder.itemStatusChecker()) {
             if (!worldIn.isRemote) {
@@ -90,7 +91,7 @@ public class BlockPump extends QPBlock {
                     pump.C_getNames().forEach(c -> player.sendStatusMessage(c, false));
                 }
             }
-            return true;
+            return ActionResultType.SUCCESS;
         } else if (stack.getItem() == Holder.itemLiquidSelector()) {
             if (!worldIn.isRemote) {
                 TilePump pump = (TilePump) worldIn.getTileEntity(pos);
@@ -98,9 +99,9 @@ public class BlockPump extends QPBlock {
 //                QuarryPlus.proxy.openPumpGui(worldIn, playerIn, facing, pump);
                 }
             }
-            return true;
+            return ActionResultType.SUCCESS;
         }
-        return false;
+        return ActionResultType.PASS;
     }
 
     @Override

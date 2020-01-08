@@ -82,7 +82,7 @@ class ItemTemplate extends Item(new Item.Properties().maxStackSize(1).group(Hold
         }
         ActionResultType.SUCCESS
       case _ =>
-        if (!context.isPlacerSneaking) {
+        if (!context.func_225518_g_) {
           if (!worldIn.isRemote) {
             val playerPos = playerIn.getPosition
             NetworkHooks.openGui(playerIn.asInstanceOf[ServerPlayerEntity], ItemTemplate.InteractionObject, playerPos)

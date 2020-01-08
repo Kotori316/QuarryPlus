@@ -23,6 +23,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -74,16 +75,16 @@ public class BlockQuarry2 extends QPBlock {
     }
 
     @Override
-    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
-                                    Hand hand, BlockRayTraceResult hit) {
-        if (super.onBlockActivated(state, worldIn, pos, player, hand, hit)) return true;
+    public ActionResultType func_225533_a_(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
+                                           Hand hand, BlockRayTraceResult hit) {
+        if (super.func_225533_a_(state, worldIn, pos, player, hand, hit).func_226247_b_()) return ActionResultType.SUCCESS;
         ItemStack stack = player.getHeldItem(hand);
         if (BuildcraftHelper.isWrench(player, hand, stack, hit)) {
             if (!worldIn.isRemote)
                 Optional.ofNullable((TileQuarry2) worldIn.getTileEntity(pos)).ifPresent(tileQuarry2 -> tileQuarry2.onActivated(player));
-            return true;
+            return ActionResultType.SUCCESS;
         }
-        if (!player.isSneaking()) {
+        if (!player.isCrouching()) {
             if (!worldIn.isRemote) {
                 Optional.ofNullable((TileQuarry2) worldIn.getTileEntity(pos)).map(t -> {
                     if (stack.getItem() == Holder.itemYSetter()) return YSetterInteractionObject.apply(t, pos);
@@ -92,9 +93,9 @@ public class BlockQuarry2 extends QPBlock {
                     else return new ContainerQuarryModule.InteractionObject(pos, TranslationKeys.quarry2);
                 }).ifPresent(o -> NetworkHooks.openGui(((ServerPlayerEntity) player), o, pos));
             }
-            return true;
+            return ActionResultType.SUCCESS;
         }
-        return false;
+        return ActionResultType.PASS;
     }
 
     @Override

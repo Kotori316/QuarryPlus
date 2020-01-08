@@ -87,9 +87,9 @@ package object qp {
     }
   }
 
-  implicit val Long2NBT: NBTWrapper[Long, LongNBT] = (num: Long) => new LongNBT(num)
-  implicit val int2NBT: NBTWrapper[Int, IntNBT] = (num: Int) => new IntNBT(num)
-  implicit val bool2NBT: NBTWrapper[Boolean, ByteNBT] = (b: Boolean) => new ByteNBT(if (b) 1 else 0)
+  implicit val Long2NBT: NBTWrapper[Long, LongNBT] = (num: Long) => LongNBT.func_229698_a_(num)
+  implicit val int2NBT: NBTWrapper[Int, IntNBT] = (num: Int) => IntNBT.func_229692_a_(num)
+  implicit val bool2NBT: NBTWrapper[Boolean, ByteNBT] = (b: Boolean) => ByteNBT.func_229672_a_(b)
 
   implicit val Fluid2NBT: NBTWrapper[FluidStack, CompoundNBT] = (num: FluidStack) => num.writeToNBT(new CompoundNBT)
   implicit val NBTSerializable2NBT: INBTSerializable[CompoundNBT] NBTWrapper CompoundNBT = _.serializeNBT()

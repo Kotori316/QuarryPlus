@@ -1,6 +1,6 @@
 package com.yogpc.qp.machines.advquarry
 
-import com.mojang.blaze3d.platform.GlStateManager
+import com.mojang.blaze3d.systems.RenderSystem
 import com.yogpc.qp.QuarryPlus
 import com.yogpc.qp.machines.TranslationKeys
 import com.yogpc.qp.machines.base.{Area, IHandleButton}
@@ -29,7 +29,7 @@ class GuiAdvQuarry(c: ContainerAdvQuarry, i: PlayerInventory, t: ITextComponent)
   }
 
   override def drawGuiContainerBackgroundLayer(p_146976_1_ : Float, p_146976_2_ : Int, p_146976_3_ : Int): Unit = {
-    GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F)
+    RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F)
     this.getMinecraft.getTextureManager.bindTexture(LOCATION)
     this.blit(guiLeft, guiTop, 0, 0, xSize, ySize)
   }

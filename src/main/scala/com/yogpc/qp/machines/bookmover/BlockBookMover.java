@@ -11,6 +11,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -27,17 +28,17 @@ public class BlockBookMover extends QPBlock {
     }
 
     @Override
-    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
-                                    Hand hand, BlockRayTraceResult hit) {
-        if (super.onBlockActivated(state, worldIn, pos, player, hand, hit)) return true;
+    public ActionResultType func_225533_a_(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
+                                           Hand hand, BlockRayTraceResult hit) {
+        if (super.func_225533_a_(state, worldIn, pos, player, hand, hit).func_226247_b_()) return ActionResultType.SUCCESS;
         TileBookMover mover = ((TileBookMover) worldIn.getTileEntity(pos));
-        if (!player.isSneaking() && mover != null && mover.enabled()) {
+        if (!player.isCrouching() && mover != null && mover.enabled()) {
             if (!worldIn.isRemote) {
                 NetworkHooks.openGui(((ServerPlayerEntity) player), mover, pos);
             }
-            return true;
+            return ActionResultType.SUCCESS;
         }
-        return false;
+        return ActionResultType.PASS;
     }
 
     @Override

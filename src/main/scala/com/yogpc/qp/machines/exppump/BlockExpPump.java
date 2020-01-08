@@ -18,6 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -53,8 +54,8 @@ public class BlockExpPump extends QPBlock {
     }
 
     @Override
-    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
-        if (super.onBlockActivated(state, worldIn, pos, player, hand, hit)) return true;
+    public ActionResultType func_225533_a_(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+        if (super.func_225533_a_(state, worldIn, pos, player, hand, hit).func_226247_b_()) return ActionResultType.SUCCESS;
         if (player.getHeldItem(hand).getItem() == Holder.itemStatusChecker()) {
             if (!worldIn.isRemote) {
                 Optional.ofNullable(worldIn.getTileEntity(pos))
@@ -62,9 +63,9 @@ public class BlockExpPump extends QPBlock {
                     .ifPresent(t -> player.sendStatusMessage(new StringTextComponent(
                         "Xp Amount: " + t.getXpAmount()), false));
             }
-            return true;
+            return ActionResultType.SUCCESS;
         }
-        if (!player.isSneaking()) {
+        if (!player.isCrouching()) {
             if (!worldIn.isRemote) {
                 TileEntity tileEntity = worldIn.getTileEntity(pos);
                 if (tileEntity instanceof TileExpPump) {
@@ -72,9 +73,9 @@ public class BlockExpPump extends QPBlock {
                     expPump.onActivated(worldIn, pos, player);
                 }
             }
-            return true;
+            return ActionResultType.SUCCESS;
         }
-        return false;
+        return ActionResultType.PASS;
     }
 
     @Override

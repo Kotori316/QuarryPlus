@@ -4,14 +4,12 @@ import java.util.List;
 import java.util.Random;
 
 import javax.annotation.Nullable;
-import javax.vecmath.Matrix4f;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
-import org.apache.commons.lang3.tuple.Pair;
 
 public class DummyBlockBakedModel implements IBakedModel {
 
@@ -58,9 +56,10 @@ public class DummyBlockBakedModel implements IBakedModel {
         return model.isAmbientOcclusion(state);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
-    public Pair<? extends IBakedModel, Matrix4f> handlePerspective(net.minecraft.client.renderer.model.ItemCameraTransforms.TransformType cameraTransformType) {
-        return model.handlePerspective(cameraTransformType);
+    @SuppressWarnings("deprecation")
+    public net.minecraft.client.renderer.model.ItemCameraTransforms getItemCameraTransforms() {
+        return model.getItemCameraTransforms();
     }
+
 }

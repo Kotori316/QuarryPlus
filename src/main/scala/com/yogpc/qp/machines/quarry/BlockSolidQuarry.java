@@ -20,6 +20,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -69,24 +70,24 @@ public class BlockSolidQuarry extends QPBlock {
     }
 
     @Override
-    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity playerIn,
-                                    Hand hand, BlockRayTraceResult hit) {
-        if (super.onBlockActivated(state, worldIn, pos, playerIn, hand, hit)) return true;
+    public ActionResultType func_225533_a_(BlockState state, World worldIn, BlockPos pos, PlayerEntity playerIn,
+                                           Hand hand, BlockRayTraceResult hit) {
+        if (super.func_225533_a_(state, worldIn, pos, playerIn, hand, hit).func_226247_b_()) return ActionResultType.SUCCESS;
         ItemStack stack = playerIn.getHeldItem(hand);
         if (BuildcraftHelper.isWrench(playerIn, hand, stack, hit)) {
             Optional.ofNullable((TileSolidQuarry) worldIn.getTileEntity(pos)).ifPresent(TileSolidQuarry::G_ReInit);
             playerIn.sendStatusMessage(new TranslationTextComponent(TranslationKeys.QUARRY_RESTART), false);
-            return true;
+            return ActionResultType.SUCCESS;
         }
-        if (!playerIn.isSneaking()) {
+        if (!playerIn.isCrouching()) {
             if (!worldIn.isRemote) {
                 Optional.ofNullable((TileSolidQuarry) worldIn.getTileEntity(pos)).ifPresent(t ->
                     NetworkHooks.openGui(((ServerPlayerEntity) playerIn), t, pos)
                 );
             }
-            return true;
+            return ActionResultType.SUCCESS;
         }
-        return false;
+        return ActionResultType.PASS;
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.yogpc.qp.machines.bookmover
 
-import com.mojang.blaze3d.platform.GlStateManager
+import com.mojang.blaze3d.systems.RenderSystem
 import com.yogpc.qp.QuarryPlus
 import com.yogpc.qp.machines.TranslationKeys
 import net.minecraft.client.gui.screen.inventory.ContainerScreen
@@ -13,7 +13,7 @@ class GuiBookMover(c: ContainerBookMover, inv: PlayerInventory, t: ITextComponen
   val LOCATION = new ResourceLocation(QuarryPlus.modID, "textures/gui/bookmover.png")
 
   override def drawGuiContainerBackgroundLayer(partialTicks: Float, mouseX: Int, mouseY: Int): Unit = {
-    GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F)
+    RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F)
     this.getMinecraft.getTextureManager.bindTexture(LOCATION)
     this.blit(guiLeft, guiTop, 0, 0, xSize, ySize)
     if (container.moverIsWorking()) {

@@ -1,5 +1,5 @@
 package com.yogpc.qp.render
-
+/*
 import com.yogpc.qp.Config
 import com.yogpc.qp.machines.marker.TileMarker
 import net.minecraft.client.Minecraft
@@ -43,3 +43,4 @@ object RenderMarker extends TileEntityRendererFast[TileMarker] {
   }
 
 }
+*/

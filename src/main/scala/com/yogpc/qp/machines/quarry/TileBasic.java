@@ -317,7 +317,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         nbt.put("silktouchList", silktouchList.stream().map(BlockData.dataToNbt()::apply).collect(Collectors.toCollection(ListNBT::new)));
         nbt.putInt("yLevel", this.yLevel);
 
-        nbt.put("enchList", ench.entrySet().stream().map(keys(ResourceLocation::toString)).map(values(IntNBT::new)).collect(NBTBuilder.toNBTTag()));
+        nbt.put("enchList", ench.entrySet().stream().map(keys(ResourceLocation::toString)).map(values(IntNBT::func_229692_a_)).collect(NBTBuilder.toNBTTag()));
         return super.write(nbt);
     }
 

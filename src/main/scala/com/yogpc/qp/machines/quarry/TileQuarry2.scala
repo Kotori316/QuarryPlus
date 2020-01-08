@@ -281,6 +281,6 @@ object TileQuarry2 {
   //  private[this] final val MARKER: Marker = MarkerManager.getMarker("QUARRY_NBT")
 
   implicit val modeToNbt: Mode NBTWrapper StringNBT = mode => {
-    new StringNBT(mode.toString)
+    StringNBT.func_229705_a_(mode.toString)
   }
 }

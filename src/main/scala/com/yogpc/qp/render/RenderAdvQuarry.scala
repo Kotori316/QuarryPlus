@@ -1,5 +1,5 @@
 package com.yogpc.qp.render
-
+/*
 import com.yogpc.qp.machines.advquarry.AdvQuarryWork.MakeFrame
 import com.yogpc.qp.machines.advquarry.{AdvQuarryWork, TileAdvQuarry}
 import com.yogpc.qp.machines.base.Area
@@ -49,3 +49,4 @@ object RenderAdvQuarry extends TileEntityRendererFast[TileAdvQuarry] {
   override def isGlobalRenderer(te: TileAdvQuarry): Boolean = true
 
 }
+*/

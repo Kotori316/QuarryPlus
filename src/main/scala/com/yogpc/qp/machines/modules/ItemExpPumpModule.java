@@ -20,8 +20,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Rarity;
 import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
@@ -66,7 +66,7 @@ public class ItemExpPumpModule extends Item implements IDisabled, IModuleItem {
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        if (!playerIn.isSneaking()) {
+        if (!playerIn.isCrouching()) {
             ItemStack stack = playerIn.getHeldItem(handIn);
             int xp = Optional.ofNullable(stack.getTag())
                 .map(tag -> tag.get(Key_xp))
@@ -76,10 +76,11 @@ public class ItemExpPumpModule extends Item implements IDisabled, IModuleItem {
             if (xp > 0) {
                 stack.removeChildTag(Key_xp);
                 if (!worldIn.isRemote) {
-                    ExperienceOrbEntity orb = new ExperienceOrbEntity(worldIn, playerIn.posX, playerIn.posY, playerIn.posZ, xp);
+                    Vec3d vec = playerIn.getPositionVec();
+                    ExperienceOrbEntity orb = new ExperienceOrbEntity(worldIn, vec.getX(), vec.getY(), vec.getZ(), xp);
                     worldIn.addEntity(orb);
                 }
-                return ActionResult.newResult(ActionResultType.SUCCESS, stack);
+                return ActionResult.func_226248_a_(stack);
             }
         }
         return super.onItemRightClick(worldIn, playerIn, handIn);

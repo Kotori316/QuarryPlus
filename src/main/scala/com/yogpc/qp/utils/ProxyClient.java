@@ -20,13 +20,11 @@ import com.yogpc.qp.machines.quarry.TileQuarry;
 import com.yogpc.qp.machines.quarry.TileQuarry2;
 import com.yogpc.qp.machines.workbench.GuiWorkbench;
 import com.yogpc.qp.render.DummyBlockBakedModel;
-import com.yogpc.qp.render.RenderAdvQuarry;
-import com.yogpc.qp.render.RenderMarker;
-import com.yogpc.qp.render.RenderQuarry;
-import com.yogpc.qp.render.RenderQuarry2;
 import com.yogpc.qp.render.Sprites;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelManager;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
@@ -78,8 +76,8 @@ public class ProxyClient extends ProxyCommon {
     public void registerModBus(IEventBus modBus) {
         super.registerModBus(modBus);
         modBus.addListener(this::onBake);
-        modBus.addListener(Sprites::putTexture);
-        modBus.addListener(Sprites::registerTexture);
+//        modBus.addListener(Sprites::putTexture);
+//        modBus.addListener(Sprites::registerTexture);
     }
 
     @Override
@@ -98,10 +96,10 @@ public class ProxyClient extends ProxyCommon {
     public void registerTextures(FMLCommonSetupEvent event) {
         // Register TileEntity Special Render
         if (Config.client().enableRender().get()) {
-            ClientRegistry.bindTileEntitySpecialRenderer(TileMarker.class, RenderMarker.instance());
+            /*ClientRegistry.bindTileEntitySpecialRenderer(TileMarker.class, RenderMarker.instance());
             ClientRegistry.bindTileEntitySpecialRenderer(TileQuarry.class, RenderQuarry.instance());
             ClientRegistry.bindTileEntitySpecialRenderer(TileQuarry2.class, RenderQuarry2.instance());
-            ClientRegistry.bindTileEntitySpecialRenderer(TileAdvQuarry.class, RenderAdvQuarry.instance());
+            ClientRegistry.bindTileEntitySpecialRenderer(TileAdvQuarry.class, RenderAdvQuarry.instance());*/
         }
 //        if (!Config.content().disableRendering()) {
 //            if (!Config.content().disableMapJ().get(TileAdvQuarry.SYMBOL()))
@@ -122,6 +120,13 @@ public class ProxyClient extends ProxyCommon {
         ScreenManager.registerFactory(Holder.advPumpContainerType(), GuiAdvPump::new);
         ScreenManager.registerFactory(Holder.advQuarryContainerType(), GuiAdvQuarry::new);
         ScreenManager.registerFactory(Holder.statusContainerType(), StatusGui::new);
+
+        // Register transparent blocks
+        RenderType rendertype = RenderType.func_228641_d_();
+        RenderTypeLookup.setRenderLayer(Holder.blockFrame(), rendertype);
+        RenderTypeLookup.setRenderLayer(Holder.blockDummy(), rendertype);
+        RenderTypeLookup.setRenderLayer(Holder.blockPlainPipe(), rendertype);
+        RenderTypeLookup.setRenderLayer(Holder.blockMarker(), rendertype);
     }
 
     public void onBake(ModelBakeEvent event) {

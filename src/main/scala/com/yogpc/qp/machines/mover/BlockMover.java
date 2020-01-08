@@ -30,6 +30,7 @@ import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -56,16 +57,16 @@ public class BlockMover extends Block implements IDisabled /*IDismantleable, IWr
 
     @Override
     @SuppressWarnings("deprecation")
-    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos,
-                                    PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
-        if (InvUtils.isDebugItem(player, hand)) return true;
-        if (player.isSneaking()
+    public ActionResultType func_225533_a_(BlockState state, World worldIn, BlockPos pos,
+                                             PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+        if (InvUtils.isDebugItem(player, hand).func_226247_b_()) return ActionResultType.SUCCESS;
+        if (player.isCrouching()
             && BuildcraftHelper.isWrench(player, hand, player.getHeldItem(hand), hit)) {
             if (!worldIn.isRemote)
                 QPBlock.dismantle(worldIn, pos, state, false);
-            return true;
+            return ActionResultType.SUCCESS;
         }
-        if (!player.isSneaking()) {
+        if (!player.isCrouching()) {
             if (!worldIn.isRemote) {
                 if (!enabled()) {
                     player.sendStatusMessage(new TranslationTextComponent(TranslationKeys.DISABLE_MESSAGE, getNameTextComponent()), true);
@@ -73,9 +74,9 @@ public class BlockMover extends Block implements IDisabled /*IDismantleable, IWr
                     NetworkHooks.openGui(((ServerPlayerEntity) player), new InteractionObject(pos), pos);
                 }
             }
-            return true;
+            return ActionResultType.SUCCESS;
         }
-        return false;
+        return ActionResultType.PASS;
     }
 
     @Override

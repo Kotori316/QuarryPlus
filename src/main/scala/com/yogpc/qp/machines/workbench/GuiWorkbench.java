@@ -1,6 +1,7 @@
 package com.yogpc.qp.machines.workbench;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.TranslationKeys;
 import javax.annotation.Nullable;
@@ -104,7 +105,7 @@ public class GuiWorkbench extends ContainerScreen<ContainerWorkbench> {
 
     @Override
     protected void drawGuiContainerBackgroundLayer(final float partialTicks, final int mouseX, final int mouseY) {
-        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         this.getMinecraft().getTextureManager().bindTexture(gui);
         final int xf = this.width - this.xSize >> 1;
         final int yf = this.height - this.ySize >> 1;

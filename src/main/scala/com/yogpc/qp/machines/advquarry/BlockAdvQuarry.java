@@ -28,6 +28,7 @@ import net.minecraft.item.Items;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.NonNullList;
@@ -48,8 +49,8 @@ public class BlockAdvQuarry extends QPBlock {
     }
 
     @Override
-    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
-        if (super.onBlockActivated(state, worldIn, pos, player, hand, hit)) return true;
+    public ActionResultType func_225533_a_(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+        if (super.func_225533_a_(state, worldIn, pos, player, hand, hit).func_226247_b_()) return ActionResultType.SUCCESS;
         ItemStack stack = player.getHeldItem(hand);
         if (BuildcraftHelper.isWrench(player, hand, stack, hit)) {
             if (!worldIn.isRemote) {
@@ -66,24 +67,24 @@ public class BlockAdvQuarry extends QPBlock {
                     }
                 }
             }
-            return true;
+            return ActionResultType.SUCCESS;
         } else if (stack.getItem() == Holder.itemStatusChecker()) {
             if (!worldIn.isRemote)
                 NetworkHooks.openGui(((ServerPlayerEntity) player), new StatusContainer.ContainerProvider(pos), pos);
-            return true;
+            return ActionResultType.SUCCESS;
         } else if (stack.getItem() == Holder.itemLiquidSelector()) {
             // Not implemented.
-            return true;
+            return ActionResultType.SUCCESS;
         } else if (stack.getItem() == Holder.itemYSetter()) {
             if (!worldIn.isRemote)
                 NetworkHooks.openGui(((ServerPlayerEntity) player), YSetterInteractionObject.apply((TileAdvQuarry) worldIn.getTileEntity(pos), pos), pos);
-            return true;
-        } else if (!player.isSneaking()) {
+            return ActionResultType.SUCCESS;
+        } else if (!player.isCrouching()) {
             if (!worldIn.isRemote)
                 NetworkHooks.openGui(((ServerPlayerEntity) player), (TileAdvQuarry) worldIn.getTileEntity(pos), pos);
-            return true;
+            return ActionResultType.SUCCESS;
         }
-        return false;
+        return ActionResultType.PASS;
     }
 
     @Override

@@ -15,7 +15,7 @@ object Sprites {
     .map(Symbol.apply)
 
   def getMap = map.toMap
-
+/*
   def registerTexture(event: TextureStitchEvent.Pre): Unit = {
     if (event.getMap.getBasePath == "textures") {
       LaserType.values().foreach(laserType => event.addSprite(laserType.location()))
@@ -29,5 +29,5 @@ object Sprites {
       LaserType.values().foreach(laserType => map.put(laserType.symbol, textureMap.getSprite(laserType.location())))
       symbols.foreach(s => map.put(s, textureMap.getSprite(new ResourceLocation(QuarryPlus.modID, "entities/" + s.name))))
     }
-  }
+  }*/
 }

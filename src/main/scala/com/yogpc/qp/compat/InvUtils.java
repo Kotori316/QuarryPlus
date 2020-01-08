@@ -22,6 +22,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -107,13 +108,16 @@ public class InvUtils {
         }
     }
 
-    public static boolean isDebugItem(@Nonnull PlayerEntity player, @Nonnull Hand hand) {
+    public static ActionResultType isDebugItem(@Nonnull PlayerEntity player, @Nonnull Hand hand) {
         ItemStack stack = player.getHeldItem(hand);
         if (!stack.isEmpty()) {
             Item item = stack.getItem();
-            return item == quarryDebug || item == ic2_meter || item == ic2_wrench || item == ic2_electric_wrench;
+            if (item == quarryDebug || item == ic2_meter || item == ic2_wrench || item == ic2_electric_wrench)
+                return ActionResultType.SUCCESS;
+            else
+                return ActionResultType.PASS;
         }
-        return false;
+        return ActionResultType.PASS;
     }
 
     public static BlockState getStateFromItem(@Nonnull BlockItem itemBlock) {

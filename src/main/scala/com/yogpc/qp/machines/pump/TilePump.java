@@ -397,7 +397,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                                     count++;
                             }
                 } else {
-                    BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
+                    BlockPos.Mutable mutableBlockPos = new BlockPos.Mutable();
                     for (bz = 0; bz < this.block_side_z; bz++)
                         if (this.blocks[this.py - this.yOffset][this.px][bz] != 0) {
                             bb = this.storageArray[this.px >> 4][bz >> 4][this.py >> 4].getBlockState(this.px & 0xF, this.py & 0xF, bz & 0xF);

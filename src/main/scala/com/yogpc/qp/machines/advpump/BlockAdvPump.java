@@ -25,6 +25,7 @@ import net.minecraft.item.Items;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -43,29 +44,29 @@ public class BlockAdvPump extends QPBlock {
     }
 
     @Override
-    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity playerIn, Hand hand, BlockRayTraceResult hit) {
-        if (super.onBlockActivated(state, worldIn, pos, playerIn, hand, hit)) return true;
+    public ActionResultType func_225533_a_(BlockState state, World worldIn, BlockPos pos, PlayerEntity playerIn, Hand hand, BlockRayTraceResult hit) {
+        if (super.func_225533_a_(state, worldIn, pos, playerIn, hand, hit).func_226247_b_()) return ActionResultType.SUCCESS;
         ItemStack stack = playerIn.getHeldItem(hand);
         if (Config.common().debug() && stack.getItem() == Items.STICK) {
             Optional.ofNullable((TileAdvPump) worldIn.getTileEntity(pos)).ifPresent(TileAdvPump::toggleDelete);
-            return true;
+            return ActionResultType.SUCCESS;
         } else if (BuildcraftHelper.isWrench(playerIn, hand, stack, hit)) {
             if (!worldIn.isRemote) {
                 Optional.ofNullable((TileAdvPump) worldIn.getTileEntity(pos)).ifPresent(TileAdvPump::G_ReInit);
             }
-            return true;
+            return ActionResultType.SUCCESS;
         } else if (stack.getItem() == Holder.itemStatusChecker()) {
             if (!worldIn.isRemote)
                 Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t ->
                     t.sendEnchantMassage(playerIn));
-            return true;
-        } else if (!playerIn.isSneaking()) {
+            return ActionResultType.SUCCESS;
+        } else if (!playerIn.isCrouching()) {
             if (!worldIn.isRemote) {
                 NetworkHooks.openGui(((ServerPlayerEntity) playerIn), (TileAdvPump) worldIn.getTileEntity(pos), pos);
             }
-            return true;
+            return ActionResultType.SUCCESS;
         }
-        return false;
+        return ActionResultType.PASS;
     }
 
 

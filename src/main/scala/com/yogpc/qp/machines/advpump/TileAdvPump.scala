@@ -157,7 +157,7 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
 
     getWorld.getProfiler.startSection("Depth")
 
-    var downPos = ench.firstPos(getPos).down
+    var downPos: BlockPos = ench.firstPos(getPos).down
     var flag = true
     while (flag) {
       if (downPos.getY < 0 || !ench.inRange(getPos, downPos)) {

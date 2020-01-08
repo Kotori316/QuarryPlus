@@ -2,7 +2,7 @@ package com.yogpc.qp.machines.quarry;
 
 import java.util.function.IntSupplier;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.advquarry.TileAdvQuarry;
@@ -45,7 +45,7 @@ public class GuiQuarryModule extends ContainerScreen<ContainerQuarryModule> {
 
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         this.getMinecraft().getTextureManager().bindTexture(LOCATION);
         this.blit(guiLeft, guiTop, 0, 0, xSize, ySize);
     }
