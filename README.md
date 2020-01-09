@@ -5,8 +5,6 @@
 
 CurseForge - https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner
 
-Now, this project is WIP. See commit page for details.
-
 Finished Work
 * Marker
 * Workbench

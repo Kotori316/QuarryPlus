@@ -1,5 +1,9 @@
 **This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).**
 
+## Version 14.1.5
+- Use vanilla format block state.
+- Fixed an issue that the area of adv quarry seems strange when markers are used.
+
 ## Version 14.1.4
 - Fixed a crash of `java.lang.IllegalAccessError`. [#75](https://github.com/Kotori316/QuarryPlus/issues/75)
 - Update forge to 28.1.108
