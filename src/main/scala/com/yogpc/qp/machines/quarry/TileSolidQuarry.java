@@ -20,7 +20,7 @@ import net.minecraft.tileentity.FurnaceTileEntity;
 import net.minecraft.util.IIntArray;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraftforge.event.ForgeEventFactory;
+import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
@@ -65,9 +65,7 @@ public class TileSolidQuarry extends TileQuarry implements INamedContainerProvid
                 getEnergy(fuelEfficiency, true);
             }
         } else {
-            int burn = fuel.getBurnTime();
-            burn = ForgeEventFactory.getItemBurnTime(fuel, burn == -1 ? FurnaceTileEntity.getBurnTimes().getOrDefault(fuel.getItem(), 0) : burn);
-            // int burn = ForgeHooks.getBurnTime(fuel);
+            int burn = ForgeHooks.getBurnTime(fuel);
             if (burn > 0) {
                 fuelCount += burn / 5;
                 if (fuel.hasContainerItem() && fuel.getCount() == 1) {
