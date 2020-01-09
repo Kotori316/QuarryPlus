@@ -246,7 +246,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
       val facing = world.getBlockState(pos).get(BlockStateProperties.FACING)
       Area.findAdvQuarryArea(facing, world, pos) match {
         case (newArea, markerOpt) =>
-          area = newArea
+          area = newArea.copy(yMax = newArea.yMin) // Prevent wrong line rendering
           markerOpt.foreach(m => m.removeFromWorldWithItem().forEach(storage.insertItem))
       }
     }
