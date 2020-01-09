@@ -1,7 +1,7 @@
 package com.yogpc.qp.render;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.renderer.BufferBuilder;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.renderer.Matrix4f;
 import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.Vector4f;
@@ -9,11 +9,11 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.Vec3i;
 
 final class Buffer {
-    private final BufferBuilder bufferBuilder;
+    private final IVertexBuilder bufferBuilder;
     private final Vector3f vector3f = new Vector3f();
     private final Vector4f vector4f = new Vector4f();
 
-    Buffer(BufferBuilder bufferBuilder) {
+    Buffer(IVertexBuilder bufferBuilder) {
         this.bufferBuilder = bufferBuilder;
     }
 
@@ -53,14 +53,14 @@ final class Buffer {
      * {@code buffer.lightmap(240, 0).endVertex()}
      */
     final void lightedAndEnd() {
-        bufferBuilder.func_225585_a_(10, 10).func_225587_b_(240, 0).endVertex();
+        bufferBuilder.func_225585_a_(10, 10).func_225587_b_(240, 0).func_225584_a_(0, 0, 0).endVertex();
     }
 
     final void lightedAndEnd(Box.LightValue value) {
-        bufferBuilder.func_225585_a_(10, 10).func_225587_b_(value.l1(), value.l2()).endVertex();
+        bufferBuilder.func_225585_a_(10, 10).func_225587_b_(value.l1(), value.l2()).func_225584_a_(0, 1, 0).endVertex();
     }
 
-    final boolean bufferEq(BufferBuilder builder) {
+    final boolean bufferEq(IVertexBuilder builder) {
         return bufferBuilder == builder;
     }
 }
