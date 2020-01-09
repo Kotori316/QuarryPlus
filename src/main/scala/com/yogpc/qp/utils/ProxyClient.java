@@ -20,6 +20,7 @@ import com.yogpc.qp.machines.quarry.TileQuarry;
 import com.yogpc.qp.machines.quarry.TileQuarry2;
 import com.yogpc.qp.machines.workbench.GuiWorkbench;
 import com.yogpc.qp.render.DummyBlockBakedModel;
+import com.yogpc.qp.render.RenderAdvQuarry;
 import com.yogpc.qp.render.Sprites;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
@@ -76,8 +77,8 @@ public class ProxyClient extends ProxyCommon {
     public void registerModBus(IEventBus modBus) {
         super.registerModBus(modBus);
         modBus.addListener(this::onBake);
-//        modBus.addListener(Sprites::putTexture);
-//        modBus.addListener(Sprites::registerTexture);
+        modBus.addListener(Sprites::putTexture);
+        modBus.addListener(Sprites::registerTexture);
     }
 
     @Override
@@ -98,8 +99,8 @@ public class ProxyClient extends ProxyCommon {
         if (Config.client().enableRender().get()) {
             /*ClientRegistry.bindTileEntitySpecialRenderer(TileMarker.class, RenderMarker.instance());
             ClientRegistry.bindTileEntitySpecialRenderer(TileQuarry.class, RenderQuarry.instance());
-            ClientRegistry.bindTileEntitySpecialRenderer(TileQuarry2.class, RenderQuarry2.instance());
-            ClientRegistry.bindTileEntitySpecialRenderer(TileAdvQuarry.class, RenderAdvQuarry.instance());*/
+            ClientRegistry.bindTileEntitySpecialRenderer(TileQuarry2.class, RenderQuarry2.instance());*/
+            ClientRegistry.bindTileEntityRenderer(Holder.advQuarryType(), t -> RenderAdvQuarry.instance());
         }
 //        if (!Config.content().disableRendering()) {
 //            if (!Config.content().disableMapJ().get(TileAdvQuarry.SYMBOL()))
