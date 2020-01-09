@@ -6,21 +6,18 @@ import java.util.Optional;
 import com.yogpc.qp.Config;
 import com.yogpc.qp.machines.advpump.GuiAdvPump;
 import com.yogpc.qp.machines.advquarry.GuiAdvQuarry;
-import com.yogpc.qp.machines.advquarry.TileAdvQuarry;
 import com.yogpc.qp.machines.base.StatusGui;
 import com.yogpc.qp.machines.bookmover.GuiBookMover;
 import com.yogpc.qp.machines.item.GuiEnchList;
 import com.yogpc.qp.machines.item.GuiListTemplate;
 import com.yogpc.qp.machines.item.GuiQuarryLevel;
-import com.yogpc.qp.machines.marker.TileMarker;
 import com.yogpc.qp.machines.mover.GuiMover;
 import com.yogpc.qp.machines.quarry.GuiQuarryModule;
 import com.yogpc.qp.machines.quarry.GuiSolidQuarry;
-import com.yogpc.qp.machines.quarry.TileQuarry;
-import com.yogpc.qp.machines.quarry.TileQuarry2;
 import com.yogpc.qp.machines.workbench.GuiWorkbench;
 import com.yogpc.qp.render.DummyBlockBakedModel;
 import com.yogpc.qp.render.RenderAdvQuarry;
+import com.yogpc.qp.render.RenderMarker;
 import com.yogpc.qp.render.Sprites;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
@@ -97,8 +94,8 @@ public class ProxyClient extends ProxyCommon {
     public void registerTextures(FMLCommonSetupEvent event) {
         // Register TileEntity Special Render
         if (Config.client().enableRender().get()) {
-            /*ClientRegistry.bindTileEntitySpecialRenderer(TileMarker.class, RenderMarker.instance());
-            ClientRegistry.bindTileEntitySpecialRenderer(TileQuarry.class, RenderQuarry.instance());
+            ClientRegistry.bindTileEntityRenderer(Holder.markerTileType(), t -> RenderMarker.instance());
+          /*  ClientRegistry.bindTileEntitySpecialRenderer(TileQuarry.class, RenderQuarry.instance());
             ClientRegistry.bindTileEntitySpecialRenderer(TileQuarry2.class, RenderQuarry2.instance());*/
             ClientRegistry.bindTileEntityRenderer(Holder.advQuarryType(), t -> RenderAdvQuarry.instance());
         }
