@@ -1,6 +1,5 @@
 package com.yogpc.qp.machines.workbench;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.TranslationKeys;
@@ -9,7 +8,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.fonts.Font;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.renderer.Matrix4f;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.renderer.model.ModelManager;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -21,7 +22,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.lwjgl.opengl.GL11;
 
 @OnlyIn(Dist.CLIENT)
 public class GuiWorkbench extends ContainerScreen<ContainerWorkbench> {
@@ -33,17 +33,32 @@ public class GuiWorkbench extends ContainerScreen<ContainerWorkbench> {
         }
 
         @Override
-        public int drawStringWithShadow(String text, float x, float y, int color) {
+        public int func_228079_a_(String text, float x, float y, int color, boolean p_228079_5_, Matrix4f matrix4f, IRenderTypeBuffer renderTypeBuffer, boolean depth, int l1, int l2) {
             int l = this.p.getStringWidth(text);
-            GL11.glPushMatrix();
-            GL11.glTranslatef(x, y, 0);
+            RenderSystem.pushMatrix();
+            RenderSystem.translatef(x, y, 0);
             if (l > 16) {
                 final float f = (float) 16 / l;
-                GL11.glTranslatef(l - 16, this.p.FONT_HEIGHT * (1 - f), 0);
-                GL11.glScalef(f, f, 1);
+                RenderSystem.translatef(l - 16, this.p.FONT_HEIGHT * (1 - f), 0);
+                RenderSystem.scalef(f, f, 1);
+            }
+            l = super.func_228079_a_(text, x, y, color, p_228079_5_, matrix4f, renderTypeBuffer, depth, l1, l2);
+            RenderSystem.popMatrix();
+            return l;
+        }
+
+        @Override
+        public int drawStringWithShadow(String text, float x, float y, int color) {
+            int l = this.p.getStringWidth(text);
+            RenderSystem.pushMatrix();
+            RenderSystem.translatef(x, y, 0);
+            if (l > 16) {
+                final float f = (float) 16 / l;
+                RenderSystem.translatef(l - 16, this.p.FONT_HEIGHT * (1 - f), 0);
+                RenderSystem.scalef(f, f, 1);
             }
             l = this.p.drawStringWithShadow(text, 0, 0, color);
-            GL11.glPopMatrix();
+            RenderSystem.popMatrix();
             return l;
         }
 
@@ -77,9 +92,10 @@ public class GuiWorkbench extends ContainerScreen<ContainerWorkbench> {
 
         @Override
         public void renderItemOverlayIntoGUI(FontRenderer fr, ItemStack stack, int xPosition, int yPosition, @Nullable String text) {
-            if (stack.getCount() > 64)
-                super.renderItemOverlayIntoGUI(myFont.setParent(fr), stack, xPosition, yPosition, text);
-            else
+//            if (stack.getCount() > 64){
+//                super.renderItemOverlayIntoGUI(myFont.setParent(fr), stack, xPosition, yPosition, text);
+//            }
+//            else
                 Minecraft.getInstance().getItemRenderer().renderItemOverlayIntoGUI(fr, stack, xPosition, yPosition, text);
         }
     }
