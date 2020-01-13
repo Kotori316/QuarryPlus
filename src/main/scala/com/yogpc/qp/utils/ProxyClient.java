@@ -18,6 +18,8 @@ import com.yogpc.qp.machines.workbench.GuiWorkbench;
 import com.yogpc.qp.render.DummyBlockBakedModel;
 import com.yogpc.qp.render.RenderAdvQuarry;
 import com.yogpc.qp.render.RenderMarker;
+import com.yogpc.qp.render.RenderQuarry;
+import com.yogpc.qp.render.RenderQuarry2;
 import com.yogpc.qp.render.Sprites;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
@@ -42,8 +44,6 @@ import net.minecraftforge.fml.network.NetworkEvent;
 
 @OnlyIn(Dist.CLIENT)
 public class ProxyClient extends ProxyCommon {
-    private DummyBlockBakedModel dummyBlockBakedModel;
-    private DummyBlockBakedModel dummyItemBakedModel;
 
     @Override
     public Optional<PlayerEntity> getPacketPlayer(final NetworkEvent.Context context) {
@@ -95,8 +95,8 @@ public class ProxyClient extends ProxyCommon {
         // Register TileEntity Special Render
         if (Config.client().enableRender().get()) {
             ClientRegistry.bindTileEntityRenderer(Holder.markerTileType(), t -> RenderMarker.instance());
-//            ClientRegistry.bindTileEntityRenderer(Holder.quarryTileType(), t -> RenderQuarry.instance());
-//            ClientRegistry.bindTileEntityRenderer(Holder.quarry2(), t -> RenderQuarry2.instance());
+            ClientRegistry.bindTileEntityRenderer(Holder.quarryTileType(), t -> RenderQuarry.instance());
+            ClientRegistry.bindTileEntityRenderer(Holder.quarry2(), t -> RenderQuarry2.instance());
             ClientRegistry.bindTileEntityRenderer(Holder.advQuarryType(), t -> RenderAdvQuarry.instance());
         }
 //        if (!Config.content().disableRendering()) {
@@ -132,8 +132,8 @@ public class ProxyClient extends ProxyCommon {
 
         IBakedModel blockModel = getModel(event.getModelManager(), new ModelResourceLocation(itemTexName));
         IBakedModel itemModel = getModel(event.getModelManager(), new ModelResourceLocation(itemTexName, "inventory"));
-        dummyBlockBakedModel = new DummyBlockBakedModel(blockModel);
-        dummyItemBakedModel = new DummyBlockBakedModel(itemModel);
+        DummyBlockBakedModel dummyBlockBakedModel = new DummyBlockBakedModel(blockModel);
+        DummyBlockBakedModel dummyItemBakedModel = new DummyBlockBakedModel(itemModel);
 
         ResourceLocation pathIn = Objects.requireNonNull(Holder.blockDummy().getRegistryName());
         event.getModelRegistry().put(new ModelResourceLocation(pathIn.toString()), dummyBlockBakedModel);
