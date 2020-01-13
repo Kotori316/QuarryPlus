@@ -664,10 +664,10 @@ object RenderQuarry2 extends TileEntityRenderer[TileQuarry2](TileEntityRendererD
         val D_I8dV = drillStripe.getInterpolatedV(8d)
         val D_16dU = drillStripe.getMaxU
         //Top
-        buffer.pos(hXmd, MYPd + .5, hZmd, matrixStack).colored().tex(D_minU, D_I8dV).lightedAndEnd()
-        buffer.pos(hXmd, MYPd + .5, hZPd, matrixStack).colored().tex(D_maxU, D_I8dV).lightedAndEnd()
-        buffer.pos(hXPd, MYPd + .5, hZPd, matrixStack).colored().tex(D_maxU, drillStripe.getMaxV).lightedAndEnd()
-        buffer.pos(hXPd, MYPd + .5, hZmd, matrixStack).colored().tex(D_minU, drillStripe.getMaxV).lightedAndEnd()
+        buffer.pos(hXmd, MYPd, hZmd, matrixStack).colored().tex(D_minU, D_I8dV).lightedAndEnd()
+        buffer.pos(hXmd, MYPd, hZPd, matrixStack).colored().tex(D_maxU, D_I8dV).lightedAndEnd()
+        buffer.pos(hXPd, MYPd, hZPd, matrixStack).colored().tex(D_maxU, drillStripe.getMaxV).lightedAndEnd()
+        buffer.pos(hXPd, MYPd, hZmd, matrixStack).colored().tex(D_minU, drillStripe.getMaxV).lightedAndEnd()
 
         var i1 = 0
         while (i1 < floor) {
@@ -680,9 +680,9 @@ object RenderQuarry2 extends TileEntityRenderer[TileQuarry2](TileEntityRendererD
           buffer.pos(hXmd, MY1, hZmd, matrixStack).colored().tex(D_minU, D_I8dV).lightedAndEnd()
 
           buffer.pos(hXPd, MY1, hZPd, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
-          buffer.pos(hXPd, MY2, hZPd, matrixStack).colored().tex(D_16dU, D_minV).lightedAndEnd()
-          buffer.pos(hXmd, MY2, hZPd, matrixStack).colored().tex(D_16dU, D_I8dV).lightedAndEnd()
           buffer.pos(hXmd, MY1, hZPd, matrixStack).colored().tex(D_minU, D_I8dV).lightedAndEnd()
+          buffer.pos(hXmd, MY2, hZPd, matrixStack).colored().tex(D_16dU, D_I8dV).lightedAndEnd()
+          buffer.pos(hXPd, MY2, hZPd, matrixStack).colored().tex(D_16dU, D_minV).lightedAndEnd()
 
           buffer.pos(hXPd, MY1, hZPd, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
           buffer.pos(hXPd, MY2, hZPd, matrixStack).colored().tex(D_16dU, D_minV).lightedAndEnd()
@@ -690,9 +690,9 @@ object RenderQuarry2 extends TileEntityRenderer[TileQuarry2](TileEntityRendererD
           buffer.pos(hXPd, MY1, hZmd, matrixStack).colored().tex(D_minU, D_I8dV).lightedAndEnd()
 
           buffer.pos(hXmd, MY1, hZPd, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
-          buffer.pos(hXmd, MY2, hZPd, matrixStack).colored().tex(D_16dU, D_minV).lightedAndEnd()
-          buffer.pos(hXmd, MY2, hZmd, matrixStack).colored().tex(D_16dU, D_I8dV).lightedAndEnd()
           buffer.pos(hXmd, MY1, hZmd, matrixStack).colored().tex(D_minU, D_I8dV).lightedAndEnd()
+          buffer.pos(hXmd, MY2, hZmd, matrixStack).colored().tex(D_16dU, D_I8dV).lightedAndEnd()
+          buffer.pos(hXmd, MY2, hZPd, matrixStack).colored().tex(D_16dU, D_minV).lightedAndEnd()
           i1 += 1
         }
         val fixedU = drillStripe.getInterpolatedU((length - floor) * 16)
@@ -704,9 +704,9 @@ object RenderQuarry2 extends TileEntityRenderer[TileQuarry2](TileEntityRendererD
         buffer.pos(hXmd, MYF, hZmd, matrixStack).colored().tex(D_minU, D_I8dV).lightedAndEnd()
 
         buffer.pos(hXPd, MYF, hZPd, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
-        buffer.pos(hXPd, MYL, hZPd, matrixStack).colored().tex(fixedU, D_minV).lightedAndEnd()
-        buffer.pos(hXmd, MYL, hZPd, matrixStack).colored().tex(fixedU, D_I8dV).lightedAndEnd()
         buffer.pos(hXmd, MYF, hZPd, matrixStack).colored().tex(D_minU, D_I8dV).lightedAndEnd()
+        buffer.pos(hXmd, MYL, hZPd, matrixStack).colored().tex(fixedU, D_I8dV).lightedAndEnd()
+        buffer.pos(hXPd, MYL, hZPd, matrixStack).colored().tex(fixedU, D_minV).lightedAndEnd()
 
         buffer.pos(hXPd, MYF, hZPd, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
         buffer.pos(hXPd, MYL, hZPd, matrixStack).colored().tex(fixedU, D_minV).lightedAndEnd()
@@ -714,15 +714,15 @@ object RenderQuarry2 extends TileEntityRenderer[TileQuarry2](TileEntityRendererD
         buffer.pos(hXPd, MYF, hZmd, matrixStack).colored().tex(D_minU, D_I8dV).lightedAndEnd()
 
         buffer.pos(hXmd, MYF, hZPd, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
-        buffer.pos(hXmd, MYL, hZPd, matrixStack).colored().tex(fixedU, D_minV).lightedAndEnd()
-        buffer.pos(hXmd, MYL, hZmd, matrixStack).colored().tex(fixedU, D_I8dV).lightedAndEnd()
         buffer.pos(hXmd, MYF, hZmd, matrixStack).colored().tex(D_minU, D_I8dV).lightedAndEnd()
+        buffer.pos(hXmd, MYL, hZmd, matrixStack).colored().tex(fixedU, D_I8dV).lightedAndEnd()
+        buffer.pos(hXmd, MYL, hZPd, matrixStack).colored().tex(fixedU, D_minV).lightedAndEnd()
 
         //Bottom
         buffer.pos(hXmd, MYL, hZmd, matrixStack).colored().tex(D_minU, D_I8dV).lightedAndEnd()
-        buffer.pos(hXmd, MYL, hZPd, matrixStack).colored().tex(D_maxU, D_I8dV).lightedAndEnd()
-        buffer.pos(hXPd, MYL, hZPd, matrixStack).colored().tex(D_maxU, drillStripe.getMaxV).lightedAndEnd()
         buffer.pos(hXPd, MYL, hZmd, matrixStack).colored().tex(D_minU, drillStripe.getMaxV).lightedAndEnd()
+        buffer.pos(hXPd, MYL, hZPd, matrixStack).colored().tex(D_maxU, drillStripe.getMaxV).lightedAndEnd()
+        buffer.pos(hXmd, MYL, hZPd, matrixStack).colored().tex(D_maxU, D_I8dV).lightedAndEnd()
 
         //Drill
         val xm = headPosX - d4 / 2
@@ -758,7 +758,6 @@ object RenderQuarry2 extends TileEntityRenderer[TileQuarry2](TileEntityRendererD
 
       val y_length = maxY - headPosY - 0.75
       val y_floor = MathHelper.floor(y_length)
-      matrixStack.func_227861_a_(-pos.getX + .5, -pos.getY + .5, -pos.getZ + .5)
       yLine(y_floor, y_length)
 
       matrixStack.func_227865_b_()
