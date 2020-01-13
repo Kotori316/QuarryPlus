@@ -86,14 +86,14 @@ object RenderQuarry extends TileEntityRenderer[TileQuarry](TileEntityRendererDis
           buffer.pos(mXi, ymd, MZP, matrixStack).colored().tex(V_minU, V_maxV).lightedAndEnd()
 
           buffer.pos(mXi, yPd, mZm, matrixStack).colored().tex(V_minU, V_minV).lightedAndEnd()
-          buffer.pos(mXn, yPd, mZm, matrixStack).colored().tex(V_maxU, V_minV).lightedAndEnd()
-          buffer.pos(mXn, yPd, mZP, matrixStack).colored().tex(V_maxU, V_maxV).lightedAndEnd()
           buffer.pos(mXi, yPd, mZP, matrixStack).colored().tex(V_minU, V_maxV).lightedAndEnd()
+          buffer.pos(mXn, yPd, mZP, matrixStack).colored().tex(V_maxU, V_maxV).lightedAndEnd()
+          buffer.pos(mXn, yPd, mZm, matrixStack).colored().tex(V_maxU, V_minV).lightedAndEnd()
 
           buffer.pos(mXi, yPd, MZm, matrixStack).colored().tex(V_minU, V_minV).lightedAndEnd()
-          buffer.pos(mXn, yPd, MZm, matrixStack).colored().tex(V_maxU, V_minV).lightedAndEnd()
-          buffer.pos(mXn, yPd, MZP, matrixStack).colored().tex(V_maxU, V_maxV).lightedAndEnd()
           buffer.pos(mXi, yPd, MZP, matrixStack).colored().tex(V_minU, V_maxV).lightedAndEnd()
+          buffer.pos(mXn, yPd, MZP, matrixStack).colored().tex(V_maxU, V_maxV).lightedAndEnd()
+          buffer.pos(mXn, yPd, MZm, matrixStack).colored().tex(V_maxU, V_minV).lightedAndEnd()
         }
 
         def tempZ(z: Double): Unit = {
@@ -110,14 +110,14 @@ object RenderQuarry extends TileEntityRenderer[TileQuarry](TileEntityRendererDis
           buffer.pos(mXi, MYm, zmd, matrixStack).colored().tex(V_minU, V_maxV).lightedAndEnd()
 
           buffer.pos(mXi, mYP, zPd, matrixStack).colored().tex(V_minU, V_minV).lightedAndEnd()
-          buffer.pos(mXn, mYP, zPd, matrixStack).colored().tex(V_maxU, V_minV).lightedAndEnd()
-          buffer.pos(mXn, mYm, zPd, matrixStack).colored().tex(V_maxU, V_maxV).lightedAndEnd()
           buffer.pos(mXi, mYm, zPd, matrixStack).colored().tex(V_minU, V_maxV).lightedAndEnd()
+          buffer.pos(mXn, mYm, zPd, matrixStack).colored().tex(V_maxU, V_maxV).lightedAndEnd()
+          buffer.pos(mXn, mYP, zPd, matrixStack).colored().tex(V_maxU, V_minV).lightedAndEnd()
 
           buffer.pos(mXi, MYP, zPd, matrixStack).colored().tex(V_minU, V_minV).lightedAndEnd()
-          buffer.pos(mXn, MYP, zPd, matrixStack).colored().tex(V_maxU, V_minV).lightedAndEnd()
-          buffer.pos(mXn, MYm, zPd, matrixStack).colored().tex(V_maxU, V_maxV).lightedAndEnd()
           buffer.pos(mXi, MYm, zPd, matrixStack).colored().tex(V_minU, V_maxV).lightedAndEnd()
+          buffer.pos(mXn, MYm, zPd, matrixStack).colored().tex(V_maxU, V_maxV).lightedAndEnd()
+          buffer.pos(mXn, MYP, zPd, matrixStack).colored().tex(V_maxU, V_minV).lightedAndEnd()
         }
 
         tempY(minY)
@@ -140,24 +140,24 @@ object RenderQuarry extends TileEntityRenderer[TileQuarry](TileEntityRendererDis
         val y0 = mYP + i + 0
         val yn = mYP + i + n
         buffer.pos(mXm, y0, mZm, matrixStack).colored().tex(H_minU, H_minV).lightedAndEnd()
-        buffer.pos(mXP, y0, mZm, matrixStack).colored().tex(H_maxU, H_minV).lightedAndEnd()
-        buffer.pos(mXP, yn, mZm, matrixStack).colored().tex(H_maxU, H_maxV).lightedAndEnd()
         buffer.pos(mXm, yn, mZm, matrixStack).colored().tex(H_minU, H_maxV).lightedAndEnd()
+        buffer.pos(mXP, yn, mZm, matrixStack).colored().tex(H_maxU, H_maxV).lightedAndEnd()
+        buffer.pos(mXP, y0, mZm, matrixStack).colored().tex(H_maxU, H_minV).lightedAndEnd()
 
         buffer.pos(MXm, y0, mZm, matrixStack).colored().tex(H_minU, H_minV).lightedAndEnd()
-        buffer.pos(MXP, y0, mZm, matrixStack).colored().tex(H_maxU, H_minV).lightedAndEnd()
-        buffer.pos(MXP, yn, mZm, matrixStack).colored().tex(H_maxU, H_maxV).lightedAndEnd()
         buffer.pos(MXm, yn, mZm, matrixStack).colored().tex(H_minU, H_maxV).lightedAndEnd()
+        buffer.pos(MXP, yn, mZm, matrixStack).colored().tex(H_maxU, H_maxV).lightedAndEnd()
+        buffer.pos(MXP, y0, mZm, matrixStack).colored().tex(H_maxU, H_minV).lightedAndEnd()
 
         buffer.pos(mXm, y0, MZm, matrixStack).colored().tex(H_minU, H_minV).lightedAndEnd()
-        buffer.pos(mXP, y0, MZm, matrixStack).colored().tex(H_maxU, H_minV).lightedAndEnd()
-        buffer.pos(mXP, yn, MZm, matrixStack).colored().tex(H_maxU, H_maxV).lightedAndEnd()
         buffer.pos(mXm, yn, MZm, matrixStack).colored().tex(H_minU, H_maxV).lightedAndEnd()
+        buffer.pos(mXP, yn, MZm, matrixStack).colored().tex(H_maxU, H_maxV).lightedAndEnd()
+        buffer.pos(mXP, y0, MZm, matrixStack).colored().tex(H_maxU, H_minV).lightedAndEnd()
 
         buffer.pos(MXm, y0, MZm, matrixStack).colored().tex(H_minU, H_minV).lightedAndEnd()
-        buffer.pos(MXP, y0, MZm, matrixStack).colored().tex(H_maxU, H_minV).lightedAndEnd()
-        buffer.pos(MXP, yn, MZm, matrixStack).colored().tex(H_maxU, H_maxV).lightedAndEnd()
         buffer.pos(MXm, yn, MZm, matrixStack).colored().tex(H_minU, H_maxV).lightedAndEnd()
+        buffer.pos(MXP, yn, MZm, matrixStack).colored().tex(H_maxU, H_maxV).lightedAndEnd()
+        buffer.pos(MXP, y0, MZm, matrixStack).colored().tex(H_maxU, H_minV).lightedAndEnd()
 
         buffer.pos(mXm, y0, mZP, matrixStack).colored().tex(H_minU, H_minV).lightedAndEnd()
         buffer.pos(mXP, y0, mZP, matrixStack).colored().tex(H_maxU, H_minV).lightedAndEnd()
@@ -202,24 +202,24 @@ object RenderQuarry extends TileEntityRenderer[TileQuarry](TileEntityRendererDis
 
 
         buffer.pos(mXP, y0, mZm, matrixStack).colored().tex(H_minU, H_minV).lightedAndEnd()
-        buffer.pos(mXP, y0, mZP, matrixStack).colored().tex(H_maxU, H_minV).lightedAndEnd()
-        buffer.pos(mXP, yn, mZP, matrixStack).colored().tex(H_maxU, H_maxV).lightedAndEnd()
         buffer.pos(mXP, yn, mZm, matrixStack).colored().tex(H_minU, H_maxV).lightedAndEnd()
+        buffer.pos(mXP, yn, mZP, matrixStack).colored().tex(H_maxU, H_maxV).lightedAndEnd()
+        buffer.pos(mXP, y0, mZP, matrixStack).colored().tex(H_maxU, H_minV).lightedAndEnd()
 
         buffer.pos(MXP, y0, mZm, matrixStack).colored().tex(H_minU, H_minV).lightedAndEnd()
-        buffer.pos(MXP, y0, mZP, matrixStack).colored().tex(H_maxU, H_minV).lightedAndEnd()
-        buffer.pos(MXP, yn, mZP, matrixStack).colored().tex(H_maxU, H_maxV).lightedAndEnd()
         buffer.pos(MXP, yn, mZm, matrixStack).colored().tex(H_minU, H_maxV).lightedAndEnd()
+        buffer.pos(MXP, yn, mZP, matrixStack).colored().tex(H_maxU, H_maxV).lightedAndEnd()
+        buffer.pos(MXP, y0, mZP, matrixStack).colored().tex(H_maxU, H_minV).lightedAndEnd()
 
         buffer.pos(mXP, y0, MZm, matrixStack).colored().tex(H_minU, H_minV).lightedAndEnd()
-        buffer.pos(mXP, y0, MZP, matrixStack).colored().tex(H_maxU, H_minV).lightedAndEnd()
-        buffer.pos(mXP, yn, MZP, matrixStack).colored().tex(H_maxU, H_maxV).lightedAndEnd()
         buffer.pos(mXP, yn, MZm, matrixStack).colored().tex(H_minU, H_maxV).lightedAndEnd()
+        buffer.pos(mXP, yn, MZP, matrixStack).colored().tex(H_maxU, H_maxV).lightedAndEnd()
+        buffer.pos(mXP, y0, MZP, matrixStack).colored().tex(H_maxU, H_minV).lightedAndEnd()
 
         buffer.pos(MXP, y0, MZm, matrixStack).colored().tex(H_minU, H_minV).lightedAndEnd()
-        buffer.pos(MXP, y0, MZP, matrixStack).colored().tex(H_maxU, H_minV).lightedAndEnd()
-        buffer.pos(MXP, yn, MZP, matrixStack).colored().tex(H_maxU, H_maxV).lightedAndEnd()
         buffer.pos(MXP, yn, MZm, matrixStack).colored().tex(H_minU, H_maxV).lightedAndEnd()
+        buffer.pos(MXP, yn, MZP, matrixStack).colored().tex(H_maxU, H_maxV).lightedAndEnd()
+        buffer.pos(MXP, y0, MZP, matrixStack).colored().tex(H_maxU, H_minV).lightedAndEnd()
         i += 1
       }
       //Z 4 LINES
@@ -234,14 +234,14 @@ object RenderQuarry extends TileEntityRenderer[TileQuarry](TileEntityRendererDis
           val ymd = y - d1
           val yPd = y + d1
           buffer.pos(mXm, ymd, mZi, matrixStack).colored().tex(V_minU, V_minV).lightedAndEnd()
-          buffer.pos(mXm, ymd, mZn, matrixStack).colored().tex(V_maxU, V_minV).lightedAndEnd()
-          buffer.pos(mXP, ymd, mZn, matrixStack).colored().tex(V_maxU, V_maxV).lightedAndEnd()
           buffer.pos(mXP, ymd, mZi, matrixStack).colored().tex(V_minU, V_maxV).lightedAndEnd()
+          buffer.pos(mXP, ymd, mZn, matrixStack).colored().tex(V_maxU, V_maxV).lightedAndEnd()
+          buffer.pos(mXm, ymd, mZn, matrixStack).colored().tex(V_maxU, V_minV).lightedAndEnd()
 
           buffer.pos(MXm, ymd, mZi, matrixStack).colored().tex(V_minU, V_minV).lightedAndEnd()
-          buffer.pos(MXm, ymd, mZn, matrixStack).colored().tex(V_maxU, V_minV).lightedAndEnd()
-          buffer.pos(MXP, ymd, mZn, matrixStack).colored().tex(V_maxU, V_maxV).lightedAndEnd()
           buffer.pos(MXP, ymd, mZi, matrixStack).colored().tex(V_minU, V_maxV).lightedAndEnd()
+          buffer.pos(MXP, ymd, mZn, matrixStack).colored().tex(V_maxU, V_maxV).lightedAndEnd()
+          buffer.pos(MXm, ymd, mZn, matrixStack).colored().tex(V_maxU, V_minV).lightedAndEnd()
 
           buffer.pos(mXm, yPd, mZi, matrixStack).colored().tex(V_minU, V_minV).lightedAndEnd()
           buffer.pos(mXm, yPd, mZn, matrixStack).colored().tex(V_maxU, V_minV).lightedAndEnd()
@@ -258,14 +258,14 @@ object RenderQuarry extends TileEntityRenderer[TileQuarry](TileEntityRendererDis
           val xmd = x - d1
           val xPd = x + d1
           buffer.pos(xmd, mYP, mZi, matrixStack).colored().tex(V_minU, V_minV).lightedAndEnd()
-          buffer.pos(xmd, mYP, mZn, matrixStack).colored().tex(V_maxU, V_minV).lightedAndEnd()
-          buffer.pos(xmd, mYm, mZn, matrixStack).colored().tex(V_maxU, V_maxV).lightedAndEnd()
           buffer.pos(xmd, mYm, mZi, matrixStack).colored().tex(V_minU, V_maxV).lightedAndEnd()
+          buffer.pos(xmd, mYm, mZn, matrixStack).colored().tex(V_maxU, V_maxV).lightedAndEnd()
+          buffer.pos(xmd, mYP, mZn, matrixStack).colored().tex(V_maxU, V_minV).lightedAndEnd()
 
           buffer.pos(xmd, MYP, mZi, matrixStack).colored().tex(V_minU, V_minV).lightedAndEnd()
-          buffer.pos(xmd, MYP, mZn, matrixStack).colored().tex(V_maxU, V_minV).lightedAndEnd()
-          buffer.pos(xmd, MYm, mZn, matrixStack).colored().tex(V_maxU, V_maxV).lightedAndEnd()
           buffer.pos(xmd, MYm, mZi, matrixStack).colored().tex(V_minU, V_maxV).lightedAndEnd()
+          buffer.pos(xmd, MYm, mZn, matrixStack).colored().tex(V_maxU, V_maxV).lightedAndEnd()
+          buffer.pos(xmd, MYP, mZn, matrixStack).colored().tex(V_maxU, V_minV).lightedAndEnd()
 
           buffer.pos(xPd, mYP, mZi, matrixStack).colored().tex(V_minU, V_minV).lightedAndEnd()
           buffer.pos(xPd, mYP, mZn, matrixStack).colored().tex(V_maxU, V_minV).lightedAndEnd()
@@ -301,14 +301,14 @@ object RenderQuarry extends TileEntityRenderer[TileQuarry](TileEntityRendererDis
       buffer.pos(MXm, mYP, mZm, matrixStack).colored().tex(B_minU, B_maxV).lightedAndEnd()
 
       buffer.pos(mXP, mYP, MZP, matrixStack).colored().tex(B_minU, B_minV).lightedAndEnd()
-      buffer.pos(mXP, mYm, MZP, matrixStack).colored().tex(B_maxU, B_minV).lightedAndEnd()
-      buffer.pos(mXm, mYm, MZP, matrixStack).colored().tex(B_maxU, B_maxV).lightedAndEnd()
       buffer.pos(mXm, mYP, MZP, matrixStack).colored().tex(B_minU, B_maxV).lightedAndEnd()
+      buffer.pos(mXm, mYm, MZP, matrixStack).colored().tex(B_maxU, B_maxV).lightedAndEnd()
+      buffer.pos(mXP, mYm, MZP, matrixStack).colored().tex(B_maxU, B_minV).lightedAndEnd()
 
       buffer.pos(MXP, mYP, MZP, matrixStack).colored().tex(B_minU, B_minV).lightedAndEnd()
-      buffer.pos(MXP, mYm, MZP, matrixStack).colored().tex(B_maxU, B_minV).lightedAndEnd()
-      buffer.pos(MXm, mYm, MZP, matrixStack).colored().tex(B_maxU, B_maxV).lightedAndEnd()
       buffer.pos(MXm, mYP, MZP, matrixStack).colored().tex(B_minU, B_maxV).lightedAndEnd()
+      buffer.pos(MXm, mYm, MZP, matrixStack).colored().tex(B_maxU, B_maxV).lightedAndEnd()
+      buffer.pos(MXP, mYm, MZP, matrixStack).colored().tex(B_maxU, B_minV).lightedAndEnd()
 
       buffer.pos(mXP, MYP, mZm, matrixStack).colored().tex(B_minU, B_minV).lightedAndEnd()
       buffer.pos(mXP, MYm, mZm, matrixStack).colored().tex(B_maxU, B_minV).lightedAndEnd()
@@ -321,35 +321,35 @@ object RenderQuarry extends TileEntityRenderer[TileQuarry](TileEntityRendererDis
       buffer.pos(MXm, MYP, mZm, matrixStack).colored().tex(B_minU, B_maxV).lightedAndEnd()
 
       buffer.pos(mXP, MYP, MZP, matrixStack).colored().tex(B_minU, B_minV).lightedAndEnd()
-      buffer.pos(mXP, MYm, MZP, matrixStack).colored().tex(B_maxU, B_minV).lightedAndEnd()
-      buffer.pos(mXm, MYm, MZP, matrixStack).colored().tex(B_maxU, B_maxV).lightedAndEnd()
       buffer.pos(mXm, MYP, MZP, matrixStack).colored().tex(B_minU, B_maxV).lightedAndEnd()
+      buffer.pos(mXm, MYm, MZP, matrixStack).colored().tex(B_maxU, B_maxV).lightedAndEnd()
+      buffer.pos(mXP, MYm, MZP, matrixStack).colored().tex(B_maxU, B_minV).lightedAndEnd()
 
       buffer.pos(MXP, MYP, MZP, matrixStack).colored().tex(B_minU, B_minV).lightedAndEnd()
-      buffer.pos(MXP, MYm, MZP, matrixStack).colored().tex(B_maxU, B_minV).lightedAndEnd()
-      buffer.pos(MXm, MYm, MZP, matrixStack).colored().tex(B_maxU, B_maxV).lightedAndEnd()
       buffer.pos(MXm, MYP, MZP, matrixStack).colored().tex(B_minU, B_maxV).lightedAndEnd()
+      buffer.pos(MXm, MYm, MZP, matrixStack).colored().tex(B_maxU, B_maxV).lightedAndEnd()
+      buffer.pos(MXP, MYm, MZP, matrixStack).colored().tex(B_maxU, B_minV).lightedAndEnd()
 
       //x
       buffer.pos(mXm, mYP, mZP, matrixStack).colored().tex(B_minU, B_minV).lightedAndEnd()
-      buffer.pos(mXm, mYm, mZP, matrixStack).colored().tex(B_maxU, B_minV).lightedAndEnd()
-      buffer.pos(mXm, mYm, mZm, matrixStack).colored().tex(B_maxU, B_maxV).lightedAndEnd()
       buffer.pos(mXm, mYP, mZm, matrixStack).colored().tex(B_minU, B_maxV).lightedAndEnd()
+      buffer.pos(mXm, mYm, mZm, matrixStack).colored().tex(B_maxU, B_maxV).lightedAndEnd()
+      buffer.pos(mXm, mYm, mZP, matrixStack).colored().tex(B_maxU, B_minV).lightedAndEnd()
 
       buffer.pos(mXm, mYP, MZP, matrixStack).colored().tex(B_minU, B_minV).lightedAndEnd()
-      buffer.pos(mXm, mYm, MZP, matrixStack).colored().tex(B_maxU, B_minV).lightedAndEnd()
-      buffer.pos(mXm, mYm, MZm, matrixStack).colored().tex(B_maxU, B_maxV).lightedAndEnd()
       buffer.pos(mXm, mYP, MZm, matrixStack).colored().tex(B_minU, B_maxV).lightedAndEnd()
+      buffer.pos(mXm, mYm, MZm, matrixStack).colored().tex(B_maxU, B_maxV).lightedAndEnd()
+      buffer.pos(mXm, mYm, MZP, matrixStack).colored().tex(B_maxU, B_minV).lightedAndEnd()
 
       buffer.pos(mXm, MYP, mZP, matrixStack).colored().tex(B_minU, B_minV).lightedAndEnd()
-      buffer.pos(mXm, MYm, mZP, matrixStack).colored().tex(B_maxU, B_minV).lightedAndEnd()
-      buffer.pos(mXm, MYm, mZm, matrixStack).colored().tex(B_maxU, B_maxV).lightedAndEnd()
       buffer.pos(mXm, MYP, mZm, matrixStack).colored().tex(B_minU, B_maxV).lightedAndEnd()
+      buffer.pos(mXm, MYm, mZm, matrixStack).colored().tex(B_maxU, B_maxV).lightedAndEnd()
+      buffer.pos(mXm, MYm, mZP, matrixStack).colored().tex(B_maxU, B_minV).lightedAndEnd()
 
       buffer.pos(mXm, MYP, MZP, matrixStack).colored().tex(B_minU, B_minV).lightedAndEnd()
-      buffer.pos(mXm, MYm, MZP, matrixStack).colored().tex(B_maxU, B_minV).lightedAndEnd()
-      buffer.pos(mXm, MYm, MZm, matrixStack).colored().tex(B_maxU, B_maxV).lightedAndEnd()
       buffer.pos(mXm, MYP, MZm, matrixStack).colored().tex(B_minU, B_maxV).lightedAndEnd()
+      buffer.pos(mXm, MYm, MZm, matrixStack).colored().tex(B_maxU, B_maxV).lightedAndEnd()
+      buffer.pos(mXm, MYm, MZP, matrixStack).colored().tex(B_maxU, B_minV).lightedAndEnd()
 
       buffer.pos(MXP, mYP, mZP, matrixStack).colored().tex(B_minU, B_minV).lightedAndEnd()
       buffer.pos(MXP, mYm, mZP, matrixStack).colored().tex(B_maxU, B_minV).lightedAndEnd()
@@ -372,6 +372,7 @@ object RenderQuarry extends TileEntityRenderer[TileQuarry](TileEntityRendererDis
       buffer.pos(MXP, MYP, MZm, matrixStack).colored().tex(B_minU, B_maxV).lightedAndEnd()
 
       //y
+      // Lower Side
       buffer.pos(mXP, mYm, mZP, matrixStack).colored().tex(B_minU, B_minV).lightedAndEnd()
       buffer.pos(mXm, mYm, mZP, matrixStack).colored().tex(B_maxU, B_minV).lightedAndEnd()
       buffer.pos(mXm, mYm, mZm, matrixStack).colored().tex(B_maxU, B_maxV).lightedAndEnd()
@@ -392,25 +393,26 @@ object RenderQuarry extends TileEntityRenderer[TileQuarry](TileEntityRendererDis
       buffer.pos(MXm, mYm, MZm, matrixStack).colored().tex(B_maxU, B_maxV).lightedAndEnd()
       buffer.pos(MXP, mYm, MZm, matrixStack).colored().tex(B_minU, B_maxV).lightedAndEnd()
 
+      // Upper Side
       buffer.pos(mXP, MYP, mZP, matrixStack).colored().tex(B_minU, B_minV).lightedAndEnd()
-      buffer.pos(mXm, MYP, mZP, matrixStack).colored().tex(B_maxU, B_minV).lightedAndEnd()
-      buffer.pos(mXm, MYP, mZm, matrixStack).colored().tex(B_maxU, B_maxV).lightedAndEnd()
       buffer.pos(mXP, MYP, mZm, matrixStack).colored().tex(B_minU, B_maxV).lightedAndEnd()
+      buffer.pos(mXm, MYP, mZm, matrixStack).colored().tex(B_maxU, B_maxV).lightedAndEnd()
+      buffer.pos(mXm, MYP, mZP, matrixStack).colored().tex(B_maxU, B_minV).lightedAndEnd()
 
       buffer.pos(MXP, MYP, mZP, matrixStack).colored().tex(B_minU, B_minV).lightedAndEnd()
-      buffer.pos(MXm, MYP, mZP, matrixStack).colored().tex(B_maxU, B_minV).lightedAndEnd()
-      buffer.pos(MXm, MYP, mZm, matrixStack).colored().tex(B_maxU, B_maxV).lightedAndEnd()
       buffer.pos(MXP, MYP, mZm, matrixStack).colored().tex(B_minU, B_maxV).lightedAndEnd()
+      buffer.pos(MXm, MYP, mZm, matrixStack).colored().tex(B_maxU, B_maxV).lightedAndEnd()
+      buffer.pos(MXm, MYP, mZP, matrixStack).colored().tex(B_maxU, B_minV).lightedAndEnd()
 
       buffer.pos(mXP, MYP, MZP, matrixStack).colored().tex(B_minU, B_minV).lightedAndEnd()
-      buffer.pos(mXm, MYP, MZP, matrixStack).colored().tex(B_maxU, B_minV).lightedAndEnd()
-      buffer.pos(mXm, MYP, MZm, matrixStack).colored().tex(B_maxU, B_maxV).lightedAndEnd()
       buffer.pos(mXP, MYP, MZm, matrixStack).colored().tex(B_minU, B_maxV).lightedAndEnd()
+      buffer.pos(mXm, MYP, MZm, matrixStack).colored().tex(B_maxU, B_maxV).lightedAndEnd()
+      buffer.pos(mXm, MYP, MZP, matrixStack).colored().tex(B_maxU, B_minV).lightedAndEnd()
 
       buffer.pos(MXP, MYP, MZP, matrixStack).colored().tex(B_minU, B_minV).lightedAndEnd()
-      buffer.pos(MXm, MYP, MZP, matrixStack).colored().tex(B_maxU, B_minV).lightedAndEnd()
-      buffer.pos(MXm, MYP, MZm, matrixStack).colored().tex(B_maxU, B_maxV).lightedAndEnd()
       buffer.pos(MXP, MYP, MZm, matrixStack).colored().tex(B_minU, B_maxV).lightedAndEnd()
+      buffer.pos(MXm, MYP, MZm, matrixStack).colored().tex(B_maxU, B_maxV).lightedAndEnd()
+      buffer.pos(MXm, MYP, MZP, matrixStack).colored().tex(B_maxU, B_minV).lightedAndEnd()
 
       matrixStack.func_227865_b_()
       Minecraft.getInstance.getProfiler.endSection()
@@ -441,49 +443,93 @@ object RenderQuarry extends TileEntityRenderer[TileQuarry](TileEntityRendererDis
           val i2 = i1 + 1
           val fX1 = f(quarry.headPosX, d4 + i1)
           val fX2 = f(quarry.headPosX, d4 + i2)
-          buffer.pos(fX1, MYPd, hZmd, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
-          buffer.pos(fX1, MYPd, hZPd, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
-          buffer.pos(fX2, MYPd, hZPd, matrixStack).colored().tex(D_maxU, D_maxV).lightedAndEnd()
-          buffer.pos(fX2, MYPd, hZmd, matrixStack).colored().tex(D_minU, D_maxV).lightedAndEnd()
+          if (plus) {
+            buffer.pos(fX1, MYPd, hZmd, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
+            buffer.pos(fX1, MYPd, hZPd, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
+            buffer.pos(fX2, MYPd, hZPd, matrixStack).colored().tex(D_maxU, D_maxV).lightedAndEnd()
+            buffer.pos(fX2, MYPd, hZmd, matrixStack).colored().tex(D_minU, D_maxV).lightedAndEnd()
 
-          buffer.pos(fX1, MYmd, hZmd, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
-          buffer.pos(fX1, MYmd, hZPd, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
-          buffer.pos(fX2, MYmd, hZPd, matrixStack).colored().tex(D_maxU, D_maxV).lightedAndEnd()
-          buffer.pos(fX2, MYmd, hZmd, matrixStack).colored().tex(D_minU, D_maxV).lightedAndEnd()
+            buffer.pos(fX1, MYmd, hZmd, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
+            buffer.pos(fX2, MYmd, hZmd, matrixStack).colored().tex(D_minU, D_maxV).lightedAndEnd()
+            buffer.pos(fX2, MYmd, hZPd, matrixStack).colored().tex(D_maxU, D_maxV).lightedAndEnd()
+            buffer.pos(fX1, MYmd, hZPd, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
 
-          buffer.pos(fX2, MYPd, hZmd, matrixStack).colored().tex(D_maxU, D_maxV).lightedAndEnd()
-          buffer.pos(fX2, MYmd, hZmd, matrixStack).colored().tex(D_minU, D_maxV).lightedAndEnd()
-          buffer.pos(fX1, MYmd, hZmd, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
-          buffer.pos(fX1, MYPd, hZmd, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
+            buffer.pos(fX2, MYPd, hZmd, matrixStack).colored().tex(D_maxU, D_maxV).lightedAndEnd()
+            buffer.pos(fX2, MYmd, hZmd, matrixStack).colored().tex(D_minU, D_maxV).lightedAndEnd()
+            buffer.pos(fX1, MYmd, hZmd, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
+            buffer.pos(fX1, MYPd, hZmd, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
 
-          buffer.pos(fX2, MYPd, hZPd, matrixStack).colored().tex(D_maxU, D_maxV).lightedAndEnd()
-          buffer.pos(fX2, MYmd, hZPd, matrixStack).colored().tex(D_minU, D_maxV).lightedAndEnd()
-          buffer.pos(fX1, MYmd, hZPd, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
-          buffer.pos(fX1, MYPd, hZPd, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
+            buffer.pos(fX2, MYPd, hZPd, matrixStack).colored().tex(D_maxU, D_maxV).lightedAndEnd()
+            buffer.pos(fX1, MYPd, hZPd, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
+            buffer.pos(fX1, MYmd, hZPd, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
+            buffer.pos(fX2, MYmd, hZPd, matrixStack).colored().tex(D_minU, D_maxV).lightedAndEnd()
+          } else {
+            buffer.pos(fX1, MYPd, hZmd, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
+            buffer.pos(fX2, MYPd, hZmd, matrixStack).colored().tex(D_minU, D_maxV).lightedAndEnd()
+            buffer.pos(fX2, MYPd, hZPd, matrixStack).colored().tex(D_maxU, D_maxV).lightedAndEnd()
+            buffer.pos(fX1, MYPd, hZPd, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
+
+            buffer.pos(fX1, MYmd, hZmd, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
+            buffer.pos(fX1, MYmd, hZPd, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
+            buffer.pos(fX2, MYmd, hZPd, matrixStack).colored().tex(D_maxU, D_maxV).lightedAndEnd()
+            buffer.pos(fX2, MYmd, hZmd, matrixStack).colored().tex(D_minU, D_maxV).lightedAndEnd()
+
+            buffer.pos(fX2, MYPd, hZmd, matrixStack).colored().tex(D_maxU, D_maxV).lightedAndEnd()
+            buffer.pos(fX1, MYPd, hZmd, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
+            buffer.pos(fX1, MYmd, hZmd, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
+            buffer.pos(fX2, MYmd, hZmd, matrixStack).colored().tex(D_minU, D_maxV).lightedAndEnd()
+
+            buffer.pos(fX2, MYPd, hZPd, matrixStack).colored().tex(D_maxU, D_maxV).lightedAndEnd()
+            buffer.pos(fX2, MYmd, hZPd, matrixStack).colored().tex(D_minU, D_maxV).lightedAndEnd()
+            buffer.pos(fX1, MYmd, hZPd, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
+            buffer.pos(fX1, MYPd, hZPd, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
+          }
           i1 += 1
         }
         val fixedV = drillStripe.getInterpolatedV((length - floor) * 16)
         val xF = f(quarry.headPosX, d4 + floor)
         val xL = f(quarry.headPosX, d4 + length)
-        buffer.pos(xF, MYPd, hZmd, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
-        buffer.pos(xF, MYPd, hZPd, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
-        buffer.pos(xL, MYPd, hZPd, matrixStack).colored().tex(D_maxU, fixedV).lightedAndEnd()
-        buffer.pos(xL, MYPd, hZmd, matrixStack).colored().tex(D_minU, fixedV).lightedAndEnd()
+        if (plus) {
+          buffer.pos(xF, MYPd, hZmd, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
+          buffer.pos(xF, MYPd, hZPd, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
+          buffer.pos(xL, MYPd, hZPd, matrixStack).colored().tex(D_maxU, fixedV).lightedAndEnd()
+          buffer.pos(xL, MYPd, hZmd, matrixStack).colored().tex(D_minU, fixedV).lightedAndEnd()
 
-        buffer.pos(xF, MYmd, hZmd, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
-        buffer.pos(xF, MYmd, hZPd, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
-        buffer.pos(xL, MYmd, hZPd, matrixStack).colored().tex(D_maxU, fixedV).lightedAndEnd()
-        buffer.pos(xL, MYmd, hZmd, matrixStack).colored().tex(D_minU, fixedV).lightedAndEnd()
+          buffer.pos(xF, MYmd, hZmd, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
+          buffer.pos(xL, MYmd, hZmd, matrixStack).colored().tex(D_minU, fixedV).lightedAndEnd()
+          buffer.pos(xL, MYmd, hZPd, matrixStack).colored().tex(D_maxU, fixedV).lightedAndEnd()
+          buffer.pos(xF, MYmd, hZPd, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
 
-        buffer.pos(xL, MYPd, hZmd, matrixStack).colored().tex(D_maxU, fixedV).lightedAndEnd()
-        buffer.pos(xL, MYmd, hZmd, matrixStack).colored().tex(D_minU, fixedV).lightedAndEnd()
-        buffer.pos(xF, MYmd, hZmd, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
-        buffer.pos(xF, MYPd, hZmd, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
+          buffer.pos(xL, MYPd, hZmd, matrixStack).colored().tex(D_maxU, fixedV).lightedAndEnd()
+          buffer.pos(xL, MYmd, hZmd, matrixStack).colored().tex(D_minU, fixedV).lightedAndEnd()
+          buffer.pos(xF, MYmd, hZmd, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
+          buffer.pos(xF, MYPd, hZmd, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
 
-        buffer.pos(xL, MYPd, hZPd, matrixStack).colored().tex(D_maxU, fixedV).lightedAndEnd()
-        buffer.pos(xL, MYmd, hZPd, matrixStack).colored().tex(D_minU, fixedV).lightedAndEnd()
-        buffer.pos(xF, MYmd, hZPd, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
-        buffer.pos(xF, MYPd, hZPd, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
+          buffer.pos(xL, MYPd, hZPd, matrixStack).colored().tex(D_maxU, fixedV).lightedAndEnd()
+          buffer.pos(xF, MYPd, hZPd, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
+          buffer.pos(xF, MYmd, hZPd, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
+          buffer.pos(xL, MYmd, hZPd, matrixStack).colored().tex(D_minU, fixedV).lightedAndEnd()
+        } else {
+          buffer.pos(xF, MYPd, hZmd, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
+          buffer.pos(xL, MYPd, hZmd, matrixStack).colored().tex(D_minU, fixedV).lightedAndEnd()
+          buffer.pos(xL, MYPd, hZPd, matrixStack).colored().tex(D_maxU, fixedV).lightedAndEnd()
+          buffer.pos(xF, MYPd, hZPd, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
+
+          buffer.pos(xF, MYmd, hZmd, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
+          buffer.pos(xF, MYmd, hZPd, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
+          buffer.pos(xL, MYmd, hZPd, matrixStack).colored().tex(D_maxU, fixedV).lightedAndEnd()
+          buffer.pos(xL, MYmd, hZmd, matrixStack).colored().tex(D_minU, fixedV).lightedAndEnd()
+
+          buffer.pos(xL, MYPd, hZmd, matrixStack).colored().tex(D_maxU, fixedV).lightedAndEnd()
+          buffer.pos(xF, MYPd, hZmd, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
+          buffer.pos(xF, MYmd, hZmd, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
+          buffer.pos(xL, MYmd, hZmd, matrixStack).colored().tex(D_minU, fixedV).lightedAndEnd()
+
+          buffer.pos(xL, MYPd, hZPd, matrixStack).colored().tex(D_maxU, fixedV).lightedAndEnd()
+          buffer.pos(xL, MYmd, hZPd, matrixStack).colored().tex(D_minU, fixedV).lightedAndEnd()
+          buffer.pos(xF, MYmd, hZPd, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
+          buffer.pos(xF, MYPd, hZPd, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
+        }
       }
       //X lines
 
@@ -505,49 +551,93 @@ object RenderQuarry extends TileEntityRenderer[TileQuarry](TileEntityRendererDis
           val i2 = i1 + 1
           val fZ1 = f(quarry.headPosZ, d4 + i1)
           val fZ2 = f(quarry.headPosZ, d4 + i2)
-          buffer.pos(hXmd, MYPd, fZ1, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
-          buffer.pos(hXPd, MYPd, fZ1, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
-          buffer.pos(hXPd, MYPd, fZ2, matrixStack).colored().tex(D_maxU, D_maxV).lightedAndEnd()
-          buffer.pos(hXmd, MYPd, fZ2, matrixStack).colored().tex(D_minU, D_maxV).lightedAndEnd()
+          if (plus) {
+            buffer.pos(hXmd, MYPd, fZ1, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
+            buffer.pos(hXmd, MYPd, fZ2, matrixStack).colored().tex(D_minU, D_maxV).lightedAndEnd()
+            buffer.pos(hXPd, MYPd, fZ2, matrixStack).colored().tex(D_maxU, D_maxV).lightedAndEnd()
+            buffer.pos(hXPd, MYPd, fZ1, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
 
-          buffer.pos(hXmd, MYmd, fZ1, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
-          buffer.pos(hXPd, MYmd, fZ1, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
-          buffer.pos(hXPd, MYmd, fZ2, matrixStack).colored().tex(D_maxU, D_maxV).lightedAndEnd()
-          buffer.pos(hXmd, MYmd, fZ2, matrixStack).colored().tex(D_minU, D_maxV).lightedAndEnd()
+            buffer.pos(hXmd, MYmd, fZ1, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
+            buffer.pos(hXPd, MYmd, fZ1, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
+            buffer.pos(hXPd, MYmd, fZ2, matrixStack).colored().tex(D_maxU, D_maxV).lightedAndEnd()
+            buffer.pos(hXmd, MYmd, fZ2, matrixStack).colored().tex(D_minU, D_maxV).lightedAndEnd()
 
-          buffer.pos(hXmd, MYPd, fZ2, matrixStack).colored().tex(D_maxU, D_maxV).lightedAndEnd()
-          buffer.pos(hXmd, MYmd, fZ2, matrixStack).colored().tex(D_minU, D_maxV).lightedAndEnd()
-          buffer.pos(hXmd, MYmd, fZ1, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
-          buffer.pos(hXmd, MYPd, fZ1, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
+            buffer.pos(hXmd, MYPd, fZ2, matrixStack).colored().tex(D_maxU, D_maxV).lightedAndEnd()
+            buffer.pos(hXmd, MYPd, fZ1, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
+            buffer.pos(hXmd, MYmd, fZ1, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
+            buffer.pos(hXmd, MYmd, fZ2, matrixStack).colored().tex(D_minU, D_maxV).lightedAndEnd()
 
-          buffer.pos(hXPd, MYPd, fZ2, matrixStack).colored().tex(D_maxU, D_maxV).lightedAndEnd()
-          buffer.pos(hXPd, MYmd, fZ2, matrixStack).colored().tex(D_minU, D_maxV).lightedAndEnd()
-          buffer.pos(hXPd, MYmd, fZ1, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
-          buffer.pos(hXPd, MYPd, fZ1, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
+            buffer.pos(hXPd, MYPd, fZ2, matrixStack).colored().tex(D_maxU, D_maxV).lightedAndEnd()
+            buffer.pos(hXPd, MYmd, fZ2, matrixStack).colored().tex(D_minU, D_maxV).lightedAndEnd()
+            buffer.pos(hXPd, MYmd, fZ1, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
+            buffer.pos(hXPd, MYPd, fZ1, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
+          } else {
+            buffer.pos(hXmd, MYPd, fZ1, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
+            buffer.pos(hXPd, MYPd, fZ1, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
+            buffer.pos(hXPd, MYPd, fZ2, matrixStack).colored().tex(D_maxU, D_maxV).lightedAndEnd()
+            buffer.pos(hXmd, MYPd, fZ2, matrixStack).colored().tex(D_minU, D_maxV).lightedAndEnd()
+
+            buffer.pos(hXmd, MYmd, fZ1, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
+            buffer.pos(hXmd, MYmd, fZ2, matrixStack).colored().tex(D_minU, D_maxV).lightedAndEnd()
+            buffer.pos(hXPd, MYmd, fZ2, matrixStack).colored().tex(D_maxU, D_maxV).lightedAndEnd()
+            buffer.pos(hXPd, MYmd, fZ1, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
+
+            buffer.pos(hXmd, MYPd, fZ2, matrixStack).colored().tex(D_maxU, D_maxV).lightedAndEnd()
+            buffer.pos(hXmd, MYmd, fZ2, matrixStack).colored().tex(D_minU, D_maxV).lightedAndEnd()
+            buffer.pos(hXmd, MYmd, fZ1, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
+            buffer.pos(hXmd, MYPd, fZ1, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
+
+            buffer.pos(hXPd, MYPd, fZ2, matrixStack).colored().tex(D_maxU, D_maxV).lightedAndEnd()
+            buffer.pos(hXPd, MYPd, fZ1, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
+            buffer.pos(hXPd, MYmd, fZ1, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
+            buffer.pos(hXPd, MYmd, fZ2, matrixStack).colored().tex(D_minU, D_maxV).lightedAndEnd()
+          }
           i1 += 1
         }
         val fixedV = drillStripe.getInterpolatedV((length - floor) * 16)
         val zF = f(quarry.headPosZ, d4 + floor)
         val zL = f(quarry.headPosZ, d4 + length)
-        buffer.pos(hXmd, MYPd, zF, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
-        buffer.pos(hXPd, MYPd, zF, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
-        buffer.pos(hXPd, MYPd, zL, matrixStack).colored().tex(D_maxU, fixedV).lightedAndEnd()
-        buffer.pos(hXmd, MYPd, zL, matrixStack).colored().tex(D_minU, fixedV).lightedAndEnd()
+        if (plus) {
+          buffer.pos(hXmd, MYPd, zF, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
+          buffer.pos(hXmd, MYPd, zL, matrixStack).colored().tex(D_minU, fixedV).lightedAndEnd()
+          buffer.pos(hXPd, MYPd, zL, matrixStack).colored().tex(D_maxU, fixedV).lightedAndEnd()
+          buffer.pos(hXPd, MYPd, zF, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
 
-        buffer.pos(hXmd, MYmd, zF, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
-        buffer.pos(hXPd, MYmd, zF, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
-        buffer.pos(hXPd, MYmd, zL, matrixStack).colored().tex(D_maxU, fixedV).lightedAndEnd()
-        buffer.pos(hXmd, MYmd, zL, matrixStack).colored().tex(D_minU, fixedV).lightedAndEnd()
+          buffer.pos(hXmd, MYmd, zF, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
+          buffer.pos(hXPd, MYmd, zF, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
+          buffer.pos(hXPd, MYmd, zL, matrixStack).colored().tex(D_maxU, fixedV).lightedAndEnd()
+          buffer.pos(hXmd, MYmd, zL, matrixStack).colored().tex(D_minU, fixedV).lightedAndEnd()
 
-        buffer.pos(hXmd, MYPd, zL, matrixStack).colored().tex(D_maxU, fixedV).lightedAndEnd()
-        buffer.pos(hXmd, MYmd, zL, matrixStack).colored().tex(D_minU, fixedV).lightedAndEnd()
-        buffer.pos(hXmd, MYmd, zF, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
-        buffer.pos(hXmd, MYPd, zF, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
+          buffer.pos(hXmd, MYPd, zL, matrixStack).colored().tex(D_maxU, fixedV).lightedAndEnd()
+          buffer.pos(hXmd, MYPd, zF, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
+          buffer.pos(hXmd, MYmd, zF, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
+          buffer.pos(hXmd, MYmd, zL, matrixStack).colored().tex(D_minU, fixedV).lightedAndEnd()
 
-        buffer.pos(hXPd, MYPd, zL, matrixStack).colored().tex(D_maxU, fixedV).lightedAndEnd()
-        buffer.pos(hXPd, MYmd, zL, matrixStack).colored().tex(D_minU, fixedV).lightedAndEnd()
-        buffer.pos(hXPd, MYmd, zF, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
-        buffer.pos(hXPd, MYPd, zF, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
+          buffer.pos(hXPd, MYPd, zL, matrixStack).colored().tex(D_maxU, fixedV).lightedAndEnd()
+          buffer.pos(hXPd, MYmd, zL, matrixStack).colored().tex(D_minU, fixedV).lightedAndEnd()
+          buffer.pos(hXPd, MYmd, zF, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
+          buffer.pos(hXPd, MYPd, zF, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
+        } else {
+          buffer.pos(hXmd, MYPd, zF, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
+          buffer.pos(hXPd, MYPd, zF, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
+          buffer.pos(hXPd, MYPd, zL, matrixStack).colored().tex(D_maxU, fixedV).lightedAndEnd()
+          buffer.pos(hXmd, MYPd, zL, matrixStack).colored().tex(D_minU, fixedV).lightedAndEnd()
+
+          buffer.pos(hXmd, MYmd, zF, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
+          buffer.pos(hXmd, MYmd, zL, matrixStack).colored().tex(D_minU, fixedV).lightedAndEnd()
+          buffer.pos(hXPd, MYmd, zL, matrixStack).colored().tex(D_maxU, fixedV).lightedAndEnd()
+          buffer.pos(hXPd, MYmd, zF, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
+
+          buffer.pos(hXmd, MYPd, zL, matrixStack).colored().tex(D_maxU, fixedV).lightedAndEnd()
+          buffer.pos(hXmd, MYmd, zL, matrixStack).colored().tex(D_minU, fixedV).lightedAndEnd()
+          buffer.pos(hXmd, MYmd, zF, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
+          buffer.pos(hXmd, MYPd, zF, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
+
+          buffer.pos(hXPd, MYPd, zL, matrixStack).colored().tex(D_maxU, fixedV).lightedAndEnd()
+          buffer.pos(hXPd, MYPd, zF, matrixStack).colored().tex(D_maxU, D_minV).lightedAndEnd()
+          buffer.pos(hXPd, MYmd, zF, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
+          buffer.pos(hXPd, MYmd, zL, matrixStack).colored().tex(D_minU, fixedV).lightedAndEnd()
+        }
       }
       //Z lines
 
@@ -565,10 +655,10 @@ object RenderQuarry extends TileEntityRenderer[TileQuarry](TileEntityRendererDis
         val D_I8dV = drillStripe.getInterpolatedV(8d)
         val D_16dU = drillStripe.getMaxU
         //Top
-        buffer.pos(hXmd, MYPd + .5, hZmd, matrixStack).colored().tex(D_minU, D_I8dV).lightedAndEnd()
-        buffer.pos(hXmd, MYPd + .5, hZPd, matrixStack).colored().tex(D_maxU, D_I8dV).lightedAndEnd()
-        buffer.pos(hXPd, MYPd + .5, hZPd, matrixStack).colored().tex(D_maxU, drillStripe.getMaxV).lightedAndEnd()
-        buffer.pos(hXPd, MYPd + .5, hZmd, matrixStack).colored().tex(D_minU, drillStripe.getMaxV).lightedAndEnd()
+        buffer.pos(hXmd, MYPd, hZmd, matrixStack).colored().tex(D_minU, D_I8dV).lightedAndEnd()
+        buffer.pos(hXmd, MYPd, hZPd, matrixStack).colored().tex(D_maxU, D_I8dV).lightedAndEnd()
+        buffer.pos(hXPd, MYPd, hZPd, matrixStack).colored().tex(D_maxU, drillStripe.getMaxV).lightedAndEnd()
+        buffer.pos(hXPd, MYPd, hZmd, matrixStack).colored().tex(D_minU, drillStripe.getMaxV).lightedAndEnd()
 
         var i1 = 0
         while (i1 < floor) {
@@ -581,9 +671,9 @@ object RenderQuarry extends TileEntityRenderer[TileQuarry](TileEntityRendererDis
           buffer.pos(hXmd, MY1, hZmd, matrixStack).colored().tex(D_minU, D_I8dV).lightedAndEnd()
 
           buffer.pos(hXPd, MY1, hZPd, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
-          buffer.pos(hXPd, MY2, hZPd, matrixStack).colored().tex(D_16dU, D_minV).lightedAndEnd()
-          buffer.pos(hXmd, MY2, hZPd, matrixStack).colored().tex(D_16dU, D_I8dV).lightedAndEnd()
           buffer.pos(hXmd, MY1, hZPd, matrixStack).colored().tex(D_minU, D_I8dV).lightedAndEnd()
+          buffer.pos(hXmd, MY2, hZPd, matrixStack).colored().tex(D_16dU, D_I8dV).lightedAndEnd()
+          buffer.pos(hXPd, MY2, hZPd, matrixStack).colored().tex(D_16dU, D_minV).lightedAndEnd()
 
           buffer.pos(hXPd, MY1, hZPd, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
           buffer.pos(hXPd, MY2, hZPd, matrixStack).colored().tex(D_16dU, D_minV).lightedAndEnd()
@@ -591,9 +681,9 @@ object RenderQuarry extends TileEntityRenderer[TileQuarry](TileEntityRendererDis
           buffer.pos(hXPd, MY1, hZmd, matrixStack).colored().tex(D_minU, D_I8dV).lightedAndEnd()
 
           buffer.pos(hXmd, MY1, hZPd, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
-          buffer.pos(hXmd, MY2, hZPd, matrixStack).colored().tex(D_16dU, D_minV).lightedAndEnd()
-          buffer.pos(hXmd, MY2, hZmd, matrixStack).colored().tex(D_16dU, D_I8dV).lightedAndEnd()
           buffer.pos(hXmd, MY1, hZmd, matrixStack).colored().tex(D_minU, D_I8dV).lightedAndEnd()
+          buffer.pos(hXmd, MY2, hZmd, matrixStack).colored().tex(D_16dU, D_I8dV).lightedAndEnd()
+          buffer.pos(hXmd, MY2, hZPd, matrixStack).colored().tex(D_16dU, D_minV).lightedAndEnd()
           i1 += 1
         }
         val fixedU = drillStripe.getInterpolatedU((length - floor) * 16)
@@ -605,9 +695,9 @@ object RenderQuarry extends TileEntityRenderer[TileQuarry](TileEntityRendererDis
         buffer.pos(hXmd, MYF, hZmd, matrixStack).colored().tex(D_minU, D_I8dV).lightedAndEnd()
 
         buffer.pos(hXPd, MYF, hZPd, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
-        buffer.pos(hXPd, MYL, hZPd, matrixStack).colored().tex(fixedU, D_minV).lightedAndEnd()
-        buffer.pos(hXmd, MYL, hZPd, matrixStack).colored().tex(fixedU, D_I8dV).lightedAndEnd()
         buffer.pos(hXmd, MYF, hZPd, matrixStack).colored().tex(D_minU, D_I8dV).lightedAndEnd()
+        buffer.pos(hXmd, MYL, hZPd, matrixStack).colored().tex(fixedU, D_I8dV).lightedAndEnd()
+        buffer.pos(hXPd, MYL, hZPd, matrixStack).colored().tex(fixedU, D_minV).lightedAndEnd()
 
         buffer.pos(hXPd, MYF, hZPd, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
         buffer.pos(hXPd, MYL, hZPd, matrixStack).colored().tex(fixedU, D_minV).lightedAndEnd()
@@ -615,15 +705,15 @@ object RenderQuarry extends TileEntityRenderer[TileQuarry](TileEntityRendererDis
         buffer.pos(hXPd, MYF, hZmd, matrixStack).colored().tex(D_minU, D_I8dV).lightedAndEnd()
 
         buffer.pos(hXmd, MYF, hZPd, matrixStack).colored().tex(D_minU, D_minV).lightedAndEnd()
-        buffer.pos(hXmd, MYL, hZPd, matrixStack).colored().tex(fixedU, D_minV).lightedAndEnd()
-        buffer.pos(hXmd, MYL, hZmd, matrixStack).colored().tex(fixedU, D_I8dV).lightedAndEnd()
         buffer.pos(hXmd, MYF, hZmd, matrixStack).colored().tex(D_minU, D_I8dV).lightedAndEnd()
+        buffer.pos(hXmd, MYL, hZmd, matrixStack).colored().tex(fixedU, D_I8dV).lightedAndEnd()
+        buffer.pos(hXmd, MYL, hZPd, matrixStack).colored().tex(fixedU, D_minV).lightedAndEnd()
 
         //Bottom
         buffer.pos(hXmd, MYL, hZmd, matrixStack).colored().tex(D_minU, D_I8dV).lightedAndEnd()
-        buffer.pos(hXmd, MYL, hZPd, matrixStack).colored().tex(D_maxU, D_I8dV).lightedAndEnd()
-        buffer.pos(hXPd, MYL, hZPd, matrixStack).colored().tex(D_maxU, drillStripe.getMaxV).lightedAndEnd()
         buffer.pos(hXPd, MYL, hZmd, matrixStack).colored().tex(D_minU, drillStripe.getMaxV).lightedAndEnd()
+        buffer.pos(hXPd, MYL, hZPd, matrixStack).colored().tex(D_maxU, drillStripe.getMaxV).lightedAndEnd()
+        buffer.pos(hXmd, MYL, hZPd, matrixStack).colored().tex(D_maxU, D_I8dV).lightedAndEnd()
 
         //Drill
         val xm = quarry.headPosX - d4 / 2
@@ -659,7 +749,6 @@ object RenderQuarry extends TileEntityRenderer[TileQuarry](TileEntityRendererDis
 
       val y_length = quarry.yMax - quarry.headPosY - 0.75
       val y_floor = MathHelper.floor(y_length)
-      matrixStack.func_227861_a_(-pos.getX + .5, -pos.getY, -pos.getZ + .5)
       yLine(y_floor, y_length)
 
       matrixStack.func_227865_b_()
