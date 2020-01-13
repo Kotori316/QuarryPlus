@@ -172,7 +172,7 @@ curseforge {
         id = '282837'
         changelogType = 'markdown'
         changelog = new File("temp_changelog.md")
-        releaseType = 'alpha'
+        releaseType = 'release'
         addGameVersion '1.15.1'
         mainArtifact(jar) {
             displayName = 'v' + project.version
@@ -228,7 +228,7 @@ task CheckCompileOption() {
     }
 }
 
-task copyToDrive(type: Copy, dependsOn: "build") {
+task copyToDrive(type: Copy, dependsOn: "curseforge") {
     def PATH_NAME = "drive_path"
     from(jar.getArchiveFile(), deobfJar.getArchiveFile(), srcJar.getArchiveFile())
     into(file(java.util.Optional.ofNullable(System.getenv(PATH_NAME)).orElse(".")))

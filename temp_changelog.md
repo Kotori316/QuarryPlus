@@ -1,5 +1,8 @@
 **This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).**
 
+## Version 15.0.2
+* Add support of JEI.
+
 ## Version 15.0.1-SNAPSHOT
 * Added renderer for QuarryPlus.
 * Disabled own font renderer in WorkbenchPlus.
