@@ -23,7 +23,6 @@ import net.minecraft.resources.{IResource, IResourceManager}
 import net.minecraft.util.{JSONUtils, ResourceLocation}
 import net.minecraft.world.World
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
-import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.common.crafting.CraftingHelper
 import net.minecraftforge.event.entity.player.PlayerEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent

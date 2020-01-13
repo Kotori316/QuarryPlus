@@ -1,6 +1,7 @@
 package com.yogpc.qp.integration.jei;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,7 +36,7 @@ public class QuarryJeiPlugin implements IModPlugin {
     public void registerRecipes(IRecipeRegistration registration) {
         List<WorkbenchRecipes> recipes = Stream.concat(
             CollectionConverters.asJava(WorkbenchRecipes.getRecipeMap()).values().stream(), // Internal recipes.
-            RecipeGetter.getRecipes(Minecraft.getInstance().world.getRecipeManager(), WorkbenchRecipes.recipeType()).values().stream()) // Synced by server.
+            RecipeGetter.getRecipes(Objects.requireNonNull(Minecraft.getInstance().world).getRecipeManager(), WorkbenchRecipes.recipeType()).values().stream()) // Synced by server.
             .filter(WorkbenchRecipes::showInJEI)
             .sorted(WorkbenchRecipes.recipeOrdering())
             .collect(Collectors.toList());
