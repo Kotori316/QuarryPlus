@@ -260,7 +260,7 @@ publishing {
     }
     publications {
         gpr(MavenPublication) {
-            artifactId = archivesBaseName
+            artifactId = "AdditionalEnchantedMiner"
             artifact srcJar {
                 classifier = 'sources'
                 extension = 'jar'
