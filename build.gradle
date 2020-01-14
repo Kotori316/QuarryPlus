@@ -16,6 +16,9 @@ buildscript {
         classpath "gradle.plugin.com.matthewprenger:CurseGradle:1.2.0"
     }
 }
+plugins {
+    id("maven-publish")
+}
 apply plugin: 'scala'
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: "com.matthewprenger.cursegradle"
@@ -23,6 +26,10 @@ apply plugin: "com.matthewprenger.cursegradle"
 apply plugin: 'eclipse'
 
 version = getProperty("modVersion")
+if (Boolean.valueOf(System.getenv("GITHUB_ACTIONS"))) {
+    // In remote CI/CD environment
+    version = (getProperty("modVersion") + "_" + System.getenv("GITHUB_SHA").substring(0, 7))
+}
 group = 'com.kotori316' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'AdditionalEnchantedMiner-1.15.1'
 
@@ -207,8 +214,10 @@ task signJar2() {
     }
 }
 
-// Runs this task automatically when build is ran.
-assemble.dependsOn(signJar2)
+if (!Boolean.valueOf(System.getenv("GITHUB_ACTIONS"))) {
+    // Runs this task automatically when build is ran.
+    assemble.dependsOn(signJar2)
+}
 
 static String getCommit(String branch) {
     ProcessBuilder builder = new ProcessBuilder("git", "rev-parse", branch)
@@ -235,5 +244,32 @@ task copyToDrive(type: Copy, dependsOn: "curseforge") {
     onlyIf {
         System.getenv(PATH_NAME) != null &&
                 Files.exists(Paths.get(System.getenv(PATH_NAME)))
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/Kotori316/QuarryPlus")
+            credentials {
+                username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR") ?: ""
+                password = project.findProperty("githubToken") ?: System.getenv("REPO_TOKEN")
+            }
+        }
+    }
+    publications {
+        gpr(MavenPublication) {
+            artifactId = archivesBaseName
+            artifact srcJar {
+                classifier = 'sources'
+                extension = 'jar'
+            }
+            artifact deobfJar {
+                classifier = 'deobf'
+                extension = 'jar'
+            }
+            artifact reobfArtifact
+        }
     }
 }

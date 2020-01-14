@@ -1,4 +1,4 @@
-name: Build Check
+name: Build Check and Publish
 
 on:
   push:
@@ -22,7 +22,7 @@ jobs:
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/forge_version.properties') }}
-      - name: Precompile
-        run: chmod +x ./gradlew && ./gradlew compileScala --continue --warning-mode all
+      - name: Compile and Publish
+        run: chmod +x ./gradlew && ./gradlew publish --continue --warning-mode all
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
