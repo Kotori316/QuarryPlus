@@ -7,21 +7,25 @@ CurseForge - https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-m
 
 Finished Work
 * Marker
+  * Renderer
 * Workbench
+  * JEI support
 * ExpPump
 * EnchantMover
+  * JEI support
 * Miningwell
 * PlainPipe
 * QuarryFrame
 * Quarry
+  * Renderer
 * Solid Fuel Quarry
 * PumpPlus
 * Replacer
 * Dummy Block
+  * Renderer
 * Book Mover
+  * JEI support
 * Spawner Controller
 * Advanced Pump
 * Chunk Destroyer
-
-Not Finished
-* Renderer
+  * Renderer
