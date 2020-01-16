@@ -96,6 +96,7 @@ public class ProxyClient extends ProxyCommon {
         if (Config.client().enableRender().get()) {
             ClientRegistry.bindTileEntityRenderer(Holder.markerTileType(), t -> RenderMarker.instance());
             ClientRegistry.bindTileEntityRenderer(Holder.quarryTileType(), t -> RenderQuarry.instance());
+            ClientRegistry.bindTileEntityRenderer(Holder.solidQuarryType(), t -> RenderQuarry.instance());
             ClientRegistry.bindTileEntityRenderer(Holder.quarry2(), t -> RenderQuarry2.instance());
             ClientRegistry.bindTileEntityRenderer(Holder.advQuarryType(), t -> RenderAdvQuarry.instance());
         }
