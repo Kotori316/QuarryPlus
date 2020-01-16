@@ -1,7 +1,7 @@
 # QuarryPlus for 1.15.1
 ===========
 
-[![](https://github.com/Kotori316/QuarryPlus/workflows/Build%20Check/badge.svg)](https://github.com/Kotori316/QuarryPlus/actions)
+[![](https://github.com/Kotori316/QuarryPlus/workflows/Build%20Check%20and%20Publish/badge.svg)](https://github.com/Kotori316/QuarryPlus/actions)
 
 CurseForge - https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner
 
