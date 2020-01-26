@@ -16,6 +16,7 @@ public class AdvPumpChangeMessage implements IMessage<AdvPumpChangeMessage> {
     int dim;
     BlockPos pos;
     boolean placeFrame;
+    boolean deleteFluid;
     ToStart toStart;
 
     public static AdvPumpChangeMessage create(TileAdvPump tile, ToStart start) {
@@ -24,6 +25,7 @@ public class AdvPumpChangeMessage implements IMessage<AdvPumpChangeMessage> {
         message.pos = tile.getPos();
         message.dim = IMessage.getDimId(tile.getWorld());
         message.toStart = start;
+        message.deleteFluid = tile.delete();
         return message;
     }
 
@@ -33,13 +35,13 @@ public class AdvPumpChangeMessage implements IMessage<AdvPumpChangeMessage> {
         dim = buffer.readInt();
         placeFrame = buffer.readBoolean();
         toStart = ToStart.valueOf(buffer.readInt());
+        deleteFluid = buffer.readBoolean();
         return this;
     }
 
     @Override
     public void writeToBuffer(PacketBuffer buffer) {
-        buffer.writeBlockPos(pos).writeInt(dim).writeBoolean(placeFrame).writeInt(toStart.ordinal());
-
+        buffer.writeBlockPos(pos).writeInt(dim).writeBoolean(placeFrame).writeInt(toStart.ordinal()).writeBoolean(deleteFluid);
     }
 
     @Override
@@ -47,6 +49,7 @@ public class AdvPumpChangeMessage implements IMessage<AdvPumpChangeMessage> {
         IMessage.findTile(ctx, pos, dim, TileAdvPump.class)
             .ifPresent(pump -> ctx.get().enqueueWork(() -> {
                 pump.placeFrame_$eq(placeFrame);
+                pump.delete_$eq(deleteFluid);
                 if (toStart == ToStart.START) {
                     pump.start();
                 }

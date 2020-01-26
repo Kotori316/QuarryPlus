@@ -68,7 +68,6 @@ public class BlockAdvPump extends QPBlock {
         return false;
     }
 
-
     @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
