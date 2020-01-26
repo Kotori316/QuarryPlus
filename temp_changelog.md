@@ -1,5 +1,11 @@
 **This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).**
 
+## Version 14.1.6
+- Allow only silktouch machine to collect bedrock
+- Click with stick to restart AdvQuarry work.
+- Fixed crashes and infinite loops of Chunk Destroyer.
+- Change default value of `NoEnergy` to false.
+
 ## Version 14.1.5
 - Use vanilla format block state.
 - Fixed an issue that the area of adv quarry seems strange when markers are used.
