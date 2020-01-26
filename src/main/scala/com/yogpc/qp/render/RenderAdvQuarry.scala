@@ -23,9 +23,9 @@ object RenderAdvQuarry extends TileEntityRenderer[TileAdvQuarry](TileEntityRende
       if (range != Area.zeroArea) {
         val buffer = iRenderTypeBuffer.getBuffer(RenderType.func_228643_e_())
         val pos = te.getPos
-        val playerX = pos.getX - 0 //x
-        val playerY = pos.getY - 0 //y
-        val playerZ = pos.getZ - 0 //z
+        val player = Minecraft.getInstance.player
+        val playerX = if (player == null) pos.getX - 0 else player.func_226277_ct_ //x
+        val playerZ = if (player == null) pos.getZ - 0 else player.func_226281_cx_ //z
         matrixStack.func_227860_a_()
         matrixStack.func_227861_a_(-pos.getX, -pos.getY, -pos.getZ) // Offset
         val b1 = (playerZ - range.zMin - 0.5).abs < 256
