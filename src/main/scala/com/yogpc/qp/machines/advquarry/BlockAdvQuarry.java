@@ -56,8 +56,7 @@ public class BlockAdvQuarry extends QPBlock {
                 TileAdvQuarry quarry = (TileAdvQuarry) worldIn.getTileEntity(pos);
                 if (quarry != null) {
                     if (stack.getItem() == Items.STICK) {
-                        if (Config.common().noEnergy().get())
-                            quarry.stickActivated(player);
+                        quarry.stickActivated(player);
                     } else {
                         quarry.G_ReInit();
                         if (Config.common().noEnergy().get()) {

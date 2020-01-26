@@ -57,7 +57,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
   val moduleInv = new QuarryModuleInventory(5, this, _ => refreshModules(), TileAdvQuarry.moduleFilter)
 
   def stickActivated(playerEntity: PlayerEntity): Unit = {
-    //Called when noEnergy is true and block is right clicked with stick (item)
+    //Called when block is right clicked with stick (item)
     if (action == AdvQuarryWork.waiting) {
       action = action.next(self)
       startWork()
