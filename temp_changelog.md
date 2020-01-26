@@ -1,5 +1,9 @@
 **This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).**
 
+## Version 15.0.3
+* Fixed solid fuel quarry had no renderer.
+* Change default value of `NoEnergy` to false.
+
 ## Version 15.0.2
 * Add support of JEI.
 
