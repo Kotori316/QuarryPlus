@@ -63,4 +63,9 @@ object EnchantmentHolder {
       case _ => enchantments.copy(other = enchantments.other + (id -> value))
     }
   }
+
+  trait EnchantmentProvider {
+    def getEnchantmentHolder: EnchantmentHolder
+  }
+
 }

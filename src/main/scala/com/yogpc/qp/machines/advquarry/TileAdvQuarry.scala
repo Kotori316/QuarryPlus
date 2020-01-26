@@ -46,7 +46,8 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
   with IChunkLoadTile
   with INamedContainerProvider
   with ContainerQuarryModule.HasModuleInventory
-  with StatusContainer.StatusProvider {
+  with StatusContainer.StatusProvider
+  with EnchantmentHolder.EnchantmentProvider {
   self =>
 
   var yLevel = 1
@@ -311,6 +312,8 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     trackIntSeq(0).set(storage.itemSize)
     trackIntSeq(1).set(storage.fluidSize)
   }
+
+  override def getEnchantmentHolder = enchantments
 }
 
 object TileAdvQuarry {

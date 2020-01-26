@@ -34,7 +34,8 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   with IDebugSender
   with IChunkLoadTile
   with ContainerQuarryModule.HasModuleInventory
-  with StatusContainer.StatusProvider {
+  with StatusContainer.StatusProvider
+  with EnchantmentHolder.EnchantmentProvider {
   self =>
 
   import TileQuarry2._
@@ -259,6 +260,8 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     trackingIntSeq(0).set(storage.itemSize)
     trackingIntSeq(1).set(storage.fluidSize)
   }
+
+  override def getEnchantmentHolder = enchantments
 }
 
 object TileQuarry2 {
