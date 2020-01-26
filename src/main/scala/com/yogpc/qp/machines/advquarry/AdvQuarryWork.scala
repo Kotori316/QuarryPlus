@@ -231,8 +231,10 @@ object AdvQuarryWork {
       var i = 0
       while (i < numberInTick) {
         i += 1
-        val reasons = loop(targetList.head, 0, Nil)
-        reasons.reverse.foreach(Reason.printNonEnergy)
+        if (targetList.nonEmpty) {
+          val reasons = loop(targetList.head, 0, Nil)
+          reasons.reverse.foreach(Reason.printNonEnergy)
+        }
       }
     }
 
@@ -315,7 +317,7 @@ object AdvQuarryWork {
       while (i < numberInTick * 32) {
         i += 1
         targetList match {
-          case Nil => i = 33 // Finished
+          case Nil => i = numberInTick * 32 + 1 // Finished
           case head :: tl =>
             Range(tile.yLevel, head.getY).map(y => head.copy(y = y)).foreach { p =>
               val state = tile.getWorld.getBlockState(p)
