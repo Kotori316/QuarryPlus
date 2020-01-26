@@ -30,6 +30,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
@@ -45,10 +46,12 @@ public class BlockAdvPump extends QPBlock {
 
     @Override
     public ActionResultType func_225533_a_(BlockState state, World worldIn, BlockPos pos, PlayerEntity playerIn, Hand hand, BlockRayTraceResult hit) {
-        if (super.func_225533_a_(state, worldIn, pos, playerIn, hand, hit).func_226247_b_()) return ActionResultType.SUCCESS;
+        if (super.func_225533_a_(state, worldIn, pos, playerIn, hand, hit).func_226247_b_())
+            return ActionResultType.SUCCESS;
         ItemStack stack = playerIn.getHeldItem(hand);
         if (Config.common().debug() && stack.getItem() == Items.STICK) {
             Optional.ofNullable((TileAdvPump) worldIn.getTileEntity(pos)).ifPresent(TileAdvPump::toggleDelete);
+            playerIn.sendStatusMessage(new StringTextComponent("Delete is changed."), false);
             return ActionResultType.SUCCESS;
         } else if (BuildcraftHelper.isWrench(playerIn, hand, stack, hit)) {
             if (!worldIn.isRemote) {
@@ -68,7 +71,6 @@ public class BlockAdvPump extends QPBlock {
         }
         return ActionResultType.PASS;
     }
-
 
     @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
