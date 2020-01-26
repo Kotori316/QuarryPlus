@@ -3,6 +3,8 @@
 ## Version 15.0.3
 * Fixed solid fuel quarry had no renderer.
 * Change default value of `NoEnergy` to false.
+* Fixed crashes and infinite loops of Chunk Destroyer.
+* Render improvement. Not to render far lines.
 
 ## Version 15.0.2
 * Add support of JEI.
