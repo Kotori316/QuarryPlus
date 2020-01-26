@@ -175,6 +175,7 @@ object AdvQuarryWork {
         }
 
         if (targets.forall(tile.getWorld.isAirBlock)) {
+          // Skip this xz. Insert dropped items and go ahead.
           tile.storage.addAll(storage1, log = true)
           val searchEnergy = PowerManager.calcEnergyAdvSearch(tile.enchantments.unbreaking, pos.getY - tile.yLevel + 1)
           if (tile.useEnergy(searchEnergy, searchEnergy, true, EnergyUsage.ADV_CHECK_BLOCK) == searchEnergy) {
@@ -312,23 +313,18 @@ object AdvQuarryWork {
         }
       val orbs = tile.getWorld.getEntitiesWithinAABB(classOf[Entity], aabb).asScala.toList
       tile.modules.foreach(_.invoke(IModule.CollectingItem(orbs)))
-      var i = 0
       var poses = 0
-      while (i < numberInTick * 32) {
-        i += 1
-        targetList match {
-          case Nil => i = numberInTick * 32 + 1 // Finished
-          case head :: tl =>
-            Range(tile.yLevel, head.getY).map(y => head.copy(y = y)).foreach { p =>
-              val state = tile.getWorld.getBlockState(p)
-              if (TilePump.isLiquid(state)) {
-                tile.getWorld.setBlockState(p, Blocks.AIR.getDefaultState)
-                poses = 1 |+| poses
-              }
-            }
-            targetList = tl
+      val (targets, rest) = targetList.splitAt(numberInTick * 32)
+      targets.foreach { head =>
+        Range(tile.yLevel, head.getY).map(y => head.copy(y = y)).foreach { p =>
+          val state = tile.getWorld.getBlockState(p)
+          if (TilePump.isLiquid(state)) {
+            tile.getWorld.setBlockState(p, Blocks.AIR.getDefaultState)
+            poses = 1 |+| poses
+          }
         }
       }
+      targetList = rest
       if (!poses.isEmpty)
         QuarryPlus.LOGGER.debug(AdvQuarryWork.MARKER, "Removed fluids  " + poses)
     }
