@@ -20,9 +20,11 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.state.StateContainer;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Hand;
@@ -73,7 +75,16 @@ public class BlockAdvPump extends QPBlock {
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
         if (!worldIn.isRemote) {
             Consumer<TileAdvPump> consumer = IEnchantableTile.Util.initConsumer(stack);
-            Optional.ofNullable((TileAdvPump) worldIn.getTileEntity(pos)).ifPresent(consumer.andThen(TileAdvPump.requestTicket));
+            Consumer<TileAdvPump> deleteSetter = pump -> {
+                BlockPos p = pos.down();
+                for (; ; p = p.down()) {
+                    if (!worldIn.isAirBlock(p) || p.getY() < 0)
+                        break;
+                }
+                IFluidState fluidState = worldIn.getFluidState(p);
+                pump.delete_$eq(fluidState.getFluid().isIn(FluidTags.WATER));
+            };
+            Optional.ofNullable((TileAdvPump) worldIn.getTileEntity(pos)).ifPresent(consumer.andThen(deleteSetter).andThen(TileAdvPump.requestTicket));
         }
     }
 
