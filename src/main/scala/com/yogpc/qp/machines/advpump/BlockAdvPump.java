@@ -3,6 +3,7 @@ package com.yogpc.qp.machines.advpump;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
@@ -20,7 +21,6 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.state.StateContainer;
@@ -79,15 +79,13 @@ public class BlockAdvPump extends QPBlock {
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
         if (!worldIn.isRemote) {
             Consumer<TileAdvPump> consumer = IEnchantableTile.Util.initConsumer(stack);
-            Consumer<TileAdvPump> deleteSetter = pump -> {
-                BlockPos p = pos.down();
-                for (; ; p = p.down()) {
-                    if (!worldIn.isAirBlock(p) || p.getY() < 0)
-                        break;
-                }
-                IFluidState fluidState = worldIn.getFluidState(p);
-                pump.delete_$eq(fluidState.getFluid().isIn(FluidTags.WATER));
-            };
+            Consumer<TileAdvPump> deleteSetter = pump ->
+                Stream.iterate(pos.down(), BlockPos::down)
+                    .filter(p -> !worldIn.isAirBlock(p) || p.getY() < 0)
+                    .findFirst()
+                    .map(worldIn::getFluidState)
+                    .map(f -> f.getFluid().isIn(FluidTags.WATER))
+                    .ifPresent(pump::delete_$eq);
             Optional.ofNullable((TileAdvPump) worldIn.getTileEntity(pos)).ifPresent(consumer.andThen(deleteSetter).andThen(TileAdvPump.requestTicket));
         }
     }
