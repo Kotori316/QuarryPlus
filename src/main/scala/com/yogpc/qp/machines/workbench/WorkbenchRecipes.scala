@@ -23,7 +23,6 @@ import net.minecraft.resources.{IResource, IResourceManager}
 import net.minecraft.util.{JSONUtils, ResourceLocation}
 import net.minecraft.world.World
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
-import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.common.crafting.CraftingHelper
 import net.minecraftforge.event.entity.player.PlayerEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
@@ -31,6 +30,7 @@ import net.minecraftforge.fml.DistExecutor
 import net.minecraftforge.fml.network.PacketDistributor
 import net.minecraftforge.fml.server.ServerLifecycleHooks
 import org.apache.commons.io.IOUtils
+import org.apache.logging.log4j.LogManager
 
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._
@@ -85,6 +85,7 @@ abstract sealed class WorkbenchRecipes(val location: ResourceLocation, val outpu
 
 private final class IngredientRecipe(location: ResourceLocation, o: ItemStack, e: Long, s: Boolean, seq: Seq[Seq[IngredientWithCount]])
   extends WorkbenchRecipes(location, ItemElement(o), e, s) {
+  WorkbenchRecipes.LOGGER.debug("Recipe instance({}) created for {}. Input: ", location, output, inputs)
   override val size = seq.size
 
   override def inputs = seq
@@ -117,6 +118,7 @@ object WorkbenchRecipes {
   val recipeLocation = new ResourceLocation(QuarryPlus.modID, "workbench_recipe")
   val recipeType = IRecipeType.register[WorkbenchRecipes](recipeLocation.toString)
   private[this] final val conditionMessage = "Condition is false"
+  final val LOGGER = LogManager.getLogger(classOf[WorkbenchRecipes])
 
   /**
    * @return Recipes of workbench, including data pack and vanilla recipe system.
@@ -150,7 +152,7 @@ object WorkbenchRecipes {
     if (energy > 0) {
       recipes_internal put(location, newRecipe)
     } else {
-      QuarryPlus.LOGGER.error(s"Energy of Workbench Recipe is 0. $newRecipe")
+      LOGGER.error(s"Energy of Workbench Recipe is 0. $newRecipe")
     }
   }
 
@@ -212,7 +214,7 @@ object WorkbenchRecipes {
     for (location <- resourceManager.getAllResourceLocations("quarryplus/workbench", s => s.endsWith(".json") && !s.startsWith("_")).asScala) {
       resource(resourceManager, location) flatMap (read(_, gson)) flatMap (parse(_, location)) match {
         case Left(value) if value == conditionMessage =>
-        case Left(value) => QuarryPlus.LOGGER.error(s"Error in loading $location, $value")
+        case Left(value) => LOGGER.error(s"Error in loading $location, $value")
         case Right(r) => recipes_internal.put(r.location, r)
       }
     }
@@ -221,6 +223,7 @@ object WorkbenchRecipes {
   object Serializer extends IRecipeSerializer[WorkbenchRecipes] {
     override def read(recipeId: ResourceLocation, json: JsonObject): WorkbenchRecipes = {
       json.addProperty("id", recipeId.toString)
+      LOGGER.debug("Serializer loaded {} created from json.", recipeId)
       parse(json, recipeId) match {
         case Right(value) => value
         case Left(value) if value == conditionMessage => WorkbenchRecipes.dummyRecipe
@@ -230,6 +233,7 @@ object WorkbenchRecipes {
 
     override def read(recipeId: ResourceLocation, buffer: PacketBuffer): WorkbenchRecipes = {
       val location = buffer.readResourceLocation()
+      LOGGER.debug("Serializer loaded {} created from packet.", location)
       val output = buffer.readItemStack()
       val energy = buffer.readLong()
       val showInJEI = buffer.readBoolean()
@@ -275,12 +279,12 @@ object WorkbenchRecipes {
       for ((location, jsonObject) <- splashList.asScala) {
         parse(jsonObject, location) match {
           case Left(value) if value == conditionMessage =>
-          case Left(value) => QuarryPlus.LOGGER.error(s"Error in loading $location, $value")
+          case Left(value) => LOGGER.error(s"Error in loading $location, $value")
           case Right(r) => recipes_internal.put(r.location, r)
         }
       }
 
-      QuarryPlus.LOGGER.debug("Recipe loaded.")
+      LOGGER.debug("Recipe loaded.")
     }
 
     @SubscribeEvent
