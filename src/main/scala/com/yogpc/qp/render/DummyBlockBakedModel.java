@@ -36,6 +36,11 @@ public class DummyBlockBakedModel implements IBakedModel {
     }
 
     @Override
+    public boolean func_230044_c_() {
+        return model.func_230044_c_();
+    }
+
+    @Override
     public boolean isBuiltInRenderer() {
         return model.isBuiltInRenderer();
     }

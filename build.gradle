@@ -111,8 +111,8 @@ dependencies {
     implementation "org.scala-lang:scala-library:2.13.1"
     implementation group: 'org.typelevel', name: "cats-core_2.13", version: '2.1.0'
 
-    def mc_version = "1.15.1"
-    def jei_version = "6.0.0.1"
+    def mc_version = "1.15.2"
+    def jei_version = "6.0.0.2"
     // at runtime, use the full JEI jar
     implementation fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
 //    compile "mezz.jei:jei-${mc_version}:${jei_version}:sources"
@@ -180,7 +180,7 @@ curseforge {
         changelogType = 'markdown'
         changelog = new File("temp_changelog.md")
         releaseType = 'release'
-        addGameVersion '1.15.1'
+        addGameVersion '1.15.2'
         mainArtifact(jar) {
             displayName = 'v' + project.version
         }
