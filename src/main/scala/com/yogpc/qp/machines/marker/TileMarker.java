@@ -19,9 +19,11 @@ import com.yogpc.qp.packet.marker.LinkMessage;
 import com.yogpc.qp.packet.marker.UpdateBoxMessage;
 import com.yogpc.qp.render.Box;
 import com.yogpc.qp.utils.Holder;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
@@ -29,6 +31,8 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import scala.Symbol;
@@ -140,6 +144,15 @@ public class TileMarker extends APacketTile implements IMarker, IDebugSender, IC
     public List<? extends ITextComponent> getDebugMessages() {
         return Arrays.asList(new StringTextComponent("Link : " + link),
             new StringTextComponent("Laser : " + laser));
+    }
+
+    @Nonnull
+    @Override
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+        if (cap == IMarker.Cap.MARKER_CAPABILITY()) {
+            return LazyOptional.of(() -> this).cast();
+        }
+        return super.getCapability(cap, side);
     }
 
     public static class Laser {
