@@ -1,5 +1,11 @@
 **This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).**
 
+## Version 14.1.7
+- AdvPump - Refactored searching water.
+- AdvPump - Detect `Delete fluid` automatically.
+- AdvPump - Add delete button.
+- Log recipe info.
+
 ## Version 14.1.6
 - Allow only silktouch machine to collect bedrock
 - Click with stick to restart AdvQuarry work.
