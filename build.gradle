@@ -212,6 +212,11 @@ task signJar2() {
                 tsaurl: "http://timestamp.digicert.com"
         )
     }
+    onlyIf {
+        project.hasProperty('keyStoreAlias') &&
+                project.hasProperty('keyStore') &&
+                project.hasProperty('keyStorePass')
+    }
 }
 
 if (!Boolean.valueOf(System.getenv("GITHUB_ACTIONS"))) {
