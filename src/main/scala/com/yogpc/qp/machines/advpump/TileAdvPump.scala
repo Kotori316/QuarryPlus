@@ -63,7 +63,7 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
     paths.clear()
     if (!ench.square && ench.fortune >= 3) {
       val mayMarker = Area.getMarkersOnDirection(List.from(Direction.Plane.HORIZONTAL.iterator().asScala), getWorld, getPos)
-      mayMarker.getOrElse(IMarker.EMPTY_MARKER)
+      mayMarker.toList
         .headOption
         .foreach { marker =>
           ench = ench.copy(start = marker.min(), end = marker.max())

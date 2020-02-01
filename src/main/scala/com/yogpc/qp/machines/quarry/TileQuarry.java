@@ -23,6 +23,7 @@ import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.TranslationKeys;
+import com.yogpc.qp.machines.base.Area;
 import com.yogpc.qp.machines.base.IAttachment;
 import com.yogpc.qp.machines.base.IChunkLoadTile;
 import com.yogpc.qp.machines.base.IDebugSender;
@@ -53,6 +54,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.BooleanUtils;
+import scala.Option;
 import scala.Symbol;
 import scala.jdk.javaapi.CollectionConverters;
 
@@ -348,7 +350,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
         if (this.yMax != Integer.MIN_VALUE)
             return;
 
-        Direction facing = world.getBlockState(getPos()).get(FACING).getOpposite();
+        Direction facing = world.getBlockState(getPos()).get(FACING);
         /*if (bcLoaded) {
             Optional<IAreaProvider> marker = Stream.of(getNeighbors(facing))
                 .map(world::getTileEntity).filter(Objects::nonNull)
@@ -385,12 +387,13 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                 return;
             }
         }*/
-        Optional<IMarker> marker = Stream.of(getNeighbors(facing))
+        Optional<IMarker> marker0 = Stream.of(getNeighbors(facing.getOpposite()))
             .map(world::getTileEntity)
             .flatMap(streamCast(IMarker.class))
             .filter(IMarker::hasLink)
             .findFirst();
-        if (marker.isPresent()) {
+        Option<IMarker> marker = Area.findQuarryArea(facing, world, pos)._2;
+        if (marker.isDefined()) {
             IMarker iMarker = marker.get();
             this.xMin = iMarker.min().getX();
             this.yMin = iMarker.min().getY();
