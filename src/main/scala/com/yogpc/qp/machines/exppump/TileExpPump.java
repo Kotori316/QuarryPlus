@@ -147,7 +147,7 @@ public class TileExpPump extends APacketTile implements IEnchantableTile, IDebug
 
     @Override
     public CompoundNBT write(CompoundNBT compound) {
-        compound.putByte("mConnectTo", Optional.ofNullable(mConnectTo).map(Enum::ordinal).orElse(-1).byteValue());
+        compound.putByte("mConnectTo", Optional.ofNullable(mConnectTo).map(Direction::ordinal).orElse(-1).byteValue());
         compound.putInt("xpAmount", module.xp());
         compound.putBoolean("silktouch", this.silktouch);
         compound.putByte("fortune", (byte) this.fortune);
