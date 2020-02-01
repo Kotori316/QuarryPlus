@@ -48,16 +48,21 @@ public class AdvPumpChangeMessage implements IMessage<AdvPumpChangeMessage> {
     public void onReceive(Supplier<NetworkEvent.Context> ctx) {
         IMessage.findTile(ctx, pos, dim, TileAdvPump.class)
             .ifPresent(pump -> ctx.get().enqueueWork(() -> {
-                pump.placeFrame_$eq(placeFrame);
-                pump.delete_$eq(deleteFluid);
-                if (toStart == ToStart.START) {
-                    pump.start();
+                if (toStart == ToStart.MODULE_INV) {
+                    pump.openModuleInv(ctx.get().getSender());
+                } else {
+                    pump.placeFrame_$eq(placeFrame);
+                    pump.delete_$eq(deleteFluid);
+                    if (toStart == ToStart.START) {
+                        pump.start();
+                    }
                 }
+
             }));
     }
 
     public enum ToStart {
-        UNCHANGED, START, STOP;
+        UNCHANGED, START, STOP, MODULE_INV;
 
         public static ToStart valueOf(int i) {
             switch (i) {
@@ -67,6 +72,8 @@ public class AdvPumpChangeMessage implements IMessage<AdvPumpChangeMessage> {
                     return START;
                 case 2:
                     return STOP;
+                case 3:
+                    return MODULE_INV;
                 default:
                     QuarryPlus.LOGGER.error("ToStart undefined enum = " + i);
                     return null;

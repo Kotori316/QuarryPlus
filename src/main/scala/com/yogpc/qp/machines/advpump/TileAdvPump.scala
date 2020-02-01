@@ -6,11 +6,13 @@ import cats._
 import cats.implicits._
 import com.yogpc.qp.machines.TranslationKeys
 import com.yogpc.qp.machines.base._
+import com.yogpc.qp.machines.modules.IModuleItem
 import com.yogpc.qp.machines.pump.TilePump
+import com.yogpc.qp.machines.quarry.ContainerQuarryModule
 import com.yogpc.qp.utils.Holder
 import com.yogpc.qp.{Config, QuarryPlus, _}
 import net.minecraft.block.{BlockState, Blocks, IBucketPickupHandler}
-import net.minecraft.entity.player.{PlayerEntity, PlayerInventory}
+import net.minecraft.entity.player.{PlayerEntity, PlayerInventory, ServerPlayerEntity}
 import net.minecraft.fluid.{Fluid, Fluids}
 import net.minecraft.inventory.InventoryHelper
 import net.minecraft.inventory.container.INamedContainerProvider
@@ -18,11 +20,12 @@ import net.minecraft.nbt.CompoundNBT
 import net.minecraft.tileentity.ITickableTileEntity
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.{StringTextComponent, TranslationTextComponent}
-import net.minecraft.util.{Direction, ResourceLocation}
+import net.minecraft.util.{Direction, IntReferenceHolder, ResourceLocation}
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.fluids.capability.{CapabilityFluidHandler, IFluidHandler}
 import net.minecraftforge.fluids.{FluidAttributes, FluidStack}
+import net.minecraftforge.fml.network.NetworkHooks
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
@@ -32,7 +35,15 @@ import scala.jdk.CollectionConverters._
  * @see [buildcraft.factory.tile.TilePump]
  */
 class TileAdvPump extends APowerTile(Holder.advPumpType)
-  with IEnchantableTile with ITickableTileEntity with IDebugSender with IChunkLoadTile with INamedContainerProvider {
+  with IEnchantableTile
+  with ITickableTileEntity
+  with IDebugSender
+  with IChunkLoadTile
+  with INamedContainerProvider
+  with HasStorage
+  with ContainerQuarryModule.HasModuleInventory
+  with StatusContainer.StatusProvider
+  with EnchantmentHolder.EnchantmentProvider {
 
   import TileAdvPump._
 
@@ -50,11 +61,13 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
   private[this] val paths = mutable.Map.empty[BlockPos, List[BlockPos]]
   private[this] val FACINGS = List(Direction.UP, Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST)
   private[this] val storage = new TankAdvPump(Eval.always(ench.maxAmount))
+  val moduleInv = new QuarryModuleInventory(5, this, _ => refreshModules(), moduleFilter)
+  private[this] var modules: List[IModule] = Nil
 
   override def isWorking: Boolean = !finished
 
   override def G_ReInit(): Unit = {
-    configure(ench.getReceiveEnergy, 1024 * APowerTile.MJToMicroMJ)
+    configure(ench.getReceiveEnergy, ench.getReceiveEnergy * 3)
     finished = true
     queueBuilt = false
     skip = false
@@ -74,6 +87,7 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
   }
 
   override def workInTick(): Unit = {
+    modules.foreach(_.invoke(IModule.Tick(this)))
     if (finished) {
       if (toStart) {
         toStart = false
@@ -278,16 +292,20 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
     val state = getWorld.getBlockState(pos)
     state.getBlock match {
       case h: IBucketPickupHandler => h.pickupFluid(getWorld, pos, state)
-      case _ => getWorld.setBlockState(pos, Blocks.AIR.getDefaultState)
+      case _ =>
+        modules.foldMap(_.invoke(IModule.AfterBreak(getWorld, pos, state, getWorld.getGameTime))) match {
+          case IModule.NoAction => getWorld.setBlockState(pos, Blocks.AIR.getDefaultState)
+          case _ =>
+        }
     }
     if (placeFrame)
-      Direction.Plane.HORIZONTAL.iterator().asScala.foreach(facing => {
+      Direction.Plane.HORIZONTAL.iterator().asScala.foreach { facing =>
         val offset = pos.offset(facing)
         // TODO CHECK
         if (!inRange.contains(offset) && TilePump.isLiquid(getWorld.getBlockState(offset))) {
           getWorld.setBlockState(offset, Holder.blockFrame.getDammingState)
         }
-      })
+      }
   }
 
   private def changeState(working: Boolean, state: BlockState): Unit = {
@@ -332,6 +350,7 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
     placeFrame = nbt.getBoolean(NBT_PLACE_FRAME)
     delete = nbt.getBoolean(NBT_DELETE)
     storage.deserializeNBT(nbt.getCompound(NBT_FluidHandler))
+    moduleInv.deserializeNBT(nbt.getCompound(NBT_ModuleInv))
   }
 
   override def write(nbt: CompoundNBT): CompoundNBT = {
@@ -341,6 +360,7 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
     nbt.putBoolean(NBT_DELETE, delete)
     nbt.put(NBT_P_ENCH, ench.toNBT)
     nbt.put(NBT_FluidHandler, storage.toNBT)
+    nbt.put(NBT_ModuleInv, moduleInv.toNBT)
     super.write(nbt)
   }
 
@@ -363,6 +383,27 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
   override def getDisplayName = new TranslationTextComponent(getDebugName)
 
   override def createMenu(id: Int, i: PlayerInventory, p: PlayerEntity) = new ContainerAdvPump(id, p, getPos)
+
+  def refreshModules(): Unit = {
+    val internalModules = moduleInv.moduleItems().asScala.toList >>= (e => e.getKey.apply(e.getValue, this).toList)
+    this.modules = internalModules
+  }
+
+  def openModuleInv(player: ServerPlayerEntity): Unit = {
+    if (hasWorld && !world.isRemote) {
+      NetworkHooks.openGui(player, new ContainerQuarryModule.InteractionObject(getPos, TranslationKeys.advpump), getPos)
+    }
+  }
+
+  override def getEnchantmentHolder = ench.toHolder
+
+  override def getStatusStrings(trackIntSeq: Seq[IntReferenceHolder]): Seq[String] = {
+    val enchantmentStrings = EnchantmentHolder.getEnchantmentStringSeq(this.getEnchantmentHolder)
+    val modules = if (this.modules.nonEmpty) "Modules" :: this.modules.map("  " + _.toString) else Nil
+    enchantmentStrings ++ modules
+  }
+
+  override def getStorage = storage
 }
 
 object TileAdvPump {
@@ -371,12 +412,13 @@ object TileAdvPump {
   final val SYMBOL = Symbol("AdvancedPump")
   private final val NBT_P_ENCH = "nbt_pump_ench"
   private final val NBT_FluidHandler = "FluidHandler"
+  private final val NBT_ModuleInv = "moduleInv"
 
   final val NBT_POS = "targetPos"
   final val NBT_FINISHED = "finished"
   final val NBT_PLACE_FRAME = "placeFrame"
   final val NBT_DELETE = "delete"
-  private[this] final val defaultBaseEnergy = Seq(10, 8, 6, 4).map(_ * APowerTile.MJToMicroMJ)
+  private[this] final val defaultBaseEnergy = Seq(10, 8, 5, 2).map(_ * APowerTile.MJToMicroMJ)
   private[this] final val defaultReceiveEnergy = Seq(32, 64, 128, 256, 512, 1024).map(_ * APowerTile.MJToMicroMJ)
   implicit val pEnchNbt: NBTWrapper[PEnch, CompoundNBT] = _.writeToNBT(new CompoundNBT)
 
@@ -457,6 +499,8 @@ object TileAdvPump {
     }
 
     override def toString: String = s"PEnch($efficiency, $unbreaking, $fortune, $silktouch)"
+
+    def toHolder = EnchantmentHolder(efficiency, unbreaking, fortune, silktouch)
   }
 
   object PEnch {
@@ -471,4 +515,10 @@ object TileAdvPump {
     }
   }
 
+  private[this] final lazy val acceptableModule = Set(
+    Holder.itemFuelModuleCreative.getSymbol,
+    Holder.itemFuelModuleNormal.getSymbol,
+  )
+
+  val moduleFilter: java.util.function.Predicate[IModuleItem] = item => acceptableModule.contains(item.getSymbol)
 }

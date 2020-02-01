@@ -21,6 +21,7 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.state.StateContainer;
@@ -95,6 +96,22 @@ public class BlockAdvPump extends QPBlock {
     public void addInformation(ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         super.addInformation(stack, worldIn, tooltip, flagIn);
         tooltip.add(new TranslationTextComponent(TranslationKeys.TOOLTIP_ADVPUMP, ' '));
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (state.getBlock() != newState.getBlock()) {
+            if (!worldIn.isRemote) {
+                TileEntity entity = worldIn.getTileEntity(pos);
+                if (entity instanceof TileAdvPump) {
+                    TileAdvPump inventory = (TileAdvPump) entity;
+                    InventoryHelper.dropInventoryItems(worldIn, pos, inventory.moduleInv());
+                    worldIn.updateComparatorOutputLevel(pos, state.getBlock());
+                }
+            }
+            super.onReplaced(state, worldIn, pos, newState, isMoving);
+        }
     }
 
     @Override
