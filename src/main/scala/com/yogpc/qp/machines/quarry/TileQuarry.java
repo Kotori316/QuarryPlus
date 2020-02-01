@@ -64,7 +64,6 @@ import static com.yogpc.qp.machines.base.IAttachment.Attachments.REPLACER;
 import static jp.t2v.lab.syntax.MapStreamSyntax.byEntry;
 import static jp.t2v.lab.syntax.MapStreamSyntax.entryToMap;
 import static jp.t2v.lab.syntax.MapStreamSyntax.not;
-import static jp.t2v.lab.syntax.MapStreamSyntax.streamCast;
 import static net.minecraft.state.properties.BlockStateProperties.FACING;
 
 public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTile {
@@ -387,11 +386,6 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                 return;
             }
         }*/
-        Optional<IMarker> marker0 = Stream.of(getNeighbors(facing.getOpposite()))
-            .map(world::getTileEntity)
-            .flatMap(streamCast(IMarker.class))
-            .filter(IMarker::hasLink)
-            .findFirst();
         Option<IMarker> marker = Area.findQuarryArea(facing, world, pos)._2;
         if (marker.isDefined()) {
             IMarker iMarker = marker.get();
