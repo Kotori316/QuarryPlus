@@ -1,7 +1,6 @@
 package com.yogpc
 
 import cats._
-import cats.arrow.FunctionK
 import cats.data._
 import cats.implicits._
 import net.minecraft.enchantment.Enchantment
