@@ -1,6 +1,8 @@
 package com.yogpc.qp.machines.base
 
 import cats.Show
+import cats.data.OptionT
+import cats.implicits._
 import com.yogpc.qp._
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.util.Direction
@@ -52,8 +54,19 @@ object Area {
     posToArea(edge1, edge2)
   }
 
+  def getMarkersOnDirection(directions: List[Direction], world: World, pos: BlockPos): OptionT[List, IMarker] =
+    for {
+      f <- OptionT.liftF(directions)
+      p <- OptionT.pure[List](pos.offset(f))
+      t <- OptionT.fromOption[List](Option(world.getTileEntity(p)))
+      marker <- t.getCapability(IMarker.Cap.MARKER_CAPABILITY(), f.getOpposite).asScala.mapK(evalToList) orElse
+        OptionT.pure[List](t).collect { case marker: IMarker => marker }
+      if marker.hasLink
+    } yield marker
+
   def findQuarryArea(facing: Direction, world: World, pos: BlockPos) = {
-    List(pos.offset(facing.getOpposite), pos.offset(facing.rotateY()), pos.offset(facing.rotateYCCW())).map(world.getTileEntity).collectFirst { case m: IMarker if m.hasLink => m } match {
+    val mayMarker = getMarkersOnDirection(List(facing.getOpposite, facing.rotateY(), facing.rotateYCCW()), world, pos)
+    mayMarker.collectFirst(PartialFunction.fromFunction(identity)) match {
       case Some(marker) => areaFromMarker(facing, pos, marker)
       case None => defaultQuarryArea(pos, facing.getOpposite) -> None
     }

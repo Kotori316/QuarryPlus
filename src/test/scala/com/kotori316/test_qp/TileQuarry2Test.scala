@@ -1,7 +1,5 @@
 package com.kotori316.test_qp
 
-import java.util.Collections
-
 import cats.implicits._
 import com.yogpc.qp.machines.base.{Area, IMarker}
 import com.yogpc.qp.machines.quarry.QuarryAction
@@ -51,7 +49,7 @@ class TileQuarry2Test {
   @Test
   def nearDigTargets(): Unit = {
     {
-      val marker = m4.copy(max = m4.max.east())
+      val marker = Marker(m4.min(), m4.max().east())
       val pos = new BlockPos(7, 5, 8)
       val (area, m) = Area.areaFromMarker(Direction.EAST, pos, marker)
       assertTrue(m.isDefined)
@@ -114,10 +112,8 @@ class TileQuarry2Test {
     assertEquals(14, QuarryAction.far(10, 6, 14))
   }
 
-  case class Marker(override val min: BlockPos, override val max: BlockPos) extends IMarker {
-    override def hasLink = true
-
-    override def removeFromWorldWithItem() = Collections.emptyList()
+  object Marker {
+    def apply(min: BlockPos, max: BlockPos): IMarker = new IMarker.MarkerImpl(min, max)
   }
 
 }

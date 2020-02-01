@@ -2,8 +2,8 @@ package com.yogpc.qp.machines.advpump
 
 import java.util
 
-import cats.Eval
-import cats.syntax.show._
+import cats._
+import cats.implicits._
 import com.yogpc.qp.machines.TranslationKeys
 import com.yogpc.qp.machines.base._
 import com.yogpc.qp.machines.pump.TilePump
@@ -62,13 +62,14 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
     toDig = Nil
     paths.clear()
     if (!ench.square && ench.fortune >= 3) {
-      Direction.Plane.HORIZONTAL.iterator().asScala.map(f => getWorld.getTileEntity(getPos.offset(f))).collectFirst {
-        case marker: IMarker if marker.hasLink => marker
-      }.foreach(marker => {
-        ench = ench.copy(start = marker.min(), end = marker.max())
-        marker.removeFromWorldWithItem().asScala.foreach(s =>
-          InventoryHelper.spawnItemStack(getWorld, getPos.getX + 0.5, getPos.getY + 1, getPos.getZ + 0.5, s))
-      })
+      val mayMarker = Area.getMarkersOnDirection(List.from(Direction.Plane.HORIZONTAL.iterator().asScala), getWorld, getPos)
+      mayMarker.getOrElse(IMarker.EMPTY_MARKER)
+        .headOption
+        .foreach { marker =>
+          ench = ench.copy(start = marker.min(), end = marker.max())
+          marker.removeFromWorldWithItem().asScala.foreach(s =>
+            InventoryHelper.spawnItemStack(getWorld, getPos.getX + 0.5, getPos.getY + 1, getPos.getZ + 0.5, s))
+        }
     }
   }
 

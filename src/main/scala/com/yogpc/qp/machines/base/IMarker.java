@@ -7,7 +7,6 @@ import java.util.concurrent.Callable;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
@@ -93,4 +92,6 @@ public interface IMarker {
             return Collections.emptyList();
         }
     }
+
+    public static final IMarker EMPTY_MARKER = new MarkerImpl(BlockPos.ZERO, BlockPos.ZERO);
 }
