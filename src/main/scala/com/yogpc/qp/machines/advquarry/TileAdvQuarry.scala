@@ -15,7 +15,7 @@ import com.yogpc.qp.packet.PacketHandler
 import com.yogpc.qp.packet.advquarry.AdvModeMessage
 import com.yogpc.qp.utils.{Holder, NotNullList}
 import net.minecraft.block.{Block, BlockState, Blocks}
-import net.minecraft.entity.player.{PlayerEntity, PlayerInventory, ServerPlayerEntity}
+import net.minecraft.entity.player.{PlayerEntity, PlayerInventory}
 import net.minecraft.inventory.container.INamedContainerProvider
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.CompoundNBT
@@ -31,7 +31,6 @@ import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.ForgeEventFactory
 import net.minecraftforge.event.world.BlockEvent
 import net.minecraftforge.fluids.{FluidAttributes, FluidStack}
-import net.minecraftforge.fml.network.NetworkHooks
 
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._
@@ -72,12 +71,6 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     if (action == AdvQuarryWork.waiting) {
       action = new BreakBlock(area, None)
       startWork()
-    }
-  }
-
-  def openModuleInv(player: ServerPlayerEntity): Unit = {
-    if (hasWorld && !world.isRemote) {
-      NetworkHooks.openGui(player, new ContainerQuarryModule.InteractionObject(getPos, TranslationKeys.advquarry), getPos)
     }
   }
 

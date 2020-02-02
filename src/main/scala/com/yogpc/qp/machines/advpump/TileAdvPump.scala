@@ -12,7 +12,8 @@ import com.yogpc.qp.machines.quarry.ContainerQuarryModule
 import com.yogpc.qp.utils.Holder
 import com.yogpc.qp.{Config, QuarryPlus, _}
 import net.minecraft.block.{BlockState, Blocks, IBucketPickupHandler}
-import net.minecraft.entity.player.{PlayerEntity, PlayerInventory, ServerPlayerEntity}
+import net.minecraft.client.resources.I18n
+import net.minecraft.entity.player.{PlayerEntity, PlayerInventory}
 import net.minecraft.fluid.{Fluid, Fluids}
 import net.minecraft.inventory.InventoryHelper
 import net.minecraft.inventory.container.INamedContainerProvider
@@ -25,7 +26,6 @@ import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.fluids.capability.{CapabilityFluidHandler, IFluidHandler}
 import net.minecraftforge.fluids.{FluidAttributes, FluidStack}
-import net.minecraftforge.fml.network.NetworkHooks
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
@@ -387,12 +387,6 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
   def refreshModules(): Unit = {
     val internalModules = moduleInv.moduleItems().asScala.toList >>= (e => e.getKey.apply(e.getValue, this).toList)
     this.modules = internalModules
-  }
-
-  def openModuleInv(player: ServerPlayerEntity): Unit = {
-    if (hasWorld && !world.isRemote) {
-      NetworkHooks.openGui(player, new ContainerQuarryModule.InteractionObject(getPos, TranslationKeys.advpump), getPos)
-    }
   }
 
   override def getEnchantmentHolder = ench.toHolder

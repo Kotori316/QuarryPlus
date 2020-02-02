@@ -3,7 +3,9 @@ package com.yogpc.qp.packet.advpump;
 import java.util.function.Supplier;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.advpump.TileAdvPump;
+import com.yogpc.qp.machines.quarry.ContainerQuarryModule;
 import com.yogpc.qp.packet.IMessage;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
@@ -49,7 +51,7 @@ public class AdvPumpChangeMessage implements IMessage<AdvPumpChangeMessage> {
         IMessage.findTile(ctx, pos, dim, TileAdvPump.class)
             .ifPresent(pump -> ctx.get().enqueueWork(() -> {
                 if (toStart == ToStart.MODULE_INV) {
-                    pump.openModuleInv(ctx.get().getSender());
+                    ContainerQuarryModule.InteractionObject.openGUI(pump, ctx.get().getSender(), TranslationKeys.advpump);
                 } else {
                     pump.placeFrame_$eq(placeFrame);
                     pump.delete_$eq(deleteFluid);
