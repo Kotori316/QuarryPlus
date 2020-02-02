@@ -17,9 +17,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.yogpc.qp.Config;
@@ -38,6 +40,7 @@ import net.minecraft.state.StateContainer;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
@@ -47,6 +50,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.tuple.Pair;
+import scala.jdk.javaapi.CollectionConverters;
 
 import static jp.t2v.lab.syntax.MapStreamSyntax.byKey;
 import static jp.t2v.lab.syntax.MapStreamSyntax.entryToMap;
@@ -164,8 +168,8 @@ public class BlockFrame extends Block {
                 List<BlockPos> list = (List<BlockPos>) nextCheck.clone();
                 nextCheck.clear();
                 for (BlockPos pos : list) {
-                    for (Direction dir : Direction.values()) {
-                        BlockPos nPos = pos.offset(dir);
+                    for (Direction8 dir : Direction8.DIRECTIONS) {
+                        BlockPos nPos = pos.add(dir.getVec());
                         BlockState nBlock = world.getBlockState(nPos);
                         if (nBlock.getBlock() == this) {
                             if (!HAS_NEIGHBOUR_LIQUID.test(world, nPos) && set.add(nPos))
@@ -214,6 +218,51 @@ public class BlockFrame extends Block {
         super.neighborChanged(state, worldIn, pos, blockIn, fromPos, isMoving);
         if (!Config.common().disableFrameChainBreak().get() && state.get(DAMMING)) {
             worldIn.setBlockState(pos, state.with(DAMMING, HAS_NEIGHBOUR_LIQUID.test(worldIn, pos)), 2);
+        }
+    }
+
+    private static class Direction8 {
+        private final Vec3i vec;
+
+        private Direction8(Vec3i vec) {
+            this.vec = vec;
+        }
+
+        public Vec3i getVec() {
+            return vec;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Direction8 that = (Direction8) o;
+            return Objects.equals(vec, that.vec);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(vec);
+        }
+
+        @Override
+        public String toString() {
+            return "Direction8{" +
+                "vec=" + vec +
+                '}';
+        }
+
+        public static final List<Direction8> DIRECTIONS;
+
+        static {
+            List<BlockPos> ds = Stream.of(Direction.values()).map(Direction::getDirectionVec).map(BlockPos::new).collect(Collectors.toList());
+            ds.add(BlockPos.ZERO);
+            DIRECTIONS = CollectionConverters.asJava(
+                CollectionConverters.asScala(ds).combinations(2).map(vectors -> vectors.<BlockPos>reduce(BlockPos::add))
+                    .distinct()
+                    .filterNot(BlockPos.ZERO::equals)
+                    .map(Direction8::new)
+                    .toSeq());
         }
     }
 }
