@@ -11,6 +11,7 @@ import com.yogpc.qp.compat.BuildcraftHelper;
 import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.IEnchantableTile;
 import com.yogpc.qp.machines.base.QPBlock;
+import com.yogpc.qp.machines.base.StatusContainer;
 import com.yogpc.qp.utils.Holder;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -59,8 +60,7 @@ public class BlockAdvPump extends QPBlock {
             return true;
         } else if (stack.getItem() == Holder.itemStatusChecker()) {
             if (!worldIn.isRemote)
-                Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(t ->
-                    t.sendEnchantMassage(playerIn));
+                NetworkHooks.openGui(((ServerPlayerEntity) playerIn), new StatusContainer.ContainerProvider(pos), pos);
             return true;
         } else if (!playerIn.isSneaking()) {
             if (!worldIn.isRemote) {

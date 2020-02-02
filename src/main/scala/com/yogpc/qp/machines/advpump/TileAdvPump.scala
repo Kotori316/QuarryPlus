@@ -394,7 +394,9 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
   override def getStatusStrings(trackIntSeq: Seq[IntReferenceHolder]): Seq[String] = {
     val enchantmentStrings = EnchantmentHolder.getEnchantmentStringSeq(this.getEnchantmentHolder)
     val modules = if (this.modules.nonEmpty) "Modules" :: this.modules.map("  " + _.toString) else Nil
-    enchantmentStrings ++ modules
+    val maxEnergy = (2 * ench.maxAmount / 1000 * ench.baseEnergy / APowerTile.MJToMicroMJ).toInt
+    val energyStrings = Seq(I18n.format(TranslationKeys.REQUIRES), s"$maxEnergy FE/t", I18n.format(TranslationKeys.RECEIVES), s"${ench.getReceiveEnergy / APowerTile.FEtoMicroJ} FE/t")
+    enchantmentStrings ++ energyStrings ++ modules
   }
 
   override def getStorage = storage

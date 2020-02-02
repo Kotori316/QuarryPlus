@@ -97,6 +97,7 @@
   "quarryplus.status.item_empty": "ItemStorage is empty.",
   "quarryplus.status.item": "%s items in total",
   "quarryplus.status.require": "Requires",
+  "quarryplus.status.receive": "Receives",
   "quarryplus.tooltip.advpump": "This block is a standalone pump.%1$sPlace this above fluid block.",
   "quarryplus.tooltip.advpump.gui_delete": "On: Fluids are sent to void...\nUseful for removing water\nOff: Fluids are moved to tank.",
   "quarryplus.tooltip.blockpump": "This block is an attachment for %1$s.%2$sPlace this next to %1$s.",
