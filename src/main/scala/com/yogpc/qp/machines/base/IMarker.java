@@ -38,7 +38,7 @@ public interface IMarker {
 
         @Override
         public IMarker call() {
-            return new MarkerImpl(BlockPos.ZERO, BlockPos.ZERO);
+            return EMPTY_MARKER;
         }
 
         @Override
@@ -51,6 +51,7 @@ public interface IMarker {
 
         @Override
         public void readNBT(Capability<IMarker> capability, IMarker instance, Direction side, INBT nbt) {
+            // Default marker instance is immutable.
         }
 
         public static Capability<IMarker> MARKER_CAPABILITY() {

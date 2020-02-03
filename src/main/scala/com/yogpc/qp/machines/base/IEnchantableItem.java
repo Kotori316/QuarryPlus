@@ -36,7 +36,6 @@ public interface IEnchantableItem {
      */
     boolean canMove(@Nonnull ItemStack is, Enchantment enchantment);
 
-    Predicate<Enchantment> FALSE = MapStreamSyntax.always_false();
     Predicate<Enchantment> SILKTOUCH = Predicate.isEqual(Enchantments.SILK_TOUCH);
     Predicate<Enchantment> FORTUNE = Predicate.isEqual(Enchantments.FORTUNE);
     Predicate<Enchantment> EFFICIENCY = Predicate.isEqual(Enchantments.EFFICIENCY);
