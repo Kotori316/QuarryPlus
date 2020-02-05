@@ -7,6 +7,7 @@ import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.advquarry.BlockWrapper;
 import com.yogpc.qp.machines.base.IEnchantableTile;
 import com.yogpc.qp.machines.base.IMarker;
+import com.yogpc.qp.machines.base.IRemotePowerOn;
 import com.yogpc.qp.machines.workbench.WorkbenchRecipes;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.EnableCondition;
@@ -110,6 +111,7 @@ public class QuarryPlus {
             LootFunctionManager.registerFunction(new IEnchantableTile.DropFunction.Serializer());
             Config.common().outputPowerDetail(Paths.get("config\\quarryplus"));
             IMarker.Cap.register();
+            IRemotePowerOn.Cap.register();
         }
 
         @SubscribeEvent

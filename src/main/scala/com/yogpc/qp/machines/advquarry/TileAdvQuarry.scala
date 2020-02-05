@@ -23,11 +23,12 @@ import net.minecraft.state.properties.BlockStateProperties
 import net.minecraft.tileentity.ITickableTileEntity
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos}
 import net.minecraft.util.text.{ITextComponent, StringTextComponent, TranslationTextComponent}
-import net.minecraft.util.{Hand, IntReferenceHolder, ResourceLocation}
+import net.minecraft.util.{Direction, Hand, IntReferenceHolder, ResourceLocation}
 import net.minecraft.world.World
 import net.minecraft.world.server.ServerWorld
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.event.ForgeEventFactory
 import net.minecraftforge.event.world.BlockEvent
 import net.minecraftforge.fluids.{FluidAttributes, FluidStack}
@@ -46,7 +47,8 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
   with INamedContainerProvider
   with ContainerQuarryModule.HasModuleInventory
   with StatusContainer.StatusProvider
-  with EnchantmentHolder.EnchantmentProvider {
+  with EnchantmentHolder.EnchantmentProvider
+  with IRemotePowerOn {
   self =>
 
   var yLevel = 1
@@ -229,6 +231,10 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     else super.getMaxRenderDistanceSquared
   }
 
+  override def getCapability[T](cap: Capability[T], side: Direction) = {
+    Cap.asJava(Cap.make(cap, this, IRemotePowerOn.Cap.REMOTE_CAPABILITY()) orElse super.getCapability(cap, side).asScala)
+  }
+
   // Interface implementation
   override protected def isWorking = action.target != BlockPos.ZERO && action != AdvQuarryWork.none
 
@@ -307,6 +313,19 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
   }
 
   override def getEnchantmentHolder = enchantments
+
+  override def setArea(area: Area): Unit = this.area = area
+
+  override def startWorking(): Unit = {
+    G_ReInit()
+  }
+
+  override def getArea = this.area
+
+  override def startWaiting(): Unit = {
+    // Just means "stop".
+    this.action = AdvQuarryWork.none
+  }
 }
 
 object TileAdvQuarry {

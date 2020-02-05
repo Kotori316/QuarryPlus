@@ -32,9 +32,9 @@ public interface IMarker {
      */
     List<ItemStack> removeFromWorldWithItem();
 
-    public static final class Cap implements Capability.IStorage<IMarker>, Callable<IMarker> {
+    final class Cap implements Capability.IStorage<IMarker>, Callable<IMarker> {
         @CapabilityInject(IMarker.class)
-        private static final Capability<IMarker> MARKER_CAP = null;
+        public static final Capability<IMarker> MARKER_CAP = null;
 
         @Override
         public IMarker call() {
@@ -94,5 +94,5 @@ public interface IMarker {
         }
     }
 
-    public static final IMarker EMPTY_MARKER = new MarkerImpl(BlockPos.ZERO, BlockPos.ZERO);
+    IMarker EMPTY_MARKER = new MarkerImpl(BlockPos.ZERO, BlockPos.ZERO);
 }

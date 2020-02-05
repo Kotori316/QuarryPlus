@@ -21,6 +21,7 @@ import net.minecraft.world.World
 import net.minecraft.world.server.ServerWorld
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.event.ForgeEventFactory
 import net.minecraftforge.event.world.BlockEvent
 
@@ -35,7 +36,8 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   with IChunkLoadTile
   with ContainerQuarryModule.HasModuleInventory
   with StatusContainer.StatusProvider
-  with EnchantmentHolder.EnchantmentProvider {
+  with EnchantmentHolder.EnchantmentProvider
+  with IRemotePowerOn {
   self =>
 
   import TileQuarry2._
@@ -233,6 +235,10 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     else super.getMaxRenderDistanceSquared
   }
 
+  override def getCapability[T](cap: Capability[T], side: Direction) = {
+    Cap.asJava(Cap.make(cap, this, IRemotePowerOn.Cap.REMOTE_CAPABILITY()) orElse super.getCapability(cap, side).asScala)
+  }
+
   override def getStorage = storage
 
   @OnlyIn(Dist.CLIENT)
@@ -262,6 +268,22 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   }
 
   override def getEnchantmentHolder = enchantments
+
+  override def setArea(area: Area): Unit = {
+    this.area = if (area.yMin == area.yMax) area.copy(yMax = area.yMin + 3) else area
+  }
+
+  override def startWorking(): Unit = {
+    G_ReInit()
+    if (!getWorld.isRemote) // Send client a packet to notify changes of area.
+      PacketHandler.sendToClient(TileMessage.create(self), world)
+  }
+
+  override def getArea = this.area
+
+  override def startWaiting(): Unit = {
+    this.action = QuarryAction.none
+  }
 }
 
 object TileQuarry2 {
