@@ -40,8 +40,8 @@ object Area {
   val areaBox: Area => AxisAlignedBB = area =>
     new AxisAlignedBB(area.xMin, 0, area.zMin, area.xMax, area.yMax, area.zMax)
 
-  val posToArea: (Vec3i, Vec3i) => Area = {
-    case (p1, p2) => Area(Math.min(p1.getX, p2.getX), Math.min(p1.getY, p2.getY), Math.min(p1.getZ, p2.getZ),
+  def posToArea(p1: Vec3i, p2: Vec3i): Area = {
+    Area(Math.min(p1.getX, p2.getX), Math.min(p1.getY, p2.getY), Math.min(p1.getZ, p2.getZ),
       Math.max(p1.getX, p2.getX), Math.max(p1.getY, p2.getY), Math.max(p1.getZ, p2.getZ))
   }
 
