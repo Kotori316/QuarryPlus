@@ -1,5 +1,12 @@
 **This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).**
 
+## Version 14.1.8
+- Many internal changes.
+- Chain breaking of frame expanded
+- More info on Status Checker
+- Faster pump
+- Fuel Module for AdvPump
+
 ## Version 14.1.7
 - AdvPump - Refactored searching water.
 - AdvPump - Detect `Delete fluid` automatically.
