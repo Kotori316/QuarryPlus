@@ -85,7 +85,7 @@ abstract sealed class WorkbenchRecipes(val location: ResourceLocation, val outpu
 
 private final class IngredientRecipe(location: ResourceLocation, o: ItemStack, e: Long, s: Boolean, seq: Seq[Seq[IngredientWithCount]])
   extends WorkbenchRecipes(location, ItemElement(o), e, s) {
-  WorkbenchRecipes.LOGGER.debug("Recipe instance({}) created for {}. Input: ", location, output, inputs)
+  WorkbenchRecipes.LOGGER.debug("Recipe instance({}) created for {}. Input: {}", location, output, inputs)
   override val size = seq.size
 
   override def inputs = seq

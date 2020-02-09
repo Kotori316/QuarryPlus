@@ -15,7 +15,6 @@ import net.minecraft.nbt.CompoundNBT
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos}
 import net.minecraft.util.{Direction, EntityPredicates, Hand}
 import net.minecraft.world.World
-import net.minecraft.world.server.ServerWorld
 import net.minecraftforge.common.util.Constants.NBT
 import org.apache.logging.log4j.MarkerManager
 
@@ -202,7 +201,7 @@ object AdvQuarryWork {
             }.sum
           if (tile.useEnergy(energy, energy, false, EnergyUsage.ADV_BREAK_BLOCK) == energy) {
             tile.useEnergy(energy, energy, true, EnergyUsage.ADV_BREAK_BLOCK)
-            val fakePlayer = QuarryFakePlayer.get(tile.getDiggingWorld.asInstanceOf[ServerWorld], target)
+            val fakePlayer = QuarryFakePlayer.get(tile.getDiggingWorld, target)
             val pickaxe = tile.getEnchantedPickaxe()
             fakePlayer.setHeldItem(Hand.MAIN_HAND, pickaxe)
             targets.map { p =>
