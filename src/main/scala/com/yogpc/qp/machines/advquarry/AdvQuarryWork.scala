@@ -90,7 +90,7 @@ object AdvQuarryWork {
         i += 1
         if (framePoses.nonEmpty) {
           if (tryPlaceFrame(tile, target)) {
-            framePoses = framePoses.tail.dropWhile(p => tile.getWorld.getBlockState(p).getBlock == Holder.blockFrame)
+            framePoses = framePoses.tail.dropWhile(p => tile.getDiggingWorld.getBlockState(p).getBlock == Holder.blockFrame)
             mTarget = framePoses.headOption.getOrElse(BlockPos.ZERO)
           }
         }
@@ -99,9 +99,9 @@ object AdvQuarryWork {
 
     def tryPlaceFrame(tile: TileAdvQuarry, pos: BlockPos): Boolean = {
       if (pos == tile.getPos) true // Go ahead
-      else if (!tile.getWorld.isAirBlock(pos)) {
+      else if (!tile.getDiggingWorld.isAirBlock(pos)) {
         // Break block before placing frame
-        val state = tile.getWorld.getBlockState(pos)
+        val state = tile.getDiggingWorld.getBlockState(pos)
         if (state.getBlock == Holder.blockFrame) {
           true // Go ahead
         } else {
@@ -109,14 +109,14 @@ object AdvQuarryWork {
             case Ior.Left(a) => Reason.printNonEnergy(a); !a.isEnergyIssue
             case Ior.Right(_) =>
               if (PowerManager.useEnergyFrameBuild(tile, tile.enchantments.unbreaking)) {
-                tile.getWorld.setBlockState(target, Holder.blockFrame.getDefaultState)
+                tile.getDiggingWorld.setBlockState(target, Holder.blockFrame.getDefaultState)
                 true
               } else {
                 false
               }
             case Ior.Both(a, _) => Reason.printNonEnergy(a)
-              if (tile.getWorld.isAirBlock(pos) && PowerManager.useEnergyFrameBuild(tile, tile.enchantments.unbreaking)) {
-                tile.getWorld.setBlockState(target, Holder.blockFrame.getDefaultState)
+              if (tile.getDiggingWorld.isAirBlock(pos) && PowerManager.useEnergyFrameBuild(tile, tile.enchantments.unbreaking)) {
+                tile.getDiggingWorld.setBlockState(target, Holder.blockFrame.getDefaultState)
                 true
               } else {
                 !a.isEnergyIssue
@@ -125,7 +125,7 @@ object AdvQuarryWork {
         }
       } else {
         if (PowerManager.useEnergyFrameBuild(tile, tile.enchantments.unbreaking)) {
-          tile.getWorld.setBlockState(target, Holder.blockFrame.getDefaultState)
+          tile.getDiggingWorld.setBlockState(target, Holder.blockFrame.getDefaultState)
           true
         } else {
           false
@@ -159,22 +159,22 @@ object AdvQuarryWork {
       @scala.annotation.tailrec
       def loop(pos: BlockPos, count: Int, list: List[Reason]): List[Reason] = {
         val targets = Range(tile.yLevel, area.yMin).reverse.map(yPos => pos.copy(y = yPos))
-        checkWater(tile.getWorld, targets)
+        checkWater(tile.getDiggingWorld, targets)
         val storage1 = new AdvStorage
         if (pos.getX % 3 == 0) {
           import scala.jdk.CollectionConverters._
           // drop check
           val aabb = new AxisAlignedBB(pos.getX - 6, tile.yLevel - 3, pos.getZ - 6, pos.getX + 6, pos.getY, pos.getZ + 6)
-          tile.getWorld.getEntitiesWithinAABB[ItemEntity](classOf[ItemEntity], aabb, EntityPredicates.IS_ALIVE)
+          tile.getDiggingWorld.getEntitiesWithinAABB[ItemEntity](classOf[ItemEntity], aabb, EntityPredicates.IS_ALIVE)
             .asScala.foreach { e =>
             storage1.insertItem(e.getItem)
             QuarryPlus.proxy.removeEntity(e)
           }
-          val orbs = tile.getWorld.getEntitiesWithinAABB(classOf[Entity], aabb).asScala.toList
+          val orbs = tile.getDiggingWorld.getEntitiesWithinAABB(classOf[Entity], aabb).asScala.toList
           tile.modules.foreach(_.invoke(IModule.CollectingItem(orbs)))
         }
 
-        if (targets.forall(tile.getWorld.isAirBlock)) {
+        if (targets.forall(tile.getDiggingWorld.isAirBlock)) {
           // Skip this xz. Insert dropped items and go ahead.
           tile.storage.addAll(storage1, log = true)
           val searchEnergy = PowerManager.calcEnergyAdvSearch(tile.enchantments.unbreaking, pos.getY - tile.yLevel + 1)
@@ -193,8 +193,8 @@ object AdvQuarryWork {
           // Time to remove blocks.
           val energy = targets
             .map { p =>
-              val state = tile.getWorld.getBlockState(p)
-              state.getBlockHardness(tile.getWorld, p) match {
+              val state = tile.getDiggingWorld.getBlockState(p)
+              state.getBlockHardness(tile.getDiggingWorld, p) match {
                 case h if TileAdvQuarry.isUnbreakable(h, state) => 0
                 case _ if state.getMaterial.isLiquid => PowerManager.calcEnergyPumpDrain(tile.enchantments.unbreaking, 1L, 0L)
                 case hardness => PowerManager.calcEnergyBreak(hardness, tile.enchantments)
@@ -202,11 +202,11 @@ object AdvQuarryWork {
             }.sum
           if (tile.useEnergy(energy, energy, false, EnergyUsage.ADV_BREAK_BLOCK) == energy) {
             tile.useEnergy(energy, energy, true, EnergyUsage.ADV_BREAK_BLOCK)
-            val fakePlayer = QuarryFakePlayer.get(tile.getWorld.asInstanceOf[ServerWorld], target)
+            val fakePlayer = QuarryFakePlayer.get(tile.getDiggingWorld.asInstanceOf[ServerWorld], target)
             val pickaxe = tile.getEnchantedPickaxe()
             fakePlayer.setHeldItem(Hand.MAIN_HAND, pickaxe)
             targets.map { p =>
-              val state = tile.getWorld.getBlockState(p)
+              val state = tile.getDiggingWorld.getBlockState(p)
               tile.gatherItemDrops(p, searchReplacer = true, state, fakePlayer, pickaxe)
             }.foldRight((List.empty[Reason], storage1)) { case (ior, (l, s)) =>
               ior.foreach(s.addAll(_, log = false)); (ior.left.toList ::: l) -> s
@@ -306,20 +306,20 @@ object AdvQuarryWork {
     override def tick(tile: TileAdvQuarry): Unit = {
       import scala.jdk.CollectionConverters._
       val aabb = new AxisAlignedBB(area.xMin - 6, tile.yLevel - 3, area.zMin - 6, area.xMax + 6, area.yMax, area.zMax + 6)
-      tile.getWorld.getEntitiesWithinAABB[ItemEntity](classOf[ItemEntity], aabb, EntityPredicates.IS_ALIVE)
+      tile.getDiggingWorld.getEntitiesWithinAABB[ItemEntity](classOf[ItemEntity], aabb, EntityPredicates.IS_ALIVE)
         .forEach { e =>
           tile.storage.insertItem(e.getItem)
           QuarryPlus.proxy.removeEntity(e)
         }
-      val orbs = tile.getWorld.getEntitiesWithinAABB(classOf[Entity], aabb).asScala.toList
+      val orbs = tile.getDiggingWorld.getEntitiesWithinAABB(classOf[Entity], aabb).asScala.toList
       tile.modules.foreach(_.invoke(IModule.CollectingItem(orbs)))
       var poses = 0
       val (targets, rest) = targetList.splitAt(numberInTick * 32)
       targets.foreach { head =>
         Range(tile.yLevel, head.getY).map(y => head.copy(y = y)).foreach { p =>
-          val state = tile.getWorld.getBlockState(p)
+          val state = tile.getDiggingWorld.getBlockState(p)
           if (TilePump.isLiquid(state)) {
-            tile.getWorld.setBlockState(p, Blocks.AIR.getDefaultState)
+            tile.getDiggingWorld.setBlockState(p, Blocks.AIR.getDefaultState)
             poses = 1 |+| poses
           }
         }

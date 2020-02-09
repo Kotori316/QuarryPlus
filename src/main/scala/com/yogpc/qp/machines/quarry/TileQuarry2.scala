@@ -51,6 +51,14 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   private val storage = new QuarryStorage
   val moduleInv = new QuarryModuleInventory(5, this, _ => refreshModules(), jp.t2v.lab.syntax.MapStreamSyntax.always_true())
 
+  def getDiggingWorld: ServerWorld = {
+    if (!super.getWorld.isRemote) {
+      this.area.getWorld(super.getWorld.asInstanceOf[ServerWorld])
+    } else {
+      throw new IllegalStateException("Tried to get server world in client.")
+    }
+  }
+
   override def workInTick(): Unit = {
     // Module Tick Action
     modules.foreach(_.invoke(IModule.Tick(self)))
