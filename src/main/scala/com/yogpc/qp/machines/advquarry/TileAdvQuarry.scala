@@ -293,7 +293,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
   override def getStatusStrings(trackIntSeq: Seq[IntReferenceHolder]): Seq[String] = {
     import net.minecraft.client.resources.I18n
     val enchantmentStrings = EnchantmentHolder.getEnchantmentStringSeq(this.enchantments)
-    val containItems = if (trackIntSeq(0).get() <= 0) I18n.format(TranslationKeys.EMPTY_ITEM) else I18n.format(TranslationKeys.CONTAIN_ITEM, trackIntSeq(0).get().toString)
+    val containItems = if (trackIntSeq.head.get() <= 0) I18n.format(TranslationKeys.EMPTY_ITEM) else I18n.format(TranslationKeys.CONTAIN_ITEM, trackIntSeq.head.get().toString)
     val containFluids = if (trackIntSeq(1).get() <= 0) I18n.format(TranslationKeys.EMPTY_FLUID) else I18n.format(TranslationKeys.CONTAIN_FLUID, trackIntSeq(1).get().toString)
     val modules = if (this.modules.nonEmpty) "Modules" :: this.modules.map("  " + _.toString) else Nil
     enchantmentStrings ++ modules :+ containItems :+ containFluids
@@ -308,7 +308,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
   }
 
   override def updateIntRef(trackIntSeq: Seq[IntReferenceHolder]): Unit = {
-    trackIntSeq(0).set(storage.itemSize)
+    trackIntSeq.head.set(storage.itemSize)
     trackIntSeq(1).set(storage.fluidSize)
   }
 
