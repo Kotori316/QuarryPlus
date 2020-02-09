@@ -166,11 +166,8 @@ public class FakeHandler extends ServerPlayNetHandler {
     }
 
     @Override
-    public void setPlayerLocation(double x, double y, double z, float yaw, float pitch) {
-    }
-
-    @Override
     public void setPlayerLocation(double x, double y, double z, float yaw, float pitch, Set<SPlayerPositionLookPacket.Flags> relativeSet) {
+        this.player.setPositionAndRotation(x, y, z, yaw, pitch);
     }
 
     @Override

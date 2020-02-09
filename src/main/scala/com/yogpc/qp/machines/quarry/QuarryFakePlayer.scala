@@ -74,7 +74,8 @@ object QuarryFakePlayer {
   def get(server: ServerWorld, pos: BlockPos): QuarryFakePlayer = {
     players.get(profile) match {
       case Some(player) =>
-        player.teleport(server, pos.getX, pos.getY, pos.getZ, player.getYaw(1.0f), player.getPitch(1.0f))
+        player.setPosition(pos.getX, pos.getY, pos.getZ)
+        player.setWorld(server)
         player
       case None => players = players.updated(profile, new QuarryFakePlayer(server)); get(server, pos)
     }
