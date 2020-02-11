@@ -24,6 +24,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
       - name: Compile
-        run: chmod +x ./gradlew && ./gradlew publish --continue --warning-mode all
+        run: chmod +x ./gradlew && ./gradlew test publish --continue --warning-mode all
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
