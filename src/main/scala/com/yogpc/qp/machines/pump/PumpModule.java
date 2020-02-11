@@ -104,7 +104,7 @@ public abstract class PumpModule implements IModule {
                 BlockPos target = beforeBreak.pos();
                 BlockState state = beforeBreak.world().getBlockState(target);
                 if (TilePump.isLiquid(state)) {
-                    world = tile.getWorld();
+                    world = beforeBreak.world();
                     if (S_removeLiquids(tile, target.getX(), target.getY(), target.getZ())) {
                         return Done$.MODULE$;
                     } else {
