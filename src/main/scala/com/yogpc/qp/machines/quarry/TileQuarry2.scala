@@ -50,6 +50,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   var frameMode = false
   private val storage = new QuarryStorage
   val moduleInv = new QuarryModuleInventory(5, this, _ => refreshModules(), jp.t2v.lab.syntax.MapStreamSyntax.always_true())
+  finishListener.add(() => getDiggingWorld.getChunk(area.xMin >> 4, area.zMin >> 4).setLoaded(false))
 
   def getDiggingWorld: ServerWorld = {
     if (!super.getWorld.isRemote) {
@@ -79,8 +80,12 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     updateWorkingState()
     // Insert items
     storage.pushItem(world, pos)
-    if (world.getGameTime % 20 == 0) // Insert fluid every 1 second.
+    if (world.getGameTime % 20 == 0) { // Insert fluid every 1 second.
       storage.pushFluid(world, pos)
+      if (isWorking && getWorld.getDimension.getType != getDiggingWorld.getDimension.getType) {
+        getDiggingWorld.getChunk(area.xMin >> 4, area.zMin >> 4).setLoaded(true)
+      }
+    }
   }
 
   override def remove(): Unit = {

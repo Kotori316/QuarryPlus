@@ -57,6 +57,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
   var action: AdvQuarryWork = AdvQuarryWork.none
   val storage = new AdvStorage
   val moduleInv = new QuarryModuleInventory(5, this, _ => refreshModules(), TileAdvQuarry.moduleFilter)
+  finishListener.add(() => getDiggingWorld.getChunk(area.xMin >> 4, area.zMin >> 4).setLoaded(false))
 
   def getDiggingWorld: ServerWorld = {
     if (!super.getWorld.isRemote) {
@@ -206,6 +207,9 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     storage.pushItem(getWorld, getPos)
     if (getWorld.getGameTime % 10 == 0) {
       storage.pushFluid(getWorld, getPos)
+      if (isWorking && getWorld.getDimension.getType != getDiggingWorld.getDimension.getType) {
+        getDiggingWorld.getChunk(area.xMin >> 4, area.zMin >> 4).setLoaded(true)
+      }
     }
   }
 
