@@ -31,7 +31,7 @@ if (Boolean.valueOf(System.getenv("GITHUB_ACTIONS"))) {
     version = (getProperty("modVersion") + "_" + System.getenv("GITHUB_SHA").substring(0, 7))
 }
 group = 'com.kotori316' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'AdditionalEnchantedMiner-1.15.1'
+archivesBaseName = 'AdditionalEnchantedMiner-1.15.2'
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 compileScala.sourceCompatibility = compileScala.targetCompatibility = '1.8'
