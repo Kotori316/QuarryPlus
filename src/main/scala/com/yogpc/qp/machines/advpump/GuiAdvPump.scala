@@ -30,9 +30,10 @@ class GuiAdvPump(c: ContainerAdvPump, i: PlayerInventory, t: ITextComponent) ext
     super.init()
     val buttonWidth = 80
     addButton(new IHandleButton.Button(0, guiLeft + getXSize / 2 - buttonWidth, guiTop + 22, buttonWidth, 20, frameText(tile.placeFrame), this))
-    addButton(new IHandleButton.Button(1, guiLeft + getXSize / 2 - 60, guiTop + 50, 120, 20, "Start", this))
+    addButton(new IHandleButton.Button(1, guiLeft + getXSize / 2 - 60, guiTop + 45, 120, 20, "Start", this))
     val deleteButton = new IHandleButton.Button(2, guiLeft + getXSize / 2, guiTop + 22, buttonWidth, 20, deleteText(tile.delete), this)
     addButton(deleteButton)
+    addButton(new IHandleButton.Button(3, guiLeft + getXSize / 2 + 20, guiTop + 65, 60, 15, "Module", this))
     buttons.get(1).active = !tile.isWorking
     val toolTipDeleteButton = java.util.Arrays.asList(I18n.format("quarryplus.tooltip.advpump.gui_delete").split("\n"): _*)
     deleteButton.setToolTip(() => toolTipDeleteButton, this)
@@ -48,6 +49,8 @@ class GuiAdvPump(c: ContainerAdvPump, i: PlayerInventory, t: ITextComponent) ext
       case 2 => tile.toggleDelete()
         button.setMessage(deleteText(tile.delete))
         PacketHandler.sendToServer(AdvPumpChangeMessage.create(tile, AdvPumpChangeMessage.ToStart.UNCHANGED))
+      case 3 =>
+        PacketHandler.sendToServer(AdvPumpChangeMessage.create(tile, AdvPumpChangeMessage.ToStart.MODULE_INV))
       case _ => QuarryPlus.LOGGER.error("AdvPump undefined button")
     }
   }

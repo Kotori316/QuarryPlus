@@ -20,7 +20,8 @@ import net.minecraft.util.{Unit => _, _}
 import net.minecraft.world.World
 import net.minecraft.world.server.ServerWorld
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
-import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.common.capabilities.Capability
+import net.minecraftforge.common.{DimensionManager, MinecraftForge}
 import net.minecraftforge.event.ForgeEventFactory
 import net.minecraftforge.event.world.BlockEvent
 
@@ -34,7 +35,9 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   with IDebugSender
   with IChunkLoadTile
   with ContainerQuarryModule.HasModuleInventory
-  with StatusContainer.StatusProvider {
+  with StatusContainer.StatusProvider
+  with EnchantmentHolder.EnchantmentProvider
+  with IRemotePowerOn {
   self =>
 
   import TileQuarry2._
@@ -47,6 +50,15 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   var frameMode = false
   private val storage = new QuarryStorage
   val moduleInv = new QuarryModuleInventory(5, this, _ => refreshModules(), jp.t2v.lab.syntax.MapStreamSyntax.always_true())
+  finishListener.add(() => DimensionManager.keepLoaded(getDiggingWorld.getDimension.getType, false))
+
+  def getDiggingWorld: ServerWorld = {
+    if (!super.getWorld.isRemote) {
+      this.area.getWorld(super.getWorld.asInstanceOf[ServerWorld])
+    } else {
+      throw new IllegalStateException("Tried to get server world in client.")
+    }
+  }
 
   override def workInTick(): Unit = {
     // Module Tick Action
@@ -68,8 +80,12 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     updateWorkingState()
     // Insert items
     storage.pushItem(world, pos)
-    if (world.getGameTime % 20 == 0) // Insert fluid every 1 second.
+    if (world.getGameTime % 20 == 0) { // Insert fluid every 1 second.
       storage.pushFluid(world, pos)
+      if (isWorking && getWorld.getDimension.getType != getDiggingWorld.getDimension.getType) {
+        DimensionManager.keepLoaded(getDiggingWorld.getDimension.getType, true)
+      }
+    }
   }
 
   override def remove(): Unit = {
@@ -232,6 +248,10 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     else super.getMaxRenderDistanceSquared
   }
 
+  override def getCapability[T](cap: Capability[T], side: Direction) = {
+    Cap.asJava(Cap.make(cap, this, IRemotePowerOn.Cap.REMOTE_CAPABILITY()) orElse super.getCapability(cap, side).asScala)
+  }
+
   override def getStorage = storage
 
   @OnlyIn(Dist.CLIENT)
@@ -258,6 +278,24 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   override def updateIntRef(trackingIntSeq: Seq[IntReferenceHolder]): Unit = {
     trackingIntSeq(0).set(storage.itemSize)
     trackingIntSeq(1).set(storage.fluidSize)
+  }
+
+  override def getEnchantmentHolder = enchantments
+
+  override def setArea(area: Area): Unit = {
+    this.area = if (area.yMin == area.yMax) area.copy(yMax = area.yMin + 3) else area
+  }
+
+  override def startWorking(): Unit = {
+    G_ReInit()
+    if (!getWorld.isRemote) // Send client a packet to notify changes of area.
+      PacketHandler.sendToClient(TileMessage.create(self), world)
+  }
+
+  override def getArea = this.area
+
+  override def startWaiting(): Unit = {
+    this.action = QuarryAction.none
   }
 }
 

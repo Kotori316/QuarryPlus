@@ -14,7 +14,6 @@ import net.minecraft.nbt.CompoundNBT
 import net.minecraft.util.SoundCategory
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos}
 import net.minecraft.world.World
-import net.minecraft.world.server.ServerWorld
 import org.apache.logging.log4j.MarkerManager
 
 trait QuarryAction {
@@ -93,18 +92,18 @@ object QuarryAction {
     override def action(target: BlockPos): Unit = {
       frameTargets match {
         case head :: til if head == target =>
-          val state = quarry2.getWorld.getBlockState(target)
-          if (checkPlaceable(quarry2.getWorld, target, state, Holder.blockFrame.getDammingState)) {
+          val state = quarry2.getDiggingWorld.getBlockState(target)
+          if (checkPlaceable(quarry2.getDiggingWorld, target, state, Holder.blockFrame.getDammingState)) {
             if (PowerManager.useEnergyFrameBuild(quarry2, quarry2.enchantments.unbreaking)) {
-              quarry2.getWorld.setBlockState(target, Holder.blockFrame.getDammingState)
+              quarry2.getDiggingWorld.setBlockState(target, Holder.blockFrame.getDammingState)
               frameTargets = til
             }
           } else {
-            if (!checkBreakable(quarry2.getWorld, target, state, quarry2.modules)) {
+            if (!checkBreakable(quarry2.getDiggingWorld, target, state, quarry2.modules)) {
               frameTargets = til
-            } else if (quarry2.breakBlock(quarry2.getWorld.asInstanceOf[ServerWorld], target, state)) {
+            } else if (quarry2.breakBlock(quarry2.getDiggingWorld, target, state)) {
               if (PowerManager.useEnergyFrameBuild(quarry2, quarry2.enchantments.unbreaking)) {
-                quarry2.getWorld.setBlockState(target, Holder.blockFrame.getDammingState)
+                quarry2.getDiggingWorld.setBlockState(target, Holder.blockFrame.getDammingState)
                 frameTargets = til
               }
             }
@@ -113,7 +112,7 @@ object QuarryAction {
       }
     }
 
-    override def nextTarget(): BlockPos = frameTargets.dropWhile(p => quarry2.getWorld.getBlockState(p).getBlock == Holder.blockFrame).headOption.getOrElse(BlockPos.ZERO)
+    override def nextTarget(): BlockPos = frameTargets.dropWhile(p => quarry2.getDiggingWorld.getBlockState(p).getBlock == Holder.blockFrame).headOption.getOrElse(BlockPos.ZERO)
 
     override def nextAction(quarry2: TileQuarry2): QuarryAction = new BreakBlock(quarry2, quarry2.area.yMin - 1, quarry2.getPos)
 
@@ -138,7 +137,7 @@ object QuarryAction {
   class BreakInsideFrame(quarry2: TileQuarry2) extends QuarryAction {
     var insideFrame: List[BlockPos] = if (quarry2.hasWorld && !quarry2.getWorld.isRemote) {
       insideFrameArea(quarry2.area)
-        .dropWhile(p => !checkBreakable(quarry2.getWorld, p, quarry2.getWorld.getBlockState(p), quarry2.modules))
+        .dropWhile(p => !checkBreakable(quarry2.getDiggingWorld, p, quarry2.getDiggingWorld.getBlockState(p), quarry2.modules))
     } else {
       Nil
     }
@@ -146,15 +145,15 @@ object QuarryAction {
     override def action(target: BlockPos): Unit = {
       insideFrame match {
         case head :: tl if head == target =>
-          val state = quarry2.getWorld.getBlockState(target)
-          if (checkBreakable(quarry2.getWorld, head, state, quarry2.modules)) {
-            if (quarry2.breakBlock(quarry2.getWorld.asInstanceOf[ServerWorld], head, state)) {
-              quarry2.getWorld.setBlockState(target, Blocks.AIR.getDefaultState)
-              playSound(state, quarry2.getWorld, head)
-              insideFrame = tl.dropWhile(p => !checkBreakable(quarry2.getWorld, p, quarry2.getWorld.getBlockState(p), quarry2.modules))
+          val state = quarry2.getDiggingWorld.getBlockState(target)
+          if (checkBreakable(quarry2.getDiggingWorld, head, state, quarry2.modules)) {
+            if (quarry2.breakBlock(quarry2.getDiggingWorld, head, state)) {
+              quarry2.getDiggingWorld.setBlockState(target, Blocks.AIR.getDefaultState)
+              playSound(state, quarry2.getDiggingWorld, head)
+              insideFrame = tl.dropWhile(p => !checkBreakable(quarry2.getDiggingWorld, p, quarry2.getDiggingWorld.getBlockState(p), quarry2.modules))
             }
           } else {
-            insideFrame = insideFrame.dropWhile(p => !checkBreakable(quarry2.getWorld, p, quarry2.getWorld.getBlockState(p), quarry2.modules))
+            insideFrame = insideFrame.dropWhile(p => !checkBreakable(quarry2.getDiggingWorld, p, quarry2.getDiggingWorld.getBlockState(p), quarry2.modules))
           }
         case _ =>
       }
@@ -189,7 +188,7 @@ object QuarryAction {
     }
 
     var digTargets: List[BlockPos] = (if (quarry2.hasWorld && !quarry2.getWorld.isRemote) QuarryAction.digTargets(quarry2.area, targetBefore, y) else Nil)
-      .dropWhile(p => !checkBreakable(quarry2.getWorld, p, quarry2.getWorld.getBlockState(p), quarry2.modules))
+      .dropWhile(p => !checkBreakable(quarry2.getDiggingWorld, p, quarry2.getDiggingWorld.getBlockState(p), quarry2.modules))
 
     var movingHead = true
 
@@ -221,25 +220,25 @@ object QuarryAction {
       if (!movingHead) {
         digTargets match {
           case Nil =>
-            val poses = QuarryAction.digTargets(quarry2.area, targetBefore, y, log = false).dropWhile(p => !checkBreakable(quarry2.getWorld, p, quarry2.getWorld.getBlockState(p), quarry2.modules))
+            val poses = QuarryAction.digTargets(quarry2.area, targetBefore, y, log = false).dropWhile(p => !checkBreakable(quarry2.getDiggingWorld, p, quarry2.getDiggingWorld.getBlockState(p), quarry2.modules))
             if (poses.nonEmpty) {
               digTargets = poses
             }
           case head :: tl if target == head =>
-            val state = quarry2.getWorld.getBlockState(target)
-            if (quarry2.breakBlock(quarry2.getWorld.asInstanceOf[ServerWorld], target, state)) {
+            val state = quarry2.getDiggingWorld.getBlockState(target)
+            if (quarry2.breakBlock(quarry2.getDiggingWorld, target, state)) {
               // Replacer works for non liquid block.
-              if (!TilePump.isLiquid(state) && !state.getBlock.isAir(state, quarry2.getWorld, target)) {
-                val replaced = quarry2.modules.foldMap(_.invoke(IModule.AfterBreak(quarry2.getWorld, target, state, quarry2.getWorld.getGameTime)))
+              if (!TilePump.isLiquid(state) && !state.getBlock.isAir(state, quarry2.getDiggingWorld, target)) {
+                val replaced = quarry2.modules.foldMap(_.invoke(IModule.AfterBreak(quarry2.getDiggingWorld, target, state, quarry2.getDiggingWorld.getGameTime)))
                 if (!replaced.done) { // Not replaced
-                  quarry2.getWorld.setBlockState(target, Blocks.AIR.getDefaultState)
-                  playSound(state, quarry2.getWorld, target)
+                  quarry2.getDiggingWorld.setBlockState(target, Blocks.AIR.getDefaultState)
+                  playSound(state, quarry2.getDiggingWorld, target)
                 }
               } else {
-                quarry2.getWorld.setBlockState(target, Blocks.AIR.getDefaultState)
-                playSound(state, quarry2.getWorld, target)
+                quarry2.getDiggingWorld.setBlockState(target, Blocks.AIR.getDefaultState)
+                playSound(state, quarry2.getDiggingWorld, target)
               }
-              digTargets = tl.dropWhile(p => !checkBreakable(quarry2.getWorld, p, quarry2.getWorld.getBlockState(p), quarry2.modules))
+              digTargets = tl.dropWhile(p => !checkBreakable(quarry2.getDiggingWorld, p, quarry2.getDiggingWorld.getBlockState(p), quarry2.modules))
               movingHead = true
             }
         }
@@ -255,8 +254,8 @@ object QuarryAction {
       if (digTargets.isEmpty) {
         val set = quarry.modules.flatMap(IModule.replaceBlocks(y)).toSet
         val list = QuarryAction.digTargets(quarry2.area, targetBefore, y, log = false)
-          .filter(p => checkBreakable(quarry2.getWorld, p, quarry2.getWorld.getBlockState(p), quarry2.modules))
-        list.forall(quarry.getWorld.getBlockState _ andThen set)
+          .filter(p => checkBreakable(quarry2.getDiggingWorld, p, quarry2.getDiggingWorld.getBlockState(p), quarry2.modules))
+        list.forall(quarry.getDiggingWorld.getBlockState _ andThen set)
       } else {
         false
       }
@@ -295,7 +294,7 @@ object QuarryAction {
 
     override def action(target: BlockPos): Unit = {
       val r = quarry2.area
-      quarry2.gatherDrops(quarry2.getWorld,
+      quarry2.gatherDrops(quarry2.getDiggingWorld,
         new AxisAlignedBB(r.xMin - 2, y - 3, r.zMin - 2, r.xMax + 2, y + 2, r.zMax + 2))
       finished = true
     }

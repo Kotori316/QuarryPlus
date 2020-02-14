@@ -1,13 +1,27 @@
 package com.yogpc.qp.machines.base
 
 import cats.Show
+import cats.data.OptionT
+import cats.implicits._
+import com.mojang.datafixers.Dynamic
 import com.yogpc.qp._
-import net.minecraft.nbt.CompoundNBT
+import net.minecraft.nbt.{CompoundNBT, NBTDynamicOps}
 import net.minecraft.util.Direction
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos, ChunkPos, Vec3i}
 import net.minecraft.world.World
+import net.minecraft.world.dimension.DimensionType
+import net.minecraft.world.server.ServerWorld
 
-case class Area(xMin: Int, yMin: Int, zMin: Int, xMax: Int, yMax: Int, zMax: Int)
+case class Area(xMin: Int, yMin: Int, zMin: Int, xMax: Int, yMax: Int, zMax: Int, dimID: Option[Int]) {
+  private val dimensionType = dimID.flatMap(i => Option(DimensionType.getById(i))).orNull
+
+  def getWorld(world: ServerWorld): ServerWorld = {
+    if (dimensionType != null)
+      world.getServer.getWorld(dimensionType)
+    else
+      world
+  }
+}
 
 object Area {
   private[this] final val NBT_X_MIN = "xMin"
@@ -16,7 +30,8 @@ object Area {
   private[this] final val NBT_Y_MAX = "yMax"
   private[this] final val NBT_Z_MIN = "zMin"
   private[this] final val NBT_Z_MAX = "zMax"
-  val zeroArea = Area(0, 0, 0, 0, 0, 0)
+  private[this] final val NBT_DIM = "dim"
+  val zeroArea = Area(0, 0, 0, 0, 0, 0, None)
 
   implicit val showArea: Show[Area] = area => s"(${area.xMin}, ${area.yMin}, ${area.zMin}) -> (${area.xMax}, ${area.yMax}, ${area.zMax})"
 
@@ -28,22 +43,23 @@ object Area {
     nbt.putInt(NBT_Y_MAX, area.yMax)
     nbt.putInt(NBT_Z_MIN, area.zMin)
     nbt.putInt(NBT_Z_MAX, area.zMax)
+    area.dimID.flatMap(id => Option(DimensionType.getById(id))).foreach(t => nbt.put(NBT_DIM, t.serialize(NBTDynamicOps.INSTANCE)))
     nbt
   }
 
   val areaLengthSq: Area => Double = {
-    case Area(xMin, _, zMin, xMax, yMax, zMax) =>
+    case Area(xMin, _, zMin, xMax, yMax, zMax, _) =>
       Math.pow(xMax - xMin, 2) + Math.pow(yMax, 2) + Math.pow(zMax - zMin, 2)
   }
   val areaBox: Area => AxisAlignedBB = area =>
     new AxisAlignedBB(area.xMin, 0, area.zMin, area.xMax, area.yMax, area.zMax)
 
-  val posToArea: (Vec3i, Vec3i) => Area = {
-    case (p1, p2) => Area(Math.min(p1.getX, p2.getX), Math.min(p1.getY, p2.getY), Math.min(p1.getZ, p2.getZ),
-      Math.max(p1.getX, p2.getX), Math.max(p1.getY, p2.getY), Math.max(p1.getZ, p2.getZ))
+  def posToArea(p1: Vec3i, p2: Vec3i, dim: DimensionType): Area = {
+    Area(Math.min(p1.getX, p2.getX), Math.min(p1.getY, p2.getY), Math.min(p1.getZ, p2.getZ),
+      Math.max(p1.getX, p2.getX), Math.max(p1.getY, p2.getY), Math.max(p1.getZ, p2.getZ), dim.getId.some)
   }
 
-  def defaultQuarryArea(pos: BlockPos, facing: Direction): Area = {
+  def defaultQuarryArea(pos: BlockPos, facing: Direction, dim: DimensionType): Area = {
     val x = 11
     val y = (x - 1) / 2 //5
     val start: BlockPos = pos.offset(facing, 2)
@@ -51,34 +67,46 @@ object Area {
     val edge1: BlockPos = front.up(3)
     val pos1: BlockPos = start.offset(facing, x - 1)
     val edge2: BlockPos = pos1.offset(facing.rotateYCCW(), y)
-    posToArea(edge1, edge2)
+    posToArea(edge1, edge2, dim)
   }
 
+  def getMarkersOnDirection(directions: List[Direction], world: World, pos: BlockPos): OptionT[List, IMarker] =
+    for {
+      f <- OptionT.liftF(directions)
+      p <- OptionT.pure[List](pos.offset(f))
+      t <- OptionT.fromOption[List](Option(world.getTileEntity(p)))
+      marker <- t.getCapability(IMarker.Cap.MARKER_CAPABILITY(), f.getOpposite).asScala.mapK(evalToList) orElse
+        OptionT.pure[List](t).collect { case marker: IMarker => marker }
+      if marker.hasLink
+    } yield marker
+
   def findQuarryArea(facing: Direction, world: World, pos: BlockPos) = {
-    List(pos.offset(facing.getOpposite), pos.offset(facing.rotateY()), pos.offset(facing.rotateYCCW())).map(world.getTileEntity).collectFirst { case m: IMarker if m.hasLink => m } match {
-      case Some(marker) => areaFromMarker(facing, pos, marker)
-      case None => defaultQuarryArea(pos, facing.getOpposite) -> None
+    val mayMarker = getMarkersOnDirection(List(facing.getOpposite, facing.rotateY(), facing.rotateYCCW()), world, pos)
+    mayMarker.collectFirst(PartialFunction.fromFunction(identity)) match {
+      case Some(marker) => areaFromMarker(facing, pos, marker, world.getDimension.getType)
+      case None => defaultQuarryArea(pos, facing.getOpposite, world.getDimension.getType) -> None
     }
   }
 
-  def areaFromMarker(facing: Direction, pos: BlockPos, marker: IMarker) = {
+  def areaFromMarker(facing: Direction, pos: BlockPos, marker: IMarker, dim: DimensionType) = {
     if (marker.min().getX <= pos.getX && marker.max().getX >= pos.getX &&
       marker.min().getY <= pos.getY && marker.max().getY >= pos.getY &&
       marker.min().getZ <= pos.getZ && marker.max().getZ >= pos.getZ) {
-      defaultQuarryArea(pos, facing.getOpposite) -> None
+      defaultQuarryArea(pos, facing.getOpposite, dim) -> None
     } else {
       val subs = marker.max().subtract(marker.min())
       if (subs.getX > 1 && subs.getZ > 1) {
         val maxY = if (subs.getY > 1) marker.max().getY else marker.min().getY + 3
-        posToArea(marker.min(), marker.max().copy(y = maxY)) -> Some(marker)
+        posToArea(marker.min(), marker.max().copy(y = maxY), dim) -> Some(marker)
       } else {
-        defaultQuarryArea(pos, facing.getOpposite) -> None
+        defaultQuarryArea(pos, facing.getOpposite, dim) -> None
       }
     }
   }
 
   def areaLoad(nbt: CompoundNBT) = {
-    Area(nbt.getInt(NBT_X_MIN), nbt.getInt(NBT_Y_MIN), nbt.getInt(NBT_Z_MIN), nbt.getInt(NBT_X_MAX), nbt.getInt(NBT_Y_MAX), nbt.getInt(NBT_Z_MAX))
+    val dim = nbt.some.filter(_.contains(NBT_DIM)).map(t => DimensionType.func_218271_a(new Dynamic(NBTDynamicOps.INSTANCE, t.get(NBT_DIM))))
+    Area(nbt.getInt(NBT_X_MIN), nbt.getInt(NBT_Y_MIN), nbt.getInt(NBT_Z_MIN), nbt.getInt(NBT_X_MAX), nbt.getInt(NBT_Y_MAX), nbt.getInt(NBT_Z_MAX), dim.map(_.getId))
   }
 
   def posesInArea(area: Area, filter: (Int, Int, Int) => Boolean): List[BlockPos] = {
@@ -131,7 +159,7 @@ object Area {
       case (_, None) =>
         val chunkPos = new ChunkPos(pos)
         val y = pos.getY
-        Area(chunkPos.getXStart, y, chunkPos.getZStart, chunkPos.getXEnd, y, chunkPos.getZEnd) -> None
+        Area(chunkPos.getXStart, y, chunkPos.getZStart, chunkPos.getXEnd, y, chunkPos.getZEnd, world.getDimension.getType.getId.some) -> None
     }
   }
 }

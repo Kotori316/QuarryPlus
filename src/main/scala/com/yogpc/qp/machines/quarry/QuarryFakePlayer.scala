@@ -75,6 +75,7 @@ object QuarryFakePlayer {
     players.get(profile) match {
       case Some(player) =>
         player.setPosition(pos.getX, pos.getY, pos.getZ)
+        player.setWorld(server)
         player
       case None => players = players.updated(profile, new QuarryFakePlayer(server)); get(server, pos)
     }

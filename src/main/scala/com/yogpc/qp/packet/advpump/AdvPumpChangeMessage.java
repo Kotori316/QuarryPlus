@@ -3,7 +3,9 @@ package com.yogpc.qp.packet.advpump;
 import java.util.function.Supplier;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.advpump.TileAdvPump;
+import com.yogpc.qp.machines.quarry.ContainerQuarryModule;
 import com.yogpc.qp.packet.IMessage;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
@@ -48,16 +50,21 @@ public class AdvPumpChangeMessage implements IMessage<AdvPumpChangeMessage> {
     public void onReceive(Supplier<NetworkEvent.Context> ctx) {
         IMessage.findTile(ctx, pos, dim, TileAdvPump.class)
             .ifPresent(pump -> ctx.get().enqueueWork(() -> {
-                pump.placeFrame_$eq(placeFrame);
-                pump.delete_$eq(deleteFluid);
-                if (toStart == ToStart.START) {
-                    pump.start();
+                if (toStart == ToStart.MODULE_INV) {
+                    ContainerQuarryModule.InteractionObject.openGUI(pump, ctx.get().getSender(), TranslationKeys.advpump);
+                } else {
+                    pump.placeFrame_$eq(placeFrame);
+                    pump.delete_$eq(deleteFluid);
+                    if (toStart == ToStart.START) {
+                        pump.start();
+                    }
                 }
+
             }));
     }
 
     public enum ToStart {
-        UNCHANGED, START, STOP;
+        UNCHANGED, START, STOP, MODULE_INV;
 
         public static ToStart valueOf(int i) {
             switch (i) {
@@ -67,6 +74,8 @@ public class AdvPumpChangeMessage implements IMessage<AdvPumpChangeMessage> {
                     return START;
                 case 2:
                     return STOP;
+                case 3:
+                    return MODULE_INV;
                 default:
                     QuarryPlus.LOGGER.error("ToStart undefined enum = " + i);
                     return null;

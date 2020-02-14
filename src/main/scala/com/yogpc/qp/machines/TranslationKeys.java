@@ -56,6 +56,7 @@ public class TranslationKeys {
     public static final String QP_ENABLE_LIST = "qp.list.setting";
     public static final String QUARRY_MODE = "chat.quarrymode";
     public static final String QUARRY_RESTART = "chat.quarry.restart";
+    public static final String RECEIVES = "quarryplus.status.receive";
     public static final String REQUIRES = "quarryplus.status.require";
     public static final String SELECT_FLUID = "tof.selectfluid";
     public static final String SET_SELECT = "pp.set.select";

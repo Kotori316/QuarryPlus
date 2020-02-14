@@ -152,4 +152,8 @@ package object qp {
 
   implicit val showPos: Show[BlockPos] = pos => s"(${pos.getX}, ${pos.getY}, ${pos.getZ})"
   implicit val showFluidStack: Show[FluidStack] = stack => s"${stack.getFluid.getRegistryName} @${stack.getAmount}mB"
+
+  val evalToList: Eval ~> List = new (Eval ~> List) {
+    override def apply[A](fa: Eval[A]) = fa.toList
+  }
 }

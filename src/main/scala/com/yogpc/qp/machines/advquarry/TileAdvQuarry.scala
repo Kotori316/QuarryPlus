@@ -15,7 +15,7 @@ import com.yogpc.qp.packet.PacketHandler
 import com.yogpc.qp.packet.advquarry.AdvModeMessage
 import com.yogpc.qp.utils.{Holder, NotNullList}
 import net.minecraft.block.{Block, BlockState, Blocks}
-import net.minecraft.entity.player.{PlayerEntity, PlayerInventory, ServerPlayerEntity}
+import net.minecraft.entity.player.{PlayerEntity, PlayerInventory}
 import net.minecraft.inventory.container.INamedContainerProvider
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.CompoundNBT
@@ -23,15 +23,15 @@ import net.minecraft.state.properties.BlockStateProperties
 import net.minecraft.tileentity.ITickableTileEntity
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos}
 import net.minecraft.util.text.{ITextComponent, StringTextComponent, TranslationTextComponent}
-import net.minecraft.util.{Hand, IntReferenceHolder, ResourceLocation}
+import net.minecraft.util.{Direction, Hand, IntReferenceHolder, ResourceLocation}
 import net.minecraft.world.World
 import net.minecraft.world.server.ServerWorld
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
-import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.common.capabilities.Capability
+import net.minecraftforge.common.{DimensionManager, MinecraftForge}
 import net.minecraftforge.event.ForgeEventFactory
 import net.minecraftforge.event.world.BlockEvent
 import net.minecraftforge.fluids.{FluidAttributes, FluidStack}
-import net.minecraftforge.fml.network.NetworkHooks
 
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._
@@ -46,7 +46,9 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
   with IChunkLoadTile
   with INamedContainerProvider
   with ContainerQuarryModule.HasModuleInventory
-  with StatusContainer.StatusProvider {
+  with StatusContainer.StatusProvider
+  with EnchantmentHolder.EnchantmentProvider
+  with IRemotePowerOn {
   self =>
 
   var yLevel = 1
@@ -55,6 +57,15 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
   var action: AdvQuarryWork = AdvQuarryWork.none
   val storage = new AdvStorage
   val moduleInv = new QuarryModuleInventory(5, this, _ => refreshModules(), TileAdvQuarry.moduleFilter)
+  finishListener.add(() => DimensionManager.keepLoaded(getDiggingWorld.getDimension.getType, false))
+
+  def getDiggingWorld: ServerWorld = {
+    if (!super.getWorld.isRemote) {
+      this.area.getWorld(super.getWorld.asInstanceOf[ServerWorld])
+    } else {
+      throw new IllegalStateException("Tried to get server world in client.")
+    }
+  }
 
   def stickActivated(playerEntity: PlayerEntity): Unit = {
     //Called when noEnergy is true and block is right clicked with stick (item)
@@ -74,23 +85,17 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     }
   }
 
-  def openModuleInv(player: ServerPlayerEntity): Unit = {
-    if (hasWorld && !world.isRemote) {
-      NetworkHooks.openGui(player, new ContainerQuarryModule.InteractionObject(getPos, TranslationKeys.advquarry), getPos)
-    }
-  }
-
   /**
    * Break blocks and gather drop items. This method doesn't try to break bedrock.
    *
    * @return [[cats.data.Ior.Right]] if succeeded, [[cats.data.Ior.Left]] if failed. [[cats.data.Ior.Both]] is returned if block is not breakable.
    */
   def breakBlock(target: BlockPos, searchReplacer: Boolean = true): Ior[Reason, Unit] = {
-    val state = getWorld.getBlockState(target)
-    if (state.isAir(getWorld, target)) {
+    val state = getDiggingWorld.getBlockState(target)
+    if (state.isAir(getDiggingWorld, target)) {
       ().rightIor
     } else {
-      val hardness = state.getBlockHardness(getWorld, target)
+      val hardness = state.getBlockHardness(getDiggingWorld, target)
       val energy = PowerManager.calcEnergyBreak(hardness, enchantments)
       if (TileAdvQuarry.isUnbreakable(hardness, state) || energy > getMaxStored) {
         // Not breakable
@@ -112,18 +117,18 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
   }
 
   def gatherItemDrops(target: BlockPos, searchReplacer: Boolean, stateBefore: BlockState, fakePlayer: QuarryFakePlayer, pickaxe: ItemStack): Ior[Reason, AdvStorage] = {
-    val storage = removeUnbreakable(stateBefore, self.getWorld, target, pickaxe, self.modules.flatMap(IModule.replaceBlocks(target.getY)).headOption.getOrElse(Blocks.AIR.getDefaultState))
-    if (getWorld.isAirBlock(target)) {
+    val storage = removeUnbreakable(stateBefore, self.getDiggingWorld, target, pickaxe, self.modules.flatMap(IModule.replaceBlocks(target.getY)).headOption.getOrElse(Blocks.AIR.getDefaultState))
+    if (getDiggingWorld.isAirBlock(target)) {
       return storage.rightIor // Early return for unbreakable blocks that can be broken by above method. (Nether portal)
     }
-    val breakEvent = new BlockEvent.BreakEvent(getWorld, target, stateBefore, fakePlayer)
+    val breakEvent = new BlockEvent.BreakEvent(getDiggingWorld, target, stateBefore, fakePlayer)
     if (!MinecraftForge.EVENT_BUS.post(breakEvent)) {
       val returnValue = modules.foldMap(m => m.invoke(IModule.BeforeBreak(breakEvent.getExpToDrop, world, target)))
       if (!returnValue.canGoNext) {
         return Reason.message("Module work has not finished yet.").leftIor
       }
-      val state = getWorld.getBlockState(target)
-      if (TileAdvQuarry.isUnbreakable(state.getBlockHardness(getWorld, target), state)) {
+      val state = getDiggingWorld.getBlockState(target)
+      if (TileAdvQuarry.isUnbreakable(state.getBlockHardness(getDiggingWorld, target), state)) {
         return storage.rightIor // Early return for unbreakable blocks such as Bedrock.
       }
       if (TilePump.isLiquid(state)) {
@@ -136,20 +141,20 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
       // Gather dropped items
       if (!BlockWrapper.getWrappers.exists(_.contain(state))) {
         val drops = new NotNullList(mutable.Buffer.empty)
-        val tile = getWorld.getTileEntity(target)
+        val tile = getDiggingWorld.getTileEntity(target)
         drops.addAll(Block.getDrops(state, world.asInstanceOf[ServerWorld], target, tile, fakePlayer, pickaxe))
-        ForgeEventFactory.fireBlockHarvesting(drops, getWorld, target, state, self.enchantments.fortune, 1.0f, self.enchantments.silktouch, fakePlayer)
+        ForgeEventFactory.fireBlockHarvesting(drops, getDiggingWorld, target, state, self.enchantments.fortune, 1.0f, self.enchantments.silktouch, fakePlayer)
         storage.insertItems(drops.seq)
       }
 
       if (!TilePump.isLiquid(state) && searchReplacer) {
-        val replaced = self.modules.foldMap(_.invoke(IModule.AfterBreak(getWorld, target, state, getWorld.getGameTime)))
+        val replaced = self.modules.foldMap(_.invoke(IModule.AfterBreak(getDiggingWorld, target, state, getDiggingWorld.getGameTime)))
         if (!replaced.done) {
           // Not replaced
-          getWorld.setBlockState(target, Blocks.AIR.getDefaultState, 0x10 | 0x2)
+          getDiggingWorld.setBlockState(target, Blocks.AIR.getDefaultState, 0x10 | 0x2)
         }
       } else {
-        getWorld.setBlockState(target, Blocks.AIR.getDefaultState, 0x10 | 0x2)
+        getDiggingWorld.setBlockState(target, Blocks.AIR.getDefaultState, 0x10 | 0x2)
       }
       storage.rightIor
     } else {
@@ -202,6 +207,9 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     storage.pushItem(getWorld, getPos)
     if (getWorld.getGameTime % 10 == 0) {
       storage.pushFluid(getWorld, getPos)
+      if (isWorking && getWorld.getDimension.getType != getDiggingWorld.getDimension.getType) {
+        DimensionManager.keepLoaded(getDiggingWorld.getDimension.getType, true)
+      }
     }
   }
 
@@ -233,6 +241,10 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
   override def getMaxRenderDistanceSquared: Double = {
     if (area != Area.zeroArea) Area.areaLengthSq(area)
     else super.getMaxRenderDistanceSquared
+  }
+
+  override def getCapability[T](cap: Capability[T], side: Direction) = {
+    Cap.asJava(Cap.make(cap, this, IRemotePowerOn.Cap.REMOTE_CAPABILITY()) orElse super.getCapability(cap, side).asScala)
   }
 
   // Interface implementation
@@ -293,7 +305,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
   override def getStatusStrings(trackIntSeq: Seq[IntReferenceHolder]): Seq[String] = {
     import net.minecraft.client.resources.I18n
     val enchantmentStrings = EnchantmentHolder.getEnchantmentStringSeq(this.enchantments)
-    val containItems = if (trackIntSeq(0).get() <= 0) I18n.format(TranslationKeys.EMPTY_ITEM) else I18n.format(TranslationKeys.CONTAIN_ITEM, trackIntSeq(0).get().toString)
+    val containItems = if (trackIntSeq.head.get() <= 0) I18n.format(TranslationKeys.EMPTY_ITEM) else I18n.format(TranslationKeys.CONTAIN_ITEM, trackIntSeq.head.get().toString)
     val containFluids = if (trackIntSeq(1).get() <= 0) I18n.format(TranslationKeys.EMPTY_FLUID) else I18n.format(TranslationKeys.CONTAIN_FLUID, trackIntSeq(1).get().toString)
     val modules = if (this.modules.nonEmpty) "Modules" :: this.modules.map("  " + _.toString) else Nil
     enchantmentStrings ++ modules :+ containItems :+ containFluids
@@ -308,8 +320,23 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
   }
 
   override def updateIntRef(trackIntSeq: Seq[IntReferenceHolder]): Unit = {
-    trackIntSeq(0).set(storage.itemSize)
+    trackIntSeq.head.set(storage.itemSize)
     trackIntSeq(1).set(storage.fluidSize)
+  }
+
+  override def getEnchantmentHolder = enchantments
+
+  override def setArea(area: Area): Unit = this.area = area
+
+  override def startWorking(): Unit = {
+    G_ReInit()
+  }
+
+  override def getArea = this.area
+
+  override def startWaiting(): Unit = {
+    // Just means "stop".
+    this.action = AdvQuarryWork.none
   }
 }
 

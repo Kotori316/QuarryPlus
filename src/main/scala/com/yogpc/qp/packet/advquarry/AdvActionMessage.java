@@ -4,8 +4,10 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.advquarry.TileAdvQuarry;
 import com.yogpc.qp.machines.base.Area;
+import com.yogpc.qp.machines.quarry.ContainerQuarryModule;
 import com.yogpc.qp.packet.IMessage;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
@@ -63,7 +65,7 @@ public class AdvActionMessage implements IMessage<AdvActionMessage> {
         CHANGE_RANGE((quarry, rangeNBT) ->
             quarry.area_$eq(Area.areaLoad(rangeNBT))
         ),
-        MODULE_INV((q, t, p) -> q.openModuleInv(p));
+        MODULE_INV((q, t, p) -> ContainerQuarryModule.InteractionObject.openGUI(q, p, TranslationKeys.advquarry));
         private final ThreeConsumer<TileAdvQuarry, CompoundNBT, ServerPlayerEntity> consumer;
 
         Actions(Consumer<TileAdvQuarry> consumer) {

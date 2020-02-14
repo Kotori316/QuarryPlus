@@ -104,7 +104,7 @@ class TankAdvPump(capacity: Eval[Int]) extends HasStorage.Storage with IFluidHan
   override def deserializeNBT(nbt: CompoundNBT): Unit = {
     val list = nbt.getList(NBT_fluidStacks, NBT.TAG_COMPOUND)
     fluidStacks = fluidStacks.empty
-    fluidStacks ++= list.asScala.map(cast andThen loadStack andThen separate run)
+    fluidStacks ++= list.asScala.map(loadElement run)
     amountPumped = nbt.getLong(NBT_amountPumped)
   }
 }
@@ -117,4 +117,5 @@ object TankAdvPump {
   private val cast = Reader((n: INBT) => n.asInstanceOf[CompoundNBT])
   private val loadStack = Reader(FluidStack.loadFluidStackFromNBT)
   private val separate = Reader((stack: FluidStack) => FluidElement.fromStack(stack) -> stack.getAmount)
+  val loadElement: Reader[INBT, (FluidElement, Int)] = cast andThen loadStack andThen separate
 }

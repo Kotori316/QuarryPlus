@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Map;
 
+import com.yogpc.qp.QuarryPlus;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.item.crafting.RecipeManager;
@@ -36,7 +37,7 @@ public class RecipeGetter {
                 Map<ResourceLocation, T> invoke = (Map<ResourceLocation, T>) getRecipes.invoke(manager, recipeTypeIn);
                 return invoke;
             } catch (ReflectiveOperationException e) {
-                e.printStackTrace();
+                QuarryPlus.LOGGER.error("Error in getting recipe of " + recipeTypeIn + ".", e);
                 return Collections.emptyMap();
             }
         }

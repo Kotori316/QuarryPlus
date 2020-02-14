@@ -8,13 +8,16 @@ import com.yogpc.qp.machines.base.SlotTile;
 import com.yogpc.qp.utils.Holder;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 public class ContainerQuarryModule extends Container {
     public static final String GUI_ID = QuarryPlus.modID + ":gui_quarry_module";
@@ -103,6 +106,12 @@ public class ContainerQuarryModule extends Container {
         @Override
         public Container createMenu(int id, PlayerInventory i, PlayerEntity p) {
             return new ContainerQuarryModule(id, p, pos);
+        }
+
+        public static <T extends TileEntity & HasModuleInventory> void openGUI(T tile, ServerPlayerEntity player, String name) {
+            if (tile.hasWorld() && !Objects.requireNonNull(tile.getWorld()).isRemote) {
+                NetworkHooks.openGui(player, new ContainerQuarryModule.InteractionObject(tile.getPos(), name), tile.getPos());
+            }
         }
     }
 }

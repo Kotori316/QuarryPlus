@@ -1,12 +1,11 @@
 package com.kotori316.test_qp
 
-import java.util.Collections
-
 import cats.implicits._
 import com.yogpc.qp.machines.base.{Area, IMarker}
 import com.yogpc.qp.machines.quarry.QuarryAction
 import net.minecraft.util.Direction
 import net.minecraft.util.math.BlockPos
+import net.minecraft.world.dimension.DimensionType
 import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.Test
 
@@ -15,25 +14,26 @@ class TileQuarry2Test {
   val m2 = Marker(new BlockPos(-5, 2, 8), new BlockPos(25, 3, 18))
   val m3 = Marker(new BlockPos(0, 63, 0), new BlockPos(15, 68, 15))
   val m4 = Marker(new BlockPos(8, 5, 8), new BlockPos(10, 5, 16))
+  val dimID = 0.some
 
   @Test
   def defaultArea(): Unit = {
-    assertEquals(Area(-2, 0, 4, 8, 3, 14), Area.defaultQuarryArea(new BlockPos(3, 0, 2), Direction.SOUTH))
+    assertEquals(Area(-2, 0, 4, 8, 3, 14, dimID), Area.defaultQuarryArea(new BlockPos(3, 0, 2), Direction.SOUTH, DimensionType.OVERWORLD))
   }
 
   @Test
   def posArea(): Unit = {
-    Area.areaFromMarker(Direction.SOUTH, new BlockPos(12, 2, 7), m1) match {
+    Area.areaFromMarker(Direction.SOUTH, new BlockPos(12, 2, 7), m1, DimensionType.OVERWORLD) match {
       case (area, marker) =>
-        assertEquals(Area(-5, 2, 8, 25, 9, 18), area)
+        assertEquals(Area(-5, 2, 8, 25, 9, 18, dimID), area)
         assertTrue(marker.isDefined)
     }
-    Area.areaFromMarker(Direction.SOUTH, new BlockPos(12, 2, 7), m2) match {
+    Area.areaFromMarker(Direction.SOUTH, new BlockPos(12, 2, 7), m2, DimensionType.OVERWORLD) match {
       case (area, marker) =>
-        assertEquals(Area(-5, 2, 8, 25, 5, 18), area)
+        assertEquals(Area(-5, 2, 8, 25, 5, 18, dimID), area)
         assertTrue(marker.isDefined)
     }
-    Area.areaFromMarker(Direction.SOUTH, new BlockPos(12, 2, 12), m2) match {
+    Area.areaFromMarker(Direction.SOUTH, new BlockPos(12, 2, 12), m2, DimensionType.OVERWORLD) match {
       case (_, marker) =>
         assertFalse(marker.isDefined)
     }
@@ -42,7 +42,7 @@ class TileQuarry2Test {
   @Test
   def digTargets(): Unit = {
     val pos = new BlockPos(-1, 1, 5)
-    val (area, m) = Area.areaFromMarker(Direction.WEST, pos, m3)
+    val (area, m) = Area.areaFromMarker(Direction.WEST, pos, m3, DimensionType.OVERWORLD)
     assertTrue(m.isDefined)
     val poses = QuarryAction.digTargets(area, pos, 63, log = false)
     assertEquals((m3.max.getX - m3.min.getX - 1) * (m3.max.getZ - m3.min.getZ - 1), poses.size)
@@ -51,9 +51,9 @@ class TileQuarry2Test {
   @Test
   def nearDigTargets(): Unit = {
     {
-      val marker = m4.copy(max = m4.max.east())
+      val marker = Marker(m4.min(), m4.max().east())
       val pos = new BlockPos(7, 5, 8)
-      val (area, m) = Area.areaFromMarker(Direction.EAST, pos, marker)
+      val (area, m) = Area.areaFromMarker(Direction.EAST, pos, marker, DimensionType.OVERWORLD)
       assertTrue(m.isDefined)
       val poses = QuarryAction.digTargets(area, pos, pos.getY, log = false)
       assertFalse(poses.isEmpty)
@@ -62,7 +62,7 @@ class TileQuarry2Test {
     {
       val marker = m4
       val pos = new BlockPos(7, 5, 8)
-      val (area, m) = Area.areaFromMarker(Direction.EAST, pos, marker)
+      val (area, m) = Area.areaFromMarker(Direction.EAST, pos, marker, DimensionType.OVERWORLD)
       assertTrue(m.isDefined)
       val poses = QuarryAction.digTargets(area, pos, pos.getY, log = false)
       assertFalse(poses.isEmpty)
@@ -81,8 +81,8 @@ class TileQuarry2Test {
 
   @Test
   def insideFrame(): Unit = {
-    val (area, _) = Area.areaFromMarker(Direction.SOUTH, new BlockPos(12, 2, 7), m1)
-    assertEquals(Area(-5, 2, 8, 25, 9, 18), area)
+    val (area, _) = Area.areaFromMarker(Direction.SOUTH, new BlockPos(12, 2, 7), m1, DimensionType.OVERWORLD)
+    assertEquals(Area(-5, 2, 8, 25, 9, 18, dimID), area)
     val poses = QuarryAction.insideFrameArea(area)
     assertEquals(m1.max.getX, poses.maxBy(_.getX).getX)
     assertEquals(m1.max.getZ, poses.maxBy(_.getZ).getZ)
@@ -114,10 +114,8 @@ class TileQuarry2Test {
     assertEquals(14, QuarryAction.far(10, 6, 14))
   }
 
-  case class Marker(override val min: BlockPos, override val max: BlockPos) extends IMarker {
-    override def hasLink = true
-
-    override def removeFromWorldWithItem() = Collections.emptyList()
+  object Marker {
+    def apply(min: BlockPos, max: BlockPos): IMarker = new IMarker.MarkerImpl(min, max)
   }
 
 }
