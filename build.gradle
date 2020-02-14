@@ -1,3 +1,7 @@
+import org.gradle.api.tasks.Copy
+
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
@@ -250,5 +254,15 @@ publishing {
             }
             artifact reobfArtifact
         }
+    }
+}
+
+task copyToDrive(type: Copy, dependsOn: "build") {
+    def PATH_NAME = "drive_path"
+    from(jar.archivePath, deobfJar.archivePath, srcJar.archivePath)
+    into(file(java.util.Optional.ofNullable(System.getenv(PATH_NAME)).orElse(".")))
+    onlyIf {
+        System.getenv(PATH_NAME) != null &&
+                Files.exists(Paths.get(System.getenv(PATH_NAME)))
     }
 }
