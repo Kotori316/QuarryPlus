@@ -44,7 +44,7 @@ package object qp {
     }
   }
 
-  implicit class SOM[T](val o: java.util.Optional[T]) extends AnyVal {
+  implicit class SOM[T](private val o: java.util.Optional[T]) extends AnyVal {
     def scalaMap[B](f: T => B): Option[B] = toScalaOption(o).map(f)
 
     def scalaFilter(p: T => Boolean): Option[T] = toScalaOption(o).filter(p)
@@ -54,11 +54,11 @@ package object qp {
     def toList: List[T] = if (o.isPresent) List(o.get()) else Nil
   }
 
-  implicit class JOS[T](val o: Option[T]) extends AnyVal {
+  implicit class JOS[T](private val o: Option[T]) extends AnyVal {
     def asJava: java.util.Optional[T] = toJavaOption(o)
   }
 
-  implicit class ItemStackRemoveEnchantment(val stack: ItemStack) extends AnyVal {
+  implicit class ItemStackRemoveEnchantment(private val stack: ItemStack) extends AnyVal {
     def removeEnchantment(enchantment: Enchantment): Unit = {
       val id = ForgeRegistries.ENCHANTMENTS.getKey(enchantment)
       val tagName = if (stack.getItem == net.minecraft.item.Items.ENCHANTED_BOOK) "StoredEnchantments" else "ench"
@@ -98,7 +98,7 @@ package object qp {
     def toNBT[B <: INBT](implicit wrapper: NBTWrapper[A, B]): B = wrapper apply num
   }
 
-  implicit class PosHelper(val blockPos: BlockPos) extends AnyVal {
+  implicit class PosHelper(private val blockPos: BlockPos) extends AnyVal {
     def offset(facing1: Direction, facing2: Direction): BlockPos = {
       val x = facing1.getXOffset + facing2.getXOffset
       val y = facing1.getYOffset + facing2.getYOffset
@@ -123,7 +123,7 @@ package object qp {
     }
   }
 
-  implicit class AsScalaLO[T](val cap: LazyOptional[T]) extends AnyVal {
+  implicit class AsScalaLO[T](private val cap: LazyOptional[T]) extends AnyVal {
     def asScala: Cap[T] = OptionT(transform0(cap))
   }
 
@@ -146,7 +146,7 @@ package object qp {
       "LazyOptional has no content " +
         "though it returned true when isPresent is called.")
 
-  implicit class AsScalaPredicate[T](val javaPredicate: java.util.function.Predicate[T]) extends AnyVal {
+  implicit class AsScalaPredicate[T](private val javaPredicate: java.util.function.Predicate[T]) extends AnyVal {
     def asScala: T => Boolean = p => javaPredicate test p
   }
 
