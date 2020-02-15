@@ -318,7 +318,7 @@ object QuarryAction {
     val lastX = far(pos.getX, r.xMin + 1, r.xMax - 1)
     val firstZ = near(pos.getZ, r.zMin + 1, r.zMax - 1)
     val lastZ = far(pos.getZ, r.zMin + 1, r.zMax - 1)
-    if (log) QuarryPlus.LOGGER.debug(MARKER, s"Making targets list of breaking blocks. y=$y $r, firstX=$firstX, lastX=$lastX firstZ=$firstZ, lastZ=$lastZ")
+    if (log) QuarryPlus.LOGGER.debug(MARKER, show"Making targets list of blocks. y=$y $r, firstX=$firstX lastX=$lastX firstZ=$firstZ lastZ=$lastZ")
     val list = Range.inclusive(firstZ, lastZ, signum(firstZ, lastZ))
       .map(z => Range.inclusive(firstX, lastX, signum(firstX, lastX)).map(x => new BlockPos(x, y, z)))
       .zip(LazyList.iterate(true)(b => !b))
