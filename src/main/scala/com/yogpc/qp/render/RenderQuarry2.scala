@@ -23,6 +23,9 @@ object RenderQuarry2 extends TileEntityRenderer[TileQuarry2](TileEntityRendererD
   private[this] var bufferInstance = new Buffer(null)
 
   override def func_225616_a_(quarry: TileQuarry2, v: Float, matrixStack: MatrixStack, iRenderTypeBuffer: IRenderTypeBuffer, i: Int, i1: Int): Unit = {
+    Minecraft.getInstance.getProfiler.startSection("quarryplus")
+    Minecraft.getInstance.getProfiler.startSection("quarry")
+    if (!quarry.area.dimID.forall(id => Minecraft.getInstance.world.dimension.getType.getId == id)) return
     val pos = quarry.getPos
     val bufferBuilder = iRenderTypeBuffer.getBuffer(RenderType.func_228643_e_())
     if (!(bufferInstance bufferEq bufferBuilder)) {
@@ -30,8 +33,6 @@ object RenderQuarry2 extends TileEntityRenderer[TileQuarry2](TileEntityRendererD
     }
     val buffer = bufferInstance
 
-    Minecraft.getInstance.getProfiler.startSection("quarryplus")
-    Minecraft.getInstance.getProfiler.startSection("quarry")
     if ((quarry.action.mode == TileQuarry2.waiting || quarry.action.mode == TileQuarry2.buildFrame || quarry.action.mode == TileQuarry2.breakInsideFrame)
       && quarry.area != Area.zeroArea) {
       Minecraft.getInstance.getProfiler.startSection("frame")
