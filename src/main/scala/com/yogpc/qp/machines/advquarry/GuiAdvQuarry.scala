@@ -87,7 +87,7 @@ class GuiAdvQuarry(c: ContainerAdvQuarry, i: PlayerInventory, t: ITextComponent)
               if (range.zMax > e - t) range.copy(zMin = e - t) else range
             }
           } else range
-        tile.area = newRange
+        tile.setArea(newRange)
         PacketHandler.sendToServer(AdvActionMessage.create(tile, AdvActionMessage.Actions.CHANGE_RANGE, tile.area.toNBT))
       }
     }

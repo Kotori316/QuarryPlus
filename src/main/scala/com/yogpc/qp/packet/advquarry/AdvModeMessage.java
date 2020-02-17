@@ -24,7 +24,7 @@ public class AdvModeMessage implements IMessage<AdvModeMessage> {
         message.dim = IMessage.getDimId(quarry.getWorld());
         message.pos = quarry.getPos();
         AdvQuarryWork mode = quarry.action();
-        Area digRange = quarry.area();
+        Area digRange = quarry.getArea();
         CompoundNBT nbt = new CompoundNBT();
         CompoundNBT areaNbt = Area.areaToNbt().apply(digRange);
         nbt.put("area", areaNbt);
@@ -53,7 +53,7 @@ public class AdvModeMessage implements IMessage<AdvModeMessage> {
     public void onReceive(Supplier<NetworkEvent.Context> ctx) {
         IMessage.findTile(ctx, pos, dim, TileAdvQuarry.class)
             .ifPresent(quarry -> ctx.get().enqueueWork(() -> {
-                quarry.area_$eq(Area.areaLoad(modeNBT.getCompound("area")));
+                quarry.setArea(Area.areaLoad(modeNBT.getCompound("area")));
                 quarry.action_$eq(AdvQuarryWork.load().apply(quarry).apply(modeNBT.getCompound("mode")));
             }));
     }

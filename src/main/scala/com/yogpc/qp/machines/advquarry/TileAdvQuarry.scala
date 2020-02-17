@@ -258,7 +258,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
       val facing = world.getBlockState(pos).get(BlockStateProperties.FACING)
       Area.findAdvQuarryArea(facing, world, pos) match {
         case (newArea, markerOpt) =>
-          area = newArea.copy(yMax = newArea.yMin) // Prevent wrong line rendering
+          setArea(newArea.copy(yMax = newArea.yMin)) // Prevent wrong line rendering
           markerOpt.foreach(m => m.removeFromWorldWithItem().forEach(storage.insertItem))
       }
     }
@@ -326,7 +326,16 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
 
   override def getEnchantmentHolder = enchantments
 
-  override def setArea(area: Area): Unit = this.area = area
+  /**
+   * This method has filter to limit range.
+   *
+   * @param area will be limited to specific range.
+   */
+  override def setArea(area: Area): Unit = {
+    val limit = Config.common.quarryRangeLimit.get()
+    if (limit == -1 || Area.hasLimit(area, limit))
+      this.area = area
+  }
 
   override def startWorking(): Unit = {
     G_ReInit()

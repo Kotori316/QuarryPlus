@@ -9,6 +9,7 @@ import com.yogpc.qp.machines.advquarry.TileAdvQuarry;
 import com.yogpc.qp.machines.base.Area;
 import com.yogpc.qp.machines.quarry.ContainerQuarryModule;
 import com.yogpc.qp.packet.IMessage;
+import com.yogpc.qp.packet.PacketHandler;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
@@ -62,9 +63,10 @@ public class AdvActionMessage implements IMessage<AdvActionMessage> {
 
     public enum Actions {
         QUICK_START(TileAdvQuarry::noFrameStart),
-        CHANGE_RANGE((quarry, rangeNBT) ->
-            quarry.area_$eq(Area.areaLoad(rangeNBT))
-        ),
+        CHANGE_RANGE((quarry, rangeNBT) -> {
+            quarry.setArea(Area.areaLoad(rangeNBT));
+            PacketHandler.sendToClient(AdvModeMessage.create(quarry), quarry.getWorld()); // Sync with client
+        }),
         MODULE_INV((q, t, p) -> ContainerQuarryModule.InteractionObject.openGUI(q, p, TranslationKeys.advquarry));
         private final ThreeConsumer<TileAdvQuarry, CompoundNBT, ServerPlayerEntity> consumer;
 

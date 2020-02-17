@@ -1,8 +1,8 @@
 package com.yogpc.qp.machines.base
 
-import cats.Show
 import cats.data.OptionT
 import cats.implicits._
+import cats.{Id, Show}
 import com.mojang.datafixers.Dynamic
 import com.yogpc.qp._
 import net.minecraft.nbt.{CompoundNBT, NBTDynamicOps}
@@ -162,5 +162,19 @@ object Area {
         val y = pos.getY
         Area(chunkPos.getXStart, y, chunkPos.getZStart, chunkPos.getXEnd, y, chunkPos.getZEnd, world.getDimension.getType.getId.some) -> None
     }
+  }
+
+  def hasLimit(area: Area, limit: Int): Boolean =
+    area.xMax - area.xMin > limit || area.zMax - area.zMin > limit
+
+  def limit(area: Area, limit: Int): Area = {
+    def xCheck(area: Area, limit: Int): Area = if (area.xMax - area.xMin > limit) area.copy(xMax = area.xMin + limit) else area
+
+    def zCheck(area: Area, limit: Int): Area = if (area.zMax - area.zMin > limit) area.copy(zMax = area.zMin + limit) else area
+
+    for {
+      cx <- xCheck(area, limit).pure[Id]
+      cxz <- zCheck(cx, limit).pure[Id]
+    } yield cxz
   }
 }
