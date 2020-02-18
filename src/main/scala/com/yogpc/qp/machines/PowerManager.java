@@ -146,15 +146,20 @@ public class PowerManager {
      * @param enchantmentMode no enchantment -> 0, silktouch -> -1, fortune -> fortune level, break canceled -> -2
      * @param unbreaking      unbreaking level
      * @param replacer        True if replacer is working.
+     * @param force           If true, machine must consume energy even if there isn't enough energy to break block.
      * @return Whether the tile used energy.
      */
-    public static boolean useEnergyBreak(final APowerTile pp, final float hardness, final int enchantmentMode, final int unbreaking, boolean replacer) {
+    public static boolean useEnergyBreak(final APowerTile pp, final float hardness, final int enchantmentMode, final int unbreaking, boolean replacer, boolean force) {
         if (enchantmentMode == -2)
             return true;
         final long pw = (long) (calcEnergyBreak(pp, hardness, enchantmentMode, unbreaking) * (replacer ? 1.1 : 1));
-        if (pp.useEnergy(pw, pw, false, EnergyUsage.BREAK_BLOCK) != pw)
-            return false;
-        pp.useEnergy(pw, pw, true, EnergyUsage.BREAK_BLOCK);
+        if (!force) {
+            if (pp.useEnergy(pw, pw, false, EnergyUsage.BREAK_BLOCK) != pw)
+                return false;
+            pp.useEnergy(pw, pw, true, EnergyUsage.BREAK_BLOCK);
+        } else {
+            pp.useEnergyForce(pw, true, EnergyUsage.BREAK_BLOCK);
+        }
         return true;
     }
 
@@ -163,13 +168,14 @@ public class PowerManager {
      * @param pos         the position of block which will be removed.
      * @param enchantment enchantment of the tile.
      * @param replacer    whether tile has replacer module.
+     * @param force       If true, machine must consume energy even if there isn't enough energy to break block.
      * @return {@code true} if succeeded and {@code false} means there isn't enough energy to break block.
      */
-    public static boolean useEnergyBreak(final APowerTile pp, final BlockPos pos, final EnchantmentHolder enchantment, boolean replacer) {
+    public static boolean useEnergyBreak(final APowerTile pp, final BlockPos pos, final EnchantmentHolder enchantment, boolean replacer, boolean force) {
         if (pp.getWorld() != null) {
             float blockHardness = pp.getWorld().getBlockState(pos).getBlockHardness(pp.getWorld(), pos);
             int mode = EnchantmentHolder.enchantmentMode(enchantment);
-            return useEnergyBreak(pp, blockHardness, mode, enchantment.unbreaking(), replacer);
+            return useEnergyBreak(pp, blockHardness, mode, enchantment.unbreaking(), replacer, force);
         } else {
             return true;
         }

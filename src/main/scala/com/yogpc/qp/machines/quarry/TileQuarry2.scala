@@ -188,7 +188,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
         ForgeEventFactory.fireBlockHarvesting(drops, world, pos, state, self.enchantments.fortune, 1.0f, self.enchantments.silktouch, fakePlayer)
         fakePlayer.setHeldItem(Hand.MAIN_HAND, ItemStack.EMPTY)
 
-        if (TilePump.isLiquid(state) || PowerManager.useEnergyBreak(self, pos, enchantments, modules.exists(IModule.hasReplaceModule))) {
+        if (TilePump.isLiquid(state) || PowerManager.useEnergyBreak(self, pos, enchantments, modules.exists(IModule.hasReplaceModule), false)) {
           drops.asScala.groupBy(ItemDamage.apply).view.mapValues(_.map(_.getCount).sum).toList.map { case (damage, i) => damage.toStack(i) }.foreach(storage.addItem)
           true // true means work is finished.
         } else {

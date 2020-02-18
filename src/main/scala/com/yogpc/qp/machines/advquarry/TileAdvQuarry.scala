@@ -101,7 +101,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
         // Not breakable
         Ior.both(Reason.message(s"$state is too hard to break. Requiring $energy."), ())
       } else {
-        if (PowerManager.useEnergyBreak(self, target, enchantments, modules.exists(IModule.hasReplaceModule))) {
+        if (PowerManager.useEnergyBreak(self, target, enchantments, modules.exists(IModule.hasReplaceModule), false)) {
           val fakePlayer = QuarryFakePlayer.get(world.asInstanceOf[ServerWorld], target)
           val pickaxe = getEnchantedPickaxe()
           fakePlayer.setHeldItem(Hand.MAIN_HAND, pickaxe)
