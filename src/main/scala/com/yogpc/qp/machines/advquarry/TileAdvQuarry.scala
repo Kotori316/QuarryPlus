@@ -258,8 +258,15 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
       val facing = world.getBlockState(pos).get(BlockStateProperties.FACING)
       Area.findAdvQuarryArea(facing, world, pos) match {
         case (newArea, markerOpt) =>
-          setArea(newArea.copy(yMax = newArea.yMin)) // Prevent wrong line rendering
-          markerOpt.foreach(m => m.removeFromWorldWithItem().forEach(storage.insertItem))
+          val areaLimited = Area.limit(newArea.copy(yMax = newArea.yMin), Config.common.quarryRangeLimit.get()) // Prevent wrong line rendering
+          areaLimited match {
+            case Validated.Valid(a) =>
+              setArea(a)
+              markerOpt.foreach(m => m.removeFromWorldWithItem().forEach(storage.insertItem))
+            case Validated.Invalid(e) =>
+              this.area = Area.defaultAdvQuarryArea(pos, world.dimension.getType) // Skip area check to avoid error.
+              QuarryPlus.LOGGER.info("Player selected area wider than limit. {}", e.mkString_(", "))
+          }
       }
     }
     action = AdvQuarryWork.waiting
@@ -333,8 +340,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
    */
   override def setArea(area: Area): Unit = {
     val limit = Config.common.quarryRangeLimit.get()
-    if (limit == -1 || Area.hasLimit(area, limit))
-      this.area = area
+    this.area = Area.limit(area, limit).getOrElse(this.area)
   }
 
   override def startWorking(): Unit = {

@@ -1,8 +1,8 @@
 package com.yogpc.qp.machines.base
 
-import cats.data.OptionT
+import cats.Show
+import cats.data.{OptionT, ValidatedNel}
 import cats.implicits._
-import cats.{Id, Show}
 import com.mojang.datafixers.Dynamic
 import com.yogpc.qp._
 import net.minecraft.nbt.{CompoundNBT, NBTDynamicOps}
@@ -69,6 +69,12 @@ object Area {
     val pos1: BlockPos = start.offset(facing, x - 1)
     val edge2: BlockPos = pos1.offset(facing.rotateYCCW(), y)
     posToArea(edge1, edge2, dim)
+  }
+
+  def defaultAdvQuarryArea(pos: BlockPos, dim: DimensionType): Area = {
+    val chunkPos = new ChunkPos(pos)
+    val y = pos.getY
+    Area(chunkPos.getXStart, y, chunkPos.getZStart, chunkPos.getXEnd, y, chunkPos.getZEnd, dim.getId.some)
   }
 
   def getMarkersOnDirection(directions: List[Direction], world: World, pos: BlockPos): OptionT[List, IMarker] =
@@ -157,24 +163,17 @@ object Area {
   def findAdvQuarryArea(facing: Direction, world: World, pos: BlockPos): (Area, Option[IMarker]) = {
     findQuarryArea(facing, world, pos) match {
       case marked@(_, Some(_)) => marked
-      case (_, None) =>
-        val chunkPos = new ChunkPos(pos)
-        val y = pos.getY
-        Area(chunkPos.getXStart, y, chunkPos.getZStart, chunkPos.getXEnd, y, chunkPos.getZEnd, world.getDimension.getType.getId.some) -> None
+      case (_, None) => defaultAdvQuarryArea(pos, world.getDimension.getType) -> None
     }
   }
 
-  def hasLimit(area: Area, limit: Int): Boolean =
-    area.xMax - area.xMin > limit || area.zMax - area.zMin > limit
+  def limit(area: Area, limit: Int): ValidatedNel[String, Area] = {
+    if (limit == -1) return area.validNel // Fast return to skip limitation check
 
-  def limit(area: Area, limit: Int): Area = {
-    def xCheck(area: Area, limit: Int): Area = if (area.xMax - area.xMin > limit) area.copy(xMax = area.xMin + limit) else area
+    def xCheck(area: Area): ValidatedNel[String, Area] = if (area.xMax - area.xMin > limit) s"Over limit x. Limit $limit but ${area.xMin} -> ${area.xMax}".invalidNel else area.validNel
 
-    def zCheck(area: Area, limit: Int): Area = if (area.zMax - area.zMin > limit) area.copy(zMax = area.zMin + limit) else area
+    def zCheck(area: Area): ValidatedNel[String, Area] = if (area.zMax - area.zMin > limit) s"Over limit z. Limit $limit but ${area.zMin} -> ${area.zMax}".invalidNel else area.validNel
 
-    for {
-      cx <- xCheck(area, limit).pure[Id]
-      cxz <- zCheck(cx, limit).pure[Id]
-    } yield cxz
+    (xCheck(area), zCheck(area)).mapN { case (_, _) => area }
   }
 }
