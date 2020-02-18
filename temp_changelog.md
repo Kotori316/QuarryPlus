@@ -1,5 +1,16 @@
 **This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).**
 
+## Version 15.2.1
+* Allow minus energy when digging. #78.
+* Implemented area limitation for ChunkDestroyer.
+* Fixed quarry drill was rendered in wrong dimension..\
+* Imported changes from 1.14.4 2020/02/14.
+    - Many internal changes.
+    - Chain breaking of frame expanded
+    - More info on Status Checker
+    - Faster pump
+    - Fuel Module for AdvPump
+
 ## Version 15.2.0
 * Update to Minecraft 1.15.2
 
