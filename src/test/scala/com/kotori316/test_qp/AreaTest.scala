@@ -1,5 +1,5 @@
 package com.kotori316.test_qp
-
+import cats.syntax.validated._
 import com.yogpc.qp.machines.base.Area
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.dimension.DimensionType
@@ -56,5 +56,43 @@ class AreaTest {
     assertFalse(poses contains new BlockPos(9, 16, 16))
     assertTrue(poses contains new BlockPos(9, 16, 20))
     assertTrue(poses contains new BlockPos(10, 16, 19))
+  }
+
+  private def areaByPair(min: Int, max: Int): Area = {
+    Area(min, 1, min, max, 10, max, Option(0))
+  }
+
+  @Test
+  def limit22(): Unit = {
+    val area = areaByPair(4, 26) // Range 22
+    assertAll(
+      () => assertEquals(area.validNel, Area.limit(area, Int.MaxValue), "Max Limit"),
+      () => assertEquals(area.validNel, Area.limit(area, 128), "8 chunks"),
+      () => assertEquals(area.validNel, Area.limit(area, 32), "2 chunks"),
+      () => assertEquals(area.validNel, Area.limit(area, 22), "22 blocks"),
+      () => assertNotEquals(area.validNel, Area.limit(area, 21), "21 blocks"),
+      () => assertTrue(Area.limit(area, 21).isInvalid, "21 blocks changed area"),
+      () => assertNotEquals(area.validNel, Area.limit(area, 16), "1 chunk."),
+      () => assertNotEquals(area.validNel, Area.limit(area, 1), "1 block."),
+      () => assertTrue(Area.limit(area, 1).isInvalid, "1 block. Changed"),
+    )
+  }
+
+  @Test
+  def limit45(): Unit = {
+    val area = areaByPair(-8, 24) // Range 32 = 2 chunks
+    assertAll(
+      () => assertEquals(area.validNel, Area.limit(area, Int.MaxValue), "Max Limit"),
+      () => assertEquals(area.validNel, Area.limit(area, 128), "8 chunks"),
+      () => assertEquals(area.validNel, Area.limit(area, 64), "4 chunks"),
+      () => assertEquals(area.validNel, Area.limit(area, 32), "2 chunks"),
+      () => assertNotEquals(area.validNel, Area.limit(area, 31), "31 blocks"),
+      () => assertTrue(Area.limit(area, 31).isInvalid, "31 blocks changed area"),
+      () => assertNotEquals(area.validNel, Area.limit(area, 22), "22 blocks"),
+      () => assertNotEquals(area.validNel, Area.limit(area, 21), "21 blocks"),
+      () => assertNotEquals(area.validNel, Area.limit(area, 16), "1 chunk."),
+      () => assertNotEquals(area.validNel, Area.limit(area, 1), "1 block."),
+      () => assertTrue(Area.limit(area, 1).isInvalid, "1 block. Changed"),
+    )
   }
 }

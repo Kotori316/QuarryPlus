@@ -70,7 +70,7 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
         if (hasWorld() && !Objects.requireNonNull(getWorld()).isRemote && isWorking())
             debug.getAndTick(got);
         this.got = 0;
-        if (world != null && !world.isRemote && enabled() && enabledByRS())
+        if (world != null && !world.isRemote && enabled() && enabledByRS() && this.all >= 0)
             workInTick();
     }
 
@@ -231,6 +231,14 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
         }
         debug.use(res, !real, usage);
         return res;
+    }
+
+    public final long useEnergyForce(long amount, final boolean real, EnergyUsage usage) {
+        debug.use(amount, !real, usage);
+        if (real) {
+            this.all -= amount;
+        }
+        return amount; // Must supply all required energy.
     }
 
     protected final long getEnergy(final long a, final boolean real) {

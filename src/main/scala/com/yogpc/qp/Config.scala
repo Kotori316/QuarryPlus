@@ -46,6 +46,8 @@ object Config {
     val disableFrameChainBreak = addBoolOption(builder.comment("DisableFrameChainBreak").define("DisableFrameChainBreak", false))
     val removeOnlySource = addBoolOption(builder.comment("Set false to allow PlumPlus to remove non-source fluid block.").define("RemoveOnlyFluidSource", false))
     val enableRSControl = addBoolOption(builder.comment("True to enable RS control of machines.").define("EnableRSControl", false))
+    val quarryRangeLimit = builder.comment("Range limit of ChunkDestroyer. set -1 to disable. The unit of number is `blocks`. 16 = 1 chunk.")
+      .defineInRange("QuarryRangeLimit", -1, -1, Int.MaxValue)
     private[this] final val disabledEntities = Seq(
       "minecraft:ender_dragon",
       "minecraft:wither",

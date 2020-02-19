@@ -101,7 +101,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
         // Not breakable
         Ior.both(Reason.message(s"$state is too hard to break. Requiring $energy."), ())
       } else {
-        if (PowerManager.useEnergyBreak(self, target, enchantments, modules.exists(IModule.hasReplaceModule))) {
+        if (PowerManager.useEnergyBreak(self, target, enchantments, modules.exists(IModule.hasReplaceModule), false)) {
           val fakePlayer = QuarryFakePlayer.get(world.asInstanceOf[ServerWorld], target)
           val pickaxe = getEnchantedPickaxe()
           fakePlayer.setHeldItem(Hand.MAIN_HAND, pickaxe)
@@ -258,8 +258,15 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
       val facing = world.getBlockState(pos).get(BlockStateProperties.FACING)
       Area.findAdvQuarryArea(facing, world, pos) match {
         case (newArea, markerOpt) =>
-          area = newArea.copy(yMax = newArea.yMin) // Prevent wrong line rendering
-          markerOpt.foreach(m => m.removeFromWorldWithItem().forEach(storage.insertItem))
+          val areaLimited = Area.limit(newArea.copy(yMax = newArea.yMin), Config.common.quarryRangeLimit.get()) // Prevent wrong line rendering
+          areaLimited match {
+            case Validated.Valid(a) =>
+              setArea(a)
+              markerOpt.foreach(m => m.removeFromWorldWithItem().forEach(storage.insertItem))
+            case Validated.Invalid(e) =>
+              this.area = Area.defaultAdvQuarryArea(pos, world.dimension.getType) // Skip area check to avoid error.
+              QuarryPlus.LOGGER.info("Player selected area wider than limit. {}", e.mkString_(", "))
+          }
       }
     }
     action = AdvQuarryWork.waiting
@@ -326,7 +333,15 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
 
   override def getEnchantmentHolder = enchantments
 
-  override def setArea(area: Area): Unit = this.area = area
+  /**
+   * This method has filter to limit range.
+   *
+   * @param area will be limited to specific range.
+   */
+  override def setArea(area: Area): Unit = {
+    val limit = Config.common.quarryRangeLimit.get()
+    this.area = Area.limit(area, limit).getOrElse(this.area)
+  }
 
   override def startWorking(): Unit = {
     G_ReInit()

@@ -1,7 +1,7 @@
 package com.yogpc.qp.machines.base
 
 import cats.Show
-import cats.data.OptionT
+import cats.data.{OptionT, ValidatedNel}
 import cats.implicits._
 import com.mojang.datafixers.Dynamic
 import com.yogpc.qp._
@@ -31,9 +31,10 @@ object Area {
   private[this] final val NBT_Z_MIN = "zMin"
   private[this] final val NBT_Z_MAX = "zMax"
   private[this] final val NBT_DIM = "dim"
+  private[this] final val EMPTY_DIM = "None"
   val zeroArea = Area(0, 0, 0, 0, 0, 0, None)
 
-  implicit val showArea: Show[Area] = area => s"(${area.xMin}, ${area.yMin}, ${area.zMin}) -> (${area.xMax}, ${area.yMax}, ${area.zMax})"
+  implicit val showArea: Show[Area] = area => s"(${area.xMin}, ${area.yMin}, ${area.zMin}) -> (${area.xMax}, ${area.yMax}, ${area.zMax}) in dim ${area.dimID.map(_.toString).getOrElse(EMPTY_DIM)}"
 
   implicit val areaToNbt: Area NBTWrapper CompoundNBT = area => {
     val nbt = new CompoundNBT
@@ -66,6 +67,12 @@ object Area {
     val edge1 = start.offset(facing.rotateY(), y).up(3)
     val edge2 = start.offset(facing, x - 1).offset(facing.rotateYCCW(), y)
     posToArea(edge1, edge2, dim)
+  }
+
+  def defaultAdvQuarryArea(pos: BlockPos, dim: DimensionType): Area = {
+    val chunkPos = new ChunkPos(pos)
+    val y = pos.getY
+    Area(chunkPos.getXStart, y, chunkPos.getZStart, chunkPos.getXEnd, y, chunkPos.getZEnd, dim.getId.some)
   }
 
   def getMarkersOnDirection(directions: List[Direction], world: World, pos: BlockPos): OptionT[List, IMarker] =
@@ -154,10 +161,17 @@ object Area {
   def findAdvQuarryArea(facing: Direction, world: World, pos: BlockPos): (Area, Option[IMarker]) = {
     findQuarryArea(facing, world, pos) match {
       case marked@(_, Some(_)) => marked
-      case (_, None) =>
-        val chunkPos = new ChunkPos(pos)
-        val y = pos.getY
-        Area(chunkPos.getXStart, y, chunkPos.getZStart, chunkPos.getXEnd, y, chunkPos.getZEnd, world.getDimension.getType.getId.some) -> None
+      case (_, None) => defaultAdvQuarryArea(pos, world.getDimension.getType) -> None
     }
+  }
+
+  def limit(area: Area, limit: Int): ValidatedNel[String, Area] = {
+    if (limit == -1) return area.validNel // Fast return to skip limitation check
+
+    def xCheck(area: Area): ValidatedNel[String, Area] = if (area.xMax - area.xMin > limit) s"Over limit x. Limit $limit but ${area.xMin} -> ${area.xMax}".invalidNel else area.validNel
+
+    def zCheck(area: Area): ValidatedNel[String, Area] = if (area.zMax - area.zMin > limit) s"Over limit z. Limit $limit but ${area.zMin} -> ${area.zMax}".invalidNel else area.validNel
+
+    (xCheck(area), zCheck(area)).mapN { case (_, _) => area }
   }
 }

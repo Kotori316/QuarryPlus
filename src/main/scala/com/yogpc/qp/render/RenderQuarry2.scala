@@ -23,14 +23,15 @@ object RenderQuarry2 extends TileEntityRendererFast[TileQuarry2] {
 
   override def renderTileEntityFast(quarry: TileQuarry2, distanceX: Double, distanceY: Double, distanceZ: Double,
                                     partialTicks: Float, destroyStage: Int, bufferBuilder: BufferBuilder): Unit = {
+    Minecraft.getInstance.getProfiler.startSection("quarryplus")
+    Minecraft.getInstance.getProfiler.startSection("quarry")
+    if (!quarry.area.dimID.forall(id => Minecraft.getInstance.world.dimension.getType.getId == id)) return
     val pos = quarry.getPos
     if (!(bufferInstance bufferEq bufferBuilder)) {
       bufferInstance = new Buffer(bufferBuilder)
     }
     val buffer = bufferInstance
 
-    Minecraft.getInstance.getProfiler.startSection("quarryplus")
-    Minecraft.getInstance.getProfiler.startSection("quarry")
     if ((quarry.action.mode == TileQuarry2.waiting || quarry.action.mode == TileQuarry2.buildFrame || quarry.action.mode == TileQuarry2.breakInsideFrame)
       && quarry.area != Area.zeroArea) {
       Minecraft.getInstance.getProfiler.startSection("frame")
