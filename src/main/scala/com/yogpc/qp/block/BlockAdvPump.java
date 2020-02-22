@@ -13,6 +13,7 @@ import com.yogpc.qp.item.ItemBlockAllEnch;
 import com.yogpc.qp.tile.IEnchantableTile;
 import com.yogpc.qp.tile.TileAdvPump;
 import javax.annotation.Nullable;
+import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
@@ -21,6 +22,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -32,6 +34,8 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidUtil;
 
 public class BlockAdvPump extends ADismCBlock {
     public BlockAdvPump() {
@@ -94,7 +98,17 @@ public class BlockAdvPump extends ADismCBlock {
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
         if (!worldIn.isRemote) {
             Consumer<TileAdvPump> consumer = IEnchantableTile.Util.initConsumer(stack);
-            Optional.ofNullable((TileAdvPump) worldIn.getTileEntity(pos)).ifPresent(consumer.andThen(TileAdvPump.requestTicket));
+            Consumer<TileAdvPump> deleteSetter = pump -> {
+                BlockPos p = pos.down();
+                for (; ; p = p.down()) {
+                    if (!worldIn.isAirBlock(p) || p.getY() < 0)
+                        break;
+                }
+                IBlockState blockState = worldIn.getBlockState(p);
+                Block block = blockState.getBlock();
+                pump.delete_$eq(block == Blocks.WATER || block == Blocks.FLOWING_WATER);
+            };
+            Optional.ofNullable((TileAdvPump) worldIn.getTileEntity(pos)).ifPresent(consumer.andThen(deleteSetter).andThen(TileAdvPump.requestTicket));
         }
     }
 

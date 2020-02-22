@@ -560,7 +560,7 @@ object TileAdvPump {
 
     val distanceSq: Int = distance * distance
 
-    val maxAmount: Int = 128 * Fluid.BUCKET_VOLUME * (efficiency + 1)
+    val maxAmount: Int = 512 * Fluid.BUCKET_VOLUME * (efficiency + 1)
 
     val baseEnergy = defaultBaseEnergy(if (unbreaking >= 3) 3 else unbreaking)
 
@@ -568,7 +568,7 @@ object TileAdvPump {
       baseEnergy * (if (placeFrame) 2.5 else 1).toLong
     }
 
-    val getReceiveEnergy = if (efficiency >= 5) defaultReceiveEnergy(5) else defaultReceiveEnergy(efficiency)
+    val getReceiveEnergy = (if (efficiency >= 5) defaultReceiveEnergy(5) else defaultReceiveEnergy(efficiency)) * (fortune + 1) * (fortune + 1)
 
     def inRange(tilePos: BlockPos, pos: BlockPos): Boolean = {
       if (square) {

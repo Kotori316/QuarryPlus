@@ -26,8 +26,10 @@ class GuiAdvPump(tile: TileAdvPump, player: EntityPlayer) extends GuiContainer(n
 
   override def initGui(): Unit = {
     super.initGui()
-    this.buttonList.add(new GuiButton(0, guiLeft + 12, guiTop + 22, 120, 20, "PlaceFrame = " + tile.placeFrame))
-    this.buttonList.add(new GuiButton(1, guiLeft + 12, guiTop + 47, 120, 20, "Start"))
+    val buttonWidth = 80
+    this.buttonList.add(new GuiButton(0, guiLeft + getXSize / 2 - buttonWidth, guiTop + 22, buttonWidth, 20, "PlaceFrame = " + tile.placeFrame))
+    this.buttonList.add(new GuiButton(1, guiLeft + getXSize / 2 - 60, guiTop + 50, 120, 20, "Start"))
+    this.buttonList.add(new GuiButton(2, guiLeft + getXSize / 2, guiTop + 22, buttonWidth, 20, "Delete"))
     buttonList.get(1).enabled = !tile.isWorking
   }
 
@@ -39,6 +41,8 @@ class GuiAdvPump(tile: TileAdvPump, player: EntityPlayer) extends GuiContainer(n
         PacketHandler.sendToServer(AdvPumpChangeMessage.create(tile, AdvPumpChangeMessage.ToStart.UNCHANGED))
       case 1 => this.buttonList.get(button.id).enabled = false
         PacketHandler.sendToServer(AdvPumpChangeMessage.create(tile, AdvPumpChangeMessage.ToStart.START))
+      case 2 => tile.toggleDelete()
+        PacketHandler.sendToServer(AdvPumpChangeMessage.create(tile, AdvPumpChangeMessage.ToStart.UNCHANGED))
       case _ => QuarryPlus.LOGGER.error("AdvPump undefined button")
     }
   }
