@@ -45,7 +45,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import scala.collection.JavaConversions;
-import scala.collection.JavaConverters;
 
 public class BlockFrame extends BlockEmptyDrops {
 
@@ -297,12 +296,14 @@ public class BlockFrame extends BlockEmptyDrops {
         static {
             List<BlockPos> ds = Stream.of(EnumFacing.values()).map(EnumFacing::getDirectionVec).map(BlockPos::new).collect(Collectors.toList());
             ds.add(BlockPos.ORIGIN);
-            DIRECTIONS = JavaConversions.seqAsJavaList(
-                JavaConversions.asScalaBuffer(ds).combinations(2).map(vectors -> vectors.<BlockPos>reduce(BlockPos::add))
-                    .toList()
-                    .distinct()
-                    .filterNot(BlockPos.ORIGIN::equals)
-                    .toSeq()).stream().map(Direction8::new).collect(Collectors.toList());
+            DIRECTIONS = JavaConversions.asJavaCollection(JavaConversions.asScalaBuffer(ds).combinations(2).toList()).stream()
+                .map(JavaConversions::asJavaCollection)
+                .map(poses -> poses.stream().reduce(BlockPos.ORIGIN, BlockPos::add))
+                .filter(p -> !BlockPos.ORIGIN.equals(p))
+                .collect(Collectors.toSet())
+                .stream()
+                .map(Direction8::new)
+                .collect(Collectors.toList());
         }
     }
 }
