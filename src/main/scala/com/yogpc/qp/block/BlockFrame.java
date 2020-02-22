@@ -16,8 +16,10 @@ package com.yogpc.qp.block;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.yogpc.qp.Config;
@@ -37,10 +39,13 @@ import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import scala.collection.JavaConversions;
+import scala.collection.JavaConverters;
 
 public class BlockFrame extends BlockEmptyDrops {
 
@@ -132,8 +137,8 @@ public class BlockFrame extends BlockEmptyDrops {
                 List<BlockPos> list = (List<BlockPos>) nextCheck.clone();
                 nextCheck.clear();
                 for (BlockPos pos : list) {
-                    for (EnumFacing dir : EnumFacing.VALUES) {
-                        BlockPos nPos = pos.offset(dir);
+                    for (Direction8 dir : Direction8.DIRECTIONS) {
+                        BlockPos nPos = pos.add(dir.getVec());
                         IBlockState nBlock = world.getBlockState(nPos);
                         if (nBlock.getBlock() == this) {
                             if (!HAS_NEIGHBOUR_LIQUID.test(world, nPos) && set.add(nPos))
@@ -253,6 +258,51 @@ public class BlockFrame extends BlockEmptyDrops {
         super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
         if (!Config.content().disableFrameChainBreak() && state.getValue(DAMMING)) {
             worldIn.setBlockState(pos, state.withProperty(DAMMING, HAS_NEIGHBOUR_LIQUID.test(worldIn, pos)), 2);
+        }
+    }
+
+    private static class Direction8 {
+        private final Vec3i vec;
+
+        private Direction8(Vec3i vec) {
+            this.vec = vec;
+        }
+
+        public Vec3i getVec() {
+            return vec;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Direction8 that = (Direction8) o;
+            return Objects.equals(vec, that.vec);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(vec);
+        }
+
+        @Override
+        public String toString() {
+            return "Direction8{" +
+                "vec=" + vec +
+                '}';
+        }
+
+        public static final List<Direction8> DIRECTIONS;
+
+        static {
+            List<BlockPos> ds = Stream.of(EnumFacing.values()).map(EnumFacing::getDirectionVec).map(BlockPos::new).collect(Collectors.toList());
+            ds.add(BlockPos.ORIGIN);
+            DIRECTIONS = JavaConversions.seqAsJavaList(
+                JavaConversions.asScalaBuffer(ds).combinations(2).map(vectors -> vectors.<BlockPos>reduce(BlockPos::add))
+                    .toList()
+                    .distinct()
+                    .filterNot(BlockPos.ORIGIN::equals)
+                    .toSeq()).stream().map(Direction8::new).collect(Collectors.toList());
         }
     }
 }
