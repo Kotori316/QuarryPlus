@@ -68,6 +68,7 @@ import static com.yogpc.qp.QuarryPlusI.blockBreaker;
 import static com.yogpc.qp.QuarryPlusI.blockChunkDestroyer;
 import static com.yogpc.qp.QuarryPlusI.blockController;
 import static com.yogpc.qp.QuarryPlusI.blockExpPump;
+import static com.yogpc.qp.QuarryPlusI.blockFiller;
 import static com.yogpc.qp.QuarryPlusI.blockFrame;
 import static com.yogpc.qp.QuarryPlusI.blockLaser;
 import static com.yogpc.qp.QuarryPlusI.blockList;
@@ -204,7 +205,8 @@ public class QuarryPlus {
             blockSolidQuarry().itemBlock(),
             dummyBlock().itemBlock(),
             blockReplacer().itemBlock(),
-            blockQuarry2().itemBlock()
+            blockQuarry2().itemBlock(),
+            blockFiller().itemBlock()
         );
         event.getRegistry().registerAll(
             itemList().toArray(new Item[0])
@@ -236,6 +238,7 @@ public class QuarryPlus {
         ModelLoader.setCustomModelResourceLocation(dummyBlock().itemBlock(), 0, proxy.fromEntry(dummyBlock()));
         ModelLoader.setCustomModelResourceLocation(blockReplacer().itemBlock(), 0, proxy.fromEntry(blockReplacer()));
         ModelLoader.setCustomModelResourceLocation(blockQuarry2().itemBlock(), 0, proxy.fromEntry(blockQuarry2()));
+        ModelLoader.setCustomModelResourceLocation(blockFiller().itemBlock(), 0, proxy.fromEntry(blockFiller()));
         ModelLoader.setCustomModelResourceLocation(itemTool(), ItemTool.meta_StatusChecker(), ModelLoader.getInventoryVariant(prefix + ItemTool.statuschecker()));
         ModelLoader.setCustomModelResourceLocation(itemTool(), ItemTool.meta_ListEditor(), ModelLoader.getInventoryVariant(prefix + ItemTool.listeditor()));
         ModelLoader.setCustomModelResourceLocation(itemTool(), ItemTool.meta_LiquidSelector(), ModelLoader.getInventoryVariant(prefix + ItemTool.liquidselector()));
@@ -338,6 +341,7 @@ public class QuarryPlus {
         public static final String exppumpModule = "exppump_module";
         public static final String frame = "quarryframe";
         public static final String fuelModule = "fuel_module";
+        public static final String filler = "filler";
         public static final String laser = "laserplus";
         public static final String marker = "markerplus";
         public static final String miningwell = "miningwellplus";

@@ -49,6 +49,7 @@ object QuarryPlusI {
   val dummyBlock: DummyBlock = registerB(new DummyBlock)
   val blockReplacer: BlockReplacer = registerB(new BlockReplacer)
   val blockQuarry2: BlockQuarry2 = registerB(new BlockQuarry2)
+  val blockFiller: BlockFiller = registerB(new BlockFiller)
   val itemTool = registerI(new ItemTool)
   val magicMirror = registerI(new ItemMirror)
   val debugItem = registerI(new ItemQuarryDebug)
@@ -74,6 +75,7 @@ object QuarryPlusI {
   final val guiIdQuarryModule = 13
   final val guiIdQuarry2YLevel = 14
   final val guiIdStatus = 15
+  final val guiIdFiller = 16
 
   val tileIdMap = Map(
     classOf[TileWorkbench] -> QuarryPlus.Names.workbench,
@@ -91,7 +93,8 @@ object QuarryPlusI {
     classOf[TileExpPump] -> QuarryPlus.Names.exppump,
     classOf[TileSolidQuarry] -> QuarryPlus.Names.solidquarry,
     classOf[TileReplacer] -> QuarryPlus.Names.replacer,
-    classOf[TileQuarry2] -> QuarryPlus.Names.quarry2
+    classOf[TileQuarry2] -> QuarryPlus.Names.quarry2,
+    classOf[TileFiller] -> QuarryPlus.Names.filler
   ).mapValues(s => new ResourceLocation(QuarryPlus.modID, s))
 
   val tileIdSet = tileIdMap.map { case (_, s) => s.toString }.toSet
