@@ -102,7 +102,8 @@ object Config {
     'WorkbenchPlus,
     'SolidFuleQuarry,
     'Replacer,
-    'NewQuarry) ++ QuarryPlusI.itemDisableInfo.map(_.getSymbol)
+    'NewQuarry,
+    'Filler) ++ QuarryPlusI.itemDisableInfo.map(_.getSymbol)
   private val DisableBC = Map(
     'LaserPlus -> QuarryPlus.Optionals.Buildcraft_silicon_modID,
     'RefineryPlus -> QuarryPlus.Optionals.Buildcraft_factory_modID

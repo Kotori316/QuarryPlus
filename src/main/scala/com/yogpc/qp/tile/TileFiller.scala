@@ -1,10 +1,15 @@
 package com.yogpc.qp.tile
 
 import com.yogpc.qp._
+import com.yogpc.qp.container.ContainerQuarryModule.HasModuleInventory
 import com.yogpc.qp.gui.TranslationKeys
-import net.minecraft.inventory.InventoryBasic
+import com.yogpc.qp.modules.IModuleItem
+import net.minecraft.inventory.{InventoryBasic, ItemStackHelper}
+import net.minecraft.item.ItemStack
+import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.math.ChunkPos
-import net.minecraft.util.{EnumFacing, ITickable}
+import net.minecraft.util.text.TextComponentTranslation
+import net.minecraft.util.{EnumFacing, ITickable, NonNullList}
 import net.minecraftforge.common.ForgeChunkManager
 import net.minecraftforge.common.ForgeChunkManager.Type
 import net.minecraftforge.common.capabilities.Capability
@@ -17,11 +22,42 @@ final class TileFiller
   extends APowerTile
     with ITickable
     with IDebugSender
+    with HasModuleInventory
     with IChunkLoadTile {
   val inventory = new InventoryBasic(TranslationKeys.filler, false, TileFiller.slotCount)
+  private[this] final val moduleInventory = new QuarryModuleInventory(new TextComponentTranslation(TranslationKeys.filler), 5, this, refreshModules _, TileFiller.modulePredicate)
   var work: TileFiller.Work = TileFiller.Wait
+  var modules: List[IModule] = Nil
 
   // TileEntity Overrides
+
+  override def update(): Unit = {
+    super.update()
+    if (!getWorld.isRemote && !machineDisabled) {
+      modules.foreach(_.invoke(IModule.Tick(this)))
+      this.work.tick()
+      this.work = this.work.next(this)
+    }
+  }
+
+  override def readFromNBT(nbt: NBTTagCompound): Unit = {
+    super.readFromNBT(nbt)
+    val itemList = NonNullList.withSize(TileFiller.slotCount, ItemStack.EMPTY)
+    ItemStackHelper.loadAllItems(nbt.getCompoundTag("inventory"), itemList)
+    itemList.asScala.zipWithIndex.foreach { case (stack, i) => inventory.setInventorySlotContents(i, stack) }
+    moduleInv.deserializeNBT(nbt.getCompoundTag("modules"))
+  }
+
+  override def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
+    val itemList = Range(0, TileFiller.slotCount).map(i => (i, inventory.getStackInSlot(i))).foldLeft(NonNullList.withSize(TileFiller.slotCount, ItemStack.EMPTY)) {
+      case (l, (i, s)) => l.set(i, s); l
+    }
+    val itemTag = new NBTTagCompound
+    ItemStackHelper.saveAllItems(itemTag, itemList)
+    nbt.setTag("inventory", itemTag)
+    nbt.setTag("modules", moduleInv.serializeNBT())
+    super.writeToNBT(nbt)
+  }
 
   override def hasCapability(capability: Capability[_], facing: EnumFacing) =
     capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, facing)
@@ -47,8 +83,11 @@ final class TileFiller
   override def getDebugName: String = TranslationKeys.filler
 
   override def getDebugMessages = Seq(
-    "Work: " + this.work
+    "Work: " + this.work,
+    "Modules: " + modules.mkString(", ")
   ).map(toComponentString).asJava
+
+  override def moduleInv = this.moduleInventory
 
   // Chunk Loading
 
@@ -71,19 +110,40 @@ final class TileFiller
     super.onChunkUnload()
   }
 
+  // Methods
+
+  def refreshModules(inv: QuarryModuleInventory): Unit = {
+    modules = inv.moduleItems().asScala.flatMap(e => e.getKey.apply(e.getValue, this).toList).toList
+  }
 }
 
 object TileFiller {
-  final val SYMBOL = Symbol("filler")
+  final val SYMBOL = Symbol("Filler")
   final val slotCount = 27
+  final val modulePredicate: java.util.function.Predicate[IModuleItem] = new java.util.function.Predicate[IModuleItem] {
+    private[this] final lazy val set = Set(
+      QuarryPlusI.fuelModuleCreative.getSymbol,
+      QuarryPlusI.fuelModuleNormal.getSymbol
+    )
+
+    override def test(t: IModuleItem): Boolean = set contains t.getSymbol
+  }
 
   trait Work {
     val working = true
+
+    def tick(): Unit
+
+    def next(tile: TileFiller): Work
   }
 
   object Wait extends Work {
     override val working = false
     override val toString = "Wait"
+
+    override def tick(): Unit = ()
+
+    override def next(tile: TileFiller): Work = this
   }
 
 }
