@@ -39,7 +39,7 @@ public class ItemExpPumpModule extends Item implements IDisabled, IModuleItem {
     }
 
     @Override
-    public <T extends APowerTile & HasStorage> Function<T, IModule> getModule(ItemStack stack) {
+    public <T extends APowerTile> Function<T, IModule> getModule(ItemStack stack) {
         int xp = getXp(stack).orElse(0);
         return t -> {
             ExpPumpModule module = ExpPumpModule.fromTile(t, value -> stack.setTagInfo(Key_xp, new NBTTagInt(value)));

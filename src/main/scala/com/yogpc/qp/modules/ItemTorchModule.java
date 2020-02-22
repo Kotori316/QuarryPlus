@@ -20,7 +20,7 @@ public class ItemTorchModule extends Item implements IDisabled, IModuleItem {
     }
 
     @Override
-    public <T extends APowerTile & HasStorage> Function<T, IModule> getModule(ItemStack stack) {
+    public <T extends APowerTile> Function<T, IModule> getModule(ItemStack stack) {
         return TorchModule::get;
     }
 
