@@ -1,5 +1,6 @@
 package com.yogpc.qp.block;
 
+import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.tile.TileFiller;
@@ -13,6 +14,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
 public class BlockFiller extends ADismCBlock {
@@ -37,12 +39,16 @@ public class BlockFiller extends ADismCBlock {
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ)) return true;
+        if (Config.content().disableMapJ().get(TileFiller.SYMBOL())) {
+            playerIn.sendStatusMessage(new TextComponentString(TileFiller.SYMBOL().name() + " is disabled."), true);
+            return true;
+        }
 
         if (!playerIn.isSneaking()) {
             playerIn.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdFiller(), worldIn, pos.getX(), pos.getY(), pos.getZ());
             return true;
         }
-        return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
+        return false;
     }
 
     @Override

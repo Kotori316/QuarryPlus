@@ -109,7 +109,7 @@ object Config {
     'RefineryPlus -> QuarryPlus.Optionals.Buildcraft_factory_modID
   )
 
-  private val defaultDisables = Set('EnchantMoverFromBook, 'Replacer) ++
+  private val defaultDisables = Set('EnchantMoverFromBook, 'Replacer, 'Filler) ++
     QuarryPlusI.itemDisableInfo.collect { case m if m.defaultDisableMachine => m.getSymbol }
 
   final val CATEGORY_MACHINES = "machines"
