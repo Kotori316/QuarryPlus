@@ -43,13 +43,14 @@ public class GuiFiller extends GuiContainer {
             case 0: // Module
                 PacketHandler.sendToServer(FillerActionMessage.create(this.tile, FillerActionMessage.Actions.MODULE_INV));
                 break;
-            case 1:
+            case 1: // Fill All
                 PacketHandler.sendToServer(FillerActionMessage.create(this.tile, FillerActionMessage.Actions.FILL_ALL));
                 break;
             case 2: // Fill Box
                 PacketHandler.sendToServer(FillerActionMessage.create(this.tile, FillerActionMessage.Actions.FILL_BOX));
                 break;
             default:
+                QuarryPlus.LOGGER.error("Not handled button. id={}, text={}", button.id, button.displayString);
         }
     }
 
