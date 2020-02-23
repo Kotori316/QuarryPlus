@@ -161,9 +161,13 @@ object TileFiller {
     def firstBlock(i: Int = 0): Option[(ItemStack, Block)] = {
       if (i >= 0 && i < getSizeInventory) {
         val stack = getStackInSlot(i)
-        stack.getItem match {
-          case iB: ItemBlock if iB.getBlock.getDefaultState.getMaterial != Material.AIR => Option(stack -> iB.getBlock)
-          case _ => firstBlock(i + 1)
+        if (stack.isEmpty) {
+          firstBlock(i + 1)
+        } else {
+          stack.getItem match {
+            case iB: ItemBlock if iB.getBlock.getDefaultState.getMaterial != Material.AIR => Option(stack -> iB.getBlock)
+            case _ => firstBlock(i + 1)
+          }
         }
       } else {
         None
