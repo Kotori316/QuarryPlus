@@ -35,7 +35,7 @@ final class TileFiller
     super.update()
     if (!getWorld.isRemote && !machineDisabled) {
       modules.foreach(_.invoke(IModule.Tick(this)))
-      this.work.tick()
+      this.work.tick(this)
       this.work = this.work.next(this)
     }
   }
@@ -46,6 +46,7 @@ final class TileFiller
     ItemStackHelper.loadAllItems(nbt.getCompoundTag("inventory"), itemList)
     itemList.asScala.zipWithIndex.foreach { case (stack, i) => inventory.setInventorySlotContents(i, stack) }
     moduleInv.deserializeNBT(nbt.getCompoundTag("modules"))
+    work = TileFiller.Work.fromNBT(nbt.getCompoundTag("work"))
   }
 
   override def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
@@ -56,6 +57,7 @@ final class TileFiller
     ItemStackHelper.saveAllItems(itemTag, itemList)
     nbt.setTag("inventory", itemTag)
     nbt.setTag("modules", moduleInv.serializeNBT())
+    nbt.setTag("work", work.toNBT)
     super.writeToNBT(nbt)
   }
 
@@ -130,20 +132,47 @@ object TileFiller {
   }
 
   trait Work {
+    val name: String
     val working = true
 
-    def tick(): Unit
+    override def toString = name
+
+    def tick(tile: TileFiller): Unit
 
     def next(tile: TileFiller): Work
+
+    final def toNBT: NBTTagCompound = {
+      val tag = new NBTTagCompound
+      tag.setString("name", this.name)
+      save(tag)
+    }
+
+    protected def save(tag: NBTTagCompound): NBTTagCompound
+  }
+
+  object Work {
+    def fromNBT(tag: NBTTagCompound): Work = {
+      val name = tag.getString("name")
+      restoreMap.get(name).map(_.apply(tag)).getOrElse {
+        QuarryPlus.LOGGER.error(s"Unregistered key $name was used to read work $tag.")
+        Wait
+      }
+    }
+
+    private[this] final val restoreMap: Map[String, NBTTagCompound => Work] = Map(
+      Wait.name -> (_ => Wait)
+    )
   }
 
   object Wait extends Work {
     override val working = false
-    override val toString = "Wait"
+    override val name = "Wait"
 
-    override def tick(): Unit = ()
+    override def tick(tile: TileFiller): Unit = ()
 
     override def next(tile: TileFiller): Work = this
+
+    protected override def save(tag: NBTTagCompound): NBTTagCompound = tag
   }
 
 }
