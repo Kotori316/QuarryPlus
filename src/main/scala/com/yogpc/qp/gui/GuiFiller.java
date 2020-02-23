@@ -34,6 +34,7 @@ public class GuiFiller extends GuiContainer {
         AtomicInteger id = new AtomicInteger(0);
         addButton(new GuiButton(id.getAndIncrement(), this.xSize + 50, this.ySize - 96 + 7, 60, 14, "Modules"));
         addButton(new GuiButton(id.getAndIncrement(), this.guiLeft + this.xSize - 60 - 8, this.guiTop + 7, 60, 20, "FillAll"));
+        addButton(new GuiButton(id.getAndIncrement(), this.guiLeft + this.xSize - 60 - 8, this.guiTop + 7 + 20, 60, 20, "FillBox"));
     }
 
     @Override
@@ -44,6 +45,9 @@ public class GuiFiller extends GuiContainer {
                 break;
             case 1:
                 PacketHandler.sendToServer(FillerActionMessage.create(this.tile, FillerActionMessage.Actions.FILL_ALL));
+                break;
+            case 2: // Fill Box
+                PacketHandler.sendToServer(FillerActionMessage.create(this.tile, FillerActionMessage.Actions.FILL_BOX));
                 break;
             default:
         }

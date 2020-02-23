@@ -131,7 +131,7 @@ final class TileFiller
 
   def getWorkingWorld = getWorld
 
-  def startFillAll(): Unit = {
+  private def getArea: Option[(BlockPos, BlockPos)] = {
     EnumFacing.HORIZONTALS.map(f => getWorld.getTileEntity(getPos.offset(f)))
       .collectFirst { case m: IMarker if m.hasLink =>
         val a = m.min() -> m.max()
@@ -139,7 +139,14 @@ final class TileFiller
         a
       }
       .orElse(lastArea)
-      .foreach { case (min, max) => this.work = new FillerWorks.FillAll(min, max); lastArea = Option(min, max) }
+  }
+
+  def startFillAll(): Unit = {
+    getArea.foreach { case (min, max) => this.work = new FillerWorks.FillAll(min, max); lastArea = Option(min, max) }
+  }
+
+  def startFillBox(): Unit = {
+    getArea.foreach { case (min, max) => this.work = new FillerWorks.FillBox(min, max); lastArea = Option(min, max) }
   }
 }
 

@@ -44,7 +44,8 @@ object FillerWorks {
 
   private[this] final val restoreMap: Map[String, NBTTagCompound => FillerWorks] = Map(
     Wait.name -> (_ => Wait),
-    "FillAll" -> (tag => new FillAll(BlockPos.fromLong(tag.getLong("min")), BlockPos.fromLong(tag.getLong("max"))))
+    "FillAll" -> (tag => new FillAll(BlockPos.fromLong(tag.getLong("min")), BlockPos.fromLong(tag.getLong("max")))),
+    "FillBox" -> (tag => new FillBox(BlockPos.fromLong(tag.getLong("min")), BlockPos.fromLong(tag.getLong("max"))))
   )
 
   object Wait extends FillerWorks {
@@ -67,7 +68,7 @@ object FillerWorks {
       val fakePlayer = QuarryFakePlayer.get(tile.getWorld.asInstanceOf[WorldServer], tile.getPos)
       for {
         (stack, block) <- tile.inventory.firstBlock()
-        targetPos <- BlockPos.getAllInBoxMutable(min, max).asScala
+        targetPos <- targetIterator
           .find(p => tile.getWorkingWorld.mayPlace(block, p, false, EnumFacing.UP, fakePlayer))
       } {
         val e = TileFiller.power * APowerTile.MJToMicroMJ / 100
@@ -80,10 +81,14 @@ object FillerWorks {
       }
     }
 
+    protected def targetIterator: Iterator[BlockPos] = {
+      BlockPos.getAllInBoxMutable(min, max).asScala.iterator
+    }
+
     override def next(tile: TileFiller): FillerWorks = {
       tile.inventory.firstBlock() match {
         case Some((_, b)) =>
-          if (BlockPos.getAllInBoxMutable(min, max).asScala
+          if (targetIterator
             .forall(p => !tile.getWorkingWorld.mayPlace(b, p, false, EnumFacing.UP, null))) {
             Wait // Work has been done.
           } else {
@@ -97,6 +102,22 @@ object FillerWorks {
       tag.setLong("minPos", min.toLong)
       tag.setLong("maxPos", max.toLong)
       tag
+    }
+  }
+
+  class FillBox(override val min: BlockPos, override val max: BlockPos) extends FillAll(min, max) {
+    override val name = "FillBox"
+
+    override protected def targetIterator: Iterator[BlockPos] = {
+      val mutable = new BlockPos.MutableBlockPos()
+      val downUp = for {z <- Range.inclusive(min.getZ, max.getZ); x <- Range.inclusive(min.getX, max.getX)} yield (x, z)
+      val middle = downUp.filter { case (x, z) => (x == min.getX || x == max.getX) || (z == min.getZ || z == max.getZ) }
+      Iterator.range(min.getY, max.getY + 1).flatMap { y =>
+        if (y == min.getY || y == max.getY)
+          downUp.iterator.map { case (x, z) => mutable.setPos(x, y, z); mutable }
+        else
+          middle.iterator.map { case (x, z) => mutable.setPos(x, y, z); mutable }
+      }
     }
   }
 
