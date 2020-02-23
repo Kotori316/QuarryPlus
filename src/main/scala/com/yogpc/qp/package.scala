@@ -37,7 +37,7 @@ package object qp {
     }
   }
 
-  implicit class SOM[T](val o: java.util.Optional[T]) extends AnyVal {
+  implicit class SOM[T](private val o: java.util.Optional[T]) extends AnyVal {
     def scalaMap[B](f: T => B): Option[B] = toScalaOption(o).map(f)
 
     def scalaFilter(p: T => Boolean): Option[T] = toScalaOption(o).filter(p)
@@ -45,11 +45,11 @@ package object qp {
     def asScala: Option[T] = toScalaOption(o)
   }
 
-  implicit class JOS[T](val o: Option[T]) extends AnyVal {
+  implicit class JOS[T](private val o: Option[T]) extends AnyVal {
     def asJava: java.util.Optional[T] = toJavaOption(o)
   }
 
-  implicit class NBTList2Iterator(val list: NBTTagList) extends AnyVal {
+  implicit class NBTList2Iterator(private val list: NBTTagList) extends AnyVal {
     def tagIterator: Iterator[NBTTagCompound] = new AbstractIterator[NBTTagCompound] {
       var count = 0
 
@@ -67,7 +67,7 @@ package object qp {
     }
   }
 
-  implicit class ItemStackRemoveEnchantment(val stack: ItemStack) extends AnyVal {
+  implicit class ItemStackRemoveEnchantment(private val stack: ItemStack) extends AnyVal {
     def removeEnchantment(enchantment: Enchantment): Unit = {
       val id = Enchantment.getEnchantmentID(enchantment).toShort
       val tagName = if (stack.getItem == net.minecraft.init.Items.ENCHANTED_BOOK) "StoredEnchantments" else "ench"
@@ -131,7 +131,7 @@ package object qp {
     def toNBT[B <: NBTBase](implicit wrapper: NBTWrapper[A, B]): B = wrapper apply num
   }
 
-  implicit class PosHelper(val blockPos: BlockPos) extends AnyVal {
+  implicit class PosHelper(private val blockPos: BlockPos) extends AnyVal {
     def offset(facing1: EnumFacing, facing2: EnumFacing): BlockPos = {
       val x = facing1.getFrontOffsetX + facing2.getFrontOffsetX
       val y = facing1.getFrontOffsetY + facing2.getFrontOffsetY
