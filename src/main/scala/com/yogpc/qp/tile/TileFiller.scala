@@ -4,12 +4,13 @@ import com.yogpc.qp._
 import com.yogpc.qp.container.ContainerQuarryModule.HasModuleInventory
 import com.yogpc.qp.gui.TranslationKeys
 import com.yogpc.qp.modules.IModuleItem
+import com.yogpc.qp.packet.{PacketHandler, TileMessage}
 import net.minecraft.block.Block
 import net.minecraft.block.material.Material
 import net.minecraft.inventory.{InventoryBasic, InventoryHelper, ItemStackHelper}
 import net.minecraft.item.{ItemBlock, ItemStack}
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.math.{BlockPos, ChunkPos}
+import net.minecraft.util.math.{AxisAlignedBB, BlockPos, ChunkPos}
 import net.minecraft.util.text.TextComponentTranslation
 import net.minecraft.util.{EnumFacing, ITickable, NonNullList}
 import net.minecraftforge.common.ForgeChunkManager
@@ -87,6 +88,10 @@ final class TileFiller
     configure(TileFiller.power * APowerTile.MJToMicroMJ, TileFiller.power * APowerTile.MJToMicroMJ)
   }
 
+  override def hasFastRenderer = true
+
+  override def getRenderBoundingBox: AxisAlignedBB = getWorkingArea.map { case (pos, pos1) => new AxisAlignedBB(pos, pos1) }.getOrElse(super.getRenderBoundingBox)
+
   // Implemented methods
 
   override protected def isWorking: Boolean = this.work.working
@@ -131,6 +136,8 @@ final class TileFiller
 
   def getWorkingWorld = getWorld
 
+  def getWorkingArea: Option[(BlockPos, BlockPos)] = work.area
+
   private def getArea: Option[(BlockPos, BlockPos)] = {
     EnumFacing.HORIZONTALS.map(f => getWorld.getTileEntity(getPos.offset(f)))
       .collectFirst { case m: IMarker if m.hasLink =>
@@ -143,10 +150,12 @@ final class TileFiller
 
   def startFillAll(): Unit = {
     getArea.foreach { case (min, max) => this.work = new FillerWorks.FillAll(min, max); lastArea = Option(min, max) }
+    PacketHandler.sendToAround(TileMessage.create(this), getWorld, getPos)
   }
 
   def startFillBox(): Unit = {
     getArea.foreach { case (min, max) => this.work = new FillerWorks.FillBox(min, max); lastArea = Option(min, max) }
+    PacketHandler.sendToAround(TileMessage.create(this), getWorld, getPos)
   }
 }
 

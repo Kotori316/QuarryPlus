@@ -32,7 +32,7 @@ public class GuiFiller extends GuiContainer {
     public void initGui() {
         super.initGui();
         AtomicInteger id = new AtomicInteger(0);
-        addButton(new GuiButton(id.getAndIncrement(), this.xSize + 50, this.ySize - 96 + 7, 60, 14, "Modules"));
+        addButton(new GuiButton(id.getAndIncrement(), this.guiLeft + 110, this.guiTop + this.ySize - 97, 60, 14, "Modules"));
         addButton(new GuiButton(id.getAndIncrement(), this.guiLeft + this.xSize - 60 - 8, this.guiTop + 7, 60, 20, "FillAll"));
         addButton(new GuiButton(id.getAndIncrement(), this.guiLeft + this.xSize - 60 - 8, this.guiTop + 7 + 20, 60, 20, "FillBox"));
     }

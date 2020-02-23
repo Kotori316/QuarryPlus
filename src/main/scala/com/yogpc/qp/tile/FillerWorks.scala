@@ -31,6 +31,8 @@ trait FillerWorks {
   }
 
   protected def save(tag: NBTTagCompound): NBTTagCompound
+
+  def area: Option[(BlockPos, BlockPos)] = None
 }
 
 object FillerWorks {
@@ -44,8 +46,8 @@ object FillerWorks {
 
   private[this] final val restoreMap: Map[String, NBTTagCompound => FillerWorks] = Map(
     Wait.name -> (_ => Wait),
-    "FillAll" -> (tag => new FillAll(BlockPos.fromLong(tag.getLong("min")), BlockPos.fromLong(tag.getLong("max")))),
-    "FillBox" -> (tag => new FillBox(BlockPos.fromLong(tag.getLong("min")), BlockPos.fromLong(tag.getLong("max"))))
+    "FillAll" -> (tag => new FillAll(BlockPos.fromLong(tag.getLong("minPos")), BlockPos.fromLong(tag.getLong("maxPos")))),
+    "FillBox" -> (tag => new FillBox(BlockPos.fromLong(tag.getLong("minPos")), BlockPos.fromLong(tag.getLong("maxPos"))))
   )
 
   object Wait extends FillerWorks {
@@ -61,6 +63,7 @@ object FillerWorks {
 
   class FillAll(val min: BlockPos, val max: BlockPos) extends FillerWorks {
     override val name = "FillAll"
+    override val area = Option(min, max)
 
     override def toString = super.toString + s" min=$min, max=$max"
 

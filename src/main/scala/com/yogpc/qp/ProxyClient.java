@@ -8,12 +8,14 @@ import com.yogpc.qp.packet.advquarry.AdvFilterMessage;
 import com.yogpc.qp.render.DummyBlockBakedModel;
 import com.yogpc.qp.render.RenderAdvQuarry;
 import com.yogpc.qp.render.RenderDistiller;
+import com.yogpc.qp.render.RenderFiller;
 import com.yogpc.qp.render.RenderLaser;
 import com.yogpc.qp.render.RenderMarker;
 import com.yogpc.qp.render.RenderQuarry;
 import com.yogpc.qp.render.RenderQuarry2;
 import com.yogpc.qp.render.Sprites;
 import com.yogpc.qp.tile.TileAdvQuarry;
+import com.yogpc.qp.tile.TileFiller;
 import com.yogpc.qp.tile.TileLaser;
 import com.yogpc.qp.tile.TileMarker;
 import com.yogpc.qp.tile.TilePump;
@@ -102,6 +104,8 @@ public class ProxyClient extends ProxyCommon {
                 ClientRegistry.bindTileEntitySpecialRenderer(TileAdvQuarry.class, RenderAdvQuarry.instance());
             if (!Config.content().disableMapJ().get(TileLaser.SYMBOL))
                 ClientRegistry.bindTileEntitySpecialRenderer(TileLaser.class, RenderLaser.instance());
+            if (!Config.content().disableMapJ().get(TileFiller.SYMBOL()))
+                ClientRegistry.bindTileEntitySpecialRenderer(TileFiller.class, RenderFiller.instance());
             ClientRegistry.bindTileEntitySpecialRenderer(TileRefinery.class, RenderDistiller.instance());
             MinecraftForge.EVENT_BUS.register(Sprites.instance());
         }
