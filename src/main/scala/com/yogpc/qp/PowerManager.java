@@ -44,6 +44,7 @@ public class PowerManager {
     private static double PumpDrain_CU;// Pump:Liquid
     private static long MoveHead_BP;
     private static double MoveHead_CU;// Quarry:MoveHead
+    private static long FillerWork_BP; // Filler:Base
 
     private static final int length = (Configuration.CATEGORY_GENERAL + Configuration.CATEGORY_SPLITTER).length();
 
@@ -127,6 +128,8 @@ public class PowerManager {
         Refinery_XR = micro * (long) get(c, "BaseMaxRecieve", 6);
         Refinery_MS = micro * (long) get(c, "BaseMaxStored", 1000);
 
+        c = cg.getCategory(cn + "Filler");
+        FillerWork_BP = (long) (micro * get(c, "BasePower", 40));
     }
 
     public static void configure0(final APowerTile pp) {
@@ -253,7 +256,7 @@ public class PowerManager {
         if (!Config.content().fastQuarryHeadMove()) {
             pw = Math.min(2 + (double) pp.getStoredEnergy() / 500 / APowerTile.MJToMicroMJ, (dist / 2 - 0.05) * bp / (U * MoveHead_CU + 1));
         } else {
-            pw = (dist / 2 - 0.05) *bp / (U * MoveHead_CU + 1);
+            pw = (dist / 2 - 0.05) * bp / (U * MoveHead_CU + 1);
         }
         pw = (double) pp.useEnergy(0, (long) (pw * APowerTile.MJToMicroMJ), true, EnergyUsage.MOVE_HEAD) / APowerTile.MJToMicroMJ;
         return pw * (U * MoveHead_CU + 1) / bp + 0.05;
@@ -280,5 +283,10 @@ public class PowerManager {
      */
     public static long calcEnergyAdvSearch(int unbreakingLevel, int targetY) {
         return (long) (MoveHead_BP * targetY / (MoveHead_CU * unbreakingLevel + 1) / 4);
+    }
+
+    public static boolean useEnergyFillerWork(final APowerTile filler, boolean simulate) {
+        long pw = FillerWork_BP;
+        return filler.useEnergy(pw, pw, !simulate, EnergyUsage.FILLER) == pw;
     }
 }

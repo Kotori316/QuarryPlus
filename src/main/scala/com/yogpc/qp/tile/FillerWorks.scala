@@ -1,6 +1,6 @@
 package com.yogpc.qp.tile
 
-import com.yogpc.qp.QuarryPlus
+import com.yogpc.qp.{PowerManager, QuarryPlus}
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
@@ -71,9 +71,8 @@ object FillerWorks {
         targetPos <- targetIterator
           .find(p => tile.getWorkingWorld.mayPlace(block, p, false, EnumFacing.UP, fakePlayer))
       } {
-        val e = TileFiller.power * APowerTile.MJToMicroMJ / 100
-        if (tile.useEnergy(e, e, false, EnergyUsage.FILLER) == e) {
-          tile.useEnergy(e, e, true, EnergyUsage.FILLER)
+        if (PowerManager.useEnergyFillerWork(tile, true)) {
+          PowerManager.useEnergyFillerWork(tile, false)
           tile.getWorkingWorld.setBlockState(targetPos, block.getDefaultState)
           stack.shrink(1)
           tile.inventory.markDirty()
