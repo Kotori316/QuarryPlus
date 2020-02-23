@@ -12,5 +12,6 @@ public enum EnergyUsage {
     PUMP_EXP,
     ADV_BREAK_BLOCK,
     ADV_CHECK_BLOCK,
-    ADV_PUMP_FLUID
+    ADV_PUMP_FLUID,
+    FILLER
 }

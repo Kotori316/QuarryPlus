@@ -4,10 +4,12 @@ import com.yogpc.qp._
 import com.yogpc.qp.container.ContainerQuarryModule.HasModuleInventory
 import com.yogpc.qp.gui.TranslationKeys
 import com.yogpc.qp.modules.IModuleItem
-import net.minecraft.inventory.{InventoryBasic, ItemStackHelper}
-import net.minecraft.item.ItemStack
+import net.minecraft.block.Block
+import net.minecraft.block.material.Material
+import net.minecraft.inventory.{InventoryBasic, InventoryHelper, ItemStackHelper}
+import net.minecraft.item.{ItemBlock, ItemStack}
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.math.ChunkPos
+import net.minecraft.util.math.{BlockPos, ChunkPos}
 import net.minecraft.util.text.TextComponentTranslation
 import net.minecraft.util.{EnumFacing, ITickable, NonNullList}
 import net.minecraftforge.common.ForgeChunkManager
@@ -24,10 +26,11 @@ final class TileFiller
     with IDebugSender
     with HasModuleInventory
     with IChunkLoadTile {
-  val inventory = new InventoryBasic(TranslationKeys.filler, false, TileFiller.slotCount)
+  val inventory = new TileFiller.InventoryFiller
   private[this] final val moduleInventory = new QuarryModuleInventory(new TextComponentTranslation(TranslationKeys.filler), 5, this, refreshModules _, TileFiller.modulePredicate)
-  var work: TileFiller.Work = TileFiller.Wait
+  var work: FillerWorks = FillerWorks.Wait
   var modules: List[IModule] = Nil
+  var lastArea: Option[(BlockPos, BlockPos)] = None
 
   // TileEntity Overrides
 
@@ -35,8 +38,16 @@ final class TileFiller
     super.update()
     if (!getWorld.isRemote && !machineDisabled) {
       modules.foreach(_.invoke(IModule.Tick(this)))
+      val preWorking = isWorking
       this.work.tick(this)
       this.work = this.work.next(this)
+      if (preWorking ^ isWorking) {
+        if (preWorking) { // finished.
+          finishWork()
+        } else { // started.
+          startWork()
+        }
+      }
     }
   }
 
@@ -46,7 +57,7 @@ final class TileFiller
     ItemStackHelper.loadAllItems(nbt.getCompoundTag("inventory"), itemList)
     itemList.asScala.zipWithIndex.foreach { case (stack, i) => inventory.setInventorySlotContents(i, stack) }
     moduleInv.deserializeNBT(nbt.getCompoundTag("modules"))
-    work = TileFiller.Work.fromNBT(nbt.getCompoundTag("work"))
+    work = FillerWorks.fromNBT(nbt.getCompoundTag("work"))
   }
 
   override def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
@@ -73,7 +84,7 @@ final class TileFiller
 
   override def onLoad(): Unit = {
     super.onLoad()
-    configure(5000 * APowerTile.MJToMicroMJ, 5000 * APowerTile.MJToMicroMJ)
+    configure(TileFiller.power * APowerTile.MJToMicroMJ, TileFiller.power * APowerTile.MJToMicroMJ)
   }
 
   // Implemented methods
@@ -85,7 +96,7 @@ final class TileFiller
   override def getDebugName: String = TranslationKeys.filler
 
   override def getDebugMessages = Seq(
-    "Work: " + this.work,
+    "FillerWorks: " + this.work,
     "Modules: " + modules.mkString(", ")
   ).map(toComponentString).asJava
 
@@ -117,11 +128,25 @@ final class TileFiller
   def refreshModules(inv: QuarryModuleInventory): Unit = {
     modules = inv.moduleItems().asScala.flatMap(e => e.getKey.apply(e.getValue, this).toList).toList
   }
+
+  def getWorkingWorld = getWorld
+
+  def startFillAll(): Unit = {
+    EnumFacing.HORIZONTALS.map(f => getWorld.getTileEntity(getPos.offset(f)))
+      .collectFirst { case m: IMarker if m.hasLink =>
+        val a = m.min() -> m.max()
+        m.removeFromWorldWithItem().asScala.foreach(i => InventoryHelper.spawnItemStack(getWorld, getPos.getX + 0.5, getPos.getY + 1, getPos.getZ + 0.5, i))
+        a
+      }
+      .orElse(lastArea)
+      .foreach { case (min, max) => this.work = new FillerWorks.FillAll(min, max); lastArea = Option(min, max) }
+  }
 }
 
 object TileFiller {
   final val SYMBOL = Symbol("Filler")
   final val slotCount = 27
+  final val power = 5000
   final val modulePredicate: java.util.function.Predicate[IModuleItem] = new java.util.function.Predicate[IModuleItem] {
     private[this] final lazy val set = Set(
       QuarryPlusI.fuelModuleCreative.getSymbol,
@@ -131,48 +156,19 @@ object TileFiller {
     override def test(t: IModuleItem): Boolean = set contains t.getSymbol
   }
 
-  trait Work {
-    val name: String
-    val working = true
-
-    override def toString = name
-
-    def tick(tile: TileFiller): Unit
-
-    def next(tile: TileFiller): Work
-
-    final def toNBT: NBTTagCompound = {
-      val tag = new NBTTagCompound
-      tag.setString("name", this.name)
-      save(tag)
-    }
-
-    protected def save(tag: NBTTagCompound): NBTTagCompound
-  }
-
-  object Work {
-    def fromNBT(tag: NBTTagCompound): Work = {
-      val name = tag.getString("name")
-      restoreMap.get(name).map(_.apply(tag)).getOrElse {
-        QuarryPlus.LOGGER.error(s"Unregistered key $name was used to read work $tag.")
-        Wait
+  final class InventoryFiller extends InventoryBasic(TranslationKeys.filler, false, TileFiller.slotCount) {
+    @scala.annotation.tailrec
+    def firstBlock(i: Int = 0): Option[(ItemStack, Block)] = {
+      if (i >= 0 && i < getSizeInventory) {
+        val stack = getStackInSlot(i)
+        stack.getItem match {
+          case iB: ItemBlock if iB.getBlock.getDefaultState.getMaterial != Material.AIR => Option(stack -> iB.getBlock)
+          case _ => firstBlock(i + 1)
+        }
+      } else {
+        None
       }
     }
-
-    private[this] final val restoreMap: Map[String, NBTTagCompound => Work] = Map(
-      Wait.name -> (_ => Wait)
-    )
-  }
-
-  object Wait extends Work {
-    override val working = false
-    override val name = "Wait"
-
-    override def tick(tile: TileFiller): Unit = ()
-
-    override def next(tile: TileFiller): Work = this
-
-    protected override def save(tag: NBTTagCompound): NBTTagCompound = tag
   }
 
 }

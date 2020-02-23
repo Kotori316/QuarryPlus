@@ -65,7 +65,8 @@ public class FillerActionMessage implements IMessage {
         MODULE_INV((f, c, p) -> {
             if (!f.getWorld().isRemote)
                 p.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdQuarryModule(), f.getWorld(), f.getPos().getX(), f.getPos().getY(), f.getPos().getZ());
-        });
+        }),
+        FILL_ALL(TileFiller::startFillAll);
         private final TriConsumer<TileFiller, NBTTagCompound, EntityPlayer> consumer;
 
         Actions(Consumer<TileFiller> consumer) {
