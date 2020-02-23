@@ -1,3 +1,8 @@
+# Version 12.3.1
+- Added `delete` button to adv pump.
+- Improved chain breaking of quarry frame
+- Added filler. (disabled in default)
+
 # Version 12.3.0
 - Working on a crash when you remove working pump.
 
