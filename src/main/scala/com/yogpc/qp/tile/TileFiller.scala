@@ -43,6 +43,7 @@ final class TileFiller
       this.work.tick(this)
       this.work = this.work.next(this)
       if (preWorking ^ isWorking) {
+        PacketHandler.sendToAround(TileMessage.create(this), getWorld, getPos)
         if (preWorking) { // finished.
           finishWork()
         } else { // started.
