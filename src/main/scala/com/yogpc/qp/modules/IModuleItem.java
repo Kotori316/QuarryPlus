@@ -10,9 +10,9 @@ import scala.Option;
 
 public interface IModuleItem extends IDisabled {
 
-    <T extends APowerTile & HasStorage> Function<T, IModule> getModule(ItemStack stack);
+    <T extends APowerTile> Function<T, IModule> getModule(ItemStack stack);
 
-    default <T extends APowerTile & HasStorage> Option<IModule> apply(ItemStack stack, T t) {
+    default <T extends APowerTile> Option<IModule> apply(ItemStack stack, T t) {
         if (enabled()) {
             return Option.apply(getModule(stack).apply(t));
         } else {

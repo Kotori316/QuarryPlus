@@ -1,5 +1,7 @@
 package com.yogpc.qp.packet;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.advpump.AdvPumpChangeMessage;
 import com.yogpc.qp.packet.advpump.AdvPumpStatusMessage;
@@ -16,6 +18,7 @@ import com.yogpc.qp.packet.enchantment.DiffMessage;
 import com.yogpc.qp.packet.enchantment.EnchantmentMessage;
 import com.yogpc.qp.packet.enchantment.MoverMessage;
 import com.yogpc.qp.packet.exppump.ExpPumpMessage;
+import com.yogpc.qp.packet.filler.FillerActionMessage;
 import com.yogpc.qp.packet.laser.LaserAverageMessage;
 import com.yogpc.qp.packet.laser.LaserMessage;
 import com.yogpc.qp.packet.listtemplate.TemplateMessage;
@@ -46,61 +49,62 @@ public class PacketHandler {
     public static void init() {
         wrapper = NetworkRegistry.INSTANCE.newSimpleChannel(QuarryPlus.modID);
         IMessageHandler<IMessage, IMessage> handler = (message, ctx) -> message.onReceive(message, ctx);
-        int i = 0;
-        wrapper.registerMessage(handler, TileMessage.class, i++, Side.CLIENT);
-        wrapper.registerMessage(handler, TileMessage.class, i++, Side.SERVER);
+        AtomicInteger id = new AtomicInteger(0);
+        wrapper.registerMessage(handler, TileMessage.class, id.getAndIncrement(), Side.CLIENT);
+        wrapper.registerMessage(handler, TileMessage.class, id.getAndIncrement(), Side.SERVER);
         //pump
-        wrapper.registerMessage(handler, Now.class, i++, Side.CLIENT);
-        wrapper.registerMessage(handler, Mappings.All.class, i++, Side.CLIENT);
-        wrapper.registerMessage(handler, Mappings.Copy.class, i++, Side.SERVER);
-        wrapper.registerMessage(handler, Mappings.Update.class, i++, Side.SERVER);
+        wrapper.registerMessage(handler, Now.class, id.getAndIncrement(), Side.CLIENT);
+        wrapper.registerMessage(handler, Mappings.All.class, id.getAndIncrement(), Side.CLIENT);
+        wrapper.registerMessage(handler, Mappings.Copy.class, id.getAndIncrement(), Side.SERVER);
+        wrapper.registerMessage(handler, Mappings.Update.class, id.getAndIncrement(), Side.SERVER);
         //enchantment
-        wrapper.registerMessage(handler, EnchantmentMessage.class, i++, Side.SERVER);
-        wrapper.registerMessage(handler, DiffMessage.class, i++, Side.CLIENT);
-        wrapper.registerMessage(handler, BlockListRequestMessage.class, i++, Side.SERVER);
-        wrapper.registerMessage(handler, MoverMessage.Move.class, i++, Side.SERVER);
-        wrapper.registerMessage(handler, MoverMessage.Cursor.class, i++, Side.SERVER);
+        wrapper.registerMessage(handler, EnchantmentMessage.class, id.getAndIncrement(), Side.SERVER);
+        wrapper.registerMessage(handler, DiffMessage.class, id.getAndIncrement(), Side.CLIENT);
+        wrapper.registerMessage(handler, BlockListRequestMessage.class, id.getAndIncrement(), Side.SERVER);
+        wrapper.registerMessage(handler, MoverMessage.Move.class, id.getAndIncrement(), Side.SERVER);
+        wrapper.registerMessage(handler, MoverMessage.Cursor.class, id.getAndIncrement(), Side.SERVER);
         //marker
-        wrapper.registerMessage(handler, LinkRequest.class, i++, Side.SERVER);
-        wrapper.registerMessage(handler, LinkReply.class, i++, Side.CLIENT);
-        wrapper.registerMessage(handler, LinkUpdate.class, i++, Side.CLIENT);
-        wrapper.registerMessage(handler, RemoveLaser.class, i++, Side.CLIENT);
-        wrapper.registerMessage(handler, RemoveLink.class, i++, Side.CLIENT);
+        wrapper.registerMessage(handler, LinkRequest.class, id.getAndIncrement(), Side.SERVER);
+        wrapper.registerMessage(handler, LinkReply.class, id.getAndIncrement(), Side.CLIENT);
+        wrapper.registerMessage(handler, LinkUpdate.class, id.getAndIncrement(), Side.CLIENT);
+        wrapper.registerMessage(handler, RemoveLaser.class, id.getAndIncrement(), Side.CLIENT);
+        wrapper.registerMessage(handler, RemoveLink.class, id.getAndIncrement(), Side.CLIENT);
         //workbench
-        wrapper.registerMessage(handler, WorkbenchMessage.class, i++, Side.CLIENT);
+        wrapper.registerMessage(handler, WorkbenchMessage.class, id.getAndIncrement(), Side.CLIENT);
         //controller
-        wrapper.registerMessage(handler, AvailableEntities.class, i++, Side.CLIENT);
-        wrapper.registerMessage(handler, SetEntity.class, i++, Side.SERVER);
+        wrapper.registerMessage(handler, AvailableEntities.class, id.getAndIncrement(), Side.CLIENT);
+        wrapper.registerMessage(handler, SetEntity.class, id.getAndIncrement(), Side.SERVER);
         //quarry
-        wrapper.registerMessage(handler, ModeMessage.class, i++, Side.CLIENT);
-        wrapper.registerMessage(handler, MoveHead.class, i++, Side.CLIENT);
-        wrapper.registerMessage(handler, LevelMessage.class, i++, Side.CLIENT);
-        wrapper.registerMessage(handler, LevelMessage.class, i++, Side.SERVER);
+        wrapper.registerMessage(handler, ModeMessage.class, id.getAndIncrement(), Side.CLIENT);
+        wrapper.registerMessage(handler, MoveHead.class, id.getAndIncrement(), Side.CLIENT);
+        wrapper.registerMessage(handler, LevelMessage.class, id.getAndIncrement(), Side.CLIENT);
+        wrapper.registerMessage(handler, LevelMessage.class, id.getAndIncrement(), Side.SERVER);
         //laser
-        wrapper.registerMessage(handler, LaserMessage.class, i++, Side.CLIENT);
-        wrapper.registerMessage(handler, LaserAverageMessage.class, i++, Side.CLIENT);
+        wrapper.registerMessage(handler, LaserMessage.class, id.getAndIncrement(), Side.CLIENT);
+        wrapper.registerMessage(handler, LaserAverageMessage.class, id.getAndIncrement(), Side.CLIENT);
         //chunkdestroyer
-        wrapper.registerMessage(handler, AdvModeMessage.class, i++, Side.CLIENT);
-        wrapper.registerMessage(handler, AdvFilterMessage.class, i++, Side.CLIENT);
-        wrapper.registerMessage(handler, AdvFilterMessage.class, i++, Side.SERVER);
-        wrapper.registerMessage(handler, AdvContentMessage.class, i++, Side.CLIENT);
-        wrapper.registerMessage(handler, AdvLevelMessage.class, i++, Side.CLIENT);
-        wrapper.registerMessage(handler, AdvLevelMessage.class, i++, Side.SERVER);
-        wrapper.registerMessage(handler, AdvActionMessage.class, i++, Side.SERVER);
+        wrapper.registerMessage(handler, AdvModeMessage.class, id.getAndIncrement(), Side.CLIENT);
+        wrapper.registerMessage(handler, AdvFilterMessage.class, id.getAndIncrement(), Side.CLIENT);
+        wrapper.registerMessage(handler, AdvFilterMessage.class, id.getAndIncrement(), Side.SERVER);
+        wrapper.registerMessage(handler, AdvContentMessage.class, id.getAndIncrement(), Side.CLIENT);
+        wrapper.registerMessage(handler, AdvLevelMessage.class, id.getAndIncrement(), Side.CLIENT);
+        wrapper.registerMessage(handler, AdvLevelMessage.class, id.getAndIncrement(), Side.SERVER);
+        wrapper.registerMessage(handler, AdvActionMessage.class, id.getAndIncrement(), Side.SERVER);
         //adv pump
-        wrapper.registerMessage(handler, AdvPumpStatusMessage.class, i++, Side.CLIENT);
-        wrapper.registerMessage(handler, AdvPumpChangeMessage.class, i++, Side.SERVER);
+        wrapper.registerMessage(handler, AdvPumpStatusMessage.class, id.getAndIncrement(), Side.CLIENT);
+        wrapper.registerMessage(handler, AdvPumpChangeMessage.class, id.getAndIncrement(), Side.SERVER);
         //distiller
-        wrapper.registerMessage(handler, AnimationMessage.class, i++, Side.CLIENT);
+        wrapper.registerMessage(handler, AnimationMessage.class, id.getAndIncrement(), Side.CLIENT);
         //exp pump
-        wrapper.registerMessage(handler, ExpPumpMessage.class, i++, Side.CLIENT);
+        wrapper.registerMessage(handler, ExpPumpMessage.class, id.getAndIncrement(), Side.CLIENT);
         //template
-        wrapper.registerMessage(handler, TemplateMessage.class, i++, Side.SERVER);
+        wrapper.registerMessage(handler, TemplateMessage.class, id.getAndIncrement(), Side.SERVER);
         //new quarry
-        wrapper.registerMessage(handler, ActionMessage.class, i++, Side.CLIENT);
-        wrapper.registerMessage(handler, Level2Message.class, i++, Side.CLIENT);
-        wrapper.registerMessage(handler, Level2Message.class, i++, Side.SERVER);
-        assert i > 0 : "Dummy Operation";
+        wrapper.registerMessage(handler, ActionMessage.class, id.getAndIncrement(), Side.CLIENT);
+        wrapper.registerMessage(handler, Level2Message.class, id.getAndIncrement(), Side.CLIENT);
+        wrapper.registerMessage(handler, Level2Message.class, id.getAndIncrement(), Side.SERVER);
+        //filler
+        wrapper.registerMessage(handler, FillerActionMessage.class, id.getAndIncrement(), Side.SERVER);
     }
 
     /**

@@ -40,7 +40,7 @@ public class ItemReplacerModule extends Item implements IDisabled, IModuleItem {
     }
 
     @Override
-    public <T extends APowerTile & HasStorage> Function<T, IModule> getModule(ItemStack stack) {
+    public <T extends APowerTile> Function<T, IModule> getModule(ItemStack stack) {
         IBlockState state = Optional.ofNullable(stack.getTagCompound())
             .map(tag -> tag.getString(Key_state))
             .map(s -> gson.fromJson(s, JsonObject.class))

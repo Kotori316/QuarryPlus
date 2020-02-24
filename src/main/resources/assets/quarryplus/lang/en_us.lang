@@ -22,6 +22,7 @@ tile.enchantmoverfrombook.name=Book EnchantMover
 tile.solidquarry.name=Solid Fuel Quarry
 tile.quarryplus.dummyblock.name=Dummy Block
 tile.quarryreplacer.name=Quarry Replacer
+tile.filler.name=Filler
 item.dimensionmirror.name=DimensionalMirror
 item.electric_armor.name=ElectricArmorPlus
 item.fuel_module_normal.name=Quarry Fuel Module

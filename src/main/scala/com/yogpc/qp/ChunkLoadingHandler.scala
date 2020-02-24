@@ -30,7 +30,8 @@ object ChunkLoadingHandler extends ForgeChunkManager.OrderedLoadingCallback {
     QuarryPlusI.blockChunkDestroyer,
     QuarryPlusI.blockStandalonePump,
     QuarryPlusI.blockSolidQuarry,
-    QuarryPlusI.blockQuarry2
+    QuarryPlusI.blockQuarry2,
+    QuarryPlusI.blockFiller
   )
 
   override def ticketsLoaded(tickets: util.List[ForgeChunkManager.Ticket], world: World): Unit = {
