@@ -61,8 +61,7 @@ object FillerWorks {
     protected override def save(tag: NBTTagCompound): NBTTagCompound = tag
   }
 
-  class FillAll(val min: BlockPos, val max: BlockPos) extends FillerWorks {
-    override val name = "FillAll"
+  abstract class Fill(val min: BlockPos, val max: BlockPos) extends FillerWorks {
     override val area = Option(min, max)
 
     override def toString = super.toString + s" min=$min, max=$max"
@@ -83,9 +82,7 @@ object FillerWorks {
       }
     }
 
-    protected def targetIterator: Iterator[BlockPos] = {
-      BlockPos.getAllInBoxMutable(min, max).asScala.iterator
-    }
+    protected def targetIterator: Iterator[BlockPos.MutableBlockPos]
 
     override def next(tile: TileFiller): FillerWorks = {
       tile.inventory.firstBlock() match {
@@ -107,10 +104,16 @@ object FillerWorks {
     }
   }
 
-  class FillBox(override val min: BlockPos, override val max: BlockPos) extends FillAll(min, max) {
+  class FillAll(m: BlockPos, M: BlockPos) extends Fill(m, M) {
+    override val name = "FillAll"
+
+    protected def targetIterator: Iterator[BlockPos.MutableBlockPos] = BlockPos.getAllInBoxMutable(min, max).asScala.iterator
+  }
+
+  class FillBox(m: BlockPos, M: BlockPos) extends Fill(m, M) {
     override val name = "FillBox"
 
-    override protected def targetIterator: Iterator[BlockPos] = {
+    override protected def targetIterator: Iterator[BlockPos.MutableBlockPos] = {
       val mutable = new BlockPos.MutableBlockPos()
       val downUp = for {z <- Range.inclusive(min.getZ, max.getZ); x <- Range.inclusive(min.getX, max.getX)} yield (x, z)
       val middle = downUp.filter { case (x, z) => (x == min.getX || x == max.getX) || (z == min.getZ || z == max.getZ) }
