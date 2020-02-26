@@ -70,9 +70,10 @@ public class BlockSolidQuarry extends QPBlock {
     }
 
     @Override
-    public ActionResultType func_225533_a_(BlockState state, World worldIn, BlockPos pos, PlayerEntity playerIn,
-                                           Hand hand, BlockRayTraceResult hit) {
-        if (super.func_225533_a_(state, worldIn, pos, playerIn, hand, hit).func_226247_b_()) return ActionResultType.SUCCESS;
+    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity playerIn,
+                                             Hand hand, BlockRayTraceResult hit) {
+        if (super.onBlockActivated(state, worldIn, pos, playerIn, hand, hit).isSuccess())
+            return ActionResultType.SUCCESS;
         ItemStack stack = playerIn.getHeldItem(hand);
         if (BuildcraftHelper.isWrench(playerIn, hand, stack, hit)) {
             Optional.ofNullable((TileSolidQuarry) worldIn.getTileEntity(pos)).ifPresent(TileSolidQuarry::G_ReInit);

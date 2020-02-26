@@ -78,8 +78,8 @@ public class BlockMarker extends Block {
 
     @Override
     @SuppressWarnings("deprecation")
-    public ActionResultType func_225533_a_(BlockState state, World worldIn, BlockPos pos,
-                                           PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
+    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos,
+                                             PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
         if (!worldIn.isRemote) {
             TileEntity entity = worldIn.getTileEntity(pos);
             if (entity instanceof TileMarker) {
@@ -172,7 +172,7 @@ public class BlockMarker extends Block {
         Direction direction = state.get(FACING);
         BlockPos blockpos = pos.offset(direction.getOpposite());
         BlockState floorState = worldIn.getBlockState(blockpos);
-        return floorState.func_224755_d(worldIn, blockpos, direction);
+        return floorState.isSolidSide(worldIn, blockpos, direction);
     }
 
     @Override

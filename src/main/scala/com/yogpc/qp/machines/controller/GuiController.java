@@ -52,7 +52,7 @@ public class GuiController extends Screen implements IHandleButton {
         this.search = new TextFieldWidget(font, this.width / 2 - 125, this.height - 56, 250, 20, "");
         this.children.add(search);
         search.setCanLoseFocus(true);
-        search.func_212954_a(this::searchEntities);
+        search.setResponder(this::searchEntities);
     }
 
     @Override

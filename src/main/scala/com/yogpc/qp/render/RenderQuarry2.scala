@@ -22,12 +22,12 @@ object RenderQuarry2 extends TileEntityRenderer[TileQuarry2](TileEntityRendererD
   private[this] final val minusF: (Double, Double) => Double = (double1, double2) => double1 - double2
   private[this] var bufferInstance = new Buffer(null)
 
-  override def func_225616_a_(quarry: TileQuarry2, v: Float, matrixStack: MatrixStack, iRenderTypeBuffer: IRenderTypeBuffer, i: Int, i1: Int): Unit = {
+  override def render(quarry: TileQuarry2, v: Float, matrixStack: MatrixStack, iRenderTypeBuffer: IRenderTypeBuffer, i: Int, i1: Int): Unit = {
     Minecraft.getInstance.getProfiler.startSection("quarryplus")
     Minecraft.getInstance.getProfiler.startSection("quarry")
     if (!quarry.area.dimID.forall(id => Minecraft.getInstance.world.dimension.getType.getId == id)) return
     val pos = quarry.getPos
-    val bufferBuilder = iRenderTypeBuffer.getBuffer(RenderType.func_228643_e_())
+    val bufferBuilder = iRenderTypeBuffer.getBuffer(RenderType.getCutout)
     if (!(bufferInstance bufferEq bufferBuilder)) {
       bufferInstance = new Buffer(bufferBuilder)
     }
@@ -36,8 +36,8 @@ object RenderQuarry2 extends TileEntityRenderer[TileQuarry2](TileEntityRendererD
     if ((quarry.action.mode == TileQuarry2.waiting || quarry.action.mode == TileQuarry2.buildFrame || quarry.action.mode == TileQuarry2.breakInsideFrame)
       && quarry.area != Area.zeroArea) {
       Minecraft.getInstance.getProfiler.startSection("frame")
-      matrixStack.func_227860_a_()
-      matrixStack.func_227861_a_(-pos.getX + .5, -pos.getY + .5, -pos.getZ + .5)
+      matrixStack.push()
+      matrixStack.translate(-pos.getX + .5, -pos.getY + .5, -pos.getZ + .5)
       val minX = quarry.area.xMin
       val minY = quarry.area.yMin
       val minZ = quarry.area.zMin
@@ -415,14 +415,14 @@ object RenderQuarry2 extends TileEntityRenderer[TileQuarry2](TileEntityRendererD
       buffer.pos(MXm, MYP, MZm, matrixStack).colored().tex(B_maxU, B_maxV).lightedAndEnd()
       buffer.pos(MXm, MYP, MZP, matrixStack).colored().tex(B_maxU, B_minV).lightedAndEnd()
 
-      matrixStack.func_227865_b_()
+      matrixStack.pop()
       Minecraft.getInstance.getProfiler.endSection()
     }
 
     if (quarry.action.mode == TileQuarry2.breakBlock) {
       Minecraft.getInstance.getProfiler.startSection("drill")
-      matrixStack.func_227860_a_()
-      matrixStack.func_227861_a_(-pos.getX + .5, -pos.getY + .5, -pos.getZ + .5)
+      matrixStack.push()
+      matrixStack.translate(-pos.getX + .5, -pos.getY + .5, -pos.getZ + .5)
       val minX = quarry.area.xMin
       val minZ = quarry.area.zMin
       val maxX = quarry.area.xMax
@@ -761,7 +761,7 @@ object RenderQuarry2 extends TileEntityRenderer[TileQuarry2](TileEntityRendererD
       val y_floor = MathHelper.floor(y_length)
       yLine(y_floor, y_length)
 
-      matrixStack.func_227865_b_()
+      matrixStack.pop()
       Minecraft.getInstance.getProfiler.endSection()
     }
 

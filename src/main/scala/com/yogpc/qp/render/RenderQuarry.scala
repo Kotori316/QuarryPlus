@@ -21,9 +21,9 @@ object RenderQuarry extends TileEntityRenderer[TileQuarry](TileEntityRendererDis
   private[this] final val minusF: (Double, Double) => Double = (double1, double2) => double1 - double2
   private[this] var bufferInstance = new Buffer(null)
 
-  override def func_225616_a_(quarry: TileQuarry, v: Float, matrixStack: MatrixStack, iRenderTypeBuffer: IRenderTypeBuffer, i: Int, i1: Int): Unit = {
+  override def render(quarry: TileQuarry, v: Float, matrixStack: MatrixStack, iRenderTypeBuffer: IRenderTypeBuffer, i: Int, i1: Int): Unit = {
     val pos = quarry.getPos
-    val bufferBuilder = iRenderTypeBuffer.getBuffer(RenderType.func_228643_e_())
+    val bufferBuilder = iRenderTypeBuffer.getBuffer(RenderType.getCutout)
     if (!(bufferInstance bufferEq bufferBuilder)) {
       bufferInstance = new Buffer(bufferBuilder)
     }
@@ -33,8 +33,8 @@ object RenderQuarry extends TileEntityRenderer[TileQuarry](TileEntityRendererDis
     Minecraft.getInstance.getProfiler.startSection("quarry")
     if ((quarry.G_getNow == TileQuarry.Mode.NOT_NEED_BREAK || quarry.G_getNow == TileQuarry.Mode.MAKE_FRAME) && quarry.yMax != Integer.MIN_VALUE) {
       Minecraft.getInstance.getProfiler.startSection("frame")
-      matrixStack.func_227860_a_()
-      matrixStack.func_227861_a_(-pos.getX + .5, -pos.getY + .5, -pos.getZ + .5)
+      matrixStack.push()
+      matrixStack.translate(-pos.getX + .5, -pos.getY + .5, -pos.getZ + .5)
       val minPos = quarry.getMinPos
       val maxPos = quarry.getMaxPos
       val minX = minPos.getX
@@ -414,14 +414,14 @@ object RenderQuarry extends TileEntityRenderer[TileQuarry](TileEntityRendererDis
       buffer.pos(MXm, MYP, MZm, matrixStack).colored().tex(B_maxU, B_maxV).lightedAndEnd()
       buffer.pos(MXm, MYP, MZP, matrixStack).colored().tex(B_maxU, B_minV).lightedAndEnd()
 
-      matrixStack.func_227865_b_()
+      matrixStack.pop()
       Minecraft.getInstance.getProfiler.endSection()
     }
 
     if (quarry.G_getNow() == TileQuarry.Mode.BREAK_BLOCK || quarry.G_getNow() == TileQuarry.Mode.MOVE_HEAD) {
       Minecraft.getInstance.getProfiler.startSection("drill")
-      matrixStack.func_227860_a_()
-      matrixStack.func_227861_a_(-pos.getX + .5, -pos.getY + .5, -pos.getZ + .5)
+      matrixStack.push()
+      matrixStack.translate(-pos.getX + .5, -pos.getY + .5, -pos.getZ + .5)
       //render crossed frame
       val D_minU = drillStripe.getMinU
       val D_minV = drillStripe.getMinV
@@ -751,7 +751,7 @@ object RenderQuarry extends TileEntityRenderer[TileQuarry](TileEntityRendererDis
       val y_floor = MathHelper.floor(y_length)
       yLine(y_floor, y_length)
 
-      matrixStack.func_227865_b_()
+      matrixStack.pop()
       Minecraft.getInstance.getProfiler.endSection()
     }
 

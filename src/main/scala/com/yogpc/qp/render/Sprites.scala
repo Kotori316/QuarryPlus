@@ -18,7 +18,7 @@ object Sprites {
   def getMap = map.toMap
 
   def registerTexture(event: TextureStitchEvent.Pre): Unit = {
-    if (event.getMap.func_229223_g_() == PlayerContainer.field_226615_c_) {
+    if (event.getMap.getTextureLocation == PlayerContainer.LOCATION_BLOCKS_TEXTURE) {
       LaserType.values().foreach(laserType => event.addSprite(laserType.location()))
       symbols.foreach(s => event.addSprite(new ResourceLocation(QuarryPlus.modID, "entities/" + s.name)))
     }
@@ -26,7 +26,7 @@ object Sprites {
 
   def putTexture(event: TextureStitchEvent.Post): Unit = {
     val textureMap = event.getMap
-    if (textureMap.func_229223_g_() == PlayerContainer.field_226615_c_) {
+    if (textureMap.getTextureLocation == PlayerContainer.LOCATION_BLOCKS_TEXTURE) {
       LaserType.values().foreach(laserType => map.put(laserType.symbol, textureMap.getSprite(laserType.location())))
       symbols.foreach(s => map.put(s, textureMap.getSprite(new ResourceLocation(QuarryPlus.modID, "entities/" + s.name))))
     }

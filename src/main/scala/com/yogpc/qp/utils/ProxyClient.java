@@ -121,7 +121,7 @@ public class ProxyClient extends ProxyCommon {
         ScreenManager.registerFactory(Holder.statusContainerType(), StatusGui::new);
 
         // Register transparent blocks
-        RenderType rendertype = RenderType.func_228641_d_();
+        RenderType rendertype = RenderType.getCutoutMipped();
         RenderTypeLookup.setRenderLayer(Holder.blockFrame(), rendertype);
         RenderTypeLookup.setRenderLayer(Holder.blockDummy(), rendertype);
         RenderTypeLookup.setRenderLayer(Holder.blockPlainPipe(), rendertype);

@@ -80,7 +80,7 @@ public class ItemExpPumpModule extends Item implements IDisabled, IModuleItem {
                     ExperienceOrbEntity orb = new ExperienceOrbEntity(worldIn, vec.getX(), vec.getY(), vec.getZ(), xp);
                     worldIn.addEntity(orb);
                 }
-                return ActionResult.func_226248_a_(stack);
+                return ActionResult.resultSuccess(stack);
             }
         }
         return super.onItemRightClick(worldIn, playerIn, handIn);

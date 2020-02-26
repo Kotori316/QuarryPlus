@@ -28,9 +28,9 @@ public class BlockBookMover extends QPBlock {
     }
 
     @Override
-    public ActionResultType func_225533_a_(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
-                                           Hand hand, BlockRayTraceResult hit) {
-        if (super.func_225533_a_(state, worldIn, pos, player, hand, hit).func_226247_b_()) return ActionResultType.SUCCESS;
+    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
+                                             Hand hand, BlockRayTraceResult hit) {
+        if (super.onBlockActivated(state, worldIn, pos, player, hand, hit).isSuccess()) return ActionResultType.SUCCESS;
         TileBookMover mover = ((TileBookMover) worldIn.getTileEntity(pos));
         if (!player.isCrouching() && mover != null && mover.enabled()) {
             if (!worldIn.isRemote) {

@@ -349,28 +349,28 @@ object Box {
   class Wrapper(val buffer: IVertexBuilder) extends AnyVal {
     def pos(x: Double, y: Double, z: Double, matrix: MatrixStack): Wrapper = {
       val vector4f = getPosVector(x.toFloat, y.toFloat, z.toFloat, matrix)
-      buffer.func_225582_a_(vector4f.getX, vector4f.getY, vector4f.getZ)
+      buffer.pos(vector4f.getX, vector4f.getY, vector4f.getZ)
       this
     }
 
     def color(red: Int, green: Int, blue: Int, alpha: Int): Wrapper = {
-      buffer.func_225586_a_(red, green, blue, alpha)
+      buffer.color(red, green, blue, alpha)
       this
     }
 
     def tex(u: Float, v: Float): Wrapper = {
-      buffer.func_225583_a_(u, v)
+      buffer.tex(u, v)
       this
     }
 
     //noinspection SpellCheckingInspection
     def lightmap(l1: Int, l2: Int): Wrapper = {
-      buffer.func_225585_a_(10, 10).func_225587_b_(l1, l2)
+      buffer.overlay(10, 10).lightmap(l1, l2)
       this
     }
 
     def endVertex(): Unit = {
-      buffer.func_225584_a_(0, 1, 0).endVertex()
+      buffer.normal(0, 1, 0).endVertex()
     }
   }
 
@@ -380,11 +380,11 @@ object Box {
   private def getPosVector(x: Float, y: Float, z: Float, matrix: MatrixStack): Vector4f = {
     val vec3i = Direction.UP.getDirectionVec
     vector3f.set(vec3i.getX, vec3i.getY, vec3i.getZ)
-    val matrix4f = matrix.func_227866_c_.func_227870_a_
-    vector3f.func_229188_a_(matrix.func_227866_c_.func_227872_b_)
+    val matrix4f = matrix.getLast.getMatrix
+    vector3f.transform(matrix.getLast.getNormal)
 
     vector4f.set(x, y, z, 1.0F)
-    vector4f.func_229372_a_(matrix4f)
+    vector4f.transform(matrix4f)
     vector4f
   }
 }

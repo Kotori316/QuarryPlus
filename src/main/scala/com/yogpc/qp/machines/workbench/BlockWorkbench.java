@@ -32,8 +32,8 @@ public class BlockWorkbench extends QPBlock {
     }
 
     @Override
-    public ActionResultType func_225533_a_(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
-        if (super.func_225533_a_(state, worldIn, pos, player, hand, hit).func_226247_b_()) return ActionResultType.SUCCESS;
+    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+        if (super.onBlockActivated(state, worldIn, pos, player, hand, hit).isSuccess()) return ActionResultType.SUCCESS;
         if (player.getHeldItem(hand).getItem() == Holder.itemStatusChecker()) {
             if (!worldIn.isRemote) {
                 Optional.ofNullable(worldIn.getTileEntity(pos))

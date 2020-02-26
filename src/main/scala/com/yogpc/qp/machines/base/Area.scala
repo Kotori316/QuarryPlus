@@ -112,7 +112,7 @@ object Area {
   }
 
   def areaLoad(nbt: CompoundNBT) = {
-    val dim = nbt.some.filter(_.contains(NBT_DIM)).map(t => DimensionType.func_218271_a(new Dynamic(NBTDynamicOps.INSTANCE, t.get(NBT_DIM))))
+    val dim = nbt.some.filter(_.contains(NBT_DIM)).map(t => DimensionType.deserialize(new Dynamic(NBTDynamicOps.INSTANCE, t.get(NBT_DIM))))
     Area(nbt.getInt(NBT_X_MIN), nbt.getInt(NBT_Y_MIN), nbt.getInt(NBT_Z_MIN), nbt.getInt(NBT_X_MAX), nbt.getInt(NBT_Y_MAX), nbt.getInt(NBT_Z_MAX), dim.map(_.getId))
   }
 

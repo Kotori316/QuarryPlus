@@ -25,7 +25,7 @@ public class BlockDummy extends AbstractGlassBlock {
             .lightValue(15)
             .noDrops()
             .sound(SoundType.GLASS)
-            .func_226896_b_());
+            .notSolid());
         setRegistryName(QuarryPlus.modID, QuarryPlus.Names.dummyblock);
         mItemBlock = new BlockItem(this, new Item.Properties().group(Holder.tab()));
         mItemBlock.setRegistryName(QuarryPlus.modID, QuarryPlus.Names.dummyblock);

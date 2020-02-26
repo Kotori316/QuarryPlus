@@ -57,9 +57,9 @@ public class BlockMover extends Block implements IDisabled /*IDismantleable, IWr
 
     @Override
     @SuppressWarnings("deprecation")
-    public ActionResultType func_225533_a_(BlockState state, World worldIn, BlockPos pos,
+    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos,
                                              PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
-        if (InvUtils.isDebugItem(player, hand).func_226247_b_()) return ActionResultType.SUCCESS;
+        if (InvUtils.isDebugItem(player, hand).isSuccess()) return ActionResultType.SUCCESS;
         if (player.isCrouching()
             && BuildcraftHelper.isWrench(player, hand, player.getHeldItem(hand), hit)) {
             if (!worldIn.isRemote)

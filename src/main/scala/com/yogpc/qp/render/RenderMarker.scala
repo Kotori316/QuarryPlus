@@ -15,14 +15,14 @@ object RenderMarker extends TileEntityRenderer[TileMarker](TileEntityRendererDis
 
   override def isGlobalRenderer(te: TileMarker): Boolean = true
 
-  override def func_225616_a_(te: TileMarker, v: Float, matrixStack: MatrixStack, iRenderTypeBuffer: IRenderTypeBuffer, i: Int, i1: Int): Unit = {
+  override def render(te: TileMarker, v: Float, matrixStack: MatrixStack, iRenderTypeBuffer: IRenderTypeBuffer, i: Int, i1: Int): Unit = {
     Minecraft.getInstance.getProfiler.startSection("quarryplus")
     Minecraft.getInstance.getProfiler.startSection("marker")
 
     val pos = te.getPos
-    val buffer = iRenderTypeBuffer.getBuffer(RenderType.func_228643_e_())
-    matrixStack.func_227860_a_()
-    matrixStack.func_227861_a_(-pos.getX, -pos.getY, -pos.getZ)
+    val buffer = iRenderTypeBuffer.getBuffer(RenderType.getCutout)
+    matrixStack.push()
+    matrixStack.translate(-pos.getX, -pos.getY, -pos.getZ)
     if (te.laser != null) {
       Minecraft.getInstance.getProfiler.startSection("laser")
       if (te.laser.boxes != null) {
@@ -37,7 +37,7 @@ object RenderMarker extends TileEntityRenderer[TileMarker](TileEntityRendererDis
       }
       Minecraft.getInstance.getProfiler.endSection()
     }
-    matrixStack.func_227865_b_()
+    matrixStack.pop()
     Minecraft.getInstance.getProfiler.endSection()
     Minecraft.getInstance.getProfiler.endSection()
   }

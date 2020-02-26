@@ -42,7 +42,7 @@ abstract class QPBlock(builder: Block.Properties, name: String, generator: java.
     }
   }
 
-  override def func_225533_a_(state: BlockState, worldIn: World, pos: BlockPos, player: PlayerEntity, hand: Hand, hit: BlockRayTraceResult): ActionResultType = {
+  override def onBlockActivated(state: BlockState, worldIn: World, pos: BlockPos, player: PlayerEntity, hand: Hand, hit: BlockRayTraceResult): ActionResultType = {
     if (Holder.tiles.get(getTileType).fold(false)(!_.enabled)) {
       if (worldIn.isRemote)
         player.sendStatusMessage(new TranslationTextComponent(TranslationKeys.DISABLE_MESSAGE, getNameTextComponent), true)

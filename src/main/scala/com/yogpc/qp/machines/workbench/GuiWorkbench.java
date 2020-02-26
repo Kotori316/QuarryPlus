@@ -33,7 +33,7 @@ public class GuiWorkbench extends ContainerScreen<ContainerWorkbench> {
         }
 
         @Override
-        public int func_228079_a_(String text, float x, float y, int color, boolean p_228079_5_, Matrix4f matrix4f, IRenderTypeBuffer renderTypeBuffer, boolean depth, int l1, int l2) {
+        public int renderString(String text, float x, float y, int color, boolean dropShadow, Matrix4f matrix, IRenderTypeBuffer buffer, boolean transparentIn, int colorBackgroundIn, int packedLight) {
             int l = this.p.getStringWidth(text);
             RenderSystem.pushMatrix();
             RenderSystem.translatef(x, y, 0);
@@ -42,7 +42,7 @@ public class GuiWorkbench extends ContainerScreen<ContainerWorkbench> {
                 RenderSystem.translatef(l - 16, this.p.FONT_HEIGHT * (1 - f), 0);
                 RenderSystem.scalef(f, f, 1);
             }
-            l = super.func_228079_a_(text, x, y, color, p_228079_5_, matrix4f, renderTypeBuffer, depth, l1, l2);
+            l = super.renderString(text, x, y, color, dropShadow, matrix, buffer, transparentIn, colorBackgroundIn, packedLight);
             RenderSystem.popMatrix();
             return l;
         }
