@@ -27,7 +27,7 @@ class TorchModule(val y: Eval[Int]) extends IModule {
       case AfterBreak(world, pos, _, time) =>
         if (pos.getY === y.value && lastPlaced =!= time) {
           // Check light value
-          val light = world.getLight(pos.up())
+          val light = world.getLightFor(LightType.BLOCK, pos.up())
           if (light < 9 && Blocks.TORCH.getDefaultState.isValidPosition(world, pos)) {
             world.setBlockState(pos, Blocks.TORCH.getDefaultState)
             lastPlaced = time
