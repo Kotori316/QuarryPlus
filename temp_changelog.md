@@ -1,5 +1,9 @@
 **This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).**
 
+## Version 15.2.2
+* Update forge and mcp mapping.
+* Fixed Torch Module didn't work.
+
 ## Version 15.2.1
 * Allow minus energy when digging. #78.
 * Implemented area limitation for ChunkDestroyer.
