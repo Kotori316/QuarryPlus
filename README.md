@@ -1,4 +1,4 @@
-# QuarryPlus for 1.15.1
+# QuarryPlus for 1.15.2
 ===========
 
 [![](https://github.com/Kotori316/QuarryPlus/workflows/Build%20Check%20and%20Publish/badge.svg)](https://github.com/Kotori316/QuarryPlus/actions)
@@ -19,6 +19,7 @@ Finished Work
 * Quarry
   * Renderer
 * Solid Fuel Quarry
+  * Renderer
 * PumpPlus
 * Replacer
 * Dummy Block
