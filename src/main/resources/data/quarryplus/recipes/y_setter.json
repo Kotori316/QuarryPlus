@@ -1,9 +1,9 @@
 {
-  "id": "quarryplus:builtin_item.y_setter",
   "type": "quarryplus:workbench_recipe",
+  "id": "quarryplus:builtin_item.y_setter",
   "ingredients": [
     {
-      "item": "minecraft:gold_ingot",
+      "tag": "forge:ingots/gold",
       "count": 32
     },
     {
@@ -15,7 +15,7 @@
       "count": 8
     },
     {
-      "item": "minecraft:quartz",
+      "tag": "forge:gems/quartz",
       "count": 64
     }
   ],

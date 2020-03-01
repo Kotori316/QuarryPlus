@@ -7,7 +7,12 @@
     }
   ],
   "result": {
-    "item": "quarryplus:exppump_module",
-    "count": 1
-  }
+    "item": "quarryplus:exppump_module"
+  },
+  "conditions": [
+    {
+      "value": "ModuleExpPump",
+      "type": "quarryplus:machine_enabled"
+    }
+  ]
 }

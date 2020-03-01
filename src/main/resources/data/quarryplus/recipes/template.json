@@ -1,13 +1,13 @@
 {
-  "id": "quarryplus:builtin_item.template",
   "type": "quarryplus:workbench_recipe",
+  "id": "quarryplus:builtin_item.template",
   "ingredients": [
     {
       "item": "quarryplus:listeditor",
       "count": 2
     },
     {
-      "item": "minecraft:chest",
+      "tag": "forge:chests",
       "count": 4
     }
   ],
@@ -15,9 +15,9 @@
   "showInJEI": true,
   "result": {
     "item": "quarryplus:template",
-    "count": 1,
     "nbt": {
       "HideFlags": 1
-    }
+    },
+    "count": 1
   }
 }

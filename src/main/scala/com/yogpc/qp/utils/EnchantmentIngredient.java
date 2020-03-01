@@ -13,6 +13,8 @@ import java.util.stream.StreamSupport;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.datafixers.Dynamic;
+import com.mojang.datafixers.types.JsonOps;
 import javax.annotation.Nullable;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentData;
@@ -20,6 +22,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
@@ -130,7 +133,8 @@ public class EnchantmentIngredient extends Ingredient {
             json.addProperty("item", ingredient.stack.getItem().getRegistryName().toString());
             json.addProperty("count", ingredient.stack.getCount());
             if (ingredient.stack.hasTag()) {
-                json.add("nbt", JSONUtils.fromJson(ingredient.stack.getTag().toString()));
+                JsonElement element = Dynamic.convert(NBTDynamicOps.INSTANCE, JsonOps.INSTANCE, ingredient.stack.getTag());
+                json.add("nbt", element);
             }
             JsonArray enchantmentArray = ingredient.enchantments.stream().reduce(new JsonArray(), (jsonElements, enchantmentData) -> {
                 JsonObject object = new JsonObject();

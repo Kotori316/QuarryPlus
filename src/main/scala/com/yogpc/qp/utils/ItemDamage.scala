@@ -2,9 +2,12 @@ package com.yogpc.qp.utils
 
 import cats._
 import cats.implicits._
+import com.google.gson.JsonObject
+import com.mojang.datafixers.Dynamic
+import com.mojang.datafixers.types.JsonOps
 import javax.annotation.Nonnull
 import net.minecraft.item.{Item, ItemStack}
-import net.minecraft.nbt.CompoundNBT
+import net.minecraft.nbt.{CompoundNBT, NBTDynamicOps}
 import net.minecraftforge.items.ItemHandlerHelper
 
 sealed abstract class ItemDamage {
@@ -21,6 +24,14 @@ sealed abstract class ItemDamage {
 
   def itemStackLimit: Int = {
     item.getItemStackLimit(toStack())
+  }
+
+  def serializeJson: JsonObject = {
+    val obj = new JsonObject
+    obj.addProperty("item", item.getRegistryName.toString)
+    if (tag != null)
+      obj.add("nbt", Dynamic.convert(NBTDynamicOps.INSTANCE, JsonOps.INSTANCE, tag))
+    obj
   }
 }
 

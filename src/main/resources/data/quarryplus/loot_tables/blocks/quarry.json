@@ -6,12 +6,12 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "quarryplus:quarry",
           "functions": [
             {
               "function": "quarryplus:drop_function"
             }
-          ]
+          ],
+          "name": "quarryplus:quarry"
         }
       ],
       "conditions": [

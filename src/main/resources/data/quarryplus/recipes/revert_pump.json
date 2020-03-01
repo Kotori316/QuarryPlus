@@ -7,7 +7,12 @@
     }
   ],
   "result": {
-    "item": "quarryplus:pumpplus",
-    "count": 1
-  }
+    "item": "quarryplus:pumpplus"
+  },
+  "conditions": [
+    {
+      "value": "PumpPlus",
+      "type": "quarryplus:machine_enabled"
+    }
+  ]
 }

@@ -1,17 +1,17 @@
 {
-  "id": "quarryplus:builtin_exppump",
   "type": "quarryplus:workbench_recipe",
+  "id": "quarryplus:builtin_exp_pump",
   "ingredients": [
     {
-      "item": "minecraft:gold_ingot",
+      "tag": "forge:ingots/gold",
       "count": 16
     },
     {
-      "item": "minecraft:iron_ingot",
+      "tag": "forge:ingots/iron",
       "count": 48
     },
     {
-      "item": "minecraft:redstone",
+      "tag": "forge:dusts/redstone",
       "count": 64
     },
     {
@@ -23,7 +23,7 @@
       "count": 32
     },
     {
-      "item": "minecraft:ender_pearl",
+      "tag": "forge:ender_pearls",
       "count": 2
     }
   ],
@@ -35,8 +35,8 @@
   },
   "conditions": [
     {
-      "type": "quarryplus:machine_enabled",
-      "value": "ExpPump"
+      "value": "ExpPump",
+      "type": "quarryplus:machine_enabled"
     }
   ]
 }

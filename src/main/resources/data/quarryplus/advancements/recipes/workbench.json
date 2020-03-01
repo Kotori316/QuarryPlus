@@ -12,7 +12,7 @@
         "recipe": "quarryplus:workbenchplus"
       }
     },
-    "has_ingots/iron": {
+    "has_storage_blocks/iron": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -22,7 +22,7 @@
         ]
       }
     },
-    "has_gold": {
+    "has_storage_blocks/gold": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -36,14 +36,28 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_ingots/iron",
-      "has_gold"
+      "has_storage_blocks/iron",
+      "has_storage_blocks/gold"
     ]
   ],
   "conditions": [
     {
-      "type": "quarryplus:machine_enabled",
-      "value": "WorkbenchPlus"
+      "value": "WorkbenchPlus",
+      "type": "quarryplus:machine_enabled"
+    },
+    {
+      "value": {
+        "tag": "forge:storage_blocks/gold",
+        "type": "forge:tag_empty"
+      },
+      "type": "forge:not"
+    },
+    {
+      "value": {
+        "tag": "forge:storage_blocks/iron",
+        "type": "forge:tag_empty"
+      },
+      "type": "forge:not"
     }
   ]
 }

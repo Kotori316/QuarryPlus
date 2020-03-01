@@ -1,5 +1,6 @@
 package com.yogpc.qp.utils
 
+import com.mojang.datafixers.DSL
 import com.yogpc.qp.machines.advpump.{BlockAdvPump, ContainerAdvPump, TileAdvPump}
 import com.yogpc.qp.machines.advquarry.{BlockAdvQuarry, ContainerAdvQuarry, TileAdvQuarry}
 import com.yogpc.qp.machines.base.{IDisabled, StatusContainer}
@@ -73,7 +74,7 @@ object Holder {
 
   //---------- TileEntity ----------
   private def createTileType[T <: TileEntity](supplier: () => T, name: String, block: Block): TileEntityType[T] = {
-    val t = TileEntityType.Builder.create[T](() => supplier(), block).build(null)
+    val t = TileEntityType.Builder.create[T](() => supplier(), block).build(DSL.nilType())
     t.setRegistryName(QuarryPlus.modID, name)
     t
   }

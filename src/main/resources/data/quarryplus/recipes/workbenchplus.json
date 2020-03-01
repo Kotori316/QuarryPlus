@@ -7,26 +7,25 @@
   ],
   "key": {
     "D": {
-      "item": "minecraft:diamond_block"
+      "tag": "forge:storage_blocks/diamond"
     },
     "R": {
       "item": "minecraft:redstone"
     },
     "I": {
-      "item": "minecraft:iron_block"
+      "tag": "forge:storage_blocks/iron"
     },
     "G": {
-      "item": "minecraft:gold_block"
+      "tag": "forge:storage_blocks/gold"
     }
   },
   "result": {
-    "item": "quarryplus:workbenchplus",
-    "count": 1
+    "item": "quarryplus:workbenchplus"
   },
   "conditions": [
     {
-      "type": "quarryplus:machine_enabled",
-      "value": "WorkbenchPlus"
+      "value": "WorkbenchPlus",
+      "type": "quarryplus:machine_enabled"
     }
   ]
 }

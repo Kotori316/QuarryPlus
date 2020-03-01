@@ -1,6 +1,6 @@
 {
-  "id": "quarryplus:builtin_chunkdestroyer",
   "type": "quarryplus:workbench_recipe",
+  "id": "quarryplus:builtin_chunkdestroyer",
   "ingredients": [
     [
       {
@@ -25,11 +25,11 @@
       "count": 3
     },
     {
-      "item": "minecraft:diamond_block",
+      "tag": "forge:storage_blocks/diamond",
       "count": 8
     },
     {
-      "item": "minecraft:emerald_block",
+      "tag": "forge:storage_blocks/emerald",
       "count": 8
     },
     {
@@ -37,7 +37,7 @@
       "count": 64
     },
     {
-      "item": "minecraft:nether_star",
+      "tag": "forge:nether_stars",
       "count": 2
     },
     {
@@ -53,8 +53,8 @@
   },
   "conditions": [
     {
-      "type": "quarryplus:machine_enabled",
-      "value": "ChunkDestroyer"
+      "value": "ChunkDestroyer",
+      "type": "quarryplus:machine_enabled"
     }
   ]
 }

@@ -1,6 +1,6 @@
 package com.yogpc.qp.machines.workbench
 
-import com.google.gson.{JsonElement, JsonObject}
+import com.google.gson.{JsonArray, JsonElement, JsonObject}
 import net.minecraft.item.ItemStack
 import net.minecraft.item.crafting.Ingredient
 import net.minecraft.network.PacketBuffer
@@ -40,7 +40,7 @@ case class IngredientWithCount(ingredient: Ingredient, count: Int) {
 
   override def toString: String = {
     ingredient.getMatchingStacks.headOption match {
-      case Some(stack) => s"$stack x$count}"
+      case Some(stack) => s"${stack.getItem} x$count}"
       case None => "Empty"
     }
   }
@@ -48,6 +48,15 @@ case class IngredientWithCount(ingredient: Ingredient, count: Int) {
   def writeToBuffer(buffer: PacketBuffer): Unit = {
     ingredient.write(buffer)
     buffer.writeInt(count)
+  }
+
+  def serializeJson: JsonElement = {
+    val obj = ingredient.serialize()
+    obj match {
+      case array: JsonArray => array.forEach(e => e.getAsJsonObject.addProperty("count", count))
+      case jsonObject: JsonObject => jsonObject.addProperty("count", count)
+    }
+    obj
   }
 }
 

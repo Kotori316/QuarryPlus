@@ -152,6 +152,10 @@ public interface IEnchantableTile {
     class DropFunction extends LootFunction {
         public static final ResourceLocation LOCATION = new ResourceLocation(QuarryPlus.modID, "drop_function");
 
+        public static LootFunction.Builder<?> builder() {
+            return LootFunction.builder(DropFunction::new);
+        }
+
         protected DropFunction(ILootCondition[] conditionsIn) {
             super(conditionsIn);
         }

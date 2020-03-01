@@ -1,6 +1,6 @@
 {
-  "id": "quarryplus:builtin_advancedpump",
   "type": "quarryplus:workbench_recipe",
+  "id": "quarryplus:builtin_advanced_pump",
   "ingredients": [
     {
       "item": "quarryplus:pumpplus",
@@ -23,8 +23,8 @@
   },
   "conditions": [
     {
-      "type": "quarryplus:machine_enabled",
-      "value": "AdvancedPump"
+      "value": "AdvancedPump",
+      "type": "quarryplus:machine_enabled"
     }
   ]
 }

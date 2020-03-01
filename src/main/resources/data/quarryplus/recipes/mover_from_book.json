@@ -1,6 +1,6 @@
 {
-  "id": "quarryplus:builtin_enchantmoverfrombook",
   "type": "quarryplus:workbench_recipe",
+  "id": "quarryplus:builtin_mover_from_book",
   "ingredients": [
     {
       "item": "quarryplus:enchantmover",
@@ -11,11 +11,11 @@
       "count": 2
     },
     {
-      "item": "minecraft:bookshelf",
+      "tag": "forge:bookshelves",
       "count": 128
     },
     {
-      "item": "minecraft:diamond",
+      "tag": "forge:gems/diamond",
       "count": 16
     }
   ],
@@ -27,8 +27,8 @@
   },
   "conditions": [
     {
-      "type": "quarryplus:machine_enabled",
-      "value": "EnchantMoverFromBook"
+      "value": "EnchantMoverFromBook",
+      "type": "quarryplus:machine_enabled"
     }
   ]
 }

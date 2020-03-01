@@ -6,12 +6,12 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "quarryplus:standalonepump",
           "functions": [
             {
               "function": "quarryplus:drop_function"
             }
-          ]
+          ],
+          "name": "quarryplus:standalonepump"
         }
       ],
       "conditions": [

@@ -82,6 +82,19 @@ minecraft {
                 }
             }
         }
+        data {
+            workingDirectory project.file('run-server')
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.console.level', 'info'
+
+            args '--mod', "quarryplus", '--all'
+
+            mods {
+                quarryplus {
+                    source sourceSets.main
+                }
+            }
+        }
     }
 }
 repositories {

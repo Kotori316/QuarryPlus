@@ -1,25 +1,25 @@
 {
-  "id": "quarryplus:builtin_enchantmover",
   "type": "quarryplus:workbench_recipe",
+  "id": "quarryplus:builtin_enchantmover",
   "ingredients": [
     {
-      "item": "minecraft:diamond",
+      "tag": "forge:gems/diamond",
       "count": 32
     },
     {
-      "item": "minecraft:gold_ingot",
+      "tag": "forge:ingots/gold",
       "count": 8
     },
     {
-      "item": "minecraft:iron_ingot",
+      "tag": "forge:ingots/iron",
       "count": 8
     },
     {
-      "item": "minecraft:redstone",
+      "tag": "forge:dusts/redstone",
       "count": 48
     },
     {
-      "item": "minecraft:obsidian",
+      "tag": "forge:obsidian",
       "count": 64
     },
     {
@@ -27,7 +27,7 @@
       "count": 2
     },
     {
-      "item": "minecraft:ender_pearl",
+      "tag": "forge:ender_pearls",
       "count": 2
     }
   ],
@@ -39,8 +39,8 @@
   },
   "conditions": [
     {
-      "type": "quarryplus:machine_enabled",
-      "value": "EnchantMover"
+      "value": "EnchantMover",
+      "type": "quarryplus:machine_enabled"
     }
   ]
 }

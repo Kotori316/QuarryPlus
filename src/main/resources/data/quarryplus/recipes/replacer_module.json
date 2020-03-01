@@ -7,7 +7,12 @@
     }
   ],
   "result": {
-    "item": "quarryplus:replacer_module",
-    "count": 1
-  }
+    "item": "quarryplus:replacer_module"
+  },
+  "conditions": [
+    {
+      "value": "ModuleReplacer",
+      "type": "quarryplus:machine_enabled"
+    }
+  ]
 }

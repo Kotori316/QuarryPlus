@@ -15,7 +15,6 @@ import com.yogpc.qp.machines.base.QPBlock;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.controller.AvailableEntities;
 import com.yogpc.qp.utils.Holder;
-import cpw.mods.modlauncher.api.INameMappingService;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
@@ -52,15 +51,7 @@ public class BlockController extends Block implements IDisabled /*IDismantleable
     public final BlockItem itemBlock;
 
     static {
-        String fieldName = ObfuscationReflectionHelper.remapName(INameMappingService.Domain.FIELD, "field_98286_b");
-        Field field;
-        try {
-            field = AbstractSpawner.class.getDeclaredField(fieldName);
-            field.setAccessible(true);
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
-        }
-        logic_spawnDelay = field;
+        logic_spawnDelay = ObfuscationReflectionHelper.findField(AbstractSpawner.class, "field_98286_b");
         logic_getEntityID = ObfuscationReflectionHelper.findMethod(AbstractSpawner.class, "func_190895_g");
     }
 

@@ -3,6 +3,7 @@ package com.yogpc.qp;
 import java.lang.reflect.Method;
 import java.nio.file.Paths;
 
+import com.yogpc.qp.data.QuarryPlusDataProvider;
 import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.advquarry.BlockWrapper;
 import com.yogpc.qp.machines.base.IEnchantableTile;
@@ -56,6 +57,7 @@ public class QuarryPlus {
         proxy.registerEvents(MinecraftForge.EVENT_BUS);
         proxy.registerModBus(modBus);
         modBus.register(Register.class);
+        modBus.addListener(QuarryPlusDataProvider::gatherData);
     }
 
     private void initConfig() {
@@ -97,6 +99,9 @@ public class QuarryPlus {
 
         @SubscribeEvent
         public static void registerRecipe(RegistryEvent.Register<IRecipeSerializer<?>> event) {
+            LootFunctionManager.registerFunction(new IEnchantableTile.DropFunction.Serializer());
+            CraftingHelper.register(new EnableCondition.Serializer());
+            CraftingHelper.register(new QuarryConfigCondition.Serializer());
             CraftingHelper.register(new ResourceLocation(modID, "enchantment_ingredient"), EnchantmentIngredient.Serializer.INSTANCE);
             event.getRegistry().register(WorkbenchRecipes.Serializer$.MODULE$);
         }
@@ -106,9 +111,6 @@ public class QuarryPlus {
             proxy.registerTextures(event);
             PowerManager.configRegister();
             PacketHandler.init();
-            CraftingHelper.register(new EnableCondition.Serializer());
-            CraftingHelper.register(new QuarryConfigCondition.Serializer());
-            LootFunctionManager.registerFunction(new IEnchantableTile.DropFunction.Serializer());
             Config.common().outputPowerDetail(Paths.get("config\\quarryplus"));
             IMarker.Cap.register();
             IRemotePowerOn.Cap.register();

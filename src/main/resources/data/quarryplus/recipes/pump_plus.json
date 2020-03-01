@@ -1,21 +1,21 @@
 {
-  "id": "quarryplus:builtin_pumpplus",
   "type": "quarryplus:workbench_recipe",
+  "id": "quarryplus:builtin_pump_plus",
   "ingredients": [
     {
-      "item": "minecraft:gold_ingot",
+      "tag": "forge:ingots/gold",
       "count": 16
     },
     {
-      "item": "minecraft:iron_ingot",
+      "tag": "forge:ingots/iron",
       "count": 48
     },
     {
-      "item": "minecraft:redstone",
+      "tag": "forge:dusts/redstone",
       "count": 64
     },
     {
-      "item": "minecraft:glass",
+      "tag": "forge:glass/colorless",
       "count": 512
     },
     {
@@ -31,8 +31,8 @@
   },
   "conditions": [
     {
-      "type": "quarryplus:machine_enabled",
-      "value": "PumpPlus"
+      "value": "PumpPlus",
+      "type": "quarryplus:machine_enabled"
     }
   ]
 }

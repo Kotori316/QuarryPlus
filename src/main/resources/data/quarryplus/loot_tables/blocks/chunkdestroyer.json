@@ -6,12 +6,12 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "quarryplus:chunkdestroyer",
           "functions": [
             {
               "function": "quarryplus:drop_function"
             }
-          ]
+          ],
+          "name": "quarryplus:chunkdestroyer"
         }
       ],
       "conditions": [

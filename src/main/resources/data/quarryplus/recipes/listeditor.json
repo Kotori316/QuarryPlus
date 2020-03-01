@@ -1,17 +1,17 @@
 {
-  "id": "quarryplus:builtin_item.listeditor",
   "type": "quarryplus:workbench_recipe",
+  "id": "quarryplus:builtin_item.listeditor",
   "ingredients": [
     {
-      "item": "minecraft:diamond",
+      "tag": "forge:gems/diamond",
       "count": 4
     },
     {
-      "item": "minecraft:iron_ingot",
+      "tag": "forge:ingots/iron",
       "count": 16
     },
     {
-      "item": "minecraft:redstone",
+      "tag": "forge:dusts/redstone",
       "count": 4
     },
     {
@@ -23,7 +23,7 @@
       "count": 64
     },
     {
-      "item": "minecraft:feather",
+      "tag": "forge:feathers",
       "count": 2
     }
   ],
@@ -31,9 +31,9 @@
   "showInJEI": true,
   "result": {
     "item": "quarryplus:listeditor",
-    "count": 1,
     "nbt": {
       "HideFlags": 1
-    }
+    },
+    "count": 1
   }
 }

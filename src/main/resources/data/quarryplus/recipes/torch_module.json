@@ -1,6 +1,6 @@
 {
-  "id": "quarryplus:builtin_item.torch_module",
   "type": "quarryplus:workbench_recipe",
+  "id": "quarryplus:builtin_item.torch_module",
   "ingredients": [
     {
       "item": "minecraft:torch",
@@ -24,5 +24,11 @@
   "result": {
     "item": "quarryplus:torch_module",
     "count": 1
-  }
+  },
+  "conditions": [
+    {
+      "value": "ModuleTorch",
+      "type": "quarryplus:machine_enabled"
+    }
+  ]
 }

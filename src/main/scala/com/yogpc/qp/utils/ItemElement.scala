@@ -2,6 +2,7 @@ package com.yogpc.qp.utils
 
 import cats._
 import cats.implicits._
+import com.google.gson.JsonObject
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.CompoundNBT
 
@@ -27,6 +28,12 @@ case class ItemElement(itemDamage: ItemDamage, count: Long) {
         ItemElement(this.itemDamage, this.count + that.count)
       }
     }
+  }
+
+  def serializeJson: JsonObject = {
+    val obj = itemDamage.serializeJson
+    obj.addProperty("count", count)
+    obj
   }
 }
 

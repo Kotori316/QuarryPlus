@@ -1,21 +1,21 @@
 {
-  "id": "quarryplus:builtin_statuschecker",
   "type": "quarryplus:workbench_recipe",
+  "id": "quarryplus:builtin_statuschecker",
   "ingredients": [
     {
-      "item": "minecraft:diamond",
+      "tag": "forge:gems/diamond",
       "count": 4
     },
     {
-      "item": "minecraft:gold_ingot",
+      "tag": "forge:ingots/gold",
       "count": 16
     },
     {
-      "item": "minecraft:iron_ingot",
+      "tag": "forge:ingots/iron",
       "count": 24
     },
     {
-      "item": "minecraft:redstone",
+      "tag": "forge:dusts/redstone",
       "count": 32
     },
     {
@@ -23,7 +23,7 @@
       "count": 8
     },
     {
-      "item": "minecraft:obsidian",
+      "tag": "forge:obsidian",
       "count": 4
     }
   ],

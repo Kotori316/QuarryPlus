@@ -32,7 +32,7 @@ object BlockWrapper extends JsonDeserializer[BlockWrapper] with JsonSerializer[B
 
   def apply(tag: Tag[Block]): BlockWrapper = new TagPredicate(tag)
 
-  val example = Set(
+  val example = Array(
     BlockWrapper(Tags.Blocks.STONE),
     BlockWrapper(Tags.Blocks.COBBLESTONE),
     BlockWrapper(Blocks.DIRT.getDefaultState, ignoreProperty = true),
@@ -55,7 +55,7 @@ object BlockWrapper extends JsonDeserializer[BlockWrapper] with JsonSerializer[B
     }
   }
 
-  private final val GSON = (new GsonBuilder).setPrettyPrinting().disableHtmlEscaping()
+  final val GSON = (new GsonBuilder).setPrettyPrinting().disableHtmlEscaping()
     .registerTypeHierarchyAdapter(classOf[BlockWrapper], this)
     .registerTypeHierarchyAdapter(classOf[Array[BlockWrapper]], arrayDeserializer)
     .create()
