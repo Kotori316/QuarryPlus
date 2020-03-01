@@ -15,8 +15,7 @@ case class LootTableSerializeHelper(block: Block,
   override def location: ResourceLocation = block.getRegistryName
 
   override def build: JsonElement = {
-    val value = ItemLootEntry.builder(this.block)
-    this.functions.foreach(value.acceptFunction)
+    val value: StandaloneLootEntry.Builder[_] = SerializeUtils.builder(this.block, this.functions)
 
     val builder = LootTable.builder().addLootPool(BlockLootTables.withSurvivesExplosion(this.block, LootPool.builder().rolls(ConstantRange.of(1)).addEntry(value)))
     builder.setParameterSet(LootParameterSets.BLOCK)

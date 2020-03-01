@@ -35,7 +35,7 @@ case class AdvancementSerializeHelper(name: ResourceLocation,
       .withRequirementsStrategy(IRequirementsStrategy.OR)
     val obj = criterionList.foldRight(builder) { case ((s, c), b) => b.withCriterion(s, c) }
       .serialize()
-    obj.add("conditions", RecipeSerializeHelper.makeConditionArray(conditions))
+    obj.add("conditions", SerializeUtils.makeConditionArray(conditions))
     obj
   }
 

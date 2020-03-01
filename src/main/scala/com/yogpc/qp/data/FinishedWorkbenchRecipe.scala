@@ -1,6 +1,6 @@
 package com.yogpc.qp.data
 
-import com.google.gson.{JsonArray, JsonObject}
+import com.google.gson.JsonObject
 import com.yogpc.qp.machines.workbench.{IngredientWithCount, WorkbenchRecipes}
 import com.yogpc.qp.utils.ItemElement
 import net.minecraft.data.IFinishedRecipe
@@ -13,7 +13,7 @@ class FinishedWorkbenchRecipe(location: String, o: ItemStack, energy: Double, sh
 
   override def serialize(json: JsonObject): Unit = {
     json.addProperty("id", location)
-    json.add("ingredients", serializeIngredients(inputs))
+    json.add("ingredients", SerializeUtils.serializeIngredients(inputs))
     json.addProperty("energy", energy)
     json.addProperty("showInJEI", showInJEI)
     json.add("result", ItemElement(o).serializeJson)
@@ -27,10 +27,4 @@ class FinishedWorkbenchRecipe(location: String, o: ItemStack, energy: Double, sh
 
   override def getAdvancementID: ResourceLocation = null
 
-  def serializeIngredients(inputs: Seq[IngredientWithCount]): JsonArray = {
-    inputs.foldLeft(new JsonArray) { case (a, i) =>
-      a.add(i.serializeJson)
-      a
-    }
-  }
 }

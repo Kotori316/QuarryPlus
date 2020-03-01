@@ -1,12 +1,11 @@
 package com.yogpc.qp.data
 
-import com.google.gson.{JsonArray, JsonObject}
+import com.google.gson.JsonObject
 import com.yogpc.qp.data.QuarryPlusDataProvider.DataBuilder
 import net.minecraft.advancements.criterion.RecipeUnlockedTrigger
 import net.minecraft.data.{IFinishedRecipe, ShapedRecipeBuilder, ShapelessRecipeBuilder}
 import net.minecraft.tags.Tag
 import net.minecraft.util.ResourceLocation
-import net.minecraftforge.common.crafting.CraftingHelper
 import net.minecraftforge.common.crafting.conditions.{ICondition, NotCondition, TagEmptyCondition}
 
 case class RecipeSerializeHelper(recipe: IFinishedRecipe,
@@ -29,7 +28,7 @@ case class RecipeSerializeHelper(recipe: IFinishedRecipe,
   override def build: JsonObject = {
     val o = recipe.getRecipeJson
     if (conditions.nonEmpty)
-      o.add("conditions", RecipeSerializeHelper.makeConditionArray(conditions))
+      o.add("conditions", SerializeUtils.makeConditionArray(conditions))
     o
   }
 
@@ -60,7 +59,4 @@ object RecipeSerializeHelper {
     t
   }
 
-  def makeConditionArray(conditions: List[ICondition]): JsonArray = {
-    conditions.foldLeft(new JsonArray) { case (a, c) => a.add(CraftingHelper.serialize(c)); a }
-  }
 }
