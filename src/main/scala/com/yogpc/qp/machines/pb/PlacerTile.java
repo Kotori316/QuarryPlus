@@ -5,16 +5,22 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalInt;
+import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.APacketTile;
 import com.yogpc.qp.machines.base.HasInv;
 import com.yogpc.qp.machines.base.IDebugSender;
 import com.yogpc.qp.machines.quarry.QuarryFakePlayer;
+import com.yogpc.qp.packet.PacketHandler;
+import com.yogpc.qp.packet.TileMessage;
 import com.yogpc.qp.utils.Holder;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.ItemStackHelper;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.Item;
@@ -37,10 +43,12 @@ import static net.minecraft.state.properties.BlockStateProperties.FACING;
 public class PlacerTile extends APacketTile implements
     ITickableTileEntity,
     HasInv,
-    IDebugSender {
+    IDebugSender,
+    INamedContainerProvider {
     public static final scala.Symbol SYMBOL = scala.Symbol.apply("Placer");
     public static final String KEY_ITEM = "items";
     public static final String KEY_LAST_PLACED = "last_placed";
+    public static final String KEY_RS_MODE = "redstone_mode";
     public static final Map<Direction, Vec3d> DIRECTION_VEC3D_MAP;
 
     static {
@@ -56,18 +64,23 @@ public class PlacerTile extends APacketTile implements
 
     private NonNullList<ItemStack> inventory = NonNullList.withSize(getSizeInventory(), ItemStack.EMPTY);
     private int lastPlacedIndex = 0;
+    public RedstoneMode redstoneMode = RedstoneMode.PULSE;
 
     public PlacerTile() {
         super(Holder.placerType());
     }
 
+    // -------------------- Place --------------------
+
     @Override
     public void tick() {
-        if (world != null && !world.isRemote) {
-            if (world.isAirBlock(getPos().offset(getBlockState().get(FACING)))) {
-                placeBlock();
-            } else {
-                breakBlock();
+        if (world != null && !world.isRemote && redstoneMode.isAlways()) {
+            if (redstoneMode.shouldWork(() -> world.isBlockPowered(getPos()) || world.isBlockPowered(pos.up()))) {
+                if (world.isAirBlock(getPos().offset(getBlockState().get(FACING)))) {
+                    placeBlock();
+                } else {
+                    breakBlock();
+                }
             }
         }
     }
@@ -91,6 +104,8 @@ public class PlacerTile extends APacketTile implements
             markDirty();
         });
     }
+
+    // -------------------- Utility --------------------
 
     public static <T> OptionalInt findEntry(List<T> check, Predicate<T> filter, int startIndex) {
         int listSize = check.size();
@@ -125,10 +140,13 @@ public class PlacerTile extends APacketTile implements
         }
     }
 
+    // -------------------- NBT --------------------
+
     @Override
     public CompoundNBT write(CompoundNBT compound) {
         compound.put(KEY_ITEM, ItemStackHelper.saveAllItems(new CompoundNBT(), inventory));
         compound.putInt(KEY_LAST_PLACED, lastPlacedIndex);
+        compound.putString(KEY_RS_MODE, redstoneMode.name());
         return super.write(compound);
     }
 
@@ -137,7 +155,15 @@ public class PlacerTile extends APacketTile implements
         super.read(compound);
         ItemStackHelper.loadAllItems(compound.getCompound(KEY_ITEM), inventory);
         lastPlacedIndex = compound.getInt(KEY_LAST_PLACED);
+        try {
+            redstoneMode = RedstoneMode.valueOf(compound.getString(KEY_RS_MODE));
+        } catch (IllegalArgumentException e) {
+            QuarryPlus.LOGGER.error("Illegal name was passed to placer mode.", e);
+            redstoneMode = RedstoneMode.PULSE;
+        }
     }
+
+    // -------------------- Inventory --------------------
 
     @Override
     public ITextComponent getName() {
@@ -206,5 +232,60 @@ public class PlacerTile extends APacketTile implements
     @Override
     public boolean isItemValidForSlot(int index, ItemStack stack) {
         return true;
+    }
+
+    // -------------------- Container --------------------
+
+    @Override
+    public PlacerContainer createMenu(int id, PlayerInventory p, PlayerEntity player) {
+        return new PlacerContainer(id, player, getPos());
+    }
+
+    // -------------------- RedstoneMode --------------------
+
+    public void cycleRedstoneMode() {
+        this.redstoneMode = RedstoneMode.cycle(redstoneMode);
+        if (world != null && !world.isRemote)
+            PacketHandler.sendToClient(TileMessage.create(this), world);
+    }
+
+    public enum RedstoneMode {
+        PULSE(),
+        ALWAYS_RS_IGNORE(),
+        ALWAYS_RS_ON(),
+        ALWAYS_RS_OFF(),
+        ;
+
+        @Override
+        public String toString() {
+            return name().replace('_', ' ');
+        }
+
+        public boolean isAlways() {
+            return this == ALWAYS_RS_IGNORE || this == ALWAYS_RS_OFF || this == ALWAYS_RS_ON;
+        }
+
+        public boolean shouldWork(BooleanSupplier powered) {
+            if (this == ALWAYS_RS_ON)
+                return powered.getAsBoolean();
+            else if (this == ALWAYS_RS_OFF)
+                return !powered.getAsBoolean();
+            else
+                return true;
+        }
+
+        public static RedstoneMode cycle(RedstoneMode now) {
+            RedstoneMode[] modes = values();
+            for (int i = 0; i < modes.length; i++) {
+                RedstoneMode mode = modes[i];
+                if (mode == now) {
+                    if (i + 1 == modes.length)
+                        return modes[0];
+                    else
+                        return modes[i + 1];
+                }
+            }
+            return modes[0];
+        }
     }
 }

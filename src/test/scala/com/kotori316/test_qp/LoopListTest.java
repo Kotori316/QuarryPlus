@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.yogpc.qp.machines.pb.PlacerTile;
 import com.yogpc.qp.utils.LoopList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -80,5 +81,14 @@ class LoopListTest {
             assertFalse(loopList.getOptional(i).isPresent());
             assertEquals("Tame", loopList.getOrDefault(i, supplier));
         }
+    }
+
+    @Test
+    void redstoneModeNext() {
+        PlacerTile.RedstoneMode[] modes = PlacerTile.RedstoneMode.values();
+        assertEquals(modes[0], PlacerTile.RedstoneMode.cycle(modes[modes.length - 1]));
+        assertEquals(modes[1], PlacerTile.RedstoneMode.cycle(modes[0]));
+        assertEquals(modes[2], PlacerTile.RedstoneMode.cycle(modes[1]));
+        assertEquals(modes[modes.length - 1], PlacerTile.RedstoneMode.cycle(modes[modes.length - 2]));
     }
 }

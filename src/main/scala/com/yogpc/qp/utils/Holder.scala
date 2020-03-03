@@ -11,7 +11,7 @@ import com.yogpc.qp.machines.item._
 import com.yogpc.qp.machines.marker.{BlockMarker, TileMarker}
 import com.yogpc.qp.machines.modules._
 import com.yogpc.qp.machines.mover.{BlockMover, ContainerMover}
-import com.yogpc.qp.machines.pb.{PlacerBlock, PlacerTile}
+import com.yogpc.qp.machines.pb.{PlacerBlock, PlacerContainer, PlacerTile}
 import com.yogpc.qp.machines.pump.{BlockPump, TilePump}
 import com.yogpc.qp.machines.quarry._
 import com.yogpc.qp.machines.replacer.{BlockDummy, BlockReplacer, TileReplacer}
@@ -166,6 +166,7 @@ object Holder {
   val advPumpContainerType = createContainerType(new ContainerAdvPump(_, _, _), TileAdvPump.GUI_ID)
   val advQuarryContainerType = createContainerType(new ContainerAdvQuarry(_, _, _), TileAdvQuarry.GUI_ID)
   val statusContainerType = createContainerType(new StatusContainer(_, _, _), StatusContainer.GUI_ID)
+  val placerContainerType = createContainerType(new PlacerContainer(_, _, _), PlacerContainer.GUI_ID)
 
   val containers: Set[ContainerType[_ <: Container]] = Set(
     quarryModuleContainerType,
@@ -179,6 +180,7 @@ object Holder {
     advPumpContainerType,
     advQuarryContainerType,
     statusContainerType,
+    placerContainerType,
   )
 
   private def createContainerType[T <: Container](supplier: (Int, PlayerEntity, BlockPos) => T, name: String): ContainerType[T] = {

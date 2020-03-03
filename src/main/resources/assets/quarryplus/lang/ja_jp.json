@@ -85,6 +85,7 @@
   "pp.list.setting": "整頓されたこの改良型ポンプから搬出できる液体の一覧 ※方角：",
   "pp.set.select": "どの面の設定を変えるか選んでください",
   "qp.list.setting": "このマシンで%sを有効にして採掘するブロックの一覧",
+  "quarryplus.chat.placer_rs": "レッドストーンの設定が%sに変更されました。",
   "quarryplus.client.tooltip": "クライアントの設定",
   "quarryplus.gui.advpump.frame_true": "フレーム On",
   "quarryplus.gui.advpump.frame_false": "フレーム Off",

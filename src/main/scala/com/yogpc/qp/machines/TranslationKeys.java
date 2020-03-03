@@ -47,6 +47,7 @@ public class TranslationKeys {
     public static final String MANUAL_INPUT = "tof.manualinput";
     public static final String MARKER_AREA = "chat.markerarea";
     public static final String NORTH = "FD.north";
+    public static final String PLACER_RS = "quarryplus.chat.placer_rs";
     public static final String PLUSENCHANT = "chat.plusenchant";
     public static final String PLUSENCHANTNO = "chat.plusenchantno";
     public static final String PUMP_CONTAIN = "chat.pumpcontain";

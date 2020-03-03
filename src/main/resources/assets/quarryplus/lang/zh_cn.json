@@ -85,6 +85,7 @@
   "pp.list.setting": "增强型泵的过滤流体表：方向：",
   "pp.set.select": "请选择需要更改设置的方向",
   "qp.list.setting": "增强型机器启用的方块列表 %s",
+  "quarryplus.chat.placer_rs": "Redstone mode changed to %s.",
   "quarryplus.client.tooltip": "客户端",
   "quarryplus.gui.advpump.frame_true": "Frame On",
   "quarryplus.gui.advpump.frame_false": "Frame Off",
