@@ -11,6 +11,7 @@ import com.yogpc.qp.machines.item._
 import com.yogpc.qp.machines.marker.{BlockMarker, TileMarker}
 import com.yogpc.qp.machines.modules._
 import com.yogpc.qp.machines.mover.{BlockMover, ContainerMover}
+import com.yogpc.qp.machines.pb.{PlacerBlock, PlacerTile}
 import com.yogpc.qp.machines.pump.{BlockPump, TilePump}
 import com.yogpc.qp.machines.quarry._
 import com.yogpc.qp.machines.replacer.{BlockDummy, BlockReplacer, TileReplacer}
@@ -51,6 +52,7 @@ object Holder {
   val blockAdvQuarry = new BlockAdvQuarry
   val blockAdvPump = new BlockAdvPump
   val blockQuarry2 = new BlockQuarry2
+  val blockPlacer = new PlacerBlock
 
   val blocks: Seq[Block] = Seq(
     blockQuarry,
@@ -70,6 +72,7 @@ object Holder {
     blockAdvQuarry,
     blockAdvPump,
     blockQuarry2,
+    blockPlacer,
   )
 
   //---------- TileEntity ----------
@@ -91,6 +94,7 @@ object Holder {
   val advQuarryType = createTileType(() => new TileAdvQuarry, QuarryPlus.Names.advquarry, blockAdvQuarry)
   val advPumpType = createTileType(() => new TileAdvPump, QuarryPlus.Names.advpump, blockAdvPump)
   val quarry2 = createTileType(() => new TileQuarry2, QuarryPlus.Names.quarry2, blockQuarry2)
+  val placerType = createTileType(() => new PlacerTile, QuarryPlus.Names.placer, blockPlacer)
 
   val tiles: Map[TileEntityType[_ <: TileEntity], TileDisable] = Map(
     markerTileType -> TileDisable(TileMarker.SYMBOL),
@@ -105,6 +109,7 @@ object Holder {
     advQuarryType -> TileDisable(TileAdvQuarry.SYMBOL, defaultDisableMachine = true),
     advPumpType -> TileDisable(TileAdvPump.SYMBOL),
     quarry2 -> TileDisable(TileQuarry2.SYMBOL),
+    placerType -> TileDisable(PlacerTile.SYMBOL),
   )
 
   //---------- Item ----------

@@ -179,7 +179,7 @@ public class QuarryPlus {
         public static final String mirror = "magicmirror";
         public static final String mover = "enchantmover";
         public static final String moverfrombook = "enchantmoverfrombook";
-        public static final String placer = "placerplus";
+        public static final String placer = "placer_plus";
         public static final String plainpipe = "plainpipe";
         public static final String pump = "pumpplus";
         public static final String pumpModule = "pump_module";
