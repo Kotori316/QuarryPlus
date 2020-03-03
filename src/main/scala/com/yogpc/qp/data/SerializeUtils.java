@@ -14,8 +14,8 @@ import net.minecraftforge.common.crafting.conditions.ICondition;
 import scala.jdk.javaapi.CollectionConverters;
 
 @SuppressWarnings("SameParameterValue")
-    // I don't know why this suppress is needed, but needed.
-class SerializeUtils {
+// I don't know why this suppress is needed, but needed.
+public class SerializeUtils {
     static JsonArray serializeIngredients(scala.collection.Seq<IngredientWithCount> inputs) {
         return toJsonArray(inputs, IngredientWithCount::serializeJson);
     }
@@ -24,7 +24,7 @@ class SerializeUtils {
         return toJsonArray(conditions, CraftingHelper::serialize);
     }
 
-    static <T> JsonArray toJsonArray(scala.collection.Seq<T> data, Function<T, JsonElement> toJson) {
+    public static <T> JsonArray toJsonArray(scala.collection.Seq<T> data, Function<T, JsonElement> toJson) {
         return CollectionConverters.asJava(data).stream()
             .map(toJson)
             .reduce(new JsonArray(), (a, d) -> {

@@ -1,4 +1,4 @@
-package com.yogpc.qp.data;
+package com.kotori316.test_qp;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonPrimitive;
+import com.yogpc.qp.data.SerializeUtils;
 import org.junit.jupiter.api.Test;
 import scala.collection.Seq;
 import scala.jdk.javaapi.CollectionConverters;
