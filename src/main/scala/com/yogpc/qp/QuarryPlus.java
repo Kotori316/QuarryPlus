@@ -171,7 +171,7 @@ public class QuarryPlus {
         public static final String exppumpModule = "exppump_module";
         public static final String frame = "quarryframe";
         public static final String fuelModule = "fuel_module";
-        public static final String laser = "laserplus";
+        public static final String laser = "laser_plus";
         public static final String listeditor = "listeditor";
         public static final String liquidselector = "liquidselector";
         public static final String marker = "markerplus";
