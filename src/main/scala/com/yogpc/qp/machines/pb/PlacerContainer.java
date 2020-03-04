@@ -4,8 +4,6 @@ import java.util.Objects;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.base.SlotTile;
-import com.yogpc.qp.packet.PacketHandler;
-import com.yogpc.qp.packet.TileMessage;
 import com.yogpc.qp.utils.Holder;
 import javax.annotation.Nonnull;
 import net.minecraft.entity.player.PlayerEntity;
@@ -42,7 +40,7 @@ public class PlacerContainer extends Container {
         }
 
         if (!player.getEntityWorld().isRemote) {
-            PacketHandler.sendToClient(TileMessage.create(tile), player.getEntityWorld());
+            tile.sendPacket();
         }
     }
 

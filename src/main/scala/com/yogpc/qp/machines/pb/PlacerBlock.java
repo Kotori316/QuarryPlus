@@ -1,7 +1,9 @@
 package com.yogpc.qp.machines.pb;
 
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.Random;
+import java.util.function.Predicate;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.InvUtils;
@@ -94,11 +96,12 @@ public class PlacerBlock extends QPBlock {
     @SuppressWarnings("deprecation")
     public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
         super.tick(state, worldIn, pos, rand);
-        Direction direction = state.get(FACING);
+        Direction facing = state.get(FACING);
+        boolean isPowered = state.get(TRIGGERED);
         Optional<PlacerTile> tile = Optional.ofNullable(worldIn.getTileEntity(pos)).flatMap(optCast(PlacerTile.class));
-        if (worldIn.isAirBlock(pos.offset(direction))) {
+        if (worldIn.isAirBlock(pos.offset(facing)) && isPowered) {
             tile.ifPresent(PlacerTile::placeBlock);
-        } else {
+        } else if (!isPowered) {
             tile.ifPresent(PlacerTile::breakBlock);
         }
     }
@@ -108,18 +111,29 @@ public class PlacerBlock extends QPBlock {
     public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
         super.neighborChanged(state, worldIn, pos, blockIn, fromPos, isMoving);
         // Copied from net.minecraft.block.DispenserBlock#neighborChanged
-        boolean poweredNow = worldIn.isBlockPowered(pos) || worldIn.isBlockPowered(pos.up());
+        Direction facing = state.get(FACING);
+        boolean poweredNow = isPoweredToWork(worldIn, pos, facing);
         boolean poweredOld = state.get(TRIGGERED);
         if (poweredNow && !poweredOld) {
             if (Optional.ofNullable(worldIn.getTileEntity(pos)).flatMap(optCast(PlacerTile.class))
-                .filter(p -> p.redstoneMode == PlacerTile.RedstoneMode.PULSE).isPresent()) {
+                .filter(p -> p.redstoneMode.isPulse()).isPresent()) {
                 worldIn.getPendingBlockTicks().scheduleTick(pos, this, this.tickRate(worldIn));
             }
             worldIn.setBlockState(pos, state.with(TRIGGERED, Boolean.TRUE), 4);
         } else if (!poweredNow && poweredOld) {
+            if (Optional.ofNullable(worldIn.getTileEntity(pos)).flatMap(optCast(PlacerTile.class))
+                .filter(p -> p.redstoneMode.isPulse()).isPresent()) {
+                worldIn.getPendingBlockTicks().scheduleTick(pos, this, this.tickRate(worldIn));
+            }
             worldIn.setBlockState(pos, state.with(TRIGGERED, Boolean.FALSE), 4);
         }
+    }
 
+    private static final Direction[] DIRECTIONS = Direction.values().clone();
+
+    public static boolean isPoweredToWork(World worldIn, BlockPos pos, Direction currentFacing) {
+        return Arrays.stream(DIRECTIONS).filter(Predicate.isEqual(currentFacing).negate())
+            .anyMatch(f -> worldIn.isSidePowered(pos.offset(f), f)) || worldIn.isBlockPowered(pos.up());
     }
 
     @Override

@@ -17,6 +17,9 @@ import com.yogpc.qp.machines.quarry.QuarryFakePlayer;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.TileMessage;
 import com.yogpc.qp.utils.Holder;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.ItemStackHelper;
@@ -26,6 +29,7 @@ import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.util.Direction;
@@ -37,6 +41,9 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.items.wrapper.InvWrapper;
 
 import static net.minecraft.state.properties.BlockStateProperties.FACING;
 
@@ -65,6 +72,7 @@ public class PlacerTile extends APacketTile implements
     private NonNullList<ItemStack> inventory = NonNullList.withSize(getSizeInventory(), ItemStack.EMPTY);
     private int lastPlacedIndex = 0;
     public RedstoneMode redstoneMode = RedstoneMode.PULSE;
+    private final IItemHandler itemHandler = new InvWrapper(this);
 
     public PlacerTile() {
         super(Holder.placerType());
@@ -75,8 +83,9 @@ public class PlacerTile extends APacketTile implements
     @Override
     public void tick() {
         if (world != null && !world.isRemote && redstoneMode.isAlways()) {
-            if (redstoneMode.shouldWork(() -> world.isBlockPowered(getPos()) || world.isBlockPowered(pos.up()))) {
-                if (world.isAirBlock(getPos().offset(getBlockState().get(FACING)))) {
+            Direction facing = getBlockState().get(FACING);
+            if (redstoneMode.shouldWork(() -> PlacerBlock.isPoweredToWork(world, getPos(), facing))) {
+                if (world.isAirBlock(getPos().offset(facing))) {
                     placeBlock();
                 } else {
                     breakBlock();
@@ -86,11 +95,21 @@ public class PlacerTile extends APacketTile implements
     }
 
     public void breakBlock() {
-
+        if (world == null || !redstoneMode.canBreak()) return;
+        Direction facing = getBlockState().get(FACING);
+        BlockPos pos = getPos().offset(facing);
+        BlockState state = world.getBlockState(pos);
+        if (state.getBlockHardness(world, pos) < 0) return; // Unbreakable.
+        PlayerEntity fake = QuarryFakePlayer.get(((ServerWorld) world), getPos());
+        fake.setHeldItem(Hand.MAIN_HAND, getSilkPickaxe());
+        List<ItemStack> drops = Block.getDrops(state, ((ServerWorld) world), pos, world.getTileEntity(pos), fake, fake.getHeldItemMainhand());
+        world.removeBlock(pos, false);
+        drops.stream().map(s -> ItemHandlerHelper.insertItem(this.itemHandler, s, false)) // Return not-inserted items.
+            .filter(s -> !s.isEmpty()).forEach(s -> Block.spawnAsEntity(world, getPos(), s));
     }
 
     public void placeBlock() {
-        if (isEmpty()) return;
+        if (isEmpty() || !redstoneMode.canPlace()) return;
         Direction facing = getBlockState().get(FACING);
         BlockPos pos = getPos().offset(facing);
         Vec3d hitPos = DIRECTION_VEC3D_MAP.get(facing.getOpposite()).add(pos.getX(), pos.getY(), pos.getZ());
@@ -100,9 +119,14 @@ public class PlacerTile extends APacketTile implements
         findEntry(inventory,
             i -> isItemPlaceable(i, fake, rayTrace),
             lastPlacedIndex).ifPresent(i -> {
-            this.lastPlacedIndex = i;
+            if (!getStackInSlot(i).isEmpty())
+                this.lastPlacedIndex = i;
+            else
+                this.lastPlacedIndex = findEntry(inventory, s -> !s.isEmpty() && s.getItem() instanceof BlockItem, i).orElse(0);
             markDirty();
+            sendPacket();
         });
+        fake.setHeldItem(Hand.MAIN_HAND, ItemStack.EMPTY);
     }
 
     // -------------------- Utility --------------------
@@ -140,6 +164,19 @@ public class PlacerTile extends APacketTile implements
         }
     }
 
+    public int getLastPlacedIndex() {
+        return lastPlacedIndex;
+    }
+
+    void sendPacket() {
+        PacketHandler.sendToClient(TileMessage.create(this), world);
+    }
+
+    private static ItemStack getSilkPickaxe() {
+        ItemStack stack = new ItemStack(Items.DIAMOND_PICKAXE);
+        stack.addEnchantment(Enchantments.SILK_TOUCH, 1);
+        return stack;
+    }
     // -------------------- NBT --------------------
 
     @Override
@@ -245,16 +282,39 @@ public class PlacerTile extends APacketTile implements
 
     public void cycleRedstoneMode() {
         this.redstoneMode = RedstoneMode.cycle(redstoneMode);
-        if (world != null && !world.isRemote)
-            PacketHandler.sendToClient(TileMessage.create(this), world);
+        if (world != null && !world.isRemote) {
+            sendPacket();
+        }
     }
 
+    private static final int PULSE_ID = 0;
+    private static final int RS_IGNORE_ID = 1;
+    private static final int RS_ON_ID = 2;
+    private static final int RS_OFF_ID = 3;
+
     public enum RedstoneMode {
-        PULSE(),
-        ALWAYS_RS_IGNORE(),
-        ALWAYS_RS_ON(),
-        ALWAYS_RS_OFF(),
+        PULSE(PULSE_ID, true, true),
+        PULSE_PLACE_ONLY(PULSE_ID, true, false),
+        PULSE_BREAK_ONLY(PULSE_ID, false, true),
+        ALWAYS_RS_IGNORE(RS_IGNORE_ID, true, true),
+        ALWAYS_PLACE_ONLY(RS_IGNORE_ID, true, false),
+        ALWAYS_BREAK_ONLY(RS_IGNORE_ID, false, true),
+        ALWAYS_RS_ON(RS_ON_ID, true, true),
+        ALWAYS_RS_ON_PLACE_ONLY(RS_ON_ID, true, false),
+        ALWAYS_RS_ON_BREAK_ONLY(RS_ON_ID, false, true),
+        ALWAYS_RS_OFF(RS_OFF_ID, true, true),
+        ALWAYS_RS_OFF_PLACE_ONLY(RS_OFF_ID, true, false),
+        ALWAYS_RS_OFF_BREAK_ONLY(RS_OFF_ID, false, true),
         ;
+        private final int modeID;
+        private final boolean placeEnabled;
+        private final boolean breakEnabled;
+
+        RedstoneMode(int modeID, boolean placeEnabled, boolean breakEnabled) {
+            this.modeID = modeID;
+            this.placeEnabled = placeEnabled;
+            this.breakEnabled = breakEnabled;
+        }
 
         @Override
         public String toString() {
@@ -262,13 +322,33 @@ public class PlacerTile extends APacketTile implements
         }
 
         public boolean isAlways() {
-            return this == ALWAYS_RS_IGNORE || this == ALWAYS_RS_OFF || this == ALWAYS_RS_ON;
+            return this.modeID == RS_IGNORE_ID || this.modeID == RS_ON_ID || this.modeID == RS_OFF_ID;
+        }
+
+        public boolean isPulse() {
+            return this.modeID == PULSE_ID;
+        }
+
+        public boolean canPlace() {
+            return placeEnabled;
+        }
+
+        public boolean canBreak() {
+            return breakEnabled;
+        }
+
+        public boolean isRsOn() {
+            return this.modeID == RS_ON_ID;
+        }
+
+        public boolean isRsOff() {
+            return this.modeID == RS_OFF_ID;
         }
 
         public boolean shouldWork(BooleanSupplier powered) {
-            if (this == ALWAYS_RS_ON)
+            if (isRsOn())
                 return powered.getAsBoolean();
-            else if (this == ALWAYS_RS_OFF)
+            else if (isRsOff())
                 return !powered.getAsBoolean();
             else
                 return true;
