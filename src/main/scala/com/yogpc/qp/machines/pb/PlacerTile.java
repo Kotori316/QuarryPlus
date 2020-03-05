@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.OptionalInt;
 import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.TranslationKeys;
@@ -39,6 +41,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.items.IItemHandler;
@@ -214,7 +217,11 @@ public class PlacerTile extends APacketTile implements
 
     @Override
     public List<? extends ITextComponent> getDebugMessages() {
-        return Collections.emptyList();
+        return Stream.of(
+            "RS Mode: " + redstoneMode.toString(),
+            "Last Placed: " + getLastPlacedIndex(),
+            "Inv: " + inventory.stream().filter(s -> !s.isEmpty()).count()
+        ).map(StringTextComponent::new).collect(Collectors.toList());
     }
 
     @Override
@@ -296,15 +303,15 @@ public class PlacerTile extends APacketTile implements
         PULSE(PULSE_ID, true, true),
         PULSE_PLACE_ONLY(PULSE_ID, true, false),
         PULSE_BREAK_ONLY(PULSE_ID, false, true),
-        ALWAYS_RS_IGNORE(RS_IGNORE_ID, true, true),
-        ALWAYS_PLACE_ONLY(RS_IGNORE_ID, true, false),
-        ALWAYS_BREAK_ONLY(RS_IGNORE_ID, false, true),
-        ALWAYS_RS_ON(RS_ON_ID, true, true),
-        ALWAYS_RS_ON_PLACE_ONLY(RS_ON_ID, true, false),
-        ALWAYS_RS_ON_BREAK_ONLY(RS_ON_ID, false, true),
-        ALWAYS_RS_OFF(RS_OFF_ID, true, true),
-        ALWAYS_RS_OFF_PLACE_ONLY(RS_OFF_ID, true, false),
-        ALWAYS_RS_OFF_BREAK_ONLY(RS_OFF_ID, false, true),
+//        ALWAYS_RS_IGNORE(RS_IGNORE_ID, true, true),
+//        ALWAYS_PLACE_ONLY(RS_IGNORE_ID, true, false),
+//        ALWAYS_BREAK_ONLY(RS_IGNORE_ID, false, true),
+//        ALWAYS_RS_ON(RS_ON_ID, true, true),
+//        ALWAYS_RS_ON_PLACE_ONLY(RS_ON_ID, true, false),
+//        ALWAYS_RS_ON_BREAK_ONLY(RS_ON_ID, false, true),
+//        ALWAYS_RS_OFF(RS_OFF_ID, true, true),
+//        ALWAYS_RS_OFF_PLACE_ONLY(RS_OFF_ID, true, false),
+//        ALWAYS_RS_OFF_BREAK_ONLY(RS_OFF_ID, false, true),
         ;
         private final int modeID;
         private final boolean placeEnabled;
