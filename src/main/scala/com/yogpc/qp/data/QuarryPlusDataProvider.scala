@@ -5,8 +5,10 @@ import java.io.IOException
 import com.google.gson.{GsonBuilder, JsonElement}
 import com.yogpc.qp.QuarryPlus
 import com.yogpc.qp.machines.advquarry.BlockWrapper
+import com.yogpc.qp.machines.pb.PlacerTile
 import net.minecraft.data.{DataGenerator, DirectoryCache, IDataProvider}
 import net.minecraft.util.ResourceLocation
+import net.minecraftforge.common.crafting.conditions.NotCondition
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent
 
 object QuarryPlusDataProvider {
@@ -78,7 +80,13 @@ object QuarryPlusDataProvider {
         .addItemCriterion(Items.DIAMOND_PICKAXE)
         .addCondition(new EnableCondition(BlockSolidQuarry.SYMBOL))
 
-      workbench :: solidQuarry :: Nil
+      val placer = AdvancementSerializeHelper(Holder.blockPlacer.getRegistryName, saveName = location("recipe/placer_plus_crafting"))
+        .addItemCriterion(Items.MOSSY_COBBLESTONE)
+        .addItemCriterion(Items.DISPENSER)
+        .addCondition(new NotCondition(new EnableCondition(TileWorkbench.SYMBOL)))
+        .addCondition(new EnableCondition(PlacerTile.SYMBOL))
+
+      workbench :: solidQuarry :: placer :: Nil
     }
   }
 
@@ -95,6 +103,7 @@ object QuarryPlusDataProvider {
         Holder.blockSolidQuarry,
         Holder.blockController,
         Holder.blockWorkbench,
+        Holder.blockPlacer,
       ).map(LootTableSerializeHelper.withDrop)
       val enchantedMachines = Set(
         Holder.blockAdvQuarry,

@@ -10,6 +10,7 @@ import com.yogpc.qp.machines.exppump.BlockExpPump
 import com.yogpc.qp.machines.item.{ItemListEditor, ItemTemplate}
 import com.yogpc.qp.machines.marker.TileMarker
 import com.yogpc.qp.machines.mover.BlockMover
+import com.yogpc.qp.machines.pb.PlacerTile
 import com.yogpc.qp.machines.pump.TilePump
 import com.yogpc.qp.machines.quarry.{BlockSolidQuarry, TileMiningWell, TileQuarry2}
 import com.yogpc.qp.machines.replacer.TileReplacer
@@ -20,6 +21,7 @@ import net.minecraft.enchantment.{EnchantmentData, Enchantments}
 import net.minecraft.item.crafting.Ingredient
 import net.minecraft.item.{ItemStack, Items}
 import net.minecraftforge.common.Tags
+import net.minecraftforge.common.crafting.conditions.NotCondition
 
 import scala.collection.mutable.ListBuffer
 
@@ -205,6 +207,15 @@ final class Recipe(f: DataGenerator) extends QuarryPlusDataProvider.DataProvider
         new IngredientWithCount(new ItemStack(Items.COMPARATOR, 8)),
         IngredientWithCount(Ingredient.fromTag(Tags.Items.GEMS_QUARTZ), 64),
       )), saveName = location("y_setter"))
+    // Placer
+    buffer += RecipeSerializeHelper(new FinishedWorkbenchRecipe("quarryplus:builtin_placer_plus", new ItemStack(Holder.blockPlacer),
+      30000, true,
+      Seq(new IngredientWithCount(new ItemStack(Items.DISPENSER, 1)),
+        IngredientWithCount(Ingredient.fromTag(Tags.Items.INGOTS_GOLD), 2),
+        IngredientWithCount(Ingredient.fromTag(Tags.Items.INGOTS_IRON), 1),
+        IngredientWithCount(Ingredient.fromTag(Tags.Items.DUSTS_REDSTONE), 1),
+        new IngredientWithCount(new ItemStack(Items.MOSSY_COBBLESTONE, 4)),
+      )), saveName = location("placer_plus")).addCondition(new EnableCondition(PlacerTile.SYMBOL))
     buffer.toList
   }
 
@@ -272,9 +283,23 @@ final class Recipe(f: DataGenerator) extends QuarryPlusDataProvider.DataProvider
         .key('G', Tags.Items.STORAGE_BLOCKS_GOLD),
       null
     ).addCondition(new EnableCondition(TileWorkbench.SYMBOL))
+
+    val PLACER_PLUS = RecipeSerializeHelper.by(
+      ShapedRecipeBuilder.shapedRecipe(Holder.blockPlacer)
+        .patternLine("GDG")
+        .patternLine("MRM")
+        .patternLine("MIM")
+        .key('D', Items.DISPENSER)
+        .key('R', Tags.Items.DUSTS_REDSTONE)
+        .key('I', Tags.Items.INGOTS_IRON)
+        .key('M', Items.MOSSY_COBBLESTONE)
+        .key('G', Tags.Items.INGOTS_GOLD),
+      saveName = location("placer_plus_crafting")
+    ).addCondition(new NotCondition(new EnableCondition(TileWorkbench.SYMBOL)))
+      .addCondition(new EnableCondition(PlacerTile.SYMBOL))
     EXP_PUMP_MODULE :: PUMP_MODULE :: REPLACER_MODULE ::
       REVERT_EXP_PUMP :: REVERT_PUMP :: REVERT_REPLACER ::
-      SOLID_QUARRY :: WORKBENCH_PLUS :: Nil
+      SOLID_QUARRY :: WORKBENCH_PLUS :: PLACER_PLUS :: Nil
   }
 
   override def data: List[RecipeSerializeHelper] = workbenchRecipes ::: craftingRecipes
