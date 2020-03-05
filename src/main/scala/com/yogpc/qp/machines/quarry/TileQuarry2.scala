@@ -249,7 +249,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   }
 
   override def getCapability[T](cap: Capability[T], side: Direction) = {
-    Cap.asJava(Cap.make(cap, this, IRemotePowerOn.Cap.REMOTE_CAPABILITY()) orElse super.getCapability(cap, side).asScala)
+    Cap.asJava(Cap.make(cap, this, IRemotePowerOn.Cap.REMOTE_CAPABILITY()) orElse Cap.dummyItemOrFluid(cap) orElse super.getCapability(cap, side).asScala)
   }
 
   override def getStorage = storage
@@ -289,7 +289,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   override def startWorking(): Unit = {
     G_ReInit()
     if (!getWorld.isRemote) // Send client a packet to notify changes of area.
-      PacketHandler.sendToClient(TileMessage.create(self), world)
+    PacketHandler.sendToClient(TileMessage.create(self), world)
   }
 
   override def getArea = this.area

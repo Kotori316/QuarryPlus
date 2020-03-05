@@ -244,7 +244,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
   }
 
   override def getCapability[T](cap: Capability[T], side: Direction) = {
-    Cap.asJava(Cap.make(cap, this, IRemotePowerOn.Cap.REMOTE_CAPABILITY()) orElse super.getCapability(cap, side).asScala)
+    Cap.asJava(Cap.make(cap, this, IRemotePowerOn.Cap.REMOTE_CAPABILITY()) orElse Cap.dummyItemOrFluid(cap) orElse super.getCapability(cap, side).asScala)
   }
 
   // Interface implementation

@@ -13,6 +13,10 @@ import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.util.Constants.NBT
 import net.minecraftforge.common.util.{INBTSerializable, LazyOptional, NonNullSupplier}
 import net.minecraftforge.fluids.FluidStack
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler
+import net.minecraftforge.fluids.capability.templates.EmptyFluidHandler
+import net.minecraftforge.items.CapabilityItemHandler
+import net.minecraftforge.items.wrapper.EmptyHandler
 import net.minecraftforge.registries.ForgeRegistries
 
 package object qp {
@@ -25,7 +29,7 @@ package object qp {
   }
   val toComponentString: String => StringTextComponent = s => new StringTextComponent(s)
   val nonNull: AnyRef => Boolean = obj => obj != null
-  val facings = Eval.later(Direction.values()).map(_.toList)
+  val facings = Eval.later(List.from(Direction.values()))
 
   def toJavaOption[T](o: Option[T]): java.util.Optional[T] = {
     //I think it's faster than match function.
@@ -72,13 +76,13 @@ package object qp {
           val unused: INBT = list.remove(i)
         }
       }
-      Option(stack.getTag).foreach(subtag => {
+      Option(stack.getTag).foreach { subtag =>
         subtag.remove(tagName)
         if (!list.isEmpty) {
           subtag.put(tagName, list)
         }
         stack.setTag(if (subtag.isEmpty) null else subtag)
-      })
+      }
     }
 
     def enchantmentAdded(enchantment: Enchantment, level: Int): ItemStack = {
@@ -138,6 +142,11 @@ package object qp {
 
     def empty[A]: Cap[A] = {
       OptionT.none
+    }
+
+    def dummyItemOrFluid[T](cap: Capability[T]): Cap[T] = {
+      Cap.make(cap, EmptyHandler.INSTANCE, CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) orElse
+        Cap.make(cap, EmptyFluidHandler.INSTANCE, CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY)
     }
   }
 
