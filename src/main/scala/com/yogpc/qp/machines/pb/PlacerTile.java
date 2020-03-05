@@ -19,6 +19,8 @@ import com.yogpc.qp.machines.quarry.QuarryFakePlayer;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.TileMessage;
 import com.yogpc.qp.utils.Holder;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.Enchantments;
@@ -44,6 +46,9 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.wrapper.InvWrapper;
@@ -180,6 +185,7 @@ public class PlacerTile extends APacketTile implements
         stack.addEnchantment(Enchantments.SILK_TOUCH, 1);
         return stack;
     }
+
     // -------------------- NBT --------------------
 
     @Override
@@ -201,6 +207,17 @@ public class PlacerTile extends APacketTile implements
             QuarryPlus.LOGGER.error("Illegal name was passed to placer mode.", e);
             redstoneMode = RedstoneMode.PULSE;
         }
+    }
+
+    // -------------------- Capability --------------------
+    private final LazyOptional<IItemHandler> itemHandlerOpt = LazyOptional.of(() -> itemHandler);
+
+    @Nonnull
+    @Override
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+            return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.orEmpty(cap, itemHandlerOpt);
+        return super.getCapability(cap, side);
     }
 
     // -------------------- Inventory --------------------
