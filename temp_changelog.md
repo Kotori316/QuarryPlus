@@ -1,5 +1,12 @@
 **This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).**
 
+## Version 15.2.3
+* Implemented "Placer Plus".
+* Implemented data generators.
+* Internal changes
+  * Changed texture name.
+  * Removed unused code.
+
 ## Version 15.2.2
 * Update forge and mcp mapping.
 * Fixed Torch Module didn't work.
