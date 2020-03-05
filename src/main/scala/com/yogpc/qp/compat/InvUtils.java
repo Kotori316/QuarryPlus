@@ -10,7 +10,6 @@ import com.yogpc.qp.QuarryPlus;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnchantmentType;
@@ -18,7 +17,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryHelper;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -37,28 +35,32 @@ import net.minecraftforge.registries.ObjectHolder;
 import scala.Option;
 
 public class InvUtils {
-    private static final List<IInjector> INJECTORS;
 
-    static {
-        Stream.Builder<IInjector> builder = Stream.builder();
-        // TODO change to net.minecraftforge.fml.common.ModAPIManager
-        if (ModList.get().isLoaded(QuarryPlus.Optionals.Buildcraft_transport)) {
-            try {
-                builder.add((IInjector) Class.forName("com.yogpc.qp.compat.BCInjector").getMethod("init").invoke(null));
-            } catch (ReflectiveOperationException e) {
-                e.printStackTrace();
-            }
-        }
-        if (ModList.get().isLoaded(QuarryPlus.Optionals.Mekanism_modID)) {
-            try {
-                builder.add((IInjector) Class.forName("com.yogpc.qp.compat.MekanismInjector").getMethod("init").invoke(null));
-            } catch (ReflectiveOperationException e) {
-                e.printStackTrace();
-            }
-        }
-        builder.add(new ForgeInjector(EmptyHandler.INSTANCE));
+    private static class InjectorHolder {
 
-        INJECTORS = Collections.unmodifiableList(builder.build().filter(Objects::nonNull).collect(Collectors.toList()));
+        private static final List<IInjector> INJECTORS;
+
+        static {
+            Stream.Builder<IInjector> builder = Stream.builder();
+            // TODO change to net.minecraftforge.fml.common.ModAPIManager
+            if (ModList.get().isLoaded(QuarryPlus.Optionals.Buildcraft_transport)) {
+                try {
+                    builder.add((IInjector) Class.forName("com.yogpc.qp.compat.BCInjector").getMethod("init").invoke(null));
+                } catch (ReflectiveOperationException e) {
+                    QuarryPlus.LOGGER.error("Error occurred in initializing build craft injector.", e);
+                }
+            }
+            if (ModList.get().isLoaded(QuarryPlus.Optionals.Mekanism_modID)) {
+                try {
+                    builder.add((IInjector) Class.forName("com.yogpc.qp.compat.MekanismInjector").getMethod("init").invoke(null));
+                } catch (ReflectiveOperationException e) {
+                    QuarryPlus.LOGGER.error("Error occurred in initializing Mekanism injector.", e);
+                }
+            }
+            builder.add(new ForgeInjector(EmptyHandler.INSTANCE));
+
+            INJECTORS = Collections.unmodifiableList(builder.build().filter(Objects::nonNull).collect(Collectors.toList()));
+        }
     }
 
     /**
@@ -72,7 +74,7 @@ public class InvUtils {
         List<? extends IInjector> injectors = Stream.of(Direction.values()).flatMap(enumFacing ->
             Stream.of(w.getTileEntity(pos.offset(enumFacing)))
                 .filter(Objects::nonNull)
-                .flatMap(tile -> INJECTORS.stream().flatMap(i -> i.getInjector(is, tile, enumFacing)))
+                .flatMap(tile -> InjectorHolder.INJECTORS.stream().flatMap(i -> i.getInjector(is, tile, enumFacing)))
         ).collect(Collectors.toList());
 
         ItemStack inserted = is.copy();
@@ -118,11 +120,6 @@ public class InvUtils {
                 return ActionResultType.PASS;
         }
         return ActionResultType.PASS;
-    }
-
-    public static BlockState getStateFromItem(@Nonnull BlockItem itemBlock) {
-        Block block = itemBlock.getBlock();
-        return block.getDefaultState();
     }
 
     public static boolean hasSmelting(ItemStack stack) {
