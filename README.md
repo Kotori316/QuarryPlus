@@ -11,8 +11,8 @@ Minecraft CurseForge - https://minecraft.curseforge.com/projects/additional-ench
 
 ---
 This program is licensed under GNU LESSER GENERAL PUBLIC LICENSE.  
-Copyright (C) 2012,2013 yogpstop  
-Copyright (C) 2017-2019 Kotori316
+Copyright (C) 2012, 2013 yogpstop  
+Copyright (C) 2017-2020 Kotori316
 ---
 
 Supported API

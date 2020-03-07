@@ -1,3 +1,6 @@
+# Version 12.3.2
+- Fixed issue of energy setting.
+
 # Version 12.3.1
 - Added `delete` button to adv pump.
 - Improved chain breaking of quarry frame
