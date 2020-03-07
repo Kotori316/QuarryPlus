@@ -56,12 +56,12 @@ public class PowerManager {
                 prop.setComment(c.getQualifiedName().substring(length) + Configuration.CATEGORY_SPLITTER + name);
                 c.put(name, prop);
             }
-            prop.setMinValue(0.1d).setMaxValue(2e9).setDefaultValue(def);
+            prop.setMinValue(1e-9).setMaxValue(2e9).setDefaultValue(def);
             return prop.getDouble(def);
         }
         final Property prop = new Property(name, Double.toString(def), Property.Type.DOUBLE);
         prop.setComment(c.getQualifiedName().substring(length) + Configuration.CATEGORY_SPLITTER + name);
-        prop.setMinValue(0.1d).setMaxValue(2e9).setDefaultValue(def);
+        prop.setMinValue(1e-9).setMaxValue(2e9).setDefaultValue(def);
         c.put(name, prop);
         return prop.getDouble(def);
     }
@@ -69,64 +69,64 @@ public class PowerManager {
     @SuppressWarnings("SpellCheckingInspection")
     static void loadConfiguration(final Configuration cg) throws RuntimeException {
         ConfigCategory powerSetting = cg.getCategory(Configuration.CATEGORY_GENERAL + Configuration.CATEGORY_SPLITTER + "PowerSetting");
-        powerSetting.setComment("Quarry PowerSetting (min = 0.1, Max = 2,000,000,000 = 2 billion)");
+        powerSetting.setComment("Quarry PowerSetting (min = 1e-9, Max = 2,000,000,000 = 2 billion)");
         final String cn = Configuration.CATEGORY_GENERAL + Configuration.CATEGORY_SPLITTER + "PowerSetting" + Configuration.CATEGORY_SPLITTER;
 
         String cn2 = cn + "Quarry" + Configuration.CATEGORY_SPLITTER;
         ConfigCategory c = cg.getCategory(cn2 + "BreakBlock");
 //        c.setComment("Quarry BreakBlock");
         long micro = APowerTile.MJToMicroMJ;
-        QuarryWork_BP = micro * (long) get(c, "BasePower", 40);
+        QuarryWork_BP = (long) (micro * get(c, "BasePower", 40));
         QuarryWork_CE = get(c, "EfficiencyCoefficient", 1.3);
         QuarryWork_CU = get(c, "UnbreakingCoefficient", 1);
         QuarryWork_CF = get(c, "FortuneCoefficient", 1.3);
         QuarryWork_CS = get(c, "SilktouchCoefficient", 2);
-        QuarryWork_XR = micro * (long) get(c, "BaseMaxRecieve", 300);
-        QuarryWork_MS = micro * (long) get(c, "BaseMaxStored", 15000);
+        QuarryWork_XR = (long) (micro * get(c, "BaseMaxRecieve", 300));
+        QuarryWork_MS = (long) (micro * get(c, "BaseMaxStored", 15000));
 
         c = cg.getCategory(cn2 + "BreakBlock" + Configuration.CATEGORY_SPLITTER + "MoveHead");
-        MoveHead_BP = micro * (long) get(c, "BasePower", 200);
+        MoveHead_BP = (long) (micro * get(c, "BasePower", 200));
         MoveHead_CU = get(c, "UnbreakingCoefficient", 1);
 
         c = cg.getCategory(cn2 + "MakeFrame");
-        FrameBuild_BP = micro * (long) get(c, "BasePower", 25);
+        FrameBuild_BP = (long) (micro * get(c, "BasePower", 25));
         FrameBuild_CE = get(c, "EfficiencyCoefficient", 1.3);
         FrameBuild_CU = get(c, "UnbreakingCoefficient", 1);
-        FrameBuild_XR = micro * (long) get(c, "BaseMaxRecieve", 100);
-        FrameBuild_MS = micro * (long) get(c, "BaseMaxStored", 15000);
+        FrameBuild_XR = (long) (micro * get(c, "BaseMaxRecieve", 100));
+        FrameBuild_MS = (long) (micro * get(c, "BaseMaxStored", 15000));
 
         cn2 = cn + "Pump" + Configuration.CATEGORY_SPLITTER;
         c = cg.getCategory(cn2 + "DrainLiquid");
-        PumpDrain_BP = micro * (long) get(c, "BasePower", 10);
+        PumpDrain_BP = (long) (micro * get(c, "BasePower", 10));
         PumpDrain_CU = get(c, "UnbreakingCoefficient", 1);
 
         c = cg.getCategory(cn2 + "MakeFrame");
-        PumpFrame_BP = micro * (long) get(c, "BasePower", 25);
+        PumpFrame_BP = (long) (micro * get(c, "BasePower", 25));
         PumpFrame_CU = get(c, "UnbreakingCoefficient", 1);
 
         c = cg.getCategory(cn + "MiningWell");
-        MiningWell_BP = micro * (long) get(c, "BasePower", 40);
+        MiningWell_BP = (long) (micro * get(c, "BasePower", 40));
         MiningWell_CE = get(c, "EfficiencyCoefficient", 1.3);
         MiningWell_CU = get(c, "UnbreakingCoefficient", 1);
         MiningWell_CF = get(c, "FortuneCoefficient", 1.3);
         MiningWell_CS = get(c, "SilktouchCoefficient", 2);
-        MiningWell_XR = micro * (long) get(c, "BaseMaxRecieve", 100);
-        MiningWell_MS = micro * (long) get(c, "BaseMaxStored", 1000);
+        MiningWell_XR = (long) (micro * get(c, "BaseMaxRecieve", 100));
+        MiningWell_MS = (long) (micro * get(c, "BaseMaxStored", 1000));
 
         c = cg.getCategory(cn + "Laser");
-        Laser_BP = micro * (long) get(c, "BasePower", 4);
+        Laser_BP = (long) (micro * get(c, "BasePower", 4));
         Laser_CE = get(c, "EfficiencyCoefficient", 2);
         Laser_CU = get(c, "UnbreakingCoefficient", 0.1);
         Laser_CF = get(c, "FortuneCoefficient", 1.05);
         Laser_CS = get(c, "SilktouchCoefficient", 1.1);
-        Laser_XR = micro * (long) get(c, "BaseMaxRecieve", 100);
-        Laser_MS = micro * (long) get(c, "BaseMaxStored", 1000);
+        Laser_XR = (long) (micro * get(c, "BaseMaxRecieve", 100));
+        Laser_MS = (long) (micro * get(c, "BaseMaxStored", 1000));
 
         c = cg.getCategory(cn + "Refinery");
         Refinery_CE = get(c, "EfficiencyCoefficient", 1.2);
         Refinery_CU = get(c, "UnbreakingCoefficient", 1);
-        Refinery_XR = micro * (long) get(c, "BaseMaxRecieve", 6);
-        Refinery_MS = micro * (long) get(c, "BaseMaxStored", 1000);
+        Refinery_XR = (long) (micro * get(c, "BaseMaxRecieve", 6));
+        Refinery_MS = (long) (micro * get(c, "BaseMaxStored", 1000));
 
         c = cg.getCategory(cn + "Filler");
         FillerWork_BP = (long) (micro * get(c, "BasePower", 40));

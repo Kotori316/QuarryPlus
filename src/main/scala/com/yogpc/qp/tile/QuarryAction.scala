@@ -290,7 +290,7 @@ object QuarryAction {
     override def action(target: BlockPos): Unit = {
       val r = quarry2.area
       quarry2.gatherDrops(quarry2.getWorld,
-        new AxisAlignedBB(r.xMin - 2, y - 3, r.zMin - 2, r.xMax + 2, y + 2, r.zMax + 2))
+        new AxisAlignedBB(r.xMin - 2, y - 3, r.zMin - 2, r.xMax + 2, r.yMax, r.zMax + 2))
       finished = true
     }
 
