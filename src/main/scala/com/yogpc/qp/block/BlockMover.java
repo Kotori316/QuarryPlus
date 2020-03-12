@@ -75,6 +75,12 @@ public class BlockMover extends Block implements IDismantleable, IWrenchable {
     }
 
     @Override
+    public boolean isToolEffective(String type, IBlockState state) {
+        if ("wrench".equals(type)) return true;
+        return super.isToolEffective(type, state);
+    }
+
+    @Override
     @Optional.Method(modid = QuarryPlus.Optionals.COFH_modID)
     public ArrayList<ItemStack> dismantleBlock(World world, BlockPos pos, IBlockState state, EntityPlayer player, boolean returnDrops) {
         return ADismCBlock.dismantle(world, pos, state, returnDrops);
