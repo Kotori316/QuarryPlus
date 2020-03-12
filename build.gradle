@@ -82,11 +82,11 @@ repositories {
 dependencies {
 //    compile 'org.scala-lang:scala-library:2.11.11'
 //    compile group: "com.github.bigwheel", name: "util-backports_2.12", version: "1.1"
-    deobfCompile 'net.industrial-craft:industrialcraft-2:2.8.188-ex112:dev'
+    deobfCompile 'net.industrial-craft:industrialcraft-2:2.8.194-ex112:dev'
     deobfCompile "cofh:RedstoneFlux:1.12-2.1.0.6:universal"
     deobfCompile "cofh:CoFHCore:1.12.2-4.6.3.27:universal"
     deobfCompile "mezz.jei:jei_1.12.2:4.15.0.293"
-    deobfCompile "com.mod-buildcraft:buildcraft-main:7.99.24.4"
+    deobfCompile "com.mod-buildcraft:buildcraft-main:7.99.24.5"
     compileOnly "mekanism:Mekanism:1.12.2-9.4.4.330+0b21085"
     compileOnly "team.chisel.ctm:CTM:MC1.12-0.2.3.13"
 }
