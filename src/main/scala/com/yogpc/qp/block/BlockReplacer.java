@@ -26,7 +26,7 @@ public class BlockReplacer extends ADismCBlock {
 
     public BlockReplacer() {
         super(Material.IRON, QuarryPlus.Names.replacer, ItemBlock::new);
-        setHardness(5F);
+        setHardness(3F);
         setDefaultState(getBlockState().getBaseState().withProperty(CONNECTED, false));
     }
 

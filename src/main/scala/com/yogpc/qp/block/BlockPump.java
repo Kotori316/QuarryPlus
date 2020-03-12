@@ -52,7 +52,7 @@ public class BlockPump extends ADismCBlock {
 
     public BlockPump() {
         super(Material.IRON, QuarryPlus.Names.pump, ItemBlockPump::new);
-        setHardness(5F);
+        setHardness(3F);
         setDefaultState(getBlockState().getBaseState().withProperty(ACTING, false).withProperty(CONNECTED, false));
     }
 
