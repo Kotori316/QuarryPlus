@@ -74,6 +74,12 @@ public abstract class ADismCBlock extends QPBlock implements IDismantleable, IWr
     }
 
     @Override
+    public boolean isToolEffective(String type, IBlockState state) {
+        if ("wrench".equals(type)) return true;
+        return super.isToolEffective(type, state);
+    }
+
+    @Override
     public boolean canDismantle(World world, BlockPos pos, IBlockState state, EntityPlayer player) {
         return this != QuarryPlusI.blockChunkDestroyer();
     }

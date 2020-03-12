@@ -20,6 +20,7 @@ import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 
 import com.yogpc.qp.compat.BuildcraftHelper;
+import com.yogpc.qp.compat.IC2Harvest;
 import com.yogpc.qp.gui.GuiFactory;
 import com.yogpc.qp.gui.GuiHandler;
 import com.yogpc.qp.item.ItemTool;
@@ -172,6 +173,9 @@ public class QuarryPlus {
         // TODO change to net.minecraftforge.fml.common.ModAPIManager
         if (inDev && Loader.isModLoaded(Optionals.Buildcraft_facades))
             BuildcraftHelper.disableFacade();
+        if (Loader.isModLoaded(Optionals.IC2_modID)) {
+            MinecraftForge.EVENT_BUS.register(IC2Harvest.class);
+        }
     }
 
     @SubscribeEvent
