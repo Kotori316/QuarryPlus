@@ -1,3 +1,8 @@
+# Version 12.3.3
+- Softer attachment blocks. (Pump, ExpPump, Replacer)
+- Make tile blocks removable when IC2 new wrench is used.
+- Update dependencies. (IC2 and BC)
+
 # Version 12.3.2
 - Fixed issue of energy setting.
 
