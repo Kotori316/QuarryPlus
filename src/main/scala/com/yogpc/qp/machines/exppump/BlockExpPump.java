@@ -37,7 +37,7 @@ public class BlockExpPump extends QPBlock {
     public static final Symbol SYMBOL = Symbol.apply("ExpPump");
 
     public BlockExpPump() {
-        super(Properties.create(Material.ANVIL).hardnessAndResistance(5.0f), QuarryPlus.Names.exppump, BlockItemPump::new);
+        super(Properties.create(Material.ANVIL).hardnessAndResistance(3.0f), QuarryPlus.Names.exppump, BlockItemPump::new);
         setDefaultState(getStateContainer().getBaseState().with(ENABLED, false).with(QPBlock.WORKING(), false));
     }
 

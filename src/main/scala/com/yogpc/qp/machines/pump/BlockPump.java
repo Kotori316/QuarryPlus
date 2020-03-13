@@ -47,7 +47,7 @@ import static net.minecraft.state.properties.BlockStateProperties.ENABLED;
 public class BlockPump extends QPBlock {
 
     public BlockPump() {
-        super(Properties.create(Material.IRON).hardnessAndResistance(5f), QuarryPlus.Names.pump, BlockItemPump::new);
+        super(Properties.create(Material.IRON).hardnessAndResistance(3.0f), QuarryPlus.Names.pump, BlockItemPump::new);
         setDefaultState(getStateContainer().getBaseState().with(QPBlock.WORKING(), false).with(ENABLED, false));
     }
 

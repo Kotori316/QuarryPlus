@@ -27,7 +27,7 @@ import net.minecraft.world.World;
 public class BlockReplacer extends QPBlock {
 
     public BlockReplacer() {
-        super(Block.Properties.create(Material.IRON).hardnessAndResistance(5f), QuarryPlus.Names.replacer, BlockItem::new);
+        super(Block.Properties.create(Material.IRON).hardnessAndResistance(3.0f), QuarryPlus.Names.replacer, BlockItem::new);
         setDefaultState(getStateContainer().getBaseState().with(QPBlock.WORKING(), false));
     }
 
