@@ -20,8 +20,28 @@ public interface HasStorage {
 
         /**
          * Add the fluid to inventory.
-         * @param fluidStack  to be inserted.
+         *
+         * @param fluidStack to be inserted.
          */
         void insertFluid(FluidStack fluidStack);
+    }
+
+    interface HasDummyStorage extends HasStorage {
+        class DummyStorage implements HasStorage.Storage {
+            @Override
+            public void insertItem(ItemStack stack) {
+            }
+
+            @Override
+            public void insertFluid(FluidStack fluidStack) {
+            }
+        }
+
+        HasStorage.Storage DUMMY = new DummyStorage();
+
+        @Override
+        default Storage getStorage() {
+            return DUMMY;
+        }
     }
 }

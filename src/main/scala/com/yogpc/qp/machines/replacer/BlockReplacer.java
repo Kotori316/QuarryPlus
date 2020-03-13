@@ -49,7 +49,6 @@ public class BlockReplacer extends QPBlock {
         builder.add(QPBlock.WORKING());
     }
 
-
     @Override
     public void addInformation(ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         super.addInformation(stack, worldIn, tooltip, flagIn);

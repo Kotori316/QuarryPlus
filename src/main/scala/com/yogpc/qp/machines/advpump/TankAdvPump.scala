@@ -59,11 +59,7 @@ class TankAdvPump(capacity: Eval[Int]) extends HasStorage.Storage with IFluidHan
 
   override def fill(resource: FluidStack, action: IFluidHandler.FluidAction): Int = 0 // Not fill-able
 
-  override def drain(resource: FluidStack, action: IFluidHandler.FluidAction): FluidStack = {
-    if (resource.isEmpty || resource.getAmount <= 0) return FluidStack.EMPTY
-    val key = FluidElement.fromStack(resource)
-    val current = fluidStacks.getOrElse(key, 0)
-    val drainAmount = Math.min(current, resource.getAmount)
+  private def drainInternal(action: IFluidHandler.FluidAction, key: FluidElement, current: Int, drainAmount: Int): FluidStack = {
     if (action.execute() && drainAmount > 0) {
       val amount = current - drainAmount
       if (amount > 0)
@@ -74,19 +70,20 @@ class TankAdvPump(capacity: Eval[Int]) extends HasStorage.Storage with IFluidHan
     key.withAmount(drainAmount)
   }
 
+  override def drain(resource: FluidStack, action: IFluidHandler.FluidAction): FluidStack = {
+    if (resource.isEmpty || resource.getAmount <= 0) return FluidStack.EMPTY
+    val key = FluidElement.fromStack(resource)
+    val current = fluidStacks.getOrElse(key, 0)
+    val drainAmount = Math.min(current, resource.getAmount)
+    drainInternal(action, key, current, drainAmount)
+  }
+
   override def drain(maxDrain: Int, action: IFluidHandler.FluidAction): FluidStack = {
     if (maxDrain <= 0) return FluidStack.EMPTY
     fluidStacks.headOption match {
       case Some((key, current)) =>
         val drainAmount = Math.min(current, maxDrain)
-        if (action.execute() && drainAmount > 0) {
-          val amount = current - drainAmount
-          if (amount > 0)
-            fluidStacks = fluidStacks.updated(key, amount)
-          else
-            fluidStacks -= key
-        }
-        key.withAmount(drainAmount)
+        drainInternal(action, key, current, drainAmount)
       case None => FluidStack.EMPTY
     }
   }

@@ -3,7 +3,6 @@ package com.yogpc.qp.machines.modules;
 import java.util.Optional;
 import java.util.function.Function;
 
-import cats.Eval;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.Dynamic;
@@ -49,6 +48,6 @@ public class ItemReplacerModule extends Item implements IDisabled, IModuleItem {
                 }
             })
             .orElse(Holder.blockDummy().getDefaultState());
-        return t -> new ReplacerModule(Eval.now(state));
+        return t -> ReplacerModule.apply(state);
     }
 }
