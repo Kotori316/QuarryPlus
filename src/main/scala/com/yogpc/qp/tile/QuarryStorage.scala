@@ -1,7 +1,7 @@
 package com.yogpc.qp.tile
 
 import com.yogpc.qp.compat.{FluidStore, InvUtils}
-import com.yogpc.qp.utils.ItemElement
+import com.yogpc.qp.utils.{ItemElement, ListLikeMap}
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
 import net.minecraft.util.math.BlockPos
@@ -12,15 +12,15 @@ import net.minecraftforge.fluids.{FluidRegistry, FluidStack}
 
 class QuarryStorage extends INBTSerializable[NBTTagCompound] with HasStorage.Storage {
 
-  private var items = Map.empty[ItemDamage, ItemElement]
+  private var items = ListLikeMap.empty[ItemDamage, ItemElement]
   private type FluidUnit = Long
-  private var fluids = Map.empty[FluidStack, FluidUnit]
+  private var fluids = ListLikeMap.empty[FluidStack, FluidUnit]
 
   def addItem(stack: ItemStack): Unit = {
     val key = ItemDamage(stack)
     val inserting = ItemElement(stack)
     val element = items.getOrElse(key, ItemElement.invalid)
-    items = items.updated(key, element + inserting)
+    items = items.updated(key, element + inserting, reuseInternalObjects = true)
     //QuarryPlus.LOGGER.debug(MARKER, s"Inserted $inserting")
   }
 
@@ -40,16 +40,15 @@ class QuarryStorage extends INBTSerializable[NBTTagCompound] with HasStorage.Sto
       //        }
       val remain = InvUtils.injectToNearTile(world, pos, element.toStack)
       if (remain.isEmpty)
-        items = items - key
+        items = items.remove(key, reuseInternalObjects = true)
       else
-        items = items.updated(key, ItemElement(remain))
-
+        items = items.updated(key, ItemElement(remain), reuseInternalObjects = true)
     }
   }
 
   def addFluid(fluid: FluidStack, amount: FluidUnit)(implicit proxy: Numeric[FluidUnit]): Unit = {
     val element = fluids.getOrElse(fluid, proxy.zero)
-    fluids = fluids.updated(fluid, proxy.plus(element, amount))
+    fluids = fluids.updated(fluid, proxy.plus(element, amount), reuseInternalObjects = true)
     //QuarryPlus.LOGGER.debug(MARKER, s"Inserted $fluid @$amount mB")
   }
 
@@ -58,6 +57,8 @@ class QuarryStorage extends INBTSerializable[NBTTagCompound] with HasStorage.Sto
       val inserted = FluidStore.injectToNearTile(world, pos, fluid, amount)
       if (amount > inserted) {
         fluids = fluids.updated(fluid, amount - inserted)
+        // Not to reuse internal list because this is in forEach statement.
+        // Reuse of list will cause unexpected modification.
       } else {
         fluids = fluids - fluid
       }
@@ -66,7 +67,7 @@ class QuarryStorage extends INBTSerializable[NBTTagCompound] with HasStorage.Sto
 
   override def serializeNBT(): NBTTagCompound = {
     val nbt = new NBTTagCompound
-    val itemList = items.values.map(_.toNBT).foldLeft(new NBTTagList) { case (l, tag) => l.appendTag(tag); l }
+    val itemList = items.map { case (_, e) => e.toNBT }.foldLeft(new NBTTagList) { case (l, tag) => l.appendTag(tag); l }
     val fluidList = fluids.map { case (fluid, amount) =>
       val tag = new NBTTagCompound
       tag.setString("name", FluidRegistry.getFluidName(fluid.getFluid))
@@ -81,14 +82,16 @@ class QuarryStorage extends INBTSerializable[NBTTagCompound] with HasStorage.Sto
   override def deserializeNBT(nbt: NBTTagCompound): Unit = {
     val itemList = nbt.getTagList("items", NBT.TAG_COMPOUND)
     val fluidList = nbt.getTagList("fluids", NBT.TAG_COMPOUND)
-    items = Range(0, itemList.tagCount()).map(itemList.getCompoundTagAt).map { tag =>
+    items = ListLikeMap(Range(0, itemList.tagCount()).map(itemList.getCompoundTagAt).map { tag =>
       val stack = new ItemStack(tag)
       stack.setCount(tag.getInteger("Count"))
       ItemElement(stack)
-    }.map(e => (e.itemDamage, e)).toMap
-    fluids = Range(0, fluidList.tagCount()).map(fluidList.getCompoundTagAt).flatMap { tag =>
-      Option(FluidRegistry.getFluid(tag.getString("name"))).map(f => (new FluidStack(f, tag.getLong("amount").toInt), tag.getLong("amount"))).toList
-    }.toMap
+    }.map(e => (e.itemDamage, e)): _*)
+    fluids = ListLikeMap(
+      Range(0, fluidList.tagCount()).map(fluidList.getCompoundTagAt).flatMap { tag =>
+        Option(FluidRegistry.getFluid(tag.getString("name"))).map(f => (new FluidStack(f, tag.getLong("amount").toInt), tag.getLong("amount"))).toList
+      }: _*
+    )
   }
 
   override def insertItem(stack: ItemStack): Unit = addItem(stack)
