@@ -326,10 +326,7 @@ class TileAdvQuarry extends APowerTile
             val handler = Option(FluidUtil.getFluidHandler(getWorld, p, EnumFacing.UP))
             val fluidOp = handler.flatMap(_.getTankProperties.apply(0).nnMap(_.getContents))
             fluidOp match {
-              case Some(fluidStack) => handler.flatMap(_.drain(fluidStack.amount, false).toOption).foreach(s => fluidStacks.get(fluidStack) match {
-                case Some(tank) => tank.fill(s, true)
-                case None => fluidStacks.put(fluidStack, new QuarryTank(s, Int.MaxValue))
-              })
+              case Some(fluidStack) => handler.flatMap(_.drain(fluidStack.amount, false).toOption).foreach(s => getStorage.insertFluid(s, s.amount))
               case None => //QuarryPlus.LOGGER.error(s"Adv Fluid null, ${getWorld.getBlockState(p)}, ${FluidUtil.getFluidHandler(getWorld, p, EnumFacing.UP)}")
             }
             getWorld.setBlockState(p, Blocks.AIR.getDefaultState, 2)
@@ -903,7 +900,7 @@ class TileAdvQuarry extends APowerTile
 
   override protected def getSymbol: Symbol = TileAdvQuarry.SYMBOL
 
-  override lazy val getStorage = new Storage {
+  override lazy val getStorage: Storage = new Storage {
     override def insertItem(stack: ItemStack): Unit = cacheItems.add(stack)
 
     override def insertFluid(fluid: FluidStack, amount: Long): Unit = {

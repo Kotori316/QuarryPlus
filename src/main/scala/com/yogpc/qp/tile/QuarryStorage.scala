@@ -84,8 +84,8 @@ class QuarryStorage extends INBTSerializable[NBTTagCompound] with HasStorage.Sto
     items = Range(0, itemList.tagCount()).map(itemList.getCompoundTagAt).map { tag =>
       val stack = new ItemStack(tag)
       stack.setCount(tag.getInteger("Count"))
-      stack
-    }.map(ItemElement.apply).map(e => (e.itemDamage, e)).toMap
+      ItemElement(stack)
+    }.map(e => (e.itemDamage, e)).toMap
     fluids = Range(0, fluidList.tagCount()).map(fluidList.getCompoundTagAt).flatMap { tag =>
       Option(FluidRegistry.getFluid(tag.getString("name"))).map(f => (new FluidStack(f, tag.getLong("amount").toInt), tag.getLong("amount"))).toList
     }.toMap
