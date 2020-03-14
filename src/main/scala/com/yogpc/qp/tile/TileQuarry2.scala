@@ -30,7 +30,6 @@ import net.minecraftforge.event.world.BlockEvent
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler
 import net.minecraftforge.fluids.capability.templates.EmptyFluidHandler
 import net.minecraftforge.fml.common.Loader
-import net.minecraftforge.fml.common.registry.ForgeRegistries
 import org.apache.logging.log4j.{Marker, MarkerManager}
 
 import scala.collection.JavaConverters._
@@ -89,7 +88,8 @@ class TileQuarry2 extends APowerTile()
       }
       // Insert items
       storage.pushItem(world, pos)
-      storage.pushFluid(world, pos)
+      if (world.getTotalWorldTime % 20 == 0)
+        storage.pushFluid(world, pos) // Push every 1 sec.
     }
   }
 
