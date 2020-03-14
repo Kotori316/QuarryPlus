@@ -1,6 +1,5 @@
 package com.yogpc.qp.tile
 
-import com.yogpc.qp._
 import com.yogpc.qp.compat.{FluidStore, InvUtils}
 import com.yogpc.qp.utils.ItemElement
 import net.minecraft.item.ItemStack
@@ -10,11 +9,8 @@ import net.minecraft.world.World
 import net.minecraftforge.common.util.Constants.NBT
 import net.minecraftforge.common.util.INBTSerializable
 import net.minecraftforge.fluids.{FluidRegistry, FluidStack}
-import net.minecraftforge.items.ItemHandlerHelper
 
 class QuarryStorage extends INBTSerializable[NBTTagCompound] with HasStorage.Storage {
-
-  import QuarryAction.MARKER
 
   private var items = Map.empty[ItemDamage, ItemElement]
   private type FluidUnit = Long
@@ -25,7 +21,7 @@ class QuarryStorage extends INBTSerializable[NBTTagCompound] with HasStorage.Sto
     val inserting = ItemElement(stack)
     val element = items.getOrElse(key, ItemElement.invalid)
     items = items.updated(key, element + inserting)
-    QuarryPlus.LOGGER.debug(MARKER, s"Inserted $inserting")
+    //QuarryPlus.LOGGER.debug(MARKER, s"Inserted $inserting")
   }
 
   def pushItem(world: World, pos: BlockPos): Unit = {
@@ -54,7 +50,7 @@ class QuarryStorage extends INBTSerializable[NBTTagCompound] with HasStorage.Sto
   def addFluid(fluid: FluidStack, amount: FluidUnit)(implicit proxy: Numeric[FluidUnit]): Unit = {
     val element = fluids.getOrElse(fluid, proxy.zero)
     fluids = fluids.updated(fluid, proxy.plus(element, amount))
-    QuarryPlus.LOGGER.debug(MARKER, s"Inserted $fluid @$amount mB")
+    //QuarryPlus.LOGGER.debug(MARKER, s"Inserted $fluid @$amount mB")
   }
 
   def pushFluid(world: World, pos: BlockPos): Unit = {
