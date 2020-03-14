@@ -13,12 +13,12 @@ import net.minecraftforge.common.util.Constants.NBT
 import net.minecraftforge.common.util.INBTSerializable
 import net.minecraftforge.fluids.FluidStack
 
+import scala.collection.immutable.ListMap
+
 class QuarryStorage extends INBTSerializable[CompoundNBT] with HasStorage.Storage {
 
-  import QuarryAction.MARKER
-
-  private var items = Map.empty[ItemDamage, ItemElement]
-  private var fluids = Map.empty[FluidElement, FluidStack]
+  private var items = ListMap.empty[ItemDamage, ItemElement]
+  private var fluids = ListMap.empty[FluidElement, FluidStack]
 
   def addItem(stack: ItemStack): Unit = {
     val key = ItemDamage(stack)
@@ -59,7 +59,7 @@ class QuarryStorage extends INBTSerializable[CompoundNBT] with HasStorage.Storag
   override def serializeNBT(): CompoundNBT = {
     val nbt = new CompoundNBT
     val itemList = items.values.map(_.toNBT).foldLeft(new ListNBT) { case (l, tag) => l.add(tag); l }
-    val fluidList = fluids.toSeq.map { case (key, value) =>
+    val fluidList = fluids.map { case (key, value) =>
       val tag = new CompoundNBT
       tag.put("name", key.toNBT)
       tag.put("amount", value.toNBT)
@@ -78,12 +78,12 @@ class QuarryStorage extends INBTSerializable[CompoundNBT] with HasStorage.Storag
       stack.setCount(1)
       val count = tag.getLong("Count")
       new ItemElement(ItemDamage(stack), count)
-    }.map(e => (e.itemDamage, e)).toMap
+    }.map(e => (e.itemDamage, e)).to(ListMap)
     fluids = Range(0, fluidList.size()).map(fluidList.getCompound).flatMap { tag =>
       val key = FluidElement.fromNBT(tag.getCompound("name"))
       val stack = FluidStack.loadFluidStackFromNBT(tag.getCompound("amount"))
       if (stack.isEmpty) Nil else List(key -> stack)
-    }.toMap
+    }.to(ListMap)
   }
 
   override def insertItem(stack: ItemStack): Unit = addItem(stack)
