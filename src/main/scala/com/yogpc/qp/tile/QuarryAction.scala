@@ -72,7 +72,7 @@ object QuarryAction {
           Range(firstZ, lastZ, (lastZ - firstZ).signum).map(z => new BlockPos(r.xMax, y, z)) ++
           Range(r.xMax, r.xMin, -1).map(x => new BlockPos(x, y, lastZ)) ++
           Range(lastZ, firstZ, (firstZ - lastZ).signum).map(z => new BlockPos(r.xMin, y, z))
-        }.toList
+      }.toList
 
       def b(y: Int) = {
         for (x <- List(r.xMin, r.xMax);
@@ -345,7 +345,7 @@ object QuarryAction {
   }
 
   def checkBreakable(world: World, pos: BlockPos, state: IBlockState, modules: Seq[IModule]): Boolean = {
-    !world.isAirBlock(pos) &&
+    !QuarryBlackList.contains(state, world, pos) &&
       state.getBlockHardness(world, pos) >= 0 &&
       !state.getBlockHardness(world, pos).isInfinity &&
       !modules.flatMap(IModule.replaceBlocks(pos.getY)).contains(state) &&

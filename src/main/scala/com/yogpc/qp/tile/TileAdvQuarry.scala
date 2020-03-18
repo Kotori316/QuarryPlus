@@ -185,7 +185,7 @@ class TileAdvQuarry extends APowerTile
             pos.setY(y)
 
             val state = getWorld.getBlockState(pos)
-            if (!state.getBlock.isAir(state, getWorld, pos)) {
+            if (!QuarryBlackList.contains(state, getWorld, pos)) {
               if (TilePump.isLiquid(state)) {
                 requireEnergy += PowerManager.calcEnergyPumpDrain(ench.unbreaking, 1, 0)
                 drain += y

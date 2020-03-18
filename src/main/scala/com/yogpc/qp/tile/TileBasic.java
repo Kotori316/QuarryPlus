@@ -148,7 +148,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         } else {
             blockState = loadedChunk.getBlockState(x & 0xF, y, z & 0xF);
         }
-        if (blockState.getBlock().isAir(blockState, getWorld(), pos))
+        if (QuarryBlackList.contains(blockState, getWorld(), pos))
             return true;
 
         BI bi = S_addDroppedItems(dropped, blockState, pos);
