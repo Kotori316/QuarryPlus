@@ -1,5 +1,6 @@
 package com.yogpc.qp.tile
 
+import com.yogpc.qp.integration.bedrockore.BedrockOreModule
 import com.yogpc.qp.modules.TorchModule
 import com.yogpc.qp.tile.IModule.{CalledWhen, Result}
 import net.minecraft.block.state.IBlockState
@@ -7,6 +8,7 @@ import net.minecraft.entity.Entity
 import net.minecraft.init.Blocks
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
+import net.minecraftforge.fml.common.Loader
 
 trait IModule {
   def id: String
@@ -41,6 +43,14 @@ object IModule {
     case t: TorchModule if t.y() == y => List(Blocks.TORCH.getDefaultState)
     case r: ReplacerModule => List(r.toReplace())
     case _ => Nil
+  }
+
+  def defaultModules(tile: APowerTile): List[IModule] = {
+    if (Loader.isModLoaded(BedrockOreModule.bedrock_id)) {
+      List(BedrockOreModule.from(tile))
+    } else {
+      Nil
+    }
   }
 
   sealed trait ModuleType

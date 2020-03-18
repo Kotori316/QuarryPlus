@@ -746,7 +746,7 @@ class TileAdvQuarry extends APowerTile
     val internalModules = moduleInv.moduleItems().asScala.flatMap { e =>
       e.getKey.apply(e.getValue, self).toList
     }
-    this.modules = attachmentModules ++ internalModules
+    this.modules = IModule.defaultModules(this) ++ attachmentModules ++ internalModules
   }
 
   def preparedFiller: Boolean = {

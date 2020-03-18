@@ -11,6 +11,9 @@ buildscript {
         classpath "gradle.plugin.com.matthewprenger:CurseGradle:1.1.0"
     }
 }
+plugins {
+    id "com.wynprice.cursemaven" version "2.1.1"
+}
 apply plugin: 'scala'
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: "com.matthewprenger.cursegradle"
@@ -89,6 +92,7 @@ dependencies {
     deobfCompile "com.mod-buildcraft:buildcraft-main:7.99.24.5"
     compileOnly "mekanism:Mekanism:1.12.2-9.4.4.330+0b21085"
     compileOnly "team.chisel.ctm:CTM:MC1.12-0.2.3.13"
+    compileOnly "curse.maven:bedrockores:2602707"
 }
 
 processResources {
