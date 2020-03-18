@@ -19,12 +19,12 @@ object QuarryBlackList {
     if (Files.exists(path)) {
       val GSON = (new GsonBuilder).registerTypeHierarchyAdapter(classOf[Entry], Entry).create()
       val r = GSON.fromJson(Files.newBufferedReader(path), classOf[Array[Entry]])
-      r.toSet
+      r.toSet + Air
     } else {
       val GSON = (new GsonBuilder).registerTypeHierarchyAdapter(classOf[Entry], Entry).setPrettyPrinting().create()
-      val s = Array(Air)
+      val s: Array[Entry] = Array(Air)
       Files.write(path, Collections.singletonList(GSON.toJson(s)))
-      s.toSet
+      s.toSet + Air
     }
   }
 
@@ -32,13 +32,13 @@ object QuarryBlackList {
     entries.exists(_.test(state, world, pos))
   }
 
-  abstract class Entry(val id: ResourceLocation) {
-    def this(id: String) = {
-      this(new ResourceLocation(QuarryPlus.modID, id))
-    }
-
+  abstract class Entry(val id: String) {
     def test(state: IBlockState, world: World, pos: BlockPos): Boolean
   }
+
+  private[this] final val ID_AIR = QuarryPlus.modID + ":blacklist_air"
+  private[this] final val ID_NAME = QuarryPlus.modID + ":blacklist_name"
+  private[this] final val ID_MOD = QuarryPlus.modID + ":blacklist_modid"
 
   object Entry extends AnyRef with JsonSerializer[Entry] with JsonDeserializer[Entry] {
     override def serialize(src: Entry, typeOfSrc: Type, context: JsonSerializationContext): JsonElement = {
@@ -59,8 +59,8 @@ object QuarryBlackList {
         id <- Option(obj.get("id")).map(_.getAsString) if obj.has("id")
       } yield {
         id match {
-          case "quarryplus:blacklist_name" => Name(new ResourceLocation(JsonUtils.getString(obj, "name")))
-          case "quarryplus:blacklist_modid" => Mod(JsonUtils.getString(obj, "modID"))
+          case ID_NAME => Name(new ResourceLocation(JsonUtils.getString(obj, "name")))
+          case ID_MOD => Mod(JsonUtils.getString(obj, "modID"))
           case _ => Air
         }
       }
@@ -68,20 +68,27 @@ object QuarryBlackList {
     }
   }
 
-  private object Air extends Entry("blacklist_air") {
+
+  private object Air extends Entry(ID_AIR) {
     override def test(state: IBlockState, world: World, pos: BlockPos): Boolean = world.isAirBlock(pos)
+
+    override def toString = "BlackList of Air"
   }
 
-  private case class Name(name: ResourceLocation) extends Entry("blacklist_name") {
+  private case class Name(name: ResourceLocation) extends Entry(ID_NAME) {
     override def test(state: IBlockState, world: World, pos: BlockPos): Boolean = state.getBlock.getRegistryName == name
+
+    override def toString = "BlackList for " + name
   }
 
-  private case class Mod(modID: String) extends Entry("blacklist_modid") {
+  private case class Mod(modID: String) extends Entry(ID_MOD) {
     override def test(state: IBlockState, world: World, pos: BlockPos): Boolean = {
       val registryName = state.getBlock.getRegistryName
       if (registryName == null) false
       else registryName.getResourceDomain == modID
     }
+
+    override def toString = "BlackList for all blocks of " + modID
   }
 
 }
