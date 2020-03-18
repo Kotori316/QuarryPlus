@@ -1,3 +1,10 @@
+# Version 12.3.4
+- Removed log message of QuarryStorage.
+- QuarryPlus keeps order of items to output to chest.
+- QuarryPlus now push fluid every 1 second.
+- Added black list for mining machines.
+- Support ores added by [Bedrock Ores](https://www.curseforge.com/minecraft/mc-mods/bedrockores).
+
 # Version 12.3.3
 - Softer attachment blocks. (Pump, ExpPump, Replacer)
 - Make tile blocks removable when IC2 new wrench is used.
