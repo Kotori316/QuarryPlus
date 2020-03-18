@@ -57,16 +57,14 @@ object QuarryBlackList {
         j <- Option(json) if j.isJsonObject
         obj = j.getAsJsonObject
         id <- Option(obj.get("id")).map(_.getAsString) if obj.has("id")
-      } yield id
-      idOpt match {
-        case Some(x) =>
-          x match {
-            case "quarryplus:blacklist_name" => Name(new ResourceLocation(JsonUtils.getString(json, "name")))
-            case "quarryplus:blacklist_modid" => Mod(JsonUtils.getString(json, "modID"))
-            case _ => Air
-          }
-        case None => Air
+      } yield {
+        id match {
+          case "quarryplus:blacklist_name" => Name(new ResourceLocation(JsonUtils.getString(obj, "name")))
+          case "quarryplus:blacklist_modid" => Mod(JsonUtils.getString(obj, "modID"))
+          case _ => Air
+        }
       }
+      idOpt.getOrElse(Air)
     }
   }
 
