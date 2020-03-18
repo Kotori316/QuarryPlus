@@ -11,7 +11,7 @@ import scala.collection.JavaConverters._
 class BedrockOreModule(machine: APowerTile, mode: () => Int, u: () => Int) extends IModule {
   override def id: String = BedrockOreModule.id
 
-  override def calledWhen: Set[IModule.ModuleType] = Set(IModule.TypeBeforeBreak)
+  override def calledWhen: Set[IModule.ModuleType] = Set(IModule.TypeBeforeBreak, IModule.TypeAfterBreak)
 
   override protected def action(when: IModule.CalledWhen): IModule.Result = {
     when match {
@@ -41,14 +41,20 @@ class BedrockOreModule(machine: APowerTile, mode: () => Int, u: () => Int) exten
                   }
                   // The block was replaced to bedrock.
                   if (machine.isInstanceOf[TileAdvQuarry] && Config.content.removeBedrock) {
-                    // AdvQuarry can remove bedrock from the world.
-                    world.setBlockToAir(pos)
+                    IModule.NotFinished // Break again to remove bedrock.
+                  } else {
+                    IModule.Done
                   }
-                  IModule.Done
                 case _ => IModule.NoAction // Skip
               }
             case _ => IModule.NoAction
           }
+        } else {
+          IModule.NoAction
+        }
+      case IModule.AfterBreak(_, _, before, _) =>
+        if (before.getBlock.getRegistryName.toString == BedrockOreModule.blockName) {
+          IModule.Done // Implies that "replaced to bedrock".
         } else {
           IModule.NoAction
         }

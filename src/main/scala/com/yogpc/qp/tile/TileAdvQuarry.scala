@@ -267,10 +267,11 @@ class TileAdvQuarry extends APowerTile
 
           val reasons = new ArrayBuffer[Reason](0)
           var additionalExp = 0
+          var goNext = true
           dig.foreach { y =>
             p.setY(y)
             val state = getWorld.getBlockState(p)
-            breakEvent(p, state, fakePlayer) { _ =>
+            val (r, go) = breakEvent(p, state, fakePlayer) { _ =>
               if (ench.silktouch && state.getBlock.canSilkHarvest(getWorld, p, state, fakePlayer)) {
                 tempList.add(ReflectionHelper.invoke(TileBasic.createStackedBlock, state.getBlock, state).asInstanceOf[ItemStack])
               } else {
@@ -283,7 +284,9 @@ class TileAdvQuarry extends APowerTile
                 additionalExp += TileBasic.getSmeltingXp(tempList.fixing.asJava, Collections.emptyList())
               tempList.clear()
               setBlock(p, state)
-            } ++=: reasons
+            }
+            r ++=: reasons
+            goNext &= go
           }
           if (shear.nonEmpty) {
             //Enchantment must be Silktouch.
@@ -293,20 +296,22 @@ class TileAdvQuarry extends APowerTile
               p.setY(y)
               val state = getWorld.getBlockState(p)
               val block = state.getBlock.asInstanceOf[Block with IShearable]
-              breakEvent(p, state, fakePlayer) { _ =>
+              val (r, go) = breakEvent(p, state, fakePlayer) { _ =>
                 tempList.addAll(block.onSheared(itemShear, getWorld, p, ench.fortune))
                 ForgeEventFactory.fireBlockHarvesting(tempList, getWorld, p, state, ench.fortune, 1f, ench.silktouch, fakePlayer)
                 list.addAll(tempList)
                 tempList.clear()
                 setBlock(p, state)
-              } ++=: reasons
+              }
+              r ++=: reasons
+              goNext &= go
             }
           }
           val l = new ItemList
           destroy.foreach { y =>
             p.setY(y)
             val state = getWorld.getBlockState(p)
-            breakEvent(p, state, fakePlayer) { _ =>
+            val (r, go) = breakEvent(p, state, fakePlayer) { _ =>
               setBlock(p, state)
               if (collectFurnaceXP) {
                 val nnl = new NotNullList(new ArrayBuffer[ItemStack]())
@@ -314,7 +319,9 @@ class TileAdvQuarry extends APowerTile
                 nnl.seq.foreach(l.add)
                 // adding exp to pump is under.
               }
-            } ++=: reasons
+            }
+            r ++=: reasons
+            goNext &= go
           }
           if (collectFurnaceXP) {
             additionalExp += TileBasic.floorFloat(l.list.map(ie => FurnaceRecipes.instance().getSmeltingResult(ie.toStack) -> ie.count).collect {
@@ -333,7 +340,8 @@ class TileAdvQuarry extends APowerTile
           }
           fakePlayer.setHeldItem(EnumHand.MAIN_HAND, VersionUtil.empty())
           modules.collectFirst { case module: ExpPumpModule => module }.foreach(_.addXp(additionalExp))
-          Right(list, reasons)
+          if (goNext) Right(list, reasons)
+          else Left(Reason.StringMessage("Module work hasn't finished yet."))
         }
 
         chunkLoad()
@@ -492,15 +500,19 @@ class TileAdvQuarry extends APowerTile
     }
   }
 
-  def breakEvent(pos: BlockPos, state: IBlockState, player: EntityPlayer)(action: BlockEvent.BreakEvent => Unit): Seq[Reason] = {
+  def breakEvent(pos: BlockPos, state: IBlockState, player: EntityPlayer)(action: BlockEvent.BreakEvent => Unit): (Seq[Reason], Boolean) = {
     val event = new BlockEvent.BreakEvent(getWorld, pos, state, player)
     MinecraftForge.EVENT_BUS.post(event)
     if (!event.isCanceled) {
-      modules.foldLeft(IModule.NoAction: IModule.Result) { case (r, m) => IModule.Result.combine(r, m.invoke(IModule.BeforeBreak(event.getExpToDrop, world, pos))) }
-      action(event)
-      Nil
+      val result = modules.foldLeft(IModule.NoAction: IModule.Result) { case (r, m) => IModule.Result.combine(r, m.invoke(IModule.BeforeBreak(event.getExpToDrop, world, pos))) }
+      if (result.canGoNext) {
+        action(event)
+        (Nil, true)
+      } else {
+        (Nil, false)
+      }
     } else {
-      Seq(Reason(pos, state))
+      (Seq(Reason(pos, state)), true)
     }
   }
 

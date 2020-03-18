@@ -19,8 +19,8 @@ trait Reason {
 
 object Reason {
 
-  private[this] final val Nano = 1000000000l
-  private[this] final val toNano = 1000000000l
+  private[this] final val Nano = 1000000000L
+  private[this] final val toNano = 1000000000L
 
   def apply(energyUsage: EnergyUsage, required: Double, amount: Double): Reason =
     new EnergyReasonImpl(energyUsage, (required * toNano).toLong, (amount * toNano).toLong)
@@ -67,6 +67,14 @@ object Reason {
     override def isEnergyIssue: Boolean = false
 
     override def toString: String = s"x = ${pos.getX}, z = ${pos.getZ} has no blocks. index = $index"
+
+    override def print(): Unit = ()
+  }
+
+  case class StringMessage(message: String) extends Reason {
+    override def isEnergyIssue: Boolean = false
+
+    override def toString = message
 
     override def print(): Unit = ()
   }
