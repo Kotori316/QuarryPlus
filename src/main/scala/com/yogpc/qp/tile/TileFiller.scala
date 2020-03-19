@@ -132,7 +132,7 @@ final class TileFiller
   // Methods
 
   def refreshModules(inv: QuarryModuleInventory): Unit = {
-    modules = inv.moduleItems().asScala.flatMap(e => e.getKey.apply(e.getValue, this).toList).toList
+    modules = IModule.defaultModules(this) ::: inv.moduleItems().asScala.flatMap(e => e.getKey.apply(e.getValue, this).toList).toList
   }
 
   def getWorkingWorld = getWorld

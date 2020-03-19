@@ -12,7 +12,6 @@ import net.minecraft.util.{JsonUtils, ResourceLocation}
 import net.minecraft.world.World
 
 object QuarryBlackList {
-  //noinspection SpellCheckingInspection
   private[this] final lazy val entries: Set[Entry] = fromJson(Paths.get("config", QuarryPlus.modID, "blacklist.json"))
 
   def fromJson(path: Path): Set[Entry] = {

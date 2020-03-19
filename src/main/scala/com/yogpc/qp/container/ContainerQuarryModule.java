@@ -2,7 +2,6 @@ package com.yogpc.qp.container;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.tile.QuarryModuleInventory;
-import com.yogpc.qp.tile.TileQuarry2;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
