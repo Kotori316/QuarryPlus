@@ -1,5 +1,9 @@
 **This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).**
 
+## Version 15.2.5
+* Fixed Solid Fuel Quarry stops when working.
+* Refactoring.
+
 ## Version 15.2.4
 * Now, pipe from Mekanism looks connected to Quarries.
 * Quarries now return dummy handlers for ITEM and FLUID capability.
