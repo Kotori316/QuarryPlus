@@ -2,6 +2,7 @@
 
 ## Version 14.1.9
 - Fixed Solid Fuel Quarry stops when working.
+- Fixed default area of Solid Fuel Quarry was facing wrong direction.
 
 ## Version 14.1.8
 - Many internal changes.
