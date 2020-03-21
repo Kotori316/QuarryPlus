@@ -398,19 +398,19 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
             if (getPos().getX() >= this.xMin && getPos().getX() <= this.xMax && getPos().getY() >= this.yMin
                 && getPos().getY() <= this.yMax && getPos().getZ() >= this.zMin && getPos().getZ() <= this.zMax) {
                 this.yMax = Integer.MIN_VALUE;
-                setDefaultRange(getPos(), facing);
+                setDefaultRange(getPos(), facing.getOpposite());
                 return;
             }
             if (this.xMax - this.xMin < 2 || this.zMax - this.zMin < 2) {
                 this.yMax = Integer.MIN_VALUE;
-                setDefaultRange(getPos(), facing);
+                setDefaultRange(getPos(), facing.getOpposite());
                 return;
             }
             if (this.yMax - this.yMin < 2)
                 this.yMax = this.yMin + 3;
             areaProvider = iMarker;
         } else {
-            setDefaultRange(getPos(), facing);
+            setDefaultRange(getPos(), facing.getOpposite());
         }
     }
 
