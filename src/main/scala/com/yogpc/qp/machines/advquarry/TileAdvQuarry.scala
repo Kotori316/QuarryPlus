@@ -192,9 +192,12 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     super.remove()
   }
 
-  override def workInTick(): Unit = {
+  override protected def getEnergyInTick(): Unit = {
+    // Module Tick Action
     modules.foreach(_.invoke(IModule.Tick(self)))
+  }
 
+  override def workInTick(): Unit = {
     action.tick(self)
     if (action.goNext(self)) {
       action = action.next(self)

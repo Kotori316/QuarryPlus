@@ -66,6 +66,7 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
     @Override
     public final void tick() {
         postLoadEvent();
+        getEnergyInTick();
         this.all += this.got;
         if (hasWorld() && !Objects.requireNonNull(getWorld()).isRemote && isWorking())
             debug.getAndTick(got);
@@ -75,6 +76,12 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
     }
 
     protected abstract void workInTick();
+
+    protected void getEnergyInTick() {
+        // NO OP
+        // If machine gets energy by itself, override this.
+        // This method is called before calculation of got energy.
+    }
 
     @Override
     public void remove() {
