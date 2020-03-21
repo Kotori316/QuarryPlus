@@ -57,8 +57,7 @@ public class TileSolidQuarry extends TileQuarry implements INamedContainerProvid
     }
 
     @Override
-    protected void S_updateEntity() {
-        if (!enabled()) return;
+    protected void getEnergyInTick() {
         if (fuelCount > 0) {
             if (getEnergy(fuelEfficiency, false) == fuelEfficiency) {
                 fuelCount -= 1;
@@ -77,7 +76,6 @@ public class TileSolidQuarry extends TileQuarry implements INamedContainerProvid
                 }
             }
         }
-        super.S_updateEntity();
     }
 
     @Override

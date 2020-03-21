@@ -86,8 +86,12 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
     }
   }
 
-  override def workInTick(): Unit = {
+  override protected def getEnergyInTick(): Unit = {
+    // Module Tick Action
     modules.foreach(_.invoke(IModule.Tick(this)))
+  }
+
+  override def workInTick(): Unit = {
     if (finished) {
       if (toStart) {
         toStart = false

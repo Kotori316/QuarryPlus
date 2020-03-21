@@ -60,9 +60,12 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     }
   }
 
-  override def workInTick(): Unit = {
+  override protected def getEnergyInTick(): Unit = {
     // Module Tick Action
     modules.foreach(_.invoke(IModule.Tick(self)))
+  }
+
+  override def workInTick(): Unit = {
     // Quarry action
     var i = 0
     while (i < enchantments.efficiency + 1) {
