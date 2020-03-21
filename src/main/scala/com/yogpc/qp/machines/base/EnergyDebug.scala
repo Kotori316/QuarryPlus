@@ -1,10 +1,5 @@
 package com.yogpc.qp.machines.base
-
-import com.google.common.base.Stopwatch
-import com.yogpc.qp.{Config, QuarryPlus}
-
-import scala.collection.mutable
-
+/*
 class EnergyDebug(tile: APowerTile) {
 
   private[this] val tileName = tile.getClass.getSimpleName
@@ -139,3 +134,4 @@ class EnergyDebug(tile: APowerTile) {
     s"Debugger for $tileName. $stopWatch t: $totalUsed"
   }
 }
+*/
