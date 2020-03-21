@@ -1,5 +1,8 @@
 **This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).**
 
+## Version 14.1.9
+- Fixed Solid Fuel Quarry stops when working.
+
 ## Version 14.1.8
 - Many internal changes.
 - Chain breaking of frame expanded
