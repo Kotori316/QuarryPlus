@@ -17,7 +17,7 @@ class BedrockOreModule(machine: APowerTile, mode: () => Int, u: () => Int) exten
     when match {
       case IModule.BeforeBreak(_, world, pos) =>
         val state = world.getBlockState(pos)
-        if (state.getBlock.getRegistryName.toString == BedrockOreModule.blockName) {
+        if (BlockHolder.isBedrockOre(state.getBlock)) {
           val tile = world.getTileEntity(pos)
           tile match {
             case oreTile: TileEntityBedrockOre =>
@@ -55,7 +55,7 @@ class BedrockOreModule(machine: APowerTile, mode: () => Int, u: () => Int) exten
           IModule.NoAction
         }
       case IModule.AfterBreak(_, _, before, _) =>
-        if (before.getBlock.getRegistryName.toString == BedrockOreModule.blockName) {
+        if (BlockHolder.isBedrockOre(before.getBlock)) {
           IModule.Done // Implies that "replaced to bedrock".
         } else {
           IModule.NoAction
@@ -69,9 +69,7 @@ class BedrockOreModule(machine: APowerTile, mode: () => Int, u: () => Int) exten
 
 object BedrockOreModule {
   final val id = QuarryPlus.modID + ":" + "module_bedrock_ore"
-  //noinspection SpellCheckingInspection
-  final val bedrock_id = "bedrockores"
-  final val blockName = bedrock_id + ":bedrock_ore"
+  final val bedrock_mod_id = BlockHolder.MOD_ID_BEDROCK_ORES
 
   def from(tile: APowerTile): BedrockOreModule = {
     tile match {

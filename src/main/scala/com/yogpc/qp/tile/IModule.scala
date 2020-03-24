@@ -46,7 +46,7 @@ object IModule {
   }
 
   def defaultModules(tile: APowerTile): List[IModule] = {
-    if (Loader.isModLoaded(BedrockOreModule.bedrock_id)) {
+    if (Loader.isModLoaded(BedrockOreModule.bedrock_mod_id)) {
       List(BedrockOreModule.from(tile))
     } else {
       Nil
