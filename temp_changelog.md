@@ -1,3 +1,6 @@
+# Version 12.3.5
+- Fixed - Quarry freezes when mining bedrock ore if you use low energy supplier(less than 1000 RF/t).
+
 # Version 12.3.4
 - Removed log message of QuarryStorage.
 - QuarryPlus keeps order of items to output to chest.
