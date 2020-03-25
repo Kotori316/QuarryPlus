@@ -241,7 +241,7 @@ static String getCommit(String branch) {
     def reader = new BufferedReader(new InputStreamReader(process.getInputStream()))
     def commit = reader.readLine()
     reader.close()
-    return commit
+    return commit ?: ""
 }
 
 task CheckCompileOption() {
