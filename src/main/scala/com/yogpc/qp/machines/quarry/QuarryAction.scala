@@ -3,7 +3,7 @@ package com.yogpc.qp.machines.quarry
 import cats.implicits._
 import com.yogpc.qp._
 import com.yogpc.qp.machines.PowerManager
-import com.yogpc.qp.machines.base.{Area, IModule}
+import com.yogpc.qp.machines.base.{Area, IModule, QuarryBlackList}
 import com.yogpc.qp.machines.modules.RemoveBedrockModule
 import com.yogpc.qp.machines.pump.TilePump
 import com.yogpc.qp.packet.PacketHandler
@@ -77,7 +77,7 @@ object QuarryAction {
           Range(firstZ, lastZ, (lastZ - firstZ).sign).map(z => new BlockPos(r.xMax, y, z)) ++
           Range(r.xMax, r.xMin, -1).map(x => new BlockPos(x, y, lastZ)) ++
           Range(lastZ, firstZ, (firstZ - lastZ).sign).map(z => new BlockPos(r.xMin, y, z))
-        }.toList
+      }.toList
 
       def b(y: Int) = {
         for (x <- List(r.xMin, r.xMax);
@@ -350,9 +350,9 @@ object QuarryAction {
   }
 
   def checkBreakable(world: World, pos: BlockPos, state: BlockState, modules: Seq[IModule]): Boolean = {
-    val unbreakable = (state.getBlock == Blocks.BEDROCK && !(Config.common.removeBedrock.get() && modules.exists(IModule.has(RemoveBedrockModule.id)))) &&
+    lazy val unbreakable = (state.getBlock == Blocks.BEDROCK && !(Config.common.removeBedrock.get() && modules.exists(IModule.has(RemoveBedrockModule.id)))) &&
       (state.getBlockHardness(world, pos) < 0 || state.getBlockHardness(world, pos).isInfinity)
-    !state.isAir(world, pos) &&
+    !QuarryBlackList.contains(state, world, pos) &&
       !unbreakable &&
       !modules.flatMap(IModule.replaceBlocks(pos.getY)).contains(state) &&
       (!TilePump.isLiquid(state) || modules.exists(IModule.hasPumpModule))

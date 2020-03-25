@@ -92,12 +92,12 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
    */
   def breakBlock(target: BlockPos, searchReplacer: Boolean = true): Ior[Reason, Unit] = {
     val state = getDiggingWorld.getBlockState(target)
-    if (state.isAir(getDiggingWorld, target)) {
+    if (QuarryBlackList.contains(state, getDiggingWorld, target)) {
       ().rightIor
     } else {
       val hardness = state.getBlockHardness(getDiggingWorld, target)
       val energy = PowerManager.calcEnergyBreak(hardness, enchantments)
-      if (TileAdvQuarry.isUnbreakable(hardness, state) || energy > getMaxStored) {
+      if (TileAdvQuarry.isUnbreakable(hardness, state, getDiggingWorld, target) || energy > getMaxStored) {
         // Not breakable
         Ior.both(Reason.message(s"$state is too hard to break. Requiring $energy."), ())
       } else {
@@ -128,7 +128,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
         return Reason.message("Module work has not finished yet.").leftIor
       }
       val state = getDiggingWorld.getBlockState(target)
-      if (TileAdvQuarry.isUnbreakable(state.getBlockHardness(getDiggingWorld, target), state)) {
+      if (TileAdvQuarry.isUnbreakable(state.getBlockHardness(getDiggingWorld, target), state, getDiggingWorld, target)) {
         return storage.rightIor // Early return for unbreakable blocks such as Bedrock.
       }
       if (TilePump.isLiquid(state)) {
@@ -366,8 +366,8 @@ object TileAdvQuarry {
 
   def maxReceiveEnergy(enchantment: EnchantmentHolder): Long = (enchantment.efficiency + 1) * MAX_STORED * APowerTile.MJToMicroMJ
 
-  def isUnbreakable(hardness: Float, state: BlockState): Boolean = {
-    hardness < 0 || hardness.isInfinity
+  def isUnbreakable(hardness: Float, state: BlockState, world: World, pos: BlockPos) = {
+    hardness < 0 || hardness.isInfinity || QuarryBlackList.contains(state, world, pos)
   }
 
 

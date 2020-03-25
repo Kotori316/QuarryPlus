@@ -37,6 +37,7 @@ import com.yogpc.qp.machines.base.IAttachable;
 import com.yogpc.qp.machines.base.IAttachment;
 import com.yogpc.qp.machines.base.IEnchantableTile;
 import com.yogpc.qp.machines.base.IModule;
+import com.yogpc.qp.machines.base.QuarryBlackList;
 import com.yogpc.qp.machines.pump.TilePump;
 import com.yogpc.qp.machines.workbench.BlockData;
 import com.yogpc.qp.utils.NBTBuilder;
@@ -162,7 +163,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         final BlockState blockState;
         BlockPos pos = new BlockPos(x, y, z);
         blockState = world.getBlockState(pos);
-        if (blockState.getBlock().isAir(blockState, world, pos))
+        if (QuarryBlackList.contains(blockState, world, pos))
             return true;
 
         BI bi = S_addDroppedItems(dropped, blockState, pos);
