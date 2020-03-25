@@ -4,7 +4,7 @@ import cats.data._
 import cats.implicits._
 import com.yogpc.qp._
 import com.yogpc.qp.machines.PowerManager
-import com.yogpc.qp.machines.base.{Area, EnergyUsage, IModule}
+import com.yogpc.qp.machines.base.{Area, EnergyUsage, IModule, QuarryBlackList}
 import com.yogpc.qp.machines.pump.TilePump
 import com.yogpc.qp.machines.quarry.QuarryFakePlayer
 import com.yogpc.qp.utils.Holder
@@ -173,7 +173,7 @@ object AdvQuarryWork {
           tile.modules.foreach(_.invoke(IModule.CollectingItem(orbs)))
         }
 
-        if (targets.forall(tile.getDiggingWorld.isAirBlock)) {
+        if (targets.forall(p => QuarryBlackList.contains(tile.getDiggingWorld.getBlockState(p), tile.getDiggingWorld, p))) {
           // Skip this xz. Insert dropped items and go ahead.
           tile.storage.addAll(storage1, log = true)
           val searchEnergy = PowerManager.calcEnergyAdvSearch(tile.enchantments.unbreaking, pos.getY - tile.yLevel + 1)
@@ -194,7 +194,7 @@ object AdvQuarryWork {
             .map { p =>
               val state = tile.getDiggingWorld.getBlockState(p)
               state.getBlockHardness(tile.getDiggingWorld, p) match {
-                case h if TileAdvQuarry.isUnbreakable(h, state) => 0
+                case h if TileAdvQuarry.isUnbreakable(h, state, tile.getDiggingWorld, p) => 0
                 case _ if state.getMaterial.isLiquid => PowerManager.calcEnergyPumpDrain(tile.enchantments.unbreaking, 1L, 0L)
                 case hardness => PowerManager.calcEnergyBreak(hardness, tile.enchantments)
               }

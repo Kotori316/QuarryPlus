@@ -5,6 +5,7 @@ import java.io.IOException
 import com.google.gson.{GsonBuilder, JsonElement}
 import com.yogpc.qp.QuarryPlus
 import com.yogpc.qp.machines.advquarry.BlockWrapper
+import com.yogpc.qp.machines.base.QuarryBlackList
 import com.yogpc.qp.machines.pb.PlacerTile
 import net.minecraft.data.{DataGenerator, DirectoryCache, IDataProvider}
 import net.minecraft.util.ResourceLocation
@@ -18,6 +19,7 @@ object QuarryPlusDataProvider {
       event.getGenerator.addProvider(new Wrapper(event.getGenerator))
       event.getGenerator.addProvider(new Advancements(event.getGenerator))
       event.getGenerator.addProvider(new BlockDrop(event.getGenerator))
+      event.getGenerator.addProvider(new BlackList(event.getGenerator))
     }
   }
 
@@ -116,6 +118,16 @@ object QuarryPlusDataProvider {
       ).map(LootTableSerializeHelper.withEnchantedDrop)
       (notMachines ++ enchantedMachines).toSeq
     }
+  }
+
+  class BlackList(g: DataGenerator) extends QuarryPlusDataProvider.DataProvider(g) {
+    override def directory: String = QuarryPlus.modID + "/blacklist"
+
+    override def data: Seq[DataBuilder] = Seq(new DataBuilder {
+      override def location = QuarryPlusDataProvider.location("blacklist")
+
+      override def build: JsonElement = QuarryBlackList.GSON.toJsonTree(QuarryBlackList.example)
+    })
   }
 
 }
