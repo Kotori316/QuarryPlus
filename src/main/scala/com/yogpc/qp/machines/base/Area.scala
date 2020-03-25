@@ -91,8 +91,10 @@ object Area {
 
   def findQuarryArea(facing: Direction, world: World, pos: BlockPos): (Area, Option[IMarker]) = {
     val mayMarker = getMarkersOnDirection(List(facing.getOpposite, facing.rotateY(), facing.rotateYCCW()), world, pos)
-    mayMarker.collectFirst(PartialFunction.fromFunction(identity)) match {
-      case Some(marker) => areaFromMarker(facing, pos, marker, world.getDimension.getType)
+    mayMarker.map(marker => areaFromMarker(facing, pos, marker, world.getDimension.getType))
+      .filter { case (_, maybeMarker) => maybeMarker.isDefined }
+      .collectFirst(PartialFunction.fromFunction(identity)) match {
+      case Some(a) => a
       case None => defaultQuarryArea(pos, facing.getOpposite, world.getDimension.getType) -> None
     }
   }
