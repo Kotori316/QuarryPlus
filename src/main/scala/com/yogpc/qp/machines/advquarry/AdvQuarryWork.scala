@@ -97,6 +97,15 @@ object AdvQuarryWork {
     }
 
     def tryPlaceFrame(tile: TileAdvQuarry, pos: BlockPos): Boolean = {
+      def place(): Boolean = {
+        if (PowerManager.useEnergyFrameBuild(tile, tile.enchantments.unbreaking)) {
+          tile.getDiggingWorld.setBlockState(target, Holder.blockFrame.getDefaultState)
+          true
+        } else {
+          false
+        }
+      }
+
       if (pos == tile.getPos) true // Go ahead
       else if (!tile.getDiggingWorld.isAirBlock(pos)) {
         // Break block before placing frame
@@ -106,13 +115,7 @@ object AdvQuarryWork {
         } else {
           tile.breakBlock(pos, searchReplacer = false) match {
             case Ior.Left(a) => Reason.printNonEnergy(a); !a.isEnergyIssue
-            case Ior.Right(_) =>
-              if (PowerManager.useEnergyFrameBuild(tile, tile.enchantments.unbreaking)) {
-                tile.getDiggingWorld.setBlockState(target, Holder.blockFrame.getDefaultState)
-                true
-              } else {
-                false
-              }
+            case Ior.Right(_) => place()
             case Ior.Both(a, _) => Reason.printNonEnergy(a)
               if (tile.getDiggingWorld.isAirBlock(pos) && PowerManager.useEnergyFrameBuild(tile, tile.enchantments.unbreaking)) {
                 tile.getDiggingWorld.setBlockState(target, Holder.blockFrame.getDefaultState)
@@ -123,12 +126,7 @@ object AdvQuarryWork {
           }
         }
       } else {
-        if (PowerManager.useEnergyFrameBuild(tile, tile.enchantments.unbreaking)) {
-          tile.getDiggingWorld.setBlockState(target, Holder.blockFrame.getDefaultState)
-          true
-        } else {
-          false
-        }
+        place()
       }
 
     }
@@ -138,11 +136,13 @@ object AdvQuarryWork {
     override def goNext(tile: TileAdvQuarry) = framePoses.isEmpty
   }
 
+  private def getNumberInTick(area: _root_.com.yogpc.qp.machines.base.Area): Int = {
+    val length = (area.xMax + area.zMax - area.xMin - area.zMin + 2) / 2
+    Math.max(length / 128, 1)
+  }
+
   class BreakBlock(area: Area, previous: Option[BlockPos]) extends AdvQuarryWork {
-    val numberInTick: Int = {
-      val length = (area.xMax + area.zMax - area.xMin - area.zMin + 2) / 2
-      Math.max(length / 128, 1)
-    }
+    val numberInTick: Int = getNumberInTick(area)
     var targetList = Area.posesInArea(area,
       previous.map(p => (x: Int, _: Int, z: Int) => z > p.getZ || x >= p.getX).getOrElse((_, _, _) => true))
 
@@ -285,10 +285,7 @@ object AdvQuarryWork {
   }
 
   class RemoveLiquid(area: Area, previous: Option[BlockPos]) extends AdvQuarryWork {
-    val numberInTick: Int = {
-      val length = (area.xMax + area.zMax - area.xMin - area.zMin + 2) / 2
-      Math.max(length / 128, 1)
-    }
+    val numberInTick: Int = getNumberInTick(area)
     var targetList = Area.posesInArea(area,
       previous.map(p => (x: Int, _: Int, z: Int) => z > p.getZ || x >= p.getX).getOrElse((_, _, _) => true))
 
