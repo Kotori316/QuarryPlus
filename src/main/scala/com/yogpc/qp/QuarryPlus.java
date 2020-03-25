@@ -9,6 +9,7 @@ import com.yogpc.qp.machines.advquarry.BlockWrapper;
 import com.yogpc.qp.machines.base.IEnchantableTile;
 import com.yogpc.qp.machines.base.IMarker;
 import com.yogpc.qp.machines.base.IRemotePowerOn;
+import com.yogpc.qp.machines.base.QuarryBlackList;
 import com.yogpc.qp.machines.workbench.WorkbenchRecipes;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.EnableCondition;
@@ -72,6 +73,7 @@ public class QuarryPlus {
         event.getServer().getResourceManager().addReloadListener(WorkbenchRecipes.Reload$.MODULE$);
         MinecraftForge.EVENT_BUS.register(WorkbenchRecipes.Reload$.MODULE$);
         event.getServer().getResourceManager().addReloadListener(BlockWrapper.Reload$.MODULE$);
+        event.getServer().getResourceManager().addReloadListener(QuarryBlackList.Reload$.MODULE$);
     }
 
     //    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
