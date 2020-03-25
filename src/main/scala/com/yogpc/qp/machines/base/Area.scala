@@ -55,12 +55,16 @@ object Area {
   val areaBox: Area => AxisAlignedBB = area =>
     new AxisAlignedBB(area.xMin, 0, area.zMin, area.xMax, area.yMax, area.zMax)
 
-  def posToArea(p1: Vec3i, p2: Vec3i, dim: DimensionType): Area = {
+  def posToArea(p1: Vec3i, p2: Vec3i, dim: DimensionType): Area = posToArea(p1, p2, dim.getId.some)
+
+  def posToArea(p1: Vec3i, p2: Vec3i, dim: Option[Int]): Area = {
     Area(Math.min(p1.getX, p2.getX), Math.min(p1.getY, p2.getY), Math.min(p1.getZ, p2.getZ),
-      Math.max(p1.getX, p2.getX), Math.max(p1.getY, p2.getY), Math.max(p1.getZ, p2.getZ), dim.getId.some)
+      Math.max(p1.getX, p2.getX), Math.max(p1.getY, p2.getY), Math.max(p1.getZ, p2.getZ), dim)
   }
 
-  def defaultQuarryArea(pos: BlockPos, facing: Direction, dim: DimensionType): Area = {
+  def defaultQuarryArea(pos: BlockPos, facing: Direction, dim: DimensionType): Area = defaultQuarryArea(pos, facing, dim.getId.some)
+
+  def defaultQuarryArea(pos: BlockPos, facing: Direction, dim: Option[Int]): Area = {
     val x = 11
     val y = (x - 1) / 2 //5
     val start = pos.offset(facing, 2)
@@ -85,7 +89,7 @@ object Area {
       if marker.hasLink
     } yield marker
 
-  def findQuarryArea(facing: Direction, world: World, pos: BlockPos) = {
+  def findQuarryArea(facing: Direction, world: World, pos: BlockPos): (Area, Option[IMarker]) = {
     val mayMarker = getMarkersOnDirection(List(facing.getOpposite, facing.rotateY(), facing.rotateYCCW()), world, pos)
     mayMarker.collectFirst(PartialFunction.fromFunction(identity)) match {
       case Some(marker) => areaFromMarker(facing, pos, marker, world.getDimension.getType)
@@ -93,7 +97,9 @@ object Area {
     }
   }
 
-  def areaFromMarker(facing: Direction, pos: BlockPos, marker: IMarker, dim: DimensionType) = {
+  def areaFromMarker(facing: Direction, pos: BlockPos, marker: IMarker, dim: DimensionType): (Area, Option[IMarker]) = areaFromMarker(facing, pos, marker, dim.getId.some)
+
+  def areaFromMarker(facing: Direction, pos: BlockPos, marker: IMarker, dim: Option[Int]): (Area, Option[IMarker]) = {
     if (marker.min().getX <= pos.getX && marker.max().getX >= pos.getX &&
       marker.min().getY <= pos.getY && marker.max().getY >= pos.getY &&
       marker.min().getZ <= pos.getZ && marker.max().getZ >= pos.getZ) {
@@ -109,7 +115,7 @@ object Area {
     }
   }
 
-  def areaLoad(nbt: CompoundNBT) = {
+  def areaLoad(nbt: CompoundNBT): Area = {
     val dim = nbt.some.filter(_.contains(NBT_DIM)).map(t => DimensionType.func_218271_a(new Dynamic(NBTDynamicOps.INSTANCE, t.get(NBT_DIM))))
     Area(nbt.getInt(NBT_X_MIN), nbt.getInt(NBT_Y_MIN), nbt.getInt(NBT_Z_MIN), nbt.getInt(NBT_X_MAX), nbt.getInt(NBT_Y_MAX), nbt.getInt(NBT_Z_MAX), dim.map(_.getId))
   }
