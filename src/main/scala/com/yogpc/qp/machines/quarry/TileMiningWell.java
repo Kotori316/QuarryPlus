@@ -84,7 +84,7 @@ public class TileMiningWell extends TileBasic implements ITickableTileEntity {
             }
             depth--;
         }
-        if (this.working)
+        if (this.working && getStoredEnergy() > 0)
             S_breakBlock(getPos().getX(), depth, getPos().getZ(), Blocks.AIR.getDefaultState());
         S_pollItems();
     }
