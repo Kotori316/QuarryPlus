@@ -123,11 +123,18 @@ object QuarryPlusDataProvider {
   class BlackList(g: DataGenerator) extends QuarryPlusDataProvider.DataProvider(g) {
     override def directory: String = QuarryPlus.modID + "/blacklist"
 
-    override def data: Seq[DataBuilder] = Seq(new DataBuilder {
-      override def location = QuarryPlusDataProvider.location("blacklist")
+    override def data: Seq[DataBuilder] = Seq(
+      new DataBuilder {
+        override def location = QuarryPlusDataProvider.location("blacklist")
 
-      override def build: JsonElement = QuarryBlackList.GSON.toJsonTree(QuarryBlackList.example)
-    })
+        override def build: JsonElement = QuarryBlackList.GSON.toJsonTree(QuarryBlackList.example1)
+      },
+      new DataBuilder {
+        override def location = QuarryPlusDataProvider.location("blacklist2")
+
+        override def build: JsonElement = QuarryBlackList.GSON.toJsonTree(QuarryBlackList.example2)
+      }
+    )
   }
 
 }

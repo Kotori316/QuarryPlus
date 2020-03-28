@@ -31,7 +31,9 @@ object QuarryBlackList {
    */
   def contains(state: BlockState, world: World, pos: BlockPos): Boolean = entries.exists(_.test(state, world, pos))
 
-  final val example: Array[Entry] = Array(Air)
+  final def example1: Array[Entry] = Array(Air)
+
+  final def example2: Array[Entry] = Array(Air, Name(Blocks.WHITE_WOOL.getRegistryName), Mod("ic2"), Ores, Tag(Tags.Blocks.STONE.getId))
 
   private var entries: Set[Entry] = Set.empty
 
@@ -52,6 +54,7 @@ object QuarryBlackList {
       src match {
         case Mod(modID) => o.addProperty("modID", modID)
         case Name(name) => o.addProperty("name", name.toString)
+        case Tag(name) => o.addProperty("tag", name.toString)
         case _ =>
       }
       LOGGER.debug(s"BlackList, $src, was serialized to $o.")
@@ -67,6 +70,7 @@ object QuarryBlackList {
         id match {
           case ID_NAME => Name(new ResourceLocation(JSONUtils.getString(obj, "name")))
           case ID_MOD => Mod(JSONUtils.getString(obj, "modID"))
+          case ID_TAG => Tag(new ResourceLocation(JSONUtils.getString(obj, "tag")))
           case ID_ORES => Ores
           case _ => Air
         }
