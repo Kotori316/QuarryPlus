@@ -28,6 +28,7 @@ import net.minecraft.world.World
 import net.minecraft.world.server.ServerWorld
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 import net.minecraftforge.common.capabilities.Capability
+import net.minecraftforge.common.util.LazyOptional
 import net.minecraftforge.common.{DimensionManager, MinecraftForge}
 import net.minecraftforge.event.ForgeEventFactory
 import net.minecraftforge.event.world.BlockEvent
@@ -246,7 +247,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     else super.getMaxRenderDistanceSquared
   }
 
-  override def getCapability[T](cap: Capability[T], side: Direction) = {
+  override def getCapability[T](cap: Capability[T], side: Direction): LazyOptional[T] = {
     Cap.asJava(Cap.make(cap, this, IRemotePowerOn.Cap.REMOTE_CAPABILITY()) orElse Cap.dummyItemOrFluid(cap) orElse super.getCapability(cap, side).asScala)
   }
 
@@ -280,7 +281,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     }
   }
 
-  override def getEnchantments = {
+  override def getEnchantments: util.Map[ResourceLocation, Integer] = {
     EnchantmentHolder.getEnchantmentMap(enchantments).collect(enchantCollector).asJava
   }
 
@@ -302,7 +303,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     s"Modules: ${modules.mkString(""",""")}",
   ).map(new StringTextComponent(_)).asJava
 
-  override def getDisplayName = super.getDisplayName
+  override def getDisplayName: ITextComponent = super.getDisplayName
 
   override def getName = new TranslationTextComponent(getDebugName)
 
@@ -356,6 +357,8 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     // Just means "stop".
     this.action = AdvQuarryWork.none
   }
+
+  override def getModules: List[IModule] = modules
 }
 
 object TileAdvQuarry {

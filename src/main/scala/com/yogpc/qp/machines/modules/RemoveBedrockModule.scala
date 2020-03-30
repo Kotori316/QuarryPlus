@@ -3,11 +3,12 @@ package com.yogpc.qp.machines.modules
 import com.yogpc.qp.Config
 import com.yogpc.qp.machines.PowerManager
 import com.yogpc.qp.machines.base._
+import com.yogpc.qp.machines.quarry.ContainerQuarryModule.HasModuleInventory
 import net.minecraft.block.{BlockState, Blocks}
 import net.minecraft.item.ItemStack
 import net.minecraft.world.dimension.DimensionType
 
-class RemoveBedrockModule(tile: APowerTile with HasStorage) extends IModule {
+class RemoveBedrockModule(tile: APowerTile with HasStorage with HasModuleInventory) extends IModule {
   override def id: String = RemoveBedrockModule.id
 
   override def calledWhen: Set[IModule.ModuleType] = Set(IModule.TypeBeforeBreak)
@@ -29,7 +30,8 @@ class RemoveBedrockModule(tile: APowerTile with HasStorage) extends IModule {
             if (Config.common.collectBedrock.get()) {
               tile.getStorage.insertItem(new ItemStack(Blocks.BEDROCK))
             }
-            world.setBlockState(pos, Blocks.AIR.getDefaultState, 0x10 | 0x3)
+            val replace = tile.getModules.flatMap(IModule.replaceBlocks(pos.getY)).headOption.getOrElse(Blocks.AIR.getDefaultState)
+            world.setBlockState(pos, replace, 0x10 | 0x3)
             IModule.Done
           } else {
             IModule.NotFinished

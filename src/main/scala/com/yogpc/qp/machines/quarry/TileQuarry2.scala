@@ -257,6 +257,8 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
 
   override def getStorage = storage
 
+  override def getModules = modules
+
   @OnlyIn(Dist.CLIENT)
   override def getStatusStrings(trackIntSeq: Seq[IntReferenceHolder]): Seq[String] = {
     import net.minecraft.client.resources.I18n

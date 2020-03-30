@@ -16,10 +16,8 @@ class ReplacerModule(val toReplace: Eval[BlockState]) extends IModule {
         val replaceState = toReplace.value
         if (before != replaceState) {
           world.setBlockState(pos, replaceState)
-          Done
-        } else {
-          NoAction
         }
+        Done
       case _ => NoAction
     }
 

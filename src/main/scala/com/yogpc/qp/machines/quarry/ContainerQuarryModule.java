@@ -3,6 +3,7 @@ package com.yogpc.qp.machines.quarry;
 import java.util.Objects;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.base.IModule;
 import com.yogpc.qp.machines.base.QuarryModuleInventory;
 import com.yogpc.qp.machines.base.SlotTile;
 import com.yogpc.qp.utils.Holder;
@@ -87,6 +88,8 @@ public class ContainerQuarryModule extends Container {
 
     public interface HasModuleInventory {
         QuarryModuleInventory moduleInv();
+
+        scala.collection.immutable.List<IModule> getModules();
     }
 
     public static class InteractionObject implements INamedContainerProvider {
