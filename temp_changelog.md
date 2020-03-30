@@ -1,5 +1,14 @@
 **This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).**
 
+## Version 15.2.6
+* Fixed replacer didn't work for bedrock.
+* added new example of blacklist
+* Fixed miningwell plus digs block before energy is sent.
+* Forge version up to 31.1.27
+* BlackList of Machines.
+* Fixed quarry area faced wrong direction.
+* Fixed area finding method seemed wrong.
+
 ## Version 15.2.5
 * Fixed Solid Fuel Quarry stops when working.
 * Refactoring.
