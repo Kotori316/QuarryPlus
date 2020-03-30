@@ -13,6 +13,7 @@ import com.yogpc.qp.machines.base.APowerTile;
 import com.yogpc.qp.machines.base.HasStorage;
 import com.yogpc.qp.machines.base.IDisabled;
 import com.yogpc.qp.machines.base.IModule;
+import com.yogpc.qp.machines.quarry.ContainerQuarryModule;
 import com.yogpc.qp.machines.replacer.ReplacerModule;
 import com.yogpc.qp.utils.Holder;
 import net.minecraft.block.BlockState;
@@ -36,7 +37,7 @@ public class ItemReplacerModule extends Item implements IDisabled, IModuleItem {
     }
 
     @Override
-    public <T extends APowerTile & HasStorage> Function<T, IModule> getModule(ItemStack stack) {
+    public <T extends APowerTile & HasStorage & ContainerQuarryModule.HasModuleInventory> Function<T, IModule> getModule(ItemStack stack) {
         BlockState state = Optional.ofNullable(stack.getTag())
             .map(tag -> tag.getString(Key_state))
             .map(s -> gson.fromJson(s, JsonObject.class))

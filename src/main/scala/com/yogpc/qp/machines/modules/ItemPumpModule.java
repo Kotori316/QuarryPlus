@@ -8,6 +8,7 @@ import com.yogpc.qp.machines.base.HasStorage;
 import com.yogpc.qp.machines.base.IDisabled;
 import com.yogpc.qp.machines.base.IModule;
 import com.yogpc.qp.machines.pump.PumpModule;
+import com.yogpc.qp.machines.quarry.ContainerQuarryModule;
 import com.yogpc.qp.utils.Holder;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -29,7 +30,7 @@ public class ItemPumpModule extends Item implements IDisabled, IModuleItem {
     }
 
     @Override
-    public <T extends APowerTile & HasStorage> Function<T, IModule> getModule(ItemStack stack) {
+    public <T extends APowerTile & HasStorage & ContainerQuarryModule.HasModuleInventory> Function<T, IModule> getModule(ItemStack stack) {
         return t -> PumpModule.fromModule(t, () -> EnchantmentHelper.getEnchantmentLevel(Enchantments.UNBREAKING, stack));
     }
 }

@@ -7,6 +7,7 @@ import com.yogpc.qp.machines.base.APowerTile;
 import com.yogpc.qp.machines.base.HasStorage;
 import com.yogpc.qp.machines.base.IDisabled;
 import com.yogpc.qp.machines.base.IModule;
+import com.yogpc.qp.machines.quarry.ContainerQuarryModule;
 import com.yogpc.qp.utils.Holder;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -21,7 +22,7 @@ public class ItemTorchModule extends Item implements IDisabled, IModuleItem {
     }
 
     @Override
-    public <T extends APowerTile & HasStorage> Function<T, IModule> getModule(ItemStack stack) {
+    public <T extends APowerTile & HasStorage & ContainerQuarryModule.HasModuleInventory> Function<T, IModule> getModule(ItemStack stack) {
         return TorchModule::get;
     }
 

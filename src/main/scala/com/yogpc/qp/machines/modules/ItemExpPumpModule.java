@@ -10,6 +10,7 @@ import com.yogpc.qp.machines.base.HasStorage;
 import com.yogpc.qp.machines.base.IDisabled;
 import com.yogpc.qp.machines.base.IModule;
 import com.yogpc.qp.machines.exppump.ExpPumpModule;
+import com.yogpc.qp.machines.quarry.ContainerQuarryModule;
 import com.yogpc.qp.utils.Holder;
 import javax.annotation.Nullable;
 import net.minecraft.client.util.ITooltipFlag;
@@ -41,7 +42,7 @@ public class ItemExpPumpModule extends Item implements IDisabled, IModuleItem {
     }
 
     @Override
-    public <T extends APowerTile & HasStorage> Function<T, IModule> getModule(ItemStack stack) {
+    public <T extends APowerTile & HasStorage & ContainerQuarryModule.HasModuleInventory> Function<T, IModule> getModule(ItemStack stack) {
         int xp = Optional.ofNullable(stack.getTag())
             .map(tag -> tag.get(Key_xp))
             .flatMap(NBTDynamicOps.INSTANCE::getNumberValue)

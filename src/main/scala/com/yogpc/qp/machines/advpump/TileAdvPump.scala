@@ -403,7 +403,9 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
     enchantmentStrings ++ energyStrings ++ modules
   }
 
-  override def getStorage = storage
+  override def getStorage: TankAdvPump = storage
+
+  override def getModules = modules
 }
 
 object TileAdvPump {

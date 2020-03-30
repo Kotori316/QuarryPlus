@@ -39,7 +39,7 @@ object IModule {
   val getId: IModule => String = _.id
   val hasReplaceModule: IModule => Boolean = has(ReplacerModule.id, TorchModule.id)
   val hasPumpModule: IModule => Boolean = has(PumpModule.ID)
-  val replaceBlocks: Int => PartialFunction[IModule, List[BlockState]] = y => {
+  val replaceBlocks: Int => IModule => List[BlockState] = y => {
     case t: TorchModule if t.y.contains_(y) => List(Blocks.TORCH.getDefaultState)
     case r: ReplacerModule => r.toReplace.toList
     case _ => Nil
