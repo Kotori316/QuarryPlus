@@ -263,7 +263,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
     @Override
     @Optional.Method(modid = QuarryPlus.Optionals.IC2_modID)
     public final int getSinkTier() {
-        return 4;
+        return 5; // IV 8192 EU/t
     }
 
     //cofh(RF) energy api implication
