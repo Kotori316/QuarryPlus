@@ -1,3 +1,6 @@
+# Version 12.3.6
+- Changed - Machines now accept "Insane Voltage"(up to 8192 EU/t).
+
 # Version 12.3.5
 - Fixed - Quarry freezes when mining bedrock ore if you use low energy supplier(less than 1000 RF/t).
 
