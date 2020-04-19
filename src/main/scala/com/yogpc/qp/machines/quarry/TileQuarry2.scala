@@ -66,9 +66,12 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   }
 
   override def workInTick(): Unit = {
+    val faster = Boolean.unbox(Config.common.fastQuarryHeadMove.get())
     // Quarry action
     var i = 0
-    while (i < enchantments.efficiency + 1) {
+    var broken = false
+    while (i < enchantments.efficiency + 1 && !broken) {
+      if (!faster) broken = true
       action.action(target)
       if (action.canGoNext(self)) {
         action = action.nextAction(self)
