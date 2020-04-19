@@ -105,6 +105,7 @@ public class DetailDataCollector {
         } catch (IOException e) {
             QuarryPlus.LOGGER.error("Errored writing file.", e);
         }
+        data.clear();
     }
 
     public static class Data {
