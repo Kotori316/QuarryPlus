@@ -96,9 +96,10 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
 //            }
             this.areaProvider = null;
         }
+        Boolean faster = Config.common().fastQuarryHeadMove().get();
         boolean broken = false;
         for (int i = 0; i < efficiency + 1 && !broken; i++) {
-            if (!Config.common().fastQuarryHeadMove().get()) broken = true;
+            if (!faster) broken = true;
             switch (this.now) {
                 case MAKE_FRAME:
                     if (S_makeFrame())
