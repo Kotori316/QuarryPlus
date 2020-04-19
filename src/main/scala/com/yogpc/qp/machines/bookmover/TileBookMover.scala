@@ -1,7 +1,7 @@
 package com.yogpc.qp.machines.bookmover
 
-import com.yogpc.qp.machines.TranslationKeys
 import com.yogpc.qp.machines.base._
+import com.yogpc.qp.machines.{PowerManager, TranslationKeys}
 import com.yogpc.qp.utils.Holder
 import com.yogpc.qp.{Config, _}
 import net.minecraft.enchantment.{EnchantmentHelper, EnchantmentType}
@@ -56,7 +56,7 @@ class TileBookMover extends APowerTile(Holder.bookMoverType) with HasInv with IT
           }
           setInventorySlotContents(0, ItemStack.EMPTY)
           setInventorySlotContents(2, copy)
-          useEnergy(getMaxStored, getMaxStored, true, EnergyUsage.BOOK_MOVER)
+          PowerManager.useEnergy(this, getMaxStored, EnergyUsage.BOOK_MOVER)
           finishWork()
         }
       }

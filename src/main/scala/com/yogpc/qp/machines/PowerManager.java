@@ -15,9 +15,11 @@ package com.yogpc.qp.machines;
 
 import com.yogpc.qp.Config;
 import com.yogpc.qp.machines.base.APowerTile;
+import com.yogpc.qp.machines.base.DetailDataCollector;
 import com.yogpc.qp.machines.base.EnchantmentHolder;
 import com.yogpc.qp.machines.base.EnergyUsage;
 import com.yogpc.qp.machines.quarry.TileMiningWell;
+import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 
 @SuppressWarnings("ClassWithTooManyFields")
@@ -45,6 +47,7 @@ public class PowerManager {
     private static long MoveHead_BP;
     private static double MoveHead_CU;// Quarry:MoveHead
 
+    @SuppressWarnings("DuplicatedCode")
     public static void configRegister() {
         long micro = APowerTile.MJToMicroMJ;
         String cat;
@@ -128,6 +131,7 @@ public class PowerManager {
         configure(pp, MiningWell_CE, efficiencyLevel, unbreakingLevel, MiningWell_CU, MiningWell_XR, MiningWell_MS, pump);
     }
 
+    @SuppressWarnings("unused")
     public static void configureLaser(final APowerTile pp, final int efficiencyLevel, final int unbreakingLevel) {
         configure(pp, Laser_CE, efficiencyLevel, unbreakingLevel, Laser_CU, Laser_XR, Laser_MS, 0);
     }
@@ -136,8 +140,26 @@ public class PowerManager {
         configure(pp, FrameBuild_CE, efficiencyLevel, unbreakingLevel, FrameBuild_CU, FrameBuild_XR, FrameBuild_MS, pump);
     }
 
+    @SuppressWarnings("unused")
     public static void configureRefinery(final APowerTile pp, final int efficiencyLevel, final int unbreakingLevel) {
         configure(pp, Refinery_CE, efficiencyLevel, unbreakingLevel, Refinery_CU, Refinery_XR, Refinery_MS, 0);
+    }
+
+    /**
+     * Consume energy.
+     *
+     * @param pp     the machine which used the energy.
+     * @param energy amount of energy. Unit is micro MJ.
+     * @param usage  What is this energy used for?
+     * @return whether energy is consumed.
+     */
+    @SuppressWarnings("deprecation")
+    public static boolean useEnergy(APowerTile pp, long energy, EnergyUsage usage) {
+        if (pp.useEnergy(energy, energy, false, usage) != energy)
+            return false;
+        pp.useEnergy(energy, energy, true, usage);
+        pp.collector.get().addData(new DetailDataCollector.Common(usage, energy));
+        return true;
     }
 
     /**
@@ -147,9 +169,11 @@ public class PowerManager {
      * @param unbreaking      unbreaking level
      * @param replacer        True if replacer is working.
      * @param force           If true, machine must consume energy even if there isn't enough energy to break block.
+     * @param state           The state of block. Used for logging.
      * @return Whether the tile used energy.
      */
-    public static boolean useEnergyBreak(final APowerTile pp, final float hardness, final int enchantmentMode, final int unbreaking, boolean replacer, boolean force) {
+    @SuppressWarnings("deprecation")
+    public static boolean useEnergyBreak(final APowerTile pp, final float hardness, final int enchantmentMode, final int unbreaking, boolean replacer, boolean force, BlockState state) {
         if (enchantmentMode == -2)
             return true;
         final long pw = (long) (calcEnergyBreak(pp, hardness, enchantmentMode, unbreaking) * (replacer ? 1.1 : 1));
@@ -157,6 +181,7 @@ public class PowerManager {
             if (pp.useEnergy(pw, pw, false, EnergyUsage.BREAK_BLOCK) != pw)
                 return false;
             pp.useEnergy(pw, pw, true, EnergyUsage.BREAK_BLOCK);
+            pp.collector.get().addData(new DetailDataCollector.Break(state, hardness, pw));
         } else {
             pp.useEnergyForce(pw, true, EnergyUsage.BREAK_BLOCK);
         }
@@ -173,9 +198,10 @@ public class PowerManager {
      */
     public static boolean useEnergyBreak(final APowerTile pp, final BlockPos pos, final EnchantmentHolder enchantment, boolean replacer, boolean force) {
         if (pp.getWorld() != null) {
-            float blockHardness = pp.getWorld().getBlockState(pos).getBlockHardness(pp.getWorld(), pos);
+            BlockState blockState = pp.getWorld().getBlockState(pos);
+            float blockHardness = blockState.getBlockHardness(pp.getWorld(), pos);
             int mode = EnchantmentHolder.enchantmentMode(enchantment);
-            return useEnergyBreak(pp, blockHardness, mode, enchantment.unbreaking(), replacer, force);
+            return useEnergyBreak(pp, blockHardness, mode, enchantment.unbreaking(), replacer, force, blockState);
         } else {
             return true;
         }
@@ -224,11 +250,13 @@ public class PowerManager {
         return calcEnergyBreak(hardness, EnchantmentHolder.enchantmentMode(enchantmentHolder), enchantmentHolder.unbreaking());
     }
 
+    @SuppressWarnings("deprecation")
     public static boolean useEnergyPump(final APowerTile pp, final int U, final long liquidsCount, final long framesToBuild) {
         final long pw = calcEnergyPumpDrain(U, liquidsCount, framesToBuild);
         if (pp.useEnergy(pw, pw, false, EnergyUsage.PUMP_FLUID) != pw)
             return false;
         pp.useEnergy(pw, pw, true, EnergyUsage.PUMP_FLUID);
+        pp.collector.get().addData(new DetailDataCollector.Pump(liquidsCount, U, framesToBuild, pw));
         return true;
     }
 
@@ -238,20 +266,19 @@ public class PowerManager {
 
     private static boolean useEnergy(final APowerTile pp, final long BP, final int U, final double CU, final int E, final double CE, EnergyUsage usage) {
         final long pw = (long) (BP / Math.pow(CE, E) / (U * CU + 1));
-        if (pp.useEnergy(pw, pw, false, usage) != pw)
-            return false;
-        pp.useEnergy(pw, pw, true, usage);
-        return true;
+        return useEnergy(pp, pw, usage);
     }
 
     public static boolean useEnergyFrameBuild(final APowerTile pp, final int U) {
         return useEnergy(pp, FrameBuild_BP, U, FrameBuild_CU, 0, 1, EnergyUsage.FRAME_BUILD);
     }
 
+    @SuppressWarnings("unused")
     public static boolean useEnergyRefinery(final APowerTile pp, final long BP, final int U, final int E) {
         return useEnergy(pp, BP, U, Refinery_CU, E, Refinery_CE, EnergyUsage.REFINERY);
     }
 
+    @SuppressWarnings("deprecation")
     public static double useEnergyQuarryHead(final APowerTile pp, final double dist, final int U) {
         double bp = (double) MoveHead_BP / APowerTile.MJToMicroMJ;
         double pw;
@@ -260,7 +287,9 @@ public class PowerManager {
         } else {
             pw = (dist / 2 - 0.05) * bp / (U * MoveHead_CU + 1);
         }
-        pw = (double) pp.useEnergy(0, (long) (pw * APowerTile.MJToMicroMJ), true, EnergyUsage.MOVE_HEAD) / APowerTile.MJToMicroMJ;
+        long used = pp.useEnergy(0, (long) (pw * APowerTile.MJToMicroMJ), true, EnergyUsage.MOVE_HEAD);
+        pw = (double) used / APowerTile.MJToMicroMJ;
+        pp.collector.get().addData(new DetailDataCollector.Common(EnergyUsage.MOVE_HEAD, used));
         return pw * (U * MoveHead_CU + 1) / bp + 0.05;
     }
 
@@ -275,6 +304,7 @@ public class PowerManager {
         return pw;
     }
 
+    @SuppressWarnings({"unused", "deprecation"})
     public static long simulateEnergyLaser(final APowerTile pp, final int U, final int F, final boolean S, final int E) {
         long pw = (long) (Laser_BP * Math.pow(Laser_CF, F) * Math.pow(Laser_CE, E) / (U * Laser_CU + 1));
         if (S) {
@@ -286,9 +316,11 @@ public class PowerManager {
         }
     }
 
+    @SuppressWarnings({"unused", "deprecation"})
     public static void useEnergyLaser(final APowerTile pp, final long power, final int U, final int F, final boolean S, boolean simulate) {
         long pw = (long) (power * Math.pow(Laser_CF, F) * (S ? Laser_CS : 1) / (U * Laser_CU + 1));
         pp.useEnergy(pw, pw, !simulate, EnergyUsage.LASER);
+        if (!simulate) pp.collector.get().addData(new DetailDataCollector.Common(EnergyUsage.LASER, pw));
     }
 
     /**

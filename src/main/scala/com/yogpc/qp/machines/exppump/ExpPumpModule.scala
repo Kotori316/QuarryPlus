@@ -5,13 +5,14 @@ import java.util.function.{IntConsumer, IntSupplier, LongPredicate}
 import cats.Eval
 import cats.data.Kleisli
 import com.yogpc.qp.QuarryPlus
+import com.yogpc.qp.machines.PowerManager
 import com.yogpc.qp.machines.base.IModule.{Done, Result}
 import com.yogpc.qp.machines.base.{APowerTile, EnergyUsage, IEnchantableTile, IModule}
 import net.minecraft.entity.item.ExperienceOrbEntity
 
 final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: Eval[Int], consumer: Option[IntConsumer]) extends IModule {
   def this(powerTile: APowerTile, consumer: Option[IntConsumer] = None) = {
-    this(e => e == powerTile.useEnergy(e, e, true, EnergyUsage.PUMP_EXP),
+    this(e => PowerManager.useEnergy(powerTile, e, EnergyUsage.PUMP_EXP),
       Eval.later(Option(powerTile)
         .collect { case ench: IEnchantableTile => ench.getEnchantments.getOrDefault(IEnchantableTile.UnbreakingID, 0).intValue() }
         .getOrElse(0)), consumer)
@@ -37,7 +38,8 @@ final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: Eval[Int], con
     val energy = getEnergy(amount).value
     if (useEnergy(energy)) {
       this.xp += amount
-      if (amount != 0) // Always true
+      // Always true
+      if (amount != 0)
         consumer.foreach(_.accept(this.xp))
     }
   }

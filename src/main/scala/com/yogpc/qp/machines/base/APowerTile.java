@@ -50,10 +50,11 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
      */
     private Object helper;//buildcraft capability helper
     protected final EnergyDebug3 debug = EnergyDebug3.apply(getClass().getSimpleName(), 100, this);
+    public final DetailDataCollector collector = DetailDataCollector.getInstance(this);
     protected boolean outputEnergyInfo = true;
     private static final scala.Function1<String, Void> logFunction = v1 -> {
         QuarryPlus.LOGGER.info(v1);
-        return (Void) null;
+        return null;
     };
 
     public APowerTile(TileEntityType<?> type) {
@@ -209,11 +210,15 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
     }
 
     /**
+     * Use {@link com.yogpc.qp.machines.PowerManager#useEnergy(APowerTile, long, EnergyUsage)} instead.
      * Energy Unit is microMJ.
      * 1MJ = 2.5EU = 10RF = 1,000,000 micro MJ
      *
      * @return the amount of used energy.
+     * @deprecated Use {@link com.yogpc.qp.machines.PowerManager#useEnergy(APowerTile, long, EnergyUsage)}
      */
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    @Deprecated
     public final long useEnergy(long min, long amount, final boolean real, EnergyUsage usage) {
         if (Config.common().noEnergy().get()) {
             debug.use(amount, !real, usage);

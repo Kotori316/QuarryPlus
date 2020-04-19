@@ -26,7 +26,7 @@ class RemoveBedrockModule(tile: APowerTile with HasStorage with HasModuleInvento
         }
         if (toRemove && Config.common.removeBedrock.get() && state.getBlock == Blocks.BEDROCK) {
           val energy = RemoveBedrockModule.calcUnbreakableEnergy(state, List(this))
-          if (tile.useEnergy(energy, energy, true, EnergyUsage.BREAK_BLOCK) == energy) {
+          if (PowerManager.useEnergy(tile, energy, EnergyUsage.BREAK_BLOCK)) {
             if (Config.common.collectBedrock.get()) {
               tile.getStorage.insertItem(new ItemStack(Blocks.BEDROCK))
             }
