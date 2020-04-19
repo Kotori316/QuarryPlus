@@ -4,11 +4,11 @@ import java.util
 
 import cats._
 import cats.implicits._
-import com.yogpc.qp.machines.TranslationKeys
 import com.yogpc.qp.machines.base._
 import com.yogpc.qp.machines.modules.IModuleItem
 import com.yogpc.qp.machines.pump.TilePump
 import com.yogpc.qp.machines.quarry.ContainerQuarryModule
+import com.yogpc.qp.machines.{PowerManager, TranslationKeys}
 import com.yogpc.qp.utils.Holder
 import com.yogpc.qp.{Config, QuarryPlus, _}
 import net.minecraft.block.{BlockState, Blocks, IBucketPickupHandler}
@@ -247,7 +247,7 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
           if (isLiquid && !isSource) {
             getWorld.removeBlock(target, false)
             nextPos()
-          } else if (useEnergy(energy, energy, true, EnergyUsage.ADV_PUMP_FLUID) == energy) {
+          } else if (PowerManager.useEnergy(this, energy, EnergyUsage.ADV_PUMP_FLUID)) {
             if (isSource && posList.forall(pos => TilePump.isLiquid(getWorld.getBlockState(pos)))) {
               val stack = new FluidStack(state.getFluidState.getFluid, FluidAttributes.BUCKET_VOLUME)
               storage.insertFluid(stack)

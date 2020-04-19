@@ -26,12 +26,8 @@ class RemoveBedrockModule(tile: APowerTile with HasStorage with HasModuleInvento
         }
         if (toRemove && Config.common.removeBedrock.get() && state.getBlock == Blocks.BEDROCK) {
           val energy = RemoveBedrockModule.calcUnbreakableEnergy(state, List(this))
-          if (tile.useEnergy(energy, energy, true, EnergyUsage.BREAK_BLOCK) == energy) {
-            val hasSilk = tile match {
-              case e: EnchantmentHolder.EnchantmentProvider => e.getEnchantmentHolder.silktouch
-              case _ => true
-            }
-            if (hasSilk && Config.common.collectBedrock.get()) {
+          if (PowerManager.useEnergy(tile, energy, EnergyUsage.BREAK_BLOCK)) {
+            if (Config.common.collectBedrock.get()) {
               tile.getStorage.insertItem(new ItemStack(Blocks.BEDROCK))
             }
             val replace = tile.getModules.flatMap(IModule.replaceBlocks(pos.getY)).headOption.getOrElse(Blocks.AIR.getDefaultState)

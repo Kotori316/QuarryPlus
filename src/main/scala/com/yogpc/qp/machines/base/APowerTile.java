@@ -49,8 +49,13 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
      * Instance of {@code buildcraft.api.mj.MjCapabilityHelper}. Null if BC isn't installed.
      */
     private Object helper;//buildcraft capability helper
-    protected final EnergyDebug debug = new EnergyDebug(this);
+    protected final EnergyDebug3 debug = EnergyDebug3.apply(getClass().getSimpleName(), 100, this);
+    public final DetailDataCollector collector = DetailDataCollector.getInstance(this);
     protected boolean outputEnergyInfo = true;
+    private static final scala.Function1<String, Void> logFunction = v1 -> {
+        QuarryPlus.LOGGER.info(v1);
+        return null;
+    };
 
     public APowerTile(TileEntityType<?> type) {
         super(type);
@@ -60,7 +65,7 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
             helper = MjReceiver.mjCapabilityHelper(this);
         }
         startListener.add(debug::start);
-        finishListener.add(debug::finish);
+        finishListener.add(() -> debug.finish().foreach(logFunction));
     }
 
     @Override
@@ -69,7 +74,7 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
         getEnergyInTick();
         this.all += this.got;
         if (hasWorld() && !Objects.requireNonNull(getWorld()).isRemote && isWorking())
-            debug.getAndTick(got);
+            debug.getAndTick(got).foreach(logFunction);
         this.got = 0;
         if (world != null && !world.isRemote && enabled() && enabledByRS() && this.all >= 0)
             workInTick();
@@ -205,11 +210,15 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
     }
 
     /**
+     * Use {@link com.yogpc.qp.machines.PowerManager#useEnergy(APowerTile, long, EnergyUsage)} instead.
      * Energy Unit is microMJ.
      * 1MJ = 2.5EU = 10RF = 1,000,000 micro MJ
      *
      * @return the amount of used energy.
+     * @deprecated Use {@link com.yogpc.qp.machines.PowerManager#useEnergy(APowerTile, long, EnergyUsage)}
      */
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    @Deprecated
     public final long useEnergy(long min, long amount, final boolean real, EnergyUsage usage) {
         if (Config.common().noEnergy().get()) {
             debug.use(amount, !real, usage);

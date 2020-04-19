@@ -177,7 +177,7 @@ object AdvQuarryWork {
           // Skip this xz. Insert dropped items and go ahead.
           tile.storage.addAll(storage1, log = true)
           val searchEnergy = PowerManager.calcEnergyAdvSearch(tile.enchantments.unbreaking, pos.getY - tile.yLevel + 1)
-          if (tile.useEnergy(searchEnergy, searchEnergy, true, EnergyUsage.ADV_CHECK_BLOCK) == searchEnergy) {
+          if (PowerManager.useEnergy(tile, searchEnergy, EnergyUsage.ADV_CHECK_BLOCK)) {
             targetList = targetList.tail
             if (targetList.nonEmpty) {
               loop(targetList.head, count + 1, Reason.allAir(pos, count) :: list)
@@ -199,8 +199,7 @@ object AdvQuarryWork {
                 case hardness => PowerManager.calcEnergyBreak(hardness, tile.enchantments)
               }
             }.sum
-          if (tile.useEnergy(energy, energy, false, EnergyUsage.ADV_BREAK_BLOCK) == energy) {
-            tile.useEnergy(energy, energy, true, EnergyUsage.ADV_BREAK_BLOCK)
+          if (PowerManager.useEnergy(tile, energy, EnergyUsage.ADV_BREAK_BLOCK)) {
             val fakePlayer = QuarryFakePlayer.get(tile.getDiggingWorld, target)
             val pickaxe = tile.getEnchantedPickaxe()
             fakePlayer.setHeldItem(Hand.MAIN_HAND, pickaxe)
@@ -214,7 +213,7 @@ object AdvQuarryWork {
                 tile.storage.addAll(storage, log = true)
 
                 val searchEnergy = PowerManager.calcEnergyAdvSearch(tile.enchantments.unbreaking, pos.getY - tile.yLevel + 1)
-                if (tile.useEnergy(searchEnergy, searchEnergy, true, EnergyUsage.ADV_CHECK_BLOCK) == searchEnergy) {
+                if (PowerManager.useEnergy(tile, searchEnergy, EnergyUsage.ADV_CHECK_BLOCK)) {
                   targetList = targetList.tail
                   reasons ::: list
                 } else {

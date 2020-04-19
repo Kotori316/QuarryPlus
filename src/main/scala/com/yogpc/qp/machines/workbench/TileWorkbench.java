@@ -21,6 +21,7 @@ import java.util.Objects;
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.InvUtils;
+import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.APowerTile;
 import com.yogpc.qp.machines.base.EnergyUsage;
@@ -61,7 +62,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
     public final NonNullList<ItemStack> inventory2 = NonNullList.withSize(18, ItemStack.EMPTY);
     public List<WorkbenchRecipes> recipesList = Collections.emptyList();
     private WorkbenchRecipes currentRecipe = WorkbenchRecipes.dummyRecipe();
-    private ItemHandler itemHandler = new ItemHandler();
+    private final ItemHandler itemHandler = new ItemHandler();
     public boolean workContinue;
     public boolean noEnergy = false;
 
@@ -73,7 +74,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
     public void workInTick() {
         if (isWorking() && world != null) {
             if (currentRecipe.microEnergy() <= getStoredEnergy()) {
-                useEnergy(currentRecipe.microEnergy(), currentRecipe.microEnergy(), true, EnergyUsage.WORKBENCH);
+                PowerManager.useEnergy(this, currentRecipe.microEnergy(), EnergyUsage.WORKBENCH);
                 if (Config.common().noEnergy().get())
                     this.setStoredEnergy(0); // Set current energy to 0 to make waiting time.
                 ItemStack stack = currentRecipe.getOutput();
