@@ -64,8 +64,9 @@ class TileQuarry2 extends APowerTile()
       // Module Tick Action
       modules.foreach(_.invoke(IModule.Tick(self)))
       // Quarry action
+      val faster = Config.content.fastQuarryHeadMove
       var i = 0
-      while (i < enchantments.efficiency + 1) {
+      do {
         action.action(target)
         if (action.canGoNext(self)) {
           action = action.nextAction(self)
@@ -76,7 +77,7 @@ class TileQuarry2 extends APowerTile()
         }
         target = action.nextTarget()
         i += 1
-      }
+      } while (i < enchantments.efficiency + 1 && faster)
       val nowState = world.getBlockState(pos)
       if (nowState.getValue(ADismCBlock.ACTING) ^ isWorking) {
         if (isWorking) {

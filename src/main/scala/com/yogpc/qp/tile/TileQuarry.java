@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 
 import buildcraft.api.core.IAreaProvider;
 import buildcraft.api.tiles.TilesAPI;
+import com.yogpc.qp.Config;
 import com.yogpc.qp.PowerManager;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
@@ -97,8 +98,10 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
             }
             this.areaProvider = null;
         }
+        boolean faster = Config.content().fastQuarryHeadMove();
         boolean broken = false;
         for (int i = 0; i < efficiency + 1 && !broken; i++) {
+            if (!faster) broken = true;
             switch (this.now) {
                 case MAKE_FRAME:
                     if (S_makeFrame())
