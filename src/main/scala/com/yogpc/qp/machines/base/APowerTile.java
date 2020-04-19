@@ -66,6 +66,7 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
         }
         startListener.add(debug::start);
         finishListener.add(() -> debug.finish().foreach(logFunction));
+        finishListener.add(collector::finish);
     }
 
     @Override
