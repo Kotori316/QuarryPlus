@@ -97,7 +97,7 @@ public class DetailDataCollector {
         List<String> collect = data.entrySet().stream()
             .map(e -> Pair.of(e.getKey() - min.orElse(0L), e.getValue()))
             .sorted(Map.Entry.comparingByKey())
-            .map(p -> p.getKey() + "," + p.getValue().energy + "," + p.getValue())
+            .map(p -> p.getKey() + "," + ((double) p.getValue().energy / APowerTile.MJToMicroMJ) + "," + p.getValue())
             .collect(Collectors.toList());
         collect.add(0, "Tick,Energy,Detail");
         try {
@@ -163,7 +163,7 @@ public class DetailDataCollector {
             return "Break{" +
                 "name='" + name + '\'' +
                 " hardness=" + hardness +
-                " e=" + e +
+                " e=" + (double) e / APowerTile.MJToMicroMJ +
                 '}';
         }
 
@@ -192,7 +192,7 @@ public class DetailDataCollector {
                 "amount=" + amount +
                 " Un-breaking=" + u +
                 " frame=" + frame +
-                " e=" + energy +
+                " e=" + (double) energy / APowerTile.MJToMicroMJ +
                 '}';
         }
 
@@ -230,7 +230,7 @@ public class DetailDataCollector {
         public String toString() {
             return "Common{" +
                 "usage=" + usage +
-                " energy=" + energy +
+                " energy=" + (double) energy / APowerTile.MJToMicroMJ +
                 '}';
         }
 
