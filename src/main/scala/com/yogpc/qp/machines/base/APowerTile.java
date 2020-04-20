@@ -93,6 +93,7 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
     public void remove() {
         super.remove();
         postUnLoadEvent();
+        if (world != null && !world.isRemote && isWorking()) finishWork();
     }
 
     @Override
