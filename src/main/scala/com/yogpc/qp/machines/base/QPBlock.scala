@@ -25,6 +25,7 @@ abstract class QPBlock(builder: Block.Properties, name: String, generator: java.
 
   override def asItem() = BlockItem
 
+  //noinspection ScalaDeprecation
   override def getRenderType(state: BlockState): BlockRenderType = BlockRenderType.MODEL
 
   override def canCreatureSpawn(state: BlockState, world: IBlockReader, pos: BlockPos, t: EntitySpawnPlacementRegistry.PlacementType, entityType: EntityType[_]) = {
@@ -42,6 +43,7 @@ abstract class QPBlock(builder: Block.Properties, name: String, generator: java.
     }
   }
 
+  //noinspection ScalaDeprecation
   override def onBlockActivated(state: BlockState, worldIn: World, pos: BlockPos, player: PlayerEntity, hand: Hand, hit: BlockRayTraceResult): ActionResultType = {
     if (Holder.tiles.get(getTileType).fold(false)(!_.enabled)) {
       if (worldIn.isRemote)
@@ -52,10 +54,12 @@ abstract class QPBlock(builder: Block.Properties, name: String, generator: java.
     }
   }
 
+  //noinspection ScalaDeprecation
   override def getComparatorInputOverride(blockState: BlockState, worldIn: World, pos: BlockPos): Int = {
     if (blockState.get(QPBlock.WORKING)) 15 else 0
   }
 
+  //noinspection ScalaDeprecation
   override def hasComparatorInputOverride(state: BlockState): Boolean = state.getProperties.contains(QPBlock.WORKING)
 
   def getTileType: TileEntityType[_ <: TileEntity]
