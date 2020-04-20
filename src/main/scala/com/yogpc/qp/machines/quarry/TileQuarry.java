@@ -600,14 +600,13 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
         return TranslationKeys.quarry;
     }
 
+    /**
+     * Get the name of this object. For players this returns their username
+     */
     @Override
     public TranslationTextComponent getName() {
         return new TranslationTextComponent(getDebugName());
     }
-
-    /**
-     * Get the name of this object. For players this returns their username
-     */
 
 
     public double headPosX, headPosY, headPosZ;

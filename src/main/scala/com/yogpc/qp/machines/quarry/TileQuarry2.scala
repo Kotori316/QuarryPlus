@@ -188,17 +188,21 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     if (!event.isCanceled) {
       val returnValue = modules.foldMap(m => m.invoke(IModule.BeforeBreak(event.getExpToDrop, world, pos)))
       if (returnValue.canGoNext) {
-        val drops = NonNullList.create[ItemStack]
-        val state = world.getBlockState(pos)
-        drops.addAll(Block.getDrops(state, world, pos, world.getTileEntity(pos), fakePlayer, pickaxe))
-        ForgeEventFactory.fireBlockHarvesting(drops, world, pos, state, self.enchantments.fortune, 1.0f, self.enchantments.silktouch, fakePlayer)
-        fakePlayer.setHeldItem(Hand.MAIN_HAND, ItemStack.EMPTY)
+        if (!world.isAirBlock(pos)) {
+          val drops = NonNullList.create[ItemStack]
+          val state = world.getBlockState(pos)
+          drops.addAll(Block.getDrops(state, world, pos, world.getTileEntity(pos), fakePlayer, pickaxe))
+          ForgeEventFactory.fireBlockHarvesting(drops, world, pos, state, self.enchantments.fortune, 1.0f, self.enchantments.silktouch, fakePlayer)
+          fakePlayer.setHeldItem(Hand.MAIN_HAND, ItemStack.EMPTY)
 
-        if (TilePump.isLiquid(state) || PowerManager.useEnergyBreak(self, pos, enchantments, modules.exists(IModule.hasReplaceModule), false)) {
-          drops.asScala.groupBy(ItemDamage.apply).view.mapValues(_.map(_.getCount).sum).toList.map { case (damage, i) => damage.toStack(i) }.foreach(storage.addItem)
-          true // true means work is finished.
+          if (TilePump.isLiquid(state) || PowerManager.useEnergyBreak(self, pos, enchantments, modules.exists(IModule.hasReplaceModule), false)) {
+            drops.asScala.groupBy(ItemDamage.apply).view.mapValues(_.map(_.getCount).sum).toList.map { case (damage, i) => damage.toStack(i) }.foreach(storage.addItem)
+            true // true means work is finished.
+          } else {
+            false
+          }
         } else {
-          false
+          true // Block is replaced to air.
         }
       } else {
         false // Module work is not finished.
@@ -267,7 +271,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     import net.minecraft.client.resources.I18n
     val enchantmentStrings = EnchantmentHolder.getEnchantmentStringSeq(this.enchantments)
     val requiresEnergy = (PowerManager.calcEnergyBreak(1.5f, this.enchantments) + PowerManager.calcEnergyQuarryHead(this, 1, enchantments.unbreaking)) /
-      APowerTile.FEtoMicroJ * (enchantments.efficiency + 1)
+      APowerTile.FEtoMicroJ * (if (Config.common.fastQuarryHeadMove.get()) enchantments.efficiency + 1 else 1)
     val energyStrings = Seq(I18n.format(TranslationKeys.REQUIRES), s"$requiresEnergy FE/t")
     val containItems = if (trackIntSeq(0).get() <= 0) I18n.format(TranslationKeys.EMPTY_ITEM) else I18n.format(TranslationKeys.CONTAIN_ITEM, trackIntSeq(0).get().toString)
     val containFluids = if (trackIntSeq(1).get() <= 0) I18n.format(TranslationKeys.EMPTY_FLUID) else I18n.format(TranslationKeys.CONTAIN_FLUID, trackIntSeq(1).get().toString)
