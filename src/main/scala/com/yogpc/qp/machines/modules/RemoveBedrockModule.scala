@@ -4,7 +4,7 @@ import com.yogpc.qp.Config
 import com.yogpc.qp.machines.PowerManager
 import com.yogpc.qp.machines.base._
 import com.yogpc.qp.machines.quarry.ContainerQuarryModule.HasModuleInventory
-import net.minecraft.block.{BlockState, Blocks}
+import net.minecraft.block.Blocks
 import net.minecraft.item.ItemStack
 import net.minecraft.world.dimension.DimensionType
 
@@ -25,8 +25,8 @@ class RemoveBedrockModule(tile: APowerTile with HasStorage with HasModuleInvento
           case _ => pos.getY > 0 && pos.getY < 5
         }
         if (toRemove && Config.common.removeBedrock.get() && state.getBlock == Blocks.BEDROCK) {
-          val energy = RemoveBedrockModule.calcUnbreakableEnergy(state, List(this))
-          if (PowerManager.useEnergy(tile, energy, EnergyUsage.BREAK_BLOCK)) {
+          val hardness = if (Config.common.collectBedrock.get()) 200f else 50f
+          if (PowerManager.useEnergyBreak(tile, hardness, 0, 0, false, false, state)) {
             if (Config.common.collectBedrock.get()) {
               tile.getStorage.insertItem(new ItemStack(Blocks.BEDROCK))
             }
@@ -48,17 +48,4 @@ class RemoveBedrockModule(tile: APowerTile with HasStorage with HasModuleInvento
 
 object RemoveBedrockModule {
   final val id = "quarryplus:module_bedrock"
-
-  def calcUnbreakableEnergy(state: BlockState, modules: List[IModule]): Long = {
-    if (state.getBlock == Blocks.BEDROCK && modules.exists(IModule.has(RemoveBedrockModule.id))) {
-      if (Config.common.collectBedrock.get()) {
-        PowerManager.calcEnergyBreak(50f, EnchantmentHolder.noEnch)
-      } else {
-        PowerManager.calcEnergyBreak(100f, EnchantmentHolder.noEnch) * 2
-      }
-    } else {
-      0L
-    }
-  }
-
 }
