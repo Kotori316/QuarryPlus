@@ -181,10 +181,10 @@ public class PowerManager {
             if (pp.useEnergy(pw, pw, false, EnergyUsage.BREAK_BLOCK) != pw)
                 return false;
             pp.useEnergy(pw, pw, true, EnergyUsage.BREAK_BLOCK);
-            pp.collector.get().addData(new DetailDataCollector.Break(state, hardness, pw));
         } else {
             pp.useEnergyForce(pw, true, EnergyUsage.BREAK_BLOCK);
         }
+        pp.collector.get().addData(new DetailDataCollector.Break(state, hardness, pw));
         return true;
     }
 
