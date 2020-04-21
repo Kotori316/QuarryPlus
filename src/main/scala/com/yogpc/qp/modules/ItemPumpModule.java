@@ -5,9 +5,9 @@ import java.util.function.Function;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.tile.APowerTile;
-import com.yogpc.qp.tile.HasStorage;
 import com.yogpc.qp.tile.IModule;
 import com.yogpc.qp.tile.PumpModule;
+import com.yogpc.qp.tile.TileQuarry2;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.init.Enchantments;
 import net.minecraft.item.EnumRarity;
@@ -36,6 +36,19 @@ public class ItemPumpModule extends Item implements IDisabled, IModuleItem {
 
     @Override
     public <T extends APowerTile> Function<T, IModule> getModule(ItemStack stack) {
-        return t -> PumpModule.fromModule(t, () -> EnchantmentHelper.getEnchantmentLevel(Enchantments.UNBREAKING, stack));
+        return t -> PumpModule.fromModule(t, () -> getUnbreakingLevel(t, stack));
+    }
+
+    private static int getUnbreakingLevel(APowerTile t, ItemStack stack) {
+        int stackLevel = EnchantmentHelper.getEnchantmentLevel(Enchantments.UNBREAKING, stack);
+        int tile;
+        if (t instanceof TileQuarry2) {
+            // Other machines can't use pump module.
+            TileQuarry2 p = (TileQuarry2) t;
+            tile = p.enchantments().unbreaking();
+        } else {
+            tile = 0;
+        }
+        return Math.max(stackLevel, tile);
     }
 }
