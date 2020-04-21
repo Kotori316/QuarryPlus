@@ -1,3 +1,9 @@
+# Version 12.3.7
+* Improved quarry work.
+* Reduced energy to remove fluids. (Unbreaking of machine will be applied.)
+* Fixed the quarry was too faster. #85
+* Log energy consumption detail.
+
 # Version 12.3.6
 - Changed - Machines now accept "Insane Voltage"(up to 8192 EU/t).
 
