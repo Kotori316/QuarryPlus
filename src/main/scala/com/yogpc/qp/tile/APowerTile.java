@@ -67,6 +67,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
         }
         startListener.add(debug::start);
         finishListener.add(debug::finish);
+        finishListener.add(collector::finish);
     }
 
     @Override
@@ -82,6 +83,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
     public void invalidate() {
         super.invalidate();
         postUnLoadEvent();
+        if (world != null && !world.isRemote && isWorking()) finishWork();
     }
 
     @Override

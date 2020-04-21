@@ -143,6 +143,8 @@ public class DetailDataCollector implements Serializable {
 
     public interface EnergyDetail {
         long getEnergy();
+
+        EnergyUsage getUsage();
     }
 
     public static class Break implements EnergyDetail, Serializable {
@@ -183,6 +185,11 @@ public class DetailDataCollector implements Serializable {
         @Override
         public long getEnergy() {
             return e;
+        }
+
+        @Override
+        public EnergyUsage getUsage() {
+            return EnergyUsage.BREAK_BLOCK;
         }
     }
 
@@ -228,6 +235,11 @@ public class DetailDataCollector implements Serializable {
         public long getEnergy() {
             return energy;
         }
+
+        @Override
+        public EnergyUsage getUsage() {
+            return EnergyUsage.PUMP_FLUID;
+        }
     }
 
     public static final class Common implements EnergyDetail, Serializable {
@@ -264,6 +276,11 @@ public class DetailDataCollector implements Serializable {
         @Override
         public long getEnergy() {
             return energy;
+        }
+
+        @Override
+        public EnergyUsage getUsage() {
+            return usage;
         }
     }
 }
