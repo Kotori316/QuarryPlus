@@ -2,13 +2,13 @@ package com.yogpc.qp.tile
 
 import java.util.function.{IntConsumer, IntSupplier, LongPredicate}
 
-import com.yogpc.qp.QuarryPlus
+import com.yogpc.qp.{PowerManager, QuarryPlus}
 import com.yogpc.qp.tile.IModule.{Done, Result}
 import net.minecraft.entity.item.EntityXPOrb
 
 final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: () => Int, consumer: Option[Int => Unit]) extends IModule {
   def this(powerTile: APowerTile, consumer: Option[IntConsumer]) = {
-    this(e => e == powerTile.useEnergy(e, e, true, EnergyUsage.PUMP_EXP),
+    this(e => PowerManager.useEnergy(powerTile, e, EnergyUsage.PUMP_EXP),
       () => Option(powerTile)
         .collect { case ench: IEnchantableTile => ench.getEnchantments }
         .flatMap(m => Option(m.get(IEnchantableTile.UnbreakingID)))
@@ -37,7 +37,7 @@ final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: () => Int, con
     if (useEnergy(energy)) {
       this.xp += amount
       if (amount != 0) // Always true
-        consumer.foreach(_.apply(this.xp))
+      consumer.foreach(_.apply(this.xp))
     }
   }
 

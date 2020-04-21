@@ -152,7 +152,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
             return true;
 
         BI bi = S_addDroppedItems(dropped, blockState, pos);
-        if (!PowerManager.useEnergyBreak(this, blockState.getBlockHardness(getWorld(), pos), bi.b, this.unbreaking, bi.b1))
+        if (!PowerManager.useEnergyBreak(this, blockState.getBlockHardness(getWorld(), pos), bi.b, this.unbreaking, bi.b1, blockState))
             return false;
         modules.forEach(iModule -> iModule.invoke(new IModule.BeforeBreak(bi.i, world, pos)));
         this.cacheItems.addAll(dropped);

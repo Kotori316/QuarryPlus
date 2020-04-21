@@ -27,7 +27,7 @@ class BedrockOreModule(machine: APowerTile, mode: () => Int, u: () => Int) exten
                   val storage = s.getStorage
                   var first = true // flag. Machine has consumed energy once for the block.
                   while (oreTile.getAmount > 0) {
-                    if (first || PowerManager.useEnergyBreak(this.machine, ore.getBlockHardness(world, pos), mode.apply(), u(), false)) {
+                    if (first || PowerManager.useEnergyBreak(this.machine, ore.getBlockHardness(world, pos), mode.apply(), u(), false, state)) {
                       first = false
                       if (mode.apply() == -1) {
                         oreTile.extract().asScala.foreach(storage.insertItem)

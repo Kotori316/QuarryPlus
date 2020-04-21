@@ -56,6 +56,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
      */
     private Object helper;//buildcraft capability helper
     protected final EnergyDebug debug = new EnergyDebug(this);
+    public final DetailDataCollector collector = DetailDataCollector.getInstance(this);
     protected boolean outputEnergyInfo = true;
 
     public APowerTile() {
@@ -161,7 +162,9 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
      * 1MJ = 2.5EU = 10RF = 1,000,000 micro MJ
      *
      * @return the amount of used energy.
+     * @deprecated Use {@link com.yogpc.qp.PowerManager#useEnergy(APowerTile, long, EnergyUsage)} instead.
      */
+    @Deprecated
     public final long useEnergy(long min, long amount, final boolean real, EnergyUsage usage) {
         if (Config.content().noEnergy()) {
             debug.use(amount, !real, usage);

@@ -242,7 +242,7 @@ class TileQuarry2 extends APowerTile()
         list
       }
       if (TilePump.isLiquid(state) || PowerManager.useEnergyBreak(self, state.getBlockHardness(world, pos),
-        TileQuarry2.enchantmentMode(enchantments), enchantments.unbreaking, modules.exists(IModule.hasReplaceModule))) {
+        TileQuarry2.enchantmentMode(enchantments), enchantments.unbreaking, modules.exists(IModule.hasReplaceModule), state)) {
         val returnValue = modules.foldLeft(IModule.NoAction: IModule.Result) { case (r, m) => IModule.Result.combine(r, m.invoke(IModule.BeforeBreak(event.getExpToDrop, world, pos))) }
         drops.asScala.groupBy(ItemDamage.apply).mapValues(_.map(_.getCount).sum).map { case (damage, i) => damage.toStack(i) }.foreach(storage.addItem)
         returnValue.canGoNext // true means work is finished.

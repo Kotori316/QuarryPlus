@@ -99,8 +99,7 @@ class TileAdvQuarry extends APowerTile
 
             if (ench.silktouch && state.getBlock.canSilkHarvest(getWorld, target, state, null)) {
               val energy = PowerManager.calcEnergyBreak(state.getBlockHardness(getWorld, target), -1, ench.unbreaking)
-              if (useEnergy(energy, energy, false, EnergyUsage.ADV_BREAK_BLOCK) == energy) {
-                useEnergy(energy, energy, true, EnergyUsage.ADV_BREAK_BLOCK)
+              if (PowerManager.useEnergy(self, energy, EnergyUsage.ADV_BREAK_BLOCK)) {
                 list.add(ReflectionHelper.invoke(TileBasic.createStackedBlock, state.getBlock, state).asInstanceOf[ItemStack])
                 getWorld.setBlockToAir(target)
               } else {
@@ -108,8 +107,7 @@ class TileAdvQuarry extends APowerTile
               }
             } else {
               val energy = PowerManager.calcEnergyBreak(state.getBlockHardness(getWorld, target), ench.fortune, ench.unbreaking)
-              if (useEnergy(energy, energy, false, EnergyUsage.ADV_BREAK_BLOCK) == energy) {
-                useEnergy(energy, energy, true, EnergyUsage.ADV_BREAK_BLOCK)
+              if (PowerManager.useEnergy(self, energy, EnergyUsage.ADV_BREAK_BLOCK)) {
                 TileBasic.getDrops(getWorld, target, state, state.getBlock, ench.fortune, list)
                 getWorld.setBlockToAir(target)
               } else {
@@ -249,8 +247,7 @@ class TileAdvQuarry extends APowerTile
 
         val consumeEnergy: B_1 => Either[Reason, C_1] = b => {
           val (list, destroy, dig, drain, rest, energy) = b
-          if (useEnergy(energy, energy, false, EnergyUsage.ADV_BREAK_BLOCK) == energy) {
-            useEnergy(energy, energy, true, EnergyUsage.ADV_BREAK_BLOCK)
+          if (PowerManager.useEnergy(self, energy, EnergyUsage.ADV_BREAK_BLOCK)) {
             Right(list, destroy, dig, drain, rest)
           } else {
             Left(Reason(EnergyUsage.ADV_BREAK_BLOCK, energy, getStoredEnergy))
@@ -362,14 +359,13 @@ class TileAdvQuarry extends APowerTile
                     Some(BlockPos.ORIGIN) -> reasons
                   } else {
                     val energy = PowerManager.calcEnergyAdvSearch(ench.unbreaking, newPos.getY - yLevel + 1)
-                    if (notEnoughEnergy || useEnergy(energy, energy, false, EnergyUsage.ADV_CHECK_BLOCK) != energy) {
+                    if (notEnoughEnergy || !PowerManager.useEnergy(self, energy, EnergyUsage.ADV_CHECK_BLOCK)) {
                       notEnoughEnergy = true
                       if (index == 0)
                         None -> Seq(Reason(EnergyUsage.ADV_CHECK_BLOCK, energy, getStoredEnergy, index))
                       else
                         Some(pre) -> (Reason(EnergyUsage.ADV_CHECK_BLOCK, energy, getStoredEnergy, index) :: reasons)
                     } else {
-                      useEnergy(energy, energy, true, EnergyUsage.ADV_CHECK_BLOCK)
                       if (index == 31) {
                         Some(newPos) -> reasons
                       } else if (BlockPos.getAllInBoxMutable(new BlockPos(newPos.getX, yLevel, newPos.getZ), newPos).asScala.exists(p => !getWorld.isAirBlock(p))) {

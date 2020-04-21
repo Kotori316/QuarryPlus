@@ -14,8 +14,10 @@
 package com.yogpc.qp;
 
 import com.yogpc.qp.tile.APowerTile;
+import com.yogpc.qp.tile.DetailDataCollector;
 import com.yogpc.qp.tile.EnergyUsage;
 import com.yogpc.qp.tile.TileMiningWell;
+import net.minecraft.block.state.IBlockState;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
@@ -172,6 +174,23 @@ public class PowerManager {
     }
 
     /**
+     * Consume energy.
+     *
+     * @param pp     the machine which used the energy.
+     * @param energy amount of energy. Unit is micro MJ.
+     * @param usage  What is this energy used for?
+     * @return whether energy is consumed.
+     */
+    @SuppressWarnings("deprecation")
+    public static boolean useEnergy(APowerTile pp, long energy, EnergyUsage usage) {
+        if (pp.useEnergy(energy, energy, false, usage) != energy)
+            return false;
+        pp.useEnergy(energy, energy, true, usage);
+        pp.collector.get().addData(new DetailDataCollector.Common(usage, energy));
+        return true;
+    }
+
+    /**
      * @param pp          power tile
      * @param hardness    block hardness
      * @param enchantMode no enchantment -> 0, silktouch -> -1, fortune -> fortune level, break canceled -> -2
@@ -179,13 +198,15 @@ public class PowerManager {
      * @param replacer    True if replacer is working.
      * @return Whether the tile used energy.
      */
-    public static boolean useEnergyBreak(final APowerTile pp, final float hardness, final int enchantMode, final int unbreaking, boolean replacer) {
+    @SuppressWarnings("deprecation")
+    public static boolean useEnergyBreak(final APowerTile pp, final float hardness, final int enchantMode, final int unbreaking, boolean replacer, IBlockState state) {
         if (enchantMode == -2)
             return true;
         final long pw = (long) (calcEnergyBreak(pp, hardness, enchantMode, unbreaking) * (replacer ? 1.1 : 1));
         if (pp.useEnergy(pw, pw, false, EnergyUsage.BREAK_BLOCK) != pw)
             return false;
         pp.useEnergy(pw, pw, true, EnergyUsage.BREAK_BLOCK);
+        pp.collector.get().addData(new DetailDataCollector.Break(state, hardness, pw));
         return true;
     }
 
@@ -222,11 +243,13 @@ public class PowerManager {
         return (long) (BP * hardness * CSP / (unbreaking * CU + 1));
     }
 
+    @SuppressWarnings("deprecation")
     public static boolean useEnergyPump(final APowerTile pp, final int U, final long liquidsCount, final long framesToBuild) {
         final long pw = calcEnergyPumpDrain(U, liquidsCount, framesToBuild);
         if (pp.useEnergy(pw, pw, false, EnergyUsage.PUMP_FLUID) != pw)
             return false;
         pp.useEnergy(pw, pw, true, EnergyUsage.PUMP_FLUID);
+        pp.collector.get().addData(new DetailDataCollector.Pump(liquidsCount, U, framesToBuild, pw));
         return true;
     }
 
@@ -234,11 +257,13 @@ public class PowerManager {
         return (long) (PumpDrain_BP * liquids / (unbreaking * PumpDrain_CU + 1) + PumpFrame_BP * frames / (unbreaking * PumpFrame_CU + 1));
     }
 
+    @SuppressWarnings("deprecation")
     private static boolean useEnergy(final APowerTile pp, final long BP, final int U, final double CU, final int E, final double CE, EnergyUsage usage) {
         final long pw = (long) (BP / Math.pow(CE, E) / (U * CU + 1));
         if (pp.useEnergy(pw, pw, false, usage) != pw)
             return false;
         pp.useEnergy(pw, pw, true, usage);
+        pp.collector.get().addData(new DetailDataCollector.Common(usage, pw));
         return true;
     }
 
@@ -250,6 +275,7 @@ public class PowerManager {
         return useEnergy(pp, BP, U, Refinery_CU, E, Refinery_CE, EnergyUsage.REFINERY);
     }
 
+    @SuppressWarnings("deprecation")
     public static double useEnergyQuarryHead(final APowerTile pp, final double dist, final int U) {
         double bp = (double) MoveHead_BP / APowerTile.MJToMicroMJ;
         double pw;
@@ -258,10 +284,13 @@ public class PowerManager {
         } else {
             pw = (dist / 2 - 0.05) * bp / (U * MoveHead_CU + 1);
         }
-        pw = (double) pp.useEnergy(0, (long) (pw * APowerTile.MJToMicroMJ), true, EnergyUsage.MOVE_HEAD) / APowerTile.MJToMicroMJ;
+        long used = pp.useEnergy(0, (long) (pw * APowerTile.MJToMicroMJ), true, EnergyUsage.MOVE_HEAD);
+        pw = (double) used / APowerTile.MJToMicroMJ;
+        pp.collector.get().addData(new DetailDataCollector.Common(EnergyUsage.MOVE_HEAD, used));
         return pw * (U * MoveHead_CU + 1) / bp + 0.05;
     }
 
+    @SuppressWarnings("deprecation")
     public static long simulateEnergyLaser(final APowerTile pp, final int U, final int F, final boolean S, final int E) {
         long pw = (long) (Laser_BP * Math.pow(Laser_CF, F) * Math.pow(Laser_CE, E) / (U * Laser_CU + 1));
         if (S) {
@@ -273,9 +302,11 @@ public class PowerManager {
         }
     }
 
+    @SuppressWarnings("deprecation")
     public static void useEnergyLaser(final APowerTile pp, final long power, final int U, final int F, final boolean S, boolean simulate) {
         long pw = (long) (power * Math.pow(Laser_CF, F) * (S ? Laser_CS : 1) / (U * Laser_CU + 1));
         pp.useEnergy(pw, pw, !simulate, EnergyUsage.LASER);
+        if (!simulate) pp.collector.get().addData(new DetailDataCollector.Common(EnergyUsage.LASER, pw));
     }
 
     /**
@@ -285,8 +316,11 @@ public class PowerManager {
         return (long) (MoveHead_BP * targetY / (MoveHead_CU * unbreakingLevel + 1) / 4);
     }
 
+    @SuppressWarnings("deprecation")
     public static boolean useEnergyFillerWork(final APowerTile filler, boolean simulate) {
         long pw = FillerWork_BP;
-        return filler.useEnergy(pw, pw, !simulate, EnergyUsage.FILLER) == pw;
+        boolean result = filler.useEnergy(pw, pw, !simulate, EnergyUsage.FILLER) == pw;
+        if (result && !simulate) filler.collector.get().addData(new DetailDataCollector.Common(EnergyUsage.FILLER, pw));
+        return result;
     }
 }
