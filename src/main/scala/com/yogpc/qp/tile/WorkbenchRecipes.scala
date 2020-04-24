@@ -1,6 +1,7 @@
 package com.yogpc.qp.tile
 
 import java.nio.file.{Files, Path}
+import java.util
 import java.util.{Collections, Comparator}
 
 import com.google.gson.{Gson, GsonBuilder, JsonArray, JsonObject}
@@ -35,6 +36,8 @@ abstract sealed class WorkbenchRecipes(val output: ItemDamage, val energy: Doubl
   def location: ResourceLocation
 
   def getOutput: ItemStack = output.toStack()
+
+  def getOutput(input: java.util.List[ItemStack]): ItemStack = getOutput
 
   override val toString = s"WorkbenchRecipes(output=$output, energy=$energy)"
 
@@ -111,6 +114,25 @@ private final class IngredientRecipe(override val location: ResourceLocation, o:
   override def inputs = seq
 
   override def getOutput = o.copy()
+}
+
+private final class EnchantmentCopyRecipe(override val location: ResourceLocation, o: ItemStack, e: Double, input: IngredientWithCount)
+  extends WorkbenchRecipes(ItemDamage(o), e, showInJEI = true) {
+  override val size = 1
+
+  override def inputs: Seq[Seq[IngredientWithCount]] = Seq(Seq(input))
+
+  override def getOutput(inputStacks: util.List[ItemStack]): ItemStack = {
+    val stack = super.getOutput
+    val tagFrom = inputStacks.asScala.find(input.matches)
+    tagFrom.flatMap(s => Option(s.getTagCompound))
+      .map(_.copy())
+      .map { t =>
+        if (stack.hasTagCompound) t.merge(stack.getTagCompound)
+        t
+      }.foreach(t => stack.setTagCompound(t))
+    stack
+  }
 }
 
 object WorkbenchRecipes {
@@ -233,6 +255,11 @@ object WorkbenchRecipes {
     )
     map.filterKeys(Config.content.enableMap).foreach {
       case (s, (item, energy, recipe)) => addSeqRecipe(item, energy, recipe, name = s)
+    }
+    if (Config.content.enableMap.contains(TileQuarry.SYMBOL) &&
+      Config.content.enableMap.contains(TileQuarry2.SYMBOL)) {
+      val r = new ResourceLocation(QuarryPlus.modID, "convert_quarry_plus")
+      recipes.put(r, new EnchantmentCopyRecipe(r, new ItemStack(blockQuarry2), 1000, new IngredientWithCount(new ItemStack(blockQuarry))))
     }
 
     val list1 = Seq(
