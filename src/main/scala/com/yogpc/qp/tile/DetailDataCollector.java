@@ -90,6 +90,7 @@ public class DetailDataCollector implements Serializable {
     }
 
     public void finish() {
+        if (data.isEmpty()) return;
         Path parent = Paths.get("debug", "quarryplus");
         if (Files.notExists(parent)) {
             try {
@@ -153,7 +154,7 @@ public class DetailDataCollector implements Serializable {
         private final long e;
 
         public Break(IBlockState block, float hardness, long e) {
-            name = Objects.toString(block);
+            name = Objects.toString(block).replace(',', ' ');
             this.hardness = hardness;
             this.e = e;
         }
