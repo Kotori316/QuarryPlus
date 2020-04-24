@@ -152,9 +152,11 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
             return true;
 
         BI bi = S_addDroppedItems(dropped, blockState, pos);
-        if (!PowerManager.useEnergyBreak(this, blockState.getBlockHardness(getWorld(), pos), bi.b, this.unbreaking, bi.b1, blockState))
-            return false;
-        modules.forEach(iModule -> iModule.invoke(new IModule.BeforeBreak(bi.i, world, pos)));
+        IBlockState maybeUpdated = world.getBlockState(pos);
+        if (!maybeUpdated.getBlock().isAir(maybeUpdated, world, pos)) {
+            if (!PowerManager.useEnergyBreak(this, blockState.getBlockHardness(getWorld(), pos), bi.b, this.unbreaking, bi.b1, blockState))
+                return false;
+        }
         this.cacheItems.addAll(dropped);
 
         if (facingMap.containsKey(FLUID_PUMP) && TilePump.isLiquid(blockState)) {
@@ -248,6 +250,8 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
                     xp += getSmeltingXp(collection, rawItems);
                 }
             }
+            final int xp2 = xp;
+            modules.forEach(iModule -> iModule.invoke(new IModule.BeforeBreak(xp2, world, pos)));
         } else {
             i = -2;
         }
