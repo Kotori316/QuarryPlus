@@ -104,6 +104,7 @@ object QuarryAction {
             }
           }
         case _ =>
+          frameTargets = frameTargets.dropWhile(p => quarry2.getWorld.getBlockState(p).getBlock == QuarryPlusI.blockFrame)
       }
     }
 
