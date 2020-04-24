@@ -1,3 +1,8 @@
+# Version 12.3.8
+* Fixed that quarry stopped when building frames.
+* Fixed the old quarry required energy before replacing fluids.
+* Added a recipe to convert from Old Quarry Plus to Quarry Plus.
+
 # Version 12.3.7
 * Improved quarry work.
 * Reduced energy to remove fluids. (Unbreaking of machine will be applied.)
