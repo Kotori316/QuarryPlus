@@ -103,11 +103,9 @@ final class Recipe(f: DataGenerator) extends QuarryPlusDataProvider.DataProvider
     // Mining Well Plus
     buffer += RecipeSerializeHelper(new FinishedWorkbenchRecipe("quarryplus:builtin_miningwell_plus", new ItemStack(Holder.blockMiningWell),
       160000, true,
-      Seq(IngredientWithCount(Ingredient.fromTag(Tags.Items.GEMS_DIAMOND), 2),
-        IngredientWithCount(Ingredient.fromTag(Tags.Items.INGOTS_GOLD), 6),
-        IngredientWithCount(Ingredient.fromTag(Tags.Items.INGOTS_IRON), 32),
-        IngredientWithCount(Ingredient.fromTag(Tags.Items.DUSTS_REDSTONE), 16),
-        IngredientWithCount(Ingredient.fromTag(Tags.Items.ENDER_PEARLS), 1),
+      Seq(IngredientWithCount(Ingredient.fromTag(Tags.Items.INGOTS_GOLD), 3),
+        IngredientWithCount(Ingredient.fromTag(Tags.Items.INGOTS_IRON), 16),
+        IngredientWithCount(Ingredient.fromTag(Tags.Items.DUSTS_REDSTONE), 8),
       )), saveName = location("miningwell_plus")).addCondition(new EnableCondition(TileMiningWell.SYMBOL))
     // Pump Plus
     buffer += RecipeSerializeHelper(new FinishedWorkbenchRecipe("quarryplus:builtin_pump_plus", new ItemStack(Holder.blockPump),
