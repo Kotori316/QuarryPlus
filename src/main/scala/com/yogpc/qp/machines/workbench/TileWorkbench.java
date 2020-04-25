@@ -196,10 +196,13 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
             setInventorySlotContents(inventory.size() + i, recipesList.get(i).getOutput());
         }
         if (getRecipeIndex() == -1) {
-            setCurrentRecipeIndex(-1);
-            finishWork();
+            if (currentRecipe.hasContent()) {
+                setCurrentRecipeIndex(-1);
+                if (world != null && !world.isRemote()) finishWork();
+            }
+
         } else {
-            startWork();
+            if (world != null && !world.isRemote()) startWork();
         }
         if (world != null && !world.isRemote()) {
             PacketHandler.sendToAround(TileMessage.create(this), world, pos);
