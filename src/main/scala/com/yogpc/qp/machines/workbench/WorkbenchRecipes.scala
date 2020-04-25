@@ -4,7 +4,6 @@ import java.nio.charset.StandardCharsets
 import java.util
 import java.util.{Collections, Comparator}
 
-import cats._
 import cats.data._
 import cats.implicits._
 import com.google.gson._
@@ -35,9 +34,9 @@ import org.apache.logging.log4j.LogManager
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._
 
-abstract sealed class WorkbenchRecipes(val location: ResourceLocation, val output: ItemElement, val energy: Long, val showInJEI: Boolean = true)
+abstract class WorkbenchRecipes(val location: ResourceLocation, val output: ItemElement, val energy: Long, val showInJEI: Boolean = true)
   extends IRecipe[TileWorkbench] with Ordered[WorkbenchRecipes] {
-  val microEnergy = energy
+  val microEnergy: Long = energy
   val size: Int
 
   def inputs: Seq[Seq[IngredientWithCount]]
@@ -47,6 +46,10 @@ abstract sealed class WorkbenchRecipes(val location: ResourceLocation, val outpu
   def hasContent: Boolean = true
 
   def getOutput: ItemStack = output.toStack
+
+  def getOutput(inputs: java.util.List[ItemStack]): ItemStack = getOutput
+
+  def subTypeName: String
 
   override val toString = s"WorkbenchRecipes(output=$output, energy=$energy)"
 
@@ -61,46 +64,36 @@ abstract sealed class WorkbenchRecipes(val location: ResourceLocation, val outpu
     }
   }
 
-  override def compare(that: WorkbenchRecipes) = WorkbenchRecipes.recipeOrdering.compare(this, that)
+  override def compare(that: WorkbenchRecipes): Int = WorkbenchRecipes.recipeOrdering.compare(this, that)
 
-  override def matches(inv: TileWorkbench, worldIn: World) = {
+  override def matches(inv: TileWorkbench, worldIn: World): Boolean = {
     val inputInv = Range(0, inv.getSizeInventory).map(inv.getStackInSlot)
     hasContent && inputs.forall(in => inputInv.exists(invStack => in.exists(_.matches(invStack))))
   }
 
-  override def getCraftingResult(inv: TileWorkbench) = getOutput
+  override def getCraftingResult(inv: TileWorkbench): ItemStack = getOutput
 
-  override def getRecipeOutput = getOutput
+  override def getRecipeOutput: ItemStack = getOutput
 
   override def canFit(width: Int, height: Int) = true
 
-  override def getSerializer = WorkbenchRecipes.Serializer
+  override def getSerializer: IRecipeSerializer[_] = WorkbenchRecipes.Serializer
 
-  override def getId = location
+  override def getId: ResourceLocation = location
 
-  override def getType = WorkbenchRecipes.recipeType
+  override def getType: IRecipeType[WorkbenchRecipes] = WorkbenchRecipes.recipeType
 
-  override def getIcon = new ItemStack(Holder.blockWorkbench)
-}
-
-private final class IngredientRecipe(location: ResourceLocation, o: ItemStack, e: Long, s: Boolean, seq: Seq[Seq[IngredientWithCount]])
-  extends WorkbenchRecipes(location, ItemElement(o), e, s) {
-  WorkbenchRecipes.LOGGER.debug("Recipe instance({}) created for {}. Input: {}", location, output, inputs)
-  override val size = seq.size
-
-  override def inputs = seq
-
-  override def getOutput = o.copy()
+  override def getIcon: ItemStack = new ItemStack(Holder.blockWorkbench)
 }
 
 private object DummyRecipe extends WorkbenchRecipes(
-  new ResourceLocation(QuarryPlus.modID, "builtin_dummy"), ItemElement.invalid, energy = 0, showInJEI = false) {
+  new ResourceLocation(QuarryPlus.modID, "builtin_dummy"), ItemElement.invalid, energy = 0L, showInJEI = false) {
   override val inputs = Nil
-  override val microEnergy = 0L
   override val inputsJ: java.util.List[java.util.List[IngredientWithCount]] = Collections.emptyList()
   override val size: Int = 0
   override val toString: String = "WorkbenchRecipe NoRecipe"
   override val hasContent: Boolean = false
+  override val subTypeName: String = "dummy"
 }
 
 object WorkbenchRecipes {
@@ -116,11 +109,15 @@ object WorkbenchRecipes {
     Ordering.by((a: WorkbenchRecipes) => a.energy) thenComparing Ordering.by((a: WorkbenchRecipes) => Item.getIdFromItem(a.output.itemDamage.item))
 
   val recipeLocation = new ResourceLocation(QuarryPlus.modID, "workbench_recipe")
-  val recipeType = IRecipeType.register[WorkbenchRecipes](recipeLocation.toString)
+  val recipeType: IRecipeType[WorkbenchRecipes] = IRecipeType.register[WorkbenchRecipes](recipeLocation.toString)
   private[this] final val conditionMessage = "Condition is false"
-  final val LOGGER = LogManager.getLogger(classOf[WorkbenchRecipes])
+  final val LOGGER = LogManager.getLogger("QuarryPlus/WorkbenchRecipe")
   private[this] final val recipeParserMapInternal: mutable.Map[String, (JsonObject, ResourceLocation) => Either[String, WorkbenchRecipes]] =
-    mutable.Map(recipeLocation.toString -> createIngredientRecipe) // Default parser.
+    mutable.Map(IngredientRecipe.subTypeName -> IngredientRecipe.createIngredientRecipe, // Default parser.
+      EnchantmentCopyRecipe.subName -> EnchantmentCopyRecipe.createRecipe)
+  private[this] final val recipePacketSerializer: mutable.Map[String, PacketSerialize] =
+    mutable.Map(IngredientRecipe.subTypeName -> IngredientRecipe.packetSerialize,
+      EnchantmentCopyRecipe.subName -> EnchantmentCopyRecipe.packetSerialize)
 
   /**
    * @return Recipes of workbench, including data pack and vanilla recipe system.
@@ -185,9 +182,9 @@ object WorkbenchRecipes {
 
   private def parse(json: JsonObject, location: ResourceLocation): Either[String, WorkbenchRecipes] = {
     if (CraftingHelper.processConditions(json, "conditions")) {
-      val recipeType: Validated[String, String] = Validated.catchNonFatal(JSONUtils.getString(json, "type"))
+      val subType: Validated[String, String] = Validated.catchNonFatal(JSONUtils.getString(json, "sub_type", IngredientRecipe.subTypeName))
         .leftMap(_.toString)
-      recipeType.toEither.flatMap(r => getRecipeParser(r).apply(json, location))
+      subType.toEither.flatMap(r => getRecipeParser(r).apply(json, location))
     } else {
       Left(conditionMessage)
     }
@@ -195,32 +192,6 @@ object WorkbenchRecipes {
 
   def getRecipeParser(recipeTypeString: String): (JsonObject, ResourceLocation) => Either[String, WorkbenchRecipes] = {
     this.recipeParserMapInternal.getOrElse(recipeTypeString, (_, _) => Left("Not a workbench recipe"))
-  }
-
-  def createIngredientRecipe(json: JsonObject, location: ResourceLocation): Either[String, WorkbenchRecipes] = {
-    type EOR[A] = ValidatedNel[String, A]
-    implicit val ff: Functor[EOR] with Semigroupal[EOR] = new Functor[EOR] with Semigroupal[EOR] {
-      override def map[A, B](fa: EOR[A])(f: A => B): EOR[B] = fa map f
-
-      override def product[A, B](fa: EOR[A], fb: EOR[B]): EOR[(A, B)] = fa product fb
-    }
-    val energy: EOR[Double] = Validated.catchNonFatal(JSONUtils.getString(json, "energy", "1000").toDouble)
-      .leftMap(e => NonEmptyList.of(e.toString))
-      .andThen(d => Validated.condNel(d > 0, d * APowerTile.MJToMicroMJ, "Energy must be over than 0"))
-    val item: EOR[ItemStack] = Validated.catchNonFatal(CraftingHelper.getItemStack(JSONUtils.getJsonObject(json, "result"), true))
-      .leftMap {
-        case jsonEx: JsonParseException => NonEmptyList.of(jsonEx.getMessage)
-        case ex => NonEmptyList.of(ex.toString)
-      }
-      .andThen(i => Validated.condNel(!i.isEmpty, i, "Result item is empty"))
-    val seq: EOR[Seq[Seq[IngredientWithCount]]] = Validated.catchNonFatal(JSONUtils.getJsonArray(json, "ingredients").asScala.map(IngredientWithCount.getSeq).toSeq)
-      .leftMap(e => NonEmptyList.of(e.toString))
-    val value = (energy, item, seq).mapN { case (e, stack, recipe) =>
-      val showInJei = JSONUtils.getBoolean(json, "showInJEI", true)
-      val id = JSONUtils.getString(json, "id", "").some.filter(_.nonEmpty).map(new ResourceLocation(_)).getOrElse(location)
-      new IngredientRecipe(id, stack, e.toLong, showInJei, recipe)
-    }
-    value.leftMap(_.mkString_(", ")).toEither
   }
 
   def registerJsonRecipe(resourceManager: IResourceManager): Unit = {
@@ -237,7 +208,7 @@ object WorkbenchRecipes {
   object Serializer extends IRecipeSerializer[WorkbenchRecipes] {
     override def read(recipeId: ResourceLocation, json: JsonObject): WorkbenchRecipes = {
       json.addProperty("id", recipeId.toString)
-      LOGGER.debug("Serializer loaded {} created from json.", recipeId)
+      LOGGER.debug("Serializer loading {} and creating from json.", recipeId)
       parse(json, recipeId) match {
         case Right(value) => value
         case Left(value) if value == conditionMessage => WorkbenchRecipes.dummyRecipe
@@ -246,43 +217,27 @@ object WorkbenchRecipes {
     }
 
     override def read(recipeId: ResourceLocation, buffer: PacketBuffer): WorkbenchRecipes = {
-      val location = buffer.readResourceLocation()
-      LOGGER.debug("Serializer loaded {} created from packet.", location)
-      val output = buffer.readItemStack()
-      val energy = buffer.readLong()
-      val showInJEI = buffer.readBoolean()
-
-      val recipeSize = buffer.readVarInt()
-      val builder = Seq.newBuilder[Seq[IngredientWithCount]]
-      for (_ <- 0 until recipeSize) {
-        val b2 = Seq.newBuilder[IngredientWithCount]
-        val size = buffer.readVarInt()
-        for (_ <- 0 until size) {
-          b2 += IngredientWithCount.readFromBuffer(buffer)
-        }
-        builder += b2.result()
-      }
-      new IngredientRecipe(location, output, energy, showInJEI, builder.result())
+      val subName = buffer.readString()
+      recipePacketSerializer.get(subName).map(_.read(recipeId, buffer)).getOrElse(DummyRecipe)
     }
 
     override def write(buffer: PacketBuffer, recipe: WorkbenchRecipes): Unit = {
-      buffer.writeResourceLocation(recipe.location)
-      buffer.writeItemStack(recipe.getOutput)
-      buffer.writeLong(recipe.energy)
-      buffer.writeBoolean(recipe.showInJEI)
-
-      buffer.writeVarInt(recipe.size)
-      recipe.inputs.foreach { s =>
-        buffer.writeVarInt(s.size)
-        s.foreach(_.writeToBuffer(buffer))
-      }
+      val subName = recipe.subTypeName
+      buffer.writeString(subName)
+      recipePacketSerializer.get(subName).foreach(_.write(buffer, recipe))
     }
 
     override def setRegistryName(name: ResourceLocation) = throw new UnsupportedOperationException("Changing registry name is not allowed.")
 
-    override def getRegistryName = recipeLocation
+    override def getRegistryName: ResourceLocation = recipeLocation
 
-    override def getRegistryType = classOf[IRecipeSerializer[_]]
+    override def getRegistryType: Class[IRecipeSerializer[_]] = classOf[IRecipeSerializer[_]]
+  }
+
+  trait PacketSerialize {
+    def read(recipeId: ResourceLocation, buffer: PacketBuffer): WorkbenchRecipes
+
+    def write(buffer: PacketBuffer, recipe: WorkbenchRecipes): Unit
   }
 
   object Reload extends JsonReloadListener(new GsonBuilder().setPrettyPrinting().disableHtmlEscaping.create, QuarryPlus.modID + "/workbench") {

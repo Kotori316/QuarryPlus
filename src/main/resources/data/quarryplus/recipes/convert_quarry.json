@@ -1,0 +1,25 @@
+{
+  "type": "quarryplus:workbench_recipe",
+  "id": "quarryplus:convert_quarry",
+  "sub_type": "copy_enchantment",
+  "enchantment_from": {
+    "item": "quarryplus:quarryplus",
+    "count": 1
+  },
+  "ingredients": [ ],
+  "energy": 1000.0,
+  "result": {
+    "item": "quarryplus:quarry",
+    "count": 1
+  },
+  "conditions": [
+    {
+      "value": "NewQuarry",
+      "type": "quarryplus:machine_enabled"
+    },
+    {
+      "value": "QuarryPlus",
+      "type": "quarryplus:machine_enabled"
+    }
+  ]
+}
