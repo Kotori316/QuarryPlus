@@ -90,6 +90,7 @@ public class DetailDataCollector implements Serializable {
     }
 
     public void finish() {
+        if (data.isEmpty()) return;
         Path parent = Paths.get("debug", "quarryplus");
         if (Files.notExists(parent)) {
             try {
