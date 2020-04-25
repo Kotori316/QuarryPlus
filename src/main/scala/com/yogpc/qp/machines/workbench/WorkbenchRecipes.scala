@@ -119,6 +119,8 @@ object WorkbenchRecipes {
   val recipeType = IRecipeType.register[WorkbenchRecipes](recipeLocation.toString)
   private[this] final val conditionMessage = "Condition is false"
   final val LOGGER = LogManager.getLogger(classOf[WorkbenchRecipes])
+  private[this] final val recipeParserMapInternal: mutable.Map[String, (JsonObject, ResourceLocation) => Either[String, WorkbenchRecipes]] =
+    mutable.Map(recipeLocation.toString -> createIngredientRecipe) // Default parser.
 
   /**
    * @return Recipes of workbench, including data pack and vanilla recipe system.
@@ -182,14 +184,26 @@ object WorkbenchRecipes {
   }
 
   private def parse(json: JsonObject, location: ResourceLocation): Either[String, WorkbenchRecipes] = {
+    if (CraftingHelper.processConditions(json, "conditions")) {
+      val recipeType: Validated[String, String] = Validated.catchNonFatal(JSONUtils.getString(json, "type"))
+        .leftMap(_.toString)
+      recipeType.toEither.flatMap(r => getRecipeParser(r).apply(json, location))
+    } else {
+      Left(conditionMessage)
+    }
+  }
+
+  def getRecipeParser(recipeTypeString: String): (JsonObject, ResourceLocation) => Either[String, WorkbenchRecipes] = {
+    this.recipeParserMapInternal.getOrElse(recipeTypeString, (_, _) => Left("Not a workbench recipe"))
+  }
+
+  def createIngredientRecipe(json: JsonObject, location: ResourceLocation): Either[String, WorkbenchRecipes] = {
     type EOR[A] = ValidatedNel[String, A]
     implicit val ff: Functor[EOR] with Semigroupal[EOR] = new Functor[EOR] with Semigroupal[EOR] {
       override def map[A, B](fa: EOR[A])(f: A => B): EOR[B] = fa map f
 
       override def product[A, B](fa: EOR[A], fb: EOR[B]): EOR[(A, B)] = fa product fb
     }
-    val cond: EOR[Unit] = Validated.condNel(CraftingHelper.processConditions(json, "conditions"), (), conditionMessage)
-    val recipeType: EOR[Unit] = Validated.condNel(JSONUtils.getString(json, "type") == recipeLocation.toString, (), "Not a workbench recipe")
     val energy: EOR[Double] = Validated.catchNonFatal(JSONUtils.getString(json, "energy", "1000").toDouble)
       .leftMap(e => NonEmptyList.of(e.toString))
       .andThen(d => Validated.condNel(d > 0, d * APowerTile.MJToMicroMJ, "Energy must be over than 0"))
@@ -201,7 +215,7 @@ object WorkbenchRecipes {
       .andThen(i => Validated.condNel(!i.isEmpty, i, "Result item is empty"))
     val seq: EOR[Seq[Seq[IngredientWithCount]]] = Validated.catchNonFatal(JSONUtils.getJsonArray(json, "ingredients").asScala.map(IngredientWithCount.getSeq).toSeq)
       .leftMap(e => NonEmptyList.of(e.toString))
-    val value = (cond, recipeType, energy, item, seq).mapN { case (_, _, e, stack, recipe) =>
+    val value = (energy, item, seq).mapN { case (e, stack, recipe) =>
       val showInJei = JSONUtils.getBoolean(json, "showInJEI", true)
       val id = JSONUtils.getString(json, "id", "").some.filter(_.nonEmpty).map(new ResourceLocation(_)).getOrElse(location)
       new IngredientRecipe(id, stack, e.toLong, showInJei, recipe)
