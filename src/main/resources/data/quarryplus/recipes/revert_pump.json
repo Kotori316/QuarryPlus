@@ -9,5 +9,18 @@
   "result": {
     "item": "quarryplus:pumpplus",
     "count": 1
-  }
+  },
+  "conditions": [
+    {
+      "value": {
+        "value": "WorkbenchPlus",
+        "type": "quarryplus:machine_enabled"
+      },
+      "type": "forge:not"
+    },
+    {
+      "value": "PumpPlus",
+      "type": "quarryplus:machine_enabled"
+    }
+  ]
 }

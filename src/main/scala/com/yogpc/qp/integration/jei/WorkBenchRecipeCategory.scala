@@ -5,12 +5,12 @@ import java.util.{Collections, ArrayList => AList, List => JList}
 import com.yogpc.qp.QuarryPlus
 import com.yogpc.qp.integration.jei.WorkBenchRecipeCategory._
 import com.yogpc.qp.machines.base.APowerTile
-import com.yogpc.qp.machines.workbench.WorkbenchRecipes
+import com.yogpc.qp.machines.workbench.{EnchantmentCopyRecipe, WorkbenchRecipes}
 import com.yogpc.qp.utils.Holder
 import mezz.jei.api.constants.VanillaTypes
 import mezz.jei.api.gui.IRecipeLayout
-import mezz.jei.api.gui.drawable.IDrawable
 import mezz.jei.api.gui.drawable.IDrawableAnimated.StartDirection
+import mezz.jei.api.gui.drawable.{IDrawable, IDrawableAnimated, IDrawableStatic}
 import mezz.jei.api.helpers.IGuiHelper
 import mezz.jei.api.ingredients.IIngredients
 import mezz.jei.api.recipe.category.IRecipeCategory
@@ -24,8 +24,8 @@ import scala.jdk.CollectionConverters._
 class WorkBenchRecipeCategory(guiHelper: IGuiHelper) extends IRecipeCategory[WorkbenchRecipes] {
   //4, 13 => 175, 94
 
-  val bar = guiHelper.createDrawable(backGround, xOff, 87, 160, 4)
-  val animateBar = guiHelper.createAnimatedDrawable(bar, 300, StartDirection.LEFT, false)
+  val bar: IDrawableStatic = guiHelper.createDrawable(backGround, xOff, 87, 160, 4)
+  val animateBar: IDrawableAnimated = guiHelper.createAnimatedDrawable(bar, 300, StartDirection.LEFT, false)
 
   override val getBackground: IDrawable = guiHelper.createDrawable(backGround, xOff, yOff, 167, 86)
 
@@ -47,16 +47,21 @@ class WorkBenchRecipeCategory(guiHelper: IGuiHelper) extends IRecipeCategory[Wor
 
   override def getTitle: String = I18n.format(Holder.blockWorkbench.getTranslationKey)
 
-  override val getUid = UID
+  override val getUid: ResourceLocation = UID
 
   override def draw(recipe: WorkbenchRecipes, mouseX: Double, mouseY: Double): Unit = {
     animateBar.draw(4, 60)
-    Minecraft.getInstance().fontRenderer.drawString((recipe.energy.toDouble / APowerTile.MJToMicroMJ).toString + "MJ", 36 - xOff, 70 - yOff, 0x404040)
+    if (!recipe.isInstanceOf[EnchantmentCopyRecipe]) {
+      Minecraft.getInstance().fontRenderer.drawString((recipe.energy.toDouble / APowerTile.MJToMicroMJ).toString + "MJ", 36 - xOff, 70 - yOff, 0x404040)
+    } else {
+      Minecraft.getInstance().fontRenderer.drawString((recipe.energy.toDouble / APowerTile.MJToMicroMJ).toString + "MJ", 36 - xOff, 67 - yOff, 0x404040)
+      Minecraft.getInstance().fontRenderer.drawString("Keeps enchantments", 36 - xOff, 77 - yOff, 0x404040)
+    }
   }
 
-  override def getRecipeClass = classOf[WorkbenchRecipes]
+  override def getRecipeClass: Class[WorkbenchRecipes] = classOf[WorkbenchRecipes]
 
-  override val getIcon = guiHelper.createDrawableIngredient(new ItemStack(Holder.blockWorkbench))
+  override val getIcon: IDrawable = guiHelper.createDrawableIngredient(new ItemStack(Holder.blockWorkbench))
 
   override def setIngredients(recipe: WorkbenchRecipes, ingredients: IIngredients): Unit = {
     val inputs = new AList[JList[ItemStack]](recipe.size)

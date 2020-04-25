@@ -7,7 +7,19 @@
     }
   ],
   "result": {
-    "item": "quarryplus:pump_module",
-    "count": 1
-  }
+    "item": "quarryplus:pump_module"
+  },
+  "conditions": [
+    {
+      "value": {
+        "value": "WorkbenchPlus",
+        "type": "quarryplus:machine_enabled"
+      },
+      "type": "forge:not"
+    },
+    {
+      "value": "ModulePump",
+      "type": "quarryplus:machine_enabled"
+    }
+  ]
 }
