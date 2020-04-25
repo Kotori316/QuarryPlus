@@ -12,7 +12,7 @@ import com.yogpc.qp.machines.marker.TileMarker
 import com.yogpc.qp.machines.mover.BlockMover
 import com.yogpc.qp.machines.pb.PlacerTile
 import com.yogpc.qp.machines.pump.TilePump
-import com.yogpc.qp.machines.quarry.{BlockSolidQuarry, TileMiningWell, TileQuarry2}
+import com.yogpc.qp.machines.quarry.{BlockSolidQuarry, TileMiningWell, TileQuarry, TileQuarry2}
 import com.yogpc.qp.machines.replacer.TileReplacer
 import com.yogpc.qp.machines.workbench.{IngredientWithCount, TileWorkbench}
 import com.yogpc.qp.utils.{EnableCondition, EnchantmentIngredient, Holder, QuarryConfigCondition}
@@ -302,7 +302,16 @@ final class Recipe(f: DataGenerator) extends QuarryPlusDataProvider.DataProvider
       SOLID_QUARRY :: WORKBENCH_PLUS :: PLACER_PLUS :: Nil
   }
 
-  override def data: List[RecipeSerializeHelper] = workbenchRecipes ::: craftingRecipes
+  def enchantmentCopyRecipes: List[RecipeSerializeHelper] = {
+    val buffer = new ListBuffer[RecipeSerializeHelper]
+    buffer += RecipeSerializeHelper(FinishedCopyRecipe("quarryplus:convert_quarry", new ItemStack(Holder.blockQuarry2), 1000d,
+      IngredientWithCount(Ingredient.fromItems(Holder.blockQuarry), 1), Nil
+    )).addCondition(new EnableCondition(TileQuarry.SYMBOL)).addCondition(new EnableCondition(TileQuarry2.SYMBOL))
+
+    buffer.result()
+  }
+
+  override def data: List[RecipeSerializeHelper] = workbenchRecipes ::: craftingRecipes ::: enchantmentCopyRecipes
 
   override def directory = "recipes"
 }
