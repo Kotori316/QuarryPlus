@@ -11,6 +11,13 @@
   },
   "conditions": [
     {
+      "value": {
+        "value": "WorkbenchPlus",
+        "type": "quarryplus:machine_enabled"
+      },
+      "type": "forge:not"
+    },
+    {
       "value": "ModulePump",
       "type": "quarryplus:machine_enabled"
     }

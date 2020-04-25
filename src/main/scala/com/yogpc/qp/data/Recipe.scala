@@ -233,6 +233,7 @@ final class Recipe(f: DataGenerator) extends QuarryPlusDataProvider.DataProvider
         .setGroup(MODULE_RECIPE_GROUP),
       location("pump_module"))
       .addCondition(new EnableCondition(Holder.itemPumpModule.getSymbol))
+      .addCondition(new NotCondition(new EnableCondition(TileWorkbench.SYMBOL)))
 
     val REPLACER_MODULE = RecipeSerializeHelper.by(
       ShapelessRecipeBuilder.shapelessRecipe(Holder.itemReplacerModule)
@@ -253,6 +254,7 @@ final class Recipe(f: DataGenerator) extends QuarryPlusDataProvider.DataProvider
         .setGroup(MODULE_RECIPE_GROUP),
       location("revert_pump")
     ).addCondition(new EnableCondition(TilePump.SYMBOL))
+      .addCondition(new NotCondition(new EnableCondition(TileWorkbench.SYMBOL)))
     val REVERT_REPLACER = RecipeSerializeHelper.by(
       ShapelessRecipeBuilder.shapelessRecipe(Holder.blockReplacer)
         .addIngredient(Holder.itemReplacerModule)
@@ -304,10 +306,20 @@ final class Recipe(f: DataGenerator) extends QuarryPlusDataProvider.DataProvider
 
   def enchantmentCopyRecipes: List[RecipeSerializeHelper] = {
     val buffer = new ListBuffer[RecipeSerializeHelper]
+    // Convert quarry
     buffer += RecipeSerializeHelper(FinishedCopyRecipe("quarryplus:convert_quarry", new ItemStack(Holder.blockQuarry2), 1000d,
       IngredientWithCount(Ingredient.fromItems(Holder.blockQuarry), 1), Nil
     )).addCondition(new EnableCondition(TileQuarry.SYMBOL)).addCondition(new EnableCondition(TileQuarry2.SYMBOL))
 
+    // Pump Module from Pump Plus
+    buffer += RecipeSerializeHelper(FinishedCopyRecipe("quarryplus:pump_module_workbench", new ItemStack(Holder.itemPumpModule), 1000d,
+      IngredientWithCount(Ingredient.fromItems(Holder.blockPump), 1), Nil
+    )).addCondition(new EnableCondition(Holder.itemPumpModule.getSymbol))
+
+    // Pump Plus from Pump Module
+    buffer += RecipeSerializeHelper(FinishedCopyRecipe("quarryplus:revert_pump_workbench", new ItemStack(Holder.blockPump), 1000d,
+      IngredientWithCount(Ingredient.fromItems(Holder.itemPumpModule), 1), Nil
+    )).addCondition(new EnableCondition(TilePump.SYMBOL))
     buffer.result()
   }
 
