@@ -12,16 +12,18 @@
  */
 package com.yogpc.qp.machines.pump
 
+import java.util.function.Predicate
+
 import com.yogpc.qp.Config
 import com.yogpc.qp.machines.base.BlockItemEnchantable
 import com.yogpc.qp.machines.base.IEnchantableItem.{FORTUNE, SILKTOUCH, UNBREAKING}
 import com.yogpc.qp.machines.bookmover.BlockBookMover
 import net.minecraft.block.Block
-import net.minecraft.enchantment.{EnchantmentHelper, Enchantments}
+import net.minecraft.enchantment.{Enchantment, EnchantmentHelper, Enchantments}
 import net.minecraft.item.{Item, ItemStack}
 
 class BlockItemPump(b: Block, prop: Item.Properties) extends BlockItemEnchantable(b, prop) {
-  override def tester(is: ItemStack) =
+  override def tester(is: ItemStack): Predicate[Enchantment] =
     if (!Config.common.disabled(BlockBookMover.SYMBOL).get()) {
       SILKTOUCH or FORTUNE or UNBREAKING
     } else if (EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, is) > 0) {

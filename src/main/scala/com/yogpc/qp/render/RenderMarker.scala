@@ -3,15 +3,16 @@ package com.yogpc.qp.render
 import com.mojang.blaze3d.matrix.MatrixStack
 import com.yogpc.qp.machines.marker.TileMarker
 import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.texture.TextureAtlasSprite
 import net.minecraft.client.renderer.tileentity.{TileEntityRenderer, TileEntityRendererDispatcher}
 import net.minecraft.client.renderer.{IRenderTypeBuffer, RenderType}
 
 object RenderMarker extends TileEntityRenderer[TileMarker](TileEntityRendererDispatcher.instance) {
 
-  val instance = this
-  val d = 1d / 16d
-  lazy val sprite_B = Sprites.getMap(LaserType.BLUE_LASER.symbol)
-  lazy val sprite_R = Sprites.getMap(LaserType.RED_LASER.symbol)
+  val instance: RenderMarker.type = this
+  val d: Double = 1d / 16d
+  lazy val sprite_B: TextureAtlasSprite = Sprites.getMap(LaserType.BLUE_LASER.symbol)
+  lazy val sprite_R: TextureAtlasSprite = Sprites.getMap(LaserType.RED_LASER.symbol)
 
   override def isGlobalRenderer(te: TileMarker): Boolean = true
 

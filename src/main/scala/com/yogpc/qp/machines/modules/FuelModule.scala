@@ -3,7 +3,7 @@ package com.yogpc.qp.machines.modules
 import com.yogpc.qp.machines.base.IModule
 
 class FuelModule(mode: FuelModule.Mode) extends IModule {
-  override def id = FuelModule.id
+  override def id: String = FuelModule.id
 
   override def calledWhen = Set(IModule.TypeTick)
 
@@ -22,7 +22,7 @@ class FuelModule(mode: FuelModule.Mode) extends IModule {
   }
 
 
-  override def toString = {
+  override def toString: String = {
     mode match {
       case FuelModule.Normal => s"FuelModule(${FuelModule.RFInTick} RF/t)"
       case FuelModule.Creative => "FuelModule(Creative)"

@@ -24,7 +24,7 @@ class MoverRecipeCategory(guiHelper: IGuiHelper) extends IRecipeCategory[MoverRe
 
   import MoverRecipeCategory._
 
-  override def getUid = UID
+  override def getUid: ResourceLocation = UID
 
   override def getTitle: String = I18n.format(Holder.blockMover.getTranslationKey)
 
@@ -39,9 +39,9 @@ class MoverRecipeCategory(guiHelper: IGuiHelper) extends IRecipeCategory[MoverRe
     guiItemStack.set(ingredients)
   }
 
-  override def getRecipeClass = classOf[MoverRecipe]
+  override def getRecipeClass: Class[_ <: MoverRecipe] = classOf[MoverRecipe]
 
-  override def getIcon = guiHelper.createDrawableIngredient(new ItemStack(Holder.blockMover))
+  override def getIcon: IDrawable = guiHelper.createDrawableIngredient(new ItemStack(Holder.blockMover))
 
   override def setIngredients(recipe: MoverRecipe, ingredients: IIngredients): Unit = {
     val input = recipe.enchantments.map(e => new ItemStack(Items.DIAMOND_PICKAXE).enchantmentAdded(e, e.getMaxLevel))
@@ -76,7 +76,7 @@ object MoverRecipeCategory {
 
     import net.minecraft.enchantment.Enchantments._
 
-    val enchantments = Seq(EFFICIENCY, UNBREAKING, FORTUNE, SILK_TOUCH).filter(this)
+    val enchantments: Seq[Enchantment] = Seq(EFFICIENCY, UNBREAKING, FORTUNE, SILK_TOUCH).filter(this)
 
     def toStack: ItemStack = stack.copy()
 

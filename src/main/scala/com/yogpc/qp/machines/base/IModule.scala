@@ -10,7 +10,7 @@ import net.minecraft.block.{BlockState, Blocks}
 import net.minecraft.entity.Entity
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
-import org.apache.logging.log4j.MarkerManager
+import org.apache.logging.log4j.{Marker, MarkerManager}
 
 trait IModule {
   def id: String
@@ -34,7 +34,7 @@ trait IModule {
 }
 
 object IModule {
-  val MARKER = MarkerManager.getMarker("QUARRY_MODULE")
+  val MARKER: Marker = MarkerManager.getMarker("QUARRY_MODULE")
   implicit val moduleShow: Show[IModule] = Show.fromToString
   val getId: IModule => String = _.id
   val hasReplaceModule: IModule => Boolean = has(ReplacerModule.id, TorchModule.id)

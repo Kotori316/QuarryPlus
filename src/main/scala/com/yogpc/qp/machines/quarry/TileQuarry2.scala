@@ -15,12 +15,13 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.{CompoundNBT, StringNBT}
 import net.minecraft.state.properties.BlockStateProperties
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos}
-import net.minecraft.util.text.{StringTextComponent, TranslationTextComponent}
+import net.minecraft.util.text.{ITextComponent, StringTextComponent, TranslationTextComponent}
 import net.minecraft.util.{Unit => _, _}
 import net.minecraft.world.World
 import net.minecraft.world.server.ServerWorld
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 import net.minecraftforge.common.capabilities.Capability
+import net.minecraftforge.common.util.LazyOptional
 import net.minecraftforge.common.{DimensionManager, MinecraftForge}
 import net.minecraftforge.event.ForgeEventFactory
 import net.minecraftforge.event.world.BlockEvent
@@ -42,10 +43,10 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
 
   import TileQuarry2._
 
-  var enchantments = EnchantmentHolder.noEnch
-  var area = Area.zeroArea
+  var enchantments: EnchantmentHolder = EnchantmentHolder.noEnch
+  var area: Area = Area.zeroArea
   var action: QuarryAction = QuarryAction.none
-  var target = BlockPos.ZERO
+  var target: BlockPos = BlockPos.ZERO
   var yLevel = 1
   var frameMode = false
   private val storage = new QuarryStorage
@@ -99,7 +100,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     super.remove()
   }
 
-  override def write(nbt: CompoundNBT) = {
+  override def write(nbt: CompoundNBT): CompoundNBT = {
     nbt.put("target", target.toLong.toNBT)
     nbt.put("enchantments", enchantments.toNBT)
     nbt.put("area", area.toNBT)
@@ -154,7 +155,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     configure(getMaxStored, getMaxStored)
   }
 
-  override def getEnchantments = {
+  override def getEnchantments: java.util.Map[ResourceLocation, Integer] = {
     EnchantmentHolder.getEnchantmentMap(enchantments).collect(enchantCollector).asJava
   }
 
@@ -166,7 +167,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
    * @param attachments that you're trying to add.
    * @return whether this machine can accept the attachment.
    */
-  override def isValidAttachment(attachments: IAttachment.Attachments[_ <: APacketTile]) = IAttachment.Attachments.ALL.contains(attachments)
+  override def isValidAttachment(attachments: IAttachment.Attachments[_ <: APacketTile]): Boolean = IAttachment.Attachments.ALL.contains(attachments)
 
   /**
    * This method does not place any blocks.
@@ -223,14 +224,14 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     modules.foreach(_.invoke(IModule.CollectingItem(orbs)))
   }
 
-  override def getDebugName = TranslationKeys.quarry2
+  override def getDebugName: String = TranslationKeys.quarry2
 
   /**
    * For internal use only.
    *
    * @return debug info of valid machine.
    */
-  override def getDebugMessages = List(
+  override def getDebugMessages: java.util.List[StringTextComponent] = List(
     s"Mode: ${action.mode}",
     s"Target: ${target.show}",
     s"Enchantment: ${enchantments.show}",
@@ -244,7 +245,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
 
   def getName = new TranslationTextComponent(getDebugName)
 
-  override def getDisplayName = super.getDisplayName
+  override def getDisplayName: ITextComponent = super.getDisplayName
 
   override def hasFastRenderer = true
 
@@ -258,13 +259,13 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     else super.getMaxRenderDistanceSquared
   }
 
-  override def getCapability[T](cap: Capability[T], side: Direction) = {
+  override def getCapability[T](cap: Capability[T], side: Direction): LazyOptional[T] = {
     Cap.asJava(Cap.make(cap, this, IRemotePowerOn.Cap.REMOTE_CAPABILITY()) orElse Cap.dummyItemOrFluid(cap) orElse super.getCapability(cap, side).asScala)
   }
 
-  override def getStorage = storage
+  override def getStorage: HasStorage.Storage = storage
 
-  override def getModules = modules
+  override def getModules: List[IModule] = modules
 
   @OnlyIn(Dist.CLIENT)
   override def getStatusStrings(trackIntSeq: Seq[IntReferenceHolder]): Seq[String] = {
@@ -292,7 +293,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     trackingIntSeq(1).set(storage.fluidSize)
   }
 
-  override def getEnchantmentHolder = enchantments
+  override def getEnchantmentHolder: EnchantmentHolder = enchantments
 
   override def setArea(area: Area): Unit = {
     this.area = if (area.yMin == area.yMax) area.copy(yMax = area.yMin + 3) else area
@@ -304,7 +305,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     PacketHandler.sendToClient(TileMessage.create(self), world)
   }
 
-  override def getArea = this.area
+  override def getArea: Area = this.area
 
   override def startWaiting(): Unit = {
     this.action = QuarryAction.none
@@ -313,7 +314,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
 
 object TileQuarry2 {
   //---------- Constants ----------
-  val SYMBOL = Symbol("NewQuarry")
+  val SYMBOL: Symbol = Symbol("NewQuarry")
   final val comma = ","
 
   //---------- Data ----------

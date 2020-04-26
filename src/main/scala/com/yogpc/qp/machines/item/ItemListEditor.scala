@@ -19,7 +19,7 @@ import net.minecraft.nbt.CompoundNBT
 import net.minecraft.network.PacketBuffer
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.{ITextComponent, StringTextComponent, TranslationTextComponent}
-import net.minecraft.util.{ActionResultType, NonNullList}
+import net.minecraft.util.{ActionResultType, NonNullList, ResourceLocation}
 import net.minecraft.world.World
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 import net.minecraftforge.common.util.Constants.NBT
@@ -39,7 +39,7 @@ class ItemListEditor extends Item((new Item.Properties).group(Holder.tab)) with 
    * @param enchantment target enchantment
    * @return that ItemStack can move enchantment on EnchantMover
    */
-  override def canMove(is: ItemStack, enchantment: Enchantment) = {
+  override def canMove(is: ItemStack, enchantment: Enchantment): Boolean = {
     val l = is.getEnchantmentTagList
     (l == null || l.isEmpty) && ((enchantment == Enchantments.SILK_TOUCH) || (enchantment == Enchantments.FORTUNE))
   }
@@ -49,11 +49,11 @@ class ItemListEditor extends Item((new Item.Properties).group(Holder.tab)) with 
    *
    * @return stack which can be enchanted.
    */
-  override def stacks() = Array(ItemListEditor.getEditorStack)
+  override def stacks(): Array[ItemStack] = Array(ItemListEditor.getEditorStack)
 
   override def isValidInBookMover = false
 
-  override def onItemUseFirst(stack: ItemStack, context: ItemUseContext) = {
+  override def onItemUseFirst(stack: ItemStack, context: ItemUseContext): ActionResultType = {
     val worldIn = context.getWorld
     val pos = context.getPos
 
@@ -122,9 +122,9 @@ class ItemListEditor extends Item((new Item.Properties).group(Holder.tab)) with 
 object ItemListEditor {
 
   class InteractionObject(f: Boolean, text: ITextComponent, pos: BlockPos) extends INamedContainerProvider {
-    val enchantmentName = f.pure[Id].map(bool => if (bool) IEnchantableTile.FortuneID else IEnchantableTile.SilktouchID)
+    val enchantmentName: ResourceLocation = if (f) IEnchantableTile.FortuneID else IEnchantableTile.SilktouchID
 
-    override def getDisplayName = text
+    override def getDisplayName: ITextComponent = text
 
     override def createMenu(id: Int, i: PlayerInventory, playerIn: PlayerEntity) = new ContainerEnchList(id, playerIn, pos, enchantmentName)
 
@@ -141,12 +141,12 @@ object ItemListEditor {
     stack
   }
 
-  def hasEnchantment(enchantment: Eval[Enchantment]) = Kleisli((ench: List[Enchantment]) => enchantment.map(ench.contains))
+  def hasEnchantment(enchantment: Eval[Enchantment]): Kleisli[Eval, List[Enchantment], Boolean] = Kleisli((ench: List[Enchantment]) => enchantment.map(ench.contains))
 
-  def enchantmentName(enchantment: Eval[Enchantment]) =
+  def enchantmentName(enchantment: Eval[Enchantment]): Kleisli[Option, ItemStack, ITextComponent] =
     getEnchantments andThen hasEnchantment(enchantment) mapF (b => if (b.value) new TranslationTextComponent(enchantment.value.getName).some else None)
 
-  def onlySpecificEnchantment(enchantment: Eval[Enchantment]) = {
+  def onlySpecificEnchantment(enchantment: Eval[Enchantment]): Kleisli[Eval, ItemStack, Boolean] = {
     implicit val bool: Semigroup[Boolean] = (x: Boolean, y: Boolean) => x | y
     val hasTheEnchantment = hasEnchantment(enchantment)
     val others = enchantment.map(e => ForgeRegistries.ENCHANTMENTS.asScala.filterNot(_ == e).map(Eval.now).map(hasEnchantment).toList)
@@ -166,14 +166,14 @@ object ItemListEditor {
   private[this] val hasSilktouch = hasEnchantment(silktouchEval)
   private[this] val getNameAsText = getTag andThen getName map (new StringTextComponent(_))
 
-  val getBlockData = getTag andThen getName map (new BlockData(_))
-  val isFortune = getEnchantments andThen hasFortune
-  val isSilktouch = getEnchantments andThen hasSilktouch
-  val fortuneName = enchantmentName(fortuneEval)
-  val silktouchName = enchantmentName(silktouchEval)
+  val getBlockData: Kleisli[Option, ItemStack, BlockData] = getTag andThen getName map (new BlockData(_))
+  val isFortune: Kleisli[Eval, ItemStack, Boolean] = getEnchantments andThen hasFortune
+  val isSilktouch: Kleisli[Eval, ItemStack, Boolean] = getEnchantments andThen hasSilktouch
+  val fortuneName: Kleisli[Option, ItemStack, ITextComponent] = enchantmentName(fortuneEval)
+  val silktouchName: Kleisli[Option, ItemStack, ITextComponent] = enchantmentName(silktouchEval)
   val information: Kleisli[List, ItemStack, ITextComponent] = Kleisli(stack => List(getNameAsText, fortuneName, silktouchName).flatMap(_ (stack)))
 
-  val onlySilktouch = onlySpecificEnchantment(silktouchEval)
-  val onlyFortune = onlySpecificEnchantment(fortuneEval)
+  val onlySilktouch: Kleisli[Eval, ItemStack, Boolean] = onlySpecificEnchantment(silktouchEval)
+  val onlyFortune: Kleisli[Eval, ItemStack, Boolean] = onlySpecificEnchantment(fortuneEval)
 
 }

@@ -53,8 +53,8 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
   self =>
 
   var yLevel = 1
-  var area = Area.zeroArea
-  var enchantments = EnchantmentHolder.noEnch
+  var area: Area = Area.zeroArea
+  var enchantments: EnchantmentHolder = EnchantmentHolder.noEnch
   var action: AdvQuarryWork = AdvQuarryWork.none
   val storage = new AdvStorage
   val moduleInv = new QuarryModuleInventory(5, this, _ => refreshModules(), TileAdvQuarry.moduleFilter)
@@ -289,9 +289,9 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     enchantments = EnchantmentHolder.updateEnchantment(enchantments, id, value)
   }
 
-  override def getStorage = storage
+  override def getStorage: HasStorage.Storage = storage
 
-  override def getDebugName = TranslationKeys.advquarry
+  override def getDebugName: String = TranslationKeys.advquarry
 
   override def getDebugMessages: util.List[_ <: ITextComponent] = List(
     s"Mode: ${action.name}",
@@ -309,7 +309,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
 
   override def createMenu(id: Int, i: PlayerInventory, player: PlayerEntity) = new ContainerAdvQuarry(id, player, getPos)
 
-  override def isValidAttachment(attachments: IAttachment.Attachments[_ <: APacketTile]) =
+  override def isValidAttachment(attachments: IAttachment.Attachments[_ <: APacketTile]): Boolean =
     attachments == IAttachment.Attachments.EXP_PUMP || attachments == IAttachment.Attachments.REPLACER
 
   @OnlyIn(Dist.CLIENT)
@@ -335,7 +335,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     trackIntSeq(1).set(storage.fluidSize)
   }
 
-  override def getEnchantmentHolder = enchantments
+  override def getEnchantmentHolder: EnchantmentHolder = enchantments
 
   /**
    * This method has filter to limit range.
@@ -351,7 +351,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     G_ReInit()
   }
 
-  override def getArea = this.area
+  override def getArea: Area = this.area
 
   override def startWaiting(): Unit = {
     // Just means "stop".
@@ -369,7 +369,7 @@ object TileAdvQuarry {
 
   def maxReceiveEnergy(enchantment: EnchantmentHolder): Long = (enchantment.efficiency + 1) * MAX_STORED * APowerTile.MJToMicroMJ
 
-  def isUnbreakable(hardness: Float, state: BlockState, world: World, pos: BlockPos) = {
+  def isUnbreakable(hardness: Float, state: BlockState, world: World, pos: BlockPos): Boolean = {
     hardness < 0 || hardness.isInfinity || QuarryBlackList.contains(state, world, pos)
   }
 

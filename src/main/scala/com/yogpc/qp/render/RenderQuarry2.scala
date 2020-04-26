@@ -9,7 +9,7 @@ import net.minecraft.client.renderer.{IRenderTypeBuffer, RenderType}
 import net.minecraft.util.math.{MathHelper, Vec3i}
 
 object RenderQuarry2 extends TileEntityRenderer[TileQuarry2](TileEntityRendererDispatcher.instance) {
-  val instance = this
+  val instance: RenderQuarry2.type = this
 
   private[this] final val d1 = 1d / 16d
   private[this] final val d4 = 4d / 16d

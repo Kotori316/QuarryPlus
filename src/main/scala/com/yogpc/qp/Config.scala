@@ -13,9 +13,9 @@ object Config {
   private var mContent: Content = _
   private var mClientContent: ClientContent = _
 
-  def common = mContent
+  def common: Content = mContent
 
-  def client = mClientContent
+  def client: ClientContent = mClientContent
 
   def commonBuild(builder: ForgeConfigSpec.Builder): ForgeConfigSpec.Builder = {
     mContent = new Content(builder)
@@ -37,16 +37,16 @@ object Config {
     builder.comment("Beginning of QuarryPlus configuration.").push("common")
     //--------- Registering config entries. ---------
     private[this] val configDebug = builder.comment("True to enable debug mode.").define("debug", inDev)
-    val noEnergy = addBoolOption(builder.comment("True to make machines work with no energy.").define("NoEnergy", false))
-    val workbenchMaxReceive = builder.comment("Amount of energy WorkbenchPlus can receive in a tick. [MJ]")
+    val noEnergy: ForgeConfigSpec.BooleanValue = addBoolOption(builder.comment("True to make machines work with no energy.").define("NoEnergy", false))
+    val workbenchMaxReceive: ForgeConfigSpec.IntValue = builder.comment("Amount of energy WorkbenchPlus can receive in a tick. [MJ]")
       .defineInRange("WorkbenchMaxReceive", 250, 0, Int.MaxValue)
-    val fastQuarryHeadMove = addBoolOption(builder.comment("Fasten quarry's head moving.").define("FastQuarryHeadMove", false))
-    val removeBedrock = addBoolOption(builder.comment("True to allow machines to remove bedrock. (Just removing. Not collecting)").define("RemoveBedrock", false))
-    val collectBedrock = addBoolOption(builder.comment("True to enable ChunkDestroyer to collect bedrock as item.").define("CollectBedrock", false))
-    val disableFrameChainBreak = addBoolOption(builder.comment("DisableFrameChainBreak").define("DisableFrameChainBreak", false))
-    val removeOnlySource = addBoolOption(builder.comment("Set false to allow PlumPlus to remove non-source fluid block.").define("RemoveOnlyFluidSource", false))
-    val enableRSControl = addBoolOption(builder.comment("True to enable RS control of machines.").define("EnableRSControl", false))
-    val quarryRangeLimit = builder.comment("Range limit of ChunkDestroyer. set -1 to disable. The unit of number is `blocks`. 16 = 1 chunk.")
+    val fastQuarryHeadMove: ForgeConfigSpec.BooleanValue = addBoolOption(builder.comment("Fasten quarry's head moving.").define("FastQuarryHeadMove", false))
+    val removeBedrock: ForgeConfigSpec.BooleanValue = addBoolOption(builder.comment("True to allow machines to remove bedrock. (Just removing. Not collecting)").define("RemoveBedrock", false))
+    val collectBedrock: ForgeConfigSpec.BooleanValue = addBoolOption(builder.comment("True to enable ChunkDestroyer to collect bedrock as item.").define("CollectBedrock", false))
+    val disableFrameChainBreak: ForgeConfigSpec.BooleanValue = addBoolOption(builder.comment("DisableFrameChainBreak").define("DisableFrameChainBreak", false))
+    val removeOnlySource: ForgeConfigSpec.BooleanValue = addBoolOption(builder.comment("Set false to allow PlumPlus to remove non-source fluid block.").define("RemoveOnlyFluidSource", false))
+    val enableRSControl: ForgeConfigSpec.BooleanValue = addBoolOption(builder.comment("True to enable RS control of machines.").define("EnableRSControl", false))
+    val quarryRangeLimit: ForgeConfigSpec.IntValue = builder.comment("Range limit of ChunkDestroyer. set -1 to disable. The unit of number is `blocks`. 16 = 1 chunk.")
       .defineInRange("QuarryRangeLimit", -1, -1, Int.MaxValue)
     private[this] final val disabledEntities = Seq(
       "minecraft:ender_dragon",
@@ -59,17 +59,17 @@ object Config {
       .defineList("spawnerBlacklist", disabledEntities.asJava, s => s.isInstanceOf[String])
 
 
-    val powers = powerConfig(builder)
-    val disabled = disableConfig(builder)
+    val powers: Map[String, ForgeConfigSpec.DoubleValue] = powerConfig(builder)
+    val disabled: Map[Symbol, ForgeConfigSpec.BooleanValue] = disableConfig(builder)
     builder.pop()
 
-    def debug = inDev || configDebug.get()
+    def debug: Boolean = inDev || configDebug.get()
 
-    def spawnerBlacklist = spawnerBlacklist_internal.get().asScala.map(new ResourceLocation(_))
+    def spawnerBlacklist: scala.collection.mutable.Buffer[ResourceLocation] = spawnerBlacklist_internal.get().asScala.map(new ResourceLocation(_))
 
     private def powerConfig(builder: ForgeConfigSpec.Builder): Map[String, ForgeConfigSpec.DoubleValue] = {
       case class Category(path: List[String]) {
-        def apply(values: (String, Double)*) = {
+        def apply(values: (String, Double)*): Map[String, ForgeConfigSpec.DoubleValue] = {
           values.map { case (name, defaultValue) =>
             val strings = path :+ name
             strings.mkString(".") -> builder.defineInRange(strings.asJava, defaultValue, 0d, 2e9)
@@ -183,8 +183,8 @@ object Config {
     builder.comment("Beginning of QuarryPlus client configuration.").push("client")
 
     //--------- Registering config entries. ---------
-    val enableRender = builder.comment("True to enable render of machine effect.").define("enableRender", true)
-    val dummyTexture = builder.comment("Not used").define("dummyTexture", "minecraft:glass")
+    val enableRender: ForgeConfigSpec.BooleanValue = builder.comment("True to enable render of machine effect.").define("enableRender", true)
+    val dummyTexture: ForgeConfigSpec.ConfigValue[String] = builder.comment("Not used").define("dummyTexture", "minecraft:glass")
 
     builder.pop()
   }

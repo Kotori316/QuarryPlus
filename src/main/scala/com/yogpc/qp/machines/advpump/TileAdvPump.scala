@@ -24,6 +24,7 @@ import net.minecraft.util.text.{StringTextComponent, TranslationTextComponent}
 import net.minecraft.util.{Direction, IntReferenceHolder, ResourceLocation}
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 import net.minecraftforge.common.capabilities.Capability
+import net.minecraftforge.common.util.LazyOptional
 import net.minecraftforge.fluids.capability.{CapabilityFluidHandler, IFluidHandler}
 import net.minecraftforge.fluids.{FluidAttributes, FluidStack}
 
@@ -368,7 +369,7 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
     super.write(nbt)
   }
 
-  override def getCapability[T](cap: Capability[T], side: Direction) =
+  override def getCapability[T](cap: Capability[T], side: Direction): LazyOptional[T] =
     Cap.asJava(storage.getCapability(cap) orElse super.getCapability(cap, side).asScala)
 
   override def remove(): Unit = {
@@ -393,7 +394,7 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
     this.modules = internalModules
   }
 
-  override def getEnchantmentHolder = ench.toHolder
+  override def getEnchantmentHolder: EnchantmentHolder = ench.toHolder
 
   override def getStatusStrings(trackIntSeq: Seq[IntReferenceHolder]): Seq[String] = {
     val enchantmentStrings = EnchantmentHolder.getEnchantmentStringSeq(this.getEnchantmentHolder)
@@ -405,7 +406,7 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
 
   override def getStorage: TankAdvPump = storage
 
-  override def getModules = modules
+  override def getModules: List[IModule] = modules
 }
 
 object TileAdvPump {
@@ -466,24 +467,20 @@ object TileAdvPump {
 
     val maxAmount: Int = 512 * 1000 * (efficiency + 1)
 
-    val baseEnergy = defaultBaseEnergy(if (unbreaking >= 3) 3 else unbreaking)
+    val baseEnergy: Long = defaultBaseEnergy(if (unbreaking >= 3) 3 else unbreaking)
 
-    def getEnergy(placeFrame: Boolean) = {
+    def getEnergy(placeFrame: Boolean): Long = {
       baseEnergy * (if (placeFrame) 2.5 else 1).toLong
     }
 
-    val getReceiveEnergy = (if (efficiency >= 5) defaultReceiveEnergy(5) else defaultReceiveEnergy(efficiency)) * (fortune + 1) * (fortune + 1)
+    val getReceiveEnergy: Long = (if (efficiency >= 5) defaultReceiveEnergy(5) else defaultReceiveEnergy(efficiency)) * (fortune + 1) * (fortune + 1)
 
     def inRange(tilePos: BlockPos, pos: BlockPos): Boolean = {
       if (square) {
-        if (silktouch) {
-          start.getX < pos.getX && pos.getX < end.getX &&
-            start.getZ < pos.getZ && pos.getZ < end.getZ
-        } else {
-          start.getX < pos.getX && pos.getX < end.getX &&
-            start.getZ < pos.getZ && pos.getZ < end.getZ &&
-            tilePos.distanceSq(pos) < distanceSq
-        }
+        val isInArea = start.getX < pos.getX && pos.getX < end.getX &&
+          start.getZ < pos.getZ && pos.getZ < end.getZ
+        //if (silktouch) isInArea else isInArea && tilePos.distanceSq(pos) < distanceSq
+        isInArea && (!silktouch || tilePos.distanceSq(pos) < distanceSq)
       } else if (silktouch) {
         val dx = tilePos.getX - pos.getX
         val dz = tilePos.getZ - pos.getZ
@@ -502,11 +499,11 @@ object TileAdvPump {
 
     override def toString: String = s"PEnch($efficiency, $unbreaking, $fortune, $silktouch)"
 
-    def toHolder = EnchantmentHolder(efficiency, unbreaking, fortune, silktouch)
+    def toHolder: EnchantmentHolder = EnchantmentHolder(efficiency, unbreaking, fortune, silktouch)
   }
 
   object PEnch {
-    val defaultEnch = PEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false, BlockPos.ZERO, BlockPos.ZERO)
+    val defaultEnch: PEnch = PEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false, BlockPos.ZERO, BlockPos.ZERO)
 
     def readFromNBT(tag: CompoundNBT): PEnch = {
       if (!tag.isEmpty) {

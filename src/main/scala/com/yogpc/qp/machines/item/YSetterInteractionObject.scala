@@ -7,12 +7,13 @@ import net.minecraft.entity.player.{PlayerEntity, PlayerInventory}
 import net.minecraft.inventory.container.INamedContainerProvider
 import net.minecraft.util.INameable
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.text.ITextComponent
 
 abstract class YSetterInteractionObject(nameable: INameable) extends INamedContainerProvider {
 
-  def getGuiID = YSetterInteractionObject.GUI_ID
+  def getGuiID: String = YSetterInteractionObject.GUI_ID
 
-  override def getDisplayName = nameable.getName
+  override def getDisplayName: ITextComponent = nameable.getName
 
 }
 

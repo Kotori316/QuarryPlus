@@ -15,7 +15,7 @@ import net.minecraft.util.math.BlockPos
 class ContainerQuarryLevel(id: Int, player: PlayerEntity, pos: BlockPos)
   extends Container(Holder.ySetterContainerType, id) {
   type Message[T <: TileEntity] = T => _ <: LevelMessage
-  val tile = player.getEntityWorld.getTileEntity(pos)
+  val tile: TileEntity = player.getEntityWorld.getTileEntity(pos)
   val oneBox = 18
   val messageFunc: Message[TileEntity] = (tile match {
     case _: TileBasic => implicitly[Message[TileBasic]]
@@ -35,7 +35,7 @@ class ContainerQuarryLevel(id: Int, player: PlayerEntity, pos: BlockPos)
   if (!tile.getWorld.isRemote)
     PacketHandler.sendToClient(messageFunc(tile), tile.getWorld)
 
-  override def canInteractWith(playerIn: PlayerEntity) = tile.getWorld.getTileEntity(tile.getPos) eq tile
+  override def canInteractWith(playerIn: PlayerEntity): Boolean = tile.getWorld.getTileEntity(tile.getPos) eq tile
 
-  override def transferStackInSlot(playerIn: PlayerEntity, index: Int) = ItemStack.EMPTY
+  override def transferStackInSlot(playerIn: PlayerEntity, index: Int): ItemStack = ItemStack.EMPTY
 }

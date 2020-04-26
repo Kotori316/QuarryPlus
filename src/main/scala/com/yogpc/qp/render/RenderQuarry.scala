@@ -8,7 +8,7 @@ import net.minecraft.client.renderer.{IRenderTypeBuffer, RenderType}
 import net.minecraft.util.math.MathHelper
 
 object RenderQuarry extends TileEntityRenderer[TileQuarry](TileEntityRendererDispatcher.instance) {
-  val instance = this
+  val instance: RenderQuarry.type = this
 
   private[this] final val d1 = 1d / 16d
   private[this] final val d4 = 4d / 16d

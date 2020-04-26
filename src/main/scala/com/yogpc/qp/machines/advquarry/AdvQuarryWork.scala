@@ -46,7 +46,7 @@ object AdvQuarryWork {
   final val NBT_name_liquid = "RemoveLiquid"
 
   object none extends AdvQuarryWork {
-    override val target = BlockPos.ZERO
+    override val target: BlockPos = BlockPos.ZERO
 
     override def next(tile: TileAdvQuarry): AdvQuarryWork = none
 
@@ -54,11 +54,11 @@ object AdvQuarryWork {
 
     override def tick(tile: TileAdvQuarry): Unit = ()
 
-    override val name = NBT_name_none
+    override val name: String = NBT_name_none
   }
 
   object waiting extends AdvQuarryWork {
-    override val target = BlockPos.ZERO
+    override val target: BlockPos = BlockPos.ZERO
 
     override def next(tile: TileAdvQuarry) = new MakeFrame(tile.area)
 
@@ -66,18 +66,18 @@ object AdvQuarryWork {
 
     override def tick(tile: TileAdvQuarry): Unit = ()
 
-    override val name = NBT_name_waiting
+    override val name: String = NBT_name_waiting
   }
 
   class MakeFrame(area: Area) extends AdvQuarryWork {
-    var framePoses = Area.getFramePoses(area)
-    var mTarget = framePoses.head
+    var framePoses: List[BlockPos] = Area.getFramePoses(area)
+    var mTarget: BlockPos = framePoses.head
 
-    override def target = mTarget
+    override def target: BlockPos = mTarget
 
     override def next(tile: TileAdvQuarry) = new BreakBlock(tile.area, None)
 
-    override def serverWrite(nbt: CompoundNBT) = {
+    override def serverWrite(nbt: CompoundNBT): CompoundNBT = {
       super.serverWrite(nbt)
       nbt.putLong(NBT_key_target, target.toLong)
       nbt
@@ -131,9 +131,9 @@ object AdvQuarryWork {
 
     }
 
-    override val name = NBT_name_frame
+    override val name: String = NBT_name_frame
 
-    override def goNext(tile: TileAdvQuarry) = framePoses.isEmpty
+    override def goNext(tile: TileAdvQuarry): Boolean = framePoses.isEmpty
   }
 
   private def getNumberInTick(area: _root_.com.yogpc.qp.machines.base.Area): Int = {
@@ -143,12 +143,12 @@ object AdvQuarryWork {
 
   class BreakBlock(area: Area, previous: Option[BlockPos]) extends AdvQuarryWork {
     val numberInTick: Int = getNumberInTick(area)
-    var targetList = Area.posesInArea(area,
+    var targetList: List[BlockPos] = Area.posesInArea(area,
       previous.map(p => (x: Int, _: Int, z: Int) => z > p.getZ || x >= p.getX).getOrElse((_, _, _) => true))
 
     override def next(tile: TileAdvQuarry) = new RemoveLiquid(tile.area, None)
 
-    override def serverWrite(nbt: CompoundNBT) = {
+    override def serverWrite(nbt: CompoundNBT): CompoundNBT = {
       super.serverWrite(nbt)
       nbt.putLong(NBT_key_target, target.toLong)
       nbt
@@ -276,23 +276,23 @@ object AdvQuarryWork {
       }
     }
 
-    override def goNext(tile: TileAdvQuarry) = targetList.isEmpty
+    override def goNext(tile: TileAdvQuarry): Boolean = targetList.isEmpty
 
-    override val name = NBT_name_break
+    override val name: String = NBT_name_break
 
-    override def target = targetList.headOption.getOrElse(BlockPos.ZERO)
+    override def target: BlockPos = targetList.headOption.getOrElse(BlockPos.ZERO)
   }
 
   class RemoveLiquid(area: Area, previous: Option[BlockPos]) extends AdvQuarryWork {
     val numberInTick: Int = getNumberInTick(area)
-    var targetList = Area.posesInArea(area,
+    var targetList: List[BlockPos] = Area.posesInArea(area,
       previous.map(p => (x: Int, _: Int, z: Int) => z > p.getZ || x >= p.getX).getOrElse((_, _, _) => true))
 
-    override def target = targetList.headOption.getOrElse(BlockPos.ZERO)
+    override def target: BlockPos = targetList.headOption.getOrElse(BlockPos.ZERO)
 
     override def next(tile: TileAdvQuarry): AdvQuarryWork = none
 
-    override def serverWrite(nbt: CompoundNBT) = {
+    override def serverWrite(nbt: CompoundNBT): CompoundNBT = {
       super.serverWrite(nbt)
       nbt.putLong(NBT_key_target, target.toLong)
       nbt
@@ -325,9 +325,9 @@ object AdvQuarryWork {
         QuarryPlus.LOGGER.debug(AdvQuarryWork.MARKER, "Removed fluids  " + poses)
     }
 
-    override def goNext(tile: TileAdvQuarry) = targetList.isEmpty
+    override def goNext(tile: TileAdvQuarry): Boolean = targetList.isEmpty
 
-    override val name = NBT_name_liquid
+    override val name: String = NBT_name_liquid
   }
 
   private[this] final val loadNone: PartialFunction[CompoundNBT, AdvQuarryWork] = Function.unlift { nbt: CompoundNBT =>
@@ -368,7 +368,7 @@ object AdvQuarryWork {
     loadBreak,
     loadLiquid,
   )
-  val load = (t: TileAdvQuarry) => loader.map(_.apply(t)).fold(PartialFunction.empty) { case (a, b) => a orElse b }
+  val load: TileAdvQuarry => CompoundNBT => AdvQuarryWork = (t: TileAdvQuarry) => loader.map(_.apply(t)).fold(PartialFunction.empty) { case (a, b) => a orElse b }
 
   implicit val AdvQuarryWork2NBT: NBTWrapper[AdvQuarryWork, CompoundNBT] = work => work.serverWrite(new CompoundNBT)
 }

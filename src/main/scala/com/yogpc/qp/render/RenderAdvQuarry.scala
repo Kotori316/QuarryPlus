@@ -5,13 +5,14 @@ import com.yogpc.qp.machines.advquarry.AdvQuarryWork.MakeFrame
 import com.yogpc.qp.machines.advquarry.{AdvQuarryWork, TileAdvQuarry}
 import com.yogpc.qp.machines.base.Area
 import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.texture.TextureAtlasSprite
 import net.minecraft.client.renderer.tileentity.{TileEntityRenderer, TileEntityRendererDispatcher}
 import net.minecraft.client.renderer.{IRenderTypeBuffer, RenderType}
 
 object RenderAdvQuarry extends TileEntityRenderer[TileAdvQuarry](TileEntityRendererDispatcher.instance) {
   private[this] final val d = 1d / 16d
-  val instance = this
-  lazy val sprite = Sprites.getMap(Symbol("yellow"))
+  val instance: RenderAdvQuarry.type = this
+  lazy val sprite: TextureAtlasSprite = Sprites.getMap(Symbol("yellow"))
 
   override def render(te: TileAdvQuarry, v: Float, matrixStack: MatrixStack, iRenderTypeBuffer: IRenderTypeBuffer, i: Int, i1: Int): Unit = {
 

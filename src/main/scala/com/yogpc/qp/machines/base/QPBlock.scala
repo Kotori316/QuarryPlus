@@ -20,19 +20,19 @@ import net.minecraft.world.{IBlockReader, World}
 abstract class QPBlock(builder: Block.Properties, name: String, generator: java.util.function.BiFunction[QPBlock, Item.Properties, _ <: BlockItem]) extends ContainerBlock(builder) {
 
   setRegistryName(QuarryPlus.modID, name)
-  val BlockItem = generator.apply(this, new Item.Properties().group(Holder.tab))
+  val BlockItem: BlockItem = generator.apply(this, new Item.Properties().group(Holder.tab))
   BlockItem.setRegistryName(QuarryPlus.modID, name)
 
-  override def asItem() = BlockItem
+  override def asItem(): Item = BlockItem
 
   //noinspection ScalaDeprecation
   override def getRenderType(state: BlockState): BlockRenderType = BlockRenderType.MODEL
 
-  override def canCreatureSpawn(state: BlockState, world: IBlockReader, pos: BlockPos, t: EntitySpawnPlacementRegistry.PlacementType, entityType: EntityType[_]) = {
+  override def canCreatureSpawn(state: BlockState, world: IBlockReader, pos: BlockPos, t: EntitySpawnPlacementRegistry.PlacementType, entityType: EntityType[_]): Boolean = {
     false
   }
 
-  override def getPickBlock(state: BlockState, target: RayTraceResult, world: IBlockReader, pos: BlockPos, player: PlayerEntity) = {
+  override def getPickBlock(state: BlockState, target: RayTraceResult, world: IBlockReader, pos: BlockPos, player: PlayerEntity): ItemStack = {
     val tile = world.getTileEntity(pos)
     tile match {
       case enchantable: IEnchantableTile =>
@@ -68,7 +68,7 @@ abstract class QPBlock(builder: Block.Properties, name: String, generator: java.
 }
 
 object QPBlock {
-  val WORKING = BooleanProperty.create("working")
+  val WORKING: BooleanProperty = BooleanProperty.create("working")
   val contentLocation = new ResourceLocation(QuarryPlus.modID, "content")
 
   def dismantle(world: World, pos: BlockPos, state: BlockState, returnDrops: Boolean): NonNullList[ItemStack] = {

@@ -10,12 +10,12 @@ import scala.collection.mutable
 
 object Sprites {
 
-  val instance = this
+  val instance: Sprites.type = this
   private[this] val map = mutable.Map.empty[Symbol, TextureAtlasSprite]
   private[this] final val symbols = List("laser_1", "laser_2", "laser_3", "laser_4", "yellow", "stripes_h", "stripes_v", "stripes_b", "stripes_refinery")
     .map(Symbol.apply)
 
-  def getMap = map.toMap
+  def getMap: Map[Symbol, TextureAtlasSprite] = map.toMap
 
   def registerTexture(event: TextureStitchEvent.Pre): Unit = {
     if (event.getMap.getTextureLocation == PlayerContainer.LOCATION_BLOCKS_TEXTURE) {

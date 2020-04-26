@@ -9,7 +9,7 @@ import com.yogpc.qp.machines.base.IEnchantableItem
 import com.yogpc.qp.machines.item.ItemListEditor._
 import com.yogpc.qp.machines.quarry.TileBasic
 import com.yogpc.qp.machines.workbench.BlockData
-import com.yogpc.qp.utils.Holder
+import com.yogpc.qp.utils.{Holder, NoDuplicateList}
 import com.yogpc.qp.{QuarryPlus, _}
 import net.minecraft.client.util.ITooltipFlag
 import net.minecraft.enchantment.{Enchantment, Enchantments}
@@ -39,7 +39,7 @@ class ItemTemplate extends Item(new Item.Properties().maxStackSize(1).group(Hold
    * @param enchantment target enchantment
    * @return that ItemStack can move enchantment on EnchantMover
    */
-  override def canMove(is: ItemStack, enchantment: Enchantment) = {
+  override def canMove(is: ItemStack, enchantment: Enchantment): Boolean = {
     val l = is.getEnchantmentTagList
     (l == null || l.isEmpty) && ((enchantment eq Enchantments.SILK_TOUCH) || (enchantment eq Enchantments.FORTUNE))
   }
@@ -49,7 +49,7 @@ class ItemTemplate extends Item(new Item.Properties().maxStackSize(1).group(Hold
    *
    * @return stack which can be enchanted.
    */
-  override def stacks() = Array(getEditorStack)
+  override def stacks(): Array[ItemStack] = Array(getEditorStack)
 
   override def isValidInBookMover = false
 
@@ -120,7 +120,7 @@ object ItemTemplate {
   final val EmPlate = Template(Nil, include = true)
 
   case class Template(items: List[BlockData], include: Boolean) {
-    def writeToNBT(nbt: CompoundNBT) = {
+    def writeToNBT(nbt: CompoundNBT): CompoundNBT = {
       val list = items.map(_.toNBT).foldLeft(new ListNBT) { (l, tag) => l.add(tag); l }
       nbt.put(NBT_Template_Items, list)
       nbt.putBoolean(NBT_Include, include)
@@ -161,18 +161,19 @@ object ItemTemplate {
     }
   }
 
-  val enchantmentName = Kleisli((stack: ItemStack) => List(silktouchName, fortuneName).flatMap(_.apply(stack)))
+  val enchantmentName: Kleisli[List, ItemStack, ITextComponent] = Kleisli((stack: ItemStack) => List(silktouchName, fortuneName).flatMap(_.apply(stack)))
 
   private[this] val silkList = onlySilktouch.first[TileBasic].mapF(b => if (b.value._1) b.value._2.silktouchList.some else None)
   private[this] val fList = onlyFortune.first[TileBasic].mapF(b => if (b.value._1) b.value._2.fortuneList.some else None)
   private[this] val silkIncSet = onlySilktouch.first[TileBasic].mapF(b => if (b.value._1) ((bool: Boolean) => b.value._2.silktouchInclude = bool).some else None)
   private[this] val fIncSet = onlyFortune.first[TileBasic].mapF(b => if (b.value._1) ((bool: Boolean) => b.value._2.fortuneInclude = bool).some else None)
-  val blocksList = Kleisli((t: (ItemStack, TileBasic)) => {
+
+  private def orElseCompute[A](silktouch: Kleisli[Option, (ItemStack, TileBasic), A], fortune: Kleisli[Option, (ItemStack, TileBasic), A]):
+  Kleisli[Option, (ItemStack, TileBasic), A] = Kleisli((t: (ItemStack, TileBasic)) => {
     val (stack: ItemStack, basic: TileBasic) = t
-    silkList(stack, basic) orElse fList(stack, basic)
+    (silktouch orElse fortune).run(stack, basic)
   })
-  val includeSetter = Kleisli((t: (ItemStack, TileBasic)) => {
-    val (stack: ItemStack, basic: TileBasic) = t
-    silkIncSet(stack, basic) orElse fIncSet(stack, basic)
-  })
+
+  val blocksList: Kleisli[Option, (ItemStack, TileBasic), NoDuplicateList[BlockData]] = orElseCompute(silkList, fList)
+  val includeSetter: Kleisli[Option, (ItemStack, TileBasic), Boolean => Unit] = orElseCompute(silkIncSet, fIncSet)
 }
