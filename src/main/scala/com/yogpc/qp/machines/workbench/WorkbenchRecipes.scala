@@ -180,7 +180,7 @@ object WorkbenchRecipes {
       }
   }
 
-  private def parse(json: JsonObject, location: ResourceLocation): Either[String, WorkbenchRecipes] = {
+  def parse(json: JsonObject, location: ResourceLocation): Either[String, WorkbenchRecipes] = {
     if (CraftingHelper.processConditions(json, "conditions")) {
       val subType: Validated[String, String] = Validated.catchNonFatal(JSONUtils.getString(json, "sub_type", IngredientRecipe.subTypeName))
         .leftMap(_.toString)
@@ -190,7 +190,7 @@ object WorkbenchRecipes {
     }
   }
 
-  def getRecipeParser(recipeTypeString: String): (JsonObject, ResourceLocation) => Either[String, WorkbenchRecipes] = {
+  private def getRecipeParser(recipeTypeString: String): (JsonObject, ResourceLocation) => Either[String, WorkbenchRecipes] = {
     this.recipeParserMapInternal.getOrElse(recipeTypeString, (_, _) => Left("Not a workbench recipe"))
   }
 
