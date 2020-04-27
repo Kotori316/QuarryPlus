@@ -21,6 +21,9 @@ object QuarryPlusDataProvider {
       event.getGenerator.addProvider(new BlockDrop(event.getGenerator))
       event.getGenerator.addProvider(new BlackList(event.getGenerator))
     }
+    if (event.includeDev()) {
+      event.getGenerator.addProvider(com.yogpc.qp.test.Starter.getInstance())
+    }
   }
 
   def location(name: String) = new ResourceLocation(QuarryPlus.modID, name)
