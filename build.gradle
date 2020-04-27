@@ -27,7 +27,7 @@ apply plugin: "com.matthewprenger.cursegradle"
 apply plugin: 'eclipse'
 
 version = getProperty("modVersion")
-if (Boolean.valueOf(System.getenv("GITHUB_ACTIONS"))) {
+if (isInCI()) {
     // In remote CI/CD environment
     version = (getProperty("modVersion") + "_" + System.getenv("GITHUB_SHA").substring(0, 7))
 }
@@ -109,6 +109,16 @@ repositories {
         name = "ModMaven"
         url = "https://modmaven.k-4u.nl"
     }
+    if (isInCI()) {
+        maven {
+            name = "Scala Language Loader"
+            url = uri("https://maven.pkg.github.com/Kotori316/SLP")
+            credentials {
+                username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR") ?: ""
+                password = project.findProperty("githubToken") ?: System.getenv("REPO_TOKEN")
+            }
+        }
+    }
 }
 
 dependencies {
@@ -129,8 +139,18 @@ dependencies {
     implementation fg.deobf("curse.maven:mekanism:2894305")
 
     // Test Dependencies.
-    testCompile("org.junit.jupiter:junit-jupiter-api:5.4.2")
-    testRuntime("org.junit.jupiter:junit-jupiter-engine:5.4.2")
+    implementation(group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.6.2')
+    runtimeOnly(group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.6.2')
+    // https://mvnrepository.com/artifact/org.junit.platform/junit-platform-launcher
+    implementation(group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.6.2')
+
+    if (isInCI()) {
+        runtimeOnly("com.kotori316:ScalableCatsForce:2.13.1-build-7:dev")
+    }
+}
+
+private static boolean isInCI() {
+    return Boolean.parseBoolean(System.getenv("GITHUB_ACTIONS"))
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
