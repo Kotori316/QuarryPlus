@@ -15,7 +15,7 @@ class BedrockOreModule(machine: APowerTile, mode: () => Int, u: () => Int) exten
 
   override protected def action(when: IModule.CalledWhen): IModule.Result = {
     when match {
-      case IModule.BeforeBreak(_, world, pos) =>
+      case IModule.BeforeBreak(world, pos) =>
         val state = world.getBlockState(pos)
         if (BlockHolder.isBedrockOre(state.getBlock)) {
           val tile = world.getTileEntity(pos)
@@ -54,7 +54,7 @@ class BedrockOreModule(machine: APowerTile, mode: () => Int, u: () => Int) exten
         } else {
           IModule.NoAction
         }
-      case IModule.AfterBreak(_, _, before, _) =>
+      case IModule.AfterBreak(_, _, before, _, _) =>
         if (BlockHolder.isBedrockOre(before.getBlock)) {
           IModule.Done // Implies that "replaced to bedrock".
         } else {

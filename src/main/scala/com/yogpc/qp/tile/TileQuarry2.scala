@@ -218,7 +218,7 @@ class TileQuarry2 extends APowerTile()
     *
     * @return True if succeeded.
     */
-  def breakBlock(world: World, pos: BlockPos, state: IBlockState): Boolean = {
+  def breakBlock(world: World, pos: BlockPos): (Boolean, Int) = {
     import scala.collection.JavaConverters._
     if (pos.getX % 6 == 0 && pos.getZ % 6 == 0) {
       // Gather items
@@ -227,38 +227,41 @@ class TileQuarry2 extends APowerTile()
     }
     val fakePlayer = QuarryFakePlayer.get(world.asInstanceOf[WorldServer], pos)
     fakePlayer.setHeldItem(EnumHand.MAIN_HAND, getEnchantedPickaxe)
-    val event = new BlockEvent.BreakEvent(world, pos, state, fakePlayer)
-    MinecraftForge.EVENT_BUS.post(event)
-    if (!event.isCanceled) {
-      val returnValue = modules.foldLeft(IModule.NoAction: IModule.Result) { case (r, m) => IModule.Result.combine(r, m.invoke(IModule.BeforeBreak(event.getExpToDrop, world, pos))) }
-      if (returnValue.canGoNext) {
-        if (!world.isAirBlock(pos)) {
-          val drops = if (self.enchantments.silktouch && state.getBlock.canSilkHarvest(world, pos, state, fakePlayer)) {
-            val list = NonNullList.create[ItemStack]
-            list.add(ReflectionHelper.invoke(TileBasic.createStackedBlock, state.getBlock, state).asInstanceOf[ItemStack])
-            ForgeEventFactory.fireBlockHarvesting(list, world, pos, state, 0, 1.0f, true, fakePlayer)
-            list
-          } else {
-            val list = NonNullList.create[ItemStack]
-            TileBasic.getDrops(world, pos, state, state.getBlock, self.enchantments.fortune, list)
-            ForgeEventFactory.fireBlockHarvesting(list, world, pos, state, self.enchantments.fortune, 1.0f, false, fakePlayer)
-            list
-          }
-          if (TilePump.isLiquid(state) || PowerManager.useEnergyBreak(self, state.getBlockHardness(world, pos),
-            TileQuarry2.enchantmentMode(enchantments), enchantments.unbreaking, modules.exists(IModule.hasReplaceModule), state)) {
+    val returnValue = modules.foldLeft(IModule.NoAction: IModule.Result) { case (r, m) => IModule.Result.combine(r, m.invoke(IModule.BeforeBreak(world, pos))) }
+
+    val state = world.getBlockState(pos) // may be replaced.
+    if (PowerManager.useEnergyBreak(self, state.getBlockHardness(world, pos),
+      TileQuarry2.enchantmentMode(enchantments), enchantments.unbreaking, modules.exists(IModule.hasReplaceModule), state)) {
+      val event = new BlockEvent.BreakEvent(world, pos, state, fakePlayer)
+      MinecraftForge.EVENT_BUS.post(event)
+      if (!event.isCanceled) {
+        if (returnValue.canGoNext) {
+          if (!world.isAirBlock(pos)) {
+            val drops = if (self.enchantments.silktouch && state.getBlock.canSilkHarvest(world, pos, state, fakePlayer)) {
+              val list = NonNullList.create[ItemStack]
+              list.add(ReflectionHelper.invoke(TileBasic.createStackedBlock, state.getBlock, state).asInstanceOf[ItemStack])
+              ForgeEventFactory.fireBlockHarvesting(list, world, pos, state, 0, 1.0f, true, fakePlayer)
+              list
+            } else {
+              val list = NonNullList.create[ItemStack]
+              TileBasic.getDrops(world, pos, state, state.getBlock, self.enchantments.fortune, list)
+              ForgeEventFactory.fireBlockHarvesting(list, world, pos, state, self.enchantments.fortune, 1.0f, false, fakePlayer)
+              list
+            }
+
             drops.asScala.groupBy(ItemDamage.apply).mapValues(_.map(_.getCount).sum).map { case (damage, i) => damage.toStack(i) }.foreach(storage.addItem)
-            true // true means work is finished.
+            (true, event.getExpToDrop) // true means work is finished.
           } else {
-            false // Need more energy
+            (true, event.getExpToDrop) // Block is replaced to air.
           }
         } else {
-          true // Block is replaced to air.
+          (false, 0) // Module work is not finished.
         }
       } else {
-        false // Module work is not finished.
+        (true, 0) // Once event is canceled, you should think the block is unbreakable.
       }
     } else {
-      true // Once event is canceled, you should think the block is unbreakable.
+      (false, 0) // Need more energy
     }
   }
 

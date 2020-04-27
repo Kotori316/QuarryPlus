@@ -3,7 +3,7 @@ package com.yogpc.qp.tile
 import java.util.function.{IntConsumer, IntSupplier, LongPredicate}
 
 import com.yogpc.qp.{PowerManager, QuarryPlus}
-import com.yogpc.qp.tile.IModule.{Done, Result}
+import com.yogpc.qp.tile.IModule.{Done, NoAction, Result}
 import net.minecraft.entity.item.EntityXPOrb
 
 final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: () => Int, consumer: Option[Int => Unit]) extends IModule {
@@ -16,19 +16,19 @@ final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: () => Int, con
         .getOrElse(0), consumer.map(_.accept))
   }
 
-  override val calledWhen: Set[IModule.ModuleType] = Set(IModule.TypeCollectItem, IModule.TypeBeforeBreak)
+  override val calledWhen: Set[IModule.ModuleType] = Set(IModule.TypeCollectItem, IModule.TypeAfterBreak)
 
   var xp: Int = _
 
   override def action(when: IModule.CalledWhen): Result = {
-    val xp = when match {
+    val (xp, r) = when match {
       case t: IModule.CollectingItem =>
-        t.entities.collect { case orb: EntityXPOrb if orb.isEntityAlive => QuarryPlus.proxy.removeEntity(orb); orb.xpValue }.sum
-      case s: IModule.BeforeBreak => s.xp
-      case _ => 0
+        t.entities.collect { case orb: EntityXPOrb if orb.isEntityAlive => QuarryPlus.proxy.removeEntity(orb); orb.xpValue }.sum -> Done
+      case s: IModule.AfterBreak => s.xp -> NoAction
+      case _ => 0 -> NoAction
     }
     addXp(xp)
-    Done
+    r
   }
 
   def addXp(amount: Int): Unit = {

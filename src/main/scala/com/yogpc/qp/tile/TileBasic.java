@@ -151,13 +151,24 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         if (QuarryBlackList.contains(blockState, getWorld(), pos))
             return true;
 
-        BI bi = S_addDroppedItems(dropped, blockState, pos);
+        modules.forEach(iModule -> iModule.invoke(new IModule.BeforeBreak(world, pos)));
         IBlockState maybeUpdated = world.getBlockState(pos);
+        QuarryFakePlayer fakePlayer = QuarryFakePlayer.get(((WorldServer) getWorld()), pos);
+        fakePlayer.setHeldItem(EnumHand.MAIN_HAND, getEnchantedPickaxe());
         if (!maybeUpdated.getBlock().isAir(maybeUpdated, world, pos)) {
-            if (!PowerManager.useEnergyBreak(this, blockState.getBlockHardness(getWorld(), pos), bi.b, this.unbreaking, bi.b1, blockState))
+            int enchantmentLevel;
+            if (maybeUpdated.getBlock().canSilkHarvest(world, pos, maybeUpdated, fakePlayer) && this.silktouch
+                && silktouchList.contains(new BlockData(maybeUpdated.getBlock(), maybeUpdated)) == this.silktouchInclude)
+                enchantmentLevel = -1;
+            else
+                enchantmentLevel = this.fortune;
+            if (!PowerManager.useEnergyBreak(this, maybeUpdated.getBlockHardness(getWorld(), pos), enchantmentLevel, this.unbreaking,
+                facingMap.containsKey(IAttachment.Attachments.REPLACER), blockState))
                 return false;
         }
+        BI bi = S_addDroppedItems(dropped, blockState, pos, fakePlayer);
         this.cacheItems.addAll(dropped);
+        modules.forEach(iModule -> iModule.invoke(new IModule.AfterBreak(world, pos, maybeUpdated, world.getTotalWorldTime(), bi.i)));
 
         if (facingMap.containsKey(FLUID_PUMP) && TilePump.isLiquid(blockState)) {
             final TileEntity te = world.getTileEntity(getPos().offset(facingMap.get(FLUID_PUMP)));
@@ -212,12 +223,10 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         }
     }
 
-    private BI S_addDroppedItems(final Collection<ItemStack> collection, final IBlockState state, final BlockPos pos) {
+    private BI S_addDroppedItems(final Collection<ItemStack> collection, final IBlockState state, final BlockPos pos, QuarryFakePlayer fakePlayer) {
         Block block = state.getBlock();
         byte i;
         int xp = 0;
-        QuarryFakePlayer fakePlayer = QuarryFakePlayer.get(((WorldServer) getWorld()), pos);
-        fakePlayer.setHeldItem(EnumHand.MAIN_HAND, getEnchantedPickaxe());
         BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(world, pos, state, fakePlayer);
         MinecraftForge.EVENT_BUS.post(event);
         if (!event.isCanceled()) {
@@ -250,8 +259,6 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
                     xp += getSmeltingXp(collection, rawItems);
                 }
             }
-            final int xp2 = xp;
-            modules.forEach(iModule -> iModule.invoke(new IModule.BeforeBreak(xp2, world, pos)));
         } else {
             i = -2;
         }

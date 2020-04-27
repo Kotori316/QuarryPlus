@@ -19,7 +19,7 @@ class TorchModule(val y: () => Int) extends IModule {
     */
   override def action(when: IModule.CalledWhen): Result = {
     when match {
-      case AfterBreak(world, pos, _, time) =>
+      case AfterBreak(world, pos, _, time, _) =>
         if (pos.getY == y.apply() && time != lastPlaced) {
           // Check light value
           val light = world.getLightFor(EnumSkyBlock.BLOCK, pos.up())

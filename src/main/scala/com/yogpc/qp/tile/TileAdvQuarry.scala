@@ -268,7 +268,7 @@ class TileAdvQuarry extends APowerTile
           dig.foreach { y =>
             p.setY(y)
             val state = getWorld.getBlockState(p)
-            val (r, go) = breakEvent(p, state, fakePlayer) { _ =>
+            val (r, go) = breakEvent(p, state, fakePlayer) { e =>
               if (ench.silktouch && state.getBlock.canSilkHarvest(getWorld, p, state, fakePlayer)) {
                 tempList.add(ReflectionHelper.invoke(TileBasic.createStackedBlock, state.getBlock, state).asInstanceOf[ItemStack])
               } else {
@@ -280,7 +280,7 @@ class TileAdvQuarry extends APowerTile
               if (collectFurnaceXP)
                 additionalExp += TileBasic.getSmeltingXp(tempList.fixing.asJava, Collections.emptyList())
               tempList.clear()
-              setBlock(p, state)
+              setBlock(p, state, e.getExpToDrop)
             }
             r ++=: reasons
             goNext &= go
@@ -293,12 +293,12 @@ class TileAdvQuarry extends APowerTile
               p.setY(y)
               val state = getWorld.getBlockState(p)
               val block = state.getBlock.asInstanceOf[Block with IShearable]
-              val (r, go) = breakEvent(p, state, fakePlayer) { _ =>
+              val (r, go) = breakEvent(p, state, fakePlayer) { e =>
                 tempList.addAll(block.onSheared(itemShear, getWorld, p, ench.fortune))
                 ForgeEventFactory.fireBlockHarvesting(tempList, getWorld, p, state, ench.fortune, 1f, ench.silktouch, fakePlayer)
                 list.addAll(tempList)
                 tempList.clear()
-                setBlock(p, state)
+                setBlock(p, state, e.getExpToDrop)
               }
               r ++=: reasons
               goNext &= go
@@ -308,8 +308,8 @@ class TileAdvQuarry extends APowerTile
           destroy.foreach { y =>
             p.setY(y)
             val state = getWorld.getBlockState(p)
-            val (r, go) = breakEvent(p, state, fakePlayer) { _ =>
-              setBlock(p, state)
+            val (r, go) = breakEvent(p, state, fakePlayer) { e =>
+              setBlock(p, state, e.getExpToDrop)
               if (collectFurnaceXP) {
                 val nnl = new NotNullList(new ArrayBuffer[ItemStack]())
                 TileBasic.getDrops(getWorld, p, state, state.getBlock, 0, nnl)
@@ -488,8 +488,8 @@ class TileAdvQuarry extends APowerTile
     }
   }
 
-  private def setBlock(pos: BlockPos, state: IBlockState): Unit = {
-    val replaced = modules.foldLeft(IModule.NoAction: IModule.Result) { case (r, m) => IModule.Result.combine(r, m.invoke(IModule.AfterBreak(getWorld, pos, state, self.getWorld.getTotalWorldTime))) }
+  private def setBlock(pos: BlockPos, state: IBlockState, xp: Int): Unit = {
+    val replaced = modules.foldLeft(IModule.NoAction: IModule.Result) { case (r, m) => IModule.Result.combine(r, m.invoke(IModule.AfterBreak(getWorld, pos, state, self.getWorld.getTotalWorldTime, xp))) }
     if (!replaced.done) {
       val i = 0x10 | 0x2
       getWorld.setBlockState(pos, Blocks.AIR.getDefaultState, i)
@@ -500,7 +500,7 @@ class TileAdvQuarry extends APowerTile
     val event = new BlockEvent.BreakEvent(getWorld, pos, state, player)
     MinecraftForge.EVENT_BUS.post(event)
     if (!event.isCanceled) {
-      val result = modules.foldLeft(IModule.NoAction: IModule.Result) { case (r, m) => IModule.Result.combine(r, m.invoke(IModule.BeforeBreak(event.getExpToDrop, world, pos))) }
+      val result = modules.foldLeft(IModule.NoAction: IModule.Result) { case (r, m) => IModule.Result.combine(r, m.invoke(IModule.BeforeBreak(world, pos))) }
       if (result.canGoNext) {
         action(event)
         (Nil, true)
