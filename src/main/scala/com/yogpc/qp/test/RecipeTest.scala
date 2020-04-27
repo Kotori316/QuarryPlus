@@ -1,10 +1,13 @@
 package com.yogpc.qp.test
 
+import java.util.Arrays.asList
+
 import com.google.gson.JsonObject
-import com.yogpc.qp.machines.workbench.WorkbenchRecipes
+import com.yogpc.qp.machines.workbench.{EnchantmentCopyRecipe, IngredientWithCount, WorkbenchRecipes}
 import com.yogpc.qp.utils.Holder
 import net.minecraft.enchantment.{EnchantmentHelper, Enchantments}
-import net.minecraft.item.ItemStack
+import net.minecraft.item.{ItemStack, Items}
+import net.minecraft.nbt.CompoundNBT
 import net.minecraft.util.{JSONUtils, ResourceLocation}
 import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.Test
@@ -12,6 +15,8 @@ import org.junit.jupiter.api.Test
 import scala.jdk.javaapi.CollectionConverters
 
 private[test] class RecipeTest {
+
+  private[this] final def id(s: String) = new ResourceLocation("test", s)
 
   val json: JsonObject = JSONUtils.fromJson(
     """
@@ -48,6 +53,7 @@ private[test] class RecipeTest {
       () => assertEquals(new ResourceLocation("quarryplus:convert_quarry"), recipes.getId),
       () => assertTrue(recipes.hasContent, "Valid recipe"),
       () => assertEquals(Holder.blockQuarry2.asItem(), recipes.getOutput.getItem),
+      () => assertEquals(classOf[EnchantmentCopyRecipe], recipes.getClass, "Class check")
     )
   }
 
@@ -58,11 +64,42 @@ private[test] class RecipeTest {
     EnchantmentHelper.setEnchantments(
       CollectionConverters.asJava(Map(Enchantments.SILK_TOUCH -> Int.box(1), Enchantments.EFFICIENCY -> Int.box(4)))
       , oldQuarry)
-    val out = recipes.getOutput(CollectionConverters.asJava(List(oldQuarry)))
+    val out = recipes.getOutput(asList(oldQuarry))
     assertFalse(out.isEmpty, "Out is valid item.")
     assertAll(
       () => assertEquals(1, EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, out), "Silktouch"),
       () => assertEquals(4, EnchantmentHelper.getEnchantmentLevel(Enchantments.EFFICIENCY, out), "Efficiency"),
     )
+  }
+
+  @Test
+  def copyNbtTest(): Unit = {
+    val recipeOut = new ItemStack(Items.APPLE)
+    locally {
+      val tag = new CompoundNBT()
+      tag.putString("test1", "a")
+      recipeOut.setTag(tag)
+    }
+    val recipe = new EnchantmentCopyRecipe(id("d"), recipeOut, 100, List(new IngredientWithCount(new ItemStack(Items.OAK_LOG, 4))), Nil)
+    locally {
+      val ins = asList(new ItemStack(Items.OAK_LOG, 2), new ItemStack(Items.OAK_LOG, 7))
+      val o = recipe.getOutput(ins)
+      assertTrue(ItemStack.areItemStacksEqual(recipeOut, o))
+    }
+    locally {
+      val in1 = new ItemStack(Items.OAK_LOG, 2)
+      in1.addEnchantment(Enchantments.EFFICIENCY, 3)
+      val in2 = new ItemStack(Items.OAK_LOG, 7)
+      val t = new CompoundNBT()
+      t.putByte("test2", 4)
+      in2.setTag(t)
+      val ins = asList(in1, in2)
+      val o = recipe.getOutput(ins)
+      val tag = o.getTag
+      assertAll(
+        () => assertEquals("a", tag.getString("test1")),
+        () => assertEquals(4, tag.getByte("test2")),
+      )
+    }
   }
 }
