@@ -3,11 +3,10 @@ package com.yogpc.qp.machines.quarry
 import cats.implicits._
 import com.yogpc.qp._
 import com.yogpc.qp.machines.base._
-import com.yogpc.qp.machines.pump.TilePump
 import com.yogpc.qp.machines.{PowerManager, TranslationKeys}
 import com.yogpc.qp.packet.{PacketHandler, TileMessage}
 import com.yogpc.qp.utils.{Holder, ItemDamage}
-import net.minecraft.block.{Block, BlockState}
+import net.minecraft.block.Block
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.ItemEntity
 import net.minecraft.entity.player.PlayerEntity
@@ -173,7 +172,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
    *
    * @return True if succeeded.
    */
-  def breakBlock(world: ServerWorld, pos: BlockPos, stateToBreak: BlockState): Boolean = {
+  def breakBlock(world: ServerWorld, pos: BlockPos): (Boolean, Int) = {
     import scala.jdk.CollectionConverters._
     if (pos.getX % 6 == 0 && pos.getZ % 6 == 0) {
       // Gather items
@@ -183,32 +182,28 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     val fakePlayer = QuarryFakePlayer.get(world, pos)
     val pickaxe = getEnchantedPickaxe
     fakePlayer.setHeldItem(Hand.MAIN_HAND, pickaxe)
-    val event = new BlockEvent.BreakEvent(world, pos, stateToBreak, fakePlayer)
-    MinecraftForge.EVENT_BUS.post(event)
-    if (!event.isCanceled) {
-      val returnValue = modules.foldMap(m => m.invoke(IModule.BeforeBreak(event.getExpToDrop, world, pos)))
-      if (returnValue.canGoNext) {
+    val returnValue = modules.foldMap(m => m.invoke(IModule.BeforeBreak(world, pos)))
+
+    val state = world.getBlockState(pos)
+    if (returnValue.canGoNext && PowerManager.useEnergyBreak(self, pos, enchantments, modules.exists(IModule.hasReplaceModule), false)) {
+      val event = new BlockEvent.BreakEvent(world, pos, state, fakePlayer)
+      MinecraftForge.EVENT_BUS.post(event)
+      if (!event.isCanceled) {
         if (!world.isAirBlock(pos)) {
           val drops = NonNullList.create[ItemStack]
-          val state = world.getBlockState(pos)
           drops.addAll(Block.getDrops(state, world, pos, world.getTileEntity(pos), fakePlayer, pickaxe))
           ForgeEventFactory.fireBlockHarvesting(drops, world, pos, state, self.enchantments.fortune, 1.0f, self.enchantments.silktouch, fakePlayer)
           fakePlayer.setHeldItem(Hand.MAIN_HAND, ItemStack.EMPTY)
 
-          if (TilePump.isLiquid(state) || PowerManager.useEnergyBreak(self, pos, enchantments, modules.exists(IModule.hasReplaceModule), false)) {
-            drops.asScala.groupBy(ItemDamage.apply).view.mapValues(_.map(_.getCount).sum).toList.map { case (damage, i) => damage.toStack(i) }.foreach(storage.addItem)
-            true // true means work is finished.
-          } else {
-            false
-          }
-        } else {
-          true // Block is replaced to air.
+          drops.asScala.groupBy(ItemDamage.apply).view.mapValues(_.map(_.getCount).sum).toList.map { case (damage, i) => damage.toStack(i) }.foreach(storage.addItem)
         }
+        true -> event.getExpToDrop // true means work is finished.
+
       } else {
-        false // Module work is not finished.
+        true -> 0 // Once event is canceled, you should think the block is unbreakable.
       }
     } else {
-      true // Once event is canceled, you should think the block is unbreakable.
+      false -> 0 // Not enough energy or Module work is not finished.
     }
   }
 

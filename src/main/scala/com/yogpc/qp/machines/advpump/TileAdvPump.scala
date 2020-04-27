@@ -297,7 +297,7 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
     state.getBlock match {
       case h: IBucketPickupHandler => h.pickupFluid(getWorld, pos, state)
       case _ =>
-        modules.foldMap(_.invoke(IModule.AfterBreak(getWorld, pos, state, getWorld.getGameTime))) match {
+        modules.foldMap(_.invoke(IModule.AfterBreak(getWorld, pos, state, getWorld.getGameTime, 0))) match {
           case IModule.NoAction => getWorld.setBlockState(pos, Blocks.AIR.getDefaultState)
           case _ =>
         }

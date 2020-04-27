@@ -160,9 +160,10 @@ object AdvQuarryWork {
         val targets = Range(tile.yLevel, area.yMin).reverse.map(yPos => pos.copy(y = yPos))
         checkWater(tile.getDiggingWorld, targets)
         val storage1 = new AdvStorage
+
+        // drop check
         if (pos.getX % 3 == 0) {
           import scala.jdk.CollectionConverters._
-          // drop check
           val aabb = new AxisAlignedBB(pos.getX - 6, tile.yLevel - 3, pos.getZ - 6, pos.getX + 6, pos.getY, pos.getZ + 6)
           tile.getDiggingWorld.getEntitiesWithinAABB[ItemEntity](classOf[ItemEntity], aabb, EntityPredicates.IS_ALIVE)
             .asScala.foreach { e =>
