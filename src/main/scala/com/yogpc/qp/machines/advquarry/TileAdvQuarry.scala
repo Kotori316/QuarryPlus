@@ -124,7 +124,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     }
     val breakEvent = new BlockEvent.BreakEvent(getDiggingWorld, target, stateBefore, fakePlayer)
     if (!MinecraftForge.EVENT_BUS.post(breakEvent)) {
-      val returnValue = modules.foldMap(m => m.invoke(IModule.BeforeBreak(breakEvent.getExpToDrop, world, target)))
+      val returnValue = modules.foldMap(m => m.invoke(IModule.BeforeBreak(world, target)))
       if (!returnValue.canGoNext) {
         return Reason.message("Module work has not finished yet.").leftIor
       }
@@ -149,7 +149,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
       }
 
       if (!TilePump.isLiquid(state) && searchReplacer) {
-        val replaced = self.modules.foldMap(_.invoke(IModule.AfterBreak(getDiggingWorld, target, state, getDiggingWorld.getGameTime)))
+        val replaced = self.modules.foldMap(_.invoke(IModule.AfterBreak(getDiggingWorld, target, state, getDiggingWorld.getGameTime, breakEvent.getExpToDrop)))
         if (!replaced.done) {
           // Not replaced
           getDiggingWorld.setBlockState(target, Blocks.AIR.getDefaultState, 0x10 | 0x2)

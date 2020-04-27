@@ -160,17 +160,32 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     protected boolean S_breakBlock(final int x, final int y, final int z, BlockState replace) {
         assert world != null;
         final List<ItemStack> dropped = new ArrayList<>(2);
-        final BlockState blockState;
         BlockPos pos = new BlockPos(x, y, z);
-        blockState = world.getBlockState(pos);
-        if (QuarryBlackList.contains(blockState, world, pos))
+        if (QuarryBlackList.contains(world.getBlockState(pos), world, pos))
             return true;
 
-        BI bi = S_addDroppedItems(dropped, blockState, pos);
-        modules.forEach(iModule -> iModule.invoke(new IModule.BeforeBreak(bi.i, world, pos)));
-        if (!PowerManager.useEnergyBreak(this, blockState.getBlockHardness(world, pos), bi.b, this.unbreaking, bi.b1, true, blockState))
+        modules.forEach(iModule -> iModule.invoke(new IModule.BeforeBreak(world, pos)));
+        final BlockState blockState = world.getBlockState(pos); // Block may be replaced in module work.
+        QuarryFakePlayer fakePlayer = QuarryFakePlayer.get(((ServerWorld) world), pos);
+        ItemStack pickaxe;
+        int i;
+        if (this.silktouch && silktouchList.contains(new BlockData(blockState)) == this.silktouchInclude) {
+            pickaxe = getEnchantedPickaxe(FORTUNE.negate());
+            i = -1;
+        } else if (fortuneList.contains(new BlockData(blockState)) == this.fortuneInclude) {
+            pickaxe = getEnchantedPickaxe(SILKTOUCH.negate());
+            i = this.fortune;
+        } else {
+            pickaxe = getEnchantedPickaxe(SILKTOUCH.negate().and(FORTUNE.negate()));
+            i = 0;
+        }
+        fakePlayer.setHeldItem(Hand.MAIN_HAND, pickaxe);
+        if (!PowerManager.useEnergyBreak(this, blockState.getBlockHardness(world, pos), i, this.unbreaking,
+            facingMap.containsKey(IAttachment.Attachments.REPLACER), true, blockState))
             return false;
+        int xp = S_addDroppedItems(dropped, blockState, pos, fakePlayer, i);
         this.cacheItems.addAll(dropped);
+        modules.forEach(m -> m.invoke(new IModule.AfterBreak(world, pos, blockState, world.getGameTime(), xp)));
 
         if (facingMap.containsKey(FLUID_PUMP) && TilePump.isLiquid(blockState)) {
             final TileEntity te = world.getTileEntity(getPos().offset(facingMap.get(FLUID_PUMP)));
@@ -222,23 +237,10 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         QuarryPlus.LOGGER.debug("Quarry yLevel is set to " + yLevel + ".");
     }
 
-    private BI S_addDroppedItems(final Collection<ItemStack> collection, final BlockState state, final BlockPos pos) {
+    private int S_addDroppedItems(final Collection<ItemStack> collection, final BlockState state, final BlockPos pos, PlayerEntity fakePlayer, int i) {
         assert world != null;
-        byte i;
         int xp = 0;
-        QuarryFakePlayer fakePlayer = QuarryFakePlayer.get(((ServerWorld) world), pos);
-        ItemStack pickaxe;
-        if (this.silktouch && silktouchList.contains(new BlockData(state)) == this.silktouchInclude) {
-            pickaxe = getEnchantedPickaxe(FORTUNE.negate());
-            i = -1;
-        } else if (fortuneList.contains(new BlockData(state)) == this.fortuneInclude) {
-            pickaxe = getEnchantedPickaxe(SILKTOUCH.negate());
-            i = this.fortune;
-        } else {
-            pickaxe = getEnchantedPickaxe(SILKTOUCH.negate().and(FORTUNE.negate()));
-            i = 0;
-        }
-        fakePlayer.setHeldItem(Hand.MAIN_HAND, pickaxe);
+
         BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(world, pos, state, fakePlayer);
         MinecraftForge.EVENT_BUS.post(event);
         if (!event.isCanceled()) {
@@ -257,11 +259,9 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
                     xp += getSmeltingXp(collection, rawItems, world);
                 }
             }
-        } else {
-            i = -2;
         }
         fakePlayer.setHeldItem(Hand.MAIN_HAND, ItemStack.EMPTY);
-        return new BI(i, xp, facingMap.containsKey(IAttachment.Attachments.REPLACER));
+        return xp;
     }
 
     /**

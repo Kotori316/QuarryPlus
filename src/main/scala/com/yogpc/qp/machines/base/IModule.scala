@@ -62,11 +62,14 @@ object IModule {
 
   sealed abstract class CalledWhen(val moduleType: ModuleType)
 
-  final case class BeforeBreak(xp: Int, world: World, pos: BlockPos) extends CalledWhen(TypeBeforeBreak)
+  final case class BeforeBreak(world: World, pos: BlockPos) extends CalledWhen(TypeBeforeBreak)
 
   final case class CollectingItem(entities: List[Entity]) extends CalledWhen(TypeCollectItem)
 
-  final case class AfterBreak(world: World, pos: BlockPos, before: BlockState, time: Long) extends CalledWhen(TypeAfterBreak)
+  /**
+   * The return value of this type is whether replace work is finished.
+   */
+  final case class AfterBreak(world: World, pos: BlockPos, before: BlockState, time: Long, xp: Int) extends CalledWhen(TypeAfterBreak)
 
   final case class Tick(tile: APowerTile) extends CalledWhen(TypeTick)
 

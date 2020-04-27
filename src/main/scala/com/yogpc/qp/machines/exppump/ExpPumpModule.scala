@@ -6,7 +6,7 @@ import cats.Eval
 import cats.data.Kleisli
 import com.yogpc.qp.QuarryPlus
 import com.yogpc.qp.machines.PowerManager
-import com.yogpc.qp.machines.base.IModule.{Done, Result}
+import com.yogpc.qp.machines.base.IModule.{Done, NoAction, Result}
 import com.yogpc.qp.machines.base.{APowerTile, EnergyUsage, IEnchantableTile, IModule}
 import net.minecraft.entity.item.ExperienceOrbEntity
 
@@ -18,19 +18,19 @@ final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: Eval[Int], con
         .getOrElse(0)), consumer)
   }
 
-  override val calledWhen = Set(IModule.TypeCollectItem, IModule.TypeBeforeBreak)
+  override val calledWhen = Set(IModule.TypeCollectItem, IModule.TypeAfterBreak)
 
   var xp: Int = _
 
   override def action(when: IModule.CalledWhen): Result = {
-    val xp = when match {
+    val (xp, r) = when match {
       case t: IModule.CollectingItem =>
-        t.entities.collect { case orb: ExperienceOrbEntity if orb.isAlive => QuarryPlus.proxy.removeEntity(orb); orb.xpValue }.sum
-      case s: IModule.BeforeBreak => s.xp
-      case _ => 0
+        t.entities.collect { case orb: ExperienceOrbEntity if orb.isAlive => QuarryPlus.proxy.removeEntity(orb); orb.xpValue }.sum -> Done
+      case s: IModule.AfterBreak => s.xp -> NoAction
+      case _ => 0 -> NoAction
     }
     addXp(xp)
-    Done
+    r
   }
 
   private def addXp(amount: Int): Unit = {

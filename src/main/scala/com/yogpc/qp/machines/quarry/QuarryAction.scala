@@ -101,7 +101,7 @@ object QuarryAction {
           } else {
             if (!checkBreakable(quarry2.getDiggingWorld, target, state, quarry2.modules)) {
               frameTargets = til
-            } else if (quarry2.breakBlock(quarry2.getDiggingWorld, target, state)) {
+            } else if (quarry2.breakBlock(quarry2.getDiggingWorld, target)._1) {
               if (PowerManager.useEnergyFrameBuild(quarry2, quarry2.enchantments.unbreaking)) {
                 quarry2.getDiggingWorld.setBlockState(target, Holder.blockFrame.getDammingState)
                 frameTargets = til
@@ -147,7 +147,7 @@ object QuarryAction {
         case head :: tl if head == target =>
           val state = quarry2.getDiggingWorld.getBlockState(target)
           if (checkBreakable(quarry2.getDiggingWorld, head, state, quarry2.modules)) {
-            if (quarry2.breakBlock(quarry2.getDiggingWorld, head, state)) {
+            if (quarry2.breakBlock(quarry2.getDiggingWorld, head)._1) {
               quarry2.getDiggingWorld.setBlockState(target, Blocks.AIR.getDefaultState)
               playSound(state, quarry2.getDiggingWorld, head)
               insideFrame = tl.dropWhile(p => !checkBreakable(quarry2.getDiggingWorld, p, quarry2.getDiggingWorld.getBlockState(p), quarry2.modules))
@@ -225,11 +225,12 @@ object QuarryAction {
               digTargets = poses
             }
           case head :: tl if target == head =>
-            val state = quarry2.getDiggingWorld.getBlockState(target)
-            if (quarry2.breakBlock(quarry2.getDiggingWorld, target, state)) {
+            val (b, xp) = quarry2.breakBlock(quarry2.getDiggingWorld, target)
+            if (b) {
+              val state = quarry2.getDiggingWorld.getBlockState(target)
               // Replacer works for non liquid block.
               if (!TilePump.isLiquid(state) && !state.getBlock.isAir(state, quarry2.getDiggingWorld, target)) {
-                val replaced = quarry2.modules.foldMap(_.invoke(IModule.AfterBreak(quarry2.getDiggingWorld, target, state, quarry2.getDiggingWorld.getGameTime)))
+                val replaced = quarry2.modules.foldMap(_.invoke(IModule.AfterBreak(quarry2.getDiggingWorld, target, state, quarry2.getDiggingWorld.getGameTime, xp)))
                 if (!replaced.done) { // Not replaced
                   quarry2.getDiggingWorld.setBlockState(target, Blocks.AIR.getDefaultState)
                   playSound(state, quarry2.getDiggingWorld, target)

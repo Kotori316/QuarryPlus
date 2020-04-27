@@ -18,7 +18,7 @@ class RemoveBedrockModule(tile: APowerTile with HasStorage with HasModuleInvento
    */
   override protected def action(when: IModule.CalledWhen): IModule.Result = {
     when match {
-      case IModule.BeforeBreak(_, world, pos) =>
+      case IModule.BeforeBreak(world, pos) =>
         val state = world.getBlockState(pos)
         val toRemove = world.getDimension.getType match {
           case DimensionType.THE_NETHER => (pos.getY > 0 && pos.getY < 5) || (pos.getY > 122 && pos.getY < 127)
