@@ -53,7 +53,9 @@ private[test] class RecipeTest {
       () => assertEquals(new ResourceLocation("quarryplus:convert_quarry"), recipes.getId),
       () => assertTrue(recipes.hasContent, "Valid recipe"),
       () => assertEquals(Holder.blockQuarry2.asItem(), recipes.getOutput.getItem),
-      () => assertEquals(classOf[EnchantmentCopyRecipe], recipes.getClass, "Class check")
+      () => assertEquals(1, recipes.getOutput.getCount),
+      () => assertEquals(classOf[EnchantmentCopyRecipe], recipes.getClass, "Class check"),
+      () => assertEquals(1, recipes.inputs.head.size),
     )
   }
 
@@ -101,5 +103,33 @@ private[test] class RecipeTest {
         () => assertEquals(4, tag.getByte("test2")),
       )
     }
+  }
+
+  @Test
+  def gotErrorFromNoResult(): Unit = {
+    val noResult = JSONUtils.fromJson(
+      """
+        |{
+        |  "type": "quarryplus:workbench_recipe",
+        |  "ingredients": [
+        |    {
+        |      "tag": "forge:ingots/gold",
+        |      "count": 16
+        |    }
+        |  ],
+        |  "energy": 320000.0,
+        |  "showInJEI": true
+        |}
+        |""".stripMargin)
+    val noResultRecipe = WorkbenchRecipes.parse(noResult, id("no_result"))
+    assertAll(
+      () => assertTrue(noResultRecipe.isLeft, "no result"),
+      () => assertTrue(noResultRecipe.left.exists(_.contains("JsonSyntaxException")))
+    )
+    val hasEmptyResult = new JsonObject
+    noResult.entrySet().forEach(e => hasEmptyResult.add(e.getKey, e.getValue))
+    hasEmptyResult.add("result", new JsonObject)
+    val resultRecipe = WorkbenchRecipes.parse(hasEmptyResult, id("empty_result"))
+    assertTrue(resultRecipe.isLeft, "empty result")
   }
 }
