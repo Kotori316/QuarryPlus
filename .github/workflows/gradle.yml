@@ -9,23 +9,23 @@ on:
       - "!*"
 
 jobs:
-  func:
-    runs-on: ubuntu-latest
-    steps:
-      - name: CI func
-        run: |
-          echo "$(ls ../)" && echo "$(ls ../ | grep h)"
-          echo "$(ls /)" > func_test.text
-          ls -m /
-          echo "grep = $(grep h func_test.text)"
-          test -e func_test.text
-          echo "Exists $?"
-          [ -f func_test.text ]
-          echo "Exists $?"
-          ! [ -f func_test.text ]
-          echo "Non Exists $?"
-          ! [ -f it.txt ]
-          echo "Non Exists $?"
+#   func:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: CI func
+#         run: |
+#           echo "$(ls ../)" && echo "$(ls ../ | grep h)"
+#           echo "$(ls /)" > func_test.text
+#           ls -m /
+#           echo "grep = $(grep h func_test.text)"
+#           test -e func_test.text
+#           echo "Exists $?"
+#           [ -f func_test.text ]
+#           echo "Exists $?"
+#           ! [ -f func_test.text ]
+#           echo "Non Exists $?"
+#           ! [ -f it.txt ]
+#           echo "Non Exists $?"
 
   check:
     runs-on: ubuntu-latest
@@ -53,7 +53,11 @@ jobs:
       - id: show-failure-log
         if: failure()
         run: cat error-trace.txt
-      - name: Compile and Publish
-        run: chmod +x ./gradlew && ./gradlew build publish --continue --warning-mode all
+      - name: Compile
+        run: chmod +x ./gradlew && ./gradlew build --continue --warning-mode all
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
+      - name: Publish
+        uses: actions/upload-artifact@v2
+        with:
+          path: build/libs/*
