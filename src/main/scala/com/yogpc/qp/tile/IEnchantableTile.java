@@ -22,6 +22,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.yogpc.qp.Config;
+import com.yogpc.qp.QuarryPlusI;
 import com.yogpc.qp.block.BlockBookMover;
 import com.yogpc.qp.gui.TranslationKeys;
 import com.yogpc.qp.version.VersionUtil;
@@ -79,7 +80,7 @@ public interface IEnchantableTile {
     }
 
     default ItemStack getEnchantedPickaxe() {
-        ItemStack stack = new ItemStack(Items.DIAMOND_PICKAXE);
+        ItemStack stack = new ItemStack(QuarryPlusI.itemQuarryPickaxe());
         getEnchantments().entrySet().stream()
             .filter(byEntry(Config.content().disableMapJ().get(BlockBookMover.SYMBOL) ? isValidEnch : (k, v) -> true))
             .map(keys(Enchantment::getEnchantmentByID))

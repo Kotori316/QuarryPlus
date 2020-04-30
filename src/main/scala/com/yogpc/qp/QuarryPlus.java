@@ -92,6 +92,7 @@ import static com.yogpc.qp.QuarryPlusI.expPumpModule;
 import static com.yogpc.qp.QuarryPlusI.fuelModuleCreative;
 import static com.yogpc.qp.QuarryPlusI.fuelModuleNormal;
 import static com.yogpc.qp.QuarryPlusI.itemList;
+import static com.yogpc.qp.QuarryPlusI.itemQuarryPickaxe;
 import static com.yogpc.qp.QuarryPlusI.itemTemplate;
 import static com.yogpc.qp.QuarryPlusI.itemTool;
 import static com.yogpc.qp.QuarryPlusI.magicMirror;
@@ -247,6 +248,7 @@ public class QuarryPlus {
         ModelLoader.setCustomModelResourceLocation(itemTool(), ItemTool.meta_ListEditor(), ModelLoader.getInventoryVariant(prefix + ItemTool.listeditor()));
         ModelLoader.setCustomModelResourceLocation(itemTool(), ItemTool.meta_LiquidSelector(), ModelLoader.getInventoryVariant(prefix + ItemTool.liquidselector()));
         ModelLoader.setCustomModelResourceLocation(itemTool(), ItemTool.meta_YSetter(), ModelLoader.getInventoryVariant(prefix + ItemTool.ySetter()));
+        ModelLoader.setCustomModelResourceLocation(itemQuarryPickaxe(), 0, proxy.fromEntry(itemQuarryPickaxe()));
         ModelLoader.setCustomModelResourceLocation(magicMirror(), 0, proxy.fromEntry(magicMirror()));
         ModelLoader.setCustomModelResourceLocation(magicMirror(), 1, proxy.fromEntry(magicMirror()));
         ModelLoader.setCustomModelResourceLocation(magicMirror(), 2, proxy.fromEntry(magicMirror()));
@@ -358,6 +360,7 @@ public class QuarryPlus {
         public static final String pumpModule = "pump_module";
         public static final String quarry = "quarryplus";
         public static final String quarry2 = "quarry";
+        public static final String quarryPickaxe = "quarry_pickaxe";
         public static final String refinery = "refineryplus";
         public static final String replacer = "quarryreplacer";
         public static final String replacerModule = "replacer_module";

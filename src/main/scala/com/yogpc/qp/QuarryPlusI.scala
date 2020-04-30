@@ -15,7 +15,7 @@ package com.yogpc.qp
 import java.util
 
 import com.yogpc.qp.block._
-import com.yogpc.qp.item.{ItemMirror, ItemQuarryDebug, ItemTemplate, ItemTool}
+import com.yogpc.qp.item.{ItemMirror, ItemQuarryDebug, ItemQuarryPickaxe, ItemTemplate, ItemTool}
 import com.yogpc.qp.modules._
 import com.yogpc.qp.tile._
 import net.minecraft.block.Block
@@ -51,6 +51,7 @@ object QuarryPlusI {
   val blockQuarry2: BlockQuarry2 = registerB(new BlockQuarry2)
   val blockFiller: BlockFiller = registerB(new BlockFiller)
   val itemTool = registerI(new ItemTool)
+  val itemQuarryPickaxe = registerI(new ItemQuarryPickaxe)
   val magicMirror = registerI(new ItemMirror)
   val debugItem = registerI(new ItemQuarryDebug)
   val itemTemplate = registerI(new ItemTemplate)

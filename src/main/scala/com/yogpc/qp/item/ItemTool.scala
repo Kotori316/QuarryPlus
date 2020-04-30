@@ -138,22 +138,6 @@ class ItemTool extends Item with IEnchantableItem {
     items.add(getEditorStack)
     items.add(new ItemStack(this, 1, meta_LiquidSelector))
     items.add(new ItemStack(this, 1, meta_YSetter))
-    if (Config.content.debug /*&& QuarryPlus.instance.inDev*/ ) {
-      val stack = new ItemStack(Items.DIAMOND_PICKAXE)
-      stack.addEnchantment(Enchantments.EFFICIENCY, 5)
-      stack.addEnchantment(Enchantments.UNBREAKING, 3)
-
-      {
-        val stack1 = stack.copy
-        stack1.addEnchantment(Enchantments.FORTUNE, 3)
-        items.add(stack1)
-      }
-      {
-        val stack1 = stack.copy
-        stack1.addEnchantment(Enchantments.SILK_TOUCH, 1)
-        items.add(stack1)
-      }
-    }
   }
 
   override def canMove(is: ItemStack, enchantment: Enchantment): Boolean = {
