@@ -127,6 +127,7 @@ object Holder {
   val itemFuelModuleNormal = new ItemFuelModule(FuelModule.Normal)
   val itemFuelModuleCreative = new ItemFuelModule(FuelModule.Creative)
   val itemRemoveBedrockModule = new ItemBedrockModule
+  val itemQuarryPickaxe = new SuperPickaxeItem
 
   val items: Seq[Item] = Seq(
     itemStatusChecker,
@@ -142,6 +143,7 @@ object Holder {
     itemFuelModuleNormal,
     itemFuelModuleCreative,
     itemRemoveBedrockModule,
+    itemQuarryPickaxe,
   )
 
   //---------- IDisable ----------

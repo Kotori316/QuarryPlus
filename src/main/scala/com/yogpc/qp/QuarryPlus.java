@@ -187,6 +187,7 @@ public class QuarryPlus {
         public static final String pumpModule = "pump_module";
         public static final String quarry = "quarryplus";
         public static final String quarry2 = "quarry";
+        public static final String quarry_pickaxe = "quarry_pickaxe";
         public static final String refinery = "refineryplus";
         public static final String replacer = "quarryreplacer";
         public static final String replacerModule = "replacer_module";

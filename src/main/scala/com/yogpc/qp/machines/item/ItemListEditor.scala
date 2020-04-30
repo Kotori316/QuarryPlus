@@ -5,11 +5,11 @@ import java.util
 import cats._
 import cats.data._
 import cats.implicits._
+import com.yogpc.qp.QuarryPlus
 import com.yogpc.qp.machines.base.{IEnchantableItem, IEnchantableTile}
 import com.yogpc.qp.machines.quarry.TileBasic
 import com.yogpc.qp.machines.workbench.BlockData
 import com.yogpc.qp.utils.Holder
-import com.yogpc.qp.{Config, QuarryPlus}
 import net.minecraft.client.util.ITooltipFlag
 import net.minecraft.enchantment.{Enchantment, EnchantmentHelper, Enchantments}
 import net.minecraft.entity.player.{PlayerEntity, PlayerInventory, ServerPlayerEntity}
@@ -27,7 +27,6 @@ import net.minecraftforge.fml.network.NetworkHooks
 import net.minecraftforge.registries.ForgeRegistries
 
 import scala.jdk.CollectionConverters._
-import scala.util.Try
 
 class ItemListEditor extends Item((new Item.Properties).group(Holder.tab)) with IEnchantableItem {
   setRegistryName(QuarryPlus.modID, QuarryPlus.Names.listeditor)
@@ -94,21 +93,6 @@ class ItemListEditor extends Item((new Item.Properties).group(Holder.tab)) with 
   override def fillItemGroup(group: ItemGroup, items: NonNullList[ItemStack]): Unit = {
     if (this.isInGroup(group)) {
       items.add(ItemListEditor.getEditorStack)
-      if (Try(Config.common.debug).getOrElse(false)) {
-        val stack = new ItemStack(Items.DIAMOND_PICKAXE)
-        stack.addEnchantment(Enchantments.EFFICIENCY, 5)
-        stack.addEnchantment(Enchantments.UNBREAKING, 3)
-        locally {
-          val stack1 = stack.copy
-          stack1.addEnchantment(Enchantments.FORTUNE, 3)
-          items.add(stack1)
-        }
-        locally {
-          val stack1 = stack.copy
-          stack1.addEnchantment(Enchantments.SILK_TOUCH, 1)
-          items.add(stack1)
-        }
-      }
     }
   }
 

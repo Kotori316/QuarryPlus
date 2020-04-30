@@ -30,12 +30,12 @@ import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.bookmover.BlockBookMover;
+import com.yogpc.qp.utils.Holder;
 import javax.annotation.Nonnull;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.ResourceLocation;
@@ -97,7 +97,7 @@ public interface IEnchantableTile {
     }
 
     default ItemStack getEnchantedPickaxe(Predicate<? super Enchantment> predicate) {
-        ItemStack stack = new ItemStack(Items.DIAMOND_PICKAXE);
+        ItemStack stack = new ItemStack(Holder.itemQuarryPickaxe());
         getEnchantments().entrySet().stream()
             .filter(byEntry(Config.common().disabled().apply(BlockBookMover.SYMBOL).get() ? isValidEnch : (k, v) -> true))
             .map(keys(ForgeRegistries.ENCHANTMENTS::getValue))
