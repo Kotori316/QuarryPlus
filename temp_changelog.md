@@ -1,3 +1,7 @@
+# Version 12.3.9
+* Fixed the quarry fired a harvesting event every tick.
+* Use own pickaxe to break blocks. (Harvesting Level = 5 (2 level upper than diamond), Tier = DIAMOND)
+
 # Version 12.3.8
 * Fixed that quarry stopped when building frames.
 * Fixed the old quarry required energy before replacing fluids.
@@ -33,7 +37,7 @@
 # Version 12.3.1
 - Added `delete` button to adv pump.
 - Improved chain breaking of quarry frame
-- Added filler. (disabled in default)
+- Added a filler. (disabled in default)
 
 # Version 12.3.0
 - Working on a crash when you remove working pump.
@@ -62,7 +66,7 @@
 
 # Version 12.2.4
 - Added - module system for Chunk Destroyer. [#53](https://github.com/Kotori316/QuarryPlus/issues/53)
-- Improvement - You can get the y-level of machine in tile's inventory GUI.
+- Improvement - You can get the y-level of machine in a tile's inventory GUI.
 - Fixed - TorchModule placed torch at invalid position.
 - Fixed - The state of ExpPump wasn't changed when xps are collected.
 - Fixed - Now all machines respect setting option `Disabled`.
@@ -75,7 +79,7 @@
 * Added tick event
 * Changed field name
 * Inline Symbol instance
-* Send localized name when quarry restarted
+* Send the localized name when quarry restarted
 * Update lang file
 * Support chain breaking of MCAssistant.
 * Use BC's marker to make dig area
@@ -84,8 +88,8 @@
 * Fixed - NPE when pump module is loaded.
 * Improvement - reduced energy to remove fluids.
 * Fixed #60
-* New quarry connects to fluid pipe.
-* Fixed - fluid in new quarry is lost when loading
+* The new quarry connects to fluid pipe.
+* Fixed - fluid in the new quarry is lost when loading
 * Fixed - fluid is replacer to dummy block
 * Remove nbt tag when xp is extracted.
 
@@ -93,22 +97,22 @@
 * Fixed - wrong reading config option
 
 # Version 12.2.0
-* Changed version to {mcVersion}.{major}.{minor}
+* Changed the version to {mcVersion}.{major}.{minor}
 * Added new quarry, which has module system to enhance its function.
 
 # Version 1.1.3
-* The position of Quarry dummy player is set to the point quarry is removing.
+* The position of Quarry's dummy player is set to the point quarry is removing.
 * Added support of chain break of [MCAssistant](https://www.curseforge.com/minecraft/mc-mods/mcassistant).
 
 # Version 1.1.2
 * Reverted [272a28bc](https://github.com/Kotori316/QuarryPlus/commit/272a28bcf97149a24f79f3411a1b6f866b5db518) to avoid crash with old forge.
 
 # Version 1.1.1
-* Fixed bug where quarry is reset when work finished if BC's pipe is connected.
+* Fixed a bug where quarry is reset when work finished if BC's pipe is connected.
 
 # Version 1.1.0
-* Hide enchantment shown in tooltip of List Template.
-* Fixed bug of saving nbt of Replacer.
+* Hide enchantment shown in the tooltip of List Template.
+* Fixed a bug of saving nbt of Replacer.
 * Added zh_cn.lang
 
 # Version 1.0.9
@@ -127,7 +131,7 @@
 * Allowed QuarryPlus to be enchanted with Fortune AND Silktouch at the same time. [#51](https://github.com/Kotori316/QuarryPlus/issues/51)
 
 # Version 1.0.5
-* Sneak and right click with AE's wrench and other mods's one to remove machine.
+* Sneak and right click with AE's wrench and other mods' one to remove machine.
 * Reduced log spam.
 
 # Version 1.0.4
