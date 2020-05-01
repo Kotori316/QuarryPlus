@@ -28,8 +28,15 @@ apply plugin: 'eclipse'
 
 version = getProperty("modVersion")
 if (isInCI()) {
+    String postFix
+    String sha = System.getenv("GITHUB_SHA")
+    if (sha == null) {
+        postFix = ""
+    } else {
+        postFix = sha.substring(0, 7)
+    }
     // In remote CI/CD environment
-    version = (getProperty("modVersion") + "_" + System.getenv("GITHUB_SHA").substring(0, 7))
+    version = (getProperty("modVersion") + "_" + postFix)
 }
 group = 'com.kotori316' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'AdditionalEnchantedMiner-1.15.2'
@@ -149,8 +156,9 @@ dependencies {
     }
 }
 
+@SuppressWarnings("SpellCheckingInspection")
 private static boolean isInCI() {
-    return Boolean.parseBoolean(System.getenv("GITHUB_ACTIONS"))
+    return Boolean.parseBoolean(System.getenv("GITHUB_ACTIONS")) || Files.exists(Paths.get("/", ".dockerenv"))
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
@@ -249,7 +257,7 @@ task signJar2() {
     }
 }
 
-if (!Boolean.valueOf(System.getenv("GITHUB_ACTIONS"))) {
+if (!isInCI()) {
     // Runs this task automatically when build is ran.
     assemble.dependsOn(signJar2)
 }
@@ -269,6 +277,7 @@ task CheckCompileOption() {
         def argsScala = compileScala.options.compilerArgs
         println(argsScala)
         println(argsScala.getClass())
+        System.properties.list(System.out)
     }
 }
 
@@ -307,4 +316,8 @@ publishing {
             artifact reobfArtifact
         }
     }
+}
+
+tasks.withType(JavaExec) {
+    systemProperties System.properties
 }
