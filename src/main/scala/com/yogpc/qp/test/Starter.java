@@ -7,8 +7,11 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import jp.t2v.lab.syntax.MapStreamSyntax;
 import net.minecraft.data.DirectoryCache;
 import net.minecraft.data.IDataProvider;
 import org.apache.logging.log4j.LogManager;
@@ -35,10 +38,21 @@ public class Starter implements IDataProvider {
 
     public static void startTest() {
         LOGGER.info("Hello test");
+        LOGGER.info("---------- System properties ----------");
+        System.getProperties().stringPropertyNames().stream()
+            .sorted()
+            .map(MapStreamSyntax.toEntry(Function.identity(), System.getProperties()::getProperty))
+            .map(MapStreamSyntax.toAny((k, v) -> k + "=" + v))
+            .forEach(LOGGER::info);
+        LOGGER.info("---------- Env ----------");
+        System.getenv().entrySet().stream()
+            .sorted(Map.Entry.comparingByKey())
+            .map(MapStreamSyntax.toAny((s, s2) -> s + "=" + s2))
+            .forEach(LOGGER::info);
         LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
             .selectors(
                 selectPackage("com.kotori316.test_qp"),
-                selectPackage("com.yogpc.qp.test")
+                selectPackage(Starter.class.getPackage().getName())
             )
             .build();
 

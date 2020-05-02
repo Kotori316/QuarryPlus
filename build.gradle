@@ -320,5 +320,6 @@ publishing {
 }
 
 tasks.withType(JavaExec) {
-    systemProperties System.properties
+    // Avoid error of GL
+    systemProperty("fml.earlyprogresswindow", false)
 }
