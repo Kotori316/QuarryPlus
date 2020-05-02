@@ -1,9 +1,9 @@
 package com.yogpc.qp.test;
 
 import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -66,7 +66,7 @@ public class Starter implements IDataProvider {
 
         TestExecutionSummary summary = listener.getSummary();
         // Do something with the TestExecutionSummary.
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        StringWriter stream = new StringWriter();
         summary.printTo(new PrintWriter(stream));
         LOGGER.info(stream.toString());
         List<Throwable> errors = summary.getFailures().stream()
