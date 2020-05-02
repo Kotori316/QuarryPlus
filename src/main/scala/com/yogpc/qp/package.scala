@@ -61,7 +61,7 @@ package object qp {
   implicit class ItemStackRemoveEnchantment(private val stack: ItemStack) extends AnyVal {
     def removeEnchantment(enchantment: Enchantment): Unit = {
       val id = ForgeRegistries.ENCHANTMENTS.getKey(enchantment)
-      val tagName = if (stack.getItem == net.minecraft.item.Items.ENCHANTED_BOOK) "StoredEnchantments" else "ench"
+      val tagName = if (stack.getItem == net.minecraft.item.Items.ENCHANTED_BOOK) "StoredEnchantments" else "Enchantments"
       val list = Option(stack.getTag).fold(new ListNBT)(_.getList(tagName, NBT.TAG_COMPOUND))
 
       import scala.jdk.CollectionConverters._
