@@ -47,6 +47,7 @@ public class Starter implements IDataProvider {
         LOGGER.info("---------- Env ----------");
         System.getenv().entrySet().stream()
             .sorted(Map.Entry.comparingByKey())
+            .filter(MapStreamSyntax.byKey(s -> !s.toLowerCase().contains("token")))
             .map(MapStreamSyntax.toAny((s, s2) -> s + "=" + s2))
             .forEach(LOGGER::info);
         LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
