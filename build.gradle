@@ -158,7 +158,8 @@ dependencies {
 
 @SuppressWarnings("SpellCheckingInspection")
 private static boolean isInCI() {
-    return Boolean.parseBoolean(System.getenv("GITHUB_ACTIONS")) || Files.exists(Paths.get("/", ".dockerenv"))
+    return Boolean.parseBoolean(System.getenv("GITHUB_ACTIONS")) ||
+            (!System.getProperty("os.name").toLowerCase().startsWith("windows") && Files.exists(Paths.get("/", ".dockerenv")))
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
