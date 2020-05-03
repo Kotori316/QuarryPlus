@@ -8,6 +8,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
 import org.junit.jupiter.api.Test;
@@ -17,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ItemAccessTest {
@@ -42,6 +46,16 @@ class ItemAccessTest {
         assertAll(
             () -> assertTrue(recipes.getRecipeOutput().isEmpty()),
             () -> assertFalse(recipes.hasContent())
+        );
+    }
+
+    @Test
+    void accessToCapability() {
+        assertAll(
+            () -> assertNotNull(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY),
+            () -> assertNotNull(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY),
+            () -> assertNotNull(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY),
+            () -> assertNotNull(CapabilityEnergy.ENERGY)
         );
     }
 }

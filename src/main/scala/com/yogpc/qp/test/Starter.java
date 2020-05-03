@@ -97,7 +97,7 @@ public class Starter implements IDataProvider {
 
     @Override
     public void act(DirectoryCache cache) {
-//        startTest();
+        startTest();
     }
 
     @Override
