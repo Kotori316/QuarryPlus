@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ItemAccessTest {
@@ -50,12 +50,12 @@ class ItemAccessTest {
     }
 
     @Test
-    void accessToCapability() {
+    void CANT_AccessToCapability() {
         assertAll(
-            () -> assertNotNull(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY),
-            () -> assertNotNull(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY),
-            () -> assertNotNull(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY),
-            () -> assertNotNull(CapabilityEnergy.ENERGY)
+            () -> assertNull(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY),
+            () -> assertNull(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY),
+            () -> assertNull(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY),
+            () -> assertNull(CapabilityEnergy.ENERGY)
         );
     }
 }
