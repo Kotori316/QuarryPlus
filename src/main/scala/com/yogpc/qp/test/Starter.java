@@ -57,6 +57,14 @@ public class Starter implements IDataProvider {
             )
             .build();
 
+        if (isInCI()) {
+            try {
+                Files.createFile(Paths.get("..", "test_started.txt"));
+            } catch (IOException e) {
+                LOGGER.error("File IO", e);
+            }
+        }
+
         Launcher launcher = LauncherFactory.create();
 
         // Register a listener of your choice
@@ -73,7 +81,7 @@ public class Starter implements IDataProvider {
         List<Throwable> errors = summary.getFailures().stream()
             .map(TestExecutionSummary.Failure::getException).collect(Collectors.toList());
         errors.forEach(t -> LOGGER.fatal(MARKER, "Test failed.", t));
-        if (Boolean.parseBoolean(System.getenv("GITHUB_ACTIONS")) && !errors.isEmpty()) {
+        if (isInCI() && !errors.isEmpty()) {
             try (BufferedWriter w = Files.newBufferedWriter(Paths.get("..", "error-trace.txt"));
                  PrintWriter writer = new PrintWriter(w)) {
                 errors.forEach(t -> t.printStackTrace(writer));
@@ -83,9 +91,13 @@ public class Starter implements IDataProvider {
         }
     }
 
+    private static boolean isInCI() {
+        return Boolean.parseBoolean(System.getenv("GITHUB_ACTIONS"));
+    }
+
     @Override
     public void act(DirectoryCache cache) {
-        startTest();
+//        startTest();
     }
 
     @Override
