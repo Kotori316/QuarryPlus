@@ -2,6 +2,7 @@ package com.yogpc.qp.machines.base;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.LongSupplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -25,6 +27,7 @@ import net.minecraft.block.BlockState;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class DetailDataCollector implements Serializable {
+    private static final long serialVersionUID = 0L;
     private transient final LongSupplier time;
     private final Map<Long, Data> data;
 
@@ -33,7 +36,7 @@ public class DetailDataCollector implements Serializable {
         this(() -> 0);
     }
 
-    private DetailDataCollector(LongSupplier time) {
+    public DetailDataCollector(LongSupplier time) {
         this.time = time;
         data = new HashMap<>();
     }
@@ -46,12 +49,15 @@ public class DetailDataCollector implements Serializable {
 
     private static class Dummy extends DetailDataCollector {
         private static final Data DATA = new DummyData();
+        private static final long serialVersionUID = 8052625389652915615L;
 
         public Dummy() {
             super(() -> 0);
         }
 
         private static class DummyData extends DetailDataCollector.Data {
+            private static final long serialVersionUID = -2498801174658098984L;
+
             @Override
             public String toString() {
                 return "DummyData";
@@ -79,6 +85,10 @@ public class DetailDataCollector implements Serializable {
         @Override
         public void finish() {
         }
+
+        @Override
+        public void writeData(Consumer<List<String>> consumer, OutputStream stream) {
+        }
     }
 
     public Data get() {
@@ -103,6 +113,21 @@ public class DetailDataCollector implements Serializable {
         LocalDateTime time = LocalDateTime.now();
         String name = time.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME).replace(':', '-');
 
+        try {
+            writeData(c -> {
+                try {
+                    Files.write(parent.resolve(name + ".csv"), c);
+                } catch (IOException e) {
+                    QuarryPlus.LOGGER.error("Errored writing file.", e);
+                }
+            }, Files.newOutputStream(parent.resolve(name + ".dat")));
+        } catch (IOException e) {
+            QuarryPlus.LOGGER.error("Errored writing file.", e);
+        }
+    }
+
+    public void writeData(Consumer<List<String>> consumer, OutputStream stream) throws IOException {
+        if (data.isEmpty()) return;
         Optional<Long> min = data.keySet().stream().min(Long::compareTo);
         List<String> collect = data.entrySet().stream()
             .map(e -> Pair.of(e.getKey() - min.orElse(0L), e.getValue()))
@@ -110,18 +135,15 @@ public class DetailDataCollector implements Serializable {
             .map(p -> p.getKey() + "," + ((double) p.getValue().energy / APowerTile.MJToMicroMJ) + "," + p.getValue())
             .collect(Collectors.toList());
         collect.add(0, "Tick,Energy,Detail");
-        try {
-            Files.write(parent.resolve(name + ".csv"), collect);
-            try (ObjectOutputStream s = new ObjectOutputStream(Files.newOutputStream(parent.resolve(name + ".dat")))) {
-                s.writeObject(this);
-            }
-        } catch (IOException e) {
-            QuarryPlus.LOGGER.error("Errored writing file.", e);
+        consumer.accept(collect);
+        try (ObjectOutputStream s = new ObjectOutputStream(stream)) {
+            s.writeObject(this);
         }
         data.clear();
     }
 
     public static class Data implements Serializable {
+        private static final long serialVersionUID = 1466891218496509471L;
         long energy = 0;
         private final List<EnergyDetail> others = new ArrayList<>();
 
@@ -140,6 +162,20 @@ public class DetailDataCollector implements Serializable {
             long sum = Stream.of(arg).mapToLong(EnergyDetail::getEnergy).sum();
             setEnergy(energy + sum);
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Data data = (Data) o;
+            return energy == data.energy &&
+                others.equals(data.others);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(energy, others);
+        }
     }
 
     public interface EnergyDetail {
@@ -147,6 +183,7 @@ public class DetailDataCollector implements Serializable {
     }
 
     public static class Break implements EnergyDetail, Serializable {
+        private static final long serialVersionUID = -6480496665210222175L;
         private final String name;
         private final float hardness;
         private final long e;
@@ -188,6 +225,7 @@ public class DetailDataCollector implements Serializable {
     }
 
     public static class Pump implements EnergyDetail, Serializable {
+        private static final long serialVersionUID = 6581044198335009551L;
         private final long amount;
         private final int u;
         private final long frame;
@@ -232,6 +270,7 @@ public class DetailDataCollector implements Serializable {
     }
 
     public static final class Common implements EnergyDetail, Serializable {
+        private static final long serialVersionUID = 280517939027947401L;
         private final EnergyUsage usage;
         private final long energy;
 
