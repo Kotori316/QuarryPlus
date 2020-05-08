@@ -1,5 +1,8 @@
 **This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).**
 
+## Version 15.2.8
+* Fixed a bug where the text in StatusChecker was wrong (In a multi server).
+
 ## Version 15.2.7
 * Fixed the crash of `java.lang.NoSuchMethodError: net.minecraft.item.Item.func_200296_o()Lnet/minecraft/util/text/ITextComponent;`
 
