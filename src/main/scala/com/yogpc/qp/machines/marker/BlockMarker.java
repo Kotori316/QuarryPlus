@@ -91,7 +91,7 @@ public class BlockMarker extends Block {
                         player.sendStatusMessage(new StringTextComponent(marker.link.toString()), false);
                     }
                 } else {
-                    player.sendStatusMessage(new TranslationTextComponent(TranslationKeys.DISABLE_MESSAGE, getNameTextComponent()), true);
+                    player.sendStatusMessage(new TranslationTextComponent(TranslationKeys.DISABLE_MESSAGE, new TranslationTextComponent(getTranslationKey())), true);
                 }
             }
         }

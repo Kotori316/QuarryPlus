@@ -68,7 +68,7 @@ public class BlockMover extends Block implements IDisabled /*IDismantleable, IWr
         if (!player.isSneaking()) {
             if (!worldIn.isRemote) {
                 if (!enabled()) {
-                    player.sendStatusMessage(new TranslationTextComponent(TranslationKeys.DISABLE_MESSAGE, getNameTextComponent()), true);
+                    player.sendStatusMessage(new TranslationTextComponent(TranslationKeys.DISABLE_MESSAGE, getSymbol().name()), true);
                 } else {
                     NetworkHooks.openGui(((ServerPlayerEntity) player), new InteractionObject(pos), pos);
                 }

@@ -9,6 +9,7 @@ import net.minecraft.inventory.container.{INamedContainerProvider, Slot}
 import net.minecraft.item.ItemStack
 import net.minecraft.util.IntReferenceHolder
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.text.{ITextComponent, TranslationTextComponent}
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 
 /**
@@ -59,7 +60,7 @@ object StatusContainer {
   }
 
   class ContainerProvider(pos: BlockPos) extends INamedContainerProvider {
-    override def getDisplayName = Holder.itemStatusChecker.getName
+    override def getDisplayName: ITextComponent = new TranslationTextComponent(Holder.itemStatusChecker.getTranslationKey())
 
     override def createMenu(id: Int, inv: PlayerInventory, player: PlayerEntity) = new StatusContainer(id, player, pos)
   }

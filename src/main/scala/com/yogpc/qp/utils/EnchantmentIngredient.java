@@ -79,6 +79,11 @@ public class EnchantmentIngredient extends Ingredient {
         return toEnchantment;
     }
 
+    @Override
+    public IIngredientSerializer<? extends Ingredient> getSerializer() {
+        return Serializer.INSTANCE;
+    }
+
     public static class Serializer implements IIngredientSerializer<EnchantmentIngredient> {
         public static final Serializer INSTANCE = new Serializer();
 
