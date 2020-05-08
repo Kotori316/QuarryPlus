@@ -72,6 +72,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(id.getAndIncrement(), ActionMessage.class, ActionMessage::writeToBuffer, IMessage.decode(ActionMessage::new), ActionMessage::onReceiveInternal);
         INSTANCE.registerMessage(id.getAndIncrement(), Level2Message.class, Level2Message::writeToBuffer, b -> new Level2Message().readFromBuffer(b), Level2Message::onReceiveInternal);
         INSTANCE.registerMessage(id.getAndIncrement(), RecipeSyncMessage.class, RecipeSyncMessage::writeToBuffer, IMessage.decode(RecipeSyncMessage::new), RecipeSyncMessage::onReceiveInternal);
+        INSTANCE.registerMessage(id.getAndIncrement(), ClientTextMessage.class, ClientTextMessage::writeToBuffer, IMessage.decode(ClientTextMessage::new), ClientTextMessage::onReceiveInternal);
     }
 
     public static void sendToClient(IMessage<?> message, World world) {

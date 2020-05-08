@@ -21,7 +21,7 @@ import net.minecraft.nbt.CompoundNBT
 import net.minecraft.tileentity.ITickableTileEntity
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.{StringTextComponent, TranslationTextComponent}
-import net.minecraft.util.{Direction, IntReferenceHolder, ResourceLocation}
+import net.minecraft.util.{Direction, ResourceLocation}
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.util.LazyOptional
@@ -396,7 +396,7 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
 
   override def getEnchantmentHolder: EnchantmentHolder = ench.toHolder
 
-  override def getStatusStrings(trackIntSeq: Seq[IntReferenceHolder]): Seq[String] = {
+  override def getStatusStrings: Seq[String] = {
     val enchantmentStrings = EnchantmentHolder.getEnchantmentStringSeq(this.getEnchantmentHolder)
     val modules = if (this.modules.nonEmpty) "Modules" :: this.modules.map("  " + _.toString) else Nil
     val maxEnergy = (2 * ench.maxAmount / 1000 * ench.baseEnergy / APowerTile.MJToMicroMJ).toInt

@@ -3,12 +3,12 @@ package com.yogpc.qp.machines.base
 import java.util.Objects
 
 import com.yogpc.qp.QuarryPlus
+import com.yogpc.qp.packet.{ClientTextMessage, PacketHandler}
 import com.yogpc.qp.utils.Holder
 import net.minecraft.entity.player.{PlayerEntity, PlayerInventory}
 import net.minecraft.inventory.container.{INamedContainerProvider, Slot}
 import net.minecraft.item.ItemStack
 import net.minecraft.tileentity.TileEntity
-import net.minecraft.util.IntReferenceHolder
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.{ITextComponent, TranslationTextComponent}
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
@@ -29,10 +29,6 @@ class StatusContainer(id: Int, player: PlayerEntity, pos: BlockPos)
   for (vertical <- Range(0, 9)) {
     this.addSlot(new Slot(player.inventory, vertical, 8 + vertical * oneBox, 202))
   }
-  tile match {
-    case provider: StatusContainer.StatusProvider => provider.tracks.foreach(this.trackInt)
-    case _ =>
-  }
 
   override def canInteractWith(playerIn: PlayerEntity): Boolean = true
 
@@ -41,7 +37,8 @@ class StatusContainer(id: Int, player: PlayerEntity, pos: BlockPos)
   override def detectAndSendChanges(): Unit = {
     tile match {
       case provider: StatusContainer.StatusProvider =>
-        provider.updateIntRef(provider.tracks)
+        val m = provider.getMessageToSend
+        if (m != null) PacketHandler.sendToClient(new ClientTextMessage(m, pos, player.getEntityWorld), player.getEntityWorld)
       case _ =>
     }
     super.detectAndSendChanges()
@@ -53,11 +50,9 @@ object StatusContainer {
 
   trait StatusProvider {
     @OnlyIn(Dist.CLIENT)
-    def getStatusStrings(trackIntSeq: Seq[IntReferenceHolder]): Seq[String]
+    def getStatusStrings: Seq[String]
 
-    lazy val tracks: Seq[IntReferenceHolder] = Nil
-
-    def updateIntRef(trackingIntSeq: Seq[IntReferenceHolder]): Unit = ()
+    def getMessageToSend: TextInClient = null
   }
 
   class ContainerProvider(pos: BlockPos) extends INamedContainerProvider {

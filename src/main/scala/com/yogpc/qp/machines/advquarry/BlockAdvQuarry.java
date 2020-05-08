@@ -59,6 +59,8 @@ public class BlockAdvQuarry extends QPBlock {
                     if (stack.getItem() == Items.STICK) {
                         if (Config.common().noEnergy().get())
                             quarry.stickActivated(player);
+                        else
+                            quarry.G_ReInit();
                     } else {
                         quarry.G_ReInit();
                         if (Config.common().noEnergy().get()) {

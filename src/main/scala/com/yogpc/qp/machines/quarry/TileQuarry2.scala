@@ -263,30 +263,20 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   override def getModules: List[IModule] = modules
 
   @OnlyIn(Dist.CLIENT)
-  override def getStatusStrings(trackIntSeq: Seq[IntReferenceHolder]): Seq[String] = {
+  override def getStatusStrings: Seq[String] = {
+    if (clientText == null) return Nil
     import net.minecraft.client.resources.I18n
     val enchantmentStrings = EnchantmentHolder.getEnchantmentStringSeq(this.enchantments)
     val requiresEnergy = (PowerManager.calcEnergyBreak(1.5f, this.enchantments) + PowerManager.calcEnergyQuarryHead(this, 1, enchantments.unbreaking)) /
       APowerTile.FEtoMicroJ * (if (Config.common.fastQuarryHeadMove.get()) enchantments.efficiency + 1 else 1)
     val energyStrings = Seq(I18n.format(TranslationKeys.REQUIRES), s"$requiresEnergy FE/t")
-    val containItems = if (trackIntSeq(0).get() <= 0) I18n.format(TranslationKeys.EMPTY_ITEM) else I18n.format(TranslationKeys.CONTAIN_ITEM, trackIntSeq(0).get().toString)
-    val containFluids = if (trackIntSeq(1).get() <= 0) I18n.format(TranslationKeys.EMPTY_FLUID) else I18n.format(TranslationKeys.CONTAIN_FLUID, trackIntSeq(1).get().toString)
+    val containItems = if (clientText.getInt(0) <= 0) I18n.format(TranslationKeys.EMPTY_ITEM) else I18n.format(TranslationKeys.CONTAIN_ITEM, clientText.getInt(0).toString)
+    val containFluids = if (clientText.getInt(1) <= 0) I18n.format(TranslationKeys.EMPTY_FLUID) else I18n.format(TranslationKeys.CONTAIN_FLUID, clientText.getInt(1).toString)
     val modules = if (this.modules.nonEmpty) "Modules" :: this.modules.map("  " + _.toString) else Nil
     enchantmentStrings ++ energyStrings ++ modules :+ containItems :+ containFluids
   }
 
-  override lazy val tracks: Seq[IntReferenceHolder] = {
-    val item = IntReferenceHolder.single()
-    val fluid = IntReferenceHolder.single()
-    val seq = Seq(item, fluid)
-    this.updateIntRef(seq)
-    seq
-  }
-
-  override def updateIntRef(trackingIntSeq: Seq[IntReferenceHolder]): Unit = {
-    trackingIntSeq(0).set(storage.itemSize)
-    trackingIntSeq(1).set(storage.fluidSize)
-  }
+  override def getMessageToSend: TextInClient = TextInClient.create(storage.itemSize, storage.fluidSize)
 
   override def getEnchantmentHolder: EnchantmentHolder = enchantments
 
