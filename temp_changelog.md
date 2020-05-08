@@ -1,7 +1,10 @@
 **This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).**
 
+## Version 15.2.7
+* Fixed the crash of `java.lang.NoSuchMethodError: net.minecraft.item.Item.func_200296_o()Lnet/minecraft/util/text/ITextComponent;`
+
 ## Version 15.2.6
-* Fixed replacer didn't work for bedrock.
+* Fixed the replacer didn't work for bedrock.
 * added new example of blacklist
 * Fixed miningwell plus digs block before energy is sent.
 * Forge version up to 31.1.27
@@ -31,7 +34,7 @@
 ## Version 15.2.1
 * Allow minus energy when digging. #78.
 * Implemented area limitation for ChunkDestroyer.
-* Fixed quarry drill was rendered in wrong dimension..\
+* Fixed quarry drill was rendered in wrong dimension.
 * Imported changes from 1.14.4 2020/02/14.
     - Many internal changes.
     - Chain breaking of frame expanded
@@ -44,7 +47,7 @@
 
 ## Version 15.0.3
 * Fixed solid fuel quarry had no renderer.
-* Change default value of `NoEnergy` to false.
+* Changed default value of `NoEnergy` false.
 * Fixed crashes and infinite loops of Chunk Destroyer.
 * Render improvement. Not to render far lines.
 
@@ -52,7 +55,7 @@
 * Add support of JEI.
 
 ## Version 15.0.1-SNAPSHOT
-* Added renderer for QuarryPlus.
+* Added the renderer for QuarryPlus.
 * Disabled own font renderer in WorkbenchPlus.
 * Added recipe hint of WorkbenchPlus.
 
