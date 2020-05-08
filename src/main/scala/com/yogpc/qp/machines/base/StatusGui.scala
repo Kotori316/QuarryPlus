@@ -37,6 +37,6 @@ class StatusGui(c: StatusContainer, inv: PlayerInventory, t: ITextComponent)
   }
 
   def listContent(): Seq[String] = {
-    Option(getContainer.tile).collect { case p: StatusContainer.StatusProvider => p.getStatusStrings(p.tracks).map(TextFormatting.getTextWithoutFormattingCodes) }.getOrElse(Nil)
+    Option(getContainer.tile).collect { case p: StatusContainer.StatusProvider => p.getStatusStrings.map(TextFormatting.getTextWithoutFormattingCodes) }.getOrElse(Nil)
   }
 }

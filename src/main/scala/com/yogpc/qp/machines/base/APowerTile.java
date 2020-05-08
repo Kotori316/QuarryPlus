@@ -23,7 +23,8 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
@@ -52,6 +53,9 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
     protected final EnergyDebug3 debug = EnergyDebug3.apply(getClass().getSimpleName(), 100, this);
     public final DetailDataCollector collector = DetailDataCollector.getInstance(this);
     protected boolean outputEnergyInfo = true;
+    @Nullable
+    @OnlyIn(Dist.CLIENT)
+    public TextInClient clientText;
     private static final scala.Function1<String, Void> logFunction = v1 -> {
         QuarryPlus.LOGGER.info(v1);
         return null;
@@ -143,10 +147,6 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
             }
         }
 
-    }
-
-    protected final BlockPos[] getNeighbors(Direction facing) {
-        return new BlockPos[]{pos.offset(facing), pos.offset(facing.rotateYCCW()), pos.offset(facing.rotateY())};
     }
 
     public final boolean isOutputEnergyInfo() {

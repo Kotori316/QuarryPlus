@@ -23,7 +23,7 @@ import net.minecraft.state.properties.BlockStateProperties
 import net.minecraft.tileentity.ITickableTileEntity
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos}
 import net.minecraft.util.text.{ITextComponent, StringTextComponent, TranslationTextComponent}
-import net.minecraft.util.{Direction, Hand, IntReferenceHolder, ResourceLocation}
+import net.minecraft.util.{Direction, Hand, ResourceLocation}
 import net.minecraft.world.World
 import net.minecraft.world.server.ServerWorld
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
@@ -313,27 +313,17 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     attachments == IAttachment.Attachments.EXP_PUMP || attachments == IAttachment.Attachments.REPLACER
 
   @OnlyIn(Dist.CLIENT)
-  override def getStatusStrings(trackIntSeq: Seq[IntReferenceHolder]): Seq[String] = {
+  override def getStatusStrings: Seq[String] = {
+    if (clientText == null) return Nil
     import net.minecraft.client.resources.I18n
     val enchantmentStrings = EnchantmentHolder.getEnchantmentStringSeq(this.enchantments)
-    val containItems = if (trackIntSeq.head.get() <= 0) I18n.format(TranslationKeys.EMPTY_ITEM) else I18n.format(TranslationKeys.CONTAIN_ITEM, trackIntSeq.head.get().toString)
-    val containFluids = if (trackIntSeq(1).get() <= 0) I18n.format(TranslationKeys.EMPTY_FLUID) else I18n.format(TranslationKeys.CONTAIN_FLUID, trackIntSeq(1).get().toString)
+    val containItems = if (clientText.getInt(0) <= 0) I18n.format(TranslationKeys.EMPTY_ITEM) else I18n.format(TranslationKeys.CONTAIN_ITEM, clientText.getInt(0).toString)
+    val containFluids = if (clientText.getInt(1) <= 0) I18n.format(TranslationKeys.EMPTY_FLUID) else I18n.format(TranslationKeys.CONTAIN_FLUID, clientText.getInt(1).toString)
     val modules = if (this.modules.nonEmpty) "Modules" :: this.modules.map("  " + _.toString) else Nil
     enchantmentStrings ++ modules :+ containItems :+ containFluids
   }
 
-  override lazy val tracks: Seq[IntReferenceHolder] = {
-    val item = IntReferenceHolder.single()
-    val fluid = IntReferenceHolder.single()
-    val seq = Seq(item, fluid)
-    this.updateIntRef(seq)
-    seq
-  }
-
-  override def updateIntRef(trackIntSeq: Seq[IntReferenceHolder]): Unit = {
-    trackIntSeq.head.set(storage.itemSize)
-    trackIntSeq(1).set(storage.fluidSize)
-  }
+  override def getMessageToSend: TextInClient = TextInClient.create(storage.itemSize, storage.fluidSize)
 
   override def getEnchantmentHolder = enchantments
 
