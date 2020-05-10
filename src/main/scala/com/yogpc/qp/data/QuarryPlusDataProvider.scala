@@ -10,9 +10,13 @@ import com.yogpc.qp.machines.pb.PlacerTile
 import net.minecraft.data.{DataGenerator, DirectoryCache, IDataProvider}
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.common.crafting.conditions.NotCondition
+import net.minecraftforge.eventbus.api.SubscribeEvent
+import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent
 
+@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, modid = QuarryPlus.modID)
 object QuarryPlusDataProvider {
+  @SubscribeEvent
   def gatherData(event: GatherDataEvent): Unit = {
     if (event.includeServer()) {
       event.getGenerator.addProvider(new Recipe(event.getGenerator))
@@ -21,9 +25,7 @@ object QuarryPlusDataProvider {
       event.getGenerator.addProvider(new BlockDrop(event.getGenerator))
       event.getGenerator.addProvider(new BlackList(event.getGenerator))
     }
-    if (event.includeDev()) {
-      event.getGenerator.addProvider(com.yogpc.qp.test.Starter.getInstance())
-    }
+    if (event.includeDev()) event.getGenerator.addProvider(com.yogpc.qp.test.Starter.getInstance())
   }
 
   def location(name: String) = new ResourceLocation(QuarryPlus.modID, name)
@@ -41,9 +43,7 @@ object QuarryPlusDataProvider {
 
       for (builder <- data) {
         val out = path.resolve(s"data/${builder.location.getNamespace}/$directory/${builder.location.getPath}.json")
-        try {
-          IDataProvider.save(GSON, cache, builder.build, out)
-        } catch {
+        try IDataProvider.save(GSON, cache, builder.build, out) catch {
           case e: IOException => QuarryPlus.LOGGER.error(s"Failed to save recipe ${builder.location}.", e)
         }
       }
@@ -57,17 +57,17 @@ object QuarryPlusDataProvider {
   }
 
   class Wrapper(g: DataGenerator) extends QuarryPlusDataProvider.DataProvider(g) {
-    override def data: Seq[DataBuilder] = Seq(new DataBuilder {
-      override def location: ResourceLocation = QuarryPlusDataProvider.location("default")
+    override def data = Seq(new DataBuilder {
+      override def location = QuarryPlusDataProvider.location("default")
 
-      override def build: JsonElement = BlockWrapper.GSON.toJsonTree(BlockWrapper.example)
+      override def build = BlockWrapper.GSON.toJsonTree(BlockWrapper.example)
     })
 
     override def directory: String = QuarryPlus.modID + "/adv_quarry"
   }
 
   class Advancements(g: DataGenerator) extends QuarryPlusDataProvider.DataProvider(g) {
-    override def directory: String = "advancements"
+    override def directory = "advancements"
 
     override def data: Seq[DataBuilder] = {
       import com.yogpc.qp.machines.quarry.BlockSolidQuarry
@@ -96,7 +96,7 @@ object QuarryPlusDataProvider {
   }
 
   class BlockDrop(g: DataGenerator) extends QuarryPlusDataProvider.DataProvider(g) {
-    override def directory: String = "loot_tables/blocks"
+    override def directory = "loot_tables/blocks"
 
     override def data: Seq[DataBuilder] = {
       import com.yogpc.qp.utils.Holder
@@ -126,16 +126,16 @@ object QuarryPlusDataProvider {
   class BlackList(g: DataGenerator) extends QuarryPlusDataProvider.DataProvider(g) {
     override def directory: String = QuarryPlus.modID + "/blacklist"
 
-    override def data: Seq[DataBuilder] = Seq(
+    override def data = Seq(
       new DataBuilder {
         override def location = QuarryPlusDataProvider.location("blacklist")
 
-        override def build: JsonElement = QuarryBlackList.GSON.toJsonTree(QuarryBlackList.example1)
+        override def build = QuarryBlackList.GSON.toJsonTree(QuarryBlackList.example1)
       },
       new DataBuilder {
         override def location = QuarryPlusDataProvider.location("blacklist2")
 
-        override def build: JsonElement = QuarryBlackList.GSON.toJsonTree(QuarryBlackList.example2)
+        override def build = QuarryBlackList.GSON.toJsonTree(QuarryBlackList.example2)
       }
     )
   }

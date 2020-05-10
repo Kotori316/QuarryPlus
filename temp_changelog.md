@@ -1,5 +1,9 @@
 **This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).**
 
+## Version 15.3.0
+* **Updated language loader**. Please update library mod to newer than 2.13.2. You can download from above link.
+* Internal changes.
+
 ## Version 15.2.8
 * Fixed a bug where the text in StatusChecker was wrong (In a multi server).
 
