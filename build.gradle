@@ -134,15 +134,11 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     def forge_prop = loadProperties("forge_version.properties")
     minecraft(forge_prop.getProperty("forge_version"))
-    implementation "org.scala-lang:scala-library:2.13.1"
+    implementation "org.scala-lang:scala-library:2.13.2"
     implementation group: 'org.typelevel', name: "cats-core_2.13", version: '2.1.0'
 
-    def mc_version = "1.15.2"
-    def jei_version = "6.0.0.2"
     // at runtime, use the full JEI jar
-    implementation fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
-//    compile "mezz.jei:jei-${mc_version}:${jei_version}:sources"
-//    implementation fg.deobf("largefluidtank:LargeFluidTank:14.6.6")
+    implementation fg.deobf("mezz.jei:jei-1.15.2:6.0.0.4")
     implementation fg.deobf("curse.maven:mekanism:2894305")
 
     // Test Dependencies.
@@ -152,7 +148,7 @@ dependencies {
     implementation(group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.6.2')
 
     if (isInCI()) {
-        runtimeOnly("com.kotori316:ScalableCatsForce:2.13.1-build-7:dev")
+        runtimeOnly("com.kotori316:ScalableCatsForce:2.13.2-build-1:dev")
     }
 }
 

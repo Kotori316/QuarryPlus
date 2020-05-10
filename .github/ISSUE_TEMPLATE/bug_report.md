@@ -18,6 +18,7 @@ Steps to reproduce the behavior:
 
 **Version**
 * Minecraft: []
+* Single Player or Multi Player?: []
 * Forge: []
 * This mod (QuarryPlus): []
 * Other mods: []

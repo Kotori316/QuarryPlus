@@ -41,7 +41,7 @@ jobs:
       - uses: actions/cache@v1
         with:
           path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/forge_version.properties') }}
+          key: ${{ runner.os }}-gradle15-${{ hashFiles('**/forge_version.properties') }}
       - name: Test
         run: chmod +x ./gradlew && ./gradlew -Dfml.earlyprogresswindow=false runData --info
         continue-on-error: true
