@@ -1,6 +1,5 @@
 package com.yogpc.qp;
 
-import java.lang.reflect.Method;
 import java.nio.file.Paths;
 
 import com.yogpc.qp.machines.PowerManager;
@@ -28,7 +27,6 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -50,12 +48,8 @@ public class QuarryPlus {
     public static final ProxyCommon proxy = DistExecutor.runForDist(() -> ProxyClient::new, () -> ProxyCommon::new);
 
     public QuarryPlus() {
-        IEventBus modBus = QuarryPlus.modBus();
         initConfig();
         MinecraftForge.EVENT_BUS.register(this);
-        proxy.registerEvents(MinecraftForge.EVENT_BUS);
-        proxy.registerModBus(modBus);
-        modBus.register(Register.class);
     }
 
     private void initConfig() {
@@ -72,7 +66,7 @@ public class QuarryPlus {
         event.getServer().getResourceManager().addReloadListener(BlockWrapper.Reload$.MODULE$);
     }
 
-    //    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
+    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class Register {
         @SubscribeEvent
         public static void registerBlocks(RegistryEvent.Register<Block> event) {
@@ -103,7 +97,6 @@ public class QuarryPlus {
 
         @SubscribeEvent
         public static void setup(FMLCommonSetupEvent event) {
-            proxy.registerTextures(event);
             PowerManager.configRegister();
             PacketHandler.init();
             CraftingHelper.register(new EnableCondition.Serializer());
@@ -119,16 +112,6 @@ public class QuarryPlus {
             DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> proxy.setDummyTexture(Config.client().dummyTexture().get()));
         }
 
-    }
-
-    private static IEventBus modBus() {
-        Object o = ModLoadingContext.get().extension();
-        try {
-            Method busGetter = o.getClass().getMethod("getModEventBus");
-            return (IEventBus) busGetter.invoke(o);
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException("Error in getting event bus.", e);
-        }
     }
 
     @SuppressWarnings({"unused", "WeakerAccess", "SpellCheckingInspection"})
