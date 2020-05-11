@@ -21,4 +21,8 @@ public interface IModuleItem extends IDisabled {
             return Option.empty();
         }
     }
+
+    default boolean isCompatibleWith(IModuleItem item) {
+        return !this.getSymbol().equals(item.getSymbol());
+    }
 }

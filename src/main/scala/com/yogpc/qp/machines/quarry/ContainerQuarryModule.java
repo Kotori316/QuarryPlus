@@ -5,7 +5,6 @@ import java.util.Objects;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.base.IModule;
 import com.yogpc.qp.machines.base.QuarryModuleInventory;
-import com.yogpc.qp.machines.base.SlotTile;
 import com.yogpc.qp.utils.Holder;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -19,6 +18,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.items.SlotItemHandler;
 
 public class ContainerQuarryModule extends Container {
     public static final String GUI_ID = QuarryPlus.modID + ":gui_quarry_module";
@@ -37,7 +37,7 @@ public class ContainerQuarryModule extends Container {
         for (int i = 0; i < allSlots; i++) {
             int verticalFix = i < 5 ? i : i - 5;
             int horizontalFix = i / 5;
-            addSlot(new SlotTile(moduleInventory, i, 44 + verticalFix * oneBox, 27 + horizontalFix * oneBox));
+            addSlot(new SlotItemHandler(moduleInventory.itemHandler, i, 44 + verticalFix * oneBox, 27 + horizontalFix * oneBox));
         }
 
         for (int h = 0; h < 3; h++) {
@@ -66,13 +66,8 @@ public class ContainerQuarryModule extends Container {
                 if (!mergeItemStack(remain, allSlots, allSlots + 36, true))
                     return ItemStack.EMPTY;
             } else {
-                for (int i = 0; i < allSlots; i++) {
-                    if (moduleInventory.isItemValidForSlot(i, remain)) {
-                        if (!mergeItemStack(remain, i, i + allSlots, false)) {
-                            return ItemStack.EMPTY;
-                        }
-                        break;
-                    }
+                if (!mergeItemStack(remain, 0, allSlots, false)) {
+                    return ItemStack.EMPTY;
                 }
             }
             if (remain.getCount() == 0)
