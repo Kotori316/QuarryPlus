@@ -6,7 +6,7 @@ import java.util
 import com.google.gson._
 import com.yogpc.qp.QuarryPlus
 import com.yogpc.qp.utils.JsonReloadListener
-import net.minecraft.block.{BlockState, Blocks}
+import net.minecraft.block.{Block, BlockState, Blocks}
 import net.minecraft.profiler.IProfiler
 import net.minecraft.resources.IResourceManager
 import net.minecraft.util.math.BlockPos
@@ -45,6 +45,7 @@ object QuarryBlackList {
   private[this] final val ID_NAME = QuarryPlus.modID + ":blacklist_name"
   private[this] final val ID_MOD = QuarryPlus.modID + ":blacklist_modid"
   private[this] final val ID_ORES = QuarryPlus.modID + ":blacklist_ores"
+  private[this] final val ID_TAG = QuarryPlus.modID + ":blacklist_tag"
 
   object Entry extends AnyRef with JsonSerializer[Entry] with JsonDeserializer[Entry] {
     override def serialize(src: Entry, typeOfSrc: Type, context: JsonSerializationContext): JsonElement = {
@@ -135,6 +136,22 @@ object QuarryBlackList {
         }
       }
     }
+
+    override def toString = "BlackList of tag `forge:ores`."
+  }
+
+  private case class Tag(name: ResourceLocation) extends Entry(ID_TAG) {
+
+    import net.minecraft.tags.{BlockTags, Tag => MCTag}
+
+    private[this] final val tag: MCTag[Block] = BlockTags.getCollection.get(name)
+
+    override def test(state: BlockState, world: World, pos: BlockPos): Boolean = {
+      if (tag == null) false
+      else tag.contains(state.getBlock)
+    }
+
+    override def toString = "BlackList for tag " + name
   }
 
   val GSON = (new GsonBuilder).disableHtmlEscaping().setPrettyPrinting()
