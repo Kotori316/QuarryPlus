@@ -33,7 +33,7 @@ object Reason {
 
   def allAir(pos: BlockPos, index: Int) = new AllAirImpl(pos, index)
 
-  def message(s: String): Reason = new Message(s)
+  def message(s: String, isEnergy: Boolean = false): Reason = new Message(s, isEnergy)
 
   def printNonEnergy[T]: Reason => Option[T] = r => {
     if (Config.common.debug && !r.isEnergyIssue)
@@ -84,10 +84,6 @@ object Reason {
     override def print(): Unit = ()
   }
 
-  private[advquarry] class Message(s: String) extends Reason {
-    override def isEnergyIssue: Boolean = false
-
-    override def toString: String = s
-  }
+  private[advquarry] class Message(override val toString: String, override val isEnergyIssue: Boolean) extends Reason
 
 }
