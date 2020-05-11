@@ -25,11 +25,20 @@ public class ItemFuelModule extends Item implements IModuleItem {
 
     @Override
     public <T extends APowerTile & HasStorage & HasModuleInventory> Function<T, IModule> getModule(ItemStack stack) {
-        return t -> new FuelModule(mode);
+        return t -> new FuelModule(mode, stack.getCount());
     }
 
     @Override
     public Symbol getSymbol() {
         return Symbol.apply("ModuleFuel");
+    }
+
+    @Override
+    public boolean isCompatibleWith(IModuleItem item) {
+        if (item instanceof ItemFuelModule) {
+            ItemFuelModule module = (ItemFuelModule) item;
+            return module.mode == this.mode;
+        }
+        return true;
     }
 }

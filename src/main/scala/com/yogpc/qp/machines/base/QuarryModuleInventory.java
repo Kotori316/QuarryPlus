@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import com.yogpc.qp.machines.modules.IModuleItem;
+import com.yogpc.qp.utils.Holder;
 import jp.t2v.lab.syntax.MapStreamSyntax;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
@@ -21,11 +22,14 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.wrapper.InvWrapper;
 
 public class QuarryModuleInventory extends Inventory implements INBTSerializable<CompoundNBT> {
     private final TileEntity tile;
     private final Consumer<QuarryModuleInventory> onUpdate;
     private final Predicate<IModuleItem> moduleFilter;
+    public final IItemHandlerModifiable itemHandler = new ItemHandler();
 
     public QuarryModuleInventory(int slotCount, TileEntity entity, Consumer<QuarryModuleInventory> onUpdate, Predicate<IModuleItem> moduleFilter) {
         super(slotCount);
@@ -51,12 +55,14 @@ public class QuarryModuleInventory extends Inventory implements INBTSerializable
             IModuleItem item = (IModuleItem) stack.getItem();
             if (!moduleFilter.test(item))
                 return false;
-            Predicate<Item> equal = Predicate.isEqual(item);
-            Predicate<Item> id = item1 -> item1 instanceof IModuleItem && ((IModuleItem) item1).getSymbol().equals(item.getSymbol());
+            if (item.getSymbol().equals(Holder.itemFuelModuleNormal().getSymbol())) {
+                return index == 4;
+            }
+            Predicate<Item> id = item1 -> item1 instanceof IModuleItem && !((IModuleItem) item1).isCompatibleWith(item);
             return IntStream.range(0, getSizeInventory())
                 .mapToObj(this::getStackInSlot)
                 .map(ItemStack::getItem)
-                .noneMatch(equal.or(id));
+                .noneMatch(id);
         }
         return false;
     }
@@ -69,7 +75,7 @@ public class QuarryModuleInventory extends Inventory implements INBTSerializable
 
     @Override
     public int getInventoryStackLimit() {
-        return 1;
+        return 64;
     }
 
     @Override
@@ -93,6 +99,19 @@ public class QuarryModuleInventory extends Inventory implements INBTSerializable
         ItemStackHelper.loadAllItems(nbt, list);
         for (int i = 0; i < list.size(); i++) {
             setInventorySlotContents(i, list.get(i));
+        }
+    }
+
+    private class ItemHandler extends InvWrapper {
+
+        public ItemHandler() {
+            super(QuarryModuleInventory.this);
+        }
+
+        @Override
+        public int getSlotLimit(int slot) {
+            if (slot == 4) return super.getSlotLimit(slot);
+            else return 1;
         }
     }
 }
