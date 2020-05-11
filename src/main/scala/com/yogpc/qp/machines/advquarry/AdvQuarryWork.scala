@@ -213,13 +213,17 @@ object AdvQuarryWork {
               case (reasons, storage) =>
                 tile.storage.addAll(storage, log = true)
 
-                val searchEnergy = PowerManager.calcEnergyAdvSearch(tile.enchantments.unbreaking, pos.getY - tile.yLevel + 1)
-                if (PowerManager.useEnergy(tile, searchEnergy, EnergyUsage.ADV_CHECK_BLOCK)) {
-                  targetList = targetList.tail
+                if (reasons.exists(_.isEnergyIssue)) {
                   reasons ::: list
                 } else {
-                  Reason.energy(EnergyUsage.ADV_CHECK_BLOCK, searchEnergy, tile.getStoredEnergy, count) ::
+                  val searchEnergy = PowerManager.calcEnergyAdvSearch(tile.enchantments.unbreaking, pos.getY - tile.yLevel + 1)
+                  if (PowerManager.useEnergy(tile, searchEnergy, EnergyUsage.ADV_CHECK_BLOCK)) {
+                    targetList = targetList.tail
                     reasons ::: list
+                  } else {
+                    Reason.energy(EnergyUsage.ADV_CHECK_BLOCK, searchEnergy, tile.getStoredEnergy, count) ::
+                      reasons ::: list
+                  }
                 }
             }
           } else {
