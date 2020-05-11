@@ -23,11 +23,11 @@ class GuiQuarryLevel(c: ContainerQuarryLevel, inv: PlayerInventory, t: ITextComp
     with IHandleButton {
 
   val LOCATION = new ResourceLocation(QuarryPlus.modID, "textures/gui/advpump.png")
-  val tile = c.tile
+  val tile: TileEntity = c.tile
   val func: TileEntity => _ <: LevelMessage = c.messageFunc
-  val lA = GuiQuarryLevel.YLevel.get(tile)
+  val lA: GuiQuarryLevel.YLevel[TileEntity] = GuiQuarryLevel.YLevel.get(tile)
   val tp = 15
-  val tileName = tile match {
+  val tileName: String = tile match {
     case n: INameable => n.getName.getFormattedText
     case d: IDebugSender => d.getDebugName
     case _ => "YSetter"

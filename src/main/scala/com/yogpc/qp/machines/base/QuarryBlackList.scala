@@ -154,7 +154,7 @@ object QuarryBlackList {
     override def toString = "BlackList for tag " + name
   }
 
-  val GSON = (new GsonBuilder).disableHtmlEscaping().setPrettyPrinting()
+  val GSON: Gson = (new GsonBuilder).disableHtmlEscaping().setPrettyPrinting()
     .registerTypeHierarchyAdapter(classOf[Entry], Entry)
     .registerTypeHierarchyAdapter(classOf[Array[Entry]], EntryArray)
     .create()

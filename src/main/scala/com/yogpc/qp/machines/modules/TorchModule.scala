@@ -14,7 +14,7 @@ import net.minecraft.world.LightType
 
 
 class TorchModule(val y: Eval[Int]) extends IModule {
-  override def id = TorchModule.id
+  override def id: String = TorchModule.id
 
   override val calledWhen = Set(IModule.TypeAfterBreak)
 

@@ -8,15 +8,15 @@ sealed class Box(val startX: Double, val startY: Double, val startZ: Double,
                  val endX: Double, val endY: Double, val endZ: Double,
                  val sizeX: Double, val sizeY: Double, val sizeZ: Double,
                  val firstSide: Boolean, val endSide: Boolean) {
-  val dx = endX - startX
-  val dy = endY - startY
-  val dz = endZ - startZ
-  val lengthSq = dx * dx + dy * dy + dz * dz
-  val length = Math.sqrt(lengthSq)
-  val offX = sizeX / 2
-  val offY = sizeY / 2
-  val offZ = sizeZ / 2
-  val maxSize = Math.max(Math.max(sizeX, sizeY), sizeZ)
+  val dx: Double = endX - startX
+  val dy: Double = endY - startY
+  val dz: Double = endZ - startZ
+  val lengthSq: Double = dx * dx + dy * dy + dz * dz
+  val length: Double = Math.sqrt(lengthSq)
+  val offX: Double = sizeX / 2
+  val offY: Double = sizeY / 2
+  val offZ: Double = sizeZ / 2
+  val maxSize: Double = Math.max(Math.max(sizeX, sizeY), sizeZ)
 
   def render(buffer: BufferBuilder, sprite: TextureAtlasSprite, alpha: Int = 255, red: Int = 255, green: Int = 255, blue: Int = 255)(implicit lightValue: Box.LightValue): Unit = {
     val n1X = dx

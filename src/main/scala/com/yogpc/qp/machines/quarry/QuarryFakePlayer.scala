@@ -43,7 +43,7 @@ class QuarryFakePlayer private(worldServer: ServerWorld) extends FakePlayer(worl
 
   override def openCommandBlock(commandBlock: CommandBlockTileEntity): Unit = ()
 
-  override def openContainer(p_213829_1_ : INamedContainerProvider) = OptionalInt.empty()
+  override def openContainer(p_213829_1_ : INamedContainerProvider): OptionalInt = OptionalInt.empty()
 
   override def openBook(stack: ItemStack, hand: Hand): Unit = ()
 

@@ -25,7 +25,7 @@ package object qp {
   }
   val toComponentString: String => StringTextComponent = s => new StringTextComponent(s)
   val nonNull: AnyRef => Boolean = obj => obj != null
-  val facings = Eval.later(Direction.values()).map(_.toList)
+  val facings: Eval[List[Direction]] = Eval.later(Direction.values()).map(_.toList)
 
   def toJavaOption[T](o: Option[T]): java.util.Optional[T] = {
     //I think it's faster than match function.
@@ -115,7 +115,7 @@ package object qp {
     }
   }
 
-  def transform0[T](cap: LazyOptional[T]) = Eval.always {
+  def transform0[T](cap: LazyOptional[T]): Eval[Option[T]] = Eval.always {
     if (cap.isPresent) {
       cap.orElseThrow(thrower).some
     } else {

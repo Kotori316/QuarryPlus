@@ -4,7 +4,7 @@ import com.yogpc.qp.machines.base._
 import com.yogpc.qp.machines.{PowerManager, TranslationKeys}
 import com.yogpc.qp.utils.Holder
 import com.yogpc.qp.{Config, _}
-import net.minecraft.enchantment.{EnchantmentHelper, EnchantmentType}
+import net.minecraft.enchantment.{Enchantment, EnchantmentHelper, EnchantmentType}
 import net.minecraft.entity.player.{PlayerEntity, PlayerInventory}
 import net.minecraft.inventory.ItemStackHelper
 import net.minecraft.inventory.container.{Container, INamedContainerProvider}
@@ -12,17 +12,17 @@ import net.minecraft.item.{ItemStack, Items}
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.tileentity.ITickableTileEntity
 import net.minecraft.util.NonNullList
-import net.minecraft.util.text.TranslationTextComponent
+import net.minecraft.util.text.{ITextComponent, TranslationTextComponent}
 import net.minecraftforge.registries.ForgeRegistries
 
 import scala.jdk.CollectionConverters._
 
 class TileBookMover extends APowerTile(Holder.bookMoverType) with HasInv with ITickableTileEntity with INamedContainerProvider {
 
-  val inv = NonNullList.withSize(getSizeInventory, ItemStack.EMPTY)
+  val inv: NonNullList[ItemStack] = NonNullList.withSize(getSizeInventory, ItemStack.EMPTY)
   configure(Config.common.workbenchMaxReceive.get() * APowerTile.MJToMicroMJ, 50000 * APowerTile.MJToMicroMJ)
-  val enchTypes = EnchantmentType.values().filter(_.canEnchantItem(Items.DIAMOND_PICKAXE)).toSet
-  val validEnch = ForgeRegistries.ENCHANTMENTS.getValues.asScala.filter(e => enchTypes(e.`type`)).toSet
+  val enchTypes: Set[EnchantmentType] = EnchantmentType.values().filter(_.canEnchantItem(Items.DIAMOND_PICKAXE)).toSet
+  val validEnch: Set[Enchantment] = ForgeRegistries.ENCHANTMENTS.getValues.asScala.filter(e => enchTypes(e.`type`)).toSet
 
   override def write(nbt: CompoundNBT): CompoundNBT = {
     ItemStackHelper.saveAllItems(nbt, inv)
@@ -94,7 +94,7 @@ class TileBookMover extends APowerTile(Holder.bookMoverType) with HasInv with IT
 
   override def getName = new TranslationTextComponent(TranslationKeys.moverfrombook)
 
-  override def getDisplayName = getName
+  override def getDisplayName: ITextComponent = getName
 
   override def canReceive: Boolean = isWorking
 

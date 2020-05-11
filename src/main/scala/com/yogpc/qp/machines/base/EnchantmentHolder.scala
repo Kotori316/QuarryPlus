@@ -13,7 +13,7 @@ import scala.jdk.CollectionConverters._
 case class EnchantmentHolder(efficiency: Int, unbreaking: Int, fortune: Int, silktouch: Boolean, other: Map[ResourceLocation, Int] = Map.empty)
 
 object EnchantmentHolder {
-  val noEnch = EnchantmentHolder(0, 0, 0, silktouch = false)
+  val noEnch: EnchantmentHolder = EnchantmentHolder(0, 0, 0, silktouch = false)
 
   def enchantmentMode(e: EnchantmentHolder): Int = if (e.silktouch) -1 else e.fortune
 

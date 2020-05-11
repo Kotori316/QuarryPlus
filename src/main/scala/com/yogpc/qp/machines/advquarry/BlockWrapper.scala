@@ -45,7 +45,7 @@ object BlockWrapper extends JsonDeserializer[BlockWrapper] with JsonSerializer[B
 
   private var wrappers = Set.empty[BlockWrapper]
 
-  def getWrappers = wrappers
+  def getWrappers: Set[BlockWrapper] = wrappers
 
   private[this] final val arrayDeserializer = new JsonDeserializer[Array[BlockWrapper]] {
     override def deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): Array[BlockWrapper] = {

@@ -7,7 +7,7 @@ import net.minecraft.util.math.MathHelper
 import net.minecraftforge.client.model.animation.TileEntityRendererFast
 
 object RenderQuarry extends TileEntityRendererFast[TileQuarry] {
-  val instance = this
+  val instance: RenderQuarry.type = this
 
   private[this] final val d1 = 1d / 16d
   private[this] final val d4 = 4d / 16d

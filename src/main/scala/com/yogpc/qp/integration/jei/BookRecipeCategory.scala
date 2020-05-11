@@ -1,5 +1,6 @@
 package com.yogpc.qp.integration.jei
 
+import java.util
 import java.util.Collections
 
 import com.yogpc.qp.machines.base.IEnchantableItem
@@ -7,8 +8,8 @@ import com.yogpc.qp.utils.Holder
 import com.yogpc.qp.{QuarryPlus, _}
 import mezz.jei.api.constants.VanillaTypes
 import mezz.jei.api.gui.IRecipeLayout
-import mezz.jei.api.gui.drawable.IDrawable
 import mezz.jei.api.gui.drawable.IDrawableAnimated.StartDirection
+import mezz.jei.api.gui.drawable.{IDrawable, IDrawableAnimated, IDrawableStatic}
 import mezz.jei.api.helpers.IGuiHelper
 import mezz.jei.api.ingredients.IIngredients
 import mezz.jei.api.recipe.category.IRecipeCategory
@@ -25,10 +26,10 @@ class BookRecipeCategory(guiHelper: IGuiHelper) extends IRecipeCategory[BookReci
 
   import BookRecipeCategory._
 
-  val bar = guiHelper.createDrawable(backGround, 176, 14, 23, 16)
-  val animateBar = guiHelper.createAnimatedDrawable(bar, 100, StartDirection.LEFT, false)
+  val bar: IDrawableStatic = guiHelper.createDrawable(backGround, 176, 14, 23, 16)
+  val animateBar: IDrawableAnimated = guiHelper.createAnimatedDrawable(bar, 100, StartDirection.LEFT, false)
 
-  override def getUid = UID
+  override def getUid: ResourceLocation = UID
 
   override def getTitle: String = I18n.format(Holder.blockBookMover.getTranslationKey)
 
@@ -50,9 +51,9 @@ class BookRecipeCategory(guiHelper: IGuiHelper) extends IRecipeCategory[BookReci
     Minecraft.getInstance().fontRenderer.drawString("50000MJ", 36 - xOff, 66 - yOff, 0x404040)
   }
 
-  override def getRecipeClass = classOf[BookRecipe]
+  override def getRecipeClass: Class[_ <: BookRecipe] = classOf[BookRecipe]
 
-  override def getIcon = guiHelper.createDrawableIngredient(new ItemStack(Holder.blockBookMover))
+  override def getIcon: IDrawable = guiHelper.createDrawableIngredient(new ItemStack(Holder.blockBookMover))
 
   override def setIngredients(recipe: BookRecipe, ingredients: IIngredients): Unit = {
     val input = Seq(items.asJava, Collections.singletonList(EnchantedBookItem.getEnchantedItemStack(recipe.ench))).asJava
@@ -70,11 +71,11 @@ object BookRecipeCategory {
   final val yOff = 0
   final val o = 18
 
-  val enchTypes = EnchantmentType.values().filter(_.canEnchantItem(Items.DIAMOND_PICKAXE)).toSet
-  val enchantments = ForgeRegistries.ENCHANTMENTS.getValues.asScala.filter(e => enchTypes(e.`type`)).map(e => new EnchantmentData(e, e.getMaxLevel))
-  val items = ForgeRegistries.ITEMS.asScala.collect { case i: Item with IEnchantableItem if i.isValidInBookMover => i }.flatMap(_.stacks).toSeq
+  val enchTypes: Set[EnchantmentType] = EnchantmentType.values().filter(_.canEnchantItem(Items.DIAMOND_PICKAXE)).toSet
+  val enchantments: Iterable[EnchantmentData] = ForgeRegistries.ENCHANTMENTS.getValues.asScala.filter(e => enchTypes(e.`type`)).map(e => new EnchantmentData(e, e.getMaxLevel))
+  val items: Seq[ItemStack] = ForgeRegistries.ITEMS.asScala.collect { case i: Item with IEnchantableItem if i.isValidInBookMover => i }.flatMap(_.stacks).toSeq
 
-  def recipes = enchantments.map(BookRecipe.apply).toSeq.asJava
+  def recipes: util.List[BookRecipe] = enchantments.map(BookRecipe.apply).toSeq.asJava
 
   case class BookRecipe(ench: EnchantmentData)
 

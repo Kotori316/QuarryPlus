@@ -8,6 +8,7 @@ import com.yogpc.qp.utils.Holder
 import net.minecraft.entity.player.{PlayerEntity, PlayerInventory}
 import net.minecraft.inventory.container.{INamedContainerProvider, Slot}
 import net.minecraft.item.ItemStack
+import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.{ITextComponent, TranslationTextComponent}
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
@@ -19,7 +20,7 @@ class StatusContainer(id: Int, player: PlayerEntity, pos: BlockPos)
   extends net.minecraft.inventory.container.Container(Holder.statusContainerType, id) {
 
   // 175, 225
-  val tile = Objects.requireNonNull(player.getEntityWorld.getTileEntity(pos))
+  val tile: TileEntity = Objects.requireNonNull(player.getEntityWorld.getTileEntity(pos))
   val oneBox = 18
 
   for (h <- Range(0, 3); v <- Range(0, 9)) {

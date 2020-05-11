@@ -48,7 +48,7 @@ final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: Eval[Int], con
 
   override def toString = s"ExpPumpModule($xp)"
 
-  override val id = ExpPumpModule.id
+  override val id: String = ExpPumpModule.id
 }
 
 object ExpPumpModule {

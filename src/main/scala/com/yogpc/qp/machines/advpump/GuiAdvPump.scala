@@ -17,7 +17,7 @@ import scala.jdk.CollectionConverters._
 
 @OnlyIn(Dist.CLIENT)
 class GuiAdvPump(c: ContainerAdvPump, i: PlayerInventory, t: ITextComponent) extends ContainerScreen[ContainerAdvPump](c, i, t) with IHandleButton {
-  val tile = getContainer.tile
+  val tile: TileAdvPump = getContainer.tile
   val LOCATION = new ResourceLocation(QuarryPlus.modID, "textures/gui/advpump.png")
 
   override def render(mouseX: Int, mouseY: Int, partialTicks: Float): Unit = {

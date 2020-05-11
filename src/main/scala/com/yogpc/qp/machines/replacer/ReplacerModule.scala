@@ -6,7 +6,7 @@ import com.yogpc.qp.machines.base.IModule.{AfterBreak, Done, NoAction}
 import net.minecraft.block.BlockState
 
 class ReplacerModule(val toReplace: Eval[BlockState]) extends IModule {
-  override val id = ReplacerModule.id
+  override val id: String = ReplacerModule.id
 
   override val calledWhen = Set(IModule.TypeAfterBreak)
 
@@ -23,7 +23,7 @@ class ReplacerModule(val toReplace: Eval[BlockState]) extends IModule {
 
   }
 
-  override def toString = {
+  override def toString: String = {
     toReplace match {
       case Now(value) => s"ReplacerModule($value)"
       case value: Always[_] => s"ReplacerModule(${value.value})"

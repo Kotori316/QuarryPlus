@@ -17,7 +17,7 @@ import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 
 @OnlyIn(Dist.CLIENT)
 class GuiAdvQuarry(c: ContainerAdvQuarry, i: PlayerInventory, t: ITextComponent) extends ContainerScreen[ContainerAdvQuarry](c, i, t) with IHandleButton {
-  val tile = getContainer.tile
+  val tile: TileAdvQuarry = getContainer.tile
   val LOCATION = new ResourceLocation(QuarryPlus.modID, "textures/gui/chunkdestroyer.png")
 
   //7,15 to 168,70 box : 162, 56

@@ -5,12 +5,13 @@ import com.yogpc.qp.machines.advquarry.{AdvQuarryWork, TileAdvQuarry}
 import com.yogpc.qp.machines.base.Area
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.BufferBuilder
+import net.minecraft.client.renderer.texture.TextureAtlasSprite
 import net.minecraftforge.client.model.animation.TileEntityRendererFast
 
 object RenderAdvQuarry extends TileEntityRendererFast[TileAdvQuarry] {
   private[this] final val d = 1d / 16d
-  val instance = this
-  lazy val sprite = Sprites.getMap(Symbol("yellow"))
+  val instance: RenderAdvQuarry.type = this
+  lazy val sprite: TextureAtlasSprite = Sprites.getMap(Symbol("yellow"))
 
   override def renderTileEntityFast(te: TileAdvQuarry, x: Double, y: Double, z: Double,
                                     partialTicks: Float, destroyStage: Int, buffer: BufferBuilder): Unit = {

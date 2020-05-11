@@ -32,7 +32,7 @@ object Area {
   private[this] final val NBT_Z_MAX = "zMax"
   private[this] final val NBT_DIM = "dim"
   private[this] final val EMPTY_DIM = "None"
-  val zeroArea = Area(0, 0, 0, 0, 0, 0, None)
+  val zeroArea: Area = Area(0, 0, 0, 0, 0, 0, None)
 
   implicit val showArea: Show[Area] = area => s"(${area.xMin}, ${area.yMin}, ${area.zMin}) -> (${area.xMax}, ${area.yMax}, ${area.zMax}) in dim ${area.dimID.map(_.toString).getOrElse(EMPTY_DIM)}"
 

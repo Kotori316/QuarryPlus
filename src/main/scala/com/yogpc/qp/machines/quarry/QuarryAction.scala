@@ -66,7 +66,7 @@ object QuarryAction {
 
     var frameTargets: List[BlockPos] = makeList
 
-    def makeList = if (quarry2.hasWorld && !quarry2.getWorld.isRemote) {
+    def makeList: List[BlockPos] = if (quarry2.hasWorld && !quarry2.getWorld.isRemote) {
       val r = quarry2.area
       val firstZ = near(quarry2.getPos.getZ, r.zMin, r.zMax)
       val lastZ = far(quarry2.getPos.getZ, r.zMin, r.zMax)
@@ -159,15 +159,15 @@ object QuarryAction {
       }
     }
 
-    override def nextTarget() = insideFrame.headOption.getOrElse(BlockPos.ZERO)
+    override def nextTarget(): BlockPos = insideFrame.headOption.getOrElse(BlockPos.ZERO)
 
-    override def nextAction(quarry2: TileQuarry2) = if (!quarry2.frameMode) new MakeFrame(quarry2) else none
+    override def nextAction(quarry2: TileQuarry2): QuarryAction = if (!quarry2.frameMode) new MakeFrame(quarry2) else none
 
-    override def canGoNext(quarry: TileQuarry2) = insideFrame.isEmpty
+    override def canGoNext(quarry: TileQuarry2): Boolean = insideFrame.isEmpty
 
-    override def mode = TileQuarry2.breakInsideFrame
+    override def mode: TileQuarry2.Mode = TileQuarry2.breakInsideFrame
 
-    override def serverWrite(nbt: CompoundNBT) = {
+    override def serverWrite(nbt: CompoundNBT): CompoundNBT = {
       //      val list = insideFrame.map(_.toLong.toNBT).foldLeft(new ListNBT) { case (l, tag) => l.add(tag); l }
       //      nbt.put("list", list)
       super.serverWrite(nbt)
@@ -246,9 +246,9 @@ object QuarryAction {
       }
     }
 
-    override def nextTarget() = digTargets.headOption.getOrElse(new BlockPos(quarry2.area.xMin + 1, y, quarry2.area.zMin + 1))
+    override def nextTarget(): BlockPos = digTargets.headOption.getOrElse(new BlockPos(quarry2.area.xMin + 1, y, quarry2.area.zMin + 1))
 
-    override def nextAction(quarry2: TileQuarry2) =
+    override def nextAction(quarry2: TileQuarry2): QuarryAction =
       if (y > quarry2.yLevel) new BreakBlock(quarry2, y - 1, quarry2.target, headX, headY, headZ) else new CheckDrops(quarry2, quarry2.yLevel)
 
     override def canGoNext(quarry: TileQuarry2): Boolean = {
@@ -262,9 +262,9 @@ object QuarryAction {
       }
     }
 
-    override def mode = TileQuarry2.breakBlock
+    override def mode: TileQuarry2.Mode = TileQuarry2.breakBlock
 
-    override def serverWrite(nbt: CompoundNBT) = {
+    override def serverWrite(nbt: CompoundNBT): CompoundNBT = {
       //      val list = digTargets.map(_.toLong.toNBT).foldLeft(new ListNBT) { case (l, tag) => l.add(tag); l }
       //      nbt.put("list", list)
       nbt.putInt("y", y)
@@ -272,7 +272,7 @@ object QuarryAction {
       super.serverWrite(nbt)
     }
 
-    override def clientWrite(nbt: CompoundNBT) = {
+    override def clientWrite(nbt: CompoundNBT): CompoundNBT = {
       nbt.putDouble("headX", headX)
       nbt.putDouble("headY", headY)
       nbt.putDouble("headZ", headZ)
@@ -300,21 +300,21 @@ object QuarryAction {
       finished = true
     }
 
-    override def nextTarget() = BlockPos.ZERO
+    override def nextTarget(): BlockPos = BlockPos.ZERO
 
-    override def nextAction(quarry2: TileQuarry2) = none
+    override def nextAction(quarry2: TileQuarry2): QuarryAction = none
 
-    override def canGoNext(quarry: TileQuarry2) = finished
+    override def canGoNext(quarry: TileQuarry2): Boolean = finished
 
-    override def mode = TileQuarry2.checkDrops
+    override def mode: TileQuarry2.Mode = TileQuarry2.checkDrops
 
-    override def serverWrite(nbt: CompoundNBT) = {
+    override def serverWrite(nbt: CompoundNBT): CompoundNBT = {
       nbt.putInt("y", y)
       super.serverWrite(nbt)
     }
   }
 
-  def digTargets(r: Area, pos: BlockPos, y: Int, log: Boolean = true) = {
+  def digTargets(r: Area, pos: BlockPos, y: Int, log: Boolean = true): List[BlockPos] = {
     val firstX = near(pos.getX, r.xMin + 1, r.xMax - 1)
     val lastX = far(pos.getX, r.xMin + 1, r.xMax - 1)
     val firstZ = near(pos.getZ, r.zMin + 1, r.zMax - 1)
@@ -330,7 +330,7 @@ object QuarryAction {
     list
   }
 
-  def insideFrameArea(r: Area) = {
+  def insideFrameArea(r: Area): List[BlockPos] = {
     (for (x <- Range.inclusive(r.xMin, r.xMax).reverse;
           z <- Range.inclusive(r.zMin, r.zMax);
           y <- Range.inclusive(r.yMin, r.yMax).reverse) yield new BlockPos(x, y, z)).toList
@@ -392,7 +392,7 @@ object QuarryAction {
     case (q, t, s) => loadFromNBT(getNamed(t, s))(q)
   }
 
-  val signum = (a: Int, b: Int) => if (a == b) 1 else (b - a).sign
+  val signum: (Int, Int) => Int = (a: Int, b: Int) => if (a == b) 1 else (b - a).sign
 
   implicit val actionToNbt: QuarryAction NBTWrapper CompoundNBT = action => action.serverWrite(new CompoundNBT)
 
