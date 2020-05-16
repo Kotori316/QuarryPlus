@@ -1,8 +1,10 @@
 **This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).**
 
-## Version 15.3.0
+## Version 15.2.9
 * **Updated language loader**. Please update library mod to newer than 2.13.2. You can download from above link.
 * Internal changes.
+* Make "Fuel Module" stackable, then you can insert the module and get maximum 2560 FE/t with no resources.
+* Fixed a bug where Bedrock Module didn't work with low energy supplier.
 
 ## Version 15.2.8
 * Fixed a bug where the text in StatusChecker was wrong (In a multi server).
