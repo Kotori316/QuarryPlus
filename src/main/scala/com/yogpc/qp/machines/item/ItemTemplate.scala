@@ -2,21 +2,24 @@ package com.yogpc.qp.machines.item
 
 import java.util
 
+import cats.Eval
 import cats.data._
 import cats.implicits._
+import com.mojang.datafixers.Dynamic
+import com.mojang.datafixers.types.JsonOps
 import com.yogpc.qp.machines.TranslationKeys
-import com.yogpc.qp.machines.base.IEnchantableItem
+import com.yogpc.qp.machines.base.{EnchantmentFilter, IEnchantableItem, QuarryBlackList}
 import com.yogpc.qp.machines.item.ItemListEditor._
 import com.yogpc.qp.machines.quarry.TileBasic
 import com.yogpc.qp.machines.workbench.BlockData
-import com.yogpc.qp.utils.{Holder, NoDuplicateList}
+import com.yogpc.qp.utils.Holder
 import com.yogpc.qp.{QuarryPlus, _}
 import net.minecraft.client.util.ITooltipFlag
 import net.minecraft.enchantment.{Enchantment, Enchantments}
 import net.minecraft.entity.player.{PlayerEntity, PlayerInventory, ServerPlayerEntity}
 import net.minecraft.inventory.container.INamedContainerProvider
 import net.minecraft.item.{Item, ItemGroup, ItemStack, ItemUseContext}
-import net.minecraft.nbt.{CompoundNBT, ListNBT}
+import net.minecraft.nbt.{CompoundNBT, ListNBT, NBTDynamicOps}
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.{ITextComponent, TranslationTextComponent}
 import net.minecraft.util.{ActionResultType, NonNullList}
@@ -74,8 +77,7 @@ class ItemTemplate extends Item(new Item.Properties().maxStackSize(1).group(Hold
         if (!worldIn.isRemote) {
           val template = ItemTemplate.getTemplate(stack)
           if (template != ItemTemplate.EmPlate) {
-            import scala.jdk.CollectionConverters._
-            blocksList(stack, basic).foreach(_.addAll(template.items.asJava))
+            blocksList(stack, basic).ap(template.entries.toSet.some)
             includeSetter(stack, basic).ap(template.include.some)
             playerIn.sendStatusMessage(new TranslationTextComponent(TranslationKeys.TOF_ADDED), false)
           }
@@ -115,23 +117,24 @@ object ItemTemplate {
 
   final val NBT_Template = "template"
   final val NBT_Template_Items = "items"
+  final val NBT_Template_Entries = "entries"
   final val NBT_Include = "include"
 
   final val EmPlate = Template(Nil, include = true)
 
-  case class Template(items: List[BlockData], include: Boolean) {
+  case class Template(entries: List[QuarryBlackList.Entry], include: Boolean) {
     def writeToNBT(nbt: CompoundNBT): CompoundNBT = {
-      val list = items.map(_.toNBT).foldLeft(new ListNBT) { (l, tag) => l.add(tag); l }
-      nbt.put(NBT_Template_Items, list)
+      val list = entries.map(_.toNBT).foldLeft(new ListNBT) { (l, tag) => l.add(tag); l }
+      nbt.put(NBT_Template_Entries, list)
       nbt.putBoolean(NBT_Include, include)
       nbt
     }
 
-    def add(data: BlockData): Template = Template(data :: items, include)
+    def add(data: QuarryBlackList.Entry): Template = Template(data :: entries, include)
 
-    def remove(data: BlockData): Template = Template(items.filterNot(_ == data), include)
+    def remove(data: QuarryBlackList.Entry): Template = Template(entries.filterNot(_ == data), include)
 
-    def toggle: Template = Template(items, !include)
+    def toggle: Template = Template(entries, !include)
   }
 
   def getTemplate(stack: ItemStack): Template = {
@@ -144,12 +147,21 @@ object ItemTemplate {
   }
 
   def read(compound: Option[CompoundNBT]): Template = {
-    val maybeTemplate = compound.filter(_.contains(NBT_Template_Items)).map(_.getList(NBT_Template_Items, NBT.TAG_COMPOUND))
+    val maybeTemplate = compound.filter(_.contains(NBT_Template_Entries)).map(_.getList(NBT_Template_Entries, NBT.TAG_COMPOUND))
     val mustBeBoolean = compound.filter(_.contains(NBT_Include)).map(_.getBoolean(NBT_Include)).orElse(Some(true))
-    val opt = (maybeTemplate, mustBeBoolean).mapN {
-      case (list, include) =>
-        val data = list.asScala.map(_.asInstanceOf[CompoundNBT]).map(BlockData.read).toList
-        Template(data, include)
+    val opt = if (compound.exists(_.contains(NBT_Template_Items))) {
+      (compound.filter(_.contains(NBT_Template_Items)).map(_.getList(NBT_Template_Items, NBT.TAG_COMPOUND)), mustBeBoolean).mapN {
+        case (list, include) =>
+          val data = list.asScala.map(_.asInstanceOf[CompoundNBT]).map(BlockData.read).map(b => QuarryBlackList.Name(b.name)).toList
+          Template(data, include)
+      }
+    } else {
+      (maybeTemplate, mustBeBoolean).mapN {
+        case (list, include) =>
+          val data = list.asScala.map(n => Dynamic.convert(NBTDynamicOps.INSTANCE, JsonOps.INSTANCE, n))
+            .map(j => QuarryBlackList.GSON.fromJson(j, classOf[QuarryBlackList.Entry])).toList
+          Template(data, include)
+      }
     }
     opt.getOrElse(EmPlate)
   }
@@ -163,10 +175,20 @@ object ItemTemplate {
 
   val enchantmentName: Kleisli[List, ItemStack, ITextComponent] = Kleisli((stack: ItemStack) => List(silktouchName, fortuneName).flatMap(_.apply(stack)))
 
-  private[this] val silkList = onlySilktouch.first[TileBasic].mapF(b => if (b.value._1) b.value._2.silktouchList.some else None)
-  private[this] val fList = onlyFortune.first[TileBasic].mapF(b => if (b.value._1) b.value._2.fortuneList.some else None)
-  private[this] val silkIncSet = onlySilktouch.first[TileBasic].mapF(b => if (b.value._1) ((bool: Boolean) => b.value._2.silktouchInclude = bool).some else None)
-  private[this] val fIncSet = onlyFortune.first[TileBasic].mapF(b => if (b.value._1) ((bool: Boolean) => b.value._2.fortuneInclude = bool).some else None)
+  private[this] val setter = ((t: TileBasic, f: EnchantmentFilter) => t.enchantmentFilter = f).tupled
+
+  def createSetter[A](enchantmentSelector: Kleisli[Eval, ItemStack, Boolean], createInstance: (A, TileBasic) => EnchantmentFilter):
+  Kleisli[Option, (ItemStack, TileBasic), A => Unit] = {
+    enchantmentSelector.first[TileBasic]
+      .mapF(e => Option.when(e.value._1)(e.value._2))
+      .map(t => (a: A) => (t, createInstance(a, t)))
+      .map(_ andThen setter)
+  }
+
+  private[this] val silkList = createSetter(onlySilktouch, (s: Set[QuarryBlackList.Entry], t) => t.enchantmentFilter.copy(silktouchList = t.enchantmentFilter.silktouchList union s))
+  private[this] val fList = createSetter(onlyFortune, (s: Set[QuarryBlackList.Entry], t) => t.enchantmentFilter.copy(fortuneList = t.enchantmentFilter.fortuneList union s))
+  private[this] val silkIncSet = createSetter(onlySilktouch, (bool: Boolean, t) => t.enchantmentFilter.copy(silktouchInclude = bool))
+  private[this] val fIncSet = createSetter(onlySilktouch, (bool: Boolean, t) => t.enchantmentFilter.copy(fortuneInclude = bool))
 
   private def orElseCompute[A](silktouch: Kleisli[Option, (ItemStack, TileBasic), A], fortune: Kleisli[Option, (ItemStack, TileBasic), A]):
   Kleisli[Option, (ItemStack, TileBasic), A] = Kleisli((t: (ItemStack, TileBasic)) => {
@@ -174,6 +196,6 @@ object ItemTemplate {
     (silktouch orElse fortune).run(stack, basic)
   })
 
-  val blocksList: Kleisli[Option, (ItemStack, TileBasic), NoDuplicateList[BlockData]] = orElseCompute(silkList, fList)
+  val blocksList: Kleisli[Option, (ItemStack, TileBasic), Set[QuarryBlackList.Entry] => Unit] = orElseCompute(silkList, fList)
   val includeSetter: Kleisli[Option, (ItemStack, TileBasic), Boolean => Unit] = orElseCompute(silkIncSet, fIncSet)
 }

@@ -1,18 +1,20 @@
 package com.yogpc.qp.packet.mover;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Supplier;
 
+import com.yogpc.qp.machines.base.EnchantmentFilter;
+import com.yogpc.qp.machines.base.QuarryBlackList;
 import com.yogpc.qp.machines.item.ContainerEnchList;
 import com.yogpc.qp.machines.item.GuiEnchList;
-import com.yogpc.qp.machines.workbench.BlockData;
 import com.yogpc.qp.packet.IMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
+import scala.jdk.javaapi.CollectionConverters;
 
 /**
  * To client only.
@@ -25,13 +27,13 @@ public class DiffMessage implements IMessage<DiffMessage> {
         containerId = buffer.readInt();
         int fS = buffer.readInt();
         int sS = buffer.readInt();
-        fortuneList = new ArrayList<>(fS);
-        silkList = new ArrayList<>(sS);
+        fortuneList = new HashSet<>(fS);
+        silkList = new HashSet<>(sS);
         for (int i = 0; i < fS; i++) {
-            fortuneList.add(BlockData.read(buffer.readCompoundTag()));
+            fortuneList.add(QuarryBlackList.GSON().fromJson(buffer.readString(), QuarryBlackList.Entry.class));
         }
         for (int i = 0; i < sS; i++) {
-            silkList.add(BlockData.read(buffer.readCompoundTag()));
+            silkList.add(QuarryBlackList.GSON().fromJson(buffer.readString(), QuarryBlackList.Entry.class));
         }
         return this;
     }
@@ -40,8 +42,8 @@ public class DiffMessage implements IMessage<DiffMessage> {
     public void writeToBuffer(PacketBuffer buffer) {
         buffer.writeInt(containerId);
         buffer.writeInt(fortuneList.size()).writeInt(silkList.size());
-        fortuneList.stream().map(BlockData.dataToNbt()::apply).forEach(buffer::writeCompoundTag);
-        silkList.stream().map(BlockData.dataToNbt()::apply).forEach(buffer::writeCompoundTag);
+        fortuneList.stream().map(QuarryBlackList.GSON()::toJson).forEach(buffer::writeString);
+        silkList.stream().map(QuarryBlackList.GSON()::toJson).forEach(buffer::writeString);
 
     }
 
@@ -51,24 +53,26 @@ public class DiffMessage implements IMessage<DiffMessage> {
             Screen screen = Minecraft.getInstance().currentScreen;
             if (screen instanceof GuiEnchList) {
                 ContainerEnchList enchList = ((GuiEnchList) screen).getContainer();
-                enchList.tile.fortuneList.clear();
-                enchList.tile.fortuneList.addAll(fortuneList);
-                enchList.tile.silktouchList.clear();
-                enchList.tile.silktouchList.addAll(silkList);
+                EnchantmentFilter filter = enchList.tile.enchantmentFilter;
+                enchList.tile.enchantmentFilter = filter.copy(
+                    filter.fortuneInclude(), filter.silktouchInclude(),
+                    CollectionConverters.asScala(fortuneList).toSet(),
+                    CollectionConverters.asScala(silkList).toSet()
+                );
                 ((GuiEnchList) screen).refreshList();
             }
         });
     }
 
     int containerId;
-    List<BlockData> fortuneList;
-    List<BlockData> silkList;
+    Set<QuarryBlackList.Entry> fortuneList;
+    Set<QuarryBlackList.Entry> silkList;
 
-    public static DiffMessage create(Container container, List<BlockData> fortuneList, List<BlockData> silkList) {
+    public static DiffMessage create(Container container, EnchantmentFilter filter) {
         DiffMessage message = new DiffMessage();
         message.containerId = container.windowId;
-        message.fortuneList = fortuneList;
-        message.silkList = silkList;
+        message.fortuneList = CollectionConverters.asJava(filter.fortuneList());
+        message.silkList = CollectionConverters.asJava(filter.silktouchList());
         return message;
     }
 }

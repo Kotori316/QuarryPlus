@@ -67,8 +67,8 @@ class ItemListEditor extends Item((new Item.Properties).group(Holder.tab)) with 
           bd match {
             case Some(value) =>
               if (!worldIn.isRemote) {
-                val data = if (f.value) tb.fortuneList else tb.silktouchList
-                data.add(value)
+                val adder = if (f.value) tb.enchantmentFilter.addFortune _ else tb.enchantmentFilter.addSilktouch _
+                tb.enchantmentFilter = adder(value.name)
               }
               stack.getTag.remove(ItemListEditor.NAME_key)
             case None =>

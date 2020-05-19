@@ -4,14 +4,17 @@ import java.lang.reflect.{GenericArrayType, Type}
 import java.util
 
 import com.google.gson._
-import com.yogpc.qp.QuarryPlus
+import com.mojang.datafixers.Dynamic
+import com.mojang.datafixers.types.JsonOps
 import com.yogpc.qp.utils.JsonReloadListener
+import com.yogpc.qp.{NBTWrapper, QuarryPlus}
 import net.minecraft.block.{Block, BlockState, Blocks}
+import net.minecraft.nbt.{INBT, NBTDynamicOps}
 import net.minecraft.profiler.IProfiler
 import net.minecraft.resources.IResourceManager
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{JSONUtils, ResourceLocation}
-import net.minecraft.world.World
+import net.minecraft.world.IBlockReader
 import net.minecraftforge.common.Tags
 import org.apache.logging.log4j.LogManager
 
@@ -29,7 +32,7 @@ object QuarryBlackList {
    * @param pos   the position where block exists.
    * @return if the block represented by `state` is registered as blacklist, `true`.
    */
-  def contains(state: BlockState, world: World, pos: BlockPos): Boolean = entries.exists(_.test(state, world, pos))
+  def contains(state: BlockState, world: IBlockReader, pos: BlockPos): Boolean = entries.exists(_.test(state, world, pos))
 
   final def example1: Array[Entry] = Array(Air)
 
@@ -38,7 +41,7 @@ object QuarryBlackList {
   private var entries: Set[Entry] = Set.empty
 
   abstract class Entry(val id: String) {
-    def test(state: BlockState, world: World, pos: BlockPos): Boolean
+    def test(state: BlockState, world: IBlockReader, pos: BlockPos): Boolean
   }
 
   private[this] final val ID_AIR = QuarryPlus.modID + ":blacklist_air"
@@ -50,14 +53,14 @@ object QuarryBlackList {
   object Entry extends AnyRef with JsonSerializer[Entry] with JsonDeserializer[Entry] {
     override def serialize(src: Entry, typeOfSrc: Type, context: JsonSerializationContext): JsonElement = {
       val o = new JsonObject
-      o.addProperty("id", src.id.toString)
+      o.addProperty("id", src.id)
       src match {
         case Mod(modID) => o.addProperty("modID", modID)
         case Name(name) => o.addProperty("name", name.toString)
         case Tag(name) => o.addProperty("tag", name.toString)
         case _ =>
       }
-      LOGGER.debug(s"BlackList, $src, was serialized to $o.")
+      LOGGER.debug(s"BlackListEntry, $src, was serialized to $o.")
       o
     }
 
@@ -75,9 +78,12 @@ object QuarryBlackList {
           case _ => Air
         }
       }
-      LOGGER.debug("BlackList, {}, created from json, {}", idOpt.orNull, json)
+      LOGGER.debug("BlackListEntry, {}, created from json, {}", idOpt.orNull, json)
       idOpt.getOrElse(Air)
     }
+
+    implicit val EntryToNBT: NBTWrapper[Entry, INBT] =
+      e => Dynamic.convert(JsonOps.INSTANCE, NBTDynamicOps.INSTANCE, GSON.toJsonTree(e))
   }
 
   private object EntryArray extends JsonDeserializer[Array[Entry]] {
@@ -89,25 +95,25 @@ object QuarryBlackList {
   }
 
   private object Air extends Entry(ID_AIR) {
-    override def test(state: BlockState, world: World, pos: BlockPos): Boolean = world.isAirBlock(pos)
+    override def test(state: BlockState, world: IBlockReader, pos: BlockPos): Boolean = world.getBlockState(pos).isAir(world, pos)
 
     override def toString = "BlackList of Air"
   }
 
-  private case class Name(name: ResourceLocation) extends Entry(ID_NAME) {
-    override def test(state: BlockState, world: World, pos: BlockPos): Boolean = state.getBlock.getRegistryName == name
+  case class Name(name: ResourceLocation) extends Entry(ID_NAME) {
+    override def test(state: BlockState, world: IBlockReader, pos: BlockPos): Boolean = state.getBlock.getRegistryName == name
 
-    override def toString = "BlackList for " + name
+    override def toString: String = name.toString
   }
 
-  private case class Mod(modID: String) extends Entry(ID_MOD) {
-    override def test(state: BlockState, world: World, pos: BlockPos): Boolean = {
+  case class Mod(modID: String) extends Entry(ID_MOD) {
+    override def test(state: BlockState, world: IBlockReader, pos: BlockPos): Boolean = {
       val registryName = state.getBlock.getRegistryName
       if (registryName == null) false
       else registryName.getNamespace == modID
     }
 
-    override def toString = "BlackList for all blocks of " + modID
+    override def toString: String = "BlackList for all blocks of " + modID
   }
 
   private object Ores extends Entry(ID_ORES) {
@@ -123,7 +129,7 @@ object QuarryBlackList {
       Blocks.REDSTONE_ORE.getDefaultState
     )
 
-    override def test(state: BlockState, world: World, pos: BlockPos): Boolean = {
+    override def test(state: BlockState, world: IBlockReader, pos: BlockPos): Boolean = {
       if (cacheNoOre(state)) false
       else if (cacheOre(state)) true
       else {
@@ -140,18 +146,18 @@ object QuarryBlackList {
     override def toString = "BlackList of tag `forge:ores`."
   }
 
-  private case class Tag(name: ResourceLocation) extends Entry(ID_TAG) {
+  case class Tag(name: ResourceLocation) extends Entry(ID_TAG) {
 
     import net.minecraft.tags.{BlockTags, Tag => MCTag}
 
     private[this] final val tag: MCTag[Block] = BlockTags.getCollection.get(name)
 
-    override def test(state: BlockState, world: World, pos: BlockPos): Boolean = {
+    override def test(state: BlockState, world: IBlockReader, pos: BlockPos): Boolean = {
       if (tag == null) false
       else tag.contains(state.getBlock)
     }
 
-    override def toString = "BlackList for tag " + name
+    override def toString: String = "BlackList for tag " + name
   }
 
   val GSON: Gson = (new GsonBuilder).disableHtmlEscaping().setPrettyPrinting()

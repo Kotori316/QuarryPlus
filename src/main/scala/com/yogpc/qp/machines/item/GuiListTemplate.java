@@ -4,12 +4,11 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.IHandleButton;
-import com.yogpc.qp.machines.workbench.BlockData;
+import com.yogpc.qp.machines.base.QuarryBlackList;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.listtemplate.TemplateMessage;
 import com.yogpc.qp.utils.Holder;
@@ -23,7 +22,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import scala.collection.JavaConverters;
+import scala.jdk.javaapi.CollectionConverters;
 
 public class GuiListTemplate extends ContainerScreen<ContainerListTemplate> implements IHandleButton {
     private static final ResourceLocation LOCATION = new ResourceLocation(QuarryPlus.modID, "textures/gui/template.png");
@@ -105,8 +104,8 @@ public class GuiListTemplate extends ContainerScreen<ContainerListTemplate> impl
             case 0: //ADD
                 ItemStack stack = this.getContainer().getInventory().get(0);
                 if (!stack.isEmpty() && stack.getItem() instanceof BlockItem) {
-                    BlockData data = BlockData.apply(stack.getItem().getRegistryName());
-                    if (!template.items().contains(data))
+                    QuarryBlackList.Entry data = new QuarryBlackList.Name(stack.getItem().getRegistryName());
+                    if (!template.entries().contains(data))
                         template = template.add(data);
                 }
                 break;
@@ -123,8 +122,8 @@ public class GuiListTemplate extends ContainerScreen<ContainerListTemplate> impl
         itemList.refresh();
     }
 
-    private <T extends ExtendedList.AbstractListEntry<T>> void refreshList(Consumer<T> modListViewConsumer, Function<BlockData, T> newEntry) {
-        JavaConverters.asJavaCollection(template.items()).stream().map(newEntry).forEach(modListViewConsumer);
+    private <T extends ExtendedList.AbstractListEntry<T>> void refreshList(Consumer<T> modListViewConsumer, Function<QuarryBlackList.Entry, T> newEntry) {
+        CollectionConverters.asJava(template.entries()).stream().map(newEntry).forEach(modListViewConsumer);
     }
 
     private class ItemList extends ExtendedList<ItemList.Entry> {
@@ -191,15 +190,15 @@ public class GuiListTemplate extends ContainerScreen<ContainerListTemplate> impl
         }
 
         private class Entry extends ExtendedList.AbstractListEntry<Entry> {
-            private final BlockData data;
+            private final QuarryBlackList.Entry data;
 
-            public Entry(BlockData data) {
+            public Entry(QuarryBlackList.Entry data) {
                 this.data = data;
             }
 
             @Override
             public void render(int entryIdx, int top, int left, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean p_render_8_, float partialTicks) {
-                drawString(ItemList.this.minecraft.fontRenderer, data.getDisplayText().getFormattedText(),
+                drawString(ItemList.this.minecraft.fontRenderer, data.toString(),
                     left, top + 3, 0xFFFFFF);
             }
 

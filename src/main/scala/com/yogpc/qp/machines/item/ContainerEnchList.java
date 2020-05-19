@@ -52,14 +52,19 @@ public class ContainerEnchList extends Container {
     public void updateProgressBar(int id, int data) {
         super.updateProgressBar(id, data);
         if (id == 0) {
-            this.tile.fortuneInclude = (data & 2) != 0;
-            this.tile.silktouchInclude = (data & 1) != 0;
+            this.tile.enchantmentFilter =
+                this.tile.enchantmentFilter.copy(
+                    (data & 2) != 0, // Fortune
+                    (data & 1) != 0, // Silktouch
+                    tile.enchantmentFilter.fortuneList(),
+                    tile.enchantmentFilter.silktouchList()
+                );
         }
     }
 
     private int getInclude() {
-        int a = tile.fortuneInclude ? 2 : 0;
-        int b = tile.silktouchInclude ? 1 : 0;
+        int a = tile.enchantmentFilter.fortuneInclude() ? 2 : 0;
+        int b = tile.enchantmentFilter.silktouchInclude() ? 1 : 0;
         return a | b;
     }
 }

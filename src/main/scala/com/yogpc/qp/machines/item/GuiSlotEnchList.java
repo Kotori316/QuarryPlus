@@ -1,6 +1,6 @@
 package com.yogpc.qp.machines.item;
 
-import com.yogpc.qp.machines.workbench.BlockData;
+import com.yogpc.qp.machines.base.QuarryBlackList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.list.ExtendedList;
 
@@ -21,20 +21,20 @@ public class GuiSlotEnchList extends ExtendedList<GuiSlotEnchList.Entry> {
 
     public class Entry extends ExtendedList.AbstractListEntry<Entry> {
 
-        private final BlockData data;
+        private final QuarryBlackList.Entry data;
 
-        public Entry(BlockData data) {
+        public Entry(QuarryBlackList.Entry data) {
             this.data = data;
         }
 
-        public BlockData getData() {
+        public QuarryBlackList.Entry getData() {
             return data;
         }
 
         @Override
         @SuppressWarnings("IntegerDivisionInFloatingPointContext")
         public void render(int entryIdx, int top, int left, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean p_render_8_, float partialTicks) {
-            String name = data.getDisplayText().getFormattedText();
+            String name = data.toString();
             Minecraft.getInstance().fontRenderer.drawStringWithShadow(name,
                 (GuiSlotEnchList.this.parent.width * 3 / 5 - Minecraft.getInstance().fontRenderer.getStringWidth(name)) / 2, top + 2, 0xFFFFFF);
         }

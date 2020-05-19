@@ -26,12 +26,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.mojang.datafixers.Dynamic;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.APacketTile;
 import com.yogpc.qp.machines.base.APowerTile;
+import com.yogpc.qp.machines.base.EnchantmentFilter;
 import com.yogpc.qp.machines.base.HasInv;
 import com.yogpc.qp.machines.base.IAttachable;
 import com.yogpc.qp.machines.base.IAttachment;
@@ -39,9 +41,7 @@ import com.yogpc.qp.machines.base.IEnchantableTile;
 import com.yogpc.qp.machines.base.IModule;
 import com.yogpc.qp.machines.base.QuarryBlackList;
 import com.yogpc.qp.machines.pump.TilePump;
-import com.yogpc.qp.machines.workbench.BlockData;
 import com.yogpc.qp.utils.NBTBuilder;
-import com.yogpc.qp.utils.NoDuplicateList;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -53,7 +53,7 @@ import net.minecraft.item.crafting.FurnaceRecipe;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.IntNBT;
-import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
@@ -79,8 +79,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 import static com.yogpc.qp.machines.base.IAttachment.Attachments.ALL;
 import static com.yogpc.qp.machines.base.IAttachment.Attachments.EXP_PUMP;
 import static com.yogpc.qp.machines.base.IAttachment.Attachments.FLUID_PUMP;
-import static com.yogpc.qp.machines.base.IEnchantableItem.FORTUNE;
-import static com.yogpc.qp.machines.base.IEnchantableItem.SILKTOUCH;
 import static jp.t2v.lab.syntax.MapStreamSyntax.byKey;
 import static jp.t2v.lab.syntax.MapStreamSyntax.entryToMap;
 import static jp.t2v.lab.syntax.MapStreamSyntax.keys;
@@ -95,9 +93,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
     private static final Set<IAttachment.Attachments<?>> VALID_ATTACHMENTS = ALL;
     protected final Map<IAttachment.Attachments<?>, Direction> facingMap = new HashMap<>();
 
-    public NoDuplicateList<BlockData> fortuneList = NoDuplicateList.create(ArrayList::new);
-    public NoDuplicateList<BlockData> silktouchList = NoDuplicateList.create(ArrayList::new);
-    public boolean fortuneInclude, silktouchInclude;
+    public EnchantmentFilter enchantmentFilter = EnchantmentFilter.defaultInstance();
 
     protected byte unbreaking;
     protected byte fortune;
@@ -169,14 +165,14 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         QuarryFakePlayer fakePlayer = QuarryFakePlayer.get(((ServerWorld) world), pos);
         ItemStack pickaxe;
         int i;
-        if (this.silktouch && silktouchList.contains(new BlockData(blockState)) == this.silktouchInclude) {
-            pickaxe = getEnchantedPickaxe(FORTUNE.negate());
+        if (this.silktouch && enchantmentFilter.canApplySilktouch(blockState, world, pos)) {
+            pickaxe = getEnchantedPickaxe(EnchantmentFilter.NOT_FORTUNE());
             i = -1;
-        } else if (fortuneList.contains(new BlockData(blockState)) == this.fortuneInclude) {
-            pickaxe = getEnchantedPickaxe(SILKTOUCH.negate());
+        } else if (enchantmentFilter.canApplyFortune(blockState, world, pos)) {
+            pickaxe = getEnchantedPickaxe(EnchantmentFilter.NOT_SILK());
             i = this.fortune;
         } else {
-            pickaxe = getEnchantedPickaxe(SILKTOUCH.negate().and(FORTUNE.negate()));
+            pickaxe = getEnchantedPickaxe(EnchantmentFilter.NOT_SILK_AND_FORTUNE());
             i = 0;
         }
         fakePlayer.setHeldItem(Hand.MAIN_HAND, pickaxe);
@@ -292,13 +288,12 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         this.fortune = nbt.getByte("fortune");
         this.efficiency = nbt.getByte("efficiency");
         this.unbreaking = nbt.getByte("unbreaking");
-        this.fortuneInclude = nbt.getBoolean("fortuneInclude");
-        this.silktouchInclude = nbt.getBoolean("silktouchInclude");
         this.yLevel = Math.max(nbt.getInt("yLevel"), 1);
-        fortuneList = nbt.getList("fortuneList", Constants.NBT.TAG_COMPOUND).stream().map(CompoundNBT.class::cast)
-            .map(BlockData::read).collect(Collectors.toCollection(NoDuplicateList::create));
-        silktouchList = nbt.getList("silktouchList", Constants.NBT.TAG_COMPOUND).stream().map(CompoundNBT.class::cast)
-            .map(BlockData::read).collect(Collectors.toCollection(NoDuplicateList::create));
+        if (nbt.contains("enchantmentFilter")) {
+            this.enchantmentFilter = EnchantmentFilter.read(new Dynamic<>(NBTDynamicOps.INSTANCE, nbt.get("enchantmentFilter")));
+        } else {
+            this.enchantmentFilter = EnchantmentFilter.fromLegacyTag(nbt);
+        }
         ench = nbt.getList("enchList", Constants.NBT.TAG_COMPOUND).stream().map(CompoundNBT.class::cast)
             .map(toEntry(n -> n.getString("id"), n -> n.getInt("value")))
             .map(keys(ResourceLocation::new))
@@ -312,10 +307,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         nbt.putByte("fortune", this.fortune);
         nbt.putByte("efficiency", this.efficiency);
         nbt.putByte("unbreaking", this.unbreaking);
-        nbt.putBoolean("fortuneInclude", this.fortuneInclude);
-        nbt.putBoolean("silktouchInclude", this.silktouchInclude);
-        nbt.put("fortuneList", fortuneList.stream().map(BlockData.dataToNbt()::apply).collect(Collectors.toCollection(ListNBT::new)));
-        nbt.put("silktouchList", silktouchList.stream().map(BlockData.dataToNbt()::apply).collect(Collectors.toCollection(ListNBT::new)));
+        nbt.put("enchantmentFilter", EnchantmentFilter.write(this.enchantmentFilter, NBTDynamicOps.INSTANCE));
         nbt.putInt("yLevel", this.yLevel);
 
         nbt.put("enchList", ench.entrySet().stream().map(keys(ResourceLocation::toString)).map(values(IntNBT::valueOf)).collect(NBTBuilder.toNBTTag()));

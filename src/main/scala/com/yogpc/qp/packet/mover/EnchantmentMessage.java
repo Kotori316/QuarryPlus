@@ -3,8 +3,8 @@ package com.yogpc.qp.packet.mover;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+import com.yogpc.qp.machines.base.QuarryBlackList;
 import com.yogpc.qp.machines.quarry.TileBasic;
-import com.yogpc.qp.machines.workbench.BlockData;
 import com.yogpc.qp.packet.IMessage;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
@@ -22,15 +22,15 @@ public class EnchantmentMessage implements IMessage<EnchantmentMessage> {
     BlockPos pos;
     int dim;
     Enchantment enchantment;
-    BlockData data;
+    QuarryBlackList.Entry entry;
 
-    public static EnchantmentMessage create(TileBasic tile, Type type, Enchantment enchantment, BlockData data) {
+    public static EnchantmentMessage create(TileBasic tile, Type type, Enchantment enchantment, QuarryBlackList.Entry entry) {
         EnchantmentMessage message = new EnchantmentMessage();
         message.pos = tile.getPos();
         message.dim = IMessage.getDimId(tile.getWorld());
         message.type = type;
         message.enchantment = enchantment;
-        message.data = data;
+        message.entry = entry;
         return message;
     }
 
@@ -39,7 +39,7 @@ public class EnchantmentMessage implements IMessage<EnchantmentMessage> {
         pos = buffer.readBlockPos();
         type = buffer.readEnumValue(Type.class);
         enchantment = ForgeRegistries.ENCHANTMENTS.getValue(buffer.readResourceLocation());
-        data = BlockData.read(buffer.readCompoundTag());
+        entry = QuarryBlackList.GSON().fromJson(buffer.readString(), QuarryBlackList.Entry.class);
         dim = buffer.readInt();
         return this;
     }
@@ -47,7 +47,7 @@ public class EnchantmentMessage implements IMessage<EnchantmentMessage> {
     @Override
     public void writeToBuffer(PacketBuffer buffer) {
         buffer.writeBlockPos(pos).writeEnumValue(type).writeResourceLocation(Objects.requireNonNull(enchantment.getRegistryName()))
-            .writeCompoundTag(BlockData.dataToNbt().apply(data)).writeInt(dim);
+            .writeString(QuarryBlackList.GSON().toJson(entry)).writeInt(dim);
 
     }
 
@@ -57,15 +57,15 @@ public class EnchantmentMessage implements IMessage<EnchantmentMessage> {
             ctx.get().enqueueWork(() -> {
                 if (type == Type.Toggle) {
                     if (enchantment == Enchantments.FORTUNE) {
-                        tile.fortuneInclude = !tile.fortuneInclude;
+                        tile.enchantmentFilter = tile.enchantmentFilter.toggleFortune();
                     } else if (enchantment == Enchantments.SILK_TOUCH) {
-                        tile.silktouchInclude = !tile.silktouchInclude;
+                        tile.enchantmentFilter = tile.enchantmentFilter.toggleSilktouch();
                     }
                 } else if (type == Type.Remove) {
                     if (enchantment == Enchantments.FORTUNE)
-                        tile.fortuneList.remove(data);
+                        tile.enchantmentFilter = tile.enchantmentFilter.removeFortune(entry);
                     else if (enchantment == Enchantments.SILK_TOUCH)
-                        tile.silktouchList.remove(data);
+                        tile.enchantmentFilter = tile.enchantmentFilter.removeSilktouch(entry);
                 }
             })
         );

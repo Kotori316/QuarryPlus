@@ -43,6 +43,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   import TileQuarry2._
 
   var enchantments: EnchantmentHolder = EnchantmentHolder.noEnch
+  var enchantmentFilter: EnchantmentFilter = EnchantmentFilter.defaultInstance
   var area: Area = Area.zeroArea
   var action: QuarryAction = QuarryAction.none
   var target: BlockPos = BlockPos.ZERO
@@ -180,13 +181,14 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
       val aabb = new AxisAlignedBB(pos.getX - 8, pos.getY - 3, pos.getZ - 8, pos.getX + 8, pos.getY + 5, pos.getZ + 8)
       gatherDrops(world, aabb)
     }
-    val fakePlayer = QuarryFakePlayer.get(world, pos)
-    val pickaxe = getEnchantedPickaxe
-    fakePlayer.setHeldItem(Hand.MAIN_HAND, pickaxe)
     val returnValue = modules.foldMap(m => m.invoke(IModule.BeforeBreak(world, pos)))
 
-    val state = world.getBlockState(pos)
     if (returnValue.canGoNext && PowerManager.useEnergyBreak(self, pos, enchantments, modules.exists(IModule.hasReplaceModule), false)) {
+      val fakePlayer = QuarryFakePlayer.get(world, pos)
+      val state = world.getBlockState(pos)
+      val enchantmentPredicate = enchantmentFilter.getEnchantmentPredicate(state, world, pos)
+      val pickaxe = getEnchantedPickaxe(enchantmentPredicate)
+      fakePlayer.setHeldItem(Hand.MAIN_HAND, pickaxe)
       val event = new BlockEvent.BreakEvent(world, pos, state, fakePlayer)
       MinecraftForge.EVENT_BUS.post(event)
       if (!event.isCanceled) {

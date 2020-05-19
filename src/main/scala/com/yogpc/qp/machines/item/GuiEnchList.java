@@ -14,16 +14,16 @@
 package com.yogpc.qp.machines.item;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.IHandleButton;
+import com.yogpc.qp.machines.base.QuarryBlackList;
 import com.yogpc.qp.machines.quarry.TileBasic;
-import com.yogpc.qp.machines.workbench.BlockData;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.mover.EnchantmentMessage;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
@@ -33,12 +33,14 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.ForgeRegistries;
+import scala.jdk.javaapi.CollectionConverters;
 
 @OnlyIn(Dist.CLIENT)
 public class GuiEnchList extends ContainerScreen<ContainerEnchList> implements BooleanConsumer, IHandleButton {
@@ -55,18 +57,18 @@ public class GuiEnchList extends ContainerScreen<ContainerEnchList> implements B
 
     public boolean include() {
         if (this.target == Enchantments.FORTUNE)
-            return this.tile.fortuneInclude;
-        return this.tile.silktouchInclude;
+            return this.tile.enchantmentFilter.fortuneInclude();
+        return this.tile.enchantmentFilter.silktouchInclude();
     }
 
-    private List<BlockData> getBlockDataList(Enchantment enchantment) {
+    private Set<QuarryBlackList.Entry> getBlockDataList(Enchantment enchantment) {
         if (enchantment == Enchantments.SILK_TOUCH) {
-            return tile.silktouchList;
+            return CollectionConverters.asJava(tile.enchantmentFilter.silktouchList());
         } else if (enchantment == Enchantments.FORTUNE) {
-            return tile.fortuneList;
+            return CollectionConverters.asJava(tile.enchantmentFilter.fortuneList());
         } else {
             QuarryPlus.LOGGER.error(String.format("GuiEnchList target is %s", enchantment));
-            return Collections.emptyList();
+            return Collections.emptySet();
         }
     }
 
@@ -96,10 +98,11 @@ public class GuiEnchList extends ContainerScreen<ContainerEnchList> implements B
                 break;
             case Remove_id:
                 this.getMinecraft().displayGuiScreen(new ConfirmScreen(this, new TranslationTextComponent(TranslationKeys.DELETE_BLOCK_SURE),
-                    Optional.ofNullable(this.slot.getSelected()).map(GuiSlotEnchList.Entry::getData).map(BlockData::getDisplayText).orElse(new StringTextComponent("None"))));
+                    new StringTextComponent(Optional.ofNullable(this.slot.getSelected()).map(GuiSlotEnchList.Entry::getData).map(Object::toString).orElse("None"))));
                 break;
             default: //maybe toggle
-                PacketHandler.sendToServer(EnchantmentMessage.create(tile, EnchantmentMessage.Type.Toggle, target, BlockData.Invalid()));
+                PacketHandler.sendToServer(EnchantmentMessage.create(tile, EnchantmentMessage.Type.Toggle, target,
+                    new QuarryBlackList.Name(new ResourceLocation("dummy:toggle_button"))));
                 break;
         }
     }
@@ -108,10 +111,13 @@ public class GuiEnchList extends ContainerScreen<ContainerEnchList> implements B
     public void accept(boolean result) {
         GuiSlotEnchList.Entry selected = this.slot.getSelected();
         if (selected != null && result) {
-            final BlockData bd = selected.getData();
-            PacketHandler.sendToServer(EnchantmentMessage.create(tile, EnchantmentMessage.Type.Remove, target, bd));
+            final QuarryBlackList.Entry entry = selected.getData();
+            PacketHandler.sendToServer(EnchantmentMessage.create(tile, EnchantmentMessage.Type.Remove, target, entry));
 
-            getBlockDataList(target).remove(bd);
+            if (target == Enchantments.SILK_TOUCH)
+                tile.enchantmentFilter = tile.enchantmentFilter.removeSilktouch(entry);
+            else if (target == Enchantments.FORTUNE)
+                tile.enchantmentFilter = tile.enchantmentFilter.removeFortune(entry);
             refreshList();
         }
         this.getMinecraft().displayGuiScreen(this);
@@ -146,7 +152,7 @@ public class GuiEnchList extends ContainerScreen<ContainerEnchList> implements B
         this.buttons.get(2).active = !getBlockDataList(target).isEmpty();
     }
 
-    public void buildModList(Consumer<GuiSlotEnchList.Entry> modListViewConsumer, Function<BlockData, GuiSlotEnchList.Entry> newEntry) {
+    public void buildModList(Consumer<GuiSlotEnchList.Entry> modListViewConsumer, Function<QuarryBlackList.Entry, GuiSlotEnchList.Entry> newEntry) {
         getBlockDataList(target).stream().map(newEntry).forEach(modListViewConsumer);
     }
 }
