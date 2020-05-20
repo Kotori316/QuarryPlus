@@ -59,7 +59,7 @@ object QuarryBlackList {
         case Tag(name) => "tag" -> ops.createString(name.toString)
         case _ => "" -> ops.empty()
       }
-    ).map { case (str, a) => ops.createString(str) -> a }
+    ).collect { case (str, a) if !str.isEmpty => ops.createString(str) -> a }
     val o = ops.createMap(CollectionConverters.asJava(map))
     LOGGER.debug(s"BlackListEntry, $src, was serialized to $o.")
     o
@@ -68,7 +68,7 @@ object QuarryBlackList {
   def readEntry[A](tagLike: Dynamic[A]): Entry = {
     import com.yogpc.qp._
     val idOpt = for {
-      j <- tagLike.asMapOpt[String, Dynamic[A]](_.asString(""), v => v).asScala
+      j <- tagLike.asMapOpt[String, Dynamic[A]](_.asString(""), java.util.function.Function.identity()).asScala
       map = CollectionConverters.asScala(j)
       id <- map.get("id").flatMap(_.asString().asScala)
     } yield {

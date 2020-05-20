@@ -128,20 +128,24 @@ object ItemListEditor {
   def hasEnchantment(enchantment: Eval[Enchantment]): Kleisli[Eval, List[Enchantment], Boolean] = Kleisli((ench: List[Enchantment]) => enchantment.map(ench.contains))
 
   def enchantmentName(enchantment: Eval[Enchantment]): Kleisli[Option, ItemStack, ITextComponent] =
-    getEnchantments andThen hasEnchantment(enchantment) mapF (b => if (b.value) new TranslationTextComponent(enchantment.value.getName).some else None)
+    getEnchantments andThen hasEnchantment(enchantment) mapF (b => Option.when(b.value)(new TranslationTextComponent(enchantment.value.getName)))
 
   def onlySpecificEnchantment(enchantment: Eval[Enchantment]): Kleisli[Eval, ItemStack, Boolean] = {
-    implicit val bool: Semigroup[Boolean] = (x: Boolean, y: Boolean) => x | y
+    implicit val bool: Monoid[Boolean] = new Monoid[Boolean] {
+      override def empty: Boolean = false
+
+      override def combine(x: Boolean, y: Boolean): Boolean = x | y
+    }
     val hasTheEnchantment = hasEnchantment(enchantment)
-    val others = enchantment.map(e => ForgeRegistries.ENCHANTMENTS.asScala.filterNot(_ == e).map(Eval.now).map(hasEnchantment).toList)
+    val others = enchantment.map(e => ForgeRegistries.ENCHANTMENTS.asScala.view.filterNot(_ == e).map(Eval.now).map(hasEnchantment).toList)
     getEnchantments andThen {
       for (e <- hasTheEnchantment;
-           o <- Semigroup[Kleisli[Eval, List[Enchantment], Boolean]].combineAllOption(others.value).get) yield e & !o
+           o <- Monoid[Kleisli[Eval, List[Enchantment], Boolean]].combineAll(others.value)) yield e & !o
     }
   }
 
   private[this] val getTag = Kleisli((stack: ItemStack) => Option(stack.getTag))
-  private[this] val getName = Kleisli((tag: CompoundNBT) => if (tag.contains(NAME_key, NBT.TAG_STRING)) tag.getString(NAME_key).some else None)
+  private[this] val getName = Kleisli((tag: CompoundNBT) => Option.when(tag.contains(NAME_key, NBT.TAG_STRING))(tag.getString(NAME_key)))
   private[this] val getEnchantments = Kleisli((stack: ItemStack) => Eval.now(EnchantmentHelper.getEnchantments(stack).asScala.toList.collect { case (e, level) if level > 0 => e }))
 
   private[this] val fortuneEval = Eval.later(Enchantments.FORTUNE)
