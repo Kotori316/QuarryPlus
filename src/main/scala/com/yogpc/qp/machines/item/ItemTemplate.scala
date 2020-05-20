@@ -6,7 +6,6 @@ import cats.Eval
 import cats.data._
 import cats.implicits._
 import com.mojang.datafixers.Dynamic
-import com.mojang.datafixers.types.JsonOps
 import com.yogpc.qp.machines.TranslationKeys
 import com.yogpc.qp.machines.base.{EnchantmentFilter, IEnchantableItem, QuarryBlackList}
 import com.yogpc.qp.machines.item.ItemListEditor._
@@ -158,8 +157,7 @@ object ItemTemplate {
     } else {
       (maybeTemplate, mustBeBoolean).mapN {
         case (list, include) =>
-          val data = list.asScala.map(n => Dynamic.convert(NBTDynamicOps.INSTANCE, JsonOps.INSTANCE, n))
-            .map(j => QuarryBlackList.GSON.fromJson(j, classOf[QuarryBlackList.Entry])).toList
+          val data = list.asScala.map(n => QuarryBlackList.readEntry(new Dynamic(NBTDynamicOps.INSTANCE, n))).toList
           Template(data, include)
       }
     }
@@ -188,7 +186,7 @@ object ItemTemplate {
   private[this] val silkList = createSetter(onlySilktouch, (s: Set[QuarryBlackList.Entry], t) => t.enchantmentFilter.copy(silktouchList = t.enchantmentFilter.silktouchList union s))
   private[this] val fList = createSetter(onlyFortune, (s: Set[QuarryBlackList.Entry], t) => t.enchantmentFilter.copy(fortuneList = t.enchantmentFilter.fortuneList union s))
   private[this] val silkIncSet = createSetter(onlySilktouch, (bool: Boolean, t) => t.enchantmentFilter.copy(silktouchInclude = bool))
-  private[this] val fIncSet = createSetter(onlySilktouch, (bool: Boolean, t) => t.enchantmentFilter.copy(fortuneInclude = bool))
+  private[this] val fIncSet = createSetter(onlyFortune, (bool: Boolean, t) => t.enchantmentFilter.copy(fortuneInclude = bool))
 
   private def orElseCompute[A](silktouch: Kleisli[Option, (ItemStack, TileBasic), A], fortune: Kleisli[Option, (ItemStack, TileBasic), A]):
   Kleisli[Option, (ItemStack, TileBasic), A] = Kleisli((t: (ItemStack, TileBasic)) => {

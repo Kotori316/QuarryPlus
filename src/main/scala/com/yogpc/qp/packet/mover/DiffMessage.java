@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import com.mojang.datafixers.Dynamic;
 import com.yogpc.qp.machines.base.EnchantmentFilter;
 import com.yogpc.qp.machines.base.QuarryBlackList;
 import com.yogpc.qp.machines.item.ContainerEnchList;
@@ -12,6 +13,7 @@ import com.yogpc.qp.packet.IMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.inventory.container.Container;
+import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 import scala.jdk.javaapi.CollectionConverters;
@@ -30,10 +32,10 @@ public class DiffMessage implements IMessage<DiffMessage> {
         fortuneList = new HashSet<>(fS);
         silkList = new HashSet<>(sS);
         for (int i = 0; i < fS; i++) {
-            fortuneList.add(QuarryBlackList.GSON().fromJson(buffer.readString(), QuarryBlackList.Entry.class));
+            fortuneList.add(QuarryBlackList.readEntry(new Dynamic<>(NBTDynamicOps.INSTANCE, buffer.readCompoundTag())));
         }
         for (int i = 0; i < sS; i++) {
-            silkList.add(QuarryBlackList.GSON().fromJson(buffer.readString(), QuarryBlackList.Entry.class));
+            silkList.add(QuarryBlackList.readEntry(new Dynamic<>(NBTDynamicOps.INSTANCE, buffer.readCompoundTag())));
         }
         return this;
     }
@@ -42,8 +44,8 @@ public class DiffMessage implements IMessage<DiffMessage> {
     public void writeToBuffer(PacketBuffer buffer) {
         buffer.writeInt(containerId);
         buffer.writeInt(fortuneList.size()).writeInt(silkList.size());
-        fortuneList.stream().map(QuarryBlackList.GSON()::toJson).forEach(buffer::writeString);
-        silkList.stream().map(QuarryBlackList.GSON()::toJson).forEach(buffer::writeString);
+        fortuneList.stream().map(QuarryBlackList.Entry$.MODULE$.EntryToNBT()::apply).forEach(buffer::writeCompoundTag);
+        silkList.stream().map(QuarryBlackList.Entry$.MODULE$.EntryToNBT()::apply).forEach(buffer::writeCompoundTag);
 
     }
 

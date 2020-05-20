@@ -3,11 +3,13 @@ package com.yogpc.qp.packet.mover;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+import com.mojang.datafixers.Dynamic;
 import com.yogpc.qp.machines.base.QuarryBlackList;
 import com.yogpc.qp.machines.quarry.TileBasic;
 import com.yogpc.qp.packet.IMessage;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
+import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -39,7 +41,7 @@ public class EnchantmentMessage implements IMessage<EnchantmentMessage> {
         pos = buffer.readBlockPos();
         type = buffer.readEnumValue(Type.class);
         enchantment = ForgeRegistries.ENCHANTMENTS.getValue(buffer.readResourceLocation());
-        entry = QuarryBlackList.GSON().fromJson(buffer.readString(), QuarryBlackList.Entry.class);
+        entry = QuarryBlackList.readEntry(new Dynamic<>(NBTDynamicOps.INSTANCE, buffer.readCompoundTag()));
         dim = buffer.readInt();
         return this;
     }
@@ -47,7 +49,7 @@ public class EnchantmentMessage implements IMessage<EnchantmentMessage> {
     @Override
     public void writeToBuffer(PacketBuffer buffer) {
         buffer.writeBlockPos(pos).writeEnumValue(type).writeResourceLocation(Objects.requireNonNull(enchantment.getRegistryName()))
-            .writeString(QuarryBlackList.GSON().toJson(entry)).writeInt(dim);
+            .writeCompoundTag(QuarryBlackList.Entry$.MODULE$.EntryToNBT().apply(entry)).writeInt(dim);
 
     }
 

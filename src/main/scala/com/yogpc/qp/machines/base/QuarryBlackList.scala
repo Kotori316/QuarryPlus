@@ -5,15 +5,15 @@ import java.util
 
 import com.google.gson._
 import com.mojang.datafixers.Dynamic
-import com.mojang.datafixers.types.JsonOps
+import com.mojang.datafixers.types.{DynamicOps, JsonOps}
 import com.yogpc.qp.utils.JsonReloadListener
 import com.yogpc.qp.{NBTWrapper, QuarryPlus}
 import net.minecraft.block.{Block, BlockState, Blocks}
-import net.minecraft.nbt.{INBT, NBTDynamicOps}
+import net.minecraft.nbt.{CompoundNBT, NBTDynamicOps}
 import net.minecraft.profiler.IProfiler
 import net.minecraft.resources.IResourceManager
+import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.{JSONUtils, ResourceLocation}
 import net.minecraft.world.IBlockReader
 import net.minecraftforge.common.Tags
 import org.apache.logging.log4j.LogManager
@@ -34,9 +34,9 @@ object QuarryBlackList {
    */
   def contains(state: BlockState, world: IBlockReader, pos: BlockPos): Boolean = entries.exists(_.test(state, world, pos))
 
-  final def example1: Array[Entry] = Array(Air)
+  final def example1: Seq[Entry] = Seq(Air)
 
-  final def example2: Array[Entry] = Array(Air, Name(Blocks.WHITE_WOOL.getRegistryName), Mod("ic2"), Ores, Tag(Tags.Blocks.STONE.getId))
+  final def example2: Seq[Entry] = Seq(Air, Name(Blocks.WHITE_WOOL.getRegistryName), Mod("ic2"), Ores, Tag(Tags.Blocks.STONE.getId))
 
   private var entries: Set[Entry] = Set.empty
 
@@ -50,40 +50,50 @@ object QuarryBlackList {
   private[this] final val ID_ORES = QuarryPlus.modID + ":blacklist_ores"
   private[this] final val ID_TAG = QuarryPlus.modID + ":blacklist_tag"
 
+  def writeEntry[A](src: Entry, ops: DynamicOps[A]): A = {
+    val map: Map[A, A] = Map(
+      "id" -> ops.createString(src.id),
+      src match {
+        case Mod(modID) => "modID" -> ops.createString(modID)
+        case Name(name) => "name" -> ops.createString(name.toString)
+        case Tag(name) => "tag" -> ops.createString(name.toString)
+        case _ => "" -> ops.empty()
+      }
+    ).map { case (str, a) => ops.createString(str) -> a }
+    val o = ops.createMap(CollectionConverters.asJava(map))
+    LOGGER.debug(s"BlackListEntry, $src, was serialized to $o.")
+    o
+  }
+
+  def readEntry[A](tagLike: Dynamic[A]): Entry = {
+    import com.yogpc.qp._
+    val idOpt = for {
+      j <- tagLike.asMapOpt[String, Dynamic[A]](_.asString(""), v => v).asScala
+      map = CollectionConverters.asScala(j)
+      id <- map.get("id").flatMap(_.asString().asScala)
+    } yield {
+      id match {
+        case ID_NAME => Name(new ResourceLocation(map("name").asString.get()))
+        case ID_MOD => Mod(map("modID").asString().get())
+        case ID_TAG => Tag(new ResourceLocation(map("tag").asString().get()))
+        case ID_ORES => Ores
+        case _ => Air
+      }
+    }
+    LOGGER.debug("BlackListEntry, {}, created from {}, {}", idOpt.orNull, tagLike.getValue.getClass.getSimpleName, tagLike.getValue)
+    idOpt.getOrElse(Air)
+  }
+
   object Entry extends AnyRef with JsonSerializer[Entry] with JsonDeserializer[Entry] {
     override def serialize(src: Entry, typeOfSrc: Type, context: JsonSerializationContext): JsonElement = {
-      val o = new JsonObject
-      o.addProperty("id", src.id)
-      src match {
-        case Mod(modID) => o.addProperty("modID", modID)
-        case Name(name) => o.addProperty("name", name.toString)
-        case Tag(name) => o.addProperty("tag", name.toString)
-        case _ =>
-      }
-      LOGGER.debug(s"BlackListEntry, $src, was serialized to $o.")
-      o
+      writeEntry(src, JsonOps.INSTANCE)
     }
 
     override def deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): Entry = {
-      val idOpt = for {
-        j <- Option(json) if j.isJsonObject
-        obj = j.getAsJsonObject
-        id <- Option(obj.get("id")).map(_.getAsString) if obj.has("id")
-      } yield {
-        id match {
-          case ID_NAME => Name(new ResourceLocation(JSONUtils.getString(obj, "name")))
-          case ID_MOD => Mod(JSONUtils.getString(obj, "modID"))
-          case ID_TAG => Tag(new ResourceLocation(JSONUtils.getString(obj, "tag")))
-          case ID_ORES => Ores
-          case _ => Air
-        }
-      }
-      LOGGER.debug("BlackListEntry, {}, created from json, {}", idOpt.orNull, json)
-      idOpt.getOrElse(Air)
+      readEntry(new Dynamic(JsonOps.INSTANCE, json))
     }
 
-    implicit val EntryToNBT: NBTWrapper[Entry, INBT] =
-      e => Dynamic.convert(JsonOps.INSTANCE, NBTDynamicOps.INSTANCE, GSON.toJsonTree(e))
+    implicit val EntryToNBT: NBTWrapper[Entry, CompoundNBT] = writeEntry(_, NBTDynamicOps.INSTANCE).asInstanceOf[CompoundNBT]
   }
 
   private object EntryArray extends JsonDeserializer[Array[Entry]] {
@@ -160,7 +170,7 @@ object QuarryBlackList {
     override def toString: String = "BlackList for tag " + name
   }
 
-  val GSON: Gson = (new GsonBuilder).disableHtmlEscaping().setPrettyPrinting()
+  private final val GSON: Gson = (new GsonBuilder).disableHtmlEscaping().setPrettyPrinting()
     .registerTypeHierarchyAdapter(classOf[Entry], Entry)
     .registerTypeHierarchyAdapter(classOf[Array[Entry]], EntryArray)
     .create()

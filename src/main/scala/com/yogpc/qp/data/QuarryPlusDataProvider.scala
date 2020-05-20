@@ -3,6 +3,7 @@ package com.yogpc.qp.data
 import java.io.IOException
 
 import com.google.gson.{GsonBuilder, JsonElement}
+import com.mojang.datafixers.types.JsonOps
 import com.yogpc.qp.QuarryPlus
 import com.yogpc.qp.machines.advquarry.BlockWrapper
 import com.yogpc.qp.machines.base.QuarryBlackList
@@ -130,12 +131,12 @@ object QuarryPlusDataProvider {
       new DataBuilder {
         override def location = QuarryPlusDataProvider.location("blacklist")
 
-        override def build = QuarryBlackList.GSON.toJsonTree(QuarryBlackList.example1)
+        override def build = SerializeUtils.toJsonArray[QuarryBlackList.Entry](QuarryBlackList.example1, e => QuarryBlackList.writeEntry(e, JsonOps.INSTANCE))
       },
       new DataBuilder {
         override def location = QuarryPlusDataProvider.location("blacklist2")
 
-        override def build = QuarryBlackList.GSON.toJsonTree(QuarryBlackList.example2)
+        override def build = SerializeUtils.toJsonArray[QuarryBlackList.Entry](QuarryBlackList.example2, e => QuarryBlackList.writeEntry(e, JsonOps.INSTANCE))
       }
     )
   }

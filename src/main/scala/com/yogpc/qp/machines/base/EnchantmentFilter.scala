@@ -1,10 +1,9 @@
 package com.yogpc.qp.machines.base
 
-import java.util.function.Predicate
+import java.util.function.{Predicate, Function => JFunc}
 
-import com.google.gson.JsonArray
 import com.mojang.datafixers.Dynamic
-import com.mojang.datafixers.types.{DynamicOps, JsonOps}
+import com.mojang.datafixers.types.DynamicOps
 import com.yogpc.qp._
 import com.yogpc.qp.machines.base.QuarryBlackList.Entry
 import com.yogpc.qp.machines.workbench.BlockData
@@ -90,8 +89,10 @@ object EnchantmentFilter {
     mapOpt.map { m =>
       val fortuneInclude = m.get("fortuneInclude").exists(_.asBoolean(false))
       val silktouchInclude = m.get("silktouchInclude").exists(_.asBoolean(false))
-      val fortuneList = m.get("fortuneList").map(_.convert(JsonOps.INSTANCE).getValue).map(j => QuarryBlackList.GSON.fromJson(j, classOf[Array[Entry]])).map(_.toSet).getOrElse(Set.empty)
-      val silktouchList = m.get("silktouchList").map(_.convert(JsonOps.INSTANCE).getValue).map(j => QuarryBlackList.GSON.fromJson(j, classOf[Array[Entry]])).map(_.toSet).getOrElse(Set.empty)
+      val fortuneList = m.get("fortuneList").flatMap(l => l.asListOpt(JFunc.identity()).asScala)
+        .map(l => CollectionConverters.asScala(l).map(QuarryBlackList.readEntry).toSet).getOrElse(Set.empty)
+      val silktouchList = m.get("silktouchList").flatMap(l => l.asListOpt(JFunc.identity()).asScala)
+        .map(l => CollectionConverters.asScala(l).map(QuarryBlackList.readEntry).toSet).getOrElse(Set.empty)
       new EnchantmentFilter(fortuneInclude, silktouchInclude, fortuneList, silktouchList)
     }.getOrElse(defaultInstance)
   }
@@ -100,15 +101,10 @@ object EnchantmentFilter {
     val map = Map(
       "fortuneInclude" -> ops.createBoolean(filter.fortuneInclude),
       "silktouchInclude" -> ops.createBoolean(filter.silktouchInclude),
-      "fortuneList" -> Dynamic.convert(JsonOps.INSTANCE, ops, convertToJsonArray(filter.fortuneList)),
-      "silktouchList" -> Dynamic.convert(JsonOps.INSTANCE, ops, convertToJsonArray(filter.silktouchList))
+      "fortuneList" -> ops.createList(CollectionConverters.asJava(filter.fortuneList).stream().map(e => QuarryBlackList.writeEntry(e, ops))),
+      "silktouchList" -> ops.createList(CollectionConverters.asJava(filter.silktouchList).stream().map(QuarryBlackList.writeEntry(_, ops)))
     ).map { case (str, t) => ops.createString(str) -> t }
     ops.createMap(CollectionConverters.asJava(map))
   }
 
-  private def convertToJsonArray(s: Set[Entry]): JsonArray = {
-    val a = new JsonArray
-    s.map(e => QuarryBlackList.GSON.toJsonTree(e)).foreach(a.add)
-    a
-  }
 }
