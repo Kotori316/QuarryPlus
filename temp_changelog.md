@@ -1,3 +1,8 @@
+# Version 12.4.0
+* You can use ListEditor and Template for New QuarryPlus.
+  * It's useful when quarry has both Fortune and Silktouch.
+  * Changing `DisableEnchantMoverFromBook` false allows you to move both enchantments at the same time.
+
 # Version 12.3.9
 * Fixed the quarry fired a harvesting event every tick.
 * Use own pickaxe to break blocks. (Harvesting Level = 5 (2 level upper than diamond), Tier = DIAMOND)
