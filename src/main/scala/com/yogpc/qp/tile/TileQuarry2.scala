@@ -8,15 +8,15 @@ import com.yogpc.qp.container.ContainerQuarryModule.HasModuleInventory
 import com.yogpc.qp.container.{ContainerQuarryModule, StatusContainer}
 import com.yogpc.qp.gui.TranslationKeys
 import com.yogpc.qp.packet.{PacketHandler, TileMessage}
-import com.yogpc.qp.utils.ReflectionHelper
-import net.minecraft.block.state.IBlockState
+import com.yogpc.qp.utils.{BlockData, ReflectionHelper}
 import net.minecraft.client.resources.I18n
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.entity.player.{EntityPlayer, InventoryPlayer}
+import net.minecraft.init.Enchantments
 import net.minecraft.item.ItemStack
-import net.minecraft.nbt.{NBTTagCompound, NBTTagString}
+import net.minecraft.nbt.{NBTTagCompound, NBTTagList, NBTTagString}
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util._
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos, ChunkPos, Vec3i}
@@ -24,6 +24,7 @@ import net.minecraft.util.text.{TextComponentString, TextComponentTranslation}
 import net.minecraft.world.{IInteractionObject, World, WorldServer}
 import net.minecraftforge.common.ForgeChunkManager.Type
 import net.minecraftforge.common.capabilities.Capability
+import net.minecraftforge.common.util.Constants.NBT
 import net.minecraftforge.common.{ForgeChunkManager, MinecraftForge}
 import net.minecraftforge.event.ForgeEventFactory
 import net.minecraftforge.event.world.BlockEvent
@@ -57,6 +58,10 @@ class TileQuarry2 extends APowerTile()
   var frameMode = false
   private val storage = new QuarryStorage
   val moduleInv = new QuarryModuleInventory(new TextComponentString("Modules"), 5, this, _ => refreshModules(), jp.t2v.lab.syntax.MapStreamSyntax.always_true())
+  var fortuneList = Set.empty[BlockData]
+  var silktouchList = Set.empty[BlockData]
+  var fortuneInclude = false
+  var silktouchInclude = false
 
   override def update(): Unit = {
     super.update()
@@ -109,6 +114,10 @@ class TileQuarry2 extends APowerTile()
     nbt.setTag("moduleInv", moduleInv.toNBT)
     nbt.setTag("yLevel", yLevel.toNBT)
     nbt.setTag("frameMode", frameMode.toNBT)
+    nbt.setTag("fortuneList", fortuneList.map(_.toNBT).foldLeft(new NBTTagList) { case (l, n) => l.appendTag(n); l })
+    nbt.setTag("silktouchList", silktouchList.map(_.toNBT).foldLeft(new NBTTagList) { case (l, n) => l.appendTag(n); l })
+    nbt.setBoolean("fortuneInclude", fortuneInclude)
+    nbt.setBoolean("silktouchInclude", silktouchInclude)
     super.writeToNBT(nbt)
   }
 
@@ -122,6 +131,10 @@ class TileQuarry2 extends APowerTile()
     moduleInv.deserializeNBT(nbt.getCompoundTag("moduleInv"))
     yLevel = nbt.getInteger("yLevel")
     frameMode = nbt.getBoolean("frameMode")
+    fortuneList = nbt.getTagList("fortuneList", NBT.TAG_COMPOUND).tagIterator.map(BlockData.readFromNBT).toSet
+    silktouchList = nbt.getTagList("silktouchList", NBT.TAG_COMPOUND).tagIterator.map(BlockData.readFromNBT).toSet
+    fortuneInclude = nbt.getBoolean("fortuneInclude")
+    silktouchInclude = nbt.getBoolean("silktouchInclude")
   }
 
   override protected def isWorking = target != BlockPos.ORIGIN && action.mode != none
@@ -230,6 +243,10 @@ class TileQuarry2 extends APowerTile()
     val returnValue = modules.foldLeft(IModule.NoAction: IModule.Result) { case (r, m) => IModule.Result.combine(r, m.invoke(IModule.BeforeBreak(world, pos))) }
 
     val state = world.getBlockState(pos) // may be replaced.
+    val useSilktouch = self.enchantments.silktouch && state.getBlock.canSilkHarvest(world, pos, state, fakePlayer) && (silktouchInclude == silktouchList.contains(new BlockData(state.getBlock, state)))
+    val useFortune = fortuneInclude == fortuneList.contains(new BlockData(state.getBlock, state))
+    if (!useFortune) fakePlayer.getHeldItem(EnumHand.MAIN_HAND).removeEnchantment(Enchantments.FORTUNE)
+    if (!useSilktouch) fakePlayer.getHeldItem(EnumHand.MAIN_HAND).removeEnchantment(Enchantments.SILK_TOUCH)
     if (PowerManager.useEnergyBreak(self, state.getBlockHardness(world, pos),
       TileQuarry2.enchantmentMode(enchantments), enchantments.unbreaking, modules.exists(IModule.hasReplaceModule), state)) {
       val event = new BlockEvent.BreakEvent(world, pos, state, fakePlayer)
@@ -237,15 +254,16 @@ class TileQuarry2 extends APowerTile()
       if (!event.isCanceled) {
         if (returnValue.canGoNext) {
           if (!world.isAirBlock(pos)) {
-            val drops = if (self.enchantments.silktouch && state.getBlock.canSilkHarvest(world, pos, state, fakePlayer)) {
+            val drops = if (useSilktouch) {
               val list = NonNullList.create[ItemStack]
               list.add(ReflectionHelper.invoke(TileBasic.createStackedBlock, state.getBlock, state).asInstanceOf[ItemStack])
               ForgeEventFactory.fireBlockHarvesting(list, world, pos, state, 0, 1.0f, true, fakePlayer)
               list
             } else {
               val list = NonNullList.create[ItemStack]
-              TileBasic.getDrops(world, pos, state, state.getBlock, self.enchantments.fortune, list)
-              ForgeEventFactory.fireBlockHarvesting(list, world, pos, state, self.enchantments.fortune, 1.0f, false, fakePlayer)
+              val fortuneLevel = if (useFortune) self.enchantments.fortune else 0
+              TileBasic.getDrops(world, pos, state, state.getBlock, fortuneLevel, list)
+              ForgeEventFactory.fireBlockHarvesting(list, world, pos, state, fortuneLevel, 1.0f, false, fakePlayer)
               list
             }
 

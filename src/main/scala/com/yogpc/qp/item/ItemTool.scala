@@ -14,7 +14,7 @@ package com.yogpc.qp.item
 
 import java.util
 
-import com.yogpc.qp.tile.{IEnchantableTile, TileBasic}
+import com.yogpc.qp.tile.{IEnchantableTile, TileBasic, TileQuarry2}
 import com.yogpc.qp.utils.BlockData
 import com.yogpc.qp.{Config, QuarryPlus, QuarryPlusI, _}
 import javax.annotation.Nullable
@@ -27,6 +27,7 @@ import net.minecraft.init.{Enchantments, Items}
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.text.TextComponentString
 import net.minecraft.util.{EnumActionResult, EnumFacing, EnumHand, NonNullList}
 import net.minecraft.world.World
 import net.minecraftforge.fml.common.registry.ForgeRegistries
@@ -78,6 +79,27 @@ class ItemTool extends Item with IEnchantableItem {
             player.openGui(QuarryPlus.INSTANCE, if (f) QuarryPlusI.guiIdFList else QuarryPlusI.guiIdSList, worldIn, pos.getX, pos.getY, pos.getZ)
           }
           return returnValue
+        case quarry2: TileQuarry2 if s != f =>
+          if (stackTag != null && bd != null) {
+            if (!worldIn.isRemote) {
+              if (f) {
+                quarry2.fortuneList += bd
+              } else {
+                quarry2.silktouchList += bd
+              }
+            }
+            stackTag.removeTag(NAME_key)
+            stackTag.removeTag(META_key)
+          } else {
+            // player.openGui(QuarryPlus.INSTANCE, if (f) QuarryPlusI.guiIdFList else QuarryPlusI.guiIdSList, worldIn, pos.getX, pos.getY, pos.getZ)
+            if (!worldIn.isRemote) {
+              val include = if (f) quarry2.fortuneInclude else quarry2.silktouchInclude
+              player.sendStatusMessage(new TextComponentString(if (include) "WhiteList mode" else "BlackList mode"), false)
+              val data = if (f) quarry2.fortuneList else quarry2.silktouchList
+              data.map(_.getLocalizedName).foreach(s => player.sendStatusMessage(new TextComponentString(s), false))
+            }
+          }
+          return EnumActionResult.SUCCESS
         case _ =>
       }
       if (!state.getBlock.isAir(state, worldIn, pos)) {

@@ -3,7 +3,7 @@ package com.yogpc.qp.item
 import java.util
 
 import com.yogpc.qp.gui.TranslationKeys
-import com.yogpc.qp.tile.{IEnchantableTile, TileBasic}
+import com.yogpc.qp.tile.{IEnchantableTile, TileBasic, TileQuarry2}
 import com.yogpc.qp.utils.{BlockData, INBTWritable}
 import com.yogpc.qp.{QuarryPlus, QuarryPlusI, _}
 import net.minecraft.client.resources.I18n
@@ -82,6 +82,25 @@ class ItemTemplate extends Item with IEnchantableItem {
             } else {
               basic.silktouchInclude = template.include
               basic.silktouchList.addAll(template.items.asJava)
+            }
+            playerIn.sendStatusMessage(new TextComponentTranslation(TranslationKeys.TOF_ADDED), false)
+          }
+        }
+        EnumActionResult.SUCCESS
+      case quarry2: TileQuarry2 =>
+        if (!worldIn.isRemote) {
+          val enchantSet = stack.getEnchantmentTagList.tagIterator.map(_.getShort("id").toInt).toSet
+          val s = enchantSet.contains(IEnchantableTile.SilktouchID)
+          val f = enchantSet.contains(IEnchantableTile.FortuneID)
+          val template = ItemTemplate.getTemplate(stack)
+          if (s != f && template != ItemTemplate.EmPlate) {
+            import scala.collection.JavaConverters._
+            if (f) {
+              quarry2.fortuneInclude = template.include
+              quarry2.fortuneList = quarry2.fortuneList ++ template.items
+            } else {
+              quarry2.silktouchInclude = template.include
+              quarry2.silktouchList = quarry2.silktouchList ++ template.items
             }
             playerIn.sendStatusMessage(new TextComponentTranslation(TranslationKeys.TOF_ADDED), false)
           }
