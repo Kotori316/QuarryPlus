@@ -4,13 +4,14 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 import com.mojang.datafixers.Dynamic;
+import com.yogpc.qp.machines.base.EnchantmentFilter;
 import com.yogpc.qp.machines.base.QuarryBlackList;
-import com.yogpc.qp.machines.quarry.TileBasic;
 import com.yogpc.qp.packet.IMessage;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -26,7 +27,7 @@ public class EnchantmentMessage implements IMessage<EnchantmentMessage> {
     Enchantment enchantment;
     QuarryBlackList.Entry entry;
 
-    public static EnchantmentMessage create(TileBasic tile, Type type, Enchantment enchantment, QuarryBlackList.Entry entry) {
+    public static EnchantmentMessage create(EnchantmentFilter.Accessor tile, Type type, Enchantment enchantment, QuarryBlackList.Entry entry) {
         EnchantmentMessage message = new EnchantmentMessage();
         message.pos = tile.getPos();
         message.dim = IMessage.getDimId(tile.getWorld());
@@ -55,22 +56,24 @@ public class EnchantmentMessage implements IMessage<EnchantmentMessage> {
 
     @Override
     public void onReceive(Supplier<NetworkEvent.Context> ctx) {
-        IMessage.findTile(ctx, pos, dim, TileBasic.class).ifPresent(tile ->
-            ctx.get().enqueueWork(() -> {
-                if (type == Type.Toggle) {
-                    if (enchantment == Enchantments.FORTUNE) {
-                        tile.enchantmentFilter = tile.enchantmentFilter.toggleFortune();
-                    } else if (enchantment == Enchantments.SILK_TOUCH) {
-                        tile.enchantmentFilter = tile.enchantmentFilter.toggleSilktouch();
+        IMessage.findTile(ctx, pos, dim, TileEntity.class)
+            .flatMap(t -> com.yogpc.qp.package$.MODULE$.toJavaOption(EnchantmentFilter.Accessor$.MODULE$.apply(t)))
+            .ifPresent(tile ->
+                ctx.get().enqueueWork(() -> {
+                    if (type == Type.Toggle) {
+                        if (enchantment == Enchantments.FORTUNE) {
+                            tile.enchantmentFilter_$eq(tile.enchantmentFilter().toggleFortune());
+                        } else if (enchantment == Enchantments.SILK_TOUCH) {
+                            tile.enchantmentFilter_$eq(tile.enchantmentFilter().toggleSilktouch());
+                        }
+                    } else if (type == Type.Remove) {
+                        if (enchantment == Enchantments.FORTUNE)
+                            tile.enchantmentFilter_$eq(tile.enchantmentFilter().removeFortune(entry));
+                        else if (enchantment == Enchantments.SILK_TOUCH)
+                            tile.enchantmentFilter_$eq(tile.enchantmentFilter().removeSilktouch(entry));
                     }
-                } else if (type == Type.Remove) {
-                    if (enchantment == Enchantments.FORTUNE)
-                        tile.enchantmentFilter = tile.enchantmentFilter.removeFortune(entry);
-                    else if (enchantment == Enchantments.SILK_TOUCH)
-                        tile.enchantmentFilter = tile.enchantmentFilter.removeSilktouch(entry);
-                }
-            })
-        );
+                })
+            );
     }
 
     public enum Type {Toggle, Remove}

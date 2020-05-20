@@ -1,8 +1,6 @@
 package com.yogpc.qp.machines.item;
 
-import java.util.Objects;
-
-import com.yogpc.qp.machines.quarry.TileBasic;
+import com.yogpc.qp.machines.base.EnchantmentFilter;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.mover.BlockListRequestMessage;
 import com.yogpc.qp.utils.Holder;
@@ -15,14 +13,14 @@ import net.minecraft.util.math.BlockPos;
 
 public class ContainerEnchList extends Container {
 
-    public final TileBasic tile;
+    public final EnchantmentFilter.Accessor tile;
     private final IntReferenceHolder includeFlag = this.trackInt(IntReferenceHolder.single());
     public final ResourceLocation enchantmentName;
 
     public ContainerEnchList(int id, PlayerEntity player, BlockPos pos, ResourceLocation enchantmentName) {
         super(Holder.enchListContainerType(), id);
         this.enchantmentName = enchantmentName;
-        this.tile = Objects.requireNonNull(((TileBasic) player.getEntityWorld().getTileEntity(pos)));
+        this.tile = EnchantmentFilter.Accessor$.MODULE$.apply(player.getEntityWorld().getTileEntity(pos)).get();
         if (!player.world.isRemote) {
             includeFlag.set(getInclude());
         } else {
@@ -52,19 +50,20 @@ public class ContainerEnchList extends Container {
     public void updateProgressBar(int id, int data) {
         super.updateProgressBar(id, data);
         if (id == 0) {
-            this.tile.enchantmentFilter =
-                this.tile.enchantmentFilter.copy(
+            this.tile.enchantmentFilter_$eq(
+                this.tile.enchantmentFilter().copy(
                     (data & 2) != 0, // Fortune
                     (data & 1) != 0, // Silktouch
-                    tile.enchantmentFilter.fortuneList(),
-                    tile.enchantmentFilter.silktouchList()
-                );
+                    tile.enchantmentFilter().fortuneList(),
+                    tile.enchantmentFilter().silktouchList()
+                )
+            );
         }
     }
 
     private int getInclude() {
-        int a = tile.enchantmentFilter.fortuneInclude() ? 2 : 0;
-        int b = tile.enchantmentFilter.silktouchInclude() ? 1 : 0;
+        int a = tile.enchantmentFilter().fortuneInclude() ? 2 : 0;
+        int b = tile.enchantmentFilter().silktouchInclude() ? 1 : 0;
         return a | b;
     }
 }

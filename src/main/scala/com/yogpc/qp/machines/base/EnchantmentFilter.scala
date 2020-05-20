@@ -6,14 +6,17 @@ import com.mojang.datafixers.Dynamic
 import com.mojang.datafixers.types.DynamicOps
 import com.yogpc.qp._
 import com.yogpc.qp.machines.base.QuarryBlackList.Entry
+import com.yogpc.qp.machines.quarry.{TileBasic, TileQuarry2}
 import com.yogpc.qp.machines.workbench.BlockData
 import jp.t2v.lab.syntax.MapStreamSyntax
 import net.minecraft.block.BlockState
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.nbt.CompoundNBT
+import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.BlockPos
-import net.minecraft.world.IBlockReader
+import net.minecraft.util.text.ITextComponent
+import net.minecraft.world.{IBlockReader, World}
 import net.minecraftforge.common.util.Constants
 
 import scala.jdk.javaapi.CollectionConverters
@@ -105,6 +108,54 @@ object EnchantmentFilter {
       "silktouchList" -> ops.createList(CollectionConverters.asJava(filter.silktouchList).stream().map(QuarryBlackList.writeEntry(_, ops)))
     ).map { case (str, t) => ops.createString(str) -> t }
     ops.createMap(CollectionConverters.asJava(map))
+  }
+
+  sealed trait Accessor {
+    def enchantmentFilter: EnchantmentFilter
+
+    def enchantmentFilter_=(e: EnchantmentFilter): Unit
+
+    def getName: ITextComponent
+
+    def getPos: BlockPos
+
+    def getWorld: World
+  }
+
+  object Accessor {
+
+    def apply(tile: TileEntity): Option[Accessor] = tile match {
+      case basic: TileBasic => Some(new BasicAccessor(basic))
+      case quarry2: TileQuarry2 => Some(new NewQuarryAccessor(quarry2))
+      case _ => None
+    }
+
+    //noinspection DuplicatedCode
+    private class BasicAccessor(basic: TileBasic) extends Accessor {
+      override def enchantmentFilter = basic.enchantmentFilter
+
+      override def enchantmentFilter_=(e: EnchantmentFilter): Unit = basic.enchantmentFilter = e
+
+      override def getName: ITextComponent = basic.getName
+
+      override def getPos = basic.getPos
+
+      override def getWorld = basic.getWorld
+    }
+
+    //noinspection DuplicatedCode
+    private class NewQuarryAccessor(quarry: TileQuarry2) extends Accessor {
+      override def enchantmentFilter = quarry.enchantmentFilter
+
+      override def enchantmentFilter_=(e: EnchantmentFilter): Unit = quarry.enchantmentFilter = e
+
+      override def getName: ITextComponent = quarry.getName
+
+      override def getPos = quarry.getPos
+
+      override def getWorld = quarry.getWorld
+    }
+
   }
 
 }

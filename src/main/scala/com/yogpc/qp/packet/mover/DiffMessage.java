@@ -55,12 +55,12 @@ public class DiffMessage implements IMessage<DiffMessage> {
             Screen screen = Minecraft.getInstance().currentScreen;
             if (screen instanceof GuiEnchList) {
                 ContainerEnchList enchList = ((GuiEnchList) screen).getContainer();
-                EnchantmentFilter filter = enchList.tile.enchantmentFilter;
-                enchList.tile.enchantmentFilter = filter.copy(
+                EnchantmentFilter filter = enchList.tile.enchantmentFilter();
+                enchList.tile.enchantmentFilter_$eq(filter.copy(
                     filter.fortuneInclude(), filter.silktouchInclude(),
                     CollectionConverters.asScala(fortuneList).toSet(),
                     CollectionConverters.asScala(silkList).toSet()
-                );
+                ));
                 ((GuiEnchList) screen).refreshList();
             }
         });

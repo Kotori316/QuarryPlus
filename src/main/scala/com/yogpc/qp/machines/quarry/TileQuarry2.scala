@@ -11,7 +11,7 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.item.ItemEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemStack
-import net.minecraft.nbt.{CompoundNBT, StringNBT}
+import net.minecraft.nbt.{CompoundNBT, NBTDynamicOps, StringNBT}
 import net.minecraft.state.properties.BlockStateProperties
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos}
 import net.minecraft.util.text.{ITextComponent, StringTextComponent, TranslationTextComponent}
@@ -109,6 +109,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     nbt.put("moduleInv", moduleInv.toNBT)
     nbt.put("yLevel", yLevel.toNBT)
     nbt.put("frameMode", frameMode.toNBT)
+    nbt.put("enchantmentFilter", EnchantmentFilter.write(enchantmentFilter, NBTDynamicOps.INSTANCE))
     super.write(nbt)
   }
 
@@ -122,6 +123,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     yLevel = nbt.getInt("yLevel")
     action = QuarryAction.load(self, nbt, "mode")
     frameMode = nbt.getBoolean("frameMode")
+    enchantmentFilter = EnchantmentFilter.read(new com.mojang.datafixers.Dynamic(NBTDynamicOps.INSTANCE, nbt.get("enchantmentFilter")))
   }
 
   override protected def isWorking = target != BlockPos.ZERO && action.mode != none

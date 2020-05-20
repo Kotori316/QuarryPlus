@@ -21,9 +21,9 @@ import java.util.function.Function;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.TranslationKeys;
+import com.yogpc.qp.machines.base.EnchantmentFilter;
 import com.yogpc.qp.machines.base.IHandleButton;
 import com.yogpc.qp.machines.base.QuarryBlackList;
-import com.yogpc.qp.machines.quarry.TileBasic;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.mover.EnchantmentMessage;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
@@ -46,7 +46,7 @@ import scala.jdk.javaapi.CollectionConverters;
 public class GuiEnchList extends ContainerScreen<ContainerEnchList> implements BooleanConsumer, IHandleButton {
     public static final int Toggle_id = 10, Remove_id = 12;
     private GuiSlotEnchList slot;
-    private final TileBasic tile;
+    private final EnchantmentFilter.Accessor tile;
     private final Enchantment target;
 
     public GuiEnchList(ContainerEnchList c, PlayerInventory i, ITextComponent t) {
@@ -57,15 +57,15 @@ public class GuiEnchList extends ContainerScreen<ContainerEnchList> implements B
 
     public boolean include() {
         if (this.target == Enchantments.FORTUNE)
-            return this.tile.enchantmentFilter.fortuneInclude();
-        return this.tile.enchantmentFilter.silktouchInclude();
+            return this.tile.enchantmentFilter().fortuneInclude();
+        return this.tile.enchantmentFilter().silktouchInclude();
     }
 
     private Set<QuarryBlackList.Entry> getBlockDataList(Enchantment enchantment) {
         if (enchantment == Enchantments.SILK_TOUCH) {
-            return CollectionConverters.asJava(tile.enchantmentFilter.silktouchList());
+            return CollectionConverters.asJava(tile.enchantmentFilter().silktouchList());
         } else if (enchantment == Enchantments.FORTUNE) {
-            return CollectionConverters.asJava(tile.enchantmentFilter.fortuneList());
+            return CollectionConverters.asJava(tile.enchantmentFilter().fortuneList());
         } else {
             QuarryPlus.LOGGER.error(String.format("GuiEnchList target is %s", enchantment));
             return Collections.emptySet();
@@ -115,9 +115,9 @@ public class GuiEnchList extends ContainerScreen<ContainerEnchList> implements B
             PacketHandler.sendToServer(EnchantmentMessage.create(tile, EnchantmentMessage.Type.Remove, target, entry));
 
             if (target == Enchantments.SILK_TOUCH)
-                tile.enchantmentFilter = tile.enchantmentFilter.removeSilktouch(entry);
+                tile.enchantmentFilter_$eq(tile.enchantmentFilter().removeSilktouch(entry));
             else if (target == Enchantments.FORTUNE)
-                tile.enchantmentFilter = tile.enchantmentFilter.removeFortune(entry);
+                tile.enchantmentFilter_$eq(tile.enchantmentFilter().removeFortune(entry));
             refreshList();
         }
         this.getMinecraft().displayGuiScreen(this);

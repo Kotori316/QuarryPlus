@@ -6,8 +6,7 @@ import cats._
 import cats.data._
 import cats.implicits._
 import com.yogpc.qp.QuarryPlus
-import com.yogpc.qp.machines.base.{IEnchantableItem, IEnchantableTile}
-import com.yogpc.qp.machines.quarry.TileBasic
+import com.yogpc.qp.machines.base.{EnchantmentFilter, IEnchantableItem, IEnchantableTile}
 import com.yogpc.qp.machines.workbench.BlockData
 import com.yogpc.qp.utils.Holder
 import net.minecraft.client.util.ITooltipFlag
@@ -62,23 +61,23 @@ class ItemListEditor extends Item((new Item.Properties).group(Holder.tab)) with 
     if (context.getPlayer.isCrouching && bd.contains(new BlockData(worldIn.getBlockState(pos)))) {
       stack.getTag.remove(ItemListEditor.NAME_key)
     } else {
-      worldIn.getTileEntity(pos) match {
-        case tb: TileBasic if s.value != f.value =>
+      EnchantmentFilter.Accessor(worldIn.getTileEntity(pos)) match {
+        case Some(value) if s.value != f.value =>
           bd match {
-            case Some(value) =>
+            case Some(data) =>
               if (!worldIn.isRemote) {
-                val adder = if (f.value) tb.enchantmentFilter.addFortune _ else tb.enchantmentFilter.addSilktouch _
-                tb.enchantmentFilter = adder(value.name)
+                val adder = if (f.value) value.enchantmentFilter.addFortune _ else value.enchantmentFilter.addSilktouch _
+                value.enchantmentFilter = adder(data.name)
               }
               stack.getTag.remove(ItemListEditor.NAME_key)
             case None =>
               if (!worldIn.isRemote)
-                NetworkHooks.openGui(context.getPlayer.asInstanceOf[ServerPlayerEntity], new ItemListEditor.InteractionObject(f.value, tb.getName, pos), (b: PacketBuffer) => {
+                NetworkHooks.openGui(context.getPlayer.asInstanceOf[ServerPlayerEntity], new ItemListEditor.InteractionObject(f.value, value.getName, pos), (b: PacketBuffer) => {
                   b.writeBlockPos(pos)
                   b.writeResourceLocation(f.map(bool => if (bool) IEnchantableTile.FortuneID else IEnchantableTile.SilktouchID).value)
                 })
           }
-        case _ =>
+        case None =>
           if (!worldIn.isAirBlock(pos)) {
             if (!stack.hasTag) stack.setTag(new CompoundNBT)
             val tag = stack.getTag

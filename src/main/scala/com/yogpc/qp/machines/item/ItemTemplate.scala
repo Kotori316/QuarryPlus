@@ -9,7 +9,6 @@ import com.mojang.datafixers.Dynamic
 import com.yogpc.qp.machines.TranslationKeys
 import com.yogpc.qp.machines.base.{EnchantmentFilter, IEnchantableItem, QuarryBlackList}
 import com.yogpc.qp.machines.item.ItemListEditor._
-import com.yogpc.qp.machines.quarry.TileBasic
 import com.yogpc.qp.machines.workbench.BlockData
 import com.yogpc.qp.utils.Holder
 import com.yogpc.qp.{QuarryPlus, _}
@@ -71,18 +70,18 @@ class ItemTemplate extends Item(new Item.Properties().maxStackSize(1).group(Hold
     val worldIn = context.getWorld
     val pos = context.getPos
     val playerIn = context.getPlayer
-    worldIn.getTileEntity(pos) match {
-      case basic: TileBasic =>
+    EnchantmentFilter.Accessor(worldIn.getTileEntity(pos)) match {
+      case Some(value) =>
         if (!worldIn.isRemote) {
           val template = ItemTemplate.getTemplate(stack)
           if (template != ItemTemplate.EmPlate) {
-            blocksListSetter(stack, basic).ap(template.entries.toSet.some)
-            includeSetter(stack, basic).ap(template.include.some)
+            blocksListSetter(stack, value).ap(template.entries.toSet.some)
+            includeSetter(stack, value).ap(template.include.some)
             playerIn.sendStatusMessage(new TranslationTextComponent(TranslationKeys.TOF_ADDED), false)
           }
         }
         ActionResultType.SUCCESS
-      case _ =>
+      case None =>
         if (!context.func_225518_g_) {
           if (!worldIn.isRemote) {
             val playerPos = playerIn.getPosition
@@ -173,11 +172,11 @@ object ItemTemplate {
 
   val enchantmentName: Kleisli[List, ItemStack, ITextComponent] = Kleisli((stack: ItemStack) => List(silktouchName, fortuneName).flatMap(_.apply(stack)))
 
-  private[this] val setter = ((t: TileBasic, f: EnchantmentFilter) => t.enchantmentFilter = f).tupled
+  private[this] val setter = ((t: EnchantmentFilter.Accessor, f: EnchantmentFilter) => t.enchantmentFilter = f).tupled
 
-  def createSetter[A](enchantmentSelector: Kleisli[Eval, ItemStack, Boolean], createInstance: (A, TileBasic) => EnchantmentFilter):
-  Kleisli[Option, (ItemStack, TileBasic), A => Unit] = {
-    enchantmentSelector.first[TileBasic]
+  def createSetter[A](enchantmentSelector: Kleisli[Eval, ItemStack, Boolean], createInstance: (A, EnchantmentFilter.Accessor) => EnchantmentFilter):
+  Kleisli[Option, (ItemStack, EnchantmentFilter.Accessor), A => Unit] = {
+    enchantmentSelector.first[EnchantmentFilter.Accessor]
       .mapF(e => Option.when(e.value._1)(e.value._2))
       .map(t => (a: A) => (t, createInstance(a, t)))
       .map(_ andThen setter)
@@ -188,12 +187,12 @@ object ItemTemplate {
   private[this] val silkIncSet = createSetter(onlySilktouch, (bool: Boolean, t) => t.enchantmentFilter.copy(silktouchInclude = bool))
   private[this] val fIncSet = createSetter(onlyFortune, (bool: Boolean, t) => t.enchantmentFilter.copy(fortuneInclude = bool))
 
-  private def orElseCompute[A](silktouch: Kleisli[Option, (ItemStack, TileBasic), A], fortune: Kleisli[Option, (ItemStack, TileBasic), A]):
-  Kleisli[Option, (ItemStack, TileBasic), A] = Kleisli((t: (ItemStack, TileBasic)) => {
-    val (stack: ItemStack, basic: TileBasic) = t
+  private def orElseCompute[A](silktouch: Kleisli[Option, (ItemStack, EnchantmentFilter.Accessor), A], fortune: Kleisli[Option, (ItemStack, EnchantmentFilter.Accessor), A]):
+  Kleisli[Option, (ItemStack, EnchantmentFilter.Accessor), A] = Kleisli((t: (ItemStack, EnchantmentFilter.Accessor)) => {
+    val (stack: ItemStack, basic: EnchantmentFilter.Accessor) = t
     (silktouch orElse fortune).run(stack, basic)
   })
 
-  val blocksListSetter: Kleisli[Option, (ItemStack, TileBasic), Set[QuarryBlackList.Entry] => Unit] = orElseCompute(silkList, fList)
-  val includeSetter: Kleisli[Option, (ItemStack, TileBasic), Boolean => Unit] = orElseCompute(silkIncSet, fIncSet)
+  val blocksListSetter: Kleisli[Option, (ItemStack, EnchantmentFilter.Accessor), Set[QuarryBlackList.Entry] => Unit] = orElseCompute(silkList, fList)
+  val includeSetter: Kleisli[Option, (ItemStack, EnchantmentFilter.Accessor), Boolean => Unit] = orElseCompute(silkIncSet, fIncSet)
 }

@@ -41,7 +41,7 @@ public class BlockListRequestMessage implements IMessage<BlockListRequestMessage
         assert player != null; // Executed in server thread.
         if (player.openContainer instanceof ContainerEnchList) {
             ContainerEnchList container = (ContainerEnchList) player.openContainer;
-            PacketHandler.INSTANCE.reply(DiffMessage.create(container, container.tile.enchantmentFilter), ctx.get());
+            PacketHandler.INSTANCE.reply(DiffMessage.create(container, container.tile.enchantmentFilter()), ctx.get());
         }
     }
 }
