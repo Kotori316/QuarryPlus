@@ -76,7 +76,7 @@ class ItemTemplate extends Item(new Item.Properties().maxStackSize(1).group(Hold
         if (!worldIn.isRemote) {
           val template = ItemTemplate.getTemplate(stack)
           if (template != ItemTemplate.EmPlate) {
-            blocksList(stack, basic).ap(template.entries.toSet.some)
+            blocksListSetter(stack, basic).ap(template.entries.toSet.some)
             includeSetter(stack, basic).ap(template.include.some)
             playerIn.sendStatusMessage(new TranslationTextComponent(TranslationKeys.TOF_ADDED), false)
           }
@@ -194,6 +194,6 @@ object ItemTemplate {
     (silktouch orElse fortune).run(stack, basic)
   })
 
-  val blocksList: Kleisli[Option, (ItemStack, TileBasic), Set[QuarryBlackList.Entry] => Unit] = orElseCompute(silkList, fList)
+  val blocksListSetter: Kleisli[Option, (ItemStack, TileBasic), Set[QuarryBlackList.Entry] => Unit] = orElseCompute(silkList, fList)
   val includeSetter: Kleisli[Option, (ItemStack, TileBasic), Boolean => Unit] = orElseCompute(silkIncSet, fIncSet)
 }
