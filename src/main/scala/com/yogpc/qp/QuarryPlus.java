@@ -159,6 +159,7 @@ public class QuarryPlus {
         public static final String liquidselector = "liquidselector";
         public static final String marker = "markerplus";
         public static final String miningwell = "miningwellplus";
+        public static final String mini_quarry = "mini_quarry";
         public static final String mirror = "magicmirror";
         public static final String mover = "enchantmover";
         public static final String moverfrombook = "enchantmoverfrombook";

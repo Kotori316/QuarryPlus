@@ -12,6 +12,7 @@ import com.yogpc.qp.machines.bookmover.GuiBookMover;
 import com.yogpc.qp.machines.item.GuiEnchList;
 import com.yogpc.qp.machines.item.GuiListTemplate;
 import com.yogpc.qp.machines.item.GuiQuarryLevel;
+import com.yogpc.qp.machines.mini_quarry.MiniQuarryGui;
 import com.yogpc.qp.machines.mover.GuiMover;
 import com.yogpc.qp.machines.pb.PlacerGui;
 import com.yogpc.qp.machines.quarry.GuiQuarryModule;
@@ -113,6 +114,7 @@ public class ProxyClient extends ProxyCommon {
             ScreenManager.registerFactory(Holder.advQuarryContainerType(), GuiAdvQuarry::new);
             ScreenManager.registerFactory(Holder.statusContainerType(), StatusGui::new);
             ScreenManager.registerFactory(Holder.placerContainerType(), PlacerGui::new);
+            ScreenManager.registerFactory(Holder.miniQuarryContainerType(), MiniQuarryGui::new);
 
             // Register transparent blocks
             RenderType rendertype = RenderType.getCutoutMipped();

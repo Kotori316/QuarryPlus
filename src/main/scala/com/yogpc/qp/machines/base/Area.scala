@@ -84,10 +84,10 @@ object Area {
   def getMarkersOnDirection(directions: List[Direction], world: World, pos: BlockPos): OptionT[List, IMarker] =
     for {
       f <- OptionT.liftF(directions)
-      p <- OptionT.pure[List](pos.offset(f))
+      p = pos.offset(f)
       t <- OptionT.fromOption[List](Option(world.getTileEntity(p)))
-      marker <- t.getCapability(IMarker.Cap.MARKER_CAPABILITY(), f.getOpposite).asScala.mapK(evalToList) orElse
-        OptionT.pure[List](t).collect { case marker: IMarker => marker }
+      markerCap = t.getCapability(IMarker.Cap.MARKER_CAPABILITY(), f.getOpposite).asScala.mapK(evalToList)
+      marker <- markerCap orElse OptionT.pure[List](t).collect { case marker: IMarker => marker }
       if marker.hasLink
     } yield marker
 
