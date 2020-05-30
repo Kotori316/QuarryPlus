@@ -25,7 +25,11 @@ public class ItemFuelModule extends Item implements IModuleItem {
 
     @Override
     public <T extends APowerTile & HasStorage & HasModuleInventory> Function<T, IModule> getModule(ItemStack stack) {
-        return t -> new FuelModule(mode, stack.getCount());
+        return t -> getFuelModule(stack);
+    }
+
+    public FuelModule getFuelModule(ItemStack stack) {
+        return new FuelModule(mode, stack.getCount());
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.yogpc.qp.machines.mini_quarry
 
 import com.yogpc.qp.QuarryPlus
+import com.yogpc.qp.compat.InvUtils
 import com.yogpc.qp.machines.base.{APacketTile, IEnchantableTile, QPBlock}
 import com.yogpc.qp.utils.Holder
 import net.minecraft.block.material.Material
@@ -49,6 +50,30 @@ class MiniQuarryBlock extends QPBlock(
         IEnchantableTile.Util.init(t, stack.getEnchantmentTagList)
         APacketTile.requestTicket.accept(t)
       }
+    }
+  }
+
+  //noinspection ScalaDeprecation
+  override def neighborChanged(state: BlockState, worldIn: World, pos: BlockPos, blockIn: Block, fromPos: BlockPos, isMoving: Boolean): Unit = {
+    super.neighborChanged(state, worldIn, pos, blockIn, fromPos, isMoving)
+    if (!worldIn.isRemote) {
+      val powered = worldIn.isBlockPowered(pos)
+      Option(worldIn.getTileEntity(pos)).collect { case m: MiniQuarryTile => m }.foreach { t =>
+        if (powered) {
+          if (!t.rs) {
+            t.gotRSPulse()
+          }
+        }
+        t.rs = powered
+      }
+    }
+  }
+
+  //noinspection ScalaDeprecation
+  override def onReplaced(state: BlockState, worldIn: World, pos: BlockPos, newState: BlockState, isMoving: Boolean): Unit = {
+    if (state.getBlock != newState.getBlock) {
+      InvUtils.dropAndUpdateInv(worldIn, pos, worldIn.getTileEntity(pos).asInstanceOf[MiniQuarryTile].getInv, this)
+      super.onReplaced(state, worldIn, pos, newState, isMoving)
     }
   }
 

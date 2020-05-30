@@ -1,12 +1,13 @@
 package com.yogpc.qp.machines.mini_quarry
 
 import java.util
-import java.util.Collections
 
+import cats.implicits._
 import com.mojang.datafixers.Dynamic
 import com.yogpc.qp._
 import com.yogpc.qp.compat.InvUtils
 import com.yogpc.qp.machines.base._
+import com.yogpc.qp.machines.modules.{IModuleItem, ItemFuelModule}
 import com.yogpc.qp.machines.quarry.QuarryFakePlayer
 import com.yogpc.qp.machines.{PowerManager, TranslationKeys}
 import com.yogpc.qp.utils.Holder
@@ -18,7 +19,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.{CompoundNBT, NBTDynamicOps}
 import net.minecraft.state.properties.BlockStateProperties
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.text.ITextComponent
+import net.minecraft.util.text.{ITextComponent, StringTextComponent}
 import net.minecraft.util.{Hand, NonNullList, ResourceLocation}
 import net.minecraft.world.server.ServerWorld
 import net.minecraftforge.common.ForgeHooks
@@ -36,8 +37,9 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
   private final var enchantments = EnchantmentHolder.noEnch
   private final var area = Area.zeroArea
   private final var targets: List[BlockPos] = List.empty
-  private final var tools = NonNullList.withSize(3, ItemStack.EMPTY)
+  private final val tools = NonNullList.withSize(5, ItemStack.EMPTY)
   private final var blackList: Set[QuarryBlackList.Entry] = Set(QuarryBlackList.Air)
+  final var rs = false
   private[this] final val dropItem = (item: ItemStack) => {
     val rest = InvUtils.injectToNearTile(world, pos, item)
     InventoryHelper.spawnItemStack(world, pos.getX + 0.5, pos.getY + 1, pos.getZ + 0.5, rest)
@@ -60,15 +62,20 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
             } else {
               // Check if block harvest-able.
               val fakePlayer = QuarryFakePlayer.get(world, head)
-              val canHarvest = tools.asScala.exists { tool =>
+              val canHarvest = tools.asScala.filterNot(_.getItem.isInstanceOf[IModuleItem]).exists { tool =>
                 fakePlayer.setHeldItem(Hand.MAIN_HAND, tool)
-                ForgeHooks.canHarvestBlock(state, fakePlayer, world, head)
+                ForgeHooks.canHarvestBlock(state, fakePlayer, world, head) || ForgeHooks.isToolEffective(world, head, tool)
               }
+              // Use effective tool
+              tools.asScala.filterNot(_.getItem.isInstanceOf[IModuleItem]).find(tool => ForgeHooks.isToolEffective(world, head, tool)).foreach(fakePlayer.setHeldItem(Hand.MAIN_HAND, _))
               if (canHarvest) {
                 // Remove block
                 val drops = Block.getDrops(state, world, head, world.getTileEntity(head), fakePlayer, fakePlayer.getHeldItemMainhand)
                 drops.asScala.foreach(dropItem)
-                fakePlayer.getHeldItemMainhand.onBlockDestroyed(world, state, head, fakePlayer)
+                val count = if (ForgeHooks.isToolEffective(world, head, fakePlayer.getHeldItemMainhand)) 1 else 4
+                for (_ <- 0 until count)
+                  fakePlayer.getHeldItemMainhand.onBlockDestroyed(world, state, head, fakePlayer)
+                world.removeBlock(head, false)
                 tail
               } else {
                 // Skip this block
@@ -80,6 +87,14 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
       }
 
       targets = work(targets)
+      if (targets.isEmpty)
+        updateWorkingState()
+    }
+  }
+
+  override protected def getEnergyInTick(): Unit = {
+    tools.asScala.map(i => (i.getItem, i)).collectFirst { case (f: ItemFuelModule, s) => f.getFuelModule(s) }.foreach {
+      f => f.invoke(IModule.Tick(this))
     }
   }
 
@@ -106,16 +121,7 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
   override def getEnchantmentHolder: EnchantmentHolder = enchantments
 
   override def G_ReInit(): Unit = {
-    if (area == Area.zeroArea) {
-      val facing = world.getBlockState(pos).get(BlockStateProperties.FACING)
-      Area.findQuarryArea(facing, world, pos) match {
-        case (newArea, markerOpt) if markerOpt.isDefined =>
-          area = newArea
-          markerOpt.foreach(m => m.removeFromWorldWithItem().asScala.foreach(dropItem))
-        case _ => area = Area.zeroArea
-      }
-    }
-    PowerManager.configureQuarryWork(this, enchantments.efficiency, enchantments.unbreaking, 0)
+    PowerManager.configureQuarryWork(this, 0, 0, 0)
   }
 
   override def getEnchantments: util.Map[ResourceLocation, Integer] =
@@ -127,25 +133,42 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
   override def setArea(area: Area): Unit = this.area = area
 
   override def startWorking(): Unit = {
+    val facing = world.getBlockState(pos).get(BlockStateProperties.FACING)
+    val maybeMarkers = Area.getMarkersOnDirection(List(facing.getOpposite, facing.rotateY(), facing.rotateYCCW()), world, pos)
+    val areas = maybeMarkers.map(m => Area.posToArea(m.min(), m.max(), world.getDimension.getType) -> m)
+      .collectFirst(t => t)
+    areas match {
+      case Some((newArea, m)) =>
+        area = newArea
+        m.removeFromWorldWithItem().asScala.foreach(dropItem)
+      case _ =>
+    }
     if (area == Area.zeroArea) {
       targets = List.empty
     } else {
       val poses = for {
-        y <- area.yMax to(area.yMax, -1)
+        y <- area.yMax to(area.yMin, -1)
         x <- area.xMin to area.xMax
         z <- area.zMin to area.zMax
       } yield new BlockPos(x, y, z)
       targets = poses.toList
     }
+    updateWorkingState()
   }
 
-  override def startWaiting(): Unit = targets = List.empty
+  override def startWaiting(): Unit = {
+    targets = List.empty
+    updateWorkingState()
+  }
 
   override def createMenu(id: Int, i: PlayerInventory, player: PlayerEntity): Container = new MiniQuarryContainer(id, player, pos)
 
   override def getDebugName: String = TranslationKeys.mini_quarry
 
-  override def getDebugMessages: util.List[_ <: ITextComponent] = Collections.emptyList()
+  override def getDebugMessages: util.List[_ <: ITextComponent] = Seq(
+    s"Area: $area}",
+    s"TargetSize: ${targets.size}",
+  ).map(new StringTextComponent(_)).asJava
 
   override def getDisplayName: ITextComponent = super.getDisplayName
 
@@ -167,6 +190,7 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
     ItemStackHelper.loadAllItems(nbt.getCompound("tools"), tools)
     this.blackList = nbt.getList("blackList", NBT.TAG_COMPOUND).asScala
       .map(n => QuarryBlackList.readEntry(new Dynamic(NBTDynamicOps.INSTANCE, n))).toSet
+    this.rs = nbt.getBoolean("rs")
   }
 
   override def write(nbt: CompoundNBT): CompoundNBT = {
@@ -175,6 +199,7 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
     targets.headOption.foreach(p => nbt.putLong("head", p.toLong))
     nbt.put("tools", ItemStackHelper.saveAllItems(new CompoundNBT(), tools))
     nbt.put("blackList", NBTDynamicOps.INSTANCE.createList(blackList.asJava.stream().map(QuarryBlackList.writeEntry(_, NBTDynamicOps.INSTANCE))))
+    nbt.putBoolean("rs", rs)
     super.write(nbt)
   }
 

@@ -119,6 +119,7 @@ object QuarryPlusDataProvider {
         Holder.blockQuarry,
         Holder.blockQuarry2,
         Holder.blockAdvPump,
+        Holder.blockMiniQuarry,
       ).map(LootTableSerializeHelper.withEnchantedDrop)
       (notMachines ++ enchantedMachines).toSeq
     }

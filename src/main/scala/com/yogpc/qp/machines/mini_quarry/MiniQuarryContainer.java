@@ -26,7 +26,7 @@ public class MiniQuarryContainer extends Container {
         for (int i = 0; i < allSlots; i++) {
             int verticalFix = i < 5 ? i : i - 5;
             int horizontalFix = i / 5;
-            addSlot(new SlotTile(tile.getInv(), i, 62 + verticalFix * oneBox, 27 + horizontalFix * oneBox));
+            addSlot(new SlotTile(tile.getInv(), i, 44 + verticalFix * oneBox, 27 + horizontalFix * oneBox));
         }
         for (int h = 0; h < 3; h++) {
             for (int v = 0; v < 9; v++) {
