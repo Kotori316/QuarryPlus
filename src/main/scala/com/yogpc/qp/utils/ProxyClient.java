@@ -21,6 +21,7 @@ import com.yogpc.qp.machines.workbench.GuiWorkbench;
 import com.yogpc.qp.render.DummyBlockBakedModel;
 import com.yogpc.qp.render.RenderAdvQuarry;
 import com.yogpc.qp.render.RenderMarker;
+import com.yogpc.qp.render.RenderMiniQuarry;
 import com.yogpc.qp.render.RenderQuarry;
 import com.yogpc.qp.render.RenderQuarry2;
 import com.yogpc.qp.render.Sprites;
@@ -93,6 +94,7 @@ public class ProxyClient extends ProxyCommon {
                 ClientRegistry.bindTileEntityRenderer(Holder.solidQuarryType(), t -> RenderQuarry.instance());
                 ClientRegistry.bindTileEntityRenderer(Holder.quarry2(), t -> RenderQuarry2.instance());
                 ClientRegistry.bindTileEntityRenderer(Holder.advQuarryType(), t -> RenderAdvQuarry.instance());
+                ClientRegistry.bindTileEntityRenderer(Holder.miniQuarryType(), t -> RenderMiniQuarry.instance());
             }
 //        if (!Config.content().disableRendering()) {
 //            if (!Config.content().disableMapJ().get(TileAdvQuarry.SYMBOL()))

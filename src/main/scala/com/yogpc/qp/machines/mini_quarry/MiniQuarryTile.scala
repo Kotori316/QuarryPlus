@@ -10,6 +10,7 @@ import com.yogpc.qp.machines.base._
 import com.yogpc.qp.machines.modules.{IModuleItem, ItemFuelModule}
 import com.yogpc.qp.machines.quarry.QuarryFakePlayer
 import com.yogpc.qp.machines.{PowerManager, TranslationKeys}
+import com.yogpc.qp.packet.{PacketHandler, TileMessage}
 import com.yogpc.qp.utils.Holder
 import net.minecraft.block.Block
 import net.minecraft.entity.player.{PlayerEntity, PlayerInventory}
@@ -22,6 +23,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.{ITextComponent, StringTextComponent}
 import net.minecraft.util.{Hand, NonNullList, ResourceLocation}
 import net.minecraft.world.server.ServerWorld
+import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 import net.minecraftforge.common.ForgeHooks
 import net.minecraftforge.common.util.Constants.NBT
 
@@ -40,6 +42,7 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
   private final val tools = NonNullList.withSize(5, ItemStack.EMPTY)
   private final var blackList: Set[QuarryBlackList.Entry] = Set(QuarryBlackList.Air)
   final var rs = false
+  final var renderBox = true
   private[this] final val dropItem = (item: ItemStack) => {
     val rest = InvUtils.injectToNearTile(world, pos, item)
     InventoryHelper.spawnItemStack(world, pos.getX + 0.5, pos.getY + 1, pos.getZ + 0.5, rest)
@@ -117,6 +120,9 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
 
   def getInv: IInventory = Inv
 
+  @OnlyIn(Dist.CLIENT)
+  def renderAreaBox: Boolean = getBlockState.get(QPBlock.WORKING) && renderBox
+
   override protected def isWorking: Boolean = targets.nonEmpty
 
   override def getEnchantmentHolder: EnchantmentHolder = enchantments
@@ -134,8 +140,8 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
   override def setArea(area: Area): Unit = this.area = area
 
   override def startWorking(): Unit = {
-    val facing = world.getBlockState(pos).get(BlockStateProperties.FACING)
-    val maybeMarkers = Area.getMarkersOnDirection(List(facing.getOpposite, facing.rotateY(), facing.rotateYCCW()), world, pos)
+    val facing = getBlockState.get(BlockStateProperties.FACING)
+    val maybeMarkers = Area.getMarkersOnDirection(List(facing.getOpposite, facing.rotateY(), facing.rotateYCCW()), world, pos, ignoreHasLink = true)
     val areas = maybeMarkers.map(m => Area.posToArea(m.min(), m.max(), world.getDimension.getType) -> m)
       .collectFirst(t => t)
     areas match {
@@ -144,6 +150,12 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
         m.removeFromWorldWithItem().asScala.foreach(dropItem)
       case _ =>
     }
+    updateTargets()
+    updateWorkingState()
+    if (!world.isRemote) PacketHandler.sendToClient(TileMessage.create(this), world)
+  }
+
+  private def updateTargets(): Unit = {
     if (area == Area.zeroArea) {
       targets = List.empty
     } else {
@@ -154,13 +166,14 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
       } yield new BlockPos(x, y, z)
       targets = poses.toList
     }
-    updateWorkingState()
   }
 
   override def startWaiting(): Unit = {
     targets = List.empty
     updateWorkingState()
   }
+
+  override def getArea: Area = area
 
   override def createMenu(id: Int, i: PlayerInventory, player: PlayerEntity): Container = new MiniQuarryContainer(id, player, pos)
 
@@ -184,7 +197,7 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
     this.enchantments = EnchantmentHolder.enchantmentHolderLoad(nbt, "enchantments")
     val working = nbt.contains("head")
     if (working) {
-      startWorking()
+      updateTargets()
       val head = BlockPos.fromLong(nbt.getLong("head"))
       this.targets = targets.dropWhile(_ == head)
     }
@@ -192,6 +205,7 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
     this.blackList = nbt.getList("blackList", NBT.TAG_COMPOUND).asScala
       .map(n => QuarryBlackList.readEntry(new Dynamic(NBTDynamicOps.INSTANCE, n))).toSet
     this.rs = nbt.getBoolean("rs")
+    this.renderBox = nbt.getBoolean("renderBox")
   }
 
   override def write(nbt: CompoundNBT): CompoundNBT = {
@@ -201,8 +215,11 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
     nbt.put("tools", ItemStackHelper.saveAllItems(new CompoundNBT(), tools))
     nbt.put("blackList", NBTDynamicOps.INSTANCE.createList(blackList.asJava.stream().map(QuarryBlackList.writeEntry(_, NBTDynamicOps.INSTANCE))))
     nbt.putBoolean("rs", rs)
+    nbt.putBoolean("renderBox", renderBox)
     super.write(nbt)
   }
+
+  override def hasFastRenderer: Boolean = true
 
   override protected def enabledByRS = true
 

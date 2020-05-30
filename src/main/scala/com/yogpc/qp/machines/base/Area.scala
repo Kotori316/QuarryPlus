@@ -82,13 +82,16 @@ object Area {
   }
 
   def getMarkersOnDirection(directions: List[Direction], world: World, pos: BlockPos): OptionT[List, IMarker] =
+    getMarkersOnDirection(directions, world, pos, ignoreHasLink = false)
+
+  def getMarkersOnDirection(directions: List[Direction], world: World, pos: BlockPos, ignoreHasLink: Boolean): OptionT[List, IMarker] =
     for {
       f <- OptionT.liftF(directions)
       p = pos.offset(f)
       t <- OptionT.fromOption[List](Option(world.getTileEntity(p)))
       markerCap = t.getCapability(IMarker.Cap.MARKER_CAPABILITY(), f.getOpposite).asScala.mapK(evalToList)
       marker <- markerCap orElse OptionT.pure[List](t).collect { case marker: IMarker => marker }
-      if marker.hasLink
+      if ignoreHasLink || marker.hasLink
     } yield marker
 
   def findQuarryArea(facing: Direction, world: World, pos: BlockPos): (Area, Option[IMarker]) = {
