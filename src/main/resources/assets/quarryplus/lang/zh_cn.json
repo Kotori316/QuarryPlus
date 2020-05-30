@@ -9,6 +9,7 @@
   "block.quarryplus.exppump": "采石场经验泵",
   "block.quarryplus.laser_plus": "增强型镭射器",
   "block.quarryplus.markerplus": "增强型地标",
+  "block.quarryplus.mini_quarry": "Mini Quarry",
   "block.quarryplus.miningwellplus": "增强型矿井",
   "block.quarryplus.placer_plus": "增强型发射器",
   "block.quarryplus.plainpipe": "增强型矿井管道",
@@ -39,9 +40,9 @@
   "item.quarryplus.replacer_module": "Quarry Replacing Module",
   "item.quarryplus.torch_module": "Quarry Torch Module",
   "item.quarryplus.y_setter": "采石场 Y 设定器",
-
   "chat.changemode": "工作模式被修改为 %s",
   "chat.currentmode": "当前工作模式为 %s",
+  "chat.disable_message": "%s is disabled.",
   "chat.fillermode": "框架模式",
   "chat.indent": "-    %s%s",
   "chat.markerarea": "这个所标记的工作范围是：",

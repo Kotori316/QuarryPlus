@@ -9,6 +9,7 @@
   "block.quarryplus.exppump": "採掘機用経験値ポンプ",
   "block.quarryplus.laser_plus": "改良型レーザー",
   "block.quarryplus.markerplus": "改良型ランドマーク",
+  "block.quarryplus.mini_quarry": "Mini Quarry",
   "block.quarryplus.miningwellplus": "改良型採掘機",
   "block.quarryplus.placer_plus": "改良型設置装置",
   "block.quarryplus.plainpipe": "改良型採掘機採掘棒",
@@ -39,9 +40,9 @@
   "item.quarryplus.replacer_module": "置き換えモジュール",
   "item.quarryplus.torch_module": "松明モジュール",
   "item.quarryplus.y_setter": "採掘機レベル設定用具",
-
   "chat.changemode": "動作モードを%sに切り替えました",
   "chat.currentmode": "現在%sで動作しています",
+  "chat.disable_message": "%sは無効になっています",
   "chat.fillermode": "フレームモード",
   "chat.indent": "-    %s%s",
   "chat.markerarea": "この改良型マーカーの指定範囲は下記のとおりです：",

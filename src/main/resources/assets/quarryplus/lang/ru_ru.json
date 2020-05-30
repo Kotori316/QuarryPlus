@@ -9,6 +9,7 @@
   "block.quarryplus.exppump": "Experience Pump for Quarry",
   "block.quarryplus.laser_plus": "Улучшенный лазер",
   "block.quarryplus.markerplus": "Улучшенный маркер",
+  "block.quarryplus.mini_quarry": "Mini Quarry",
   "block.quarryplus.miningwellplus": "Улучшенная буровая установка",
   "block.quarryplus.placer_plus": "Улучшенный строитель",
   "block.quarryplus.plainpipe": "Труба улучшенной буровой установки",
@@ -39,9 +40,9 @@
   "item.quarryplus.replacer_module": "Quarry Replacing Module",
   "item.quarryplus.torch_module": "Quarry Torch Module",
   "item.quarryplus.y_setter": "Quarry Y Setter",
-
   "chat.changemode": "Режим работы был изменен на %s",
   "chat.currentmode": "Сейчас, работая в %s",
+  "chat.disable_message": "%s is disabled.",
   "chat.fillermode": "Режим заполнения",
   "chat.indent": "-    %s%s",
   "chat.markerarea": "Эта площадь помечена маркерами:",

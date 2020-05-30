@@ -67,7 +67,8 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
                 ForgeHooks.canHarvestBlock(state, fakePlayer, world, head) || ForgeHooks.isToolEffective(world, head, tool)
               }
               // Use effective tool
-              tools.asScala.filterNot(_.getItem.isInstanceOf[IModuleItem]).find(tool => ForgeHooks.isToolEffective(world, head, tool)).foreach(fakePlayer.setHeldItem(Hand.MAIN_HAND, _))
+              tools.asScala.filterNot(_.getItem.isInstanceOf[IModuleItem]).find(tool => ForgeHooks.isToolEffective(world, head, tool))
+                .foreach(fakePlayer.setHeldItem(Hand.MAIN_HAND, _))
               if (canHarvest) {
                 // Remove block
                 val drops = Block.getDrops(state, world, head, world.getTileEntity(head), fakePlayer, fakePlayer.getHeldItemMainhand)
