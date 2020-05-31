@@ -44,7 +44,7 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
   private final var blackList: Set[QuarryBlackList.Entry] = Set(QuarryBlackList.Air)
   private final var preDirection: Direction = Direction.UP
   final var rs = false
-  final var renderBox = true
+  final var renderBox = false
   private[this] final val dropItem = (item: ItemStack) => {
     val rest = InvUtils.injectToNearTile(world, pos, item)
     InventoryHelper.spawnItemStack(world, pos.getX + 0.5, pos.getY + 1, pos.getZ + 0.5, rest)

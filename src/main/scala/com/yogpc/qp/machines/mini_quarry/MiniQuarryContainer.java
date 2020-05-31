@@ -5,6 +5,7 @@ import java.util.Objects;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.base.SlotTile;
 import com.yogpc.qp.utils.Holder;
+import javax.annotation.Nonnull;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
@@ -13,13 +14,13 @@ import net.minecraft.util.math.BlockPos;
 
 public class MiniQuarryContainer extends Container {
     public static final String GUI_ID = QuarryPlus.modID + ":gui_" + QuarryPlus.Names.mini_quarry;
+    @Nonnull
     public final MiniQuarryTile tile;
     private final int allSlots;
 
     public MiniQuarryContainer(int id, PlayerEntity player, BlockPos pos) {
         super(Holder.miniQuarryContainerType(), id);
-        tile = (MiniQuarryTile) player.getEntityWorld().getTileEntity(pos);
-        Objects.requireNonNull(tile);
+        tile = (MiniQuarryTile) Objects.requireNonNull(player.getEntityWorld().getTileEntity(pos));
         int oneBox = 18;
         this.allSlots = tile.getInv().getSizeInventory();
 
