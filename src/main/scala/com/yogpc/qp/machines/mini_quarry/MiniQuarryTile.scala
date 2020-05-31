@@ -19,7 +19,7 @@ import net.minecraft.inventory.{IInventory, InventoryHelper, ItemStackHelper}
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.{CompoundNBT, NBTDynamicOps}
 import net.minecraft.state.properties.BlockStateProperties
-import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.{AxisAlignedBB, BlockPos}
 import net.minecraft.util.text.{ITextComponent, StringTextComponent}
 import net.minecraft.util.{Direction, Hand, NonNullList, ResourceLocation}
 import net.minecraft.world.server.ServerWorld
@@ -224,6 +224,16 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
   }
 
   override def hasFastRenderer: Boolean = true
+
+  override def getRenderBoundingBox: AxisAlignedBB = {
+    if (area != Area.zeroArea) Area.areaBox(area)
+    else super.getRenderBoundingBox
+  }
+
+  override def getMaxRenderDistanceSquared: Double = {
+    if (area != Area.zeroArea) Area.areaLengthSq(area)
+    else super.getMaxRenderDistanceSquared
+  }
 
   override protected def enabledByRS = true
 
