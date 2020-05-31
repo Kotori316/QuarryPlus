@@ -21,12 +21,13 @@ import net.minecraft.nbt.{CompoundNBT, NBTDynamicOps}
 import net.minecraft.state.properties.BlockStateProperties
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.{ITextComponent, StringTextComponent}
-import net.minecraft.util.{Hand, NonNullList, ResourceLocation}
+import net.minecraft.util.{Direction, Hand, NonNullList, ResourceLocation}
 import net.minecraft.world.server.ServerWorld
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 import net.minecraftforge.common.ForgeHooks
 import net.minecraftforge.common.util.Constants.NBT
 
+import scala.collection.AbstractIterator
 import scala.jdk.CollectionConverters._
 
 class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
@@ -41,6 +42,7 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
   private final var targets: List[BlockPos] = List.empty
   private final val tools = NonNullList.withSize(5, ItemStack.EMPTY)
   private final var blackList: Set[QuarryBlackList.Entry] = Set(QuarryBlackList.Air)
+  private final var preDirection: Direction = Direction.UP
   final var rs = false
   final var renderBox = true
   private[this] final val dropItem = (item: ItemStack) => {
@@ -150,19 +152,19 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
         m.removeFromWorldWithItem().asScala.foreach(dropItem)
       case _ =>
     }
-    updateTargets()
+    updateTargets(facing.getOpposite)
     updateWorkingState()
     if (!world.isRemote) PacketHandler.sendToClient(TileMessage.create(this), world)
   }
 
-  private def updateTargets(): Unit = {
+  private def updateTargets(d: Direction): Unit = {
     if (area == Area.zeroArea) {
       targets = List.empty
     } else {
+      preDirection = d
       val poses = for {
         y <- area.yMax to(area.yMin, -1)
-        x <- area.xMin to area.xMax
-        z <- area.zMin to area.zMax
+        (x, z) <- MiniQuarryTile.makeTargetsXZ(area, d)
       } yield new BlockPos(x, y, z)
       targets = poses.toList
     }
@@ -195,9 +197,10 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
     super.read(nbt)
     this.area = Area.areaLoad(nbt.getCompound("area"))
     this.enchantments = EnchantmentHolder.enchantmentHolderLoad(nbt, "enchantments")
+    this.preDirection = Direction.byName(nbt.getString("preDirection"))
     val working = nbt.contains("head")
     if (working) {
-      updateTargets()
+      updateTargets(preDirection)
       val head = BlockPos.fromLong(nbt.getLong("head"))
       this.targets = targets.dropWhile(_ == head)
     }
@@ -211,6 +214,7 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
   override def write(nbt: CompoundNBT): CompoundNBT = {
     nbt.put("area", area.toNBT)
     nbt.put("enchantments", enchantments.toNBT)
+    nbt.putString("preDirection", preDirection.getName)
     targets.headOption.foreach(p => nbt.putLong("head", p.toLong))
     nbt.put("tools", ItemStackHelper.saveAllItems(new CompoundNBT(), tools))
     nbt.put("blackList", NBTDynamicOps.INSTANCE.createList(blackList.asJava.stream().map(QuarryBlackList.writeEntry(_, NBTDynamicOps.INSTANCE))))
@@ -263,4 +267,39 @@ object MiniQuarryTile {
     }
   }
 
+  def makeTargetsXZ(area: Area, direction: Direction): Iterator[(Int, Int)] = {
+    val (start, end) = direction match {
+      case Direction.NORTH | Direction.DOWN | Direction.UP => (area.xMax, area.zMin) -> (area.xMin, area.zMax)
+      case Direction.SOUTH => (area.xMin, area.zMax) -> (area.xMax, area.zMin)
+      case Direction.WEST => (area.xMin, area.zMin) -> (area.xMax, area.zMax)
+      case Direction.EAST => (area.xMax, area.zMax) -> (area.xMin, area.zMin)
+    }
+    val vec@(vx, vz) = end |-| start
+    val (vec1, vec2) = direction.getAxis match {
+      case Direction.Axis.X => vec.bimap(_.sign, _ => 0) -> vec.bimap(_ => 0, _.sign)
+      case Direction.Axis.Z => vec.bimap(_ => 0, _.sign) -> vec.bimap(_.sign, _ => 0)
+      case _ => (0, 1) -> (-1, 0)
+    }
+    val dot1 = vx * vec1._1 + vz * vec1._2
+    val dot2 = vx * vec2._1 + vz * vec2._2
+    new AbstractIterator[(Int, Int)] {
+      var count1 = 0
+      var count2 = 0
+      var end = false
+
+      override def hasNext: Boolean = !end
+
+      override def next(): (Int, Int) = {
+        val result = start |+| (vec1 combineN count1) |+| (vec2 combineN count2)
+        if (count1 + 1 > dot1) {
+          count1 = 0
+          count2 += 1
+          if (count2 == dot2 + 1) end = true
+        } else {
+          count1 += 1
+        }
+        result
+      }
+    }
+  }
 }
