@@ -25,7 +25,9 @@ import net.minecraft.util.{Direction, Hand, NonNullList, ResourceLocation}
 import net.minecraft.world.server.ServerWorld
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 import net.minecraftforge.common.ForgeHooks
+import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.util.Constants.NBT
+import net.minecraftforge.common.util.LazyOptional
 
 import scala.collection.AbstractIterator
 import scala.jdk.CollectionConverters._
@@ -54,6 +56,8 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
     if (world.getGameTime % MiniQuarryTile.interval(enchantments.efficiency) == 0 &&
       PowerManager.useEnergy(this, MiniQuarryTile.e(enchantments.unbreaking), EnergyUsage.MINI_QUARRY)) {
       // Work
+      val toolsWithoutModule = tools.asScala.filterNot(_.getItem.isInstanceOf[IModuleItem])
+
       @scala.annotation.tailrec
       def work(poses: List[BlockPos]): List[BlockPos] = {
         poses match {
@@ -67,12 +71,12 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
             } else {
               // Check if block harvest-able.
               val fakePlayer = QuarryFakePlayer.get(world, head)
-              val canHarvest = tools.asScala.filterNot(_.getItem.isInstanceOf[IModuleItem]).exists { tool =>
+              val canHarvest = toolsWithoutModule.exists { tool =>
                 fakePlayer.setHeldItem(Hand.MAIN_HAND, tool)
                 ForgeHooks.canHarvestBlock(state, fakePlayer, world, head) || ForgeHooks.isToolEffective(world, head, tool)
               }
               // Use effective tool
-              tools.asScala.filterNot(_.getItem.isInstanceOf[IModuleItem]).find(tool => ForgeHooks.isToolEffective(world, head, tool))
+              toolsWithoutModule.find(tool => ForgeHooks.isToolEffective(world, head, tool))
                 .foreach(fakePlayer.setHeldItem(Hand.MAIN_HAND, _))
               if (canHarvest) {
                 // Remove block
@@ -92,9 +96,11 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
         }
       }
 
-      targets = work(targets)
-      if (targets.isEmpty)
-        updateWorkingState()
+      if (toolsWithoutModule.nonEmpty) {
+        targets = work(targets)
+        if (targets.isEmpty)
+          updateWorkingState()
+      }
     }
   }
 
@@ -236,6 +242,10 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
   }
 
   override protected def enabledByRS = true
+
+  override def getCapability[T](cap: Capability[T], side: Direction): LazyOptional[T] = {
+    Cap.asJava(Cap.make(cap, this, IRemotePowerOn.Cap.REMOTE_CAPABILITY()) orElse Cap.dummyItemOrFluid(cap) orElse super.getCapability(cap, side).asScala)
+  }
 
   private object Inv extends IInventory {
     override def getSizeInventory: Int = tools.size()
