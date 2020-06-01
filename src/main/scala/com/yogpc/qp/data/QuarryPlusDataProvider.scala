@@ -77,16 +77,16 @@ object QuarryPlusDataProvider {
       import net.minecraft.item.Items
       import net.minecraftforge.common.Tags
 
-      val workbench = AdvancementSerializeHelper(Holder.blockWorkbench.getRegistryName, saveName = location("recipe/workbench"))
+      val workbench = AdvancementSerializeHelper(Holder.blockWorkbench.getRegistryName, saveName = location("recipes/workbench"))
         .addItemCriterion(Tags.Items.STORAGE_BLOCKS_IRON)
         .addItemCriterion(Tags.Items.STORAGE_BLOCKS_GOLD)
         .addCondition(new EnableCondition(TileWorkbench.SYMBOL))
 
-      val solidQuarry = AdvancementSerializeHelper(Holder.blockSolidQuarry.getRegistryName, saveName = location("recipe/solid_quarry"))
+      val solidQuarry = AdvancementSerializeHelper(Holder.blockSolidQuarry.getRegistryName, saveName = location("recipes/solid_quarry"))
         .addItemCriterion(Items.DIAMOND_PICKAXE)
         .addCondition(new EnableCondition(BlockSolidQuarry.SYMBOL))
 
-      val placer = AdvancementSerializeHelper(Holder.blockPlacer.getRegistryName, saveName = location("recipe/placer_plus_crafting"))
+      val placer = AdvancementSerializeHelper(Holder.blockPlacer.getRegistryName, saveName = location("recipes/placer_plus_crafting"))
         .addItemCriterion(Items.MOSSY_COBBLESTONE)
         .addItemCriterion(Items.DISPENSER)
         .addCondition(new NotCondition(new EnableCondition(TileWorkbench.SYMBOL)))

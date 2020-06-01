@@ -1,37 +1,37 @@
 {
   "type": "quarryplus:workbench_recipe",
-  "id": "quarryplus:builtin_placer_plus",
+  "id": "quarryplus:builtin_mini_quarry",
   "ingredients": [
     {
-      "item": "minecraft:dispenser",
-      "count": 1
-    },
-    {
-      "tag": "forge:ingots/gold",
+      "tag": "forge:gems/diamond",
       "count": 2
     },
     {
+      "tag": "forge:ingots/gold",
+      "count": 16
+    },
+    {
       "tag": "forge:ingots/iron",
-      "count": 1
+      "count": 32
     },
     {
       "tag": "forge:dusts/redstone",
-      "count": 1
+      "count": 8
     },
     {
-      "item": "minecraft:mossy_cobblestone",
+      "item": "minecraft:comparator",
       "count": 4
     }
   ],
-  "energy": 30000.0,
+  "energy": 10000.0,
   "showInJEI": true,
   "result": {
-    "item": "quarryplus:placer_plus",
+    "item": "quarryplus:mini_quarry",
     "count": 1
   },
   "conditions": [
     {
-      "value": "Placer",
+      "value": "MiniQuarry",
       "type": "quarryplus:machine_enabled"
     }
   ]
