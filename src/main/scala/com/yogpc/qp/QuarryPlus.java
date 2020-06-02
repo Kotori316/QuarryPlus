@@ -23,7 +23,6 @@ import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.loot.functions.LootFunctionManager;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
@@ -34,7 +33,6 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -107,11 +105,6 @@ public class QuarryPlus {
             Config.common().outputPowerDetail(Paths.get("config\\quarryplus"));
             IMarker.Cap.register();
             IRemotePowerOn.Cap.register();
-        }
-
-        @SubscribeEvent
-        public static void loadComplete(FMLLoadCompleteEvent event) {
-            DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> proxy.setDummyTexture(Config.client().dummyTexture().get()));
         }
 
     }

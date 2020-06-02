@@ -44,6 +44,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 @OnlyIn(Dist.CLIENT)
@@ -154,6 +155,12 @@ public class ProxyClient extends ProxyCommon {
         public static void putTexture(TextureStitchEvent.Post event) {
             Sprites.putTexture(event);
         }
+
+        @SubscribeEvent
+        public static void loadComplete(FMLLoadCompleteEvent event) {
+            QuarryPlus.proxy.setDummyTexture(Config.client().dummyTexture().get());
+        }
+
     }
 
 }
