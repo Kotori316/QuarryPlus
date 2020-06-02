@@ -270,6 +270,8 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
     override def isUsableByPlayer(player: PlayerEntity): Boolean = true
 
     override def clear(): Unit = tools.clear()
+
+    override def getInventoryStackLimit: Int = 1
   }
 
 }

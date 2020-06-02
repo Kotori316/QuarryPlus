@@ -40,7 +40,7 @@ public class MiniQuarryListGui extends Screen implements IHandleButton {
         int buttonWidth = 80;
         addButton(new Button(0, width / 3 - buttonWidth / 2, height - 35, buttonWidth, 20, "BlackList", this));
         addButton(new Button(1, width / 3 * 2 - buttonWidth / 2, height - 35, buttonWidth, 20, "Close", this));
-//        addButton(new Button(2, width / 2 - buttonWidth, height - 60, buttonWidth, 20, "New Entry", this));
+        addButton(new Button(2, width / 2 - buttonWidth, height - 60, buttonWidth, 20, "New Entry", this));
         addButton(new Button(3, width / 2, height - 60, buttonWidth, 20, "Delete", this));
         list = new EntryList(this.minecraft, this.width, this.height, 30, this.height - 70, 18, this, this::getEntries);
         this.children.add(list);
@@ -93,7 +93,12 @@ public class MiniQuarryListGui extends Screen implements IHandleButton {
                 this.minecraft.player.closeScreen();
                 break;
             case 2: // New Entry
-                list.updateList();
+                getMinecraft().displayGuiScreen(new MiniQuarryAddEntryGui(this,
+                    l -> {
+                        getEntries().add(new QuarryBlackList.Name(l));
+                        list.updateList();
+                        PacketHandler.sendToServer(MiniListSyncMessage.create(pos, dim, blackList, whiteList));
+                    }));
                 break;
             case 3: // Delete
                 MiniQuarryListEntry selected = list.getSelected();
