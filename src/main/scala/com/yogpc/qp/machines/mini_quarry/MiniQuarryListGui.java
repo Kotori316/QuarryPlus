@@ -15,6 +15,7 @@ import com.yogpc.qp.packet.mini_quarry.MiniListSyncMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.list.ExtendedList;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.util.math.BlockPos;
 
@@ -39,9 +40,9 @@ public class MiniQuarryListGui extends Screen implements IHandleButton {
         super.init();
         int buttonWidth = 80;
         addButton(new Button(0, width / 3 - buttonWidth / 2, height - 35, buttonWidth, 20, "BlackList", this));
-        addButton(new Button(1, width / 3 * 2 - buttonWidth / 2, height - 35, buttonWidth, 20, "Close", this));
+        addButton(new Button(1, width / 3 * 2 - buttonWidth / 2, height - 35, buttonWidth, 20, I18n.format("gui.done"), this));
         addButton(new Button(2, width / 2 - buttonWidth, height - 60, buttonWidth, 20, "New Entry", this));
-        addButton(new Button(3, width / 2, height - 60, buttonWidth, 20, "Delete", this));
+        addButton(new Button(3, width / 2, height - 60, buttonWidth, 20, I18n.format("selectWorld.delete"), this));
         list = new EntryList(this.minecraft, this.width, this.height, 30, this.height - 70, 18, this, this::getEntries);
         this.children.add(list);
         this.setFocused(list);

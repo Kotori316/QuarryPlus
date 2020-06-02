@@ -5,11 +5,13 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.IHandleButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.list.ExtendedList;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -34,7 +36,7 @@ public class MiniQuarryAddEntryGui extends Screen implements IHandleButton {
         int buttonWidth = 80;
         textField = new TextFieldWidget(font, this.width / 2 - 125, this.height - 56, 250, 20, "");
         list = new EntryList(this.minecraft, this.width, this.height, 30, this.height - 70, 18, this, this::getEntries);
-        addButton(new Button(1, width / 2 - buttonWidth / 2, height - 35, buttonWidth, 20, "Add", this));
+        addButton(new Button(1, width / 2 - buttonWidth / 2, height - 35, buttonWidth, 20, I18n.format(TranslationKeys.ADD), this));
         this.children.add(list);
         this.children.add(textField);
         this.setFocused(list);
