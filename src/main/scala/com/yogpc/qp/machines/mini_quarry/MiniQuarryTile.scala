@@ -43,10 +43,11 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
   private final var area = Area.zeroArea
   private final var targets: List[BlockPos] = List.empty
   private final val tools = NonNullList.withSize(5, ItemStack.EMPTY)
-  private final var blackList: Set[QuarryBlackList.Entry] = Set(QuarryBlackList.Air)
   private final var preDirection: Direction = Direction.UP
   final var rs = false
   final var renderBox = false
+  final var blackList: Set[QuarryBlackList.Entry] = Set(QuarryBlackList.Air)
+  final var whiteList: Set[QuarryBlackList.Entry] = Set()
   private[this] final val dropItem = (item: ItemStack) => {
     val rest = InvUtils.injectToNearTile(world, pos, item)
     InventoryHelper.spawnItemStack(world, pos.getX + 0.5, pos.getY + 1, pos.getZ + 0.5, rest)
@@ -65,7 +66,8 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
             val world = getDiggingWorld
             val state = world.getBlockState(head)
             if (blackList.exists(_.test(state, world, head)) ||
-              state.getBlockHardness(world, head) < 0) {
+              state.getBlockHardness(world, head) < 0 ||
+              (whiteList.nonEmpty && whiteList.exists(_.test(state, world, head)))) {
               // Unbreakable
               work(tail)
             } else {
@@ -213,6 +215,8 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
     ItemStackHelper.loadAllItems(nbt.getCompound("tools"), tools)
     this.blackList = nbt.getList("blackList", NBT.TAG_COMPOUND).asScala
       .map(n => QuarryBlackList.readEntry(new Dynamic(NBTDynamicOps.INSTANCE, n))).toSet
+    this.whiteList = nbt.getList("whiteList", NBT.TAG_COMPOUND).asScala
+      .map(n => QuarryBlackList.readEntry(new Dynamic(NBTDynamicOps.INSTANCE, n))).toSet
     this.rs = nbt.getBoolean("rs")
     this.renderBox = nbt.getBoolean("renderBox")
   }
@@ -224,6 +228,7 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
     targets.headOption.foreach(p => nbt.putLong("head", p.toLong))
     nbt.put("tools", ItemStackHelper.saveAllItems(new CompoundNBT(), tools))
     nbt.put("blackList", NBTDynamicOps.INSTANCE.createList(blackList.asJava.stream().map(QuarryBlackList.writeEntry(_, NBTDynamicOps.INSTANCE))))
+    nbt.put("whiteList", NBTDynamicOps.INSTANCE.createList(whiteList.asJava.stream().map(QuarryBlackList.writeEntry(_, NBTDynamicOps.INSTANCE))))
     nbt.putBoolean("rs", rs)
     nbt.putBoolean("renderBox", renderBox)
     super.write(nbt)

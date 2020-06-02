@@ -6,6 +6,7 @@ import com.mojang.datafixers.Dynamic
 import com.mojang.datafixers.types.DynamicOps
 import com.yogpc.qp._
 import com.yogpc.qp.machines.base.QuarryBlackList.Entry
+import com.yogpc.qp.machines.mini_quarry.MiniQuarryTile
 import com.yogpc.qp.machines.quarry.{TileBasic, TileQuarry2}
 import com.yogpc.qp.machines.workbench.BlockData
 import jp.t2v.lab.syntax.MapStreamSyntax
@@ -127,6 +128,7 @@ object EnchantmentFilter {
     def apply(tile: TileEntity): Option[Accessor] = tile match {
       case basic: TileBasic => Some(new BasicAccessor(basic))
       case quarry2: TileQuarry2 => Some(new NewQuarryAccessor(quarry2))
+      case mini: MiniQuarryTile => Some(new MiniQuarryAccessor(mini))
       case _ => None
     }
 
@@ -154,6 +156,20 @@ object EnchantmentFilter {
       override def getPos = quarry.getPos
 
       override def getWorld = quarry.getWorld
+    }
+
+    private class MiniQuarryAccessor(t: MiniQuarryTile) extends Accessor {
+      override def enchantmentFilter: EnchantmentFilter = EnchantmentFilter(fortuneInclude = false, silktouchInclude = false, t.whiteList, Set.empty)
+
+      override def enchantmentFilter_=(filter: EnchantmentFilter): Unit = filter match {
+        case EnchantmentFilter(_, _, f, s) => t.whiteList = f union s
+      }
+
+      override def getName: ITextComponent = t.getDisplayName
+
+      override def getPos = t.getPos
+
+      override def getWorld = t.getWorld
     }
 
   }

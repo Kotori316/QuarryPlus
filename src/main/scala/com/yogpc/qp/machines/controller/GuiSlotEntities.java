@@ -41,7 +41,7 @@ public class GuiSlotEntities extends ExtendedList<GuiSlotEntities.Entry> {
         }
 
         @Override
-        public boolean mouseClicked(double p_mouseClicked_1_, double p_mouseClicked_3_, int p_mouseClicked_5_) {
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
             GuiSlotEntities.this.setSelected(this);
             return false;
         }

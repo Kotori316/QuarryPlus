@@ -6,6 +6,7 @@ import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.IHandleButton;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.mini_quarry.MiniRenderBoxMessage;
+import com.yogpc.qp.packet.mini_quarry.MiniRequestListMessage;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
@@ -46,6 +47,7 @@ public class MiniQuarryGui extends ContainerScreen<MiniQuarryContainer> implemen
     protected void init() {
         super.init();
         addButton(new IHandleButton.Button(0, guiLeft + 8, guiTop + 50, 60, 20, "RenderBox", this));
+        addButton(new IHandleButton.Button(1, guiLeft + 70, guiTop + 50, 60, 20, "List", this));
     }
 
     @Override
@@ -55,6 +57,10 @@ public class MiniQuarryGui extends ContainerScreen<MiniQuarryContainer> implemen
                 boolean renderBox = !container.tile.renderBox();
                 container.tile.renderBox_$eq(renderBox);
                 PacketHandler.sendToServer(MiniRenderBoxMessage.create(container.tile, renderBox));
+                break;
+            case 1:
+//                this.onClose();
+                PacketHandler.sendToServer(MiniRequestListMessage.create(container.tile));
                 break;
         }
     }

@@ -3,6 +3,7 @@ package com.yogpc.qp.machines.base;
 import java.util.List;
 import java.util.function.Supplier;
 
+import javax.annotation.Nonnull;
 import net.minecraft.client.gui.screen.Screen;
 
 public interface IHandleButton {
@@ -25,7 +26,7 @@ public interface IHandleButton {
             handler.actionPerformed(this);
         }
 
-        public void setToolTip(Supplier<List<String>> toolTip, Screen parent) {
+        public void setToolTip(Supplier<List<String>> toolTip, @Nonnull Screen parent) {
             this.toolTipSupplier = toolTip;
             this.parent = parent;
         }
