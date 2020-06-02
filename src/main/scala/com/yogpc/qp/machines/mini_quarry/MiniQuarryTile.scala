@@ -67,7 +67,7 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
             val state = world.getBlockState(head)
             if (blackList.exists(_.test(state, world, head)) ||
               state.getBlockHardness(world, head) < 0 ||
-              (whiteList.nonEmpty && whiteList.exists(_.test(state, world, head)))) {
+              (whiteList.nonEmpty && !whiteList.exists(_.test(state, world, head)))) {
               // Unbreakable
               work(tail)
             } else {
