@@ -55,7 +55,7 @@ public class BlockAdvPump extends QPBlock {
         ItemStack stack = playerIn.getHeldItem(hand);
         if (Config.common().debug() && stack.getItem() == Items.STICK) {
             Optional.ofNullable((TileAdvPump) worldIn.getTileEntity(pos)).ifPresent(TileAdvPump::toggleDelete);
-            playerIn.sendStatusMessage(new StringTextComponent("Delete is changed."), false);
+            playerIn.sendStatusMessage(new StringTextComponent("Changed delete mode."), false);
             return ActionResultType.SUCCESS;
         } else if (BuildcraftHelper.isWrench(playerIn, hand, stack, hit)) {
             if (!worldIn.isRemote) {

@@ -98,24 +98,24 @@ object GuiQuarryLevel {
         case _: TileAdvQuarry => implicitly[YLevel[TileAdvQuarry]]
         case _: TileQuarry2 => implicitly[YLevel[TileQuarry2]]
       }
-      }.asInstanceOf[YLevel[TileEntity]]
+    }.asInstanceOf[YLevel[TileEntity]]
   }
 
   implicit val BasicY: YLevel[TileBasic] = new YLevel[TileBasic] {
     override def setYLevel(t: TileBasic, yLevel: Int): Unit = t.yLevel = yLevel
 
-    override def getYLevel(t: TileBasic) = t.yLevel
+    override def getYLevel(t: TileBasic): Int = t.yLevel
   }
 
   implicit val AdvY: YLevel[TileAdvQuarry] = new YLevel[TileAdvQuarry] {
     override def setYLevel(t: TileAdvQuarry, yLevel: Int): Unit = t.yLevel = yLevel
 
-    override def getYLevel(t: TileAdvQuarry) = t.yLevel
+    override def getYLevel(t: TileAdvQuarry): Int = t.yLevel
   }
   implicit val NQuarryY: YLevel[TileQuarry2] = new YLevel[TileQuarry2] {
     override def setYLevel(t: TileQuarry2, yLevel: Int): Unit = t.yLevel = yLevel
 
-    override def getYLevel(t: TileQuarry2) = t.yLevel
+    override def getYLevel(t: TileQuarry2): Int = t.yLevel
   }
 
   implicit val basicMessage: TileBasic => LevelMessage = LevelMessage.create
