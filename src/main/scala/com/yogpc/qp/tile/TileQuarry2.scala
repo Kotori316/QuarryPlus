@@ -243,8 +243,19 @@ class TileQuarry2 extends APowerTile()
     val returnValue = modules.foldLeft(IModule.NoAction: IModule.Result) { case (r, m) => IModule.Result.combine(r, m.invoke(IModule.BeforeBreak(world, pos))) }
 
     val state = world.getBlockState(pos) // may be replaced.
-    val useSilktouch = self.enchantments.silktouch && state.getBlock.canSilkHarvest(world, pos, state, fakePlayer) && (silktouchInclude == silktouchList.contains(new BlockData(state.getBlock, state)))
-    val useFortune = fortuneInclude == fortuneList.contains(new BlockData(state.getBlock, state))
+    val blockIsInFortuneList = fortuneList.contains(new BlockData(state.getBlock, state))
+    val blockIsInSilktouchList = silktouchList.contains(new BlockData(state.getBlock, state))
+    val useSilktouch: Boolean = {
+      if (self.enchantments.silktouch && state.getBlock.canSilkHarvest(world, pos, state, fakePlayer)) {
+        if (fortuneInclude && blockIsInFortuneList && (!silktouchInclude || !blockIsInSilktouchList))
+          false
+        else
+          silktouchInclude == blockIsInSilktouchList
+      } else {
+        false
+      }
+    }
+    val useFortune = fortuneInclude == blockIsInFortuneList
     if (!useFortune) fakePlayer.getHeldItem(EnumHand.MAIN_HAND).removeEnchantment(Enchantments.FORTUNE)
     if (!useSilktouch) fakePlayer.getHeldItem(EnumHand.MAIN_HAND).removeEnchantment(Enchantments.SILK_TOUCH)
     if (PowerManager.useEnergyBreak(self, state.getBlockHardness(world, pos),
