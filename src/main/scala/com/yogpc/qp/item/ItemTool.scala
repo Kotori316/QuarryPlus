@@ -97,6 +97,7 @@ class ItemTool extends Item with IEnchantableItem {
               player.sendStatusMessage(new TextComponentString(s"Fortune: ${modeString(quarry2.fortuneInclude)}"), false)
               player.sendStatusMessage(new TextComponentString(s"Silktouch: ${modeString(quarry2.silktouchInclude)}"), false)
               val data = if (f) quarry2.fortuneList else quarry2.silktouchList
+              if (data.nonEmpty) player.sendStatusMessage(new TextComponentString("----Blocks----"), false)
               data.map(_.getLocalizedName).foreach(s => player.sendStatusMessage(new TextComponentString(s), false))
             }
           }
