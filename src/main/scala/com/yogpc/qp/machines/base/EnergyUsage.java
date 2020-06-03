@@ -13,5 +13,6 @@ public enum EnergyUsage {
     ADV_BREAK_BLOCK,
     ADV_CHECK_BLOCK,
     ADV_PUMP_FLUID,
+    MINI_QUARRY,
     UNKNOWN
 }

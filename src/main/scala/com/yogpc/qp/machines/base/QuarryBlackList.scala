@@ -104,7 +104,7 @@ object QuarryBlackList {
     }
   }
 
-  private object Air extends Entry(ID_AIR) {
+  object Air extends Entry(ID_AIR) {
     override def test(state: BlockState, world: IBlockReader, pos: BlockPos): Boolean = world.getBlockState(pos).isAir(world, pos)
 
     override def toString = "BlackList of Air"
@@ -126,7 +126,7 @@ object QuarryBlackList {
     override def toString: String = "BlackList for all blocks of " + modID
   }
 
-  private object Ores extends Entry(ID_ORES) {
+  object Ores extends Entry(ID_ORES) {
     private[this] var cacheNoOre = Set(Blocks.AIR.getDefaultState, Blocks.CAVE_AIR.getDefaultState, Blocks.VOID_AIR.getDefaultState)
     private[this] var cacheOre = Set(
       Blocks.COAL_ORE.getDefaultState,

@@ -9,6 +9,7 @@ import com.yogpc.qp.machines.controller.BlockController
 import com.yogpc.qp.machines.exppump.{BlockExpPump, TileExpPump}
 import com.yogpc.qp.machines.item._
 import com.yogpc.qp.machines.marker.{BlockMarker, TileMarker}
+import com.yogpc.qp.machines.mini_quarry.{MiniQuarryBlock, MiniQuarryContainer, MiniQuarryTile}
 import com.yogpc.qp.machines.modules._
 import com.yogpc.qp.machines.mover.{BlockMover, ContainerMover}
 import com.yogpc.qp.machines.pb.{PlacerBlock, PlacerContainer, PlacerTile}
@@ -53,6 +54,7 @@ object Holder {
   val blockAdvPump = new BlockAdvPump
   val blockQuarry2 = new BlockQuarry2
   val blockPlacer = new PlacerBlock
+  val blockMiniQuarry = new MiniQuarryBlock
 
   val blocks: Seq[Block] = Seq(
     blockQuarry,
@@ -73,6 +75,7 @@ object Holder {
     blockAdvPump,
     blockQuarry2,
     blockPlacer,
+    blockMiniQuarry,
   )
 
   //---------- TileEntity ----------
@@ -95,6 +98,7 @@ object Holder {
   val advPumpType: TileEntityType[TileAdvPump] = createTileType(() => new TileAdvPump, QuarryPlus.Names.advpump, blockAdvPump)
   val quarry2: TileEntityType[TileQuarry2] = createTileType(() => new TileQuarry2, QuarryPlus.Names.quarry2, blockQuarry2)
   val placerType: TileEntityType[PlacerTile] = createTileType(() => new PlacerTile, QuarryPlus.Names.placer, blockPlacer)
+  val miniQuarryType: TileEntityType[MiniQuarryTile] = createTileType(() => new MiniQuarryTile, QuarryPlus.Names.mini_quarry, blockMiniQuarry)
 
   val tiles: Map[TileEntityType[_ <: TileEntity], TileDisable] = Map(
     markerTileType -> TileDisable(TileMarker.SYMBOL),
@@ -110,6 +114,7 @@ object Holder {
     advPumpType -> TileDisable(TileAdvPump.SYMBOL),
     quarry2 -> TileDisable(TileQuarry2.SYMBOL),
     placerType -> TileDisable(PlacerTile.SYMBOL),
+    miniQuarryType -> TileDisable(MiniQuarryTile.SYMBOL),
   )
 
   //---------- Item ----------
@@ -169,6 +174,7 @@ object Holder {
   val advQuarryContainerType: ContainerType[ContainerAdvQuarry] = createContainerType(new ContainerAdvQuarry(_, _, _), TileAdvQuarry.GUI_ID)
   val statusContainerType: ContainerType[StatusContainer] = createContainerType(new StatusContainer(_, _, _), StatusContainer.GUI_ID)
   val placerContainerType: ContainerType[PlacerContainer] = createContainerType(new PlacerContainer(_, _, _), PlacerContainer.GUI_ID)
+  val miniQuarryContainerType: ContainerType[MiniQuarryContainer] = createContainerType(new MiniQuarryContainer(_, _, _), MiniQuarryContainer.GUI_ID)
 
   val containers: Set[ContainerType[_ <: Container]] = Set(
     quarryModuleContainerType,
@@ -183,6 +189,7 @@ object Holder {
     advQuarryContainerType,
     statusContainerType,
     placerContainerType,
+    miniQuarryContainerType,
   )
 
   private def createContainerType[T <: Container](supplier: (Int, PlayerEntity, BlockPos) => T, name: String): ContainerType[T] = {

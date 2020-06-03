@@ -12,7 +12,7 @@ import net.minecraft.client.renderer.{IRenderTypeBuffer, RenderType}
 object RenderAdvQuarry extends TileEntityRenderer[TileAdvQuarry](TileEntityRendererDispatcher.instance) {
   private[this] final val d = 1d / 16d
   val instance: RenderAdvQuarry.type = this
-  lazy val sprite: TextureAtlasSprite = Sprites.getMap(Symbol("yellow"))
+  lazy val sprite: TextureAtlasSprite = Sprites.getMap(Symbol("white"))
 
   override def render(te: TileAdvQuarry, v: Float, matrixStack: MatrixStack, iRenderTypeBuffer: IRenderTypeBuffer, i: Int, i1: Int): Unit = {
 
@@ -37,10 +37,10 @@ object RenderAdvQuarry extends TileEntityRenderer[TileAdvQuarry](TileEntityRende
         val xMax = math.min(range.xMax + 1.5, playerX + 128)
         val zMin = math.max(range.zMin - 0.5, playerZ - 128)
         val zMax = math.min(range.zMax + 1.5, playerZ + 128)
-        if (b1) Box(xMin, range.yMin, range.zMin - 0.5, xMax, range.yMax, range.zMin - 0.5, d, d, d, firstSide = false, endSide = false).render(buffer, matrixStack, sprite)
-        if (b2) Box(xMin, range.yMin, range.zMax + 1.5, xMax, range.yMax, range.zMax + 1.5, d, d, d, firstSide = false, endSide = false).render(buffer, matrixStack, sprite)
-        if (b3) Box(range.xMin - 0.5, range.yMin, zMin, range.xMin - 0.5, range.yMax, zMax, d, d, d, firstSide = false, endSide = false).render(buffer, matrixStack, sprite)
-        if (b4) Box(range.xMax + 1.5, range.yMin, zMin, range.xMax + 1.5, range.yMax, zMax, d, d, d, firstSide = false, endSide = false).render(buffer, matrixStack, sprite)
+        if (b1) Box(xMin, range.yMin, range.zMin - 0.5, xMax, range.yMax, range.zMin - 0.5, d, d, d, firstSide = false, endSide = false).render(buffer, matrixStack, sprite, blue = 0)
+        if (b2) Box(xMin, range.yMin, range.zMax + 1.5, xMax, range.yMax, range.zMax + 1.5, d, d, d, firstSide = false, endSide = false).render(buffer, matrixStack, sprite, blue = 0)
+        if (b3) Box(range.xMin - 0.5, range.yMin, zMin, range.xMin - 0.5, range.yMax, zMax, d, d, d, firstSide = false, endSide = false).render(buffer, matrixStack, sprite, blue = 0)
+        if (b4) Box(range.xMax + 1.5, range.yMin, zMin, range.xMax + 1.5, range.yMax, zMax, d, d, d, firstSide = false, endSide = false).render(buffer, matrixStack, sprite, blue = 0)
         matrixStack.pop()
       }
       Minecraft.getInstance.getProfiler.endSection()

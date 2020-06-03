@@ -83,6 +83,7 @@ public class TranslationKeys {
     public static final String frame = "block.quarryplus." + QuarryPlus.Names.frame;
     public static final String laser = "block.quarryplus." + QuarryPlus.Names.laser;
     public static final String marker = "block.quarryplus." + QuarryPlus.Names.marker;
+    public static final String mini_quarry = "block.quarryplus." + QuarryPlus.Names.mini_quarry;
     public static final String miningwell = "block.quarryplus." + QuarryPlus.Names.miningwell;
     public static final String mover = "block.quarryplus." + QuarryPlus.Names.mover;
     public static final String moverfrombook = "block.quarryplus." + QuarryPlus.Names.moverfrombook;

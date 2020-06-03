@@ -12,6 +12,7 @@ import com.yogpc.qp.machines.bookmover.GuiBookMover;
 import com.yogpc.qp.machines.item.GuiEnchList;
 import com.yogpc.qp.machines.item.GuiListTemplate;
 import com.yogpc.qp.machines.item.GuiQuarryLevel;
+import com.yogpc.qp.machines.mini_quarry.MiniQuarryGui;
 import com.yogpc.qp.machines.mover.GuiMover;
 import com.yogpc.qp.machines.pb.PlacerGui;
 import com.yogpc.qp.machines.quarry.GuiQuarryModule;
@@ -20,6 +21,7 @@ import com.yogpc.qp.machines.workbench.GuiWorkbench;
 import com.yogpc.qp.render.DummyBlockBakedModel;
 import com.yogpc.qp.render.RenderAdvQuarry;
 import com.yogpc.qp.render.RenderMarker;
+import com.yogpc.qp.render.RenderMiniQuarry;
 import com.yogpc.qp.render.RenderQuarry;
 import com.yogpc.qp.render.RenderQuarry2;
 import com.yogpc.qp.render.Sprites;
@@ -93,6 +95,7 @@ public class ProxyClient extends ProxyCommon {
                 ClientRegistry.bindTileEntityRenderer(Holder.solidQuarryType(), t -> RenderQuarry.instance());
                 ClientRegistry.bindTileEntityRenderer(Holder.quarry2(), t -> RenderQuarry2.instance());
                 ClientRegistry.bindTileEntityRenderer(Holder.advQuarryType(), t -> RenderAdvQuarry.instance());
+                ClientRegistry.bindTileEntityRenderer(Holder.miniQuarryType(), t -> RenderMiniQuarry.instance());
             }
 //        if (!Config.content().disableRendering()) {
 //            if (!Config.content().disableMapJ().get(TileAdvQuarry.SYMBOL()))
@@ -114,6 +117,7 @@ public class ProxyClient extends ProxyCommon {
             ScreenManager.registerFactory(Holder.advQuarryContainerType(), GuiAdvQuarry::new);
             ScreenManager.registerFactory(Holder.statusContainerType(), StatusGui::new);
             ScreenManager.registerFactory(Holder.placerContainerType(), PlacerGui::new);
+            ScreenManager.registerFactory(Holder.miniQuarryContainerType(), MiniQuarryGui::new);
 
             // Register transparent blocks
             RenderType rendertype = RenderType.getCutoutMipped();

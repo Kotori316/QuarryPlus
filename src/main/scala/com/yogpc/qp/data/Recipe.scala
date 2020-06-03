@@ -9,6 +9,7 @@ import com.yogpc.qp.machines.controller.BlockController
 import com.yogpc.qp.machines.exppump.BlockExpPump
 import com.yogpc.qp.machines.item.{ItemListEditor, ItemTemplate}
 import com.yogpc.qp.machines.marker.TileMarker
+import com.yogpc.qp.machines.mini_quarry.MiniQuarryTile
 import com.yogpc.qp.machines.mover.BlockMover
 import com.yogpc.qp.machines.pb.PlacerTile
 import com.yogpc.qp.machines.pump.TilePump
@@ -214,6 +215,16 @@ final class Recipe(f: DataGenerator) extends QuarryPlusDataProvider.DataProvider
         IngredientWithCount(Ingredient.fromTag(Tags.Items.DUSTS_REDSTONE), 1),
         new IngredientWithCount(new ItemStack(Items.MOSSY_COBBLESTONE, 4)),
       )), saveName = location("placer_plus")).addCondition(new EnableCondition(PlacerTile.SYMBOL))
+    // Mini Quarry
+    buffer += RecipeSerializeHelper(new FinishedWorkbenchRecipe("quarryplus:builtin_mini_quarry", new ItemStack(Holder.blockMiniQuarry),
+      10000, true,
+      Seq(
+        IngredientWithCount(Ingredient.fromTag(Tags.Items.GEMS_DIAMOND), 2),
+        IngredientWithCount(Ingredient.fromTag(Tags.Items.INGOTS_GOLD), 16),
+        IngredientWithCount(Ingredient.fromTag(Tags.Items.INGOTS_IRON), 32),
+        IngredientWithCount(Ingredient.fromTag(Tags.Items.DUSTS_REDSTONE), 8),
+        new IngredientWithCount(new ItemStack(Items.COMPARATOR, 4)),
+      )), saveName = location("mini_quarry"), conditions = List(new EnableCondition(MiniQuarryTile.SYMBOL)))
     buffer.toList
   }
 

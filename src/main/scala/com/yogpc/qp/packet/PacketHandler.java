@@ -13,6 +13,9 @@ import com.yogpc.qp.packet.controller.SetEntity;
 import com.yogpc.qp.packet.listtemplate.TemplateMessage;
 import com.yogpc.qp.packet.marker.LinkMessage;
 import com.yogpc.qp.packet.marker.UpdateBoxMessage;
+import com.yogpc.qp.packet.mini_quarry.MiniListSyncMessage;
+import com.yogpc.qp.packet.mini_quarry.MiniRenderBoxMessage;
+import com.yogpc.qp.packet.mini_quarry.MiniRequestListMessage;
 import com.yogpc.qp.packet.mover.BlockListRequestMessage;
 import com.yogpc.qp.packet.mover.DiffMessage;
 import com.yogpc.qp.packet.mover.EnchantmentMessage;
@@ -73,6 +76,9 @@ public class PacketHandler {
         INSTANCE.registerMessage(id.getAndIncrement(), Level2Message.class, Level2Message::writeToBuffer, b -> new Level2Message().readFromBuffer(b), Level2Message::onReceiveInternal);
         INSTANCE.registerMessage(id.getAndIncrement(), RecipeSyncMessage.class, RecipeSyncMessage::writeToBuffer, IMessage.decode(RecipeSyncMessage::new), RecipeSyncMessage::onReceiveInternal);
         INSTANCE.registerMessage(id.getAndIncrement(), ClientTextMessage.class, ClientTextMessage::writeToBuffer, IMessage.decode(ClientTextMessage::new), ClientTextMessage::onReceiveInternal);
+        INSTANCE.registerMessage(id.getAndIncrement(), MiniRenderBoxMessage.class, MiniRenderBoxMessage::writeToBuffer, IMessage.decode(MiniRenderBoxMessage::new), MiniRenderBoxMessage::onReceiveInternal);
+        INSTANCE.registerMessage(id.getAndIncrement(), MiniRequestListMessage.class, MiniRequestListMessage::writeToBuffer, IMessage.decode(MiniRequestListMessage::new), MiniRequestListMessage::onReceiveInternal);
+        INSTANCE.registerMessage(id.getAndIncrement(), MiniListSyncMessage.class, MiniListSyncMessage::writeToBuffer, IMessage.decode(MiniListSyncMessage::new), MiniListSyncMessage::onReceiveInternal);
     }
 
     public static void sendToClient(IMessage<?> message, World world) {
