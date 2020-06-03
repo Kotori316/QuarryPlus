@@ -1,4 +1,15 @@
 **This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).**
+## Version 15.3.0
+* Now NewQuarry can accept setting of ListEditor and Template.
+  * You can select which blocks quarry digs with enchantments.
+* Changed serialize process of blacklist.
+* Added new machine, Mini Quarry.
+  * A simple machine which allows you to automatically break blocks.
+  * Can be used in tree farm.
+  * To use machine,
+    * Place
+    * Open GUI and put tools required to break block. (Pickaxe for stones, Axe for wood, shovel for dirt)
+    * Send RS signal(Pulse). Toggles working and waiting with a redstone pulse.
 
 ## Version 15.2.9
 * **Updated language loader**. Please update library mod to newer than 2.13.2. You can download from above link.
@@ -15,7 +26,7 @@
 ## Version 15.2.6
 * Fixed the replacer didn't work for bedrock.
 * added new example of blacklist
-* Fixed miningwell plus digs block before energy is sent.
+* Fixed miningwell plus digs block before energy supplied.
 * Forge version up to 31.1.27
 * BlackList of Machines.
 * Fixed quarry area faced wrong direction.
