@@ -95,8 +95,8 @@ class GuiAdvQuarry(c: ContainerAdvQuarry, i: PlayerInventory, t: ITextComponent)
 
   override def drawGuiContainerForegroundLayer(mouseX: Int, mouseY: Int): Unit = {
     val s: String = I18n.format(TranslationKeys.advquarry)
-    this.font.drawString(s, this.xSize / 2 - this.font.getStringWidth(s) / 2, 6, 0x404040)
-    this.font.drawString(I18n.format(TranslationKeys.CONTAINER_INVENTORY), 8, this.ySize - 96 + 2, 0x404040)
+    this.font.drawString(s, (this.xSize - this.font.getStringWidth(s)).toFloat / 2, 6, 0x404040)
+    this.font.drawString(I18n.format(TranslationKeys.CONTAINER_INVENTORY), 8, (this.ySize - 96 + 2).toFloat, 0x404040)
     if (range != Area.zeroArea) {
       val chunkPos = new ChunkPos(tile.getPos)
       val north: Double = chunkPos.getZStart - range.zMin

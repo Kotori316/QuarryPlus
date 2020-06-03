@@ -54,7 +54,7 @@ class MoverRecipeCategory(guiHelper: IGuiHelper) extends IRecipeCategory[MoverRe
   override def draw(recipe: MoverRecipe, mouseX: Double, mouseY: Double): Unit = {
     super.draw(recipe, mouseX, mouseY)
     recipe.enchantments.zipWithIndex.foreach { case (e, i) =>
-      Minecraft.getInstance().fontRenderer.drawString(I18n.format(e.getName), 36 - xOff, 6 - yOff + 10 * i, 0x404040)
+      Minecraft.getInstance().fontRenderer.drawString(I18n.format(e.getName), (36 - xOff).toFloat, (6 - yOff + 10 * i).toFloat, 0x404040)
     }
   }
 }

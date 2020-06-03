@@ -40,11 +40,11 @@ object BlockData {
 
 case class BlockData(name: ResourceLocation) extends Ordered[BlockData] {
 
-  def this(resourceName: String) {
+  def this(resourceName: String) = {
     this(new ResourceLocation(resourceName))
   }
 
-  def this(state: BlockState) {
+  def this(state: BlockState) = {
     this(ForgeRegistries.BLOCKS.getKey(state.getBlock))
   }
 

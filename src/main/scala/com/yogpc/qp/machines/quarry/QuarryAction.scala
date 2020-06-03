@@ -183,7 +183,7 @@ object QuarryAction {
 
   class BreakBlock(quarry2: TileQuarry2, y: Int, targetBefore: BlockPos, var headX: Double, var headY: Double, var headZ: Double) extends QuarryAction {
 
-    def this(quarry2: TileQuarry2, y: Int, targetBefore: BlockPos) {
+    def this(quarry2: TileQuarry2, y: Int, targetBefore: BlockPos) = {
       this(quarry2, y, targetBefore, (quarry2.area.xMin + quarry2.area.xMax + 1) / 2, y + 1, (quarry2.area.zMin + quarry2.area.zMax + 1) / 2)
     }
 

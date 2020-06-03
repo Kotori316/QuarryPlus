@@ -30,10 +30,10 @@ class StatusGui(c: StatusContainer, inv: PlayerInventory, t: ITextComponent)
 
   override def drawGuiContainerForegroundLayer(p_146979_1_ : Int, p_146979_2_ : Int): Unit = {
     val s = getContainer.tile.getBlockState.getBlock.getNameTextComponent.getFormattedText
-    this.font.drawString(s, this.xSize / 2 - this.font.getStringWidth(s) / 2, 6, 0x404040)
-    this.font.drawString(I18n.format(TranslationKeys.CONTAINER_INVENTORY), 8, this.ySize - 96 + 2, 0x404040)
+    this.font.drawString(s, (this.xSize - this.font.getStringWidth(s)).toFloat / 2, 6, 0x404040)
+    this.font.drawString(I18n.format(TranslationKeys.CONTAINER_INVENTORY), 8, (this.ySize - 96 + 2).toFloat, 0x404040)
     listContent().zipWithIndex.map { case (str, i) => str -> (i * 9 + 15) }
-      .foreach { case (str, i) => this.font.drawString(str, 8, i, 0x404040) }
+      .foreach { case (str, i) => this.font.drawString(str, 8, i.toFloat, 0x404040) }
   }
 
   def listContent(): Seq[String] = {
