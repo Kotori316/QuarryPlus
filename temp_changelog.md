@@ -1,3 +1,7 @@
+# Version 12.4.1
+* Template improved
+  * Fortune Template setting will be applied to quarry correctly.
+
 # Version 12.4.0
 * You can use ListEditor and Template for New QuarryPlus.
   * It's useful when quarry has both Fortune and Silktouch.
