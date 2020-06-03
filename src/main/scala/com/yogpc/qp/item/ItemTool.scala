@@ -93,8 +93,9 @@ class ItemTool extends Item with IEnchantableItem {
           } else {
             // player.openGui(QuarryPlus.INSTANCE, if (f) QuarryPlusI.guiIdFList else QuarryPlusI.guiIdSList, worldIn, pos.getX, pos.getY, pos.getZ)
             if (!worldIn.isRemote) {
-              val include = if (f) quarry2.fortuneInclude else quarry2.silktouchInclude
-              player.sendStatusMessage(new TextComponentString(if (include) "WhiteList mode" else "BlackList mode"), false)
+              val modeString = (include: Boolean) => if (include) "WhiteList mode" else "BlackList mode"
+              player.sendStatusMessage(new TextComponentString(s"Fortune: ${modeString(quarry2.fortuneInclude)}"), false)
+              player.sendStatusMessage(new TextComponentString(s"Silktouch: ${modeString(quarry2.silktouchInclude)}"), false)
               val data = if (f) quarry2.fortuneList else quarry2.silktouchList
               data.map(_.getLocalizedName).foreach(s => player.sendStatusMessage(new TextComponentString(s), false))
             }
