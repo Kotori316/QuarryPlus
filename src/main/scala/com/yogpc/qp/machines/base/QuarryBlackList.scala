@@ -180,7 +180,8 @@ object QuarryBlackList {
   }
 
   case class VanillaBlockPredicate(block_predicate: String) extends Entry(ID_VANILLA) {
-    private lazy val iResult = Try(BlockPredicateArgument.blockPredicate().parse(new StringReader(block_predicate)))
+    private lazy val iResult: Try[BlockPredicateArgument.IResult] =
+      Try(BlockPredicateArgument.blockPredicate().parse(new StringReader(block_predicate)))
 
     override def test(state: BlockState, world: IBlockReader, pos: BlockPos): Boolean = {
       world match {
