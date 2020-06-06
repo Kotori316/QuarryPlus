@@ -7,6 +7,7 @@ import com.google.gson._
 import com.mojang.brigadier.StringReader
 import com.mojang.datafixers.Dynamic
 import com.mojang.datafixers.types.{DynamicOps, JsonOps}
+import com.yogpc.qp.machines.pump.TilePump
 import com.yogpc.qp.utils.JsonReloadListener
 import com.yogpc.qp.{NBTWrapper, QuarryPlus}
 import net.minecraft.block.{Block, BlockState, Blocks}
@@ -53,6 +54,7 @@ object QuarryBlackList {
   private[this] final val ID_ORES = QuarryPlus.modID + ":blacklist_ores"
   private[this] final val ID_TAG = QuarryPlus.modID + ":blacklist_tag"
   private[this] final val ID_VANILLA = QuarryPlus.modID + ":blacklist_vanilla"
+  private[this] final val ID_FLUID = QuarryPlus.modID + ":blacklist_fluid"
 
   def writeEntry[A](src: Entry, ops: DynamicOps[A]): A = {
     val map: Map[A, A] = Map(
@@ -83,6 +85,7 @@ object QuarryBlackList {
         case ID_TAG => Tag(new ResourceLocation(map("tag").asString().get()))
         case ID_VANILLA => VanillaBlockPredicate(map("block_predicate").asString().get())
         case ID_ORES => Ores
+        case ID_FLUID => Fluids
         case _ => Air
       }
     }
@@ -191,6 +194,13 @@ object QuarryBlackList {
     }
 
     override def toString: String = s"Vanilla Predicate[$block_predicate]"
+  }
+
+  object Fluids extends Entry(ID_FLUID) {
+    override def test(state: BlockState, world: IBlockReader, pos: BlockPos): Boolean =
+      TilePump.isLiquid(state)
+
+    override def toString: String = "BlackList of fluids."
   }
 
   private final val GSON: Gson = (new GsonBuilder).disableHtmlEscaping().setPrettyPrinting()

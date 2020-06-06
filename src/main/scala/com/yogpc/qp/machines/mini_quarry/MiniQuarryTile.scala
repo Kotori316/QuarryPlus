@@ -46,7 +46,7 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
   private final var preDirection: Direction = Direction.UP
   final var rs = false
   final var renderBox = false
-  final var blackList: Set[QuarryBlackList.Entry] = Set(QuarryBlackList.Air)
+  final var blackList: Set[QuarryBlackList.Entry] = MiniQuarryTile.defaultBlackList
   final var whiteList: Set[QuarryBlackList.Entry] = Set()
   private[this] final val dropItem = (item: ItemStack) => {
     val rest = InvUtils.injectToNearTile(world, pos, item)
@@ -278,6 +278,7 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
 
 object MiniQuarryTile {
   final val SYMBOL = Symbol("MiniQuarry")
+  final val defaultBlackList = Set(QuarryBlackList.Air, QuarryBlackList.Fluids)
 
   def e(unbreaking: Int): Long = APowerTile.FEtoMicroJ * 20 / (unbreaking + 1)
 

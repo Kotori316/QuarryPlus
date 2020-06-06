@@ -105,7 +105,7 @@ public class MiniQuarryListGui extends Screen implements IHandleButton {
                 MiniQuarryListEntry selected = list.getSelected();
                 if (selected != null) {
                     QuarryBlackList.Entry data = selected.getData();
-                    if (data != QuarryBlackList.Air$.MODULE$) {
+                    if (!MiniQuarryTile.defaultBlackList().contains(data)) {
                         getEntries().remove(data);
                         list.updateList();
                         PacketHandler.sendToServer(MiniListSyncMessage.create(pos, dim, blackList, whiteList));
