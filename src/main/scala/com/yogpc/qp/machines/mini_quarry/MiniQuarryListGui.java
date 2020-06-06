@@ -95,8 +95,8 @@ public class MiniQuarryListGui extends Screen implements IHandleButton {
                 break;
             case 2: // New Entry
                 getMinecraft().displayGuiScreen(new MiniQuarryAddEntryGui(this,
-                    l -> {
-                        getEntries().add(new QuarryBlackList.Name(l));
+                    e -> {
+                        getEntries().add(e);
                         list.updateList();
                         PacketHandler.sendToServer(MiniListSyncMessage.create(pos, dim, blackList, whiteList));
                     }));

@@ -5,14 +5,19 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.IHandleButton;
+import com.yogpc.qp.machines.base.QuarryBlackList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.list.ExtendedList;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.InputMappings;
+import net.minecraft.command.arguments.BlockStateParser;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.lwjgl.glfw.GLFW;
@@ -20,11 +25,11 @@ import org.lwjgl.glfw.GLFW;
 public class MiniQuarryAddEntryGui extends Screen implements IHandleButton {
     @javax.annotation.Nonnull
     private final Screen parent;
-    private final Consumer<ResourceLocation> callback;
+    private final Consumer<QuarryBlackList.Entry> callback;
     private EntryList list;
     private TextFieldWidget textField;
 
-    protected MiniQuarryAddEntryGui(Screen parent, Consumer<ResourceLocation> callback) {
+    protected MiniQuarryAddEntryGui(Screen parent, Consumer<QuarryBlackList.Entry> callback) {
         super(parent.getTitle());
         this.parent = parent;
         this.callback = callback;
@@ -67,9 +72,17 @@ public class MiniQuarryAddEntryGui extends Screen implements IHandleButton {
             LocationEntry entry = list.getSelected();
             if (entry != null) {
                 ResourceLocation location = entry.getData();
-                callback.accept(location);
-                this.onClose();
+                callback.accept(new QuarryBlackList.Name(location));
+            } else {
+                String maybePredicate = textField.getText();
+                try {
+                    (new BlockStateParser(new StringReader(maybePredicate), true)).parse(true);
+                    callback.accept(new QuarryBlackList.VanillaBlockPredicate(maybePredicate));
+                } catch (CommandSyntaxException e) {
+                    QuarryPlus.LOGGER.debug("Invalid predicate {} was parsed but not added. Got {}.", maybePredicate, e);
+                }
             }
+            this.onClose();
         }
     }
 

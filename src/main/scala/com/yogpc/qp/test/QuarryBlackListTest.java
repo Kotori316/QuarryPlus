@@ -42,4 +42,14 @@ class QuarryBlackListTest {
             assertEquals(air, entry);
         }
     }
+
+    @Test
+    void vanillaPredicate() {
+        String blockName = "minecraft:stone";
+        QuarryBlackList.VanillaBlockPredicate p = new QuarryBlackList.VanillaBlockPredicate(blockName);
+        JsonElement j = QuarryBlackList.writeEntry(p, JsonOps.INSTANCE);
+
+        QuarryBlackList.Entry loaded = QuarryBlackList.readEntry(new Dynamic<>(JsonOps.INSTANCE, j));
+        assertEquals(p, loaded);
+    }
 }

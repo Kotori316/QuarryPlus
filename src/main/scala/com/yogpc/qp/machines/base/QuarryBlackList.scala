@@ -4,21 +4,24 @@ import java.lang.reflect.{GenericArrayType, Type}
 import java.util
 
 import com.google.gson._
+import com.mojang.brigadier.StringReader
 import com.mojang.datafixers.Dynamic
 import com.mojang.datafixers.types.{DynamicOps, JsonOps}
 import com.yogpc.qp.utils.JsonReloadListener
 import com.yogpc.qp.{NBTWrapper, QuarryPlus}
 import net.minecraft.block.{Block, BlockState, Blocks}
+import net.minecraft.command.arguments.BlockPredicateArgument
 import net.minecraft.nbt.{CompoundNBT, NBTDynamicOps}
 import net.minecraft.profiler.IProfiler
 import net.minecraft.resources.IResourceManager
-import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.BlockPos
-import net.minecraft.world.IBlockReader
+import net.minecraft.util.{CachedBlockInfo, ResourceLocation}
+import net.minecraft.world.{IBlockReader, World}
 import net.minecraftforge.common.Tags
 import org.apache.logging.log4j.LogManager
 
 import scala.jdk.javaapi.CollectionConverters
+import scala.util.Try
 
 object QuarryBlackList {
   private final val LOGGER = LogManager.getLogger(getClass)
@@ -49,6 +52,7 @@ object QuarryBlackList {
   private[this] final val ID_MOD = QuarryPlus.modID + ":blacklist_modid"
   private[this] final val ID_ORES = QuarryPlus.modID + ":blacklist_ores"
   private[this] final val ID_TAG = QuarryPlus.modID + ":blacklist_tag"
+  private[this] final val ID_VANILLA = QuarryPlus.modID + ":blacklist_vanilla"
 
   def writeEntry[A](src: Entry, ops: DynamicOps[A]): A = {
     val map: Map[A, A] = Map(
@@ -57,6 +61,7 @@ object QuarryBlackList {
         case Mod(modID) => "modID" -> ops.createString(modID)
         case Name(name) => "name" -> ops.createString(name.toString)
         case Tag(name) => "tag" -> ops.createString(name.toString)
+        case VanillaBlockPredicate(block_predicate) => "block_predicate" -> ops.createString(block_predicate)
         case _ => "" -> ops.empty()
       }
     ).collect { case (str, a) if !str.isEmpty => ops.createString(str) -> a }
@@ -76,6 +81,7 @@ object QuarryBlackList {
         case ID_NAME => Name(new ResourceLocation(map("name").asString.get()))
         case ID_MOD => Mod(map("modID").asString().get())
         case ID_TAG => Tag(new ResourceLocation(map("tag").asString().get()))
+        case ID_VANILLA => VanillaBlockPredicate(map("block_predicate").asString().get())
         case ID_ORES => Ores
         case _ => Air
       }
@@ -168,6 +174,23 @@ object QuarryBlackList {
     }
 
     override def toString: String = "BlackList for tag " + name
+  }
+
+  case class VanillaBlockPredicate(block_predicate: String) extends Entry(ID_VANILLA) {
+    private lazy val iResult = Try(BlockPredicateArgument.blockPredicate().parse(new StringReader(block_predicate)))
+
+    override def test(state: BlockState, world: IBlockReader, pos: BlockPos): Boolean = {
+      world match {
+        case w: World =>
+          iResult.map(_.create(w.getTags).test(new CachedBlockInfo(w, pos, false))).recover { e =>
+            LOGGER.debug(s"Predicate '$block_predicate' is invalid.", e)
+            false
+          }.getOrElse(false)
+        case _ => false
+      }
+    }
+
+    override def toString: String = s"Vanilla Predicate[$block_predicate]"
   }
 
   private final val GSON: Gson = (new GsonBuilder).disableHtmlEscaping().setPrettyPrinting()
