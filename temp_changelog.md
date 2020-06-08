@@ -1,4 +1,7 @@
 **This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).**
+## Version 15.3.1
+* Fixed a crash in launching server by LoadingFailedException. [#91](https://github.com/Kotori316/QuarryPlus/issues/91)
+
 ## Version 15.3.0
 * Now NewQuarry can accept setting of ListEditor and Template.
   * You can select which blocks quarry digs with enchantments.
