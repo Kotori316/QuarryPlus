@@ -15,6 +15,8 @@ import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -67,13 +69,23 @@ public class MiniListSyncMessage implements IMessage<MiniListSyncMessage> {
         Collection<QuarryBlackList.Entry> w = listTag.getList("white", Constants.NBT.TAG_COMPOUND)
             .stream().map(n -> new Dynamic<>(NBTDynamicOps.INSTANCE, n)).map(QuarryBlackList::readEntry).collect(Collectors.toList());
         if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {
-            IMessage.findTile(ctx, pos, dim, MiniQuarryTile.class).ifPresent(t ->
-                ctx.get().enqueueWork(() -> Minecraft.getInstance().displayGuiScreen(new MiniQuarryListGui(t, w, b))));
+            calledInClient(ctx, b, w);
         } else if (ctx.get().getDirection().getReceptionSide() == LogicalSide.SERVER) {
-            IMessage.findTile(ctx, pos, dim, MiniQuarryTile.class).ifPresent(t -> ctx.get().enqueueWork(() -> {
-                t.blackList_$eq(CollectionConverters.asScala(b).toSet());
-                t.whiteList_$eq(CollectionConverters.asScala(w).toSet());
-            }));
+            calledInLogicalServer(ctx, b, w);
         }
     }
+
+    @OnlyIn(Dist.CLIENT)
+    private void calledInClient(Supplier<NetworkEvent.Context> ctx, Collection<QuarryBlackList.Entry> b, Collection<QuarryBlackList.Entry> w) {
+        IMessage.findTile(ctx, pos, dim, MiniQuarryTile.class).ifPresent(t ->
+            ctx.get().enqueueWork(() -> Minecraft.getInstance().displayGuiScreen(new MiniQuarryListGui(t, w, b))));
+    }
+
+    private void calledInLogicalServer(Supplier<NetworkEvent.Context> ctx, Collection<QuarryBlackList.Entry> b, Collection<QuarryBlackList.Entry> w) {
+        IMessage.findTile(ctx, pos, dim, MiniQuarryTile.class).ifPresent(t -> ctx.get().enqueueWork(() -> {
+            t.blackList_$eq(CollectionConverters.asScala(b).toSet());
+            t.whiteList_$eq(CollectionConverters.asScala(w).toSet());
+        }));
+    }
+
 }
