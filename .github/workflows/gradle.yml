@@ -60,6 +60,7 @@ jobs:
         run: cat error-trace.txt
   publish:
     runs-on: ubuntu-latest
+    needs: [check]
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 1.8
