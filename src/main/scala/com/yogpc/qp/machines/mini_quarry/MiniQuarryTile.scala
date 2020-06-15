@@ -41,7 +41,7 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
   with IDebugSender {
   private final var enchantments = EnchantmentHolder.noEnch
   private final var area = Area.zeroArea
-  private final var targets: List[BlockPos] = List.empty
+  private final var targets: LazyList[BlockPos] = LazyList.empty
   private final val tools = NonNullList.withSize(5, ItemStack.EMPTY)
   private final var preDirection: Direction = Direction.UP
   final var rs = false
@@ -60,9 +60,9 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
       val toolsWithoutModule = tools.asScala.filterNot(_.getItem.isInstanceOf[IModuleItem])
 
       @scala.annotation.tailrec
-      def work(poses: List[BlockPos]): List[BlockPos] = {
+      def work(poses: LazyList[BlockPos]): LazyList[BlockPos] = {
         poses match {
-          case head :: tail =>
+          case LazyList.#::(head, tail) =>
             val world = getDiggingWorld
             val state = world.getBlockState(head)
             if (blackList.exists(_.test(state, world, head)) ||
@@ -95,7 +95,7 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
                 tail
               }
             }
-          case Nil => Nil
+          case _ => LazyList.empty
         }
       }
 
@@ -168,19 +168,19 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
 
   private def updateTargets(d: Direction): Unit = {
     if (area == Area.zeroArea) {
-      targets = List.empty
+      targets = LazyList.empty
     } else {
       preDirection = d
       val poses = for {
-        y <- area.yMax to(area.yMin, -1)
-        (x, z) <- MiniQuarryTile.makeTargetsXZ(area, d)
+        y <- LazyList.from(area.yMax to(area.yMin, -1))
+        (x, z) <- MiniQuarryTile.makeTargetsXZ(area, d) to LazyList
       } yield new BlockPos(x, y, z)
-      targets = poses.toList
+      targets = poses
     }
   }
 
   override def startWaiting(): Unit = {
-    targets = List.empty
+    targets = LazyList.empty
     updateWorkingState()
   }
 
