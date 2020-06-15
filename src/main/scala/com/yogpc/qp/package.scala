@@ -3,12 +3,14 @@ package com.yogpc
 import cats._
 import cats.data._
 import cats.implicits._
+import net.minecraft.block.BlockState
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt._
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.StringTextComponent
-import net.minecraft.util.{Direction, ResourceLocation}
+import net.minecraft.util.{Direction, ResourceLocation, SoundCategory}
+import net.minecraft.world.World
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.util.Constants.NBT
 import net.minecraftforge.common.util.{INBTSerializable, LazyOptional, NonNullSupplier}
@@ -164,5 +166,10 @@ package object qp {
 
   val evalToList: Eval ~> List = new (Eval ~> List) {
     override def apply[A](fa: Eval[A]) = fa.toList
+  }
+
+  def playSound(state: BlockState, world: World, pos: BlockPos): Unit = {
+    val sound = state.getBlock.getSoundType(state, world, pos, null)
+    world.playSound(null, pos, sound.getBreakSound, SoundCategory.BLOCKS, (sound.getVolume + 1.0F) / 2.0F, sound.getPitch * 0.8F)
   }
 }

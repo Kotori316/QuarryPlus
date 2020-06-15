@@ -88,6 +88,7 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
                 for (_ <- 0 until count)
                   fakePlayer.getHeldItemMainhand.onBlockDestroyed(world, state, head, fakePlayer)
                 world.removeBlock(head, false)
+                playSound(state, world, head)
                 tail
               } else {
                 // Skip this block

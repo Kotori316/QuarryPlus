@@ -11,7 +11,6 @@ import com.yogpc.qp.packet.quarry2.ActionMessage
 import com.yogpc.qp.utils.Holder
 import net.minecraft.block.{BlockState, Blocks}
 import net.minecraft.nbt.CompoundNBT
-import net.minecraft.util.SoundCategory
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos}
 import net.minecraft.world.World
 import org.apache.logging.log4j.MarkerManager
@@ -358,11 +357,6 @@ object QuarryAction {
       !unbreakable &&
       !modules.flatMap(IModule.replaceBlocks(pos.getY)).contains(state) &&
       (!TilePump.isLiquid(state) || modules.exists(IModule.hasPumpModule))
-  }
-
-  def playSound(state: BlockState, world: World, pos: BlockPos): Unit = {
-    val sound = state.getBlock.getSoundType(state, world, pos, null)
-    world.playSound(null, pos, sound.getBreakSound, SoundCategory.BLOCKS, (sound.getVolume + 1.0F) / 2.0F, sound.getPitch * 0.8F)
   }
 
   val getNamed: (CompoundNBT, String) => CompoundNBT = _.getCompound(_)
