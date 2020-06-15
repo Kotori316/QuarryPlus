@@ -114,7 +114,7 @@ object QuarryBlackList {
   }
 
   object Air extends Entry(ID_AIR) {
-    override def test(state: BlockState, world: IBlockReader, pos: BlockPos): Boolean = world.getBlockState(pos).isAir(world, pos)
+    override def test(state: BlockState, world: IBlockReader, pos: BlockPos): Boolean = state.isAir(world, pos)
 
     override def toString = "BlackList of Air"
   }
