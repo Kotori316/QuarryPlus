@@ -87,6 +87,7 @@ class QuarryBlackListTest {
         Stream<Executable> executable = Stream.concat(
             ForgeRegistries.FLUIDS.getValues().stream()
                 .map(Fluid::getDefaultState)
+                .filter(f -> !f.isEmpty())
                 .map(IFluidState::getBlockState),
             Stream.of(
                 Blocks.WATER.getDefaultState(),
