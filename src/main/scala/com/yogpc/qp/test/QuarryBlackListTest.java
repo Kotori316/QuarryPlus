@@ -9,6 +9,7 @@ import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.JsonOps;
 import com.yogpc.qp.machines.base.QuarryBlackList;
 import com.yogpc.qp.machines.base.QuarryBlackList.Entry;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.fluid.Fluid;
@@ -21,7 +22,6 @@ import net.minecraft.world.EmptyBlockReader;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
-import scala.collection.immutable.Seq;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -38,8 +38,7 @@ class QuarryBlackListTest {
 
     @Test
     void airSerialize() {
-        Seq<Entry> example1 = QuarryBlackList.example1();
-        Entry air = example1.apply(0);
+        Entry air = QuarryBlackList.Air$.MODULE$;
 
         INBT n = QuarryBlackList.writeEntry(air, NBTDynamicOps.INSTANCE);
         CompoundNBT tag = QuarryBlackList.Entry$.MODULE$.EntryToNBT().apply(air);
@@ -64,6 +63,13 @@ class QuarryBlackListTest {
     }
 
     @Test
+    void airPredicate() {
+        assertAll(Stream.of(Blocks.AIR, Blocks.CAVE_AIR, Blocks.VOID_AIR)
+            .map(Block::getDefaultState)
+            .map(getExecutable(QuarryBlackList.Air$.MODULE$)));
+    }
+
+    @Test
     void vanillaPredicate() {
         String blockName = "minecraft:stone";
         QuarryBlackList.VanillaBlockPredicate p = new QuarryBlackList.VanillaBlockPredicate(blockName);
@@ -71,12 +77,14 @@ class QuarryBlackListTest {
 
         QuarryBlackList.Entry loaded = QuarryBlackList.readEntry(new Dynamic<>(JsonOps.INSTANCE, j));
         assertEquals(p, loaded);
+        // We can't test this entry because we don't have way to get world instance.
+        // Also we don't have instance of IWorldReader.
     }
 
     @Test
     void fluidPredicate() {
         QuarryBlackList.Entry entry = QuarryBlackList.Fluids$.MODULE$;
-        Executable[] executables = Stream.concat(
+        Stream<Executable> executable = Stream.concat(
             ForgeRegistries.FLUIDS.getValues().stream()
                 .map(Fluid::getDefaultState)
                 .map(IFluidState::getBlockState),
@@ -84,8 +92,8 @@ class QuarryBlackListTest {
                 Blocks.WATER.getDefaultState(),
                 Blocks.LAVA.getDefaultState()
             )
-        ).map(getExecutable(entry)).toArray(Executable[]::new);
+        ).map(getExecutable(entry));
 
-        assertAll(executables);
+        assertAll(executable);
     }
 }
