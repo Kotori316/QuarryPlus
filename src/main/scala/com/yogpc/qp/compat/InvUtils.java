@@ -10,6 +10,7 @@ import com.yogpc.qp.QuarryPlus;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnchantmentType;
@@ -19,6 +20,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
@@ -70,8 +72,12 @@ public class InvUtils {
      * @return Stack NOT inserted to inv.
      */
     public static ItemStack injectToNearTile(@Nonnull final World w, @Nonnull BlockPos pos, final ItemStack is) {
+        BlockState state = w.getBlockState(pos);
+        Stream<Direction> directionStream = clockwiseDirections(
+            state.has(BlockStateProperties.FACING) ? state.get(BlockStateProperties.FACING) : null
+        );
 
-        List<? extends IInjector> injectors = Stream.of(Direction.values()).flatMap(enumFacing ->
+        List<? extends IInjector> injectors = directionStream.flatMap(enumFacing ->
             Stream.of(w.getTileEntity(pos.offset(enumFacing)))
                 .filter(Objects::nonNull)
                 .flatMap(tile -> InjectorHolder.INJECTORS.stream().flatMap(i -> i.getInjector(is, tile, enumFacing)))
@@ -86,6 +92,37 @@ public class InvUtils {
         }
         return inserted;
 
+    }
+
+    public static Stream<Direction> clockwiseDirections(@Nullable Direction blockDirection) {
+        if (blockDirection == null) {
+            // Block doesn't have direction attribute. returns default list.
+            return Stream.of(Direction.values());
+        } else {
+            switch (blockDirection) {
+                case UP:
+                    return Stream.concat(
+                        Stream.of(Direction.UP),
+                        Stream.concat(
+                            Stream.iterate(Direction.NORTH, Direction::rotateY).limit(4),
+                            Stream.of(Direction.DOWN)
+                        )
+                    );
+                case DOWN:
+                    return Stream.concat(
+                        Stream.of(Direction.DOWN),
+                        Stream.concat(
+                            Stream.iterate(Direction.NORTH, Direction::rotateY).limit(4),
+                            Stream.of(Direction.UP)
+                        )
+                    );
+                default:
+                    return Stream.concat(
+                        Stream.iterate(blockDirection, Direction::rotateY).limit(4),
+                        Stream.of(Direction.UP, Direction.DOWN)
+                    );
+            }
+        }
     }
 
     @Deprecated
