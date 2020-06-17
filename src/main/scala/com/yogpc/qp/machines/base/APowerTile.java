@@ -174,7 +174,7 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
      */
     protected void updateWorkingState() {
         assert world != null;
-        BlockState nowState = world.getBlockState(pos);
+        BlockState nowState = getBlockState();
         if (nowState.get(QPBlock.WORKING()) ^ isWorking()) {
             if (isWorking()) {
                 startWork();
