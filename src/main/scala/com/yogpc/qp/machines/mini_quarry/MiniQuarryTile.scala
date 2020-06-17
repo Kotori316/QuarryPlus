@@ -18,6 +18,7 @@ import net.minecraft.inventory.container.{Container, INamedContainerProvider}
 import net.minecraft.inventory.{IInventory, InventoryHelper, ItemStackHelper}
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.{CompoundNBT, NBTDynamicOps}
+import net.minecraft.network.play.server.SUpdateTileEntityPacket
 import net.minecraft.state.properties.BlockStateProperties
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos}
 import net.minecraft.util.text.{ITextComponent, StringTextComponent}
@@ -101,8 +102,7 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
 
       if (toolsWithoutModule.nonEmpty) {
         targets = work(targets)
-        if (targets.isEmpty)
-          updateWorkingState()
+        updateWorkingState()
       }
     }
   }
@@ -159,11 +159,10 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
       case Some((newArea, m)) =>
         area = newArea
         m.removeFromWorldWithItem().asScala.foreach(dropItem)
+        if (!world.isRemote) PacketHandler.sendToClient(TileMessage.create(this), world)
       case _ =>
     }
     updateTargets(facing.getOpposite)
-    updateWorkingState()
-    if (!world.isRemote) PacketHandler.sendToClient(TileMessage.create(this), world)
   }
 
   private def updateTargets(d: Direction): Unit = {
@@ -252,6 +251,8 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
   override def getCapability[T](cap: Capability[T], side: Direction): LazyOptional[T] = {
     Cap.asJava(Cap.make(cap, this, IRemotePowerOn.Cap.REMOTE_CAPABILITY()) orElse Cap.dummyItemOrFluid(cap) orElse super.getCapability(cap, side).asScala)
   }
+
+  override def getUpdatePacket: SUpdateTileEntityPacket = null
 
   private object Inv extends IInventory {
     override def getSizeInventory: Int = tools.size()
