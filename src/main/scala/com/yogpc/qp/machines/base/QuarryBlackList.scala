@@ -176,7 +176,7 @@ object QuarryBlackList {
       else tag.contains(state.getBlock)
     }
 
-    override def toString: String = "BlackList for tag " + name
+    override def toString: String = "Tag #" + name
   }
 
   case class VanillaBlockPredicate(block_predicate: String) extends Entry(ID_VANILLA) {
