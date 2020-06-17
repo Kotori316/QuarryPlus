@@ -18,8 +18,10 @@ import net.minecraft.client.gui.widget.list.ExtendedList;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.command.arguments.BlockStateParser;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.glfw.GLFW;
 
 public class MiniQuarryAddEntryGui extends Screen implements IHandleButton {
@@ -61,9 +63,16 @@ public class MiniQuarryAddEntryGui extends Screen implements IHandleButton {
         drawCenteredString(this.font, title, this.width / 2, 8, 0xFFFFFF);
     }
 
-    private List<ResourceLocation> getEntries() {
+    private Pair<Kind, List<ResourceLocation>> getEntries() {
         String filterText = textField == null ? "" : textField.getText();
-        return ForgeRegistries.BLOCKS.getKeys().stream().filter(r -> r.toString().contains(filterText)).sorted().collect(Collectors.toList());
+        if (filterText.startsWith("#")) {
+            String f = filterText.substring(1); // Remove first #
+            return Pair.of(Kind.TAG, BlockTags.getCollection().getRegisteredTags()
+                .stream().filter(r -> r.toString().contains(f)).sorted().collect(Collectors.toList()));
+        } else {
+            return Pair.of(Kind.BLOCK, ForgeRegistries.BLOCKS.getKeys().stream()
+                .filter(r -> r.toString().contains(filterText)).sorted().collect(Collectors.toList()));
+        }
     }
 
     @Override
@@ -72,7 +81,16 @@ public class MiniQuarryAddEntryGui extends Screen implements IHandleButton {
             LocationEntry entry = list.getSelected();
             if (entry != null) {
                 ResourceLocation location = entry.getData();
-                callback.accept(new QuarryBlackList.Name(location));
+                switch (entry.getKind()) {
+                    case BLOCK:
+                        callback.accept(new QuarryBlackList.Name(location));
+                        break;
+                    case TAG:
+                        callback.accept(new QuarryBlackList.Tag(location));
+                        break;
+                    default:
+                        QuarryPlus.LOGGER.warn("Not registered kind {} for {}.", entry.getKind(), location);
+                }
             } else {
                 String maybePredicate = textField.getText();
                 try {
@@ -104,9 +122,9 @@ public class MiniQuarryAddEntryGui extends Screen implements IHandleButton {
     static class EntryList extends ExtendedList<LocationEntry> {
 
         private final Screen parent;
-        private final Supplier<List<ResourceLocation>> entriesSupplier;
+        private final Supplier<Pair<Kind, List<ResourceLocation>>> entriesSupplier;
 
-        public EntryList(Minecraft mcIn, int widthIn, int heightIn, int topIn, int bottomIn, int slotHeightIn, Screen parent, Supplier<List<ResourceLocation>> entriesSupplier) {
+        public EntryList(Minecraft mcIn, int widthIn, int heightIn, int topIn, int bottomIn, int slotHeightIn, Screen parent, Supplier<Pair<Kind, List<ResourceLocation>>> entriesSupplier) {
             super(mcIn, widthIn, heightIn, topIn, bottomIn, slotHeightIn);
             this.parent = parent;
             this.entriesSupplier = entriesSupplier;
@@ -115,7 +133,8 @@ public class MiniQuarryAddEntryGui extends Screen implements IHandleButton {
 
         public void updateList() {
             this.clearEntries();
-            entriesSupplier.get().stream().map(e -> new LocationEntry(e, this.parent, this::setSelected)).forEach(this::addEntry);
+            Pair<Kind, List<ResourceLocation>> kindListPair = entriesSupplier.get();
+            kindListPair.getValue().stream().map(e -> new LocationEntry(e, this.parent, this::setSelected, kindListPair.getKey())).forEach(this::addEntry);
         }
 
     }
@@ -125,21 +144,27 @@ public class MiniQuarryAddEntryGui extends Screen implements IHandleButton {
         private final ResourceLocation data;
         private final Screen parent;
         private final Consumer<LocationEntry> setSelected;
+        private final Kind kind;
 
-        LocationEntry(ResourceLocation data, Screen parent, Consumer<LocationEntry> setSelected) {
+        LocationEntry(ResourceLocation data, Screen parent, Consumer<LocationEntry> setSelected, Kind kind) {
             this.data = data;
             this.parent = parent;
             this.setSelected = setSelected;
+            this.kind = kind;
         }
 
         public ResourceLocation getData() {
             return data;
         }
 
+        public Kind getKind() {
+            return kind;
+        }
+
         @Override
         @SuppressWarnings("IntegerDivisionInFloatingPointContext")
         public void render(int entryIdx, int top, int left, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean p_render_8_, float partialTicks) {
-            String name = data.toString();
+            String name = (kind == Kind.TAG ? "#" : "") + data.toString();
             Minecraft.getInstance().fontRenderer.drawStringWithShadow(name,
                 (parent.width - Minecraft.getInstance().fontRenderer.getStringWidth(name)) / 2, top + 2, 0xFFFFFF);
         }
@@ -151,4 +176,7 @@ public class MiniQuarryAddEntryGui extends Screen implements IHandleButton {
         }
     }
 
+    private enum Kind {
+        BLOCK, TAG
+    }
 }
