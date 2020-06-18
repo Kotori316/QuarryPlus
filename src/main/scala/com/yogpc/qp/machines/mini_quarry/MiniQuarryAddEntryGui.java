@@ -93,11 +93,13 @@ public class MiniQuarryAddEntryGui extends Screen implements IHandleButton {
                 }
             } else {
                 String maybePredicate = textField.getText();
-                try {
-                    (new BlockStateParser(new StringReader(maybePredicate), true)).parse(true);
-                    callback.accept(new QuarryBlackList.VanillaBlockPredicate(maybePredicate));
-                } catch (CommandSyntaxException e) {
-                    QuarryPlus.LOGGER.debug("Invalid predicate {} was parsed but not added. Got {}.", maybePredicate, e);
+                if (!maybePredicate.isEmpty()) {
+                    try {
+                        (new BlockStateParser(new StringReader(maybePredicate), true)).parse(true);
+                        callback.accept(new QuarryBlackList.VanillaBlockPredicate(maybePredicate));
+                    } catch (CommandSyntaxException e) {
+                        QuarryPlus.LOGGER.debug("Invalid predicate {} was parsed but not added. Got {}.", maybePredicate, e);
+                    }
                 }
             }
             this.onClose();
