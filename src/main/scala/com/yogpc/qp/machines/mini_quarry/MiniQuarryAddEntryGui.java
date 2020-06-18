@@ -59,7 +59,7 @@ public class MiniQuarryAddEntryGui extends Screen implements IHandleButton {
         list.render(mouseX, mouseY, partialTicks);
         textField.render(mouseX, mouseY, partialTicks);
         super.render(mouseX, mouseY, partialTicks);
-        String title = "New Entry";
+        String title = I18n.format(TranslationKeys.NEW_ENTRY);
         drawCenteredString(this.font, title, this.width / 2, 8, 0xFFFFFF);
     }
 

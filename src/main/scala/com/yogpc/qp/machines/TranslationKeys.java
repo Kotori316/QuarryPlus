@@ -14,6 +14,7 @@ public class TranslationKeys {
     public static final String ADD = "tof.addnewore";
     public static final String ADD_FLUID_SURE = "tof.addfluidsure";
     public static final String ALREADY_REGISTERED_ERROR = "tof.alreadyerror";
+    public static final String BLACKLIST = "quarryplus.gui.blacklist";
     public static final String CANCEL = "gui.cancel";
     public static final String CHANGEMODE = "chat.changemode";
     public static final String CHANGE_DIRECTION = "pp.change";
@@ -47,6 +48,8 @@ public class TranslationKeys {
     public static final String MANUAL_INPUT = "tof.manualinput";
     public static final String MARKER_AREA = "chat.markerarea";
     public static final String NORTH = "FD.north";
+    public static final String NEW_ENTRY = "quarryplus.gui.new_entry";
+    public static final String OF = "quarryplus.gui.of";
     public static final String PLACER_RS = "quarryplus.chat.placer_rs";
     public static final String PLUSENCHANT = "chat.plusenchant";
     public static final String PLUSENCHANTNO = "chat.plusenchantno";
@@ -67,6 +70,7 @@ public class TranslationKeys {
     public static final String TOF_INCLUDE = "tof.include";
     public static final String UP = "FD.up";
     public static final String WEST = "FD.west";
+    public static final String WHITELIST = "quarryplus.gui.whitelist";
     public static final String Y_LEVEL = "chat.ylevel";
     public static final String YOG_SPAWNER_SETTING = "yog.spanwer.setting";
 

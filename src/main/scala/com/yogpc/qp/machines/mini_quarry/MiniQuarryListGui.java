@@ -7,6 +7,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.IHandleButton;
 import com.yogpc.qp.machines.base.QuarryBlackList;
 import com.yogpc.qp.packet.IMessage;
@@ -39,9 +40,9 @@ public class MiniQuarryListGui extends Screen implements IHandleButton {
     protected void init() {
         super.init();
         int buttonWidth = 80;
-        addButton(new Button(0, width / 3 - buttonWidth / 2, height - 35, buttonWidth, 20, "BlackList", this));
+        addButton(new Button(0, width / 3 - buttonWidth / 2, height - 35, buttonWidth, 20, I18n.format(TranslationKeys.BLACKLIST), this));
         addButton(new Button(1, width / 3 * 2 - buttonWidth / 2, height - 35, buttonWidth, 20, I18n.format("gui.done"), this));
-        addButton(new Button(2, width / 2 - buttonWidth, height - 60, buttonWidth, 20, "New Entry", this));
+        addButton(new Button(2, width / 2 - buttonWidth, height - 60, buttonWidth, 20, I18n.format(TranslationKeys.NEW_ENTRY), this));
         addButton(new Button(3, width / 2, height - 60, buttonWidth, 20, I18n.format("selectWorld.delete"), this));
         list = new EntryList(this.minecraft, this.width, this.height, 30, this.height - 70, 18, this, this::getEntries);
         this.children.add(list);
@@ -52,7 +53,8 @@ public class MiniQuarryListGui extends Screen implements IHandleButton {
     public void render(final int mouseX, final int mouseY, final float partialTicks) {
         list.render(mouseX, mouseY, partialTicks);
         super.render(mouseX, mouseY, partialTicks);
-        String title = (whiteListFlag ? "WhiteList" : "BlackList") + " of " + super.getTitle().getFormattedText();
+        String listName = whiteListFlag ? I18n.format(TranslationKeys.WHITELIST) : I18n.format(TranslationKeys.BLACKLIST);
+        String title = I18n.format(TranslationKeys.OF, listName, super.getTitle().getFormattedText());
         drawCenteredString(this.font, title, this.width / 2, 8, 0xFFFFFF);
     }
 
@@ -86,7 +88,7 @@ public class MiniQuarryListGui extends Screen implements IHandleButton {
         switch (button.id) {
             case 0: // Change list
                 setWhiteListFlag(!whiteListFlag);
-                button.setMessage(whiteListFlag ? "BlackList" : "WhiteList");
+                button.setMessage(whiteListFlag ? I18n.format(TranslationKeys.BLACKLIST) : I18n.format(TranslationKeys.WHITELIST));
                 break;
             case 1:
                 assert this.minecraft != null;
