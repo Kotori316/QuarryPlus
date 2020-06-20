@@ -42,6 +42,7 @@ public class MiniQuarryAddEntryGui extends Screen implements IHandleButton {
         super.init();
         int buttonWidth = 80;
         textField = new TextFieldWidget(font, this.width / 2 - 125, this.height - 56, 250, 20, "");
+        textField.setMaxStringLength(512);
         list = new EntryList(this.minecraft, this.width, this.height, 30, this.height - 70, 18, this, this::getEntries);
         addButton(new Button(1, width / 2 - buttonWidth / 2, height - 35, buttonWidth, 20, I18n.format(TranslationKeys.ADD), this));
         this.children.add(list);
