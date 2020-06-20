@@ -109,6 +109,7 @@
   "quarryplus.tooltip.blockpump": "这个方块是%1$s的附件。%2$s把这个放在%1$s旁边。",
   "quarryplus.tooltip.exppump": "这个是%1$s和%2$s的附件。%3$s请将这个方块放在机器旁边。",
   "quarryplus.tooltip.replacer": "这个是%1$s和%2$s的附件。%3$s请将这个方块放在机器旁边。",
+  "quarryplus.tooltip.placer_plus": "Right click with Redstone Torch to change mode.",
   "tof.addblocksure": "你确定要添加这个方块吗？",
   "tof.addfluidsure": "你确定要添加这个流体吗？",
   "tof.addnewore": "添加",

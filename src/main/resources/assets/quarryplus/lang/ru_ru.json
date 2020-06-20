@@ -109,6 +109,7 @@
   "quarryplus.tooltip.blockpump": "This block is an attachment for %1$s.%2$sPlace this next to %1$s.",
   "quarryplus.tooltip.exppump": "This block is an attachment for %1$s and %2$s.%3$sPlace this next to machines.",
   "quarryplus.tooltip.replacer": "This block is an attachment for %1$s and %2$s.%3$sPlace this next to machines.",
+  "quarryplus.tooltip.placer_plus": "Right click with Redstone Torch to change mode.",
   "tof.addblocksure": "Вы точно хотите добавить этот блок?",
   "tof.addfluidsure": "Вы точно хотите добавить эту жидкость?",
   "tof.addnewore": "Добавить",

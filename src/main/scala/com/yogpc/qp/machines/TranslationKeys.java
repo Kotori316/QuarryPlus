@@ -78,6 +78,7 @@ public class TranslationKeys {
     public static final String TOOLTIP_EXPPUMP = "quarryplus.tooltip.exppump";
     public static final String TOOLTIP_REPLACER = "quarryplus.tooltip.replacer";
     public static final String TOOLTIP_ADVPUMP = "quarryplus.tooltip.advpump";
+    public static final String TOOLTIP_PLACER_PLUS = "quarryplus.tooltip.placer_plus";
 
     public static final String advpump = "block.quarryplus." + QuarryPlus.Names.advpump;
     public static final String advquarry = "block.quarryplus." + QuarryPlus.Names.advquarry;

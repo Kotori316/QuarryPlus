@@ -109,6 +109,7 @@
   "quarryplus.tooltip.blockpump": "このブロックは%1$s用の機械です。%2$s%1$sの隣に設置してください。",
   "quarryplus.tooltip.exppump": "このブロックは%1$sと%2$s用の機械です。%3$sこれらの機械の隣に設置してください。",
   "quarryplus.tooltip.replacer": "このブロックは%1$sと%2$s用の機械です。%3$sこれらの機械の隣に設置してください。",
+  "quarryplus.tooltip.placer_plus": "レッドストーントーチで右クリックするとモード変更",
   "tof.addblocksure": "本当にこのブロックを登録してもいいですか？",
   "tof.addfluidsure": "本当にこの液体を登録してもいいですか？",
   "tof.addnewore": "追加",

@@ -1,6 +1,7 @@
 package com.yogpc.qp.machines.pb;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.function.Predicate;
@@ -10,9 +11,12 @@ import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.QPBlock;
 import com.yogpc.qp.utils.Holder;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.BlockItem;
@@ -27,10 +31,14 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import static jp.t2v.lab.syntax.MapStreamSyntax.optCast;
@@ -88,6 +96,15 @@ public class PlacerBlock extends QPBlock {
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
         builder.add(FACING, TRIGGERED);
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public void addInformation(ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        super.addInformation(stack, worldIn, tooltip, flagIn);
+        if (Screen.hasShiftDown()) {
+            tooltip.add(new TranslationTextComponent(TranslationKeys.TOOLTIP_PLACER_PLUS));
+        }
     }
 
     // Placer Works
