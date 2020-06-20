@@ -1,4 +1,15 @@
 **This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).**
+## Version 15.3.2
+* Removed text field limit.
+* Add tool tip of PlacerPlus.
+* Translation of Mini Quarry.
+* Not to add empty string as predicate.
+* Reduced the number of sync packets.
+* Show tags in new entry lists.
+* Not to send item UP side first.
+* Play sound when mini quarry working Moved util method to package object.
+* Internal changes.
+
 ## Version 15.3.1
 * Fixed a crash in launching server by LoadingFailedException. [#91](https://github.com/Kotori316/QuarryPlus/issues/91)
 
@@ -57,7 +68,7 @@
 ## Version 15.2.1
 * Allow minus energy when digging. #78.
 * Implemented area limitation for ChunkDestroyer.
-* Fixed quarry drill was rendered in wrong dimension.
+* Fixed that quarry rendered the drill in wrong dimension.
 * Imported changes from 1.14.4 2020/02/14.
     - Many internal changes.
     - Chain breaking of frame expanded
