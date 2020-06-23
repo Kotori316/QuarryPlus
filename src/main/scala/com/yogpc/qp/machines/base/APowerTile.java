@@ -60,6 +60,7 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
         QuarryPlus.LOGGER.info(v1);
         return null;
     };
+    protected LazyOptional<IEnergyStorage> optHandler = LazyOptional.of(() -> this);
 
     public APowerTile(TileEntityType<?> type) {
         super(type);
@@ -194,6 +195,14 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
 //        MinecraftForge.EVENT_BUS.post(new EnergyTileUnloadEvent(this));
 //    }
 
+    /**
+     * Invalidate old handler and set new handler.
+     */
+    protected void updateEnergyHandler() {
+        this.optHandler.invalidate();
+        this.optHandler = LazyOptional.of(() -> this);
+    }
+
     @Override
     public void read(final CompoundNBT nbt) {
         super.read(nbt);
@@ -298,6 +307,7 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
         if (Config.common().noEnergy().get()) {
             this.all = maxStored;
         }
+        updateEnergyHandler();
     }
 
     //ic2 energy api implication
@@ -428,7 +438,7 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
         if (cap == CapabilityEnergy.ENERGY) {
-            return LazyOptional.of(() -> this).cast();
+            return this.optHandler.cast();
         }
         return super.getCapability(cap, side);
     }
