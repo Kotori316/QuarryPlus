@@ -21,6 +21,8 @@ import net.minecraftforge.items.CapabilityItemHandler
 import net.minecraftforge.items.wrapper.EmptyHandler
 import net.minecraftforge.registries.ForgeRegistries
 
+import scala.jdk.javaapi.OptionConverters
+
 package object qp {
 
   type NBTWrapper[A, NBTType <: INBT] = A => NBTType
@@ -42,20 +44,12 @@ package object qp {
     }
   }
 
-  def toScalaOption[T](o: java.util.Optional[T]): Option[T] = {
-    if (o.isPresent) {
-      Some(o.get())
-    } else {
-      None
-    }
-  }
-
   implicit class SOM[T](private val o: java.util.Optional[T]) extends AnyVal {
-    def scalaMap[B](f: T => B): Option[B] = toScalaOption(o).map(f)
+    def scalaMap[B](f: T => B): Option[B] = OptionConverters.toScala(o).map(f)
 
-    def scalaFilter(p: T => Boolean): Option[T] = toScalaOption(o).filter(p)
+    def scalaFilter(p: T => Boolean): Option[T] = OptionConverters.toScala(o).filter(p)
 
-    def asScala: Option[T] = toScalaOption(o)
+    def asScala: Option[T] = OptionConverters.toScala(o)
 
     def toList: List[T] = if (o.isPresent) List(o.get()) else Nil
   }
