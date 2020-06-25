@@ -3,6 +3,7 @@ import java.nio.file.Paths
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
+import java.util.stream.Collectors
 
 buildscript {
     repositories {
@@ -19,6 +20,7 @@ buildscript {
 plugins {
     id("maven-publish")
     id "com.wynprice.cursemaven" version "2.1.1"
+    id "com.github.breadmoirai.github-release" version "2.2.12"
 }
 apply plugin: 'scala'
 apply plugin: 'net.minecraftforge.gradle'
@@ -231,6 +233,23 @@ curseforge {
     }
 }
 
+githubRelease {
+    repo = 'QuarryPlus'
+    token = project.hasProperty("githubToken") ? getProperty("githubToken") : ""
+    targetCommitish = '1.15.1'
+    body {
+        file("temp_changelog.md").readLines()
+                .drop(1)
+                .takeWhile { s -> !s.isEmpty() }
+                .stream().collect(Collectors.joining())
+    }
+    releaseAssets = files(
+            jar.getArchiveFile().get(),
+            deobfJar.getArchiveFile().get(),
+            srcJar.getArchiveFile().get()
+    )
+}
+
 test {
     useJUnitPlatform()
 }
@@ -275,6 +294,10 @@ task CheckCompileOption() {
         println(argsScala)
         println(argsScala.getClass())
         System.properties.list(System.out)
+        println(file("temp_changelog.md").readLines()
+                .drop(1)
+                .takeWhile { s -> !s.isEmpty() }
+                .stream().collect(Collectors.joining(System.lineSeparator())))
     }
 }
 
