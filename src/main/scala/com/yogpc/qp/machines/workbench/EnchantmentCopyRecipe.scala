@@ -14,6 +14,7 @@ import net.minecraft.util.{JSONUtils, ResourceLocation}
 import net.minecraftforge.common.crafting.CraftingHelper
 
 import scala.jdk.CollectionConverters._
+import scala.util.chaining._
 
 final class EnchantmentCopyRecipe(location: ResourceLocation, o: ItemStack, e: Long, copyFrom: Seq[IngredientWithCount], otherInput: Seq[Seq[IngredientWithCount]])
   extends WorkbenchRecipes(location, ItemElement(o), e, showInJEI = true) {
@@ -24,12 +25,13 @@ final class EnchantmentCopyRecipe(location: ResourceLocation, o: ItemStack, e: L
   override def getOutput(inputs: util.List[ItemStack]): ItemStack = {
     val stack = super.getOutput
     val tagFrom = inputs.asScala.find(i => copyFrom.exists(_.matches(i)))
-    tagFrom.flatMap(s => Option(s.getTag))
-      .map(_.copy())
-      .map { t =>
-        if (stack.hasTag) t.merge(stack.getTag)
-        t
-      }.foreach(t => stack.setTag(t))
+    for {
+      s <- tagFrom
+      tag_raw <- Option(s.getTag)
+      tag = tag_raw.copy().tap(t => if (stack.hasTag) t.merge(stack.getTag))
+    } {
+      stack.setTag(tag)
+    }
     stack
   }
 
