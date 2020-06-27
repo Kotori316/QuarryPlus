@@ -3,7 +3,7 @@ package com.yogpc.qp.utils
 import com.mojang.datafixers.DSL
 import com.yogpc.qp.machines.advpump.{BlockAdvPump, ContainerAdvPump, TileAdvPump}
 import com.yogpc.qp.machines.advquarry.{BlockAdvQuarry, ContainerAdvQuarry, TileAdvQuarry}
-import com.yogpc.qp.machines.base.{IDisabled, StatusContainer}
+import com.yogpc.qp.machines.base.{IDisabled, IEnchantableTile, StatusContainer}
 import com.yogpc.qp.machines.bookmover.{BlockBookMover, ContainerBookMover, TileBookMover}
 import com.yogpc.qp.machines.controller.BlockController
 import com.yogpc.qp.machines.exppump.{BlockExpPump, TileExpPump}
@@ -22,8 +22,10 @@ import net.minecraft.block.Block
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.inventory.container.{Container, ContainerType}
 import net.minecraft.item.Item
+import net.minecraft.loot.LootFunctionType
 import net.minecraft.tileentity.{TileEntity, TileEntityType}
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.registry.Registry
 import net.minecraftforge.common.extensions.IForgeContainerType
 import net.minecraftforge.fml.ModLoadingContext
 
@@ -80,7 +82,7 @@ object Holder {
 
   //---------- TileEntity ----------
   private def createTileType[T <: TileEntity](supplier: () => T, name: String, block: Block): TileEntityType[T] = {
-    val t = TileEntityType.Builder.create[T](() => supplier(), block).build(DSL.nilType())
+    val t = TileEntityType.Builder.create[T](() => supplier(), block).build(DSL.emptyPartType())
     t.setRegistryName(QuarryPlus.modID, name)
     t
   }
@@ -197,4 +199,7 @@ object Holder {
     value.setRegistryName(name)
     value
   }
+
+  val dropLootFunctionType: LootFunctionType = Registry.register(Registry.field_239694_aZ_, IEnchantableTile.DropFunction.LOCATION,
+    new LootFunctionType(new IEnchantableTile.DropFunction.Serializer))
 }

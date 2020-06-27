@@ -4,7 +4,6 @@ import java.nio.file.Paths;
 
 import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.advquarry.BlockWrapper;
-import com.yogpc.qp.machines.base.IEnchantableTile;
 import com.yogpc.qp.machines.base.IMarker;
 import com.yogpc.qp.machines.base.IRemotePowerOn;
 import com.yogpc.qp.machines.base.QuarryBlackList;
@@ -20,9 +19,9 @@ import net.minecraft.block.Block;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.Item;
 import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.resources.IReloadableResourceManager;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.storage.loot.functions.LootFunctionManager;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
@@ -60,10 +59,11 @@ public class QuarryPlus {
 
     @SubscribeEvent
     public void serverStart(FMLServerAboutToStartEvent event) {
-        event.getServer().getResourceManager().addReloadListener(WorkbenchRecipes.Reload$.MODULE$);
         MinecraftForge.EVENT_BUS.register(WorkbenchRecipes.Reload$.MODULE$);
-        event.getServer().getResourceManager().addReloadListener(BlockWrapper.Reload$.MODULE$);
-        event.getServer().getResourceManager().addReloadListener(QuarryBlackList.Reload$.MODULE$);
+        IReloadableResourceManager manager = (IReloadableResourceManager) event.getServer().getDataPackRegistries().func_240970_h_();
+        manager.addReloadListener(WorkbenchRecipes.Reload$.MODULE$);
+        manager.addReloadListener(BlockWrapper.Reload$.MODULE$);
+        manager.addReloadListener(QuarryBlackList.Reload$.MODULE$);
     }
 
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -91,7 +91,6 @@ public class QuarryPlus {
 
         @SubscribeEvent
         public static void registerRecipe(RegistryEvent.Register<IRecipeSerializer<?>> event) {
-            LootFunctionManager.registerFunction(new IEnchantableTile.DropFunction.Serializer());
             CraftingHelper.register(new EnableCondition.Serializer());
             CraftingHelper.register(new QuarryConfigCondition.Serializer());
             CraftingHelper.register(new ResourceLocation(modID, "enchantment_ingredient"), EnchantmentIngredient.Serializer.INSTANCE);

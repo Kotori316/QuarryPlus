@@ -36,15 +36,16 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootContext;
+import net.minecraft.loot.LootFunction;
+import net.minecraft.loot.LootFunctionType;
+import net.minecraft.loot.LootParameters;
+import net.minecraft.loot.conditions.ILootCondition;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.storage.loot.LootContext;
-import net.minecraft.world.storage.loot.LootFunction;
-import net.minecraft.world.storage.loot.LootParameters;
-import net.minecraft.world.storage.loot.conditions.ILootCondition;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import static jp.t2v.lab.syntax.MapStreamSyntax.always_true;
@@ -168,10 +169,12 @@ public interface IEnchantableTile {
             return stack;
         }
 
+        @Override
+        public LootFunctionType func_230425_b_() {
+            return Holder.dropLootFunctionType();
+        }
+
         public static class Serializer extends LootFunction.Serializer<DropFunction> {
-            public Serializer() {
-                super(DropFunction.LOCATION, DropFunction.class);
-            }
 
             @Override
             public DropFunction deserialize(JsonObject object, JsonDeserializationContext deserializationContext, ILootCondition[] conditionsIn) {

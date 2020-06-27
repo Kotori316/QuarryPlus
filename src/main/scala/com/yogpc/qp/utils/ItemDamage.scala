@@ -3,8 +3,7 @@ package com.yogpc.qp.utils
 import cats._
 import cats.implicits._
 import com.google.gson.JsonObject
-import com.mojang.datafixers.Dynamic
-import com.mojang.datafixers.types.JsonOps
+import com.mojang.serialization.{Dynamic, JsonOps}
 import javax.annotation.Nonnull
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.nbt.{CompoundNBT, NBTDynamicOps}
