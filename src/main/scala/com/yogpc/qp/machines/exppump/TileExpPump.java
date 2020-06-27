@@ -27,7 +27,7 @@ import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Pair;
@@ -122,7 +122,7 @@ public class TileExpPump extends APacketTile implements IEnchantableTile, IDebug
     public void onActivated(World worldIn, BlockPos pos, PlayerEntity playerIn) {
         if (module.xp() > 0) {
             int xp = ExperienceOrbEntity.getXPSplit(module.xp());
-            Vec3d vec = playerIn.getPositionVec();
+            Vector3d vec = playerIn.getPositionVec();
             ExperienceOrbEntity orb = new ExperienceOrbEntity(worldIn, vec.getX(), vec.getY(), vec.getZ(), xp);
             worldIn.addEntity(orb);
             addXp(-xp);
@@ -137,8 +137,8 @@ public class TileExpPump extends APacketTile implements IEnchantableTile, IDebug
     }
 
     @Override
-    public void read(CompoundNBT compound) {
-        super.read(compound);
+    public void func_230337_a_(BlockState state, CompoundNBT compound) {
+        super.func_230337_a_(state, compound);
         int connectID = compound.getByte("mConnectTo");
         mConnectTo = connectID < 0 ? null : Direction.byIndex(connectID);
         module.xp_$eq(compound.getInt("xpAmount"));

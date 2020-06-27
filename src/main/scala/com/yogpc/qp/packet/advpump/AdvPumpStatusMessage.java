@@ -6,6 +6,7 @@ import com.yogpc.qp.machines.advpump.TileAdvPump;
 import com.yogpc.qp.packet.IMessage;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -33,13 +34,14 @@ public class AdvPumpStatusMessage implements IMessage<AdvPumpStatusMessage> {
         pos = buffer.readBlockPos();
         nbtTagCompound = buffer.readCompoundTag();
         placeFrame = buffer.readBoolean();
-        dim = buffer.readResourceLocation()();
+        dim = buffer.readResourceLocation();
         return this;
     }
 
     @Override
     public void writeToBuffer(PacketBuffer buffer) {
-        buffer.writeBlockPos(pos).writeCompoundTag(nbtTagCompound).writeBoolean(placeFrame).writeInt(dim);
+        buffer.writeBlockPos(pos).writeCompoundTag(nbtTagCompound).writeBoolean(placeFrame);
+        buffer.writeResourceLocation(dim);
     }
 
     @Override

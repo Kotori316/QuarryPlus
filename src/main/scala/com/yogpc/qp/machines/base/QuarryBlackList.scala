@@ -5,8 +5,7 @@ import java.util
 
 import com.google.gson._
 import com.mojang.brigadier.StringReader
-import com.mojang.datafixers.Dynamic
-import com.mojang.datafixers.types.{DynamicOps, JsonOps}
+import com.mojang.serialization.{Dynamic, DynamicOps, JsonOps}
 import com.yogpc.qp.machines.pump.TilePump
 import com.yogpc.qp.utils.JsonReloadListener
 import com.yogpc.qp.{NBTWrapper, QuarryPlus}
@@ -40,7 +39,7 @@ object QuarryBlackList {
 
   final def example1: Seq[Entry] = Seq(Air)
 
-  final def example2: Seq[Entry] = Seq(Air, Name(Blocks.WHITE_WOOL.getRegistryName), Mod("ic2"), Ores, Tag(Tags.Blocks.STONE.getId))
+  final def example2: Seq[Entry] = Seq(Air, Name(Blocks.WHITE_WOOL.getRegistryName), Mod("ic2"), Ores, Tag(Tags.Blocks.STONE.func_230234_a_()))
 
   private var entries: Set[Entry] = Set.empty
 
@@ -74,16 +73,18 @@ object QuarryBlackList {
 
   def readEntry[A](tagLike: Dynamic[A]): Entry = {
     import com.yogpc.qp._
+    def notPresent = throw new IllegalArgumentException("Entry didn't have enough parameter., %s".format(tagLike))
+
     val idOpt = for {
-      j <- tagLike.asMapOpt[String, Dynamic[A]](_.asString(""), java.util.function.Function.identity()).asScala
+      j <- tagLike.asMapOpt[String, Dynamic[A]](_.asString(""), java.util.function.Function.identity()).result().asScala
       map = CollectionConverters.asScala(j)
-      id <- map.get("id").flatMap(_.asString().asScala)
+      id <- map.get("id").flatMap(_.asString().result().asScala)
     } yield {
       id match {
-        case ID_NAME => Name(new ResourceLocation(map("name").asString.get()))
-        case ID_MOD => Mod(map("modID").asString().get())
-        case ID_TAG => Tag(new ResourceLocation(map("tag").asString().get()))
-        case ID_VANILLA => VanillaBlockPredicate(map("block_predicate").asString().get())
+        case ID_NAME => Name(new ResourceLocation(map("name").asString(notPresent)))
+        case ID_MOD => Mod(map("modID").asString(notPresent))
+        case ID_TAG => Tag(new ResourceLocation(map("tag").asString(notPresent)))
+        case ID_VANILLA => VanillaBlockPredicate(map("block_predicate").asString(notPresent))
         case ID_ORES => Ores
         case ID_FLUID => Fluids
         case _ => Air
@@ -152,7 +153,7 @@ object QuarryBlackList {
       if (cacheNoOre(state)) false
       else if (cacheOre(state)) true
       else {
-        if (Tags.Blocks.ORES.contains(state.getBlock)) {
+        if (Tags.Blocks.ORES.func_230235_a_(state.getBlock)) {
           cacheOre += state
           true
         } else {
@@ -167,13 +168,13 @@ object QuarryBlackList {
 
   case class Tag(name: ResourceLocation) extends Entry(ID_TAG) {
 
-    import net.minecraft.tags.{BlockTags, Tag => MCTag}
+    import net.minecraft.tags.{BlockTags, ITag => MCTag}
 
     private[this] final val tag: MCTag[Block] = BlockTags.getCollection.get(name)
 
     override def test(state: BlockState, world: IBlockReader, pos: BlockPos): Boolean = {
       if (tag == null) false
-      else tag.contains(state.getBlock)
+      else tag.func_230235_a_(state.getBlock)
     }
 
     override def toString: String = "Tag #" + name

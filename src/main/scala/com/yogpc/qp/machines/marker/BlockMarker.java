@@ -51,7 +51,7 @@ public class BlockMarker extends Block {
     public final BlockItem itemBlock;
 
     public BlockMarker() {
-        super(Block.Properties.create(Material.MISCELLANEOUS).lightValue(7));
+        super(Block.Properties.create(Material.MISCELLANEOUS).func_235838_a_(o -> 7));
         setRegistryName(QuarryPlus.modID, QuarryPlus.Names.marker);
         itemBlock = new BlockItem(this, new Item.Properties().group(Holder.tab()));
         itemBlock.setRegistryName(QuarryPlus.modID, QuarryPlus.Names.marker);

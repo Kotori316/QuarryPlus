@@ -3,16 +3,17 @@ package com.yogpc.qp.machines.advquarry
 import java.lang.reflect.{GenericArrayType, Type}
 
 import com.google.gson._
-import com.mojang.datafixers.types.JsonOps
+import com.mojang.serialization.JsonOps
 import com.yogpc.qp.utils.JsonReloadListener
 import net.minecraft.block.{Block, BlockState, Blocks}
 import net.minecraft.profiler.IProfiler
 import net.minecraft.resources.IResourceManager
-import net.minecraft.tags.{BlockTags, Tag}
+import net.minecraft.tags.{BlockTags, ITag, TagCollectionManager}
 import net.minecraft.util.{JSONUtils, ResourceLocation}
 import net.minecraftforge.common.Tags
 
 import scala.jdk.CollectionConverters._
+import scala.jdk.FunctionConverters._
 import scala.util.Try
 
 abstract class BlockWrapper(val name: String)
@@ -30,7 +31,7 @@ abstract class BlockWrapper(val name: String)
 object BlockWrapper extends JsonDeserializer[BlockWrapper] with JsonSerializer[BlockWrapper] {
   def apply(state: BlockState, ignoreProperty: Boolean = false): BlockWrapper = new State(state, ignoreProperty)
 
-  def apply(tag: Tag[Block]): BlockWrapper = new TagPredicate(tag)
+  def apply(tag: ITag[Block]): BlockWrapper = new TagPredicate(tag)
 
   val example: Array[BlockWrapper] = Array(
     BlockWrapper(Tags.Blocks.STONE),
@@ -85,29 +86,30 @@ object BlockWrapper extends JsonDeserializer[BlockWrapper] with JsonSerializer[B
 
     override def serialize(obj: JsonObject, typeOfSrc: Type, context: JsonSerializationContext) = {
       obj.addProperty(KEY_NAME, name)
-      obj.add(KEY_STATE, BlockState.serialize(JsonOps.INSTANCE, state).getValue)
+      val f = (s: String) => QuarryPlus.LOGGER.error(s)
+      obj.add(KEY_STATE, BlockState.field_235877_b_.encodeStart(JsonOps.INSTANCE, state).getOrThrow(false, f.asJavaConsumer))
       obj.addProperty(KEY_Property, ignoreProperty)
       obj
     }
   }
 
-  private class TagPredicate(tag: Tag[Block]) extends BlockWrapper(NAME_Tag) {
-    override def contain(that: BlockState) = tag.contains(that.getBlock)
+  private class TagPredicate(tag: ITag[Block]) extends BlockWrapper(NAME_Tag) {
+    override def contain(that: BlockState) = tag.func_230235_a_(that.getBlock)
 
     override def serialize(obj: JsonObject, typeOfSrc: Type, context: JsonSerializationContext) = {
       obj.addProperty(KEY_NAME, name)
-      obj.addProperty(KEY_Tag, tag.getId.toString)
+      obj.addProperty(KEY_Tag, TagCollectionManager.func_232928_e_().func_232923_a_().func_232975_b_(tag).toString)
       obj
     }
   }
 
   override def deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): BlockWrapper = {
-    import com.mojang.datafixers.Dynamic
     val jsonObj = JSONUtils.getJsonObject(json, "wrapper")
     val name = JSONUtils.getString(jsonObj, KEY_NAME, NAME_NoMatch)
     name match {
       case NAME_State =>
-        val maybeWrapper = for (state <- Try(BlockState.deserialize(new Dynamic(JsonOps.INSTANCE, JSONUtils.getJsonObject(json.getAsJsonObject, KEY_STATE))));
+        val maybeWrapper = for (result <- Try(BlockState.field_235877_b_.decode(JsonOps.INSTANCE, JSONUtils.getJsonObject(json.getAsJsonObject, KEY_STATE)));
+                                state <- Try(result.result().get().getFirst);
                                 property <- Try(JSONUtils.getBoolean(json.getAsJsonObject, KEY_Property, false)))
           yield new State(state, property)
         maybeWrapper.getOrElse(new State(Blocks.AIR.getDefaultState))

@@ -19,7 +19,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.IBucketPickupHandler;
-import net.minecraft.fluid.IFluidState;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkSection;
@@ -347,7 +347,7 @@ public abstract class PumpModule implements IModule {
                         this.liquids.add(stack);
                 }
             });*/
-                IFluidState fluidState = world.getFluidState(blockPos);
+                FluidState fluidState = world.getFluidState(blockPos);
                 if (fluidState.isSource()) {
                     if (tile instanceof HasStorage) {
                         HasStorage.Storage storage = ((HasStorage) tile).getStorage();

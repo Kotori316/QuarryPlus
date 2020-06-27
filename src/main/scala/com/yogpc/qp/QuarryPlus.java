@@ -43,7 +43,7 @@ public class QuarryPlus {
     public static final String modID = "quarryplus";
     public static final Logger LOGGER = LogManager.getLogger(Mod_Name);
 
-    public static final ProxyCommon proxy = DistExecutor.runForDist(() -> ProxyClient::new, () -> ProxyCommon::new);
+    public static final ProxyCommon proxy = DistExecutor.safeRunForDist(() -> ProxyClient::new, () -> ProxyCommon::new);
 
     public QuarryPlus() {
         initConfig();

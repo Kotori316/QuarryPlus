@@ -6,7 +6,7 @@ import com.yogpc.qp.machines.base._
 import com.yogpc.qp.machines.quarry.ContainerQuarryModule.HasModuleInventory
 import net.minecraft.block.Blocks
 import net.minecraft.item.ItemStack
-import net.minecraft.world.dimension.DimensionType
+import net.minecraft.world.World
 
 class RemoveBedrockModule(tile: APowerTile with HasStorage with HasModuleInventory) extends IModule {
   override def id: String = RemoveBedrockModule.id
@@ -20,8 +20,8 @@ class RemoveBedrockModule(tile: APowerTile with HasStorage with HasModuleInvento
     when match {
       case IModule.BeforeBreak(world, pos) =>
         val state = world.getBlockState(pos)
-        val toRemove = world.getDimension.getType match {
-          case DimensionType.THE_NETHER => (pos.getY > 0 && pos.getY < 5) || (pos.getY > 122 && pos.getY < 127)
+        val toRemove = world.func_234923_W_() match {
+          case World.field_234919_h_ /*THE NETHER*/ => (pos.getY > 0 && pos.getY < 5) || (pos.getY > 122 && pos.getY < 127)
           case _ => pos.getY > 0 && pos.getY < 5
         }
         if (toRemove && Config.common.removeBedrock.get() && state.getBlock == Blocks.BEDROCK) {

@@ -4,7 +4,7 @@ import com.yogpc.qp.QuarryPlus
 import com.yogpc.qp.compat.InvUtils
 import com.yogpc.qp.machines.TranslationKeys
 import com.yogpc.qp.utils.Holder
-import net.minecraft.block.{Block, BlockRenderType, BlockState, ContainerBlock}
+import net.minecraft.block._
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.entity.{EntitySpawnPlacementRegistry, EntityType}
 import net.minecraft.inventory.InventoryHelper
@@ -17,7 +17,7 @@ import net.minecraft.util.{ActionResultType, Hand, NonNullList, ResourceLocation
 import net.minecraft.world.server.ServerWorld
 import net.minecraft.world.{IBlockReader, World}
 
-abstract class QPBlock(builder: Block.Properties, name: String, generator: java.util.function.BiFunction[QPBlock, Item.Properties, _ <: BlockItem]) extends ContainerBlock(builder) {
+abstract class QPBlock(builder: AbstractBlock.Properties, name: String, generator: java.util.function.BiFunction[QPBlock, Item.Properties, _ <: BlockItem]) extends ContainerBlock(builder) {
 
   setRegistryName(QuarryPlus.modID, name)
   val BlockItem: BlockItem = generator.apply(this, new Item.Properties().group(Holder.tab))
@@ -60,7 +60,7 @@ abstract class QPBlock(builder: Block.Properties, name: String, generator: java.
   }
 
   //noinspection ScalaDeprecation
-  override def hasComparatorInputOverride(state: BlockState): Boolean = state.getProperties.contains(QPBlock.WORKING)
+  override def hasComparatorInputOverride(state: BlockState): Boolean = state.func_235901_b_(QPBlock.WORKING)
 
   def getTileType: TileEntityType[_ <: TileEntity]
 

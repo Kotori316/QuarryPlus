@@ -22,7 +22,7 @@ import net.minecraft.item.Rarity;
 import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
@@ -43,10 +43,7 @@ public class ItemExpPumpModule extends Item implements IDisabled, IModuleItem {
 
     @Override
     public <T extends APowerTile & HasStorage & ContainerQuarryModule.HasModuleInventory> Function<T, IModule> getModule(ItemStack stack) {
-        int xp = Optional.ofNullable(stack.getTag())
-            .map(tag -> tag.get(Key_xp))
-            .flatMap(NBTDynamicOps.INSTANCE::getNumberValue)
-            .map(Number::intValue)
+        int xp = getXPInStack(stack)
             .orElse(0);
         return t -> {
             ExpPumpModule module = ExpPumpModule.fromTile(t, value -> stack.setTagInfo(Key_xp, NBTDynamicOps.INSTANCE.createInt(value)));
@@ -58,26 +55,27 @@ public class ItemExpPumpModule extends Item implements IDisabled, IModuleItem {
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         super.addInformation(stack, worldIn, tooltip, flagIn);
-        Optional.ofNullable(stack.getTag())
-            .map(tag -> tag.get(Key_xp))
-            .flatMap(NBTDynamicOps.INSTANCE::getNumberValue)
-            .map(Number::intValue)
+        getXPInStack(stack)
             .ifPresent(integer -> tooltip.add(new StringTextComponent("xp: " + integer)));
+    }
+
+    private Optional<Integer> getXPInStack(ItemStack stack) {
+        return Optional.ofNullable(stack.getTag())
+            .map(tag -> tag.get(Key_xp))
+            .flatMap(t -> NBTDynamicOps.INSTANCE.getNumberValue(t).result())
+            .map(Number::intValue);
     }
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
         if (!playerIn.isCrouching()) {
             ItemStack stack = playerIn.getHeldItem(handIn);
-            int xp = Optional.ofNullable(stack.getTag())
-                .map(tag -> tag.get(Key_xp))
-                .flatMap(NBTDynamicOps.INSTANCE::getNumberValue)
-                .map(Number::intValue)
+            int xp = getXPInStack(stack)
                 .orElse(0);
             if (xp > 0) {
                 stack.removeChildTag(Key_xp);
                 if (!worldIn.isRemote) {
-                    Vec3d vec = playerIn.getPositionVec();
+                    Vector3d vec = playerIn.getPositionVec();
                     ExperienceOrbEntity orb = new ExperienceOrbEntity(worldIn, vec.getX(), vec.getY(), vec.getZ(), xp);
                     worldIn.addEntity(orb);
                 }

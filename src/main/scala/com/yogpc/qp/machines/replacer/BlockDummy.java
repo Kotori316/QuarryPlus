@@ -22,7 +22,7 @@ public class BlockDummy extends AbstractGlassBlock {
     public BlockDummy() {
         super(Block.Properties.create(Material.GLASS)
             .hardnessAndResistance(1f)
-            .lightValue(15)
+            .func_235838_a_(value -> 15)
             .noDrops()
             .sound(SoundType.GLASS)
             .notSolid());

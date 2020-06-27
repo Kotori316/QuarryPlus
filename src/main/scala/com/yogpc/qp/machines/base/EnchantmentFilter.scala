@@ -2,8 +2,7 @@ package com.yogpc.qp.machines.base
 
 import java.util.function.{Predicate, Function => JFunc}
 
-import com.mojang.datafixers.Dynamic
-import com.mojang.datafixers.types.DynamicOps
+import com.mojang.serialization.{DynamicOps, Dynamic => SerializeDynamic}
 import com.yogpc.qp._
 import com.yogpc.qp.machines.base.QuarryBlackList.Entry
 import com.yogpc.qp.machines.mini_quarry.MiniQuarryTile
@@ -87,15 +86,15 @@ object EnchantmentFilter {
     new EnchantmentFilter(fortuneInclude, silktouchInclude, fortuneList, silktouchList)
   }
 
-  def read[T](tagLike: Dynamic[T]): EnchantmentFilter = {
+  def read[T](tagLike: SerializeDynamic[T]): EnchantmentFilter = {
     import scala.jdk.CollectionConverters._
-    val mapOpt: Option[Map[String, Dynamic[T]]] = tagLike.asMapOpt[String, Dynamic[T]](k => k.asString(""), v => v).asScala.map(m => m.asScala.toMap)
+    val mapOpt: Option[Map[String, SerializeDynamic[T]]] = tagLike.asMapOpt[String, SerializeDynamic[T]](k => k.asString(""), v => v).result().asScala.map(m => m.asScala.toMap)
     mapOpt.map { m =>
       val fortuneInclude = m.get("fortuneInclude").exists(_.asBoolean(false))
       val silktouchInclude = m.get("silktouchInclude").exists(_.asBoolean(false))
-      val fortuneList = m.get("fortuneList").flatMap(l => l.asListOpt(JFunc.identity()).asScala)
+      val fortuneList = m.get("fortuneList").flatMap(l => l.asListOpt(JFunc.identity()).result().asScala)
         .map(l => CollectionConverters.asScala(l).map(QuarryBlackList.readEntry).toSet).getOrElse(Set.empty)
-      val silktouchList = m.get("silktouchList").flatMap(l => l.asListOpt(JFunc.identity()).asScala)
+      val silktouchList = m.get("silktouchList").flatMap(l => l.asListOpt(JFunc.identity()).result().asScala)
         .map(l => CollectionConverters.asScala(l).map(QuarryBlackList.readEntry).toSet).getOrElse(Set.empty)
       new EnchantmentFilter(fortuneInclude, silktouchInclude, fortuneList, silktouchList)
     }.getOrElse(defaultInstance)

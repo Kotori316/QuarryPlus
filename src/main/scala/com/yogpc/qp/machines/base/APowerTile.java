@@ -205,8 +205,12 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
     }
 
     @Override
+    public void func_230337_a_(BlockState state, CompoundNBT nbt) {
+        super.func_230337_a_(state, nbt);
+        read(nbt);
+    }
+
     public void read(final CompoundNBT nbt) {
-        super.read(nbt);
         setStoredEnergy(nbt.getLong(NBT_STORED_ENERGY));
         configure(nbt.getLong(NBT_MAX_RECEIVE), nbt.getLong(NBT_MAX_STORED));
         outputEnergyInfo = !nbt.contains(NBT_OUTPUT_ENERGY_INFO) || nbt.getBoolean(NBT_OUTPUT_ENERGY_INFO);

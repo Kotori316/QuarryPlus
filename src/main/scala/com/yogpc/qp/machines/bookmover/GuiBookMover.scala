@@ -1,10 +1,9 @@
 package com.yogpc.qp.machines.bookmover
 
+import com.mojang.blaze3d.matrix.MatrixStack
 import com.mojang.blaze3d.systems.RenderSystem
 import com.yogpc.qp.QuarryPlus
-import com.yogpc.qp.machines.TranslationKeys
 import net.minecraft.client.gui.screen.inventory.ContainerScreen
-import net.minecraft.client.resources.I18n
 import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.text.ITextComponent
@@ -12,24 +11,19 @@ import net.minecraft.util.text.ITextComponent
 class GuiBookMover(c: ContainerBookMover, inv: PlayerInventory, t: ITextComponent) extends ContainerScreen[ContainerBookMover](c, inv, t) {
   val LOCATION = new ResourceLocation(QuarryPlus.modID, "textures/gui/bookmover.png")
 
-  override def drawGuiContainerBackgroundLayer(partialTicks: Float, mouseX: Int, mouseY: Int): Unit = {
+  //noinspection ScalaDeprecation
+  override def func_230450_a_(matrixStack: MatrixStack, partialTicks: Float, mouseX: Int, mouseY: Int): Unit = {
     RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F)
     this.getMinecraft.getTextureManager.bindTexture(LOCATION)
-    this.blit(guiLeft, guiTop, 0, 0, xSize, ySize)
+    this.func_238474_b_(matrixStack, guiLeft, guiTop, 0, 0, xSize, ySize)
     if (container.moverIsWorking()) {
-      this.blit(guiLeft + 79, guiTop + 35, xSize + 0, 14, container.getProgress * 3 / 125, 16)
+      this.func_238474_b_(matrixStack, guiLeft + 79, guiTop + 35, xSize + 0, 14, container.getProgress * 3 / 125, 16)
     }
   }
 
-  override def render(mouseX: Int, mouseY: Int, partialTicks: Float): Unit = {
-    this.renderBackground()
-    super.render(mouseX, mouseY, partialTicks)
-    this.renderHoveredToolTip(mouseX, mouseY)
-  }
-
-  override def drawGuiContainerForegroundLayer(p_146979_1_ : Int, p_146979_2_ : Int): Unit = {
-    val s = I18n.format(TranslationKeys.moverfrombook)
-    this.font.drawString(s, (this.xSize - this.font.getStringWidth(s)).toFloat / 2, 6, 0x404040)
-    this.font.drawString(I18n.format(TranslationKeys.CONTAINER_INVENTORY), 8, (this.ySize - 96 + 2).toFloat, 4210752)
+  override def func_230430_a_(matrixStack: MatrixStack, mouseX: Int, mouseY: Int, partialTicks: Float): Unit = { // render
+    this.func_230446_a_(matrixStack) // back ground
+    super.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks) // super.render
+    this.func_230459_a_(matrixStack, mouseX, mouseY) // render tooltip
   }
 }

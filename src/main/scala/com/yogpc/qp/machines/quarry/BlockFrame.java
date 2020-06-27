@@ -39,10 +39,10 @@ import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.util.math.vector.Vector3i;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
@@ -215,13 +215,13 @@ public class BlockFrame extends Block {
     }
 
     private static class Direction8 {
-        private final Vec3i vec;
+        private final Vector3i vec;
 
-        private Direction8(Vec3i vec) {
+        private Direction8(Vector3i vec) {
             this.vec = vec;
         }
 
-        public Vec3i getVec() {
+        public Vector3i getVec() {
             return vec;
         }
 

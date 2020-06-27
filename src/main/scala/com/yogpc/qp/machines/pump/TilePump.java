@@ -48,8 +48,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.block.IBucketPickupHandler;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.fluid.IFluidState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.ITickableTileEntity;
@@ -108,8 +108,8 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     }
 
     @Override
-    public void read(final CompoundNBT nbt) {
-        super.read(nbt);
+    public void func_230337_a_(BlockState state, final CompoundNBT nbt) {
+        super.func_230337_a_(state, nbt);
         this.silktouch = nbt.getBoolean("silktouch");
         this.fortune = nbt.getByte("fortune");
         this.unbreaking = nbt.getByte("unbreaking");
@@ -498,7 +498,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                         this.liquids.add(stack);
                 }
             });*/
-            IFluidState fluidState = world.getFluidState(blockPos);
+            FluidState fluidState = world.getFluidState(blockPos);
             if (fluidState.isSource()) {
                 HasStorage.Storage storage = G_connected() instanceof HasStorage ? ((HasStorage) G_connected()).getStorage() : getStorage();
                 storage.insertFluid(new FluidStack(fluidState.getFluid(), FluidAttributes.BUCKET_VOLUME));

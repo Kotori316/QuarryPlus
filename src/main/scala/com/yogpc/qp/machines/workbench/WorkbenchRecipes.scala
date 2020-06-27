@@ -12,7 +12,6 @@ import com.yogpc.qp.packet.PacketHandler
 import com.yogpc.qp.packet.workbench.RecipeSyncMessage
 import com.yogpc.qp.utils.{Holder, ItemElement, RecipeGetter}
 import com.yogpc.qp.{QuarryPlus, _}
-import net.minecraft.client.resources.JsonReloadListener
 import net.minecraft.entity.player.ServerPlayerEntity
 import net.minecraft.item.crafting.{IRecipe, IRecipeSerializer, IRecipeType}
 import net.minecraft.item.{Item, ItemStack}
@@ -149,7 +148,7 @@ object WorkbenchRecipes {
     val scalaInput = inputs.asScala.map(_.asScala.toSeq).toSeq
     val newRecipe = new IngredientRecipe(location, output, (energy * APowerTile.MJToMicroMJ).toLong, s = true, scalaInput)
     if (energy > 0) {
-      recipes_internal put(location, newRecipe)
+      recipes_internal.put(location, newRecipe)
     } else {
       LOGGER.error(s"Energy of Workbench Recipe is 0. $newRecipe")
     }
@@ -240,12 +239,13 @@ object WorkbenchRecipes {
     def write(buffer: PacketBuffer, recipe: WorkbenchRecipes): Unit
   }
 
-  object Reload extends JsonReloadListener(new GsonBuilder().setPrettyPrinting().disableHtmlEscaping.create, QuarryPlus.modID + "/workbench") {
+  object Reload extends com.yogpc.qp.utils.JsonReloadListener(new GsonBuilder().setPrettyPrinting().disableHtmlEscaping.create, QuarryPlus.modID + "/workbench") {
 
-    override def apply(splashList: util.Map[ResourceLocation, JsonObject], resourceManagerIn: IResourceManager, profilerIn: IProfiler): Unit = {
+    def apply(splashList: util.Map[ResourceLocation, JsonElement], resourceManagerIn: IResourceManager, profilerIn: IProfiler): Unit = {
       recipes_internal.clear()
 
-      for ((location, jsonObject) <- splashList.asScala) {
+      for ((location, element) <- splashList.asScala;
+           jsonObject <- element.some.collect { case o: JsonObject => o }) {
         parse(jsonObject, location) match {
           case Left(value) if value == conditionMessage =>
           case Left(value) => LOGGER.error(s"Error in loading $location, $value")
@@ -258,7 +258,7 @@ object WorkbenchRecipes {
 
     @SubscribeEvent
     def loggedIn(event: PlayerEvent.PlayerLoggedInEvent): Unit = {
-      DistExecutor.runWhenOn(Dist.DEDICATED_SERVER, () => () =>
+      DistExecutor.unsafeRunWhenOn(Dist.DEDICATED_SERVER, () => () =>
         PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.`with`(() => event.getPlayer.asInstanceOf[ServerPlayerEntity]),
           RecipeSyncMessage.create(WorkbenchRecipes.recipes)))
     }

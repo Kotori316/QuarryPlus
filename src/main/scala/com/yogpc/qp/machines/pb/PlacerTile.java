@@ -41,7 +41,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -64,16 +64,16 @@ public class PlacerTile extends APacketTile implements
     public static final String KEY_ITEM = "items";
     public static final String KEY_LAST_PLACED = "last_placed";
     public static final String KEY_RS_MODE = "redstone_mode";
-    public static final Map<Direction, Vec3d> DIRECTION_VEC3D_MAP;
+    public static final Map<Direction, Vector3d> DIRECTION_VEC3D_MAP;
 
     static {
-        EnumMap<Direction, Vec3d> map = new EnumMap<>(Direction.class);
-        map.put(Direction.DOWN, new Vec3d(0.5, 0, 0.5));
-        map.put(Direction.UP, new Vec3d(0.5, 1, 0.5));
-        map.put(Direction.NORTH, new Vec3d(0.5, 0.5, 0));
-        map.put(Direction.SOUTH, new Vec3d(0.5, 0.5, 1));
-        map.put(Direction.EAST, new Vec3d(1, 0.5, 0.5));
-        map.put(Direction.WEST, new Vec3d(0, 0.5, 0.5));
+        EnumMap<Direction, Vector3d> map = new EnumMap<>(Direction.class);
+        map.put(Direction.DOWN, new Vector3d(0.5, 0, 0.5));
+        map.put(Direction.UP, new Vector3d(0.5, 1, 0.5));
+        map.put(Direction.NORTH, new Vector3d(0.5, 0.5, 0));
+        map.put(Direction.SOUTH, new Vector3d(0.5, 0.5, 1));
+        map.put(Direction.EAST, new Vector3d(1, 0.5, 0.5));
+        map.put(Direction.WEST, new Vector3d(0, 0.5, 0.5));
         DIRECTION_VEC3D_MAP = Collections.unmodifiableMap(map);
     }
 
@@ -120,7 +120,7 @@ public class PlacerTile extends APacketTile implements
         if (isEmpty() || !redstoneMode.canPlace()) return;
         Direction facing = getBlockState().get(FACING);
         BlockPos pos = getPos().offset(facing);
-        Vec3d hitPos = DIRECTION_VEC3D_MAP.get(facing.getOpposite()).add(pos.getX(), pos.getY(), pos.getZ());
+        Vector3d hitPos = DIRECTION_VEC3D_MAP.get(facing.getOpposite()).add(pos.getX(), pos.getY(), pos.getZ());
         BlockRayTraceResult rayTrace = new BlockRayTraceResult(hitPos, facing.getOpposite(), pos, false);
         PlayerEntity fake = QuarryFakePlayer.get(((ServerWorld) world), getPos());
 
@@ -197,8 +197,8 @@ public class PlacerTile extends APacketTile implements
     }
 
     @Override
-    public void read(CompoundNBT compound) {
-        super.read(compound);
+    public void func_230337_a_(BlockState state, CompoundNBT compound) {
+        super.func_230337_a_(state, compound);
         ItemStackHelper.loadAllItems(compound.getCompound(KEY_ITEM), inventory);
         lastPlacedIndex = compound.getInt(KEY_LAST_PLACED);
         try {

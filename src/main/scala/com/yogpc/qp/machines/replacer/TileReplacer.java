@@ -93,8 +93,8 @@ public class TileReplacer extends APacketTile implements IAttachment, IDebugSend
     }
 
     @Override
-    public void read(CompoundNBT compound) {
-        super.read(compound);
+    public void func_230337_a_(BlockState state, CompoundNBT compound) {
+        super.func_230337_a_(state, compound);
         facing = Optional.of(compound.getString("facing")).filter(not(String::isEmpty)).map(Direction::byName).orElse(null);
         loading = true;
     }

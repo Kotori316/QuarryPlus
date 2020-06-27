@@ -149,7 +149,8 @@ public class TileMiningWell extends TileBasic implements ITickableTileEntity {
 
     public void removePipes() {
         assert world != null;
-        BlockPos.Mutable pos = new BlockPos.Mutable(getPos());
+        BlockPos.Mutable pos = new BlockPos.Mutable();
+        pos.setPos(getPos());
         for (int depth = getPos().getY() - 1; depth > 0; depth--) {
             pos.setY(depth);
             if (world.getBlockState(pos).getBlock() != Holder.blockPlainPipe())

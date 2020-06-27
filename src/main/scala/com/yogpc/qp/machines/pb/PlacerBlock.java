@@ -102,7 +102,7 @@ public class PlacerBlock extends QPBlock {
     @OnlyIn(Dist.CLIENT)
     public void addInformation(ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         super.addInformation(stack, worldIn, tooltip, flagIn);
-        if (Screen.hasShiftDown()) {
+        if (Screen.func_231173_s_()) {
             tooltip.add(new TranslationTextComponent(TranslationKeys.TOOLTIP_PLACER_PLUS));
         }
     }
@@ -153,7 +153,6 @@ public class PlacerBlock extends QPBlock {
             .anyMatch(f -> worldIn.isSidePowered(pos.offset(f), f)) || worldIn.isBlockPowered(pos.up());
     }
 
-    @Override
     public int tickRate(IWorldReader worldIn) {
         return 1;
     }

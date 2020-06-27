@@ -86,7 +86,7 @@ public class TankPump implements HasStorage.Storage, ICapabilityProvider {
         CompoundNBT mappingNbt = new CompoundNBT();
         mapping.forEach((direction, fluidStacks) -> {
             ListNBT fss = fluidStacks.stream().map(FluidElement::toCompoundTag).collect(Collectors.toCollection(ListNBT::new));
-            mappingNbt.put(direction.getName(), fss);
+            mappingNbt.put(direction.getName2(), fss);
         });
         if (writeContents) {
             ListNBT keysNbt = keys.stream().map(FluidElement::toCompoundTag).collect(Collectors.toCollection(ListNBT::new));
@@ -102,7 +102,7 @@ public class TankPump implements HasStorage.Storage, ICapabilityProvider {
     public void deserializeNBT(CompoundNBT allNbt, boolean readContents) {
         CompoundNBT mappingNbt = allNbt.getCompound("mapping");
         for (Direction direction : Direction.values()) {
-            ListNBT fss = mappingNbt.getList(direction.getName(), Constants.NBT.TAG_COMPOUND);
+            ListNBT fss = mappingNbt.getList(direction.getName2(), Constants.NBT.TAG_COMPOUND);
             mapping.put(direction, fss.stream().map(CompoundNBT.class::cast).map(FluidElement::fromNBT).collect(Collectors.toList()));
         }
         if (readContents) {

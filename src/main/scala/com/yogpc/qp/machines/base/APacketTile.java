@@ -69,7 +69,7 @@ public abstract class APacketTile extends TileEntity {
     @Override
     public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
         super.onDataPacket(net, pkt);
-        read(pkt.getNbtCompound());
+//        read(pkt.getNbtCompound()); // how to get state?
     }
 
     @Override
@@ -100,7 +100,7 @@ public abstract class APacketTile extends TileEntity {
         World world = this.getWorld();
         BlockPos pos = this.getPos();
         if (event.pos.equals(new ChunkPos(pos)) &&
-            (world != null && world.getDimension().getType() == event.getWorld().getDimension().getType())) {
+            (world != null && world.func_234923_W_() == event.getWorld().getWorld().func_234923_W_())) {
             // Someone is trying to stop forcing this chunk.
             event.setCanceled(true);
         }

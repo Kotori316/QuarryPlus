@@ -5,15 +5,15 @@ import java.util.stream.Stream;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.JsonOps;
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.JsonOps;
 import com.yogpc.qp.machines.base.QuarryBlackList;
 import com.yogpc.qp.machines.base.QuarryBlackList.Entry;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.IFluidState;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.NBTDynamicOps;
@@ -88,7 +88,7 @@ class QuarryBlackListTest {
             ForgeRegistries.FLUIDS.getValues().stream()
                 .map(Fluid::getDefaultState)
                 .filter(f -> !f.isEmpty())
-                .map(IFluidState::getBlockState),
+                .map(FluidState::getBlockState),
             Stream.of(
                 Blocks.WATER.getDefaultState(),
                 Blocks.LAVA.getDefaultState()

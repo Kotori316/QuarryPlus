@@ -15,8 +15,8 @@ import net.minecraft.tileentity.{CommandBlockTileEntity, SignTileEntity}
 import net.minecraft.util.Hand
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.ITextComponent
-import net.minecraft.world.dimension.DimensionType
 import net.minecraft.world.server.ServerWorld
+import net.minecraft.world.storage.FolderName
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.common.util.FakePlayer
 import net.minecraftforge.event.world.WorldEvent
@@ -27,8 +27,8 @@ class QuarryFakePlayer private(worldServer: ServerWorld) extends FakePlayer(worl
   this.connection = new FakeHandler(this)
 
   private[this] val advancements = new PlayerAdvancements(
-    worldServer.getServer,
-    new File(new File(worldServer.getServer.getWorld(DimensionType.OVERWORLD).getSaveHandler.getWorldDirectory, "advancements"), s"$getUniqueID.json"),
+    worldServer.getServer.getDataFixer, worldServer.getServer.getPlayerList, worldServer.getServer.getAdvancementManager,
+    new File(worldServer.getServer.func_240776_a_(FolderName.field_237245_a_).toFile, s"advancements/$getUniqueID.json"),
     this) {
     override def getProgress(advancementIn: Advancement): AdvancementProgress = {
       new AdvancementProgress() {
@@ -56,11 +56,11 @@ class QuarryFakePlayer private(worldServer: ServerWorld) extends FakePlayer(worl
   override def isPotionApplicable(effect: EffectInstance): Boolean = false
 
   override def sendStatusMessage(chatComponent: ITextComponent, actionBar: Boolean): Unit = if (Config.common.debug) {
-    QuarryPlus.LOGGER.info(QuarryFakePlayer.MARKER, chatComponent.getFormattedText)
+    QuarryPlus.LOGGER.info(QuarryFakePlayer.MARKER, chatComponent.getString)
   }
 
-  override def sendMessage(chatComponent: ITextComponent): Unit = if (Config.common.debug) {
-    QuarryPlus.LOGGER.info(QuarryFakePlayer.MARKER, chatComponent.getFormattedText)
+  override def sendMessage(chatComponent: ITextComponent, uuid: UUID): Unit = if (Config.common.debug) {
+    QuarryPlus.LOGGER.info(QuarryFakePlayer.MARKER, chatComponent.getString)
   }
 }
 

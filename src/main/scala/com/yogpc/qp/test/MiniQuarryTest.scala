@@ -2,7 +2,7 @@ package com.yogpc.qp.test
 
 import com.yogpc.qp.machines.base.Area
 import com.yogpc.qp.machines.mini_quarry.MiniQuarryTile
-import net.minecraft.util.Direction
+import net.minecraft.util.{Direction, ResourceLocation}
 import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.function.Executable
@@ -10,7 +10,8 @@ import org.junit.jupiter.api.function.Executable
 import scala.jdk.javaapi.CollectionConverters
 
 class MiniQuarryTest {
-  private val area = Area(0, 0, 0, 4, 5, 6, Some(0))
+  private val someLocation: Some[ResourceLocation] = Some(new ResourceLocation("quarryplus:dummy"))
+  private val area = Area(0, 0, 0, 4, 5, 6, someLocation)
 
   @Test
   def rangeCheck(): Unit = {
@@ -54,7 +55,7 @@ class MiniQuarryTest {
 
   @Test
   def makeAreaEastWest(): Unit = {
-    val area = Area(0, 0, 0, 4, 5, 6, Some(0))
+    val area = Area(0, 0, 0, 4, 5, 6, someLocation)
     val targetsWest = MiniQuarryTile.makeTargetsXZ(area, Direction.WEST).toList
 
     val targetsEast = MiniQuarryTile.makeTargetsXZ(area, Direction.EAST).toList
