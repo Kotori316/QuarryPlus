@@ -4,7 +4,7 @@ import com.google.gson.JsonObject
 import com.yogpc.qp.data.QuarryPlusDataProvider.DataBuilder
 import net.minecraft.advancements.criterion.RecipeUnlockedTrigger
 import net.minecraft.data.{IFinishedRecipe, ShapedRecipeBuilder, ShapelessRecipeBuilder}
-import net.minecraft.tags.Tag
+import net.minecraft.tags.ITag
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.common.crafting.conditions.{ICondition, NotCondition, TagEmptyCondition}
 
@@ -22,8 +22,8 @@ case class RecipeSerializeHelper(recipe: IFinishedRecipe,
   def addCondition(condition: ICondition): RecipeSerializeHelper =
     copy(conditions = condition :: this.conditions)
 
-  def addTagCondition(tag: Tag[_]): RecipeSerializeHelper =
-    addCondition(new NotCondition(new TagEmptyCondition(tag.getId)))
+  def addTagCondition(tag: ITag.INamedTag[_]): RecipeSerializeHelper =
+    addCondition(new NotCondition(new TagEmptyCondition(tag.func_230234_a_())))
 
   override def build: JsonObject = {
     val o = recipe.getRecipeJson
@@ -41,7 +41,7 @@ object RecipeSerializeHelper {
 
   def by(c: ShapelessRecipeBuilder, saveName: ResourceLocation): RecipeSerializeHelper = new RecipeSerializeHelper(c, saveName)
 
-  private[this] final val dummyTrigger = new RecipeUnlockedTrigger.Instance(new ResourceLocation("dummy:dummy"))
+  private[this] final val dummyTrigger = RecipeUnlockedTrigger.func_235675_a_(new ResourceLocation("dummy:dummy"))
 
   //noinspection DuplicatedCode
   private def getConsumeValue(c: ShapedRecipeBuilder): IFinishedRecipe = {

@@ -5,9 +5,9 @@ import com.google.gson.JsonElement
 import com.yogpc.qp.machines.base.IEnchantableTile
 import net.minecraft.block.Block
 import net.minecraft.data.loot.BlockLootTables
+import net.minecraft.loot.{ConstantRange, LootParameterSets, LootPool, LootTable, LootTableManager, StandaloneLootEntry}
+import net.minecraft.loot.functions.ILootFunction
 import net.minecraft.util.ResourceLocation
-import net.minecraft.world.storage.loot._
-import net.minecraft.world.storage.loot.functions.ILootFunction
 
 case class LootTableSerializeHelper(block: Block,
                                     functions: List[ILootFunction.IBuilder] = Nil)

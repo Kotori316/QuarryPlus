@@ -3,7 +3,7 @@ package com.yogpc.qp.data
 import java.io.IOException
 
 import com.google.gson.{GsonBuilder, JsonElement}
-import com.mojang.datafixers.types.JsonOps
+import com.mojang.serialization.JsonOps
 import com.yogpc.qp.QuarryPlus
 import com.yogpc.qp.machines.advquarry.BlockWrapper
 import com.yogpc.qp.machines.base.QuarryBlackList

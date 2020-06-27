@@ -1,5 +1,5 @@
 package com.yogpc.qp.integration.jei
-
+/*
 import java.util.Collections
 
 import com.yogpc.qp.machines.base.IEnchantableItem
@@ -79,3 +79,4 @@ object BookRecipeCategory {
   case class BookRecipe(ench: EnchantmentData)
 
 }
+*/

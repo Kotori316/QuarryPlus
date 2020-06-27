@@ -1,5 +1,5 @@
 package com.yogpc.qp.integration.jei;
-
+/*
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -99,3 +99,4 @@ public class QuarryJeiPlugin implements IModPlugin {
         QuarryJeiPlugin.jeiRuntime = jeiRuntime;
     }
 }
+*/

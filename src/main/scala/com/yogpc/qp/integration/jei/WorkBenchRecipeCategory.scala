@@ -1,5 +1,5 @@
 package com.yogpc.qp.integration.jei
-
+/*
 import java.util.{Collections, ArrayList => AList, List => JList}
 
 import com.yogpc.qp.QuarryPlus
@@ -81,3 +81,4 @@ object WorkBenchRecipeCategory {
   final val yOff = 0
   final val o = 18
 }
+*/

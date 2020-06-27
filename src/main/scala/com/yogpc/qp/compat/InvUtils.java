@@ -74,7 +74,7 @@ public class InvUtils {
     public static ItemStack injectToNearTile(@Nonnull final World w, @Nonnull BlockPos pos, final ItemStack is) {
         BlockState state = w.getBlockState(pos);
         Stream<Direction> directionStream = clockwiseDirections(
-            state.has(BlockStateProperties.FACING) ? state.get(BlockStateProperties.FACING) : null
+            state.func_235901_b_(BlockStateProperties.FACING) ? state.get(BlockStateProperties.FACING) : null
         );
 
         List<? extends IInjector> injectors = directionStream.flatMap(enumFacing ->
@@ -205,7 +205,7 @@ public class InvUtils {
         private static final DummyEnchantment DUMMY_ENCHANTMENT = new DummyEnchantment();
 
         DummyEnchantment() {
-            super(Rarity.COMMON, EnchantmentType.ALL, new EquipmentSlotType[]{});
+            super(Rarity.COMMON, EnchantmentType.BREAKABLE, new EquipmentSlotType[]{});
         }
     }
 }
