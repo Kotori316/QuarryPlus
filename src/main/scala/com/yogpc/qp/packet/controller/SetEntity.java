@@ -15,11 +15,11 @@ import net.minecraftforge.fml.network.NetworkEvent;
  */
 public class SetEntity implements IMessage<SetEntity> {
 
-    int dim;
+    ResourceLocation dim;
     BlockPos pos;
     ResourceLocation location;
 
-    public static SetEntity create(int dim, BlockPos pos, ResourceLocation location) {
+    public static SetEntity create(ResourceLocation dim, BlockPos pos, ResourceLocation location) {
         SetEntity setEntity = new SetEntity();
         setEntity.dim = dim;
         setEntity.location = location;
@@ -31,20 +31,20 @@ public class SetEntity implements IMessage<SetEntity> {
     public SetEntity readFromBuffer(PacketBuffer buffer) {
         pos = buffer.readBlockPos();
         location = buffer.readResourceLocation();
-        dim = buffer.readInt();
+        dim = buffer.readResourceLocation();
         return this;
     }
 
     @Override
     public void writeToBuffer(PacketBuffer buffer) {
-        buffer.writeBlockPos(pos).writeResourceLocation(location).writeInt(dim);
+        buffer.writeBlockPos(pos).writeResourceLocation(location).writeResourceLocation(dim);
 
     }
 
     @Override
     public void onReceive(Supplier<NetworkEvent.Context> ctx) {
         QuarryPlus.proxy.getPacketWorld(ctx.get())
-            .filter(world -> world.getDimension().getType().getId() == dim)
+            .filter(world -> world.func_234923_W_().func_240901_a_().equals(dim))
             .filter(world -> world.isBlockPresent(pos))
             .ifPresent(world -> BlockController.setSpawnerEntity(world, pos, location));
     }

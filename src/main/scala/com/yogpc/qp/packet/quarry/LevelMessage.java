@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 import com.yogpc.qp.machines.quarry.TileBasic;
 import com.yogpc.qp.packet.IMessage;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -16,7 +17,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
 public class LevelMessage implements IMessage<LevelMessage> {
     protected int yLevel;
     protected BlockPos pos;
-    protected int dim;
+    protected ResourceLocation dim;
 
     public static LevelMessage create(TileBasic tileBasic) {
         LevelMessage message = new LevelMessage();
@@ -29,14 +30,14 @@ public class LevelMessage implements IMessage<LevelMessage> {
     @Override
     public LevelMessage readFromBuffer(PacketBuffer buffer) {
         pos = buffer.readBlockPos();
-        dim = buffer.readInt();
+        dim = buffer.readResourceLocation();
         yLevel = buffer.readInt();
         return this;
     }
 
     @Override
     public void writeToBuffer(PacketBuffer buffer) {
-        buffer.writeBlockPos(pos).writeInt(dim);
+        buffer.writeBlockPos(pos).writeResourceLocation(dim);
         buffer.writeInt(yLevel);
     }
 

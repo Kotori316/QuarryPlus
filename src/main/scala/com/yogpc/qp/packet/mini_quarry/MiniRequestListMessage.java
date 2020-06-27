@@ -6,6 +6,7 @@ import com.yogpc.qp.machines.mini_quarry.MiniQuarryTile;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.packet.PacketHandler;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -14,7 +15,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
  */
 public class MiniRequestListMessage implements IMessage<MiniRequestListMessage> {
     private BlockPos pos;
-    private int dim;
+    private ResourceLocation dim;
 
     public static MiniRequestListMessage create(MiniQuarryTile tile) {
         MiniRequestListMessage message = new MiniRequestListMessage();
@@ -27,13 +28,13 @@ public class MiniRequestListMessage implements IMessage<MiniRequestListMessage> 
     public MiniRequestListMessage readFromBuffer(PacketBuffer buffer) {
         MiniRequestListMessage message = new MiniRequestListMessage();
         message.pos = buffer.readBlockPos();
-        message.dim = buffer.readInt();
+        message.dim = buffer.readResourceLocation();
         return message;
     }
 
     @Override
     public void writeToBuffer(PacketBuffer buffer) {
-        buffer.writeBlockPos(pos).writeInt(dim);
+        buffer.writeBlockPos(pos).writeResourceLocation(dim);
     }
 
     @Override

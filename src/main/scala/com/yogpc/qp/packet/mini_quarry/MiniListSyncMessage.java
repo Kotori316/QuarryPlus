@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Dynamic;
 import com.yogpc.qp.machines.base.QuarryBlackList;
 import com.yogpc.qp.machines.mini_quarry.MiniQuarryListGui;
 import com.yogpc.qp.machines.mini_quarry.MiniQuarryTile;
@@ -14,6 +14,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -28,14 +29,14 @@ import scala.jdk.javaapi.CollectionConverters;
  */
 public class MiniListSyncMessage implements IMessage<MiniListSyncMessage> {
     BlockPos pos;
-    int dim;
+    ResourceLocation dim;
     CompoundNBT listTag;
 
-    public static MiniListSyncMessage create(BlockPos blockPos, int dim, Set<QuarryBlackList.Entry> blackList, Set<QuarryBlackList.Entry> whiteList) {
+    public static MiniListSyncMessage create(BlockPos blockPos, ResourceLocation dim, Set<QuarryBlackList.Entry> blackList, Set<QuarryBlackList.Entry> whiteList) {
         return create(blockPos, dim, CollectionConverters.asJava(blackList), CollectionConverters.asJava(whiteList));
     }
 
-    public static MiniListSyncMessage create(BlockPos blockPos, int dim, Collection<QuarryBlackList.Entry> blackList, Collection<QuarryBlackList.Entry> whiteList) {
+    public static MiniListSyncMessage create(BlockPos blockPos, ResourceLocation dim, Collection<QuarryBlackList.Entry> blackList, Collection<QuarryBlackList.Entry> whiteList) {
         MiniListSyncMessage message = new MiniListSyncMessage();
         message.pos = blockPos;
         message.dim = dim;
@@ -51,14 +52,14 @@ public class MiniListSyncMessage implements IMessage<MiniListSyncMessage> {
     public MiniListSyncMessage readFromBuffer(PacketBuffer buffer) {
         MiniListSyncMessage message = new MiniListSyncMessage();
         message.pos = buffer.readBlockPos();
-        message.dim = buffer.readInt();
+        message.dim = buffer.readResourceLocation();
         message.listTag = buffer.readCompoundTag();
         return message;
     }
 
     @Override
     public void writeToBuffer(PacketBuffer buffer) {
-        buffer.writeBlockPos(pos).writeInt(dim);
+        buffer.writeBlockPos(pos).writeResourceLocation(dim);
         buffer.writeCompoundTag(listTag);
     }
 

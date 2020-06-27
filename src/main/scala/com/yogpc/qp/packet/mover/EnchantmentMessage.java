@@ -3,7 +3,7 @@ package com.yogpc.qp.packet.mover;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Dynamic;
 import com.yogpc.qp.machines.base.EnchantmentFilter;
 import com.yogpc.qp.machines.base.QuarryBlackList;
 import com.yogpc.qp.packet.IMessage;
@@ -12,6 +12,7 @@ import net.minecraft.enchantment.Enchantments;
 import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -23,7 +24,7 @@ public class EnchantmentMessage implements IMessage<EnchantmentMessage> {
 
     Type type;
     BlockPos pos;
-    int dim;
+    ResourceLocation dim;
     Enchantment enchantment;
     QuarryBlackList.Entry entry;
 
@@ -43,14 +44,14 @@ public class EnchantmentMessage implements IMessage<EnchantmentMessage> {
         type = buffer.readEnumValue(Type.class);
         enchantment = ForgeRegistries.ENCHANTMENTS.getValue(buffer.readResourceLocation());
         entry = QuarryBlackList.readEntry(new Dynamic<>(NBTDynamicOps.INSTANCE, buffer.readCompoundTag()));
-        dim = buffer.readInt();
+        dim = buffer.readResourceLocation();
         return this;
     }
 
     @Override
     public void writeToBuffer(PacketBuffer buffer) {
         buffer.writeBlockPos(pos).writeEnumValue(type).writeResourceLocation(Objects.requireNonNull(enchantment.getRegistryName()))
-            .writeCompoundTag(QuarryBlackList.Entry$.MODULE$.EntryToNBT().apply(entry)).writeInt(dim);
+            .writeCompoundTag(QuarryBlackList.Entry$.MODULE$.EntryToNBT().apply(entry)).writeResourceLocation(dim);
 
     }
 

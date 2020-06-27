@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 import com.yogpc.qp.machines.marker.TileMarker;
 import com.yogpc.qp.packet.IMessage;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -13,7 +14,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
  */
 public class UpdateBoxMessage implements IMessage<UpdateBoxMessage> {
     private BlockPos pos;
-    private int dim;
+    private ResourceLocation dim;
     private boolean on;
 
     public static UpdateBoxMessage create(TileMarker marker, boolean on) {
@@ -27,14 +28,14 @@ public class UpdateBoxMessage implements IMessage<UpdateBoxMessage> {
     @Override
     public UpdateBoxMessage readFromBuffer(PacketBuffer buffer) {
         pos = buffer.readBlockPos();
-        dim = buffer.readInt();
+        dim = buffer.readResourceLocation();
         on = buffer.readBoolean();
         return this;
     }
 
     @Override
     public void writeToBuffer(PacketBuffer buffer) {
-        buffer.writeBlockPos(pos).writeInt(dim);
+        buffer.writeBlockPos(pos).writeResourceLocation(dim);
         buffer.writeBoolean(on);
     }
 

@@ -22,7 +22,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
  */
 public class AvailableEntities implements IMessage<AvailableEntities> {
     BlockPos pos;
-    int dim;
+    ResourceLocation dim;
     List<ResourceLocation> entities;
 
     public static AvailableEntities create(BlockPos pos, World world, List<EntityType<?>> list) {
@@ -36,7 +36,7 @@ public class AvailableEntities implements IMessage<AvailableEntities> {
     @Override
     public AvailableEntities readFromBuffer(PacketBuffer buffer) {
         pos = buffer.readBlockPos();
-        dim = buffer.readInt();
+        dim = buffer.readResourceLocation();
         int i = buffer.readInt();
         entities = new ArrayList<>(i);
         for (int j = 0; j < i; j++) {
@@ -48,7 +48,7 @@ public class AvailableEntities implements IMessage<AvailableEntities> {
     @Override
     public void writeToBuffer(PacketBuffer buffer) {
         buffer.writeBlockPos(pos);
-        buffer.writeInt(dim);
+        buffer.writeResourceLocation(dim);
         buffer.writeInt(entities.size());
         entities.forEach(buffer::writeResourceLocation);
     }

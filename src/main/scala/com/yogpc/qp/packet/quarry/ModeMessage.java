@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 import com.yogpc.qp.machines.quarry.TileQuarry;
 import com.yogpc.qp.packet.IMessage;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -12,7 +13,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
  * To client only.
  */
 public class ModeMessage implements IMessage<ModeMessage> {
-    int dim;
+    ResourceLocation dim;
     BlockPos pos;
     BlockPos minPos, maxPos;
     TileQuarry.Mode mode;
@@ -33,13 +34,13 @@ public class ModeMessage implements IMessage<ModeMessage> {
         minPos = buffer.readBlockPos();
         maxPos = buffer.readBlockPos();
         mode = buffer.readEnumValue(TileQuarry.Mode.class);
-        dim = buffer.readInt();
+        dim = buffer.readResourceLocation();
         return this;
     }
 
     @Override
     public void writeToBuffer(PacketBuffer buffer) {
-        buffer.writeBlockPos(pos).writeBlockPos(minPos).writeBlockPos(maxPos).writeEnumValue(mode).writeInt(dim);
+        buffer.writeBlockPos(pos).writeBlockPos(minPos).writeBlockPos(maxPos).writeEnumValue(mode).writeResourceLocation(dim);
 
     }
 

@@ -8,6 +8,7 @@ import com.yogpc.qp.machines.base.Area;
 import com.yogpc.qp.packet.IMessage;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -15,7 +16,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
  * To Client Only
  */
 public class AdvModeMessage implements IMessage<AdvModeMessage> {
-    int dim;
+    ResourceLocation dim;
     BlockPos pos;
     CompoundNBT modeNBT;
 
@@ -38,14 +39,14 @@ public class AdvModeMessage implements IMessage<AdvModeMessage> {
     @Override
     public AdvModeMessage readFromBuffer(PacketBuffer buffer) {
         pos = buffer.readBlockPos();
-        dim = buffer.readInt();
+        dim = buffer.readResourceLocation();
         modeNBT = buffer.readCompoundTag();
         return this;
     }
 
     @Override
     public void writeToBuffer(PacketBuffer buffer) {
-        buffer.writeBlockPos(pos).writeInt(dim);
+        buffer.writeBlockPos(pos).writeResourceLocation(dim);
         buffer.writeCompoundTag(modeNBT);
     }
 

@@ -7,6 +7,7 @@ import com.yogpc.qp.machines.quarry.TileQuarry2;
 import com.yogpc.qp.packet.IMessage;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -14,7 +15,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
  * To client only.
  */
 public class ActionMessage implements IMessage<ActionMessage> {
-    int dim;
+    ResourceLocation dim;
     BlockPos pos;
     CompoundNBT actionNBT;
 
@@ -29,14 +30,14 @@ public class ActionMessage implements IMessage<ActionMessage> {
     @Override
     public ActionMessage readFromBuffer(PacketBuffer buffer) {
         pos = buffer.readBlockPos();
-        dim = buffer.readInt();
+        dim = buffer.readResourceLocation();
         actionNBT = buffer.readCompoundTag();
         return this;
     }
 
     @Override
     public void writeToBuffer(PacketBuffer buffer) {
-        buffer.writeBlockPos(pos).writeInt(dim);
+        buffer.writeBlockPos(pos).writeResourceLocation(dim);
         buffer.writeCompoundTag(actionNBT);
     }
 

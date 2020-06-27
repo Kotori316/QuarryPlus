@@ -13,6 +13,7 @@ import com.yogpc.qp.packet.PacketHandler;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.util.ThreeConsumer;
@@ -22,7 +23,7 @@ import net.minecraftforge.fml.util.ThreeConsumer;
  */
 public class AdvActionMessage implements IMessage<AdvActionMessage> {
     private BlockPos pos;
-    private int dim;
+    private ResourceLocation dim;
     private Actions action;
     private CompoundNBT tag;
 
@@ -42,7 +43,7 @@ public class AdvActionMessage implements IMessage<AdvActionMessage> {
     @Override
     public AdvActionMessage readFromBuffer(PacketBuffer buffer) {
         pos = buffer.readBlockPos();
-        dim = buffer.readInt();
+        dim = buffer.readResourceLocation();
         action = buffer.readEnumValue(Actions.class);
         tag = buffer.readCompoundTag();
         return this;
@@ -50,7 +51,7 @@ public class AdvActionMessage implements IMessage<AdvActionMessage> {
 
     @Override
     public void writeToBuffer(PacketBuffer buffer) {
-        buffer.writeBlockPos(pos).writeInt(dim);
+        buffer.writeBlockPos(pos).writeResourceLocation(dim);
         buffer.writeEnumValue(action);
         buffer.writeCompoundTag(tag);
     }

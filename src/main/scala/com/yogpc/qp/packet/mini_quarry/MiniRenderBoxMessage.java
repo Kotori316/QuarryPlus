@@ -6,6 +6,7 @@ import com.yogpc.qp.machines.mini_quarry.MiniQuarryTile;
 import com.yogpc.qp.packet.IMessage;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -14,7 +15,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
  */
 public class MiniRenderBoxMessage implements IMessage<MiniRenderBoxMessage> {
     private BlockPos pos;
-    private int dim;
+    private ResourceLocation dim;
     private boolean renderBox;
 
     public static MiniRenderBoxMessage create(TileEntity entity, boolean renderBox) {
@@ -29,14 +30,14 @@ public class MiniRenderBoxMessage implements IMessage<MiniRenderBoxMessage> {
     public MiniRenderBoxMessage readFromBuffer(PacketBuffer buffer) {
         MiniRenderBoxMessage message = new MiniRenderBoxMessage();
         message.pos = buffer.readBlockPos();
-        message.dim = buffer.readInt();
+        message.dim = buffer.readResourceLocation();
         message.renderBox = buffer.readBoolean();
         return message;
     }
 
     @Override
     public void writeToBuffer(PacketBuffer buffer) {
-        buffer.writeBlockPos(pos).writeInt(dim);
+        buffer.writeBlockPos(pos).writeResourceLocation(dim);
         buffer.writeBoolean(renderBox);
     }
 

@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Dynamic;
 import com.yogpc.qp.machines.base.EnchantmentFilter;
 import com.yogpc.qp.machines.base.QuarryBlackList;
 import com.yogpc.qp.machines.item.ContainerEnchList;

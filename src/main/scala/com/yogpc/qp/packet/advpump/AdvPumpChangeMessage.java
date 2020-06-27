@@ -8,6 +8,7 @@ import com.yogpc.qp.machines.advpump.TileAdvPump;
 import com.yogpc.qp.machines.quarry.ContainerQuarryModule;
 import com.yogpc.qp.packet.IMessage;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -15,7 +16,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
  * To Server only
  */
 public class AdvPumpChangeMessage implements IMessage<AdvPumpChangeMessage> {
-    int dim;
+    ResourceLocation dim;
     BlockPos pos;
     boolean placeFrame;
     boolean deleteFluid;
@@ -34,7 +35,7 @@ public class AdvPumpChangeMessage implements IMessage<AdvPumpChangeMessage> {
     @Override
     public AdvPumpChangeMessage readFromBuffer(PacketBuffer buffer) {
         pos = buffer.readBlockPos();
-        dim = buffer.readInt();
+        dim = buffer.readResourceLocation();
         placeFrame = buffer.readBoolean();
         toStart = ToStart.valueOf(buffer.readInt());
         deleteFluid = buffer.readBoolean();
@@ -43,7 +44,7 @@ public class AdvPumpChangeMessage implements IMessage<AdvPumpChangeMessage> {
 
     @Override
     public void writeToBuffer(PacketBuffer buffer) {
-        buffer.writeBlockPos(pos).writeInt(dim).writeBoolean(placeFrame).writeInt(toStart.ordinal()).writeBoolean(deleteFluid);
+        buffer.writeBlockPos(pos).writeResourceLocation(dim).writeBoolean(placeFrame).writeInt(toStart.ordinal()).writeBoolean(deleteFluid);
     }
 
     @Override

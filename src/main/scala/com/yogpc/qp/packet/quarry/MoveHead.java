@@ -8,6 +8,7 @@ import com.yogpc.qp.machines.quarry.TileQuarry;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.packet.PacketHandler;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -17,7 +18,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
  * To client only.
  */
 public class MoveHead implements IMessage<MoveHead> {
-    int dim;
+    ResourceLocation dim;
     BlockPos pos;
     double headPosX;
     double headPosY;
@@ -40,7 +41,7 @@ public class MoveHead implements IMessage<MoveHead> {
     @Override
     public MoveHead readFromBuffer(PacketBuffer buffer) {
         pos = buffer.readBlockPos();
-        dim = buffer.readInt();
+        dim = buffer.readResourceLocation();
         headPosX = buffer.readDouble();
         headPosY = buffer.readDouble();
         headPosZ = buffer.readDouble();
@@ -49,7 +50,7 @@ public class MoveHead implements IMessage<MoveHead> {
 
     @Override
     public void writeToBuffer(PacketBuffer buffer) {
-        buffer.writeBlockPos(pos).writeInt(dim);
+        buffer.writeBlockPos(pos).writeResourceLocation(dim);
         buffer.writeDouble(headPosX).writeDouble(headPosY).writeDouble(headPosZ);
     }
 

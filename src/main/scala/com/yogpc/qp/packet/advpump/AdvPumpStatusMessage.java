@@ -14,7 +14,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
  */
 public class AdvPumpStatusMessage implements IMessage<AdvPumpStatusMessage> {
 
-    int dim;
+    ResourceLocation dim;
     BlockPos pos;
     boolean placeFrame;
     CompoundNBT nbtTagCompound;
@@ -33,7 +33,7 @@ public class AdvPumpStatusMessage implements IMessage<AdvPumpStatusMessage> {
         pos = buffer.readBlockPos();
         nbtTagCompound = buffer.readCompoundTag();
         placeFrame = buffer.readBoolean();
-        dim = buffer.readInt();
+        dim = buffer.readResourceLocation()();
         return this;
     }
 

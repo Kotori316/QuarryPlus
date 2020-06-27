@@ -82,12 +82,12 @@ public class PacketHandler {
     }
 
     public static void sendToClient(IMessage<?> message, World world) {
-        INSTANCE.send(PacketDistributor.DIMENSION.with(() -> world.getDimension().getType()), message);
+        INSTANCE.send(PacketDistributor.DIMENSION.with(world::func_234923_W_), message);
     }
 
     public static void sendToAround(IMessage<?> message, World world, BlockPos pos) {
         INSTANCE.send(PacketDistributor.NEAR.with(PacketDistributor.TargetPoint.p(pos.getX(), pos.getY(), pos.getZ(),
-            256, world.getDimension().getType())), message);
+            256, world.func_234923_W_())), message);
     }
 
     public static void sendToServer(IMessage<?> message) {

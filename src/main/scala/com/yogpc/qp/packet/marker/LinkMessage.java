@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 import com.yogpc.qp.machines.marker.TileMarker;
 import com.yogpc.qp.packet.IMessage;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.LogicalSidedProvider;
@@ -18,7 +19,7 @@ import static jp.t2v.lab.syntax.MapStreamSyntax.streamCast;
  */
 public class LinkMessage implements IMessage<LinkMessage> {
     private BlockPos pos;
-    private int dim;
+    private ResourceLocation dim;
     private BlockPos maxPos, minPos;
 
     public static LinkMessage create(TileMarker marker) {
@@ -33,7 +34,7 @@ public class LinkMessage implements IMessage<LinkMessage> {
     @Override
     public LinkMessage readFromBuffer(PacketBuffer buffer) {
         pos = buffer.readBlockPos();
-        dim = buffer.readInt();
+        dim = buffer.readResourceLocation();
         minPos = buffer.readBlockPos();
         maxPos = buffer.readBlockPos();
         return this;
@@ -41,7 +42,7 @@ public class LinkMessage implements IMessage<LinkMessage> {
 
     @Override
     public void writeToBuffer(PacketBuffer buffer) {
-        buffer.writeBlockPos(pos).writeInt(dim);
+        buffer.writeBlockPos(pos).writeResourceLocation(dim);
         buffer.writeBlockPos(minPos).writeBlockPos(maxPos);
     }
 
@@ -49,7 +50,7 @@ public class LinkMessage implements IMessage<LinkMessage> {
     public void onReceive(Supplier<NetworkEvent.Context> ctx) {
         TileMarker.Link link = TileMarker.Link.of(maxPos.getX(), minPos.getX(), maxPos.getY(), minPos.getY(), maxPos.getZ(), minPos.getZ());
         Optional<World> worldOptional = LogicalSidedProvider.CLIENTWORLD.get(ctx.get().getDirection().getReceptionSide());
-        worldOptional.filter(w -> w.dimension.getType().getId() == dim).ifPresent(world -> {
+        worldOptional.filter(w -> w.func_234923_W_().func_240901_a_().equals(dim)).ifPresent(world -> {
             TileMarker.Link boxed = link.setWorld(world);
             ctx.get().enqueueWork(() ->
                 boxed.edges()

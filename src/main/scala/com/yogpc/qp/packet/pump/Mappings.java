@@ -24,7 +24,7 @@ public class Mappings {
      */
     public static class All implements IMessage<All> {
         BlockPos pos;
-        int dim;
+        ResourceLocation dim;
         Direction facing;
         EnumMap<Direction, List<FluidElement>> map = new EnumMap<>(Direction.class);
 
@@ -40,7 +40,7 @@ public class Mappings {
         @Override
         public All readFromBuffer(PacketBuffer buffer) {
             pos = buffer.readBlockPos();
-            dim = buffer.readInt();
+            dim = buffer.readResourceLocation();
             facing = buffer.readEnumValue(Direction.class);
             for (Direction direction : Direction.values()) {
                 int l = buffer.readInt();
@@ -56,7 +56,7 @@ public class Mappings {
 
         @Override
         public void writeToBuffer(PacketBuffer buffer) {
-            buffer.writeBlockPos(pos).writeInt(dim);
+            buffer.writeBlockPos(pos).writeResourceLocation(dim);
             buffer.writeEnumValue(facing);
             for (List<FluidElement> stacks : map.values()) {
                 buffer.writeInt(stacks.size());
@@ -83,7 +83,7 @@ public class Mappings {
         Type type;
         Direction facing;
         BlockPos pos;
-        int dim;
+        ResourceLocation dim;
         ResourceLocation fluidName;
 
         public static Update create(TilePump pump, Direction facing, Type type, ResourceLocation fluidName) {
@@ -102,13 +102,13 @@ public class Mappings {
             facing = buffer.readEnumValue(Direction.class);
             type = buffer.readEnumValue(Type.class);
             fluidName = buffer.readResourceLocation();
-            dim = buffer.readInt();
+            dim = buffer.readResourceLocation();
             return this;
         }
 
         @Override
         public void writeToBuffer(PacketBuffer buffer) {
-            buffer.writeBlockPos(pos).writeEnumValue(facing).writeEnumValue(type).writeResourceLocation(fluidName).writeInt(dim);
+            buffer.writeBlockPos(pos).writeEnumValue(facing).writeEnumValue(type).writeResourceLocation(fluidName).writeResourceLocation(dim);
 
         }
 
@@ -171,7 +171,7 @@ public class Mappings {
     public static class Copy implements IMessage<Copy> {
 
         BlockPos pos;
-        int dim;
+        ResourceLocation dim;
         Direction dest;
         List<FluidElement> list;
 
@@ -188,7 +188,7 @@ public class Mappings {
         public Copy readFromBuffer(PacketBuffer buffer) {
             pos = buffer.readBlockPos();
             dest = buffer.readEnumValue(Direction.class);
-            dim = buffer.readInt();
+            dim = buffer.readResourceLocation();
             int length = buffer.readInt();
             list = new LinkedList<>();
             for (int i = 0; i < length; i++) {
@@ -199,7 +199,7 @@ public class Mappings {
 
         @Override
         public void writeToBuffer(PacketBuffer buffer) {
-            buffer.writeBlockPos(pos).writeEnumValue(dest).writeInt(dim).writeInt(list.size());
+            buffer.writeBlockPos(pos).writeEnumValue(dest).writeResourceLocation(dim).writeInt(list.size());
             list.stream().map(FluidElement::toCompoundTag).forEach(buffer::writeCompoundTag);
         }
 

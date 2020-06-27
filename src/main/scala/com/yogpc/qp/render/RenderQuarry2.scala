@@ -6,7 +6,8 @@ import com.yogpc.qp.machines.quarry.{QuarryAction, TileQuarry2}
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.tileentity.{TileEntityRenderer, TileEntityRendererDispatcher}
 import net.minecraft.client.renderer.{IRenderTypeBuffer, RenderType}
-import net.minecraft.util.math.{MathHelper, Vec3i}
+import net.minecraft.util.math.MathHelper
+import net.minecraft.util.math.vector.Vector3i
 
 object RenderQuarry2 extends TileEntityRenderer[TileQuarry2](TileEntityRendererDispatcher.instance) {
   val instance: RenderQuarry2.type = this
@@ -25,7 +26,7 @@ object RenderQuarry2 extends TileEntityRenderer[TileQuarry2](TileEntityRendererD
   override def render(quarry: TileQuarry2, v: Float, matrixStack: MatrixStack, iRenderTypeBuffer: IRenderTypeBuffer, i: Int, i1: Int): Unit = {
     Minecraft.getInstance.getProfiler.startSection("quarryplus")
     Minecraft.getInstance.getProfiler.startSection("quarry")
-    if (!quarry.area.dimID.forall(id => Minecraft.getInstance.world.dimension.getType.getId == id)) return
+    if (!quarry.area.dimID.forall(id => Minecraft.getInstance.world.func_234923_W_().func_240901_a_() == id)) return
     val pos = quarry.getPos
     val bufferBuilder = iRenderTypeBuffer.getBuffer(RenderType.getCutout)
     if (!(bufferInstance bufferEq bufferBuilder)) {
@@ -45,7 +46,7 @@ object RenderQuarry2 extends TileEntityRenderer[TileQuarry2](TileEntityRendererD
       val maxY = quarry.area.yMax
       val maxZ = quarry.area.zMax
 
-      val subtract = new Vec3i(maxX - minX, maxY - minY, maxZ - minZ)
+      val subtract = new Vector3i(maxX - minX, maxY - minY, maxZ - minZ)
 
       val mXm = minX - d1
       val mXP = minX + d1

@@ -7,6 +7,7 @@ import com.yogpc.qp.packet.IMessage;
 import javax.annotation.Nullable;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -19,7 +20,7 @@ public class Now implements IMessage<Now> {
     Direction facing;
     boolean working;
     BlockPos pos;
-    int dim;
+    ResourceLocation dim;
 
     public static Now create(TilePump pump) {
         Now now = new Now();
@@ -33,7 +34,7 @@ public class Now implements IMessage<Now> {
     @Override
     public Now readFromBuffer(PacketBuffer buffer) {
         pos = buffer.readBlockPos();
-        dim = buffer.readInt();
+        dim = buffer.readResourceLocation();
         int i = buffer.readVarInt();
         if (i == -1) {
             facing = null;
@@ -46,7 +47,7 @@ public class Now implements IMessage<Now> {
 
     @Override
     public void writeToBuffer(PacketBuffer buffer) {
-        buffer.writeBlockPos(pos).writeInt(dim);
+        buffer.writeBlockPos(pos).writeResourceLocation(dim);
         if (facing == null) {
             buffer.writeVarInt(-1);
         } else {
