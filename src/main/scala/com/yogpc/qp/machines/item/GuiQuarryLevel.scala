@@ -1,10 +1,9 @@
 package com.yogpc.qp.machines.item
 
-import com.mojang.blaze3d.systems.RenderSystem
+import com.mojang.blaze3d.matrix.MatrixStack
 import com.yogpc.qp.QuarryPlus
-import com.yogpc.qp.machines.TranslationKeys
 import com.yogpc.qp.machines.advquarry.TileAdvQuarry
-import com.yogpc.qp.machines.base.{IDebugSender, IHandleButton}
+import com.yogpc.qp.machines.base.{IDebugSender, IHandleButton, ScreenUtil}
 import com.yogpc.qp.machines.quarry.{TileBasic, TileQuarry, TileQuarry2}
 import com.yogpc.qp.packet.PacketHandler
 import com.yogpc.qp.packet.advquarry.AdvLevelMessage
@@ -12,7 +11,6 @@ import com.yogpc.qp.packet.quarry.LevelMessage
 import com.yogpc.qp.packet.quarry2.Level2Message
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.gui.screen.inventory.ContainerScreen
-import net.minecraft.client.resources.I18n
 import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.text.ITextComponent
@@ -28,39 +26,38 @@ class GuiQuarryLevel(c: ContainerQuarryLevel, inv: PlayerInventory, t: ITextComp
   val lA: GuiQuarryLevel.YLevel[TileEntity] = GuiQuarryLevel.YLevel.get(tile)
   val tp = 15
   val tileName: String = tile match {
-    case n: INameable => n.getName.getFormattedText
+    case n: INameable => n.getName.getString
     case d: IDebugSender => d.getDebugName
     case _ => "YSetter"
   }
 
-  override def render(mouseX: Int, mouseY: Int, partialTicks: Float): Unit = {
-    this.renderBackground()
-    super.render(mouseX, mouseY, partialTicks)
-    this.renderHoveredToolTip(mouseX, mouseY)
+  override def func_230430_a_(matrixStack: MatrixStack, mouseX: Int, mouseY: Int, partialTicks: Float): Unit = { // render
+    this.func_230446_a_(matrixStack) // back ground
+    super.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks) // super.render
+    this.func_230459_a_(matrixStack, mouseX, mouseY) // render tooltip
   }
 
-  override def drawGuiContainerBackgroundLayer(partialTicks: Float, mouseX: Int, mouseY: Int): Unit = {
-    RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F)
-    this.minecraft.getTextureManager.bindTexture(LOCATION)
-    this.blit(guiLeft, guiTop, 0, 0, xSize, ySize)
+  override def func_230450_a_(matrix: MatrixStack, partialTicks: Float, mouseX: Int, mouseY: Int): Unit = {
+    ScreenUtil.color4f()
+    this.getMinecraft.getTextureManager.bindTexture(LOCATION)
+    this.func_238474_b_(matrix, guiLeft, guiTop, 0, 0, xSize, ySize)
   }
 
-  override def init(): Unit = {
-    super.init()
+  override def func_231160_c_(): Unit = {
+    super.func_231160_c_()
     val width = 40
-    addButton(new IHandleButton.Button(0, guiLeft + this.xSize / 2 - width / 2, guiTop + tp, width, 20, "+", this))
-    addButton(new IHandleButton.Button(1, guiLeft + this.xSize / 2 - width / 2, guiTop + tp + 33, width, 20, "-", this))
+    func_230480_a_(new IHandleButton.Button(0, guiLeft + this.xSize / 2 - width / 2, guiTop + tp, width, 20, "+", this))
+    func_230480_a_(new IHandleButton.Button(1, guiLeft + this.xSize / 2 - width / 2, guiTop + tp + 33, width, 20, "-", this))
   }
 
-  override def drawGuiContainerForegroundLayer(mouseX: Int, mouseY: Int): Unit = {
-    val s: String = tileName
-    this.font.drawString(s, (this.xSize - this.font.getStringWidth(s)).toFloat / 2, 6, 0x404040)
-    this.font.drawString(I18n.format(TranslationKeys.CONTAINER_INVENTORY), 8, (this.ySize - 96 + 2).toFloat, 0x404040)
-    this.font.drawString(lA.getYLevel(tile).toString, (this.xSize / 2 - this.font.getStringWidth(lA.getYLevel(tile).toString) / 2).toFloat, tp.toFloat + 23, 0x404040)
+  override def func_230451_b_(matrix: MatrixStack, mouseX: Int, mouseY: Int): Unit = {
+    super.func_230451_b_(matrix, mouseX, mouseY)
+
+    this.field_230712_o_.func_238421_b_(matrix, lA.getYLevel(tile).toString, (this.xSize / 2 - this.field_230712_o_.getStringWidth(lA.getYLevel(tile).toString) / 2).toFloat, tp.toFloat + 23, 0x404040)
   }
 
   override def actionPerformed(button: IHandleButton.Button): Unit = {
-    val di = (if (button.id % 2 == 0) 1 else -1) * (if (Screen.hasControlDown) 10 else 1)
+    val di = (if (button.id % 2 == 0) 1 else -1) * (if (Screen.func_231172_r_) 10 else 1) // ctrl
     val yMin = tile match {
       case quarry: TileQuarry => quarry.yMin
       //      case quarry2: TileQuarry2 => quarry2.area.yMin
@@ -72,8 +69,8 @@ class GuiQuarryLevel(c: ContainerQuarryLevel, inv: PlayerInventory, t: ITextComp
     }
   }
 
-  override def onClose(): Unit = {
-    super.onClose()
+  override def func_231164_f_(): Unit = {
+    super.func_231164_f_()
     PacketHandler.sendToServer(func(tile))
   }
 }

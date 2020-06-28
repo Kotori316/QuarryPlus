@@ -9,9 +9,12 @@ import com.yogpc.qp.machines.advpump.GuiAdvPump;
 import com.yogpc.qp.machines.advquarry.GuiAdvQuarry;
 import com.yogpc.qp.machines.base.StatusGui;
 import com.yogpc.qp.machines.bookmover.GuiBookMover;
+import com.yogpc.qp.machines.item.GuiQuarryLevel;
 import com.yogpc.qp.machines.mini_quarry.MiniQuarryGui;
 import com.yogpc.qp.machines.pb.PlacerGui;
+import com.yogpc.qp.machines.quarry.GuiQuarryModule;
 import com.yogpc.qp.machines.quarry.GuiSolidQuarry;
+import com.yogpc.qp.machines.workbench.GuiWorkbench;
 import com.yogpc.qp.render.DummyBlockBakedModel;
 import com.yogpc.qp.render.RenderAdvQuarry;
 import com.yogpc.qp.render.RenderMarker;
@@ -100,11 +103,11 @@ public class ProxyClient extends ProxyCommon {
 //        }
             // Register GUI
 //            ScreenManager.registerFactory(Holder.moverContainerType(), GuiMover::new);
-//            ScreenManager.registerFactory(Holder.workbenchContainerType(), GuiWorkbench::new);
+            ScreenManager.registerFactory(Holder.workbenchContainerType(), GuiWorkbench::new);
             ScreenManager.registerFactory(Holder.bookMoverContainerType(), GuiBookMover::new);
-//            ScreenManager.registerFactory(Holder.ySetterContainerType(), GuiQuarryLevel::new);
+            ScreenManager.registerFactory(Holder.ySetterContainerType(), GuiQuarryLevel::new);
             ScreenManager.registerFactory(Holder.solidQuarryContainerType(), GuiSolidQuarry::new);
-//            ScreenManager.registerFactory(Holder.quarryModuleContainerType(), GuiQuarryModule::new);
+            ScreenManager.registerFactory(Holder.quarryModuleContainerType(), GuiQuarryModule::new);
 //            ScreenManager.registerFactory(Holder.enchListContainerType(), GuiEnchList::new);
 //            ScreenManager.registerFactory(Holder.templateContainerType(), GuiListTemplate::new);
             ScreenManager.registerFactory(Holder.advPumpContainerType(), GuiAdvPump::new);
