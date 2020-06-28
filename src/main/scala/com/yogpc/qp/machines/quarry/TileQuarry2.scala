@@ -19,9 +19,9 @@ import net.minecraft.util.{Unit => _, _}
 import net.minecraft.world.World
 import net.minecraft.world.server.ServerWorld
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
+import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.util.LazyOptional
-import net.minecraftforge.common.{DimensionManager, MinecraftForge}
 import net.minecraftforge.event.ForgeEventFactory
 import net.minecraftforge.event.world.BlockEvent
 
@@ -51,7 +51,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   var frameMode = false
   private val storage = new QuarryStorage
   val moduleInv = new QuarryModuleInventory(5, this, _ => refreshModules(), jp.t2v.lab.syntax.MapStreamSyntax.always_true())
-  finishListener.add(() => DimensionManager.keepLoaded(getDiggingWorld.getDimension.getType, false))
+//  finishListener.add(() => DimensionManager.keepLoaded(getDiggingWorld.getDimension.getType, false))
 
   def getDiggingWorld: ServerWorld = {
     if (!super.getWorld.isRemote) {
@@ -89,9 +89,9 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     storage.pushItem(world, pos)
     if (world.getGameTime % 20 == 0) { // Insert fluid every 1 second.
       storage.pushFluid(world, pos)
-      if (isWorking && getWorld.getDimension.getType != getDiggingWorld.getDimension.getType) {
-        DimensionManager.keepLoaded(getDiggingWorld.getDimension.getType, true)
-      }
+//      if (isWorking && getWorld.getDimension.getType != getDiggingWorld.getDimension.getType) {
+//        DimensionManager.keepLoaded(getDiggingWorld.getDimension.getType, true)
+//      }
     }
   }
 
@@ -123,7 +123,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     yLevel = nbt.getInt("yLevel")
     action = QuarryAction.load(self, nbt, "mode")
     frameMode = nbt.getBoolean("frameMode")
-    enchantmentFilter = EnchantmentFilter.read(new com.mojang.datafixers.Dynamic(NBTDynamicOps.INSTANCE, nbt.get("enchantmentFilter")))
+    enchantmentFilter = EnchantmentFilter.read(new com.mojang.serialization.Dynamic(NBTDynamicOps.INSTANCE, nbt.get("enchantmentFilter")))
   }
 
   override protected def isWorking = target != BlockPos.ZERO && action.mode != none
