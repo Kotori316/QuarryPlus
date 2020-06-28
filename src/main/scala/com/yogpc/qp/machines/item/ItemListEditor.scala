@@ -5,16 +5,16 @@ import java.util
 import cats._
 import cats.data._
 import cats.implicits._
+import com.mojang.serialization.{Dynamic => SerializeDynamic}
 import com.yogpc.qp.QuarryPlus
-import com.yogpc.qp.machines.base.{EnchantmentFilter, IEnchantableItem, IEnchantableTile}
-import com.yogpc.qp.machines.workbench.BlockData
+import com.yogpc.qp.machines.base.{EnchantmentFilter, IEnchantableItem, IEnchantableTile, QuarryBlackList}
 import com.yogpc.qp.utils.Holder
 import net.minecraft.client.util.ITooltipFlag
 import net.minecraft.enchantment.{Enchantment, EnchantmentHelper, Enchantments}
 import net.minecraft.entity.player.{PlayerEntity, PlayerInventory, ServerPlayerEntity}
 import net.minecraft.inventory.container.INamedContainerProvider
 import net.minecraft.item._
-import net.minecraft.nbt.CompoundNBT
+import net.minecraft.nbt.{CompoundNBT, NBTDynamicOps}
 import net.minecraft.network.PacketBuffer
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.{ITextComponent, StringTextComponent, TranslationTextComponent}
@@ -58,7 +58,7 @@ class ItemListEditor extends Item((new Item.Properties).group(Holder.tab)) with 
     val s = ItemListEditor.onlySilktouch(stack)
     val f = ItemListEditor.onlyFortune(stack)
     val bd = ItemListEditor.getBlockData(stack)
-    if (context.getPlayer.isCrouching && bd.contains(new BlockData(worldIn.getBlockState(pos)))) {
+    if (context.getPlayer.isCrouching && bd.exists(_.test(worldIn.getBlockState(pos), worldIn, pos))) {
       stack.getTag.remove(ItemListEditor.NAME_key)
     } else {
       EnchantmentFilter.Accessor(worldIn.getTileEntity(pos)) match {
@@ -66,8 +66,8 @@ class ItemListEditor extends Item((new Item.Properties).group(Holder.tab)) with 
           bd match {
             case Some(data) =>
               if (!worldIn.isRemote) {
-                val adder = if (f.value) value.enchantmentFilter.addFortune _ else value.enchantmentFilter.addSilktouch _
-                value.enchantmentFilter = adder(data.name)
+                val adder = if (f.value) value.enchantmentFilter.addFortuneEntry _ else value.enchantmentFilter.addSilktouchEntry _
+                value.enchantmentFilter = adder(data)
               }
               stack.getTag.remove(ItemListEditor.NAME_key)
             case None =>
@@ -81,8 +81,8 @@ class ItemListEditor extends Item((new Item.Properties).group(Holder.tab)) with 
           if (!worldIn.isAirBlock(pos)) {
             if (!stack.hasTag) stack.setTag(new CompoundNBT)
             val tag = stack.getTag
-            val name = ForgeRegistries.BLOCKS.getKey(worldIn.getBlockState(pos).getBlock).toString
-            tag.putString(ItemListEditor.NAME_key, name)
+            val name = ForgeRegistries.BLOCKS.getKey(worldIn.getBlockState(pos).getBlock)
+            tag.put(ItemListEditor.NAME_key, QuarryBlackList.Name(name).toNBT)
           }
       }
     }
@@ -144,16 +144,16 @@ object ItemListEditor {
   }
 
   private[this] val getTag = Kleisli((stack: ItemStack) => Option(stack.getTag))
-  private[this] val getName = Kleisli((tag: CompoundNBT) => Option.when(tag.contains(NAME_key, NBT.TAG_STRING))(tag.getString(NAME_key)))
+  private[this] val getEntry = Kleisli((tag: CompoundNBT) => Option.when(tag.contains(NAME_key, NBT.TAG_COMPOUND))(QuarryBlackList.readEntry(new SerializeDynamic(NBTDynamicOps.INSTANCE, tag.get(NAME_key)))))
   private[this] val getEnchantments = Kleisli((stack: ItemStack) => Eval.now(EnchantmentHelper.getEnchantments(stack).asScala.toList.collect { case (e, level) if level > 0 => e }))
 
   private[this] val fortuneEval = Eval.later(Enchantments.FORTUNE)
   private[this] val silktouchEval = Eval.later(Enchantments.SILK_TOUCH)
   private[this] val hasFortune = hasEnchantment(fortuneEval)
   private[this] val hasSilktouch = hasEnchantment(silktouchEval)
-  private[this] val getNameAsText = getTag andThen getName map (new StringTextComponent(_))
+  private[this] val getNameAsText = getTag andThen getEntry map (e => new StringTextComponent(e.toString))
 
-  val getBlockData: Kleisli[Option, ItemStack, BlockData] = getTag andThen getName map (new BlockData(_))
+  val getBlockData: Kleisli[Option, ItemStack, QuarryBlackList.Entry] = getTag andThen getEntry
   val isFortune: Kleisli[Eval, ItemStack, Boolean] = getEnchantments andThen hasFortune
   val isSilktouch: Kleisli[Eval, ItemStack, Boolean] = getEnchantments andThen hasSilktouch
   val fortuneName: Kleisli[Option, ItemStack, ITextComponent] = enchantmentName(fortuneEval)

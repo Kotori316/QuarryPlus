@@ -7,17 +7,14 @@ import com.yogpc.qp._
 import com.yogpc.qp.machines.base.QuarryBlackList.Entry
 import com.yogpc.qp.machines.mini_quarry.MiniQuarryTile
 import com.yogpc.qp.machines.quarry.{TileBasic, TileQuarry2}
-import com.yogpc.qp.machines.workbench.BlockData
 import jp.t2v.lab.syntax.MapStreamSyntax
 import net.minecraft.block.BlockState
 import net.minecraft.enchantment.Enchantment
-import net.minecraft.nbt.CompoundNBT
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.world.{IBlockReader, World}
-import net.minecraftforge.common.util.Constants
 
 import scala.jdk.javaapi.CollectionConverters
 
@@ -38,7 +35,9 @@ case class EnchantmentFilter(fortuneInclude: Boolean,
 
   def toggleFortune: EnchantmentFilter = this.copy(fortuneInclude = !fortuneInclude)
 
-  def addFortune(name: ResourceLocation): EnchantmentFilter = this.copy(fortuneList = fortuneList + QuarryBlackList.Name(name))
+  def addFortune(name: ResourceLocation): EnchantmentFilter = addFortuneEntry(QuarryBlackList.Name(name))
+
+  def addFortuneEntry(entry: Entry): EnchantmentFilter = this.copy(fortuneList = fortuneList + entry)
 
   def removeFortune(entry: Entry): EnchantmentFilter = this.copy(fortuneList = fortuneList - entry)
 
@@ -48,7 +47,9 @@ case class EnchantmentFilter(fortuneInclude: Boolean,
 
   def toggleSilktouch: EnchantmentFilter = this.copy(silktouchInclude = !silktouchInclude)
 
-  def addSilktouch(name: ResourceLocation): EnchantmentFilter = this.copy(silktouchList = silktouchList + QuarryBlackList.Name(name))
+  def addSilktouch(name: ResourceLocation): EnchantmentFilter = addSilktouchEntry(QuarryBlackList.Name(name))
+
+  def addSilktouchEntry(entry: Entry): EnchantmentFilter = this.copy(silktouchList = silktouchList + entry)
 
   def removeSilktouch(entry: Entry): EnchantmentFilter = this.copy(silktouchList = silktouchList - entry)
 }
@@ -69,21 +70,6 @@ object EnchantmentFilter {
     } else { // Exclude Silktouch and Fortune
       NOT_SILK_AND_FORTUNE
     }
-  }
-
-  def fromLegacyTag(nbt: CompoundNBT): EnchantmentFilter = {
-    import scala.jdk.CollectionConverters._
-    val fortuneInclude = nbt.getBoolean("fortuneInclude")
-    val silktouchInclude = nbt.getBoolean("silktouchInclude")
-    val fortuneList: Set[Entry] = nbt.getList("fortuneList", Constants.NBT.TAG_COMPOUND).asScala
-      .map(i => BlockData.read(i.asInstanceOf[CompoundNBT]))
-      .map(d => QuarryBlackList.Name(d.name))
-      .toSet
-    val silktouchList: Set[Entry] = nbt.getList("silktouchList", Constants.NBT.TAG_COMPOUND).asScala
-      .map(i => BlockData.read(i.asInstanceOf[CompoundNBT]))
-      .map(d => QuarryBlackList.Name(d.name))
-      .toSet
-    new EnchantmentFilter(fortuneInclude, silktouchInclude, fortuneList, silktouchList)
   }
 
   def read[T](tagLike: SerializeDynamic[T]): EnchantmentFilter = {

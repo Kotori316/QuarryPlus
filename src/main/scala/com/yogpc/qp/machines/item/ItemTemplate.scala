@@ -5,11 +5,10 @@ import java.util
 import cats.Eval
 import cats.data._
 import cats.implicits._
-import com.mojang.datafixers.Dynamic
+import com.mojang.serialization.Dynamic
 import com.yogpc.qp.machines.TranslationKeys
 import com.yogpc.qp.machines.base.{EnchantmentFilter, IEnchantableItem, QuarryBlackList}
 import com.yogpc.qp.machines.item.ItemListEditor._
-import com.yogpc.qp.machines.workbench.BlockData
 import com.yogpc.qp.utils.Holder
 import com.yogpc.qp.{QuarryPlus, _}
 import net.minecraft.client.util.ITooltipFlag
@@ -84,7 +83,7 @@ class ItemTemplate extends Item(new Item.Properties().maxStackSize(1).group(Hold
       case None =>
         if (!context.func_225518_g_) {
           if (!worldIn.isRemote) {
-            val playerPos = playerIn.getPosition
+            val playerPos = playerIn.func_233580_cy_()
             NetworkHooks.openGui(playerIn.asInstanceOf[ServerPlayerEntity], ItemTemplate.InteractionObject, playerPos)
           }
           ActionResultType.SUCCESS
@@ -147,18 +146,10 @@ object ItemTemplate {
   def read(compound: Option[CompoundNBT]): Template = {
     val maybeTemplate = compound.filter(_.contains(NBT_Template_Entries)).map(_.getList(NBT_Template_Entries, NBT.TAG_COMPOUND))
     val mustBeBoolean = compound.filter(_.contains(NBT_Include)).map(_.getBoolean(NBT_Include)).orElse(Some(true))
-    val opt = if (compound.exists(_.contains(NBT_Template_Items))) {
-      (compound.filter(_.contains(NBT_Template_Items)).map(_.getList(NBT_Template_Items, NBT.TAG_COMPOUND)), mustBeBoolean).mapN {
-        case (list, include) =>
-          val data = list.asScala.map(_.asInstanceOf[CompoundNBT]).map(BlockData.read).map(b => QuarryBlackList.Name(b.name)).toList
-          Template(data, include)
-      }
-    } else {
-      (maybeTemplate, mustBeBoolean).mapN {
-        case (list, include) =>
-          val data = list.asScala.map(n => QuarryBlackList.readEntry(new Dynamic(NBTDynamicOps.INSTANCE, n))).toList
-          Template(data, include)
-      }
+    val opt = (maybeTemplate, mustBeBoolean).mapN {
+      case (list, include) =>
+        val data = list.asScala.map(n => QuarryBlackList.readEntry(new Dynamic(NBTDynamicOps.INSTANCE, n))).toList
+        Template(data, include)
     }
     opt.getOrElse(EmPlate)
   }
@@ -188,10 +179,10 @@ object ItemTemplate {
   private[this] val fIncSet = createSetter(onlyFortune, (bool: Boolean, t) => t.enchantmentFilter.copy(fortuneInclude = bool))
 
   private def orElseCompute[A](silktouch: Kleisli[Option, (ItemStack, EnchantmentFilter.Accessor), A], fortune: Kleisli[Option, (ItemStack, EnchantmentFilter.Accessor), A]):
-  Kleisli[Option, (ItemStack, EnchantmentFilter.Accessor), A] = Kleisli((t: (ItemStack, EnchantmentFilter.Accessor)) => {
+  Kleisli[Option, (ItemStack, EnchantmentFilter.Accessor), A] = Kleisli { (t: (ItemStack, EnchantmentFilter.Accessor)) =>
     val (stack: ItemStack, basic: EnchantmentFilter.Accessor) = t
     (silktouch orElse fortune).run(stack, basic)
-  })
+  }
 
   val blocksListSetter: Kleisli[Option, (ItemStack, EnchantmentFilter.Accessor), Set[QuarryBlackList.Entry] => Unit] = orElseCompute(silkList, fList)
   val includeSetter: Kleisli[Option, (ItemStack, EnchantmentFilter.Accessor), Boolean => Unit] = orElseCompute(silkIncSet, fIncSet)
