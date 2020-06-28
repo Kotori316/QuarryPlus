@@ -20,6 +20,7 @@ import net.minecraft.world.{IBlockReader, World}
 import net.minecraftforge.common.Tags
 import org.apache.logging.log4j.LogManager
 
+import scala.jdk.FunctionConverters._
 import scala.jdk.javaapi.CollectionConverters
 import scala.util.Try
 
@@ -71,9 +72,13 @@ object QuarryBlackList {
     o
   }
 
-  def readEntry[A](tagLike: Dynamic[A]): Entry = {
+  def readEntry[A](tagLike: Dynamic[A], log: Boolean = true): Entry = {
     import com.yogpc.qp._
-    def notPresent = throw new IllegalArgumentException("Entry didn't have enough parameter., %s".format(tagLike))
+
+    val onError = {
+      val c: String => Nothing = s => throw new IllegalArgumentException("Entry didn't have enough parameter. %s. %s".format(s, tagLike))
+      c.asJavaConsumer
+    }
 
     val idOpt = for {
       j <- tagLike.asMapOpt[String, Dynamic[A]](_.asString(""), java.util.function.Function.identity()).result().asScala
@@ -81,16 +86,16 @@ object QuarryBlackList {
       id <- map.get("id").flatMap(_.asString().result().asScala)
     } yield {
       id match {
-        case ID_NAME => Name(new ResourceLocation(map("name").asString(notPresent)))
-        case ID_MOD => Mod(map("modID").asString(notPresent))
-        case ID_TAG => Tag(new ResourceLocation(map("tag").asString(notPresent)))
-        case ID_VANILLA => VanillaBlockPredicate(map("block_predicate").asString(notPresent))
+        case ID_NAME => Name(new ResourceLocation(map("name").asString().getOrThrow(false, onError)))
+        case ID_MOD => Mod(map("modID").asString().getOrThrow(false, onError))
+        case ID_TAG => Tag(new ResourceLocation(map("tag").asString().getOrThrow(false, onError)))
+        case ID_VANILLA => VanillaBlockPredicate(map("block_predicate").asString().getOrThrow(false, onError))
         case ID_ORES => Ores
         case ID_FLUID => Fluids
         case _ => Air
       }
     }
-    LOGGER.debug("BlackListEntry, {}, created from {}, {}", idOpt.orNull, tagLike.getValue.getClass.getSimpleName, tagLike.getValue)
+    if (log) LOGGER.debug("BlackListEntry, {}, created from {}, {}", idOpt.orNull, tagLike.getValue.getClass.getSimpleName, tagLike.getValue)
     idOpt.getOrElse(Air)
   }
 
