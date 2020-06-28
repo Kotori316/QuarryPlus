@@ -37,7 +37,7 @@ object Reason {
 
   def printNonEnergy[T]: Reason => Option[T] = r => {
     if (Config.common.debug && !r.isEnergyIssue)
-      DistExecutor.runWhenOn(Dist.CLIENT, () => () => {
+      DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () => () => {
         r.print()
       })
     None
@@ -45,7 +45,7 @@ object Reason {
 
   def print[T]: Reason => Option[T] = r => {
     if (Config.common.debug)
-      DistExecutor.runWhenOn(Dist.CLIENT, () => () => {
+      DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () => () => {
         r.print()
       })
     None

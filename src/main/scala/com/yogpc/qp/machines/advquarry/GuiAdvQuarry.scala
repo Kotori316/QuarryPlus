@@ -1,9 +1,8 @@
 package com.yogpc.qp.machines.advquarry
 
 import com.mojang.blaze3d.matrix.MatrixStack
-import com.mojang.blaze3d.systems.RenderSystem
 import com.yogpc.qp.QuarryPlus
-import com.yogpc.qp.machines.base.{Area, IHandleButton}
+import com.yogpc.qp.machines.base.{Area, IHandleButton, ScreenUtil}
 import com.yogpc.qp.packet.PacketHandler
 import com.yogpc.qp.packet.advquarry.AdvActionMessage
 import net.minecraft.client.gui.screen.Screen
@@ -27,9 +26,8 @@ class GuiAdvQuarry(c: ContainerAdvQuarry, i: PlayerInventory, t: ITextComponent)
     this.func_230459_a_(matrixStack, mouseX, mouseY) // render tooltip
   }
 
-  //noinspection ScalaDeprecation
   override def func_230450_a_(matrix: MatrixStack, partialTicks: Float, mouseX: Int, mouseY: Int): Unit = {
-    RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F)
+    ScreenUtil.color4f()
     this.getMinecraft.getTextureManager.bindTexture(LOCATION)
     this.func_238474_b_(matrix, guiLeft, guiTop, 0, 0, xSize, ySize)
   }
