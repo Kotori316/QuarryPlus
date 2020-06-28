@@ -44,7 +44,7 @@ object BlockWrapper extends JsonDeserializer[BlockWrapper] with JsonSerializer[B
 
   import com.yogpc.qp._
 
-  private var wrappers = Set.empty[BlockWrapper]
+  private var wrappers = example.toSet //Set.empty[BlockWrapper]
 
   def getWrappers: Set[BlockWrapper] = wrappers
 

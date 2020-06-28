@@ -1,31 +1,20 @@
 package com.yogpc.qp.machines.workbench
 
 import java.nio.charset.StandardCharsets
-import java.util
 import java.util.{Collections, Comparator}
 
 import cats.data._
 import cats.implicits._
 import com.google.gson._
-import com.yogpc.qp.machines.base.APowerTile
-import com.yogpc.qp.packet.PacketHandler
-import com.yogpc.qp.packet.workbench.RecipeSyncMessage
 import com.yogpc.qp.utils.{Holder, ItemElement, RecipeGetter}
 import com.yogpc.qp.{QuarryPlus, _}
-import net.minecraft.entity.player.ServerPlayerEntity
 import net.minecraft.item.crafting.{IRecipe, IRecipeSerializer, IRecipeType}
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.network.PacketBuffer
-import net.minecraft.profiler.IProfiler
 import net.minecraft.resources.{IResource, IResourceManager}
 import net.minecraft.util.{JSONUtils, ResourceLocation}
 import net.minecraft.world.World
-import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 import net.minecraftforge.common.crafting.CraftingHelper
-import net.minecraftforge.event.entity.player.PlayerEvent
-import net.minecraftforge.eventbus.api.SubscribeEvent
-import net.minecraftforge.fml.DistExecutor
-import net.minecraftforge.fml.network.PacketDistributor
 import net.minecraftforge.fml.server.ServerLifecycleHooks
 import org.apache.commons.io.IOUtils
 import org.apache.logging.log4j.LogManager
@@ -83,6 +72,8 @@ abstract class WorkbenchRecipes(val location: ResourceLocation, val output: Item
   override def getType: IRecipeType[WorkbenchRecipes] = WorkbenchRecipes.recipeType
 
   override def getIcon: ItemStack = new ItemStack(Holder.blockWorkbench)
+
+  override def isDynamic: Boolean = true
 }
 
 private object DummyRecipe extends WorkbenchRecipes(
@@ -96,11 +87,6 @@ private object DummyRecipe extends WorkbenchRecipes(
 }
 
 object WorkbenchRecipes {
-
-  /**
-   * JVM static instance. Need to be reset when world is changed or entered into multi player world.
-   */
-  private[this] val recipes_internal = mutable.Map.empty[ResourceLocation, WorkbenchRecipes]
 
   val dummyRecipe: WorkbenchRecipes = DummyRecipe
 
@@ -123,14 +109,10 @@ object WorkbenchRecipes {
    */
   def recipes: Map[ResourceLocation, WorkbenchRecipes] = {
     Option(ServerLifecycleHooks.getCurrentServer)
-      .map(s => RecipeGetter.getRecipes(s.getRecipeManager, recipeType).asScala.toMap).getOrElse(Map.empty) ++ recipes_internal
+      .map(s => RecipeGetter.getRecipes(s.getRecipeManager, recipeType).asScala.toMap).getOrElse(Map.empty)
   }
 
   def recipeSize: Int = recipes.size
-
-  def removeRecipe(output: ItemElement): Unit = recipes_internal.filterInPlace { case (_, r) => r.output =!= output }
-
-  def removeRecipe(location: ResourceLocation): Unit = recipes_internal.remove(location)
 
   def getRecipe(inputs: java.util.List[ItemStack]): java.util.List[WorkbenchRecipes] = {
     val asScala = inputs.asScala
@@ -143,21 +125,6 @@ object WorkbenchRecipes {
     }.values.toList.sorted
     sorted.asJava
   }
-
-  def addIngredientRecipe(location: ResourceLocation, output: ItemStack, energy: Double, inputs: java.util.List[java.util.List[IngredientWithCount]]): Unit = {
-    val scalaInput = inputs.asScala.map(_.asScala.toSeq).toSeq
-    val newRecipe = new IngredientRecipe(location, output, (energy * APowerTile.MJToMicroMJ).toLong, s = true, scalaInput)
-    if (energy > 0) {
-      recipes_internal.put(location, newRecipe)
-    } else {
-      LOGGER.error(s"Energy of Workbench Recipe is 0. $newRecipe")
-    }
-  }
-
-  /**
-   * @return Only internal recipe. (Registered via data.quarryplus.workbench)
-   */
-  def getRecipeMap: Map[ResourceLocation, WorkbenchRecipes] = recipes_internal.toMap
 
   def getRecipeFromResult(stack: ItemStack): java.util.Optional[WorkbenchRecipes] = {
     if (stack.isEmpty) return java.util.Optional.empty()
@@ -193,17 +160,6 @@ object WorkbenchRecipes {
     this.recipeParserMapInternal.getOrElse(recipeTypeString, (_, _) => Left("Not a workbench recipe"))
   }
 
-  def registerJsonRecipe(resourceManager: IResourceManager): Unit = {
-    val gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping.create
-    for (location <- resourceManager.getAllResourceLocations("quarryplus/workbench", s => s.endsWith(".json") && !s.startsWith("_")).asScala) {
-      resource(resourceManager, location) flatMap (read(_, gson)) flatMap (parse(_, location)) match {
-        case Left(value) if value == conditionMessage =>
-        case Left(value) => LOGGER.error(s"Error in loading $location, $value")
-        case Right(r) => recipes_internal.put(r.location, r)
-      }
-    }
-  }
-
   object Serializer extends IRecipeSerializer[WorkbenchRecipes] {
     override def read(recipeId: ResourceLocation, json: JsonObject): WorkbenchRecipes = {
       json.addProperty("id", recipeId.toString)
@@ -237,37 +193,6 @@ object WorkbenchRecipes {
     def read(recipeId: ResourceLocation, buffer: PacketBuffer): WorkbenchRecipes
 
     def write(buffer: PacketBuffer, recipe: WorkbenchRecipes): Unit
-  }
-
-  object Reload extends com.yogpc.qp.utils.JsonReloadListener(new GsonBuilder().setPrettyPrinting().disableHtmlEscaping.create, QuarryPlus.modID + "/workbench") {
-
-    def apply(splashList: util.Map[ResourceLocation, JsonElement], resourceManagerIn: IResourceManager, profilerIn: IProfiler): Unit = {
-      recipes_internal.clear()
-
-      for ((location, element) <- splashList.asScala;
-           jsonObject <- element.some.collect { case o: JsonObject => o }) {
-        parse(jsonObject, location) match {
-          case Left(value) if value == conditionMessage =>
-          case Left(value) => LOGGER.error(s"Error in loading $location, $value")
-          case Right(r) => recipes_internal.put(r.location, r)
-        }
-      }
-
-      LOGGER.debug("Recipe loaded.")
-    }
-
-    @SubscribeEvent
-    def loggedIn(event: PlayerEvent.PlayerLoggedInEvent): Unit = {
-      DistExecutor.unsafeRunWhenOn(Dist.DEDICATED_SERVER, () => () =>
-        PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.`with`(() => event.getPlayer.asInstanceOf[ServerPlayerEntity]),
-          RecipeSyncMessage.create(WorkbenchRecipes.recipes)))
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    def receiveRecipeFromServer(recipe: scala.collection.Map[ResourceLocation, WorkbenchRecipes]): Unit = {
-      recipes_internal.clear()
-      recipes_internal.addAll(recipe)
-    }
   }
 
 }

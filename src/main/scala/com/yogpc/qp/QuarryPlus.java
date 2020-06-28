@@ -59,11 +59,9 @@ public class QuarryPlus {
 
     @SubscribeEvent
     public void serverStart(FMLServerAboutToStartEvent event) {
-        MinecraftForge.EVENT_BUS.register(WorkbenchRecipes.Reload$.MODULE$);
         IReloadableResourceManager manager = (IReloadableResourceManager) event.getServer().getDataPackRegistries().func_240970_h_();
-        manager.addReloadListener(WorkbenchRecipes.Reload$.MODULE$);
-        manager.addReloadListener(BlockWrapper.Reload$.MODULE$);
-        manager.addReloadListener(QuarryBlackList.Reload$.MODULE$);
+        manager.addReloadListener(BlockWrapper.Reload$.MODULE$); // seems not working
+        manager.addReloadListener(QuarryBlackList.Reload$.MODULE$); // seems not working
     }
 
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)

@@ -41,7 +41,7 @@ object QuarryBlackList {
 
   final def example2: Seq[Entry] = Seq(Air, Name(Blocks.WHITE_WOOL.getRegistryName), Mod("ic2"), Ores, Tag(Tags.Blocks.STONE.func_230234_a_()))
 
-  private var entries: Set[Entry] = Set.empty
+  private var entries: Set[Entry] = example1.toSet
 
   abstract class Entry(val id: String) {
     def test(state: BlockState, world: IBlockReader, pos: BlockPos): Boolean
