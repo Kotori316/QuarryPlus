@@ -289,11 +289,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         this.efficiency = nbt.getByte("efficiency");
         this.unbreaking = nbt.getByte("unbreaking");
         this.yLevel = Math.max(nbt.getInt("yLevel"), 1);
-        if (nbt.contains("enchantmentFilter")) {
-            this.enchantmentFilter = EnchantmentFilter.read(new Dynamic<>(NBTDynamicOps.INSTANCE, nbt.get("enchantmentFilter")));
-        } else {
-            this.enchantmentFilter = EnchantmentFilter.fromLegacyTag(nbt);
-        }
+        this.enchantmentFilter = EnchantmentFilter.read(new Dynamic<>(NBTDynamicOps.INSTANCE, nbt.get("enchantmentFilter")));
         ench = nbt.getList("enchList", Constants.NBT.TAG_COMPOUND).stream().map(CompoundNBT.class::cast)
             .map(toEntry(n -> n.getString("id"), n -> n.getInt("value")))
             .map(keys(ResourceLocation::new))
