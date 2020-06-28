@@ -27,7 +27,6 @@ import com.yogpc.qp.packet.quarry.ModeMessage;
 import com.yogpc.qp.packet.quarry.MoveHead;
 import com.yogpc.qp.packet.quarry2.ActionMessage;
 import com.yogpc.qp.packet.quarry2.Level2Message;
-import com.yogpc.qp.packet.workbench.RecipeSyncMessage;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -74,7 +73,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(id.getAndIncrement(), TemplateMessage.class, TemplateMessage::writeToBuffer, IMessage.decode(TemplateMessage::new), TemplateMessage::onReceiveInternal);
         INSTANCE.registerMessage(id.getAndIncrement(), ActionMessage.class, ActionMessage::writeToBuffer, IMessage.decode(ActionMessage::new), ActionMessage::onReceiveInternal);
         INSTANCE.registerMessage(id.getAndIncrement(), Level2Message.class, Level2Message::writeToBuffer, b -> new Level2Message().readFromBuffer(b), Level2Message::onReceiveInternal);
-        INSTANCE.registerMessage(id.getAndIncrement(), RecipeSyncMessage.class, RecipeSyncMessage::writeToBuffer, IMessage.decode(RecipeSyncMessage::new), RecipeSyncMessage::onReceiveInternal);
+//        INSTANCE.registerMessage(id.getAndIncrement(), RecipeSyncMessage.class, RecipeSyncMessage::writeToBuffer, IMessage.decode(RecipeSyncMessage::new), RecipeSyncMessage::onReceiveInternal);
         INSTANCE.registerMessage(id.getAndIncrement(), ClientTextMessage.class, ClientTextMessage::writeToBuffer, IMessage.decode(ClientTextMessage::new), ClientTextMessage::onReceiveInternal);
         INSTANCE.registerMessage(id.getAndIncrement(), MiniRenderBoxMessage.class, MiniRenderBoxMessage::writeToBuffer, IMessage.decode(MiniRenderBoxMessage::new), MiniRenderBoxMessage::onReceiveInternal);
         INSTANCE.registerMessage(id.getAndIncrement(), MiniRequestListMessage.class, MiniRequestListMessage::writeToBuffer, IMessage.decode(MiniRequestListMessage::new), MiniRequestListMessage::onReceiveInternal);

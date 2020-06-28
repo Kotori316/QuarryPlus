@@ -11,11 +11,15 @@ import scala.jdk.javaapi.CollectionConverters;
 
 /**
  * From Dedicated Server to Client.
+ *
+ * @deprecated This packet is no longer used.
  */
+@Deprecated
 public class RecipeSyncMessage implements IMessage<RecipeSyncMessage> {
 
     private scala.collection.Map<ResourceLocation, WorkbenchRecipes> recipesMap;
 
+    @Deprecated
     public static RecipeSyncMessage create(scala.collection.Map<ResourceLocation, WorkbenchRecipes> recipesMap) {
         RecipeSyncMessage message = new RecipeSyncMessage();
         message.recipesMap = recipesMap;
@@ -47,7 +51,7 @@ public class RecipeSyncMessage implements IMessage<RecipeSyncMessage> {
 
     @Override
     public void onReceive(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> WorkbenchRecipes.Reload$.MODULE$.receiveRecipeFromServer(this.recipesMap));
+        // Packet going to be removed.
     }
 
 }
