@@ -19,6 +19,7 @@ public class GuiWorkbench extends ContainerScreen<ContainerWorkbench> {
         super(workbench, inv, component);
         this.xSize = 176;
         this.ySize = 222;
+        this.field_238745_s_ = this.ySize - 96 + 2; // y position of text, inventory
     }
 
     @Override

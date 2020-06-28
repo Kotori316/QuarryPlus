@@ -72,7 +72,11 @@ object QuarryBlackList {
     o
   }
 
-  def readEntry[A](tagLike: Dynamic[A], log: Boolean = true): Entry = {
+  def readEntry[A](tagLike: Dynamic[A]): Entry = {
+    readEntry2(tagLike)
+  }
+
+  def readEntry2[A](tagLike: Dynamic[A], log: Boolean = true): Entry = {
     import com.yogpc.qp._
 
     val onError = {
