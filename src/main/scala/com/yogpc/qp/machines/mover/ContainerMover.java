@@ -39,7 +39,7 @@ import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.IntReferenceHolder;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -89,7 +89,7 @@ public class ContainerMover extends Container {
 
     @Override
     public boolean canInteractWith(final PlayerEntity playerIn) {
-        return this.worldObj.getBlockState(pos).getBlock() == Holder.blockMover() && playerIn.getDistanceSq(new Vec3d(pos)) <= 64.0D;
+        return this.worldObj.getBlockState(pos).getBlock() == Holder.blockMover() && playerIn.getDistanceSq(Vector3d.func_237492_c_(pos)) <= 64.0D;
     }
 
     @Override

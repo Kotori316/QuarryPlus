@@ -89,7 +89,7 @@ public class MoverMessage {
                 QuarryPlus.proxy.getPacketPlayer(ctx.get())
                     .map(p -> p.openContainer)
                     .filter(c -> c.windowId == id)
-                    .ifPresent(container -> ((ContainerMover) container).setAvail(d)))            ;
+                    .ifPresent(container -> ((ContainerMover) container).setAvail(d)));
         }
     }
 

@@ -15,20 +15,20 @@ package com.yogpc.qp.machines.mover;
 
 import java.util.Optional;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.IHandleButton;
+import com.yogpc.qp.machines.base.ScreenUtil;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.mover.MoverMessage;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -44,45 +44,42 @@ public class GuiMover extends ContainerScreen<ContainerMover> implements IHandle
     }
 
     @Override
-    public void init() {
-        super.init();
-        final int i = this.width - this.xSize >> 1;
-        final int j = this.height - this.ySize >> 1;
-        addButton(new IHandleButton.Button(1, i + 27, j + 18, 122, 18, I18n.format(TranslationKeys.UP), this));
-        addButton(new IHandleButton.Button(2, i + 27, j + 36, 122, 18, "", this));
-        addButton(new IHandleButton.Button(3, i + 27, j + 54, 122, 18, I18n.format(TranslationKeys.DOWN), this));
+    public void func_231160_c_() {
+        super.func_231160_c_();
+        func_230480_a_(new IHandleButton.Button(1, guiLeft + 27, guiTop + 18, 122, 18, new TranslationTextComponent(TranslationKeys.UP), this));
+        func_230480_a_(new IHandleButton.Button(2, guiLeft + 27, guiTop + 36, 122, 18, "", this));
+        func_230480_a_(new IHandleButton.Button(3, guiLeft + 27, guiTop + 54, 122, 18, new TranslationTextComponent(TranslationKeys.DOWN), this));
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(final int mouseX, final int mouseY) {
-        this.font.drawString(I18n.format(TranslationKeys.mover), 8, 6, 0x404040);
-        this.font.drawString(I18n.format(TranslationKeys.CONTAINER_INVENTORY), 8, 72, 0x404040);
+    protected void func_230451_b_(MatrixStack matrixStack, final int mouseX, final int mouseY) {
+        super.func_230451_b_(matrixStack, mouseX, mouseY);
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground();
-        super.render(mouseX, mouseY, partialTicks);
-        this.renderHoveredToolTip(mouseX, mouseY);
+    public void func_230430_a_(MatrixStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
+        this.func_230446_a_(matrixStack);// back ground
+        super.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
+        this.func_230459_a_(matrixStack, mouseX, mouseY); // render tooltip
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(final float partialTicks, final int mouseX, final int mouseY) {
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+    protected void func_230450_a_(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+        ScreenUtil.color4f();
         this.getMinecraft().getTextureManager().bindTexture(gui);
-        blit(this.width - this.xSize >> 1, this.height - this.ySize >> 1, 0, 0, this.xSize, this.ySize);
+        this.func_238474_b_(matrixStack, guiLeft, guiTop, 0, 0, xSize, ySize);
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void func_231023_e_() {
+        super.func_231023_e_();
         Optional<Enchantment> enchantment = this.container.getEnchantment();
-        this.buttons.get(1).setMessage(enchantment.map(e -> I18n.format(e.getName())).orElse(""));
+        this.field_230710_m_.get(1).func_238482_a_(enchantment.map(e -> new TranslationTextComponent(e.getName())).orElse(new TranslationTextComponent("")));
     }
 
     @Override
     public void actionPerformed(IHandleButton.Button button) {
-        if (!button.active)
+        if (!button.field_230693_o_)
             return;
 
         switch (button.id) {

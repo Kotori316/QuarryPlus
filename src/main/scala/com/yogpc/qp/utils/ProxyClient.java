@@ -11,6 +11,7 @@ import com.yogpc.qp.machines.base.StatusGui;
 import com.yogpc.qp.machines.bookmover.GuiBookMover;
 import com.yogpc.qp.machines.item.GuiQuarryLevel;
 import com.yogpc.qp.machines.mini_quarry.MiniQuarryGui;
+import com.yogpc.qp.machines.mover.GuiMover;
 import com.yogpc.qp.machines.pb.PlacerGui;
 import com.yogpc.qp.machines.quarry.GuiQuarryModule;
 import com.yogpc.qp.machines.quarry.GuiSolidQuarry;
@@ -102,7 +103,7 @@ public class ProxyClient extends ProxyCommon {
 //            ClientRegistry.bindTileEntitySpecialRenderer(TileRefinery.class, RenderDistiller.instance());
 //        }
             // Register GUI
-//            ScreenManager.registerFactory(Holder.moverContainerType(), GuiMover::new);
+            ScreenManager.registerFactory(Holder.moverContainerType(), GuiMover::new);
             ScreenManager.registerFactory(Holder.workbenchContainerType(), GuiWorkbench::new);
             ScreenManager.registerFactory(Holder.bookMoverContainerType(), GuiBookMover::new);
             ScreenManager.registerFactory(Holder.ySetterContainerType(), GuiQuarryLevel::new);
