@@ -4,6 +4,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.workbench.WorkbenchRecipes;
 import com.yogpc.qp.utils.Holder;
 import net.minecraft.block.Block;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -20,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -46,6 +48,15 @@ class ItemAccessTest {
         assertAll(
             () -> assertTrue(recipes.getRecipeOutput().isEmpty()),
             () -> assertFalse(recipes.hasContent())
+        );
+    }
+
+    @Test
+    void accessToEnchantment() {
+        assertAll(
+            () -> assertNotNull(Enchantments.SILK_TOUCH),
+            () -> assertNotNull(Enchantments.SHARPNESS.getRegistryName()),
+            () -> assertTrue(ForgeRegistries.ENCHANTMENTS.containsValue(Enchantments.FORTUNE))
         );
     }
 

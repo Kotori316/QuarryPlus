@@ -148,7 +148,7 @@ object ItemTemplate {
     val mustBeBoolean = compound.filter(_.contains(NBT_Include)).map(_.getBoolean(NBT_Include)).orElse(Some(true))
     val opt = (maybeTemplate, mustBeBoolean).mapN {
       case (list, include) =>
-        val data = list.asScala.map(n => QuarryBlackList.readEntry(new Dynamic(NBTDynamicOps.INSTANCE, n))).toList
+        val data = list.asScala.map(n => QuarryBlackList.readEntry2(new Dynamic(NBTDynamicOps.INSTANCE, n), log = false)).toList
         Template(data, include)
     }
     opt.getOrElse(EmPlate)

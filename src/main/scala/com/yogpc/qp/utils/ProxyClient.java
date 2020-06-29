@@ -10,6 +10,7 @@ import com.yogpc.qp.machines.advquarry.GuiAdvQuarry;
 import com.yogpc.qp.machines.base.StatusGui;
 import com.yogpc.qp.machines.bookmover.GuiBookMover;
 import com.yogpc.qp.machines.item.GuiEnchList;
+import com.yogpc.qp.machines.item.GuiListTemplate;
 import com.yogpc.qp.machines.item.GuiQuarryLevel;
 import com.yogpc.qp.machines.mini_quarry.MiniQuarryGui;
 import com.yogpc.qp.machines.mover.GuiMover;
@@ -111,7 +112,7 @@ public class ProxyClient extends ProxyCommon {
             ScreenManager.registerFactory(Holder.solidQuarryContainerType(), GuiSolidQuarry::new);
             ScreenManager.registerFactory(Holder.quarryModuleContainerType(), GuiQuarryModule::new);
             ScreenManager.registerFactory(Holder.enchListContainerType(), GuiEnchList::new);
-//            ScreenManager.registerFactory(Holder.templateContainerType(), GuiListTemplate::new);
+            ScreenManager.registerFactory(Holder.templateContainerType(), GuiListTemplate::new);
             ScreenManager.registerFactory(Holder.advPumpContainerType(), GuiAdvPump::new);
             ScreenManager.registerFactory(Holder.advQuarryContainerType(), GuiAdvQuarry::new);
             ScreenManager.registerFactory(Holder.statusContainerType(), StatusGui::new);
