@@ -1,6 +1,30 @@
 package com.yogpc.qp.machines.controller;
 
-/*
+import java.util.Comparator;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
+
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.yogpc.qp.machines.TranslationKeys;
+import com.yogpc.qp.machines.base.IHandleButton;
+import com.yogpc.qp.packet.PacketHandler;
+import com.yogpc.qp.packet.controller.SetEntity;
+import com.yogpc.qp.utils.Holder;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.util.InputMappings;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import org.lwjgl.glfw.GLFW;
+
 @OnlyIn(Dist.CLIENT)
 public class GuiController extends Screen implements IHandleButton {
     private GuiSlotEntities slot;
@@ -22,42 +46,46 @@ public class GuiController extends Screen implements IHandleButton {
     }
 
     @Override
-    public void init() {
-        super.init();
-        this.slot = new GuiSlotEntities(this.minecraft, this.width, this.height, 30, this.height - 60, 18, this);
-        this.children.add(slot);
-        addButton(new IHandleButton.Button(-1, this.width / 2 - 125, this.height - 26, 250, 20, I18n.format(TranslationKeys.DONE), this));
-        setFocused(slot);
-        this.search = new TextFieldWidget(font, this.width / 2 - 125, this.height - 56, 250, 20, "");
-        this.children.add(search);
+    public void func_231160_c_() {
+        super.func_231160_c_();
+        int width = this.field_230708_k_;
+        int height = this.field_230709_l_;
+        this.slot = new GuiSlotEntities(this.getMinecraft(), width, height, 30, height - 60, 18, this);
+        this.field_230705_e_.add(slot);
+        func_231035_a_(slot);
+        func_230480_a_(new IHandleButton.Button(-1, width / 2 - 125, height - 26, 250, 20, new TranslationTextComponent(TranslationKeys.DONE), this));
+        this.search = new TextFieldWidget(field_230712_o_, width / 2 - 125, height - 56, 250, 20, new StringTextComponent(""));
+        this.field_230705_e_.add(search);
         search.setCanLoseFocus(true);
         search.setResponder(this::searchEntities);
     }
 
     @Override
-    public void render(final int mouseX, final int mouseY, final float partialTicks) {
+    public void func_230430_a_(MatrixStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
         if (slot != null) {
-            this.slot.render(mouseX, mouseY, partialTicks);
-            this.search.render(mouseX, mouseY, partialTicks);
+            this.slot.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
+            this.search.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
         }
-        super.render(mouseX, mouseY, partialTicks);
-        drawCenteredString(this.font, I18n.format(TranslationKeys.YOG_SPAWNER_SETTING), this.width / 2, 8, 0xFFFFFF);
+        super.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
+        func_238472_a_(matrixStack, this.field_230712_o_, new TranslationTextComponent(TranslationKeys.YOG_SPAWNER_SETTING), this.field_230708_k_ / 2, 8, 0xFFFFFF);
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void func_231023_e_() {
+        super.func_231023_e_();
         if (!this.getMinecraft().player.isAlive())
             this.getMinecraft().player.closeScreen();
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int p_keyPressed_2_, int p_keyPressed_3_) {
-        if (keyCode == GLFW.GLFW_KEY_ESCAPE || (!search.isFocused() && keyCode == this.getMinecraft().gameSettings.keyBindInventory.getKey().getKeyCode())) {
-            this.onClose();
+    public boolean func_231046_a_(int keyCode, int scanCode, int modifiers) {
+        InputMappings.Input mouseKey = InputMappings.getInputByCode(keyCode, scanCode);
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE || (!search.func_230999_j_() && this.getMinecraft().gameSettings.keyBindInventory.isActiveAndMatches(mouseKey))) {
+            // func_230999_j_ isFocused
+            this.func_231175_as__();
             return true;
         }
-        return super.keyPressed(keyCode, p_keyPressed_2_, p_keyPressed_3_);
+        return super.func_231046_a_(keyCode, scanCode, modifiers);
     }
 
     @Override
@@ -94,4 +122,3 @@ public class GuiController extends Screen implements IHandleButton {
         this.slot.func_241215_a_(null); // setSelected
     }
 }
-*/

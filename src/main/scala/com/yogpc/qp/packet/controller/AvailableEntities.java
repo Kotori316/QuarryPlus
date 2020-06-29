@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import com.yogpc.qp.machines.controller.GuiController;
 import com.yogpc.qp.packet.IMessage;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityType;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
@@ -14,8 +16,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.NetworkEvent;
-
-//import com.yogpc.qp.machines.controller.GuiController;
 
 /**
  * To client only.
@@ -57,8 +57,7 @@ public class AvailableEntities implements IMessage<AvailableEntities> {
     @OnlyIn(Dist.CLIENT)
     public void onReceive(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() ->
-            System.out.println("Minecraft.getInstance().displayGuiScreen(new GuiController(dim, pos.getX(), pos.getY(), pos.getZ(), entities))")
-//            Minecraft.getInstance().displayGuiScreen(new GuiController(dim, pos.getX(), pos.getY(), pos.getZ(), entities))
+            Minecraft.getInstance().displayGuiScreen(new GuiController(dim, pos.getX(), pos.getY(), pos.getZ(), entities))
         );
     }
 }
