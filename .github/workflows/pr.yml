@@ -3,8 +3,7 @@ name: PullRequest Test
 on:
   pull_request:
     branches:
-      - 1.14.4
-      - 1.15.1
+      - 1.16
 
 jobs:
   pr-check:
@@ -19,7 +18,7 @@ jobs:
       - uses: actions/cache@v1
         with:
           path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle15-${{ hashFiles('**/forge_version.properties') }}
+          key: ${{ runner.os }}-gradle16-${{ hashFiles('**/forge_version.properties') }}
       - name: Test
         run: chmod +x ./gradlew && ./gradlew -Dfml.earlyprogresswindow=false runData --info
         continue-on-error: true
