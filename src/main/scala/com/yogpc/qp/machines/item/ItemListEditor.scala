@@ -145,7 +145,7 @@ object ItemListEditor {
 
   private[this] val getTag = Kleisli((stack: ItemStack) => Option(stack.getTag))
   private[this] val getEntry = Kleisli((tag: CompoundNBT) =>
-    Option.when(tag.contains(NAME_key, NBT.TAG_COMPOUND))(QuarryBlackList.readEntry(new SerializeDynamic(NBTDynamicOps.INSTANCE, tag.get(NAME_key)), log = false)))
+    Option.when(tag.contains(NAME_key, NBT.TAG_COMPOUND))(QuarryBlackList.readEntry2(new SerializeDynamic(NBTDynamicOps.INSTANCE, tag.get(NAME_key)), log = false)))
   private[this] val getEnchantments = Kleisli((stack: ItemStack) => Eval.now(EnchantmentHelper.getEnchantments(stack).asScala.toList.collect { case (e, level) if level > 0 => e }))
 
   private[this] val fortuneEval = Eval.later(Enchantments.FORTUNE)
