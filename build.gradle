@@ -100,9 +100,9 @@ minecraft {
             property 'forge.logging.console.level', 'info'
 
             if (isInCI())
-                args '--mod', "fluidtank", '--dev'
+                args '--mod', "quarryplus", '--dev'
             else
-                args '--mod', "fluidtank", '--all'
+                args '--mod', "quarryplus", '--all'
 
             mods {
                 quarryplus {
