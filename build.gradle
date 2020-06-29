@@ -242,6 +242,7 @@ githubRelease {
     repo = 'QuarryPlus'
     token = project.hasProperty("githubToken") ? getProperty("githubToken") : ""
     targetCommitish = '1.16'
+    prerelease = project.version.toString().contains("SNAPSHOT")
     body {
         getChangeLog() +
                 System.lineSeparator() * 2 +

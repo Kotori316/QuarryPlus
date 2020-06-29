@@ -26,7 +26,7 @@ Finished Work
   * Renderer
 * Book Mover
   * JEI support
-* ~Spawner Controller~
+* Spawner Controller
 * Advanced Pump
 * Chunk Destroyer
   * Renderer
