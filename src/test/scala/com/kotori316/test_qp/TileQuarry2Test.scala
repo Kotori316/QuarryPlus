@@ -3,8 +3,8 @@ package com.kotori316.test_qp
 import cats.implicits._
 import com.yogpc.qp.machines.base.{Area, IMarker}
 import com.yogpc.qp.machines.quarry.QuarryAction
-import net.minecraft.util.Direction
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.{Direction, ResourceLocation}
 import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.Test
 
@@ -13,7 +13,7 @@ class TileQuarry2Test {
   val m2 = Marker(new BlockPos(-5, 2, 8), new BlockPos(25, 3, 18))
   val m3 = Marker(new BlockPos(0, 63, 0), new BlockPos(15, 68, 15))
   val m4 = Marker(new BlockPos(8, 5, 8), new BlockPos(10, 5, 16))
-  val dimID = 0.some
+  val dimID = new ResourceLocation("minecraft:over_world").some
 
   @Test
   def defaultArea(): Unit = {

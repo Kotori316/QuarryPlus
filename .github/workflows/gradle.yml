@@ -8,23 +8,23 @@ on:
       - "!*"
 
 jobs:
-#   func:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: CI func
-#         run: |
-#           echo "$(ls ../)" && echo "$(ls ../ | grep h)"
-#           echo "$(ls /)" > func_test.text
-#           ls -m /
-#           echo "grep = $(grep h func_test.text)"
-#           test -e func_test.text
-#           echo "Exists $?"
-#           [ -f func_test.text ]
-#           echo "Exists $?"
-#           ! [ -f func_test.text ]
-#           echo "Non Exists $?"
-#           ! [ -f it.txt ]
-#           echo "Non Exists $?"
+  #   func:
+  #     runs-on: ubuntu-latest
+  #     steps:
+  #       - name: CI func
+  #         run: |
+  #           echo "$(ls ../)" && echo "$(ls ../ | grep h)"
+  #           echo "$(ls /)" > func_test.text
+  #           ls -m /
+  #           echo "grep = $(grep h func_test.text)"
+  #           test -e func_test.text
+  #           echo "Exists $?"
+  #           [ -f func_test.text ]
+  #           echo "Exists $?"
+  #           ! [ -f func_test.text ]
+  #           echo "Non Exists $?"
+  #           ! [ -f it.txt ]
+  #           echo "Non Exists $?"
 
   check:
     runs-on: ubuntu-latest
@@ -44,7 +44,11 @@ jobs:
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle16-${{ hashFiles('**/forge_version.properties') }}
-      - name: Test
+      - name: Test with JUnit
+        run: chmod +x ./gradlew && ./gradlew test
+        env:
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
+      - name: Test with runData
         run: chmod +x ./gradlew && ./gradlew -Dfml.earlyprogresswindow=false runData --info
         continue-on-error: true
         env:
