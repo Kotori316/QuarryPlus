@@ -3,7 +3,7 @@ package com.yogpc.qp.machines.mini_quarry
 import java.util
 
 import cats.implicits._
-import com.mojang.datafixers.Dynamic
+import com.mojang.serialization.Dynamic
 import com.yogpc.qp._
 import com.yogpc.qp.compat.InvUtils
 import com.yogpc.qp.machines.base._
@@ -153,7 +153,7 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
   override def startWorking(): Unit = {
     val facing = getBlockState.get(BlockStateProperties.FACING)
     val maybeMarkers = Area.getMarkersOnDirection(List(facing.getOpposite, facing.rotateY(), facing.rotateYCCW()), world, pos, ignoreHasLink = true)
-    val areas = maybeMarkers.map(m => Area.posToArea(m.min(), m.max(), world.getDimension.getType) -> m)
+    val areas = maybeMarkers.map(m => Area.posToArea(m.min(), m.max(), world.func_234923_W_()) -> m)
       .collectFirst(t => t)
     areas match {
       case Some((newArea, m)) =>
@@ -171,7 +171,7 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
     } else {
       preDirection = d
       val poses = for {
-        y <- LazyList.from(area.yMax to(area.yMin, -1))
+        y <- LazyList.from(area.yMax.to(area.yMin, -1))
         (x, z) <- MiniQuarryTile.makeTargetsXZ(area, d) to LazyList
       } yield new BlockPos(x, y, z)
       targets = poses
@@ -224,7 +224,7 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
   override def write(nbt: CompoundNBT): CompoundNBT = {
     nbt.put("area", area.toNBT)
     nbt.put("enchantments", enchantments.toNBT)
-    nbt.putString("preDirection", preDirection.getName)
+    nbt.putString("preDirection", preDirection.func_176610_l())
     targets.headOption.foreach(p => nbt.putLong("head", p.toLong))
     nbt.put("tools", ItemStackHelper.saveAllItems(new CompoundNBT(), tools))
     nbt.put("blackList", NBTDynamicOps.INSTANCE.createList(blackList.asJava.stream().map(QuarryBlackList.writeEntry(_, NBTDynamicOps.INSTANCE))))

@@ -5,7 +5,7 @@ import com.yogpc.qp.compat.InvUtils
 import com.yogpc.qp.machines.base.{APacketTile, IEnchantableTile, QPBlock}
 import com.yogpc.qp.utils.Holder
 import net.minecraft.block.material.Material
-import net.minecraft.block.{Block, BlockState, SoundType}
+import net.minecraft.block.{AbstractBlock, Block, BlockState, SoundType}
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.player.{PlayerEntity, ServerPlayerEntity}
 import net.minecraft.item.ItemStack
@@ -18,7 +18,7 @@ import net.minecraft.world.World
 import net.minecraftforge.fml.network.NetworkHooks
 
 class MiniQuarryBlock extends QPBlock(
-  Block.Properties.create(Material.IRON).hardnessAndResistance(1.5f, 10f).sound(SoundType.STONE),
+  AbstractBlock.Properties.create(Material.IRON).hardnessAndResistance(1.5f, 10f).sound(SoundType.STONE),
   QuarryPlus.Names.mini_quarry,
   new MiniQuarryItem(_, _)
 ) {
