@@ -1,4 +1,4 @@
-# QuarryPlus for 1.15.2
+# QuarryPlus for 1.16.1
 ===========
 
 [![](https://github.com/Kotori316/QuarryPlus/workflows/Build%20Check%20and%20Publish/badge.svg)](https://github.com/Kotori316/QuarryPlus/actions)
@@ -26,9 +26,10 @@ Finished Work
   * Renderer
 * Book Mover
   * JEI support
-* Spawner Controller
+* ~Spawner Controller~
 * Advanced Pump
 * Chunk Destroyer
   * Renderer
 * Placer Plus
   * Including 2 functions, placing and breaking.
+* Mini Quarry
