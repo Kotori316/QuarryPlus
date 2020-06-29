@@ -1,9 +1,6 @@
 package com.yogpc.qp.machines.item;
 
-import com.yogpc.qp.machines.base.QuarryBlackList;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.widget.list.ExtendedList;
-
+/*
 public class GuiSlotEnchList extends ExtendedList<GuiSlotEnchList.Entry> {
 
     private final GuiEnchList parent;
@@ -46,3 +43,4 @@ public class GuiSlotEnchList extends ExtendedList<GuiSlotEnchList.Entry> {
         }
     }
 }
+*/

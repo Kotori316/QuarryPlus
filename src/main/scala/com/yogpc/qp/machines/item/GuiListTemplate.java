@@ -1,29 +1,6 @@
 package com.yogpc.qp.machines.item;
 
-import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Function;
-
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.machines.TranslationKeys;
-import com.yogpc.qp.machines.base.IHandleButton;
-import com.yogpc.qp.machines.base.QuarryBlackList;
-import com.yogpc.qp.packet.PacketHandler;
-import com.yogpc.qp.packet.listtemplate.TemplateMessage;
-import com.yogpc.qp.utils.Holder;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.gui.widget.list.ExtendedList;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import scala.jdk.javaapi.CollectionConverters;
-
+/*
 public class GuiListTemplate extends ContainerScreen<ContainerListTemplate> implements IHandleButton {
     private static final ResourceLocation LOCATION = new ResourceLocation(QuarryPlus.modID, "textures/gui/template.png");
     private final PlayerEntity player;
@@ -183,7 +160,7 @@ public class GuiListTemplate extends ContainerScreen<ContainerListTemplate> impl
             }
         }
 */
-
+/*
         @Override
         protected int getScrollbarPosition() {
             return this.x1 - 6;
@@ -214,3 +191,4 @@ public class GuiListTemplate extends ContainerScreen<ContainerListTemplate> impl
         }
     }
 }
+*/

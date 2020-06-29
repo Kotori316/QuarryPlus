@@ -1,28 +1,6 @@
 package com.yogpc.qp.machines.controller;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-import java.util.stream.Collectors;
-
-import com.yogpc.qp.machines.TranslationKeys;
-import com.yogpc.qp.machines.base.IHandleButton;
-import com.yogpc.qp.packet.PacketHandler;
-import com.yogpc.qp.packet.controller.SetEntity;
-import com.yogpc.qp.utils.Holder;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import org.lwjgl.glfw.GLFW;
-
+/*
 @OnlyIn(Dist.CLIENT)
 public class GuiController extends Screen implements IHandleButton {
     private GuiSlotEntities slot;
@@ -30,9 +8,10 @@ public class GuiController extends Screen implements IHandleButton {
     List<ResourceLocation> names;
     @javax.annotation.Nonnull
     private final List<ResourceLocation> allEntities;
-    final int dim, xc, yc, zc;
+    ResourceLocation dim;
+    final int xc, yc, zc;
 
-    public GuiController(final int d, final int x, final int y, final int z, final List<ResourceLocation> allEntities) {
+    public GuiController(final ResourceLocation d, final int x, final int y, final int z, final List<ResourceLocation> allEntities) {
         super(new TranslationTextComponent(Holder.blockController().getTranslationKey()));
         this.dim = d;
         this.xc = x;
@@ -84,7 +63,7 @@ public class GuiController extends Screen implements IHandleButton {
     @Override
     public void actionPerformed(IHandleButton.Button button) {
         if (button.id == -1) {
-            GuiSlotEntities.Entry selected = slot.getSelected();
+            GuiSlotEntities.Entry selected = slot.func_230958_g_();
             if (selected != null) {
                 PacketHandler.sendToServer(SetEntity.create(dim, new BlockPos(xc, yc, zc), selected.location));
             }
@@ -112,6 +91,7 @@ public class GuiController extends Screen implements IHandleButton {
         }
         names = collect;
         this.slot.refreshList();
-        this.slot.setSelected(null);
+        this.slot.func_241215_a_(null); // setSelected
     }
 }
+*/

@@ -7,8 +7,6 @@ import java.util.function.Supplier;
 import com.mojang.serialization.Dynamic;
 import com.yogpc.qp.machines.base.EnchantmentFilter;
 import com.yogpc.qp.machines.base.QuarryBlackList;
-import com.yogpc.qp.machines.item.ContainerEnchList;
-import com.yogpc.qp.machines.item.GuiEnchList;
 import com.yogpc.qp.packet.IMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
@@ -17,6 +15,8 @@ import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 import scala.jdk.javaapi.CollectionConverters;
+
+//import com.yogpc.qp.machines.item.GuiEnchList;
 
 /**
  * To client only.
@@ -53,7 +53,8 @@ public class DiffMessage implements IMessage<DiffMessage> {
     public void onReceive(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             Screen screen = Minecraft.getInstance().currentScreen;
-            if (screen instanceof GuiEnchList) {
+            // TODO GuiEnchList
+            /*if (screen instanceof GuiEnchList) {
                 ContainerEnchList enchList = ((GuiEnchList) screen).getContainer();
                 EnchantmentFilter filter = enchList.tile.enchantmentFilter();
                 enchList.tile.enchantmentFilter_$eq(filter.copy(
@@ -62,7 +63,7 @@ public class DiffMessage implements IMessage<DiffMessage> {
                     CollectionConverters.asScala(silkList).toSet()
                 ));
                 ((GuiEnchList) screen).refreshList();
-            }
+            }*/
         });
     }
 

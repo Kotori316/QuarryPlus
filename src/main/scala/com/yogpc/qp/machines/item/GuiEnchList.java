@@ -13,35 +13,7 @@
 
 package com.yogpc.qp.machines.item;
 
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Function;
-
-import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.machines.TranslationKeys;
-import com.yogpc.qp.machines.base.EnchantmentFilter;
-import com.yogpc.qp.machines.base.IHandleButton;
-import com.yogpc.qp.machines.base.QuarryBlackList;
-import com.yogpc.qp.packet.PacketHandler;
-import com.yogpc.qp.packet.mover.EnchantmentMessage;
-import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
-import net.minecraft.client.gui.screen.ConfirmScreen;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.registries.ForgeRegistries;
-import scala.jdk.javaapi.CollectionConverters;
-
+/*
 @OnlyIn(Dist.CLIENT)
 public class GuiEnchList extends ContainerScreen<ContainerEnchList> implements BooleanConsumer, IHandleButton {
     public static final int Toggle_id = 10, Remove_id = 12;
@@ -156,3 +128,4 @@ public class GuiEnchList extends ContainerScreen<ContainerEnchList> implements B
         getBlockDataList(target).stream().map(newEntry).forEach(modListViewConsumer);
     }
 }
+*/
