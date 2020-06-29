@@ -135,7 +135,7 @@ class EntryList extends ExtendedList<MiniQuarryListEntry> {
 
     public void updateList() {
         this.func_230963_j_(); // clear
-        entriesSupplier.get().stream().map(e -> new MiniQuarryListEntry(e, this.parent, this::func_241215_a_)).forEach(this::func_230513_b_); //
+        entriesSupplier.get().stream().map(e -> new MiniQuarryListEntry(e, this.parent, this::func_241215_a_)).forEach(this::func_230513_b_); // addEntry
     }
 
 }
