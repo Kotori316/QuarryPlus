@@ -64,7 +64,7 @@ public class SuperPickaxeItem extends ToolItem {
     @SuppressWarnings("unchecked")
     private Set<ToolType> getToolTypes() {
         try {
-            Field valuesField = ToolType.class.getDeclaredField("values");
+            Field valuesField = ToolType.class.getDeclaredField("VALUES");
             valuesField.setAccessible(true);
             Map<String, ToolType> toolTypeMap = ((Map<String, ToolType>) valuesField.get(null));
             return new HashSet<>(toolTypeMap.values());
