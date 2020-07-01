@@ -65,7 +65,7 @@ object Config {
 
     def debug: Boolean = inDev || configDebug.get()
 
-    def spawnerBlacklist: scala.collection.mutable.Buffer[ResourceLocation] = spawnerBlacklist_internal.get().asScala.map(new ResourceLocation(_))
+    def spawnerBlacklist: scala.collection.Seq[ResourceLocation] = spawnerBlacklist_internal.get().asScala.map(new ResourceLocation(_))
 
     private def powerConfig(builder: ForgeConfigSpec.Builder): Map[String, ForgeConfigSpec.DoubleValue] = {
       case class Category(path: List[String]) {
