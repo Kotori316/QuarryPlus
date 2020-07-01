@@ -177,8 +177,7 @@ final class Recipe(f: DataGenerator) extends QuarryPlusDataProvider.DataProvider
     // Status Checker
     buffer += RecipeSerializeHelper(new FinishedWorkbenchRecipe("quarryplus:builtin_statuschecker", new ItemStack(Holder.itemStatusChecker),
       80000, true,
-      Seq(IngredientWithCount(Ingredient.fromTag(Tags.Items.GEMS_DIAMOND), 4),
-        IngredientWithCount(Ingredient.fromTag(Tags.Items.INGOTS_GOLD), 16),
+      Seq(IngredientWithCount(Ingredient.fromTag(Tags.Items.INGOTS_GOLD), 16),
         IngredientWithCount(Ingredient.fromTag(Tags.Items.INGOTS_IRON), 24),
         IngredientWithCount(Ingredient.fromTag(Tags.Items.DUSTS_REDSTONE), 32),
         new IngredientWithCount(new ItemStack(Items.LAPIS_LAZULI, 8)),
