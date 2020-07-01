@@ -1,7 +1,8 @@
 package com.yogpc.qp.integration.jei
-/*
+
 import java.util.Collections
 
+import com.mojang.blaze3d.matrix.MatrixStack
 import com.yogpc.qp.machines.base.IEnchantableItem
 import com.yogpc.qp.utils.Holder
 import com.yogpc.qp.{QuarryPlus, _}
@@ -16,6 +17,7 @@ import net.minecraft.client.resources.I18n
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.item.{Item, ItemStack, Items}
 import net.minecraft.util.ResourceLocation
+import net.minecraft.util.text.TranslationTextComponent
 import net.minecraftforge.registries.ForgeRegistries
 
 import scala.jdk.CollectionConverters._
@@ -51,10 +53,10 @@ class MoverRecipeCategory(guiHelper: IGuiHelper) extends IRecipeCategory[MoverRe
     ingredients.setOutputLists(VanillaTypes.ITEM, Collections.singletonList(output.asJava))
   }
 
-  override def draw(recipe: MoverRecipe, mouseX: Double, mouseY: Double): Unit = {
-    super.draw(recipe, mouseX, mouseY)
+  override def draw(recipe: MoverRecipe, matrixStack: MatrixStack, mouseX: Double, mouseY: Double): Unit = {
+    super.draw(recipe, matrixStack, mouseX, mouseY)
     recipe.enchantments.zipWithIndex.foreach { case (e, i) =>
-      Minecraft.getInstance().fontRenderer.drawString(I18n.format(e.getName), (36 - xOff).toFloat, (6 - yOff + 10 * i).toFloat, 0x404040)
+      Minecraft.getInstance().fontRenderer.func_238422_b_(matrixStack, new TranslationTextComponent(e.getName), (36 - xOff).toFloat, (6 - yOff + 10 * i).toFloat, 0x404040)
     }
   }
 }
@@ -86,4 +88,3 @@ object MoverRecipeCategory {
   }
 
 }
-*/

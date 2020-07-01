@@ -1,7 +1,8 @@
 package com.yogpc.qp.integration.jei
-/*
+
 import java.util.{Collections, ArrayList => AList, List => JList}
 
+import com.mojang.blaze3d.matrix.MatrixStack
 import com.yogpc.qp.QuarryPlus
 import com.yogpc.qp.integration.jei.WorkBenchRecipeCategory._
 import com.yogpc.qp.machines.base.APowerTile
@@ -49,13 +50,14 @@ class WorkBenchRecipeCategory(guiHelper: IGuiHelper) extends IRecipeCategory[Wor
 
   override val getUid: ResourceLocation = UID
 
-  override def draw(recipe: WorkbenchRecipes, mouseX: Double, mouseY: Double): Unit = {
-    animateBar.draw(4, 60)
+  override def draw(recipe: WorkbenchRecipes, matrixStack: MatrixStack, mouseX: Double, mouseY: Double): Unit = {
+    super.draw(recipe, matrixStack, mouseX, mouseY)
+    animateBar.draw(matrixStack, 4, 60)
     if (!recipe.isInstanceOf[EnchantmentCopyRecipe]) {
-      Minecraft.getInstance().fontRenderer.drawString((recipe.energy.toDouble / APowerTile.MJToMicroMJ).toString + "MJ", 36 - xOff, 70 - yOff, 0x404040)
+      Minecraft.getInstance().fontRenderer.func_238421_b_(matrixStack, (recipe.energy.toDouble / APowerTile.MJToMicroMJ).toString + "MJ", 36 - xOff, 70 - yOff, 0x404040)
     } else {
-      Minecraft.getInstance().fontRenderer.drawString((recipe.energy.toDouble / APowerTile.MJToMicroMJ).toString + "MJ", 36 - xOff, 67 - yOff, 0x404040)
-      Minecraft.getInstance().fontRenderer.drawString("Keeps enchantments", 36 - xOff, 77 - yOff, 0x404040)
+      Minecraft.getInstance().fontRenderer.func_238421_b_(matrixStack, (recipe.energy.toDouble / APowerTile.MJToMicroMJ).toString + "MJ", 36 - xOff, 67 - yOff, 0x404040)
+      Minecraft.getInstance().fontRenderer.func_238421_b_(matrixStack, "Keeps enchantments", 36 - xOff, 77 - yOff, 0x404040)
     }
   }
 
@@ -81,4 +83,3 @@ object WorkBenchRecipeCategory {
   final val yOff = 0
   final val o = 18
 }
-*/

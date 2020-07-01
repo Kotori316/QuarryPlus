@@ -1,7 +1,8 @@
 package com.yogpc.qp.integration.jei
-/*
+
 import java.util.Collections
 
+import com.mojang.blaze3d.matrix.MatrixStack
 import com.yogpc.qp.machines.base.IEnchantableItem
 import com.yogpc.qp.utils.Holder
 import com.yogpc.qp.{QuarryPlus, _}
@@ -44,10 +45,10 @@ class BookRecipeCategory(guiHelper: IGuiHelper) extends IRecipeCategory[BookReci
     guiItemStack.set(ingredients)
   }
 
-  override def draw(recipe: BookRecipe, mouseX: Double, mouseY: Double): Unit = {
-    super.draw(recipe, mouseX, mouseY)
-    animateBar.draw(75, 31)
-    Minecraft.getInstance().fontRenderer.drawString("50000MJ", 36 - xOff, 66 - yOff, 0x404040)
+  override def draw(recipe: BookRecipe, matrixStack: MatrixStack, mouseX: Double, mouseY: Double): Unit = {
+    super.draw(recipe, matrixStack, mouseX, mouseY)
+    animateBar.draw(matrixStack, 75, 31)
+    Minecraft.getInstance().fontRenderer.func_238421_b_(matrixStack, "50000MJ", 36 - xOff, 66 - yOff, 0x404040)
   }
 
   override def getRecipeClass: Class[_ <: BookRecipe] = classOf[BookRecipe]
@@ -79,4 +80,3 @@ object BookRecipeCategory {
   case class BookRecipe(ench: EnchantmentData)
 
 }
-*/

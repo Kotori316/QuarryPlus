@@ -1,9 +1,8 @@
 package com.yogpc.qp.integration.jei;
-/*
+
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
@@ -23,7 +22,6 @@ import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import scala.jdk.javaapi.CollectionConverters;
 
 @JeiPlugin
 public class QuarryJeiPlugin implements IModPlugin {
@@ -34,9 +32,8 @@ public class QuarryJeiPlugin implements IModPlugin {
 
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
-        List<WorkbenchRecipes> recipes = Stream.concat(
-            CollectionConverters.asJava(WorkbenchRecipes.getRecipeMap()).values().stream(), // Internal recipes.
-            RecipeGetter.getRecipes(Objects.requireNonNull(Minecraft.getInstance().world).getRecipeManager(), WorkbenchRecipes.recipeType()).values().stream()) // Synced by server.
+        List<WorkbenchRecipes> recipes =
+            RecipeGetter.getRecipes(Objects.requireNonNull(Minecraft.getInstance().world).getRecipeManager(), WorkbenchRecipes.recipeType()).values().stream() // Synced by server.
             .filter(WorkbenchRecipes::showInJEI)
             .sorted(WorkbenchRecipes.recipeOrdering())
             .collect(Collectors.toList());
@@ -99,4 +96,3 @@ public class QuarryJeiPlugin implements IModPlugin {
         QuarryJeiPlugin.jeiRuntime = jeiRuntime;
     }
 }
-*/
