@@ -32,7 +32,7 @@ class SlotMover(inv: IInventory, index: Int, xPosition: Int, yPosition: Int) ext
       case 0 =>
         !is.getEnchantmentTagList.isEmpty &&
           (is.getItem match {
-            case tool: ToolItem => tool.getTier == ItemTier.DIAMOND
+            case tool: ToolItem => tool.getTier.getHarvestLevel >= ItemTier.DIAMOND.getHarvestLevel
             case _: BowItem => true
             case _ => false
           })
