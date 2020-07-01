@@ -49,6 +49,8 @@ compileScala.options.compilerArgs.add("-Xlint:all")
 
 static String mappingVersion() { return '20200514-1.16' }
 
+println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
+
 minecraft {
     // The mappings can be changed at any time, and must be in the following format.
     // snapshot_YYYYMMDD   Snapshot are built nightly.
