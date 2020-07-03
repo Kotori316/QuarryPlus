@@ -47,7 +47,8 @@ public class QuarryPlus {
 
     public QuarryPlus() {
         initConfig();
-        MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.addListener(this::serverStart);
+        callMarker();
     }
 
     private void initConfig() {
@@ -57,14 +58,21 @@ public class QuarryPlus {
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.clientBuild(client).build());
     }
 
-    @SubscribeEvent
     public void serverStart(FMLServerAboutToStartEvent event) {
         IReloadableResourceManager manager = (IReloadableResourceManager) event.getServer().getDataPackRegistries().func_240970_h_();
         manager.addReloadListener(BlockWrapper.Reload$.MODULE$); // seems not working
         manager.addReloadListener(QuarryBlackList.Reload$.MODULE$); // seems not working
     }
 
-    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
+    private static void callMarker() {
+        try {
+            Class.forName("com.kotori316.marker.Marker").newInstance();
+        } catch (ReflectiveOperationException e) {
+            LOGGER.warn("Error loading in marker.", e);
+        }
+    }
+
+    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, modid = QuarryPlus.modID)
     public static class Register {
         @SubscribeEvent
         public static void registerBlocks(RegistryEvent.Register<Block> event) {
