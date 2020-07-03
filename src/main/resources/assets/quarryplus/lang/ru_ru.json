@@ -23,6 +23,8 @@
   "block.quarryplus.spawnercontroller": "Спавнер контроллер",
   "block.quarryplus.standalonepump": "Advanced Pump",
   "block.quarryplus.workbenchplus": "Улучшенный верстак",
+  "block.quarryplus.flex_marker": "Flexible Marker",
+  "block.quarryplus.marker16": "Chunk Marker",
   "item.quarryplus.remove_bedrock_module": "Remove Bedrock Module",
   "item.quarryplus.dimensionmirror": "Зеркало измерения",
   "item.quarryplus.electric_armor": "Электрическая улучшенная броня",
@@ -40,6 +42,7 @@
   "item.quarryplus.replacer_module": "Quarry Replacing Module",
   "item.quarryplus.torch_module": "Quarry Torch Module",
   "item.quarryplus.y_setter": "Quarry Y Setter",
+  "item.quarryplus.remote_controller": "Remote Controller",
   "chat.changemode": "Режим работы был изменен на %s",
   "chat.currentmode": "Сейчас, работая в %s",
   "chat.disable_message": "%s is disabled.",
@@ -137,5 +140,14 @@
   "yog.armor.hover.off": "Режим парения отключен.",
   "yog.armor.hover.on": "Режим парения включен.",
   "yog.pump.liquid": "-    %s: %smB",
-  "yog.spanwer.setting": "Пожалуйста, выберите существо, которое будет спавнится в спавнере"
+  "yog.spanwer.setting": "Пожалуйста, выберите существо, которое будет спавнится в спавнере",
+  "chat.flexiblemarker.area": "Set new area.",
+  "chat.flexiblemarker.pos": "Set new machine pos. %s",
+  "chat.flexiblemarker.reset": "Reset controller configuration.",
+  "tooltip.flexiblemarker.area": "Area (%s, %s, %s) -> (%s, %s, %s)",
+  "tooltip.flexiblemarker.remote_pos": "Pos %s, %s, %s in %s",
+  "itemGroup.flexiblemarker": "Flexible Marker",
+  "gui.left": "Left",
+  "gui.forward": "Forward",
+  "gui.right": "Right"
 }

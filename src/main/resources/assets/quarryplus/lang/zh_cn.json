@@ -23,6 +23,8 @@
   "block.quarryplus.spawnercontroller": "刷怪控制器",
   "block.quarryplus.standalonepump": "高级泵",
   "block.quarryplus.workbenchplus": "增强型工作台",
+  "block.quarryplus.flex_marker": "Flexible Marker",
+  "block.quarryplus.marker16": "Chunk Marker",
   "item.quarryplus.remove_bedrock_module": "Remove Bedrock Module",
   "item.quarryplus.dimensionmirror": "维度之镜",
   "item.quarryplus.electric_armor": "充能增强型盔甲",
@@ -40,6 +42,7 @@
   "item.quarryplus.replacer_module": "Quarry Replacing Module",
   "item.quarryplus.torch_module": "Quarry Torch Module",
   "item.quarryplus.y_setter": "采石场 Y 设定器",
+  "item.quarryplus.remote_controller": "Remote Controller",
   "chat.changemode": "工作模式被修改为 %s",
   "chat.currentmode": "当前工作模式为 %s",
   "chat.disable_message": "%s is disabled.",
@@ -137,5 +140,14 @@
   "yog.armor.hover.off": "悬浮模式已被禁用。",
   "yog.armor.hover.on": "悬浮模式已被启用。",
   "yog.pump.liquid": "-    %s：%s mB",
-  "yog.spanwer.setting": "请选择要刷怪笼要生成的实体"
+  "yog.spanwer.setting": "请选择要刷怪笼要生成的实体",
+  "chat.flexiblemarker.area": "Set new area.",
+  "chat.flexiblemarker.pos": "Set new machine pos. %s",
+  "chat.flexiblemarker.reset": "Reset controller configuration.",
+  "tooltip.flexiblemarker.area": "Area (%s, %s, %s) -> (%s, %s, %s)",
+  "tooltip.flexiblemarker.remote_pos": "Pos %s, %s, %s in %s",
+  "itemGroup.flexiblemarker": "Flexible Marker",
+  "gui.left": "Left",
+  "gui.forward": "Forward",
+  "gui.right": "Right"
 }

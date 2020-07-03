@@ -23,6 +23,8 @@
   "block.quarryplus.spawnercontroller": "モンスタースポナー制御装置",
   "block.quarryplus.standalonepump": "自立改良型ポンプ",
   "block.quarryplus.workbenchplus": "改良型作業台",
+  "block.quarryplus.flex_marker": "Flexibleなマーカー",
+  "block.quarryplus.marker16": "Chunkっぽいマーカー",
   "item.quarryplus.remove_bedrock_module": "岩盤破壊モジュール",
   "item.quarryplus.dimensionmirror": "世界の鏡",
   "item.quarryplus.electric_armor": "改良型電動防具",
@@ -40,6 +42,7 @@
   "item.quarryplus.replacer_module": "置き換えモジュール",
   "item.quarryplus.torch_module": "松明モジュール",
   "item.quarryplus.y_setter": "採掘機レベル設定用具",
+  "item.quarryplus.remote_controller": "採掘機のリモコン",
   "chat.changemode": "動作モードを%sに切り替えました",
   "chat.currentmode": "現在%sで動作しています",
   "chat.disable_message": "%sは無効になっています",
@@ -137,5 +140,14 @@
   "yog.armor.hover.off": "ホバリングモードが無効になりました",
   "yog.armor.hover.on": "ホバリングモードが有効になりました",
   "yog.pump.liquid": "-    %s: %smB",
-  "yog.spanwer.setting": "隣接したスポーナーからスポーンさせる生物を選択してください"
+  "yog.spanwer.setting": "隣接したスポーナーからスポーンさせる生物を選択してください",
+  "chat.flexiblemarker.area": "エリアを設定しました",
+  "chat.flexiblemarker.pos": "機械の座標を設定しました %s",
+  "chat.flexiblemarker.reset": "リモコンの設定を消去しました",
+  "tooltip.flexiblemarker.area": "エリア (%s, %s, %s) -> (%s, %s, %s)",
+  "tooltip.flexiblemarker.remote_pos": "Pos %s, %s, %s in %s",
+  "itemGroup.flexiblemarker": "Flexible Marker",
+  "gui.left": "左",
+  "gui.forward": "前方",
+  "gui.right": "右"
 }

@@ -1,0 +1,29 @@
+{
+  "type": "quarryplus:workbench_recipe",
+  "ingredients": [
+    {
+      "tag": "forge:ingots/gold",
+      "count": 32
+    },
+    {
+      "tag": "forge:ender_pearls",
+      "count": 16
+    },
+    {
+      "tag": "forge:nether_stars",
+      "count": 4
+    }
+  ],
+  "energy": 320000.0,
+  "showInJEI": true,
+  "result": {
+    "item": "quarryplus:remote_controller",
+    "count": 1
+  },
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "quarryplus"
+    }
+  ]
+}

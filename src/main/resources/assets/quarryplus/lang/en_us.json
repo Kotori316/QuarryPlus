@@ -23,6 +23,8 @@
   "block.quarryplus.spawnercontroller": "Spawner Controller",
   "block.quarryplus.standalonepump": "Advanced Pump",
   "block.quarryplus.workbenchplus": "Workbench Plus",
+  "block.quarryplus.flex_marker": "Flexible Marker",
+  "block.quarryplus.marker16": "Chunk Marker",
   "item.quarryplus.remove_bedrock_module": "Remove Bedrock Module",
   "item.quarryplus.dimensionmirror": "DimensionalMirror",
   "item.quarryplus.electric_armor": "ElectricArmorPlus",
@@ -40,6 +42,7 @@
   "item.quarryplus.replacer_module": "Quarry Replacing Module",
   "item.quarryplus.torch_module": "Quarry Torch Module",
   "item.quarryplus.y_setter": "Quarry Y Setter",
+  "item.quarryplus.remote_controller": "Remote Controller",
   "chat.changemode": "Working mode was changed to %s",
   "chat.currentmode": "Now, working in %s",
   "chat.disable_message": "%s is disabled.",
@@ -137,5 +140,14 @@
   "yog.armor.hover.off": "Hover Mode disabled.",
   "yog.armor.hover.on": "Hover Mode enabled.",
   "yog.pump.liquid": "-    %s: %smB",
-  "yog.spanwer.setting": "Please select entity to be spawned by spawner"
+  "yog.spanwer.setting": "Please select entity to be spawned by spawner",
+  "chat.flexiblemarker.area": "Set new area.",
+  "chat.flexiblemarker.pos": "Set new machine pos. %s",
+  "chat.flexiblemarker.reset": "Reset controller configuration.",
+  "tooltip.flexiblemarker.area": "Area (%s, %s, %s) -> (%s, %s, %s)",
+  "tooltip.flexiblemarker.remote_pos": "Pos %s, %s, %s in %s",
+  "itemGroup.flexiblemarker": "Flexible Marker",
+  "gui.left": "Left",
+  "gui.forward": "Forward",
+  "gui.right": "Right"
 }
