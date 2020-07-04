@@ -55,6 +55,7 @@ class MiniQuarryBlock extends QPBlock(
 
   //noinspection ScalaDeprecation
   override def neighborChanged(state: BlockState, worldIn: World, pos: BlockPos, blockIn: Block, fromPos: BlockPos, isMoving: Boolean): Unit = {
+    //noinspection ScalaDeprecation
     super.neighborChanged(state, worldIn, pos, blockIn, fromPos, isMoving)
     if (!worldIn.isRemote) {
       val powered = worldIn.isBlockPowered(pos)
@@ -73,6 +74,7 @@ class MiniQuarryBlock extends QPBlock(
   override def onReplaced(state: BlockState, worldIn: World, pos: BlockPos, newState: BlockState, isMoving: Boolean): Unit = {
     if (state.getBlock != newState.getBlock) {
       InvUtils.dropAndUpdateInv(worldIn, pos, worldIn.getTileEntity(pos).asInstanceOf[MiniQuarryTile].getInv, this)
+      //noinspection ScalaDeprecation
       super.onReplaced(state, worldIn, pos, newState, isMoving)
     }
   }

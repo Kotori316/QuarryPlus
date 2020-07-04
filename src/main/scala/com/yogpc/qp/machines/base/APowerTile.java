@@ -273,7 +273,7 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
         return amount; // Must supply all required energy.
     }
 
-    protected final long getEnergy(final long a, final boolean real) {
+    public final long getEnergy(final long a, final boolean real) {
         if (Config.common().noEnergy().get()) {
             return 0;
         }
