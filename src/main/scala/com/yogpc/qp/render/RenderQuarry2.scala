@@ -26,7 +26,7 @@ object RenderQuarry2 extends TileEntityRenderer[TileQuarry2](TileEntityRendererD
   override def render(quarry: TileQuarry2, v: Float, matrixStack: MatrixStack, iRenderTypeBuffer: IRenderTypeBuffer, i: Int, i1: Int): Unit = {
     Minecraft.getInstance.getProfiler.startSection("quarryplus")
     Minecraft.getInstance.getProfiler.startSection("quarry")
-    if (!quarry.area.dimID.forall(id => Minecraft.getInstance.world.func_234923_W_().func_240901_a_() == id)) return
+    if (!quarry.area.dimID.contains(Minecraft.getInstance.world.func_234923_W_().func_240901_a_())) return
     val pos = quarry.getPos
     val bufferBuilder = iRenderTypeBuffer.getBuffer(RenderType.getCutout)
     if (!(bufferInstance bufferEq bufferBuilder)) {

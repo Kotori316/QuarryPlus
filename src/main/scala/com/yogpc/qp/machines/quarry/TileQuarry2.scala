@@ -51,7 +51,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   var frameMode = false
   private val storage = new QuarryStorage
   val moduleInv = new QuarryModuleInventory(5, this, _ => refreshModules(), jp.t2v.lab.syntax.MapStreamSyntax.always_true())
-//  finishListener.add(() => DimensionManager.keepLoaded(getDiggingWorld.getDimension.getType, false))
+  //  finishListener.add(() => DimensionManager.keepLoaded(getDiggingWorld.getDimension.getType, false))
 
   def getDiggingWorld: ServerWorld = {
     if (!super.getWorld.isRemote) {
@@ -89,9 +89,9 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     storage.pushItem(world, pos)
     if (world.getGameTime % 20 == 0) { // Insert fluid every 1 second.
       storage.pushFluid(world, pos)
-//      if (isWorking && getWorld.getDimension.getType != getDiggingWorld.getDimension.getType) {
-//        DimensionManager.keepLoaded(getDiggingWorld.getDimension.getType, true)
-//      }
+      //      if (isWorking && getWorld.getDimension.getType != getDiggingWorld.getDimension.getType) {
+      //        DimensionManager.keepLoaded(getDiggingWorld.getDimension.getType, true)
+      //      }
     }
   }
 
@@ -155,6 +155,9 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     action = QuarryAction.waiting
     PowerManager.configureQuarryWork(this, enchantments.efficiency, enchantments.unbreaking, 0)
     configure(getMaxStored, getMaxStored)
+    if (hasWorld && !world.isRemote) {
+      PacketHandler.sendToClient(TileMessage.create(self), world)
+    }
   }
 
   override def getEnchantments: java.util.Map[ResourceLocation, Integer] = {
