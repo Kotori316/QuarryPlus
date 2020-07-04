@@ -22,7 +22,7 @@ import net.minecraft.nbt.CompoundNBT
 import net.minecraft.state.properties.BlockStateProperties
 import net.minecraft.tileentity.ITickableTileEntity
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos}
-import net.minecraft.util.text.{ITextComponent, StringTextComponent, TranslationTextComponent}
+import net.minecraft.util.text.{ITextComponent, TranslationTextComponent}
 import net.minecraft.util.{Direction, Hand, ResourceLocation}
 import net.minecraft.world.World
 import net.minecraft.world.server.ServerWorld
@@ -301,7 +301,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     s"Storage: ${storage.show}",
     s"Digs to y = $yLevel",
     s"Modules: ${modules.mkString(""",""")}",
-  ).map(new StringTextComponent(_)).asJava
+  ).map(toComponentString).asJava
 
   override def getDisplayName: ITextComponent = super.getDisplayName
 

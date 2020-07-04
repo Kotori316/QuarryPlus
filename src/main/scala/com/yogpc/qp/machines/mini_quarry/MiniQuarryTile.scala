@@ -21,7 +21,7 @@ import net.minecraft.nbt.{CompoundNBT, NBTDynamicOps}
 import net.minecraft.network.play.server.SUpdateTileEntityPacket
 import net.minecraft.state.properties.BlockStateProperties
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos}
-import net.minecraft.util.text.{ITextComponent, StringTextComponent}
+import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.{Direction, Hand, NonNullList, ResourceLocation}
 import net.minecraft.world.server.ServerWorld
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
@@ -192,7 +192,7 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
   override def getDebugMessages: util.List[_ <: ITextComponent] = Seq(
     s"Area: $area}",
     s"TargetSize: ${targets.size}",
-  ).map(new StringTextComponent(_)).asJava
+  ).map(toComponentString).asJava
 
   override def getDisplayName: ITextComponent = super.getDisplayName
 

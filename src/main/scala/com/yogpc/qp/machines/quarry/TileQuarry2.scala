@@ -243,7 +243,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
     s"Digs to y = $yLevel",
     s"Modules: ${modules.mkString(comma)}",
     s"Attachments: ${attachments.mkString(comma)}",
-  ).map(new StringTextComponent(_)).asJava
+  ).map(toComponentString).asJava
 
   def getName = new TranslationTextComponent(getDebugName)
 
