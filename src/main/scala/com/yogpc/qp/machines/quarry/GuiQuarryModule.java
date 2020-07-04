@@ -52,6 +52,8 @@ public class GuiQuarryModule extends ContainerScreen<ContainerQuarryModule> {
     @Override
     protected void func_230451_b_(MatrixStack matrixStack, final int mouseX, final int mouseY) {
         super.func_230451_b_(matrixStack, mouseX, mouseY);
-        this.field_230712_o_.func_238421_b_(matrixStack, "Y: " + yGetter.getAsInt(), 120, 6, 0x404040);
+        if (yGetter != null) {
+            this.field_230712_o_.func_238421_b_(matrixStack, "Y: " + yGetter.getAsInt(), 120, 6, 0x404040);
+        }
     }
 }
