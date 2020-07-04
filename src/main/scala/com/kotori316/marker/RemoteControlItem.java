@@ -60,7 +60,7 @@ public class RemoteControlItem extends Item {
                                 }))); // Drop item
 
                                 getRemotePos(stack)
-                                    .flatMap(p -> Optional.ofNullable(world.getServer()).map(w -> w.getWorld(p.func_239646_a_()).getTileEntity(p.getPos())))
+                                    .flatMap(p -> Optional.ofNullable(world.getServer()).map(w -> w.getWorld(p.func_239646_a_())).map(w -> w.getTileEntity(p.getPos())))
                                     .flatMap(t -> Caps.remotePowerOnCapability().map(c -> t.getCapability(c, context.getFace())))
                                     .ifPresent(l -> l.ifPresent(r -> {
                                         LOGGER.debug("Send start request to {} with {}", r, area);
@@ -115,7 +115,7 @@ public class RemoteControlItem extends Item {
     }
 
     public static final Function<GlobalPos, ITextComponent> convertPosText = p ->
-        new TranslationTextComponent("tooltip.flexiblemarker.remote_pos", p.getPos().getX(), p.getPos().getY(), p.getPos().getZ(), p.func_239646_a_());
+        new TranslationTextComponent("tooltip.flexiblemarker.remote_pos", p.getPos().getX(), p.getPos().getY(), p.getPos().getZ(), p.func_239646_a_().func_240901_a_());
 
     public static List<? extends ITextComponent> areaText(ItemStack stack) {
         if (Caps.isQuarryModLoaded())
