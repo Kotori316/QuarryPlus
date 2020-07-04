@@ -81,7 +81,7 @@ public class ContainerBookMover extends Container {
 
     @Override
     public void detectAndSendChanges() {
-        int progress = (int) (mover.getStoredEnergy() / mover.getMaxStored() * 1000);
+        int progress = (int) (1000 * mover.getStoredEnergy() / mover.getMaxStored() );
         this.progress.set(progress);
         this.isWorking.set(mover.isWorking() ? 1 : 0);
         super.detectAndSendChanges();
