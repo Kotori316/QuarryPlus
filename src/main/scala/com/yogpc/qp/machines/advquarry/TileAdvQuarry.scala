@@ -124,7 +124,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
     }
     val breakEvent = new BlockEvent.BreakEvent(getDiggingWorld, target, stateBefore, fakePlayer)
     if (!MinecraftForge.EVENT_BUS.post(breakEvent)) {
-      val returnValue = modules.foldMap(m => m.invoke(IModule.BeforeBreak(world, target)))
+      val returnValue = modules.foldMap(m => m.invoke(IModule.BeforeBreak(getDiggingWorld, target)))
       if (!returnValue.canGoNext) {
         return Reason.message("Module work has not finished yet.", isEnergy = true).leftIor
       }
