@@ -5,7 +5,7 @@ import com.yogpc.qp.data.QuarryPlusDataProvider.DataBuilder
 import net.minecraft.advancements.criterion._
 import net.minecraft.advancements.{Advancement, AdvancementRewards, ICriterionInstance, IRequirementsStrategy}
 import net.minecraft.item.Item
-import net.minecraft.tags.{ITag, Tag}
+import net.minecraft.tags.ITag
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.common.crafting.conditions.{ICondition, NotCondition, TagEmptyCondition}
 

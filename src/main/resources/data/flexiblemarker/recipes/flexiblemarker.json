@@ -13,16 +13,12 @@
     }
   },
   "result": {
-    "item": "quarryplus:flex_marker",
-    "count": 1
+    "item": "quarryplus:flex_marker"
   },
   "conditions": [
     {
-      "type": "forge:not",
-      "value": {
-        "type": "forge:mod_loaded",
-        "modid": "buildcraftcore"
-      }
+      "value": "MarkerPlus",
+      "type": "quarryplus:machine_enabled"
     }
   ]
 }

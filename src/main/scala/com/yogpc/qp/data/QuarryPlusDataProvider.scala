@@ -7,6 +7,7 @@ import com.mojang.serialization.JsonOps
 import com.yogpc.qp.QuarryPlus
 import com.yogpc.qp.machines.advquarry.BlockWrapper
 import com.yogpc.qp.machines.base.QuarryBlackList
+import com.yogpc.qp.machines.marker.TileMarker
 import com.yogpc.qp.machines.pb.PlacerTile
 import net.minecraft.data.{DataGenerator, DirectoryCache, IDataProvider}
 import net.minecraft.util.ResourceLocation
@@ -71,6 +72,7 @@ object QuarryPlusDataProvider {
     override def directory = "advancements"
 
     override def data: Seq[DataBuilder] = {
+      import com.kotori316.marker.Marker
       import com.yogpc.qp.machines.quarry.BlockSolidQuarry
       import com.yogpc.qp.machines.workbench.TileWorkbench
       import com.yogpc.qp.utils.{EnableCondition, Holder}
@@ -92,7 +94,16 @@ object QuarryPlusDataProvider {
         .addCondition(new NotCondition(new EnableCondition(TileWorkbench.SYMBOL)))
         .addCondition(new EnableCondition(PlacerTile.SYMBOL))
 
-      workbench :: solidQuarry :: placer :: Nil
+      val flex_marker = AdvancementSerializeHelper(Marker.Entries.block16Marker.getRegistryName, saveName = new ResourceLocation(Marker.ModName.toLowerCase, "recipes/flex_marker"))
+        .addItemCriterion(Holder.blockMarker.itemBlock)
+        .addItemCriterion(Tags.Items.GEMS_EMERALD)
+        .addCondition(new EnableCondition(TileMarker.SYMBOL))
+
+      val marker16 = AdvancementSerializeHelper(Marker.Entries.block16Marker.getRegistryName, saveName = new ResourceLocation(Marker.ModName.toLowerCase, "recipes/marker16"))
+        .addItemCriterion(Marker.Entries.blockMarker.itemBlock)
+        .addItemCriterion(Tags.Items.DUSTS_REDSTONE)
+
+      workbench :: solidQuarry :: placer :: flex_marker :: marker16 :: Nil
     }
   }
 
@@ -100,6 +111,7 @@ object QuarryPlusDataProvider {
     override def directory = "loot_tables/blocks"
 
     override def data: Seq[DataBuilder] = {
+      import com.kotori316.marker.Marker
       import com.yogpc.qp.utils.Holder
       val notMachines = Set(
         Holder.blockMover,
@@ -110,6 +122,8 @@ object QuarryPlusDataProvider {
         Holder.blockController,
         Holder.blockWorkbench,
         Holder.blockPlacer,
+        Marker.Entries.blockMarker,
+        Marker.Entries.block16Marker,
       ).map(LootTableSerializeHelper.withDrop)
       val enchantedMachines = Set(
         Holder.blockAdvQuarry,

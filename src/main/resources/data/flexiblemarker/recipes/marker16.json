@@ -6,14 +6,13 @@
   ],
   "key": {
     "E": {
-      "item": "minecraft:redstone"
+      "tag": "forge:dusts/redstone"
     },
     "T": {
       "item": "quarryplus:flex_marker"
     }
   },
   "result": {
-    "item": "quarryplus:marker16",
-    "count": 1
+    "item": "quarryplus:marker16"
   }
 }

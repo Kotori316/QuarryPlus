@@ -2,6 +2,7 @@ package com.yogpc.qp.data
 
 import java.util.Collections
 
+import com.kotori316.marker.Marker
 import com.yogpc.qp.machines.advpump.TileAdvPump
 import com.yogpc.qp.machines.advquarry.TileAdvQuarry
 import com.yogpc.qp.machines.bookmover.BlockBookMover
@@ -21,6 +22,7 @@ import net.minecraft.data._
 import net.minecraft.enchantment.{EnchantmentData, Enchantments}
 import net.minecraft.item.crafting.Ingredient
 import net.minecraft.item.{ItemStack, Items}
+import net.minecraft.util.ResourceLocation
 import net.minecraftforge.common.Tags
 import net.minecraftforge.common.crafting.conditions.NotCondition
 
@@ -307,9 +309,28 @@ final class Recipe(f: DataGenerator) extends QuarryPlusDataProvider.DataProvider
       saveName = location("placer_plus_crafting")
     ).addCondition(new NotCondition(new EnableCondition(TileWorkbench.SYMBOL)))
       .addCondition(new EnableCondition(PlacerTile.SYMBOL))
+
+    val FLEX_MARKER = RecipeSerializeHelper.by(
+      ShapedRecipeBuilder.shapedRecipe(Marker.Entries.blockMarker)
+        .patternLine("E")
+        .patternLine("T")
+        .key('E', Tags.Items.GEMS_EMERALD)
+        .key('T', Holder.blockMarker),
+      saveName = new ResourceLocation(Marker.ModName.toLowerCase, "flexiblemarker")
+    ).addCondition(new EnableCondition(TileMarker.SYMBOL))
+    val MARKER16 = RecipeSerializeHelper.by(
+      ShapedRecipeBuilder.shapedRecipe(Marker.Entries.block16Marker)
+        .patternLine("E")
+        .patternLine("T")
+        .key('E', Tags.Items.DUSTS_REDSTONE)
+        .key('T', Marker.Entries.blockMarker),
+      saveName = new ResourceLocation(Marker.ModName.toLowerCase, "marker16")
+    )
+
     EXP_PUMP_MODULE :: PUMP_MODULE :: REPLACER_MODULE ::
       REVERT_EXP_PUMP :: REVERT_PUMP :: REVERT_REPLACER ::
-      SOLID_QUARRY :: WORKBENCH_PLUS :: PLACER_PLUS :: Nil
+      SOLID_QUARRY :: WORKBENCH_PLUS :: PLACER_PLUS ::
+      FLEX_MARKER :: MARKER16 :: Nil
   }
 
   def enchantmentCopyRecipes: List[RecipeSerializeHelper] = {
