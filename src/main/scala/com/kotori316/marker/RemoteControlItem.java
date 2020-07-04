@@ -53,6 +53,7 @@ public class RemoteControlItem extends Item {
                         maybeMarker.flatMap(l -> l.map(m -> Area.posToArea(m.min(), m.max(), world.func_234923_W_())).map(Optional::of).orElse(getArea(stack)))
                             .ifPresent(area -> {
                                 setArea(stack, Area.areaToNbt().apply(area)); // Save
+                                LOGGER.debug("New area set: {}", area);
                                 maybeMarker.ifPresent(l -> l.ifPresent(m -> m.removeFromWorldWithItem().forEach(i -> {
                                     if (context.getPlayer() != null && !context.getPlayer().inventory.addItemStackToInventory(i)) {
                                         context.getPlayer().dropItem(i, false);
@@ -65,9 +66,9 @@ public class RemoteControlItem extends Item {
                                     .ifPresent(l -> l.ifPresent(r -> {
                                         LOGGER.debug("Send start request to {} with {}", r, area);
                                         r.setAndStart(area);
+                                        stack.removeChildTag(NBT_AREA);
                                     }));
                             });
-                        LOGGER.debug("New area set: {}", getArea(stack));
                         Optional.ofNullable(context.getPlayer()).ifPresent(p ->
                             p.sendStatusMessage(new TranslationTextComponent("chat.flexiblemarker.area"), false));
                     }
@@ -78,6 +79,7 @@ public class RemoteControlItem extends Item {
                         maybeRemoteControllable.ifPresent(l -> l.ifPresent(r -> {
                             r.setAndStart(optionalArea.get());
                             LOGGER.debug("Send start request to {} with {}", r, optionalArea.get());
+                            stack.removeChildTag(NBT_AREA);
                         }));
                     } else {
                         GlobalPos pos = GlobalPos.func_239648_a_(world.func_234923_W_(), tileEntity.getPos());
