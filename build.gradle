@@ -222,7 +222,9 @@ curseforge {
     project {
         id = '282837'
         changelogType = 'markdown'
-        changelog = new File("temp_changelog.md")
+        changelog = "Build with ${loadProperties("forge_version.properties").getProperty("forge_version")}, Mapping: ${mappingVersion()}" +
+                System.lineSeparator() * 2 +
+                new File("temp_changelog.md").text
         releaseType = 'release'
         addGameVersion '1.16.1'
         mainArtifact(jar) {
