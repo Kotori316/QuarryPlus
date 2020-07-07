@@ -249,8 +249,6 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
 
   override def getDisplayName: ITextComponent = super.getDisplayName
 
-  override def hasFastRenderer = true
-
   override def getRenderBoundingBox: AxisAlignedBB = {
     if (area != Area.zeroArea) Area.areaBox(area)
     else super.getRenderBoundingBox

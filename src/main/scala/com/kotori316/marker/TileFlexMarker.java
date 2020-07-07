@@ -137,11 +137,6 @@ public class TileFlexMarker extends TileEntity implements IAreaConfigurable {
         return 128 * 128 * 2;
     }
 
-    @Override
-    public boolean hasFastRenderer() {
-        return true;
-    }
-
     public BlockPos min() {
         return min == BlockPos.ZERO ? getPos() : min;
     }

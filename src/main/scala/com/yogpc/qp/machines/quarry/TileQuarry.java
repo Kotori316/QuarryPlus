@@ -686,11 +686,6 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     }
 
     @Override
-    public boolean hasFastRenderer() {
-        return true;
-    }
-
-    @Override
     public List<ITextComponent> getDebugMessages() {
         List<ITextComponent> list = new ArrayList<>();
         list.add(new TranslationTextComponent(TranslationKeys.CURRENT_MODE, G_getNow()));

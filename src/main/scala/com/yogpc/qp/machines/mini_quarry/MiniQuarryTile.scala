@@ -234,8 +234,6 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
     super.write(nbt)
   }
 
-  override def hasFastRenderer: Boolean = true
-
   override def getRenderBoundingBox: AxisAlignedBB = {
     if (area != Area.zeroArea) Area.areaBox(area)
     else super.getRenderBoundingBox

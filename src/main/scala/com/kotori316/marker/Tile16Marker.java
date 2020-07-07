@@ -81,11 +81,6 @@ public class Tile16Marker extends TileEntity implements /*ITileAreaProvider, IDe
     }
 
     @Override
-    public boolean hasFastRenderer() {
-        return true;
-    }
-
-    @Override
     public void func_230337_a_(BlockState state, CompoundNBT compound) {
         super.func_230337_a_(state, compound);
         min = BlockPos.fromLong(compound.getLong("min"));

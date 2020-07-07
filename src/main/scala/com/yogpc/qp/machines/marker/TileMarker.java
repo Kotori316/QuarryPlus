@@ -102,11 +102,6 @@ public class TileMarker extends APacketTile implements IMarker, IDebugSender, IC
         }
     }
 
-    @Override
-    public boolean hasFastRenderer() {
-        return true;
-    }
-
     public void activated() {
         Link.updateLinks(getWorld(), getPos());
         assert world != null;

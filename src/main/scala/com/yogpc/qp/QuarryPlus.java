@@ -19,12 +19,12 @@ import net.minecraft.block.Block;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.Item;
 import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.resources.IReloadableResourceManager;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
@@ -32,7 +32,6 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scala.jdk.javaapi.CollectionConverters;
@@ -58,10 +57,9 @@ public class QuarryPlus {
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.clientBuild(client).build());
     }
 
-    public void serverStart(FMLServerAboutToStartEvent event) {
-        IReloadableResourceManager manager = (IReloadableResourceManager) event.getServer().getDataPackRegistries().func_240970_h_();
-        manager.addReloadListener(BlockWrapper.Reload$.MODULE$); // seems not working
-        manager.addReloadListener(QuarryBlackList.Reload$.MODULE$); // seems not working
+    public void serverStart(AddReloadListenerEvent event) {
+        event.addListener(BlockWrapper.Reload$.MODULE$);
+        event.addListener(QuarryBlackList.Reload$.MODULE$);
     }
 
     private static void callMarker() {
