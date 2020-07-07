@@ -5,7 +5,6 @@ import java.util.function.Function;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.JsonOps;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.base.APowerTile;
@@ -42,7 +41,7 @@ public class ItemReplacerModule extends Item implements IDisabled, IModuleItem {
             .map(s -> gson.fromJson(s, JsonObject.class))
             .flatMap(jsonObject -> {
                 try {
-                    return BlockState.field_235877_b_.decode(JsonOps.INSTANCE, jsonObject).map(Pair::getFirst).result();
+                    return BlockState.field_235877_b_.parse(JsonOps.INSTANCE, jsonObject).result();
                 } catch (Exception e) {
                     QuarryPlus.LOGGER.debug("Error in getting replace block of ReplaceModule.", e);
                     return Optional.empty();

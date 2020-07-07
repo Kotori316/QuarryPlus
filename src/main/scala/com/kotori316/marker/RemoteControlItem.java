@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
-import com.mojang.datafixers.util.Pair;
 import com.yogpc.qp.machines.base.Area;
 import com.yogpc.qp.machines.base.IMarker;
 import com.yogpc.qp.machines.base.IRemotePowerOn;
@@ -162,8 +161,7 @@ public class RemoteControlItem extends Item {
             return Optional.ofNullable(stack.getTag())
                 .filter(t -> t.contains(NBT_REMOTE_POS))
                 .filter(t -> !t.contains(NBT_REMOTE_POS, Constants.NBT.TAG_LONG))
-                .flatMap(t -> GlobalPos.field_239645_a_.decode(NBTDynamicOps.INSTANCE, t.get(NBT_REMOTE_POS)).result())
-                .map(Pair::getFirst);
+                .flatMap(t -> GlobalPos.field_239645_a_.parse(NBTDynamicOps.INSTANCE, t.get(NBT_REMOTE_POS)).result());
         else {
             return Optional.empty();
         }

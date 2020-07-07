@@ -108,8 +108,8 @@ object BlockWrapper extends JsonDeserializer[BlockWrapper] with JsonSerializer[B
     val name = JSONUtils.getString(jsonObj, KEY_NAME, NAME_NoMatch)
     name match {
       case NAME_State =>
-        val maybeWrapper = for (result <- Try(BlockState.field_235877_b_.decode(JsonOps.INSTANCE, JSONUtils.getJsonObject(json.getAsJsonObject, KEY_STATE)));
-                                state <- Try(result.result().get().getFirst);
+        val maybeWrapper = for (result <- Try(BlockState.field_235877_b_.parse(JsonOps.INSTANCE, JSONUtils.getJsonObject(json.getAsJsonObject, KEY_STATE)));
+                                state <- Try(result.result().get());
                                 property <- Try(JSONUtils.getBoolean(json.getAsJsonObject, KEY_Property, false)))
           yield new State(state, property)
         maybeWrapper.getOrElse(new State(Blocks.AIR.getDefaultState))

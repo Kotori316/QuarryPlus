@@ -12,6 +12,8 @@ import net.minecraft.util.{Direction, RegistryKey, ResourceLocation}
 import net.minecraft.world.World
 import net.minecraft.world.server.ServerWorld
 
+import scala.util.chaining._
+
 case class Area(xMin: Int, yMin: Int, zMin: Int, xMax: Int, yMax: Int, zMax: Int, dimID: Option[ResourceLocation]) {
   private val dimensionType = dimID.flatMap(i => Option(Area.idToType(i))).orNull
 
@@ -47,12 +49,10 @@ object Area {
     nbt.putInt(NBT_Z_MIN, area.zMin)
     nbt.putInt(NBT_Z_MAX, area.zMax)
 
-    area.dimID.flatMap(id => Option(idToType(id)))
-    (area.dimID
+    val dimOpt = (area.dimID
       >>= (id => Option(idToType(id)))
       >>= (t => World.field_234917_f_.encodeStart(NBTDynamicOps.INSTANCE, t).result().asScala))
-      .foreach(t => nbt.put(NBT_DIM, t))
-    nbt
+    nbt.tap(t => dimOpt.foreach(n => t.put(NBT_DIM, n)))
   }
 
   val areaLengthSq: Area => Double = {
@@ -130,8 +130,8 @@ object Area {
   }
 
   def areaLoad(nbt: CompoundNBT): Area = {
-    val dim = nbt.some.filter(_.contains(NBT_DIM)).flatMap(t => World.field_234917_f_.decode(NBTDynamicOps.INSTANCE, t.get(NBT_DIM)).result().asScala)
-    Area(nbt.getInt(NBT_X_MIN), nbt.getInt(NBT_Y_MIN), nbt.getInt(NBT_Z_MIN), nbt.getInt(NBT_X_MAX), nbt.getInt(NBT_Y_MAX), nbt.getInt(NBT_Z_MAX), dim.map(_.getFirst.func_240901_a_()))
+    val dim = nbt.some.filter(_.contains(NBT_DIM)).flatMap(t => World.field_234917_f_.parse(NBTDynamicOps.INSTANCE, t.get(NBT_DIM)).result().asScala)
+    Area(nbt.getInt(NBT_X_MIN), nbt.getInt(NBT_Y_MIN), nbt.getInt(NBT_Z_MIN), nbt.getInt(NBT_X_MAX), nbt.getInt(NBT_Y_MAX), nbt.getInt(NBT_Z_MAX), dim.map(_.func_240901_a_()))
   }
 
   def posesInArea(area: Area, filter: (Int, Int, Int) => Boolean): List[BlockPos] = {
