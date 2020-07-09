@@ -28,6 +28,7 @@ import com.yogpc.qp.packet.quarry.MoveHead;
 import com.yogpc.qp.packet.quarry2.ActionMessage;
 import com.yogpc.qp.packet.quarry2.Level2Message;
 import com.yogpc.qp.packet.workbench.RecipeSyncMessage;
+import com.yogpc.qp.packet.workbench.UpdateOutputsMessage;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -79,6 +80,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(id.getAndIncrement(), MiniRenderBoxMessage.class, MiniRenderBoxMessage::writeToBuffer, IMessage.decode(MiniRenderBoxMessage::new), MiniRenderBoxMessage::onReceiveInternal);
         INSTANCE.registerMessage(id.getAndIncrement(), MiniRequestListMessage.class, MiniRequestListMessage::writeToBuffer, IMessage.decode(MiniRequestListMessage::new), MiniRequestListMessage::onReceiveInternal);
         INSTANCE.registerMessage(id.getAndIncrement(), MiniListSyncMessage.class, MiniListSyncMessage::writeToBuffer, IMessage.decode(MiniListSyncMessage::new), MiniListSyncMessage::onReceiveInternal);
+        INSTANCE.registerMessage(id.getAndIncrement(), UpdateOutputsMessage.class, UpdateOutputsMessage::writeToBuffer, IMessage.decode(UpdateOutputsMessage::new), UpdateOutputsMessage::onReceiveInternal);
     }
 
     public static void sendToClient(IMessage<?> message, World world) {

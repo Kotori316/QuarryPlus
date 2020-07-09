@@ -29,6 +29,7 @@ import com.yogpc.qp.machines.base.HasInv;
 import com.yogpc.qp.machines.base.IDebugSender;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.TileMessage;
+import com.yogpc.qp.packet.workbench.UpdateOutputsMessage;
 import com.yogpc.qp.utils.Holder;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -99,6 +100,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
             }
         }
         if (!openPlayers.isEmpty() /*&& !world.isRemote */) {
+            // To fix container in server showed wrong item count.
             PacketHandler.sendToAround(TileMessage.create(this), Objects.requireNonNull(this.getWorld()), this.getPos());
         }
     }
@@ -159,7 +161,11 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
     public ItemStack decrStackSize(int index, int count) {
         if (inventory.size() <= index && index < getSizeInventory())
             return ItemStackHelper.getAndSplit(inventory2, index - inventory.size(), count);
-        return ItemStackHelper.getAndSplit(inventory, index, count);
+        else {
+            ItemStack stack = ItemStackHelper.getAndSplit(inventory, index, count);
+            updateRecipeOutputs();
+            return stack;
+        }
     }
 
     @Override
@@ -173,8 +179,10 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
     public void setInventorySlotContents(int index, ItemStack stack) {
         if (inventory.size() <= index && index < getSizeInventory()) {
             inventory2.set(index - inventory.size(), stack);
-        } else
+        } else {
             inventory.set(index, stack);
+            updateRecipeOutputs();
+        }
     }
 
     @Override
@@ -190,22 +198,25 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
     @Override
     public void markDirty() {
         super.markDirty();
-        recipesList = WorkbenchRecipes.getRecipe(inventory);
-        inventory2.clear();
-        for (int i = 0; i < recipesList.size(); i++) {
-            setInventorySlotContents(inventory.size() + i, recipesList.get(i).getOutput(inventory));
-        }
-        if (getRecipeIndex() == -1) {
-            if (currentRecipe.hasContent()) {
-                setCurrentRecipeIndex(-1);
-                if (world != null && !world.isRemote()) finishWork();
-            }
+    }
 
-        } else {
-            if (world != null && !world.isRemote()) startWork();
-        }
+    private void updateRecipeOutputs() {
         if (world != null && !world.isRemote()) {
+            recipesList = WorkbenchRecipes.getRecipe(inventory);
+            inventory2.clear();
+            for (int i = 0; i < recipesList.size(); i++) {
+                setInventorySlotContents(inventory.size() + i, recipesList.get(i).getOutput(inventory));
+            }
+            if (getRecipeIndex() == -1) {
+                if (currentRecipe.hasContent()) {
+                    setCurrentRecipeIndex(-1);
+                    finishWork();
+                }
+            } else {
+                startWork();
+            }
             PacketHandler.sendToAround(TileMessage.create(this), world, pos);
+            PacketHandler.sendToAround(UpdateOutputsMessage.create(this), world, pos);
         }
     }
 
