@@ -1,4 +1,9 @@
 **This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).**
+## Version 16.0.4
+* REQUIRES Forge newer than 32.0.57
+* Now, mods loads ignore list of Chunk Destroyer and disallow list of mining machine from data pack.
+* Fixed an issue that workbench plus had no recipe output in the dedicated server.
+
 ## Version 16.0.3
 * The first release version for Minecraft 1.16.1.
   * **Features**
