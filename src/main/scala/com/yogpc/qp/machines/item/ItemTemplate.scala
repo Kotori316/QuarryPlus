@@ -75,8 +75,9 @@ class ItemTemplate extends Item(new Item.Properties().maxStackSize(1).group(Hold
           val template = ItemTemplate.getTemplate(stack)
           if (template != ItemTemplate.EmPlate) {
             blocksListSetter(stack, value).ap(template.entries.toSet.some)
-            includeSetter(stack, value).ap(template.include.some)
-            playerIn.sendStatusMessage(new TranslationTextComponent(TranslationKeys.TOF_ADDED), false)
+            includeSetter(stack, value).ap(template.include.some).foreach(
+              _ => playerIn.sendStatusMessage(new TranslationTextComponent(TranslationKeys.TOF_ADDED), false)
+            )
           }
         }
         ActionResultType.SUCCESS
