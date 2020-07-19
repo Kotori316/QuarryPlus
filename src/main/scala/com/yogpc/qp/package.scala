@@ -81,6 +81,7 @@ package object qp {
       }
     }
 
+    @inline
     def enchantmentAdded(enchantment: Enchantment, level: Int): ItemStack = {
       stack.addEnchantment(enchantment, level)
       stack

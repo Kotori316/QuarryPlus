@@ -62,6 +62,8 @@ class ItemTemplate extends Item(new Item.Properties().maxStackSize(1).group(Hold
   override def fillItemGroup(group: ItemGroup, items: NonNullList[ItemStack]): Unit = {
     if (this.isInGroup(group)) {
       items.add(getEditorStack)
+      items.add(getEditorStack.enchantmentAdded(Enchantments.FORTUNE, 1))
+      items.add(getEditorStack.enchantmentAdded(Enchantments.SILK_TOUCH, 1))
     }
   }
 

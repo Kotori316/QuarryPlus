@@ -6,9 +6,9 @@ import cats._
 import cats.data._
 import cats.implicits._
 import com.mojang.serialization.{Dynamic => SerializeDynamic}
-import com.yogpc.qp.QuarryPlus
 import com.yogpc.qp.machines.base.{EnchantmentFilter, IEnchantableItem, IEnchantableTile, QuarryBlackList}
 import com.yogpc.qp.utils.Holder
+import com.yogpc.qp.{QuarryPlus, _}
 import net.minecraft.client.util.ITooltipFlag
 import net.minecraft.enchantment.{Enchantment, EnchantmentHelper, Enchantments}
 import net.minecraft.entity.player.{PlayerEntity, PlayerInventory, ServerPlayerEntity}
@@ -96,6 +96,8 @@ class ItemListEditor extends Item((new Item.Properties).group(Holder.tab)) with 
   override def fillItemGroup(group: ItemGroup, items: NonNullList[ItemStack]): Unit = {
     if (this.isInGroup(group)) {
       items.add(ItemListEditor.getEditorStack)
+      items.add(ItemListEditor.getEditorStack.enchantmentAdded(Enchantments.FORTUNE, 1))
+      items.add(ItemListEditor.getEditorStack.enchantmentAdded(Enchantments.SILK_TOUCH, 1))
     }
   }
 
