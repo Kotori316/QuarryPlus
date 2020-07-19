@@ -10,6 +10,7 @@ import com.yogpc.qp.packet.advquarry.AdvLevelMessage;
 import com.yogpc.qp.packet.advquarry.AdvModeMessage;
 import com.yogpc.qp.packet.controller.AvailableEntities;
 import com.yogpc.qp.packet.controller.SetEntity;
+import com.yogpc.qp.packet.filler.FillerModuleMessage;
 import com.yogpc.qp.packet.listtemplate.TemplateMessage;
 import com.yogpc.qp.packet.marker.LinkMessage;
 import com.yogpc.qp.packet.marker.UpdateBoxMessage;
@@ -80,6 +81,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(id.getAndIncrement(), MiniRequestListMessage.class, MiniRequestListMessage::writeToBuffer, IMessage.decode(MiniRequestListMessage::new), MiniRequestListMessage::onReceiveInternal);
         INSTANCE.registerMessage(id.getAndIncrement(), MiniListSyncMessage.class, MiniListSyncMessage::writeToBuffer, IMessage.decode(MiniListSyncMessage::new), MiniListSyncMessage::onReceiveInternal);
         INSTANCE.registerMessage(id.getAndIncrement(), UpdateOutputsMessage.class, UpdateOutputsMessage::writeToBuffer, IMessage.decode(UpdateOutputsMessage::new), UpdateOutputsMessage::onReceiveInternal);
+        INSTANCE.registerMessage(id.getAndIncrement(), FillerModuleMessage.class, FillerModuleMessage::writeToBuffer, IMessage.decode(FillerModuleMessage::new), FillerModuleMessage::onReceiveInternal);
     }
 
     public static void sendToClient(IMessage<?> message, World world) {
