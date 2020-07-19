@@ -7,7 +7,7 @@ import com.yogpc.qp.machines.base.{IDisabled, IEnchantableTile, StatusContainer}
 import com.yogpc.qp.machines.bookmover.{BlockBookMover, ContainerBookMover, TileBookMover}
 import com.yogpc.qp.machines.controller.BlockController
 import com.yogpc.qp.machines.exppump.{BlockExpPump, TileExpPump}
-import com.yogpc.qp.machines.filler.{FillerBlock, FillerTile}
+import com.yogpc.qp.machines.filler.{FillerBlock, FillerContainer, FillerTile}
 import com.yogpc.qp.machines.generator.creative.{CreativeGeneratorBlock, CreativeGeneratorTile}
 import com.yogpc.qp.machines.item._
 import com.yogpc.qp.machines.marker.{BlockMarker, TileMarker}
@@ -187,6 +187,7 @@ object Holder {
   val statusContainerType: ContainerType[StatusContainer] = createContainerType(new StatusContainer(_, _, _), StatusContainer.GUI_ID)
   val placerContainerType: ContainerType[PlacerContainer] = createContainerType(new PlacerContainer(_, _, _), PlacerContainer.GUI_ID)
   val miniQuarryContainerType: ContainerType[MiniQuarryContainer] = createContainerType(new MiniQuarryContainer(_, _, _), MiniQuarryContainer.GUI_ID)
+  val fillerContainerType: ContainerType[FillerContainer] = createContainerType(new FillerContainer(_, _, _), FillerContainer.GUI_ID)
 
   val containers: Set[ContainerType[_ <: Container]] = Set(
     quarryModuleContainerType,
@@ -202,6 +203,7 @@ object Holder {
     statusContainerType,
     placerContainerType,
     miniQuarryContainerType,
+    fillerContainerType,
   )
 
   private def createContainerType[T <: Container](supplier: (Int, PlayerEntity, BlockPos) => T, name: String): ContainerType[T] = {
