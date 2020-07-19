@@ -7,6 +7,7 @@ import com.yogpc.qp.machines.base.{IDisabled, IEnchantableTile, StatusContainer}
 import com.yogpc.qp.machines.bookmover.{BlockBookMover, ContainerBookMover, TileBookMover}
 import com.yogpc.qp.machines.controller.BlockController
 import com.yogpc.qp.machines.exppump.{BlockExpPump, TileExpPump}
+import com.yogpc.qp.machines.filler.{FillerBlock, FillerTile}
 import com.yogpc.qp.machines.generator.creative.{CreativeGeneratorBlock, CreativeGeneratorTile}
 import com.yogpc.qp.machines.item._
 import com.yogpc.qp.machines.marker.{BlockMarker, TileMarker}
@@ -59,6 +60,7 @@ object Holder {
   val blockPlacer = new PlacerBlock
   val blockMiniQuarry = new MiniQuarryBlock
   val blockCreativeGenerator = new CreativeGeneratorBlock
+  val blockFiller = new FillerBlock
 
   val blocks: Seq[Block] = Seq(
     blockQuarry,
@@ -81,6 +83,7 @@ object Holder {
     blockPlacer,
     blockMiniQuarry,
     blockCreativeGenerator,
+    blockFiller,
   )
 
   //---------- TileEntity ----------
@@ -105,6 +108,7 @@ object Holder {
   val placerType: TileEntityType[PlacerTile] = createTileType(() => new PlacerTile, QuarryPlus.Names.placer, blockPlacer)
   val miniQuarryType: TileEntityType[MiniQuarryTile] = createTileType(() => new MiniQuarryTile, QuarryPlus.Names.mini_quarry, blockMiniQuarry)
   val creativeGeneratorType: TileEntityType[CreativeGeneratorTile] = createTileType(() => new CreativeGeneratorTile, QuarryPlus.Names.creative_generator, blockCreativeGenerator)
+  val fillerType: TileEntityType[FillerTile] = createTileType(() => new FillerTile, QuarryPlus.Names.filler, blockFiller)
 
   val tiles: Map[TileEntityType[_ <: TileEntity], TileDisable] = Map(
     markerTileType -> TileDisable(TileMarker.SYMBOL),
@@ -122,6 +126,7 @@ object Holder {
     placerType -> TileDisable(PlacerTile.SYMBOL),
     miniQuarryType -> TileDisable(MiniQuarryTile.SYMBOL),
     creativeGeneratorType -> TileDisable(CreativeGeneratorTile.SYMBOL),
+    fillerType -> TileDisable(FillerTile.SYMBOL),
   )
 
   //---------- Item ----------
