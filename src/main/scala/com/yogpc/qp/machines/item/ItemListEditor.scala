@@ -77,6 +77,10 @@ class ItemListEditor extends Item((new Item.Properties).group(Holder.tab)) with 
                   b.writeResourceLocation(f.map(bool => if (bool) IEnchantableTile.FortuneID else IEnchantableTile.SilktouchID).value)
                 })
           }
+        case Some(_) =>
+          if (!worldIn.isRemote) {
+            context.getPlayer.sendStatusMessage(new TranslationTextComponent("quarryplus.chat.editor_enchantment"), false)
+          }
         case None =>
           if (!worldIn.isAirBlock(pos)) {
             if (!stack.hasTag) stack.setTag(new CompoundNBT)

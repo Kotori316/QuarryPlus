@@ -90,6 +90,7 @@
   "pp.set.select": "请选择需要更改设置的方向",
   "qp.list.setting": "增强型机器启用的方块列表 %s",
   "quarryplus.chat.placer_rs": "Redstone mode changed to %s.",
+  "quarryplus.chat.editor_enchantment": "Add the same enchantment as the machine.",
   "quarryplus.client.tooltip": "客户端",
   "quarryplus.gui.advpump.frame_true": "Frame On",
   "quarryplus.gui.advpump.frame_false": "Frame Off",

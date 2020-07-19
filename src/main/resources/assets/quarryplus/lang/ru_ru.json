@@ -90,6 +90,7 @@
   "pp.set.select": "Пожалуйста, выберите направление изменив настройки",
   "qp.list.setting": "Включить список блоков в улучшенных машинах %s",
   "quarryplus.chat.placer_rs": "Redstone mode changed to %s.",
+  "quarryplus.chat.editor_enchantment": "Add the same enchantment as the machine.",
   "quarryplus.client.tooltip": "Client",
   "quarryplus.gui.advpump.frame_true": "Frame On",
   "quarryplus.gui.advpump.frame_false": "Frame Off",
