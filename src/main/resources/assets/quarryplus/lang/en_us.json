@@ -96,7 +96,7 @@
   "quarryplus.gui.advpump.frame_false": "Frame Off",
   "quarryplus.gui.advpump.delete_true": "Delete On",
   "quarryplus.gui.advpump.delete_false": "Delete Off",
-  "quarryplus.gui.blacklist": "Disallowed List",
+  "quarryplus.gui.blacklist": "Deny List",
   "quarryplus.gui.whitelist": "Allowed List",
   "quarryplus.gui.new_entry": "New Entry",
   "quarryplus.gui.of": "%1$s of %2$s",
