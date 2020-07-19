@@ -1,4 +1,9 @@
 **This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).**
+## Version 16.0.5
+* Add enchanted editors in the creative tab.
+* Not to show message if template fails to add entry.
+* Tells players that List Editor should be enchanted with the same enchantments as the machine. Close #94.
+
 ## Version 16.0.4
 * REQUIRES Forge newer than 32.0.57
 * Now, mods loads ignore list of Chunk Destroyer and disallow list of mining machine from data pack.

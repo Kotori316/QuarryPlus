@@ -14,6 +14,7 @@ import scala.jdk.CollectionConverters._
 import scala.util.Random
 import scala.util.chaining._
 
+//noinspection AccessorLikeMethodIsUnit
 class ListEditorUtilTest {
   @Test
   def onlySilktouchTest(): Unit = {
