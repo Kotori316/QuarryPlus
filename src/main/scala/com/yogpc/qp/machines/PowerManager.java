@@ -46,6 +46,7 @@ public class PowerManager {
     private static double PumpDrain_CU;// Pump:Liquid
     private static long MoveHead_BP;
     private static double MoveHead_CU;// Quarry:MoveHead
+    private static long FillerWork_BP; // Filler:Base
 
     @SuppressWarnings("DuplicatedCode")
     public static void configRegister() {
@@ -102,6 +103,9 @@ public class PowerManager {
         Laser_CU = Config.common().powers().apply(cat + "UnbreakingCoefficient").get();
         Laser_CF = Config.common().powers().apply(cat + "FortuneCoefficient").get();
         Laser_CS = Config.common().powers().apply(cat + "SilktouchCoefficient").get();
+
+        cat = "Filler.";
+        FillerWork_BP = (long) (Config.common().powers().apply(cat + "BasePower").get() * micro);
     }
 
     public static void configure0(final APowerTile pp) {
@@ -328,5 +332,13 @@ public class PowerManager {
      */
     public static long calcEnergyAdvSearch(int unbreakingLevel, int targetY) {
         return (long) (MoveHead_BP * targetY / (MoveHead_CU * unbreakingLevel + 1) / 4);
+    }
+
+    @SuppressWarnings("deprecation")
+    public static boolean useEnergyFillerWork(final APowerTile filler, boolean simulate) {
+        long pw = FillerWork_BP;
+        boolean result = filler.useEnergy(pw, pw, !simulate, EnergyUsage.FILLER) == pw;
+        if (result && !simulate) filler.collector.get().addData(new DetailDataCollector.Common(EnergyUsage.FILLER, pw));
+        return result;
     }
 }
