@@ -1,8 +1,8 @@
 package com.yogpc.qp.machines.filler
 
 import java.util
-import java.util.Collections
 
+import com.yogpc.qp._
 import com.yogpc.qp.machines.TranslationKeys
 import com.yogpc.qp.machines.base._
 import com.yogpc.qp.machines.quarry.ContainerQuarryModule.HasModuleInventory
@@ -23,6 +23,7 @@ import net.minecraftforge.common.util.LazyOptional
 import net.minecraftforge.items.CapabilityItemHandler
 import net.minecraftforge.items.wrapper.InvWrapper
 
+import scala.jdk.CollectionConverters._
 import scala.util.chaining._
 
 class FillerTile extends APowerTile(Holder.fillerType)
@@ -31,19 +32,31 @@ class FillerTile extends APowerTile(Holder.fillerType)
   with HasModuleInventory
   with IChunkLoadTile
   with HasStorage.HasDummyStorage
-  with INamedContainerProvider {
+  with INamedContainerProvider
+  with IRemotePowerOn {
 
   private[this] final val moduleInventory = new QuarryModuleInventory(5, this, inv => updateModule(inv), _ => true)
   var modules: List[IModule] = List.empty
   val inventory = new FillerTile.InventoryFiller
+  var area: Area = Area.zeroArea
+  var fillerWork: FillerWork = FillerWork.Waiting
 
   override protected def workInTick(): Unit = ()
+
+  override protected def getEnergyInTick(): Unit = {
+    super.getEnergyInTick()
+    // Module Tick Action
+    modules.foreach(_.invoke(IModule.Tick(this)))
+  }
 
   override protected def isWorking: Boolean = false
 
   override def getDebugName: String = TranslationKeys.filler
 
-  override def getDebugMessages: util.List[_ <: ITextComponent] = Collections.emptyList()
+  override def getDebugMessages: util.List[_ <: ITextComponent] = Seq(
+    "Area: " + area,
+    "Modules: " + modules.mkString(", "),
+  ).map(toComponentString).asJava
 
   override def moduleInv: QuarryModuleInventory = moduleInventory
 
@@ -58,11 +71,13 @@ class FillerTile extends APowerTile(Holder.fillerType)
     super.read(nbt)
     moduleInventory.deserializeNBT(nbt.getCompound("moduleInventory"))
     inventory.read(nbt.getList("inventory", NBT.TAG_COMPOUND))
+    area = Area.areaLoad(nbt.getCompound("area"))
   }
 
   override def write(nbt: CompoundNBT): CompoundNBT = {
     nbt.put("moduleInventory", moduleInventory.serializeNBT())
     nbt.put("inventory", inventory.write())
+    nbt.put("area", area.toNBT)
     super.write(nbt)
   }
 
@@ -81,6 +96,12 @@ class FillerTile extends APowerTile(Holder.fillerType)
   }
 
   override def createMenu(id: Int, i: PlayerInventory, p: PlayerEntity): Container = new FillerContainer(id, p, getPos)
+
+  override def setArea(area: Area): Unit = this.area = area
+
+  override def startWorking(): Unit = ()
+
+  override def startWaiting(): Unit = ()
 }
 
 object FillerTile {
@@ -107,7 +128,6 @@ object FillerTile {
     }
 
     override def read(list: ListNBT): Unit = {
-      import scala.jdk.CollectionConverters._
       list.asScala.collect { case t: CompoundNBT => (t.getShort("Slot"), ItemStack.read(t)) }
         .foreach(e => setInventorySlotContents(e._1, e._2))
     }
