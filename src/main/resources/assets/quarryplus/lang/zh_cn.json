@@ -90,6 +90,7 @@
   "pp.set.select": "请选择需要更改设置的方向",
   "qp.list.setting": "增强型机器启用的方块列表 %s",
   "quarryplus.chat.placer_rs": "红石模式更改为%s.",
+  "quarryplus.chat.editor_enchantment": "添加和该机器一样的附魔",
   "quarryplus.client.tooltip": "客户端",
   "quarryplus.gui.advpump.frame_true": "框架开启",
   "quarryplus.gui.advpump.frame_false": "框架关闭",
