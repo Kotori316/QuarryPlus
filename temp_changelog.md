@@ -1,4 +1,8 @@
 **This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).**
+## Version 16.0.6
+* Update Chinese lang file
+* Also, updated for other languages.
+
 ## Version 16.0.5
 * Add enchanted editors in the creative tab.
 * Not to show message if template fails to add entry.
