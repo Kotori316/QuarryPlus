@@ -1,4 +1,7 @@
 **This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).**
+## Version 15.3.3
+* Fixed that workbench had no recipe on Dedicated Server
+
 ## Version 15.3.2
 * Removed text field limit.
 * Add tool tip of PlacerPlus.
