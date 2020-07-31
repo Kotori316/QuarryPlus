@@ -1,4 +1,9 @@
 **This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).**
+## Version 16.0.7
+* Forge update to 1.16.1-32.0.98 and added license.
+* Internal changes.
+* Fix that quarry stopped in building frames if it tries to create a frame in water.
+
 ## Version 16.0.6
 * Update Chinese lang file
 * Also, updated for other languages.
