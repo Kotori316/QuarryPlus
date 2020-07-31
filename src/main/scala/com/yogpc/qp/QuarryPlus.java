@@ -64,7 +64,7 @@ public class QuarryPlus {
 
     private static void callMarker() {
         try {
-            Class.forName("com.kotori316.marker.Marker").newInstance();
+            Class.forName("com.kotori316.marker.Marker").getConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             LOGGER.warn("Error loading in marker.", e);
         }
