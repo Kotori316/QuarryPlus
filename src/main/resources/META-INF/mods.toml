@@ -9,6 +9,7 @@ modLoader="kotori_scala" #mandatory
 loaderVersion="[2.13.2,2.14.0)" #mandatory
 # A URL to refer people to when problems occur with this mod
 issueTrackerURL="https://github.com/Kotori316/QuarryPlus/issues" #optional
+license="GNU Lesser General Public License v3.0"
 # A list of mods - how many allowed here is determined by the individual mod loader
 [[mods]] #mandatory
 # The modid of the mod
