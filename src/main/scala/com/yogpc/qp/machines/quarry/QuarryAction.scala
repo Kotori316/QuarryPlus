@@ -93,25 +93,28 @@ object QuarryAction {
         case head :: til if head == target =>
           val state = quarry2.getDiggingWorld.getBlockState(target)
           if (checkPlaceable(quarry2.getDiggingWorld, target, state, Holder.blockFrame.getDammingState)) {
-            if (PowerManager.useEnergyFrameBuild(quarry2, quarry2.enchantments.unbreaking)) {
-              quarry2.getDiggingWorld.setBlockState(target, Holder.blockFrame.getDammingState)
-              frameTargets = til
-            }
+            consumeEnergyAndPlaceAndUpdate(target)
           } else {
             if (!checkBreakable(quarry2.getDiggingWorld, target, state, quarry2.modules)) {
               frameTargets = til
             } else if (quarry2.breakBlock(quarry2.getDiggingWorld, target)._1) {
-              if (PowerManager.useEnergyFrameBuild(quarry2, quarry2.enchantments.unbreaking)) {
-                quarry2.getDiggingWorld.setBlockState(target, Holder.blockFrame.getDammingState)
-                frameTargets = til
-              }
+              consumeEnergyAndPlaceAndUpdate(target)
             }
           }
         case _ =>
       }
     }
 
-    override def nextTarget(): BlockPos = frameTargets.dropWhile(p => quarry2.getDiggingWorld.getBlockState(p).getBlock == Holder.blockFrame).headOption.getOrElse(BlockPos.ZERO)
+    private def consumeEnergyAndPlaceAndUpdate(target: BlockPos): Unit = {
+      if (PowerManager.useEnergyFrameBuild(quarry2, quarry2.enchantments.unbreaking)) {
+        quarry2.getDiggingWorld.setBlockState(target, Holder.blockFrame.getDammingState)
+        frameTargets = droppedList
+      }
+    }
+
+    private def droppedList: List[BlockPos] = frameTargets.dropWhile(p => quarry2.getDiggingWorld.getBlockState(p).getBlock == Holder.blockFrame)
+
+    override def nextTarget(): BlockPos = droppedList.headOption.getOrElse(BlockPos.ZERO)
 
     override def nextAction(quarry2: TileQuarry2): QuarryAction = new BreakBlock(quarry2, quarry2.area.yMin - 1, quarry2.getPos)
 
