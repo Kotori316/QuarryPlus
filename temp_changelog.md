@@ -37,7 +37,7 @@
     * Mini Quarry
     * Placer Plus
     * Enchantment Mover
-  * The list of ignore blocks(previously, black list) chan't be edited now due to forge limitation.
+  * The list of ignore blocks(previously, black list) can't be edited now due to forge limitation.
 * Fixed module saw wrong dimension.
 * Fixed NPE when opening module GUI of Adv Pump.
 * Fixed quarryplus didn't show area when placed into the world.
