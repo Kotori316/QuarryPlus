@@ -31,6 +31,7 @@ import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.TextComponentString;
@@ -118,6 +119,15 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
         }
         nbt.setTag("Items", list);
         return super.writeToNBT(nbt);
+    }
+
+    /**
+     * Workbench doesn't have any rendering data so it has no need to sync with client.
+     */
+    @Override
+    @Nullable
+    public SPacketUpdateTileEntity getUpdatePacket() {
+        return null;
     }
 
     @Override
