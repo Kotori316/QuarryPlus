@@ -83,6 +83,10 @@ public abstract class APacketTile extends TileEntity implements buildcraft.api.t
         return writeToNBT(new NBTTagCompound());
     }
 
+    protected final NBTTagCompound writeInternalTag(NBTTagCompound compound) {
+        return super.writeToNBT(compound);
+    }
+
     @Override
     public ITextComponent getDisplayName() {
         return displayName;

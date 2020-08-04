@@ -31,6 +31,7 @@ import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
@@ -110,12 +111,14 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
         NBTTagList list = new NBTTagList();
         for (int i = 0; i < inventory.size(); i++) {
             ItemStack stack = inventory.get(i);
-            NBTTagCompound nbttagcompound = new NBTTagCompound();
-            nbttagcompound.setByte("Slot", (byte) i);
-            stack.writeToNBT(nbttagcompound);
-            nbttagcompound.removeTag("Count");
-            nbttagcompound.setInteger("Count", VersionUtil.getCount(stack));
-            list.appendTag(nbttagcompound);
+            if (VersionUtil.nonEmpty(stack)) {
+                NBTTagCompound nbttagcompound = new NBTTagCompound();
+                nbttagcompound.setByte("Slot", (byte) i);
+                stack.writeToNBT(nbttagcompound);
+                nbttagcompound.removeTag("Count");
+                nbttagcompound.setInteger("Count", VersionUtil.getCount(stack));
+                list.appendTag(nbttagcompound);
+            }
         }
         nbt.setTag("Items", list);
         return super.writeToNBT(nbt);
@@ -128,6 +131,15 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
     @Nullable
     public SPacketUpdateTileEntity getUpdatePacket() {
         return null;
+    }
+
+    @Override
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
+    }
+
+    @Override
+    public NBTTagCompound getUpdateTag() {
+        return writeInternalTag(new NBTTagCompound());
     }
 
     @Override
