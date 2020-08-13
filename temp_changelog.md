@@ -1,4 +1,8 @@
 **This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).**
+## Version 16.0.8
+* Fixed a side loading error shown in server launching.
+* Fixed workbench plus create items even materials not supplied. Close #99
+
 ## Version 16.0.7
 * Forge update to 1.16.1-32.0.98 and added license.
 * Internal changes.
