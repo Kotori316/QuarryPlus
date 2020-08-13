@@ -36,7 +36,7 @@ object Area {
   private[this] final val EMPTY_DIM = "None"
   val zeroArea: Area = Area(0, 0, 0, 0, 0, 0, None)
 
-  private def idToType(location: ResourceLocation): RegistryKey[World] = RegistryKey.func_240903_a_(Registry.field_239699_ae_, location)
+  private def idToType(location: ResourceLocation): RegistryKey[World] = RegistryKey.func_240903_a_(Registry.WORLD_KEY, location)
 
   implicit val showArea: Show[Area] = area => s"(${area.xMin}, ${area.yMin}, ${area.zMin}) -> (${area.xMax}, ${area.yMax}, ${area.zMax}) in dim ${area.dimID.map(_.toString).getOrElse(EMPTY_DIM)}"
 

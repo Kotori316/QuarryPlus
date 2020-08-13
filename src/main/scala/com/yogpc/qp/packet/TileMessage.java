@@ -41,7 +41,7 @@ public class TileMessage implements IMessage<TileMessage> {
         Runnable runnable = () -> worldOptional.ifPresent(w -> {
             TileEntity t = w.getTileEntity(pos);
             if (t != null) {
-                t.func_230337_a_(w.getBlockState(pos), compound);
+                t.read(w.getBlockState(pos), compound);
             }
         });
         ctx.get().enqueueWork(runnable);

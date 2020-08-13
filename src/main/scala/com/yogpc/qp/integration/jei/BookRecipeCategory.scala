@@ -48,7 +48,7 @@ class BookRecipeCategory(guiHelper: IGuiHelper) extends IRecipeCategory[BookReci
   override def draw(recipe: BookRecipe, matrixStack: MatrixStack, mouseX: Double, mouseY: Double): Unit = {
     super.draw(recipe, matrixStack, mouseX, mouseY)
     animateBar.draw(matrixStack, 75, 31)
-    Minecraft.getInstance().fontRenderer.func_238421_b_(matrixStack, "50000MJ", 36 - xOff, 66 - yOff, 0x404040)
+    Minecraft.getInstance().fontRenderer.drawString(matrixStack, "50000MJ", 36 - xOff, 66 - yOff, 0x404040)
   }
 
   override def getRecipeClass: Class[_ <: BookRecipe] = classOf[BookRecipe]

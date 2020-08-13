@@ -31,7 +31,6 @@ import com.yogpc.qp.packet.mover.EnchantmentMessage;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.player.PlayerInventory;
@@ -75,23 +74,23 @@ public class GuiEnchList extends ContainerScreen<ContainerEnchList> implements B
     }
 
     @Override
-    public void func_231160_c_() {
-        int width = this.field_230708_k_;
-        int height = this.field_230709_l_;
+    public void init() {
+        int width = this.width;
+        int height = this.height;
         this.xSize = width;
         this.ySize = height;
-        super.func_231160_c_(); // must be here!
+        super.init(); // must be here!
 //        PacketHandler.sendToServer(BlockListRequestMessage.create(inventorySlots.windowId));
-        func_230480_a_(new IHandleButton.Button(-1,
+        addButton(new IHandleButton.Button(-1,
             width / 2 - 125, height - 26, 250, 20, new TranslationTextComponent(TranslationKeys.DONE), this));
-        func_230480_a_(new IHandleButton.Button(Toggle_id,
+        addButton(new IHandleButton.Button(Toggle_id,
             width * 2 / 3 + 10, 140, 100, 20, "", this));
-        func_230480_a_(new IHandleButton.Button(Remove_id,
+        addButton(new IHandleButton.Button(Remove_id,
             width * 2 / 3 + 10, 110, 100, 20, new TranslationTextComponent(TranslationKeys.DELETE), this));
         this.slot = new GuiSlotEnchList(this.getMinecraft(), width * 3 / 5, height - 60, 30, height - 30,
             18, this);
-        this.field_230705_e_.add(slot);
-        this.func_231035_a_(slot);
+        this.children.add(slot);
+        this.setFocusedDefault(slot);
     }
 
     @Override
@@ -102,7 +101,7 @@ public class GuiEnchList extends ContainerScreen<ContainerEnchList> implements B
                 break;
             case Remove_id:
                 this.getMinecraft().displayGuiScreen(new ConfirmScreen(this, new TranslationTextComponent(TranslationKeys.DELETE_BLOCK_SURE),
-                    new StringTextComponent(Optional.ofNullable(this.slot.func_230958_g_()).map(GuiSlotEnchList.Entry::getData).map(Object::toString).orElse("None"))));
+                    new StringTextComponent(Optional.ofNullable(this.slot.getSelected()).map(GuiSlotEnchList.Entry::getData).map(Object::toString).orElse("None"))));
                 break;
             default: //maybe toggle
                 PacketHandler.sendToServer(EnchantmentMessage.create(tile, EnchantmentMessage.Type.Toggle, target,
@@ -113,7 +112,7 @@ public class GuiEnchList extends ContainerScreen<ContainerEnchList> implements B
 
     @Override
     public void accept(boolean result) {
-        GuiSlotEnchList.Entry selected = this.slot.func_230958_g_();
+        GuiSlotEnchList.Entry selected = this.slot.getSelected();
         if (selected != null && result) {
             final QuarryBlackList.Entry entry = selected.getData();
             PacketHandler.sendToServer(EnchantmentMessage.create(tile, EnchantmentMessage.Type.Remove, target, entry));
@@ -129,31 +128,31 @@ public class GuiEnchList extends ContainerScreen<ContainerEnchList> implements B
 
     public void refreshList() {
         this.slot.refreshList();
-        this.slot.func_241215_a_(null);
+        this.slot.setSelected(null);
     }
 
     @Override
-    protected void func_230450_a_(MatrixStack matrixStack,final float k, final int i, final int j) {
+    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, final float k, final int i, final int j) {
         if (slot != null)
-            this.slot.func_230430_a_(matrixStack, i, j, k);
+            this.slot.render(matrixStack, i, j, k);
     }
 
     @Override
-    public void func_230430_a_(MatrixStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
-        super.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
+    public void render(MatrixStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
+        super.render(matrixStack, mouseX, mouseY, partialTicks);
     }
 
     @Override
-    protected void func_230451_b_(MatrixStack matrixStack, final int i, final int j) {
-        func_238471_a_(matrixStack, this.field_230712_o_, I18n.format(TranslationKeys.QP_ENABLE_LIST, I18n.format(this.target.getName())),
-            this.xSize / 2, 8, 0xFFFFFF); // drawCenteredString
+    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, final int i, final int j) {
+        this.font.func_243248_b(matrixStack, new TranslationTextComponent(TranslationKeys.QP_ENABLE_LIST, new TranslationTextComponent(this.target.getName())),
+            (float) this.xSize / 2, 8, 0xFFFFFF);
     }
 
     @Override
-    public void func_231023_e_() {
-        super.func_231023_e_();
-        this.field_230710_m_.get(1).func_238482_a_(new TranslationTextComponent(include() ? TranslationKeys.TOF_INCLUDE : TranslationKeys.TOF_EXCLUDE));
-        this.field_230710_m_.get(2).field_230693_o_ = !getBlockDataList(target).isEmpty();
+    public void tick() {
+        super.tick();
+        this.buttons.get(1).setMessage(new TranslationTextComponent(include() ? TranslationKeys.TOF_INCLUDE : TranslationKeys.TOF_EXCLUDE));
+        this.buttons.get(2).active = !getBlockDataList(target).isEmpty();
     }
 
     public void buildModList(Consumer<GuiSlotEnchList.Entry> modListViewConsumer, Function<QuarryBlackList.Entry, GuiSlotEnchList.Entry> newEntry) {

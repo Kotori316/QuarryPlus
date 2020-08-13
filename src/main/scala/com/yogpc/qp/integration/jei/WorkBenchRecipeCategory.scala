@@ -54,10 +54,10 @@ class WorkBenchRecipeCategory(guiHelper: IGuiHelper) extends IRecipeCategory[Wor
     super.draw(recipe, matrixStack, mouseX, mouseY)
     animateBar.draw(matrixStack, 4, 60)
     if (!recipe.isInstanceOf[EnchantmentCopyRecipe]) {
-      Minecraft.getInstance().fontRenderer.func_238421_b_(matrixStack, (recipe.energy.toDouble / APowerTile.MJToMicroMJ).toString + "MJ", 36 - xOff, 70 - yOff, 0x404040)
+      Minecraft.getInstance().fontRenderer.drawString(matrixStack, (recipe.energy.toDouble / APowerTile.MJToMicroMJ).toString + "MJ", 36 - xOff, 70 - yOff, 0x404040)
     } else {
-      Minecraft.getInstance().fontRenderer.func_238421_b_(matrixStack, (recipe.energy.toDouble / APowerTile.MJToMicroMJ).toString + "MJ", 36 - xOff, 67 - yOff, 0x404040)
-      Minecraft.getInstance().fontRenderer.func_238421_b_(matrixStack, "Keeps enchantments", 36 - xOff, 77 - yOff, 0x404040)
+      Minecraft.getInstance().fontRenderer.drawString(matrixStack, (recipe.energy.toDouble / APowerTile.MJToMicroMJ).toString + "MJ", 36 - xOff, 67 - yOff, 0x404040)
+      Minecraft.getInstance().fontRenderer.drawString(matrixStack, "Keeps enchantments", 36 - xOff, 77 - yOff, 0x404040)
     }
   }
 

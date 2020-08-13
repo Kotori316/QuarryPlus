@@ -108,8 +108,8 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     }
 
     @Override
-    public void func_230337_a_(BlockState state, final CompoundNBT nbt) {
-        super.func_230337_a_(state, nbt);
+    public void read(BlockState state, final CompoundNBT nbt) {
+        super.read(state, nbt);
         this.silktouch = nbt.getBoolean("silktouch");
         this.fortune = nbt.getByte("fortune");
         this.unbreaking = nbt.getByte("unbreaking");

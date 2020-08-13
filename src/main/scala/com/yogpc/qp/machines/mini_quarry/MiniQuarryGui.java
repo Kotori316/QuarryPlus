@@ -23,25 +23,25 @@ public class MiniQuarryGui extends ContainerScreen<MiniQuarryContainer> implemen
     }
 
     @Override
-    public void func_230430_a_(MatrixStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
-        this.func_230446_a_(matrixStack);// back ground
-        super.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
+    public void render(MatrixStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
+        this.renderBackground(matrixStack);// back ground
+        super.render(matrixStack, mouseX, mouseY, partialTicks);
         this.func_230459_a_(matrixStack, mouseX, mouseY); // render tooltip
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    protected void func_230450_a_(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         this.getMinecraft().getTextureManager().bindTexture(LOCATION);
-        this.func_238474_b_(matrixStack, guiLeft, guiTop, 0, 0, xSize, ySize);
+        this.blit(matrixStack, guiLeft, guiTop, 0, 0, xSize, ySize);
     }
 
     @Override
-    protected void func_231160_c_() {
-        super.func_231160_c_();
-        func_230480_a_(new IHandleButton.Button(0, guiLeft + 8, guiTop + 50, 60, 20, "RenderBox", this));
-        func_230480_a_(new IHandleButton.Button(1, guiLeft + 70, guiTop + 50, 60, 20, "List", this));
+    protected void init() {
+        super.init();
+        addButton(new IHandleButton.Button(0, guiLeft + 8, guiTop + 50, 60, 20, "RenderBox", this));
+        addButton(new IHandleButton.Button(1, guiLeft + 70, guiTop + 50, 60, 20, "List", this));
     }
 
     @Override

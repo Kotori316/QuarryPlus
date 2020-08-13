@@ -60,7 +60,7 @@ public class Button16Message {
             .ifPresent(entity -> {
                 Tile16Marker marker = (Tile16Marker) entity;
                 marker.changeSize(this.amount, this.yMax, this.yMin);
-                PacketHandler.sendToClient(new AreaMessage(this.pos, RegistryKey.func_240903_a_(Registry.field_239699_ae_, dim), marker.min(), marker.max()), entity.getWorld());
+                PacketHandler.sendToClient(new AreaMessage(this.pos, RegistryKey.func_240903_a_(Registry.WORLD_KEY, dim), marker.min(), marker.max()), entity.getWorld());
             }));
     }
 

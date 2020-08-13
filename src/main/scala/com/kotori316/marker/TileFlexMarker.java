@@ -98,7 +98,7 @@ public class TileFlexMarker extends TileEntity implements IAreaConfigurable {
             bb = new AxisAlignedBB(getPos().getX() + a, getPos().getY() + a, getPos().getZ() - c + a,
                 getPos().getX() + a, getPos().getY() + a, getPos().getZ() + c + a);
         }
-        directionBox = Box.apply(bb.offset(Vector3d.func_237491_b_(direction.getDirectionVec()).scale(a)), 1d / 8d, 1d / 8d, 1d / 8d, true, true);
+        directionBox = Box.apply(bb.offset(Vector3d.copy(direction.getDirectionVec()).scale(a)), 1d / 8d, 1d / 8d, 1d / 8d, true, true);
     }
 
     @Override
@@ -110,8 +110,8 @@ public class TileFlexMarker extends TileEntity implements IAreaConfigurable {
     }
 
     @Override
-    public void func_230337_a_(BlockState state, CompoundNBT compound) {
-        super.func_230337_a_(state, compound);
+    public void read(BlockState state, CompoundNBT compound) {
+        super.read(state, compound);
         min = BlockPos.fromLong(compound.getLong("min"));
         max = BlockPos.fromLong(compound.getLong("max"));
         direction = Direction.byName(compound.getString("direction"));

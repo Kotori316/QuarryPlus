@@ -36,7 +36,7 @@ public class ButtonMessage {
     public static ButtonMessage fromBytes(PacketBuffer p) {
         ButtonMessage message = new ButtonMessage();
         message.pos = p.readBlockPos();
-        message.dim = RegistryKey.func_240903_a_(Registry.field_239699_ae_, p.readResourceLocation());
+        message.dim = RegistryKey.func_240903_a_(Registry.WORLD_KEY, p.readResourceLocation());
         message.movable = p.readEnumValue(TileFlexMarker.Movable.class);
         message.amount = p.readInt();
         return message;

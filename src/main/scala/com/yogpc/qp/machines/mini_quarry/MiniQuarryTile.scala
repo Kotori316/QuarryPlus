@@ -224,7 +224,7 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
   override def write(nbt: CompoundNBT): CompoundNBT = {
     nbt.put("area", area.toNBT)
     nbt.put("enchantments", enchantments.toNBT)
-    nbt.putString("preDirection", preDirection.func_176610_l())
+    nbt.putString("preDirection", preDirection.getString())
     targets.headOption.foreach(p => nbt.putLong("head", p.toLong))
     nbt.put("tools", ItemStackHelper.saveAllItems(new CompoundNBT(), tools))
     nbt.put("blackList", NBTDynamicOps.INSTANCE.createList(blackList.asJava.stream().map(QuarryBlackList.writeEntry(_, NBTDynamicOps.INSTANCE))))

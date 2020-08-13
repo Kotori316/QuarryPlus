@@ -3,7 +3,6 @@ package com.kotori316.marker.gui;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.yogpc.qp.machines.base.IHandleButton;
 import com.yogpc.qp.machines.base.ScreenUtil;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
@@ -27,47 +26,46 @@ public class Gui16Marker extends ContainerScreen<ContainerMarker> implements IHa
         //217, 188
         this.xSize = 217;
         this.ySize = 188;
-        this.field_238745_s_ = this.ySize - 96 + 2; // y position of text, inventory
+        this.playerInventoryTitleY = this.ySize - 96 + 2; // y position of text, inventory
     }
 
     @Override
-    public void func_230430_a_(MatrixStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
-        this.func_230446_a_(matrixStack);// back ground
-        super.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
+    public void render(MatrixStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
+        this.renderBackground(matrixStack);// back ground
+        super.render(matrixStack, mouseX, mouseY, partialTicks);
         this.func_230459_a_(matrixStack, mouseX, mouseY); // render tooltip
     }
 
     @Override
-    protected void func_230450_a_(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
         ScreenUtil.color4f();
         this.getMinecraft().getTextureManager().bindTexture(LOCATION);
-        this.func_238474_b_(matrixStack, guiLeft, guiTop, 0, 0, xSize, ySize);
+        this.blit(matrixStack, guiLeft, guiTop, 0, 0, xSize, ySize);
     }
 
     @Override
-    protected void func_230451_b_(MatrixStack matrixStack, final int mouseX, final int mouseY) {
-        super.func_230451_b_(matrixStack, mouseX, mouseY);
-        FontRenderer font = field_230712_o_;
-        font.func_238421_b_(matrixStack, "Size", (this.xSize - font.getStringWidth("Size")) / 2f, 6, 0x404040);
+    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, final int mouseX, final int mouseY) {
+        super.drawGuiContainerForegroundLayer(matrixStack, mouseX, mouseY);
+        font.drawString(matrixStack, "Size", (this.xSize - font.getStringWidth("Size")) / 2f, 6, 0x404040);
         String sizeText = Integer.toString(marker.getSize() / CHUNK);
-        font.func_238421_b_(matrixStack, sizeText, (this.xSize - font.getStringWidth(sizeText)) / 2f, 15 + 23, 0x404040);
+        font.drawString(matrixStack, sizeText, (this.xSize - font.getStringWidth(sizeText)) / 2f, 15 + 23, 0x404040);
         String yMaxText = Integer.toString(marker.max().getY());
         String yMinText = Integer.toString(marker.min().getY());
-        font.func_238421_b_(matrixStack, yMaxText, (this.xSize - font.getStringWidth(yMaxText)) / 2f + 10 + BUTTON_WIDTH, 15 + 23, 0x404040);
-        font.func_238421_b_(matrixStack, yMinText, (this.xSize - font.getStringWidth(yMinText)) / 2f - 10 - BUTTON_WIDTH, 15 + 23, 0x404040);
+        font.drawString(matrixStack, yMaxText, (this.xSize - font.getStringWidth(yMaxText)) / 2f + 10 + BUTTON_WIDTH, 15 + 23, 0x404040);
+        font.drawString(matrixStack, yMinText, (this.xSize - font.getStringWidth(yMinText)) / 2f - 10 - BUTTON_WIDTH, 15 + 23, 0x404040);
     }
 
     @Override
-    public void func_231160_c_() {
-        super.func_231160_c_();
+    public void init() {
+        super.init();
         final int tp = 15;
         final int middle = guiLeft + this.xSize / 2;
-        this.func_230480_a_(new IHandleButton.Button(0, middle - BUTTON_WIDTH / 2, guiTop + tp, BUTTON_WIDTH, 20, "+", this));
-        this.func_230480_a_(new IHandleButton.Button(1, middle - BUTTON_WIDTH / 2, guiTop + tp + 33, BUTTON_WIDTH, 20, "-", this));
-        this.func_230480_a_(new IHandleButton.Button(2, middle + BUTTON_WIDTH / 2 + 10, guiTop + tp, BUTTON_WIDTH, 20, "Top+", this));
-        this.func_230480_a_(new IHandleButton.Button(3, middle + BUTTON_WIDTH / 2 + 10, guiTop + tp + 33, BUTTON_WIDTH, 20, "Top-", this));
-        this.func_230480_a_(new IHandleButton.Button(4, middle - BUTTON_WIDTH / 2 - 10 - BUTTON_WIDTH, guiTop + tp, BUTTON_WIDTH, 20, "Bottom+", this));
-        this.func_230480_a_(new IHandleButton.Button(5, middle - BUTTON_WIDTH / 2 - 10 - BUTTON_WIDTH, guiTop + tp + 33, BUTTON_WIDTH, 20, "Bottom-", this));
+        this.addButton(new IHandleButton.Button(0, middle - BUTTON_WIDTH / 2, guiTop + tp, BUTTON_WIDTH, 20, "+", this));
+        this.addButton(new IHandleButton.Button(1, middle - BUTTON_WIDTH / 2, guiTop + tp + 33, BUTTON_WIDTH, 20, "-", this));
+        this.addButton(new IHandleButton.Button(2, middle + BUTTON_WIDTH / 2 + 10, guiTop + tp, BUTTON_WIDTH, 20, "Top+", this));
+        this.addButton(new IHandleButton.Button(3, middle + BUTTON_WIDTH / 2 + 10, guiTop + tp + 33, BUTTON_WIDTH, 20, "Top-", this));
+        this.addButton(new IHandleButton.Button(4, middle - BUTTON_WIDTH / 2 - 10 - BUTTON_WIDTH, guiTop + tp, BUTTON_WIDTH, 20, "Bottom+", this));
+        this.addButton(new IHandleButton.Button(5, middle - BUTTON_WIDTH / 2 - 10 - BUTTON_WIDTH, guiTop + tp + 33, BUTTON_WIDTH, 20, "Bottom-", this));
 
     }
 
@@ -76,9 +74,9 @@ public class Gui16Marker extends ContainerScreen<ContainerMarker> implements IHa
         int size = marker.getSize();
         int yMin = marker.min().getY(), yMax = marker.max().getY();
         int n;
-        if (Screen.func_231173_s_()) { // Shift
+        if (Screen.hasShiftDown()) { // Shift
             n = 16;
-        } else if (Screen.func_231172_r_()) {
+        } else if (Screen.hasControlDown()) {
             n = 4;
         } else {
             n = 1;

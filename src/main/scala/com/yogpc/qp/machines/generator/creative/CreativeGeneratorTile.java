@@ -56,9 +56,9 @@ public class CreativeGeneratorTile extends APacketTile implements ITickableTileE
     }
 
     @Override
-    public void func_230337_a_(BlockState state, CompoundNBT nbt) {
+    public void read(BlockState state, CompoundNBT nbt) {
         sendAmount = nbt.getLong("sendAmount");
-        super.func_230337_a_(state, nbt);
+        super.read(state, nbt);
     }
 
     @Override

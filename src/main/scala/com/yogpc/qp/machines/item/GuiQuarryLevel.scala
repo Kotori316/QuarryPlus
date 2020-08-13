@@ -31,33 +31,33 @@ class GuiQuarryLevel(c: ContainerQuarryLevel, inv: PlayerInventory, t: ITextComp
     case _ => "YSetter"
   }
 
-  override def func_230430_a_(matrixStack: MatrixStack, mouseX: Int, mouseY: Int, partialTicks: Float): Unit = { // render
-    this.func_230446_a_(matrixStack) // back ground
-    super.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks) // super.render
+  override def render(matrixStack: MatrixStack, mouseX: Int, mouseY: Int, partialTicks: Float): Unit = { // render
+    this.renderBackground(matrixStack) // back ground
+    super.render(matrixStack, mouseX, mouseY, partialTicks) // super.render
     this.func_230459_a_(matrixStack, mouseX, mouseY) // render tooltip
   }
 
-  override def func_230450_a_(matrix: MatrixStack, partialTicks: Float, mouseX: Int, mouseY: Int): Unit = {
+  override def drawGuiContainerBackgroundLayer(matrix: MatrixStack, partialTicks: Float, mouseX: Int, mouseY: Int): Unit = {
     ScreenUtil.color4f()
     this.getMinecraft.getTextureManager.bindTexture(LOCATION)
-    this.func_238474_b_(matrix, guiLeft, guiTop, 0, 0, xSize, ySize)
+    this.blit(matrix, guiLeft, guiTop, 0, 0, xSize, ySize)
   }
 
-  override def func_231160_c_(): Unit = {
-    super.func_231160_c_()
+  override def init(): Unit = {
+    super.init()
     val width = 40
-    func_230480_a_(new IHandleButton.Button(0, guiLeft + this.xSize / 2 - width / 2, guiTop + tp, width, 20, "+", this))
-    func_230480_a_(new IHandleButton.Button(1, guiLeft + this.xSize / 2 - width / 2, guiTop + tp + 33, width, 20, "-", this))
+    addButton(new IHandleButton.Button(0, guiLeft + this.xSize / 2 - width / 2, guiTop + tp, width, 20, "+", this))
+    addButton(new IHandleButton.Button(1, guiLeft + this.xSize / 2 - width / 2, guiTop + tp + 33, width, 20, "-", this))
   }
 
-  override def func_230451_b_(matrix: MatrixStack, mouseX: Int, mouseY: Int): Unit = {
-    super.func_230451_b_(matrix, mouseX, mouseY)
+  override def drawGuiContainerForegroundLayer(matrix: MatrixStack, mouseX: Int, mouseY: Int): Unit = {
+    super.drawGuiContainerForegroundLayer(matrix, mouseX, mouseY)
 
-    this.field_230712_o_.func_238421_b_(matrix, lA.getYLevel(tile).toString, (this.xSize / 2 - this.field_230712_o_.getStringWidth(lA.getYLevel(tile).toString) / 2).toFloat, tp.toFloat + 23, 0x404040)
+    this.font.drawString(matrix, lA.getYLevel(tile).toString, (this.xSize / 2 - this.font.getStringWidth(lA.getYLevel(tile).toString) / 2).toFloat, tp.toFloat + 23, 0x404040)
   }
 
   override def actionPerformed(button: IHandleButton.Button): Unit = {
-    val di = (if (button.id % 2 == 0) 1 else -1) * (if (Screen.func_231172_r_) 10 else 1) // ctrl
+    val di = (if (button.id % 2 == 0) 1 else -1) * (if (Screen.hasControlDown) 10 else 1) // ctrl
     val yMin = tile match {
       case quarry: TileQuarry => quarry.yMin
       //      case quarry2: TileQuarry2 => quarry2.area.yMin
@@ -69,8 +69,8 @@ class GuiQuarryLevel(c: ContainerQuarryLevel, inv: PlayerInventory, t: ITextComp
     }
   }
 
-  override def func_231164_f_(): Unit = {
-    super.func_231164_f_()
+  override def onClose(): Unit = {
+    super.onClose()
     PacketHandler.sendToServer(func(tile))
   }
 }

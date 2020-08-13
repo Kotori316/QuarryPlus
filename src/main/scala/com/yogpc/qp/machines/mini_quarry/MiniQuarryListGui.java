@@ -39,27 +39,27 @@ public class MiniQuarryListGui extends Screen implements IHandleButton {
     }
 
     @Override
-    protected void func_231160_c_() {
-        super.func_231160_c_();
+    protected void init() {
+        super.init();
         int buttonWidth = 80;
-        int width = this.field_230708_k_;
-        int height = this.field_230709_l_;
-        func_230480_a_(new Button(0, width / 3 - buttonWidth / 2, height - 35, buttonWidth, 20, I18n.format(TranslationKeys.BLACKLIST), this));
-        func_230480_a_(new Button(1, width / 3 * 2 - buttonWidth / 2, height - 35, buttonWidth, 20, I18n.format("gui.done"), this));
-        func_230480_a_(new Button(2, width / 2 - buttonWidth, height - 60, buttonWidth, 20, I18n.format(TranslationKeys.NEW_ENTRY), this));
-        func_230480_a_(new Button(3, width / 2, height - 60, buttonWidth, 20, I18n.format("selectWorld.delete"), this));
+        int width = this.width;
+        int height = this.height;
+        addButton(new Button(0, width / 3 - buttonWidth / 2, height - 35, buttonWidth, 20, I18n.format(TranslationKeys.BLACKLIST), this));
+        addButton(new Button(1, width / 3 * 2 - buttonWidth / 2, height - 35, buttonWidth, 20, I18n.format("gui.done"), this));
+        addButton(new Button(2, width / 2 - buttonWidth, height - 60, buttonWidth, 20, I18n.format(TranslationKeys.NEW_ENTRY), this));
+        addButton(new Button(3, width / 2, height - 60, buttonWidth, 20, I18n.format("selectWorld.delete"), this));
         list = new EntryList(this.getMinecraft(), width, height, 30, height - 70, 18, this, this::getEntries);
-        func_230481_d_(list); // Add?
-        this.func_231035_a_(list); // setFocus
+        addListener(list); // Add?
+        this.setFocusedDefault(list); // setFocus
     }
 
     @Override
-    public void func_230430_a_(MatrixStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
-        list.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
-        super.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
+    public void render(MatrixStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
+        list.render(matrixStack, mouseX, mouseY, partialTicks);
+        super.render(matrixStack, mouseX, mouseY, partialTicks);
         String listName = whiteListFlag ? I18n.format(TranslationKeys.WHITELIST) : I18n.format(TranslationKeys.BLACKLIST);
-        String title = I18n.format(TranslationKeys.OF, listName, super.func_231171_q_().getString());
-        func_238471_a_(matrixStack, this.field_230712_o_, title, this.field_230708_k_ / 2, 8, 0xFFFFFF);
+        String title = I18n.format(TranslationKeys.OF, listName, super.getTitle().getString());
+        drawCenteredString(matrixStack, this.font, title, this.width / 2, 8, 0xFFFFFF);
     }
 
     public List<QuarryBlackList.Entry> getEntries() {
@@ -75,9 +75,9 @@ public class MiniQuarryListGui extends Screen implements IHandleButton {
     }
 
     @Override
-    public boolean func_231046_a_(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         // keyPressed
-        if (super.func_231046_a_(keyCode, scanCode, modifiers)) return true;
+        if (super.keyPressed(keyCode, scanCode, modifiers)) return true;
         InputMappings.Input mouseKey = InputMappings.getInputByCode(keyCode, scanCode);
         if (this.getMinecraft().gameSettings.keyBindInventory.isActiveAndMatches(mouseKey)) {
             assert this.getMinecraft().player != null;
@@ -107,7 +107,7 @@ public class MiniQuarryListGui extends Screen implements IHandleButton {
                     }));
                 break;
             case 3: // Delete
-                MiniQuarryListEntry selected = list.func_230958_g_(); // getSelected
+                MiniQuarryListEntry selected = list.getSelected(); // getSelected
                 if (selected != null) {
                     QuarryBlackList.Entry data = selected.getData();
                     if (!MiniQuarryTile.defaultBlackList().contains(data)) {
@@ -134,8 +134,8 @@ class EntryList extends ExtendedList<MiniQuarryListEntry> {
     }
 
     public void updateList() {
-        this.func_230963_j_(); // clear
-        entriesSupplier.get().stream().map(e -> new MiniQuarryListEntry(e, this.parent, this::func_241215_a_)).forEach(this::func_230513_b_); // addEntry
+        this.clearEntries(); // clear
+        entriesSupplier.get().stream().map(e -> new MiniQuarryListEntry(e, this.parent, this::setSelected)).forEach(this::addEntry); // addEntry
     }
 
 }
@@ -158,15 +158,15 @@ class MiniQuarryListEntry extends ExtendedList.AbstractListEntry<MiniQuarryListE
 
     @Override
     @SuppressWarnings("IntegerDivisionInFloatingPointContext")
-    public void func_230432_a_(MatrixStack m, int entryIdx, int top, int left, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean p_render_8_, float partialTicks) {
+    public void render(MatrixStack m, int entryIdx, int top, int left, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean p_render_8_, float partialTicks) {
         //render
         String name = data.toString();
-        Minecraft.getInstance().fontRenderer.func_238405_a_(m, name,
-            (parent.field_230708_k_ - Minecraft.getInstance().fontRenderer.getStringWidth(name)) / 2, top + 2, 0xFFFFFF);
+        Minecraft.getInstance().fontRenderer.drawString(m, name,
+            (parent.width - Minecraft.getInstance().fontRenderer.getStringWidth(name)) / 2, top + 2, 0xFFFFFF);
     }
 
     @Override
-    public boolean func_231044_a_(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
         // Mouse clicked
         setSelected.accept(this);
         return false;

@@ -36,24 +36,24 @@ public class GuiQuarryModule extends ContainerScreen<ContainerQuarryModule> {
     }
 
     @Override
-    public void func_230430_a_(MatrixStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
-        this.func_230446_a_(matrixStack);// back ground
-        super.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
+    public void render(MatrixStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
+        this.renderBackground(matrixStack);// back ground
+        super.render(matrixStack, mouseX, mouseY, partialTicks);
         this.func_230459_a_(matrixStack, mouseX, mouseY); // render tooltip
     }
 
     @Override
-    protected void func_230450_a_(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
         ScreenUtil.color4f();
         this.getMinecraft().getTextureManager().bindTexture(LOCATION);
-        this.func_238474_b_(matrixStack, guiLeft, guiTop, 0, 0, xSize, ySize);
+        this.blit(matrixStack, guiLeft, guiTop, 0, 0, xSize, ySize);
     }
 
     @Override
-    protected void func_230451_b_(MatrixStack matrixStack, final int mouseX, final int mouseY) {
-        super.func_230451_b_(matrixStack, mouseX, mouseY);
+    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, final int mouseX, final int mouseY) {
+        super.drawGuiContainerForegroundLayer(matrixStack, mouseX, mouseY);
         if (yGetter != null) {
-            this.field_230712_o_.func_238421_b_(matrixStack, "Y: " + yGetter.getAsInt(), 120, 6, 0x404040);
+            this.font.drawString(matrixStack, "Y: " + yGetter.getAsInt(), 120, 6, 0x404040);
         }
     }
 }

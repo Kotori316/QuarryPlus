@@ -40,7 +40,7 @@ object QuarryBlackList {
 
   final def example1: Seq[Entry] = Seq(Air)
 
-  final def example2: Seq[Entry] = Seq(Air, Name(Blocks.WHITE_WOOL.getRegistryName), Mod("ic2"), Ores, Tag(Tags.Blocks.STONE.func_230234_a_()))
+  final def example2: Seq[Entry] = Seq(Air, Name(Blocks.WHITE_WOOL.getRegistryName), Mod("ic2"), Ores, Tag(Tags.Blocks.STONE.getName()))
 
   private var entries: Set[Entry] = example1.toSet
 
@@ -162,7 +162,7 @@ object QuarryBlackList {
       if (cacheNoOre(state)) false
       else if (cacheOre(state)) true
       else {
-        if (Tags.Blocks.ORES.func_230235_a_(state.getBlock)) {
+        if (Tags.Blocks.ORES.contains(state.getBlock)) {
           cacheOre += state
           true
         } else {
@@ -183,7 +183,7 @@ object QuarryBlackList {
 
     override def test(state: BlockState, world: IBlockReader, pos: BlockPos): Boolean = {
       if (tag == null) false
-      else tag.func_230235_a_(state.getBlock)
+      else tag.contains(state.getBlock)
     }
 
     override def toString: String = "Tag #" + name

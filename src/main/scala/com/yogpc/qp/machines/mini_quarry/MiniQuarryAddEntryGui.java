@@ -13,7 +13,6 @@ import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.IHandleButton;
 import com.yogpc.qp.machines.base.QuarryBlackList;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.list.ExtendedList;
@@ -35,39 +34,38 @@ public class MiniQuarryAddEntryGui extends Screen implements IHandleButton {
     private TextFieldWidget textField;
 
     protected MiniQuarryAddEntryGui(Screen parent, Consumer<QuarryBlackList.Entry> callback) {
-        super(parent.func_231171_q_()); // title
+        super(parent.getTitle()); // title
         this.parent = parent;
         this.callback = callback;
     }
 
     @Override
-    protected void func_231160_c_() {
-        super.func_231160_c_();
+    protected void init() {
+        super.init();
         int buttonWidth = 80;
-        int width = this.field_230708_k_;
-        int height = this.field_230709_l_;
-        FontRenderer font = field_230712_o_;
+        int width = this.width;
+        int height = this.height;
         textField = new TextFieldWidget(font, width / 2 - 125, height - 56, 250, 20, new StringTextComponent(""));
         textField.setMaxStringLength(512);
         list = new EntryList(this.getMinecraft(), width, height, 30, height - 70, 18, this, this::getEntries);
-        func_230480_a_(new Button(1, width / 2 - buttonWidth / 2, height - 35, buttonWidth, 20, I18n.format(TranslationKeys.ADD), this));
-        this.field_230705_e_.add(list);
-        this.field_230705_e_.add(textField);
-        this.func_231035_a_(list);
+        addButton(new Button(1, width / 2 - buttonWidth / 2, height - 35, buttonWidth, 20, I18n.format(TranslationKeys.ADD), this));
+        this.children.add(list);
+        this.children.add(textField);
+        this.setFocusedDefault(list);
         textField.setCanLoseFocus(true);
         textField.setResponder(s -> {
             list.updateList();
-            list.func_230932_a_(list.func_230966_l_()); // Scroll
+            list.setScrollAmount(list.getScrollAmount()); // Scroll
         });
     }
 
     @Override
-    public void func_230430_a_(MatrixStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
-        list.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
-        textField.func_230431_b_(matrixStack, mouseX, mouseY, partialTicks);
-        super.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
+    public void render(MatrixStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
+        list.render(matrixStack, mouseX, mouseY, partialTicks);
+        textField.renderButton(matrixStack, mouseX, mouseY, partialTicks);
+        super.render(matrixStack, mouseX, mouseY, partialTicks);
         String title = I18n.format(TranslationKeys.NEW_ENTRY);
-        func_238471_a_(matrixStack, this.field_230712_o_, title, this.field_230708_k_ / 2, 8, 0xFFFFFF);
+        drawCenteredString(matrixStack, this.font, title, this.width / 2, 8, 0xFFFFFF);
     }
 
     private Pair<Kind, List<ResourceLocation>> getEntries() {
@@ -85,7 +83,7 @@ public class MiniQuarryAddEntryGui extends Screen implements IHandleButton {
     @Override
     public void actionPerformed(Button button) {
         if (button.id == 1) {
-            LocationEntry entry = list.func_230958_g_();
+            LocationEntry entry = list.getSelected();
             if (entry != null) {
                 ResourceLocation location = entry.getData();
                 switch (entry.getKind()) {
@@ -109,23 +107,23 @@ public class MiniQuarryAddEntryGui extends Screen implements IHandleButton {
                     }
                 }
             }
-            this.func_231175_as__();
+            this.closeScreen();
         }
     }
 
     @Override
-    public boolean func_231046_a_(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         InputMappings.Input mouseKey = InputMappings.getInputByCode(keyCode, scanCode);
-        if (keyCode == GLFW.GLFW_KEY_ESCAPE || (!textField.func_230999_j_() && this.getMinecraft().gameSettings.keyBindInventory.isActiveAndMatches(mouseKey))) {
-            // func_230999_j_ isFocused
-            this.func_231175_as__();
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE || (!textField.isFocused() && this.getMinecraft().gameSettings.keyBindInventory.isActiveAndMatches(mouseKey))) {
+            // isFocused isFocused
+            this.closeScreen();
             return true;
         }
-        return super.func_231046_a_(keyCode, scanCode, modifiers);
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
-    public void func_231175_as__() { // OnClose
+    public void closeScreen() { // OnClose
         getMinecraft().displayGuiScreen(parent);
     }
 
@@ -142,9 +140,9 @@ public class MiniQuarryAddEntryGui extends Screen implements IHandleButton {
         }
 
         public void updateList() {
-            this.func_230963_j_();
+            this.clearEntries();
             Pair<Kind, List<ResourceLocation>> kindListPair = entriesSupplier.get();
-            kindListPair.getValue().stream().map(e -> new LocationEntry(e, this.parent, this::func_241215_a_, kindListPair.getKey())).forEach(this::func_230513_b_);
+            kindListPair.getValue().stream().map(e -> new LocationEntry(e, this.parent, this::setSelected, kindListPair.getKey())).forEach(this::addEntry);
         }
 
     }
@@ -173,14 +171,14 @@ public class MiniQuarryAddEntryGui extends Screen implements IHandleButton {
 
         @Override
         @SuppressWarnings("IntegerDivisionInFloatingPointContext")
-        public void func_230432_a_(MatrixStack m, int entryIdx, int top, int left, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean p_render_8_, float partialTicks) {
+        public void render(MatrixStack m, int entryIdx, int top, int left, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean p_render_8_, float partialTicks) {
             String name = (kind == Kind.TAG ? "#" : "") + data.toString();
-            Minecraft.getInstance().fontRenderer.func_238405_a_(m, name,
-                (parent.field_230708_k_ - Minecraft.getInstance().fontRenderer.getStringWidth(name)) / 2, top + 2, 0xFFFFFF);
+            Minecraft.getInstance().fontRenderer.drawString(m, name,
+                (parent.width - Minecraft.getInstance().fontRenderer.getStringWidth(name)) / 2, top + 2, 0xFFFFFF);
         }
 
         @Override
-        public boolean func_231044_a_(double mouseX, double mouseY, int button) {
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
             setSelected.accept(this);
             return false;
         }

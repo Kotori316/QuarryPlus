@@ -60,7 +60,7 @@ abstract class QPBlock(builder: AbstractBlock.Properties, name: String, generato
   }
 
   //noinspection ScalaDeprecation
-  override def hasComparatorInputOverride(state: BlockState): Boolean = state.func_235901_b_(QPBlock.WORKING)
+  override def hasComparatorInputOverride(state: BlockState): Boolean = state.hasProperty(QPBlock.WORKING)
 
   def getTileType: TileEntityType[_ <: TileEntity]
 

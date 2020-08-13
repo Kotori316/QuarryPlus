@@ -21,8 +21,8 @@ case class AdvancementSerializeHelper(name: ResourceLocation,
     addCriterion(s"has_${item.getRegistryName.getPath}", InventoryChangeTrigger.Instance.forItems(item))
 
   def addItemCriterion(tag: ITag.INamedTag[Item]): AdvancementSerializeHelper =
-    addCriterion(s"has_${tag.func_230234_a_().getPath}", InventoryChangeTrigger.Instance.forItems(ItemPredicate.Builder.create().tag(tag).build()))
-      .addCondition(new NotCondition(new TagEmptyCondition(tag.func_230234_a_())))
+    addCriterion(s"has_${tag.getName().getPath}", InventoryChangeTrigger.Instance.forItems(ItemPredicate.Builder.create().tag(tag).build()))
+      .addCondition(new NotCondition(new TagEmptyCondition(tag.getName())))
 
   def addCondition(condition: ICondition): AdvancementSerializeHelper =
     copy(conditions = condition :: conditions)
@@ -30,7 +30,7 @@ case class AdvancementSerializeHelper(name: ResourceLocation,
   override def build: JsonObject = {
     val builder = Advancement.Builder.builder()
     builder.withParentId(new ResourceLocation("recipes/root"))
-      .withCriterion("has_the_recipe", RecipeUnlockedTrigger.func_235675_a_(name))
+      .withCriterion("has_the_recipe", RecipeUnlockedTrigger.create(name))
       .withRewards(AdvancementRewards.Builder.recipe(name))
       .withRequirementsStrategy(IRequirementsStrategy.OR)
     val obj = criterionList.foldRight(builder) { case ((s, c), b) => b.withCriterion(s, c) }

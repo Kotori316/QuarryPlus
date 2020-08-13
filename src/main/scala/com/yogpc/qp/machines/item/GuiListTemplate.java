@@ -41,60 +41,60 @@ public class GuiListTemplate extends ContainerScreen<ContainerListTemplate> impl
         if (stack.getItem() == Holder.itemTemplate()) {
             template = ItemTemplate.getTemplate(stack);
         }
-        this.field_238745_s_ = this.ySize - 96 + 2; // y position of text, inventory
+        this.playerInventoryTitleY = this.ySize - 96 + 2; // y position of text, inventory
     }
 
     @Override
-    public void func_231160_c_() {
-        super.func_231160_c_();
+    public void init() {
+        super.init();
         itemList = new ItemList(this.getMinecraft(), guiLeft + 8, guiLeft + 133, 0, guiTop + 8, guiTop + 114, 18);
-        this.field_230705_e_.add(itemList);
-        this.func_231035_a_(itemList);
+        this.children.add(itemList);
+        this.setFocusedDefault(itemList);
 
         int id = 0;
         int buttonHeight = 20;
         int buttonWidth = 40;
-        func_230480_a_(new IHandleButton.Button(id++, guiLeft + 132, guiTop + 110, buttonWidth, buttonHeight, new TranslationTextComponent(TranslationKeys.ADD), this));
-        func_230480_a_(new IHandleButton.Button(id++, guiLeft + 132, guiTop + 42, buttonWidth, buttonHeight, new TranslationTextComponent(TranslationKeys.DELETE), this));
-        func_230480_a_(new IHandleButton.Button(id++, guiLeft + 132, guiTop + 42 + buttonHeight, buttonWidth, buttonHeight, "", this));
+        addButton(new IHandleButton.Button(id++, guiLeft + 132, guiTop + 110, buttonWidth, buttonHeight, new TranslationTextComponent(TranslationKeys.ADD), this));
+        addButton(new IHandleButton.Button(id++, guiLeft + 132, guiTop + 42, buttonWidth, buttonHeight, new TranslationTextComponent(TranslationKeys.DELETE), this));
+        addButton(new IHandleButton.Button(id++, guiLeft + 132, guiTop + 42 + buttonHeight, buttonWidth, buttonHeight, "", this));
         assert id > 0;
         buttonText();
     }
 
     protected void buttonText() {
-        field_230710_m_.get(2).func_238482_a_(new TranslationTextComponent(template.include() ? TranslationKeys.TOF_INCLUDE : TranslationKeys.TOF_EXCLUDE));
+        buttons.get(2).setMessage(new TranslationTextComponent(template.include() ? TranslationKeys.TOF_INCLUDE : TranslationKeys.TOF_EXCLUDE));
     }
 
     @Override
-    public void func_230430_a_(MatrixStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
-        this.func_230446_a_(matrixStack);// back ground
-        super.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
+    public void render(MatrixStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
+        this.renderBackground(matrixStack);// back ground
+        super.render(matrixStack, mouseX, mouseY, partialTicks);
         this.func_230459_a_(matrixStack, mouseX, mouseY); // render tooltip
     }
 
     @Override
-    protected void func_230450_a_(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
         ScreenUtil.color4f();
         this.getMinecraft().getTextureManager().bindTexture(LOCATION);
-        this.func_238474_b_(matrixStack, guiLeft, guiTop, 0, 0, xSize, ySize);
-        itemList.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
+        this.blit(matrixStack, guiLeft, guiTop, 0, 0, xSize, ySize);
+        itemList.render(matrixStack, mouseX, mouseY, partialTicks);
     }
 
     @Override
-    protected void func_230451_b_(MatrixStack matrixStack, final int mouseX, final int mouseY) {
-        this.field_230712_o_.func_238422_b_(matrixStack, this.playerInventory.getDisplayName(), (float) this.field_238744_r_, (float) this.field_238745_s_, 4210752);
+    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, final int mouseX, final int mouseY) {
+        this.font.func_238422_b_(matrixStack, this.playerInventory.getDisplayName().func_241878_f(), (float) this.playerInventoryTitleX, (float) this.playerInventoryTitleY, 4210752);
     }
 
     @Override
-    public void func_231164_f_() { // OnRemoved
+    public void onClose() { // onClose
         PacketHandler.sendToServer(TemplateMessage.create(player.inventory.currentItem, template));
-        super.func_231164_f_();
+        super.onClose();
     }
 
     @Override
-    public void func_231175_as__() { // OnClosed
+    public void closeScreen() { // closeScreen
         PacketHandler.sendToServer(TemplateMessage.create(player.inventory.currentItem, template));
-        super.func_231175_as__();
+        super.closeScreen();
     }
 
     @Override
@@ -109,7 +109,7 @@ public class GuiListTemplate extends ContainerScreen<ContainerListTemplate> impl
                 }
                 break;
             case 1: //DELETE
-                Optional.ofNullable(itemList.func_230958_g_())
+                Optional.ofNullable(itemList.getSelected())
                     .map(entry -> entry.data)
                     .ifPresent(data -> template = template.remove(data));
                 break;
@@ -130,18 +130,18 @@ public class GuiListTemplate extends ContainerScreen<ContainerListTemplate> impl
         public ItemList(Minecraft mcIn, int left, int right, int height, int topIn, int bottomIn, int slotHeightIn) {
             super(mcIn, -left + right, height, topIn, bottomIn, slotHeightIn);
             assert right > left;
-            this.field_230675_l_ = left;
-            this.field_230674_k_ = right;
+            this.x0 = left;
+            this.x1 = right;
             refresh();
         }
 
         public void refresh() {
-            this.func_230963_j_();
-            GuiListTemplate.this.refreshList(this::func_230513_b_, Entry::new);
+            this.clearEntries();
+            GuiListTemplate.this.refreshList(this::addEntry, Entry::new);
         }
 
         @Override
-        public int func_230949_c_() {
+        public int getRowWidth() {
             return this.getRight() - this.getLeft();
         }
 
@@ -184,7 +184,7 @@ public class GuiListTemplate extends ContainerScreen<ContainerListTemplate> impl
 */
 
         @Override
-        protected int func_230952_d_() {
+        protected int getScrollbarPosition() {
             return this.getRight() - 6;
         }
 
@@ -196,21 +196,21 @@ public class GuiListTemplate extends ContainerScreen<ContainerListTemplate> impl
             }
 
             @Override
-            public void func_230432_a_(MatrixStack m, int entryIdx, int top, int left, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean p_render_8_, float partialTicks) {
-                func_238476_c_(m, ItemList.this.field_230668_b_.fontRenderer, data.toString(),
+            public void render(MatrixStack m, int entryIdx, int top, int left, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean p_render_8_, float partialTicks) {
+                drawString(m, ItemList.this.minecraft.fontRenderer, data.toString(),
                     left, top + 3, 0xFFFFFF);
             }
 
             @Override
-            public boolean func_231044_a_(double mouseX, double mouseY, int button) {
-                ItemList.this.func_241215_a_(this);
+            public boolean mouseClicked(double mouseX, double mouseY, int button) {
+                ItemList.this.setSelected(this);
                 return false;
             }
         }
 
         @Override
-        protected void func_238478_a_(MatrixStack stack, int p_238478_2_, int p_238478_3_, int p_238478_4_, int p_238478_5_, float p_238478_6_) {
-            super.func_238478_a_(stack, p_238478_2_, p_238478_3_, p_238478_4_, p_238478_5_, p_238478_6_);
+        protected void renderList(MatrixStack stack, int p_238478_2_, int p_238478_3_, int p_238478_4_, int p_238478_5_, float p_238478_6_) {
+            super.renderList(stack, p_238478_2_, p_238478_3_, p_238478_4_, p_238478_5_, p_238478_6_);
         }
     }
 }

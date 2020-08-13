@@ -41,7 +41,7 @@ public class ItemReplacerModule extends Item implements IDisabled, IModuleItem {
             .map(s -> gson.fromJson(s, JsonObject.class))
             .flatMap(jsonObject -> {
                 try {
-                    return BlockState.field_235877_b_.parse(JsonOps.INSTANCE, jsonObject).result();
+                    return BlockState.BLOCKSTATE_CODEC.parse(JsonOps.INSTANCE, jsonObject).result();
                 } catch (Exception e) {
                     QuarryPlus.LOGGER.debug("Error in getting replace block of ReplaceModule.", e);
                     return Optional.empty();

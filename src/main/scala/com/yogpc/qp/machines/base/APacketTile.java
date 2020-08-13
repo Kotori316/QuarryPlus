@@ -99,10 +99,11 @@ public abstract class APacketTile extends TileEntity {
     public void releaseChunkLoad(IChunkLoadTile.ReleaseChunkLoadEvent event) {
         World world = this.getWorld();
         BlockPos pos = this.getPos();
-        if (event.pos.equals(new ChunkPos(pos)) &&
-            (world != null && world.func_234923_W_() == event.getWorld().getWorld().func_234923_W_())) {
-            // Someone is trying to stop forcing this chunk.
-            event.setCanceled(true);
+        if (event.pos.equals(new ChunkPos(pos)) && world != null) {
+            if (event.getWorld() instanceof World && world.func_234923_W_() == ((World) event.getWorld()).func_234923_W_()) {
+                // Someone is trying to stop forcing this chunk.
+                event.setCanceled(true);
+            }
         }
     }
 

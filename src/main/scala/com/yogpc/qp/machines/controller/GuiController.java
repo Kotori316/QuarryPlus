@@ -46,52 +46,51 @@ public class GuiController extends Screen implements IHandleButton {
     }
 
     @Override
-    public void func_231160_c_() {
-        super.func_231160_c_();
-        int width = this.field_230708_k_;
-        int height = this.field_230709_l_;
+    public void init() {
+        super.init();
+        int width = this.width;
+        int height = this.height;
         this.slot = new GuiSlotEntities(this.getMinecraft(), width, height, 30, height - 60, 18, this);
-        this.field_230705_e_.add(slot);
-        func_231035_a_(slot);
-        func_230480_a_(new IHandleButton.Button(-1, width / 2 - 125, height - 26, 250, 20, new TranslationTextComponent(TranslationKeys.DONE), this));
-        this.search = new TextFieldWidget(field_230712_o_, width / 2 - 125, height - 56, 250, 20, new StringTextComponent(""));
-        this.field_230705_e_.add(search);
+        this.children.add(slot);
+        setFocusedDefault(slot);
+        addButton(new IHandleButton.Button(-1, width / 2 - 125, height - 26, 250, 20, new TranslationTextComponent(TranslationKeys.DONE), this));
+        this.search = new TextFieldWidget(font, width / 2 - 125, height - 56, 250, 20, new StringTextComponent(""));
+        this.children.add(search);
         search.setCanLoseFocus(true);
         search.setResponder(this::searchEntities);
     }
 
     @Override
-    public void func_230430_a_(MatrixStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
+    public void render(MatrixStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
         if (slot != null) {
-            this.slot.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
-            this.search.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
+            this.slot.render(matrixStack, mouseX, mouseY, partialTicks);
+            this.search.render(matrixStack, mouseX, mouseY, partialTicks);
         }
-        super.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
-        func_238472_a_(matrixStack, this.field_230712_o_, new TranslationTextComponent(TranslationKeys.YOG_SPAWNER_SETTING), this.field_230708_k_ / 2, 8, 0xFFFFFF);
+        super.render(matrixStack, mouseX, mouseY, partialTicks);
+        drawCenteredString(matrixStack, this.font, new TranslationTextComponent(TranslationKeys.YOG_SPAWNER_SETTING), this.width / 2, 8, 0xFFFFFF);
     }
 
     @Override
-    public void func_231023_e_() {
-        super.func_231023_e_();
+    public void tick() {
+        super.tick();
         if (!this.getMinecraft().player.isAlive())
             this.getMinecraft().player.closeScreen();
     }
 
     @Override
-    public boolean func_231046_a_(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         InputMappings.Input mouseKey = InputMappings.getInputByCode(keyCode, scanCode);
-        if (keyCode == GLFW.GLFW_KEY_ESCAPE || (!search.func_230999_j_() && this.getMinecraft().gameSettings.keyBindInventory.isActiveAndMatches(mouseKey))) {
-            // func_230999_j_ isFocused
-            this.func_231175_as__();
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE || (!search.isFocused() && this.getMinecraft().gameSettings.keyBindInventory.isActiveAndMatches(mouseKey))) {
+            this.closeScreen();
             return true;
         }
-        return super.func_231046_a_(keyCode, scanCode, modifiers);
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
     public void actionPerformed(IHandleButton.Button button) {
         if (button.id == -1) {
-            GuiSlotEntities.Entry selected = slot.func_230958_g_();
+            GuiSlotEntities.Entry selected = slot.getSelected();
             if (selected != null) {
                 PacketHandler.sendToServer(SetEntity.create(dim, new BlockPos(xc, yc, zc), selected.location));
             }
@@ -119,6 +118,6 @@ public class GuiController extends Screen implements IHandleButton {
         }
         names = collect;
         this.slot.refreshList();
-        this.slot.func_241215_a_(null); // setSelected
+        this.slot.setSelected(null); // setSelected
     }
 }

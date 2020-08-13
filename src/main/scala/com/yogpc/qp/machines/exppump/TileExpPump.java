@@ -137,8 +137,8 @@ public class TileExpPump extends APacketTile implements IEnchantableTile, IDebug
     }
 
     @Override
-    public void func_230337_a_(BlockState state, CompoundNBT compound) {
-        super.func_230337_a_(state, compound);
+    public void read(BlockState state, CompoundNBT compound) {
+        super.read(state, compound);
         int connectID = compound.getByte("mConnectTo");
         mConnectTo = connectID < 0 ? null : Direction.byIndex(connectID);
         module.xp_$eq(compound.getInt("xpAmount"));

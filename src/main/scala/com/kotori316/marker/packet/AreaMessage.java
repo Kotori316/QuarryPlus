@@ -50,7 +50,7 @@ public class AreaMessage {
     public void onReceive(Supplier<NetworkEvent.Context> ctx) {
         Optional.ofNullable(Minecraft.getInstance().world)
             .map(world -> world.getTileEntity(this.pos))
-            .filter(t -> t instanceof IAreaConfigurable && PacketHandler.getDimId(t.getWorld()) == RegistryKey.func_240903_a_(Registry.field_239699_ae_, dim))
+            .filter(t -> t instanceof IAreaConfigurable && PacketHandler.getDimId(t.getWorld()) == RegistryKey.func_240903_a_(Registry.WORLD_KEY, dim))
             .ifPresent(entity -> {
                 IAreaConfigurable marker = (IAreaConfigurable) entity;
                 ctx.get().enqueueWork(marker.setMinMax(this.min, this.max));

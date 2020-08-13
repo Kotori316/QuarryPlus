@@ -4,6 +4,7 @@ package com.yogpc.qp.machines.item;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.yogpc.qp.machines.base.QuarryBlackList;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.list.ExtendedList;
 
 public class GuiSlotEnchList extends ExtendedList<GuiSlotEnchList.Entry> {
@@ -17,8 +18,8 @@ public class GuiSlotEnchList extends ExtendedList<GuiSlotEnchList.Entry> {
     }
 
     public void refreshList() {
-        this.func_230963_j_();
-        parent.buildModList(this::func_230513_b_, Entry::new);
+        this.clearEntries();
+        parent.buildModList(this::addEntry, Entry::new);
     }
 
     public class Entry extends ExtendedList.AbstractListEntry<Entry> {
@@ -35,15 +36,16 @@ public class GuiSlotEnchList extends ExtendedList<GuiSlotEnchList.Entry> {
 
         @Override
         @SuppressWarnings("IntegerDivisionInFloatingPointContext")
-        public void func_230432_a_(MatrixStack m, int entryIdx, int top, int left, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean p_render_8_, float partialTicks) {
+        public void render(MatrixStack m, int entryIdx, int top, int left, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean p_render_8_, float partialTicks) {
             String name = data.toString();
-            Minecraft.getInstance().fontRenderer.func_238405_a_(m, name,
-                (GuiSlotEnchList.this.parent.field_230708_k_ * 3 / 5 - Minecraft.getInstance().fontRenderer.getStringWidth(name)) / 2, top + 2, 0xFFFFFF);
+            FontRenderer font = minecraft.fontRenderer;
+            font.drawString(m, name,
+                (GuiSlotEnchList.this.parent.width * 3 / 5 - font.getStringWidth(name)) / 2, top + 2, 0xFFFFFF);
         }
 
         @Override
-        public boolean func_231044_a_(double mouseX, double mouseY, int button) {
-            GuiSlotEnchList.this.func_241215_a_(this);
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            GuiSlotEnchList.this.setSelected(this);
             return false;
         }
     }

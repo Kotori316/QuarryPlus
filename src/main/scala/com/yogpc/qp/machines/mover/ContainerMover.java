@@ -89,7 +89,7 @@ public class ContainerMover extends Container {
 
     @Override
     public boolean canInteractWith(final PlayerEntity playerIn) {
-        return this.worldObj.getBlockState(pos).getBlock() == Holder.blockMover() && playerIn.getDistanceSq(Vector3d.func_237492_c_(pos)) <= 64.0D;
+        return this.worldObj.getBlockState(pos).getBlock() == Holder.blockMover() && playerIn.getDistanceSq(Vector3d.copyCenteredHorizontally(pos)) <= 64.0D;
     }
 
     @Override

@@ -4,7 +4,6 @@ import java.util.stream.Stream;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.yogpc.qp.machines.base.ScreenUtil;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.resources.I18n;
@@ -30,12 +29,12 @@ public class GuiMarker extends ContainerScreen<ContainerMarker> {
         //217, 188
         this.xSize = 217;
         this.ySize = 188;
-        this.field_238745_s_ = this.ySize - 96 + 2; // y position of text, inventory
+        this.playerInventoryTitleY = this.ySize - 96 + 2; // y position of text, inventory
     }
 
     @Override
-    public void func_231160_c_() {
-        super.func_231160_c_();
+    public void init() {
+        super.init();
         StringTextComponent[] mp = Stream.of("--", "-", "+", "++").map(StringTextComponent::new).toArray(StringTextComponent[]::new);
         int w = 10;
         int h = 20;
@@ -43,53 +42,52 @@ public class GuiMarker extends ContainerScreen<ContainerMarker> {
 
         for (int i = 0; i < upSide.length; i++) {
             for (int j = 0; j < mp.length; j++) {
-                func_230480_a_(new Button(guiLeft + xSize / 2 - 4 * w * upSide.length / 2 + i * w * mp.length + w * j, guiTop + top, w, h, mp[j], this::actionPerformed));
+                addButton(new Button(guiLeft + xSize / 2 - 4 * w * upSide.length / 2 + i * w * mp.length + w * j, guiTop + top, w, h, mp[j], this::actionPerformed));
             }
         }
         for (int i = 0; i < center.length; i++) {
             for (int j = 0; j < mp.length; j++) {
-                func_230480_a_(new Button(guiLeft + xSize / 2 - 4 * w * center.length / 2 + i * w * mp.length + w * j, guiTop + top + 35, w, h, mp[j], this::actionPerformed));
+                addButton(new Button(guiLeft + xSize / 2 - 4 * w * center.length / 2 + i * w * mp.length + w * j, guiTop + top + 35, w, h, mp[j], this::actionPerformed));
             }
         }
         for (int i = 0; i < downSide.length; i++) {
             for (int j = 0; j < mp.length; j++) {
-                func_230480_a_(new Button(guiLeft + xSize / 2 - 4 * w * downSide.length / 2 + i * w * mp.length + w * j, guiTop + top + 70, w, h, mp[j], this::actionPerformed));
+                addButton(new Button(guiLeft + xSize / 2 - 4 * w * downSide.length / 2 + i * w * mp.length + w * j, guiTop + top + 70, w, h, mp[j], this::actionPerformed));
             }
         }
 
     }
 
     @Override
-    public void func_230430_a_(MatrixStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
-        this.func_230446_a_(matrixStack);// back ground
-        super.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
+    public void render(MatrixStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
+        this.renderBackground(matrixStack);// back ground
+        super.render(matrixStack, mouseX, mouseY, partialTicks);
         this.func_230459_a_(matrixStack, mouseX, mouseY); // render tooltip
     }
 
     @Override
-    protected void func_230450_a_(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
         ScreenUtil.color4f();
         this.getMinecraft().getTextureManager().bindTexture(LOCATION);
-        this.func_238474_b_(matrixStack, guiLeft, guiTop, 0, 0, xSize, ySize);
+        this.blit(matrixStack, guiLeft, guiTop, 0, 0, xSize, ySize);
     }
 
     @Override
-    protected void func_230451_b_(MatrixStack matrixStack, final int mouseX, final int mouseY) {
-        FontRenderer font = field_230712_o_;
+    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, final int mouseX, final int mouseY) {
         String s = I18n.format(TileFlexMarker.Movable.UP.transName);
-        font.func_238421_b_(matrixStack, s, this.xSize / 2 - font.getStringWidth(s) / 2, 6, 0x404040);
+        font.drawString(matrixStack, s, this.xSize / 2 - font.getStringWidth(s) / 2, 6, 0x404040);
         s = I18n.format(TileFlexMarker.Movable.FORWARD.transName);
-        font.func_238421_b_(matrixStack, s, this.xSize / 2 - font.getStringWidth(s) / 2, 6 + 35, 0x404040);
+        font.drawString(matrixStack, s, this.xSize / 2 - font.getStringWidth(s) / 2, 6 + 35, 0x404040);
         s = I18n.format(TileFlexMarker.Movable.LEFT.transName);
-        font.func_238421_b_(matrixStack, s, this.xSize / 2 - font.getStringWidth(s) / 2 - 40, 6 + 35, 0x404040);
+        font.drawString(matrixStack, s, this.xSize / 2 - font.getStringWidth(s) / 2 - 40, 6 + 35, 0x404040);
         s = I18n.format(TileFlexMarker.Movable.RIGHT.transName);
-        font.func_238421_b_(matrixStack, s, this.xSize / 2 - font.getStringWidth(s) / 2 + 40, 6 + 35, 0x404040);
+        font.drawString(matrixStack, s, this.xSize / 2 - font.getStringWidth(s) / 2 + 40, 6 + 35, 0x404040);
         s = I18n.format(TileFlexMarker.Movable.DOWN.transName);
-        font.func_238421_b_(matrixStack, s, this.xSize / 2 - font.getStringWidth(s) / 2, 6 + 70, 0x404040);
+        font.drawString(matrixStack, s, this.xSize / 2 - font.getStringWidth(s) / 2, 6 + 70, 0x404040);
     }
 
     public void actionPerformed(Button button) {
-        int id = this.field_230710_m_.indexOf(button);
+        int id = this.buttons.indexOf(button);
         if (id >= 0) {
             TileFlexMarker.Movable movable = TileFlexMarker.Movable.valueOf(id / 4);
             ButtonMessage message = new ButtonMessage(container.pos, PacketHandler.getDimId(container.player.world), movable, amounts[id % 4]);

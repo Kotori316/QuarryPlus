@@ -205,8 +205,8 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
     }
 
     @Override
-    public void func_230337_a_(BlockState state, CompoundNBT nbt) {
-        super.func_230337_a_(state, nbt);
+    public void read(BlockState state, CompoundNBT nbt) {
+        super.read(state, nbt);
         read(nbt);
     }
 

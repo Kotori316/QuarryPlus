@@ -205,6 +205,6 @@ object Holder {
     value
   }
 
-  val dropLootFunctionType: LootFunctionType = Registry.register(Registry.field_239694_aZ_, IEnchantableTile.DropFunction.LOCATION,
+  val dropLootFunctionType: LootFunctionType = Registry.register(Registry.LOOT_FUNCTION_TYPE, IEnchantableTile.DropFunction.LOCATION,
     new LootFunctionType(new IEnchantableTile.DropFunction.Serializer))
 }
