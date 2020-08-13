@@ -7,23 +7,28 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkEvent;
 
-public class ProxyCommon {
+public class ProxyCommon extends ProxyProvider.AbstractProxy {
+    @Override
     public Optional<PlayerEntity> getPacketPlayer(final NetworkEvent.Context context) {
         return Optional.ofNullable(context.getSender());
     }
 
+    @Override
     public Optional<World> getPacketWorld(NetworkEvent.Context context) {
         return Optional.ofNullable(context.getSender()).map(Entity::getEntityWorld);
     }
 
+    @Override
     public void removeEntity(final Entity e) {
         e.remove();
     }
 
+    @Override
     public World getClientWorld() {
         return null;
     }
 
+    @Override
     public void setDummyTexture(String textureName) {
     }
 

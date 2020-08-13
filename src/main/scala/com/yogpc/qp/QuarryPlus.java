@@ -12,8 +12,7 @@ import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.EnableCondition;
 import com.yogpc.qp.utils.EnchantmentIngredient;
 import com.yogpc.qp.utils.Holder;
-import com.yogpc.qp.utils.ProxyClient;
-import com.yogpc.qp.utils.ProxyCommon;
+import com.yogpc.qp.utils.ProxyProvider;
 import com.yogpc.qp.utils.QuarryConfigCondition;
 import net.minecraft.block.Block;
 import net.minecraft.inventory.container.ContainerType;
@@ -27,7 +26,6 @@ import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -42,7 +40,7 @@ public class QuarryPlus {
     public static final String modID = "quarryplus";
     public static final Logger LOGGER = LogManager.getLogger(Mod_Name);
 
-    public static final ProxyCommon proxy = DistExecutor.safeRunForDist(() -> ProxyClient::new, () -> ProxyCommon::new);
+    public static final ProxyProvider.AbstractProxy proxy = ProxyProvider.getInstance();
 
     public QuarryPlus() {
         initConfig();

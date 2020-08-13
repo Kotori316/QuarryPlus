@@ -50,7 +50,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 @OnlyIn(Dist.CLIENT)
-public class ProxyClient extends ProxyCommon {
+public class ProxyClient extends ProxyProvider.AbstractProxy {
 
     @Override
     public Optional<PlayerEntity> getPacketPlayer(final NetworkEvent.Context context) {
@@ -65,7 +65,7 @@ public class ProxyClient extends ProxyCommon {
     public Optional<World> getPacketWorld(NetworkEvent.Context context) {
         ServerPlayerEntity sender = context.getSender();
         if (sender == null) {
-            return Optional.of(getClientWorld());
+            return Optional.ofNullable(getClientWorld());
         } else {
             return Optional.of(sender).map(Entity::getEntityWorld);
         }
@@ -81,6 +81,10 @@ public class ProxyClient extends ProxyCommon {
     @Override
     public World getClientWorld() {
         return Minecraft.getInstance().world;
+    }
+
+    @Override
+    public void setDummyTexture(String textureName) {
     }
 
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, modid = QuarryPlus.modID, value = Dist.CLIENT)
