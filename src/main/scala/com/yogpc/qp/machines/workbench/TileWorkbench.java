@@ -93,6 +93,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
                         inventory.set(i, ItemStack.EMPTY);
                 }
                 markDirty();
+                updateRecipeOutputs();
                 setCurrentRecipeIndex(workContinue ? getRecipeIndex() : -1);
                 noEnergy = false;
             } else if (Config.common().noEnergy().get() || noEnergy) {
