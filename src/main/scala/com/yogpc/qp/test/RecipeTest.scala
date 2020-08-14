@@ -69,8 +69,8 @@ private[test] class RecipeTest {
     val out = recipes.getOutput(asList(oldQuarry))
     assertFalse(out.isEmpty, "Out is valid item.")
     assertAll(
-      () => assertEquals(1, EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, out), "Silktouch"),
-      () => assertEquals(4, EnchantmentHelper.getEnchantmentLevel(Enchantments.EFFICIENCY, out), "Efficiency"),
+      () => assertEquals(1, EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, out), s"Silktouch in $out"),
+      () => assertEquals(4, EnchantmentHelper.getEnchantmentLevel(Enchantments.EFFICIENCY, out), s"Efficiency in $out"),
     )
   }
 
@@ -124,12 +124,12 @@ private[test] class RecipeTest {
     val noResultRecipe = WorkbenchRecipes.parse(noResult, id("no_result"))
     assertAll(
       () => assertTrue(noResultRecipe.isLeft, "no result"),
-      () => assertTrue(noResultRecipe.left.exists(_.contains("JsonSyntaxException")))
+      () => assertTrue(noResultRecipe.left.exists(_.contains("Missing result")), s"Exception $noResultRecipe")
     )
     val hasEmptyResult = new JsonObject
     noResult.entrySet().forEach(e => hasEmptyResult.add(e.getKey, e.getValue))
     hasEmptyResult.add("result", new JsonObject)
     val resultRecipe = WorkbenchRecipes.parse(hasEmptyResult, id("empty_result"))
-    assertTrue(resultRecipe.isLeft, "empty result")
+    assertTrue(resultRecipe.isLeft, s"empty result $resultRecipe")
   }
 }

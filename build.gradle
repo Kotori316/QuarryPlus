@@ -147,8 +147,8 @@ dependencies {
     implementation group: 'org.typelevel', name: "cats-core_2.13", version: '2.1.0'
 
     // at runtime, use the full JEI jar
-    implementation fg.deobf("mezz.jei:jei-1.16.1:7.0.0.6")
-//    implementation fg.deobf("curse.maven:mekanism:2894305")
+    compileOnly fg.deobf("mezz.jei:jei-1.16.1:7.0.0.6")
+//    compileOnly fg.deobf("curse.maven:mekanism:2894305")
 
     // Test Dependencies.
     implementation(group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.6.2')
