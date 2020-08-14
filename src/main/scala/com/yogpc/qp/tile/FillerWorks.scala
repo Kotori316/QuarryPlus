@@ -2,9 +2,10 @@ package com.yogpc.qp.tile
 
 import com.yogpc.qp.{PowerManager, QuarryPlus}
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.{EnumFacing, EnumHand}
 import net.minecraft.world.WorldServer
+import net.minecraftforge.common.ForgeHooks
 
 import scala.collection.JavaConverters._
 
@@ -75,8 +76,8 @@ object FillerWorks {
       } {
         if (PowerManager.useEnergyFillerWork(tile, true)) {
           PowerManager.useEnergyFillerWork(tile, false)
-          tile.getWorkingWorld.setBlockState(targetPos, block.getDefaultState)
-          stack.shrink(1)
+          fakePlayer.setHeldItem(EnumHand.MAIN_HAND, stack)
+          ForgeHooks.onPlaceItemIntoWorld(stack, fakePlayer, tile.getWorkingWorld, targetPos, EnumFacing.UP, 0.5f, 1f, 0.5f, EnumHand.MAIN_HAND)
           tile.inventory.markDirty()
         }
       }
