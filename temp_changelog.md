@@ -1,3 +1,8 @@
+# Version 12.4.4
+* Improved filler work.
+  * It can place colored wools.
+  * Solar panels from IC2 and EnderIO, too
+
 # Version 12.4.3
 * Removed unnecessary method of WorkbenchPlus
 
@@ -117,7 +122,7 @@
 * Added support of chain break of [MCAssistant](https://www.curseforge.com/minecraft/mc-mods/mcassistant).
 
 # Version 1.1.2
-* Reverted [272a28bc](https://github.com/Kotori316/QuarryPlus/commit/272a28bcf97149a24f79f3411a1b6f866b5db518) to avoid crash with old forge.
+* Reverted [272a28bc](https://github.com/Kotori316/QuarryPlus/commit/272a28bcf97149a24f79f3411a1b6f866b5db518) to avoid crash with the old forge.
 
 # Version 1.1.1
 * Fixed a bug where quarry is reset when work finished if BC's pipe is connected.
@@ -161,7 +166,7 @@
 # Version 1.0.1
 * Working to fix a bug where QuarryPlus stops its work while removing flowing liquid with PumpPlus in frame mode.
 If you have this problem, right click the PumpPlus with a stick or wrench to change PumpPlus's mode.
-* Made quarry head moving much faster. Change FastQuarryHeadMove in config to true.
+* Made quarry head moving much faster. Change FastQuarryHeadMove in the config to true.
 
 # Version 1.0.0
 * Now you can modify recipes of WorkbenchPlus. Copy file from `config/quarryplus/defaultrecipes` to `config/quarryplus/recipes` and change `UseHardCodeRecipe` in config to false.
@@ -170,7 +175,7 @@ If you have this problem, right click the PumpPlus with a stick or wrench to cha
 # Version 0.11.2
 * Fixed a crash when you shift-clicked item in WorkbenchPlus.
 * Added a condition quarryplus:machine_enabled, which checks if a machine which has the name in "value" field is enabled.
-* Fixed an issue where you can't craft items with WorkbenchPlus due to recreating tile every ticks.
+* Fixed an issue where you can't craft items with WorkbenchPlus due to recreating tile every tick.
 
 # Version 0.11.1
 * Now SolidQuarry doesn't push fuels to hopper. Close [#43](https://github.com/Kotori316/QuarryPlus/issues/43).
