@@ -45,11 +45,11 @@ jobs:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle16-${{ hashFiles('**/forge_version.properties') }}
       - name: Test with JUnit
-        run: chmod +x ./gradlew && ./gradlew assemble test
+        run: chmod +x ./gradlew && ./gradlew assemble test --no-daemon
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
       - name: Test with runData
-        run: chmod +x ./gradlew && ./gradlew -Dfml.earlyprogresswindow=false runData --info
+        run: chmod +x ./gradlew && ./gradlew -Dfml.earlyprogresswindow=false runData --info --no-daemon
         continue-on-error: true
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
@@ -76,7 +76,7 @@ jobs:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle16-${{ hashFiles('**/forge_version.properties') }}
       - name: Compile
-        run: chmod +x ./gradlew && ./gradlew build --continue --warning-mode all
+        run: chmod +x ./gradlew && ./gradlew build --continue --warning-mode all --no-daemon
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
       - name: Publish
