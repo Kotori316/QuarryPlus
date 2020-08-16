@@ -226,7 +226,7 @@ curseforge {
                 System.lineSeparator() * 2 +
                 new File("temp_changelog.md").text
         releaseType = 'release'
-        addGameVersion '1.16.1'
+        addGameVersion '1.16.2'
         mainArtifact(jar) {
             displayName = 'v' + project.version
         }
