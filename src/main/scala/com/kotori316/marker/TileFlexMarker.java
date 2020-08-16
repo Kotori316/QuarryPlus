@@ -86,12 +86,15 @@ public class TileFlexMarker extends TileEntity implements IAreaConfigurable {
     }
 
     private void setRender() {
-        assert world != null; // called in real world.
-        if (!world.isRemote)
+        if (world == null || !world.isRemote)
             return;
         boxes = IAreaConfigurable.getRenderBox(this.min, this.max);
         AxisAlignedBB bb;
-        if (direction.getAxis() == Direction.Axis.X) {
+        if (direction == null) {
+            // dummy
+            bb = new AxisAlignedBB(getPos().getX() + a, getPos().getY() + a, getPos().getZ() + a,
+                getPos().getX() + a, getPos().getY() + a, getPos().getZ() + a);
+        } else if (direction.getAxis() == Direction.Axis.X) {
             bb = new AxisAlignedBB(getPos().getX() - c + a, getPos().getY() + a, getPos().getZ() + a,
                 getPos().getX() + c + a, getPos().getY() + a, getPos().getZ() + a);
         } else {
