@@ -18,7 +18,6 @@ import java.util.Optional;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.BuildcraftHelper;
-import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.IEnchantableTile;
 import com.yogpc.qp.machines.base.QPBlock;
 import com.yogpc.qp.utils.Holder;
@@ -38,7 +37,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
@@ -107,7 +105,7 @@ public class BlockPump extends QPBlock {
     @Override
     public void addInformation(ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         super.addInformation(stack, worldIn, tooltip, flagIn);
-        tooltip.add(new TranslationTextComponent(TranslationKeys.TOOLTIP_PUMP, new TranslationTextComponent(TranslationKeys.quarry), ' '));
+//        tooltip.add(new TranslationTextComponent(TranslationKeys.TOOLTIP_PUMP, new TranslationTextComponent(TranslationKeys.quarry), ' '));
     }
 
 }

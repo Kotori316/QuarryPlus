@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.QPBlock;
 import com.yogpc.qp.utils.Holder;
 import javax.annotation.Nullable;
@@ -20,7 +19,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
@@ -52,8 +50,8 @@ public class BlockReplacer extends QPBlock {
     @Override
     public void addInformation(ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         super.addInformation(stack, worldIn, tooltip, flagIn);
-        tooltip.add(new TranslationTextComponent(TranslationKeys.TOOLTIP_REPLACER,
-            new TranslationTextComponent(TranslationKeys.quarry), new TranslationTextComponent(TranslationKeys.advquarry), ' '));
+//        tooltip.add(new TranslationTextComponent(TranslationKeys.TOOLTIP_REPLACER,
+//            new TranslationTextComponent(TranslationKeys.quarry), new TranslationTextComponent(TranslationKeys.advquarry), ' '));
     }
 
     @Override

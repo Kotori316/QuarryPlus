@@ -8,7 +8,6 @@ import java.util.stream.Stream;
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.BuildcraftHelper;
-import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.IEnchantableTile;
 import com.yogpc.qp.machines.base.QPBlock;
 import com.yogpc.qp.machines.base.StatusContainer;
@@ -35,7 +34,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
@@ -99,7 +97,7 @@ public class BlockAdvPump extends QPBlock {
     @Override
     public void addInformation(ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         super.addInformation(stack, worldIn, tooltip, flagIn);
-        tooltip.add(new TranslationTextComponent(TranslationKeys.TOOLTIP_ADVPUMP, ' '));
+//        tooltip.add(new TranslationTextComponent(TranslationKeys.TOOLTIP_ADVPUMP, ' '));
     }
 
     @Override
