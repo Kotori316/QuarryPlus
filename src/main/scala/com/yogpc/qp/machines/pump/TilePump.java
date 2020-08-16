@@ -255,9 +255,9 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         else
             this.range++;
         if (this.quarryRange)
-            ep.sendStatusMessage(new TranslationTextComponent(TranslationKeys.PUMP_RTOGGLE_QUARRY), false);
+            ep.sendStatusMessage(new TranslationTextComponent(TranslationKeys.PUMP_RANGE_QUARRY), false);
         else
-            ep.sendStatusMessage(new TranslationTextComponent(TranslationKeys.PUMP_RTOGGLE_NUM, Integer.toString(this.range * 2 + 1)), false);
+            ep.sendStatusMessage(new TranslationTextComponent(TranslationKeys.PUMP_RANGE_NUM, Integer.toString(this.range * 2 + 1)), false);
         this.fwt = 0;
     }
 

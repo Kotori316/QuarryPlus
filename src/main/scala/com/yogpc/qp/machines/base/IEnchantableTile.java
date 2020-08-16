@@ -123,7 +123,7 @@ public interface IEnchantableTile {
         static List<ITextComponent> getEnchantmentsChat(@Nonnull final IEnchantableTile te) {
             final Map<ResourceLocation, Integer> enchantments = te.getEnchantments();
             if (enchantments.size() <= 0) {
-                return Collections.singletonList(new TranslationTextComponent(TranslationKeys.PLUSENCHANTNO));
+                return Collections.singletonList(new TranslationTextComponent(TranslationKeys.PLUS_NO_ENCHANTMENTS));
             } else {
                 LinkedList<ITextComponent> collect = enchantments.entrySet().stream()
                     .map(keys(ForgeRegistries.ENCHANTMENTS::getValue))
@@ -132,7 +132,7 @@ public interface IEnchantableTile {
                             enchantment.getMaxLevel() != 1
                                 ? new TranslationTextComponent(TranslationKeys.ENCHANT_LEVELS.getOrDefault(level, level.toString()))
                                 : ""))).collect(Collectors.toCollection(LinkedList::new));
-                collect.addFirst(new TranslationTextComponent(TranslationKeys.PLUSENCHANT));
+                collect.addFirst(new TranslationTextComponent(TranslationKeys.PLUS_ENCHANTMENT));
                 return collect;
             }
         }
