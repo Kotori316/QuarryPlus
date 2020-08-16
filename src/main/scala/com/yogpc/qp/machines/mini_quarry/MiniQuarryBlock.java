@@ -100,7 +100,7 @@ public class MiniQuarryBlock extends QPBlock {
     @Override
     @SuppressWarnings("deprecation")
     public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (state.isIn(newState.getBlock())) {
+        if (!state.isIn(newState.getBlock())) {
             TileEntity entity = worldIn.getTileEntity(pos);
             if (entity instanceof MiniQuarryTile) {
                 MiniQuarryTile tile = (MiniQuarryTile) entity;
