@@ -14,10 +14,12 @@ import net.minecraft.util.{JsonUtils, ResourceLocation}
 import net.minecraft.world.World
 import net.minecraftforge.oredict.OreDictionary
 
+import scala.util.Try
+
 object QuarryBlackList {
   private[this] final lazy val entries: Set[Entry] = fromJson(Paths.get("config", QuarryPlus.modID, "blacklist.json"))
 
-  def fromJson(path: Path): Set[Entry] = {
+  def fromJson(path: Path): Set[Entry] = Try {
     if (Files.exists(path)) {
       val GSON = (new GsonBuilder).registerTypeHierarchyAdapter(classOf[Entry], Entry).create()
       val r = GSON.fromJson(Files.newBufferedReader(path), classOf[Array[Entry]])
@@ -25,10 +27,15 @@ object QuarryBlackList {
     } else {
       val GSON = (new GsonBuilder).registerTypeHierarchyAdapter(classOf[Entry], Entry).setPrettyPrinting().create()
       val s: Array[Entry] = Array(Air)
+      Files.createDirectories(path.getParent)
       Files.write(path, Collections.singletonList(GSON.toJson(s)))
       s.toSet + Air
     }
-  }
+  }.recover {
+    case e: Exception =>
+      QuarryPlus.LOGGER.warn("Caught error in loading black list.", e)
+      Set(Air: Entry)
+  }.getOrElse(Set(Air: Entry))
 
   def contains(state: IBlockState, world: World, pos: BlockPos): Boolean = {
     entries.exists(_.test(state, world, pos))
@@ -46,7 +53,7 @@ object QuarryBlackList {
   object Entry extends AnyRef with JsonSerializer[Entry] with JsonDeserializer[Entry] {
     override def serialize(src: Entry, typeOfSrc: Type, context: JsonSerializationContext): JsonElement = {
       val o = new JsonObject
-      o.addProperty("id", src.id.toString)
+      o.addProperty("id", src.id)
       src match {
         case Mod(modID) => o.addProperty("modID", modID)
         case Name(name) => o.addProperty("name", name.toString)

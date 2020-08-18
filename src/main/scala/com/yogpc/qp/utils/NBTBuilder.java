@@ -100,7 +100,7 @@ public class NBTBuilder<T extends NBTBase> {
         return state.withProperty(property, (T) entry);
     }
 
-    private Map<String, T> map = new LinkedHashMap<>();
+    private final Map<String, T> map = new LinkedHashMap<>();
     private int index = 0;
 
     public NBTBuilder<T> setTag(Map.Entry<String, T> entry) {
