@@ -91,7 +91,7 @@ public class ProxyClient extends ProxyProvider.AbstractProxy {
     static class ClientModEventHandlers {
 
         @SubscribeEvent
-        public static void registerTextures(FMLCommonSetupEvent event) {
+        public static void registerTextures(FMLClientSetupEvent event) {
             // Register TileEntity Special Render
             if (Config.client().enableRender().get()) {
                 ClientRegistry.bindTileEntityRenderer(Holder.markerTileType(), t -> RenderMarker.instance());
@@ -102,8 +102,6 @@ public class ProxyClient extends ProxyProvider.AbstractProxy {
                 ClientRegistry.bindTileEntityRenderer(Holder.miniQuarryType(), t -> RenderMiniQuarry.instance());
             }
 //        if (!Config.content().disableRendering()) {
-//            if (!Config.content().disableMapJ().get(TileAdvQuarry.SYMBOL()))
-//                ClientRegistry.bindTileEntitySpecialRenderer(TileAdvQuarry.class, RenderAdvQuarry.instance());
 //            if (!Config.content().disableMapJ().get(TileLaser.SYMBOL))
 //                ClientRegistry.bindTileEntitySpecialRenderer(TileLaser.class, RenderLaser.instance());
 //            ClientRegistry.bindTileEntitySpecialRenderer(TileRefinery.class, RenderDistiller.instance());
