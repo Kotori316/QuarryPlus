@@ -1,3 +1,6 @@
+# Version 12.4.5
+* Catch errors of loading black list.
+
 # Version 12.4.4
 * Improved filler work.
   * It can place colored wools.
