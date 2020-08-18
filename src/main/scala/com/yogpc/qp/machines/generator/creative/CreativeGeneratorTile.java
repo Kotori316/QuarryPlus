@@ -58,7 +58,7 @@ public class CreativeGeneratorTile extends APacketTile implements ITickableTileE
         }
     }
 
-    private int energyInFE() {
+    public int energyInFE() {
         return (int) (sendAmount / APowerTile.FEtoMicroJ);
     }
 

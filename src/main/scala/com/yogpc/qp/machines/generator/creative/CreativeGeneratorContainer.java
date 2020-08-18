@@ -1,6 +1,10 @@
 package com.yogpc.qp.machines.generator.creative;
 
+import java.util.Objects;
+
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.packet.PacketHandler;
+import com.yogpc.qp.packet.TileMessage;
 import com.yogpc.qp.utils.Holder;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.Container;
@@ -14,7 +18,7 @@ public class CreativeGeneratorContainer extends Container {
 
     public CreativeGeneratorContainer(int id, PlayerEntity player, BlockPos pos) {
         super(Holder.creativeGeneratorContainerType(), id);
-        generatorTile = (CreativeGeneratorTile) player.getEntityWorld().getTileEntity(pos);
+        generatorTile = (CreativeGeneratorTile) Objects.requireNonNull(player.getEntityWorld().getTileEntity(pos));
 
         int oneBox = 18;
         for (int h = 0; h < 3; h++) {
@@ -24,6 +28,9 @@ public class CreativeGeneratorContainer extends Container {
         }
         for (int vertical = 0; vertical < 9; vertical++) {
             this.addSlot(new Slot(player.inventory, vertical, 8 + vertical * oneBox, 142));
+        }
+        if (!player.getEntityWorld().isRemote) {
+            PacketHandler.sendToClient(TileMessage.create(generatorTile), player.getEntityWorld());
         }
     }
 
