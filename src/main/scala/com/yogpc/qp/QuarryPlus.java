@@ -123,16 +123,9 @@ public class QuarryPlus {
         public static final String Buildcraft_factory_modID = "buildcraftfactory";
         public static final String COFH_modID = "cofhcore";
         public static final String IC2_modID = "ic2";
-        public static final String IMC_Add = "IMC_AddRecipe";
-        public static final String IMC_Energy = "energy";
-        public static final String IMC_Remove = "IMC_RemoveRecipe";
         public static final String Mekanism_modID = "mekanism";
         public static final String RedstoneFlux_modID = "redstoneflux";
         public static final String Thaumcraft_modID = "thaumcraft";
-        public static final String clientProxy = "com.yogpc.qp.ProxyClient";
-        public static final String configFactory = "com.yogpc.qp.gui.GuiFactory";
-        public static final String serverProxy = "com.yogpc.qp.ProxyCommon";
-        public static final String updateJson = "https://raw.githubusercontent.com/Kotori316/QuarryPlus/1.13.2/update.json";
     }
 
     @SuppressWarnings("SpellCheckingInspection")
