@@ -3,15 +3,22 @@ package com.yogpc.qp.machines.generator.creative;
 import java.util.Arrays;
 import java.util.Objects;
 
+import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.APacketTile;
 import com.yogpc.qp.machines.base.APowerTile;
 import com.yogpc.qp.utils.Holder;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -22,7 +29,7 @@ import scala.Symbol;
 import static jp.t2v.lab.syntax.MapStreamSyntax.byValue;
 import static jp.t2v.lab.syntax.MapStreamSyntax.toAny;
 
-public class CreativeGeneratorTile extends APacketTile implements ITickableTileEntity {
+public class CreativeGeneratorTile extends APacketTile implements ITickableTileEntity, INamedContainerProvider {
     public static final Symbol SYMBOL = Symbol.apply("CreativeGenerator");
     public long sendAmount = 10000L * APowerTile.FEtoMicroJ;
     private final LazyOptional<IEnergyStorage> handlerOptional = LazyOptional.of(Handler::new);
@@ -74,6 +81,16 @@ public class CreativeGeneratorTile extends APacketTile implements ITickableTileE
         return super.getCapability(cap, side);
     }
 
+    @Override
+    public Container createMenu(int id, PlayerInventory i, PlayerEntity p) {
+        return new CreativeGeneratorContainer(id, p, getPos());
+    }
+
+    @Override
+    public ITextComponent getDisplayName() {
+        return new TranslationTextComponent(TranslationKeys.creative_generator);
+    }
+
     class Handler implements IEnergyStorage {
 
         @Override
@@ -88,12 +105,12 @@ public class CreativeGeneratorTile extends APacketTile implements ITickableTileE
 
         @Override
         public int getEnergyStored() {
-            return energyInFE();
+            return CreativeGeneratorTile.this.energyInFE();
         }
 
         @Override
         public int getMaxEnergyStored() {
-            return energyInFE();
+            return CreativeGeneratorTile.this.energyInFE();
         }
 
         @Override

@@ -9,6 +9,7 @@ import com.yogpc.qp.machines.advpump.GuiAdvPump;
 import com.yogpc.qp.machines.advquarry.GuiAdvQuarry;
 import com.yogpc.qp.machines.base.StatusGui;
 import com.yogpc.qp.machines.bookmover.GuiBookMover;
+import com.yogpc.qp.machines.generator.creative.CreativeGeneratorGui;
 import com.yogpc.qp.machines.item.GuiEnchList;
 import com.yogpc.qp.machines.item.GuiListTemplate;
 import com.yogpc.qp.machines.item.GuiQuarryLevel;
@@ -45,7 +46,7 @@ import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -120,6 +121,7 @@ public class ProxyClient extends ProxyProvider.AbstractProxy {
             ScreenManager.registerFactory(Holder.statusContainerType(), StatusGui::new);
             ScreenManager.registerFactory(Holder.placerContainerType(), PlacerGui::new);
             ScreenManager.registerFactory(Holder.miniQuarryContainerType(), MiniQuarryGui::new);
+            ScreenManager.registerFactory(Holder.creativeGeneratorContainerType(), CreativeGeneratorGui::new);
 
             // Register transparent blocks
             RenderType rendertype = RenderType.getCutoutMipped();
