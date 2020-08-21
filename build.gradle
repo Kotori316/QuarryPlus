@@ -157,7 +157,7 @@ dependencies {
     implementation(group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.6.2')
 
     if (isInCI()) {
-        runtimeOnly("com.kotori316:ScalableCatsForce:2.13.2-build-2:dev")
+        runtimeOnly("com.kotori316:ScalableCatsForce:2.13.3-build-1:dev")
     }
 }
 
