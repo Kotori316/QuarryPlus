@@ -22,6 +22,7 @@ import net.minecraft.data._
 import net.minecraft.enchantment.{EnchantmentData, Enchantments}
 import net.minecraft.item.crafting.Ingredient
 import net.minecraft.item.{ItemStack, Items}
+import net.minecraft.tags.ItemTags
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.common.Tags
 import net.minecraftforge.common.crafting.conditions.NotCondition
@@ -160,7 +161,7 @@ final class Recipe(f: DataGenerator) extends QuarryPlusDataProvider.DataProvider
         IngredientWithCount(Ingredient.fromTag(Tags.Items.INGOTS_GOLD), 80),
         IngredientWithCount(Ingredient.fromTag(Tags.Items.INGOTS_IRON), 80),
         new IngredientWithCount(new ItemStack(Items.ROTTEN_FLESH, 40)),
-        IngredientWithCount(Ingredient.fromTag(Tags.Items.ARROWS), 40),
+        IngredientWithCount(Ingredient.fromTag(ItemTags.ARROWS), 40),
         new IngredientWithCount(new ItemStack(Items.BONE, 40)),
         new IngredientWithCount(new ItemStack(Items.GUNPOWDER, 40)),
         new IngredientWithCount(new ItemStack(Items.GHAST_TEAR, 40)),

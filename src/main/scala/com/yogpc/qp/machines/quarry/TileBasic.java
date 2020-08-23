@@ -70,7 +70,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -179,7 +178,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         if (!PowerManager.useEnergyBreak(this, blockState.getBlockHardness(world, pos), i, this.unbreaking,
             facingMap.containsKey(IAttachment.Attachments.REPLACER), true, blockState))
             return false;
-        int xp = S_addDroppedItems(dropped, blockState, pos, fakePlayer, i);
+        int xp = S_addDroppedItems(dropped, blockState, pos, fakePlayer);
         this.cacheItems.addAll(dropped);
         modules.forEach(m -> m.invoke(new IModule.AfterBreak(world, pos, blockState, world.getGameTime(), xp)));
 
@@ -233,7 +232,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
         QuarryPlus.LOGGER.debug("Quarry yLevel is set to " + yLevel + ".");
     }
 
-    private int S_addDroppedItems(final Collection<ItemStack> collection, final BlockState state, final BlockPos pos, PlayerEntity fakePlayer, int i) {
+    private int S_addDroppedItems(final Collection<ItemStack> collection, final BlockState state, final BlockPos pos, PlayerEntity fakePlayer) {
         assert world != null;
         int xp = 0;
 
@@ -246,7 +245,6 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
             list.addAll(Block.getDrops(state, ((ServerWorld) world), pos, world.getTileEntity(pos), fakePlayer, fakePlayer.getHeldItem(Hand.MAIN_HAND)));
 
             rawItems = new HashSet<>(list);
-            ForgeEventFactory.fireBlockHarvesting(list, world, pos, state, Math.max(0, i), 1.0f, i == -1, fakePlayer);
             collection.addAll(list);
 
             if (facingMap.containsKey(EXP_PUMP)) {
@@ -413,15 +411,4 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
 //        return ConnectionType.FORCE;
 //    }
 
-    private static class BI {
-        final byte b;
-        final int i;
-        final boolean b1;
-
-        private BI(byte b, int i, boolean b1) {
-            this.b = b;
-            this.i = i;
-            this.b1 = b1;
-        }
-    }
 }

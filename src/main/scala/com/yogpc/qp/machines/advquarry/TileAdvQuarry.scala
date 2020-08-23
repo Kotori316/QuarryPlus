@@ -30,7 +30,6 @@ import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.util.LazyOptional
-import net.minecraftforge.event.ForgeEventFactory
 import net.minecraftforge.event.world.BlockEvent
 import net.minecraftforge.fluids.{FluidAttributes, FluidStack}
 
@@ -144,7 +143,6 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
         val drops = new NotNullList(mutable.Buffer.empty)
         val tile = getDiggingWorld.getTileEntity(target)
         drops.addAll(Block.getDrops(state, world.asInstanceOf[ServerWorld], target, tile, fakePlayer, pickaxe))
-        ForgeEventFactory.fireBlockHarvesting(drops, getDiggingWorld, target, state, self.enchantments.fortune, 1.0f, self.enchantments.silktouch, fakePlayer)
         storage.insertItems(drops.seq)
       }
 

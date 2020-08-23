@@ -22,7 +22,6 @@ import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.util.LazyOptional
-import net.minecraftforge.event.ForgeEventFactory
 import net.minecraftforge.event.world.BlockEvent
 
 import scala.jdk.CollectionConverters._
@@ -200,7 +199,6 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
         if (!world.isAirBlock(pos)) {
           val drops = NonNullList.create[ItemStack]
           drops.addAll(Block.getDrops(state, world, pos, world.getTileEntity(pos), fakePlayer, pickaxe))
-          ForgeEventFactory.fireBlockHarvesting(drops, world, pos, state, self.enchantments.fortune, 1.0f, self.enchantments.silktouch, fakePlayer)
           fakePlayer.setHeldItem(Hand.MAIN_HAND, ItemStack.EMPTY)
 
           drops.asScala.groupBy(ItemDamage.apply).view.mapValues(_.map(_.getCount).sum).toList.map { case (damage, i) => damage.toStack(i) }.foreach(storage.addItem)
