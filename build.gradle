@@ -147,7 +147,7 @@ dependencies {
     implementation group: 'org.typelevel', name: "cats-core_2.13", version: '2.1.0'
 
     // at runtime, use the full JEI jar
-    implementation fg.deobf("mezz.jei:jei-1.16.2:7.1.0.11")
+    implementation fg.deobf("mezz.jei:jei-1.16.2:7.1.3.19")
 //    compileOnly fg.deobf("curse.maven:mekanism:2894305")
 
     // Test Dependencies.
