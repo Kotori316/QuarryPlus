@@ -22,7 +22,6 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.common.util.LazyOptional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -45,19 +44,19 @@ public class RemoteControlItem extends Item {
                 return ActionResultType.PASS;
             TileEntity tileEntity = world.getTileEntity(context.getPos());
             if (tileEntity != null) {
-                Optional<LazyOptional<IMarker>> maybeMarker = Caps.markerCapability().map(c -> tileEntity.getCapability(c, context.getFace()).filter(IMarker::hasLink)).filter(LazyOptional::isPresent);
-                Optional<LazyOptional<IRemotePowerOn>> maybeRemoteControllable = Caps.remotePowerOnCapability().map(c -> tileEntity.getCapability(c, context.getFace())).filter(LazyOptional::isPresent);
+                Optional<IMarker> maybeMarker = Caps.markerCapability().flatMap(c -> tileEntity.getCapability(c, context.getFace()).filter(IMarker::hasLink));
+                Optional<IRemotePowerOn> maybeRemoteControllable = Caps.remotePowerOnCapability().flatMap(c -> tileEntity.getCapability(c, context.getFace()).resolve());
                 if (maybeMarker.isPresent()) {
                     if (world.getServer() != null) {
-                        maybeMarker.flatMap(l -> l.map(m -> Area.posToArea(m.min(), m.max(), world.func_234923_W_())).map(Optional::of).orElse(getArea(stack)))
+                        maybeMarker.map(m -> Area.posToArea(m.min(), m.max(), world.func_234923_W_()))
                             .ifPresent(area -> {
                                 setArea(stack, Area.areaToNbt().apply(area)); // Save
                                 LOGGER.debug("New area set: {}", area);
-                                maybeMarker.ifPresent(l -> l.ifPresent(m -> m.removeFromWorldWithItem().forEach(i -> {
+                                maybeMarker.ifPresent(m -> m.removeFromWorldWithItem().forEach(i -> {
                                     if (context.getPlayer() != null && !context.getPlayer().inventory.addItemStackToInventory(i)) {
                                         context.getPlayer().dropItem(i, false);
                                     }
-                                }))); // Drop item
+                                })); // Drop item
 
                                 getRemotePos(stack)
                                     .flatMap(p -> Optional.ofNullable(world.getServer()).map(w -> w.getWorld(p.func_239646_a_())).map(w -> w.getTileEntity(p.getPos())))
@@ -75,18 +74,18 @@ public class RemoteControlItem extends Item {
                 } else if (maybeRemoteControllable.isPresent()) {
                     Optional<Area> optionalArea = getArea(stack);
                     if (optionalArea.isPresent()) {
-                        maybeRemoteControllable.ifPresent(l -> l.ifPresent(r -> {
+                        maybeRemoteControllable.ifPresent(r -> {
                             r.setAndStart(optionalArea.get());
                             LOGGER.debug("Send start request to {} with {}", r, optionalArea.get());
                             stack.removeChildTag(NBT_AREA);
-                        }));
+                        });
                     } else {
                         GlobalPos pos = GlobalPos.func_239648_a_(world.func_234923_W_(), tileEntity.getPos());
                         setRemotePos(stack, pos);
                         LOGGER.debug("New remote pos set {}.", pos);
                         Optional.ofNullable(context.getPlayer()).ifPresent(p ->
                             p.sendStatusMessage(new TranslationTextComponent("chat.flexiblemarker.pos", convertPosText.apply(pos)), false));
-                        maybeRemoteControllable.ifPresent(l -> l.ifPresent(IRemotePowerOn::startWaiting));
+                        maybeRemoteControllable.ifPresent(IRemotePowerOn::startWaiting);
                     }
                     return ActionResultType.SUCCESS;
                 } else {
