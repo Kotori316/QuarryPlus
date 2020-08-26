@@ -46,10 +46,10 @@ class MoverRecipeCategory(guiHelper: IGuiHelper) extends IRecipeCategory[MoverRe
   override def getIcon: IDrawable = guiHelper.createDrawableIngredient(new ItemStack(Holder.blockMover))
 
   override def setIngredients(recipe: MoverRecipe, ingredients: IIngredients): Unit = {
-    val input = recipe.enchantments.map(e => new ItemStack(Items.DIAMOND_PICKAXE).enchantmentAdded(e, e.getMaxLevel))
-    val output = recipe.enchantments.map(e => recipe.toStack.enchantmentAdded(e, e.getMaxLevel))
+    val input = recipe.enchantments.flatMap(e => pickaxes.map(i => e -> i.enchantmentAdded(e, e.getMaxLevel)))
+    val output = input.map { case (e, _) => recipe.toStack.enchantmentAdded(e, e.getMaxLevel) }
 
-    ingredients.setInputLists(VanillaTypes.ITEM, Collections.singletonList(input.asJava))
+    ingredients.setInputLists(VanillaTypes.ITEM, Collections.singletonList(input.map(_._2).asJava))
     ingredients.setOutputLists(VanillaTypes.ITEM, Collections.singletonList(output.asJava))
   }
 
@@ -85,6 +85,9 @@ object MoverRecipeCategory {
     def canMove(enchantment: Enchantment): Boolean = item.canMove(toStack, enchantment)
 
     override def apply(v1: Enchantment): Boolean = canMove(v1)
+
+    override def toString(): String = s"MoverRecipe{$item, $enchantments}"
   }
 
+  def pickaxes = List(new ItemStack(Items.DIAMOND_PICKAXE), new ItemStack(Items.NETHERITE_PICKAXE))
 }
