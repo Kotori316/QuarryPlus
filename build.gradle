@@ -217,14 +217,20 @@ artifacts {
     archives srcJar, deobfJar
 }
 
+def curseForgeLog() {
+    def header = "Build with ${loadProperties("forge_version.properties").getProperty("forge_version")}, Mapping: ${mappingVersion()}" +
+            System.lineSeparator() * 2
+    def file = new File("temp_changelog.md")
+    def fileText = file.exists() ? file.text : "No changelog provided."
+    return header + fileText
+}
+
 curseforge {
     apiKey = project.hasProperty("curseforge_additional-enchanted-miner_key") ? getProperty("curseforge_additional-enchanted-miner_key") : ""
     project {
         id = '282837'
         changelogType = 'markdown'
-        changelog = "Build with ${loadProperties("forge_version.properties").getProperty("forge_version")}, Mapping: ${mappingVersion()}" +
-                System.lineSeparator() * 2 +
-                new File("temp_changelog.md").text
+        changelog = curseForgeLog()
         releaseType = 'release'
         addGameVersion '1.16.2'
         mainArtifact(jar) {
