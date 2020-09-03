@@ -141,7 +141,7 @@ repositories {
             }
         }
     }
-    repositories.forEach { repo ->
+    repositories.stream().filter { it instanceof MavenArtifactRepository }.forEach { repo ->
         repo.content {
             excludeVersionByRegex(".*", ".*", ".*_mapped_snapshot_.*")
         }
@@ -339,11 +339,19 @@ String getChangeLog() {
 task CheckCompileOption() {
     doLast {
         def argsScala = compileScala.options.compilerArgs
+        println("Arg of compileScala" + System.lineSeparator() + "-" * 15)
         println(argsScala)
         println(argsScala.getClass())
-        System.properties.list(System.out)
+//        System.properties.list(System.out)
+        println(System.lineSeparator() + "Change log" + System.lineSeparator() + "-" * 15)
         println(getChangeLog())
+        println(System.lineSeparator() + "Saved file" + System.lineSeparator() + "-" * 15)
         println(jar.archiveFile.get())
+        println(srcJar.archiveFile.get())
+        println(deobfJar.archiveFile.get())
+        println(reobfArtifact)
+        println(System.lineSeparator() + "Repository" + System.lineSeparator() + "-" * 15)
+        getProject().getRepositories().stream().forEach { n -> println("${n.name} $n ${n instanceof MavenArtifactRepository ? n.getUrl() : "Not maven"}") }
     }
 }
 
