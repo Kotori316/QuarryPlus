@@ -119,6 +119,9 @@ repositories {
         // location of the maven that hosts JEI files
         name = "Progwml6 maven"
         url = "https://dvs1.progwml6.com/files/maven/"
+        content {
+            includeGroup("mezz.jei")
+        }
     }
     maven {
         // location of a maven mirror for JEI files, as a fallback
@@ -133,6 +136,9 @@ repositories {
                 username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR") ?: ""
                 password = project.findProperty("githubToken") ?: System.getenv("REPO_TOKEN")
             }
+            content {
+                includeModule("com.kotori316", "ScalableCatsForce")
+            }
         }
     }
 }
@@ -143,7 +149,7 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     def forge_prop = loadProperties("forge_version.properties")
     minecraft(forge_prop.getProperty("forge_version"))
-    implementation "org.scala-lang:scala-library:2.13.3"
+    implementation group: 'org.scala-lang', name: 'scala-library', version: '2.13.3'
     implementation group: 'org.typelevel', name: "cats-core_2.13", version: '2.1.0'
 
     // at runtime, use the full JEI jar
