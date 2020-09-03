@@ -141,6 +141,11 @@ repositories {
             }
         }
     }
+    repositories.forEach { repo ->
+        repo.content {
+            excludeVersionByRegex(".*", ".*", ".*_mapped_snapshot_.*")
+        }
+    }
 }
 
 dependencies {
