@@ -1,5 +1,6 @@
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
@@ -125,7 +126,7 @@ repositories {
     }
     maven {
         // location of a maven mirror for JEI files, as a fallback
-        name = "ModMaven"
+        name = "ModMaven-k-4u.nl"
         url = "https://modmaven.k-4u.nl"
     }
     if (isInCI()) {
@@ -180,7 +181,7 @@ private static boolean isInCI() {
 
 // Example for how to get properties into the manifest for reading by the runtime..
 jar {
-    def timeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ")
+    def timeFormat = DateTimeFormatter.ISO_INSTANT
     manifest {
         attributes([
                 "Specification-Title"     : project.name,
@@ -343,16 +344,39 @@ task CheckCompileOption() {
         println(argsScala)
         println(argsScala.getClass())
 //        System.properties.list(System.out)
+        println(System.lineSeparator() + "CI" + System.lineSeparator() + "-" * 15)
+        println("Is in CI: " + isInCI())
+        println("Now: " + ZonedDateTime.now().format(DateTimeFormatter.ISO_INSTANT))
+        println("Now in Japan: " + ZonedDateTime.now().withZoneSameInstant(ZoneId.of("Asia/Tokyo")).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
         println(System.lineSeparator() + "Change log" + System.lineSeparator() + "-" * 15)
         println(getChangeLog())
         println(System.lineSeparator() + "Saved file" + System.lineSeparator() + "-" * 15)
         println(jar.archiveFile.get())
         println(srcJar.archiveFile.get())
         println(deobfJar.archiveFile.get())
-        println(reobfArtifact)
         println(System.lineSeparator() + "Repository" + System.lineSeparator() + "-" * 15)
-        getProject().getRepositories().stream().forEach { n -> println("${n.name} $n ${n instanceof MavenArtifactRepository ? n.getUrl() : "Not maven"}") }
+        getProject().getRepositories().stream().forEach { n -> println("${n.name} $n ${n instanceof MavenArtifactRepository ? n.getUrl() : "Not maven " + n.getClass()}") }
+        println(System.lineSeparator() + "Repository Classes" + System.lineSeparator() + "-" * 15)
+        getProject().getRepositories().stream().map { it.getClass() }.distinct().forEach { printTree(it, 0) }
+        println(System.lineSeparator() + "Dependency" + System.lineSeparator() + "-" * 15)
+        getProject().getConfigurations().each { config ->
+            println(config.getName())
+            config.getAllDependencies().each { println(it) }
+        }
     }
+}
+
+private static void printTree(Class<?> clazz, int depth) {
+    print(" |" * depth + "-")
+    if (clazz == null) {
+        System.out.println("NULL CLASS?")
+        return
+    }
+    String pre = clazz.isInterface() ? "INTERFACE " : "CLASS "
+    System.out.println(pre + clazz.name)
+    if (clazz.superclass != null)
+        printTree(clazz.superclass, depth + 1)
+    clazz.interfaces.each { printTree(it, depth + 1) }
 }
 
 task copyToDrive(type: Copy, dependsOn: "build") {
