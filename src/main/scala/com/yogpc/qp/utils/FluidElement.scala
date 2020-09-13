@@ -14,7 +14,7 @@ case class FluidElement(fluid: Fluid, tag: Option[CompoundNBT]) {
 
   def withAmount(amount: Int) = new FluidStack(fluid, amount, tag.orNull)
 
-  def toCompoundTag: CompoundNBT = this.toNBT
+  def toCompoundTag: CompoundNBT = FluidElement.fluidElement2Nbt.apply(this)
 }
 
 object FluidElement {
