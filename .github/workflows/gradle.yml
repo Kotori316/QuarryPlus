@@ -44,6 +44,10 @@ jobs:
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle16-${{ hashFiles('**/forge_version.properties') }}
+      - name: download_assets
+        run: |
+          chmod +x ./gradlew
+          ./gradlew downloadAssets || ./gradlew downloadAssets || sleep 30s && ./gradlew downloadAssets
       - id: check-parameter
         run: chmod +x ./gradlew && ./gradlew CCO --no-daemon
         env:
