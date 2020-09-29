@@ -47,7 +47,8 @@ jobs:
       - name: download_assets
         run: |
           chmod +x ./gradlew
-          ./gradlew downloadAssets || ./gradlew downloadAssets || sleep 30s && ./gradlew downloadAssets
+          ./gradlew downloadAssets || ./gradlew downloadAssets || (sleep 30s && ./gradlew downloadAssets)
+        continue-on-error: true
       - id: check-parameter
         run: chmod +x ./gradlew && ./gradlew CCO --no-daemon
         env:
@@ -58,7 +59,6 @@ jobs:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
       - name: Test with runData
         run: chmod +x ./gradlew && ./gradlew -Dfml.earlyprogresswindow=false runData --info --no-daemon
-        continue-on-error: true
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
       - id: check-test-started
