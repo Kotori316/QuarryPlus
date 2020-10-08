@@ -42,7 +42,7 @@ if (isInCI()) {
     version = (getProperty("modVersion") + "_" + postFix)
 }
 group = 'com.kotori316' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'AdditionalEnchantedMiner-1.16.2'
+archivesBaseName = 'AdditionalEnchantedMiner-1.16.3'
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 compileScala.sourceCompatibility = compileScala.targetCompatibility = '1.8'
@@ -245,7 +245,7 @@ curseforge {
         changelogType = 'markdown'
         changelog = curseForgeLog()
         releaseType = 'release'
-        addGameVersion '1.16.2'
+        addGameVersion '1.16.3'
         mainArtifact(jar) {
             displayName = 'v' + project.version
         }
@@ -256,7 +256,7 @@ curseforge {
         }
     }
     options {
-        debug = false // defaults to false
+        curseGradleOptions.debug = false // defaults to false
         javaVersionAutoDetect = false
     }
 }
