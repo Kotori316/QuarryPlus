@@ -1,4 +1,10 @@
 **This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).**
+## Version 16.1.0
+* Build with the forge for 1.16.3
+* Fixed Mini Quarry didn't work.
+* Update library, requiring Scalable Cat's Force 2.13.3-build-3
+* Update lang file.
+
 ## Version 16.0.8
 * Fixed a side loading error shown in server launching.
 * Fixed workbench plus create items even materials not supplied. Close #99
