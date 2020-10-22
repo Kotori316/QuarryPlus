@@ -40,7 +40,7 @@ object QuarryBlackList {
 
   final def example1: Seq[Entry] = Seq(Air)
 
-  final def example2: Seq[Entry] = Seq(Air, Name(Blocks.WHITE_WOOL.getRegistryName), Mod("ic2"), Ores, Tag(Tags.Blocks.STONE.getName()))
+  final def example2: Seq[Entry] = Seq(Air, Name(Blocks.WHITE_WOOL.getRegistryName), Mod("ic2"), Ores, Tag(Tags.Blocks.STONE.getName))
 
   private var entries: Set[Entry] = example1.toSet
 
