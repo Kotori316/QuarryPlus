@@ -25,7 +25,7 @@ import scala.jdk.javaapi.OptionConverters
 
 package object qp {
 
-  type NBTWrapper[A, NBTType <: INBT] = A => NBTType
+  type NBTWrapper[-A, NBTType <: INBT] = A => NBTType
   type Cap[T] = OptionT[Eval, T]
 
   val enchantCollector: PartialFunction[(ResourceLocation, Int), (ResourceLocation, Integer)] = {
