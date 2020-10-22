@@ -25,10 +25,11 @@ import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.{Direction, Hand, NonNullList, ResourceLocation}
 import net.minecraft.world.server.ServerWorld
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
-import net.minecraftforge.common.ForgeHooks
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.util.Constants.NBT
 import net.minecraftforge.common.util.LazyOptional
+import net.minecraftforge.common.{ForgeHooks, MinecraftForge}
+import net.minecraftforge.event.world.BlockEvent
 
 import scala.collection.AbstractIterator
 import scala.jdk.CollectionConverters._
@@ -76,8 +77,11 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
               val fakePlayer = QuarryFakePlayer.get(world, head)
               val canHarvest = toolsWithoutModule.exists { tool =>
                 fakePlayer.setHeldItem(Hand.MAIN_HAND, tool)
-                ForgeHooks.canHarvestBlock(state, fakePlayer, world, head) || ForgeHooks.isToolEffective(world, head, tool)
+                val event = new BlockEvent.BreakEvent(world, head, state, fakePlayer)
+                MinecraftForge.EVENT_BUS.post(event)
+                !event.isCanceled && (ForgeHooks.canHarvestBlock(state, fakePlayer, world, head) || ForgeHooks.isToolEffective(world, head, tool))
               }
+              fakePlayer.setHeldItem(Hand.MAIN_HAND, ItemStack.EMPTY)
               // Use effective tool
               toolsWithoutModule.find(tool => ForgeHooks.isToolEffective(world, head, tool))
                 .foreach(fakePlayer.setHeldItem(Hand.MAIN_HAND, _))
