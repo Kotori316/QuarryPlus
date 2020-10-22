@@ -217,12 +217,12 @@ def loadProperties(String filename) {
 
 task srcJar(type: Jar) {
     from sourceSets.main.allSource
-    classifier = 'sources'
+    archiveClassifier.set("sources")
 }
 
 task deobfJar(type: Jar) {
     from sourceSets.main.output
-    classifier = 'deobf'
+    archiveClassifier.set("deobf")
 }
 
 // Tell the artifact system about our extra jars
@@ -403,7 +403,7 @@ publishing {
     }
     publications {
         gpr(MavenPublication) {
-            artifactId = "AdditionalEnchantedMiner"
+            artifactId = "AdditionalEnchantedMiner".toLowerCase()
             artifact srcJar {
                 classifier = 'sources'
                 extension = 'jar'
