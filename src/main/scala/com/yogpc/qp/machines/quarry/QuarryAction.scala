@@ -97,8 +97,13 @@ object QuarryAction {
           } else {
             if (!checkBreakable(quarry2.getDiggingWorld, target, state, quarry2.modules)) {
               frameTargets = til
-            } else if (quarry2.breakBlock(quarry2.getDiggingWorld, target)._1) {
-              consumeEnergyAndPlaceAndUpdate(target)
+            } else {
+              val r = quarry2.breakBlock(quarry2.getDiggingWorld, target)._1
+              if (r.break) {
+                consumeEnergyAndPlaceAndUpdate(target)
+              } else if (r.skip) {
+                frameTargets = til
+              }
             }
           }
         case _ =>
@@ -149,9 +154,12 @@ object QuarryAction {
         case head :: tl if head == target =>
           val state = quarry2.getDiggingWorld.getBlockState(target)
           if (checkBreakable(quarry2.getDiggingWorld, head, state, quarry2.modules)) {
-            if (quarry2.breakBlock(quarry2.getDiggingWorld, head)._1) {
-              quarry2.getDiggingWorld.setBlockState(target, Blocks.AIR.getDefaultState)
-              playSound(state, quarry2.getDiggingWorld, head)
+            val r = quarry2.breakBlock(quarry2.getDiggingWorld, head)._1
+            if (r.goNext) {
+              if (r.break) {
+                quarry2.getDiggingWorld.setBlockState(target, Blocks.AIR.getDefaultState)
+                playSound(state, quarry2.getDiggingWorld, head)
+              }
               insideFrame = tl.dropWhile(p => !checkBreakable(quarry2.getDiggingWorld, p, quarry2.getDiggingWorld.getBlockState(p), quarry2.modules))
             }
           } else {
@@ -184,13 +192,16 @@ object QuarryAction {
   }
 
   class BreakBlock(quarry2: TileQuarry2, y: Int, targetBefore: BlockPos, var headX: Double, var headY: Double, var headZ: Double) extends QuarryAction {
+    private val skipped: scala.collection.mutable.Set[BlockPos] = scala.collection.mutable.Set.empty
 
     def this(quarry2: TileQuarry2, y: Int, targetBefore: BlockPos) = {
       this(quarry2, y, targetBefore, (quarry2.area.xMin + quarry2.area.xMax + 1) / 2, y + 1, (quarry2.area.zMin + quarry2.area.zMax + 1) / 2)
     }
 
+    private val checkBreakableFunc: BlockPos => Boolean = p =>
+      !checkBreakable(quarry2.getDiggingWorld, p, quarry2.getDiggingWorld.getBlockState(p), quarry2.modules) && !skipped.contains(p)
     var digTargets: List[BlockPos] = (if (quarry2.hasWorld && !quarry2.getWorld.isRemote) QuarryAction.digTargets(quarry2.area, targetBefore, y) else Nil)
-      .dropWhile(p => !checkBreakable(quarry2.getDiggingWorld, p, quarry2.getDiggingWorld.getBlockState(p), quarry2.modules))
+      .dropWhile(checkBreakableFunc)
 
     var movingHead = true
 
@@ -222,26 +233,30 @@ object QuarryAction {
       if (!movingHead) {
         digTargets match {
           case Nil =>
-            val poses = QuarryAction.digTargets(quarry2.area, targetBefore, y, log = false).dropWhile(p => !checkBreakable(quarry2.getDiggingWorld, p, quarry2.getDiggingWorld.getBlockState(p), quarry2.modules))
+            val poses = QuarryAction.digTargets(quarry2.area, targetBefore, y, log = false).dropWhile(checkBreakableFunc)
             if (poses.nonEmpty) {
               digTargets = poses
             }
           case head :: tl if target == head =>
             val (b, xp) = quarry2.breakBlock(quarry2.getDiggingWorld, target)
-            if (b) {
-              val state = quarry2.getDiggingWorld.getBlockState(target)
-              // Replacer works for non liquid block.
-              if (!TilePump.isLiquid(state) && !state.getBlock.isAir(state, quarry2.getDiggingWorld, target)) {
-                val replaced = quarry2.modules.foldMap(_.invoke(IModule.AfterBreak(quarry2.getDiggingWorld, target, state, quarry2.getDiggingWorld.getGameTime, xp)))
-                if (!replaced.done) { // Not replaced
+            if (b.goNext) {
+              if (b.break) {
+                val state = quarry2.getDiggingWorld.getBlockState(target)
+                // Replacer works for non liquid block.
+                if (!TilePump.isLiquid(state) && !state.getBlock.isAir(state, quarry2.getDiggingWorld, target)) {
+                  val replaced = quarry2.modules.foldMap(_.invoke(IModule.AfterBreak(quarry2.getDiggingWorld, target, state, quarry2.getDiggingWorld.getGameTime, xp)))
+                  if (!replaced.done) { // Not replaced
+                    quarry2.getDiggingWorld.setBlockState(target, Blocks.AIR.getDefaultState)
+                    playSound(state, quarry2.getDiggingWorld, target)
+                  }
+                } else {
                   quarry2.getDiggingWorld.setBlockState(target, Blocks.AIR.getDefaultState)
                   playSound(state, quarry2.getDiggingWorld, target)
                 }
               } else {
-                quarry2.getDiggingWorld.setBlockState(target, Blocks.AIR.getDefaultState)
-                playSound(state, quarry2.getDiggingWorld, target)
+                skipped.add(target)
               }
-              digTargets = tl.dropWhile(p => !checkBreakable(quarry2.getDiggingWorld, p, quarry2.getDiggingWorld.getBlockState(p), quarry2.modules))
+              digTargets = tl.dropWhile(checkBreakableFunc)
               movingHead = true
             }
         }
@@ -257,7 +272,7 @@ object QuarryAction {
       if (digTargets.isEmpty) {
         val set = quarry.modules.flatMap(IModule.replaceBlocks(y)).toSet
         val list = QuarryAction.digTargets(quarry2.area, targetBefore, y, log = false)
-          .filter(p => checkBreakable(quarry2.getDiggingWorld, p, quarry2.getDiggingWorld.getBlockState(p), quarry2.modules))
+          .filterNot(checkBreakableFunc).filterNot(skipped)
         list.forall(quarry.getDiggingWorld.getBlockState _ andThen set)
       } else {
         false
@@ -271,6 +286,7 @@ object QuarryAction {
       //      nbt.put("list", list)
       nbt.putInt("y", y)
       nbt.putLong("targetBefore", targetBefore.toLong)
+      nbt.putLongArray("skipped", skipped.map(_.toLong).toArray)
       super.serverWrite(nbt)
     }
 
@@ -288,6 +304,7 @@ object QuarryAction {
       this.headX = nbt.getDouble("headX")
       this.headY = nbt.getDouble("headY")
       this.headZ = nbt.getDouble("headZ")
+      this.skipped.addAll(nbt.getLongArray("skipped").map(BlockPos.fromLong))
       this
     }
   }
@@ -353,6 +370,9 @@ object QuarryAction {
     state.isAir(world, pos) || state == toPlace
   }
 
+  /**
+   * @return true if the block is breakable.
+   */
   def checkBreakable(world: World, pos: BlockPos, state: BlockState, modules: Seq[IModule]): Boolean = {
     lazy val unbreakable = (state.getBlock == Blocks.BEDROCK && !(Config.common.removeBedrock.get() && modules.exists(IModule.has(RemoveBedrockModule.id)))) &&
       (state.getBlockHardness(world, pos) < 0 || state.getBlockHardness(world, pos).isInfinity)

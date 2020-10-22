@@ -178,7 +178,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
    *
    * @return True if succeeded.
    */
-  def breakBlock(world: ServerWorld, pos: BlockPos): (Boolean, Int) = {
+  def breakBlock(world: ServerWorld, pos: BlockPos): (TileQuarry2.DigResult, Int) = {
     import scala.jdk.CollectionConverters._
     if (pos.getX % 6 == 0 && pos.getZ % 6 == 0) {
       // Gather items
@@ -203,13 +203,13 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
 
           drops.asScala.groupBy(ItemDamage.apply).view.mapValues(_.map(_.getCount).sum).toList.map { case (damage, i) => damage.toStack(i) }.foreach(storage.addItem)
         }
-        true -> event.getExpToDrop // true means work is finished.
+        TileQuarry2.DigResult.done -> event.getExpToDrop // true means work is finished.
 
       } else {
-        true -> 0 // Once event is canceled, you should think the block is unbreakable.
+        TileQuarry2.DigResult.skip -> 0 // Once event is canceled, you should think the block is unbreakable.
       }
     } else {
-      false -> 0 // Not enough energy or Module work is not finished.
+      TileQuarry2.DigResult.failed -> 0 // Not enough energy or Module work is not finished.
     }
   }
 
@@ -290,7 +290,7 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
   override def startWorking(): Unit = {
     G_ReInit()
     if (!getWorld.isRemote) // Send client a packet to notify changes of area.
-    PacketHandler.sendToClient(TileMessage.create(self), world)
+      PacketHandler.sendToClient(TileMessage.create(self), world)
   }
 
   override def getArea: Area = this.area
@@ -315,6 +315,27 @@ object TileQuarry2 {
   val breakInsideFrame = new Mode("BreakInsideFrame")
   val breakBlock = new Mode("BreakBlock")
   val checkDrops = new Mode("CheckDrops")
+
+  sealed trait DigResult {
+    def break: Boolean = this == DigResult.Done
+
+    def skip: Boolean = this == DigResult.Skip
+
+    def goNext: Boolean = break || skip
+  }
+
+  object DigResult {
+
+    final object Done extends DigResult
+
+    final object Skip extends DigResult
+
+    final object Failed extends DigResult
+
+    final val done: DigResult = Done
+    final val skip: DigResult = Skip
+    final val failed: DigResult = Failed
+  }
 
   //---------- NBT ----------
   //  private[this] final val MARKER: Marker = MarkerManager.getMarker("QUARRY_NBT")
