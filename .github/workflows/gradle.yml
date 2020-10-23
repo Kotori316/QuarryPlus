@@ -57,6 +57,12 @@ jobs:
         run: chmod +x ./gradlew && ./gradlew assemble test --no-daemon
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
+      - name: Upload failed test report
+        if: failure()
+        uses: actions/upload-artifact@v2
+        with:
+          path: build/reports/tests/*
+          name: Test-Report-${{ matrix.java }}
       - name: Test with runData
         run: chmod +x ./gradlew && ./gradlew -Dfml.earlyprogresswindow=false runData --info --no-daemon
         env:
