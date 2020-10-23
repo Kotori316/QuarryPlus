@@ -1,4 +1,5 @@
 package com.kotori316.test_qp
+
 import cats.syntax.validated._
 import com.yogpc.qp.machines.base.Area
 import net.minecraft.util.ResourceLocation
@@ -6,7 +7,7 @@ import net.minecraft.util.math.BlockPos
 import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.Test
 
-class AreaTest {
+class AreaTest extends InitMC {
 
   val alwaysTrue: (Int, Int, Int) => Boolean = {
     case (_, _, _) => true

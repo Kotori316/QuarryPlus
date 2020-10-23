@@ -8,7 +8,7 @@ import net.minecraft.util.{Direction, ResourceLocation}
 import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.Test
 
-class TileQuarry2Test {
+class TileQuarry2Test extends InitMC {
   val m1 = Marker(new BlockPos(-5, 2, 8), new BlockPos(25, 9, 18))
   val m2 = Marker(new BlockPos(-5, 2, 8), new BlockPos(25, 3, 18))
   val m3 = Marker(new BlockPos(0, 63, 0), new BlockPos(15, 68, 15))

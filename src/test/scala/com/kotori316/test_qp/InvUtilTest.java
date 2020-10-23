@@ -18,7 +18,7 @@ import static net.minecraft.util.Direction.WEST;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
-class InvUtilTest {
+class InvUtilTest extends InitMC {
     @Test
     void directionOrderTest() {
         List<Pair<Direction, List<Direction>>> testCases = Arrays.asList(

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class AccessTest {
+class AccessTest extends InitMC {
     @Test
     void accessAreaClass() {
         String name = "com.yogpc.qp.machines.base.Area";
