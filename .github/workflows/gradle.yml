@@ -97,4 +97,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           path: build/libs/*
-          name: ${{ github.repository }}-${{ github.workflow }}-${{ github.run_number }}
+          name: ${{ github.repository.name }}-${{ github.run_number }}
