@@ -128,7 +128,7 @@ repositories {
     maven {
         // location of a maven mirror for JEI files, as a fallback
         name = "ModMaven-k-4u.nl"
-        url = "https://modmaven.k-4u.nl"
+        url = "https://modmaven.dev/"
     }
     if (isInCI()) {
         maven {
