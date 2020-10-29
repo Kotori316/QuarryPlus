@@ -367,7 +367,7 @@ object QuarryAction {
   }
 
   def checkPlaceable(world: World, pos: BlockPos, state: BlockState, toPlace: BlockState): Boolean = {
-    state.isAir(world, pos) || state == toPlace
+    state.getBlock.isAir(state, world, pos) || state == toPlace
   }
 
   /**

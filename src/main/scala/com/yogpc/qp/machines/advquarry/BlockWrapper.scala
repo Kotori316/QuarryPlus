@@ -87,7 +87,7 @@ object BlockWrapper extends JsonDeserializer[BlockWrapper] with JsonSerializer[B
     override def serialize(obj: JsonObject, typeOfSrc: Type, context: JsonSerializationContext) = {
       obj.addProperty(KEY_NAME, name)
       val f = (s: String) => QuarryPlus.LOGGER.error(s)
-      obj.add(KEY_STATE, BlockState.BLOCKSTATE_CODEC.encodeStart(JsonOps.INSTANCE, state).getOrThrow(false, f.asJavaConsumer))
+      obj.add(KEY_STATE, BlockState.CODEC.encodeStart(JsonOps.INSTANCE, state).getOrThrow(false, f.asJavaConsumer))
       obj.addProperty(KEY_Property, ignoreProperty)
       obj
     }
@@ -98,7 +98,7 @@ object BlockWrapper extends JsonDeserializer[BlockWrapper] with JsonSerializer[B
 
     override def serialize(obj: JsonObject, typeOfSrc: Type, context: JsonSerializationContext) = {
       obj.addProperty(KEY_NAME, name)
-      obj.addProperty(KEY_Tag, TagCollectionManager.func_242178_a().func_241835_a().func_232975_b_(tag).toString)
+      obj.addProperty(KEY_Tag, TagCollectionManager.getManager.getBlockTags.getDirectIdFromTag(tag).toString)
       obj
     }
   }
@@ -108,7 +108,7 @@ object BlockWrapper extends JsonDeserializer[BlockWrapper] with JsonSerializer[B
     val name = JSONUtils.getString(jsonObj, KEY_NAME, NAME_NoMatch)
     name match {
       case NAME_State =>
-        val maybeWrapper = for (result <- Try(BlockState.BLOCKSTATE_CODEC.parse(JsonOps.INSTANCE, JSONUtils.getJsonObject(json.getAsJsonObject, KEY_STATE)));
+        val maybeWrapper = for (result <- Try(BlockState.CODEC.parse(JsonOps.INSTANCE, JSONUtils.getJsonObject(json.getAsJsonObject, KEY_STATE)));
                                 state <- Try(result.result().get());
                                 property <- Try(JSONUtils.getBoolean(json.getAsJsonObject, KEY_Property, false)))
           yield new State(state, property)

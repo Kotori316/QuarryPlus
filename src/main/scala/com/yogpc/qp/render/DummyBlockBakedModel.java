@@ -36,8 +36,8 @@ public class DummyBlockBakedModel implements IBakedModel {
     }
 
     @Override
-    public boolean func_230044_c_() {
-        return model.func_230044_c_();
+    public boolean isSideLit() {
+        return model.isSideLit();
     }
 
     @Override

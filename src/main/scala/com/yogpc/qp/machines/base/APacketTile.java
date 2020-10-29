@@ -100,7 +100,7 @@ public abstract class APacketTile extends TileEntity {
         World world = this.getWorld();
         BlockPos pos = this.getPos();
         if (event.pos.equals(new ChunkPos(pos)) && world != null) {
-            if (event.getWorld() instanceof World && world.func_234923_W_() == ((World) event.getWorld()).func_234923_W_()) {
+            if (event.getWorld() instanceof World && world.getDimensionKey() == ((World) event.getWorld()).getDimensionKey()) {
                 // Someone is trying to stop forcing this chunk.
                 event.setCanceled(true);
             }

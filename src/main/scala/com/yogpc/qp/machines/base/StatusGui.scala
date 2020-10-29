@@ -23,7 +23,7 @@ class StatusGui(c: StatusContainer, inv: PlayerInventory, t: ITextComponent)
   override def render(matrixStack: MatrixStack, mouseX: Int, mouseY: Int, partialTicks: Float): Unit = { // render
     this.renderBackground(matrixStack) // back ground
     super.render(matrixStack, mouseX, mouseY, partialTicks) // super.render
-    this.func_230459_a_(matrixStack, mouseX, mouseY) // render tooltip
+    this.renderHoveredTooltip(matrixStack, mouseX, mouseY) // render tooltip
   }
 
   override def drawGuiContainerForegroundLayer(matrix: MatrixStack, mouseX: Int, mouseY: Int): Unit = {

@@ -36,14 +36,14 @@ public class ButtonMessage {
     public static ButtonMessage fromBytes(PacketBuffer p) {
         ButtonMessage message = new ButtonMessage();
         message.pos = p.readBlockPos();
-        message.dim = RegistryKey.func_240903_a_(Registry.WORLD_KEY, p.readResourceLocation());
+        message.dim = RegistryKey.getOrCreateKey(Registry.WORLD_KEY, p.readResourceLocation());
         message.movable = p.readEnumValue(TileFlexMarker.Movable.class);
         message.amount = p.readInt();
         return message;
     }
 
     public void toBytes(PacketBuffer p) {
-        p.writeBlockPos(pos).writeResourceLocation(dim.func_240901_a_());
+        p.writeBlockPos(pos).writeResourceLocation(dim.getLocation());
         p.writeEnumValue(movable).writeInt(amount);
     }
 

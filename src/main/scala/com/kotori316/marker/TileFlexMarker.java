@@ -17,14 +17,13 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fml.ModList;
 
 import com.kotori316.marker.render.Box;
 
 public class TileFlexMarker extends TileEntity implements IAreaConfigurable {
 
-    public static final String BC_CORE_ID = "buildcraftlib"; // BuildCraftAPI|core - buildcraftapi_core
-    public static final String BC_TILE_ID = "buildcraftlib"; // BuildCraftAPI|tiles - buildcraftapi_tiles
+    // public static final String BC_CORE_ID = "buildcraftlib"; // BuildCraftAPI|core - buildcraftapi_core
+    // public static final String BC_TILE_ID = "buildcraftlib"; // BuildCraftAPI|tiles - buildcraftapi_tiles
 
     private BlockPos min = BlockPos.ZERO;
     private BlockPos max = BlockPos.ZERO;
@@ -33,7 +32,7 @@ public class TileFlexMarker extends TileEntity implements IAreaConfigurable {
     @Nullable
     public Box directionBox;
     public Direction direction;
-    private boolean bcLoaded = ModList.get().isLoaded(BC_TILE_ID); // ModAPIManager.INSTANCE.hasAPI("buildcraftapi_tiles");
+    //private boolean bcLoaded = ModList.get().isLoaded(BC_TILE_ID); // ModAPIManager.INSTANCE.hasAPI("buildcraftapi_tiles");
 
     public TileFlexMarker() {
         super(Marker.Entries.TYPE);

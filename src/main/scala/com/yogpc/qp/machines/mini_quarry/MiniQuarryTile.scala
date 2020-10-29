@@ -157,7 +157,7 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
   override def startWorking(): Unit = {
     val facing = getBlockState.get(BlockStateProperties.FACING)
     val maybeMarkers = Area.getMarkersOnDirection(List(facing.getOpposite, facing.rotateY(), facing.rotateYCCW()), world, pos, ignoreHasLink = true)
-    val areas = maybeMarkers.map(m => Area.posToArea(m.min(), m.max(), world.func_234923_W_()) -> m)
+    val areas = maybeMarkers.map(m => Area.posToArea(m.min(), m.max(), world.getDimensionKey) -> m)
       .collectFirst(t => t)
     areas match {
       case Some((newArea, m)) =>
@@ -228,7 +228,7 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
   override def write(nbt: CompoundNBT): CompoundNBT = {
     nbt.put("area", area.toNBT)
     nbt.put("enchantments", enchantments.toNBT)
-    nbt.putString("preDirection", preDirection.getString())
+    nbt.putString("preDirection", preDirection.getString)
     targets.headOption.foreach(p => nbt.putLong("head", p.toLong))
     nbt.put("tools", ItemStackHelper.saveAllItems(new CompoundNBT(), tools))
     nbt.put("blackList", NBTDynamicOps.INSTANCE.createList(blackList.asJava.stream().map(QuarryBlackList.writeEntry(_, NBTDynamicOps.INSTANCE))))

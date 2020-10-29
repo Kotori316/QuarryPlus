@@ -48,7 +48,7 @@ public class RemoteControlItem extends Item {
                 Optional<IRemotePowerOn> maybeRemoteControllable = Caps.remotePowerOnCapability().flatMap(c -> tileEntity.getCapability(c, context.getFace()).resolve());
                 if (maybeMarker.isPresent()) {
                     if (world.getServer() != null) {
-                        maybeMarker.map(m -> Area.posToArea(m.min(), m.max(), world.func_234923_W_()))
+                        maybeMarker.map(m -> Area.posToArea(m.min(), m.max(), world.getDimensionKey()))
                             .ifPresent(area -> {
                                 setArea(stack, Area.areaToNbt().apply(area)); // Save
                                 LOGGER.debug("New area set: {}", area);
@@ -59,7 +59,7 @@ public class RemoteControlItem extends Item {
                                 })); // Drop item
 
                                 getRemotePos(stack)
-                                    .flatMap(p -> Optional.ofNullable(world.getServer()).map(w -> w.getWorld(p.func_239646_a_())).map(w -> w.getTileEntity(p.getPos())))
+                                    .flatMap(p -> Optional.ofNullable(world.getServer()).map(w -> w.getWorld(p.getDimension())).map(w -> w.getTileEntity(p.getPos())))
                                     .flatMap(t -> Caps.remotePowerOnCapability().map(c -> t.getCapability(c, context.getFace())))
                                     .ifPresent(l -> l.ifPresent(r -> {
                                         LOGGER.debug("Send start request to {} with {}", r, area);
@@ -80,7 +80,7 @@ public class RemoteControlItem extends Item {
                             stack.removeChildTag(NBT_AREA);
                         });
                     } else {
-                        GlobalPos pos = GlobalPos.func_239648_a_(world.func_234923_W_(), tileEntity.getPos());
+                        GlobalPos pos = GlobalPos.getPosition(world.getDimensionKey(), tileEntity.getPos());
                         setRemotePos(stack, pos);
                         LOGGER.debug("New remote pos set {}.", pos);
                         Optional.ofNullable(context.getPlayer()).ifPresent(p ->
@@ -92,7 +92,7 @@ public class RemoteControlItem extends Item {
                     return super.onItemUseFirst(stack, context);
                 }
             } else {
-                if (context.func_225518_g_() && stack.hasTag()) {
+                if (context.hasSecondaryUseForPlayer() && stack.hasTag()) {
                     stack.removeChildTag(NBT_REMOTE_POS);
                     stack.removeChildTag(NBT_AREA);
                     LOGGER.debug("Reset controller setting.");
@@ -115,7 +115,7 @@ public class RemoteControlItem extends Item {
     }
 
     public static final Function<GlobalPos, ITextComponent> convertPosText = p ->
-        new TranslationTextComponent("tooltip.flexiblemarker.remote_pos", p.getPos().getX(), p.getPos().getY(), p.getPos().getZ(), p.func_239646_a_().func_240901_a_());
+        new TranslationTextComponent("tooltip.flexiblemarker.remote_pos", p.getPos().getX(), p.getPos().getY(), p.getPos().getZ(), p.getDimension().getLocation());
 
     public static List<? extends ITextComponent> areaText(ItemStack stack) {
         if (Caps.isQuarryModLoaded())
@@ -160,14 +160,14 @@ public class RemoteControlItem extends Item {
             return Optional.ofNullable(stack.getTag())
                 .filter(t -> t.contains(NBT_REMOTE_POS))
                 .filter(t -> !t.contains(NBT_REMOTE_POS, Constants.NBT.TAG_LONG))
-                .flatMap(t -> GlobalPos.field_239645_a_.parse(NBTDynamicOps.INSTANCE, t.get(NBT_REMOTE_POS)).result());
+                .flatMap(t -> GlobalPos.CODEC.parse(NBTDynamicOps.INSTANCE, t.get(NBT_REMOTE_POS)).result());
         else {
             return Optional.empty();
         }
     }
 
     public static void setRemotePos(ItemStack stack, GlobalPos pos) {
-        GlobalPos.field_239645_a_.encodeStart(NBTDynamicOps.INSTANCE, pos).result()
+        GlobalPos.CODEC.encodeStart(NBTDynamicOps.INSTANCE, pos).result()
             .ifPresent(p -> stack.setTagInfo(NBT_REMOTE_POS, p));
     }
 }

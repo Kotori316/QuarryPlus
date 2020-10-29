@@ -133,7 +133,7 @@ object ItemListEditor {
   def hasEnchantment(enchantment: Eval[Enchantment]): Kleisli[Eval, List[Enchantment], Boolean] = Kleisli((ench: List[Enchantment]) => enchantment.map(ench.contains))
 
   def enchantmentName(enchantment: Eval[Enchantment]): Kleisli[Option, ItemStack, ITextComponent] =
-    getEnchantments andThen hasEnchantment(enchantment) mapF (b => Option.when(b.value)(new TranslationTextComponent(enchantment.value.getName)))
+    getEnchantments andThen hasEnchantment(enchantment) mapF (b => Option.when[ITextComponent](b.value)(new TranslationTextComponent(enchantment.value.getName)))
 
   def onlySpecificEnchantment(enchantment: Eval[Enchantment]): Kleisli[Eval, ItemStack, Boolean] = {
     implicit val bool: Monoid[Boolean] = new Monoid[Boolean] {

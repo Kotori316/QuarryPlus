@@ -266,7 +266,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
               setArea(a)
               markerOpt.foreach(m => m.removeFromWorldWithItem().forEach(storage.insertItem))
             case Validated.Invalid(e) =>
-              this.area = Area.defaultAdvQuarryArea(pos, world.func_234923_W_()) // Skip area check to avoid error.
+              this.area = Area.defaultAdvQuarryArea(pos, world.getDimensionKey) // Skip area check to avoid error.
               QuarryPlus.LOGGER.info("Player selected area wider than limit. {}", e.mkString_(", "))
           }
       }

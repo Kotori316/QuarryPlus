@@ -29,7 +29,7 @@ public interface IAttachable {
 
     IAttachable dummy = new DummyAttachable();
 
-    public static class DummyAttachable implements IAttachable {
+    class DummyAttachable implements IAttachable {
         @Override
         public boolean connectAttachment(Direction facing, IAttachment.Attachments<? extends APacketTile> attachment, boolean simulate) {
             return false;

@@ -50,7 +50,7 @@ public class LinkMessage implements IMessage<LinkMessage> {
     public void onReceive(Supplier<NetworkEvent.Context> ctx) {
         TileMarker.Link link = TileMarker.Link.of(maxPos.getX(), minPos.getX(), maxPos.getY(), minPos.getY(), maxPos.getZ(), minPos.getZ());
         Optional<World> worldOptional = LogicalSidedProvider.CLIENTWORLD.get(ctx.get().getDirection().getReceptionSide());
-        worldOptional.filter(w -> w.func_234923_W_().func_240901_a_().equals(dim)).ifPresent(world -> {
+        worldOptional.filter(w -> w.getDimensionKey().getLocation().equals(dim)).ifPresent(world -> {
             TileMarker.Link boxed = link.setWorld(world);
             ctx.get().enqueueWork(() ->
                 boxed.edges()

@@ -26,7 +26,7 @@ public class ClientTextMessage implements IMessage<ClientTextMessage> {
     public ClientTextMessage() {
         this.text = null;
         this.pos = BlockPos.ZERO;
-        this.dim = World.field_234918_g_.func_240901_a_();
+        this.dim = World.OVERWORLD.getLocation();
     }
 
     private final TextInClient text;

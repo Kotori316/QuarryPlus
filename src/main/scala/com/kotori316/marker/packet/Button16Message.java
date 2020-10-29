@@ -30,7 +30,7 @@ public class Button16Message {
 
     public Button16Message(BlockPos pos, RegistryKey<World> dim, int amount, int yMax, int yMin) {
         this.pos = pos;
-        this.dim = dim.func_240901_a_();
+        this.dim = dim.getLocation();
         this.amount = amount;
         this.yMax = yMax;
         this.yMin = yMin;
@@ -56,11 +56,11 @@ public class Button16Message {
         ctx.get().enqueueWork(() -> Optional.ofNullable(ctx.get().getSender())
             .map(Entity::getEntityWorld)
             .map(world -> world.getTileEntity(this.pos))
-            .filter(t -> t instanceof Tile16Marker && PacketHandler.getDimId(t.getWorld()).func_240901_a_().equals(dim))
+            .filter(t -> t instanceof Tile16Marker && PacketHandler.getDimId(t.getWorld()).getLocation().equals(dim))
             .ifPresent(entity -> {
                 Tile16Marker marker = (Tile16Marker) entity;
                 marker.changeSize(this.amount, this.yMax, this.yMin);
-                PacketHandler.sendToClient(new AreaMessage(this.pos, RegistryKey.func_240903_a_(Registry.WORLD_KEY, dim), marker.min(), marker.max()), entity.getWorld());
+                PacketHandler.sendToClient(new AreaMessage(this.pos, RegistryKey.getOrCreateKey(Registry.WORLD_KEY, dim), marker.min(), marker.max()), entity.getWorld());
             }));
     }
 

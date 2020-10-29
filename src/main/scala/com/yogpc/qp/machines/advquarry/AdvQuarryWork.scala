@@ -313,7 +313,6 @@ object AdvQuarryWork {
         }
       val orbs = tile.getDiggingWorld.getEntitiesWithinAABB(classOf[Entity], aabb).asScala.toList
       tile.modules.foreach(_.invoke(IModule.CollectingItem(orbs)))
-      var i = 0
       var poses = 0
       val (targets, rest) = targetList.splitAt(numberInTick * 32)
       targets.foreach { head =>

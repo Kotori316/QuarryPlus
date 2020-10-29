@@ -28,7 +28,7 @@ public class AreaMessage {
 
     public AreaMessage(BlockPos pos, RegistryKey<World> dim, BlockPos min, BlockPos max) {
         this.pos = pos;
-        this.dim = dim.func_240901_a_();
+        this.dim = dim.getLocation();
         this.min = min;
         this.max = max;
     }
@@ -50,7 +50,7 @@ public class AreaMessage {
     public void onReceive(Supplier<NetworkEvent.Context> ctx) {
         Optional.ofNullable(Minecraft.getInstance().world)
             .map(world -> world.getTileEntity(this.pos))
-            .filter(t -> t instanceof IAreaConfigurable && PacketHandler.getDimId(t.getWorld()) == RegistryKey.func_240903_a_(Registry.WORLD_KEY, dim))
+            .filter(t -> t instanceof IAreaConfigurable && PacketHandler.getDimId(t.getWorld()) == RegistryKey.getOrCreateKey(Registry.WORLD_KEY, dim))
             .ifPresent(entity -> {
                 IAreaConfigurable marker = (IAreaConfigurable) entity;
                 ctx.get().enqueueWork(marker.setMinMax(this.min, this.max));

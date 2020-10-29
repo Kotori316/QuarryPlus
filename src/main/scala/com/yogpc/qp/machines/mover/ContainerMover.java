@@ -55,7 +55,7 @@ public class ContainerMover extends Container {
     private final World worldObj;
     public final BlockPos pos;
     private final LoopList<Tuple> list = new LoopList<>();
-    private IntReferenceHolder avail = trackInt(IntReferenceHolder.single());
+    private final IntReferenceHolder avail = trackInt(IntReferenceHolder.single());
 
     public ContainerMover(int id, PlayerEntity player, BlockPos pos) {
         super(Holder.moverContainerType(), id);

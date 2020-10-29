@@ -111,7 +111,7 @@ public class TileReplacer extends APacketTile implements IAttachment, IDebugSend
         // Liquid block cause crash.
         Predicate<BlockState> accept = rejects.stream().reduce(always_false(), Predicate::or).negate();
         return Optional.ofNullable(world).map(world -> world.getBlockState(pos.up()))
-            .filter(s -> !s.isAir(world, pos.up())) // Avoid air. Written here to use world and pos.
+            .filter(s -> !s.getBlock().isAir(s, world, pos.up())) // Avoid air. Written here to use world and pos.
             .filter(accept)
             .orElse(Holder.blockDummy().getDefaultState());
     }

@@ -9,7 +9,7 @@ import net.minecraft.nbt.INBT;
 
 public class NBTBuilder<T extends INBT> {
 
-    private Map<String, T> map = new LinkedHashMap<>();
+    private final Map<String, T> map = new LinkedHashMap<>();
 
     public NBTBuilder<T> setTag(Map.Entry<String, T> entry) {
         return setTag(entry.getKey(), entry.getValue());

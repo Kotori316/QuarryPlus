@@ -17,9 +17,9 @@ import net.minecraftforge.fml.network.NetworkEvent;
 public interface IMessage<T extends IMessage<T>> {
     static ResourceLocation getDimId(@Nullable World world) {
         return Optional.ofNullable(world)
-            .map(World::func_234923_W_)
-            .orElse(World.field_234918_g_)
-            .func_240901_a_();
+            .map(World::getDimensionKey)
+            .orElse(World.OVERWORLD)
+            .getLocation();
     }
 
     static <T extends IMessage<T>> Function<PacketBuffer, T> decode(Supplier<T> supplier) {
@@ -39,7 +39,7 @@ public interface IMessage<T extends IMessage<T>> {
 
     static <T extends TileEntity> Optional<T> findTile(Supplier<NetworkEvent.Context> ctx, BlockPos pos, ResourceLocation dim, Class<T> aClass) {
         return QuarryPlus.proxy.getPacketWorld(ctx.get())
-            .filter(world -> world.func_234923_W_().func_240901_a_().equals(dim))
+            .filter(world -> world.getDimensionKey().getLocation().equals(dim))
             .filter(world -> world.isBlockPresent(pos))
             .map(world -> world.getTileEntity(pos))
             .flatMap(MapStreamSyntax.optCast(aClass));

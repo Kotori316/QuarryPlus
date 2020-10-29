@@ -170,7 +170,7 @@ public interface IEnchantableTile {
         }
 
         @Override
-        public LootFunctionType func_230425_b_() {
+        public LootFunctionType getFunctionType() {
             return Holder.dropLootFunctionType();
         }
 

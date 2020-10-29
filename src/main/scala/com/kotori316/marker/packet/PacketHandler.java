@@ -24,8 +24,8 @@ public class PacketHandler {
 
     public static RegistryKey<World> getDimId(@Nullable World world) {
         return Optional.ofNullable(world)
-            .map(World::func_234923_W_)
-            .orElse(World.field_234918_g_);
+            .map(World::getDimensionKey)
+            .orElse(World.OVERWORLD);
     }
 
     public static void init() {
@@ -36,7 +36,7 @@ public class PacketHandler {
     }
 
     public static void sendToClient(Object message, World world) {
-        INSTANCE.send(PacketDistributor.DIMENSION.with(world::func_234923_W_), message);
+        INSTANCE.send(PacketDistributor.DIMENSION.with(world::getDimensionKey), message);
     }
 
     public static void sendToServer(Object message) {

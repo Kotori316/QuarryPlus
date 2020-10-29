@@ -43,13 +43,13 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
     public static final String NBT_MAX_RECEIVE = "MAX_receive";
     public static final String NBT_OUTPUT_ENERGY_INFO = "outputEnergyInfo";
     private long all, maxGot, max, got;
-    private boolean ic2ok = false, chunkLoadRegistered = false;
+    private boolean /*ic2ok = false,*/ chunkLoadRegistered = false;
     public boolean bcLoaded;
     public final boolean ic2Loaded;
     /**
      * Instance of {@code buildcraft.api.mj.MjCapabilityHelper}. Null if BC isn't installed.
      */
-    private Object helper;//buildcraft capability helper
+    //private Object helper;//buildcraft capability helper
     protected final EnergyDebug3 debug = EnergyDebug3.apply(getClass().getSimpleName(), 100, this);
     public final DetailDataCollector collector = DetailDataCollector.getInstance(this);
     protected boolean outputEnergyInfo = true;
@@ -67,7 +67,8 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
         bcLoaded = ModList.get().isLoaded(QuarryPlus.Optionals.Buildcraft_modID);
         ic2Loaded = ModList.get().isLoaded(QuarryPlus.Optionals.IC2_modID);
         if (bcLoaded) {
-            helper = MjReceiver.mjCapabilityHelper(this);
+            // helper = MjReceiver.mjCapabilityHelper(this);
+            System.out.println("BC Installed?");
         }
         startListener.add(debug::start);
         finishListener.add(() -> debug.finish().foreach(logFunction));
@@ -233,7 +234,6 @@ public abstract class APowerTile extends APacketTile implements ITickableTileEnt
      * @return the amount of used energy.
      * @deprecated Use {@link com.yogpc.qp.machines.PowerManager#useEnergy(APowerTile, long, EnergyUsage)}
      */
-    @SuppressWarnings("DeprecatedIsStillUsed")
     @Deprecated
     public final long useEnergy(long min, long amount, final boolean real, EnergyUsage usage) {
         if (Config.common().noEnergy().get()) {

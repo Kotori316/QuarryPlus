@@ -25,8 +25,8 @@ class RemoveBedrockModule(tile: APowerTile with HasStorage with HasModuleInvento
         val collectBedrock = Boolean.unbox(Config.common.collectBedrock.get())
 
         val state = world.getBlockState(pos)
-        val toRemove = world.func_234923_W_() match {
-          case World.field_234919_h_ /*THE NETHER*/ => (pos.getY > 0 && pos.getY < 5) || (pos.getY > 122 && pos.getY < netherTop)
+        val toRemove = world.getDimensionKey match {
+          case World.THE_NETHER => (pos.getY > 0 && pos.getY < 5) || (pos.getY > 122 && pos.getY < netherTop)
           case _ => pos.getY > 0 && pos.getY < 5
         }
         if (toRemove && removeBedrock && state.getBlock == Blocks.BEDROCK) {

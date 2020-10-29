@@ -77,7 +77,7 @@ public class PlacerTile extends APacketTile implements
         DIRECTION_VEC3D_MAP = Collections.unmodifiableMap(map);
     }
 
-    private NonNullList<ItemStack> inventory = NonNullList.withSize(getSizeInventory(), ItemStack.EMPTY);
+    private final NonNullList<ItemStack> inventory = NonNullList.withSize(getSizeInventory(), ItemStack.EMPTY);
     private int lastPlacedIndex = 0;
     public RedstoneMode redstoneMode = RedstoneMode.PULSE;
     private final IItemHandler itemHandler = new InvWrapper(this);

@@ -36,7 +36,7 @@ object Area {
   private[this] final val EMPTY_DIM = "None"
   val zeroArea: Area = Area(0, 0, 0, 0, 0, 0, None)
 
-  private def idToType(location: ResourceLocation): RegistryKey[World] = RegistryKey.func_240903_a_(Registry.WORLD_KEY, location)
+  private def idToType(location: ResourceLocation): RegistryKey[World] = RegistryKey.getOrCreateKey(Registry.WORLD_KEY, location)
 
   implicit val showArea: Show[Area] = area => s"(${area.xMin}, ${area.yMin}, ${area.zMin}) -> (${area.xMax}, ${area.yMax}, ${area.zMax}) in dim ${area.dimID.map(_.toString).getOrElse(EMPTY_DIM)}"
 
@@ -51,7 +51,7 @@ object Area {
 
     val dimOpt = (area.dimID
       >>= (id => Option(idToType(id)))
-      >>= (t => World.field_234917_f_.encodeStart(NBTDynamicOps.INSTANCE, t).result().asScala))
+      >>= (t => World.CODEC.encodeStart(NBTDynamicOps.INSTANCE, t).result().asScala))
     nbt.tap(t => dimOpt.foreach(n => t.put(NBT_DIM, n)))
   }
 
@@ -62,14 +62,14 @@ object Area {
   val areaBox: Area => AxisAlignedBB = area =>
     new AxisAlignedBB(area.xMin, 0, area.zMin, area.xMax, area.yMax, area.zMax)
 
-  def posToArea(p1: Vector3i, p2: Vector3i, dim: RegistryKey[World]): Area = posToArea(p1, p2, dim.func_240901_a_().some)
+  def posToArea(p1: Vector3i, p2: Vector3i, dim: RegistryKey[World]): Area = posToArea(p1, p2, dim.getLocation.some)
 
   def posToArea(p1: Vector3i, p2: Vector3i, dim: Option[ResourceLocation]): Area = {
     Area(Math.min(p1.getX, p2.getX), Math.min(p1.getY, p2.getY), Math.min(p1.getZ, p2.getZ),
       Math.max(p1.getX, p2.getX), Math.max(p1.getY, p2.getY), Math.max(p1.getZ, p2.getZ), dim)
   }
 
-  def defaultQuarryArea(pos: BlockPos, facing: Direction, dim: RegistryKey[World]): Area = defaultQuarryArea(pos, facing, dim.func_240901_a_().some)
+  def defaultQuarryArea(pos: BlockPos, facing: Direction, dim: RegistryKey[World]): Area = defaultQuarryArea(pos, facing, dim.getLocation.some)
 
   def defaultQuarryArea(pos: BlockPos, facing: Direction, dim: Option[ResourceLocation]): Area = {
     val x = 11
@@ -85,7 +85,7 @@ object Area {
   def defaultAdvQuarryArea(pos: BlockPos, dim: RegistryKey[World]): Area = {
     val chunkPos = new ChunkPos(pos)
     val y = pos.getY
-    Area(chunkPos.getXStart, y, chunkPos.getZStart, chunkPos.getXEnd, y, chunkPos.getZEnd, dim.func_240901_a_().some)
+    Area(chunkPos.getXStart, y, chunkPos.getZStart, chunkPos.getXEnd, y, chunkPos.getZEnd, dim.getLocation.some)
   }
 
   def getMarkersOnDirection(directions: List[Direction], world: World, pos: BlockPos): OptionT[List, IMarker] =
@@ -103,15 +103,15 @@ object Area {
 
   def findQuarryArea(facing: Direction, world: World, pos: BlockPos): (Area, Option[IMarker]) = {
     val mayMarker = getMarkersOnDirection(List(facing.getOpposite, facing.rotateY(), facing.rotateYCCW()), world, pos)
-    mayMarker.map(marker => areaFromMarker(facing, pos, marker, world.func_234923_W_()))
+    mayMarker.map(marker => areaFromMarker(facing, pos, marker, world.getDimensionKey))
       .filter { case (_, maybeMarker) => maybeMarker.isDefined }
       .collectFirst(PartialFunction.fromFunction(identity)) match {
       case Some(a) => a
-      case None => defaultQuarryArea(pos, facing.getOpposite, world.func_234923_W_()) -> None
+      case None => defaultQuarryArea(pos, facing.getOpposite, world.getDimensionKey) -> None
     }
   }
 
-  def areaFromMarker(facing: Direction, pos: BlockPos, marker: IMarker, dim: RegistryKey[World]): (Area, Option[IMarker]) = areaFromMarker(facing, pos, marker, dim.func_240901_a_().some)
+  def areaFromMarker(facing: Direction, pos: BlockPos, marker: IMarker, dim: RegistryKey[World]): (Area, Option[IMarker]) = areaFromMarker(facing, pos, marker, dim.getLocation.some)
 
   def areaFromMarker(facing: Direction, pos: BlockPos, marker: IMarker, dim: Option[ResourceLocation]): (Area, Option[IMarker]) = {
     if (marker.min().getX <= pos.getX && marker.max().getX >= pos.getX &&
@@ -130,8 +130,8 @@ object Area {
   }
 
   def areaLoad(nbt: CompoundNBT): Area = {
-    val dim = nbt.some.filter(_.contains(NBT_DIM)).flatMap(t => World.field_234917_f_.parse(NBTDynamicOps.INSTANCE, t.get(NBT_DIM)).result().asScala)
-    Area(nbt.getInt(NBT_X_MIN), nbt.getInt(NBT_Y_MIN), nbt.getInt(NBT_Z_MIN), nbt.getInt(NBT_X_MAX), nbt.getInt(NBT_Y_MAX), nbt.getInt(NBT_Z_MAX), dim.map(_.func_240901_a_()))
+    val dim = nbt.some.filter(_.contains(NBT_DIM)).flatMap(t => World.CODEC.parse(NBTDynamicOps.INSTANCE, t.get(NBT_DIM)).result().asScala)
+    Area(nbt.getInt(NBT_X_MIN), nbt.getInt(NBT_Y_MIN), nbt.getInt(NBT_Z_MIN), nbt.getInt(NBT_X_MAX), nbt.getInt(NBT_Y_MAX), nbt.getInt(NBT_Z_MAX), dim.map(_.getLocation()))
   }
 
   def posesInArea(area: Area, filter: (Int, Int, Int) => Boolean): List[BlockPos] = {
@@ -181,7 +181,7 @@ object Area {
   def findAdvQuarryArea(facing: Direction, world: World, pos: BlockPos): (Area, Option[IMarker]) = {
     findQuarryArea(facing, world, pos) match {
       case marked@(_, Some(_)) => marked
-      case (_, None) => defaultAdvQuarryArea(pos, world.func_234923_W_()) -> None
+      case (_, None) => defaultAdvQuarryArea(pos, world.getDimensionKey) -> None
     }
   }
 

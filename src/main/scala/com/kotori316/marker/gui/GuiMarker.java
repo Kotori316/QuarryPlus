@@ -62,7 +62,7 @@ public class GuiMarker extends ContainerScreen<ContainerMarker> {
     public void render(MatrixStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
         this.renderBackground(matrixStack);// back ground
         super.render(matrixStack, mouseX, mouseY, partialTicks);
-        this.func_230459_a_(matrixStack, mouseX, mouseY); // render tooltip
+        this.renderHoveredTooltip(matrixStack, mouseX, mouseY); // render tooltip
     }
 
     @Override

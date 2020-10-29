@@ -28,7 +28,7 @@ class QuarryFakePlayer private(worldServer: ServerWorld) extends FakePlayer(worl
 
   private[this] val advancements = new PlayerAdvancements(
     worldServer.getServer.getDataFixer, worldServer.getServer.getPlayerList, worldServer.getServer.getAdvancementManager,
-    new File(worldServer.getServer.func_240776_a_(FolderName.field_237245_a_).toFile, s"advancements/$getUniqueID.json"),
+    new File(worldServer.getServer.func_240776_a_(FolderName.ADVANCEMENTS).toFile, s"advancements/$getUniqueID.json"),
     this) {
     override def getProgress(advancementIn: Advancement): AdvancementProgress = {
       new AdvancementProgress() {

@@ -23,7 +23,7 @@ case class RecipeSerializeHelper(recipe: IFinishedRecipe,
     copy(conditions = condition :: this.conditions)
 
   def addTagCondition(tag: ITag.INamedTag[_]): RecipeSerializeHelper =
-    addCondition(new NotCondition(new TagEmptyCondition(tag.getName())))
+    addCondition(new NotCondition(new TagEmptyCondition(tag.getName)))
 
   override def build: JsonObject = {
     val o = recipe.getRecipeJson

@@ -68,12 +68,12 @@ public class MjReceiver /*implements IMjReceiver, IMjReadable*/ {
     }
 
    /* @Override
-    @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.BuildCraft_core)
+    @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.BuildCraft_core)*/
     public long getStored() {
         return tile.getStoredEnergy();
     }
 
-    @Override
+    /*@Override
     @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.BuildCraft_core)
     public long getCapacity() {
         return tile.getMaxStored();

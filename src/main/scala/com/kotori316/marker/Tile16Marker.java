@@ -11,18 +11,15 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.ModList;
 
 import com.kotori316.marker.render.Box;
-
-import static com.kotori316.marker.TileFlexMarker.BC_TILE_ID;
 
 public class Tile16Marker extends TileEntity implements /*ITileAreaProvider, IDebuggable, IMarker,*/ IAreaConfigurable {
     private BlockPos min = BlockPos.ZERO;
     private BlockPos max = BlockPos.ZERO;
     @Nullable
     public Box[] boxes;
-    private boolean bcLoaded = ModList.get().isLoaded(BC_TILE_ID);
+    //private boolean bcLoaded = ModList.get().isLoaded(BC_TILE_ID);
     private Direction.AxisDirection xDirection = Direction.AxisDirection.NEGATIVE, zDirection = Direction.AxisDirection.POSITIVE;
     private int size = 16;
 

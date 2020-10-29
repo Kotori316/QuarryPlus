@@ -19,7 +19,7 @@ class GuiAdvPump(c: ContainerAdvPump, i: PlayerInventory, t: ITextComponent) ext
   override def render(matrixStack: MatrixStack, mouseX: Int, mouseY: Int, partialTicks: Float): Unit = { // render
     this.renderBackground(matrixStack) // back ground
     super.render(matrixStack, mouseX, mouseY, partialTicks) // super.render
-    this.func_230459_a_(matrixStack, mouseX, mouseY) // render tooltip
+    this.renderHoveredTooltip(matrixStack, mouseX, mouseY) // render tooltip
   }
 
   override def init(): Unit = {
