@@ -164,10 +164,10 @@ dependencies {
 //    compileOnly fg.deobf("curse.maven:mekanism:2894305")
 
     // Test Dependencies.
-    implementation(group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.6.2')
-    runtimeOnly(group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.6.2')
+    implementation(group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.7.0')
+    runtimeOnly(group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.7.0')
     // https://mvnrepository.com/artifact/org.junit.platform/junit-platform-launcher
-    implementation(group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.6.2')
+    implementation(group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.7.0')
 
     if (isInCI()) {
         runtimeOnly("com.kotori316:ScalableCatsForce:2.13.3-build-3:dev")
