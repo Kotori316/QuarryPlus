@@ -21,8 +21,8 @@ case class AdvancementSerializeHelper(name: ResourceLocation,
     addCriterion(s"has_${item.getRegistryName.getPath}", InventoryChangeTrigger.Instance.forItems(item))
 
   def addItemCriterion(tag: ITag.INamedTag[Item]): AdvancementSerializeHelper =
-    addCriterion(s"has_${tag.getName().getPath}", InventoryChangeTrigger.Instance.forItems(ItemPredicate.Builder.create().tag(tag).build()))
-      .addCondition(new NotCondition(new TagEmptyCondition(tag.getName())))
+    addCriterion(s"has_${tag.getName.getPath}", InventoryChangeTrigger.Instance.forItems(ItemPredicate.Builder.create().tag(tag).build()))
+      .addCondition(new NotCondition(new TagEmptyCondition(tag.getName)))
 
   def addCondition(condition: ICondition): AdvancementSerializeHelper =
     copy(conditions = condition :: conditions)
