@@ -139,7 +139,7 @@ repositories {
                 password = project.findProperty("githubToken") ?: System.getenv("REPO_TOKEN")
             }
             content {
-                includeModule("com.kotori316", "ScalableCatsForce")
+                includeModule("com.kotori316", "ScalableCatsForce".toLowerCase())
             }
         }
     }
@@ -170,7 +170,7 @@ dependencies {
     implementation(group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.7.0')
 
     if (isInCI()) {
-        runtimeOnly("com.kotori316:ScalableCatsForce:2.13.3-build-3:dev")
+        runtimeOnly("com.kotori316:ScalableCatsForce:2.13.3-build-5:dev".toLowerCase())
     }
 }
 
