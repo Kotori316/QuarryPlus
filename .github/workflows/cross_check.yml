@@ -1,31 +1,11 @@
-name: Build Check and Publish
+name: Java CI Cross Check
 
 on:
   push:
     branches:
       - "1.16"
-    tags:
-      - "!*"
 
 jobs:
-  #   func:
-  #     runs-on: ubuntu-latest
-  #     steps:
-  #       - name: CI func
-  #         run: |
-  #           echo "$(ls ../)" && echo "$(ls ../ | grep h)"
-  #           echo "$(ls /)" > func_test.text
-  #           ls -m /
-  #           echo "grep = $(grep h func_test.text)"
-  #           test -e func_test.text
-  #           echo "Exists $?"
-  #           [ -f func_test.text ]
-  #           echo "Exists $?"
-  #           ! [ -f func_test.text ]
-  #           echo "Non Exists $?"
-  #           ! [ -f it.txt ]
-  #           echo "Non Exists $?"
-
   check:
     runs-on: ubuntu-latest
     strategy:
@@ -33,8 +13,8 @@ jobs:
       matrix:
         # test against latest update of each major Java version, as well as specific updates of LTS versions:
         java: [ 1.8, 11 ]
-    outputs:
-      result: ${{ steps.s1.outputs.test }}
+        # List of forge I want to check the source compiles successfully.
+        forge: [ 1.16.3-34.1.0, 1.16.3-34.1.42, 1.16.4-35.0.2 ]
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK ${{ matrix.java }}
@@ -54,20 +34,23 @@ jobs:
         run: chmod +x ./gradlew && ./gradlew CCO --no-daemon
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
+          CI_FORGE: ${{ matrix.forge }}
       - name: Test with JUnit
         run: chmod +x ./gradlew && ./gradlew assemble test --no-daemon
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
+          CI_FORGE: ${{ matrix.forge }}
       - name: Upload failed test report
         if: failure()
         uses: actions/upload-artifact@v2
         with:
           path: build/reports/tests/*
-          name: Test-Report-${{ matrix.java }}
+          name: Test-Report-${{ matrix.java }}-${{ matrix.forge }}
       - name: Test with runData
         run: chmod +x ./gradlew && ./gradlew -Dfml.earlyprogresswindow=false runData --info --no-daemon
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
+          CI_FORGE: ${{ matrix.forge }}
       - id: check-test-started
         run: |
           [ -f test_started.txt ]
@@ -77,25 +60,3 @@ jobs:
       - id: show-failure-log
         if: failure()
         run: cat error-trace.txt
-  publish:
-    runs-on: ubuntu-latest
-    needs: [ check ]
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.8
-      - uses: actions/cache@v1
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle16-${{ hashFiles('**/forge_version.properties') }}
-      - name: Compile
-        run: chmod +x ./gradlew && ./gradlew build --continue --warning-mode all --no-daemon
-        env:
-          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
-      - name: Publish
-        uses: actions/upload-artifact@v2
-        with:
-          path: build/libs/*
-          name: ${{ github.event.repository.name }}-${{ github.run_number }}

@@ -50,6 +50,18 @@ compileScala.options.compilerArgs.add("-Xlint:all")
 
 static String mappingVersion() { return '20201028-1.16.3' }
 
+String forgeVersion() {
+    if (isInCI() && System.getenv("CI_FORGE") != null && "latest" != System.getenv("CI_FORGE")) {
+        return "net.minecraftforge:forge:" + System.getenv("CI_FORGE")
+    } else {
+        // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
+        // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
+        // The user-dev artifact is a special name and will get all sorts of transformations applied to it.
+        def forge_prop = loadProperties("forge_version.properties")
+        return forge_prop.get("forge_version")
+    }
+}
+
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 
 minecraft {
@@ -151,11 +163,7 @@ repositories {
 }
 
 dependencies {
-    // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
-    // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
-    // The userdev artifact is a special name and will get all sorts of transformations applied to it.
-    def forge_prop = loadProperties("forge_version.properties")
-    minecraft(forge_prop.getProperty("forge_version"))
+    minecraft(forgeVersion())
     implementation group: 'org.scala-lang', name: 'scala-library', version: '2.13.3'
     implementation group: 'org.typelevel', name: "cats-core_2.13", version: '2.2.0'
 
@@ -176,7 +184,7 @@ dependencies {
 
 @SuppressWarnings("SpellCheckingInspection")
 private static boolean isInCI() {
-    return Boolean.parseBoolean(System.getenv("GITHUB_ACTIONS")) ||
+    return Boolean.parseBoolean(System.getenv("GITHUB_ACTIONS")) || Boolean.parseBoolean(System.getenv("CI")) ||
             (!System.getProperty("os.name").toLowerCase().startsWith("windows") && Files.exists(Paths.get("/", ".dockerenv")))
 }
 
@@ -347,6 +355,8 @@ task CheckCompileOption() {
 //        System.properties.list(System.out)
         println(System.lineSeparator() + "CI" + System.lineSeparator() + "-" * 15)
         println("Is in CI: " + isInCI())
+        println("forge: " + forgeVersion())
+        println("CI_FORGE: " + System.getenv("CI_FORGE"))
         println("Now: " + ZonedDateTime.now().format(DateTimeFormatter.ISO_INSTANT))
         println("Now in Japan: " + ZonedDateTime.now().withZoneSameInstant(ZoneId.of("Asia/Tokyo")).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
         println(System.lineSeparator() + "Change log" + System.lineSeparator() + "-" * 15)
