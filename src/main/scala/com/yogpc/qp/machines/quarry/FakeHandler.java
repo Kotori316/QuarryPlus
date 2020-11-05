@@ -8,7 +8,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import javax.annotation.Nullable;
-import javax.crypto.SecretKey;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.NetworkManager;
@@ -102,10 +101,6 @@ public class FakeHandler extends ServerPlayNetHandler {
         @Override
         public boolean isLocalChannel() {
             return false;
-        }
-
-        @Override
-        public void enableEncryption(SecretKey key) {
         }
 
         @Override
