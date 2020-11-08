@@ -14,7 +14,7 @@ jobs:
         # test against latest update of each major Java version, as well as specific updates of LTS versions:
         java: [ 1.8, 11 ]
         # List of forge I want to check the source compiles successfully.
-        forge: [ 1.16.3-34.1.0, 1.16.3-34.1.42, 1.16.4-35.0.2 ]
+        forge: [ 1.16.3-34.1.0, 1.16.3-34.1.42]
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK ${{ matrix.java }}
