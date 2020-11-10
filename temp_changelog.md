@@ -1,4 +1,8 @@
 **This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).**
+## Version 16.1.2
+* Fixed a bug that ChunkDestroyer collected stones.
+* Removed `enableEncryption` from FakePlayer.
+
 ## Version 16.1.1
 * Respect the result of break event in MiniQuarry.
 * Fixed a bug that quarry removes blocks that an event canceled to break. Fix #103

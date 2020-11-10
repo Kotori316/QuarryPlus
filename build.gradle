@@ -254,6 +254,7 @@ curseforge {
         changelog = curseForgeLog()
         releaseType = 'release'
         addGameVersion '1.16.3'
+        addGameVersion '1.16.4'
         mainArtifact(jar) {
             displayName = 'v' + project.version
         }
