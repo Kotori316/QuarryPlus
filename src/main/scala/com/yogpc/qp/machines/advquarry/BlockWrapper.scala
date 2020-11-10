@@ -8,7 +8,7 @@ import com.yogpc.qp.utils.JsonReloadListener
 import net.minecraft.block.{Block, BlockState, Blocks}
 import net.minecraft.profiler.IProfiler
 import net.minecraft.resources.IResourceManager
-import net.minecraft.tags.{BlockTags, ITag, TagCollectionManager}
+import net.minecraft.tags.{ITag, TagCollectionManager}
 import net.minecraft.util.{JSONUtils, ResourceLocation}
 import net.minecraftforge.common.Tags
 
@@ -31,7 +31,10 @@ abstract class BlockWrapper(val name: String)
 object BlockWrapper extends JsonDeserializer[BlockWrapper] with JsonSerializer[BlockWrapper] {
   def apply(state: BlockState, ignoreProperty: Boolean = false): BlockWrapper = new State(state, ignoreProperty)
 
-  def apply(tag: ITag[Block]): BlockWrapper = new TagPredicate(tag)
+  def apply(tag: ITag[Block]): BlockWrapper = tag match {
+    case tag: ITag.INamedTag[_] => new TagPredicate(tag, Option(tag.getName.toString))
+    case _ => new TagPredicate(tag, None)
+  }
 
   val example: Array[BlockWrapper] = Array(
     BlockWrapper(Tags.Blocks.STONE),
@@ -73,6 +76,8 @@ object BlockWrapper extends JsonDeserializer[BlockWrapper] with JsonSerializer[B
     override def contain(that: BlockState) = false
 
     override def serialize(obj: JsonObject, typeOfSrc: Type, context: JsonSerializationContext) = obj
+
+    override def toString: String = "BlockWrapper#NoMatch"
   }
 
   private class State(state: BlockState, ignoreProperty: Boolean = false) extends BlockWrapper(NAME_State) {
@@ -91,9 +96,11 @@ object BlockWrapper extends JsonDeserializer[BlockWrapper] with JsonSerializer[B
       obj.addProperty(KEY_Property, ignoreProperty)
       obj
     }
+
+    override def toString: String = s"BlockWrapper#State{$state}"
   }
 
-  private class TagPredicate(tag: ITag[Block]) extends BlockWrapper(NAME_Tag) {
+  private class TagPredicate(tag: ITag[Block], tagName: Option[String]) extends BlockWrapper(NAME_Tag) {
     override def contain(that: BlockState) = tag.contains(that.getBlock)
 
     override def serialize(obj: JsonObject, typeOfSrc: Type, context: JsonSerializationContext) = {
@@ -101,6 +108,8 @@ object BlockWrapper extends JsonDeserializer[BlockWrapper] with JsonSerializer[B
       obj.addProperty(KEY_Tag, TagCollectionManager.getManager.getBlockTags.getDirectIdFromTag(tag).toString)
       obj
     }
+
+    override def toString: String = s"BlockWrapper#TagPredicate{${tagName.orNull}}"
   }
 
   override def deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): BlockWrapper = {
@@ -115,7 +124,7 @@ object BlockWrapper extends JsonDeserializer[BlockWrapper] with JsonSerializer[B
         maybeWrapper.getOrElse(new State(Blocks.AIR.getDefaultState))
       case NAME_Tag =>
         val tagName = JSONUtils.getString(jsonObj, KEY_Tag)
-        Option(BlockTags.getCollection.get(new ResourceLocation(tagName))).map(new TagPredicate(_)).getOrElse(NoMatch)
+        Option(TagCollectionManager.getManager.getBlockTags.get(new ResourceLocation(tagName))).map(new TagPredicate(_, Option(tagName))).getOrElse(NoMatch)
       case _ => NoMatch
     }
   }
@@ -125,8 +134,8 @@ object BlockWrapper extends JsonDeserializer[BlockWrapper] with JsonSerializer[B
 
   object Reload extends JsonReloadListener(BlockWrapper.GSON, QuarryPlus.modID + "/adv_quarry") {
     override def apply(splashList: java.util.Map[ResourceLocation, JsonElement], resourceManagerIn: IResourceManager, profilerIn: IProfiler): Unit = {
-      BlockWrapper.wrappers = splashList.asScala.toSeq.collect { case (_, j) => GSON.fromJson(j, classOf[Array[BlockWrapper]]) }.flatten.toSet
-      QuarryPlus.LOGGER.debug("Loaded BlockWrapper, {} objects.", BlockWrapper.wrappers.size.toString)
+      BlockWrapper.wrappers = splashList.asScala.toSeq.flatMap { case (_, j) => GSON.fromJson(j, classOf[Array[BlockWrapper]]).toSeq }.toSet
+      QuarryPlus.LOGGER.debug("Loaded BlockWrapper, {}", BlockWrapper.wrappers.mkString(", "))
     }
   }
 
