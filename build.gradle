@@ -253,7 +253,6 @@ curseforge {
         changelogType = 'markdown'
         changelog = curseForgeLog()
         releaseType = 'release'
-        addGameVersion '1.16.3'
         addGameVersion '1.16.4'
         mainArtifact(jar) {
             displayName = 'v' + project.version
@@ -272,7 +271,7 @@ curseforge {
 
 githubRelease {
     repo.set('QuarryPlus')
-    token = project.hasProperty("githubToken") ? getProperty("githubToken") : ""
+    token = project.findProperty("githubToken") ?: System.getenv("REPO_TOKEN") ?: ""
     targetCommitish.set('1.16')
     prerelease.set(project.version.toString().contains("SNAPSHOT"))
     body.set(getChangeLog() +
