@@ -145,11 +145,7 @@ repositories {
     if (isInCI()) {
         maven {
             name = "Scala Language Loader"
-            url = uri("https://maven.pkg.github.com/Kotori316/SLP")
-            credentials {
-                username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR") ?: ""
-                password = project.findProperty("githubToken") ?: System.getenv("REPO_TOKEN")
-            }
+            url = uri("https://pkgs.dev.azure.com/Kotori316/minecraft/_packaging/mods/maven/v1")
             content {
                 includeModule("com.kotori316", "ScalableCatsForce".toLowerCase())
             }
@@ -178,7 +174,7 @@ dependencies {
     implementation(group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.7.0')
 
     if (isInCI()) {
-        runtimeOnly("com.kotori316:ScalableCatsForce:2.13.3-build-6:dev".toLowerCase())
+        runtimeOnly(group: 'com.kotori316', name: 'ScalableCatsForce'.toLowerCase(Locale.ROOT), version: '2.13.4-build-1', classifier: 'dev')
     }
 }
 
