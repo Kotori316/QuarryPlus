@@ -1,6 +1,7 @@
 package com.yogpc.qp.render
 
 import com.mojang.blaze3d.matrix.MatrixStack
+import com.mojang.blaze3d.vertex.IVertexBuilder
 import com.yogpc.qp.machines.mini_quarry.MiniQuarryTile
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.texture.TextureAtlasSprite
@@ -33,9 +34,44 @@ object RenderMiniQuarry extends TileEntityRenderer[MiniQuarryTile](TileEntityRen
         xMax - xMin, 1, zMax - zMin, firstSide = true, endSide = true
       ).render(buffer, matrixStackIn, sprite, alpha = 128)
 
+      drawOutline(matrixStackIn, buffer, xMin, a.yMin, zMin, xMax, a.yMax, zMax)
+
       matrixStackIn.pop()
       Minecraft.getInstance.getProfiler.endSection()
     }
     Minecraft.getInstance.getProfiler.endSection()
+  }
+
+  //noinspection DuplicatedCode
+  private def drawOutline(matrixStackIn: MatrixStack, buffer: IVertexBuilder, xMin: Double, yMin: Double, zMin: Double, xMax: Double, yMax: Double, zMax: Double): Unit = {
+    // Outline
+    // x
+    val blue = 64
+    Box(xMin, yMax + 1 + d, zMin, xMin, yMax + 1 + d, zMax, d, d, zMax - zMin, firstSide = false, endSide = false).render(buffer, matrixStackIn, sprite,
+      alpha = 192, red = 0, green = 0, blue = blue)
+    Box(xMin, yMin - d, zMin, xMin, yMin - d, zMax, d, d, zMax - zMin, firstSide = false, endSide = false).render(buffer, matrixStackIn, sprite,
+      alpha = 192, red = 0, green = 0, blue = blue)
+    Box(xMax, yMax + 1 + d, zMin, xMax, yMax + 1 + d, zMax, d, d, zMax - zMin, firstSide = false, endSide = false).render(buffer, matrixStackIn, sprite,
+      alpha = 192, red = 0, green = 0, blue = blue)
+    Box(xMax, yMin - d, zMin, xMax, yMin - d, zMax, d, d, zMax - zMin, firstSide = false, endSide = false).render(buffer, matrixStackIn, sprite,
+      alpha = 192, red = 0, green = 0, blue = blue)
+    // y
+    Box(xMin, yMin - d, zMin, xMin, yMax + 1 + d, zMin, d, yMax - yMin + 1d / 8, d, firstSide = false, endSide = false).render(buffer, matrixStackIn, sprite,
+      alpha = 192, red = 0, green = 0, blue = blue)
+    Box(xMin, yMin - d, zMax, xMin, yMax + 1 + d, zMax, d, yMax - yMin + 1d / 8, d, firstSide = false, endSide = false).render(buffer, matrixStackIn, sprite,
+      alpha = 192, red = 0, green = 0, blue = blue)
+    Box(xMax, yMin - d, zMin, xMax, yMax + 1 + d, zMin, d, yMax - yMin + 1d / 8, d, firstSide = false, endSide = false).render(buffer, matrixStackIn, sprite,
+      alpha = 192, red = 0, green = 0, blue = blue)
+    Box(xMax, yMin - d, zMax, xMax, yMax + 1 + d, zMax, d, yMax - yMin + 1d / 8, d, firstSide = false, endSide = false).render(buffer, matrixStackIn, sprite,
+      alpha = 192, red = 0, green = 0, blue = blue)
+    // z
+    Box(xMin, yMax + 1 + d, zMin, xMax, yMax + 1 + d, zMin, xMax - xMin, d, d, firstSide = false, endSide = false).render(buffer, matrixStackIn, sprite,
+      alpha = 192, red = 0, green = 0, blue = blue)
+    Box(xMin, yMin - d, zMin, xMax, yMin - d, zMin, xMax - xMin, d, d, firstSide = false, endSide = false).render(buffer, matrixStackIn, sprite,
+      alpha = 192, red = 0, green = 0, blue = blue)
+    Box(xMin, yMax + 1 + d, zMax, xMax, yMax + 1 + d, zMax, xMax - xMin, d, d, firstSide = false, endSide = false).render(buffer, matrixStackIn, sprite,
+      alpha = 192, red = 0, green = 0, blue = blue)
+    Box(xMin, yMin - d, zMax, xMax, yMin - d, zMax, xMax - xMin, d, d, firstSide = false, endSide = false).render(buffer, matrixStackIn, sprite,
+      alpha = 192, red = 0, green = 0, blue = blue)
   }
 }
