@@ -406,17 +406,25 @@ publishing {
                 password = project.findProperty("githubToken") ?: System.getenv("REPO_TOKEN")
             }
         }
+        maven {
+            name = "AzureRepository"
+            url = uri("https://pkgs.dev.azure.com/Kotori316/minecraft/_packaging/mods/maven/v1")
+            credentials {
+                username = project.findProperty("azureUserName") ?: System.getenv("AZURE_USER_NAME") ?: ""
+                password = project.findProperty("azureToken") ?: System.getenv("AZURE_TOKEN") ?: "TOKEN"
+            }
+        }
     }
     publications {
         gpr(MavenPublication) {
             artifactId = "AdditionalEnchantedMiner".toLowerCase()
             artifact srcJar {
-                classifier = 'sources'
-                extension = 'jar'
+                getArchiveClassifier().set('sources')
+                getArchiveExtension().set('jar')
             }
             artifact deobfJar {
-                classifier = 'deobf'
-                extension = 'jar'
+                getArchiveClassifier().set('deobf')
+                getArchiveExtension().set('jar')
             }
             artifact reobfArtifact
         }
