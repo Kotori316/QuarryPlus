@@ -1,3 +1,5 @@
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 
 buildscript {
@@ -11,16 +13,13 @@ buildscript {
         classpath "gradle.plugin.com.matthewprenger:CurseGradle:1.1.0"
     }
 }
-plugins {
-    id "com.wynprice.cursemaven" version "2.1.1"
-}
 apply plugin: 'scala'
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: "com.matthewprenger.cursegradle"
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
 
-version = getProperty("modversion")
+version = getProperty("modVersion")
 group = "com.yogpc.qp" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "AdditionalEnchantedMiner-1.12.2"
 
@@ -54,7 +53,7 @@ repositories {
     maven {
         // location of a maven mirror for JEI files, as a fallback
         name = "ModMaven"
-        url = "https://modmaven.k-4u.nl"
+        url = "https://modmaven.dev/"
     }
     maven {
         name = "CoFH Maven"
@@ -80,19 +79,21 @@ repositories {
         name 'CTM'
         url 'http://maven.tterrag.com/'
     }
+    maven {
+        url = "https://www.cursemaven.com"
+    }
 }
 
 dependencies {
-//    compile 'org.scala-lang:scala-library:2.11.11'
-//    compile group: "com.github.bigwheel", name: "util-backports_2.12", version: "1.1"
-    deobfCompile 'net.industrial-craft:industrialcraft-2:2.8.220-ex112:dev'
-    deobfCompile "cofh:RedstoneFlux:1.12-2.1.0.6:universal"
+    deobfCompile 'net.industrial-craft:industrialcraft-2:2.8.221-ex112:dev'
+    deobfCompile "cofh:RedstoneFlux:1.12-2.1.0.7:universal"
     deobfCompile "cofh:CoFHCore:1.12.2-4.6.3.27:universal"
-    deobfCompile "mezz.jei:jei_1.12.2:4.15.0.294"
-    deobfCompile "com.mod-buildcraft:buildcraft-main:7.99.24.6"
+    deobfCompile "mezz.jei:jei_1.12.2:4.16.1.302"
+    deobfCompile "com.mod-buildcraft:buildcraft-main:7.99.24.7"
+    compileOnly "CraftTweaker2:CraftTweaker2-API:4.1.20.605"
+    compileOnly "CraftTweaker2:ZenScript:4.1.20.605"
     compileOnly "mekanism:Mekanism:1.12.2-9.4.4.330+0b21085"
-    compileOnly "team.chisel.ctm:CTM:MC1.12-0.2.3.13"
-    compileOnly "curse.maven:bedrockores:2602707"
+    compileOnly "curse.maven:bedrockores-275083:2602707"
 }
 
 processResources {
@@ -115,7 +116,6 @@ processResources {
 }
 
 jar {
-    classifier = 'universal'
     from sourceSets.main.output
     exclude("*.md")
     manifest {
@@ -126,7 +126,7 @@ jar {
                 "Implementation-Title"    : project.name,
                 "Implementation-Version"  : "${version}",
                 "Implementation-Vendor"   : "Kotori316",
-                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                "Implementation-Timestamp": ZonedDateTime.now().format(DateTimeFormatter.ISO_INSTANT),
                 "Commit"                  : getCommit("1.12")
         ])
     }

@@ -25,6 +25,7 @@ import net.minecraft.block.state.IBlockState;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class DetailDataCollector implements Serializable {
+    private static final long serialVersionUID = 1L;
     private transient final LongSupplier time;
     private final Map<Long, Data> data;
 
@@ -46,12 +47,15 @@ public class DetailDataCollector implements Serializable {
 
     private static class Dummy extends DetailDataCollector {
         private static final Data DATA = new DummyData();
+        private static final long serialVersionUID = 5648395089406220825L;
 
         public Dummy() {
             super(() -> 0);
         }
 
         private static class DummyData extends DetailDataCollector.Data {
+            private static final long serialVersionUID = 8719675237734170932L;
+
             @Override
             public String toString() {
                 return "DummyData";
@@ -96,7 +100,7 @@ public class DetailDataCollector implements Serializable {
             try {
                 Files.createDirectories(parent);
             } catch (IOException e) {
-                QuarryPlus.LOGGER.error("Errored creating directories.", e);
+                QuarryPlus.LOGGER.error("Error in creating directories.", e);
                 return;
             }
         }
@@ -116,12 +120,13 @@ public class DetailDataCollector implements Serializable {
                 s.writeObject(this);
             }
         } catch (IOException e) {
-            QuarryPlus.LOGGER.error("Errored writing file.", e);
+            QuarryPlus.LOGGER.error("Error in writing file.", e);
         }
         data.clear();
     }
 
     public static class Data implements Serializable {
+        private static final long serialVersionUID = -9102471609294895507L;
         long energy = 0;
         private final List<EnergyDetail> others = new ArrayList<>();
 
@@ -149,6 +154,7 @@ public class DetailDataCollector implements Serializable {
     }
 
     public static class Break implements EnergyDetail, Serializable {
+        private static final long serialVersionUID = -666256696390874899L;
         private final String name;
         private final float hardness;
         private final long e;
@@ -195,6 +201,7 @@ public class DetailDataCollector implements Serializable {
     }
 
     public static class Pump implements EnergyDetail, Serializable {
+        private static final long serialVersionUID = -2949450085746873405L;
         private final long amount;
         private final int u;
         private final long frame;
@@ -244,6 +251,7 @@ public class DetailDataCollector implements Serializable {
     }
 
     public static final class Common implements EnergyDetail, Serializable {
+        private static final long serialVersionUID = 2112484264723375309L;
         private final EnergyUsage usage;
         private final long energy;
 
