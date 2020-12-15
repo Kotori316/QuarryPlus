@@ -131,6 +131,7 @@ minecraft {
 repositories {
     maven {
         // location of the maven that hosts JEI files
+        //noinspection SpellCheckingInspection
         name = "Progwml6 maven"
         url = "https://dvs1.progwml6.com/files/maven/"
         content {
@@ -142,6 +143,15 @@ repositories {
         name = "ModMaven-k-4u.nl"
         url = "https://modmaven.dev/"
     }
+    maven {
+        name = "CraftTweaker"
+        url = 'https://maven.blamejared.com'
+        content {
+            //noinspection SpellCheckingInspection
+            includeModule("com.blamejared.crafttweaker", "CraftTweaker-1.16.4")
+        }
+    }
+
     if (isInCI()) {
         maven {
             name = "Scala Language Loader"
@@ -165,6 +175,8 @@ dependencies {
 
     // at runtime, use the full JEI jar
     implementation fg.deobf("mezz.jei:jei-1.16.4:7.6.0.58")
+    //noinspection SpellCheckingInspection
+    implementation "com.blamejared.crafttweaker:CraftTweaker-1.16.4:7.1.0.71:deobf"
 //    compileOnly fg.deobf("curse.maven:mekanism:2894305")
 
     // Test Dependencies.
