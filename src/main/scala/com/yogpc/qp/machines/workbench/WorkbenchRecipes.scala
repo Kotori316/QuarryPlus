@@ -55,11 +55,14 @@ abstract class WorkbenchRecipes(val location: ResourceLocation, val output: Item
   override def compare(that: WorkbenchRecipes): Int = WorkbenchRecipes.recipeOrdering.compare(this, that)
 
   override def matches(inv: TileWorkbench, worldIn: World): Boolean = {
-    val inputInv = Range(0, inv.getSizeInventory).map(inv.getStackInSlot)
-    hasContent && inputs.forall(in => inputInv.exists(invStack => in.exists(_.matches(invStack))))
+    hasContent && hasAllRequiredItems(inv.inventory.asScala.toSeq)
   }
 
-  override def getCraftingResult(inv: TileWorkbench): ItemStack = getOutput
+  def hasAllRequiredItems(inventory: Seq[ItemStack]): Boolean = {
+    inputs.forall(in => inventory.exists(invStack => in.exists(_.matches(invStack))))
+  }
+
+  override def getCraftingResult(inv: TileWorkbench): ItemStack = getOutput(inv.inventory)
 
   override def getRecipeOutput: ItemStack = getOutput
 

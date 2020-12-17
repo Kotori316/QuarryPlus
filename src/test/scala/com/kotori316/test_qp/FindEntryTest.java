@@ -14,7 +14,7 @@ import static jp.t2v.lab.syntax.MapStreamSyntax.always_false;
 import static jp.t2v.lab.syntax.MapStreamSyntax.always_true;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class FindEntryTest {
+class FindEntryTest {
     @Test
     void empty() {
         List<String> strings = Collections.emptyList();

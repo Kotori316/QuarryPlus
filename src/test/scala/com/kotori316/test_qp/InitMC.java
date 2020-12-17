@@ -14,7 +14,7 @@ import org.junit.jupiter.api.BeforeAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-class InitMC {
+public class InitMC {
     private static final AtomicBoolean INITIALIZED = new AtomicBoolean(false);
 
     @BeforeAll
