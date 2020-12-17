@@ -38,12 +38,7 @@ object IngredientRecipe {
     val energy: EOR[Double] = Validated.catchNonFatal(JSONUtils.getString(json, "energy", "1000").toDouble)
       .leftMap(e => NonEmptyList.of(e.toString))
       .andThen(d => Validated.condNel(d > 0, d * APowerTile.MJToMicroMJ, "Energy must be over than 0"))
-    val item: EOR[ItemStack] = Validated.catchNonFatal(CraftingHelper.getItemStack(JSONUtils.getJsonObject(json, "result"), true))
-      .leftMap {
-        case jsonEx: JsonParseException => NonEmptyList.of(jsonEx.getMessage)
-        case ex => NonEmptyList.of(ex.toString)
-      }
-      .andThen(i => Validated.condNel(!i.isEmpty, i, "Result item is empty"))
+    val item: EOR[ItemStack] = findItem(json, "result", "Result item is empty")
     val seq: EOR[Seq[Seq[IngredientWithCount]]] = Validated.catchNonFatal(JSONUtils.getJsonArray(json, "ingredients").asScala.map(IngredientWithCount.getSeq).toSeq)
       .leftMap(e => NonEmptyList.of(e.toString))
     val value = (energy, item, seq).mapN { case (e, stack, recipe) =>
@@ -52,6 +47,15 @@ object IngredientRecipe {
       new IngredientRecipe(id, stack, e.toLong, showInJei, recipe)
     }
     value.leftMap(_.mkString_(", ")).toEither
+  }
+
+  def findItem(json: JsonObject, member: String, errorMessage: String): EOR[ItemStack] = {
+    Validated.catchNonFatal(CraftingHelper.getItemStack(JSONUtils.getJsonObject(json, member), true))
+      .leftMap {
+        case jsonEx: JsonParseException => NonEmptyList.of(jsonEx.getMessage)
+        case ex => NonEmptyList.of(ex.toString)
+      }
+      .andThen(i => Validated.condNel(!i.isEmpty, i, errorMessage))
   }
 
   val packetSerialize: WorkbenchRecipes.PacketSerialize = new WorkbenchRecipes.PacketSerialize {

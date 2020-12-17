@@ -44,7 +44,7 @@ object EnchantmentCopyRecipe {
     val energy: ValidatedNel[String, Long] = Validated.catchNonFatal(JSONUtils.getString(json, "energy", "1000").toDouble)
       .leftMap(e => NonEmptyList.of(e.toString))
       .andThen(d => Validated.condNel(d > 0, (d * APowerTile.MJToMicroMJ).toLong, "Energy must be over than 0"))
-    val item: ValidatedNel[String, ItemStack] = findItem(json, "result", "Result item is empty")
+    val item: ValidatedNel[String, ItemStack] = IngredientRecipe.findItem(json, "result", "Result item is empty")
     val copyFrom: ValidatedNel[String, Seq[IngredientWithCount]] = Validated.catchNonFatal(IngredientWithCount.getSeq(json.get("enchantment_from")))
       .leftMap(_.toString).toValidatedNel
     val seq: ValidatedNel[String, Seq[Seq[IngredientWithCount]]] = Validated.catchNonFatal(
