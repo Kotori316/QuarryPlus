@@ -259,6 +259,7 @@ object QuarryAction {
               digTargets = tl.dropWhile(checkBreakableFunc)
               movingHead = true
             }
+          case _ => digTargets = digTargets.tail
         }
       }
     }
