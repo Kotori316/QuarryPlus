@@ -4,19 +4,21 @@ import java.util
 
 import cats.data.{NonEmptyList, Validated, ValidatedNel}
 import cats.implicits._
-import com.google.gson.{JsonArray, JsonObject, JsonParseException}
+import com.google.gson.{JsonArray, JsonObject}
 import com.yogpc.qp.machines.base.APowerTile
 import com.yogpc.qp.machines.workbench.WorkbenchRecipes.LOGGER
 import com.yogpc.qp.utils.ItemElement
-import net.minecraft.item.ItemStack
+import net.minecraft.item.{ItemStack, Items}
+import net.minecraft.nbt.CompoundNBT
 import net.minecraft.network.PacketBuffer
 import net.minecraft.util.{JSONUtils, ResourceLocation}
-import net.minecraftforge.common.crafting.CraftingHelper
+import net.minecraftforge.common.util.Constants.NBT
 
 import scala.jdk.CollectionConverters._
 import scala.util.chaining._
 
-final class EnchantmentCopyRecipe(location: ResourceLocation, o: ItemStack, e: Long, copyFrom: Seq[IngredientWithCount], otherInput: Seq[Seq[IngredientWithCount]])
+final class EnchantmentCopyRecipe(location: ResourceLocation, o: ItemStack, e: Long, copyFrom: Seq[IngredientWithCount], otherInput: Seq[Seq[IngredientWithCount]],
+                                  enchantedBookMigration: Boolean = true)
   extends WorkbenchRecipes(location, ItemElement(o), e, showInJEI = true) {
   override val size: Int = 1 + otherInput.size
 
@@ -27,7 +29,7 @@ final class EnchantmentCopyRecipe(location: ResourceLocation, o: ItemStack, e: L
     val tagFrom = inputs.asScala.find(i => copyFrom.exists(_.matches(i)))
     for {
       s <- tagFrom
-      tag_raw <- Option(s.getTag)
+      tag_raw <- Option(s.getTag).map(EnchantmentCopyRecipe.doEnchantedBookMigration(enchantedBookMigration, stack))
       tag = tag_raw.copy().tap(t => if (stack.hasTag) t.merge(stack.getTag))
     } {
       stack.setTag(tag)
@@ -57,13 +59,19 @@ object EnchantmentCopyRecipe {
     value.leftMap(_.mkString_(", ")).toEither
   }
 
-  def findItem(json: JsonObject, member: String, error: String): ValidatedNel[String, ItemStack] = {
-    Validated.catchNonFatal(CraftingHelper.getItemStack(JSONUtils.getJsonObject(json, member), true))
-      .leftMap {
-        case jsonEx: JsonParseException => NonEmptyList.of(jsonEx.getMessage)
-        case ex => NonEmptyList.of(ex.toString)
+  def doEnchantedBookMigration(doMigrate: Boolean, outputItem: ItemStack): cats.Endo[CompoundNBT] = {
+    if (doMigrate) {
+      tag => {
+        if (tag.contains("StoredEnchantments") && outputItem.getItem != Items.ENCHANTED_BOOK) {
+          val enchantmentTag = tag.getList("StoredEnchantments", NBT.TAG_COMPOUND)
+          tag.copy().tap(_.remove("StoredEnchantments")).tap(_.put("Enchantments", enchantmentTag))
+        } else {
+          tag
+        }
       }
-      .andThen(i => Validated.condNel(!i.isEmpty, i, error))
+    } else {
+      identity[CompoundNBT]
+    }
   }
 
   val packetSerialize: WorkbenchRecipes.PacketSerialize = new WorkbenchRecipes.PacketSerialize {
