@@ -35,21 +35,21 @@ public class WorkBenchCTRegister implements IRecipeManager {
 
     @ZenCodeType.Method
     public void addSingleInputRecipe(String recipeName, IIngredient input, IItemStack output, @ZenCodeType.OptionalFloat(1000) float energy) {
-        applyRecipeAddAction(CTRecipe.createWorkbenchRecipe(fixRecipeName(recipeName), output, input, energy));
+        applyRecipeAddAction(CTRecipe.createWorkbenchRecipe(validateRecipeName(recipeName), output, input, energy));
     }
 
     @ZenCodeType.Method
     public void addMultiInputRecipe(String recipeName, IIngredient[] inputs, IItemStack output, @ZenCodeType.OptionalFloat(1000) float energy) {
-        applyRecipeAddAction(CTRecipe.createWorkbenchRecipe(fixRecipeName(recipeName), output, inputs, energy));
+        applyRecipeAddAction(CTRecipe.createWorkbenchRecipe(validateRecipeName(recipeName), output, inputs, energy));
     }
 
     @ZenCodeType.Method
     public void addRecipe(String recipeName, IIngredient[][] inputs, IItemStack output, @ZenCodeType.OptionalFloat(1000) float energy) {
-        applyRecipeAddAction(CTRecipe.createWorkbenchRecipe(fixRecipeName(recipeName), output, inputs, energy));
+        applyRecipeAddAction(CTRecipe.createWorkbenchRecipe(validateRecipeName(recipeName), output, inputs, energy));
     }
 
     @ZenCodeType.Method
     public void addEnchantmentCopyRecipe(String recipeName, IIngredient[] copyFrom, IIngredient[][] otherInputs, IItemStack output, @ZenCodeType.OptionalFloat(1000) float energy) {
-        applyRecipeAddAction(CTRecipe.createEnchantmentCopyRecipe(fixRecipeName(recipeName), output, copyFrom, otherInputs, energy));
+        applyRecipeAddAction(CTRecipe.createEnchantmentCopyRecipe(validateRecipeName(recipeName), output, copyFrom, otherInputs, energy));
     }
 }
