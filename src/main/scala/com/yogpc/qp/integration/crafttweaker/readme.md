@@ -1,37 +1,32 @@
-package com.yogpc.qp.integration.crafttweaker;
+# Craft Tweaker Integration
 
-import com.blamejared.crafttweaker.api.CraftTweakerAPI;
-import com.blamejared.crafttweaker.api.annotations.ZenRegister;
-import com.blamejared.crafttweaker.api.item.IIngredient;
-import com.blamejared.crafttweaker.api.item.IItemStack;
-import com.blamejared.crafttweaker.api.managers.IRecipeManager;
-import com.blamejared.crafttweaker.impl.actions.recipes.ActionAddRecipe;
-import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.machines.workbench.WorkbenchRecipes;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.IRecipeType;
-import org.openzen.zencode.java.ZenCodeType;
+Files in this package adds the way to modify recipes of WorkbenchPlus. WorkbenchPlus is used to create some machines in
+this mod, and you can add/remove recipes via json in data packs. Now you can use CraftTweaker to change the recipe with
+powerful dynamic features CT provides. For users who want to know how to use CraftTweaker,
+see [wiki](https://docs.blamejared.com/1.16/en/index/).
 
-@ZenRegister
-@ZenCodeType.Name(WorkBenchCTRegister.packageName)
-public class WorkBenchCTRegister implements IRecipeManager {
-    public static final String packageName = "mods." + QuarryPlus.modID + ".WorkbenchPlus";
+## The instance to access WorkbenchPlus recipes
 
-    @ZenCodeType.Field
-    public static final WorkBenchCTRegister INSTANCE = new WorkBenchCTRegister();
+```groovy
+import mods.quarryplus.WorkbenchPlus;
 
-    private WorkBenchCTRegister() {
-    }
+var workbench = WorkbenchPlus.INSTANCE;
+// Also you can access with this way
+// var workbench = <recipetype:quarryplus:workbench_recipe>;
+```
 
-    @SuppressWarnings("rawtypes")
-    @Override
-    public IRecipeType getRecipeType() {
-        return WorkbenchRecipes.recipeType();
-    }
+The instance implements [`IRecipeManager`](https://docs.blamejared.com/1.16/en/recipes/recipe_managers/). The basic
+methods to get recipes or remove recipes are available via the instance.
 
-    private void applyRecipeAddAction(IRecipe<?> recipe) {
-        CraftTweakerAPI.apply(new ActionAddRecipe(this, recipe, ""));
-    }
+## How to add Workbench recipe
+
+I added some methods to add recipes. You can also use `addJSONRecipe(String, IData)` but I don't refer to it.
+
+The api is here.
+```java
+class WorkbenchPlus {
+    public static final WorkbenchPlus INSTANCE;
+
 
     /**
      * Add a recipe of ONE input and output.
@@ -50,9 +45,7 @@ public class WorkBenchCTRegister implements IRecipeManager {
      * @param energy     required energy. Unit [FE]
      */
     @ZenCodeType.Method
-    public void addSingleInputRecipe(String recipeName, IIngredient input, IItemStack output, @ZenCodeType.OptionalFloat(1000) float energy) {
-        applyRecipeAddAction(CTRecipe.createWorkbenchRecipe(validateRecipeName(recipeName), output, input, energy));
-    }
+    public void addSingleInputRecipe(String recipeName, IIngredient input, IItemStack output, @ZenCodeType.OptionalFloat(1000) float energy);
 
     /**
      * Add a recipe of multi inputs and one output.
@@ -71,9 +64,7 @@ public class WorkBenchCTRegister implements IRecipeManager {
      * @param energy     required energy. Unit [FE]
      */
     @ZenCodeType.Method
-    public void addMultiInputRecipe(String recipeName, IIngredient[] inputs, IItemStack output, @ZenCodeType.OptionalFloat(1000) float energy) {
-        applyRecipeAddAction(CTRecipe.createWorkbenchRecipe(validateRecipeName(recipeName), output, inputs, energy));
-    }
+    public void addMultiInputRecipe(String recipeName, IIngredient[] inputs, IItemStack output, @ZenCodeType.OptionalFloat(1000) float energy);
 
     /**
      * Add a recipe of multi inputs and one output.
@@ -96,9 +87,7 @@ public class WorkBenchCTRegister implements IRecipeManager {
      * @param energy     required energy. Unit [FE]
      */
     @ZenCodeType.Method
-    public void addRecipe(String recipeName, IIngredient[][] inputs, IItemStack output, @ZenCodeType.OptionalFloat(1000) float energy) {
-        applyRecipeAddAction(CTRecipe.createWorkbenchRecipe(validateRecipeName(recipeName), output, inputs, energy));
-    }
+    public void addRecipe(String recipeName, IIngredient[][] inputs, IItemStack output, @ZenCodeType.OptionalFloat(1000) float energy);
 
     /**
      * @param recipeName  the name of recipe. [a-z0-9/._-] is allowed.
@@ -108,7 +97,9 @@ public class WorkBenchCTRegister implements IRecipeManager {
      * @param energy      required energy. Unit [FE]
      */
     @ZenCodeType.Method
-    public void addEnchantmentCopyRecipe(String recipeName, IIngredient[] copyFrom, IIngredient[][] otherInputs, IItemStack output, @ZenCodeType.OptionalFloat(1000) float energy) {
-        applyRecipeAddAction(CTRecipe.createEnchantmentCopyRecipe(validateRecipeName(recipeName), output, copyFrom, otherInputs, energy));
-    }
+    public void addEnchantmentCopyRecipe(String recipeName, IIngredient[] copyFrom, IIngredient[][] otherInputs, IItemStack output, @ZenCodeType.OptionalFloat(1000) float energy);
 }
+```
+
+## Example
+See quarry_example.zs in this directory.
