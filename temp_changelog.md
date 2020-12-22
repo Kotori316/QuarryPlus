@@ -1,4 +1,9 @@
 **This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).**
+## Version 16.1.4
+* Added CraftTweaker script support. See document in "src/main/scala/com/yogpc/qp/integration/crafttweaker"
+* Send a message if you try to use quarry in chunks protected by FTBChunks.
+* Fixed a problem that Solid Fuel Quarry just removes blocks protected with break events.
+
 ## Version 16.1.3
 * Build with the new forge.
 
