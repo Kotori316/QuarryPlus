@@ -20,7 +20,6 @@ buildscript {
 }
 plugins {
     id("maven-publish")
-    id "com.wynprice.cursemaven" version "2.1.1"
     id "com.github.breadmoirai.github-release" version "2.2.12"
 }
 apply plugin: 'scala'
@@ -138,11 +137,11 @@ repositories {
             includeGroup("mezz.jei")
         }
     }
-    maven {
+    /*maven {
         // location of a maven mirror for JEI files, as a fallback
         name = "ModMaven-k-4u.nl"
         url = "https://modmaven.dev/"
-    }
+    }*/
     maven {
         name = "CraftTweaker"
         url = 'https://maven.blamejared.com'
@@ -185,7 +184,6 @@ dependencies {
     implementation fg.deobf("mezz.jei:jei-1.16.4:7.6.0.58")
     //noinspection SpellCheckingInspection
     implementation "com.blamejared.crafttweaker:CraftTweaker-1.16.4:7.1.0.71:deobf"
-//    compileOnly fg.deobf("curse.maven:mekanism:2894305")
     compileOnly(fg.deobf("com.feed_the_beast.mods:ftb-chunks:1604.2.2.54") {
         transitive = false
     })
