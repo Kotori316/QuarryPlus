@@ -137,11 +137,11 @@ repositories {
             includeGroup("mezz.jei")
         }
     }
-    maven {
+    /*maven {
         // location of a maven mirror for JEI files, as a fallback
         name = "ModMaven-k-4u.nl"
         url = "https://modmaven.dev/"
-    }
+    }*/
     maven {
         name = "CraftTweaker"
         url = 'https://maven.blamejared.com'
