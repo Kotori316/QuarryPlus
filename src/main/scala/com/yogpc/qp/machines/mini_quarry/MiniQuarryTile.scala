@@ -6,6 +6,7 @@ import cats.implicits._
 import com.mojang.serialization.Dynamic
 import com.yogpc.qp._
 import com.yogpc.qp.compat.InvUtils
+import com.yogpc.qp.integration.ftbchunks.QuarryChunkProtectionManager
 import com.yogpc.qp.machines.base._
 import com.yogpc.qp.machines.modules.{IModuleItem, ItemFuelModule}
 import com.yogpc.qp.machines.quarry.QuarryFakePlayer
@@ -166,6 +167,7 @@ class MiniQuarryTile extends APowerTile(Holder.miniQuarryType)
         if (!world.isRemote) PacketHandler.sendToClient(TileMessage.create(this), world)
       case _ =>
     }
+    QuarryChunkProtectionManager.sendProtectionNotification(QuarryFakePlayer.get(getWorld.asInstanceOf[ServerWorld], getPos)).accept(this)
     updateTargets(facing.getOpposite)
   }
 

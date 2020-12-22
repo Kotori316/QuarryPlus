@@ -18,6 +18,7 @@ import java.util.function.Consumer;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.BuildcraftHelper;
+import com.yogpc.qp.integration.ftbchunks.QuarryChunkProtectionManager;
 import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.IEnchantableTile;
 import com.yogpc.qp.machines.base.QPBlock;
@@ -91,7 +92,11 @@ public class BlockQuarry extends QPBlock {
             Direction facing = placer.getHorizontalFacing().getOpposite();
             worldIn.setBlockState(pos, state.with(FACING, facing), 2);
             Consumer<TileQuarry> consumer = IEnchantableTile.Util.initConsumer(stack);
-            Optional.ofNullable((TileQuarry) worldIn.getTileEntity(pos)).ifPresent(consumer.andThen(TileQuarry.requestTicket));
+            Optional.ofNullable((TileQuarry) worldIn.getTileEntity(pos)).ifPresent(
+                consumer
+                    .andThen(TileQuarry.requestTicket)
+                    .andThen(QuarryChunkProtectionManager.quarrySendProtectionNotification(placer))
+            );
         }
     }
 

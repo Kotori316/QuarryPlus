@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.BuildcraftHelper;
+import com.yogpc.qp.integration.ftbchunks.QuarryChunkProtectionManager;
 import com.yogpc.qp.machines.base.IEnchantableTile;
 import com.yogpc.qp.machines.base.QPBlock;
 import com.yogpc.qp.machines.base.StatusContainer;
@@ -96,7 +97,8 @@ public class BlockAdvQuarry extends QPBlock {
             Direction facing = Optional.ofNullable(placer).map(Entity::getHorizontalFacing).map(Direction::getOpposite).orElse(Direction.NORTH);
             worldIn.setBlockState(pos, state.with(FACING, facing), 2);
             Consumer<TileAdvQuarry> consumer = IEnchantableTile.Util.initConsumer(stack);
-            Optional.ofNullable((TileAdvQuarry) worldIn.getTileEntity(pos)).ifPresent(consumer.andThen(TileAdvQuarry.requestTicket));
+            Optional.ofNullable((TileAdvQuarry) worldIn.getTileEntity(pos)).ifPresent(consumer.andThen(TileAdvQuarry.requestTicket)
+                .andThen(QuarryChunkProtectionManager.sendProtectionNotification(placer)));
         }
     }
 

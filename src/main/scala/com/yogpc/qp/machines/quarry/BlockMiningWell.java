@@ -18,6 +18,7 @@ import java.util.Optional;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.BuildcraftHelper;
+import com.yogpc.qp.integration.ftbchunks.QuarryChunkProtectionManager;
 import com.yogpc.qp.machines.base.IEnchantableTile;
 import com.yogpc.qp.machines.base.QPBlock;
 import com.yogpc.qp.utils.Holder;
@@ -88,7 +89,8 @@ public class BlockMiningWell extends QPBlock {
         if (!worldIn.isRemote) {
             Direction facing = placer.getAdjustedHorizontalFacing().getOpposite();
             worldIn.setBlockState(pos, state.with(FACING, facing), 2);
-            Optional.ofNullable((IEnchantableTile) worldIn.getTileEntity(pos)).ifPresent(IEnchantableTile.Util.initConsumer(stack));
+            Optional.ofNullable((TileMiningWell) worldIn.getTileEntity(pos)).ifPresent(IEnchantableTile.Util.<TileMiningWell>initConsumer(stack)
+                .andThen(QuarryChunkProtectionManager.minerSendProtectionNotification(placer)));
         }
     }
 
