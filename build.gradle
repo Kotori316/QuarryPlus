@@ -186,7 +186,7 @@ dependencies {
     //noinspection SpellCheckingInspection
     implementation "com.blamejared.crafttweaker:CraftTweaker-1.16.4:7.1.0.71:deobf"
 //    compileOnly fg.deobf("curse.maven:mekanism:2894305")
-    implementation(fg.deobf("com.feed_the_beast.mods:ftb-chunks:1604.2.2.54") {
+    compileOnly(fg.deobf("com.feed_the_beast.mods:ftb-chunks:1604.2.2.54") {
         transitive = false
     })
     implementation(fg.deobf("com.feed_the_beast.mods:ftb-gui-library:1604.1.1.26") {
