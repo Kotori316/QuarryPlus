@@ -44,7 +44,7 @@ object Config {
     val removeBedrock: ForgeConfigSpec.BooleanValue = addBoolOption(builder.comment("True to allow machines to remove bedrock. (Just removing. Not collecting)").define("RemoveBedrock", false))
     val collectBedrock: ForgeConfigSpec.BooleanValue = addBoolOption(builder.comment("True to enable ChunkDestroyer to collect bedrock as item.").define("CollectBedrock", false))
     val disableFrameChainBreak: ForgeConfigSpec.BooleanValue = addBoolOption(builder.comment("DisableFrameChainBreak").define("DisableFrameChainBreak", false))
-    val removeOnlySource: ForgeConfigSpec.BooleanValue = addBoolOption(builder.comment("Set false to allow PlumPlus to remove non-source fluid block.").define("RemoveOnlyFluidSource", false))
+    val removeOnlySource: ForgeConfigSpec.BooleanValue = addBoolOption(builder.comment("Set false to allow PumpPlus to remove non-source fluid block.").define("RemoveOnlyFluidSource", false))
     val enableRSControl: ForgeConfigSpec.BooleanValue = addBoolOption(builder.comment("True to enable RS control of machines.").define("EnableRSControl", false))
     val quarryRangeLimit: ForgeConfigSpec.IntValue = builder.comment("Range limit of ChunkDestroyer. set -1 to disable. The unit of number is `blocks`. 16 = 1 chunk.")
       .defineInRange("QuarryRangeLimit", -1, -1, Int.MaxValue)
@@ -58,9 +58,13 @@ object Config {
     private[this] val spawnerBlacklist_internal = builder.comment("Spawner Controller Blacklist")
       .defineList("spawnerBlacklist", disabledEntities.asJava, s => s.isInstanceOf[String])
 
-
     val powers: Map[String, ForgeConfigSpec.DoubleValue] = powerConfig(builder)
     val disabled: Map[Symbol, ForgeConfigSpec.BooleanValue] = disableConfig(builder)
+    builder.pop()
+
+    builder.comment("Integration with other mods").push("integration")
+    val sendNotificationOfChunkProtection: ForgeConfigSpec.BooleanValue = addBoolOption(builder.comment("False to disable notification of chunk protection by FTBChunks")
+      .define("SendNotificationOfChunkProtection", true))
     builder.pop()
 
     def debug: Boolean = inDev || configDebug.get()

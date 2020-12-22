@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 import com.feed_the_beast.mods.ftbchunks.api.ChunkDimPos;
 import com.feed_the_beast.mods.ftbchunks.api.ClaimedChunk;
 import com.feed_the_beast.mods.ftbchunks.api.FTBChunksAPI;
+import com.yogpc.qp.Config;
 import com.yogpc.qp.machines.base.Area;
 import com.yogpc.qp.machines.base.IRemotePowerOn;
 import com.yogpc.qp.machines.quarry.QuarryFakePlayer;
@@ -35,11 +36,23 @@ public class QuarryChunkProtectionManager {
     public static boolean hasProtectionMod() {
         int pre = IS_LOADED.get();
         if (pre == -1) {
-            IS_LOADED.lazySet(ModList.get().isLoaded(CHUNK_MOD_ID) ? 1 : 0);
+            IS_LOADED.lazySet(isModLoaded() ? 1 : 0);
             return IS_LOADED.get() == 1;
         } else {
             // Already checked the status.
             return pre == 1;
+        }
+    }
+
+    private static boolean isModLoaded() {
+        if (ModList.get().isLoaded(CHUNK_MOD_ID)) {
+            try {
+                return Config.common().sendNotificationOfChunkProtection().get();
+            } catch (Exception ignore) {
+                return true;
+            }
+        } else {
+            return false;
         }
     }
 
