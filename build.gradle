@@ -151,6 +151,14 @@ repositories {
             includeModule("com.blamejared.crafttweaker", "CraftTweaker-1.16.4")
         }
     }
+    maven {
+        name = "FTB"
+        url = "https://maven.latmod.com/"
+        content {
+            includeModule("com.feed_the_beast.mods", "ftb-chunks")
+            includeModule("com.feed_the_beast.mods", "ftb-gui-library")
+        }
+    }
 
     if (isInCI()) {
         maven {
@@ -178,6 +186,12 @@ dependencies {
     //noinspection SpellCheckingInspection
     implementation "com.blamejared.crafttweaker:CraftTweaker-1.16.4:7.1.0.71:deobf"
 //    compileOnly fg.deobf("curse.maven:mekanism:2894305")
+    implementation(fg.deobf("com.feed_the_beast.mods:ftb-chunks:1604.2.2.54") {
+        transitive = false
+    })
+    implementation(fg.deobf("com.feed_the_beast.mods:ftb-gui-library:1604.1.1.26") {
+        transitive = false
+    })
 
     // Test Dependencies.
     implementation(group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.7.0')
