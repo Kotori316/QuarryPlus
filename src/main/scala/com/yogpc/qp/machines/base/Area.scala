@@ -4,6 +4,7 @@ import cats.Show
 import cats.data.{OptionT, ValidatedNel}
 import cats.implicits._
 import com.yogpc.qp._
+import javax.annotation.Nullable
 import net.minecraft.nbt.{CompoundNBT, NBTDynamicOps}
 import net.minecraft.util.math.vector.Vector3i
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos, ChunkPos}
@@ -23,6 +24,8 @@ case class Area(xMin: Int, yMin: Int, zMin: Int, xMax: Int, yMax: Int, zMax: Int
     else
       world
   }
+
+  @Nullable def getDimensionType: RegistryKey[World] = dimensionType
 }
 
 object Area {
