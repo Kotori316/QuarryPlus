@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.BuildcraftHelper;
+import com.yogpc.qp.integration.ftbchunks.QuarryChunkProtectionManager;
 import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.IEnchantableTile;
 import com.yogpc.qp.machines.base.QPBlock;
@@ -50,7 +51,7 @@ public class BlockQuarry2 extends QPBlock {
             worldIn.setBlockState(pos, state.with(FACING, facing), 2);
             Consumer<TileQuarry2> consumer = IEnchantableTile.Util.initConsumer(stack);
             Optional.ofNullable(worldIn.getTileEntity(pos)).flatMap(optCast(TileQuarry2.class))
-                .ifPresent(consumer.andThen(TileQuarry2.requestTicket));
+                .ifPresent(consumer.andThen(TileQuarry2.requestTicket).andThen(QuarryChunkProtectionManager.sendProtectionNotification(placer)));
         }
     }
 

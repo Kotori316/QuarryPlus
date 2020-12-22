@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.BuildcraftHelper;
+import com.yogpc.qp.integration.ftbchunks.QuarryChunkProtectionManager;
 import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.QPBlock;
 import com.yogpc.qp.utils.Holder;
@@ -51,6 +52,7 @@ public class BlockSolidQuarry extends QPBlock {
             Optional.ofNullable((TileSolidQuarry) worldIn.getTileEntity(pos)).ifPresent(t -> {
                 t.G_ReInit();
                 TileSolidQuarry.requestTicket.accept(t);
+                QuarryChunkProtectionManager.quarrySendProtectionNotification(placer).accept(t);
             });
         }
     }
