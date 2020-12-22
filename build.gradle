@@ -20,7 +20,6 @@ buildscript {
 }
 plugins {
     id("maven-publish")
-    id "com.wynprice.cursemaven" version "2.1.1"
     id "com.github.breadmoirai.github-release" version "2.2.12"
 }
 apply plugin: 'scala'
@@ -177,7 +176,6 @@ dependencies {
     implementation fg.deobf("mezz.jei:jei-1.16.4:7.6.0.58")
     //noinspection SpellCheckingInspection
     implementation "com.blamejared.crafttweaker:CraftTweaker-1.16.4:7.1.0.71:deobf"
-//    compileOnly fg.deobf("curse.maven:mekanism:2894305")
 
     // Test Dependencies.
     implementation(group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.7.0')
