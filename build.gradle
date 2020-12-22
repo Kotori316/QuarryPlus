@@ -189,7 +189,8 @@ dependencies {
     compileOnly(fg.deobf("com.feed_the_beast.mods:ftb-chunks:1604.2.2.54") {
         transitive = false
     })
-    implementation(fg.deobf("com.feed_the_beast.mods:ftb-gui-library:1604.1.1.26") {
+    // This mod cause crash when running data generation
+    compileOnly(fg.deobf("com.feed_the_beast.mods:ftb-gui-library:1604.1.1.26") {
         transitive = false
     })
 
