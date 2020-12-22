@@ -104,7 +104,7 @@ public class TileMiningWell extends TileBasic implements ITickableTileEntity {
         assert world != null;
         final BlockState b = world.getBlockState(pos);
         final float h = b.getBlockHardness(world, pos);
-        if (h < 0 || b.getBlock() == Holder.blockPlainPipe() || b.getBlock().isAir(b, world, pos)) {
+        if (h < 0 || b.getBlock() == Holder.blockPlainPipe() || b.getBlock().isAir(b, world, pos) || skipped.contains(pos)) {
             return false;
         }
         if (!facingMap.containsKey(IAttachment.Attachments.FLUID_PUMP) && TilePump.isLiquid(b))

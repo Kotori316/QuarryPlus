@@ -216,7 +216,8 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
         return blockHardness >= 0 && // Not to break unbreakable
             !b.getBlock().isAir(b, world, target) && // Avoid air
             (now == Mode.NOT_NEED_BREAK || !facingMap.containsKey(REPLACER) || b != S_getFillBlock()) && // Avoid dummy block.
-            !(TilePump.isLiquid(b) && !facingMap.containsKey(FLUID_PUMP)); // Fluid when pump isn't connected.
+            !(TilePump.isLiquid(b) && !facingMap.containsKey(FLUID_PUMP)) && // Fluid when pump isn't connected.
+            !skipped.contains(target); //Not skipped(unbreakable by events)
     }
 
     private boolean addX = true;
@@ -272,6 +273,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                         this.dug = false;
                     else {
                         this.targetY--;
+                        skipped.clear();
                         final double aa = S_getDistance(this.xMin + 1, this.targetY, this.zMin + out);
                         final double ad = S_getDistance(this.xMin + 1, this.targetY, this.zMax - out);
                         final double da = S_getDistance(this.xMax - 1, this.targetY, this.zMin + out);

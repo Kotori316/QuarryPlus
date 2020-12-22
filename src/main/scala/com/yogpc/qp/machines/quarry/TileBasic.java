@@ -101,6 +101,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
 
     protected final LinkedList<ItemStack> cacheItems = new LinkedList<>();
     protected final IItemHandler handler = createHandler();
+    protected final Set<BlockPos> skipped = new HashSet<>();
 
     protected Map<ResourceLocation, Integer> ench = new HashMap<>();
 
@@ -179,6 +180,10 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
             facingMap.containsKey(IAttachment.Attachments.REPLACER), true, blockState))
             return false;
         int xp = S_addDroppedItems(dropped, blockState, pos, fakePlayer);
+        if (xp == -1) {
+            skipped.add(pos);
+            return true;// Break event was canceled.
+        }
         this.cacheItems.addAll(dropped);
         modules.forEach(m -> m.invoke(new IModule.AfterBreak(world, pos, blockState, world.getGameTime(), xp)));
 
@@ -234,11 +239,12 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
 
     private int S_addDroppedItems(final Collection<ItemStack> collection, final BlockState state, final BlockPos pos, PlayerEntity fakePlayer) {
         assert world != null;
-        int xp = 0;
+        int xp = -1;
 
         BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(world, pos, state, fakePlayer);
         MinecraftForge.EVENT_BUS.post(event);
         if (!event.isCanceled()) {
+            xp = 0;
             Set<ItemStack> rawItems;
 
             NonNullList<ItemStack> list = NonNullList.create();
