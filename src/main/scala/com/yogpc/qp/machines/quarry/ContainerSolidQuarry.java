@@ -14,6 +14,7 @@ import net.minecraft.util.math.BlockPos;
 public class ContainerSolidQuarry extends Container {
     private final TileSolidQuarry quarry;
     public final IntReferenceHolder fuelCount;
+    public final IntReferenceHolder internalFECount;
 
     public ContainerSolidQuarry(int id, PlayerEntity player, BlockPos pos) {
         super(Holder.solidQuarryContainerType(), id);
@@ -32,6 +33,7 @@ public class ContainerSolidQuarry extends Container {
             this.addSlot(new Slot(player.inventory, vertical, 8 + vertical * oneBox, 142));
         }
         fuelCount = this.trackInt(IntReferenceHolder.create(quarry.fuelCountAccessor, 0));
+        internalFECount = this.trackInt(IntReferenceHolder.create(quarry.fuelCountAccessor, 1));
     }
 
     @Override

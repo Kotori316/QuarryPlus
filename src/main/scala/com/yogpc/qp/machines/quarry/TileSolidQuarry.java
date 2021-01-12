@@ -36,17 +36,32 @@ public class TileSolidQuarry extends TileQuarry implements INamedContainerProvid
         fuelCountAccessor = new IIntArray() {
             @Override
             public int get(int index) {
-                return fuelCount;
+                switch (index) {
+                    case 0:
+                        return fuelCount;
+                    case 1:
+                        return (int) (getStoredEnergy() / FEtoMicroJ);
+                    default:
+                        return 0;
+                }
             }
 
             @Override
             public void set(int index, int value) {
-                fuelCount = value;
+                switch (index) {
+                    case 0:
+                        fuelCount = value;
+                        break;
+                    case 1:
+                        setStoredEnergy(value * FEtoMicroJ);
+                        break;
+                    default:
+                }
             }
 
             @Override
             public int size() {
-                return 1;
+                return 2;
             }
         };
     }

@@ -34,5 +34,7 @@ public class GuiSolidQuarry extends ContainerScreen<ContainerSolidQuarry> {
     protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, final int mouseX, final int mouseY) {
         super.drawGuiContainerForegroundLayer(matrixStack, mouseX, mouseY);
         this.font.drawString(matrixStack, "Fuel: " + getContainer().fuelCount.get(), 110, 6, 0x404040);
+        int feColor = getContainer().internalFECount.get() > 0 ? 0x404040 : 0x904040;
+        this.font.drawString(matrixStack, "Internal: " + getContainer().internalFECount.get() + "FE", 70, playerInventoryTitleY, feColor);
     }
 }
