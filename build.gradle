@@ -199,7 +199,7 @@ dependencies {
     implementation(group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.7.0')
 
     if (isInCI()) {
-        runtimeOnly(group: 'com.kotori316', name: 'ScalableCatsForce'.toLowerCase(Locale.ROOT), version: '2.13.4-build-1', classifier: 'dev')
+        runtimeOnly(group: 'com.kotori316', name: 'ScalableCatsForce'.toLowerCase(Locale.ROOT), version: '2.13.4-build-2', classifier: 'dev')
     }
 }
 
