@@ -1,4 +1,9 @@
 **This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).**
+## Version 16.1.5
+* Fixed the internal energy of Solid Fuel Quarry goes to under 0.
+* Added French lang file.
+* Update to Minecraft 1.16.5
+
 ## Version 16.1.4
 * Added CraftTweaker script support. See document in "src/main/scala/com/yogpc/qp/integration/crafttweaker"
 * Send a message if you try to use quarry in chunks protected by FTBChunks.

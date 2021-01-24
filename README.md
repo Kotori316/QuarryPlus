@@ -8,31 +8,50 @@
 
 CurseForge - https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner
 
-Finished Work
+## Finished Work
+
 * Marker
-  * Renderer
+    * Renderer
 * Workbench
-  * JEI support
+    * JEI support
 * ExpPump
 * EnchantMover
-  * JEI support
+    * JEI support
 * Miningwell
 * PlainPipe
 * QuarryFrame
 * Quarry
-  * Renderer
+    * Renderer
 * Solid Fuel Quarry
-  * Renderer
+    * Renderer
 * PumpPlus
 * Replacer
 * Dummy Block
-  * Renderer
+    * Renderer
 * Book Mover
-  * JEI support
+    * JEI support
 * Spawner Controller
 * Advanced Pump
 * Chunk Destroyer
-  * Renderer
+    * Renderer
 * Placer Plus
-  * Including 2 functions, placing and breaking.
+    * Including 2 functions, placing and breaking.
 * Mini Quarry
+
+## Maven repo
+
+See [here](https://dev.azure.com/Kotori316/minecraft/_packaging?_a=package&feed=mods%40Local&package=com.kotori316%3Aadditionalenchantedminer&protocolType=maven&view=versions)
+to get other versions.
+
+```groovy
+repositories {
+    maven {
+        name "Kotori316 Azure Maven"
+        url = uri("https://pkgs.dev.azure.com/Kotori316/minecraft/_packaging/mods/maven/v1")
+    }
+}
+dependencies {
+    // https://dev.azure.com/Kotori316/minecraft/_packaging?_a=package&feed=mods%40Local&package=com.kotori316%3Aadditionalenchantedminer&protocolType=maven&view=versions
+    implementation(fg.deobf("com.kotori316:AdditionalEnchantedMiner:VERSION".toLowerCase(Locale.ROOT)))
+}
+```
