@@ -176,8 +176,10 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
             i = 0;
         }
         fakePlayer.setHeldItem(Hand.MAIN_HAND, pickaxe);
-        if (!PowerManager.useEnergyBreak(this, blockState.getBlockHardness(world, pos), i, this.unbreaking,
-            facingMap.containsKey(IAttachment.Attachments.REPLACER), true, blockState))
+        float blockHardness = blockState.getBlockHardness(world, pos);
+        boolean replacer = facingMap.containsKey(IAttachment.Attachments.REPLACER);
+        if (this.getStoredEnergy() < PowerManager.calcEnergyBreak(blockHardness, i, this.unbreaking) ||
+            !PowerManager.useEnergyBreak(this, blockHardness, i, this.unbreaking, replacer, true, blockState))
             return false;
         int xp = S_addDroppedItems(dropped, blockState, pos, fakePlayer);
         if (xp == -1) {

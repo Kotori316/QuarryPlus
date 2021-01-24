@@ -222,12 +222,10 @@ public class PowerManager {
             BP = MiningWell_BP;
             CU = MiningWell_CU;
             CSP = enchantMode < 0 ? MiningWell_CS : Math.pow(MiningWell_CF, enchantMode);
+            return BP * hardness * CSP / (unbreaking * CU + 1);
         } else {
-            BP = QuarryWork_BP;
-            CU = QuarryWork_CU;
-            CSP = enchantMode < 0 ? QuarryWork_CS : Math.pow(QuarryWork_CF, enchantMode);
+            return calcEnergyBreak(hardness, enchantMode, unbreaking);
         }
-        return BP * hardness * CSP / (unbreaking * CU + 1);
     }
 
     /**
