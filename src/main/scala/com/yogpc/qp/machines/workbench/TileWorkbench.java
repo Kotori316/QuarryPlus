@@ -65,7 +65,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
     private WorkbenchRecipes currentRecipe = WorkbenchRecipes.dummyRecipe();
     private final ItemHandler itemHandler = new ItemHandler();
     public boolean workContinue;
-    public boolean noEnergy = false;
+    public boolean noEnergy = false; // Just for debugging. Use stick to machine in debug mode.
 
     public TileWorkbench() {
         super(Holder.workbenchTileType());
@@ -98,6 +98,8 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
                 noEnergy = false;
             } else if (Config.common().noEnergy().get() || noEnergy) {
                 getEnergy(currentRecipe.microEnergy() / 200, true, true); // 10 second to full.
+            } else {
+                getEnergy(Config.common().workbenchTickBonus().get() * APowerTile.FEtoMicroJ, true, true);
             }
         }
         if (!openPlayers.isEmpty() /*&& !world.isRemote */) {

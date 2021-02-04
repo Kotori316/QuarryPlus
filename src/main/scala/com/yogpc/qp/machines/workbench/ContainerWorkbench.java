@@ -2,6 +2,7 @@ package com.yogpc.qp.machines.workbench;
 
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.base.APowerTile;
 import com.yogpc.qp.machines.base.SlotUnlimited;
 import com.yogpc.qp.machines.base.SlotWorkbench;
 import com.yogpc.qp.utils.Holder;
@@ -24,6 +25,8 @@ public class ContainerWorkbench extends Container {
     final IntReferenceHolder isWorking = this.trackInt(IntReferenceHolder.single());
     final IntReferenceHolder workContinue = this.trackInt(IntReferenceHolder.single());
     final IntReferenceHolder recipeIndex = this.trackInt(IntReferenceHolder.single());
+    final IntReferenceHolder currentEnergy = this.trackInt(IntReferenceHolder.single());
+    final IntReferenceHolder requiredEnergy = this.trackInt(IntReferenceHolder.single());
 
     public ContainerWorkbench(int id, final PlayerEntity player, BlockPos pos) {
         super(Holder.workbenchContainerType(), id);
@@ -61,6 +64,9 @@ public class ContainerWorkbench extends Container {
         isWorking.set(this.tile.isWorking() ? 1 : 0);
         workContinue.set(this.tile.workContinue ? 1 : 0);
         recipeIndex.set(this.tile.getRecipeIndex());
+        long required = recipeIndex.get() == -1 ? 0 : this.tile.recipesList.get(recipeIndex.get()).energy();
+        requiredEnergy.set((int) (required / APowerTile.FEtoMicroJ));
+        currentEnergy.set(this.tile.getEnergyStored());
     }
 
     @Override

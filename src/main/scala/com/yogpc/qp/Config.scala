@@ -40,6 +40,8 @@ object Config {
     val noEnergy: ForgeConfigSpec.BooleanValue = addBoolOption(builder.comment("True to make machines work with no energy.").define("NoEnergy", false))
     val workbenchMaxReceive: ForgeConfigSpec.IntValue = builder.comment("Amount of energy WorkbenchPlus can receive in a tick. [MJ]")
       .defineInRange("WorkbenchMaxReceive", 250, 0, Int.MaxValue)
+    val workbenchTickBonus: ForgeConfigSpec.IntValue = builder.comment("The amount of energy(FE) workbench receives in a tick.")
+      .defineInRange("WorkbenchTickBonus", 5, 0, Int.MaxValue)
     val fastQuarryHeadMove: ForgeConfigSpec.BooleanValue = addBoolOption(builder.comment("Fasten quarry's head moving.").define("FastQuarryHeadMove", false))
     val removeBedrock: ForgeConfigSpec.BooleanValue = addBoolOption(builder.comment("True to allow machines to remove bedrock. (Just removing. Not collecting)").define("RemoveBedrock", false))
     val collectBedrock: ForgeConfigSpec.BooleanValue = addBoolOption(builder.comment("True to enable ChunkDestroyer to collect bedrock as item.").define("CollectBedrock", false))
