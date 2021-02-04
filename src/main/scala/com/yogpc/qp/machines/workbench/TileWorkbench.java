@@ -42,11 +42,14 @@ import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.concurrent.TickDelayedTask;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
@@ -66,6 +69,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
     private final ItemHandler itemHandler = new ItemHandler();
     public boolean workContinue;
     public boolean noEnergy = false; // Just for debugging. Use stick to machine in debug mode.
+    private Runnable initRecipeTask = null;
 
     public TileWorkbench() {
         super(Holder.workbenchTileType());
@@ -124,6 +128,13 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
             inventory.set(j, stack);
         });
         markDirty();
+        if (nbt.contains("RecipeIndex")) {
+            int recipeIndex = nbt.getInt("RecipeIndex");
+            initRecipeTask = () -> {
+                updateRecipeOutputs();
+                setCurrentRecipeIndex(recipeIndex);
+            };
+        }
     }
 
     @Override
@@ -139,6 +150,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
             list.add(compoundNBT);
         }
         nbt.put("Items", list);
+        nbt.putInt("RecipeIndex", getRecipeIndex());
         return super.write(nbt);
     }
 
@@ -201,6 +213,15 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
     @Override
     public void markDirty() {
         super.markDirty();
+    }
+
+    @Override
+    public void onLoad() {
+        if (world != null && !world.isRemote() && this.initRecipeTask != null) {
+            MinecraftServer server = ((ServerWorld) world).getServer();
+            server.enqueue(new TickDelayedTask(server.getTickCounter(), this.initRecipeTask));
+            this.initRecipeTask = null;
+        }
     }
 
     private void updateRecipeOutputs() {

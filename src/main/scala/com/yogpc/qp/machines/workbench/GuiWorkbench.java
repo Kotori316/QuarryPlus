@@ -27,8 +27,8 @@ public class GuiWorkbench extends ContainerScreen<ContainerWorkbench> {
         super.drawGuiContainerForegroundLayer(matrixStack, mouseX, mouseY);
         if (getContainer().requiredEnergy.get() != 0) {
             String current = getContainer().currentEnergy.get() + "FE";
-            this.font.drawString(matrixStack, String.format("%s / %d", current, getContainer().requiredEnergy.get()),
-                110 - this.font.getStringWidth(current), (float) this.playerInventoryTitleY, 0x404040);
+            this.font.drawString(matrixStack, String.format("%s/%d", current, getContainer().requiredEnergy.get()),
+                120 - this.font.getStringWidth(current), (float) this.playerInventoryTitleY, 0x404040);
         }
     }
 
