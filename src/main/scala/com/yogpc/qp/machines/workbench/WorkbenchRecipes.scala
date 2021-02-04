@@ -1,7 +1,7 @@
 package com.yogpc.qp.machines.workbench
 
 import java.nio.charset.StandardCharsets
-import java.util.{Collections, Comparator}
+import java.util.Collections
 
 import cats.data._
 import cats.implicits._
@@ -93,8 +93,8 @@ object WorkbenchRecipes {
 
   val dummyRecipe: WorkbenchRecipes = DummyRecipe
 
-  val recipeOrdering: Comparator[WorkbenchRecipes] =
-    Ordering.by((a: WorkbenchRecipes) => a.energy) thenComparing Ordering.by((a: WorkbenchRecipes) => Item.getIdFromItem(a.output.itemDamage.item))
+  val recipeOrdering: Ordering[WorkbenchRecipes] =
+    Ordering.by((a: WorkbenchRecipes) => a.energy) orElse Ordering.by((a: WorkbenchRecipes) => Item.getIdFromItem(a.output.itemDamage.item))
 
   val recipeLocation = new ResourceLocation(QuarryPlus.modID, "workbench_recipe")
   val recipeType: IRecipeType[WorkbenchRecipes] = IRecipeType.register[WorkbenchRecipes](recipeLocation.toString)

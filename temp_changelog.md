@@ -1,4 +1,8 @@
 **This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).**
+## Version 16.1.6
+* Restore the setting of Workbench when world is loaded.
+* Add workbench bonus(5FE/t) to avoid report of energy connection and internal energy showing. Close #113
+
 ## Version 16.1.5
 * Fixed the internal energy of Solid Fuel Quarry goes to under 0.
 * Added French lang file.
