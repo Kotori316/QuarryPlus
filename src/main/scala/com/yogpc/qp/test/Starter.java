@@ -51,8 +51,9 @@ public final class Starter implements IDataProvider {
         LOGGER.info("---------- Class Path ----------");
         Arrays.asList("java.class.path", "java.library.path", "sun.boot.class.path").forEach(s -> {
             LOGGER.info(s);
-            Arrays.stream(System.getProperty(s)
-                .split(System.getProperty("path.separator"))).sorted().distinct().forEach(LOGGER::info);
+            String t = System.getProperty(s);
+            if (t != null)
+                Arrays.stream(t.split(System.getProperty("path.separator"))).sorted().distinct().forEach(LOGGER::info);
         });
         LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
             .selectors(
@@ -78,6 +79,10 @@ public final class Starter implements IDataProvider {
 
         LOGGER.info("---------- Starting Tests ----------");
         TestPlan plan = launcher.discover(request);
+        if (!plan.containsTests()) {
+            LOGGER.warn("Contains no tests.");
+            return;
+        }
         for (TestIdentifier root : plan.getRoots()) {
             for (TestIdentifier child : plan.getChildren(root)) {
                 LOGGER.info("Test found: {}", child);
