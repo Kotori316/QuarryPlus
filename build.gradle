@@ -194,8 +194,10 @@ dependencies {
     })
 
     // Test Dependencies.
-    implementation(group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.7.0')
-    runtimeOnly(group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.7.0')
+    final def JUPITER_VERSION = '5.7.0'
+    implementation(group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: JUPITER_VERSION)
+    implementation(group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: JUPITER_VERSION)
+    runtimeOnly(group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: JUPITER_VERSION)
     // https://mvnrepository.com/artifact/org.junit.platform/junit-platform-launcher
     implementation(group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.7.0')
 
