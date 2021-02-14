@@ -7,9 +7,9 @@ import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import jp.t2v.lab.syntax.MapStreamSyntax;
 import net.minecraft.data.DirectoryCache;
@@ -44,12 +44,7 @@ public final class Starter implements IDataProvider {
             .map(MapStreamSyntax.toEntry(Function.identity(), System.getProperties()::getProperty))
             .map(MapStreamSyntax.toAny((k, v) -> k + "=" + v))
             .forEach(LOGGER::info);
-        LOGGER.info("---------- Env ----------");
-        System.getenv().entrySet().stream()
-            .sorted(Map.Entry.comparingByKey())
-            .filter(MapStreamSyntax.byKey(s -> !s.toLowerCase().contains("token")))
-            .map(MapStreamSyntax.toAny((s, s2) -> s + "=" + s2))
-            .forEach(LOGGER::info);
+
         LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
             .selectors(
                 selectPackage("com.kotori316.test_qp"),
@@ -85,6 +80,8 @@ public final class Starter implements IDataProvider {
             try (BufferedWriter w = Files.newBufferedWriter(Paths.get("..", "error-trace.txt"));
                  PrintWriter writer = new PrintWriter(w)) {
                 errors.forEach(t -> t.printStackTrace(writer));
+                writer.println();
+                summary.printFailuresTo(writer);
             } catch (IOException e) {
                 LOGGER.error("File IO", e);
             }
@@ -92,7 +89,11 @@ public final class Starter implements IDataProvider {
     }
 
     private static boolean isInCI() {
-        return Boolean.parseBoolean(System.getenv("GITHUB_ACTIONS"));
+        return Stream.of(
+            "GITHUB_ACTIONS", "CI"
+        ).map(System::getenv)
+            .map(Boolean::valueOf)
+            .reduce(Boolean.FALSE, Boolean::logicalOr);
     }
 
     @Override
