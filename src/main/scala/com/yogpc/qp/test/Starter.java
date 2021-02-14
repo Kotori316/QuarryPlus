@@ -6,8 +6,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -20,14 +20,17 @@ import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.junit.platform.launcher.Launcher;
 import org.junit.platform.launcher.LauncherDiscoveryRequest;
+import org.junit.platform.launcher.TestIdentifier;
+import org.junit.platform.launcher.TestPlan;
 import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
 import org.junit.platform.launcher.core.LauncherFactory;
+import org.junit.platform.launcher.listeners.LoggingListener;
 import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectPackage;
 
-public class Starter implements IDataProvider {
+public final class Starter implements IDataProvider {
     private static final Starter INSTANCE = new Starter();
     private static final Logger LOGGER = LogManager.getLogger("QuarryPlus/TestExecutor");
     private static final Marker MARKER = MarkerManager.getMarker("QUARRYPLUS_TEST");
@@ -41,15 +44,16 @@ public class Starter implements IDataProvider {
         LOGGER.info("---------- System properties ----------");
         System.getProperties().stringPropertyNames().stream()
             .sorted()
+            .filter(s -> !s.contains("path"))
             .map(MapStreamSyntax.toEntry(Function.identity(), System.getProperties()::getProperty))
             .map(MapStreamSyntax.toAny((k, v) -> k + "=" + v))
             .forEach(LOGGER::info);
-        LOGGER.info("---------- Env ----------");
-        System.getenv().entrySet().stream()
-            .sorted(Map.Entry.comparingByKey())
-            .filter(MapStreamSyntax.byKey(s -> !s.toLowerCase().contains("token")))
-            .map(MapStreamSyntax.toAny((s, s2) -> s + "=" + s2))
-            .forEach(LOGGER::info);
+        LOGGER.info("---------- Class Path ----------");
+        Arrays.asList("java.class.path", "java.library.path", "sun.boot.class.path").forEach(s -> {
+            LOGGER.info(s);
+            Arrays.stream(System.getProperty(s)
+                .split(System.getProperty("path.separator"))).sorted().distinct().forEach(LOGGER::info);
+        });
         LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
             .selectors(
                 selectPackage("com.kotori316.test_qp"),
@@ -67,13 +71,21 @@ public class Starter implements IDataProvider {
 
         Launcher launcher = LauncherFactory.create();
 
-        // Register a listener of your choice
-        SummaryGeneratingListener listener = new SummaryGeneratingListener();
-        launcher.registerTestExecutionListeners(listener);
+        // Register a summaryGeneratingListener of your choice
+        SummaryGeneratingListener summaryGeneratingListener = new SummaryGeneratingListener();
+        LoggingListener loggingListener = LoggingListener.forBiConsumer((t, s) -> LOGGER.info(s.get(), t));
+        launcher.registerTestExecutionListeners(summaryGeneratingListener, loggingListener);
 
-        launcher.execute(request);
+        LOGGER.info("---------- Starting Tests ----------");
+        TestPlan plan = launcher.discover(request);
+        for (TestIdentifier root : plan.getRoots()) {
+            for (TestIdentifier child : plan.getChildren(root)) {
+                LOGGER.info("Test found: {}", child);
+            }
+        }
+        launcher.execute(plan);
 
-        TestExecutionSummary summary = listener.getSummary();
+        TestExecutionSummary summary = summaryGeneratingListener.getSummary();
         // Do something with the TestExecutionSummary.
         StringWriter stream = new StringWriter();
         summary.printTo(new PrintWriter(stream));

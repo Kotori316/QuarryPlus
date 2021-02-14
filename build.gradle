@@ -46,6 +46,7 @@ archivesBaseName = 'AdditionalEnchantedMiner-1.16.5'
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 compileScala.sourceCompatibility = compileScala.targetCompatibility = '1.8'
 compileScala.options.compilerArgs.add("-Xlint:all")
+compileScala.options.compilerArgs.add("-feature")
 
 static String mappingVersion() { return '20201028-1.16.3' }
 
