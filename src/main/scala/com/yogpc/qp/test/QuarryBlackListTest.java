@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class QuarryBlackListTest {
+final class QuarryBlackListTest {
     static Executable entryTest(QuarryBlackList.Entry entry, BlockState state) {
         return () -> assertTrue(entry.test(state, EmptyBlockReader.INSTANCE, BlockPos.ZERO), String.format("Test of %s for %s.", entry, state));
     }

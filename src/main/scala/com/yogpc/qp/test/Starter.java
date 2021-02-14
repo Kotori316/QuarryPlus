@@ -27,7 +27,7 @@ import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectPackage;
 
-public class Starter implements IDataProvider {
+public final class Starter implements IDataProvider {
     private static final Starter INSTANCE = new Starter();
     private static final Logger LOGGER = LogManager.getLogger("QuarryPlus/TestExecutor");
     private static final Marker MARKER = MarkerManager.getMarker("QUARRYPLUS_TEST");
