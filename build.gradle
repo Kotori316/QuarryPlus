@@ -50,7 +50,7 @@ compileScala.options.compilerArgs.add("-Xlint:all")
 static String mappingVersion() { return '20201028-1.16.3' }
 
 String forgeVersion() {
-    if (isInCI() && System.getenv("CI_FORGE") != null && "latest" != System.getenv("CI_FORGE")) {
+    if (isInCI() && System.getenv("CI_FORGE") != null && "default" != System.getenv("CI_FORGE")) {
         return "net.minecraftforge:forge:" + System.getenv("CI_FORGE")
     } else {
         // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed

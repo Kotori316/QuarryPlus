@@ -8,66 +8,78 @@ on:
       - "!*"
 
 jobs:
-  #   func:
-  #     runs-on: ubuntu-latest
-  #     steps:
-  #       - name: CI func
-  #         run: |
-  #           echo "$(ls ../)" && echo "$(ls ../ | grep h)"
-  #           echo "$(ls /)" > func_test.text
-  #           ls -m /
-  #           echo "grep = $(grep h func_test.text)"
-  #           test -e func_test.text
-  #           echo "Exists $?"
-  #           [ -f func_test.text ]
-  #           echo "Exists $?"
-  #           ! [ -f func_test.text ]
-  #           echo "Non Exists $?"
-  #           ! [ -f it.txt ]
-  #           echo "Non Exists $?"
-
-  check:
+  assemble:
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle16-${{ hashFiles('**/forge_version.properties') }}
+      - name: Compile
+        run: chmod +x ./gradlew && ./gradlew assemble --warning-mode all --no-daemon
+        env:
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
+      - name: Publish
+        uses: actions/upload-artifact@v2
+        with:
+          path: build/libs/*
+          name: ${{ github.event.repository.name }}-${{ github.run_number }}
+
+  cross-check-runData:
+    runs-on: ubuntu-latest
+    needs: [ assemble ]
     strategy:
       fail-fast: false
       matrix:
         # test against latest update of each major Java version, as well as specific updates of LTS versions:
-        java: [ 1.8, 11 ]
-    outputs:
-      result: ${{ steps.s1.outputs.test }}
+        java: [ default, 11 ]
+        forge: [ 1.16.4-35.1.4, 1.16.4-35.1.37, latest, default ]
     steps:
       - uses: actions/checkout@v2
+        with:
+          repository: "Kotori316/SLP-example"
+      - name: Get latest version
+        if: ${{ matrix.forge == 'latest' }}
+        run: |
+          version=$(python3 get_latest_forge.py "1.16.5-latest")
+          echo "FORGE_LATEST=1.16.5-$version" >> $GITHUB_ENV
       - name: Set up JDK ${{ matrix.java }}
         uses: actions/setup-java@v1
+        if: ${{ matrix.java != 'default' }}
         with:
           java-version: ${{ matrix.java }}
       - uses: actions/cache@v2
         with:
           path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle16-${{ hashFiles('**/forge_version.properties') }}
+          key: ${{ runner.os }}-gradle16
+      - name: Download Mod Jar
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ github.event.repository.name }}-${{ github.run_number }}
+          path: work/
+      - name: move files
+        run: ls -al work && mkdir --parents run/mods && mv work/*-deobf.jar run/mods/ && ls -al run/mods
       - name: download_assets
         run: |
-          chmod +x ./gradlew
-          ./gradlew downloadAssets || ./gradlew downloadAssets || (sleep 30s && ./gradlew downloadAssets)
+          if [ $CI_FORGE = "latest" ]; then
+            export CI_FORGE=$FORGE_LATEST
+          fi
+          chmod +x ./gradlew && (./gradlew clean || true)
+          ( ./gradlew downloadAssets || ./gradlew downloadAssets || (sleep 30s && ./gradlew downloadAssets) || true)
         continue-on-error: true
-      - id: check-parameter
-        run: chmod +x ./gradlew && ./gradlew CCO --no-daemon
         env:
-          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
-      - name: Test with JUnit
-        run: chmod +x ./gradlew && ./gradlew assemble test --no-daemon
+          CI_FORGE: ${{ matrix.forge }}
+      - name: Test with JUnit and runData
+        run: |
+          if [ $CI_FORGE = "latest" ]; then
+            export CI_FORGE=$FORGE_LATEST
+          fi
+          chmod +x ./gradlew && ( ./gradlew --no-daemon runData || ./gradlew --no-daemon runData)
         env:
-          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
-      - name: Upload failed test report
-        if: failure()
-        uses: actions/upload-artifact@v2
-        with:
-          path: build/reports/tests/*
-          name: Test-Report-${{ matrix.java }}
-      - name: Test with runData
-        run: chmod +x ./gradlew && ./gradlew -Dfml.earlyprogresswindow=false runData --info --no-daemon
-        env:
-          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CI_FORGE: ${{ matrix.forge }}
+          CI_MODS: "quarryplus"
       - id: check-test-started
         run: |
           [ -f test_started.txt ]
@@ -77,25 +89,58 @@ jobs:
       - id: show-failure-log
         if: failure()
         run: cat error-trace.txt
-  publish:
+
+  cross-check-JUnit:
     runs-on: ubuntu-latest
-    needs: [ check ]
+    strategy:
+      fail-fast: false
+      matrix:
+        # test against latest update of each major Java version, as well as specific updates of LTS versions:
+        java: [ default, 11 ]
+        forge: [ 1.16.4-35.1.4, 1.16.4-35.1.37, latest, default ]
     steps:
       - uses: actions/checkout@v2
-      - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
+        if: ${{ matrix.forge == 'latest' }}
         with:
-          java-version: 1.8
-      - uses: actions/cache@v1
+          repository: "Kotori316/SLP-example"
+      - name: Get latest version
+        if: ${{ matrix.forge == 'latest' }}
+        run: |
+          version=$(python3 get_latest_forge.py "1.16.5-latest")
+          echo "FORGE_LATEST=1.16.5-$version" >> $GITHUB_ENV
+      - uses: actions/checkout@v2
+      - name: Set up JDK ${{ matrix.java }}
+        uses: actions/setup-java@v1
+        if: ${{ matrix.java != 'default' }}
+        with:
+          java-version: ${{ matrix.java }}
+      - uses: actions/cache@v2
         with:
           path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle16-${{ hashFiles('**/forge_version.properties') }}
-      - name: Compile
-        run: chmod +x ./gradlew && ./gradlew build --continue --warning-mode all --no-daemon
+          key: ${{ runner.os }}-gradle16
+      - name: compile
+        run: |
+          if [ $CI_FORGE = "latest" ]; then
+            export CI_FORGE=$FORGE_LATEST
+          fi
+          chmod +x ./gradlew && (./gradlew clean || true)
+          ( (./gradlew compileScala || ./gradlew clean) || (./gradlew compileScala || ./gradlew clean) || (sleep 10s && ./gradlew compileScala) )
+        continue-on-error: true
         env:
-          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
-      - name: Publish
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CI_FORGE: ${{ matrix.forge }}
+      - name: Test with JUnit
+        run: |
+          if [ $CI_FORGE = "latest" ]; then
+            export CI_FORGE=$FORGE_LATEST
+          fi
+          chmod +x ./gradlew && ./gradlew --no-daemon test
+        env:
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CI_FORGE: ${{ matrix.forge }}
+      - name: Upload failed test report
+        if: failure()
         uses: actions/upload-artifact@v2
         with:
-          path: build/libs/*
-          name: ${{ github.event.repository.name }}-${{ github.run_number }}
+          path: build/reports/tests/*
+          name: Test-Report-${{ matrix.java }}
