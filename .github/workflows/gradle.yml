@@ -36,9 +36,14 @@ jobs:
         java: [ default, 11 ]
         forge: [ 1.16.4-35.1.4, 1.16.4-35.1.37, latest, default ]
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout SLP-example repo
+        uses: actions/checkout@v2
+        if: ${{ matrix.forge != 'default' }}
         with:
           repository: "Kotori316/SLP-example"
+      - name: Checkout QuarryPlus repo
+        uses: actions/checkout@v2
+        if: ${{ matrix.forge == 'default' }}
       - name: Get latest version
         if: ${{ matrix.forge == 'latest' }}
         run: |
