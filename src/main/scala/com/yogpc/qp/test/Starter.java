@@ -5,15 +5,20 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.spi.FileSystemProvider;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import jp.t2v.lab.syntax.MapStreamSyntax;
 import net.minecraft.data.DirectoryCache;
 import net.minecraft.data.IDataProvider;
+import net.minecraftforge.fml.ModList;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -41,6 +46,7 @@ public final class Starter implements IDataProvider {
 
     public static void startTest() {
         LOGGER.info("Hello test");
+        hackModList();
         LOGGER.info("---------- System properties ----------");
         System.getProperties().stringPropertyNames().stream()
             .sorted()
@@ -104,6 +110,22 @@ public final class Starter implements IDataProvider {
                 errors.forEach(t -> t.printStackTrace(writer));
             } catch (IOException e) {
                 LOGGER.error("File IO", e);
+            }
+        }
+    }
+
+    @SuppressWarnings("SpellCheckingInspection")
+    private static void hackModList() {
+        for (FileSystemProvider provider : FileSystemProvider.installedProviders()) {
+            if (provider.getScheme().equals("modjar") && provider.getClass().getName().equals("com.kotori316.modjar.ModJarFileSystemProvider")) {
+                try {
+                    Map<String, Path> modFiles = ModList.get().getModFiles().stream()
+                        .flatMap(f -> f.getMods().stream().map(m -> Pair.of(m.getModId(), f.getFile().getFilePath())))
+                        .collect(Collectors.toMap(Pair::getLeft, Pair::getRight));
+                    provider.getClass().getDeclaredMethod("setModList", Map.class).invoke(provider, modFiles);
+                } catch (ReflectiveOperationException e) {
+                    LOGGER.error(e);
+                }
             }
         }
     }
