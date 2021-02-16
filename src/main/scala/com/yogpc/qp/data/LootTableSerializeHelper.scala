@@ -5,8 +5,8 @@ import com.google.gson.JsonElement
 import com.yogpc.qp.machines.base.IEnchantableTile
 import net.minecraft.block.Block
 import net.minecraft.data.loot.BlockLootTables
-import net.minecraft.loot.{ConstantRange, LootParameterSets, LootPool, LootTable, LootTableManager, StandaloneLootEntry}
 import net.minecraft.loot.functions.ILootFunction
+import net.minecraft.loot.{ConstantRange, LootParameterSets, LootPool, LootTable, LootTableManager, StandaloneLootEntry}
 import net.minecraft.util.ResourceLocation
 
 case class LootTableSerializeHelper(block: Block,
@@ -28,7 +28,7 @@ case class LootTableSerializeHelper(block: Block,
 }
 
 object LootTableSerializeHelper {
-  final val dropFunction = Eval.later(IEnchantableTile.DropFunction.builder())
+  final val dropFunction: Eval[ILootFunction.IBuilder] = Eval.later(IEnchantableTile.DropFunction.builder())
 
   def withDrop(block: Block): LootTableSerializeHelper = LootTableSerializeHelper(block)
 

@@ -16,6 +16,11 @@ jobs:
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle16-${{ hashFiles('**/forge_version.properties') }}
+      - name: Download Assets for Cache
+        run: |
+          chmod +x ./gradlew && (./gradlew clean || true)
+          ( ./gradlew downloadAssets extractNatives || ./gradlew downloadAssets extractNatives || \
+          (sleep 30s && ./gradlew downloadAssets extractNatives) || true)
       - name: Compile
         run: chmod +x ./gradlew && ./gradlew assemble --warning-mode all --no-daemon
         env:
@@ -59,23 +64,24 @@ jobs:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle16
       - name: Download Mod Jar
+        if: ${{ matrix.forge != 'default' }}
         uses: actions/download-artifact@v2
         with:
           name: ${{ github.event.repository.name }}-${{ github.run_number }}
           path: work/
       - name: move files
+        if: ${{ matrix.forge != 'default' }}
         run: ls -al work && mkdir --parents run/mods && mv work/*-deobf.jar run/mods/ && ls -al run/mods
       - name: download_assets
         run: |
           if [ $CI_FORGE = "latest" ]; then
             export CI_FORGE=$FORGE_LATEST
           fi
-          chmod +x ./gradlew && (./gradlew clean || true)
-          ( ./gradlew downloadAssets || ./gradlew downloadAssets || (sleep 30s && ./gradlew downloadAssets) || true)
+          chmod +x ./gradlew && (./gradlew clean downloadAssets || true)
         continue-on-error: true
         env:
           CI_FORGE: ${{ matrix.forge }}
-      - name: Test with JUnit and runData
+      - name: Test with runData
         run: |
           if [ $CI_FORGE = "latest" ]; then
             export CI_FORGE=$FORGE_LATEST

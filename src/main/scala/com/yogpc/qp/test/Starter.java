@@ -5,7 +5,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.spi.FileSystemProvider;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -14,14 +17,19 @@ import java.util.stream.Stream;
 import jp.t2v.lab.syntax.MapStreamSyntax;
 import net.minecraft.data.DirectoryCache;
 import net.minecraft.data.IDataProvider;
+import net.minecraftforge.fml.ModList;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.junit.platform.launcher.Launcher;
 import org.junit.platform.launcher.LauncherDiscoveryRequest;
+import org.junit.platform.launcher.TestIdentifier;
+import org.junit.platform.launcher.TestPlan;
 import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
 import org.junit.platform.launcher.core.LauncherFactory;
+import org.junit.platform.launcher.listeners.LoggingListener;
 import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
@@ -38,12 +46,21 @@ public final class Starter implements IDataProvider {
 
     public static void startTest() {
         LOGGER.info("Hello test");
+        hackModList();
         LOGGER.info("---------- System properties ----------");
         System.getProperties().stringPropertyNames().stream()
             .sorted()
+            .filter(s -> !s.contains("path"))
             .map(MapStreamSyntax.toEntry(Function.identity(), System.getProperties()::getProperty))
             .map(MapStreamSyntax.toAny((k, v) -> k + "=" + v))
             .forEach(LOGGER::info);
+        LOGGER.info("---------- Class Path ----------");
+        Arrays.asList("java.class.path", "java.library.path", "sun.boot.class.path").forEach(s -> {
+            LOGGER.info(s);
+            String t = System.getProperty(s);
+            if (t != null)
+                Arrays.stream(t.split(System.getProperty("path.separator"))).sorted().distinct().forEach(LOGGER::info);
+        });
 
         LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
             .selectors(
@@ -62,13 +79,25 @@ public final class Starter implements IDataProvider {
 
         Launcher launcher = LauncherFactory.create();
 
-        // Register a listener of your choice
-        SummaryGeneratingListener listener = new SummaryGeneratingListener();
-        launcher.registerTestExecutionListeners(listener);
+        // Register a summaryGeneratingListener of your choice
+        SummaryGeneratingListener summaryGeneratingListener = new SummaryGeneratingListener();
+        LoggingListener loggingListener = LoggingListener.forBiConsumer((t, s) -> LOGGER.info(s.get(), t));
+        launcher.registerTestExecutionListeners(summaryGeneratingListener, loggingListener);
 
-        launcher.execute(request);
+        LOGGER.info("---------- Starting Tests ----------");
+        TestPlan plan = launcher.discover(request);
+        if (!plan.containsTests()) {
+            LOGGER.warn("Contains no tests.");
+            return;
+        }
+        for (TestIdentifier root : plan.getRoots()) {
+            for (TestIdentifier child : plan.getChildren(root)) {
+                LOGGER.info("Test found: {}", child);
+            }
+        }
+        launcher.execute(plan);
 
-        TestExecutionSummary summary = listener.getSummary();
+        TestExecutionSummary summary = summaryGeneratingListener.getSummary();
         // Do something with the TestExecutionSummary.
         StringWriter stream = new StringWriter();
         summary.printTo(new PrintWriter(stream));
@@ -84,6 +113,22 @@ public final class Starter implements IDataProvider {
                 summary.printFailuresTo(writer);
             } catch (IOException e) {
                 LOGGER.error("File IO", e);
+            }
+        }
+    }
+
+    @SuppressWarnings("SpellCheckingInspection")
+    private static void hackModList() {
+        for (FileSystemProvider provider : FileSystemProvider.installedProviders()) {
+            if (provider.getScheme().equals("modjar") && provider.getClass().getName().equals("com.kotori316.modjar.ModJarFileSystemProvider")) {
+                try {
+                    Map<String, Path> modFiles = ModList.get().getModFiles().stream()
+                        .flatMap(f -> f.getMods().stream().map(m -> Pair.of(m.getModId(), f.getFile().getFilePath())))
+                        .collect(Collectors.toMap(Pair::getLeft, Pair::getRight));
+                    provider.getClass().getDeclaredMethod("setModList", Map.class).invoke(provider, modFiles);
+                } catch (ReflectiveOperationException e) {
+                    LOGGER.error(e);
+                }
             }
         }
     }

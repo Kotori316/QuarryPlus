@@ -1,6 +1,7 @@
 package com.yogpc.qp.test;
 
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import com.google.gson.JsonElement;
@@ -12,6 +13,8 @@ import com.yogpc.qp.machines.base.QuarryBlackList.Entry;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.pattern.BlockMaterialMatcher;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.CompoundNBT;
@@ -28,6 +31,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 final class QuarryBlackListTest {
+    private static final Predicate<BlockState> NotAir = BlockMaterialMatcher.forMaterial(Material.AIR).negate();
+
     static Executable entryTest(QuarryBlackList.Entry entry, BlockState state) {
         return () -> assertTrue(entry.test(state, EmptyBlockReader.INSTANCE, BlockPos.ZERO), String.format("Test of %s for %s.", entry, state));
     }
@@ -93,7 +98,7 @@ final class QuarryBlackListTest {
                 Blocks.WATER.getDefaultState(),
                 Blocks.LAVA.getDefaultState()
             )
-        ).map(getExecutable(entry));
+        ).filter(NotAir).map(getExecutable(entry));
 
         assertAll(executable);
     }
