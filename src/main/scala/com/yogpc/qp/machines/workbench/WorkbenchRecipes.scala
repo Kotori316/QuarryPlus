@@ -59,7 +59,13 @@ abstract class WorkbenchRecipes(val location: ResourceLocation, val output: Item
   }
 
   def hasAllRequiredItems(inventory: Seq[ItemStack]): Boolean = {
-    inputs.forall(in => inventory.exists(invStack => in.exists(_.matches(invStack))))
+    val copied = inventory.map(_.copy())
+    val recipeIterator = this.inputs.iterator
+    while (recipeIterator.hasNext) {
+      val found = recipeIterator.next().exists(i => copied.exists(i.shrink))
+      if (!found) return false
+    }
+    copied.forall(_.getCount >= 0)
   }
 
   override def getCraftingResult(inv: TileWorkbench): ItemStack = getOutput(inv.inventory)
