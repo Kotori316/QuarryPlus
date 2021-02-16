@@ -7,7 +7,7 @@ import net.minecraft.item.{ItemStack, Items}
 import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.Test
 
-class ItemDamageTest {
+private[test] final class ItemDamageTest {
 
   @Test
   def createInstance(): Unit = {

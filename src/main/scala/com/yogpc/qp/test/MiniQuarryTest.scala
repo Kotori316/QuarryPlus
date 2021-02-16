@@ -9,7 +9,7 @@ import org.junit.jupiter.api.function.Executable
 
 import scala.jdk.javaapi.CollectionConverters
 
-class MiniQuarryTest {
+private[test] final class MiniQuarryTest {
   private val someLocation: Some[ResourceLocation] = Some(new ResourceLocation("quarryplus:dummy"))
   private val area = Area(0, 0, 0, 4, 5, 6, someLocation)
 

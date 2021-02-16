@@ -16,9 +16,10 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.common.Mod;
 
 public class Caps {
-    public static final class QuarryPlus {
+    private static final class QuarryPlus {
         @CapabilityInject(IMarker.class)
         public static final Capability<IMarker> MARKER_CAPABILITY = null;
         @CapabilityInject(IRemotePowerOn.class)
@@ -45,6 +46,7 @@ public class Caps {
             return Optional.empty();
     }
 
+    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = Marker.modID)
     public static final class Event {
         @SubscribeEvent
         public static void attachCapability(AttachCapabilitiesEvent<TileEntity> event) {

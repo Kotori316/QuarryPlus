@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.Test
 
 //noinspection DuplicatedCode
-class EnchantmentFilterTest {
+private[test] final class EnchantmentFilterTest {
   private def p(e: EnchantmentFilter, s: BlockState) = e.getEnchantmentPredicate(s, EmptyBlockReader.INSTANCE, BlockPos.ZERO)
 
   @Test

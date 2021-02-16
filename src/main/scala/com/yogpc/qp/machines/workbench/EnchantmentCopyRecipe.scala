@@ -26,9 +26,8 @@ final class EnchantmentCopyRecipe(location: ResourceLocation, o: ItemStack, e: L
 
   override def getOutput(inputs: util.List[ItemStack]): ItemStack = {
     val stack = super.getOutput
-    val tagFrom = inputs.asScala.find(i => copyFrom.exists(_.matches(i)))
     for {
-      s <- tagFrom
+      s <- inputs.asScala.find(i => copyFrom.exists(_.matches(i)))
       tag_raw <- Option(s.getTag).map(EnchantmentCopyRecipe.doEnchantedBookMigration(enchantedBookMigration, stack))
       tag = tag_raw.copy().tap(t => if (stack.hasTag) t.merge(stack.getTag))
     } {

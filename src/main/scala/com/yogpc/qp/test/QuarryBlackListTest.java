@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class QuarryBlackListTest {
+final class QuarryBlackListTest {
     private static final Predicate<BlockState> NotAir = BlockMaterialMatcher.forMaterial(Material.AIR).negate();
 
     static Executable entryTest(QuarryBlackList.Entry entry, BlockState state) {

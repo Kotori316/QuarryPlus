@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.Test
 
 //noinspection DuplicatedCode It's test!
-class RemoveEnchantmentTest {
+private[test] final class RemoveEnchantmentTest {
   @Test def removeEnchantment1(): Unit = {
     val stack = new ItemStack(Holder.itemQuarryPickaxe)
     stack.addEnchantment(Enchantments.SILK_TOUCH, 1)

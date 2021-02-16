@@ -15,7 +15,7 @@ import scala.util.Random
 import scala.util.chaining._
 
 //noinspection AccessorLikeMethodIsUnit
-class ListEditorUtilTest {
+private[test] final class ListEditorUtilTest {
   @Test
   def onlySilktouchTest(): Unit = {
     val silk = new ItemStack(Items.DIAMOND_PICKAXE).tap(_.addEnchantment(Enchantments.SILK_TOUCH, 1))

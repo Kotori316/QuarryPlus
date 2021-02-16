@@ -3,6 +3,7 @@ package com.yogpc.qp.test
 import java.util.Arrays.asList
 
 import com.google.gson.JsonObject
+import com.yogpc.qp.QuarryPlus
 import com.yogpc.qp.machines.workbench.{EnchantmentCopyRecipe, IngredientWithCount, WorkbenchRecipes}
 import com.yogpc.qp.utils.Holder
 import net.minecraft.enchantment.{EnchantmentHelper, Enchantments}
@@ -14,9 +15,9 @@ import org.junit.jupiter.api.Test
 
 import scala.jdk.javaapi.CollectionConverters
 
-private[test] class RecipeTest {
+private[test] final class RecipeTest {
 
-  private[this] final def id(s: String) = new ResourceLocation("test", s)
+  private[this] def id(s: String) = new ResourceLocation(QuarryPlus.modID, s.toLowerCase)
 
   val json: JsonObject = JSONUtils.fromJson(
     """
