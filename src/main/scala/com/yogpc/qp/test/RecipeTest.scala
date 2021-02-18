@@ -4,6 +4,7 @@ import java.util.Arrays.asList
 
 import com.google.gson.JsonObject
 import com.yogpc.qp.QuarryPlus
+import com.yogpc.qp.machines.base.APowerTile
 import com.yogpc.qp.machines.workbench.{EnchantmentCopyRecipe, IngredientWithCount, WorkbenchRecipes}
 import com.yogpc.qp.utils.Holder
 import net.minecraft.enchantment.{EnchantmentHelper, Enchantments}
@@ -132,5 +133,41 @@ private[test] final class RecipeTest {
     hasEmptyResult.add("result", new JsonObject)
     val resultRecipe = WorkbenchRecipes.parse(hasEmptyResult, id("empty_result"))
     assertTrue(resultRecipe.isLeft, s"empty result $resultRecipe")
+  }
+
+  @Test
+  def parseNormalRecipe(): Unit = {
+    val str =
+      """
+        |{
+        |  "type": "quarryplus:workbench_recipe",
+        |  "id": "quarryplus:builtin_item.fuel_module_normal",
+        |  "ingredients": [
+        |    {
+        |      "item": "minecraft:furnace",
+        |      "count": 3
+        |    },
+        |    {
+        |      "tag": "forge:storage_blocks/gold",
+        |      "count": 16
+        |    }
+        |  ],
+        |  "energy": 3200.0,
+        |  "showInJEI": true,
+        |  "result": {
+        |    "item": "quarryplus:fuel_module_normal",
+        |    "count": 1
+        |  },
+        |  "conditions": [
+        |    {
+        |      "value": "ModuleFuel",
+        |      "type": "quarryplus:machine_enabled"
+        |    }
+        |  ]
+        |}""".stripMargin
+    val recipe = WorkbenchRecipes.Serializer.read(id("fuel"), JSONUtils.fromJson(str))
+    assertAll(
+      () => assertEquals(3200 * APowerTile.MJToMicroMJ, recipe.energy)
+    )
   }
 }

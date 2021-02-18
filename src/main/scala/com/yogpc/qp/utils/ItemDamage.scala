@@ -7,7 +7,8 @@ import com.mojang.serialization.{Dynamic, JsonOps}
 import javax.annotation.Nonnull
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.nbt.{CompoundNBT, NBTDynamicOps}
-import net.minecraftforge.items.ItemHandlerHelper
+import net.minecraft.util.IItemProvider
+import org.openzen.zencode.java.ZenCodeType.Nullable
 
 sealed abstract class ItemDamage {
   val item: Item
@@ -40,7 +41,13 @@ object ItemDamage {
       if (itemStack eq ItemStack.EMPTY)
         ItemDamageNG
       else {
-        val copied = ItemHandlerHelper.copyStackWithSize(itemStack, 1)
+        val copied = {
+          val before = itemStack.getCount
+          itemStack.setCount(1)
+          val t = itemStack.copy()
+          itemStack.setCount(before)
+          t
+        }
         if (copied.isEmpty)
           ItemDamageNG
         else
@@ -50,6 +57,8 @@ object ItemDamage {
       ItemDamageImpl(itemStack.getItem, itemStack.getTag)
     }
   }
+
+  def apply(@Nullable item: IItemProvider): ItemDamage = if (item == null) ItemDamageNG else ItemDamageImpl(item.asItem(), null)
 
   def invalid: ItemDamage = ItemDamageNG
 

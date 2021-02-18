@@ -36,4 +36,38 @@ private[test] final class ItemDamageTest {
     }
     assertEquals(expected, j)
   }
+
+  @Test
+  def fromEmptyTest(): Unit = {
+    val empty = ItemDamage.invalid
+    assertEquals(empty, ItemDamage(ItemStack.EMPTY), "From empty stack")
+    assertEquals(empty, ItemDamage(new ItemStack(Items.AIR)))
+  }
+
+  @Test
+  def stackEmptyTest(): Unit = {
+    val empty = ItemDamage.invalid
+    assertTrue(empty.toStack().isEmpty)
+    assertTrue(empty.toStack(6).isEmpty)
+  }
+
+  @Test
+  def from0Item(): Unit = {
+    val expect = ItemDamage(new ItemStack(Items.APPLE, 1))
+    assertEquals(expect, ItemDamage(new ItemStack(Items.APPLE, 0)))
+    assertEquals(expect, ItemDamage(new ItemStack(Items.APPLE, -1)))
+  }
+
+  @Test
+  def asKey(): Unit = {
+    val stacks = List(
+      Items.APPLE, Items.STONE, Items.CHEST, Items.STONE, Items.CHEST, Items.CHEST
+    ).map(i => new ItemStack(i))
+    val reduced = stacks.groupMapReduce(ItemDamage.apply)(_.getCount)(_ + _)
+    assertEquals(Map(
+      ItemDamage(Items.APPLE) -> 1,
+      ItemDamage(Items.STONE) -> 2,
+      ItemDamage(Items.CHEST) -> 3,
+    ), reduced)
+  }
 }

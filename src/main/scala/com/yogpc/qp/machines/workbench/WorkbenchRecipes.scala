@@ -6,8 +6,8 @@ import java.util.Collections
 import cats.data._
 import cats.implicits._
 import com.google.gson._
+import com.yogpc.qp.QuarryPlus
 import com.yogpc.qp.utils.{Holder, ItemElement, RecipeGetter}
-import com.yogpc.qp.{QuarryPlus, _}
 import net.minecraft.item.crafting.{IRecipe, IRecipeSerializer, IRecipeType}
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.network.PacketBuffer
@@ -95,7 +95,7 @@ private object DummyRecipe extends WorkbenchRecipes(
   override val subTypeName: String = "dummy"
 }
 
-object WorkbenchRecipes {
+object WorkbenchRecipes extends RecipeFinder {
 
   val dummyRecipe: WorkbenchRecipes = DummyRecipe
 
@@ -116,29 +116,9 @@ object WorkbenchRecipes {
   /**
    * @return Recipes of workbench, including data pack and vanilla recipe system.
    */
-  def recipes: Map[ResourceLocation, WorkbenchRecipes] = {
+  override def recipes: Map[ResourceLocation, WorkbenchRecipes] = {
     Option(ServerLifecycleHooks.getCurrentServer)
       .map(s => RecipeGetter.getRecipes(s.getRecipeManager, recipeType).asScala.toMap).getOrElse(Map.empty)
-  }
-
-  def recipeSize: Int = recipes.size
-
-  def getRecipe(inputs: java.util.List[ItemStack]): java.util.List[WorkbenchRecipes] = {
-    val asScala = inputs.asScala
-    val sorted = recipes.filter {
-      case (_, workRecipe) if workRecipe.hasContent =>
-        workRecipe.inputs.forall(i => {
-          asScala.exists(t => i.exists(_.matches(t)))
-        })
-      case _ => false
-    }.values.toList.sorted
-    sorted.asJava
-  }
-
-  def getRecipeFromResult(stack: ItemStack): java.util.Optional[WorkbenchRecipes] = {
-    if (stack.isEmpty) return java.util.Optional.empty()
-    val id = ItemElement(stack)
-    recipes.find { case (_, r) => r.output === id }.map(_._2).asJava
   }
 
   private def resource(resourceManager: IResourceManager, location: ResourceLocation): Either[String, IResource] = {
