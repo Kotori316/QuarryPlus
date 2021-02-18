@@ -21,6 +21,7 @@ import net.minecraftforge.common.Tags
 import org.apache.logging.log4j.LogManager
 
 import scala.jdk.FunctionConverters._
+import scala.jdk.OptionConverters.RichOptional
 import scala.jdk.javaapi.CollectionConverters
 import scala.util.Try
 
@@ -66,7 +67,7 @@ object QuarryBlackList {
         case VanillaBlockPredicate(block_predicate) => "block_predicate" -> ops.createString(block_predicate)
         case _ => "" -> ops.empty()
       }
-    ).collect { case (str, a) if !str.isEmpty => ops.createString(str) -> a }
+    ).collect { case (str, a) if str.nonEmpty => ops.createString(str) -> a }
     val o = ops.createMap(CollectionConverters.asJava(map))
     LOGGER.debug(s"BlackListEntry, $src, was serialized to $o.")
     o
@@ -77,7 +78,6 @@ object QuarryBlackList {
   }
 
   def readEntry2[A](tagLike: Dynamic[A], log: Boolean = true): Entry = {
-    import com.yogpc.qp._
 
     val onError = {
       val c: String => Nothing = s => throw new IllegalArgumentException("Entry didn't have enough parameter. %s. %s".format(s, tagLike))
@@ -85,9 +85,9 @@ object QuarryBlackList {
     }
 
     val idOpt = for {
-      j <- tagLike.asMapOpt[String, Dynamic[A]](_.asString(""), java.util.function.Function.identity()).result().asScala
+      j <- tagLike.asMapOpt[String, Dynamic[A]](_.asString(""), java.util.function.Function.identity()).result().toScala
       map = CollectionConverters.asScala(j)
-      id <- map.get("id").flatMap(_.asString().result().asScala)
+      id <- map.get("id").flatMap(_.asString().result().toScala)
     } yield {
       id match {
         case ID_NAME => Name(new ResourceLocation(map("name").asString().getOrThrow(false, onError)))

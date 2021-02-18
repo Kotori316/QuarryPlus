@@ -5,6 +5,7 @@ import com.yogpc.qp.machines.quarry.ContainerQuarryModule
 import net.minecraft.util.Direction
 
 import scala.jdk.CollectionConverters._
+import scala.jdk.OptionConverters.RichOptional
 
 trait IAttachableWithModuleScalaImpl extends IAttachable {
   def self: APowerTile with ContainerQuarryModule.HasModuleInventory with HasStorage
@@ -29,7 +30,7 @@ trait IAttachableWithModuleScalaImpl extends IAttachable {
 
   def refreshModules(): Unit = {
     val attachmentModules = attachments.toList >>= {
-      case (kind, facing) => kind.module(self.getWorld.getTileEntity(self.getPos.offset(facing))).toList
+      case (kind, facing) => kind.module(self.getWorld.getTileEntity(self.getPos.offset(facing))).toScala.toList
     }
     val internalModules = self.moduleInv.moduleItems().asScala.toList >>= (e => e.getKey.apply(e.getValue, self).toList)
     this.modules = attachmentModules ++ internalModules

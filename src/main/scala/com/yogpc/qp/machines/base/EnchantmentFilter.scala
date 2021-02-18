@@ -3,7 +3,6 @@ package com.yogpc.qp.machines.base
 import java.util.function.{Predicate, Function => JFunc}
 
 import com.mojang.serialization.{DynamicOps, Dynamic => SerializeDynamic}
-import com.yogpc.qp._
 import com.yogpc.qp.machines.base.QuarryBlackList.Entry
 import com.yogpc.qp.machines.mini_quarry.MiniQuarryTile
 import com.yogpc.qp.machines.quarry.{TileBasic, TileQuarry2}
@@ -16,6 +15,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.world.{IBlockReader, World}
 
+import scala.jdk.OptionConverters.RichOptional
 import scala.jdk.javaapi.CollectionConverters
 
 case class EnchantmentFilter(fortuneInclude: Boolean,
@@ -74,13 +74,13 @@ object EnchantmentFilter {
 
   def read[T](tagLike: SerializeDynamic[T]): EnchantmentFilter = {
     import scala.jdk.CollectionConverters._
-    val mapOpt: Option[Map[String, SerializeDynamic[T]]] = tagLike.asMapOpt[String, SerializeDynamic[T]](k => k.asString(""), v => v).result().asScala.map(m => m.asScala.toMap)
+    val mapOpt: Option[Map[String, SerializeDynamic[T]]] = tagLike.asMapOpt[String, SerializeDynamic[T]](k => k.asString(""), v => v).result().toScala.map(m => m.asScala.toMap)
     mapOpt.map { m =>
       val fortuneInclude = m.get("fortuneInclude").exists(_.asBoolean(false))
       val silktouchInclude = m.get("silktouchInclude").exists(_.asBoolean(false))
-      val fortuneList = m.get("fortuneList").flatMap(l => l.asListOpt(JFunc.identity()).result().asScala)
+      val fortuneList = m.get("fortuneList").flatMap(l => l.asListOpt(JFunc.identity()).result().toScala)
         .map(l => CollectionConverters.asScala(l).map(QuarryBlackList.readEntry).toSet).getOrElse(Set.empty)
-      val silktouchList = m.get("silktouchList").flatMap(l => l.asListOpt(JFunc.identity()).result().asScala)
+      val silktouchList = m.get("silktouchList").flatMap(l => l.asListOpt(JFunc.identity()).result().toScala)
         .map(l => CollectionConverters.asScala(l).map(QuarryBlackList.readEntry).toSet).getOrElse(Set.empty)
       new EnchantmentFilter(fortuneInclude, silktouchInclude, fortuneList, silktouchList)
     }.getOrElse(defaultInstance)

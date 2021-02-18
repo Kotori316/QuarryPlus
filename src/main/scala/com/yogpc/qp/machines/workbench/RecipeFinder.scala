@@ -6,6 +6,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
 
 import scala.jdk.CollectionConverters._
+import scala.jdk.OptionConverters._
 
 trait RecipeFinder {
   def recipes: Map[ResourceLocation, WorkbenchRecipes]
@@ -24,6 +25,6 @@ trait RecipeFinder {
   def getRecipeFromResult(stack: ItemStack): java.util.Optional[WorkbenchRecipes] = {
     if (stack.isEmpty) return java.util.Optional.empty()
     val id = ItemElement(stack)
-    recipes.find { case (_, r) => r.output === id }.map(_._2).asJava
+    recipes.find { case (_, r) => r.output === id }.map(_._2).toJava
   }
 }

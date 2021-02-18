@@ -21,7 +21,7 @@ import net.minecraftforge.items.CapabilityItemHandler
 import net.minecraftforge.items.wrapper.EmptyHandler
 import net.minecraftforge.registries.ForgeRegistries
 
-import scala.jdk.javaapi.OptionConverters
+import scala.jdk.CollectionConverters._
 
 package object qp {
 
@@ -35,36 +35,12 @@ package object qp {
   val nonNull: AnyRef => Boolean = obj => obj != null
   val facings: Eval[List[Direction]] = Eval.later(List.from(Direction.values()))
 
-  def toJavaOption[T](o: Option[T]): java.util.Optional[T] = {
-    //I think it's faster than match function.
-    if (o.isDefined) {
-      java.util.Optional.ofNullable(o.get)
-    } else {
-      java.util.Optional.empty()
-    }
-  }
-
-  implicit class SOM[T](private val o: java.util.Optional[T]) extends AnyVal {
-    def scalaMap[B](f: T => B): Option[B] = OptionConverters.toScala(o).map(f)
-
-    def scalaFilter(p: T => Boolean): Option[T] = OptionConverters.toScala(o).filter(p)
-
-    def asScala: Option[T] = OptionConverters.toScala(o)
-
-    def toList: List[T] = if (o.isPresent) List(o.get()) else Nil
-  }
-
-  implicit class JOS[T](private val o: Option[T]) extends AnyVal {
-    def asJava: java.util.Optional[T] = toJavaOption(o)
-  }
-
   implicit class ItemStackRemoveEnchantment(private val stack: ItemStack) extends AnyVal {
     def removeEnchantment(enchantment: Enchantment): Unit = {
       val id = ForgeRegistries.ENCHANTMENTS.getKey(enchantment)
       val tagName = if (stack.getItem == net.minecraft.item.Items.ENCHANTED_BOOK) "StoredEnchantments" else "Enchantments"
       val list = Option(stack.getTag).fold(new ListNBT)(_.getList(tagName, NBT.TAG_COMPOUND))
 
-      import scala.jdk.CollectionConverters._
       val copied = list.asScala.zipWithIndex.collect { case (t: CompoundNBT, i) => (t, i) }
       for ((tag, i) <- copied) {
         if (tag.getString("id") == id.toString) {

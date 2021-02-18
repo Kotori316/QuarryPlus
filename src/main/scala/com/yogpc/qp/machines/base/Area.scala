@@ -13,6 +13,7 @@ import net.minecraft.util.{Direction, RegistryKey, ResourceLocation}
 import net.minecraft.world.World
 import net.minecraft.world.server.ServerWorld
 
+import scala.jdk.OptionConverters._
 import scala.util.chaining._
 
 case class Area(xMin: Int, yMin: Int, zMin: Int, xMax: Int, yMax: Int, zMax: Int, dimID: Option[ResourceLocation]) {
@@ -54,7 +55,7 @@ object Area {
 
     val dimOpt = (area.dimID
       >>= (id => Option(idToType(id)))
-      >>= (t => World.CODEC.encodeStart(NBTDynamicOps.INSTANCE, t).result().asScala))
+      >>= (t => World.CODEC.encodeStart(NBTDynamicOps.INSTANCE, t).result().toScala))
     nbt.tap(t => dimOpt.foreach(n => t.put(NBT_DIM, n)))
   }
 
@@ -133,7 +134,7 @@ object Area {
   }
 
   def areaLoad(nbt: CompoundNBT): Area = {
-    val dim = nbt.some.filter(_.contains(NBT_DIM)).flatMap(t => World.CODEC.parse(NBTDynamicOps.INSTANCE, t.get(NBT_DIM)).result().asScala)
+    val dim = nbt.some.filter(_.contains(NBT_DIM)).flatMap(t => World.CODEC.parse(NBTDynamicOps.INSTANCE, t.get(NBT_DIM)).result().toScala)
     Area(nbt.getInt(NBT_X_MIN), nbt.getInt(NBT_Y_MIN), nbt.getInt(NBT_Z_MIN), nbt.getInt(NBT_X_MAX), nbt.getInt(NBT_Y_MAX), nbt.getInt(NBT_Z_MAX), dim.map(_.getLocation()))
   }
 

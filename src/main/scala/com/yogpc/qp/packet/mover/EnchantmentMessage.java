@@ -16,6 +16,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.registries.ForgeRegistries;
+import scala.jdk.javaapi.OptionConverters;
 
 /**
  * To server only.
@@ -58,7 +59,7 @@ public class EnchantmentMessage implements IMessage<EnchantmentMessage> {
     @Override
     public void onReceive(Supplier<NetworkEvent.Context> ctx) {
         IMessage.findTile(ctx, pos, dim, TileEntity.class)
-            .flatMap(t -> com.yogpc.qp.package$.MODULE$.toJavaOption(EnchantmentFilter.Accessor$.MODULE$.apply(t)))
+            .flatMap(t -> OptionConverters.toJava(EnchantmentFilter.Accessor$.MODULE$.apply(t)))
             .ifPresent(tile ->
                 ctx.get().enqueueWork(() -> {
                     if (type == Type.Toggle) {
