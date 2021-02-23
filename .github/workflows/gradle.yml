@@ -62,7 +62,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle16
+          key: ${{ runner.os }}-gradle16-${{ hashFiles('**/forge_version.properties') }}
       - name: Download Mod Jar
         if: ${{ matrix.forge != 'default' }}
         uses: actions/download-artifact@v2
