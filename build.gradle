@@ -84,8 +84,8 @@ minecraft {
 
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'REGISTRIES'
-
-            // Recommended logging level for the console
+            property 'mixin.env.disableRefMap', 'true'
+            property "mixin.debug.export", "true"
             property 'forge.logging.console.level', 'debug'
 
             mods {
@@ -94,14 +94,13 @@ minecraft {
                 }
             }
         }
-
         server {
             workingDirectory project.file('run-server')
 
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-
-            // Recommended logging level for the console
+            property 'mixin.env.disableRefMap', 'true'
+            property "mixin.debug.export", "true"
             property 'forge.logging.console.level', 'info'
 
             mods {
@@ -113,6 +112,8 @@ minecraft {
         data {
             workingDirectory project.file('run-server')
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'mixin.env.disableRefMap', 'true'
+            property "mixin.debug.export", "true"
             property 'forge.logging.console.level', 'info'
             forceExit false
 
