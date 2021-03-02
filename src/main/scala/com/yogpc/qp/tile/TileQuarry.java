@@ -73,6 +73,8 @@ import static jp.t2v.lab.syntax.MapStreamSyntax.streamCast;
 public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTile {
     public static final Symbol SYMBOL = Symbol.apply("QuarryPlus");
     private int targetX, targetY, targetZ;
+    private int preX, preY, preZ;
+    private int coolFillerMode;
     public int xMin, xMax, yMin, yMax = Integer.MIN_VALUE, zMin, zMax;
     public boolean filler;
 
@@ -120,7 +122,8 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                     break;
                 //$FALL-THROUGH$
                 case NOT_NEED_BREAK:
-                    broken = !filler;
+                    broken = !filler && coolFillerMode <= 0;
+                    if (coolFillerMode-- > 0) break;
                 case BREAK_BLOCK:
                     if (S_breakBlock())
                         while (!S_checkTarget())
@@ -165,15 +168,14 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                     }
                     setNow(MAKE_FRAME);
                     G_renew_powerConfigure();
-                    this.targetX = this.xMin;
-                    this.targetY = this.yMax;
-                    this.targetZ = this.zMin;
+                    initTargetPos();
                     this.addX = this.addZ = this.dug = true;
                     this.changeZ = false;
                     return S_checkTarget();
                 }
                 if (!isBreakableBlock(target, b, blockHardness))
                     return false;
+                this.coolFillerMode = scala.Int.unbox(Config.content().tickDelay().apply(getSymbol()));
                 if (b.getBlock() == QuarryPlusI.blockFrame() && !b.getValue(BlockFrame.DAMMING)) {
                     return Stream.of(
                         this.targetX == this.xMin || this.targetX == this.xMax,
@@ -197,10 +199,9 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                 if (b.getMaterial().isSolid()
                     && !(b.getBlock() == QuarryPlusI.blockFrame() && !b.getValue(BlockFrame.DAMMING))) {
                     setNow(NOT_NEED_BREAK);
+                    this.coolFillerMode = scala.Int.unbox(Config.content().tickDelay().apply(getSymbol()));
                     G_renew_powerConfigure();
-                    this.targetX = this.xMin;
-                    this.targetZ = this.zMin;
-                    this.targetY = this.yMax;
+                    initTargetPos();
                     this.addX = this.addZ = this.dug = true;
                     this.changeZ = false;
                     return S_checkTarget();
@@ -232,6 +233,9 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     private boolean changeZ = false;
 
     private void S_setNextTarget() {
+        preX = targetX;
+        preY = targetY;
+        preZ = targetZ;
         if (this.now == MAKE_FRAME) {
             if (this.changeZ) {
                 if (this.addZ) {
@@ -460,21 +464,30 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     }
 
     private void S_setFirstPos() {
-        this.targetX = this.xMin;
-        this.targetZ = this.zMin;
-        this.targetY = this.yMax;
+        initTargetPos();
         this.headPosX = (this.xMin + this.xMax + 1) >> 1;
         this.headPosZ = (this.zMin + this.zMax + 1) >> 1;
         this.headPosY = this.yMax - 1;
     }
 
+    private void initTargetPos() {
+        this.targetX = this.xMin;
+        this.targetY = this.yMax;
+        this.targetZ = this.zMin;
+        this.preX = this.xMin;
+        this.preY = this.yMax;
+        this.preZ = this.zMin;
+    }
+
     private boolean S_moveHead() {
+        final double maxDistance = Math.sqrt((targetX - preX) * (targetX - preX) + (targetY - preY) * (targetY - preY) + (targetZ - preZ) * (targetZ - preZ))
+            / ((double) scala.Int.unbox(Config.content().tickDelay().apply(getSymbol())) + 1);
         final double x = this.targetX - this.headPosX;
         final double y = this.targetY + 1 - this.headPosY;
         final double z = this.targetZ - this.headPosZ;
         final double distance = Math.sqrt(x * x + y * y + z * z);
-        final double blocks = PowerManager.useEnergyQuarryHead(this, distance, this.unbreaking);
-        if (blocks * 2 >= distance) {
+        final double blocks = PowerManager.useEnergyQuarryHead(this, Math.min(distance, maxDistance * 2), this.unbreaking);
+        if (blocks * 2 - distance > -1e-5) {
             this.headPosX = this.targetX;
             this.headPosY = this.targetY + 1;
             this.headPosZ = this.targetZ;
@@ -528,6 +541,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
         if (this.yMax == Integer.MIN_VALUE && !getWorld().isRemote)
             S_createBox();
         setNow(NOT_NEED_BREAK);
+        this.coolFillerMode = scala.Int.unbox(Config.content().tickDelay().apply(getSymbol()));
         G_renew_powerConfigure();
         if (!getWorld().isRemote) {
             S_setFirstPos();
@@ -580,6 +594,9 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
         this.targetX = nbt.getInteger("targetX");
         this.targetY = nbt.getInteger("targetY");
         this.targetZ = nbt.getInteger("targetZ");
+        this.preX = nbt.getInteger("preX");
+        this.preY = nbt.getInteger("preY");
+        this.preZ = nbt.getInteger("preZ");
         this.addZ = nbt.getBoolean("addZ");
         this.addX = nbt.getBoolean("addX");
         this.dug = nbt.getBoolean("dug");
@@ -603,6 +620,9 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
         nbt.setInteger("targetX", this.targetX);
         nbt.setInteger("targetY", this.targetY);
         nbt.setInteger("targetZ", this.targetZ);
+        nbt.setInteger("preX", this.preX);
+        nbt.setInteger("preY", this.preY);
+        nbt.setInteger("preZ", this.preZ);
         nbt.setBoolean("addZ", this.addZ);
         nbt.setBoolean("addX", this.addX);
         nbt.setBoolean("dug", this.dug);

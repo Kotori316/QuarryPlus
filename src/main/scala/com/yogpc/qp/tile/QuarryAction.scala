@@ -140,8 +140,10 @@ object QuarryAction {
     } else {
       Nil
     }
+    var lastAction = 0L
 
     override def action(target: BlockPos): Unit = {
+      if (Math.abs(quarry2.getWorld.getTotalWorldTime - lastAction) < Config.content.tickDelay(TileQuarry2.SYMBOL)) return
       insideFrame match {
         case head :: tl if head == target =>
           val state = quarry2.getWorld.getBlockState(target)
@@ -151,6 +153,7 @@ object QuarryAction {
               quarry2.getWorld.setBlockState(target, Blocks.AIR.getDefaultState)
               playSound(state, quarry2.getWorld, head)
               insideFrame = tl.dropWhile(p => !checkBreakable(quarry2.getWorld, p, quarry2.getWorld.getBlockState(p), quarry2.modules))
+              lastAction = quarry2.getWorld.getTotalWorldTime
             }
           } else {
             insideFrame = insideFrame.dropWhile(p => !checkBreakable(quarry2.getWorld, p, quarry2.getWorld.getBlockState(p), quarry2.modules))
@@ -191,15 +194,18 @@ object QuarryAction {
       .dropWhile(p => !checkBreakable(quarry2.getWorld, p, quarry2.getWorld.getBlockState(p), quarry2.modules))
 
     var movingHead = true
+    var pre: BlockPos = targetBefore
 
     override def action(target: BlockPos): Unit = {
       if (movingHead) {
+        val maxDistance = Math.sqrt(pre distanceSq target) /
+          (Config.content.tickDelay(TileQuarry2.SYMBOL).toDouble + 1)
         val x = target.getX - this.headX
         val y = target.getY + 1 - this.headY
         val z = target.getZ - this.headZ
         val distance = Math.sqrt(x * x + y * y + z * z)
-        val blocks = PowerManager.useEnergyQuarryHead(quarry2, distance, quarry2.enchantments.unbreaking)
-        if (blocks * 2 >= distance) {
+        val blocks = PowerManager.useEnergyQuarryHead(quarry2, Math.min(distance, maxDistance * 2), quarry2.enchantments.unbreaking)
+        if (blocks * 2 - distance > -1e-5) {
           this.headX = target.getX
           this.headY = target.getY + 1
           this.headZ = target.getZ
@@ -241,6 +247,7 @@ object QuarryAction {
               }
               digTargets = tl.dropWhile(p => !checkBreakable(quarry2.getWorld, p, quarry2.getWorld.getBlockState(p), quarry2.modules))
               movingHead = true
+              pre = target
             }
         }
       }

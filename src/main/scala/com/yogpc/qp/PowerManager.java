@@ -280,14 +280,15 @@ public class PowerManager {
         double bp = (double) MoveHead_BP / APowerTile.MJToMicroMJ;
         double pw;
         if (!Config.content().fastQuarryHeadMove()) {
-            pw = Math.min(2 + (double) pp.getStoredEnergy() / 500 / APowerTile.MJToMicroMJ, (dist / 2 - 0.05) * bp / (U * MoveHead_CU + 1));
+            pw = Math.min(2 + (double) pp.getStoredEnergy() / 500 / APowerTile.MJToMicroMJ, (dist / 2) * bp / (U * MoveHead_CU + 1));
         } else {
-            pw = (dist / 2 - 0.05) * bp / (U * MoveHead_CU + 1);
+            pw = (dist / 2) * bp / (U * MoveHead_CU + 1);
         }
         long used = pp.useEnergy(0, (long) (pw * APowerTile.MJToMicroMJ), true, EnergyUsage.MOVE_HEAD);
+        if (used == 0) return dist;
         pw = (double) used / APowerTile.MJToMicroMJ;
         pp.collector.get().addData(new DetailDataCollector.Common(EnergyUsage.MOVE_HEAD, used));
-        return pw * (U * MoveHead_CU + 1) / bp + 0.05;
+        return pw * (U * MoveHead_CU + 1) / bp;
     }
 
     @SuppressWarnings("deprecation")

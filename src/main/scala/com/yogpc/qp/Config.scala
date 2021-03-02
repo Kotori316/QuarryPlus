@@ -1,9 +1,6 @@
 package com.yogpc.qp
 
-import java.io.File
-import java.nio.file.{Files, Path}
-import java.{lang, util}
-
+import com.yogpc.qp.block.BlockSolidQuarry
 import com.yogpc.qp.tile.{TileAdvQuarry, WorkbenchRecipes}
 import com.yogpc.qp.utils.{BlockWrapper, ReflectionHelper}
 import net.minecraft.util.ResourceLocation
@@ -14,6 +11,9 @@ import net.minecraftforge.fml.client.event.ConfigChangedEvent
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
+import java.io.File
+import java.nio.file.{Files, Path}
+import java.{lang, util}
 import scala.util.Try
 import scala.util.control.NonFatal
 
@@ -109,6 +109,12 @@ object Config {
     'RefineryPlus -> QuarryPlus.Optionals.Buildcraft_factory_modID
   )
 
+  private final val TickDelayMachines: Seq[Symbol] = Seq(
+    BlockSolidQuarry.SYMBOL,
+    Symbol("QuarryPlus"),
+    Symbol("NewQuarry")
+  )
+
   private val defaultDisables = Set('EnchantMoverFromBook, 'Replacer, 'Filler) ++
     QuarryPlusI.itemDisableInfo.collect { case m if m.defaultDisableMachine => m.getSymbol }
 
@@ -176,6 +182,12 @@ object Config {
       "True to allow much faster move of quarry head.")
 
     (Disables ++ DisableBC.keySet).map("Disable" + _.name).foreach(s => configuration.getCategory(Configuration.CATEGORY_GENERAL).remove(s))
+
+    val tickDelay: Map[Symbol, Int] = (for {
+      name <- TickDelayMachines
+      comment = "Delay ticks of quarry work. 0 to disable delaying."
+    } yield (name, configuration.getInt(name.name, Configuration.CATEGORY_GENERAL + Configuration.CATEGORY_SPLITTER + "tick_delay", 0,
+      0, 1000000, comment))).toMap
 
     if (configuration.hasChanged)
       configuration.save()
