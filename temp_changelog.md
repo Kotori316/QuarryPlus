@@ -1,7 +1,15 @@
+# Version 12.4.6
+
+* Added config options
+  * Tick Delays for quarries, which eventually make quarries slow.
+  * DisableFillerMode, which will disable filler mode of quarry, that removes blocks very fast.
+
 # Version 12.4.5
+
 * Catch errors of loading black list.
 
 # Version 12.4.4
+
 * Improved filler work.
   * It can place colored wools.
   * Solar panels from IC2 and EnderIO, too
@@ -168,7 +176,7 @@
 
 # Version 1.0.1
 * Working to fix a bug where QuarryPlus stops its work while removing flowing liquid with PumpPlus in frame mode.
-If you have this problem, right click the PumpPlus with a stick or wrench to change PumpPlus's mode.
+  If you have this problem, right click the PumpPlus with a stick or wrench to change PumpPlus's mode.
 * Made quarry head moving much faster. Change FastQuarryHeadMove in the config to true.
 
 # Version 1.0.0
