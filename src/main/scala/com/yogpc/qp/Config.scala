@@ -121,6 +121,7 @@ object Config {
   final val CATEGORY_MACHINES = "machines"
   final val CATEGORY_HIDDEN = "hidden"
   final val CollectBedrock_key = "CollectBedrock"
+  final val DisableFillerMode_key = "DisableFillerMode"
   final val DisableFrameChainBreak_key = "DisableFrameChainBreak"
   final val DisableRendering_Key = "DisableRendering"
   final val DisableDungeonRoot_key = "DisableDungeonLoot"
@@ -180,12 +181,14 @@ object Config {
       "False to disable default workbench recipe. You can add recipe with json file.")
     val fastQuarryHeadMove = configuration.getBoolean(FastQuarryHeadMove_Key, Configuration.CATEGORY_GENERAL, false,
       "True to allow much faster move of quarry head.")
+    val disableFillerMode: Boolean = configuration.getBoolean(DisableFillerMode_key, Configuration.CATEGORY_GENERAL, false,
+      "False to allow quarries to break blocks inside of yellow line. True to disable this function.")
 
     (Disables ++ DisableBC.keySet).map("Disable" + _.name).foreach(s => configuration.getCategory(Configuration.CATEGORY_GENERAL).remove(s))
 
     val tickDelay: Map[Symbol, Int] = (for {
       name <- TickDelayMachines
-      comment = "Delay ticks of quarry work. 0 to disable delaying."
+      comment = s"Delay ticks of $name work. 0 to disable delaying."
     } yield (name, configuration.getInt(name.name, Configuration.CATEGORY_GENERAL + Configuration.CATEGORY_SPLITTER + "tick_delay", 0,
       0, 1000000, comment))).toMap
 

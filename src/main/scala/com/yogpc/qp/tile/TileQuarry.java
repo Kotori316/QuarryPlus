@@ -198,6 +198,10 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                 }
                 if (b.getMaterial().isSolid()
                     && !(b.getBlock() == QuarryPlusI.blockFrame() && !b.getValue(BlockFrame.DAMMING))) {
+                    if (Config.content().disableFillerMode()) {
+                        G_destroy();
+                        return false;
+                    }
                     setNow(NOT_NEED_BREAK);
                     this.coolFillerMode = scala.Int.unbox(Config.content().tickDelay().apply(getSymbol()));
                     G_renew_powerConfigure();
@@ -540,7 +544,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
     public void G_ReInit() {
         if (this.yMax == Integer.MIN_VALUE && !getWorld().isRemote)
             S_createBox();
-        setNow(NOT_NEED_BREAK);
+        setNow(Config.content().disableFillerMode() ? MAKE_FRAME : NOT_NEED_BREAK);
         this.coolFillerMode = scala.Int.unbox(Config.content().tickDelay().apply(getSymbol()));
         G_renew_powerConfigure();
         if (!getWorld().isRemote) {

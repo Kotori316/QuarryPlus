@@ -52,7 +52,8 @@ object QuarryAction {
 
     override val mode: TileQuarry2.Mode = TileQuarry2.waiting
 
-    override def nextAction(quarry2: TileQuarry2): QuarryAction = new BreakInsideFrame(quarry2)
+    override def nextAction(quarry2: TileQuarry2): QuarryAction =
+      if (Config.content.disableFillerMode) new MakeFrame(quarry2) else new BreakInsideFrame(quarry2)
 
     override def canGoNext(quarry: TileQuarry2): Boolean = quarry.getStoredEnergy * 3 > quarry.getMaxStored
   }
