@@ -8,6 +8,7 @@ on:
       - "!*"
     paths:
       - "src/main/**"
+      - "forge_version.properties"
 
 jobs:
   assemble:
