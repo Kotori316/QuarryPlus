@@ -6,6 +6,8 @@ on:
       - "1.16"
     tags:
       - "!*"
+    paths:
+      - "src/main/**"
 
 jobs:
   assemble:
@@ -16,6 +18,8 @@ jobs:
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle16-${{ hashFiles('**/forge_version.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle16
       - name: Download Assets for Cache
         run: |
           chmod +x ./gradlew && (./gradlew clean || true)
@@ -63,6 +67,8 @@ jobs:
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle16-${{ hashFiles('**/forge_version.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle16
       - name: Download Mod Jar
         if: ${{ matrix.forge != 'default' }}
         uses: actions/download-artifact@v2
@@ -129,6 +135,8 @@ jobs:
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle16-${{ hashFiles('**/forge_version.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle16
       - name: compile
         run: |
           if [ $CI_FORGE = "latest" ]; then
