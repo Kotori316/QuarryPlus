@@ -1,6 +1,7 @@
 name: Build Check and Publish
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - "1.16"
@@ -13,8 +14,12 @@ on:
 jobs:
   assemble:
     runs-on: ubuntu-latest
+    outputs:
+      key: ${{ steps.step1.outputs.test }}
     steps:
       - uses: actions/checkout@v2
+      - id: step1
+        run: echo "::set-output name=test::${{ runner.os }}-gradle16-${{ hashFiles('**/forge_version.properties') }}"
       - uses: actions/cache@v2
         with:
           path: ~/.gradle/caches
@@ -46,19 +51,19 @@ jobs:
         java: [ default, 11 ]
         forge: [ 1.16.4-35.1.4, 1.16.4-35.1.37, latest, default ]
     steps:
-      - name: Checkout SLP-example repo
+      - name: Checkout fictional-meme repo
         uses: actions/checkout@v2
         if: ${{ matrix.forge != 'default' }}
         with:
-          repository: "Kotori316/SLP-example"
+          repository: "Kotori316/fictional-meme"
+      - name: Set versions
+        if: ${{ matrix.forge != 'default' }}
+        run: |
+          sed -i -e "s/forge.version=latest/forge.version=${{ matrix.forge }}/"
+          sed -i -e "s/ci.mods=dummy/ci.mods=quarryplus/"
       - name: Checkout QuarryPlus repo
         uses: actions/checkout@v2
         if: ${{ matrix.forge == 'default' }}
-      - name: Get latest version
-        if: ${{ matrix.forge == 'latest' }}
-        run: |
-          version=$(python3 get_latest_forge.py "1.16.5-latest")
-          echo "FORGE_LATEST=1.16.5-$version" >> $GITHUB_ENV
       - name: Set up JDK ${{ matrix.java }}
         uses: actions/setup-java@v1
         if: ${{ matrix.java != 'default' }}
@@ -67,7 +72,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle16-${{ hashFiles('**/forge_version.properties') }}
+          key: ${{needs.assemble.outputs.key}}
           restore-keys: |
             ${{ runner.os }}-gradle16
       - name: Download Mod Jar
@@ -80,24 +85,14 @@ jobs:
         if: ${{ matrix.forge != 'default' }}
         run: ls -al work && mkdir --parents run/mods && mv work/*-deobf.jar run/mods/ && ls -al run/mods
       - name: download_assets
-        run: |
-          if [ $CI_FORGE = "latest" ]; then
-            export CI_FORGE=$FORGE_LATEST
-          fi
-          chmod +x ./gradlew && (./gradlew clean downloadAssets || true)
+        run: chmod +x ./gradlew && (./gradlew clean downloadAssets || true)
         continue-on-error: true
         env:
           CI_FORGE: ${{ matrix.forge }}
       - name: Test with runData
-        run: |
-          if [ $CI_FORGE = "latest" ]; then
-            export CI_FORGE=$FORGE_LATEST
-          fi
-          chmod +x ./gradlew && ( ./gradlew --no-daemon runData || ./gradlew --no-daemon runData)
+        run: chmod +x ./gradlew && ( ./gradlew --no-daemon runData || ./gradlew --no-daemon runData)
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CI_FORGE: ${{ matrix.forge }}
-          CI_MODS: "quarryplus"
       - id: check-test-started
         run: |
           [ -f test_started.txt ]
@@ -120,7 +115,7 @@ jobs:
       - uses: actions/checkout@v2
         if: ${{ matrix.forge == 'latest' }}
         with:
-          repository: "Kotori316/SLP-example"
+          repository: "Kotori316/fictional-meme"
       - name: Get latest version
         if: ${{ matrix.forge == 'latest' }}
         run: |
