@@ -58,9 +58,7 @@ jobs:
           repository: "Kotori316/fictional-meme"
       - name: Set versions
         if: ${{ matrix.forge != 'default' }}
-        run: |
-          sed -i -e "s/forge.version=latest/forge.version=${{ matrix.forge }}/" gradle.properties
-          sed -i -e "s/ci.mods=dummy/ci.mods=quarryplus/" gradle.properties
+        run: sed -i -e "s/forge.version=latest/forge.version=${{ matrix.forge }}/" -e "s/ci.mods=dummy/ci.mods=quarryplus/" gradle.properties
       - name: Checkout QuarryPlus repo
         uses: actions/checkout@v2
         if: ${{ matrix.forge == 'default' }}
@@ -87,12 +85,8 @@ jobs:
       - name: download_assets
         run: chmod +x ./gradlew && (./gradlew clean downloadAssets || true)
         continue-on-error: true
-        env:
-          CI_FORGE: ${{ matrix.forge }}
       - name: Test with runData
         run: chmod +x ./gradlew && ( ./gradlew --no-daemon runData || ./gradlew --no-daemon runData)
-        env:
-          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - id: check-test-started
         run: |
           [ -f test_started.txt ]
