@@ -24,8 +24,6 @@ jobs:
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle16-${{ hashFiles('**/forge_version.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle16
       - name: Download Assets for Cache
         run: |
           chmod +x ./gradlew && (./gradlew clean || true)
