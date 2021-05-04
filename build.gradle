@@ -180,7 +180,7 @@ repositories {
 dependencies {
     minecraft(forgeVersion())
     implementation group: 'org.scala-lang', name: 'scala-library', version: '2.13.5'
-    implementation group: 'org.typelevel', name: "cats-core_2.13", version: '2.4.2'
+    implementation group: 'org.typelevel', name: "cats-core_2.13", version: '2.6.0'
 
     // at runtime, use the full JEI jar
     implementation fg.deobf("mezz.jei:jei-1.16.4:7.6.0.58")
@@ -203,7 +203,7 @@ dependencies {
     implementation(group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.7.0')
 
     if (isInCI()) {
-        runtimeOnly(group: 'com.kotori316', name: 'ScalableCatsForce'.toLowerCase(Locale.ROOT), version: '2.13.5-build-1', classifier: 'dev')
+        runtimeOnly(group: 'com.kotori316', name: 'ScalableCatsForce'.toLowerCase(Locale.ROOT), version: '2.13.5-build-2', classifier: 'dev')
     }
 }
 
