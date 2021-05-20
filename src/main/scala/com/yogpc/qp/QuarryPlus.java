@@ -15,6 +15,7 @@ package com.yogpc.qp;
 
 import java.io.File;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.stream.Collectors;
@@ -124,13 +125,15 @@ public class QuarryPlus {
     public boolean inDev;
 
     static {
-        if (FMLCommonHandler.instance().getSide() == Side.CLIENT && !Optionals.clientProxy.equals(ProxyClient.class.getName())) {
+        if (FMLCommonHandler.instance().getSide() == Side.CLIENT &&
+            !Optionals.clientProxy.toLowerCase(Locale.ROOT).equals(ProxyClient.class.getName().toLowerCase(Locale.ROOT))) {
             throw new AssertionError("Client Proxy name doesn't match!");
         }
-        if (!Optionals.serverProxy.equals(ProxyCommon.class.getName())) {
+        if (!Optionals.serverProxy.toLowerCase(Locale.ROOT).equals(ProxyCommon.class.getName().toLowerCase(Locale.ROOT))) {
             throw new AssertionError("Server Proxy name doesn't match!");
         }
-        if (FMLCommonHandler.instance().getSide() == Side.CLIENT && !Optionals.configFactory.equals(GuiFactory.class.getName())) {
+        if (FMLCommonHandler.instance().getSide() == Side.CLIENT &&
+            !Optionals.configFactory.toLowerCase(Locale.ROOT).equals(GuiFactory.class.getName().toLowerCase(Locale.ROOT))) {
             throw new AssertionError("GuiFactory name doesn't match!");
         }
         INSTANCE = new QuarryPlus();
@@ -306,7 +309,7 @@ public class QuarryPlus {
         if (!event.isDirectory()) {
             LOGGER.warn("Invalid fingerprint detected! The file " + event.getSource().getName() +
                 " may have been tampered with. This version will NOT be supported by the author!" + System.lineSeparator() +
-                "Download: https://minecraft.curseforge.com/projects/additional-enchanted-miner");
+                "Download: https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner");
         }
     }
 
