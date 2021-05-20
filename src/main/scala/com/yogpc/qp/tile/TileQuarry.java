@@ -196,6 +196,8 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
                     this.changeZ = false;
                     return S_checkTarget();
                 }
+                if (blockHardness < 0)
+                    return false; // Avoid dead lock caused by infinite loop. Bedrock or unbreakable blocks.
                 if (b.getMaterial().isSolid()
                     && !(b.getBlock() == QuarryPlusI.blockFrame() && !b.getValue(BlockFrame.DAMMING))) {
                     if (Config.content().disableFillerMode()) {
