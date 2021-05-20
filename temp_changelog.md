@@ -1,3 +1,12 @@
+# Version 12.4.7
+
+* Fixed server freeze when bedrock exists where (old) quarry tries to place frame.
+  * This problem doesn't happen with new quarry.
+  * The frozen happens if unbreakable block(hardness = -1) is in the area of frame, yellow line of guide.
+  * It seems just quarry stops, but you can't interact anything in the world. The quarry fell into infinite loop to
+    search blocks to break, resulting in nothing found, and loop, loop.
+  * Close [#117](https://github.com/Kotori316/QuarryPlus/issues/117)
+
 # Version 12.4.6
 
 * Added config options
@@ -175,8 +184,7 @@
 * Support BuildCraft 7.99.21 and newer. Close [#47](https://github.com/Kotori316/QuarryPlus/issues/47).
 
 # Version 1.0.1
-* Working to fix a bug where QuarryPlus stops its work while removing flowing liquid with PumpPlus in frame mode.
-  If you have this problem, right click the PumpPlus with a stick or wrench to change PumpPlus's mode.
+* Working to fix a bug where QuarryPlus stops its work while removing flowing liquid with PumpPlus in frame mode. If you have this problem, right click the PumpPlus with a stick or wrench to change PumpPlus's mode.
 * Made quarry head moving much faster. Change FastQuarryHeadMove in the config to true.
 
 # Version 1.0.0
