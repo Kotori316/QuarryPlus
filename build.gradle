@@ -182,7 +182,6 @@ dependencies {
     implementation group: 'org.scala-lang', name: 'scala-library', version: '2.13.5'
     implementation group: 'org.typelevel', name: "cats-core_2.13", version: '2.6.0'
 
-    // at runtime, use the full JEI jar
     implementation fg.deobf("mezz.jei:jei-1.16.4:7.6.0.58")
     //noinspection SpellCheckingInspection
     implementation "com.blamejared.crafttweaker:CraftTweaker-1.16.4:7.1.0.71:deobf"
@@ -356,20 +355,29 @@ if (!isInCI()) {
 }
 
 static String getCommit(String branch) {
-    ProcessBuilder builder = new ProcessBuilder("git", "rev-parse", branch)
-    def process = builder.start()
-    process.waitFor(1L, TimeUnit.SECONDS)
-    def reader = new BufferedReader(new InputStreamReader(process.getInputStream()))
-    def commit = reader.readLine()
-    reader.close()
-    return commit ?: ""
+    try {
+        ProcessBuilder builder = new ProcessBuilder("git", "rev-parse", branch)
+        def process = builder.start()
+        process.waitFor(1L, TimeUnit.SECONDS)
+        def reader = new BufferedReader(new InputStreamReader(process.getInputStream()))
+        def commit = reader.readLine()
+        reader.close()
+        return commit ?: ""
+    } catch (IOException ignored) {
+        if (!isInCI())
+            println("Caught $ignored")
+        return ""
+    }
 }
 
 String getChangeLog() {
-    file("temp_changelog.md").readLines()
-            .drop(1)
-            .takeWhile { s -> !s.isEmpty() }
-            .stream().collect(Collectors.joining(System.lineSeparator()))
+    def f = file("temp_changelog.md")
+    if (f.exists())
+        return f.readLines()
+                .drop(1)
+                .takeWhile { s -> !s.isEmpty() }
+                .stream().collect(Collectors.joining(System.lineSeparator()))
+    else return ""
 }
 
 task CheckCompileOption() {

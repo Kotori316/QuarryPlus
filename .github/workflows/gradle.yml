@@ -63,6 +63,7 @@ jobs:
           mv /work/* ./ && ls -al
           version=$(java -jar $(find / -maxdepth 1 -name "*.jar") ${{ matrix.forge }})
           sed -i -e "s/forge.version=latest/forge.version=$version/" -e "s/ci.mods=dummy/ci.mods=quarryplus/" gradle.properties
+          cat gradle.properties
       - name: Checkout QuarryPlus repo
         uses: actions/checkout@v2
         if: ${{ matrix.forge == 'default' }}
