@@ -10,6 +10,7 @@ on:
     paths:
       - "src/main/**"
       - "forge_version.properties"
+      - ".github/workflows/gradle.yml"
 
 jobs:
   assemble:
@@ -29,8 +30,10 @@ jobs:
           chmod +x ./gradlew && (./gradlew clean || true)
           ( ./gradlew downloadAssets extractNatives || ./gradlew downloadAssets extractNatives || \
           (sleep 30s && ./gradlew downloadAssets extractNatives) || true)
+      - name: Check Warning
+        run: ./gradlew javaToolchains --no-daemon --warning-mode all
       - name: Compile
-        run: chmod +x ./gradlew && ./gradlew assemble --warning-mode all --no-daemon
+        run: chmod +x ./gradlew && ./gradlew assemble --no-daemon
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
       - name: Publish
@@ -42,21 +45,24 @@ jobs:
   cross-check-runData:
     runs-on: ubuntu-latest
     needs: [ assemble ]
+    container:
+      image: docker.pkg.github.com/kotori316/fictional-meme/fictional-meme:latest
+      credentials:
+        username: kotori316
+        password: ${{ secrets.GITHUB_TOKEN }}
     strategy:
       fail-fast: false
       matrix:
         # test against latest update of each major Java version, as well as specific updates of LTS versions:
-        java: [ default, 11 ]
-        forge: [ 1.16.4-35.1.4, 1.16.4-35.1.37, 1.16.5-latest, default ]
+        java: [ default, 11, 8 ]
+        forge: [ 1.16.4-latest, 1.16.5-latest, default ]
     steps:
-      - name: Checkout fictional-meme repo
-        uses: actions/checkout@v2
-        if: ${{ matrix.forge != 'default' }}
-        with:
-          repository: "Kotori316/fictional-meme"
       - name: Set versions
         if: ${{ matrix.forge != 'default' }}
-        run: sed -i -e "s/forge.version=latest/forge.version=${{ matrix.forge }}/" -e "s/ci.mods=dummy/ci.mods=quarryplus/" gradle.properties
+        run: |
+          mv /work/* ./ && ls -al
+          version=$(java -jar $(find / -maxdepth 1 -name "*.jar") ${{ matrix.forge }})
+          sed -i -e "s/forge.version=latest/forge.version=$version/" -e "s/ci.mods=dummy/ci.mods=quarryplus/" gradle.properties
       - name: Checkout QuarryPlus repo
         uses: actions/checkout@v2
         if: ${{ matrix.forge == 'default' }}
@@ -98,22 +104,21 @@ jobs:
   cross-check-JUnit:
     runs-on: ubuntu-latest
     needs: [ assemble ]
+    container:
+      image: docker.pkg.github.com/kotori316/fictional-meme/fictional-meme:latest
+      credentials:
+        username: kotori316
+        password: ${{ secrets.GITHUB_TOKEN }}
     strategy:
       fail-fast: false
       matrix:
         # test against latest update of each major Java version, as well as specific updates of LTS versions:
-        java: [ default, 11 ]
-        forge: [ 1.16.4-35.1.4, 1.16.4-35.1.37, latest, default ]
+        java: [ default, 11, 8 ]
+        forge: [ 1.16.4-latest, 1.16.5-latest, default ]
     steps:
-      - uses: actions/checkout@v2
-        if: ${{ matrix.forge == 'latest' }}
-        with:
-          repository: "Kotori316/fictional-meme"
       - name: Get latest version
-        if: ${{ matrix.forge == 'latest' }}
-        run: |
-          version=$(python3 get_latest_forge.py "1.16.5-latest")
-          echo "FORGE_LATEST=1.16.5-$version" >> $GITHUB_ENV
+        if: ${{ matrix.forge != 'default' }}
+        run: echo "CI_FORGE=$(java -jar $(find / -maxdepth 1 -name "*.jar") ${{ matrix.forge }})" >> $GITHUB_ENV
       - uses: actions/checkout@v2
       - name: Set up JDK ${{ matrix.java }}
         uses: actions/setup-java@v1
@@ -128,24 +133,15 @@ jobs:
             ${{ runner.os }}-gradle16
       - name: compile
         run: |
-          if [ $CI_FORGE = "latest" ]; then
-            export CI_FORGE=$FORGE_LATEST
-          fi
           chmod +x ./gradlew && (./gradlew clean || true)
           ( (./gradlew compileScala || ./gradlew clean) || (./gradlew compileScala || ./gradlew clean) || (sleep 10s && ./gradlew compileScala) )
         continue-on-error: true
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CI_FORGE: ${{ matrix.forge }}
       - name: Test with JUnit
-        run: |
-          if [ $CI_FORGE = "latest" ]; then
-            export CI_FORGE=$FORGE_LATEST
-          fi
-          chmod +x ./gradlew && ./gradlew --no-daemon test
+        run: chmod +x ./gradlew && ./gradlew --no-daemon javaToolchains test
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CI_FORGE: ${{ matrix.forge }}
       - name: Upload failed test report
         if: failure()
         uses: actions/upload-artifact@v2
