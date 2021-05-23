@@ -182,7 +182,7 @@ dependencies {
     implementation group: 'org.scala-lang', name: 'scala-library', version: '2.13.5'
     implementation group: 'org.typelevel', name: "cats-core_2.13", version: '2.6.0'
 
-    implementation fg.deobf("mezz.jei:jei-1.16.4:7.6.0.58")
+    implementation fg.deobf("mezz.jei:jei-1.16.5:7.7.0.99")
     //noinspection SpellCheckingInspection
     implementation "com.blamejared.crafttweaker:CraftTweaker-1.16.4:7.1.0.71:deobf"
     compileOnly(fg.deobf("com.feed_the_beast.mods:ftb-chunks:1604.2.2.54") {
