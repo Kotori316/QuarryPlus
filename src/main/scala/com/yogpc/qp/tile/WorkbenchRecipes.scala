@@ -3,7 +3,6 @@ package com.yogpc.qp.tile
 import java.nio.file.{Files, Path}
 import java.util
 import java.util.{Collections, Comparator}
-
 import com.google.gson.{Gson, GsonBuilder, JsonArray, JsonObject}
 import com.yogpc.qp.block._
 import com.yogpc.qp.item.{ItemTemplate, ItemTool}
@@ -18,7 +17,7 @@ import org.apache.commons.io.FilenameUtils
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 abstract sealed class WorkbenchRecipes(val output: ItemDamage, val energy: Double, val showInJEI: Boolean = true)
   extends Ordered[WorkbenchRecipes] {
@@ -300,16 +299,19 @@ object WorkbenchRecipes {
     objectSeq.filter(json => !json.has("conditions") || CraftingHelper.processConditions(JsonUtils.getJsonArray(json, "conditions"), ctx))
       .filter(json => JsonUtils.getString(json, "type") == QuarryPlus.modID + ":workbench_recipe")
       .flatMap { json =>
-        val result = CraftingHelper.getItemStack(JsonUtils.getJsonObject(json, "result"), ctx)
         val id = JsonUtils.getString(json, "id", "")
         val location = if (id == "") QuarryPlus.modID + ":" + JsonUtils.getString(json, "path") else id
-        if (VersionUtil.nonEmpty(result)) {
-          val recipe = JsonUtils.getJsonArray(json, "ingredients").asScala.map(IngredientWithCount.getSeq(_, ctx)).toSeq
-          val energy = Try(JsonUtils.getString(json, "energy", "1000").toDouble).getOrElse(1000d)
-          val showInJEI = JsonUtils.getBoolean(json, "showInJEI", true)
-          Seq(new IngredientRecipe(new ResourceLocation(location), result, energy, showInJEI, recipe))
-        } else {
-          Seq.empty
+        val resultTry = Try(CraftingHelper.getItemStack(JsonUtils.getJsonObject(json, "result"), ctx))
+          .flatMap(i => if (VersionUtil.nonEmpty(i)) Success(i) else Failure(new IllegalArgumentException(s"result item is empty, id=$location")))
+        resultTry match {
+          case Success(result) =>
+            val recipe = JsonUtils.getJsonArray(json, "ingredients").asScala.map(IngredientWithCount.getSeq(_, ctx)).toSeq
+            val energy = Try(JsonUtils.getString(json, "energy", "1000").toDouble).getOrElse(1000d)
+            val showInJEI = JsonUtils.getBoolean(json, "showInJEI", true)
+            Seq(new IngredientRecipe(new ResourceLocation(location), result, energy, showInJEI, recipe))
+          case Failure(exception) =>
+            QuarryPlus.LOGGER.error(s"Caught in loading recipe $location", exception)
+            Seq.empty
         }
       }
       .filter(_.energy > 0)
