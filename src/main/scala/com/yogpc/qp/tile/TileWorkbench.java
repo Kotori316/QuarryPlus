@@ -303,6 +303,14 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
         return recipesList.indexOf(currentRecipe);
     }
 
+    public RecipeSearcher getSearcher() {
+        return searcher;
+    }
+
+    public void setSearcher(RecipeSearcher searcher) {
+        this.searcher = searcher;
+    }
+
     @Override
     @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.COFH_modID)
     public ConnectionType canConnectInventory(EnumFacing from) {

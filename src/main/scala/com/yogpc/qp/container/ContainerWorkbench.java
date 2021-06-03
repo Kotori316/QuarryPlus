@@ -4,6 +4,8 @@ import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.TileMessage;
+import com.yogpc.qp.packet.workbench.RecipeSyncMessage;
+import com.yogpc.qp.recipe.RecipeSearcher;
 import com.yogpc.qp.tile.TileWorkbench;
 import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.entity.player.EntityPlayer;
@@ -54,6 +56,10 @@ public class ContainerWorkbench extends Container {
         //63-71
         for (col = 0; col < 9; ++col)
             addSlotToContainer(new Slot(player.inventory, col, 8 + col * 18, 198));
+
+        if (!tile.getWorld().isRemote) {
+            PacketHandler.sendToClient(RecipeSyncMessage.create(tile.getPos(), tile.getWorld().provider.getDimension(), tile.getSearcher()), (EntityPlayerMP) player);
+        }
     }
 
     @Override

@@ -34,6 +34,7 @@ import com.yogpc.qp.packet.quarry.ModeMessage;
 import com.yogpc.qp.packet.quarry.MoveHead;
 import com.yogpc.qp.packet.quarry2.ActionMessage;
 import com.yogpc.qp.packet.quarry2.Level2Message;
+import com.yogpc.qp.packet.workbench.RecipeSyncMessage;
 import com.yogpc.qp.packet.workbench.WorkbenchMessage;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.BlockPos;
@@ -70,7 +71,8 @@ public class PacketHandler {
         wrapper.registerMessage(handler, RemoveLaser.class, id.getAndIncrement(), Side.CLIENT);
         wrapper.registerMessage(handler, RemoveLink.class, id.getAndIncrement(), Side.CLIENT);
         //workbench
-        wrapper.registerMessage(handler, WorkbenchMessage.class, id.getAndIncrement(), Side.CLIENT);
+        wrapper.registerMessage(handler, WorkbenchMessage.class, id.getAndIncrement(), Side.SERVER);
+        wrapper.registerMessage(handler, RecipeSyncMessage.class, id.getAndIncrement(), Side.CLIENT);
         //controller
         wrapper.registerMessage(handler, AvailableEntities.class, id.getAndIncrement(), Side.CLIENT);
         wrapper.registerMessage(handler, SetEntity.class, id.getAndIncrement(), Side.SERVER);

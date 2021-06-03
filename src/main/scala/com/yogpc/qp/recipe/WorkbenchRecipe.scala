@@ -19,8 +19,7 @@ import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.util.{Failure, Success, Try}
 
-abstract class WorkbenchRecipe(val output: ItemDamage, val energy: Double, val showInJEI: Boolean = true)
-  extends Ordered[WorkbenchRecipe] {
+abstract class WorkbenchRecipe(val output: ItemDamage, val energy: Double, val showInJEI: Boolean = true) {
   val microEnergy = (energy * APowerTile.MJToMicroMJ).toLong
   val size: Int
 
@@ -51,9 +50,6 @@ abstract class WorkbenchRecipe(val output: ItemDamage, val energy: Double, val s
     }
   }
 
-  override def compare(that: WorkbenchRecipe) = {
-    WorkbenchRecipe.recipeOrdering.compare(this, that)
-  }
 }
 
 private final class R1(o: ItemDamage, e: Double, s: Boolean = true, seq: Seq[Int => ItemStack], name: Symbol, hasCondition: Boolean) extends WorkbenchRecipe(o, e, s) {
@@ -112,8 +108,9 @@ object WorkbenchRecipe extends RecipeSearcher {
     override val location: ResourceLocation = new ResourceLocation(QuarryPlus.modID, "builtin_dummy")
   }
 
-  val recipeOrdering: Comparator[WorkbenchRecipe] =
+  implicit val recipeOrdering: Ordering[WorkbenchRecipe] = Ordering.comparatorToOrdering(
     Ordering.by((a: WorkbenchRecipe) => a.energy) thenComparing Ordering.by((a: WorkbenchRecipe) => Item.getIdFromItem(a.output.item))
+  )
 
   def recipeSize: Int = recipes.size
 
