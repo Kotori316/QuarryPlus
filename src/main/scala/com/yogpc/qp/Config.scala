@@ -1,7 +1,8 @@
 package com.yogpc.qp
 
 import com.yogpc.qp.block.BlockSolidQuarry
-import com.yogpc.qp.tile.{TileAdvQuarry, WorkbenchRecipes}
+import com.yogpc.qp.recipe.WorkbenchRecipe
+import com.yogpc.qp.tile.TileAdvQuarry
 import com.yogpc.qp.utils.{BlockWrapper, ReflectionHelper}
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.common.MinecraftForge
@@ -46,7 +47,7 @@ object Config {
   def recipeSync(): Unit = {
     val recipePath = configuration.getConfigFile.toPath.getParent.resolve(RECIPE_DIRECTORY)
     if (Files.notExists(recipePath)) Files.createDirectory(recipePath)
-    WorkbenchRecipes.registerJsonRecipe(ReflectionHelper.paths(recipePath))
+    WorkbenchRecipe.registerJsonRecipe(ReflectionHelper.paths(recipePath))
   }
 
   def setConfigFile(pre: File, file: File): Unit = {
@@ -214,7 +215,7 @@ object Config {
       if (Files.notExists(recipePath)) {
         Files.createDirectory(recipePath)
       }
-      WorkbenchRecipes.outputDefaultRecipe(recipePath)
+      WorkbenchRecipe.outputDefaultRecipe(recipePath)
     }
   }
 

@@ -1,8 +1,8 @@
 package com.yogpc.qp.integration.jei
 
-import java.util.{Collections, ArrayList => AList, List => JList}
+import com.yogpc.qp.recipe.{RecipeSearcher, WorkbenchRecipe}
 
-import com.yogpc.qp.tile.WorkbenchRecipes
+import java.util.{Collections, ArrayList => AList, List => JList}
 import mezz.jei.api.IJeiRuntime
 import mezz.jei.api.ingredients.{IIngredients, VanillaTypes}
 import mezz.jei.api.recipe.IRecipeWrapper
@@ -11,7 +11,7 @@ import net.minecraft.item.ItemStack
 
 import scala.collection.JavaConverters._
 
-class WorkBenchRecipeWrapper(val recipe: WorkbenchRecipes) extends IRecipeWrapper with Ordered[WorkBenchRecipeWrapper] {
+class WorkBenchRecipeWrapper(val recipe: WorkbenchRecipe) extends IRecipeWrapper with Ordered[WorkBenchRecipeWrapper] {
 
   override def getIngredients(ingredients: IIngredients): Unit = {
     val inputs = new AList[JList[ItemStack]](recipeSize)
@@ -49,11 +49,11 @@ class WorkBenchRecipeWrapper(val recipe: WorkbenchRecipes) extends IRecipeWrappe
 object WorkBenchRecipeWrapper {
 
   def getAll: JList[WorkBenchRecipeWrapper] = {
-    WorkbenchRecipes.getRecipeMap.collect { case (_, recipe) if recipe.showInJEI => new WorkBenchRecipeWrapper(recipe) }.toList.sorted.asJava
+    RecipeSearcher.getDefault.getRecipeMap.collect { case (_, recipe) if recipe.showInJEI => new WorkBenchRecipeWrapper(recipe) }.toList.sorted.asJava
   }
 
   def hideRecipe(runtime: IJeiRuntime): Unit = {
-    val recipeSeq = WorkbenchRecipes.getRecipeMap.values.toList.filter(_.hasContent)
+    val recipeSeq = WorkbenchRecipe.getRecipeMap.values.toList.filter(_.hasContent)
     val registry = runtime.getRecipeRegistry
     registry.getRecipeWrappers(QuarryJeiPlugin.workBenchRecipeCategory).asScala
       .filter(r => !recipeSeq.contains(r.recipe))

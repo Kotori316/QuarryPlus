@@ -1,11 +1,9 @@
-package com.yogpc.qp.tile
+package com.yogpc.qp.recipe
 
-import java.nio.file.{Files, Path}
-import java.util
-import java.util.{Collections, Comparator}
 import com.google.gson.{Gson, GsonBuilder, JsonArray, JsonObject}
 import com.yogpc.qp.block._
 import com.yogpc.qp.item.{ItemTemplate, ItemTool}
+import com.yogpc.qp.tile._
 import com.yogpc.qp.utils.{EnableCondition, IngredientWithCount}
 import com.yogpc.qp.version.VersionUtil
 import com.yogpc.qp.{Config, QuarryPlus}
@@ -15,12 +13,14 @@ import net.minecraft.util.{JsonUtils, ResourceLocation}
 import net.minecraftforge.common.crafting.{CraftingHelper, JsonContext}
 import org.apache.commons.io.FilenameUtils
 
+import java.nio.file.{Files, Path}
+import java.util.{Collections, Comparator}
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.util.{Failure, Success, Try}
 
-abstract sealed class WorkbenchRecipes(val output: ItemDamage, val energy: Double, val showInJEI: Boolean = true)
-  extends Ordered[WorkbenchRecipes] {
+abstract class WorkbenchRecipe(val output: ItemDamage, val energy: Double, val showInJEI: Boolean = true)
+  extends Ordered[WorkbenchRecipe] {
   val microEnergy = (energy * APowerTile.MJToMicroMJ).toLong
   val size: Int
 
@@ -45,18 +45,18 @@ abstract sealed class WorkbenchRecipes(val output: ItemDamage, val energy: Doubl
   override def equals(obj: scala.Any): Boolean = {
     super.equals(obj) || {
       obj match {
-        case r: WorkbenchRecipes => location == r.location && output == r.output && energy == r.energy
+        case r: WorkbenchRecipe => location == r.location && output == r.output && energy == r.energy
         case _ => false
       }
     }
   }
 
-  override def compare(that: WorkbenchRecipes) = {
-    WorkbenchRecipes.recipeOrdering.compare(this, that)
+  override def compare(that: WorkbenchRecipe) = {
+    WorkbenchRecipe.recipeOrdering.compare(this, that)
   }
 }
 
-private final class R1(o: ItemDamage, e: Double, s: Boolean = true, seq: Seq[Int => ItemStack], name: Symbol, hasCondition: Boolean) extends WorkbenchRecipes(o, e, s) {
+private final class R1(o: ItemDamage, e: Double, s: Boolean = true, seq: Seq[Int => ItemStack], name: Symbol, hasCondition: Boolean) extends WorkbenchRecipe(o, e, s) {
   override val size: Int = seq.size
 
   override def inputs = seq.map(_.apply(Config.content.recipe)).filter(VersionUtil.nonEmpty).map(IngredientWithCount.getSeq)
@@ -98,47 +98,11 @@ private final class R1(o: ItemDamage, e: Double, s: Boolean = true, seq: Seq[Int
   }
 }
 
-private final class R2(override val location: ResourceLocation, o: ItemDamage, e: Double, s: Boolean, list: java.util.List[java.util.function.IntFunction[ItemStack]])
-  extends WorkbenchRecipes(o, e, s) {
-  private[this] final val seq = list.asScala
-  override val size: Int = seq.size
+object WorkbenchRecipe extends RecipeSearcher {
 
-  override def inputs = seq.map(_.apply(Config.content.recipe)).filter(VersionUtil.nonEmpty).map(IngredientWithCount.getSeq)
-}
+  private[this] val recipes = mutable.Map.empty[ResourceLocation, WorkbenchRecipe]
 
-private final class IngredientRecipe(override val location: ResourceLocation, o: ItemStack, e: Double, s: Boolean, seq: Seq[Seq[IngredientWithCount]],
-                                     override val hardCode: Boolean = false) extends WorkbenchRecipes(ItemDamage(o), e, s) {
-  override val size = seq.size
-
-  override def inputs = seq
-
-  override def getOutput = o.copy()
-}
-
-private final class EnchantmentCopyRecipe(override val location: ResourceLocation, o: ItemStack, e: Double, input: IngredientWithCount)
-  extends WorkbenchRecipes(ItemDamage(o), e, showInJEI = true) {
-  override val size = 1
-
-  override def inputs: Seq[Seq[IngredientWithCount]] = Seq(Seq(input))
-
-  override def getOutput(inputStacks: util.List[ItemStack]): ItemStack = {
-    val stack = super.getOutput
-    val tagFrom = inputStacks.asScala.find(input.matches)
-    tagFrom.flatMap(s => Option(s.getTagCompound))
-      .map(_.copy())
-      .map { t =>
-        if (stack.hasTagCompound) t.merge(stack.getTagCompound)
-        t
-      }.foreach(t => stack.setTagCompound(t))
-    stack
-  }
-}
-
-object WorkbenchRecipes {
-
-  private[this] val recipes = mutable.Map.empty[ResourceLocation, WorkbenchRecipes]
-
-  val dummyRecipe: WorkbenchRecipes = new WorkbenchRecipes(ItemDamage.invalid, energy = 0, showInJEI = false) {
+  val dummyRecipe: WorkbenchRecipe = new WorkbenchRecipe(ItemDamage.invalid, energy = 0, showInJEI = false) {
     override val inputs = Nil
     override val microEnergy = 0L
     override val inputsJ: java.util.List[java.util.List[IngredientWithCount]] = Collections.emptyList()
@@ -148,8 +112,8 @@ object WorkbenchRecipes {
     override val location: ResourceLocation = new ResourceLocation(QuarryPlus.modID, "builtin_dummy")
   }
 
-  val recipeOrdering: Comparator[WorkbenchRecipes] =
-    Ordering.by((a: WorkbenchRecipes) => a.energy) thenComparing Ordering.by((a: WorkbenchRecipes) => Item.getIdFromItem(a.output.item))
+  val recipeOrdering: Comparator[WorkbenchRecipe] =
+    Ordering.by((a: WorkbenchRecipe) => a.energy) thenComparing Ordering.by((a: WorkbenchRecipe) => Item.getIdFromItem(a.output.item))
 
   def recipeSize: Int = recipes.size
 
@@ -157,7 +121,7 @@ object WorkbenchRecipes {
 
   def removeRecipe(location: ResourceLocation): Unit = recipes.remove(location)
 
-  def getRecipe(inputs: java.util.List[ItemStack]): java.util.List[WorkbenchRecipes] = {
+  override def getRecipe(inputs: java.util.List[ItemStack]): java.util.List[WorkbenchRecipe] = {
     val asScala = inputs.asScala
     recipes.filter {
       case (_, workRecipe) if workRecipe.hasContent =>
@@ -168,7 +132,7 @@ object WorkbenchRecipes {
     }.values.toList.sorted.asJava
   }
 
-  def addSeqRecipe(output: ItemDamage, energy: Int, inputs: Seq[Int => ItemStack], name: Symbol = Symbol(""), showInJEI: Boolean = true, unit: EnergyUnit = UnitMJ): Unit = {
+  def addSeqRecipe(output: ItemDamage, energy: Int, inputs: Seq[Int => ItemStack], name: Symbol = Symbol(""), showInJEI: Boolean = true, unit: EnergyUnit = EnergyUnit.MJ): Unit = {
     val newRecipe = new R1(output, unit.multiple * energy, showInJEI, inputs, if (name == Symbol("")) Symbol(output.toStack().getUnlocalizedName) else name, name != Symbol(""))
     if (energy > 0)
       recipes put(newRecipe.location, newRecipe)
@@ -178,16 +142,16 @@ object WorkbenchRecipes {
 
   def addListRecipe(location: ResourceLocation, output: ItemDamage, energy: Int, inputs: java.util.List[java.util.function.IntFunction[ItemStack]],
                     showInJEI: Boolean, unit: EnergyUnit): Unit = {
-    val newRecipe = new R2(location, output, unit.multiple * energy, showInJEI, inputs)
-    if (energy > 0)
-      recipes put(location, newRecipe)
-    else
-      QuarryPlus.LOGGER.error(s"Energy of Workbench Recipe is 0. $newRecipe")
+    val recipeInput = inputs.asScala.map(_.apply(Config.content.recipe)).filter(VersionUtil.nonEmpty).map(IngredientWithCount.getSeq)
+    addIngredientRecipe(location, output.toStack(), unit.multiple * energy, recipeInput, hardCode = false, showInJEI = showInJEI)
   }
 
   def addIngredientRecipe(location: ResourceLocation, output: ItemStack, energy: Double, inputs: java.util.List[java.util.List[IngredientWithCount]], hardCode: Boolean): Unit = {
-    val scalaInput = inputs.asScala.map(_.asScala.toSeq)
-    val newRecipe = new IngredientRecipe(location, output, energy, s = true, scalaInput, hardCode)
+    addIngredientRecipe(location, output, energy, inputs.asScala.map(_.asScala.toSeq), hardCode, showInJEI = true)
+  }
+
+  def addIngredientRecipe(location: ResourceLocation, output: ItemStack, energy: Double, inputs: Seq[Seq[IngredientWithCount]], hardCode: Boolean, showInJEI: Boolean): Unit = {
+    val newRecipe = new IngredientRecipe(location, output, energy, showInJEI, inputs, hardCode)
     if (energy > 0) {
       recipes put(location, newRecipe)
     } else {
@@ -195,39 +159,19 @@ object WorkbenchRecipes {
     }
   }
 
-  def getRecipeMap: Map[ResourceLocation, WorkbenchRecipes] = recipes.toMap
+  override def getRecipeMap: Map[ResourceLocation, WorkbenchRecipe] = recipes.toMap
 
-  def getRecipeFromResult(stack: ItemStack): java.util.Optional[WorkbenchRecipes] = {
+  def getRecipeFromResult(stack: ItemStack): java.util.Optional[WorkbenchRecipe] = {
     if (VersionUtil.isEmpty(stack)) return java.util.Optional.empty()
     val id = ItemDamage(stack)
     recipes.find { case (_, r) => r.output == id }.map(_._2).asJava
   }
 
-  protected sealed trait EnergyUnit {
-    def multiple: Double
-  }
+  def F(item: Item, count: Double, damage: Int): Int => ItemStack = level => new ItemStack(item, (count * level).toInt, damage)
 
-  protected val UnitMJ: EnergyUnit = new EnergyUnit {
-    override val multiple: Double = 1
-  }
+  def F(item: Item, count: Double): Int => ItemStack = F(item, count, 0)
 
-  val UnitRF: EnergyUnit = new EnergyUnit {
-    override val multiple: Double = 0.1
-  }
-
-  protected class F(item: Item, count: Double, damage: Int = 0) extends (Int => ItemStack) {
-    override def apply(v1: Int): ItemStack = new ItemStack(item, (count * v1).toInt, damage)
-
-    override def toString(): String = item.getUnlocalizedName + "@" + damage + " x" + count
-  }
-
-  object F {
-    def apply(item: Item, count: Double): Int => ItemStack = new F(item, count)
-
-    def apply(item: Item, count: Double, damage: Int): Int => ItemStack = new F(item, count, damage)
-
-    def apply(block: Block, count: Double): Int => ItemStack = new F(Item.getItemFromBlock(block), count)
-  }
+  def F(block: Block, count: Double): Int => ItemStack = F(Item.getItemFromBlock(block), count)
 
   def registerRecipes(): Unit = {
     import com.yogpc.qp.QuarryPlusI._
@@ -294,7 +238,7 @@ object WorkbenchRecipes {
     json
   }
 
-  def load(objectSeq: Seq[JsonObject], ctx: JsonContext): Seq[WorkbenchRecipes] = {
+  def load(objectSeq: Seq[JsonObject], ctx: JsonContext): Seq[WorkbenchRecipe] = {
 
     objectSeq.filter(json => !json.has("conditions") || CraftingHelper.processConditions(JsonUtils.getJsonArray(json, "conditions"), ctx))
       .filter(json => JsonUtils.getString(json, "type") == QuarryPlus.modID + ":workbench_recipe")

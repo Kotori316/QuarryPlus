@@ -22,6 +22,8 @@ import com.yogpc.qp.PowerManager;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.compat.InvUtils;
 import com.yogpc.qp.gui.TranslationKeys;
+import com.yogpc.qp.recipe.RecipeSearcher;
+import com.yogpc.qp.recipe.WorkbenchRecipe;
 import com.yogpc.qp.utils.IngredientWithCount;
 import com.yogpc.qp.version.VersionUtil;
 import javax.annotation.Nullable;
@@ -49,8 +51,10 @@ import scala.Symbol;
 public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, IInventoryConnection {
     public final NonNullList<ItemStack> inventory = NonNullList.withSize(27, com.yogpc.qp.version.VersionUtil.empty());
     public final NonNullList<ItemStack> inventory2 = NonNullList.withSize(18, com.yogpc.qp.version.VersionUtil.empty());
-    public List<WorkbenchRecipes> recipesList = Collections.emptyList();
-    private WorkbenchRecipes currentRecipe = WorkbenchRecipes.dummyRecipe();
+    public List<WorkbenchRecipe> recipesList = Collections.emptyList();
+
+    private RecipeSearcher searcher = RecipeSearcher.getDefault;
+    private WorkbenchRecipe currentRecipe = searcher.dummyRecipe();
     private final ItemHandler itemHandler = new ItemHandler();
     public boolean workContinue;
 
@@ -195,7 +199,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
     @Override
     public void markDirty() {
         super.markDirty();
-        recipesList = WorkbenchRecipes.getRecipe(inventory);
+        recipesList = searcher.getRecipe(inventory);
         inventory2.clear();
         for (int i = 0; i < recipesList.size(); i++) {
             setInventorySlotContents(inventory.size() + i, recipesList.get(i).getOutput());
@@ -279,7 +283,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
         if (recipeIndex >= 0 && recipesList.size() > recipeIndex) {
             this.currentRecipe = recipesList.get(recipeIndex);
         } else {
-            this.currentRecipe = WorkbenchRecipes.dummyRecipe();
+            this.currentRecipe = searcher.dummyRecipe();
         }
         configure(Config.content().workbenchMaxReceive() * APowerTile.MJToMicroMJ, currentRecipe.microEnergy());
         if (Config.content().noEnergy()) {

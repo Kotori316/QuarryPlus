@@ -26,9 +26,10 @@ import com.yogpc.qp.gui.GuiFactory;
 import com.yogpc.qp.gui.GuiHandler;
 import com.yogpc.qp.item.ItemTool;
 import com.yogpc.qp.packet.PacketHandler;
+import com.yogpc.qp.recipe.EnergyUnit;
+import com.yogpc.qp.recipe.WorkbenchRecipe;
 import com.yogpc.qp.tile.ItemDamage;
 import com.yogpc.qp.tile.TileMarker;
-import com.yogpc.qp.tile.WorkbenchRecipes;
 import com.yogpc.qp.version.VersionDiff;
 import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.block.Block;
@@ -171,7 +172,7 @@ public class QuarryPlus {
     @Mod.EventHandler
     public void init(final FMLInitializationEvent event) {
         PacketHandler.init();
-        WorkbenchRecipes.registerRecipes();
+        WorkbenchRecipe.registerRecipes();
         Config.content().outputRecipeJson();
         Config.recipeSync();
         // TODO change to net.minecraftforge.fml.common.ModAPIManager
@@ -290,7 +291,7 @@ public class QuarryPlus {
             NBTTagCompound nbtValue = imcMessage.getNBTValue();
             Function<NBTTagCompound, ItemStack> toStack = VersionUtil::fromNBTTag;
             if (Optionals.IMC_Remove.equals(imcMessage.key)) {
-                WorkbenchRecipes.removeRecipe(ItemDamage.apply(toStack.apply(nbtValue)));
+                WorkbenchRecipe.removeRecipe(ItemDamage.apply(toStack.apply(nbtValue)));
             } else if (Optionals.IMC_Add.equals(imcMessage.key)) {
                 Function<ItemStack, IntFunction<ItemStack>> toFunc = stack -> (IntFunction<ItemStack>) integer ->
                     ItemHandlerHelper.copyStackWithSize(stack, VersionUtil.getCount(stack) * integer);
@@ -299,7 +300,7 @@ public class QuarryPlus {
                 ResourceLocation location = new ResourceLocation(nbtValue.getString("id"));
                 ItemDamage result = ItemDamage.apply(toStack.apply(list.getCompoundTagAt(0)));
                 List<IntFunction<ItemStack>> functionList = VersionUtil.nbtListStream(list).skip(1).map(toStack.andThen(toFunc)).collect(Collectors.toList());
-                WorkbenchRecipes.addListRecipe(location, result, nbtValue.getInteger(Optionals.IMC_Energy), functionList, true, WorkbenchRecipes.UnitRF());
+                WorkbenchRecipe.addListRecipe(location, result, nbtValue.getInteger(Optionals.IMC_Energy), functionList, true, EnergyUnit.RF);
             }
         });
     }

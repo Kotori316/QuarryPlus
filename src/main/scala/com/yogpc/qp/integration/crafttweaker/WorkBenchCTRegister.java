@@ -9,8 +9,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.recipe.WorkbenchRecipe;
 import com.yogpc.qp.tile.ItemDamage;
-import com.yogpc.qp.tile.WorkbenchRecipes;
 import com.yogpc.qp.utils.IngredientWithCount;
 import crafttweaker.IAction;
 import crafttweaker.api.item.IIngredient;
@@ -89,7 +89,7 @@ public class WorkBenchCTRegister {
         @Override
         public void apply() {
             ResourceLocation name = new ResourceLocation(CT.CRAFT_TWEAKER_ID, "quarryplus_workbench_" + COUNTER.getAndIncrement());
-            WorkbenchRecipes.addIngredientRecipe(name, out, energy, inputs, true);
+            WorkbenchRecipe.addIngredientRecipe(name, out, energy, inputs, true);
         }
 
         @Override
@@ -107,7 +107,7 @@ public class WorkBenchCTRegister {
 
         @Override
         public void apply() {
-            WorkbenchRecipes.removeRecipe(output);
+            WorkbenchRecipe.removeRecipe(output);
         }
 
         @Override
@@ -125,7 +125,7 @@ public class WorkBenchCTRegister {
 
         @Override
         public void apply() {
-            WorkbenchRecipes.removeRecipe(name);
+            WorkbenchRecipe.removeRecipe(name);
         }
 
         @Override
