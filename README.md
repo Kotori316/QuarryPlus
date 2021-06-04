@@ -4,10 +4,12 @@
 Advanced machines for minecraft. Forked from https://github.com/yogpstop/QuarryPlus
 
 Jar files are available on ~~https://github.com/Kotori316/QuarryPlus/releases~~
-See CurseForge for 1.12.2 version.
+See [CurseForge][1.12.2-dl] for 1.12.2 version.
 
 (Additional Enchanted Miner)
 Minecraft CurseForge - https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner
+
+[1.12.2-dl]: [https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner/files/all?filter-status=1&filter-game-version=2020709689%3A6756]
 
 ---
 This program is licensed under GNU LESSER GENERAL PUBLIC LICENSE.  
@@ -17,8 +19,9 @@ Copyright (C) 2017-2021 Kotori316
 
 Supported API
 -------------
+
 * BuildCraft API
-* ~~CofhLib API~~ 
+* ~~CofhLib API~~
 * CoFHCore API
 * RedstoneFlux API
 * IC2 API
