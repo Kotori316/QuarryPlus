@@ -53,7 +53,7 @@ object WorkBenchRecipeWrapper {
   }
 
   def hideRecipe(runtime: IJeiRuntime): Unit = {
-    val recipeSeq = WorkbenchRecipe.getRecipeMap.values.toList.filter(_.hasContent)
+    val recipeSeq = RecipeSearcher.getDefault.getRecipeMap.values.toList.filter(_.hasContent)
     val registry = runtime.getRecipeRegistry
     registry.getRecipeWrappers(QuarryJeiPlugin.workBenchRecipeCategory).asScala
       .filter(r => !recipeSeq.contains(r.recipe))

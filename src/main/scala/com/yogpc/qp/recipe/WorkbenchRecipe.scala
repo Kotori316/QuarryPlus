@@ -119,9 +119,9 @@ object WorkbenchRecipe extends RecipeSearcher {
     val asScala = inputs.asScala
     recipes.filter {
       case (_, workRecipe) if workRecipe.hasContent =>
-        workRecipe.inputs.forall(i => {
+        workRecipe.inputs.forall { i =>
           asScala.exists(t => i.exists(_.matches(t)))
-        })
+        }
       case _ => false
     }.values.toList.sorted.asJava
   }
@@ -134,11 +134,9 @@ object WorkbenchRecipe extends RecipeSearcher {
   }
 
   def addSeqRecipe(output: ItemDamage, energy: Int, inputs: Seq[Int => ItemStack], name: Symbol = Symbol(""), showInJEI: Boolean = true, unit: EnergyUnit = EnergyUnit.MJ): Unit = {
-    val newRecipe = new R1(output, unit.multiple * energy, showInJEI, inputs, if (name == Symbol("")) Symbol(output.toStack().getUnlocalizedName) else name, name != Symbol(""))
-    if (energy > 0)
-      recipes put(newRecipe.location, newRecipe)
-    else
-      QuarryPlus.LOGGER.error(s"Energy of Workbench Recipe is 0. $newRecipe")
+    val hasCondition = name != Symbol("")
+    val newRecipe = new R1(output, unit.multiple * energy, showInJEI, inputs, if (!hasCondition) Symbol(output.toStack().getUnlocalizedName) else name, hasCondition)
+    addRecipe(newRecipe)
   }
 
   def addListRecipe(location: ResourceLocation, output: ItemDamage, energy: Int, inputs: java.util.List[java.util.function.IntFunction[ItemStack]],
@@ -153,11 +151,7 @@ object WorkbenchRecipe extends RecipeSearcher {
 
   def addIngredientRecipe(location: ResourceLocation, output: ItemStack, energy: Double, inputs: Seq[Seq[IngredientWithCount]], hardCode: Boolean, showInJEI: Boolean): Unit = {
     val newRecipe = new IngredientRecipe(location, output, energy, showInJEI, inputs, hardCode)
-    if (energy > 0) {
-      recipes put(location, newRecipe)
-    } else {
-      QuarryPlus.LOGGER.error(s"Energy of Workbench Recipe is 0. $newRecipe")
-    }
+    addRecipe(newRecipe)
   }
 
   def addEnchantmentCopyRecipe(location: ResourceLocation, output: ItemStack, energy: Double, input: IngredientWithCount): Unit = {
