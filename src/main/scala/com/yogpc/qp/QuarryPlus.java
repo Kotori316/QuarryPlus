@@ -26,6 +26,7 @@ import com.yogpc.qp.gui.GuiFactory;
 import com.yogpc.qp.gui.GuiHandler;
 import com.yogpc.qp.item.ItemTool;
 import com.yogpc.qp.packet.PacketHandler;
+import com.yogpc.qp.recipe.BuiltinRecipes;
 import com.yogpc.qp.recipe.EnergyUnit;
 import com.yogpc.qp.recipe.WorkbenchRecipe;
 import com.yogpc.qp.tile.ItemDamage;
@@ -172,7 +173,7 @@ public class QuarryPlus {
     @Mod.EventHandler
     public void init(final FMLInitializationEvent event) {
         PacketHandler.init();
-        WorkbenchRecipe.registerRecipes();
+        BuiltinRecipes.registerRecipes();
         Config.content().outputRecipeJson();
         Config.recipeSync();
         // TODO change to net.minecraftforge.fml.common.ModAPIManager
