@@ -5,6 +5,7 @@ import com.yogpc.qp.container.ContainerQuarryModule.HasModuleInventory
 import com.yogpc.qp.gui.TranslationKeys
 import com.yogpc.qp.modules.IModuleItem
 import com.yogpc.qp.packet.{PacketHandler, TileMessage}
+import com.yogpc.qp.utils.MarkerUtil
 import net.minecraft.block.Block
 import net.minecraft.block.material.Material
 import net.minecraft.inventory.{InventoryBasic, InventoryHelper, ItemStackHelper}
@@ -140,12 +141,11 @@ final class TileFiller
   def getWorkingArea: Option[(BlockPos, BlockPos)] = work.area
 
   private def getArea: Option[(BlockPos, BlockPos)] = {
-    EnumFacing.HORIZONTALS.map(f => getWorld.getTileEntity(getPos.offset(f)))
-      .collectFirst { case m: IMarker if m.hasLink =>
-        val a = m.min() -> m.max()
-        m.removeFromWorldWithItem().asScala.foreach(i => InventoryHelper.spawnItemStack(getWorld, getPos.getX + 0.5, getPos.getY + 1, getPos.getZ + 0.5, i))
-        a
-      }
+    MarkerUtil.searchMarker(getWorkingWorld, getPos, null).map { case m: IMarker if m.hasLink =>
+      val a = m.min() -> m.max()
+      m.removeFromWorldWithItem().asScala.foreach(i => InventoryHelper.spawnItemStack(getWorld, getPos.getX + 0.5, getPos.getY + 1, getPos.getZ + 0.5, i))
+      a
+    }
       .orElse(lastArea)
   }
 

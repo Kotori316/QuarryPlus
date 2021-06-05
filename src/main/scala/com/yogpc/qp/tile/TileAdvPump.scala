@@ -1,13 +1,12 @@
 package com.yogpc.qp.tile
 
 import java.util
-
 import com.yogpc.qp.block.ADismCBlock
 import com.yogpc.qp.compat.InvUtils
 import com.yogpc.qp.gui.TranslationKeys
 import com.yogpc.qp.tile.IEnchantableTile.{EfficiencyID, FortuneID, SilktouchID, UnbreakingID}
 import com.yogpc.qp.tile.TileAdvPump._
-import com.yogpc.qp.utils.{INBTReadable, INBTWritable, NBTBuilder}
+import com.yogpc.qp.utils.{INBTReadable, INBTWritable, MarkerUtil, NBTBuilder}
 import com.yogpc.qp.version.VersionUtil
 import com.yogpc.qp.{Config, QuarryPlus, QuarryPlusI, _}
 import net.minecraft.block.state.IBlockState
@@ -59,13 +58,10 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
     toDig = Nil
     paths.clear()
     if (!ench.square && ench.fortune >= 3) {
-      EnumFacing.HORIZONTALS.map(f => getWorld.getTileEntity(getPos.offset(f))).collectFirst {
-        case marker: IMarker if marker.hasLink => marker
-      }.foreach(marker => {
+      MarkerUtil.searchMarker(getWorld, getPos, null).foreach { marker =>
         ench = ench.copy(start = marker.min(), end = marker.max())
-        marker.removeFromWorldWithItem().asScala.foreach(s =>
-          InventoryHelper.spawnItemStack(getWorld, getPos.getX + 0.5, getPos.getY + 1, getPos.getZ + 0.5, s))
-      })
+        marker.removeAndDrop(getWorld, getPos)
+      }
     }
   }
 

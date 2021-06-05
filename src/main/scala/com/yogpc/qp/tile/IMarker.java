@@ -4,9 +4,11 @@ import java.util.Collections;
 import java.util.List;
 
 import buildcraft.api.core.IAreaProvider;
+import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 /**
  * Must be implemented by subclass of {@link TileEntity}.
@@ -29,6 +31,11 @@ public interface IMarker {
      * @return a list of drop items.
      */
     List<ItemStack> removeFromWorldWithItem();
+
+    default void removeAndDrop(World world, BlockPos pos) {
+        removeFromWorldWithItem().forEach(i ->
+            InventoryHelper.spawnItemStack(world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, i));
+    }
 
     class BCWrapper implements IMarker {
 

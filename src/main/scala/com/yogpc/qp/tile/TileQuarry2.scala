@@ -8,7 +8,7 @@ import com.yogpc.qp.container.ContainerQuarryModule.HasModuleInventory
 import com.yogpc.qp.container.{ContainerQuarryModule, StatusContainer}
 import com.yogpc.qp.gui.TranslationKeys
 import com.yogpc.qp.packet.{PacketHandler, TileMessage}
-import com.yogpc.qp.utils.{BlockData, ReflectionHelper}
+import com.yogpc.qp.utils.{BlockData, MarkerUtil, ReflectionHelper}
 import net.minecraft.client.resources.I18n
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.entity.Entity
@@ -436,13 +436,7 @@ object TileQuarry2 {
   }
 
   def findArea(facing: EnumFacing, world: World, pos: BlockPos) = {
-    val pf: PartialFunction[TileEntity, IMarker] = if (Loader.isModLoaded(QuarryPlus.Optionals.BuildCraft_core)) {
-      case provider: IAreaProvider => new IMarker.BCWrapper(provider)
-      case m: IMarker if m.hasLink => m
-      case t: TileEntity if t.hasCapability(TilesAPI.CAP_TILE_AREA_PROVIDER, facing) => new IMarker.BCWrapper(t.getCapability(TilesAPI.CAP_TILE_AREA_PROVIDER, facing))
-    } else {
-      case m: IMarker if m.hasLink => m
-    }
+    val pf: PartialFunction[TileEntity, IMarker] = MarkerUtil.getMarker
     List(pos.offset(facing.getOpposite), pos.offset(facing.rotateY()), pos.offset(facing.rotateYCCW())).map(world.getTileEntity).collectFirst(pf) match {
       case Some(marker) => areaFromMarker(facing, pos, marker)
       case None => defaultArea(pos, facing.getOpposite) -> None
