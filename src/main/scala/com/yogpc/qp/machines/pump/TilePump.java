@@ -273,7 +273,6 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
     @SuppressWarnings("ConditionalCanBeOptional")
     private void S_searchLiquid(final int x, final int y, final int z) {
         assert world != null;
-        this.fwt = world.getDayTime();
         int cg;
         cp = cg = 0;
         int chunk_side_x, chunk_side_z;
@@ -329,49 +328,63 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         BlockState b_c;
         ChunkSection ebs_c;
         while (cp != cg) {
-            ebs_c = this.storageArray[xb[cg] >> 4][zb[cg] >> 4][yb[cg] >> 4];
-            if (ebs_c != null) {
-                b_c = ebs_c.getBlockState(xb[cg] & 0xF, yb[cg] & 0xF, zb[cg] & 0xF);
-                if (this.blocks[yb[cg] - this.yOffset][xb[cg]][zb[cg]] == 0 && isLiquid(b_c)) {
-                    this.blocks[yb[cg] - this.yOffset][xb[cg]][zb[cg]] = 0x3F;
+            try {
+                ebs_c = this.storageArray[xb[cg] >> 4][zb[cg] >> 4][yb[cg] >> 4];
+                if (ebs_c != null) {
+                    b_c = ebs_c.getBlockState(xb[cg] & 0xF, yb[cg] & 0xF, zb[cg] & 0xF);
+                    if (this.blocks[yb[cg] - this.yOffset][xb[cg]][zb[cg]] == 0 && isLiquid(b_c)) {
+                        this.blocks[yb[cg] - this.yOffset][xb[cg]][zb[cg]] = 0x3F;
 
-                    if ((b != null ? b.xMin & 0xF : 0) < xb[cg])
-                        S_put(xb[cg] - 1, yb[cg], zb[cg]);
-                    else
-                        this.blocks[yb[cg] - this.yOffset][xb[cg]][zb[cg]] = 0x7F;
+                        if ((b != null ? b.xMin & 0xF : 0) < xb[cg])
+                            S_put(xb[cg] - 1, yb[cg], zb[cg]);
+                        else
+                            this.blocks[yb[cg] - this.yOffset][xb[cg]][zb[cg]] = 0x7F;
 
-                    if (xb[cg] < (b != null ? b.xMax - this.xOffset : this.block_side_x - 1))
-                        S_put(xb[cg] + 1, yb[cg], zb[cg]);
-                    else
-                        this.blocks[yb[cg] - this.yOffset][xb[cg]][zb[cg]] = 0x7F;
+                        if (xb[cg] < (b != null ? b.xMax - this.xOffset : this.block_side_x - 1))
+                            S_put(xb[cg] + 1, yb[cg], zb[cg]);
+                        else
+                            this.blocks[yb[cg] - this.yOffset][xb[cg]][zb[cg]] = 0x7F;
 
-                    if ((b != null ? b.zMin & 0xF : 0) < zb[cg])
-                        S_put(xb[cg], yb[cg], zb[cg] - 1);
-                    else
-                        this.blocks[yb[cg] - this.yOffset][xb[cg]][zb[cg]] = 0x7F;
+                        if ((b != null ? b.zMin & 0xF : 0) < zb[cg])
+                            S_put(xb[cg], yb[cg], zb[cg] - 1);
+                        else
+                            this.blocks[yb[cg] - this.yOffset][xb[cg]][zb[cg]] = 0x7F;
 
-                    if (zb[cg] < (b != null ? b.zMax - this.zOffset : this.block_side_z - 1))
-                        S_put(xb[cg], yb[cg], zb[cg] + 1);
-                    else
-                        this.blocks[yb[cg] - this.yOffset][xb[cg]][zb[cg]] = 0x7F;
+                        if (zb[cg] < (b != null ? b.zMax - this.zOffset : this.block_side_z - 1))
+                            S_put(xb[cg], yb[cg], zb[cg] + 1);
+                        else
+                            this.blocks[yb[cg] - this.yOffset][xb[cg]][zb[cg]] = 0x7F;
 
-                    if (yb[cg] + 1 < Y_SIZE)
-                        S_put(xb[cg], yb[cg] + 1, zb[cg]);
+                        if (yb[cg] + 1 < Y_SIZE)
+                            S_put(xb[cg], yb[cg] + 1, zb[cg]);
+                    }
                 }
+                cg++;
+                if (cg == ARRAY_MAX)
+                    cg = 0;
+            } catch (ArrayIndexOutOfBoundsException e) {
+                // To get info of https://github.com/Kotori316/QuarryPlus/issues/118
+                QuarryPlus.LOGGER.error("Caught PumpPlus at {} error: ", getPos());
+                QuarryPlus.LOGGER.error(e);
+                QuarryPlus.LOGGER.error("\tchunk_side_x={}, chunk_side_z={} time={}\n" +
+                    "\txb[cg]={}, yb[cg]={}, zb[cg]={}", chunk_side_x, chunk_side_z, world.getGameTime(), xb[cg], yb[cg], zb[cg]);
+                this.fwt = world.getDayTime() - 300;
+                return;
             }
-            cg++;
-            if (cg == ARRAY_MAX)
-                cg = 0;
         }
+        this.fwt = world.getDayTime();
     }
 
     public boolean S_removeLiquids(final APowerTile tile, final int x, final int y, final int z) {
         S_sendNowPacket();
         assert world != null;
         if (this.cx != x || this.cy != y || this.cz != z || this.py < this.cy
-            || world.getDayTime() - this.fwt > 200)
+            || world.getDayTime() - this.fwt > 200) {
             S_searchLiquid(x, y, z);
-        else {
+            if (world.getDayTime() - this.fwt > 200) {
+                return true;
+            }
+        } else {
             this.storageArray = new ChunkSection[this.storageArray.length][this.storageArray[0].length][];
             for (int kx = 0; kx < this.storageArray.length; kx++) {
                 for (int kz = 0; kz < this.storageArray[0].length; kz++) {
