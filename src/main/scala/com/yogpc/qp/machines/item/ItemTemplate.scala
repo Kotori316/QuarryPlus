@@ -164,9 +164,9 @@ object ItemTemplate {
     }
   }
 
-  val enchantmentName: Kleisli[List, ItemStack, ITextComponent] = Kleisli((stack: ItemStack) => List(silktouchName, fortuneName).flatMap(_.apply(stack)))
+  final val enchantmentName: Kleisli[List, ItemStack, ITextComponent] = Kleisli((stack: ItemStack) => List(silktouchName, fortuneName).flatMap(_.apply(stack)))
 
-  private[this] val setter = ((t: EnchantmentFilter.Accessor, f: EnchantmentFilter) => t.enchantmentFilter = f).tupled
+  private final val setter = ((t: EnchantmentFilter.Accessor, f: EnchantmentFilter) => t.enchantmentFilter = f).tupled
 
   def createSetter[A](enchantmentSelector: Kleisli[Eval, ItemStack, Boolean], createInstance: (A, EnchantmentFilter.Accessor) => EnchantmentFilter):
   Kleisli[Option, (ItemStack, EnchantmentFilter.Accessor), A => Unit] = {
@@ -176,17 +176,17 @@ object ItemTemplate {
       .map(_ andThen setter)
   }
 
-  private[this] val silkList = createSetter(onlySilktouch, (s: Set[QuarryBlackList.Entry], t) => t.enchantmentFilter.copy(silktouchList = t.enchantmentFilter.silktouchList union s))
-  private[this] val fList = createSetter(onlyFortune, (s: Set[QuarryBlackList.Entry], t) => t.enchantmentFilter.copy(fortuneList = t.enchantmentFilter.fortuneList union s))
-  private[this] val silkIncSet = createSetter(onlySilktouch, (bool: Boolean, t) => t.enchantmentFilter.copy(silktouchInclude = bool))
-  private[this] val fIncSet = createSetter(onlyFortune, (bool: Boolean, t) => t.enchantmentFilter.copy(fortuneInclude = bool))
+  private final val silkList = createSetter(onlySilktouch, (s: Set[QuarryBlackList.Entry], t) => t.enchantmentFilter.copy(silktouchList = t.enchantmentFilter.silktouchList union s))
+  private final val fList = createSetter(onlyFortune, (s: Set[QuarryBlackList.Entry], t) => t.enchantmentFilter.copy(fortuneList = t.enchantmentFilter.fortuneList union s))
+  private final val silkIncSet = createSetter(onlySilktouch, (bool: Boolean, t) => t.enchantmentFilter.copy(silktouchInclude = bool))
+  private final val fIncSet = createSetter(onlyFortune, (bool: Boolean, t) => t.enchantmentFilter.copy(fortuneInclude = bool))
 
-  private def orElseCompute[A](silktouch: Kleisli[Option, (ItemStack, EnchantmentFilter.Accessor), A], fortune: Kleisli[Option, (ItemStack, EnchantmentFilter.Accessor), A]):
+  private final def orElseCompute[A](silktouch: Kleisli[Option, (ItemStack, EnchantmentFilter.Accessor), A], fortune: Kleisli[Option, (ItemStack, EnchantmentFilter.Accessor), A]):
   Kleisli[Option, (ItemStack, EnchantmentFilter.Accessor), A] = Kleisli { (t: (ItemStack, EnchantmentFilter.Accessor)) =>
     val (stack: ItemStack, basic: EnchantmentFilter.Accessor) = t
     (silktouch orElse fortune).run(stack, basic)
   }
 
-  val blocksListSetter: Kleisli[Option, (ItemStack, EnchantmentFilter.Accessor), Set[QuarryBlackList.Entry] => Unit] = orElseCompute(silkList, fList)
-  val includeSetter: Kleisli[Option, (ItemStack, EnchantmentFilter.Accessor), Boolean => Unit] = orElseCompute(silkIncSet, fIncSet)
+  final val blocksListSetter: Kleisli[Option, (ItemStack, EnchantmentFilter.Accessor), Set[QuarryBlackList.Entry] => Unit] = orElseCompute(silkList, fList)
+  final val includeSetter: Kleisli[Option, (ItemStack, EnchantmentFilter.Accessor), Boolean => Unit] = orElseCompute(silkIncSet, fIncSet)
 }

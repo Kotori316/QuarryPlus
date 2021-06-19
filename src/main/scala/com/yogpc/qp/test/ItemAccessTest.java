@@ -1,9 +1,12 @@
 package com.yogpc.qp.test;
 
+import java.util.stream.Stream;
+
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.workbench.WorkbenchRecipes;
 import com.yogpc.qp.utils.Holder;
 import net.minecraft.block.Block;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -15,6 +18,8 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import scala.jdk.javaapi.CollectionConverters;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -32,13 +37,26 @@ final class ItemAccessTest {
         assertEquals(new ResourceLocation(QuarryPlus.modID, QuarryPlus.Names.statuschecker), item.getRegistryName());
     }
 
-    @Test
-    void myItemsInForgeRegistry() {
+    public static Stream<Block> myBlocksInForgeRegistry() {
+        return CollectionConverters.asJava(Holder.blocks()).stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void myBlocksInForgeRegistry(Block block) {
         IForgeRegistry<Block> blocks = ForgeRegistries.BLOCKS;
-        assertTrue(CollectionConverters.asJava(Holder.blocks())
-            .stream().allMatch(blocks::containsValue), "All blocks are in forge registry.");
+        assertTrue(blocks.containsValue(block), "Block is in forge registry.");
+    }
+
+    public static Stream<Item> myItemsInForgeRegistry() {
+        return CollectionConverters.asJava(Holder.items()).stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void myItemsInForgeRegistry(Item item) {
         IForgeRegistry<Item> items = ForgeRegistries.ITEMS;
-        assertTrue(CollectionConverters.asJava(Holder.items()).stream().allMatch(items::containsValue), "All items are in registry.");
+        assertTrue(items.containsValue(item), "Item is in registry.");
     }
 
     @Test
@@ -51,12 +69,22 @@ final class ItemAccessTest {
         );
     }
 
-    @Test
-    void accessToEnchantment() {
+    public static Stream<Enchantment> accessToEnchantment() {
+        return Stream.of(
+            Enchantments.SILK_TOUCH,
+            Enchantments.SHARPNESS,
+            Enchantments.FORTUNE,
+            Enchantments.EFFICIENCY
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void accessToEnchantment(Enchantment enchantment) {
         assertAll(
-            () -> assertNotNull(Enchantments.SILK_TOUCH),
-            () -> assertNotNull(Enchantments.SHARPNESS.getRegistryName()),
-            () -> assertTrue(ForgeRegistries.ENCHANTMENTS.containsValue(Enchantments.FORTUNE))
+            () -> assertNotNull(enchantment),
+            () -> assertNotNull(enchantment.getRegistryName()),
+            () -> assertTrue(ForgeRegistries.ENCHANTMENTS.containsValue(enchantment))
         );
     }
 
@@ -68,5 +96,12 @@ final class ItemAccessTest {
             () -> assertNull(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY),
             () -> assertNull(CapabilityEnergy.ENERGY)
         );
+    }
+
+    @Test
+    void dummy() {
+        assertTrue(accessToEnchantment().count() > 0);
+        assertTrue(myBlocksInForgeRegistry().count() > 0);
+        assertTrue(myItemsInForgeRegistry().count() > 0);
     }
 }

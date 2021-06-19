@@ -130,44 +130,39 @@ object ItemListEditor {
     stack
   }
 
-  def hasEnchantment(enchantment: Eval[Enchantment]): Kleisli[Eval, List[Enchantment], Boolean] = Kleisli((ench: List[Enchantment]) => enchantment.map(ench.contains))
+  def hasEnchantment(enchantment: Eval[Enchantment]): Kleisli[Eval, List[Enchantment], Boolean] = Kleisli(ench => enchantment.map(ench.contains))
 
   def enchantmentName(enchantment: Eval[Enchantment]): Kleisli[Option, ItemStack, ITextComponent] =
     getEnchantments andThen hasEnchantment(enchantment) mapF (b => Option.when[ITextComponent](b.value)(new TranslationTextComponent(enchantment.value.getName)))
 
   def onlySpecificEnchantment(enchantment: Eval[Enchantment]): Kleisli[Eval, ItemStack, Boolean] = {
-    implicit val bool: Monoid[Boolean] = new Monoid[Boolean] {
-      override def empty: Boolean = false
-
-      override def combine(x: Boolean, y: Boolean): Boolean = x | y
-    }
     val hasTheEnchantment = hasEnchantment(enchantment)
-    val others = enchantment.map(e => ForgeRegistries.ENCHANTMENTS.asScala.view.filterNot(_ == e).map(Eval.now).map(hasEnchantment).toList)
     getEnchantments andThen {
       for (e <- hasTheEnchantment;
-           o <- Monoid[Kleisli[Eval, List[Enchantment], Boolean]].combineAll(others.value)) yield e & !o
+           o <- listSizeIs1) yield e && o
     }
   }
 
-  private[this] val getTag = Kleisli((stack: ItemStack) => Option(stack.getTag))
-  private[this] val getEntry = Kleisli((tag: CompoundNBT) =>
+  private final val listSizeIs1 = Kleisli((l: List[Enchantment]) => Eval.now(l.lengthIs == 1))
+  private final val getTag = Kleisli((stack: ItemStack) => Option(stack.getTag))
+  private final val getEntry = Kleisli((tag: CompoundNBT) =>
     Option.when(tag.contains(NAME_key, NBT.TAG_COMPOUND))(QuarryBlackList.readEntry2(new SerializeDynamic(NBTDynamicOps.INSTANCE, tag.get(NAME_key)), log = false)))
-  private[this] val getEnchantments = Kleisli((stack: ItemStack) => Eval.now(EnchantmentHelper.getEnchantments(stack).asScala.toList.collect { case (e, level) if level > 0 => e }))
+  private final val getEnchantments = Kleisli((stack: ItemStack) => Eval.now(EnchantmentHelper.getEnchantments(stack).asScala.toList.collect { case (e, level) if level > 0 => e }))
 
-  private[this] val fortuneEval = Eval.later(Enchantments.FORTUNE)
-  private[this] val silktouchEval = Eval.later(Enchantments.SILK_TOUCH)
-  private[this] val hasFortune = hasEnchantment(fortuneEval)
-  private[this] val hasSilktouch = hasEnchantment(silktouchEval)
-  private[this] val getNameAsText = getTag andThen getEntry map (e => new StringTextComponent(e.toString))
+  private final val fortuneEval = Eval.later(Enchantments.FORTUNE)
+  private final val silktouchEval = Eval.later(Enchantments.SILK_TOUCH)
+  private final val hasFortune = hasEnchantment(fortuneEval)
+  private final val hasSilktouch = hasEnchantment(silktouchEval)
+  private final val getNameAsText = getTag andThen getEntry map (e => new StringTextComponent(e.toString))
 
-  val getBlockData: Kleisli[Option, ItemStack, QuarryBlackList.Entry] = getTag andThen getEntry
-  val isFortune: Kleisli[Eval, ItemStack, Boolean] = getEnchantments andThen hasFortune
-  val isSilktouch: Kleisli[Eval, ItemStack, Boolean] = getEnchantments andThen hasSilktouch
-  val fortuneName: Kleisli[Option, ItemStack, ITextComponent] = enchantmentName(fortuneEval)
-  val silktouchName: Kleisli[Option, ItemStack, ITextComponent] = enchantmentName(silktouchEval)
-  val information: Kleisli[List, ItemStack, ITextComponent] = Kleisli(stack => List(getNameAsText, fortuneName, silktouchName).flatMap(_ (stack)))
+  final val getBlockData: Kleisli[Option, ItemStack, QuarryBlackList.Entry] = getTag andThen getEntry
+  final val isFortune: Kleisli[Eval, ItemStack, Boolean] = getEnchantments andThen hasFortune
+  final val isSilktouch: Kleisli[Eval, ItemStack, Boolean] = getEnchantments andThen hasSilktouch
+  final val fortuneName: Kleisli[Option, ItemStack, ITextComponent] = enchantmentName(fortuneEval)
+  final val silktouchName: Kleisli[Option, ItemStack, ITextComponent] = enchantmentName(silktouchEval)
+  final val information: Kleisli[List, ItemStack, ITextComponent] = Kleisli(stack => List(getNameAsText, fortuneName, silktouchName).flatMap(_ (stack)))
 
-  val onlySilktouch: Kleisli[Eval, ItemStack, Boolean] = onlySpecificEnchantment(silktouchEval)
-  val onlyFortune: Kleisli[Eval, ItemStack, Boolean] = onlySpecificEnchantment(fortuneEval)
+  final val onlySilktouch: Kleisli[Eval, ItemStack, Boolean] = onlySpecificEnchantment(silktouchEval)
+  final val onlyFortune: Kleisli[Eval, ItemStack, Boolean] = onlySpecificEnchantment(fortuneEval)
 
 }

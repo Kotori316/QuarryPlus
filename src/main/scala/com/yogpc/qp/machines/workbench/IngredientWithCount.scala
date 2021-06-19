@@ -8,6 +8,7 @@ import net.minecraft.util.JSONUtils
 import net.minecraftforge.common.crafting.CraftingHelper
 
 import scala.collection.immutable.ArraySeq
+import scala.util.Try
 
 case class IngredientWithCount(ingredient: Ingredient, count: Int) {
 
@@ -39,7 +40,7 @@ case class IngredientWithCount(ingredient: Ingredient, count: Int) {
   }
 
   override def toString: String = {
-    ingredient.getMatchingStacks.headOption match {
+    Try(ingredient.getMatchingStacks).toOption.flatMap(_.headOption) match {
       case Some(stack) => s"${stack.getItem} x$count}"
       case None => "Empty"
     }

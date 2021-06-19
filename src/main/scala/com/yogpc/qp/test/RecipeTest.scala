@@ -170,4 +170,40 @@ private[test] final class RecipeTest {
       () => assertEquals(3200 * APowerTile.MJToMicroMJ, recipe.energy)
     )
   }
+
+  @Test
+  def parseNormalRecipe2(): Unit = {
+    val str =
+      """
+        |{
+        |  "type": "quarryplus:workbench_recipe",
+        |  "id": "quarryplus:cheat_diamond",
+        |  "ingredients": [
+        |    {
+        |      "item": "minecraft:dirt",
+        |      "count": 3
+        |    },
+        |    {
+        |      "item": "minecraft:stone",
+        |      "count": 16
+        |    }
+        |  ],
+        |  "energy": 100.0,
+        |  "result": {
+        |    "item": "diamond",
+        |    "count": 1
+        |  }
+        |}""".stripMargin
+    val recipe = WorkbenchRecipes.Serializer.read(id("cheat_diamond"), JSONUtils.fromJson(str))
+    assertAll(
+      () => assertEquals(100 * APowerTile.MJToMicroMJ, recipe.energy),
+      () => assertTrue(ItemStack.areItemStacksEqual(new ItemStack(Items.DIAMOND), recipe.getOutput), s"Recipe output is ${recipe.getOutput}"),
+      () => assertTrue(recipe.showInJEI),
+      () => assertTrue(recipe.hasAllRequiredItems(Seq(new ItemStack(Items.DIRT, 3), new ItemStack(Items.STONE, 16)))),
+      () => assertFalse(recipe.hasAllRequiredItems(Seq(new ItemStack(Items.DIRT, 2), new ItemStack(Items.STONE, 16)))),
+      () => assertFalse(recipe.hasAllRequiredItems(Seq(new ItemStack(Items.DIRT, 3), new ItemStack(Items.STONE, 15)))),
+      () => assertFalse(recipe.hasAllRequiredItems(Seq(new ItemStack(Items.DIRT, 3)))),
+      () => assertFalse(recipe.hasAllRequiredItems(Seq(new ItemStack(Items.STONE, 16)))),
+    )
+  }
 }
