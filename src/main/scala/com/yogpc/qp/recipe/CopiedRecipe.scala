@@ -9,15 +9,19 @@ import net.minecraft.util.ResourceLocation
 
 import scala.collection.JavaConverters.setAsJavaSetConverter
 
-class CopiedRecipe(o: ItemDamage,
+class CopiedRecipe(o: ItemStack,
+                   e: Double,
                    override val location: ResourceLocation,
                    override val inputs: Seq[Seq[IngredientWithCount]])
-  extends WorkbenchRecipe(o, 1000, false) {
+  extends WorkbenchRecipe(ItemDamage(o), e, false) {
   override val size = inputs.size
 
+  override def getOutput: ItemStack = o
+
   def write(packet: PacketBuffer): Unit = {
-    packet.writeItemStack(o.toStack())
+    packet.writeItemStack(o)
     packet.writeResourceLocation(location)
+    packet.writeDouble(energy)
     packet.writeVarInt(inputs.size)
     for (input <- inputs) {
       packet.writeVarInt(input.size)
@@ -33,7 +37,7 @@ object CopiedRecipe {
   def makeCopy(searcher: RecipeSearcher): java.util.Set[CopiedRecipe] = {
     searcher.getRecipeMap
       .values
-      .map(r => new CopiedRecipe(r.output, r.location, r.inputs))
+      .map(r => new CopiedRecipe(r.getOutput, r.energy, r.location, r.inputs))
       .toSet
       .asJava
   }
@@ -45,15 +49,16 @@ object CopiedRecipe {
   }
 
   def read(packet: PacketBuffer): CopiedRecipe = {
-    val output = ItemDamage(packet.readItemStack())
+    val output = packet.readItemStack()
     val location = packet.readResourceLocation()
+    val energy = packet.readDouble()
     val inputSize = packet.readVarInt()
     val inputs = for (_ <- Range(0, inputSize)) yield {
       val size = packet.readVarInt()
       for (_ <- Range(0, size)) yield
         IngredientWithCount(readIngredient(packet), packet.readInt())
     }
-    new CopiedRecipe(output, location, inputs)
+    new CopiedRecipe(output, energy, location, inputs)
   }
 
   private def readIngredient(buffer: PacketBuffer): Ingredient = {
