@@ -294,7 +294,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
     @SideOnly(Side.CLIENT)
     public int getProgressScaled(int scale) {
         if (isWorking())
-            return (int) (getStoredEnergy() * scale / currentRecipe.microEnergy());
+            return Math.min((int) (getStoredEnergy() * scale / currentRecipe.microEnergy()), scale);
         else
             return 0;
     }
