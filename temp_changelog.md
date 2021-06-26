@@ -1,3 +1,10 @@
+# Version 12.5.0
+
+* Fixed - Incorrect items created in WorkbenchPlus.
+* Fixed - Progress bar of WorkbenchPlus sometimes weird.
+* Internal improvements.
+* Upload jar to Maven repo.
+
 # Version 12.4.9
 
 * Fixed - BC's marker(Landmark) couldn't be used for some machines.
@@ -113,7 +120,8 @@
 
 # Version 12.2.7
 
-- Trying to fix a crash of `IllegalArgumentException` in using new quarry. [#68](https://github.com/Kotori316/QuarryPlus/issues/68)
+- Trying to fix a crash of `IllegalArgumentException` in using new
+  quarry. [#68](https://github.com/Kotori316/QuarryPlus/issues/68)
 
 # Version 12.2.6
 
@@ -192,13 +200,13 @@
 
 # Version 1.0.9
 
-* Added List Template. Right click any block to open GUI, place block on right slot and click "Add". Then, right click a
+* Added List Template. Right click any block to open GUI, place block on right slot and click "Add". Then, right-click a
   machine with List Template to move setting.
 
 # Version 1.0.8
 
-* Now you can't move enchantments to machines which is incompatible with the enchantment. (e.g. You can't move Silktouch
-  to machine with Smashing or Smelting from CoFHCore, Auto-Smelt from Ender Core.)
+* Now you can't move enchantments to machines which is incompatible with the enchantment. (e.g., You can't move
+  Silktouch to machine with Smashing or Smelting from CoFHCore, Auto-Smelt from Ender Core.)
 
 # Version 1.0.7
 
@@ -209,17 +217,18 @@
 # Version 1.0.6
 
 * Internal changes. Use long instead of double to store energy.
-* Allowed QuarryPlus to be enchanted with Fortune AND Silktouch at the same time. [#51](https://github.com/Kotori316/QuarryPlus/issues/51)
+* Allowed QuarryPlus to be enchanted with Fortune AND Silktouch at the same
+  time. [#51](https://github.com/Kotori316/QuarryPlus/issues/51)
 
 # Version 1.0.5
 
-* Sneak and right click with AE's wrench and other mods' one to remove machine.
+* Sneak and right click with AE wrench and other mods' one to remove machine.
 * Reduced log spam.
 
 # Version 1.0.4
 
 * Add NoFrameMode to ChunkDestroyer. The mode skips building frame and start breaking blocks immediately.
-* Add some tooltips to attachment machines. e.g. pumps
+* Add some tooltips to attachment machines. e.g., pumps
 * Removed duplicated code.
 
 # Version 1.0.3
@@ -234,7 +243,7 @@
 # Version 1.0.1
 
 * Working to fix a bug where QuarryPlus stops its work while removing flowing liquid with PumpPlus in frame mode. If you
-  have this problem, right click the PumpPlus with a stick or wrench to change PumpPlus's mode.
+  have this problem, right-click the PumpPlus with a stick or wrench to change PumpPlus's mode.
 * Made quarry head moving much faster. Change FastQuarryHeadMove in the config to true.
 
 # Version 1.0.0

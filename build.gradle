@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit
 buildscript {
     repositories {
         jcenter()
-        maven { url = "http://files.minecraftforge.net/maven" }
+        maven { url = "https://maven.minecraftforge.net/" }
         maven { url = "https://plugins.gradle.org/m2/" }
     }
     dependencies {
@@ -60,7 +60,7 @@ repositories {
     }
     maven {
         name = "CoFH Maven"
-        url = "http://maven.covers1624.net"
+        url = "https://maven.covers1624.net"
     }
     maven {
         name "BuildCraft"
@@ -68,19 +68,19 @@ repositories {
     }
     maven {
         name = "ic2"
-        url = "http://maven.ic2.player.to/"
+        url = "https://maven.ic2.player.to/"
     }
     maven {
         name = "Mekanism"
-        url = "http://maven.thiakil.com/"
+        url = "https://maven.thiakil.com/"
     }
     maven {
         name 'Crafttweaker'
-        url 'http://maven.blamejared.com/'
+        url 'https://maven.blamejared.com/'
     }
     maven {
         name 'CTM'
-        url 'http://maven.tterrag.com/'
+        url 'https://maven.tterrag.com/'
     }
     maven {
         url = "https://www.cursemaven.com"

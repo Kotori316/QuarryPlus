@@ -1,1 +1,1 @@
-gradlew build curseforge
+gradlew clean build curseforge publish
