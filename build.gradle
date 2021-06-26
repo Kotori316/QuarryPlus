@@ -13,7 +13,10 @@ buildscript {
         classpath "gradle.plugin.com.matthewprenger:CurseGradle:1.1.0"
     }
 }
-apply plugin: 'scala'
+plugins {
+    id('scala')
+    id("maven-publish")
+}
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: "com.matthewprenger.cursegradle"
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
@@ -194,4 +197,32 @@ static String getCommit(String branch) {
     def commit = reader.readLine()
     reader.close()
     return commit
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "AzureRepository"
+            url = uri("https://pkgs.dev.azure.com/Kotori316/minecraft/_packaging/mods/maven/v1")
+            credentials {
+                username = project.findProperty("azureUserName") ?: System.getenv("AZURE_USER_NAME") ?: ""
+                password = project.findProperty("azureToken") ?: System.getenv("AZURE_TOKEN") ?: "TOKEN"
+            }
+        }
+    }
+    publications {
+        gpr(MavenPublication) {
+            groupId = "com.kotori316"
+            artifactId = "AdditionalEnchantedMiner".toLowerCase()
+            artifact srcJar {
+                classifier = 'sources'
+                extension = 'jar'
+            }
+            artifact deobfJar {
+                classifier = 'deobf'
+                extension = 'jar'
+            }
+            artifact jar
+        }
+    }
 }
