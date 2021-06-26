@@ -202,7 +202,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
         if (Config.content().noEnergy()) {
             return 0;
         }
-        final long ret = Math.min(Math.min(this.maxGot - this.got, this.max - this.all - this.got), a);
+        final long ret = Math.min(Math.min(this.maxGot - this.got, Math.max(0, this.max - this.all - this.got)), a);
         if (real)
             this.got += ret;
         return ret;
@@ -213,7 +213,7 @@ public abstract class APowerTile extends APacketTile implements ITickable, IEner
             getEnergy(a, real);
             return;
         }
-        final long ret = Math.min(this.max - this.all - this.got, a);
+        final long ret = Math.min(Math.max(0, this.max - this.all - this.got), a);
         if (real)
             this.got += ret;
     }

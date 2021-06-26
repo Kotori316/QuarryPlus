@@ -5,7 +5,7 @@ import com.yogpc.qp.tile._
 import com.yogpc.qp.utils.{EnableCondition, IngredientWithCount}
 import com.yogpc.qp.version.VersionUtil
 import com.yogpc.qp.{Config, QuarryPlus}
-import net.minecraft.item.{Item, ItemStack}
+import net.minecraft.item.ItemStack
 import net.minecraft.util.{JsonUtils, ResourceLocation}
 import net.minecraftforge.common.crafting.{CraftingHelper, JsonContext}
 import org.apache.commons.io.FilenameUtils
@@ -16,7 +16,7 @@ import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.util.{Failure, Success, Try}
 
-abstract class WorkbenchRecipe(val output: ItemDamage, val energy: Double, val showInJEI: Boolean = true) {
+abstract class WorkbenchRecipe(val key: ItemDamage, val energy: Double, val showInJEI: Boolean = true) {
   val microEnergy = (energy * APowerTile.MJToMicroMJ).toLong
   val size: Int
 
@@ -30,18 +30,18 @@ abstract class WorkbenchRecipe(val output: ItemDamage, val energy: Double, val s
 
   def location: ResourceLocation
 
-  def getOutput: ItemStack = output.toStack()
+  def getOutput: ItemStack
 
   def getOutput(input: java.util.List[ItemStack]): ItemStack = getOutput
 
-  override val toString = s"WorkbenchRecipes(output=$output, energy=$energy)"
+  override val toString = s"WorkbenchRecipes(output=$key, energy=$energy)"
 
-  override val hashCode: Int = output.hashCode() ^ energy.##
+  override val hashCode: Int = key.hashCode() ^ energy.##
 
   override def equals(obj: scala.Any): Boolean = {
     super.equals(obj) || {
       obj match {
-        case r: WorkbenchRecipe => location == r.location && output == r.output && energy == r.energy
+        case r: WorkbenchRecipe => location == r.location && key == r.key && energy == r.energy
         case _ => false
       }
     }
@@ -55,6 +55,8 @@ private final class R1(o: ItemDamage, e: Double, s: Boolean = true, seq: Seq[Int
   override def inputs = seq.map(_.apply(Config.content.recipe)).filter(VersionUtil.nonEmpty).map(IngredientWithCount.getSeq)
 
   override def hasContent = Config.content.useHardCodedRecipe
+
+  override def getOutput: ItemStack = o.toStack()
 
   override val location: ResourceLocation = new ResourceLocation(QuarryPlus.modID, "builtin_" + name.name)
 
@@ -78,7 +80,7 @@ private final class R1(o: ItemDamage, e: Double, s: Boolean = true, seq: Seq[Int
     json.add("ingredients", ingredients)
     json.addProperty("energy", energy)
     json.addProperty("showInJEI", showInJEI)
-    json.add("result", stackToJson(output.toStack()))
+    json.add("result", stackToJson(getOutput))
     if (hasCondition) {
       val conditions = new JsonArray
       val c1 = new JsonObject
@@ -103,15 +105,16 @@ object WorkbenchRecipe extends RecipeSearcher {
     override val toString: String = "WorkbenchRecipe NoRecipe"
     override val hasContent: Boolean = false
     override val location: ResourceLocation = new ResourceLocation(QuarryPlus.modID, "builtin_dummy")
+    override val getOutput = ItemStack.EMPTY
   }
 
   implicit val recipeOrdering: Ordering[WorkbenchRecipe] = Ordering.comparatorToOrdering(
-    Ordering.by((a: WorkbenchRecipe) => a.energy) thenComparing Ordering.by((a: WorkbenchRecipe) => Item.getIdFromItem(a.output.item))
+    Ordering.by((a: WorkbenchRecipe) => a.energy) thenComparing Ordering.by((a: WorkbenchRecipe) => a.key)
   )
 
   def recipeSize: Int = recipes.size
 
-  def removeRecipe(output: ItemDamage): Unit = recipes.retain { case (_, r) => r.output != output }
+  def removeRecipe(output: ItemDamage): Unit = recipes.retain { case (_, r) => r.key != output }
 
   def removeRecipe(location: ResourceLocation): Unit = recipes.remove(location)
 
@@ -163,8 +166,8 @@ object WorkbenchRecipe extends RecipeSearcher {
 
   def getRecipeFromResult(stack: ItemStack): java.util.Optional[WorkbenchRecipe] = {
     if (VersionUtil.isEmpty(stack)) return java.util.Optional.empty()
-    val id = ItemDamage(stack)
-    recipes.find { case (_, r) => r.output == id }.map(_._2).asJava
+    val key = ItemDamage(stack)
+    recipes.find { case (_, r) => r.key == key }.map(_._2).asJava
   }
 
   def registerJsonRecipe(path: java.util.List[Path]): Unit = {
@@ -211,7 +214,7 @@ object WorkbenchRecipe extends RecipeSearcher {
 
   def outputDefaultRecipe(directory: Path): Unit = {
     val gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping.create
-    getRecipeMap.collect { case (_, r: R1) => (r.output.toString + ".json", r.toJson) }
+    getRecipeMap.collect { case (_, r: R1) => (r.key.toString + ".json", r.toJson) }
       .map { case (s, j) => (directory.resolve(s), gson.toJson(j).split(System.lineSeparator()).toSeq) }
       .foreach { case (outPath, s) =>
         import scala.collection.JavaConverters._

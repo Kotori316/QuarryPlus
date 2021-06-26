@@ -13,8 +13,10 @@ final class EnchantmentCopyRecipe(override val location: ResourceLocation, o: It
 
   override def inputs: Seq[Seq[IngredientWithCount]] = Seq(Seq(input))
 
+  override def getOutput: ItemStack = o.copy()
+
   override def getOutput(inputStacks: java.util.List[ItemStack]): ItemStack = {
-    val stack = super.getOutput
+    val stack = this.getOutput
     val tagFrom = inputStacks.asScala.find(input.matches)
     tagFrom.flatMap(s => Option(s.getTagCompound))
       .map(_.copy())
