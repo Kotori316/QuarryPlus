@@ -216,10 +216,7 @@ object WorkbenchRecipe extends RecipeSearcher {
     val gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping.create
     getRecipeMap.collect { case (_, r: R1) => (r.key.toString + ".json", r.toJson) }
       .map { case (s, j) => (directory.resolve(s), gson.toJson(j).split(System.lineSeparator()).toSeq) }
-      .foreach { case (outPath, s) =>
-        import scala.collection.JavaConverters._
-        Files.write(outPath, s.asJava)
-      }
+      .foreach { case (outPath, s) => Files.write(outPath, s.asJava) }
   }
 
   private val startWith: String => Path => Boolean = name => path => path.getFileName.toString.startsWith(name)
