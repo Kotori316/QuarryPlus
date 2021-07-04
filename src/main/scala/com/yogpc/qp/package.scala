@@ -33,7 +33,7 @@ package object qp {
   }
   val toComponentString: String => StringTextComponent = s => new StringTextComponent(s)
   val nonNull: AnyRef => Boolean = obj => obj != null
-  val facings: Eval[List[Direction]] = Eval.later(List.from(Direction.values()))
+  val facings: Eval[List[Direction]] = Eval.now(List.from(Direction.values()))
 
   implicit class ItemStackRemoveEnchantment(private val stack: ItemStack) extends AnyVal {
     def removeEnchantment(enchantment: Enchantment): Unit = {
