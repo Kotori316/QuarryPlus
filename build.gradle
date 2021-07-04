@@ -5,6 +5,7 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 import java.util.stream.Collectors
+import java.util.stream.Stream
 
 buildscript {
     repositories {
@@ -386,12 +387,16 @@ static String getCommit(String branch) {
 
 String getChangeLog() {
     def f = file("temp_changelog.md")
-    if (f.exists())
-        return f.readLines()
-                .drop(1)
-                .takeWhile { s -> !s.isEmpty() }
-                .stream().collect(Collectors.joining(System.lineSeparator()))
-    else return ""
+    if (f.exists()) {
+        def version = f.readLines().find { s -> s.startsWith("#") }
+        return Stream.concat(
+                Stream.of(version, ""),
+                f.readLines()
+                        .drop(4)
+                        .takeWhile { s -> !s.isEmpty() }
+                        .stream()
+        ).collect(Collectors.joining(System.lineSeparator()))
+    } else return ""
 }
 
 task CheckCompileOption() {
@@ -407,8 +412,6 @@ task CheckCompileOption() {
         println("CI_FORGE: " + System.getenv("CI_FORGE"))
         println("Now: " + ZonedDateTime.now().format(DateTimeFormatter.ISO_INSTANT))
         println("Now in Japan: " + ZonedDateTime.now().withZoneSameInstant(ZoneId.of("Asia/Tokyo")).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
-        println(System.lineSeparator() + "Change log" + System.lineSeparator() + "-" * 15)
-        println(getChangeLog())
         println(System.lineSeparator() + "Saved file" + System.lineSeparator() + "-" * 15)
         println(jar.archiveFile.get())
         println(srcJar.archiveFile.get())
@@ -422,6 +425,8 @@ task CheckCompileOption() {
             println(config.getName())
             config.getAllDependencies().each { println(it) }
         }
+        println(System.lineSeparator() + "Change log" + System.lineSeparator() + "-" * 15)
+        println(getChangeLog())
     }
 }
 
