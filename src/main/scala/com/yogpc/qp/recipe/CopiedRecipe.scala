@@ -45,7 +45,9 @@ object CopiedRecipe {
   private def writeIngredient(ingredient: Ingredient, buffer: PacketBuffer): Unit = {
     val stacks = ingredient.getMatchingStacks
     buffer.writeVarInt(stacks.length)
-    stacks.foreach(buffer.writeItemStack)
+    stacks
+      .map { i => val s = i.copy(); s.setCount(1); s }
+      .foreach(buffer.writeItemStack)
   }
 
   def read(packet: PacketBuffer): CopiedRecipe = {
