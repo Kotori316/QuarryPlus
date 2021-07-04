@@ -6,18 +6,19 @@ import net.minecraft.item.crafting.Ingredient
 import net.minecraft.network.PacketBuffer
 import net.minecraft.util.JSONUtils
 import net.minecraftforge.common.crafting.CraftingHelper
+import net.minecraftforge.items.ItemHandlerHelper
 
 import scala.collection.immutable.ArraySeq
 import scala.util.Try
 
-case class IngredientWithCount(ingredient: Ingredient, count: Int) {
+class IngredientWithCount private(ingredient: Ingredient, count: Int) {
 
   def this(json: JsonObject) = {
     this(CraftingHelper.getIngredient(json), JSONUtils.getInt(json, "count"))
   }
 
   def this(stack: ItemStack) = {
-    this(Ingredient.fromStacks(stack), stack.getCount)
+    this(Ingredient.fromStacks(ItemHandlerHelper.copyStackWithSize(stack, 1)), stack.getCount)
   }
 
   def matches(stack: ItemStack): Boolean = {
@@ -63,6 +64,8 @@ case class IngredientWithCount(ingredient: Ingredient, count: Int) {
 
 object IngredientWithCount {
   private final val changer: JsonElement => JsonObject = _.getAsJsonObject
+
+  def apply(ingredient: Ingredient, count: Int): IngredientWithCount = new IngredientWithCount(ingredient, count)
 
   def getSeq(json: JsonElement): Seq[IngredientWithCount] = {
     val factory: JsonObject => IngredientWithCount = new IngredientWithCount(_)

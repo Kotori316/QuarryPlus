@@ -7,9 +7,11 @@ import com.yogpc.qp.QuarryPlus
 import com.yogpc.qp.machines.base.APowerTile
 import com.yogpc.qp.machines.workbench.{EnchantmentCopyRecipe, IngredientWithCount, WorkbenchRecipes}
 import com.yogpc.qp.utils.Holder
+import io.netty.buffer.Unpooled
 import net.minecraft.enchantment.{EnchantmentHelper, Enchantments}
 import net.minecraft.item.{ItemStack, Items}
 import net.minecraft.nbt.CompoundNBT
+import net.minecraft.network.PacketBuffer
 import net.minecraft.util.{JSONUtils, ResourceLocation}
 import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.Test
@@ -204,6 +206,45 @@ private[test] final class RecipeTest {
       () => assertFalse(recipe.hasAllRequiredItems(Seq(new ItemStack(Items.DIRT, 3), new ItemStack(Items.STONE, 15)))),
       () => assertFalse(recipe.hasAllRequiredItems(Seq(new ItemStack(Items.DIRT, 3)))),
       () => assertFalse(recipe.hasAllRequiredItems(Seq(new ItemStack(Items.STONE, 16)))),
+    )
+  }
+
+  @Test
+  def cyclePacket(): Unit = {
+    val str =
+      """
+        |{
+        |  "type": "quarryplus:workbench_recipe",
+        |  "id": "quarryplus:cheat_diamond2",
+        |  "ingredients": [
+        |    {
+        |      "item": "minecraft:stone",
+        |      "count": 130
+        |    },
+        |    {
+        |      "item": "minecraft:coal",
+        |      "count": 256
+        |    }
+        |  ],
+        |  "energy": 100.0,
+        |  "result": {
+        |    "item": "diamond",
+        |    "count": 1
+        |  }
+        |}""".stripMargin
+    val recipe = WorkbenchRecipes.Serializer.read(id("cheat_diamond2"), JSONUtils.fromJson(str))
+    assertTrue(ItemStack.areItemStacksEqual(new ItemStack(Items.DIAMOND), recipe.getOutput))
+
+    val packet = new PacketBuffer(Unpooled.buffer())
+    WorkbenchRecipes.Serializer.write(packet, recipe)
+    val loaded = WorkbenchRecipes.Serializer.read(id("cheat_diamond2"), packet)
+    assertAll(
+      () => assertTrue(loaded.hasAllRequiredItems(List(new ItemStack(Items.COAL, 512), new ItemStack(Items.STONE, 512)))),
+      () => assertTrue(loaded.hasAllRequiredItems(List(new ItemStack(Items.COAL, 256), new ItemStack(Items.STONE, 130)))),
+      () => assertFalse(loaded.hasAllRequiredItems(List(new ItemStack(Items.COAL, 255), new ItemStack(Items.STONE, 128)))),
+      () => assertFalse(loaded.hasAllRequiredItems(List(new ItemStack(Items.COAL, 256), new ItemStack(Items.STONE, 127)))),
+      () => assertFalse(loaded.hasAllRequiredItems(List())),
+      () => assertFalse(recipe.hasAllRequiredItems(Seq(new ItemStack(Items.DIRT, 256), new ItemStack(Items.STONE, 512)))),
     )
   }
 }
