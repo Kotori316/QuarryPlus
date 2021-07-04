@@ -153,7 +153,7 @@ repositories {
         }
     }
     maven {
-        name = "FTB"
+        name = "FTB OLD"
         url = "https://maven.latmod.com/"
         content {
             includeModule("com.feed_the_beast.mods", "ftb-chunks")
@@ -161,6 +161,14 @@ repositories {
         }
     }
 
+    maven {
+        name = "FTB NEW"
+        url = "https://maven.saps.dev/minecraft/"
+        content {
+            includeModule("dev.ftb.mods", "ftb-chunks-forge")
+            includeModule("dev.ftb.mods", "ftb-library-forge")
+        }
+    }
     if (isInCI()) {
         maven {
             name = "Scala Language Loader"
@@ -186,6 +194,12 @@ dependencies {
     //noinspection SpellCheckingInspection
     implementation "com.blamejared.crafttweaker:CraftTweaker-1.16.4:7.1.0.71:deobf"
     compileOnly(fg.deobf("com.feed_the_beast.mods:ftb-chunks:1604.2.2.54") {
+        transitive = false
+    })
+    compileOnly(fg.deobf("dev.ftb.mods:ftb-library-forge:1605.3.1-build.20") {
+        transitive = false
+    })
+    compileOnly(fg.deobf("dev.ftb.mods:ftb-chunks-forge:1605.3.1-build.20") {
         transitive = false
     })
     // This mod cause crash when running data generation
