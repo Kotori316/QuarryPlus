@@ -40,7 +40,7 @@ import static jp.t2v.lab.syntax.MapStreamSyntax.values;
 public class TileReplacer extends APacketTile implements IAttachment, IDebugSender, ITickableTileEntity {
 
     public static final Symbol SYMBOL = Symbol.apply("Replacer");
-    private static final List<Predicate<BlockState>> rejects = new ArrayList<>(Arrays.asList(
+    public static final List<Predicate<BlockState>> rejects = new ArrayList<>(Arrays.asList(
         state -> state.getBlock().hasTileEntity(state),
         state -> state.getMaterial() == Material.MISCELLANEOUS,
         TilePump::isLiquid,
