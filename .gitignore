@@ -1,6 +1,11 @@
-/run
-/server
-/run2
+# eclipse
+bin
+*.launch
+.settings
+.metadata
+.classpath
+.project
+
 # idea
 out
 *.ipr
@@ -11,11 +16,14 @@ out
 # gradle
 build
 .gradle
-
-FILES
-libs
-Minecraft
-run-server
-test_run
 logs
-Dockerfile
+
+# other
+eclipse
+FILES
+/Minecraft
+run-server
+
+# fabric
+
+run/

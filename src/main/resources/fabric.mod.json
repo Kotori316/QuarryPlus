@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "quarryplus",
+  "version": "${version}",
+  "name": "QuarryPlus",
+  "description": "QuarryPlus",
+  "authors": [
+    "Kotori316"
+  ],
+  "contact": {
+    "homepage": "https://github.com/Kotori316",
+    "sources": "https://github.com/Kotori316/QuarryPlus",
+    "issues": "https://github.com/Kotori316/QuarryPlus/issues"
+  },
+  "license": "All rights reserved",
+  "icon": "assets/quarryplus/textures/blocks/mod_quarryplus.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      {
+        "value": "com.yogpc.qp.QuarryPlus"
+      }
+    ],
+    "client": [
+      "com.yogpc.qp.QuarryPlusClient"
+    ]
+  },
+  "mixins": [
+    "quarryplus.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.11.0",
+    "fabric": "*",
+    "minecraft": "1.17.x",
+    "fabric-language-scala": ">=1.0.0"
+  }
+}

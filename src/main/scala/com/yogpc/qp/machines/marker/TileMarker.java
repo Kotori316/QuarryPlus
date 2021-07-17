@@ -1,471 +1,146 @@
 package com.yogpc.qp.machines.marker;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Set;
+import java.util.stream.IntStream;
 
-import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.machines.TranslationKeys;
-import com.yogpc.qp.machines.base.APacketTile;
-import com.yogpc.qp.machines.base.IChunkLoadTile;
-import com.yogpc.qp.machines.base.IDebugSender;
-import com.yogpc.qp.machines.base.IMarker;
-import com.yogpc.qp.packet.PacketHandler;
-import com.yogpc.qp.packet.marker.LinkMessage;
-import com.yogpc.qp.packet.marker.UpdateBoxMessage;
-import com.yogpc.qp.render.Box;
-import com.yogpc.qp.utils.Holder;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import com.yogpc.qp.machines.Area;
+import com.yogpc.qp.machines.CheckerLog;
+import com.yogpc.qp.machines.QuarryMarker;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
-import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import scala.Symbol;
+import net.minecraft.util.math.Direction;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import static jp.t2v.lab.syntax.MapStreamSyntax.streamCast;
+public class TileMarker extends BlockEntity implements QuarryMarker, CheckerLog, BlockEntityClientSerializable {
+    public static final int MAX_SEARCH = 256;
+    private MarkerConnection markerConnection = MarkerConnection.EMPTY;
 
-public class TileMarker extends APacketTile implements IMarker, IDebugSender, IChunkLoadTile {
-    private static final int MAX_SIZE = 256;
-    public static final Symbol SYMBOL = Symbol.apply("MarkerPlus");
+    public TileMarker(BlockPos pos, BlockState state) {
+        super(QuarryPlus.ModObjects.MARKER_TYPE, pos, state);
+    }
 
-    public Link link = Link.DEFAULT;
-    public Laser laser;
-
-    public TileMarker() {
-        super(Holder.markerTileType());
+    void tryConnect() {
+        assert getWorld() != null;
+        Optional<TileMarker> zMarker = IntStream.range(1, MAX_SEARCH)
+            .flatMap(i -> IntStream.of(i, -i))
+            .mapToObj(i -> getPos().offset(Direction.NORTH, i))
+            .flatMap(p -> getWorld().getBlockEntity(p, QuarryPlus.ModObjects.MARKER_TYPE).stream())
+            .findFirst();
+        Optional<TileMarker> xMarker = IntStream.range(1, MAX_SEARCH)
+            .flatMap(i -> IntStream.of(i, -i))
+            .mapToObj(i -> getPos().offset(Direction.EAST, i))
+            .flatMap(p -> getWorld().getBlockEntity(p, QuarryPlus.ModObjects.MARKER_TYPE).stream())
+            .findFirst();
+        MarkerConnection.set(this, xMarker.orElse(null), zMarker.orElse(null));
+        if (this.markerConnection == MarkerConnection.EMPTY) {
+            xMarker.ifPresent(TileMarker::tryConnect);
+        }
+        if (this.markerConnection == MarkerConnection.EMPTY) {
+            zMarker.ifPresent(TileMarker::tryConnect);
+        }
     }
 
     @Override
-    public boolean hasLink() {
-        return link.hasXLink() && link.hasZLink();
+    public void markRemoved() {
+        super.markRemoved();
+        if (world != null && !world.isClient)
+            markerConnection.markerPlaces().stream().flatMap(p -> world.getBlockEntity(p, QuarryPlus.ModObjects.MARKER_TYPE).stream())
+                .forEach(TileMarker::resetConnection);
+    }
+
+    private static void resetConnection(TileMarker m) {
+        m.markerConnection = MarkerConnection.EMPTY;
+        m.sync();
     }
 
     @Override
-    public BlockPos min() {
-        return link.min();
+    public Optional<Area> getArea() {
+        return markerConnection.getArea();
+    }
+
+    @Environment(EnvType.CLIENT)
+    public Optional<Area> renderArea() {
+        if (markerConnection.render()) return getArea();
+        else return Optional.empty();
     }
 
     @Override
-    public BlockPos max() {
-        return link.max();
+    public List<ItemStack> removeAndGetItems() {
+        assert getWorld() != null;
+        var count = markerConnection.markerPlaces().size();
+        markerConnection.markerPlaces().forEach(p -> getWorld().removeBlock(p, false));
+        return List.of(new ItemStack(QuarryPlus.ModObjects.BLOCK_MARKER, count));
     }
 
     @Override
-    public List<ItemStack> removeFromWorldWithItem() {
-        assert world != null;
-        return link.edges().filter(p -> world.getTileEntity(p) instanceof TileMarker)
-            .peek(p -> world.removeBlock(p, false))
-            .map(x -> new ItemStack(Holder.blockMarker()))
-            .collect(Collectors.toList());
+    public List<? extends Text> getDebugLogs() {
+        return List.of(
+            new LiteralText("%sMarker Area%s: %s".formatted(Formatting.AQUA, Formatting.RESET, markerConnection.getArea())),
+            new LiteralText("%sMarker Poses%s: %s".formatted(Formatting.AQUA, Formatting.RESET, markerConnection.markerPlaces()))
+        );
     }
 
     @Override
-    public void onLoad() {
-        laser = new Laser(getWorld(), getPos(), this.link, false);
+    public void fromClientTag(NbtCompound tag) {
+        this.markerConnection = MarkerConnection.fromClientNbt(tag.getCompound("markerConnection"));
     }
 
     @Override
-    public void remove() {
-        removeLink();
-        IChunkLoadTile.super.releaseTicket();
-        super.remove();
+    public NbtCompound toClientTag(NbtCompound tag) {
+        tag.put("markerConnection", markerConnection.toClientNbt());
+        return tag;
     }
 
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public AxisAlignedBB getRenderBoundingBox() {
-        return INFINITE_EXTENT_AABB;
-    }
+    record MarkerConnection(@Nullable Area area, @NotNull Set<BlockPos> markerPlaces, boolean render) {
+        static final MarkerConnection EMPTY = new MarkerConnection(null, Collections.emptySet(), false);
 
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public double getMaxRenderDistanceSquared() {
-        if (laser.hasLaser() || link.hasAnyLink()) {
-            return 256 * 256 * 4;
-        } else {
-            return super.getMaxRenderDistanceSquared();
-        }
-    }
+        static void set(TileMarker thisMarker, @Nullable TileMarker xMarker, @Nullable TileMarker zMarker) {
+            if (xMarker != null && zMarker != null) {
+                var connectionParent = new MarkerConnection(new Area(xMarker.getPos(), zMarker.getPos().up(4), Direction.UP),
+                    Set.of(thisMarker.getPos(), xMarker.getPos(), zMarker.getPos()), true);
+                var connectionChild = new MarkerConnection(new Area(xMarker.getPos(), zMarker.getPos().up(4), Direction.UP),
+                    Set.of(thisMarker.getPos(), xMarker.getPos(), zMarker.getPos()), false);
 
-    public void activated() {
-        Link.updateLinks(getWorld(), getPos());
-        assert world != null;
-        if (!world.isRemote) {
-            PacketHandler.sendToClient(LinkMessage.create(this), getWorld());
-        }
-        QuarryPlus.LOGGER.debug(String.format("Marker signal updated. Link: %s, Laser: %s", link, laser));
-    }
-
-    public void redstoneUpdate() {
-        if (world != null && !world.isRemote && enabled()) {
-            PacketHandler.sendToClient(UpdateBoxMessage.create(this, world.isBlockPowered(pos)), getWorld());
-        }
-    }
-
-    public void setLink(Link link) {
-        this.link = link;
-        this.laser = new Laser(getWorld(), getPos(), this.link, true);
-    }
-
-    public void removeLink() {
-        assert world != null;
-        this.link.edges()
-            .map(world::getTileEntity)
-            .flatMap(streamCast(TileMarker.class))
-            .forEach(m -> m.setLink(Link.DEFAULT));
-    }
-
-    @Override
-    public String getDebugName() {
-        return TranslationKeys.marker;
-    }
-
-    @Override
-    public List<? extends ITextComponent> getDebugMessages() {
-        return Arrays.asList(new StringTextComponent("Link : " + link),
-            new StringTextComponent("Laser : " + laser));
-    }
-
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == IMarker.Cap.MARKER_CAPABILITY()) {
-            return LazyOptional.of(() -> this).cast();
-        }
-        return super.getCapability(cap, side);
-    }
-
-    public static class Laser {
-        /**
-         * index x = 0, 3 , y = 1, 4 , z = 2, 5.
-         */
-        final AxisAlignedBB[] lasers = new AxisAlignedBB[6];
-        @Nullable // Null in server world.
-        public Box[] boxes;
-
-        public Laser(World world, BlockPos pos, @Nullable Link definedLink, boolean checkPowered) {
-            int px = pos.getX(), py = pos.getY(), pz = pos.getZ();
-            final double b = 10d / 16d, c = 6d / 16d;
-            if (definedLink == null || !definedLink.hasXLink()) {
-                lasers[0] = new AxisAlignedBB(px + b - MAX_SIZE, py + 0.5, pz + 0.5, px + c, py + 0.5, pz + 0.5);
-                lasers[3] = new AxisAlignedBB(px + b, py + 0.5, pz + 0.5, px + c + MAX_SIZE, py + 0.5, pz + 0.5);
+                thisMarker.markerConnection = connectionParent;
+                xMarker.markerConnection = connectionChild;
+                zMarker.markerConnection = connectionChild;
+                // Send changes to Client
+                thisMarker.sync();
+                xMarker.sync();
+                zMarker.sync();
             }
-            if (definedLink == null || !definedLink.hasYLink()) {
-                lasers[1] = new AxisAlignedBB(px + 0.5, 0, pz + 0.5, px + 0.5, py - 0.1, pz + 0.5);
-                lasers[4] = new AxisAlignedBB(px + 0.5, py + b, pz + 0.5, px + 0.5, 255, pz + 0.5);
-            }
-            if (definedLink == null || !definedLink.hasZLink()) {
-                lasers[2] = new AxisAlignedBB(px + 0.5, py + 0.5, pz + b - MAX_SIZE, px + 0.5, py + 0.5, pz + c);
-                lasers[5] = new AxisAlignedBB(px + 0.5, py + 0.5, pz + b, px + 0.5, py + 0.5, pz + c + MAX_SIZE);
-            }
-
-            boxUpdate(world, checkPowered && world.isBlockPowered(pos));
         }
 
-        @Override
-        public String toString() {
-            long i = Stream.of(lasers).filter(Objects::nonNull).count();
-            return "Lasers : " + i;
+        Optional<Area> getArea() {
+            return Optional.ofNullable(area);
         }
 
-        public boolean hasLaser() {
-            return Stream.of(lasers).anyMatch(Objects::nonNull);
+        NbtCompound toClientNbt() {
+            var tag = new NbtCompound();
+            if (area != null) tag.put("area", area.toNBT());
+            tag.putBoolean("render", render);
+            return tag;
         }
 
-        public void boxUpdate(World world, boolean on) {
-            if (world != null && world.isRemote && Config.client().enableRender().get() && on) {
-                boxes = Stream.of(lasers)
-                    .filter(Objects::nonNull)
-                    .map(range -> Box.apply(range, 1d / 8d, 1d / 8d, 1d / 8d, false, false))
-                    .toArray(Box[]::new);
-            } else {
-                boxes = null;
-            }
+        static MarkerConnection fromClientNbt(NbtCompound tag) {
+            var area = tag.contains("area") ? Area.fromNBT(tag.getCompound("area")) : Optional.<Area>empty();
+            if (area.isEmpty()) return EMPTY;
+            else return new MarkerConnection(area.orElse(null), Collections.emptySet(), tag.getBoolean("render"));
         }
     }
 
-    public static class Link {
-        public static final Link DEFAULT = new Link(0, 0, 0, 0, 0, 0) {
-            @Override
-            public boolean hasAnyLink() {
-                return false;
-            }
-
-            @Override
-            public BlockPos min() {
-                return BlockPos.ZERO;
-            }
-
-            @Override
-            public BlockPos max() {
-                return BlockPos.ZERO;
-            }
-
-            @Override
-            public Link setWorld(World world) {
-                return this;
-            }
-
-            @Override
-            public Stream<BlockPos> edges() {
-                return Stream.empty();
-            }
-
-            @Override
-            public String toString() {
-                return "Link DEFAULT";
-            }
-        };
-        private final boolean hasX;
-        private final boolean hasY;
-        private final boolean hasZ;
-
-        public Link(int x1, int x2, int y1, int y2, int z1, int z2) {
-            this.xMax = Math.max(x1, x2);
-            this.xMin = Math.min(x1, x2);
-            this.yMax = Math.max(y1, y2);
-            this.yMin = Math.min(y1, y2);
-            this.zMax = Math.max(z1, z2);
-            this.zMin = Math.min(z1, z2);
-            hasX = xMax != xMin;
-            hasY = yMax != yMin;
-            hasZ = zMax != zMin;
-        }
-
-        public Link(BlockPos pos) {
-            this.xMax = pos.getX();
-            this.xMin = pos.getX();
-            this.yMax = pos.getY();
-            this.yMin = pos.getY();
-            this.zMax = pos.getZ();
-            this.zMin = pos.getZ();
-            hasX = xMax != xMin;
-            hasY = yMax != yMin;
-            hasZ = zMax != zMin;
-        }
-
-        public Link(int x1, int x2, int y1, int y2, int z1, int z2, World world) {
-            this(x1, x2, y1, y2, z1, z2);
-
-            int flag = 0;
-            final double a = 0.5d, b = 10d / 16d, c = 6d / 16d;
-            if (hasXLink())
-                flag |= 1;
-            if (hasYLink())
-                flag |= 2;
-            if (hasZLink())
-                flag |= 4;
-            if ((flag & 1) == 1) {//x
-                lineBoxes[0] = new AxisAlignedBB(this.xMin + b, this.yMin + a, this.zMin + a, this.xMax + c, this.yMin + a, this.zMin + a);
-            }
-            if ((flag & 2) == 2) {//y
-                lineBoxes[4] = new AxisAlignedBB(this.xMin + a, this.yMin + b, this.zMin + a, this.xMin + a, this.yMax + c, this.zMin + a);
-            }
-            if ((flag & 4) == 4) {//z
-                lineBoxes[8] = new AxisAlignedBB(this.xMin + a, this.yMin + a, this.zMin + b, this.xMin + a, this.yMin + a, this.zMax + c);
-            }
-            if ((flag & 3) == 3) {//xy
-                lineBoxes[2] = new AxisAlignedBB(this.xMin + b, this.yMax + a, this.zMin + a, this.xMax + c, this.yMax + a, this.zMin + a);
-                lineBoxes[6] = new AxisAlignedBB(this.xMax + a, this.yMin + b, this.zMin + a, this.xMax + a, this.yMax + c, this.zMin + a);
-            }
-            if ((flag & 5) == 5) {//xz
-                lineBoxes[1] = new AxisAlignedBB(this.xMin + b, this.yMin + a, this.zMax + a, this.xMax + c, this.yMin + a, this.zMax + a);
-                lineBoxes[9] = new AxisAlignedBB(this.xMax + a, this.yMin + a, this.zMin + b, this.xMax + a, this.yMin + a, this.zMax + c);
-            }
-            if ((flag & 6) == 6) {//yz
-                lineBoxes[5] = new AxisAlignedBB(this.xMin + a, this.yMin + b, this.zMax + a, this.xMin + a, this.yMax + c, this.zMax + a);
-                lineBoxes[10] = new AxisAlignedBB(this.xMin + a, this.yMax + a, this.zMin + b, this.xMin + a, this.yMax + a, this.zMax + c);
-            }
-            if ((flag & 7) == 7) {//xyz
-                lineBoxes[3] = new AxisAlignedBB(this.xMin + b, this.yMax + a, this.zMax + a, this.xMax + c, this.yMax + a, this.zMax + a);
-                lineBoxes[7] = new AxisAlignedBB(this.xMax + a, this.yMin + b, this.zMax + a, this.xMax + a, this.yMax + c, this.zMax + a);
-                lineBoxes[11] = new AxisAlignedBB(this.xMax + a, this.yMax + a, this.zMin + b, this.xMax + a, this.yMax + a, this.zMax + c);
-            }
-            if (world.isRemote && Config.client().enableRender().get()) {
-                boxes = Stream.of(lineBoxes).filter(Objects::nonNull)
-                    .map(range -> Box.apply(range, 1d / 8d, 1d / 8d, 1d / 8d, false, false))
-                    .toArray(Box[]::new);
-            } else {
-                boxes = null;
-            }
-        }
-
-        public final int xMax, xMin, yMax, yMin, zMax, zMin;
-        public final AxisAlignedBB[] lineBoxes = new AxisAlignedBB[12];
-        @Nullable // Null in server world.
-        public Box[] boxes;
-
-        boolean hasXLink() {
-            return hasX;
-        }
-
-        boolean hasYLink() {
-            return hasY;
-        }
-
-        boolean hasZLink() {
-            return hasZ;
-        }
-
-        public boolean hasAnyLink() {
-            return hasX || hasY || hasZ;
-        }
-
-        public BlockPos min() {
-            return new BlockPos(xMin, yMin, zMin);
-        }
-
-        public BlockPos max() {
-            return new BlockPos(xMax, yMax, zMax);
-        }
-
-        @Override
-        public String toString() {
-            long i = BooleanUtils.toInteger(hasX) + BooleanUtils.toInteger(hasY) + BooleanUtils.toInteger(hasZ);
-            return min() + " to " + max() + " Lasers : " + i * 2;
-        }
-
-        public Link setWorld(World world) {
-            return new Link(xMax, xMin, yMax, yMin, zMax, zMin, world);
-        }
-
-        @SuppressWarnings("SuspiciousNameCombination")
-        public Stream<BlockPos> edges() {
-            return Stream.of(xMin, xMax)
-                .flatMap(x -> Stream.of(Pair.of(x, yMin), Pair.of(x, yMax)))
-                .flatMap(xy -> Stream.of(new BlockPos(xy.getLeft(), xy.getRight(), zMin), new BlockPos(xy.getLeft(), xy.getRight(), zMax)))
-                .distinct();
-        }
-
-        public static Link of(int x1, int x2, int y1, int y2, int z1, int z2) {
-            if (x1 == 0 && x2 == 0 && y1 == 0 && y2 == 0 && z1 == 0 && z2 == 0) return DEFAULT;
-            else return new Link(x1, x2, y1, y2, z1, z2);
-        }
-
-        /**
-         * Make new link and set it to all markers in the edges.
-         */
-        public static void updateLinks(World world, BlockPos originPos) {
-            Link newLink = searchInternal(world, originPos, new Link(originPos)).setWorld(world);
-            newLink.edges()
-                .map(world::getTileEntity)
-                .flatMap(streamCast(TileMarker.class))
-                .forEach(m -> m.setLink(newLink));
-        }
-
-        private static Link searchInternal(World world, BlockPos originPos, Link link) {
-            int xOffsetTemp = 0;
-            int yOffsetTemp = 0;
-            int zOffsetTemp = 0;
-            int nXMax = link.xMax, nXMin = link.xMin, nYMax = link.yMax, nYMin = link.yMin, nZMax = link.zMax, nZMin = link.zMin;
-            if (!link.hasXLink()) {
-                // Search X
-                for (int i = 1; i < MAX_SIZE; i++) {
-                    TileEntity tile = world.getTileEntity(originPos.add(i, 0, 0));
-                    if (tile instanceof TileMarker && !((TileMarker) tile).hasLink()) {
-                        xOffsetTemp = i;
-                        nXMax += i;
-                        break;
-                    }
-                    tile = world.getTileEntity(originPos.add(-i, 0, 0));
-                    if (tile instanceof TileMarker && !((TileMarker) tile).hasLink()) {
-                        xOffsetTemp = -i;
-                        nXMin -= i;
-                        break;
-                    }
-                }
-            }
-            if (!link.hasYLink()) {
-                // Search Y
-                for (int i = 1; i < MAX_SIZE; i++) {
-                    TileEntity tile = world.getTileEntity(originPos.add(0, i, 0));
-                    if (tile instanceof TileMarker && !((TileMarker) tile).link.hasYLink()) {
-                        yOffsetTemp = i;
-                        nYMax += i;
-                        break;
-                    }
-                    tile = world.getTileEntity(originPos.add(0, -i, 0));
-                    if (tile instanceof TileMarker && !((TileMarker) tile).link.hasYLink()) {
-                        yOffsetTemp = -i;
-                        nYMin -= i;
-                        break;
-                    }
-                }
-            }
-            if (!link.hasZLink()) {
-                // Search Z
-                for (int i = 1; i < MAX_SIZE; i++) {
-                    TileEntity tile = world.getTileEntity(originPos.add(0, 0, i));
-                    if (tile instanceof TileMarker && !((TileMarker) tile).hasLink()) {
-                        nZMax += i;
-                        zOffsetTemp = i;
-                        break;
-                    }
-                    tile = world.getTileEntity(originPos.add(0, 0, -i));
-                    if (tile instanceof TileMarker && !((TileMarker) tile).hasLink()) {
-                        zOffsetTemp = -i;
-                        nZMin -= i;
-                        break;
-                    }
-                }
-            }
-            final int xOffset = xOffsetTemp;
-            final int yOffset = yOffsetTemp;
-            final int zOffset = zOffsetTemp;
-            return Optional.of(of(nXMin, nXMax, nYMax, nYMin, nZMax, nZMin))
-                .map(link1 -> {
-                    if (!link1.hasXLink() && yOffset != 0) {
-                        return searchInternal(world, originPos.add(0, yOffset, 0), link1);
-                    }
-                    return link1;
-                })
-                .map(link1 -> {
-                    if (!link1.hasXLink() && zOffset != 0) {
-                        return searchInternal(world, originPos.add(0, 0, zOffset), link1);
-                    }
-                    return link1;
-                })
-                .map(link1 -> {
-                    if (!link1.hasYLink() && xOffset != 0) {
-                        return searchInternal(world, originPos.add(xOffset, 0, 0), link1);
-                    }
-                    return link1;
-                })
-                .map(link1 -> {
-                    if (!link1.hasYLink() && zOffset != 0) {
-                        return searchInternal(world, originPos.add(0, 0, zOffset), link1);
-                    }
-                    return link1;
-                })
-                .map(link1 -> {
-                    if (!link1.hasZLink() && xOffset != 0) {
-                        return searchInternal(world, originPos.add(xOffset, 0, 0), link1);
-                    }
-                    return link1;
-                })
-                .map(link1 -> {
-                    if (!link1.hasZLink() && yOffset != 0) {
-                        return searchInternal(world, originPos.add(0, yOffset, 0), link1);
-                    }
-                    return link1;
-                })
-                .filter(Link::hasAnyLink)
-                .orElse(DEFAULT);
-        }
-    }
 }

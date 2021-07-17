@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "com.yogpc.qp.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "MixinEnchantmentTargetBreakable",
+    "MixinEnchantmentTargetDigger"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
