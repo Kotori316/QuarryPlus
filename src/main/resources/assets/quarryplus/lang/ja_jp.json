@@ -82,7 +82,7 @@
   "gui.removeWater": "水を除去",
   "gui.reset": "元に戻す",
   "gui.silktouchList": "シルクタッチ有効ブロック一覧",
-  "itemGroup.QuarryPlus": "QuarryPlus",
+  "itemGroup.quarryplus.quarryplus": "QuarryPlus",
   "key.hover": "ホバリング切り替えキー",
   "key.yoglib": "QuarryPlus",
   "nei.handler.qpusage": "機械使用方法",

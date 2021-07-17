@@ -231,6 +231,7 @@ task CheckCompileOption() {
         println(strings.stream().collect(Collectors.joining(System.lineSeparator())))
     }
 }
+
 task copyToDrive(type: Copy, dependsOn: "build") {
     def PATH_NAME = "drive_path"
     from(remapJar.getArchiveFile())

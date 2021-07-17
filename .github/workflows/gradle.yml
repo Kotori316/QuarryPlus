@@ -10,6 +10,7 @@ on:
     paths:
       - "src/**"
       - ".github/workflows/gradle.yml"
+      - "build.gradle"
 
 jobs:
   build:
