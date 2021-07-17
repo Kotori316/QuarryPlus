@@ -157,7 +157,7 @@ def joinedLog = String.join("\n",
 )
 
 curseforge {
-    apiKey = project.hasProperty("curseforge_additional-enchanted-miner_key") ? getProperty("curseforge_additional-enchanted-miner_key") : ""
+    apiKey = project.hasProperty("curseforge_additional-enchanted-miner_key") ? getProperty("curseforge_additional-enchanted-miner_key") : (System.getenv("CURSEFORGE_KEY") ?: "")
     project {
         id = '282837'
         changelogType = 'markdown'
@@ -215,7 +215,7 @@ task CheckCompileOption() {
         List<String> strings = new ArrayList<>()
         strings.add("archivesBaseName: $archivesBaseName")
         strings.add("group: $group")
-        strings.add("project.maven_group: ${project.maven_group}")
+        println("Is in CI: " + isInCI())
         strings.add("project.group: ${project.group}")
         strings.add("version: $version")
         strings.add("runs: ${minecraft.getRunConfigs().asMap.toMapString()}")
