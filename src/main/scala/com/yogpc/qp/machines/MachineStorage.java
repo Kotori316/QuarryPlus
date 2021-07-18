@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.HopperBlockEntity;
@@ -123,7 +124,9 @@ public class MachineStorage {
 
     static {
         try {
-            BUCKET_FLUID_FIELD = BucketItem.class.getDeclaredField("fluid");
+            var fluidFieldName = FabricLoader.getInstance().getMappingResolver().mapFieldName("intermediary",
+                "net.minecraft.class_1755", "field_7905", "Lnet/minecraft/class_3611;");
+            BUCKET_FLUID_FIELD = BucketItem.class.getDeclaredField(fluidFieldName);
             BUCKET_FLUID_FIELD.trySetAccessible();
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);

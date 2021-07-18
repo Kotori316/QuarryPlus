@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(targets = "net.minecraft.enchantment.EnchantmentTarget$2")
 // EnchantmentTarget.BREAKABLE
 public class MixinEnchantmentTargetBreakable {
-    @Inject(method = "isAcceptableItem", at = @At("HEAD"), cancellable = true)
+    @Inject(method = {"isAcceptableItem", "method_8177"}, at = @At("HEAD"), cancellable = true)
     public void addQuarry(Item item, CallbackInfoReturnable<Boolean> cir) {
         if (item == QuarryPlus.ModObjects.BLOCK_QUARRY.blockItem) {
             cir.setReturnValue(true);
