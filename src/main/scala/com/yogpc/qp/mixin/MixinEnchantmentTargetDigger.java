@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(targets = "net.minecraft.enchantment.EnchantmentTarget$12")
-// EnchantmentTarget.BREAKABLE
+// EnchantmentTarget.DIGGER
 public class MixinEnchantmentTargetDigger {
     @Inject(method = "isAcceptableItem", at = @At("HEAD"), cancellable = true)
     public void addQuarry(Item item, CallbackInfoReturnable<Boolean> cir) {

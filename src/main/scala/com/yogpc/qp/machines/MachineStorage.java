@@ -66,7 +66,7 @@ public class MachineStorage {
 
     public record ItemKey(Item item, @Nullable NbtCompound nbt) {
         public ItemKey(ItemStack stack) {
-            this(stack.getItem(), stack.getTag());
+            this(stack.getItem(), stack.getNbt());
         }
 
         public NbtCompound createNbt(long itemCount) {
@@ -86,7 +86,7 @@ public class MachineStorage {
 
         public ItemStack toStack(int count) {
             var stack = new ItemStack(item, count);
-            stack.setTag(nbt);
+            stack.setNbt(nbt);
             return stack;
         }
     }
