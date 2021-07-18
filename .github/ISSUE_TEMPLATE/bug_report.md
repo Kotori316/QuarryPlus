@@ -7,18 +7,26 @@ assignees: ''
 
 ---
 
-**Describe the bug**
+## Describe the bug
+
 _What happened to you?_
 
-**To Reproduce**
+## To Reproduce
+
 Steps to reproduce the behavior:
+
 1. 
 2. 
 3. 
 
-**Version**
-* Minecraft: []
+## Versions
+
+* Minecraft version: []
 * Single Player or Multi Player?: []
-* Forge: []
-* This mod (QuarryPlus): []
+* Forge version: []
+* QuarryPlus version: []
 * Other mods: []
+
+## Other materials
+
+If your Minecraft has crashed, please attach the crash report. Use pastebin or something.
