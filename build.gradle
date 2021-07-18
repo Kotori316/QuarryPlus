@@ -1,5 +1,6 @@
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
@@ -22,10 +23,12 @@ version = project.mod_version
 if (isInCI()) {
     String postFix = System.getenv("GITHUB_RUN_NUMBER")
     // In remote CI/CD environment
-    version = (version + "_" + postFix)
+    version = (version + "." + postFix)
 
     println("Set version to $version because I'm in GitHub Actions.")
     println("CURSEFORGE_KEY: ${System.getenv().containsKey('CURSEFORGE_KEY')}")
+} else {
+    version = (version + ".0")
 }
 
 group = "com.kotori316"
@@ -165,8 +168,9 @@ curseforge {
         addGameVersion '1.17'
         changelog = joinedLog
         releaseType = !isInCI() ? 'beta' : 'alpha'
-        mainArtifact remapJar
-        addArtifact jar
+        mainArtifact(remapJar) {
+            displayName = "v" + project.version + "-fabric"
+        }
         relations {
             requiredDependency 'fabric-language-scala'
             //noinspection SpellCheckingInspection
@@ -227,6 +231,9 @@ task CheckCompileOption() {
         strings.add("Source Jar ${sourcesJar.getArchiveFile().get()}")
         strings.add("RemapSource Jar ${remapSourcesJar.getOutput()}")
         strings.add(String.valueOf(fileTree("build/libs").getFiles()))
+        strings.add("-" * 20)
+        strings.add("Now: " + ZonedDateTime.now().format(DateTimeFormatter.ISO_INSTANT))
+        strings.add("Now in Japan: " + ZonedDateTime.now().withZoneSameInstant(ZoneId.of("Asia/Tokyo")).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
 
         println(strings.stream().collect(Collectors.joining(System.lineSeparator())))
     }
