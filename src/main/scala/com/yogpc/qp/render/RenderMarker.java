@@ -39,25 +39,26 @@ public class RenderMarker implements BlockEntityRenderer<TileMarker> {
             var player = MinecraftClient.getInstance().player;
             var playerX = player == null ? markerPos.getX() : player.getX();
             var playerZ = player == null ? markerPos.getZ() : player.getZ();
-            var xMin = Math.max(playerX - 128, markerPos.getX() - TileMarker.MAX_SEARCH);
-            var xMax = Math.min(playerX + 128, markerPos.getX() + TileMarker.MAX_SEARCH);
-            var zMin = Math.max(playerZ - 128, markerPos.getZ() - TileMarker.MAX_SEARCH);
-            var zMax = Math.min(playerZ + 128, markerPos.getZ() + TileMarker.MAX_SEARCH);
+            int visibleRange = 32;
+            var xMin = Math.max(playerX - visibleRange, markerPos.getX() - TileMarker.MAX_SEARCH);
+            var xMax = Math.min(playerX + visibleRange, markerPos.getX() + TileMarker.MAX_SEARCH);
+            var zMin = Math.max(playerZ - visibleRange, markerPos.getZ() - TileMarker.MAX_SEARCH);
+            var zMax = Math.min(playerZ + visibleRange, markerPos.getZ() + TileMarker.MAX_SEARCH);
             renderBoxes = Stream.of(
                 // X-, force complicated rendering box to avoid strange movement of line.
-                xMin < markerPos.getX() ? new Box(markerPos.getX() + c, markerPos.getY() + a, markerPos.getZ() + a,
+                xMin < markerPos.getX() ? new Box(Math.min(playerX + visibleRange, markerPos.getX()) + c, markerPos.getY() + a, markerPos.getZ() + a,
                     xMin + b, markerPos.getY() + a, markerPos.getZ() + a,
                     1d / 8d + 0.001d, 1d / 8d + 0.001d, 1d / 8d + 0.001d, false, false) : null,
                 // X+
-                xMax > markerPos.getX() ? Box.apply(markerPos.getX() + b, markerPos.getY() + a, markerPos.getZ() + a,
+                xMax > markerPos.getX() ? Box.apply(Math.max(playerX - visibleRange, markerPos.getX()) + b, markerPos.getY() + a, markerPos.getZ() + a,
                     xMax + c, markerPos.getY() + a, markerPos.getZ() + a,
                     1d / 8d + 0.001d, 1d / 8d + 0.001d, 1d / 8d + 0.001d, false, false) : null,
                 // Z-, force complicated rendering box to avoid strange movement of line.
-                zMin < markerPos.getZ() ? new Box(markerPos.getX() + a, markerPos.getY() + a, markerPos.getZ() + c,
+                zMin < markerPos.getZ() ? new Box(markerPos.getX() + a, markerPos.getY() + a, Math.min(playerZ + visibleRange, markerPos.getZ()) + c,
                     markerPos.getX() + a, markerPos.getY() + a, zMin + b,
                     1d / 8d + 0.001d, 1d / 8d + 0.001d, 1d / 8d + 0.001d, false, false) : null,
                 // Z+
-                zMax > markerPos.getZ() ? Box.apply(markerPos.getX() + a, markerPos.getY() + a, markerPos.getZ() + b,
+                zMax > markerPos.getZ() ? Box.apply(markerPos.getX() + a, markerPos.getY() + a, Math.max(playerZ - visibleRange, markerPos.getZ()) + b,
                     markerPos.getX() + a, markerPos.getY() + a, zMax + c,
                     1d / 8d + 0.001d, 1d / 8d + 0.001d, 1d / 8d + 0.001d, false, false) : null
             ).filter(Objects::nonNull)
@@ -125,5 +126,15 @@ public class RenderMarker implements BlockEntityRenderer<TileMarker> {
         return Arrays.stream(lineBoxes).filter(Objects::nonNull)
             .map(range -> Box.apply(range, 1d / 8d + 0.001d, 1d / 8d + 0.001d, 1d / 8d + 0.001d, true, true))
             .toArray(Box[]::new);
+    }
+
+    @Override
+    public int getRenderDistance() {
+        return TileMarker.MAX_SEARCH;
+    }
+
+    @Override
+    public boolean rendersOutsideBoundingBox(TileMarker blockEntity) {
+        return true;
     }
 }
