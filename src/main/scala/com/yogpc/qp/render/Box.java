@@ -127,7 +127,7 @@ public class Box {
         this.firstSide = firstSide;
         this.endSide = endSide;
         this.dx = endX - startX;
-        this.dy = endY - startY;
+        this.dy = endY == startY ? 1e-9 : endY - startY;
         this.dz = endZ - startZ;
         this.lengthSq = this.dx * this.dx + this.dy * this.dy + this.dz * this.dz;
         this.length = Math.sqrt(this.lengthSq);
