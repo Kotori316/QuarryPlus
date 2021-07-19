@@ -431,7 +431,7 @@ public class RenderQuarry implements BlockEntityRenderer<TileQuarry> {
     private void renderDrill(TileQuarry quarry, MatrixStack matrices, VertexConsumerProvider vertexConsumers) {
         assert quarry.getArea() != null; // Null check is done.
         var buffer = new Buffer(vertexConsumers.getBuffer(RenderLayer.getCutout()), matrices);
-        matrices.translate(0.5, 0.5, 0.5);
+        matrices.translate(0.5, 1.0, 0.5);
         var minX = quarry.getArea().minX();
         var minZ = quarry.getArea().minZ();
         var maxX = quarry.getArea().maxX();
