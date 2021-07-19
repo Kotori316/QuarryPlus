@@ -43,10 +43,10 @@ public abstract class Target {
     }
 
     @Nullable
-    public static Target nextY(@Nullable Target previous, Area area) {
+    public static Target nextY(@Nullable Target previous, Area area, int digMinY) {
         if (previous instanceof DigTarget digTarget) {
             int nextY = digTarget.y - 1;
-            if (0 <= nextY && nextY <= area.maxY()) {
+            if (digMinY <= nextY && nextY <= area.maxY()) {
                 return newDigTarget(digTarget.area, nextY);
             } else {
                 return null;

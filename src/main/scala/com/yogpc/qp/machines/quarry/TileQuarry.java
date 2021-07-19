@@ -59,6 +59,7 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
     public MachineStorage storage = new MachineStorage();
     public double headX, headY, headZ;
     private boolean bedrockRemove = false;
+    private int digMinY = 0;
 
     public TileQuarry(BlockPos pos, BlockState state) {
         super(QuarryPlus.ModObjects.QUARRY_TYPE, pos, state, 10000 * ONE_FE);
@@ -82,6 +83,7 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
         nbt.putDouble("headZ", headZ);
         nbt.put("storage", storage.toNbt());
         nbt.putBoolean("bedrockRemove", bedrockRemove);
+        nbt.putInt("digMinY", digMinY);
         return super.writeNbt(nbt);
     }
 
@@ -104,6 +106,7 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
         headZ = nbt.getDouble("headZ");
         storage.readNbt(nbt.getCompound("storage"));
         bedrockRemove = nbt.getBoolean("bedrockRemove");
+        digMinY = nbt.getInt("digMinY");
     }
 
     @Override
@@ -291,11 +294,13 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
     public void setTileDataFromItem(@Nullable NbtCompound tileData) {
         if (tileData == null) return;
         setBedrockRemove(tileData.getBoolean("bedrockRemove"));
+        digMinY = tileData.getInt("digMinY");
     }
 
     public NbtCompound getTileDataForItem() {
         var tag = new NbtCompound();
         if (bedrockRemove) tag.putBoolean("bedrockRemove", true);
+        if (digMinY != 0) tag.putInt("digMinY", digMinY);
         return tag;
     }
 
@@ -320,6 +325,10 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
             .mapToInt(EnchantmentLevel::level).findFirst().orElse(0);
     }
 
+    int getDigMinY() {
+        return digMinY;
+    }
+
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean canBreak(World targetWorld, BlockPos targetPos, BlockState state) {
         var unbreakable = state.getHardness(targetWorld, targetPos) < 0;
@@ -339,6 +348,7 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
             "%sTarget:%s %s".formatted(Formatting.GREEN, Formatting.RESET, target),
             "%sState:%s %s".formatted(Formatting.GREEN, Formatting.RESET, state),
             "%sRemoveBedrock:%s %s".formatted(Formatting.GREEN, Formatting.RESET, bedrockRemove),
+            "%sDigMinY:%s %d".formatted(Formatting.GREEN, Formatting.RESET, digMinY),
             "%sHead:%s (%f, %f, %f)".formatted(Formatting.GREEN, Formatting.RESET, headX, headY, headZ),
             "%sEnergy:%s %f FE (%d)".formatted(Formatting.GREEN, Formatting.RESET, getEnergy() / (double) PowerTile.ONE_FE, getEnergy())
         ).map(LiteralText::new).toList();

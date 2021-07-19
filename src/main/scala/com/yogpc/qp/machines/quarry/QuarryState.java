@@ -74,7 +74,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
                         }
                     });
                 // Change Y
-                quarry.target = Target.nextY(quarry.target, quarry.getArea());
+                quarry.target = Target.nextY(quarry.target, quarry.getArea(), quarry.getDigMinY());
                 QuarryPlus.LOGGER.debug(MARKER, "Quarry({}) Target changed to {}.", quarryPos, quarry.target);
                 if (quarry.target != null)
                     tick(world, quarryPos, state, quarry);
