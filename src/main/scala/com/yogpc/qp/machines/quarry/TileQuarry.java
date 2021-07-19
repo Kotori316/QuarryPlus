@@ -107,13 +107,23 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
     }
 
     @Override
-    public final void fromClientTag(NbtCompound tag) {
-        readNbt(tag);
+    public final NbtCompound toClientTag(NbtCompound tag) {
+        if (area != null)
+            tag.put("area", area.toNBT());
+        tag.putString("state", state.name());
+        tag.putDouble("headX", headX);
+        tag.putDouble("headY", headY);
+        tag.putDouble("headZ", headZ);
+        return tag;
     }
 
     @Override
-    public final NbtCompound toClientTag(NbtCompound tag) {
-        return writeNbt(tag);
+    public final void fromClientTag(NbtCompound tag) {
+        area = Area.fromNBT(tag.getCompound("area")).orElse(null);
+        state = QuarryState.valueOf(tag.getString("state"));
+        headX = tag.getDouble("headX");
+        headY = tag.getDouble("headY");
+        headZ = tag.getDouble("headZ");
     }
 
     public void setArea(@Nullable Area area) {
