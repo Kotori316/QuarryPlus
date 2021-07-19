@@ -6,7 +6,8 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 
 class BoxX extends Box {
-    public BoxX(final double startX, final double endX, final double y, final double z, final double sizeX, final double sizeY, final double sizeZ, final boolean firstSide, final boolean endSide) {
+
+    BoxX(final double startX, final double endX, final double y, final double z, final double sizeX, final double sizeY, final double sizeZ, final boolean firstSide, final boolean endSide) {
         super(startX, y, z, endX, y, z, sizeX, sizeY, sizeZ, firstSide, endSide);
     }
 

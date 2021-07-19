@@ -6,11 +6,9 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 
 class BoxZ extends Box {
-    final double length;
 
-    public BoxZ(final double startZ, final double endZ, final double x, final double y, final double sizeX, final double sizeY, final double sizeZ, final boolean firstSide, final boolean endSide) {
+    BoxZ(final double startZ, final double endZ, final double x, final double y, final double sizeX, final double sizeY, final double sizeZ, final boolean firstSide, final boolean endSide) {
         super(x, y, startZ, x, y, endZ, sizeX, sizeY, sizeZ, firstSide, endSide);
-        this.length = dz;
     }
 
     @Override

@@ -6,11 +6,9 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 
 class BoxY extends Box {
-    final double length;
 
     BoxY(final double startY, final double endY, final double x, final double z, final double sizeX, final double sizeY, final double sizeZ, final boolean firstSide, final boolean endSide) {
         super(x, startY, z, x, endY, z, sizeX, sizeY, sizeZ, firstSide, endSide);
-        this.length = super.dy;
     }
 
     @Override
