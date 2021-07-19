@@ -11,7 +11,6 @@ plugins {
     id("maven-publish")
     // https://maven.fabricmc.net/net/fabricmc/fabric-loom/
     id 'fabric-loom' version "0.8.17"
-    // id 'maven-publish'
     //noinspection SpellCheckingInspection
     id "com.github.breadmoirai.github-release" version "2.2.12"
     //noinspection SpellCheckingInspection
@@ -21,7 +20,7 @@ plugins {
 archivesBaseName = "AdditionalEnchantedMiner-1.17-fabric"
 version = project.mod_version
 if (isInCI()) {
-    String postFix = System.getenv("GITHUB_RUN_NUMBER")
+    String postFix = System.getenv("GITHUB_RUN_NUMBER") ?: "SNAPSHOT"
     // In remote CI/CD environment
     version = (version + "." + postFix)
 
@@ -150,13 +149,23 @@ jar {
 
 // PUBLISH
 def joinedLog = String.join("\n",
-        "Additional Enchanted Miner for 1.17 and Fabric.",
+        "Additional Enchanted Miner for 1.17.1 and Fabric.",
+        "",
+        isInCI() ? "RELEASED VIA Ci/CD. It may contain bugs." : "Manually built.",
+        "",
+        "Commit: ${getCommit('1.17-fabric')}",
         "",
         "Requires:",
         "",
         "* [Fabric Language Scala](https://www.curseforge.com/minecraft/mc-mods/fabric-language-scala)",
         "",
-        "See https://github.com/Kotori316/QuarryPlus/tree/1.17-fabric to get all change log."
+        "See https://github.com/Kotori316/QuarryPlus/tree/1.17-fabric to get all change log.",
+        "",
+        "Built with:",
+        "",
+        "* Minecraft ${project.minecraft_version}",
+        "* Fabric API ${project.fabric_version}",
+        "* Fabric Loader ${project.loader_version}",
 )
 
 curseforge {
@@ -237,6 +246,9 @@ task CheckCompileOption() {
         strings.add("Now in Japan: " + ZonedDateTime.now().withZoneSameInstant(ZoneId.of("Asia/Tokyo")).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
 
         println(strings.stream().collect(Collectors.joining(System.lineSeparator())))
+        println("*" * 20)
+        println("ChangeLog")
+        println(joinedLog)
     }
 }
 
