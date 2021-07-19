@@ -21,6 +21,7 @@ unexpected crashes.
 
 * Marker
   * Render
+  * Guideline with RS signal
 * QuarryPlus
   * Render
   * Enchantment

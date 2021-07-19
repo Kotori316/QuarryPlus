@@ -2,6 +2,7 @@ package com.yogpc.qp.render;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
@@ -13,6 +14,7 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
+import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
@@ -21,19 +23,56 @@ public class RenderMarker implements BlockEntityRenderer<TileMarker> {
     public RenderMarker(BlockEntityRendererFactory.Context context) {
     }
 
+    private static final double a = 0.5d, b = 10d / 16d, c = 6d / 16d;
+
     @Override
     public void render(TileMarker entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+        Box[] renderBoxes;
+        Sprite sprite;
         var areaOptional = entity.renderArea();
-        if (areaOptional.isEmpty()) return;
+        var markerPos = entity.getPos();
+        if (areaOptional.isPresent()) {
+            var area = areaOptional.get();
+            renderBoxes = getRenderBox(area);
+            sprite = Sprites.INSTANCE.getBoxBlueStripe();
+        } else if (entity.rsReceiving && entity.getArea().isEmpty()) {
+            var player = MinecraftClient.getInstance().player;
+            var playerX = player == null ? markerPos.getX() : player.getX();
+            var playerZ = player == null ? markerPos.getZ() : player.getZ();
+            var xMin = Math.max(playerX - 128, markerPos.getX() - TileMarker.MAX_SEARCH);
+            var xMax = Math.min(playerX + 128, markerPos.getX() + TileMarker.MAX_SEARCH);
+            var zMin = Math.max(playerZ - 128, markerPos.getZ() - TileMarker.MAX_SEARCH);
+            var zMax = Math.min(playerZ + 128, markerPos.getZ() + TileMarker.MAX_SEARCH);
+            renderBoxes = Stream.of(
+                // X-, force complicated rendering box to avoid strange movement of line.
+                xMin < markerPos.getX() ? new Box(markerPos.getX() + c, markerPos.getY() + a, markerPos.getZ() + a,
+                    xMin + b, markerPos.getY() + a, markerPos.getZ() + a,
+                    1d / 8d + 0.001d, 1d / 8d + 0.001d, 1d / 8d + 0.001d, false, false) : null,
+                // X+
+                xMax > markerPos.getX() ? Box.apply(markerPos.getX() + b, markerPos.getY() + a, markerPos.getZ() + a,
+                    xMax + c, markerPos.getY() + a, markerPos.getZ() + a,
+                    1d / 8d + 0.001d, 1d / 8d + 0.001d, 1d / 8d + 0.001d, false, false) : null,
+                // Z-, force complicated rendering box to avoid strange movement of line.
+                zMin < markerPos.getZ() ? new Box(markerPos.getX() + a, markerPos.getY() + a, markerPos.getZ() + c,
+                    markerPos.getX() + a, markerPos.getY() + a, zMin + b,
+                    1d / 8d + 0.001d, 1d / 8d + 0.001d, 1d / 8d + 0.001d, false, false) : null,
+                // Z+
+                zMax > markerPos.getZ() ? Box.apply(markerPos.getX() + a, markerPos.getY() + a, markerPos.getZ() + b,
+                    markerPos.getX() + a, markerPos.getY() + a, zMax + c,
+                    1d / 8d + 0.001d, 1d / 8d + 0.001d, 1d / 8d + 0.001d, false, false) : null
+            ).filter(Objects::nonNull)
+                .toArray(Box[]::new);
+            sprite = Sprites.INSTANCE.getBoxRedStripe();
+        } else {
+            return;
+        }
         MinecraftClient.getInstance().getProfiler().push(QuarryPlus.modID);
         MinecraftClient.getInstance().getProfiler().push("RenderMarker");
-        var area = areaOptional.get();
         var buffer = vertexConsumers.getBuffer(RenderLayer.getCutoutMipped());
         matrices.push();
-        var markerPos = entity.getPos();
         matrices.translate(-markerPos.getX(), -markerPos.getY(), -markerPos.getZ());
-        for (Box box : getRenderBox(area)) {
-            box.render(buffer, matrices, Sprites.INSTANCE.getMarkerBlue(), ColorBox.white);
+        for (Box box : renderBoxes) {
+            box.render(buffer, matrices, sprite, ColorBox.white);
         }
         matrices.pop();
 
@@ -42,7 +81,6 @@ public class RenderMarker implements BlockEntityRenderer<TileMarker> {
     }
 
     static Box[] getRenderBox(Area area) {
-        final double a = 0.5d, b = 10d / 16d, c = 6d / 16d;
         int flag = 0;
         int xMin = area.minX();
         int yMin = area.minY();
@@ -85,7 +123,7 @@ public class RenderMarker implements BlockEntityRenderer<TileMarker> {
         }
 
         return Arrays.stream(lineBoxes).filter(Objects::nonNull)
-            .map(range -> Box.apply(range, 1d / 8d + 0.001d, 1d / 8d + 0.001d, 1d / 8d + 0.001d, false, false))
+            .map(range -> Box.apply(range, 1d / 8d + 0.001d, 1d / 8d + 0.001d, 1d / 8d + 0.001d, true, true))
             .toArray(Box[]::new);
     }
 }

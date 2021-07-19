@@ -81,7 +81,7 @@ public class RenderQuarry implements BlockEntityRenderer<TileQuarry> {
 
         var spriteV = Sprites.INSTANCE.getFrameV();
         var spriteH = Sprites.INSTANCE.getFrameH();
-        var boxStripe = Sprites.INSTANCE.getBoxStripe();
+        var boxStripe = Sprites.INSTANCE.getBoxBlueStripe();
         var V_minU = spriteV.getMinU();
         var V_minV = spriteV.getMinV();
         var V_maxU = spriteV.getFrameU(8);

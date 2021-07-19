@@ -28,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
 public class TileMarker extends BlockEntity implements QuarryMarker, CheckerLog, BlockEntityClientSerializable {
     public static final int MAX_SEARCH = 256;
     private MarkerConnection markerConnection = MarkerConnection.EMPTY;
+    public boolean rsReceiving;
 
     public TileMarker(BlockPos pos, BlockState state) {
         super(QuarryPlus.ModObjects.MARKER_TYPE, pos, state);
@@ -97,11 +98,13 @@ public class TileMarker extends BlockEntity implements QuarryMarker, CheckerLog,
     @Override
     public void fromClientTag(NbtCompound tag) {
         this.markerConnection = MarkerConnection.fromClientNbt(tag.getCompound("markerConnection"));
+        this.rsReceiving = tag.getBoolean("rsReceiving");
     }
 
     @Override
     public NbtCompound toClientTag(NbtCompound tag) {
         tag.put("markerConnection", markerConnection.toClientNbt());
+        tag.putBoolean("rsReceiving", rsReceiving);
         return tag;
     }
 
