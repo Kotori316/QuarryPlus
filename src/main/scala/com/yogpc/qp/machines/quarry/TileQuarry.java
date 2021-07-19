@@ -58,6 +58,7 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
     private List<EnchantmentLevel> enchantments = new ArrayList<>();
     public MachineStorage storage = new MachineStorage();
     public double headX, headY, headZ;
+    private boolean bedrockRemove = false;
 
     public TileQuarry(BlockPos pos, BlockState state) {
         super(QuarryPlus.ModObjects.QUARRY_TYPE, pos, state, 10000 * ONE_FE);
@@ -80,6 +81,7 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
         nbt.putDouble("headY", headY);
         nbt.putDouble("headZ", headZ);
         nbt.put("storage", storage.toNbt());
+        nbt.putBoolean("bedrockRemove", bedrockRemove);
         return super.writeNbt(nbt);
     }
 
@@ -101,6 +103,7 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
         headY = nbt.getDouble("headY");
         headZ = nbt.getDouble("headZ");
         storage.readNbt(nbt.getCompound("storage"));
+        bedrockRemove = nbt.getBoolean("bedrockRemove");
     }
 
     @Override
@@ -140,6 +143,10 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
             }
             QuarryPlus.LOGGER.debug(MARKER, "Quarry({}) State changed to {}.", pos, quarryState);
         }
+    }
+
+    public void setBedrockRemove(boolean bedrockRemove) {
+        this.bedrockRemove = bedrockRemove;
     }
 
     public ServerWorld getTargetWorld() {
@@ -271,6 +278,17 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
             .toList();
     }
 
+    public void setTileDataFromItem(@Nullable NbtCompound tileData) {
+        if (tileData == null) return;
+        setBedrockRemove(tileData.getBoolean("bedrockRemove"));
+    }
+
+    public NbtCompound getTileDataForItem() {
+        var tag = new NbtCompound();
+        if (bedrockRemove) tag.putBoolean("bedrockRemove", true);
+        return tag;
+    }
+
     private ItemStack getPickaxe() {
         var stack = new ItemStack(Items.NETHERITE_PICKAXE);
         enchantments.forEach(e -> stack.addEnchantment(e.enchantment(), e.level()));
@@ -292,8 +310,15 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
             .mapToInt(EnchantmentLevel::level).findFirst().orElse(0);
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean canBreak(World targetWorld, BlockPos targetPos, BlockState state) {
         var unbreakable = state.getHardness(targetWorld, targetPos) < 0;
+        if (unbreakable && bedrockRemove && state.getBlock() == Blocks.BEDROCK) {
+            if (targetWorld.getRegistryKey().equals(World.NETHER)) {
+                return (0 < targetPos.getY() && targetPos.getY() < 5) || (122 < targetPos.getY() && targetPos.getY() < 127);
+            }
+            return 0 < targetPos.getY() && targetPos.getY() < 5;
+        }
         return !unbreakable;
     }
 
@@ -303,6 +328,7 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
             "%sArea:%s %s".formatted(Formatting.GREEN, Formatting.RESET, area),
             "%sTarget:%s %s".formatted(Formatting.GREEN, Formatting.RESET, target),
             "%sState:%s %s".formatted(Formatting.GREEN, Formatting.RESET, state),
+            "%sRemoveBedrock:%s %s".formatted(Formatting.GREEN, Formatting.RESET, bedrockRemove),
             "%sHead:%s (%f, %f, %f)".formatted(Formatting.GREEN, Formatting.RESET, headX, headY, headZ),
             "%sEnergy:%s %f FE (%d)".formatted(Formatting.GREEN, Formatting.RESET, getEnergy() / (double) PowerTile.ONE_FE, getEnergy())
         ).map(LiteralText::new).toList();

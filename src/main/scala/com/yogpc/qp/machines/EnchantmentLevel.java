@@ -18,7 +18,7 @@ public record EnchantmentLevel(Enchantment enchantment, int level) {
         return Registry.ENCHANTMENT.getId(enchantment());
     }
 
-  public   interface HasEnchantments {
+    public interface HasEnchantments {
         List<EnchantmentLevel> getEnchantments();
     }
 }

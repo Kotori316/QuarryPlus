@@ -78,6 +78,7 @@ public class PowerTile extends BlockEntity {
         public static final long MOVE_HEAD_BASE = ONE_FE / 100;
 
         public static long getBreakEnergy(float hardness) {
+            if (hardness < 0) return 250 * BREAK_BLOCK_BASE;
             return (long) (hardness * BREAK_BLOCK_BASE);
         }
 

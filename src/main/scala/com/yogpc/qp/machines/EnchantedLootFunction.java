@@ -22,9 +22,7 @@ public class EnchantedLootFunction extends ConditionalLootFunction {
     protected ItemStack process(ItemStack stack, LootContext context) {
         var blockEntity = context.get(LootContextParameters.BLOCK_ENTITY);
         if (blockEntity instanceof EnchantmentLevel.HasEnchantments hasEnchantments) {
-            for (EnchantmentLevel enchantmentLevel : hasEnchantments.getEnchantments()) {
-                stack.addEnchantment(enchantmentLevel.enchantment(), enchantmentLevel.level());
-            }
+            process(stack, hasEnchantments);
         }
         return stack;
     }
@@ -33,6 +31,13 @@ public class EnchantedLootFunction extends ConditionalLootFunction {
     public LootFunctionType getType() {
         return QuarryPlus.ModObjects.ENCHANTED_LOOT_TYPE;
     }
+
+    public static void process(ItemStack stack, EnchantmentLevel.HasEnchantments hasEnchantments) {
+        for (EnchantmentLevel enchantmentLevel : hasEnchantments.getEnchantments()) {
+            stack.addEnchantment(enchantmentLevel.enchantment(), enchantmentLevel.level());
+        }
+    }
+
 }
 
 class EnchantedLootFunctionSerializer extends ConditionalLootFunction.Serializer<EnchantedLootFunction> {

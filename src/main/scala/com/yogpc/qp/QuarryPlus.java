@@ -7,6 +7,7 @@ import com.yogpc.qp.machines.marker.BlockMarker;
 import com.yogpc.qp.machines.marker.TileMarker;
 import com.yogpc.qp.machines.quarry.BlockFrame;
 import com.yogpc.qp.machines.quarry.BlockQuarry;
+import com.yogpc.qp.machines.quarry.QuarryLootFunction;
 import com.yogpc.qp.machines.quarry.TileQuarry;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
@@ -42,6 +43,7 @@ public class QuarryPlus implements ModInitializer {
         Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(modID, BlockMarker.NAME), ModObjects.MARKER_TYPE);
 
         Registry.register(Registry.LOOT_FUNCTION_TYPE, new Identifier(modID, "drop_function"), ModObjects.ENCHANTED_LOOT_TYPE);
+        Registry.register(Registry.LOOT_FUNCTION_TYPE, new Identifier(modID, "drop_function_quarry"), ModObjects.QUARRY_LOOT_TYPE);
     }
 
     public static class ModObjects {
@@ -52,5 +54,6 @@ public class QuarryPlus implements ModInitializer {
         public static final BlockMarker BLOCK_MARKER = new BlockMarker();
         public static final BlockEntityType<TileMarker> MARKER_TYPE = FabricBlockEntityTypeBuilder.create(TileMarker::new, BLOCK_MARKER).build(DSL.emptyPartType());
         public static final LootFunctionType ENCHANTED_LOOT_TYPE = new LootFunctionType(EnchantedLootFunction.SERIALIZER);
+        public static final LootFunctionType QUARRY_LOOT_TYPE = new LootFunctionType(QuarryLootFunction.SERIALIZER);
     }
 }

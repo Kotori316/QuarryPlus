@@ -9,6 +9,9 @@
           "functions": [
             {
               "function": "quarryplus:drop_function"
+            },
+            {
+              "function": "quarryplus:drop_function_quarry"
             }
           ],
           "name": "quarryplus:quarry"

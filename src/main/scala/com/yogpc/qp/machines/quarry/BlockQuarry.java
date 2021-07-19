@@ -5,6 +5,7 @@ import java.util.stream.Stream;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
+import com.yogpc.qp.machines.EnchantedLootFunction;
 import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.QuarryMarker;
 import com.yogpc.qp.utils.CombinedBlockEntityTicker;
@@ -31,6 +32,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -79,6 +81,7 @@ public class BlockQuarry extends BlockWithEntity {
             world.setBlockState(pos, state.with(Properties.FACING, facing), 2);
             if (world.getBlockEntity(pos) instanceof TileQuarry quarry) {
                 quarry.setEnchantments(EnchantmentHelper.get(itemStack));
+                quarry.setTileDataFromItem(itemStack.getSubNbt(BlockItem.BLOCK_ENTITY_TAG_KEY));
                 var area = findArea(world, pos, facing.getOpposite(), quarry.storage::addItem);
                 if (area.maxX() - area.minX() > 1 && area.maxZ() - area.minZ() > 1) {
                     quarry.setState(QuarryState.WAITING, state.with(Properties.FACING, facing));
@@ -89,6 +92,16 @@ public class BlockQuarry extends BlockWithEntity {
                 }
             }
         }
+    }
+
+    @Override
+    public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+        var stack = super.getPickStack(world, pos, state);
+        if (world.getBlockEntity(pos) instanceof TileQuarry quarry) {
+            QuarryLootFunction.process(stack, quarry);
+            EnchantedLootFunction.process(stack, quarry);
+        }
+        return stack;
     }
 
     static Area findArea(World world, BlockPos pos, Direction quarryBehind, Consumer<ItemStack> itemCollector) {
