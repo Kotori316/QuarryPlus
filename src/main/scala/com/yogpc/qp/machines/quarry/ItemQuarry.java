@@ -35,5 +35,8 @@ class ItemQuarry extends BlockItem {
         if (tag.getBoolean("bedrockRemove")) {
             tooltip.add(new LiteralText("BedrockRemove on"));
         }
+        if (tag.contains("digMinY")) {
+            tooltip.add(new LiteralText("DigMinY " + tag.getInt("digMinY")));
+        }
     }
 }

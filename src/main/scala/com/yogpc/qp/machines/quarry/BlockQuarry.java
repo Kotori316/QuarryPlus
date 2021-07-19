@@ -96,6 +96,7 @@ public class BlockQuarry extends BlockWithEntity {
 
     @Override
     public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+        // Called in client.
         var stack = super.getPickStack(world, pos, state);
         if (world.getBlockEntity(pos) instanceof TileQuarry quarry) {
             QuarryLootFunction.process(stack, quarry);
