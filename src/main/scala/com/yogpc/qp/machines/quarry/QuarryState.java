@@ -81,8 +81,8 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
                 else
                     quarry.setState(FINISHED, state);
             } else {
-                var difference = new Vec3d(blockTarget.getX() + 0.5 - quarry.headX,
-                    blockTarget.getY() + 0.5 - quarry.headY, blockTarget.getZ() + 0.5 - quarry.headZ);
+                var difference = new Vec3d(blockTarget.getX() - quarry.headX,
+                    blockTarget.getY() - quarry.headY, blockTarget.getZ() - quarry.headZ);
                 var squaredDistance = difference.lengthSquared();
                 if (squaredDistance > 1e-8) {
                     var moveDistance = Math.min(squaredDistance, quarry.headSpeed());
@@ -96,7 +96,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
                     quarry.headZ += normalized.getZ() * Math.sqrt(moveDistance);
                     quarry.sync();
                 }
-                if (blockTarget.getSquaredDistance(quarry.headX, quarry.headY, quarry.headZ, true) <= 1e-8)
+                if (blockTarget.getSquaredDistance(quarry.headX, quarry.headY, quarry.headZ, false) <= 1e-8)
                     BREAK_BLOCK.tick(world, quarryPos, state, quarry);
             }
         }
