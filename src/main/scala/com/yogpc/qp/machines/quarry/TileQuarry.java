@@ -99,6 +99,7 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
                 .map(k -> Pair.of(Registry.ENCHANTMENT.get(new Identifier(k)), enchantments.getInt(k)))
                 .filter(p -> p.getKey() != null)
                 .map(EnchantmentLevel::new)
+                .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR)
                 .toList();
         }
         headX = nbt.getDouble("headX");
@@ -288,6 +289,7 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
     public void setEnchantments(Map<Enchantment, Integer> enchantments) {
         this.enchantments = RESTRICTION.filterMap(enchantments).entrySet().stream()
             .map(EnchantmentLevel::new)
+            .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR)
             .toList();
     }
 
