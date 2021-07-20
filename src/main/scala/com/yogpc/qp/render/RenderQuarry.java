@@ -435,7 +435,7 @@ public class RenderQuarry implements BlockEntityRenderer<TileQuarry> {
         var minX = quarry.getArea().minX();
         var minZ = quarry.getArea().minZ();
         var maxX = quarry.getArea().maxX();
-        var maxY = quarry.getArea().maxY();
+        var maxY = quarry.getArea().maxY() - 0.5d;
         var maxZ = quarry.getArea().maxZ();
         var headPosX = quarry.headX;
         var headPosY = quarry.headY;
