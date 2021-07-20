@@ -57,12 +57,12 @@ repositories {
         }
     }
     maven {
-        name = "ModMaven"
-        url = "https://modmaven.dev/"
+        name = "REI-Architectury"
+        url = "https://maven.shedaniel.me/"
     }
     maven {
-        name = "REI"
-        url = "https://maven.shedaniel.me/"
+        name = "ModMaven" // Here as fallback.
+        url = "https://modmaven.dev/"
     }
 }
 
