@@ -304,9 +304,15 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
     }
 
     public void setTileDataFromItem(@Nullable NbtCompound tileData) {
-        if (tileData == null) return;
+        if (tileData == null) {
+            digMinY = world == null ? 0 : world.getBottomY();
+            return;
+        }
         setBedrockRemove(tileData.getBoolean("bedrockRemove"));
-        digMinY = tileData.getInt("digMinY");
+        if (tileData.contains("digMinY"))
+            digMinY = tileData.getInt("digMinY");
+        else
+            digMinY = world == null ? 0 : world.getBottomY();
     }
 
     public NbtCompound getTileDataForItem() {
@@ -345,10 +351,11 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
     public boolean canBreak(World targetWorld, BlockPos targetPos, BlockState state) {
         var unbreakable = state.getHardness(targetWorld, targetPos) < 0;
         if (unbreakable && bedrockRemove && state.getBlock() == Blocks.BEDROCK) {
+            var worldBottom = targetWorld.getBottomY();
             if (targetWorld.getRegistryKey().equals(World.NETHER)) {
-                return (0 < targetPos.getY() && targetPos.getY() < 5) || (122 < targetPos.getY() && targetPos.getY() < 127);
+                return (worldBottom < targetPos.getY() && targetPos.getY() < worldBottom + 5) || (122 < targetPos.getY() && targetPos.getY() < 127);
             }
-            return 0 < targetPos.getY() && targetPos.getY() < 5;
+            return worldBottom < targetPos.getY() && targetPos.getY() < worldBottom + 5;
         }
         return !unbreakable;
     }
