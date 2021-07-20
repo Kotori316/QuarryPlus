@@ -29,6 +29,8 @@ unexpected crashes.
   * Pump Plus is integrated.
     * Quarry will remove fluids in the area.
 * Quarry Frame
+* Y-Setter
+  * With this item, quarry digs to any y value, not only 0.
 
 ## Other works
 
@@ -57,6 +59,4 @@ unexpected crashes.
 * Flexible Marker
 * Advanced Pump
 * Chunk Destroyer
-* Y-Setter
-  * With this item, quarry digs to any y value, not only 0.
 * Bedrock Remove Module

@@ -59,7 +59,7 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
     public MachineStorage storage = new MachineStorage();
     public double headX, headY, headZ;
     private boolean bedrockRemove = false;
-    private int digMinY = 0;
+    public int digMinY = 0;
 
     public TileQuarry(BlockPos pos, BlockState state) {
         super(QuarryPlus.ModObjects.QUARRY_TYPE, pos, state, 10000 * ONE_FE);
@@ -341,10 +341,6 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
     int unbreakingLevel() {
         return enchantments.stream().filter(e -> e.enchantment() == Enchantments.UNBREAKING)
             .mapToInt(EnchantmentLevel::level).findFirst().orElse(0);
-    }
-
-    int getDigMinY() {
-        return digMinY;
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
