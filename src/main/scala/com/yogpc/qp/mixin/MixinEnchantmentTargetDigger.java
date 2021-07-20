@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(targets = "net.minecraft.enchantment.EnchantmentTarget$12")
 // EnchantmentTarget.DIGGER
 public class MixinEnchantmentTargetDigger {
+    @SuppressWarnings("UnresolvedMixinReference")
     @Inject(method = {"isAcceptableItem", "method_8177"}, at = @At("HEAD"), cancellable = true)
     public void addQuarry(Item item, CallbackInfoReturnable<Boolean> cir) {
         if (item == QuarryPlus.ModObjects.BLOCK_QUARRY.blockItem) {
