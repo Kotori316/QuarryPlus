@@ -2,6 +2,8 @@ package com.yogpc.qp.machines.misc;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.quarry.TileQuarry;
+import com.yogpc.qp.packet.PacketHandler;
+import com.yogpc.qp.packet.QuarryPlacedMessage;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
@@ -32,6 +34,8 @@ public class YSetterItem extends Item implements UseBlockCallback {
         if (player.isSpectator() || player.getStackInHand(hand).getItem() != this) return ActionResult.PASS;
         if (world.getBlockEntity(hitResult.getBlockPos()) instanceof TileQuarry quarry) {
             if (!world.isClient) {
+                if (player instanceof ServerPlayerEntity p)
+                    PacketHandler.sendToClientPlayer(new QuarryPlacedMessage(quarry), p);
                 player.openHandledScreen(new YSetterScreenHandler(quarry.getPos(), quarry.getCachedState().getBlock()));
                 return ActionResult.CONSUME;
             } else {

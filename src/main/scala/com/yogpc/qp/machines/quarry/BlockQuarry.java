@@ -8,6 +8,8 @@ import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.EnchantedLootFunction;
 import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.QuarryMarker;
+import com.yogpc.qp.packet.PacketHandler;
+import com.yogpc.qp.packet.QuarryPlacedMessage;
 import com.yogpc.qp.utils.CombinedBlockEntityTicker;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
@@ -25,6 +27,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -90,6 +93,8 @@ public class BlockQuarry extends BlockWithEntity {
                     if (placer instanceof PlayerEntity player)
                         player.sendMessage(new TranslatableText("quarryplus.chat.warn_area"), false);
                 }
+                if (placer instanceof ServerPlayerEntity p)
+                    PacketHandler.sendToClientPlayer(new QuarryPlacedMessage(quarry), p);
             }
         }
     }

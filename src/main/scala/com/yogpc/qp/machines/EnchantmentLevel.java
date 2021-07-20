@@ -13,6 +13,10 @@ public record EnchantmentLevel(Enchantment enchantment, int level) {
         this(entry.getKey(), entry.getValue());
     }
 
+    public EnchantmentLevel(Identifier enchantmentID, int level) {
+        this(Registry.ENCHANTMENT.get(enchantmentID), level);
+    }
+
     @Nullable
     public Identifier enchantmentID() {
         return Registry.ENCHANTMENT.getId(enchantment());

@@ -1,6 +1,7 @@
 package com.yogpc.qp;
 
 import com.yogpc.qp.machines.misc.YSetterScreen;
+import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.render.RenderMarker;
 import com.yogpc.qp.render.RenderQuarry;
 import com.yogpc.qp.render.Sprites;
@@ -14,6 +15,7 @@ public class QuarryPlusClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         QuarryPlus.LOGGER.info("Client init is called. {} ", QuarryPlus.modID);
+        PacketHandler.Client.initClient();
         BlockRenderLayerMap.INSTANCE.putBlock(QuarryPlus.ModObjects.BLOCK_FRAME, RenderLayer.getCutoutMipped());
         Sprites.register();
 

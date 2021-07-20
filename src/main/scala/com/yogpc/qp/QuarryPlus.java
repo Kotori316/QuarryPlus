@@ -51,7 +51,7 @@ public class QuarryPlus implements ModInitializer {
         Registry.register(Registry.LOOT_FUNCTION_TYPE, new Identifier(modID, "drop_function"), ModObjects.ENCHANTED_LOOT_TYPE);
         Registry.register(Registry.LOOT_FUNCTION_TYPE, new Identifier(modID, "drop_function_quarry"), ModObjects.QUARRY_LOOT_TYPE);
 
-        PacketHandler.initServer();
+        PacketHandler.Server.initServer();
     }
 
     public static class ModObjects {

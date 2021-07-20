@@ -111,34 +111,22 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
 
     @Override
     public final NbtCompound toClientTag(NbtCompound tag) {
-        var enchantmentsCompound = new NbtCompound();
-        enchantments.forEach(e ->
-            enchantmentsCompound.putInt(Objects.requireNonNull(e.enchantmentID()).toString(), e.level()));
-        tag.put("enchantments", enchantmentsCompound);
         if (area != null)
             tag.put("area", area.toNBT());
         tag.putString("state", state.name());
         tag.putDouble("headX", headX);
         tag.putDouble("headY", headY);
         tag.putDouble("headZ", headZ);
-        tag.copyFrom(getTileDataForItem());
         return tag;
     }
 
     @Override
     public final void fromClientTag(NbtCompound tag) {
-        var enchantmentsCompound = tag.getCompound("enchantments");
-        enchantments = enchantmentsCompound.getKeys().stream()
-            .map(k -> Pair.of(Registry.ENCHANTMENT.get(Identifier.tryParse(k)), enchantmentsCompound.getInt(k)))
-            .filter(p -> p.getKey() != null)
-            .map(EnchantmentLevel::new)
-            .toList();
         area = Area.fromNBT(tag.getCompound("area")).orElse(null);
         state = QuarryState.valueOf(tag.getString("state"));
         headX = tag.getDouble("headX");
         headY = tag.getDouble("headY");
         headZ = tag.getDouble("headZ");
-        setTileDataFromItem(tag);
     }
 
     public void setArea(@Nullable Area area) {
