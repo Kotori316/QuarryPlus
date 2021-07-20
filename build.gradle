@@ -157,9 +157,10 @@ def joinedLog = String.join("\n",
         "",
         "Requires:",
         "",
+        "* [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api)",
         "* [Fabric Language Scala](https://www.curseforge.com/minecraft/mc-mods/fabric-language-scala)",
         "",
-        "See https://github.com/Kotori316/QuarryPlus/tree/1.17-fabric to get all change log.",
+        "See https://github.com/Kotori316/QuarryPlus/commits/1.17-fabric to get all change log.",
         "",
         "Built with:",
         "",
@@ -183,6 +184,7 @@ curseforge {
         }
         relations {
             requiredDependency 'fabric-language-scala'
+            requiredDependency 'fabric-api'
             //noinspection SpellCheckingInspection
             // requiredDependency 'libblockattributes'
         }
