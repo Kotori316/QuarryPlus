@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit
 import java.util.stream.Collectors
 
 plugins {
-    id("scala")
+    // id("scala")
     id("maven-publish")
     // https://maven.fabricmc.net/net/fabricmc/fabric-loom/
     id 'fabric-loom' version "0.8.17"
@@ -64,6 +64,15 @@ repositories {
         name = "ModMaven" // Here as fallback.
         url = "https://modmaven.dev/"
     }
+    repositories.stream()
+            .filter {repo ->  repo instanceof MavenArtifactRepository && !repo.getUrl().getScheme().contains("file") }
+            .forEach { repo ->
+                repo.content {
+                    //noinspection SpellCheckingInspection
+                    excludeVersionByRegex("net_fabricmc_yarn.*", ".*", ".*")
+                    excludeVersionByRegex(".*", ".*", ".*mapped.*")
+                }
+            }
 }
 
 dependencies {
@@ -118,6 +127,14 @@ private static boolean isInCI() {
 tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"
     options.release.set(16)
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/scala'
+        }
+    }
 }
 
 java {
@@ -246,6 +263,11 @@ task CheckCompileOption() {
         strings.add("-" * 20)
         strings.add("Now: " + ZonedDateTime.now().format(DateTimeFormatter.ISO_INSTANT))
         strings.add("Now in Japan: " + ZonedDateTime.now().withZoneSameInstant(ZoneId.of("Asia/Tokyo")).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+        strings.add("-" * 20)
+        strings.add("Repositories")
+        for (def r : project.getRepositories()) {
+            strings.add("${r.name} $r ${r instanceof MavenArtifactRepository ? r.getUrl() : "Not maven " + r.getClass()}")
+        }
 
         println(strings.stream().collect(Collectors.joining(System.lineSeparator())))
         println("*" * 20)
