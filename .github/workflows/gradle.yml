@@ -17,9 +17,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Log Commit
-        run: echo ${CONTEXT}
         env:
-          CONTEXT: ${{ toJSON(github.event.head_commit) }}
+          COMMIT_CONTEXT: ${{ toJSON(github.event.head_commit) }}
+        run: echo ${COMMIT_CONTEXT}
 
   build:
     runs-on: ubuntu-latest
@@ -34,7 +34,7 @@ jobs:
       - name: Dummy
         run: |
           echo "::group::IGNORE ME"
-          chmod +x ./gradlew && ./gradlew tasks
+          chmod +x ./gradlew && ./gradlew tasks --no-daemon
           echo "::endgroup::"
       - name: Check Warning
         run: chmod +x ./gradlew && ./gradlew javaToolchains CheckCompileOption --no-daemon --warning-mode all

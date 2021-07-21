@@ -10,7 +10,7 @@ plugins {
     // id("scala")
     id("maven-publish")
     // https://maven.fabricmc.net/net/fabricmc/fabric-loom/
-    id 'fabric-loom' version "0.8.17"
+    id 'fabric-loom' version "0.9.31"
     //noinspection SpellCheckingInspection
     id "com.github.breadmoirai.github-release" version "2.2.12"
     //noinspection SpellCheckingInspection
