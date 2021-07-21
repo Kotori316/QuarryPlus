@@ -24,7 +24,7 @@ if (isInCI()) {
     // In remote CI/CD environment
     version = (version + "." + postFix)
 
-    println("Set version to $version because I'm in GitHub Actions.")
+    println("Set version to $version because I'm in CI.")
     println("CURSEFORGE_KEY: ${System.getenv().containsKey('CURSEFORGE_KEY')}")
 } else {
     version = (version + ".0")
@@ -195,7 +195,7 @@ curseforge {
         addGameVersion '1.17'
         addGameVersion '1.17.1'
         changelog = joinedLog
-        releaseType = !isInCI() ? 'beta' : 'alpha'
+        releaseType = isInCI() ? 'alpha' : 'beta'
         mainArtifact(remapJar) {
             displayName = "v" + project.version + "-fabric"
         }
@@ -248,7 +248,7 @@ task CheckCompileOption() {
         List<String> strings = new ArrayList<>()
         strings.add("archivesBaseName: $archivesBaseName")
         strings.add("group: $group")
-        println("Is in CI: " + isInCI())
+        strings.add("Is in CI: " + isInCI())
         strings.add("project.group: ${project.group}")
         strings.add("version: $version")
         strings.add("runs: ${minecraft.getRunConfigs().asMap.toMapString()}")

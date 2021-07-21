@@ -31,6 +31,8 @@ unexpected crashes.
 * Quarry Frame
 * Y-Setter
   * With this item, quarry digs to any y value, not only 0.
+* Bedrock Remove Module
+  * Craft with quarry.
 
 ## Other works
 
@@ -59,4 +61,3 @@ unexpected crashes.
 * Flexible Marker
 * Advanced Pump
 * Chunk Destroyer
-* Bedrock Remove Module

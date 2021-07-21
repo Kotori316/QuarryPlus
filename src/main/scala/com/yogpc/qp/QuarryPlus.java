@@ -12,11 +12,13 @@ import com.yogpc.qp.machines.quarry.BlockQuarry;
 import com.yogpc.qp.machines.quarry.QuarryLootFunction;
 import com.yogpc.qp.machines.quarry.TileQuarry;
 import com.yogpc.qp.packet.PacketHandler;
+import com.yogpc.qp.recipe.QuarryBedrockModuleRecipe;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.function.LootFunctionType;
@@ -47,9 +49,12 @@ public class QuarryPlus implements ModInitializer {
         Registry.register(Registry.ITEM, new Identifier(modID, BlockMarker.NAME), ModObjects.BLOCK_MARKER.blockItem);
         Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(modID, BlockMarker.NAME), ModObjects.MARKER_TYPE);
         Registry.register(Registry.ITEM, new Identifier(modID, YSetterItem.NAME), ModObjects.ITEM_Y_SETTER);
+        Registry.register(Registry.ITEM, new Identifier(modID, "remove_bedrock_module"), ModObjects.ITEM_BEDROCK_MODULE);
 
         Registry.register(Registry.LOOT_FUNCTION_TYPE, new Identifier(modID, "drop_function"), ModObjects.ENCHANTED_LOOT_TYPE);
         Registry.register(Registry.LOOT_FUNCTION_TYPE, new Identifier(modID, "drop_function_quarry"), ModObjects.QUARRY_LOOT_TYPE);
+
+        Registry.register(Registry.RECIPE_SERIALIZER, QuarryBedrockModuleRecipe.NAME, QuarryBedrockModuleRecipe.SERIALIZER);
 
         PacketHandler.Server.initServer();
     }
@@ -62,6 +67,7 @@ public class QuarryPlus implements ModInitializer {
         public static final BlockMarker BLOCK_MARKER = new BlockMarker();
         public static final BlockEntityType<TileMarker> MARKER_TYPE = FabricBlockEntityTypeBuilder.create(TileMarker::new, BLOCK_MARKER).build(DSL.emptyPartType());
         public static final YSetterItem ITEM_Y_SETTER = new YSetterItem();
+        public static final Item ITEM_BEDROCK_MODULE = new Item(new Item.Settings().group(QuarryPlus.CREATIVE_TAB));
         public static final ScreenHandlerType<YSetterContainer> Y_SETTER_HANDLER_TYPE = ScreenHandlerRegistry.registerExtended(YSetterContainer.GUI_ID,
             (syncId, inventory, buf) -> new YSetterContainer(syncId, inventory.player, buf.readBlockPos()));
         public static final LootFunctionType ENCHANTED_LOOT_TYPE = new LootFunctionType(EnchantedLootFunction.SERIALIZER);
