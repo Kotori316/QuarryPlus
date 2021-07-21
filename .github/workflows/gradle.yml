@@ -20,10 +20,15 @@ jobs:
         env:
           COMMIT_CONTEXT: ${{ toJSON(github.event.head_commit) }}
         run: echo ${COMMIT_CONTEXT}
+      - name: Show commit messages
+        run: echo "${MESSAGES}"
+        env:
+          MESSAGES: ${{ toJSON(github.event.commits.*.message) }}
+      - name: Check Publish
+        run: echo "Release ${{ !contains(github.event.head_commit.message, '[skip release]') }}"
 
   build:
     runs-on: ubuntu-latest
-    if: !contains(github.event.head_commit.message, '[skip ci]')
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 16
@@ -39,12 +44,14 @@ jobs:
       - name: Check Warning
         run: chmod +x ./gradlew && ./gradlew javaToolchains CheckCompileOption --no-daemon --warning-mode all
       - name: Compile
-        run: chmod +x ./gradlew && ./gradlew assemble --no-daemon
+        run: chmod +x ./gradlew && ./gradlew build --no-daemon
       - name: Build
-        run: chmod +x ./gradlew && ./gradlew build curseforge --no-daemon
+        if: ${{ !contains(github.event.head_commit.message, '[skip release]') }}
+        run: chmod +x ./gradlew && ./gradlew curseforge --no-daemon
         env:
           CURSEFORGE_KEY: ${{ secrets.CURSEFORGE_KEY }}
       - name: Publish
+        if: ${{ !contains(github.event.head_commit.message, '[skip release]') }}
         uses: actions/upload-artifact@v2
         with:
           path: build/libs/*
