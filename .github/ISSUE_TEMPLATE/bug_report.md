@@ -19,6 +19,8 @@ Steps to reproduce the behavior:
 2. 
 3. 
 
+If your server/client has crashed, please give me the crash report.
+
 ## Versions
 
 * Minecraft version: []
@@ -27,6 +29,6 @@ Steps to reproduce the behavior:
 * QuarryPlus version: []
 * Other mods: []
 
-## Other materials
+## Crash report or logs
 
-If your Minecraft has crashed, please attach the crash report. Use pastebin or something.
+If your Minecraft has crashed, please attach the crash report. Please use pastebin or just paste the report.
