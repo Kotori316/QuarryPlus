@@ -7,7 +7,7 @@ import team.reborn.energy.EnergySide;
 import team.reborn.energy.EnergyStorage;
 import team.reborn.energy.EnergyTier;
 
-public class RebornEnergyStorage implements EnergyStorage {
+class RebornEnergyStorage implements EnergyStorage {
     public static final long CONVERSION_RATE = PowerTile.ONE_FE / 16;
     private final PowerTile powerTile;
     private final EnumSet<EnergySide> acceptableSize = EnumSet.allOf(EnergySide.class);
@@ -27,8 +27,8 @@ public class RebornEnergyStorage implements EnergyStorage {
     @Override
     public void setStored(double amount) {
         long current = powerTile.getEnergy();
-        long updated = (long) amount * CONVERSION_RATE;
-        powerTile.addEnergy(updated - current);
+        long updated = (long) (amount * CONVERSION_RATE);
+        powerTile.addEnergy(updated - current, false);
     }
 
     @Override

@@ -61,11 +61,20 @@ repositories {
         url = "https://maven.shedaniel.me/"
     }
     maven {
+        //noinspection SpellCheckingInspection
+        name = "Technici4n"
+        url = "https://raw.githubusercontent.com/Technici4n/Technici4n-maven/master/"
+        content {
+            //noinspection SpellCheckingInspection
+            includeGroup "dev.technici4n"
+        }
+    }
+    maven {
         name = "ModMaven" // Here as fallback.
         url = "https://modmaven.dev/"
     }
     repositories.stream()
-            .filter {repo ->  repo instanceof MavenArtifactRepository && !repo.getUrl().getScheme().contains("file") }
+            .filter { repo -> repo instanceof MavenArtifactRepository && !repo.getUrl().getScheme().contains("file") }
             .forEach { repo ->
                 repo.content {
                     //noinspection SpellCheckingInspection
@@ -98,6 +107,7 @@ dependencies {
     modRuntime("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}")
     modImplementation("RebornCore:RebornCore-1.17:${project.RebornCore_version}")
     modRuntime("TechReborn:TechReborn-1.17:${project.TechReborn_version}")
+    modImplementation("dev.technici4n:FastTransferLib:${project.ftl_version}")
 
     // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
     // You may need to force-disable transitiveness on them.

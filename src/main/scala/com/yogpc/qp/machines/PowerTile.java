@@ -50,9 +50,10 @@ public class PowerTile extends BlockEntity {
         return maxEnergy;
     }
 
-    public long addEnergy(long amount) {
+    public long addEnergy(long amount, boolean simulate) {
         long accepted = Math.min(maxEnergy - energy, amount);
-        energy += accepted;
+        if (!simulate)
+            energy += accepted;
         return accepted;
     }
 
@@ -78,7 +79,7 @@ public class PowerTile extends BlockEntity {
             return (w, p, s, blockEntity) -> {
             };
         else
-            return (w, p, s, blockEntity) -> blockEntity.addEnergy(1000 * ONE_FE);
+            return (w, p, s, blockEntity) -> blockEntity.addEnergy(1000 * ONE_FE, false);
     }
 
     public static class Constants {
