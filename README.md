@@ -28,11 +28,16 @@ unexpected crashes.
     * You can enchant with Enchantment Table.
   * Pump Plus is integrated.
     * Quarry will remove fluids in the area.
+    * It seems it doesn't work in some cases.
 * Quarry Frame
 * Y-Setter
   * With this item, quarry digs to any y value, not only 0.
 * Bedrock Remove Module
   * Craft with quarry.
+* Energy system
+  * [TechReborn](https://github.com/TechReborn/TechReborn)
+  * [FastTransferLib](https://github.com/Technici4n/FastTransferLib)
+    * Used in [Industrial Revolution](https://github.com/GabrielOlvH/Industrial-Revolution)
 
 ## Other works
 
@@ -53,11 +58,6 @@ unexpected crashes.
 
 ### Future works(plan)
 
-* Energy system
-  * I'm planning to make machines accept these kinds of energy.
-    * [TechReborn](https://github.com/TechReborn/TechReborn)
-    * [FastTransferLib](https://github.com/Technici4n/FastTransferLib)
-      * Used in [Industrial Revolution](https://github.com/GabrielOlvH/Industrial-Revolution)
 * Flexible Marker
 * Advanced Pump
 * Chunk Destroyer
