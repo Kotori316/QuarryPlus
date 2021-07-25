@@ -4,7 +4,7 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.integration.EnergyIntegration;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -46,6 +46,10 @@ public class PowerTile extends BlockEntity {
         return energy;
     }
 
+    public long getMaxEnergy() {
+        return maxEnergy;
+    }
+
     public long addEnergy(long amount) {
         long accepted = Math.min(maxEnergy - energy, amount);
         energy += accepted;
@@ -69,14 +73,19 @@ public class PowerTile extends BlockEntity {
             .forEach(logger);
     }
 
-    public static final BlockEntityTicker<PowerTile> GENERATE_ENERGY = (w, p, s, blockEntity) ->
-        blockEntity.addEnergy(1000 * ONE_FE);
+    public static BlockEntityTicker<PowerTile> getGenerator() {
+        if (EnergyIntegration.hasAnyEnergyModule())
+            return (w, p, s, blockEntity) -> {
+            };
+        else
+            return (w, p, s, blockEntity) -> blockEntity.addEnergy(1000 * ONE_FE);
+    }
 
     public static class Constants {
         public static final long MAKE_FRAME = ONE_FE * 15;
-        public static final long BREAK_BLOCK_BASE = ONE_FE;
-        public static final long BREAK_BLOCK_FLUID = ONE_FE * 10;
-        public static final long MOVE_HEAD_BASE = ONE_FE / 100;
+        public static final long BREAK_BLOCK_BASE = ONE_FE * 5;
+        public static final long BREAK_BLOCK_FLUID = BREAK_BLOCK_BASE * 10;
+        public static final long MOVE_HEAD_BASE = ONE_FE / 10;
 
         public static long getBreakEnergy(float hardness) {
             if (hardness < 0) return 250 * BREAK_BLOCK_BASE;
