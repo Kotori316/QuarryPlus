@@ -27,6 +27,7 @@ public class CopiedRecipeSearcher implements RecipeSearcher {
             .filter(r -> r.inputsJ().stream().allMatch(oneItem ->
                 inputs.stream().anyMatch(stack -> oneItem.stream().anyMatch(i -> i.matches(stack)))
             ))
+            .sorted(WorkbenchRecipe.recipeOrdering())
             .collect(Collectors.toList());
     }
 

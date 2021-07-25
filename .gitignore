@@ -10,6 +10,7 @@ out
 # gradle
 build
 .gradle
+build.ps1
 
 FILES
 libs
