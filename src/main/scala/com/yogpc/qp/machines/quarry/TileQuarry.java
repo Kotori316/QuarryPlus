@@ -16,6 +16,7 @@ import com.yogpc.qp.machines.EnchantmentLevel;
 import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.PowerTile;
 import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -152,7 +153,7 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
             if (world != null) {
                 world.setBlockState(pos, blockState.with(BlockQuarry.WORKING, quarryState.isWorking), Block.NOTIFY_LISTENERS);
                 if (!world.isClient && !quarryState.isWorking) {
-                    logUsage();
+                    logUsage(FabricLoader.getInstance().isDevelopmentEnvironment() ? QuarryPlus.LOGGER::info : QuarryPlus.LOGGER::debug);
                 }
             }
             QuarryPlus.LOGGER.debug(MARKER, "Quarry({}) State changed to {}.", pos, quarryState);

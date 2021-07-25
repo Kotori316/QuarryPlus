@@ -2,6 +2,7 @@ package com.yogpc.qp.machines;
 
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.block.BlockState;
@@ -62,10 +63,10 @@ public class PowerTile extends BlockEntity {
         }
     }
 
-    public void logUsage() {
+    public void logUsage(Consumer<String> logger) {
         usageMap.entrySet().stream()
             .map(e -> "%s -> %d".formatted(e.getKey(), e.getValue()))
-            .forEach(QuarryPlus.LOGGER::debug);
+            .forEach(logger);
     }
 
     public static final BlockEntityTicker<PowerTile> GENERATE_ENERGY = (w, p, s, blockEntity) ->
