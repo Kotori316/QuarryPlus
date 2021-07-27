@@ -1,3 +1,7 @@
+# Version 12.5.3
+
+* Fixed the comparator didn't res@ect metadata of items.
+
 # Version 12.5.2
 
 * Fixed - Incorrect items created in WorkbenchPlus.
@@ -128,8 +132,7 @@
 
 # Version 12.2.7
 
-- Trying to fix a crash of `IllegalArgumentException` in using new
-  quarry. [#68](https://github.com/Kotori316/QuarryPlus/issues/68)
+- Trying to fix a crash of `IllegalArgumentException` in using new quarry. [#68](https://github.com/Kotori316/QuarryPlus/issues/68)
 
 # Version 12.2.6
 
@@ -225,8 +228,7 @@
 # Version 1.0.6
 
 * Internal changes. Use long instead of double to store energy.
-* Allowed QuarryPlus to be enchanted with Fortune AND Silktouch at the same
-  time. [#51](https://github.com/Kotori316/QuarryPlus/issues/51)
+* Allowed QuarryPlus to be enchanted with Fortune AND Silktouch at the same time. [#51](https://github.com/Kotori316/QuarryPlus/issues/51)
 
 # Version 1.0.5
 

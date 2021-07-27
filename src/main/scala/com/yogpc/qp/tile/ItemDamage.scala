@@ -1,13 +1,13 @@
 package com.yogpc.qp.tile
 
-import java.util.Objects
-
 import com.yogpc.qp.version.VersionUtil
 import net.minecraft.block.Block
 import net.minecraft.init.Blocks
 import net.minecraft.item.{Item, ItemBlock, ItemStack}
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.oredict.OreDictionary
+
+import java.util.Objects
 
 sealed abstract class ItemDamage extends Ordered[ItemDamage] {
   val item: Item
@@ -32,7 +32,13 @@ sealed abstract class ItemDamage extends Ordered[ItemDamage] {
     item.getItemStackLimit(toStack())
   }
 
-  override def compare(that: ItemDamage): Int = Integer.compare(Item.getIdFromItem(item), Item.getIdFromItem(that.item))
+  override def compare(that: ItemDamage): Int = {
+    val idCompare = Integer.compare(Item.getIdFromItem(this.item), Item.getIdFromItem(that.item))
+    if (idCompare == 0)
+      Integer.compare(this.damage, that.damage)
+    else
+      idCompare
+  }
 }
 
 case class OK(itemStack: ItemStack) extends ItemDamage {
@@ -136,4 +142,3 @@ object ItemDamage {
   def invalid = NG
 
 }
-
