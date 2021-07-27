@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import com.yogpc.qp.integration.EnergyIntegration;
+import com.yogpc.qp.utils.QuarryChunkLoadUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -17,6 +18,7 @@ public class PowerTile extends BlockEntity {
     private final Map<Reason, Long> usageMap = new EnumMap<>(Reason.class);
     private long energy;
     private long maxEnergy;
+    protected boolean chunkPreLoaded;
 
     public PowerTile(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         this(type, pos, state, ONE_FE * 1000);
@@ -31,6 +33,7 @@ public class PowerTile extends BlockEntity {
     public NbtCompound writeNbt(NbtCompound nbt) {
         nbt.putLong("energy", energy);
         nbt.putLong("maxEnergy", maxEnergy);
+        nbt.putBoolean("chunkPreLoaded", chunkPreLoaded);
         return super.writeNbt(nbt);
     }
 
@@ -40,6 +43,7 @@ public class PowerTile extends BlockEntity {
         energy = nbt.getLong("energy");
         if (nbt.contains("maxEnergy"))
             maxEnergy = nbt.getLong("maxEnergy");
+        chunkPreLoaded = nbt.getBoolean("chunkPreLoaded");
     }
 
     public long getEnergy() {
@@ -72,6 +76,17 @@ public class PowerTile extends BlockEntity {
         usageMap.entrySet().stream()
             .map(e -> "%s -> %d".formatted(e.getKey(), e.getValue()))
             .forEach(logger);
+    }
+
+    public void setChunkPreLoaded(boolean chunkPreLoaded) {
+        this.chunkPreLoaded = chunkPreLoaded;
+    }
+
+    @Override
+    public void markRemoved() {
+        super.markRemoved();
+        if (world != null && !world.isClient)
+            QuarryChunkLoadUtil.makeChunkUnloaded(world, pos, chunkPreLoaded);
     }
 
     public static BlockEntityTicker<PowerTile> getGenerator() {

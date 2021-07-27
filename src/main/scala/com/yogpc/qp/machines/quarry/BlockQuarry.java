@@ -11,6 +11,7 @@ import com.yogpc.qp.machines.QuarryMarker;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.QuarryPlacedMessage;
 import com.yogpc.qp.utils.CombinedBlockEntityTicker;
+import com.yogpc.qp.utils.QuarryChunkLoadUtil;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.tool.attribute.v1.FabricToolTags;
@@ -95,6 +96,8 @@ public class BlockQuarry extends BlockWithEntity {
                 }
                 if (placer instanceof ServerPlayerEntity p)
                     PacketHandler.sendToClientPlayer(new QuarryPlacedMessage(quarry), p);
+                var preForced = QuarryChunkLoadUtil.makeChunkLoaded(world, pos);
+                quarry.setChunkPreLoaded(preForced);
             }
         }
     }
