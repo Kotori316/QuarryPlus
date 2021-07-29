@@ -129,6 +129,7 @@ object Config {
   final val DummyBlockTextureName_key = "DummyBlockTextureName"
   final val EnableChunkDestroyerFluidHandler_key = "EnableChunkDestroyerFluidHandler"
   final val FastQuarryHeadMove_Key = "FastQuarryHeadMove"
+  final val IgnoredTools_Key = "IgnoredTools"
   final val SpawnerControllerEntityBlackList_key = "SpawnerControllerEntityBlackList"
   final val RecipeDifficulty_key = "RecipeDifficulty"
   final val Recipe_key = "NewRecipeDifficulty"
@@ -184,6 +185,8 @@ object Config {
       "True to allow much faster move of quarry head.")
     val disableFillerMode: Boolean = configuration.getBoolean(DisableFillerMode_key, Configuration.CATEGORY_GENERAL, false,
       "False to allow quarries to break blocks inside of yellow line. True to disable this function.")
+    val ignoredTools: Set[String] = configuration.get(Configuration.CATEGORY_GENERAL, IgnoredTools_Key, Array("crook"), "Tool classes quarry should NOT imitate.")
+      .getStringList.toSet
 
     (Disables ++ DisableBC.keySet).map("Disable" + _.name).foreach(s => configuration.getCategory(Configuration.CATEGORY_GENERAL).remove(s))
 

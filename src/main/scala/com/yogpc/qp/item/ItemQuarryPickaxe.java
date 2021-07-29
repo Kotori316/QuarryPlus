@@ -49,6 +49,7 @@ public class ItemQuarryPickaxe extends ItemTool {
         return ForgeRegistries.ITEMS.getValuesCollection().stream()
             .filter(i -> i != this)
             .flatMap(i -> i.getToolClasses(new ItemStack(i)).stream())
+            .filter(c -> !Config.content().ignoredTools().contains(c))
             .collect(Collectors.toSet());
     }
 
