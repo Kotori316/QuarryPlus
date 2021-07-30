@@ -61,8 +61,7 @@ public class PowerTile extends BlockEntity {
         return accepted;
     }
 
-    public boolean useEnergy(long amount, Reason reason, int unbreaking) {
-        amount = amount / (1 + Math.max(0, unbreaking));
+    public boolean useEnergy(long amount, Reason reason) {
         if (energy > amount) {
             energy -= amount;
             usageMap.merge(reason, amount, Long::sum);
@@ -98,18 +97,31 @@ public class PowerTile extends BlockEntity {
     }
 
     public static class Constants {
-        public static final long MAKE_FRAME = ONE_FE * 15;
-        public static final long BREAK_BLOCK_BASE = ONE_FE * 5;
-        public static final long BREAK_BLOCK_FLUID = BREAK_BLOCK_BASE * 10;
-        public static final long MOVE_HEAD_BASE = ONE_FE / 10;
+        private static final long MAKE_FRAME = ONE_FE * 15;
+        private static final long BREAK_BLOCK_BASE = ONE_FE * 5;
+        private static final long BREAK_BLOCK_FLUID = BREAK_BLOCK_BASE * 10;
+        private static final long MOVE_HEAD_BASE = ONE_FE / 10;
 
-        public static long getBreakEnergy(float hardness) {
+        public static long getMakeFrameEnergy(EnchantmentLevel.HasEnchantments enchantments) {
+            return MAKE_FRAME / (1 + Math.max(0, enchantments.unbreakingLevel()));
+        }
+
+        public static long getBreakEnergy(float hardness, EnchantmentLevel.HasEnchantments enchantments) {
+            hardness = hardness / (1 + Math.max(0, enchantments.unbreakingLevel()));
+            var fortune = enchantments.fortuneLevel();
+            if (fortune != 0) hardness *= (fortune + 1);
+            if (enchantments.silktouchLevel() != 0) hardness = (float) Math.pow(hardness, 1.4d);
+
             if (hardness < 0) return 250 * BREAK_BLOCK_BASE;
             return (long) (hardness * BREAK_BLOCK_BASE);
         }
 
-        public static long getMoveEnergy(double distance) {
-            return (long) (distance * MOVE_HEAD_BASE);
+        public static long getMoveEnergy(double distance, EnchantmentLevel.HasEnchantments enchantments) {
+            return (long) (distance * MOVE_HEAD_BASE) / (1 + Math.max(0, enchantments.unbreakingLevel()));
+        }
+
+        public static long getBreakBlockFluidEnergy(EnchantmentLevel.HasEnchantments enchantments) {
+            return BREAK_BLOCK_FLUID / (1 + Math.max(0, enchantments.unbreakingLevel()));
         }
     }
 

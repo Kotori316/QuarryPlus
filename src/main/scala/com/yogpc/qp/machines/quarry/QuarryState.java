@@ -44,7 +44,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
             } else {
                 var breakResult = quarry.breakBlock(targetPos);
                 if (breakResult.isSuccess()) {
-                    if (quarry.useEnergy(PowerTile.Constants.MAKE_FRAME, PowerTile.Reason.MAKE_FRAME, quarry.unbreakingLevel())) {
+                    if (quarry.useEnergy(PowerTile.Constants.getMakeFrameEnergy(quarry), PowerTile.Reason.MAKE_FRAME)) {
                         quarry.getTargetWorld().setBlockState(targetPos, QuarryPlus.ModObjects.BLOCK_FRAME.getDefaultState());
                     }
                 }
@@ -86,8 +86,8 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
                 var squaredDistance = difference.lengthSquared();
                 if (squaredDistance > 1e-8) {
                     var moveDistance = Math.min(squaredDistance, quarry.headSpeed());
-                    var required = PowerTile.Constants.getMoveEnergy(Math.sqrt(moveDistance));
-                    if (!quarry.useEnergy(required, PowerTile.Reason.MOVE_HEAD, quarry.unbreakingLevel())) {
+                    var required = PowerTile.Constants.getMoveEnergy(Math.sqrt(moveDistance), quarry);
+                    if (!quarry.useEnergy(required, PowerTile.Reason.MOVE_HEAD)) {
                         return;
                     }
                     var normalized = difference.normalize();

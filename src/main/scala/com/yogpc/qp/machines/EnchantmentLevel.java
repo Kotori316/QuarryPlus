@@ -27,6 +27,23 @@ public record EnchantmentLevel(Enchantment enchantment, int level) {
 
     public interface HasEnchantments {
         List<EnchantmentLevel> getEnchantments();
+
+        private int getLevel(Enchantment enchantment) {
+            return getEnchantments().stream().filter(e -> e.enchantment() == enchantment)
+                .mapToInt(EnchantmentLevel::level).findFirst().orElse(0);
+        }
+
+        default int unbreakingLevel() {
+            return getLevel(Enchantments.UNBREAKING);
+        }
+
+        default int fortuneLevel() {
+            return getLevel(Enchantments.FORTUNE);
+        }
+
+        default int silktouchLevel() {
+            return getLevel(Enchantments.SILK_TOUCH);
+        }
     }
 
     public static final Comparator<EnchantmentLevel> COMPARATOR =

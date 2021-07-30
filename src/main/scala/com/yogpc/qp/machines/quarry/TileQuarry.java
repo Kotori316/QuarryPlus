@@ -245,7 +245,7 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
         // Fluid at target pos
         var fluidState = targetWorld.getFluidState(targetPos);
         if (!fluidState.isEmpty() && blockState.getBlock() instanceof FluidDrainable fluidBlock) {
-            if (requireEnergy && !useEnergy(Constants.BREAK_BLOCK_FLUID, Reason.REMOVE_FLUID, unbreakingLevel())) {
+            if (requireEnergy && !useEnergy(Constants.getBreakBlockFluidEnergy(this), Reason.REMOVE_FLUID)) {
                 return BreakResult.NOT_ENOUGH_ENERGY;
             }
             var bucketItem = fluidBlock.tryDrainFluid(targetWorld, targetPos, blockState);
@@ -255,7 +255,7 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
 
         // Break block
         var hardness = fluidState.isEmpty() ? blockState.getHardness(targetWorld, targetPos) : 5;
-        if (requireEnergy && !useEnergy(Constants.getBreakEnergy(hardness), Reason.BREAK_BLOCK, unbreakingLevel())) {
+        if (requireEnergy && !useEnergy(Constants.getBreakEnergy(hardness, this), Reason.BREAK_BLOCK)) {
             return BreakResult.NOT_ENOUGH_ENERGY;
         }
         var drops = Block.getDroppedStacks(blockState, targetWorld, targetPos, targetWorld.getBlockEntity(targetPos), null, getPickaxe());
@@ -275,7 +275,7 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
         var state = world.getBlockState(pos);
         var fluidState = world.getFluidState(pos);
         if (!fluidState.isEmpty() && state.getBlock() instanceof FluidDrainable fluidBlock) {
-            if (requireEnergy && !useEnergy(Constants.BREAK_BLOCK_FLUID, Reason.REMOVE_FLUID, unbreakingLevel())) {
+            if (requireEnergy && !useEnergy(Constants.getBreakBlockFluidEnergy(this), Reason.REMOVE_FLUID)) {
                 return true;
             }
             var bucketItem = fluidBlock.tryDrainFluid(world, pos, state);
@@ -327,11 +327,6 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
             .mapToDouble(l -> Math.pow(2, defaultSpeed + l * (1 - defaultSpeed) / 5d))
             .findFirst()
             .orElse(Math.pow(2, defaultSpeed));
-    }
-
-    int unbreakingLevel() {
-        return enchantments.stream().filter(e -> e.enchantment() == Enchantments.UNBREAKING)
-            .mapToInt(EnchantmentLevel::level).findFirst().orElse(0);
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
