@@ -72,7 +72,7 @@ public class BlockMarker extends BlockWithEntity {
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (!world.isClient) {
             if (world.getBlockEntity(pos) instanceof TileMarker marker) {
-                marker.tryConnect();
+                marker.tryConnect(true);
                 marker.getArea().ifPresent(area ->
                     player.sendMessage(new LiteralText("%sMarker Area%s: %s".formatted(Formatting.AQUA, Formatting.RESET, area)), false));
             }

@@ -34,7 +34,7 @@ public class TileMarker extends BlockEntity implements QuarryMarker, CheckerLog,
         super(QuarryPlus.ModObjects.MARKER_TYPE, pos, state);
     }
 
-    void tryConnect() {
+    void tryConnect(boolean first) {
         assert getWorld() != null;
         Optional<TileMarker> zMarker = IntStream.range(1, MAX_SEARCH)
             .flatMap(i -> IntStream.of(i, -i))
@@ -47,11 +47,11 @@ public class TileMarker extends BlockEntity implements QuarryMarker, CheckerLog,
             .flatMap(p -> getWorld().getBlockEntity(p, QuarryPlus.ModObjects.MARKER_TYPE).stream())
             .findFirst();
         MarkerConnection.set(this, xMarker.orElse(null), zMarker.orElse(null));
-        if (this.markerConnection == MarkerConnection.EMPTY) {
-            xMarker.ifPresent(TileMarker::tryConnect);
+        if (first && this.markerConnection == MarkerConnection.EMPTY) {
+            xMarker.ifPresent(marker -> marker.tryConnect(false));
         }
-        if (this.markerConnection == MarkerConnection.EMPTY) {
-            zMarker.ifPresent(TileMarker::tryConnect);
+        if (first && this.markerConnection == MarkerConnection.EMPTY) {
+            zMarker.ifPresent(marker -> marker.tryConnect(false));
         }
     }
 
