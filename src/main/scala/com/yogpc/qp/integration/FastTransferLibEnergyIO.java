@@ -38,7 +38,7 @@ class FastTransferLibEnergyIO implements EnergyIo {
     @Override
     public double insert(double amount, Simulation simulation) {
         long inserted = powerTile.addEnergy((long) (amount * CONVERSION_RATE), simulation.isSimulating());
-        return (double) inserted / CONVERSION_RATE;
+        return amount - ((double) inserted / CONVERSION_RATE);
     }
 
     @Override
