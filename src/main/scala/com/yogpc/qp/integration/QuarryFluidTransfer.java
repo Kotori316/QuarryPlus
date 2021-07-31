@@ -36,6 +36,7 @@ public class QuarryFluidTransfer {
     @SuppressWarnings("SpellCheckingInspection")
     public static void register() {
         if (FabricLoader.getInstance().isModLoaded("libblockattributes_fluids")) {
+            QuarryPlus.LOGGER.debug("Trying to register LBA fluid handler.");
             transfers.add(BCRegister.getBCTransfer());
             BCRegister.registerAttributes();
             registered = true;
