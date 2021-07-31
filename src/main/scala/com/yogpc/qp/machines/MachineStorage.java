@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.yogpc.qp.integration.QuarryFluidTransfer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -110,6 +111,19 @@ public class MachineStorage {
         }
     }
 
+    public Map<FluidKey, Long> getFluidMap() {
+        return Map.copyOf(fluidMap); // Return copy to avoid ConcurrentModificationException
+    }
+
+    public void putFluid(Fluid fluid, long amount) {
+        var key = new FluidKey(fluid, null);
+        if (amount <= 0) {
+            fluidMap.remove(key);
+        } else {
+            fluidMap.put(key, amount);
+        }
+    }
+
     private static FluidKey getFluidInBucket(BucketItem bucket) {
         try {
             // How do I get nbt of Fluid?
@@ -174,6 +188,28 @@ public class MachineStorage {
                     }
                 }
             }
+        };
+    }
+
+    public static <T extends BlockEntity & HasStorage> BlockEntityTicker<T> passFluid() {
+        if (QuarryFluidTransfer.isRegistered()) return (world, pos, state, blockEntity) -> {
+            var storage = blockEntity.getStorage();
+            int count = 0;
+            for (Direction value : Direction.values()) {
+                var destPos = pos.offset(value);
+                var tile = world.getBlockEntity(destPos);
+                if (tile != null) {
+                    var fluidMap = new ArrayList<>(storage.getFluidMap().entrySet());
+                    for (Map.Entry<FluidKey, Long> entry : fluidMap) {
+                        var excess = QuarryFluidTransfer.transfer(world, destPos, tile, entry.getKey().fluid(), entry.getValue());
+                        storage.putFluid(excess.getKey(), excess.getValue());
+                        count += 1;
+                        if (count > MAX_TRANSFER) return;
+                    }
+                }
+            }
+        };
+        else return (world, pos, state, blockEntity) -> {
         };
     }
 }

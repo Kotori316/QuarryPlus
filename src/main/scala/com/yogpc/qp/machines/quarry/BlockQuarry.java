@@ -68,7 +68,7 @@ public class BlockQuarry extends BlockWithEntity {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
         return world.isClient ? null : checkType(type, QuarryPlus.ModObjects.QUARRY_TYPE,
-            new CombinedBlockEntityTicker<>(TileQuarry.getGenerator(), TileQuarry::tick, MachineStorage.passItems()));
+            new CombinedBlockEntityTicker<>(TileQuarry.getGenerator(), TileQuarry::tick, MachineStorage.passItems(), MachineStorage.passFluid()));
     }
 
     @Override

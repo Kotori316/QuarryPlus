@@ -2,6 +2,7 @@ package com.yogpc.qp;
 
 import com.mojang.datafixers.DSL;
 import com.yogpc.qp.integration.EnergyIntegration;
+import com.yogpc.qp.integration.QuarryFluidTransfer;
 import com.yogpc.qp.machines.EnchantedLootFunction;
 import com.yogpc.qp.machines.checker.ItemChecker;
 import com.yogpc.qp.machines.marker.BlockMarker;
@@ -59,6 +60,7 @@ public class QuarryPlus implements ModInitializer {
 
         PacketHandler.Server.initServer();
         EnergyIntegration.register();
+        QuarryFluidTransfer.register();
     }
 
     public static class ModObjects {
