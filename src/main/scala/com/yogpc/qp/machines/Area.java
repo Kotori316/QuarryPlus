@@ -19,6 +19,14 @@ public record Area(int minX, int minY, int minZ, int maxX, int maxY, int maxZ,
             Math.max(pos1.getX(), pos2.getX()), Math.max(pos1.getY(), pos2.getY()), Math.max(pos1.getZ(), pos2.getZ()), direction);
     }
 
+    public Area assureY(int minSpaceY) {
+        var space = maxY - minY;
+        if (space >= minSpaceY)
+            return this;
+        else
+            return new Area(minX, minY, minZ, maxX, minY + minSpaceY, maxZ, direction);
+    }
+
     public NbtCompound toNBT() {
         var tag = new NbtCompound();
         tag.putInt("minX", this.minX);

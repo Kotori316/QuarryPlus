@@ -122,6 +122,7 @@ public class BlockQuarry extends BlockWithEntity {
             })
             .flatMap(m -> m.getArea().stream().peek(a -> m.removeAndGetItems().forEach(itemCollector)))
             .findFirst()
+            .map(a -> a.assureY(4))
             .orElse(new Area(pos.offset(quarryBehind).offset(quarryBehind.rotateYCounterclockwise(), 5),
                 pos.offset(quarryBehind, 11).offset(quarryBehind.rotateYClockwise(), 5).offset(Direction.UP, 4), quarryBehind.getOpposite()));
     }
