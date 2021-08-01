@@ -15,7 +15,9 @@ public class PacketHandler {
     public static class Server {
         public static void initServer() {
             var list = List.of(
-                new ServerPacketInit(LevelMessage.NAME, LevelMessage.handler)
+                new ServerPacketInit(LevelMessage.NAME, LevelMessage.handler),
+                new ServerPacketInit(FlexMarkerMessage.NAME, FlexMarkerMessage.handler),
+                new ServerPacketInit(Marker16Message.NAME, Marker16Message.handler)
             );
             list.forEach(i -> ServerPlayNetworking.registerGlobalReceiver(i.name(), i.handler()));
         }

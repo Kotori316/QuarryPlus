@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " m ",
+    "mlm",
+    " m "
+  ],
+  "key": {
+    "m": {
+      "item": "quarryplus:marker"
+    },
+    "l": {
+      "item": "minecraft:lapis_lazuli"
+    }
+  },
+  "result": {
+    "item": "quarryplus:flex_marker"
+  }
+}

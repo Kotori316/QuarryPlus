@@ -5,7 +5,11 @@ import com.yogpc.qp.integration.EnergyIntegration;
 import com.yogpc.qp.integration.QuarryFluidTransfer;
 import com.yogpc.qp.machines.EnchantedLootFunction;
 import com.yogpc.qp.machines.checker.ItemChecker;
+import com.yogpc.qp.machines.marker.BlockExMarker;
 import com.yogpc.qp.machines.marker.BlockMarker;
+import com.yogpc.qp.machines.marker.ContainerMarker;
+import com.yogpc.qp.machines.marker.Tile16Marker;
+import com.yogpc.qp.machines.marker.TileFlexMarker;
 import com.yogpc.qp.machines.marker.TileMarker;
 import com.yogpc.qp.machines.misc.YSetterContainer;
 import com.yogpc.qp.machines.misc.YSetterItem;
@@ -52,6 +56,12 @@ public class QuarryPlus implements ModInitializer {
         Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(modID, BlockMarker.NAME), ModObjects.MARKER_TYPE);
         Registry.register(Registry.ITEM, new Identifier(modID, YSetterItem.NAME), ModObjects.ITEM_Y_SETTER);
         Registry.register(Registry.ITEM, new Identifier(modID, "remove_bedrock_module"), ModObjects.ITEM_BEDROCK_MODULE);
+        Registry.register(Registry.BLOCK, new Identifier(modID, BlockExMarker.BlockFlexMarker.NAME), ModObjects.BLOCK_FLEX_MARKER);
+        Registry.register(Registry.ITEM, new Identifier(modID, BlockExMarker.BlockFlexMarker.NAME), ModObjects.BLOCK_FLEX_MARKER.blockItem);
+        Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(modID, BlockExMarker.BlockFlexMarker.NAME), ModObjects.FLEX_MARKER_TYPE);
+        Registry.register(Registry.BLOCK, new Identifier(modID, BlockExMarker.Block16Marker.NAME), ModObjects.BLOCK_16_MARKER);
+        Registry.register(Registry.ITEM, new Identifier(modID, BlockExMarker.Block16Marker.NAME), ModObjects.BLOCK_16_MARKER.blockItem);
+        Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(modID, BlockExMarker.Block16Marker.NAME), ModObjects.MARKER_16_TYPE);
 
         Registry.register(Registry.LOOT_FUNCTION_TYPE, new Identifier(modID, "drop_function"), ModObjects.ENCHANTED_LOOT_TYPE);
         Registry.register(Registry.LOOT_FUNCTION_TYPE, new Identifier(modID, "drop_function_quarry"), ModObjects.QUARRY_LOOT_TYPE);
@@ -76,5 +86,13 @@ public class QuarryPlus implements ModInitializer {
             (syncId, inventory, buf) -> new YSetterContainer(syncId, inventory.player, buf.readBlockPos()));
         public static final LootFunctionType ENCHANTED_LOOT_TYPE = new LootFunctionType(EnchantedLootFunction.SERIALIZER);
         public static final LootFunctionType QUARRY_LOOT_TYPE = new LootFunctionType(QuarryLootFunction.SERIALIZER);
+        public static final BlockExMarker.BlockFlexMarker BLOCK_FLEX_MARKER = new BlockExMarker.BlockFlexMarker();
+        public static final BlockExMarker.Block16Marker BLOCK_16_MARKER = new BlockExMarker.Block16Marker();
+        public static final BlockEntityType<TileFlexMarker> FLEX_MARKER_TYPE = FabricBlockEntityTypeBuilder.create(TileFlexMarker::new, BLOCK_FLEX_MARKER).build(DSL.emptyPartType());
+        public static final BlockEntityType<Tile16Marker> MARKER_16_TYPE = FabricBlockEntityTypeBuilder.create(Tile16Marker::new, BLOCK_16_MARKER).build(DSL.emptyPartType());
+        public static final ScreenHandlerType<ContainerMarker> FLEX_MARKER_HANDLER_TYPE = ScreenHandlerRegistry.registerExtended(new Identifier(BlockExMarker.GUI_FLEX_ID),
+            (syncId, inventory, buf) -> new ContainerMarker(syncId, inventory.player, buf.readBlockPos(), ModObjects.FLEX_MARKER_HANDLER_TYPE));
+        public static final ScreenHandlerType<ContainerMarker> MARKER_16_HANDLER_TYPE = ScreenHandlerRegistry.registerExtended(new Identifier(BlockExMarker.GUI_16_ID),
+            (syncId, inventory, buf) -> new ContainerMarker(syncId, inventory.player, buf.readBlockPos(), ModObjects.MARKER_16_HANDLER_TYPE));
     }
 }

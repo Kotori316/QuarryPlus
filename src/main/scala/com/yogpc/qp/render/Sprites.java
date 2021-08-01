@@ -61,4 +61,8 @@ public class Sprites implements ClientSpriteRegistryCallback {
     public Sprite getDrillHeadStripe() {
         return getSprite("drill_head");
     }
+
+    public Sprite getWhite() {
+        return getSprite("white");
+    }
 }

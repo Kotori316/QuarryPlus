@@ -22,6 +22,7 @@ unexpected crashes.
 * Marker
   * Render
   * Guideline with RS signal
+* Flexible Marker
 * QuarryPlus
   * Render
   * Enchantment
@@ -58,6 +59,5 @@ unexpected crashes.
 
 ### Future works(plan)
 
-* Flexible Marker
 * Advanced Pump
 * Chunk Destroyer

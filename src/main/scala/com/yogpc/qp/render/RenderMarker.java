@@ -81,7 +81,7 @@ public class RenderMarker implements BlockEntityRenderer<TileMarker> {
         MinecraftClient.getInstance().getProfiler().pop();
     }
 
-    static Box[] getRenderBox(Area area) {
+    public static Box[] getRenderBox(Area area) {
         int flag = 0;
         int xMin = area.minX();
         int yMin = area.minY();
