@@ -18,6 +18,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -110,19 +111,13 @@ public class Tile16Marker extends BlockEntity implements QuarryMarker, CheckerLo
         return max == BlockPos.ZERO ? getPos() : max;
     }
 
-    @Environment(EnvType.CLIENT)
-    public Runnable setMinMax(BlockPos min, BlockPos max) {
-        return () -> {
-            this.max = max;
-            this.min = min;
-            setRender();
-            size = (max.getX() - min.getX() - 1);
-        };
-    }
-
     @Override
     public List<? extends Text> getDebugLogs() {
-        return List.of();
+        return List.of(
+            "Size: " + size,
+            "Min: " + min(),
+            "Max: " + max()
+        ).stream().map(LiteralText::new).toList();
     }
 
     @Override

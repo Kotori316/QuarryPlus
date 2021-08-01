@@ -19,6 +19,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -77,15 +78,6 @@ public class TileFlexMarker extends BlockEntity implements QuarryMarker, Checker
     }
 
     @Environment(EnvType.CLIENT)
-    public Runnable setMinMax(BlockPos min, BlockPos max) {
-        return () -> {
-            this.min = min;
-            this.max = max;
-            setRender();
-        };
-    }
-
-    @Environment(EnvType.CLIENT)
     private void setRender() {
         if (world == null)
             return;
@@ -128,7 +120,11 @@ public class TileFlexMarker extends BlockEntity implements QuarryMarker, Checker
 
     @Override
     public List<? extends Text> getDebugLogs() {
-        return List.of();
+        return List.of(
+            "Direction: " + direction,
+            "Min: " + min,
+            "Max: " + max
+        ).stream().map(LiteralText::new).toList();
     }
 
     @Override
