@@ -12,8 +12,6 @@ import com.yogpc.qp.machines.QuarryMarker;
 import com.yogpc.qp.render.Box;
 import com.yogpc.qp.render.RenderMarker;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -77,7 +75,6 @@ public class TileFlexMarker extends BlockEntity implements QuarryMarker, Checker
         }
     }
 
-    @Environment(EnvType.CLIENT)
     private void setRender() {
         if (world == null)
             return;

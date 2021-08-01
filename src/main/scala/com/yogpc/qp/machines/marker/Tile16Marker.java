@@ -56,7 +56,6 @@ public class Tile16Marker extends BlockEntity implements QuarryMarker, CheckerLo
         if (world != null && world.isClient) setRender();
     }
 
-    @Environment(EnvType.CLIENT)
     private void setRender() {
         assert world != null;
         boxes = RenderMarker.getRenderBox(new Area(min, max, Direction.from(Direction.Axis.X, xDirection)));
