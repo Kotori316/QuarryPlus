@@ -16,20 +16,20 @@ import net.minecraft.world.World;
 public class FlexMarkerMessage implements IMessage<FlexMarkerMessage> {
     public static final Identifier NAME = new Identifier(QuarryPlus.modID, "flex_message");
     private final BlockPos pos;
-    private final Identifier dim;
+    private final RegistryKey<World> dim;
     private final TileFlexMarker.Movable movable;
     private final int amount;
 
     public FlexMarkerMessage(World world, BlockPos pos, TileFlexMarker.Movable movable, int amount) {
         this.pos = pos;
-        this.dim = (world != null ? world.getRegistryKey() : World.OVERWORLD).getValue();
+        this.dim = world != null ? world.getRegistryKey() : World.OVERWORLD;
         this.movable = movable;
         this.amount = amount;
     }
 
     public FlexMarkerMessage(PacketByteBuf buffer) {
         pos = buffer.readBlockPos();
-        dim = buffer.readIdentifier();
+        dim = RegistryKey.of(Registry.WORLD_KEY, buffer.readIdentifier());
         movable = buffer.readEnumConstant(TileFlexMarker.Movable.class);
         amount = buffer.readVarInt();
     }
@@ -41,7 +41,7 @@ public class FlexMarkerMessage implements IMessage<FlexMarkerMessage> {
 
     @Override
     public void writeToBuffer(PacketByteBuf buffer) {
-        buffer.writeBlockPos(pos).writeIdentifier(dim);
+        buffer.writeBlockPos(pos).writeIdentifier(dim.getValue());
         buffer.writeEnumConstant(movable);
         buffer.writeVarInt(amount);
     }
@@ -54,7 +54,7 @@ public class FlexMarkerMessage implements IMessage<FlexMarkerMessage> {
     static final ServerPlayNetworking.PlayChannelHandler handler = (server, player, handler1, buf, responseSender) -> {
         var message = new FlexMarkerMessage(buf);
         server.execute(() -> {
-            var world = server.getWorld(RegistryKey.of(Registry.WORLD_KEY, message.dim));
+            var world = server.getWorld(message.dim);
             if (world != null) {
                 if (world.getBlockEntity(message.pos) instanceof TileFlexMarker flexMarker) {
                     flexMarker.move(message.movable, message.amount);

@@ -9,7 +9,7 @@ import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public record CombinedBlockEntityTicker<T extends BlockEntity>(
+public final record CombinedBlockEntityTicker<T extends BlockEntity>(
     List<BlockEntityTicker<? super T>> tickers) implements BlockEntityTicker<T> {
     @SafeVarargs
     public CombinedBlockEntityTicker(BlockEntityTicker<? super T>... ts) {

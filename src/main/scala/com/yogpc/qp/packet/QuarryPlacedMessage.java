@@ -23,7 +23,7 @@ import org.apache.commons.lang3.tuple.Pair;
 public class QuarryPlacedMessage implements IMessage<QuarryPlacedMessage> {
     public static final Identifier NAME = new Identifier(QuarryPlus.modID, "quarry_placed_message");
     private BlockPos pos;
-    private Identifier dim;
+    private RegistryKey<World> dim;
     private List<EnchantmentLevel> levels;
     private NbtCompound otherData;
 
@@ -38,13 +38,13 @@ public class QuarryPlacedMessage implements IMessage<QuarryPlacedMessage> {
         this.levels = levels;
         this.otherData = otherData;
         this.pos = pos;
-        this.dim = (world != null ? world.getRegistryKey() : World.OVERWORLD).getValue();
+        this.dim = world != null ? world.getRegistryKey() : World.OVERWORLD;
     }
 
     @Override
     public QuarryPlacedMessage readFromBuffer(PacketByteBuf buffer) {
         pos = buffer.readBlockPos();
-        dim = buffer.readIdentifier();
+        dim = RegistryKey.of(Registry.WORLD_KEY, buffer.readIdentifier());
         levels = IntStream.range(0, buffer.readInt())
             .mapToObj(i -> new EnchantmentLevel(buffer.readIdentifier(), buffer.readInt()))
             .toList();
@@ -54,7 +54,7 @@ public class QuarryPlacedMessage implements IMessage<QuarryPlacedMessage> {
 
     @Override
     public void writeToBuffer(PacketByteBuf buffer) {
-        buffer.writeBlockPos(pos).writeIdentifier(dim);
+        buffer.writeBlockPos(pos).writeIdentifier(dim.getValue());
         buffer.writeInt(levels.size());
         for (EnchantmentLevel level : levels) {
             buffer.writeIdentifier(level.enchantmentID()).writeInt(level.level());
@@ -70,7 +70,7 @@ public class QuarryPlacedMessage implements IMessage<QuarryPlacedMessage> {
     static final ClientPlayNetworking.PlayChannelHandler HANDLER = (client, handler, buf, responseSender) -> {
         var message = IMessage.decode(QuarryPlacedMessage::new).apply(buf);
         var world = client.world;
-        if (world != null && world.getRegistryKey().equals(RegistryKey.of(Registry.WORLD_KEY, message.dim))) {
+        if (world != null && world.getRegistryKey().equals(message.dim)) {
             if (world.getBlockEntity(message.pos) instanceof TileQuarry quarry) {
                 quarry.setEnchantments(message.levels.stream().map(e -> Pair.of(e.enchantment(), e.level())).collect(Collectors.toMap(Pair::getKey, Pair::getValue)));
                 quarry.setTileDataFromItem(message.otherData);

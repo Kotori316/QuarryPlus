@@ -10,18 +10,21 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
+/**
+ * To server only.
+ */
 public class Marker16Message implements IMessage<Marker16Message> {
     public static final Identifier NAME = new Identifier(QuarryPlus.modID, "marker16_message");
 
     private final BlockPos pos;
-    private final Identifier dim;
+    private final RegistryKey<World> dim;
     private final int amount;
     private final int yMax;
     private final int yMin;
 
     public Marker16Message(World world, BlockPos pos, int amount, int yMax, int yMin) {
         this.pos = pos;
-        this.dim = (world != null ? world.getRegistryKey() : World.OVERWORLD).getValue();
+        this.dim = world != null ? world.getRegistryKey() : World.OVERWORLD;
         this.amount = amount;
         this.yMax = yMax;
         this.yMin = yMin;
@@ -29,7 +32,7 @@ public class Marker16Message implements IMessage<Marker16Message> {
 
     public Marker16Message(PacketByteBuf buffer) {
         pos = buffer.readBlockPos();
-        dim = buffer.readIdentifier();
+        dim = RegistryKey.of(Registry.WORLD_KEY, buffer.readIdentifier());
         amount = buffer.readVarInt();
         yMax = buffer.readVarInt();
         yMin = buffer.readVarInt();
@@ -42,7 +45,7 @@ public class Marker16Message implements IMessage<Marker16Message> {
 
     @Override
     public void writeToBuffer(PacketByteBuf buffer) {
-        buffer.writeBlockPos(pos).writeIdentifier(dim);
+        buffer.writeBlockPos(pos).writeIdentifier(dim.getValue());
         buffer.writeVarInt(amount);
         buffer.writeVarInt(yMax);
         buffer.writeVarInt(yMin);
@@ -56,7 +59,7 @@ public class Marker16Message implements IMessage<Marker16Message> {
     static final ServerPlayNetworking.PlayChannelHandler handler = (server, player, handler1, buf, responseSender) -> {
         var message = new Marker16Message(buf);
         server.execute(() -> {
-            var world = server.getWorld(RegistryKey.of(Registry.WORLD_KEY, message.dim));
+            var world = server.getWorld(message.dim);
             if (world != null) {
                 if (world.getBlockEntity(message.pos) instanceof Tile16Marker marker) {
                     marker.changeSize(message.amount, message.yMax, message.yMin);
