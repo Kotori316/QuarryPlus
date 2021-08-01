@@ -1,14 +1,23 @@
 package com.yogpc.qp.machines.quarry;
 
+import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.Area;
+import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.PowerTile;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.FluidBlock;
 import net.minecraft.block.FluidDrainable;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.Marker;
@@ -25,7 +34,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
     WAITING(false) {
         @Override
         public void tick(World world, BlockPos quarryPos, BlockState state, TileQuarry quarry) {
-            if (quarry.getArea() != null && quarry.getEnergy() > 1e11) {
+            if (quarry.getArea() != null && quarry.getEnergy() > quarry.getMaxEnergy() / 200) {
                 quarry.setState(MAKE_FRAME, state);
             }
         }
@@ -109,15 +118,50 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
                 quarry.target = Target.newDigTarget(quarry.getArea(), quarry.getArea().minY());
                 QuarryPlus.LOGGER.debug(MARKER, "Quarry({}) Target changed to {} in BREAK_BLOCK.", quarryPos, quarry.target);
             }
-            if (quarry.breakBlock(Objects.requireNonNull(quarry.target.get(false))).isSuccess()) {
-                quarry.target.get(true);
+            if (!quarry.getTargetWorld().getFluidState(quarry.target.get(false)).isEmpty()) {
+                quarry.setState(REMOVE_FLUID, state);
+            } else if (quarry.breakBlock(Objects.requireNonNull(quarry.target.get(false))).isSuccess()) {
+                quarry.target.get(true); // Set next pos.
                 quarry.setState(MOVE_HEAD, state);
             } else {
                 quarry.setState(BREAK_BLOCK, state);
             }
         }
     },
-    ;
+    REMOVE_FLUID(true) {
+        @Override
+        public void tick(World world, BlockPos quarryPos, BlockState state, TileQuarry quarry) {
+            Objects.requireNonNull(quarry.getArea());
+            if (quarry.target == null) {
+                quarry.target = Target.newDigTarget(quarry.getArea(), quarry.getArea().minY());
+                QuarryPlus.LOGGER.debug(MARKER, "Quarry({}) Target changed to {} in {}.", quarryPos, quarry.target, name());
+            }
+            var original = Objects.requireNonNull(quarry.target.get(false));
+            Set<BlockPos> fluidPoses = new HashSet<>();
+            var targetWorld = quarry.getTargetWorld();
+            countFluid(fluidPoses, targetWorld, original, quarry.getArea());
+            var requiredEnergy = Math.min(PowerTile.Constants.getBreakBlockFluidEnergy(quarry) * fluidPoses.size(), quarry.getMaxEnergy());
+            if (quarry.useEnergy(requiredEnergy, PowerTile.Reason.REMOVE_FLUID)) {
+                for (BlockPos fluidPos : fluidPoses) {
+                    var blockState = targetWorld.getBlockState(fluidPos);
+                    if (blockState.getBlock() instanceof FluidBlock) {
+                        var fluidState = targetWorld.getFluidState(fluidPos);
+                        if (!fluidState.isEmpty() && fluidState.isStill())
+                            quarry.storage.addFluid(fluidState.getFluid(), MachineStorage.ONE_BUCKET);
+                        targetWorld.setBlockState(fluidPos, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
+                    } else if (blockState.getBlock() instanceof FluidDrainable drain) {
+                        var bucket = drain.tryDrainFluid(targetWorld, fluidPos, blockState);
+                        quarry.storage.addFluid(bucket);
+                    } else {
+                        // What ?
+                        targetWorld.setBlockState(fluidPos, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
+                    }
+                    TileQuarry.checkEdgeFluid(fluidPos, false, targetWorld, quarry);
+                }
+                quarry.setState(BREAK_BLOCK, state);
+            }
+        }
+    };
     public final boolean isWorking;
     private static final Marker MARKER = MarkerManager.getMarker("QuarryState");
 
@@ -135,6 +179,28 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
             pos = target.goNextAndGet();
         }
         return pos;
+    }
+
+    private static void countFluid(Set<BlockPos> counted, World world, BlockPos originalPos, Area area) {
+        Set<Direction> directions = EnumSet.of(Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST, Direction.UP);
+        Set<BlockPos> search = Set.of(originalPos);
+        Set<BlockPos> checked = new HashSet<>();
+        while (!search.isEmpty()) {
+            Set<BlockPos> nextSearch = new HashSet<>();
+            for (BlockPos pos : search) {
+                checked.add(pos);
+                if (!world.getFluidState(pos).isEmpty()) {
+                    if (counted.add(pos)) {
+                        directions.stream()
+                            .map(pos::offset)
+                            .filter(area::isInAreaIgnoreY)
+                            .filter(Predicate.not(checked::contains))
+                            .forEach(nextSearch::add);
+                    }
+                }
+            }
+            search = nextSearch;
+        }
     }
 }
 

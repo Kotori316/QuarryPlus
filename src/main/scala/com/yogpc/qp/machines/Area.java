@@ -27,6 +27,10 @@ public record Area(int minX, int minY, int minZ, int maxX, int maxY, int maxZ,
             return new Area(minX, minY, minZ, maxX, minY + minSpaceY, maxZ, direction);
     }
 
+    public boolean isInAreaIgnoreY(Vec3i vec3i) {
+        return minX < vec3i.getX() && vec3i.getX() < maxX && minZ < vec3i.getZ() && vec3i.getZ() < maxZ;
+    }
+
     public NbtCompound toNBT() {
         var tag = new NbtCompound();
         tag.putInt("minX", this.minX);

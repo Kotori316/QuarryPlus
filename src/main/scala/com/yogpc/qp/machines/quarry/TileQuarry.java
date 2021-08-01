@@ -194,55 +194,10 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
         }
         // Fluid remove
         // Fluid at near
-        assert area != null;
-        {
-            boolean flagMinX = targetPos.getX() - 1 == area.minX();
-            boolean flagMaxX = targetPos.getX() + 1 == area.maxX();
-            boolean flagMinZ = targetPos.getZ() - 1 == area.minZ();
-            boolean flagMaxZ = targetPos.getZ() + 1 == area.maxZ();
-            if (flagMinX) {
-                if (removeFluidAtEdge(targetWorld, new BlockPos(area.minX(), targetPos.getY(), targetPos.getZ()), requireEnergy)) {
-                    return BreakResult.NOT_ENOUGH_ENERGY;
-                }
-            }
-            if (flagMaxX) {
-                if (removeFluidAtEdge(targetWorld, new BlockPos(area.maxX(), targetPos.getY(), targetPos.getZ()), requireEnergy)) {
-                    return BreakResult.NOT_ENOUGH_ENERGY;
-                }
-            }
-            if (flagMinZ) {
-                if (removeFluidAtEdge(targetWorld, new BlockPos(targetPos.getX(), targetPos.getY(), area.minZ()), requireEnergy)) {
-                    return BreakResult.NOT_ENOUGH_ENERGY;
-                }
-            }
-            if (flagMaxZ) {
-                if (removeFluidAtEdge(targetWorld, new BlockPos(targetPos.getX(), targetPos.getY(), area.maxZ()), requireEnergy)) {
-                    return BreakResult.NOT_ENOUGH_ENERGY;
-                }
-            }
-            if (flagMinX && flagMinZ) {
-                if (removeFluidAtEdge(targetWorld, new BlockPos(area.minX(), targetPos.getY(), area.minZ()), requireEnergy)) {
-                    return BreakResult.NOT_ENOUGH_ENERGY;
-                }
-            }
-            if (flagMinX && flagMaxZ) {
-                if (removeFluidAtEdge(targetWorld, new BlockPos(area.minX(), targetPos.getY(), area.maxZ()), requireEnergy)) {
-                    return BreakResult.NOT_ENOUGH_ENERGY;
-                }
-            }
-            if (flagMaxX && flagMinZ) {
-                if (removeFluidAtEdge(targetWorld, new BlockPos(area.maxX(), targetPos.getY(), area.minZ()), requireEnergy)) {
-                    return BreakResult.NOT_ENOUGH_ENERGY;
-                }
-            }
-            if (flagMaxX && flagMaxZ) {
-                if (removeFluidAtEdge(targetWorld, new BlockPos(area.maxX(), targetPos.getY(), area.maxZ()), requireEnergy)) {
-                    return BreakResult.NOT_ENOUGH_ENERGY;
-                }
-            }
-        }
+        BreakResult notEnoughEnergy = checkEdgeFluid(targetPos, requireEnergy, targetWorld, this);
+        if (notEnoughEnergy != null) return notEnoughEnergy;
 
-        // Fluid at target pos
+        // Fluid at target pos. Maybe not available because Remove Fluid is done before breaking blocks.
         var fluidState = targetWorld.getFluidState(targetPos);
         if (!fluidState.isEmpty() && blockState.getBlock() instanceof FluidDrainable fluidBlock) {
             if (requireEnergy && !useEnergy(Constants.getBreakBlockFluidEnergy(this), Reason.REMOVE_FLUID)) {
@@ -268,18 +223,69 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
         return BreakResult.SUCCESS;
     }
 
+    @Nullable
+    public static BreakResult checkEdgeFluid(BlockPos targetPos, boolean requireEnergy, ServerWorld targetWorld, TileQuarry quarry) {
+        var area = quarry.getArea();
+        assert area != null;
+        boolean flagMinX = targetPos.getX() - 1 == area.minX();
+        boolean flagMaxX = targetPos.getX() + 1 == area.maxX();
+        boolean flagMinZ = targetPos.getZ() - 1 == area.minZ();
+        boolean flagMaxZ = targetPos.getZ() + 1 == area.maxZ();
+        if (flagMinX) {
+            if (removeFluidAtEdge(targetWorld, new BlockPos(area.minX(), targetPos.getY(), targetPos.getZ()), requireEnergy, quarry)) {
+                return BreakResult.NOT_ENOUGH_ENERGY;
+            }
+        }
+        if (flagMaxX) {
+            if (removeFluidAtEdge(targetWorld, new BlockPos(area.maxX(), targetPos.getY(), targetPos.getZ()), requireEnergy, quarry)) {
+                return BreakResult.NOT_ENOUGH_ENERGY;
+            }
+        }
+        if (flagMinZ) {
+            if (removeFluidAtEdge(targetWorld, new BlockPos(targetPos.getX(), targetPos.getY(), area.minZ()), requireEnergy, quarry)) {
+                return BreakResult.NOT_ENOUGH_ENERGY;
+            }
+        }
+        if (flagMaxZ) {
+            if (removeFluidAtEdge(targetWorld, new BlockPos(targetPos.getX(), targetPos.getY(), area.maxZ()), requireEnergy, quarry)) {
+                return BreakResult.NOT_ENOUGH_ENERGY;
+            }
+        }
+        if (flagMinX && flagMinZ) {
+            if (removeFluidAtEdge(targetWorld, new BlockPos(area.minX(), targetPos.getY(), area.minZ()), requireEnergy, quarry)) {
+                return BreakResult.NOT_ENOUGH_ENERGY;
+            }
+        }
+        if (flagMinX && flagMaxZ) {
+            if (removeFluidAtEdge(targetWorld, new BlockPos(area.minX(), targetPos.getY(), area.maxZ()), requireEnergy, quarry)) {
+                return BreakResult.NOT_ENOUGH_ENERGY;
+            }
+        }
+        if (flagMaxX && flagMinZ) {
+            if (removeFluidAtEdge(targetWorld, new BlockPos(area.maxX(), targetPos.getY(), area.minZ()), requireEnergy, quarry)) {
+                return BreakResult.NOT_ENOUGH_ENERGY;
+            }
+        }
+        if (flagMaxX && flagMaxZ) {
+            if (removeFluidAtEdge(targetWorld, new BlockPos(area.maxX(), targetPos.getY(), area.maxZ()), requireEnergy, quarry)) {
+                return BreakResult.NOT_ENOUGH_ENERGY;
+            }
+        }
+        return null;
+    }
+
     /**
      * @return {@code true} if quarry failed to remove fluid due to energy shortage.
      */
-    private boolean removeFluidAtEdge(ServerWorld world, BlockPos pos, boolean requireEnergy) {
+    private static boolean removeFluidAtEdge(ServerWorld world, BlockPos pos, boolean requireEnergy, TileQuarry quarry) {
         var state = world.getBlockState(pos);
         var fluidState = world.getFluidState(pos);
         if (!fluidState.isEmpty() && state.getBlock() instanceof FluidDrainable fluidBlock) {
-            if (requireEnergy && !useEnergy(Constants.getBreakBlockFluidEnergy(this), Reason.REMOVE_FLUID)) {
+            if (requireEnergy && !quarry.useEnergy(Constants.getBreakBlockFluidEnergy(quarry), Reason.REMOVE_FLUID)) {
                 return true;
             }
             var bucketItem = fluidBlock.tryDrainFluid(world, pos, state);
-            this.storage.addFluid(bucketItem);
+            quarry.storage.addFluid(bucketItem);
             if (world.isAir(pos)) {
                 world.setBlockState(pos, QuarryPlus.ModObjects.BLOCK_FRAME.getDammingState());
             }
