@@ -44,7 +44,7 @@ public class RenderQuarry implements BlockEntityRenderer<TileQuarry> {
         if (quarry.getArea() != null) {
             switch (quarry.state) {
                 case WAITING, MAKE_FRAME -> renderFrame(quarry, matrices, vertexConsumers);
-                case BREAK_BLOCK, MOVE_HEAD -> renderDrill(quarry, matrices, vertexConsumers);
+                case BREAK_BLOCK, MOVE_HEAD, REMOVE_FLUID -> renderDrill(quarry, matrices, vertexConsumers);
             }
         }
 
