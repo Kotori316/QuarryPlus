@@ -120,8 +120,7 @@ class BCExtractable implements FluidExtractable {
             if (filter.matches(fluidKey)) {
                 var extractAmount = maxAmount.min(FluidAmount.of(entry.getValue(), 1000));
                 if (simulation.isAction()) {
-                    long newAmount = entry.getValue() - extractAmount.asLong(1000);
-                    storage.putFluid(entry.getKey().fluid(), newAmount);
+                    storage.addFluid(entry.getKey().fluid(), -extractAmount.asLong(1000));
                 }
                 return fluidKey.withAmount(extractAmount);
             }

@@ -2,6 +2,7 @@ package com.yogpc.qp.machines;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -40,6 +41,16 @@ public class MachineStorage {
             var key = getFluidInBucket(bucket);
             fluidMap.merge(key, ONE_BUCKET, Long::sum);
         }
+    }
+
+    public void addFluid(Fluid fluid, long amount) {
+        var key = new FluidKey(fluid, null);
+        fluidMap.merge(key, amount, (l1, l2) -> {
+                long a = l1 + l2;
+                if (a > 0) return a;
+                else return null;
+            }
+        );
     }
 
     public NbtCompound toNbt() {
@@ -115,7 +126,7 @@ public class MachineStorage {
         return Map.copyOf(fluidMap); // Return copy to avoid ConcurrentModificationException
     }
 
-    public void putFluid(Fluid fluid, long amount) {
+    private void putFluid(Fluid fluid, long amount) {
         var key = new FluidKey(fluid, null);
         if (amount <= 0) {
             fluidMap.remove(key);
@@ -124,23 +135,29 @@ public class MachineStorage {
         }
     }
 
+    private static final Map<BucketItem, Fluid> BUCKET_ITEM_FLUID_MAP = new HashMap<>();
+
     private static FluidKey getFluidInBucket(BucketItem bucket) {
-        try {
-            // How do I get nbt of Fluid?
-            return new FluidKey((Fluid) BUCKET_FLUID_FIELD.get(bucket), null);
-        } catch (ReflectiveOperationException ignore) {
-            return new FluidKey(Fluids.EMPTY, null);
-        }
+        // How do I get nbt of Fluid?
+        var fluid = BUCKET_ITEM_FLUID_MAP.computeIfAbsent(bucket, t -> {
+            try {
+                return (Fluid) BUCKET_FLUID_FIELD.get(t);
+            } catch (ReflectiveOperationException ignore) {
+                return Fluids.EMPTY;
+            }
+        });
+        return new FluidKey(fluid, null);
     }
 
     private static final Field BUCKET_FLUID_FIELD;
-    private static final long ONE_BUCKET = 1000;
+    public static final long ONE_BUCKET = 1000;
 
     static {
         try {
-            var fluidFieldName = FabricLoader.getInstance().getMappingResolver().mapFieldName("intermediary",
+            @SuppressWarnings("SpellCheckingInspection")
+            var fluidFieldBucketItem = FabricLoader.getInstance().getMappingResolver().mapFieldName("intermediary",
                 "net.minecraft.class_1755", "field_7905", "Lnet/minecraft/class_3611;");
-            BUCKET_FLUID_FIELD = BucketItem.class.getDeclaredField(fluidFieldName);
+            BUCKET_FLUID_FIELD = BucketItem.class.getDeclaredField(fluidFieldBucketItem);
             BUCKET_FLUID_FIELD.trySetAccessible();
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
@@ -202,7 +219,7 @@ public class MachineStorage {
                     var fluidMap = new ArrayList<>(storage.getFluidMap().entrySet());
                     for (Map.Entry<FluidKey, Long> entry : fluidMap) {
                         var excess = QuarryFluidTransfer.transfer(world, destPos, tile, entry.getKey().fluid(), entry.getValue());
-                        storage.putFluid(excess.getKey(), excess.getValue());
+                        storage.putFluid(entry.getKey().fluid(), excess.getValue());
                         count += 1;
                         if (count > MAX_TRANSFER) return;
                     }
