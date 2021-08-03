@@ -17,9 +17,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      {
-        "value": "com.yogpc.qp.QuarryPlus"
-      }
+      "com.yogpc.qp.QuarryPlus"
     ],
     "client": [
       "com.yogpc.qp.QuarryPlusClient"
@@ -32,6 +30,7 @@
     "fabricloader": ">=0.11.0",
     "fabric": "*",
     "minecraft": "1.17.x",
-    "fabric-language-scala": ">=1.0.0"
+    "fabric-language-scala": ">=1.0.0",
+    "cloth-config2": ">=5.0.0"
   }
 }

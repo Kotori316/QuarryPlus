@@ -76,6 +76,7 @@ public class QuarryPlus implements ModInitializer {
         PacketHandler.Server.initServer();
         EnergyIntegration.register();
         QuarryFluidTransfer.register();
+        QuarryConfig.register();
     }
 
     public static class ModObjects {

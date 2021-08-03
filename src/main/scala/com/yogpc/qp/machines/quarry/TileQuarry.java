@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import com.yogpc.qp.QuarryConfig;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.BreakResult;
@@ -16,7 +17,6 @@ import com.yogpc.qp.machines.EnchantmentLevel;
 import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.PowerTile;
 import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -153,7 +153,7 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
             if (world != null) {
                 world.setBlockState(pos, blockState.with(BlockQuarry.WORKING, quarryState.isWorking), Block.NOTIFY_LISTENERS);
                 if (!world.isClient && !quarryState.isWorking) {
-                    logUsage(FabricLoader.getInstance().isDevelopmentEnvironment() ? QuarryPlus.LOGGER::info : QuarryPlus.LOGGER::debug);
+                    logUsage(QuarryConfig.config.debug ? QuarryPlus.LOGGER::info : QuarryPlus.LOGGER::debug);
                 }
             }
             QuarryPlus.LOGGER.debug(MARKER, "Quarry({}) State changed to {}.", pos, quarryState);
@@ -341,7 +341,7 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
         if (unbreakable && bedrockRemove && state.getBlock() == Blocks.BEDROCK) {
             var worldBottom = targetWorld.getBottomY();
             if (targetWorld.getRegistryKey().equals(World.NETHER)) {
-                return (worldBottom < targetPos.getY() && targetPos.getY() < worldBottom + 5) || (122 < targetPos.getY() && targetPos.getY() < 127);
+                return (worldBottom < targetPos.getY() && targetPos.getY() < worldBottom + 5) || (122 < targetPos.getY() && targetPos.getY() < QuarryConfig.config.netherTop);
             }
             return worldBottom < targetPos.getY() && targetPos.getY() < worldBottom + 5;
         }

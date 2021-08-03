@@ -109,6 +109,9 @@ dependencies {
     modRuntime("TechReborn:TechReborn-1.17:${project.TechReborn_version}")
     modImplementation("dev.technici4n:FastTransferLib:${project.ftl_version}")
 
+    modApi("me.shedaniel.cloth:cloth-config-fabric:5.0.37") {
+        exclude(group: "net.fabricmc.fabric-api")
+    }
     // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
     // You may need to force-disable transitiveness on them.
 
@@ -212,6 +215,7 @@ curseforge {
         relations {
             requiredDependency 'fabric-language-scala'
             requiredDependency 'fabric-api'
+            requiredDependency 'cloth-config'
             //noinspection SpellCheckingInspection
             // requiredDependency 'libblockattributes'
         }
