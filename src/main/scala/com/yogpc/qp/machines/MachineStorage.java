@@ -154,9 +154,11 @@ public class MachineStorage {
 
     static {
         try {
-            @SuppressWarnings("SpellCheckingInspection")
+            var bucketItemClassName = FabricLoader.getInstance().getMappingResolver().unmapClassName("intermediary", BucketItem.class.getName());
+            var fluidClassName = FabricLoader.getInstance().getMappingResolver().unmapClassName("intermediary", Fluid.class.getName());
+
             var fluidFieldBucketItem = FabricLoader.getInstance().getMappingResolver().mapFieldName("intermediary",
-                "net.minecraft.class_1755", "field_7905", "Lnet/minecraft/class_3611;");
+                bucketItemClassName, "field_7905", "L%s;".formatted(fluidClassName.replace('.', '/')));
             BUCKET_FLUID_FIELD = BucketItem.class.getDeclaredField(fluidFieldBucketItem);
             BUCKET_FLUID_FIELD.trySetAccessible();
         } catch (ReflectiveOperationException e) {
