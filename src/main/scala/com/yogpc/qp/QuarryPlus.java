@@ -11,6 +11,8 @@ import com.yogpc.qp.machines.marker.ContainerMarker;
 import com.yogpc.qp.machines.marker.Tile16Marker;
 import com.yogpc.qp.machines.marker.TileFlexMarker;
 import com.yogpc.qp.machines.marker.TileMarker;
+import com.yogpc.qp.machines.misc.CreativeGeneratorBlock;
+import com.yogpc.qp.machines.misc.CreativeGeneratorTile;
 import com.yogpc.qp.machines.misc.YSetterContainer;
 import com.yogpc.qp.machines.misc.YSetterItem;
 import com.yogpc.qp.machines.quarry.BlockFrame;
@@ -62,6 +64,9 @@ public class QuarryPlus implements ModInitializer {
         Registry.register(Registry.BLOCK, new Identifier(modID, BlockExMarker.Block16Marker.NAME), ModObjects.BLOCK_16_MARKER);
         Registry.register(Registry.ITEM, new Identifier(modID, BlockExMarker.Block16Marker.NAME), ModObjects.BLOCK_16_MARKER.blockItem);
         Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(modID, BlockExMarker.Block16Marker.NAME), ModObjects.MARKER_16_TYPE);
+        Registry.register(Registry.BLOCK, new Identifier(modID, CreativeGeneratorBlock.NAME), ModObjects.BLOCK_CREATIVE_GENERATOR);
+        Registry.register(Registry.ITEM, new Identifier(modID, CreativeGeneratorBlock.NAME), ModObjects.BLOCK_CREATIVE_GENERATOR.blockItem);
+        Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(modID, CreativeGeneratorBlock.NAME), ModObjects.CREATIVE_GENERATOR_TYPE);
 
         Registry.register(Registry.LOOT_FUNCTION_TYPE, new Identifier(modID, "drop_function"), ModObjects.ENCHANTED_LOOT_TYPE);
         Registry.register(Registry.LOOT_FUNCTION_TYPE, new Identifier(modID, "drop_function_quarry"), ModObjects.QUARRY_LOOT_TYPE);
@@ -94,5 +99,7 @@ public class QuarryPlus implements ModInitializer {
             (syncId, inventory, buf) -> new ContainerMarker(syncId, inventory.player, buf.readBlockPos(), ModObjects.FLEX_MARKER_HANDLER_TYPE));
         public static final ScreenHandlerType<ContainerMarker> MARKER_16_HANDLER_TYPE = ScreenHandlerRegistry.registerExtended(new Identifier(BlockExMarker.GUI_16_ID),
             (syncId, inventory, buf) -> new ContainerMarker(syncId, inventory.player, buf.readBlockPos(), ModObjects.MARKER_16_HANDLER_TYPE));
+        public static final CreativeGeneratorBlock BLOCK_CREATIVE_GENERATOR = new CreativeGeneratorBlock();
+        public static final BlockEntityType<CreativeGeneratorTile> CREATIVE_GENERATOR_TYPE = FabricBlockEntityTypeBuilder.create(CreativeGeneratorTile::new, BLOCK_CREATIVE_GENERATOR).build(DSL.emptyPartType());
     }
 }
