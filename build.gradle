@@ -70,6 +70,14 @@ repositories {
         }
     }
     maven {
+        name = "ModMenu"
+        url = "https://maven.terraformersmc.com/releases/"
+        content {
+            //noinspection SpellCheckingInspection
+            it.includeModule("com.terraformersmc", "modmenu")
+        }
+    }
+    maven {
         name = "ModMaven" // Here as fallback.
         url = "https://modmaven.dev/"
     }
@@ -110,7 +118,12 @@ dependencies {
     modImplementation("dev.technici4n:FastTransferLib:${project.ftl_version}")
 
     modApi("me.shedaniel.cloth:cloth-config-fabric:5.0.37") {
+        //noinspection SpellCheckingInspection
         exclude(group: "net.fabricmc.fabric-api")
+    }
+    //noinspection SpellCheckingInspection
+    modApi("com.terraformersmc:modmenu:2.0.4") {
+        transitive = false
     }
     // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
     // You may need to force-disable transitiveness on them.

@@ -21,6 +21,9 @@
     ],
     "client": [
       "com.yogpc.qp.QuarryPlusClient"
+    ],
+    "modmenu": [
+      "com.yogpc.qp.integration.QuarryModMenuIntegration"
     ]
   },
   "mixins": [
