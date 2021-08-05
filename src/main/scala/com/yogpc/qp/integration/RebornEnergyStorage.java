@@ -2,14 +2,14 @@ package com.yogpc.qp.integration;
 
 import java.util.EnumSet;
 
-import com.yogpc.qp.QuarryConfig;
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.PowerTile;
 import team.reborn.energy.EnergySide;
 import team.reborn.energy.EnergyStorage;
 import team.reborn.energy.EnergyTier;
 
 class RebornEnergyStorage implements EnergyStorage {
-    public static final long CONVERSION_RATE = (long) (PowerTile.ONE_FE * QuarryConfig.config.rebornEnergyConversionCoefficient);
+    public static final long CONVERSION_RATE = (long) (PowerTile.ONE_FE * QuarryPlus.config.power.rebornEnergyConversionCoefficient);
     private final PowerTile powerTile;
     private final EnumSet<EnergySide> acceptableSize = EnumSet.allOf(EnergySide.class);
 

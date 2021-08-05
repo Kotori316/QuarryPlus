@@ -21,6 +21,8 @@ import com.yogpc.qp.machines.quarry.QuarryLootFunction;
 import com.yogpc.qp.machines.quarry.TileQuarry;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.recipe.QuarryBedrockModuleRecipe;
+import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.serializer.Toml4jConfigSerializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
@@ -43,6 +45,7 @@ public class QuarryPlus implements ModInitializer {
     public static final ItemGroup CREATIVE_TAB = FabricItemGroupBuilder.build(
         new Identifier(modID, modID), () -> new ItemStack(ModObjects.BLOCK_QUARRY)
     );
+    public static QuarryConfig config = null;
 
     @Override
     public void onInitialize() {
@@ -76,7 +79,8 @@ public class QuarryPlus implements ModInitializer {
         PacketHandler.Server.initServer();
         EnergyIntegration.register();
         QuarryFluidTransfer.register();
-        QuarryConfig.register();
+        AutoConfig.register(QuarryConfig.class, Toml4jConfigSerializer::new);
+        QuarryPlus.config = AutoConfig.getConfigHolder(QuarryConfig.class).getConfig();
     }
 
     public static class ModObjects {

@@ -8,7 +8,6 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import com.yogpc.qp.QuarryConfig;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.BreakResult;
@@ -153,7 +152,7 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
             if (world != null) {
                 world.setBlockState(pos, blockState.with(BlockQuarry.WORKING, quarryState.isWorking), Block.NOTIFY_LISTENERS);
                 if (!world.isClient && !quarryState.isWorking) {
-                    logUsage(QuarryConfig.config.debug ? QuarryPlus.LOGGER::info : QuarryPlus.LOGGER::debug);
+                    logUsage(QuarryPlus.config.common.debug ? QuarryPlus.LOGGER::info : QuarryPlus.LOGGER::debug);
                 }
             }
             QuarryPlus.LOGGER.debug(MARKER, "Quarry({}) State changed to {}.", pos, quarryState);
@@ -341,7 +340,7 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
         if (unbreakable && bedrockRemove && state.getBlock() == Blocks.BEDROCK) {
             var worldBottom = targetWorld.getBottomY();
             if (targetWorld.getRegistryKey().equals(World.NETHER)) {
-                return (worldBottom < targetPos.getY() && targetPos.getY() < worldBottom + 5) || (122 < targetPos.getY() && targetPos.getY() < QuarryConfig.config.netherTop);
+                return (worldBottom < targetPos.getY() && targetPos.getY() < worldBottom + 5) || (122 < targetPos.getY() && targetPos.getY() < QuarryPlus.config.common.netherTop);
             }
             return worldBottom < targetPos.getY() && targetPos.getY() < worldBottom + 5;
         }
