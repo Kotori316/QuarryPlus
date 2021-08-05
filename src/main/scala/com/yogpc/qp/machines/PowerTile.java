@@ -4,6 +4,7 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.integration.EnergyIntegration;
 import com.yogpc.qp.utils.QuarryChunkLoadUtil;
 import net.minecraft.block.BlockState;
@@ -89,7 +90,7 @@ public class PowerTile extends BlockEntity {
     }
 
     public static BlockEntityTicker<PowerTile> getGenerator() {
-        if (EnergyIntegration.hasAnyEnergyModule())
+        if (EnergyIntegration.hasAnyEnergyModule() && !QuarryPlus.config.common.noEnergy)
             return (w, p, s, blockEntity) -> {
             };
         else
