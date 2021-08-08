@@ -34,7 +34,7 @@ public class YSetterScreen extends HandledScreen<YSetterContainer> {
     @Override
     protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
         super.drawForeground(matrices, mouseX, mouseY);
-        var level = String.valueOf(getScreenHandler().yAccessor != null ? getScreenHandler().yAccessor.getDigMinY() : 0);
+        var level = String.valueOf(getScreenHandler().yAccessor != null ? getScreenHandler().yAccessor.getDigMinY() + 1 : 0);
         this.textRenderer.draw(matrices, level, ((float) this.backgroundWidth - textRenderer.getWidth(level)) / 2, tp + 23, 0x404040);
     }
 
