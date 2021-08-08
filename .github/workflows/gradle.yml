@@ -43,14 +43,15 @@ jobs:
           echo "::endgroup::"
       - name: Check Warning
         run: chmod +x ./gradlew && ./gradlew javaToolchains CheckCompileOption --no-daemon --warning-mode all
-      - name: Compile
+      - name: Test Only
+        if: ${{ contains(github.event.head_commit.message, '[skip release]') }}
         run: chmod +x ./gradlew && ./gradlew build --no-daemon
-      - name: Build
+      - name: Test and Publish
         if: ${{ !contains(github.event.head_commit.message, '[skip release]') }}
-        run: chmod +x ./gradlew && ./gradlew curseforge --no-daemon
+        run: chmod +x ./gradlew && ./gradlew build curseforge --no-daemon
         env:
           CURSEFORGE_KEY: ${{ secrets.CURSEFORGE_KEY }}
-      - name: Publish
+      - name: Upload Artifacts
         if: ${{ !contains(github.event.head_commit.message, '[skip release]') }}
         uses: actions/upload-artifact@v2
         with:
