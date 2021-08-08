@@ -55,6 +55,15 @@ public class PowerTile extends BlockEntity {
         return maxEnergy;
     }
 
+    protected boolean hasEnoughEnergy() {
+        return getEnergy() >= 0;
+    }
+
+    /**
+     * @param amount   the energy
+     * @param simulate if simulate, the actual energy doesn't change.
+     * @return the amount of <strong>accepted</strong> energy.
+     */
     public long addEnergy(long amount, boolean simulate) {
         long accepted = Math.min(maxEnergy - energy, amount);
         if (!simulate)
@@ -62,8 +71,16 @@ public class PowerTile extends BlockEntity {
         return accepted;
     }
 
-    public boolean useEnergy(long amount, Reason reason) {
-        if (energy > amount) {
+    /**
+     * Use the energy. Returns if the energy is consumed to continue working.
+     *
+     * @param amount the energy
+     * @param reason the reason to use the energy
+     * @param force  whether machine should continue if machine doesn't have enough energy.
+     * @return {@code true} if the energy is consumed. When {@code false}, the machine doesn't have enough energy to work.
+     */
+    public boolean useEnergy(long amount, Reason reason, boolean force) {
+        if (energy >= amount || force) {
             energy -= amount;
             usageMap.merge(reason, amount, Long::sum);
             return true;
@@ -94,7 +111,7 @@ public class PowerTile extends BlockEntity {
             return (w, p, s, blockEntity) -> {
             };
         else
-            return (w, p, s, blockEntity) -> blockEntity.addEnergy(1000 * ONE_FE, false);
+            return (w, p, s, blockEntity) -> blockEntity.addEnergy(blockEntity.getMaxEnergy(), false);
     }
 
     public static class Constants {

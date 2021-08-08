@@ -53,7 +53,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
             } else {
                 var breakResult = quarry.breakBlock(targetPos);
                 if (breakResult.isSuccess()) {
-                    if (quarry.useEnergy(PowerTile.Constants.getMakeFrameEnergy(quarry), PowerTile.Reason.MAKE_FRAME)) {
+                    if (quarry.useEnergy(PowerTile.Constants.getMakeFrameEnergy(quarry), PowerTile.Reason.MAKE_FRAME, false)) {
                         quarry.getTargetWorld().setBlockState(targetPos, QuarryPlus.ModObjects.BLOCK_FRAME.getDefaultState());
                     }
                 }
@@ -96,7 +96,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
                 if (squaredDistance > 1e-8) {
                     var moveDistance = Math.min(squaredDistance, quarry.headSpeed());
                     var required = PowerTile.Constants.getMoveEnergy(Math.sqrt(moveDistance), quarry);
-                    if (!quarry.useEnergy(required, PowerTile.Reason.MOVE_HEAD)) {
+                    if (!quarry.useEnergy(required, PowerTile.Reason.MOVE_HEAD, false)) {
                         return;
                     }
                     var normalized = difference.normalize();
@@ -140,8 +140,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
             Set<BlockPos> fluidPoses = new HashSet<>();
             var targetWorld = quarry.getTargetWorld();
             countFluid(fluidPoses, targetWorld, original, quarry.getArea());
-            var requiredEnergy = Math.min(PowerTile.Constants.getBreakBlockFluidEnergy(quarry) * fluidPoses.size(), quarry.getMaxEnergy());
-            if (quarry.useEnergy(requiredEnergy, PowerTile.Reason.REMOVE_FLUID)) {
+            if (quarry.useEnergy(PowerTile.Constants.getBreakBlockFluidEnergy(quarry) * fluidPoses.size(), PowerTile.Reason.REMOVE_FLUID, true)) {
                 for (BlockPos fluidPos : fluidPoses) {
                     var blockState = targetWorld.getBlockState(fluidPos);
                     if (blockState.getBlock() instanceof FluidBlock) {

@@ -168,8 +168,10 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
     }
 
     public static void tick(World world, BlockPos pos, BlockState state, TileQuarry quarry) {
-        // In server world.
-        quarry.state.tick(world, pos, state, quarry);
+        if (quarry.hasEnoughEnergy()) {
+            // In server world.
+            quarry.state.tick(world, pos, state, quarry);
+        }
     }
 
     public BreakResult breakBlock(BlockPos targetPos) {
@@ -199,7 +201,7 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
         // Fluid at target pos. Maybe not available because Remove Fluid is done before breaking blocks.
         var fluidState = targetWorld.getFluidState(targetPos);
         if (!fluidState.isEmpty() && blockState.getBlock() instanceof FluidDrainable fluidBlock) {
-            if (requireEnergy && !useEnergy(Constants.getBreakBlockFluidEnergy(this), Reason.REMOVE_FLUID)) {
+            if (requireEnergy && !useEnergy(Constants.getBreakBlockFluidEnergy(this), Reason.REMOVE_FLUID, false)) {
                 return BreakResult.NOT_ENOUGH_ENERGY;
             }
             var bucketItem = fluidBlock.tryDrainFluid(targetWorld, targetPos, blockState);
@@ -209,7 +211,7 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
 
         // Break block
         var hardness = fluidState.isEmpty() ? blockState.getHardness(targetWorld, targetPos) : 5;
-        if (requireEnergy && !useEnergy(Constants.getBreakEnergy(hardness, this), Reason.BREAK_BLOCK)) {
+        if (requireEnergy && !useEnergy(Constants.getBreakEnergy(hardness, this), Reason.BREAK_BLOCK, false)) {
             return BreakResult.NOT_ENOUGH_ENERGY;
         }
         var drops = Block.getDroppedStacks(blockState, targetWorld, targetPos, targetWorld.getBlockEntity(targetPos), null, getPickaxe());
@@ -280,7 +282,7 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
         var state = world.getBlockState(pos);
         var fluidState = world.getFluidState(pos);
         if (!fluidState.isEmpty() && state.getBlock() instanceof FluidDrainable fluidBlock) {
-            if (requireEnergy && !quarry.useEnergy(Constants.getBreakBlockFluidEnergy(quarry), Reason.REMOVE_FLUID)) {
+            if (requireEnergy && !quarry.useEnergy(Constants.getBreakBlockFluidEnergy(quarry), Reason.REMOVE_FLUID, false)) {
                 return true;
             }
             var bucketItem = fluidBlock.tryDrainFluid(world, pos, state);
