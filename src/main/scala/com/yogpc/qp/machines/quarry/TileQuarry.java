@@ -20,6 +20,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidDrainable;
+import net.minecraft.block.FluidFillable;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.ItemEntity;
@@ -281,13 +282,23 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
     private static boolean removeFluidAtEdge(ServerWorld world, BlockPos pos, boolean requireEnergy, TileQuarry quarry) {
         var state = world.getBlockState(pos);
         var fluidState = world.getFluidState(pos);
-        if (!fluidState.isEmpty() && state.getBlock() instanceof FluidDrainable fluidBlock) {
-            if (requireEnergy && !quarry.useEnergy(Constants.getBreakBlockFluidEnergy(quarry), Reason.REMOVE_FLUID, false)) {
-                return true;
-            }
-            var bucketItem = fluidBlock.tryDrainFluid(world, pos, state);
-            quarry.storage.addFluid(bucketItem);
-            if (world.isAir(pos)) {
+        if (!fluidState.isEmpty()) {
+            if (state.getBlock() instanceof FluidDrainable fluidBlock) {
+                if (requireEnergy && !quarry.useEnergy(Constants.getBreakBlockFluidEnergy(quarry), Reason.REMOVE_FLUID, false)) {
+                    return true;
+                }
+                var bucketItem = fluidBlock.tryDrainFluid(world, pos, state);
+                quarry.storage.addFluid(bucketItem);
+                if (world.isAir(pos)) {
+                    world.setBlockState(pos, QuarryPlus.ModObjects.BLOCK_FRAME.getDammingState());
+                }
+            } else if (state.getBlock() instanceof FluidFillable) {
+                float hardness = state.getHardness(world, pos);
+                if (requireEnergy && !quarry.useEnergy(Constants.getBreakEnergy(hardness, quarry), Reason.REMOVE_FLUID, false)) {
+                    return true;
+                }
+                var drops = Block.getDroppedStacks(state, world, pos, world.getBlockEntity(pos), null, quarry.getPickaxe());
+                drops.forEach(quarry.storage::addItem);
                 world.setBlockState(pos, QuarryPlus.ModObjects.BLOCK_FRAME.getDammingState());
             }
         }
