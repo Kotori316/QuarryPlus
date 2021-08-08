@@ -3,7 +3,6 @@ package com.yogpc.qp.utils;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Stream;
 
 @SuppressWarnings("ClassCanBeRecord") // to make fields un-accessible.
 public class ManualOrder<T> implements Comparator<T> {
@@ -63,20 +62,5 @@ public class ManualOrder<T> implements Comparator<T> {
         public Builder<T> add(T t) {
             return add(t, ordering.values().stream().max(Comparator.naturalOrder()).orElse(0) + 1);
         }
-    }
-}
-
-class ManualOrderTest {
-    public static void main(String[] args) {
-        var order = ManualOrder.builder(Comparator.<String>naturalOrder())
-            .add("INT") // 0
-            .add("STRING") // 1
-            .add("SHORT", 5)
-            .add("BYTE") // 6
-            .add("CHAR", 3)
-            .build();
-        Stream.of(
-            "BYTE", "CHAR", "INT", "STRING", "SHORT", "LONG", "UNSIGNED", "SIGNED", "BOOLEAN"
-        ).sorted(order).forEach(System.out::println);
     }
 }
