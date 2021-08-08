@@ -48,7 +48,7 @@ public record EnchantmentLevel(Enchantment enchantment, int level) {
 
     public static final Comparator<EnchantmentLevel> COMPARATOR =
         Comparator.comparingInt((EnchantmentLevel e) -> Registry.ENCHANTMENT.getRawId(e.enchantment()))
-            .thenComparing(EnchantmentLevel::level);
+            .thenComparingInt(EnchantmentLevel::level);
     public static final Comparator<EnchantmentLevel> QUARRY_ENCHANTMENT_COMPARATOR =
         Comparator.comparing(EnchantmentLevel::enchantment,
             ManualOrder.builder(Comparator.comparingInt(Registry.ENCHANTMENT::getRawId))
@@ -57,5 +57,5 @@ public record EnchantmentLevel(Enchantment enchantment, int level) {
                 .add(Enchantments.FORTUNE)
                 .add(Enchantments.SILK_TOUCH)
                 .build()
-        ).thenComparing(EnchantmentLevel::level);
+        ).thenComparingInt(EnchantmentLevel::level);
 }
