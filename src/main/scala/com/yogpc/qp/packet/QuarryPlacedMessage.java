@@ -7,6 +7,8 @@ import java.util.stream.IntStream;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.EnchantmentLevel;
 import com.yogpc.qp.machines.quarry.TileQuarry;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
@@ -67,14 +69,17 @@ public class QuarryPlacedMessage implements IMessage<QuarryPlacedMessage> {
         return NAME;
     }
 
-    static final ClientPlayNetworking.PlayChannelHandler HANDLER = (client, handler, buf, responseSender) -> {
-        var message = IMessage.decode(QuarryPlacedMessage::new).apply(buf);
-        var world = client.world;
-        if (world != null && world.getRegistryKey().equals(message.dim)) {
-            if (world.getBlockEntity(message.pos) instanceof TileQuarry quarry) {
-                quarry.setEnchantments(message.levels.stream().map(e -> Pair.of(e.enchantment(), e.level())).collect(Collectors.toMap(Pair::getKey, Pair::getValue)));
-                quarry.setTileDataFromItem(message.otherData);
+    @Environment(EnvType.CLIENT)
+    static class Holder {
+        static final ClientPlayNetworking.PlayChannelHandler HANDLER = (client, handler, buf, responseSender) -> {
+            var message = IMessage.decode(QuarryPlacedMessage::new).apply(buf);
+            var world = client.world;
+            if (world != null && world.getRegistryKey().equals(message.dim)) {
+                if (world.getBlockEntity(message.pos) instanceof TileQuarry quarry) {
+                    quarry.setEnchantments(message.levels.stream().map(e -> Pair.of(e.enchantment(), e.level())).collect(Collectors.toMap(Pair::getKey, Pair::getValue)));
+                    quarry.setTileDataFromItem(message.otherData);
+                }
             }
-        }
-    };
+        };
+    }
 }

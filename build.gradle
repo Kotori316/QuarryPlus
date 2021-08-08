@@ -111,8 +111,13 @@ dependencies {
 
     //noinspection SpellCheckingInspection
     modRuntime("alexiil.mc.mod:simplepipes-all:${project.simple_pipe_version}")
-    //noinspection SpellCheckingInspection
-    modRuntime("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}")
+    if (Boolean.parseBoolean(System.getenv("FABRIC_SERVER") ?: "false")) {
+        //noinspection SpellCheckingInspection
+        modCompileOnly("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}")
+    } else {
+        //noinspection SpellCheckingInspection
+        modRuntime("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}")
+    }
     modImplementation("RebornCore:RebornCore-1.17:${project.RebornCore_version}")
     modRuntime("TechReborn:TechReborn-1.17:${project.TechReborn_version}")
     modImplementation("dev.technici4n:FastTransferLib:${project.ftl_version}")
