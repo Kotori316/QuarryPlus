@@ -2,6 +2,7 @@ package com.yogpc.qp.machines.quarry;
 
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -158,8 +159,11 @@ final class FrameTarget extends Target {
 
     @NotNull
     private Stream<BlockPos> getPosStream(Area area) {
-        return Stream.concat(Stream.concat(makeSquare(area, area.minY()), makePole(area, area.minY() + 1, area.maxY())),
-            makeSquare(area, area.maxY()));
+        return Stream.of(
+            makeSquare(area, area.minY()),
+            makePole(area, area.minY() + 1, area.maxY()),
+            makeSquare(area, area.maxY())
+        ).flatMap(Function.identity());
     }
 
     @Override
@@ -198,16 +202,12 @@ final class FrameTarget extends Target {
     }
 
     static Stream<BlockPos> makeSquare(Area area, int y) {
-        return Stream.concat(
-            Stream.concat(
-                IntStream.rangeClosed(area.minX(), area.maxX()).mapToObj(x -> new BlockPos(x, y, area.minZ())), // minX -> maxX, minZ
-                IntStream.rangeClosed(area.minZ(), area.maxZ()).mapToObj(z -> new BlockPos(area.maxX(), y, z)) // maxX, minZ -> maxZ
-            ),
-            Stream.concat(
-                IntStream.iterate(area.maxX(), x -> x >= area.minX(), x -> x - 1).mapToObj(x -> new BlockPos(x, y, area.maxZ())), // maxX -> minX, maxZ
-                IntStream.iterate(area.maxZ(), z -> z >= area.minZ(), z -> z - 1).mapToObj(z -> new BlockPos(area.minX(), y, z)) // minX, maxZ -> minZ
-            )
-        );
+        return Stream.of(
+            IntStream.rangeClosed(area.minX(), area.maxX()).mapToObj(x -> new BlockPos(x, y, area.minZ())), // minX -> maxX, minZ
+            IntStream.rangeClosed(area.minZ(), area.maxZ()).mapToObj(z -> new BlockPos(area.maxX(), y, z)), // maxX, minZ -> maxZ
+            IntStream.iterate(area.maxX(), x -> x >= area.minX(), x -> x - 1).mapToObj(x -> new BlockPos(x, y, area.maxZ())), // maxX -> minX, maxZ
+            IntStream.iterate(area.maxZ(), z -> z >= area.minZ(), z -> z - 1).mapToObj(z -> new BlockPos(area.minX(), y, z)) // minX, maxZ -> minZ
+        ).flatMap(Function.identity());
     }
 
     static Stream<BlockPos> makePole(Area area, int yMin, int yMax) {
