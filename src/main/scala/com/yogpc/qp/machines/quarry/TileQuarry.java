@@ -197,7 +197,7 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
         // Fluid remove
         // Fluid at near
         BreakResult notEnoughEnergy = checkEdgeFluid(targetPos, requireEnergy, targetWorld, this);
-        if (notEnoughEnergy != null) return notEnoughEnergy;
+        if (notEnoughEnergy == BreakResult.NOT_ENOUGH_ENERGY) return notEnoughEnergy;
 
         // Fluid at target pos. Maybe not available because Remove Fluid is done before breaking blocks.
         var fluidState = targetWorld.getFluidState(targetPos);
@@ -225,7 +225,6 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
         return BreakResult.SUCCESS;
     }
 
-    @Nullable
     public static BreakResult checkEdgeFluid(BlockPos targetPos, boolean requireEnergy, ServerWorld targetWorld, TileQuarry quarry) {
         var area = quarry.getArea();
         assert area != null;
@@ -273,7 +272,7 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
                 return BreakResult.NOT_ENOUGH_ENERGY;
             }
         }
-        return null;
+        return BreakResult.SUCCESS;
     }
 
     /**
