@@ -17,10 +17,15 @@ import alexiil.mc.lib.attributes.fluid.volume.FluidVolume;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.quarry.TileQuarry;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -41,17 +46,23 @@ public class QuarryFluidTransfer {
             BCRegister.registerAttributes();
             registered = true;
         }
+        if (FabricLoader.getInstance().isModLoaded("fabric-transfer-api-v1")) {
+            QuarryPlus.LOGGER.debug("Trying to register fabric fluid transfer api.");
+            FabricTransfer.register();
+            transfers.add(new FabricTransfer());
+            registered = true;
+        }
     }
 
     /**
      * @return a pair of fluid and amount which were NOT transferred. The excess amount.
      */
-    public static Pair<Fluid, Long> transfer(World world, BlockPos pos, @NotNull BlockEntity destination, Fluid fluid, long amount) {
+    public static Pair<Fluid, Long> transfer(World world, BlockPos pos, @NotNull BlockEntity destination, Fluid fluid, long amount, Direction direction) {
         if (!registered) return Pair.of(fluid, amount);
 
         for (Transfer transfer : transfers) {
-            if (transfer.acceptable(world, pos, destination)) {
-                var excess = transfer.transfer(world, pos, destination, fluid, amount);
+            if (transfer.acceptable(world, pos, direction, destination)) {
+                var excess = transfer.transfer(world, pos, destination, direction, amount, fluid);
                 if (excess.getRight() == 0) {
                     // Early return
                     return excess;
@@ -65,10 +76,10 @@ public class QuarryFluidTransfer {
 }
 
 interface Transfer {
-    boolean acceptable(World world, BlockPos pos, BlockEntity entity);
+    boolean acceptable(World world, BlockPos pos, Direction direction, BlockEntity entity);
 
     @NotNull
-    Pair<Fluid, Long> transfer(World world, BlockPos pos, @NotNull BlockEntity destination, Fluid fluid, long amount);
+    Pair<Fluid, Long> transfer(World world, BlockPos pos, @NotNull BlockEntity destination, Direction direction, long amount, Fluid fluid);
 }
 
 class BCRegister {
@@ -85,14 +96,14 @@ class BCRegister {
 class BCTransfer implements Transfer {
 
     @Override
-    public boolean acceptable(World world, BlockPos pos, BlockEntity entity) {
+    public boolean acceptable(World world, BlockPos pos, Direction direction, BlockEntity entity) {
         var attribute = FluidAttributes.INSERTABLE.get(world, pos);
         return attribute != RejectingFluidInsertable.NULL;
     }
 
     @Override
     @NotNull
-    public Pair<Fluid, Long> transfer(World world, BlockPos pos, @NotNull BlockEntity destination, Fluid fluid, long amount) {
+    public Pair<Fluid, Long> transfer(World world, BlockPos pos, @NotNull BlockEntity destination, Direction direction, long amount, Fluid fluid) {
         var volume = FluidKeys.get(fluid).withAmount(FluidAmount.of(amount, 1000)); // I'm assuming one bucket is equal to 1000 mB.
         var insertable = FluidAttributes.INSERTABLE.get(world, pos);
         var attemptResult = insertable.attemptInsertion(volume, Simulation.SIMULATE);
@@ -126,5 +137,41 @@ class BCExtractable implements FluidExtractable {
             }
         }
         return FluidVolumeUtil.EMPTY;
+    }
+}
+
+@SuppressWarnings({"deprecation", "UnstableApiUsage"})
+class FabricTransfer implements Transfer {
+    static void register() { // STUB for future.
+    }
+
+    @Override
+    public boolean acceptable(World world, BlockPos pos, Direction direction, BlockEntity entity) {
+        return FluidStorage.SIDED.find(world, pos, direction) != null;
+    }
+
+    @Override
+    public @NotNull Pair<Fluid, Long> transfer(World world, BlockPos pos, @NotNull BlockEntity destination, Direction direction, long amount, Fluid fluid) {
+        var storage = FluidStorage.SIDED.find(world, pos, direction);
+        if (storage == null) {
+            // Not fluid container.
+            return Pair.of(fluid, amount);
+        }
+        long insertAmount; // In fabric unit
+        try (Transaction simulationTransaction = Transaction.openOuter()) {
+            insertAmount = storage.insert(FluidVariant.of(fluid), amount / MachineStorage.ONE_BUCKET * FluidConstants.BUCKET, simulationTransaction);
+            simulationTransaction.abort();
+        }
+        if (insertAmount > 0) {
+            long inserted; // In mB unit
+            try (Transaction executionTransaction = Transaction.openOuter()) {
+                inserted = storage.insert(FluidVariant.of(fluid), insertAmount, executionTransaction) / FluidConstants.BUCKET * MachineStorage.ONE_BUCKET;
+                executionTransaction.commit();
+            }
+            return Pair.of(fluid, amount - inserted);
+        } else {
+            // No fluid is inserted.
+            return Pair.of(fluid, amount);
+        }
     }
 }

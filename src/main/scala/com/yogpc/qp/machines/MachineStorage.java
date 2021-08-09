@@ -214,13 +214,13 @@ public class MachineStorage {
         if (QuarryFluidTransfer.isRegistered()) return (world, pos, state, blockEntity) -> {
             var storage = blockEntity.getStorage();
             int count = 0;
-            for (Direction value : Direction.values()) {
-                var destPos = pos.offset(value);
+            for (Direction direction : Direction.values()) {
+                var destPos = pos.offset(direction);
                 var tile = world.getBlockEntity(destPos);
                 if (tile != null) {
                     var fluidMap = new ArrayList<>(storage.getFluidMap().entrySet());
                     for (Map.Entry<FluidKey, Long> entry : fluidMap) {
-                        var excess = QuarryFluidTransfer.transfer(world, destPos, tile, entry.getKey().fluid(), entry.getValue());
+                        var excess = QuarryFluidTransfer.transfer(world, destPos, tile, entry.getKey().fluid(), entry.getValue(), direction.getOpposite());
                         storage.putFluid(entry.getKey().fluid(), excess.getValue());
                         count += 1;
                         if (count > MAX_TRANSFER) return;
