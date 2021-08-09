@@ -221,9 +221,11 @@ public class MachineStorage {
                     var fluidMap = new ArrayList<>(storage.getFluidMap().entrySet());
                     for (Map.Entry<FluidKey, Long> entry : fluidMap) {
                         var excess = QuarryFluidTransfer.transfer(world, destPos, tile, entry.getKey().fluid(), entry.getValue(), direction.getOpposite());
-                        storage.putFluid(entry.getKey().fluid(), excess.getValue());
-                        count += 1;
-                        if (count > MAX_TRANSFER) return;
+                        if (!entry.getValue().equals(excess.getValue())) { // Fluid is transferred.
+                            storage.putFluid(entry.getKey().fluid(), excess.getValue());
+                            count += 1;
+                            if (count > MAX_TRANSFER) return;
+                        }
                     }
                 }
             }
