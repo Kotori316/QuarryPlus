@@ -13,6 +13,7 @@ import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.BreakResult;
 import com.yogpc.qp.machines.CheckerLog;
 import com.yogpc.qp.machines.EnchantmentLevel;
+import com.yogpc.qp.machines.ItemConverter;
 import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.PowerTile;
 import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
@@ -61,6 +62,7 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
     public double headX, headY, headZ;
     private boolean bedrockRemove = false;
     public int digMinY = 0;
+    private final ItemConverter itemConverter = new ItemConverter(List.of());
 
     public TileQuarry(BlockPos pos, BlockState state) {
         super(QuarryPlus.ModObjects.QUARRY_TYPE, pos, state, 10000 * ONE_FE);
@@ -216,7 +218,7 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
             return BreakResult.NOT_ENOUGH_ENERGY;
         }
         var drops = Block.getDroppedStacks(blockState, targetWorld, targetPos, targetWorld.getBlockEntity(targetPos), null, getPickaxe());
-        drops.forEach(this.storage::addItem);
+        drops.stream().map(itemConverter::map).forEach(this.storage::addItem);
         targetWorld.setBlockState(targetPos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
         var sound = blockState.getSoundGroup();
         if (requireEnergy)
