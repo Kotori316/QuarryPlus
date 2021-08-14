@@ -7,6 +7,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.EnchantedLootFunction;
 import com.yogpc.qp.machines.MachineStorage;
+import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QuarryMarker;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.QuarryPlacedMessage;
@@ -72,7 +73,7 @@ public class BlockQuarry extends BlockWithEntity {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
         return world.isClient ? null : checkType(type, QuarryPlus.ModObjects.QUARRY_TYPE,
-            new CombinedBlockEntityTicker<>(TileQuarry.getGenerator(), TileQuarry::tick, MachineStorage.passItems(), MachineStorage.passFluid()));
+            new CombinedBlockEntityTicker<>(PowerTile.getGenerator(), TileQuarry::tick, PowerTile.logTicker(), MachineStorage.passItems(), MachineStorage.passFluid()));
     }
 
     @Override

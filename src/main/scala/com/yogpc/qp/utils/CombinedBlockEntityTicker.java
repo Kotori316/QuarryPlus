@@ -2,6 +2,7 @@ package com.yogpc.qp.utils;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -13,7 +14,7 @@ public final record CombinedBlockEntityTicker<T extends BlockEntity>(
     List<BlockEntityTicker<? super T>> tickers) implements BlockEntityTicker<T> {
     @SafeVarargs
     public CombinedBlockEntityTicker(BlockEntityTicker<? super T>... ts) {
-        this(Arrays.asList(ts));
+        this(Arrays.stream(ts).filter(Objects::nonNull).toList());
     }
 
     @Override

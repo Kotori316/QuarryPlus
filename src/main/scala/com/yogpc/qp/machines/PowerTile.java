@@ -1,7 +1,5 @@
 package com.yogpc.qp.machines;
 
-import java.util.EnumMap;
-import java.util.Map;
 import java.util.function.Consumer;
 
 import com.yogpc.qp.QuarryPlus;
@@ -13,10 +11,11 @@ import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
+import org.jetbrains.annotations.Nullable;
 
 public class PowerTile extends BlockEntity {
     public static final long ONE_FE = 1_000_000_000L;
-    private final Map<Reason, Long> usageMap = new EnumMap<>(Reason.class);
+    private final EnergyCounter energyCounter;
     private long energy;
     private long maxEnergy;
     protected boolean chunkPreLoaded;
@@ -28,6 +27,7 @@ public class PowerTile extends BlockEntity {
     public PowerTile(BlockEntityType<?> type, BlockPos pos, BlockState state, long maxEnergy) {
         super(type, pos, state);
         this.maxEnergy = maxEnergy;
+        this.energyCounter = EnergyCounter.createInstance(QuarryPlus.config.common.debug, "%s(%s)".formatted(getClass().getSimpleName(), pos));
     }
 
     @Override
@@ -65,9 +65,12 @@ public class PowerTile extends BlockEntity {
      * @return the amount of <strong>accepted</strong> energy.
      */
     public long addEnergy(long amount, boolean simulate) {
+        assert world != null;
         long accepted = Math.min(maxEnergy - energy, amount);
-        if (!simulate)
+        if (!simulate) {
             energy += accepted;
+            energyCounter.getEnergy(world.getTime(), accepted);
+        }
         return accepted;
     }
 
@@ -80,19 +83,18 @@ public class PowerTile extends BlockEntity {
      * @return {@code true} if the energy is consumed. When {@code false}, the machine doesn't have enough energy to work.
      */
     public boolean useEnergy(long amount, Reason reason, boolean force) {
+        assert world != null;
         if (energy >= amount || force) {
             energy -= amount;
-            usageMap.merge(reason, amount, Long::sum);
+            energyCounter.useEnergy(world.getTime(), amount, reason);
             return true;
         } else {
             return false;
         }
     }
 
-    public void logUsage(Consumer<String> logger) {
-        usageMap.entrySet().stream()
-            .map(e -> "%s -> %d".formatted(e.getKey(), e.getValue()))
-            .forEach(logger);
+    protected void logUsage(Consumer<String> logger) {
+        energyCounter.logUsageMap(logger);
     }
 
     public void setChunkPreLoaded(boolean chunkPreLoaded) {
@@ -106,10 +108,17 @@ public class PowerTile extends BlockEntity {
             QuarryChunkLoadUtil.makeChunkUnloaded(world, pos, chunkPreLoaded);
     }
 
+    @Nullable
+    public static BlockEntityTicker<PowerTile> logTicker() {
+        if (QuarryPlus.config.common.debug)
+            return (w, p, s, blockEntity) -> blockEntity.energyCounter.logOutput(w.getTime());
+        else return null;
+    }
+
+    @Nullable
     public static BlockEntityTicker<PowerTile> getGenerator() {
         if (EnergyIntegration.hasAnyEnergyModule() && !QuarryPlus.config.common.noEnergy)
-            return (w, p, s, blockEntity) -> {
-            };
+            return null;
         else
             return (w, p, s, blockEntity) -> blockEntity.addEnergy(blockEntity.getMaxEnergy(), false);
     }
