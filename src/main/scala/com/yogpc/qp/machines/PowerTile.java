@@ -134,7 +134,7 @@ public class PowerTile extends BlockEntity {
         }
 
         public static long getBreakEnergy(float hardness, EnchantmentLevel.HasEnchantments enchantments) {
-            if (hardness < 0) return 200 * BREAK_BLOCK_BASE;
+            if (hardness < 0 || Float.isInfinite(hardness)) return 200 * BREAK_BLOCK_BASE;
             hardness = hardness / (1 + Math.max(0, enchantments.unbreakingLevel()));
             var fortune = enchantments.fortuneLevel();
             if (fortune != 0) hardness *= (fortune + 1);

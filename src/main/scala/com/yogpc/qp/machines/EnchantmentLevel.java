@@ -28,7 +28,7 @@ public record EnchantmentLevel(Enchantment enchantment, int level) {
     public interface HasEnchantments {
         List<EnchantmentLevel> getEnchantments();
 
-        private int getLevel(Enchantment enchantment) {
+        default int getLevel(Enchantment enchantment) {
             return getEnchantments().stream().filter(e -> e.enchantment() == enchantment)
                 .mapToInt(EnchantmentLevel::level).findFirst().orElse(0);
         }
