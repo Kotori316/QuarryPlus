@@ -62,7 +62,7 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
     public double headX, headY, headZ;
     private boolean bedrockRemove = false;
     public int digMinY = 0;
-    private final ItemConverter itemConverter = new ItemConverter(List.of());
+    private final ItemConverter itemConverter = ItemConverter.defaultConverter();
 
     public TileQuarry(BlockPos pos, BlockState state) {
         super(QuarryPlus.ModObjects.QUARRY_TYPE, pos, state, 10000 * ONE_FE);

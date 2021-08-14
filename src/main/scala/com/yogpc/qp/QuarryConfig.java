@@ -28,6 +28,9 @@ public class QuarryConfig implements ConfigData {
         @ConfigEntry.Category(Constant.COMMON_CATEGORY)
         @ConfigEntry.Gui.RequiresRestart
         public boolean noEnergy = false;
+        @ConfigEntry.Category(Constant.COMMON_CATEGORY)
+        @ConfigEntry.Gui.RequiresRestart
+        public boolean convertDeepslateOres = false;
     }
 
     public static class Power {

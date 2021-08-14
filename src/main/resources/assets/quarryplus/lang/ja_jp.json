@@ -70,6 +70,7 @@
   "text.autoconfig.quarryplus.option.common.noEnergy": "エネルギーなし",
   "text.autoconfig.quarryplus.option.power.rebornEnergyConversionCoefficient": "RebornCore",
   "text.autoconfig.quarryplus.option.power.fastTransferEnergyConversionCoefficient": "FastTransferLib",
+  "text.autoconfig.quarryplus.option.common.convertDeepslateOres": "Deepslate鉱石の変換",
   "container.yog.basic": "入出力バッファ",
   "FD.UNKNOWN": "不明な方向",
   "FD.down": "下",

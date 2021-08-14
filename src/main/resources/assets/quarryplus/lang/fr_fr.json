@@ -70,6 +70,7 @@
   "text.autoconfig.quarryplus.option.common.noEnergy": "No Energy",
   "text.autoconfig.quarryplus.option.power.rebornEnergyConversionCoefficient": "RebornCore",
   "text.autoconfig.quarryplus.option.power.fastTransferEnergyConversionCoefficient": "FastTransferLib",
+  "text.autoconfig.quarryplus.option.common.convertDeepslateOres": "Convert Deepslate Ores",
   "container.yog.basic": "Tampon Machine",
   "FD.UNKNOWN": "Direction INCONNUE",
   "FD.down": "BAS",

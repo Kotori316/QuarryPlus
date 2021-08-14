@@ -15,6 +15,7 @@ import alexiil.mc.lib.attributes.fluid.impl.RejectingFluidInsertable;
 import alexiil.mc.lib.attributes.fluid.volume.FluidKeys;
 import alexiil.mc.lib.attributes.fluid.volume.FluidVolume;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.FluidKey;
 import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.quarry.TileQuarry;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
@@ -126,7 +127,7 @@ class BCExtractable implements FluidExtractable {
 
     @Override
     public FluidVolume attemptExtraction(FluidFilter filter, FluidAmount maxAmount, Simulation simulation) {
-        for (Map.Entry<MachineStorage.FluidKey, Long> entry : storage.getFluidMap().entrySet()) {
+        for (Map.Entry<FluidKey, Long> entry : storage.getFluidMap().entrySet()) {
             var fluidKey = FluidKeys.get(entry.getKey().fluid());
             if (filter.matches(fluidKey)) {
                 var extractAmount = maxAmount.min(FluidAmount.of(entry.getValue(), 1000));

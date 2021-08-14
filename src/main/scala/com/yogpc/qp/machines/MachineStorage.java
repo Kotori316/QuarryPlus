@@ -15,16 +15,12 @@ import net.minecraft.block.entity.HopperBlockEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.BucketItem;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.Registry;
 import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.Nullable;
 
 public class MachineStorage {
     private Map<ItemKey, Long> itemMap = new LinkedHashMap<>();
@@ -75,51 +71,6 @@ public class MachineStorage {
             .map(NbtCompound.class::cast)
             .map(n -> Pair.of(FluidKey.fromNbt(n), n.getLong("amount")))
             .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
-    }
-
-    public record ItemKey(Item item, @Nullable NbtCompound nbt) {
-        public ItemKey(ItemStack stack) {
-            this(stack.getItem(), stack.getNbt());
-        }
-
-        public NbtCompound createNbt(long itemCount) {
-            var tag = new NbtCompound();
-            tag.putString("item", Registry.ITEM.getId(item).toString());
-            if (nbt != null)
-                tag.put("tag", nbt);
-            tag.putLong("count", itemCount);
-            return tag;
-        }
-
-        static ItemKey fromNbt(NbtCompound tag) {
-            var item = Registry.ITEM.get(new Identifier(tag.getString("item")));
-            var nbt = tag.contains("tag") ? tag.getCompound("tag") : null;
-            return new ItemKey(item, nbt);
-        }
-
-        public ItemStack toStack(int count) {
-            var stack = new ItemStack(item, count);
-            stack.setNbt(nbt);
-            return stack;
-        }
-    }
-
-    public record FluidKey(Fluid fluid, @Nullable NbtCompound nbt) {
-
-        public NbtCompound createNbt(long amount) {
-            var tag = new NbtCompound();
-            tag.putString("fluid", Registry.FLUID.getId(fluid).toString());
-            if (nbt != null)
-                tag.put("tag", nbt);
-            tag.putLong("amount", amount);
-            return tag;
-        }
-
-        static FluidKey fromNbt(NbtCompound tag) {
-            var fluid = Registry.FLUID.get(new Identifier(tag.getString("fluid")));
-            var nbt = tag.contains("nbt") ? tag.getCompound("nbt") : null;
-            return new FluidKey(fluid, nbt);
-        }
     }
 
     public Map<FluidKey, Long> getFluidMap() {
