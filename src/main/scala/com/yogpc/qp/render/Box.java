@@ -61,8 +61,8 @@ public class Box {
         if (this.firstSide) {
             buffer.pos(e1X, e1Y, e1Z).color(red, green, blue, alpha).tex(sprite.getMinU(), sprite.getMinV()).lightedAndEnd();
             buffer.pos(e2X, e2Y, e2Z).color(red, green, blue, alpha).tex(sprite.getMaxU(), sprite.getMinV()).lightedAndEnd();
-            buffer.pos(e3X, e2Y, e3Z).color(red, green, blue, alpha).tex(sprite.getMaxU(), sprite.getMaxV()).lightedAndEnd();
-            buffer.pos(e4X, e1Y, e4Z).color(red, green, blue, alpha).tex(sprite.getMinU(), sprite.getMaxV()).lightedAndEnd();
+            buffer.pos(e3X, e3Y, e3Z).color(red, green, blue, alpha).tex(sprite.getMaxU(), sprite.getMaxV()).lightedAndEnd();
+            buffer.pos(e4X, e4Y, e4Z).color(red, green, blue, alpha).tex(sprite.getMinU(), sprite.getMaxV()).lightedAndEnd();
         }
 
         double l = Math.sqrt(this.dx / this.sizeX * this.dx / this.sizeX + this.dy / this.sizeY * this.dy / this.sizeY + this.dz / this.sizeZ * this.dz / this.sizeZ);
