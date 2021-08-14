@@ -225,7 +225,6 @@ curseforge {
         id = '282837'
         changelogType = 'markdown'
         addGameVersion 'Fabric'
-        addGameVersion '1.17'
         addGameVersion '1.17.1'
         changelog = joinedLog
         releaseType = isInCI() ? 'alpha' : 'beta'
