@@ -294,6 +294,14 @@ final class PosesTarget extends Target {
         tag.put("poses", list);
         return tag;
     }
+
+    @Override
+    public String toString() {
+        return "PosesTarget{" +
+            "currentTarget=" + currentTarget +
+            ", size=" + posList.size() +
+            '}';
+    }
 }
 
 final class FrameInsideTarget extends Target {
@@ -346,5 +354,15 @@ final class FrameInsideTarget extends Target {
         var t = new FrameInsideTarget(area, minY, maxY);
         t.index = index;
         return t;
+    }
+
+    @Override
+    public String toString() {
+        return "FrameInsideTarget{" +
+            "area=" + area +
+            ", minY=" + minY +
+            ", maxY=" + maxY +
+            ", index=" + index +
+            '}';
     }
 }

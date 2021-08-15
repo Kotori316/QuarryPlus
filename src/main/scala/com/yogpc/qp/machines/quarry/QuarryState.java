@@ -88,7 +88,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
             Objects.requireNonNull(quarry.getArea());
             if (quarry.target == null) {
                 quarry.target = Target.newDigTarget(quarry.getArea(), quarry.getArea().minY());
-                QuarryPlus.LOGGER.debug(MARKER, "Quarry({}) Target changed to {}.", quarryPos, quarry.target);
+                QuarryPlus.LOGGER.debug(MARKER, "Quarry({}) Target changed to {} in {}.", quarryPos, quarry.target, name());
             }
             var blockTarget = QuarryState.dropUntilPos(quarry.target, StateConditions.skipNoBreak(quarry));
             if (blockTarget == null) {
@@ -97,7 +97,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
                 if (fluidPoses.isEmpty()) {
                     // Change Y
                     quarry.target = Target.nextY(quarry.target, quarry.getArea(), quarry.digMinY);
-                    QuarryPlus.LOGGER.debug(MARKER, "Quarry({}) Target changed to {}.", quarryPos, quarry.target);
+                    QuarryPlus.LOGGER.debug(MARKER, "Quarry({}) Target changed to {} in {}.", quarryPos, quarry.target, name());
                     if (quarry.target != null)
                         tick(world, quarryPos, state, quarry);
                     else
