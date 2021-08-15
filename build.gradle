@@ -92,6 +92,7 @@ repositories {
             }
 }
 
+//noinspection SpellCheckingInspection
 dependencies {
     //to change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
@@ -100,22 +101,17 @@ dependencies {
 
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-    //noinspection SpellCheckingInspection
-    modImplementation "net.fabricmc:fabric-language-scala:1.0.0"
+    // modImplementation "net.fabricmc:fabric-language-scala:1.0.0"
 
     // library
-    implementation "org.scala-lang:scala-library:2.13.4"
+    // implementation "org.scala-lang:scala-library:2.13.4"
     implementation "com.google.code.findbugs:jsr305:3.0.1"
-    //noinspection SpellCheckingInspection
     modImplementation "alexiil.mc.lib:libblockattributes-all:${project.bc_attribute_version}"
 
-    //noinspection SpellCheckingInspection
     modRuntime("alexiil.mc.mod:simplepipes-all:${project.simple_pipe_version}")
     if (Boolean.parseBoolean(System.getenv("FABRIC_SERVER") ?: "false")) {
-        //noinspection SpellCheckingInspection
         modCompileOnly("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}")
     } else {
-        //noinspection SpellCheckingInspection
         modRuntime("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}")
     }
     modImplementation("RebornCore:RebornCore-1.17:${project.RebornCore_version}")
@@ -126,12 +122,9 @@ dependencies {
         //noinspection SpellCheckingInspection
         exclude(group: "net.fabricmc.fabric-api")
     }
-    //noinspection SpellCheckingInspection
     modApi("com.terraformersmc:modmenu:${project.mod_menu_version}") {
         transitive = false
     }
-    // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
-    // You may need to force-disable transitiveness on them.
 
     // Test Dependencies.
     testImplementation(group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.6.2')
@@ -232,7 +225,7 @@ curseforge {
             displayName = "v" + project.version + "-fabric"
         }
         relations {
-            requiredDependency 'fabric-language-scala'
+            // requiredDependency 'fabric-language-scala'
             requiredDependency 'fabric-api'
             requiredDependency 'cloth-config'
             //noinspection SpellCheckingInspection
