@@ -101,7 +101,8 @@ dependencies {
 
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-    // modImplementation "net.fabricmc:fabric-language-scala:1.0.0"
+    //noinspection SpellCheckingInspection
+    modRuntime "net.fabricmc:fabric-language-scala:${project.fabric_scala_version}"
 
     // library
     // implementation "org.scala-lang:scala-library:2.13.4"
