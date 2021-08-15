@@ -1,5 +1,6 @@
 package com.yogpc.qp.machines.quarry;
 
+import java.time.Duration;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
@@ -11,7 +12,9 @@ import net.minecraft.util.math.Direction;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTimeout;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TargetTest {
@@ -65,5 +68,33 @@ class TargetTest {
             if (p == null) return null;
             else return p.toImmutable();
         }).takeWhile(Objects::nonNull);
+    }
+
+    @Test
+    void inside0() {
+        assertEquals(10, getAllPos(() -> Target.newFrameInside(area, area.minY(), area.maxY())).limit(10).distinct().count());
+    }
+
+    @Test
+    void inside1() {
+        var poses = assertTimeout(Duration.ofSeconds(5), () -> getAllPos(() -> Target.newFrameInside(area, area.minY(), area.maxY())).toList());
+        assertEquals(30, poses.size());
+
+        assertAll(
+            () -> assertEquals(new BlockPos(2, 4, 4), poses.get(0)),
+            () -> assertEquals(new BlockPos(2, 4, 5), poses.get(1)),
+            () -> assertEquals(new BlockPos(3, 4, 4), poses.get(2)),
+            () -> assertEquals(new BlockPos(3, 4, 5), poses.get(3)),
+            () -> assertEquals(new BlockPos(4, 4, 4), poses.get(4)),
+            () -> assertEquals(new BlockPos(2, 3, 4), poses.get(6)),
+            () -> assertEquals(new BlockPos(2, 2, 4), poses.get(12)),
+            () -> assertEquals(new BlockPos(2, 1, 4), poses.get(18)),
+            () -> assertEquals(new BlockPos(2, 0, 4), poses.get(24)),
+            () -> assertEquals(new BlockPos(4, 4, 5), poses.get(5)),
+            () -> assertEquals(new BlockPos(4, 3, 5), poses.get(11)),
+            () -> assertEquals(new BlockPos(4, 2, 5), poses.get(17)),
+            () -> assertEquals(new BlockPos(4, 1, 5), poses.get(23)),
+            () -> assertEquals(new BlockPos(4, 0, 5), poses.get(29))
+        );
     }
 }

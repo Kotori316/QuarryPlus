@@ -35,6 +35,7 @@ public abstract class Target {
             case "DigTarget" -> DigTarget.from(tag);
             case "FrameTarget" -> FrameTarget.from(tag);
             case "PosesTarget" -> PosesTarget.from(tag);
+            case "FrameInsideTarget" -> FrameInsideTarget.from(tag);
             default -> throw new IllegalArgumentException("Invalid target nbt. " + tag);
         };
     }
@@ -45,6 +46,10 @@ public abstract class Target {
 
     public static Target newDigTarget(Area area, int y) {
         return new DigTarget(area, y);
+    }
+
+    public static Target newFrameInside(Area area, int minY, int maxY) {
+        return new FrameInsideTarget(area, minY, maxY);
     }
 
     @Nullable
@@ -288,5 +293,58 @@ final class PosesTarget extends Target {
         var list = new NbtLongArray(allPoses().mapToLong(BlockPos::asLong).toArray());
         tag.put("poses", list);
         return tag;
+    }
+}
+
+final class FrameInsideTarget extends Target {
+    private final Area area;
+    private final int minY;
+    private final int maxY;
+    private int index = 0;
+
+    FrameInsideTarget(Area area, int minY, int maxY) {
+        this.area = area;
+        this.minY = minY;
+        this.maxY = maxY;
+    }
+
+    @Override
+    public @Nullable BlockPos get(boolean goNext) {
+        int xSize = area.maxX() - area.minX() - 1;
+        int zSize = area.maxZ() - area.minZ() - 1;
+        var areaSize = xSize * zSize;
+        int y = maxY - index / areaSize;
+        if (y < minY) return null;
+        int xz = index % areaSize;
+        int x = area.minX() + 1 + xz / zSize;
+        int z = area.minZ() + 1 + xz % zSize;
+        if (goNext) index++;
+        return new BlockPos(x, y, z);
+    }
+
+    @Override
+    public @NotNull Stream<BlockPos> allPoses() {
+        return BlockPos.stream(area.minX() + 1, minY, area.minZ() + 1,
+            area.maxX() - 1, maxY, area.maxZ() - 1);
+    }
+
+    @Override
+    public @NotNull NbtCompound toNbt() {
+        var tag = new NbtCompound();
+        tag.put("area", area.toNBT());
+        tag.putInt("minY", minY);
+        tag.putInt("maxY", maxY);
+        tag.putInt("index", index);
+        return tag;
+    }
+
+    public static FrameInsideTarget from(NbtCompound tag) {
+        var area = Area.fromNBT(tag.getCompound("area")).orElseThrow();
+        var minY = tag.getInt("minY");
+        var maxY = tag.getInt("maxY");
+        var index = tag.getInt("index");
+        var t = new FrameInsideTarget(area, minY, maxY);
+        t.index = index;
+        return t;
     }
 }

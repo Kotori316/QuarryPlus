@@ -35,7 +35,29 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
         @Override
         public void tick(World world, BlockPos quarryPos, BlockState state, TileQuarry quarry) {
             if (quarry.getArea() != null && quarry.getEnergy() > quarry.getMaxEnergy() / 200) {
+                quarry.setState(BREAK_INSIDE_FRAME, state);
+            }
+        }
+    },
+    BREAK_INSIDE_FRAME(true) {
+        @Override
+        public void tick(World world, BlockPos quarryPos, BlockState state, TileQuarry quarry) {
+            Objects.requireNonNull(quarry.getArea());
+            if (quarry.target == null) {
+                // Initial
+                quarry.target = Target.newFrameInside(quarry.getArea(), quarry.getArea().minY(), quarry.getArea().maxY());
+                QuarryPlus.LOGGER.debug(MARKER, "Quarry({}) Target changed to {} in {}.", quarryPos, quarry.target, name());
+            }
+            var targetPos = QuarryState.dropUntilPos(quarry.target, StateConditions.skipNoBreak(quarry));
+            if (targetPos == null) {
+                quarry.target = null;
                 quarry.setState(MAKE_FRAME, state);
+                return;
+            }
+            if (!quarry.getTargetWorld().getFluidState(targetPos).isEmpty()) {
+                quarry.setState(REMOVE_FLUID, state);
+            } else if (quarry.breakBlock(targetPos).isSuccess()) {
+                quarry.target.get(true); // Set next pos.
             }
         }
     },
@@ -45,7 +67,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
             Objects.requireNonNull(quarry.getArea());
             if (quarry.target == null) {
                 quarry.target = Target.newFrameTarget(quarry.getArea());
-                QuarryPlus.LOGGER.debug(MARKER, "Quarry({}) Target changed to {}.", quarryPos, quarry.target);
+                QuarryPlus.LOGGER.debug(MARKER, "Quarry({}) Target changed to {} in {}.", quarryPos, quarry.target, name());
             }
             var targetPos = QuarryState.dropUntilPos(quarry.target, StateConditions.skipFramePlace(quarry));
             if (targetPos == null) {
