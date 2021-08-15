@@ -1,6 +1,7 @@
 package com.yogpc.qp.machines.quarry;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.util.EightWayDirection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
@@ -29,7 +31,6 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import org.apache.commons.lang3.tuple.Pair;
-import scala.jdk.javaapi.CollectionConverters;
 
 import static net.minecraft.state.property.Properties.DOWN;
 import static net.minecraft.state.property.Properties.EAST;
@@ -180,14 +181,10 @@ public class BlockFrame extends Block {
         public static final List<Direction8> DIRECTIONS;
 
         static {
-            List<BlockPos> ds = Stream.of(Direction.values()).map(Direction::getVector).map(BlockPos::new).collect(Collectors.toList());
-            ds.add(BlockPos.ORIGIN);
-            DIRECTIONS = CollectionConverters.asJava(
-                CollectionConverters.asScala(ds).combinations(2).map(vectors -> vectors.<BlockPos>reduce(BlockPos::add))
-                    .distinct()
-                    .filterNot(BlockPos.ZERO::equals)
-                    .map(Direction8::new)
-                    .toSeq());
+            DIRECTIONS = Arrays.stream(EightWayDirection.values())
+                .flatMap(d -> d.getDirections().stream().map(Direction::getVector).reduce(Vec3i::add).stream())
+                .map(Direction8::new)
+                .toList();
         }
     }
 }
