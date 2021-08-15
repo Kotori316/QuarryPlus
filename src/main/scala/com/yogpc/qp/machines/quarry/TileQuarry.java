@@ -356,8 +356,9 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
             var worldBottom = targetWorld.getBottomY();
             if (targetWorld.getRegistryKey().equals(World.NETHER)) {
                 return (worldBottom < targetPos.getY() && targetPos.getY() < worldBottom + 5) || (122 < targetPos.getY() && targetPos.getY() < QuarryPlus.config.common.netherTop);
+            } else {
+                return worldBottom < targetPos.getY() && targetPos.getY() < worldBottom + 5;
             }
-            return worldBottom < targetPos.getY() && targetPos.getY() < worldBottom + 5;
         }
         return !unbreakable;
     }

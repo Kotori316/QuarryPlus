@@ -31,6 +31,10 @@ public record Area(int minX, int minY, int minZ, int maxX, int maxY, int maxZ,
         return minX < vec3i.getX() && vec3i.getX() < maxX && minZ < vec3i.getZ() && vec3i.getZ() < maxZ;
     }
 
+    public int sizeOfEachY() {
+        return (maxX() - minX()) * (maxZ() - minZ());
+    }
+
     public NbtCompound toNBT() {
         var tag = new NbtCompound();
         tag.putInt("minX", this.minX);

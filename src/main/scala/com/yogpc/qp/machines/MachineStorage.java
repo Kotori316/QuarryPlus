@@ -181,7 +181,6 @@ public class MachineStorage {
                 }
             }
         };
-        else return (world, pos, state, blockEntity) -> {
-        };
+        else return null;
     }
 }

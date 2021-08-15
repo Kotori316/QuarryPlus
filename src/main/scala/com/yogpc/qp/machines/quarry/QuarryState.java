@@ -111,7 +111,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
             Objects.requireNonNull(quarry.getArea());
             if (quarry.target == null) {
                 quarry.target = Target.newDigTarget(quarry.getArea(), quarry.getArea().minY());
-                QuarryPlus.LOGGER.debug(MARKER, "Quarry({}) Target changed to {} in BREAK_BLOCK.", quarryPos, quarry.target);
+                QuarryPlus.LOGGER.debug(MARKER, "Quarry({}) Target changed to {} in {}.", quarryPos, quarry.target, name());
             }
             if (!quarry.getTargetWorld().getFluidState(Objects.requireNonNull(quarry.target.get(false))).isEmpty()) {
                 quarry.setState(REMOVE_FLUID, state);
@@ -178,7 +178,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
         Set<BlockPos> counted = new HashSet<>();
         Set<Direction> directions = EnumSet.of(Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST, Direction.UP);
         Set<BlockPos> search = Set.of(originalPos);
-        Set<BlockPos> checked = new HashSet<>();
+        Set<BlockPos> checked = new HashSet<>(area.sizeOfEachY());
         while (!search.isEmpty()) {
             Set<BlockPos> nextSearch = new HashSet<>();
             for (BlockPos pos : search) {
