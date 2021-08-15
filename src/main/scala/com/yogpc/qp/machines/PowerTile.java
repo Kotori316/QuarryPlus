@@ -135,12 +135,12 @@ public class PowerTile extends BlockEntity {
 
         public static long getBreakEnergy(float hardness, EnchantmentLevel.HasEnchantments enchantments) {
             if (hardness < 0 || Float.isInfinite(hardness)) return 200 * BREAK_BLOCK_BASE;
-            hardness = hardness / (1 + Math.max(0, enchantments.unbreakingLevel()));
+            double modified = ((double) hardness) / (1 + Math.max(0, enchantments.unbreakingLevel()));
             var fortune = enchantments.fortuneLevel();
-            if (fortune != 0) hardness *= (fortune + 1);
-            if (enchantments.silktouchLevel() != 0) hardness = (float) Math.pow(hardness, 1.4d);
+            if (fortune != 0) modified *= (fortune + 1);
+            if (enchantments.silktouchLevel() != 0) modified = (float) Math.pow(modified, 1.4d);
 
-            return (long) (hardness * BREAK_BLOCK_BASE);
+            return (long) (modified * BREAK_BLOCK_BASE);
         }
 
         public static long getMoveEnergy(double distance, EnchantmentLevel.HasEnchantments enchantments) {
