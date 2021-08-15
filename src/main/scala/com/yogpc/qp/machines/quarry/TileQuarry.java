@@ -20,6 +20,7 @@ import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.FluidBlock;
 import net.minecraft.block.FluidDrainable;
 import net.minecraft.block.FluidFillable;
 import net.minecraft.enchantment.Enchantment;
@@ -290,7 +291,7 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
                 }
                 var bucketItem = fluidBlock.tryDrainFluid(world, pos, state);
                 quarry.storage.addFluid(bucketItem);
-                if (world.isAir(pos)) {
+                if (world.isAir(pos) || (fluidBlock instanceof FluidBlock && !fluidState.isStill())) {
                     world.setBlockState(pos, QuarryPlus.ModObjects.BLOCK_FRAME.getDammingState());
                 }
             } else if (state.getBlock() instanceof FluidFillable) {
