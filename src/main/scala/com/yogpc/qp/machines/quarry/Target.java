@@ -1,6 +1,8 @@
 package com.yogpc.qp.machines.quarry;
 
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.IntStream;
@@ -8,6 +10,7 @@ import java.util.stream.Stream;
 
 import com.yogpc.qp.machines.Area;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtLongArray;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,6 +34,7 @@ public abstract class Target {
         return switch (tag.getString("target")) {
             case "DigTarget" -> DigTarget.from(tag);
             case "FrameTarget" -> FrameTarget.from(tag);
+            case "PosesTarget" -> PosesTarget.from(tag);
             default -> throw new IllegalArgumentException("Invalid target nbt. " + tag);
         };
     }
@@ -52,9 +56,21 @@ public abstract class Target {
             } else {
                 return null;
             }
+        } else if (previous instanceof PosesTarget posesTarget) {
+            int nextY = posesTarget.allPoses().mapToInt(BlockPos::getY).max().orElse(area.minY()) - 1;
+            if (digMinY < nextY && nextY <= area.maxY()) {
+                return newDigTarget(area, nextY);
+            } else {
+                return null;
+            }
         } else {
             return newDigTarget(area, area.minY());
         }
+    }
+
+    @NotNull
+    public static Target poses(List<BlockPos> pos) {
+        return new PosesTarget(pos);
     }
 }
 
@@ -226,5 +242,51 @@ final class FrameTarget extends Target {
             ", currentTarget=" + currentTarget +
             ", hasNext=" + iterator.hasNext() +
             '}';
+    }
+}
+
+final class PosesTarget extends Target {
+    private final List<BlockPos> posList;
+    private final Iterator<BlockPos> iterator;
+    @Nullable
+    private BlockPos currentTarget;
+
+    PosesTarget(List<BlockPos> posList) {
+        this.posList = posList;
+        iterator = posList.iterator();
+        if (iterator.hasNext())
+            currentTarget = iterator.next();
+    }
+
+    public static PosesTarget from(NbtCompound tag) {
+        var poses = Arrays.stream(tag.getLongArray("poses")).mapToObj(BlockPos::fromLong).toList();
+        return new PosesTarget(poses);
+    }
+
+    @Override
+    public @Nullable BlockPos get(boolean goNext) {
+        var pre = currentTarget;
+        if (goNext) {
+            if (iterator.hasNext()) {
+                currentTarget = iterator.next();
+            } else {
+                currentTarget = null;
+            }
+        }
+        return pre;
+    }
+
+    @Override
+    public @NotNull Stream<BlockPos> allPoses() {
+        return posList.stream();
+    }
+
+    @Override
+    public @NotNull NbtCompound toNbt() {
+        var tag = new NbtCompound();
+        tag.putString("target", getClass().getSimpleName());
+        var list = new NbtLongArray(allPoses().mapToLong(BlockPos::asLong).toArray());
+        tag.put("poses", list);
+        return tag;
     }
 }

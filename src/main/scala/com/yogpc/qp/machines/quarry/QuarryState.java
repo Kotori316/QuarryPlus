@@ -70,25 +70,20 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
             }
             var blockTarget = QuarryState.dropUntilPos(quarry.target, StateConditions.skipNoBreak(quarry));
             if (blockTarget == null) {
-                quarry.target.allPoses()
-                    .filter(p -> !quarry.getTargetWorld().getFluidState(p).isEmpty())
-                    .forEach(p -> {
-                        var blockState = quarry.getTargetWorld().getBlockState(p);
-                        if (blockState.getBlock() instanceof FluidDrainable d) {
-                            var bucket = d.tryDrainFluid(quarry.getTargetWorld(), p, blockState);
-                            if (bucket.isEmpty()) {
-                                // Maybe flowing water.
-                                quarry.breakBlock(p, false);
-                            }
-                        }
-                    });
-                // Change Y
-                quarry.target = Target.nextY(quarry.target, quarry.getArea(), quarry.digMinY);
-                QuarryPlus.LOGGER.debug(MARKER, "Quarry({}) Target changed to {}.", quarryPos, quarry.target);
-                if (quarry.target != null)
-                    tick(world, quarryPos, state, quarry);
-                else
-                    quarry.setState(FINISHED, state);
+                var fluidPoses = quarry.target.allPoses()
+                    .filter(p -> !quarry.getTargetWorld().getFluidState(p).isEmpty()).map(BlockPos::toImmutable).toList();
+                if (fluidPoses.isEmpty()) {
+                    // Change Y
+                    quarry.target = Target.nextY(quarry.target, quarry.getArea(), quarry.digMinY);
+                    QuarryPlus.LOGGER.debug(MARKER, "Quarry({}) Target changed to {}.", quarryPos, quarry.target);
+                    if (quarry.target != null)
+                        tick(world, quarryPos, state, quarry);
+                    else
+                        quarry.setState(FINISHED, state);
+                } else {
+                    quarry.target = Target.poses(fluidPoses);
+                    quarry.setState(REMOVE_FLUID, state);
+                }
             } else {
                 var difference = new Vec3d(blockTarget.getX() - quarry.headX,
                     blockTarget.getY() - quarry.headY, blockTarget.getZ() - quarry.headZ);
@@ -118,7 +113,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
                 quarry.target = Target.newDigTarget(quarry.getArea(), quarry.getArea().minY());
                 QuarryPlus.LOGGER.debug(MARKER, "Quarry({}) Target changed to {} in BREAK_BLOCK.", quarryPos, quarry.target);
             }
-            if (!quarry.getTargetWorld().getFluidState(quarry.target.get(false)).isEmpty()) {
+            if (!quarry.getTargetWorld().getFluidState(Objects.requireNonNull(quarry.target.get(false))).isEmpty()) {
                 quarry.setState(REMOVE_FLUID, state);
             } else if (quarry.breakBlock(Objects.requireNonNull(quarry.target.get(false))).isSuccess()) {
                 quarry.target.get(true); // Set next pos.
@@ -137,9 +132,8 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
                 QuarryPlus.LOGGER.debug(MARKER, "Quarry({}) Target changed to {} in {}.", quarryPos, quarry.target, name());
             }
             var original = Objects.requireNonNull(quarry.target.get(false));
-            Set<BlockPos> fluidPoses = new HashSet<>();
             var targetWorld = quarry.getTargetWorld();
-            countFluid(fluidPoses, targetWorld, original, quarry.getArea());
+            Set<BlockPos> fluidPoses = countFluid(targetWorld, original, quarry.getArea());
             if (quarry.useEnergy(PowerTile.Constants.getBreakBlockFluidEnergy(quarry) * fluidPoses.size(), PowerTile.Reason.REMOVE_FLUID, true)) {
                 for (BlockPos fluidPos : fluidPoses) {
                     var blockState = targetWorld.getBlockState(fluidPos);
@@ -180,7 +174,8 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
         return pos;
     }
 
-    private static void countFluid(Set<BlockPos> counted, World world, BlockPos originalPos, Area area) {
+    private static Set<BlockPos> countFluid(World world, BlockPos originalPos, Area area) {
+        Set<BlockPos> counted = new HashSet<>();
         Set<Direction> directions = EnumSet.of(Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST, Direction.UP);
         Set<BlockPos> search = Set.of(originalPos);
         Set<BlockPos> checked = new HashSet<>();
@@ -200,6 +195,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
             }
             search = nextSearch;
         }
+        return counted;
     }
 }
 
