@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.EnchantedLootFunction;
+import com.yogpc.qp.machines.MachineBlock;
 import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QuarryMarker;
@@ -17,9 +18,7 @@ import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.tool.attribute.v1.FabricToolTags;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -33,7 +32,6 @@ import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.state.StateManager;
-import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
@@ -45,9 +43,8 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public class BlockQuarry extends BlockWithEntity {
+public class BlockQuarry extends MachineBlock {
     public static final String NAME = "quarry";
-    public static final BooleanProperty WORKING = BooleanProperty.of("working");
     public final BlockItem blockItem = new ItemQuarry(this, new FabricItemSettings().group(QuarryPlus.CREATIVE_TAB).fireproof());
 
     public BlockQuarry() {
@@ -58,11 +55,6 @@ public class BlockQuarry extends BlockWithEntity {
         setDefaultState(getStateManager().getDefaultState()
             .with(Properties.FACING, Direction.NORTH)
             .with(WORKING, false));
-    }
-
-    @Override
-    public BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.MODEL;
     }
 
     @Override

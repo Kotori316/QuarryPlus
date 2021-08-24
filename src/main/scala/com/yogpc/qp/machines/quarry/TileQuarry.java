@@ -14,6 +14,7 @@ import com.yogpc.qp.machines.BreakResult;
 import com.yogpc.qp.machines.CheckerLog;
 import com.yogpc.qp.machines.EnchantmentLevel;
 import com.yogpc.qp.machines.ItemConverter;
+import com.yogpc.qp.machines.MachineBlock;
 import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.PowerTile;
 import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
@@ -154,7 +155,7 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
             this.state = quarryState;
             sync();
             if (world != null) {
-                world.setBlockState(pos, blockState.with(BlockQuarry.WORKING, quarryState.isWorking), Block.NOTIFY_LISTENERS);
+                world.setBlockState(pos, blockState.with(MachineBlock.WORKING, quarryState.isWorking), Block.NOTIFY_LISTENERS);
                 if (!world.isClient && !quarryState.isWorking) {
                     logUsage(QuarryPlus.config.common.debug ? QuarryPlus.LOGGER::info : QuarryPlus.LOGGER::debug);
                 }
