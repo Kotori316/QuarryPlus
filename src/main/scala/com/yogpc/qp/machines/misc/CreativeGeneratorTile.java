@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.PowerTile;
+import com.yogpc.qp.utils.MapMulti;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.nbt.NbtCompound;
@@ -33,8 +34,6 @@ public class CreativeGeneratorTile extends PowerTile {
         Arrays.stream(Direction.values())
             .map(pos::offset)
             .map(world::getBlockEntity)
-            .<PowerTile>mapMulti((entity, consumer) -> {
-                if (entity instanceof PowerTile p) consumer.accept(p);
-            })
+            .mapMulti(MapMulti.cast(PowerTile.class))
             .forEach(t -> t.addEnergy(tile.sendEnergy, false));
 }

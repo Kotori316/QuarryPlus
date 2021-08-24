@@ -176,7 +176,7 @@ public class BlockFrame extends Block {
         }
     }
 
-    private record Direction8(Vec3i vec) {
+    record Direction8(Vec3i vec) {
 
         public static final List<Direction8> DIRECTIONS;
 

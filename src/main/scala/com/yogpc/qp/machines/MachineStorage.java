@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.yogpc.qp.integration.QuarryFluidTransfer;
+import com.yogpc.qp.utils.MapMulti;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -63,12 +64,12 @@ public class MachineStorage {
     public void readNbt(NbtCompound tag) {
         var itemTag = tag.getList("items", NbtElement.COMPOUND_TYPE);
         itemMap = itemTag.stream()
-            .map(NbtCompound.class::cast)
+            .mapMulti(MapMulti.cast(NbtCompound.class))
             .map(n -> Pair.of(ItemKey.fromNbt(n), n.getLong("count")))
             .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
         var fluidTag = tag.getList("fluids", NbtElement.COMPOUND_TYPE);
         fluidMap = fluidTag.stream()
-            .map(NbtCompound.class::cast)
+            .mapMulti(MapMulti.cast(NbtCompound.class))
             .map(n -> Pair.of(FluidKey.fromNbt(n), n.getLong("amount")))
             .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
     }

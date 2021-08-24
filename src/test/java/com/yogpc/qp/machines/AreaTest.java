@@ -52,8 +52,8 @@ class AreaTest {
     @Test
     void deserializeInvalid() {
         assertAll(
-            () -> assertEquals(Optional.empty(), Area.fromNBT(new NbtCompound())),
-            () -> assertEquals(Optional.empty(), Area.fromNBT(null))
+            () -> assertTrue(Area.fromNBT(new NbtCompound()).isEmpty()),
+            () -> assertTrue(Area.fromNBT(null).isEmpty())
         );
     }
 
