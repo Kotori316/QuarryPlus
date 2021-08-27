@@ -86,6 +86,6 @@ class AreaTest {
 
     @Test
     void dummy() {
-        assertTrue(randomArea().count() > 0);
+        assertTrue(randomArea().findAny().isPresent());
     }
 }

@@ -132,7 +132,7 @@ class ItemConverterTest extends QuarryPlusTest {
 
     @Test
     void dummy() {
-        assertTrue(pickaxeConvert().count() > 0);
-        assertTrue(deepOres().count() > 0);
+        assertTrue(pickaxeConvert().findAny().isPresent());
+        assertTrue(deepOres().findAny().isPresent());
     }
 }

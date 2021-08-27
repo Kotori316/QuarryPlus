@@ -91,6 +91,6 @@ class EnchantmentLevelTest extends QuarryPlusTest {
 
     @Test
     void dummy() {
-        assertTrue(enchantments().count() > 0);
+        assertTrue(enchantments().findAny().isPresent());
     }
 }
