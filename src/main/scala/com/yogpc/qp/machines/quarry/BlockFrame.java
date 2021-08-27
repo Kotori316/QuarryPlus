@@ -1,7 +1,6 @@
 package com.yogpc.qp.machines.quarry;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +10,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.Direction8;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ConnectingBlock;
@@ -21,10 +21,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.util.EightWayDirection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -173,18 +171,6 @@ public class BlockFrame extends Block {
         super.neighborUpdate(state, world, pos, block, fromPos, notify);
         if (state.get(DAMMING)) {
             world.setBlockState(pos, state.with(DAMMING, HAS_NEIGHBOUR_LIQUID.test(world, pos)), 2);
-        }
-    }
-
-    record Direction8(Vec3i vec) {
-
-        public static final List<Direction8> DIRECTIONS;
-
-        static {
-            DIRECTIONS = Arrays.stream(EightWayDirection.values())
-                .flatMap(d -> d.getDirections().stream().map(Direction::getVector).reduce(Vec3i::add).stream())
-                .map(Direction8::new)
-                .toList();
         }
     }
 }
