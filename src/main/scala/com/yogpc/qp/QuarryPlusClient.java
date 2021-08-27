@@ -21,6 +21,7 @@ public class QuarryPlusClient implements ClientModInitializer {
         QuarryPlus.LOGGER.info("Client init is called. {} ", QuarryPlus.modID);
         PacketHandler.Client.initClient();
         BlockRenderLayerMap.INSTANCE.putBlock(QuarryPlus.ModObjects.BLOCK_FRAME, RenderLayer.getCutoutMipped());
+        BlockRenderLayerMap.INSTANCE.putBlock(QuarryPlus.ModObjects.BLOCK_DUMMY, RenderLayer.getTranslucent());
         Sprites.register();
 
         BlockEntityRendererRegistry.INSTANCE.register(QuarryPlus.ModObjects.MARKER_TYPE, RenderMarker::new);

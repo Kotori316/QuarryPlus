@@ -13,7 +13,8 @@ public class MixinEnchantmentTargetDigger {
     @SuppressWarnings("UnresolvedMixinReference")
     @Inject(method = {"isAcceptableItem", "method_8177"}, at = @At("HEAD"), cancellable = true)
     public void addQuarry(Item item, CallbackInfoReturnable<Boolean> cir) {
-        if (item == QuarryPlus.ModObjects.BLOCK_QUARRY.blockItem) {
+        if (item == QuarryPlus.ModObjects.BLOCK_QUARRY.blockItem ||
+            item == QuarryPlus.ModObjects.BLOCK_ADV_PUMP.blockItem) {
             cir.setReturnValue(true);
         }
     }

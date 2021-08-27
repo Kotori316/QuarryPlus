@@ -8,15 +8,14 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Direction8;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
+import net.minecraft.block.AbstractGlassBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
-import net.minecraft.block.TransparentBlock;
 import net.minecraft.item.BlockItem;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class BlockDummy extends TransparentBlock {
+public class BlockDummy extends AbstractGlassBlock {
     public static final String NAME = "dummy";
     public final BlockItem blockItem;
 
@@ -28,17 +27,11 @@ public class BlockDummy extends TransparentBlock {
             .solidBlock((state, world, pos) -> false)
             .suffocates((state, world, pos) -> false)
             .blockVision((state, world, pos) -> false)
-            .luminance(15)
         );
         blockItem = new BlockItem(this, new FabricItemSettings().group(QuarryPlus.CREATIVE_TAB));
     }
 
     private boolean breaking = false;
-
-    @Override
-    public boolean isTranslucent(BlockState state, BlockView world, BlockPos pos) {
-        return true;
-    }
 
     @Override
     @SuppressWarnings("deprecation")

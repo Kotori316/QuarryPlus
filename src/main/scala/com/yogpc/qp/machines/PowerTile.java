@@ -17,7 +17,7 @@ public class PowerTile extends BlockEntity {
     public static final long ONE_FE = 1_000_000_000L;
     private final EnergyCounter energyCounter;
     private long energy;
-    private long maxEnergy;
+    protected long maxEnergy;
     protected boolean chunkPreLoaded;
 
     public PowerTile(BlockEntityType<?> type, BlockPos pos, BlockState state) {
@@ -56,12 +56,12 @@ public class PowerTile extends BlockEntity {
     }
 
     protected boolean hasEnoughEnergy() {
-        return getEnergy() >= 0;
+        return getEnergy() > 0;
     }
 
     /**
      * @param amount   the energy
-     * @param simulate if simulate, the actual energy doesn't change.
+     * @param simulate if simulating, the actual energy doesn't change.
      * @return the amount of <strong>accepted</strong> energy.
      */
     public long addEnergy(long amount, boolean simulate) {
@@ -153,6 +153,6 @@ public class PowerTile extends BlockEntity {
     }
 
     public enum Reason {
-        MAKE_FRAME, BREAK_BLOCK, REMOVE_FLUID, MOVE_HEAD
+        MAKE_FRAME, BREAK_BLOCK, REMOVE_FLUID, MOVE_HEAD, ADV_PUMP_FLUID
     }
 }

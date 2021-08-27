@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "bdb",
+    "mqm",
+    "gdg"
+  ],
+  "key": {
+    "b": {
+      "item": "minecraft:bucket"
+    },
+    "d": {
+      "item": "minecraft:diamond"
+    },
+    "g": {
+      "item": "minecraft:green_dye"
+    },
+    "q": {
+      "item": "quarryplus:quarry"
+    },
+    "m": {
+      "item": "quarryplus:marker"
+    }
+  },
+  "result": {
+    "item": "quarryplus:adv_pump"
+  }
+}
