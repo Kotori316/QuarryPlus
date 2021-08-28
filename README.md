@@ -39,6 +39,11 @@ unexpected crashes.
   * [TechReborn](https://github.com/TechReborn/TechReborn)
   * [FastTransferLib](https://github.com/Technici4n/FastTransferLib)
     * Used in [Industrial Revolution](https://github.com/GabrielOlvH/Industrial-Revolution)
+* Advanced Pump
+  * Enchantment
+    * You can add enchantments with Enchantment Table.
+  * Place this block above fluid, and send energy.
+  * Water is replaced with dummy block, which is removed at the end of work.
 
 ## Other works
 
@@ -59,5 +64,4 @@ unexpected crashes.
 
 ### Future works(plan)
 
-* Advanced Pump
 * Chunk Destroyer
