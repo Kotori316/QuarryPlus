@@ -21,22 +21,23 @@ class EnchantmentEfficiency {
     final int fluidCapacity;
     final long baseEnergy;
     static final List<Integer> baseEnergyMap = List.of(100, 80, 50, 20);
-    final int fortuneLevel;
+    final int range;
 
     EnchantmentEfficiency(List<EnchantmentLevel> enchantments) {
         this.enchantments = enchantments;
-        int efficiency = enchantments.stream()
-            .filter(e -> Enchantments.EFFICIENCY.equals(e.enchantment()))
-            .mapToInt(EnchantmentLevel::level).max().orElse(0);
-        int unbreaking = enchantments.stream()
-            .filter(e -> Enchantments.UNBREAKING.equals(e.enchantment()))
-            .mapToInt(EnchantmentLevel::level).max().orElse(0);
-        this.fortuneLevel = enchantments.stream()
-            .filter(e -> Enchantments.FORTUNE.equals(e.enchantment()))
-            .mapToInt(EnchantmentLevel::level).max().orElse(0);
+        int efficiency = getLevel(enchantments, Enchantments.EFFICIENCY);
+        int unbreaking = getLevel(enchantments, Enchantments.UNBREAKING);
+        int rangeLevel = Math.max(getLevel(enchantments, Enchantments.FORTUNE), 3 * getLevel(enchantments, Enchantments.SILK_TOUCH));
+        this.range = (rangeLevel + 1) * 32;
         this.energyCapacity = (int) Math.pow(2, 10 + efficiency) * PowerTile.ONE_FE;
         this.fluidCapacity = 512 * 1000 * (efficiency + 1);
         this.baseEnergy = baseEnergyMap.get(MathHelper.clamp(unbreaking, 0, 3)) * PowerTile.ONE_FE;
+    }
+
+    static int getLevel(List<EnchantmentLevel> enchantments, Enchantment enchantment) {
+        return enchantments.stream()
+            .filter(e -> enchantment.equals(e.enchantment()))
+            .mapToInt(EnchantmentLevel::level).max().orElse(0);
     }
 
     NbtCompound toNbt() {
@@ -52,7 +53,6 @@ class EnchantmentEfficiency {
     }
 
     public Predicate<BlockPos> rangePredicate(BlockPos center) {
-        var range = (fortuneLevel + 1) * 32;
         return p -> {
             var xDiff = center.getX() - p.getX();
             var zDiff = center.getZ() - p.getZ();
