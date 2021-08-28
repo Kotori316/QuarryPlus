@@ -27,7 +27,7 @@ class EnchantmentEfficiency {
         this.enchantments = enchantments;
         int efficiency = getLevel(enchantments, Enchantments.EFFICIENCY);
         int unbreaking = getLevel(enchantments, Enchantments.UNBREAKING);
-        int rangeLevel = Math.max(getLevel(enchantments, Enchantments.FORTUNE), 3 * getLevel(enchantments, Enchantments.SILK_TOUCH));
+        int rangeLevel = Math.max(getLevel(enchantments, Enchantments.FORTUNE), 3 * Math.min(getLevel(enchantments, Enchantments.SILK_TOUCH), 1));
         this.range = (rangeLevel + 1) * 32;
         this.energyCapacity = (int) Math.pow(2, 10 + efficiency) * PowerTile.ONE_FE;
         this.fluidCapacity = 512 * 1000 * (efficiency + 1);
