@@ -135,7 +135,7 @@ public class MachineStorage {
                     for (Map.Entry<ItemKey, Long> entry : itemMap) {
                         long beforeCount = entry.getValue();
                         boolean flag = true;
-                        while (beforeCount > 0 && flag) {
+                        while (beforeCount > 0 && flag && count < MAX_TRANSFER) {
                             int itemCount = (int) Math.min(entry.getKey().item().getMaxCount(), beforeCount);
                             var rest = HopperBlockEntity.transfer(null, inventory, entry.getKey().toStack(itemCount), direction.getOpposite());
                             if (itemCount != rest.getCount()) {
@@ -151,7 +151,6 @@ public class MachineStorage {
                                 }
 
                                 count += 1;
-                                if (count > MAX_TRANSFER) return;
                             } else {
                                 flag = false;
                             }
