@@ -120,7 +120,7 @@ public class PowerTile extends BlockEntity {
         if (EnergyIntegration.hasAnyEnergyModule() && !QuarryPlus.config.common.noEnergy)
             return null;
         else
-            return (w, p, s, blockEntity) -> blockEntity.addEnergy(blockEntity.getMaxEnergy(), false);
+            return (w, p, s, tile) -> tile.addEnergy(tile.getMaxEnergy() - tile.getEnergy(), false);
     }
 
     public static class Constants {

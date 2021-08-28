@@ -68,7 +68,7 @@ public class TileAdvPump extends PowerTile
                 world.setBlockState(pos, state.with(BlockAdvPump.WORKING, true));
             }
             if (pump.target.hasNext()) {
-                do {
+                while (pump.target.hasNext()) {
                     var target = pump.target.next();
                     var result = pump.pumpFluid(world, target,
                         f -> f.isIn(FluidTags.WATER) ? QuarryPlus.ModObjects.BLOCK_DUMMY.getDefaultState() : Blocks.AIR.getDefaultState(), true);
@@ -77,14 +77,14 @@ public class TileAdvPump extends PowerTile
                     Direction.Type.HORIZONTAL.stream().map(target::offset)
                         .filter(pump.target.getPredicate().negate())
                         .forEach(p -> pump.pumpFluid(world, p, f -> QuarryPlus.ModObjects.BLOCK_FRAME.getDammingState(), false));
-                } while (pump.target.hasNext());
+                }
             } else {
                 // Go to next y
                 if (!pump.target.checkAllFluidsRemoved(world, pos.withY(pump.y))) {
                     pump.y -= 1;
                     var nextPos = pos.withY(pump.y);
                     if (shouldFinish(world, nextPos)) {
-                        // Not fluid block.
+                        // Next pos doesn't have fluid block. Finish.
                         pump.finished = true;
                         pump.target = null;
                         world.setBlockState(pos, state.with(BlockAdvPump.WORKING, false));
@@ -100,6 +100,7 @@ public class TileAdvPump extends PowerTile
                             }
                         }
                     } else {
+                        // Go to the next Y.
                         pump.target = Target.getTarget(world, nextPos, pump.enchantmentEfficiency.rangePredicate(nextPos));
                     }
                 }
