@@ -10,6 +10,7 @@ import java.util.ListIterator;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import com.yogpc.qp.QuarryPlus;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -68,9 +69,10 @@ class Target implements Iterator<BlockPos> {
             Set<BlockPos> nextSearch = new HashSet<>();
             checked.addAll(search);
             for (BlockPos pos : search) {
-                if (!world.getFluidState(pos).isEmpty()) {
+                var isFluid = !world.getFluidState(pos).isEmpty();
+                if (isFluid || world.getBlockState(pos).isOf(QuarryPlus.ModObjects.BLOCK_DUMMY)) {
                     if (counted.add(pos)) {
-                        result.add(pos);
+                        if (isFluid) result.add(pos);
                         directions.stream()
                             .map(pos::offset)
                             .filter(inRange)
