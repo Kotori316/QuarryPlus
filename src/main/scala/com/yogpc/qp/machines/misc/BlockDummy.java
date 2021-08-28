@@ -37,14 +37,8 @@ public class BlockDummy extends AbstractGlassBlock {
     @SuppressWarnings("deprecation")
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         if (state.getBlock() != newState.getBlock()) {
-            boolean firstBreak;
-            if (breaking) {
-                firstBreak = false;
-            } else {
-                firstBreak = true;
+            if (!breaking) {
                 breaking = true;
-            }
-            if (firstBreak) {
                 breakChain(world, pos);
                 breaking = false;
             }
