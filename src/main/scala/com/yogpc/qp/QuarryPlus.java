@@ -3,6 +3,7 @@ package com.yogpc.qp;
 import com.mojang.datafixers.DSL;
 import com.yogpc.qp.integration.EnergyIntegration;
 import com.yogpc.qp.integration.QuarryFluidTransfer;
+import com.yogpc.qp.integration.QuarryItemTransfer;
 import com.yogpc.qp.machines.EnchantedLootFunction;
 import com.yogpc.qp.machines.advpump.BlockAdvPump;
 import com.yogpc.qp.machines.advpump.TileAdvPump;
@@ -87,6 +88,7 @@ public class QuarryPlus implements ModInitializer {
         PacketHandler.Server.initServer();
         EnergyIntegration.register();
         QuarryFluidTransfer.register();
+        QuarryItemTransfer.register();
         AutoConfig.register(QuarryConfig.class, Toml4jConfigSerializer::new);
         QuarryPlus.config = AutoConfig.getConfigHolder(QuarryConfig.class).getConfig();
     }

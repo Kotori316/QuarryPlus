@@ -33,7 +33,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class QuarryFluidTransfer {
     private static boolean registered;
-    private static final List<Transfer> transfers = new ArrayList<>();
+    private static final List<FluidTransfer> transfers = new ArrayList<>();
 
     public static boolean isRegistered() {
         return registered;
@@ -49,19 +49,19 @@ public class QuarryFluidTransfer {
         }
         if (FabricLoader.getInstance().isModLoaded("fabric-transfer-api-v1")) {
             QuarryPlus.LOGGER.debug("Trying to register fabric fluid transfer api.");
-            FabricTransfer.register();
-            transfers.add(new FabricTransfer());
+            FabricFluidTransfer.register();
+            transfers.add(new FabricFluidTransfer());
             registered = true;
         }
     }
 
     /**
-     * @return a pair of fluid and amount which were NOT transferred. The excess amount.
+     * @return A pair of fluid and amount which were NOT transferred. The excess amount.
      */
     public static Pair<Fluid, Long> transfer(World world, BlockPos pos, @NotNull BlockEntity destination, Fluid fluid, long amount, Direction direction) {
         if (!registered) return Pair.of(fluid, amount);
 
-        for (Transfer transfer : transfers) {
+        for (FluidTransfer transfer : transfers) {
             if (transfer.acceptable(world, pos, direction, destination)) {
                 var excess = transfer.transfer(world, pos, destination, direction, amount, fluid);
                 if (excess.getRight() == 0) {
@@ -76,7 +76,7 @@ public class QuarryFluidTransfer {
     }
 }
 
-interface Transfer {
+interface FluidTransfer {
     boolean acceptable(World world, BlockPos pos, Direction direction, BlockEntity entity);
 
     @NotNull
@@ -89,12 +89,12 @@ class BCRegister {
             (blockEntity, to) -> to.add(new BCExtractable(blockEntity)));
     }
 
-    static Transfer getBCTransfer() {
-        return new BCTransfer();
+    static FluidTransfer getBCTransfer() {
+        return new BCFluidTransfer();
     }
 }
 
-class BCTransfer implements Transfer {
+class BCFluidTransfer implements FluidTransfer {
 
     @Override
     public boolean acceptable(World world, BlockPos pos, Direction direction, BlockEntity entity) {
@@ -142,7 +142,7 @@ class BCExtractable implements FluidExtractable {
 }
 
 @SuppressWarnings({"deprecation", "UnstableApiUsage"})
-class FabricTransfer implements Transfer {
+class FabricFluidTransfer implements FluidTransfer {
     static void register() { // STUB for future.
     }
 
