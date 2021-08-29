@@ -3,10 +3,9 @@ package com.yogpc.qp.machines.misc;
 import java.util.List;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.MachineBlock;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
-import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -23,7 +22,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public class CreativeGeneratorBlock extends BlockWithEntity {
+public class CreativeGeneratorBlock extends MachineBlock {
     public static final String NAME = "creative_generator";
     public final BlockItem blockItem = new BlockItem(this, new Item.Settings().group(QuarryPlus.CREATIVE_TAB));
 
@@ -31,11 +30,6 @@ public class CreativeGeneratorBlock extends BlockWithEntity {
         super(FabricBlockSettings.of(Material.METAL)
             .strength(1f, 1f)
             .sounds(BlockSoundGroup.STONE));
-    }
-
-    @Override
-    public BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.MODEL;
     }
 
     @Override
