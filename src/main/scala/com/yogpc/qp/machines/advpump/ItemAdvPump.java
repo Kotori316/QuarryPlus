@@ -1,14 +1,18 @@
 package com.yogpc.qp.machines.advpump;
 
+import java.util.Set;
+
+import com.yogpc.qp.machines.EnchantableItem;
 import net.minecraft.block.Block;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.collection.DefaultedList;
 
-public class ItemAdvPump extends BlockItem {
-    public ItemAdvPump(Block block, Settings settings) {
+class ItemAdvPump extends BlockItem implements EnchantableItem {
+    ItemAdvPump(Block block, Settings settings) {
         super(block, settings);
     }
 
@@ -32,5 +36,10 @@ public class ItemAdvPump extends BlockItem {
             stack.addEnchantment(Enchantments.FORTUNE, 3);
             stacks.add(stack);
         }
+    }
+
+    @Override
+    public Set<Enchantment> acceptEnchantments() {
+        return Set.of(Enchantments.EFFICIENCY, Enchantments.UNBREAKING, Enchantments.FORTUNE);
     }
 }

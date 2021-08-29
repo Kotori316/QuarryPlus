@@ -2,9 +2,12 @@ package com.yogpc.qp.machines.quarry;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
+import com.yogpc.qp.machines.EnchantableItem;
 import net.minecraft.block.Block;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemGroup;
@@ -16,7 +19,7 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-class ItemQuarry extends BlockItem {
+class ItemQuarry extends BlockItem implements EnchantableItem {
     ItemQuarry(Block block, Settings settings) {
         super(block, settings);
     }
@@ -63,5 +66,10 @@ class ItemQuarry extends BlockItem {
                 stacks.add(copy);
             }
         }
+    }
+
+    @Override
+    public Set<Enchantment> acceptEnchantments() {
+        return Set.of(Enchantments.EFFICIENCY, Enchantments.UNBREAKING, Enchantments.FORTUNE, Enchantments.SILK_TOUCH);
     }
 }

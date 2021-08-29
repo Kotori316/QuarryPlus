@@ -3,8 +3,7 @@
   "package": "com.yogpc.qp.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "MixinEnchantmentTargetBreakable",
-    "MixinEnchantmentTargetDigger"
+    "MixinEnchantmentHelper"
   ],
   "client": [
   ],
