@@ -8,11 +8,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.yogpc.qp.integration.QuarryFluidTransfer;
+import com.yogpc.qp.integration.QuarryItemTransfer;
 import com.yogpc.qp.utils.MapMulti;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
-import net.minecraft.block.entity.HopperBlockEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.BucketItem;
@@ -129,15 +129,14 @@ public class MachineStorage {
             var storage = blockEntity.getStorage();
             int count = 0;
             for (var direction : Direction.values()) {
-                var inventory = HopperBlockEntity.getInventoryAt(world, pos.offset(direction));
-                if (inventory != null) {
+                if (QuarryItemTransfer.destinationExists(world, pos.offset(direction), direction.getOpposite())) {
                     var itemMap = new ArrayList<>(storage.itemMap.entrySet());
                     for (Map.Entry<ItemKey, Long> entry : itemMap) {
                         long beforeCount = entry.getValue();
                         boolean flag = true;
                         while (beforeCount > 0 && flag && count < MAX_TRANSFER) {
                             int itemCount = (int) Math.min(entry.getKey().item().getMaxCount(), beforeCount);
-                            var rest = HopperBlockEntity.transfer(null, inventory, entry.getKey().toStack(itemCount), direction.getOpposite());
+                            var rest = QuarryItemTransfer.transfer(world, pos.offset(direction), entry.getKey().toStack(itemCount), direction.getOpposite());
                             if (itemCount != rest.getCount()) {
                                 // Item transferred.
                                 long remain = beforeCount - (itemCount - rest.getCount());

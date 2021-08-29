@@ -42,6 +42,10 @@ public class QuarryItemTransfer {
         return send;
     }
 
+    public static boolean destinationExists(World world, BlockPos pos, Direction direction) {
+        return transfers.stream().anyMatch(t -> destinationExists(t, world, pos, direction));
+    }
+
     private static <T> ItemStack transferInternal(ItemTransfer<T> transfer, World world, BlockPos pos, ItemStack send, Direction direction) {
         var dest = transfer.getDestination(world, pos, direction);
         if (transfer.isValidDestination(dest)) {
@@ -54,6 +58,10 @@ public class QuarryItemTransfer {
         } else {
             return send;
         }
+    }
+
+    private static <T> boolean destinationExists(ItemTransfer<T> transfer, World world, BlockPos pos, Direction direction) {
+        return transfer.isValidDestination(transfer.getDestination(world, pos, direction));
     }
 }
 
@@ -103,8 +111,7 @@ class BCItemTransfer implements ItemTransfer<ItemInsertable> {
     public ItemStack transfer(ItemInsertable destination, ItemStack send, Direction direction) {
         var simulation = destination.attemptInsertion(send, Simulation.SIMULATE);
         if (simulation.getCount() < send.getCount()) {
-            var excess = destination.attemptInsertion(send, Simulation.ACTION);
-            return excess;
+            return destination.attemptInsertion(send, Simulation.ACTION);
         } else {
             return send;
         }
