@@ -5,18 +5,21 @@ import java.util.List;
 import java.util.Map;
 
 import alexiil.mc.lib.attributes.AttributeSourceType;
+import alexiil.mc.lib.attributes.SearchOptions;
 import alexiil.mc.lib.attributes.Simulation;
 import alexiil.mc.lib.attributes.fluid.FluidAttributes;
 import alexiil.mc.lib.attributes.fluid.FluidExtractable;
 import alexiil.mc.lib.attributes.fluid.FluidVolumeUtil;
 import alexiil.mc.lib.attributes.fluid.amount.FluidAmount;
 import alexiil.mc.lib.attributes.fluid.filter.FluidFilter;
+import alexiil.mc.lib.attributes.fluid.impl.EmptyFluidExtractable;
 import alexiil.mc.lib.attributes.fluid.impl.RejectingFluidInsertable;
 import alexiil.mc.lib.attributes.fluid.volume.FluidKeys;
 import alexiil.mc.lib.attributes.fluid.volume.FluidVolume;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.FluidKey;
 import com.yogpc.qp.machines.MachineStorage;
+import com.yogpc.qp.machines.advpump.TileAdvPump;
 import com.yogpc.qp.machines.quarry.TileQuarry;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
@@ -87,6 +90,8 @@ class BCRegister {
     static void registerAttributes() {
         FluidAttributes.EXTRACTABLE.setBlockEntityAdder(AttributeSourceType.COMPAT_WRAPPER, QuarryPlus.ModObjects.QUARRY_TYPE, TileQuarry.class,
             (blockEntity, to) -> to.add(new BCExtractable(blockEntity)));
+        FluidAttributes.EXTRACTABLE.setBlockEntityAdder(AttributeSourceType.INSTANCE, QuarryPlus.ModObjects.ADV_PUMP_TYPE, TileAdvPump.class,
+            (blockEntity, to) -> to.add(EmptyFluidExtractable.SUPPLIER));
     }
 
     static FluidTransfer getBCTransfer() {
@@ -98,7 +103,7 @@ class BCFluidTransfer implements FluidTransfer {
 
     @Override
     public boolean acceptable(World world, BlockPos pos, Direction direction, BlockEntity entity) {
-        var attribute = FluidAttributes.INSERTABLE.get(world, pos);
+        var attribute = FluidAttributes.INSERTABLE.get(world, pos, SearchOptions.inDirection(direction.getOpposite()));
         return attribute != RejectingFluidInsertable.NULL;
     }
 
@@ -106,9 +111,9 @@ class BCFluidTransfer implements FluidTransfer {
     @NotNull
     public Pair<Fluid, Long> transfer(World world, BlockPos pos, @NotNull BlockEntity destination, Direction direction, long amount, Fluid fluid) {
         var volume = FluidKeys.get(fluid).withAmount(FluidAmount.of(amount, 1000)); // I'm assuming one bucket is equal to 1000 mB.
-        var insertable = FluidAttributes.INSERTABLE.get(world, pos);
+        var insertable = FluidAttributes.INSERTABLE.get(world, pos, SearchOptions.inDirection(direction.getOpposite()));
         var attemptResult = insertable.attemptInsertion(volume, Simulation.SIMULATE);
-        if (!attemptResult.equals(insertable)) {
+        if (!attemptResult.equals(volume)) {
             // Accepted.
             var exceeded = insertable.insert(volume);
             return Pair.of(exceeded.getRawFluid(), exceeded.amount().asLong(1000L));
