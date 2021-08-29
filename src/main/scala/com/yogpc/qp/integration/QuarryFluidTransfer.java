@@ -46,8 +46,8 @@ public class QuarryFluidTransfer {
     public static void register() {
         if (FabricLoader.getInstance().isModLoaded("libblockattributes_fluids")) {
             QuarryPlus.LOGGER.debug("Trying to register LBA fluid handler.");
-            transfers.add(BCRegister.getBCTransfer());
-            BCRegister.registerAttributes();
+            transfers.add(BCFluidRegister.getBCTransfer());
+            BCFluidRegister.registerAttributes();
             registered = true;
         }
         if (FabricLoader.getInstance().isModLoaded("fabric-transfer-api-v1")) {
@@ -86,7 +86,7 @@ interface FluidTransfer {
     Pair<Fluid, Long> transfer(World world, BlockPos pos, @NotNull BlockEntity destination, Direction direction, long amount, Fluid fluid);
 }
 
-class BCRegister {
+class BCFluidRegister {
     static void registerAttributes() {
         FluidAttributes.EXTRACTABLE.setBlockEntityAdder(AttributeSourceType.COMPAT_WRAPPER, QuarryPlus.ModObjects.QUARRY_TYPE, TileQuarry.class,
             (blockEntity, to) -> to.add(new BCExtractable(blockEntity)));
@@ -124,14 +124,15 @@ class BCFluidTransfer implements FluidTransfer {
 }
 
 class BCExtractable implements FluidExtractable {
-    private final MachineStorage storage;
+    private final MachineStorage.HasStorage storageHolder;
 
     BCExtractable(MachineStorage.HasStorage hasStorage) {
-        this.storage = hasStorage.getStorage();
+        this.storageHolder = hasStorage;
     }
 
     @Override
     public FluidVolume attemptExtraction(FluidFilter filter, FluidAmount maxAmount, Simulation simulation) {
+        var storage = this.storageHolder.getStorage();
         for (Map.Entry<FluidKey, Long> entry : storage.getFluidMap().entrySet()) {
             var fluidKey = FluidKeys.get(entry.getKey().fluid());
             if (filter.matches(fluidKey)) {
@@ -153,12 +154,12 @@ class FabricFluidTransfer implements FluidTransfer {
 
     @Override
     public boolean acceptable(World world, BlockPos pos, Direction direction, BlockEntity entity) {
-        return FluidStorage.SIDED.find(world, pos, direction) != null;
+        return FluidStorage.SIDED.find(world, pos, null, entity, direction) != null;
     }
 
     @Override
     public @NotNull Pair<Fluid, Long> transfer(World world, BlockPos pos, @NotNull BlockEntity destination, Direction direction, long amount, Fluid fluid) {
-        var storage = FluidStorage.SIDED.find(world, pos, direction);
+        var storage = FluidStorage.SIDED.find(world, pos, null, destination, direction);
         if (storage == null) {
             // Not fluid container.
             return Pair.of(fluid, amount);

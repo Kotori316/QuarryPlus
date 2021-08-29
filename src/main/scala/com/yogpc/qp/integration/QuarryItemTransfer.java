@@ -26,8 +26,8 @@ public class QuarryItemTransfer {
     @SuppressWarnings("SpellCheckingInspection")
     public static void register() {
         if (FabricLoader.getInstance().isModLoaded("libblockattributes_items")) {
-            transfers.add(new BCItemTransfer());
-            BCItemTransfer.attributeRegister();
+            transfers.add(BCItemRegister.bcTransfer());
+            BCItemRegister.registerAttributes();
         }
         transfers.add(new VanillaItemTransfer());
     }
@@ -95,6 +95,17 @@ class VanillaItemTransfer implements ItemTransfer<Inventory> {
     }
 }
 
+class BCItemRegister {
+    static void registerAttributes() {
+        ItemAttributes.EXTRACTABLE.setBlockEntityAdder(AttributeSourceType.INSTANCE,
+            QuarryPlus.ModObjects.QUARRY_TYPE, TileQuarry.class, (blockEntity, to) -> to.add(EmptyItemExtractable.SUPPLIER));
+    }
+
+    static ItemTransfer<?> bcTransfer() {
+        return new BCItemTransfer();
+    }
+}
+
 class BCItemTransfer implements ItemTransfer<ItemInsertable> {
 
     @Override
@@ -115,10 +126,5 @@ class BCItemTransfer implements ItemTransfer<ItemInsertable> {
         } else {
             return send;
         }
-    }
-
-    static void attributeRegister() {
-        ItemAttributes.EXTRACTABLE.setBlockEntityAdder(AttributeSourceType.INSTANCE,
-            QuarryPlus.ModObjects.QUARRY_TYPE, TileQuarry.class, (blockEntity, to) -> to.add(EmptyItemExtractable.SUPPLIER));
     }
 }
