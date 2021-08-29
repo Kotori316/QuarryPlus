@@ -44,7 +44,10 @@ public record ItemConverter(
     }
 
     public static ItemConverter deepslateConverter() {
-        Predicate<ItemKey> predicate = i -> i.getId().getPath().contains("deepslate");
+        Predicate<ItemKey> predicate = i -> {
+            var path = i.getId().getPath();
+            return path.contains("deepslate") && path.contains("ore");
+        };
         Function<ItemKey, ItemKey> function = i -> {
             var newPath = i.getId().getPath().replace("deepslate_", "").replace("_deepslate", "");
             var id = new Identifier(i.getId().getNamespace(), newPath);

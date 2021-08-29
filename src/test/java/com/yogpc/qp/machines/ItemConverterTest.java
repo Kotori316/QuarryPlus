@@ -119,8 +119,12 @@ class ItemConverterTest extends QuarryPlusTest {
 
     static Stream<Object[]> deepOres() {
         return Stream.of(
+            // Excepted, Original
             Pair.of(Items.LAPIS_LAZULI, Items.LAPIS_LAZULI),
             Pair.of(Items.GOLDEN_APPLE, Items.GOLDEN_APPLE),
+            Pair.of(Items.DEEPSLATE, Items.DEEPSLATE),
+            Pair.of(Items.DEEPSLATE_WALL, Items.DEEPSLATE_WALL),
+            Pair.of(Items.DEEPSLATE_BRICKS, Items.DEEPSLATE_BRICKS),
             Pair.of(Items.COAL_ORE, Items.DEEPSLATE_COAL_ORE),
             Pair.of(Items.IRON_ORE, Items.DEEPSLATE_IRON_ORE),
             Pair.of(Items.GOLD_ORE, Items.DEEPSLATE_GOLD_ORE),
