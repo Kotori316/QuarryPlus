@@ -23,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Check Warning
-        run: chmod +x ./gradlew && ./gradlew javaToolchains --info --no-daemon --warning-mode all
+        run: chmod +x ./gradlew && ./gradlew javaToolchains --no-daemon --warning-mode all
       - name: Compile
         run: chmod +x ./gradlew && ./gradlew assemble --info --no-daemon
         env:
@@ -120,12 +120,14 @@ jobs:
       - name: compile
         run: |
           chmod +x ./gradlew && (./gradlew clean || true)
-          ( (./gradlew compileScala || ./gradlew clean) || (./gradlew compileScala || ./gradlew clean) || (sleep 10s && ./gradlew compileScala) )
+          ( (./gradlew compileJava || ./gradlew clean) || (./gradlew compileJava || ./gradlew clean) || (sleep 10s && ./gradlew compileJava) )
         continue-on-error: true
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Java Toolchains
+        run: chmod +x ./gradlew && ./gradlew --no-daemon javaToolchains --info
       - name: Test with JUnit
-        run: chmod +x ./gradlew && ./gradlew --no-daemon javaToolchains test --info
+        run: chmod +x ./gradlew && ./gradlew --no-daemon test --debug
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload failed test report
