@@ -1,4 +1,4 @@
-# QuarryPlus for 1.16.5
+# QuarryPlus for 1.17.1
 ===========
 
 [![](https://github.com/Kotori316/QuarryPlus/workflows/Build%20Check%20and%20Publish/badge.svg)](https://github.com/Kotori316/QuarryPlus/actions)
@@ -11,32 +11,31 @@ CurseForge - https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-m
 ## Finished Work
 
 * Marker
-    * Renderer
+  * Renderer
+  * MarkerPlus, Flexible Marker, Chunk Marker
 * Workbench
-    * JEI support
-* ExpPump
-* EnchantMover
-    * JEI support
+  * JEI support
+* Enchantment Mover
+  * JEI support
 * Miningwell
-* PlainPipe
 * QuarryFrame
 * Quarry
-    * Renderer
-* Solid Fuel Quarry
-    * Renderer
+  * Renderer
+  * Enchantment
 * PumpPlus
-* Replacer
-* Dummy Block
-    * Renderer
-* Book Mover
-    * JEI support
-* Spawner Controller
 * Advanced Pump
+  * Enchantment
+* Some modules
+
+## Planned (Future work)
+
+* ExpPump
+* Book Enchantment Mover
+* Spawner Controller
 * Chunk Destroyer
-    * Renderer
 * Placer Plus
-    * Including 2 functions, placing and breaking.
 * Mini Quarry
+* Replacer
 
 ## Maven repo
 
