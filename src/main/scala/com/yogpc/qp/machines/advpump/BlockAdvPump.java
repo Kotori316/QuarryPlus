@@ -1,123 +1,130 @@
 package com.yogpc.qp.machines.advpump;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.stream.Stream;
-
-import com.yogpc.qp.Config;
+import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.compat.BuildcraftHelper;
-import com.yogpc.qp.machines.base.IEnchantableTile;
-import com.yogpc.qp.machines.base.QPBlock;
-import com.yogpc.qp.machines.base.StatusContainer;
-import com.yogpc.qp.utils.Holder;
+import com.yogpc.qp.machines.EnchantedLootFunction;
+import com.yogpc.qp.machines.MachineStorage;
+import com.yogpc.qp.machines.PowerTile;
+import com.yogpc.qp.machines.QPBlock;
+import com.yogpc.qp.machines.module.ContainerQuarryModule;
+import com.yogpc.qp.utils.CombinedBlockEntityTicker;
+import com.yogpc.qp.utils.QuarryChunkLoadUtil;
 import javax.annotation.Nullable;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.InventoryHelper;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tags.FluidTags;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Containers;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 
-public class BlockAdvPump extends QPBlock {
+public class BlockAdvPump extends QPBlock implements EntityBlock {
+    public static final String NAME = "adv_pump";
+
     public BlockAdvPump() {
-        super(Properties.create(Material.IRON)
-            .hardnessAndResistance(1.5f, 10f)
-            .sound(SoundType.STONE), QuarryPlus.Names.advpump, BlockItemAdvPump::new);
-        setDefaultState(getStateContainer().getBaseState().with(QPBlock.WORKING(), false));
+        super(QPBlock.Properties.of(Material.METAL)
+            .strength(1.5f, 10f)
+            .sound(SoundType.STONE), NAME, ItemAdvPump::new);
+        registerDefaultState(getStateDefinition().any()
+            .setValue(WORKING, false));
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity playerIn, Hand hand, BlockRayTraceResult hit) {
-        if (super.onBlockActivated(state, worldIn, pos, playerIn, hand, hit).isSuccess())
-            return ActionResultType.SUCCESS;
-        ItemStack stack = playerIn.getHeldItem(hand);
-        if (Config.common().debug() && stack.getItem() == Items.STICK) {
-            Optional.ofNullable((TileAdvPump) worldIn.getTileEntity(pos)).ifPresent(TileAdvPump::toggleDelete);
-            playerIn.sendStatusMessage(new StringTextComponent("Changed delete mode."), false);
-            return ActionResultType.SUCCESS;
-        } else if (BuildcraftHelper.isWrench(playerIn, hand, stack, hit)) {
-            if (!worldIn.isRemote) {
-                Optional.ofNullable((TileAdvPump) worldIn.getTileEntity(pos)).ifPresent(TileAdvPump::G_ReInit);
-            }
-            return ActionResultType.SUCCESS;
-        } else if (stack.getItem() == Holder.itemStatusChecker()) {
-            if (!worldIn.isRemote)
-                NetworkHooks.openGui(((ServerPlayerEntity) playerIn), new StatusContainer.ContainerProvider(pos), pos);
-            return ActionResultType.SUCCESS;
-        } else if (!playerIn.isCrouching()) {
-            if (!worldIn.isRemote) {
-                NetworkHooks.openGui(((ServerPlayerEntity) playerIn), (TileAdvPump) worldIn.getTileEntity(pos), pos);
-            }
-            return ActionResultType.SUCCESS;
-        }
-        return ActionResultType.PASS;
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return Holder.ADV_PUMP_TYPE.create(pos, state);
     }
 
     @Override
-    public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
-        super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
-        if (!worldIn.isRemote) {
-            Consumer<TileAdvPump> consumer = IEnchantableTile.Util.initConsumer(stack);
-            Consumer<TileAdvPump> deleteSetter = pump ->
-                Stream.iterate(pos.down(), BlockPos::down)
-                    .filter(p -> !worldIn.isAirBlock(p) || p.getY() < 0)
-                    .findFirst()
-                    .map(worldIn::getFluidState)
-                    .map(f -> f.getFluid().isIn(FluidTags.WATER))
-                    .ifPresent(pump::delete_$eq);
-            Optional.ofNullable((TileAdvPump) worldIn.getTileEntity(pos)).ifPresent(consumer.andThen(deleteSetter).andThen(TileAdvPump.requestTicket));
-        }
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
+        builder.add(WORKING);
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        builder.add(QPBlock.WORKING());
-    }
-
-    @Override
-    public void addInformation(ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        super.addInformation(stack, worldIn, tooltip, flagIn);
-//        tooltip.add(new TranslationTextComponent(TranslationKeys.TOOLTIP_ADVPUMP, ' '));
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type) {
+        return world.isClientSide ? null : checkType(type, Holder.ADV_PUMP_TYPE,
+            new CombinedBlockEntityTicker<>(PowerTile.getGenerator(), TileAdvPump::tick, PowerTile.logTicker(), MachineStorage.passFluid()));
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (state.getBlock() != newState.getBlock()) {
-            if (!worldIn.isRemote) {
-                TileEntity entity = worldIn.getTileEntity(pos);
-                if (entity instanceof TileAdvPump) {
-                    TileAdvPump inventory = (TileAdvPump) entity;
-                    InventoryHelper.dropInventoryItems(worldIn, pos, inventory.moduleInv());
-                    worldIn.updateComparatorOutputLevel(pos, state.getBlock());
+    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        if (!QuarryPlus.config.enableMap.enabled(NAME)) {
+            if (!world.isClientSide)
+                player.displayClientMessage(new TranslatableComponent("quarryplus.chat.disable_message", getName()), false);
+            return InteractionResult.sidedSuccess(world.isClientSide);
+        }
+        var stack = player.getItemInHand(hand);
+        if (stack.getItem() == Items.STICK) {
+            if (!world.isClientSide) {
+                if (world.getBlockEntity(pos) instanceof TileAdvPump pump) {
+                    pump.reset();
+                    pump.deleteFluid = !pump.deleteFluid;
+                    player.displayClientMessage(new TextComponent("AdvPump DeleteFluid: " + pump.deleteFluid), false);
                 }
             }
-            super.onReplaced(state, worldIn, pos, newState, isMoving);
+            return InteractionResult.SUCCESS;
+        }
+        if (!player.isShiftKeyDown()) {
+            if (!world.isClientSide) {
+                if (world.getBlockEntity(pos) instanceof TileAdvPump pump) {
+                    ContainerQuarryModule.InteractionObject.openGUI(pump, (ServerPlayer) player, getName());
+                }
+            }
+            return InteractionResult.SUCCESS;
+        }
+        return super.use(state, world, pos, player, hand, hit);
+    }
+
+    @Override
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
+        super.setPlacedBy(level, pos, state, entity, stack);
+        if (!level.isClientSide) {
+            if (level.getBlockEntity(pos) instanceof TileAdvPump pump) {
+                var preForced = QuarryChunkLoadUtil.makeChunkLoaded(level, pos, pump.enabled);
+                pump.setEnchantment(EnchantmentEfficiency.fromMap(EnchantmentHelper.getEnchantments(stack)));
+                pump.setChunkPreLoaded(preForced);
+            }
         }
     }
 
     @Override
-    public TileEntityType<? extends TileEntity> getTileType() {
-        return Holder.advPumpType();
+    @SuppressWarnings("deprecation")
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moved) {
+        if (state.getBlock() != newState.getBlock()) {
+            if (level.getBlockEntity(pos) instanceof TileAdvPump pump) {
+                Containers.dropContents(level, pos, pump.getModuleInventory());
+            }
+            super.onRemove(state, level, pos, newState, moved);
+        }
     }
+
+    @Override
+    public ItemStack getPickBlock(BlockState state, HitResult target, BlockGetter world, BlockPos pos, Player player) {
+        // Called in client.
+        ItemStack stack = super.getPickBlock(state, target, world, pos, player);
+        if (world.getBlockEntity(pos) instanceof TileAdvPump pump) {
+            EnchantedLootFunction.process(stack, pump);
+        }
+        return stack;
+    }
+
 }

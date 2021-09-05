@@ -14,133 +14,82 @@
 package com.yogpc.qp.machines.mover;
 
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.compat.BuildcraftHelper;
-import com.yogpc.qp.compat.InvUtils;
-import com.yogpc.qp.machines.TranslationKeys;
-import com.yogpc.qp.machines.base.IDisabled;
-import com.yogpc.qp.machines.base.QPBlock;
-import com.yogpc.qp.utils.Holder;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkHooks;
-import scala.Symbol;
+import com.yogpc.qp.machines.QPBlock;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraftforge.fmllegacy.network.NetworkHooks;
 
-//@Optional.InterfaceList({
-//    @Optional.Interface(iface = "cofh.api.block.IDismantleable", modid = QuarryPlus.Optionals.COFH_modID),
-//    @Optional.Interface(iface = "ic2.api.tile.IWrenchable", modid = QuarryPlus.Optionals.IC2_modID)})
-public class BlockMover extends Block implements IDisabled /*IDismantleable, IWrenchable*/ {
-    public static final Symbol SYMBOL = Symbol.apply("EnchantMover");
-    public static final String GUI_ID = QuarryPlus.modID + ":gui_" + QuarryPlus.Names.mover;
-    public final BlockItem itemBlock;
+public class BlockMover extends QPBlock {
+    public static final String NAME = "mover";
+    public static final String GUI_ID = QuarryPlus.modID + ":gui_" + NAME;
 
     public BlockMover() {
-        super(Properties.create(Material.IRON).hardnessAndResistance(1.2f));
-        setRegistryName(QuarryPlus.modID, QuarryPlus.Names.mover);
-        itemBlock = new BlockItem(this, new Item.Properties().group(Holder.tab()));
-        itemBlock.setRegistryName(QuarryPlus.modID, QuarryPlus.Names.mover);
+        super(Properties.of(Material.METAL).strength(1.2f), NAME);
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos,
-                                             PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
-        if (InvUtils.isDebugItem(player, hand).isSuccess()) return ActionResultType.SUCCESS;
-        if (player.isCrouching()
-            && BuildcraftHelper.isWrench(player, hand, player.getHeldItem(hand), hit)) {
-            if (!worldIn.isRemote)
-                QPBlock.dismantle(worldIn, pos, state, false);
-            return ActionResultType.SUCCESS;
+    public InteractionResult use(BlockState state, Level level, BlockPos pos,
+                                 Player player, InteractionHand hand, BlockHitResult hit) {
+        if (!QuarryPlus.config.enableMap.enabled(NAME)) {
+            if (!level.isClientSide)
+                player.displayClientMessage(new TranslatableComponent("quarryplus.chat.disable_message", getName()), false);
+            return InteractionResult.sidedSuccess(level.isClientSide);
         }
-        if (!player.isCrouching()) {
-            if (!worldIn.isRemote) {
-                if (!enabled()) {
-                    player.sendStatusMessage(new TranslationTextComponent(TranslationKeys.DISABLE_MESSAGE, getSymbol().name()), true);
-                } else {
-                    NetworkHooks.openGui(((ServerPlayerEntity) player), new InteractionObject(pos), pos);
-                }
+        if (!player.isShiftKeyDown()) {
+            if (!level.isClientSide) {
+                NetworkHooks.openGui((ServerPlayer) player, new InteractionObject(pos, this.getName()), pos);
             }
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
-        return ActionResultType.PASS;
+        return super.use(state, level, pos, player, hand, hit);
     }
 
     @Override
-    public Item asItem() {
-        return itemBlock;
+    public void fillItemCategory(CreativeModeTab tab, NonNullList<ItemStack> stacks) {
+        super.fillItemCategory(tab, stacks);
+        {
+            var stack = new ItemStack(Items.DIAMOND_PICKAXE);
+            stack.enchant(Enchantments.BLOCK_EFFICIENCY, 5);
+            stack.enchant(Enchantments.UNBREAKING, 3);
+            stack.enchant(Enchantments.BLOCK_FORTUNE, 3);
+            stacks.add(stack);
+        }
+        {
+            var stack = new ItemStack(Items.DIAMOND_PICKAXE);
+            stack.enchant(Enchantments.BLOCK_EFFICIENCY, 5);
+            stack.enchant(Enchantments.UNBREAKING, 3);
+            stack.enchant(Enchantments.SILK_TOUCH, 1);
+            stacks.add(stack);
+        }
     }
 
-    @Override
-    public Symbol getSymbol() {
-        return SYMBOL;
-    }
-/*
-    @Override
-    @Optional.Method(modid = QuarryPlus.Optionals.COFH_modID)
-    public ArrayList<ItemStack> dismantleBlock(World world, BlockPos pos, IBlockState state, EntityPlayer player, boolean returnDrops) {
-        return ADismCBlock.dismantle(world, pos, state, returnDrops);
-    }
+    private record InteractionObject(BlockPos pos, Component name) implements MenuProvider {
 
-    @Override
-    @Optional.Method(modid = QuarryPlus.Optionals.COFH_modID)
-    public boolean canDismantle(World world, BlockPos pos, IBlockState state, EntityPlayer player) {
-        return true;
-    }
-
-    @Override
-    @Optional.Method(modid = QuarryPlus.Optionals.IC2_modID)
-    public EnumFacing getFacing(World world, BlockPos pos) {
-        return EnumFacing.UP;
-    }
-
-    @Override
-    @Optional.Method(modid = QuarryPlus.Optionals.IC2_modID)
-    public boolean setFacing(World world, BlockPos pos, EnumFacing newDirection, EntityPlayer player) {
-        return false;
-    }
-
-    @Override
-    @Optional.Method(modid = QuarryPlus.Optionals.IC2_modID)
-    public boolean wrenchCanRemove(World world, BlockPos pos, EntityPlayer player) {
-        return true;
-    }
-
-    @Override
-    @Optional.Method(modid = QuarryPlus.Optionals.IC2_modID)
-    public List<ItemStack> getWrenchDrops(World world, BlockPos pos, IBlockState state, TileEntity te, EntityPlayer player, int fortune) {
-        NonNullList<ItemStack> list = NonNullList.create();
-        state.getBlock().getDrops(list, world, pos, state, fortune);
-        return list;
-    }*/
-
-    private static class InteractionObject implements INamedContainerProvider {
-        private final BlockPos pos;
-
-        public InteractionObject(BlockPos pos) {
-            this.pos = pos;
+        @Override
+        public Component getDisplayName() {
+            return name;
         }
 
         @Override
-        public ITextComponent getDisplayName() {
-            return new TranslationTextComponent(TranslationKeys.mover);
-        }
-
-        @Override
-        public Container createMenu(int id, PlayerInventory inventory, PlayerEntity player) {
+        public AbstractContainerMenu createMenu(int id, Inventory inventory, Player player) {
             return new ContainerMover(id, player, pos);
         }
     }

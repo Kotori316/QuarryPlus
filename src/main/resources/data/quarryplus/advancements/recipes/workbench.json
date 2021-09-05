@@ -2,14 +2,14 @@
   "parent": "minecraft:recipes/root",
   "rewards": {
     "recipes": [
-      "quarryplus:workbenchplus"
+      "quarryplus:workbench"
     ]
   },
   "criteria": {
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "quarryplus:workbenchplus"
+        "recipe": "quarryplus:workbench"
       }
     },
     "has_storage_blocks/iron": {

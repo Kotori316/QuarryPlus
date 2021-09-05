@@ -1,0 +1,39 @@
+package com.yogpc.qp.machines;
+
+import javax.annotation.Nullable;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.registries.ForgeRegistries;
+
+public record ItemKey(Item item, @Nullable CompoundTag nbt) {
+    public ItemKey(ItemStack stack) {
+        this(stack.getItem(), stack.getTag());
+    }
+
+    public CompoundTag createNbt(long itemCount) {
+        var tag = new CompoundTag();
+        tag.putString("item", getId().toString());
+        if (nbt != null)
+            tag.put("tag", nbt);
+        tag.putLong("count", itemCount);
+        return tag;
+    }
+
+    static ItemKey fromNbt(CompoundTag tag) {
+        var item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(tag.getString("item")));
+        var nbt = tag.contains("tag") ? tag.getCompound("tag") : null;
+        return new ItemKey(item, nbt);
+    }
+
+    public ItemStack toStack(int count) {
+        var stack = new ItemStack(item, count);
+        stack.setTag(nbt);
+        return stack;
+    }
+
+    public ResourceLocation getId() {
+        return ForgeRegistries.ITEMS.getKey(item);
+    }
+}

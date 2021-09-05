@@ -1,158 +1,142 @@
-/*
- * Copyright (C) 2012,2013 yogpstop This program is free software: you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation, either version 3 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.yogpc.qp.machines.mover;
 
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
-import com.yogpc.qp.machines.base.IEnchantableItem;
-import com.yogpc.qp.machines.base.SlotMover;
-import com.yogpc.qp.utils.Holder;
-import com.yogpc.qp.utils.LoopList;
-import jp.t2v.lab.syntax.MapStreamSyntax;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.IntReferenceHolder;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import com.google.common.annotations.VisibleForTesting;
+import com.yogpc.qp.Holder;
+import com.yogpc.qp.machines.EnchantableItem;
+import com.yogpc.qp.machines.EnchantmentLevel;
+import javax.annotation.Nullable;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.BowItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TieredItem;
+import net.minecraft.world.item.Tiers;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.TierSortingRegistry;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 
-public class ContainerMover extends Container {
-    public final IInventory craftMatrix = new Inventory(2) {
+public class ContainerMover extends AbstractContainerMenu {
+    public final Container craftMatrix = new SimpleContainer(2) {
         @Override
-        public void markDirty() {
-            super.markDirty();
-            detectAndSendChanges();
+        public void setChanged() {
+            super.setChanged();
+            updateEnchantmentList();
         }
     };
-    private final World worldObj;
+    private final Level worldObj;
+    List<Enchantment> movable = Collections.emptyList();
+    @Nullable
+    Enchantment selected = null;
     public final BlockPos pos;
-    private final LoopList<Tuple> list = new LoopList<>();
-    private final IntReferenceHolder avail = trackInt(IntReferenceHolder.single());
 
-    public ContainerMover(int id, PlayerEntity player, BlockPos pos) {
-        super(Holder.moverContainerType(), id);
-        PlayerInventory inv = player.inventory;
-        this.worldObj = player.getEntityWorld();
+    public ContainerMover(int id, Player player, BlockPos pos) {
+        super(Holder.MOVER_MENU_TYPE, id);
+        Inventory inv = player.getInventory();
+        this.worldObj = player.level;
         this.pos = pos;
         int row;
         int col;
         for (col = 0; col < 2; ++col)
-            addSlot(new SlotMover(this.craftMatrix, col, 8 + col * 144, 35));
+            addSlot(new SlotMover(this.craftMatrix, col, 8 + col * 144, 40));
 
         for (row = 0; row < 3; ++row)
             for (col = 0; col < 9; ++col)
-                addSlot(new Slot(inv, col + row * 9 + 9, 8 + col * 18, 84 + row * 18));
+                addSlot(new Slot(inv, col + row * 9 + 9, 8 + col * 18, 104 + row * 18));
 
         for (col = 0; col < 9; ++col)
-            addSlot(new Slot(inv, col, 8 + col * 18, 142));
-        avail.set(0);
+            addSlot(new Slot(inv, col, 8 + col * 18, 162));
     }
 
     @Override
-    public void onContainerClosed(final PlayerEntity playerIn) {
-        super.onContainerClosed(playerIn);
-        if (!worldObj.isRemote) {
-            IntStream.range(0, craftMatrix.getSizeInventory())
-                .mapToObj(craftMatrix::removeStackFromSlot)
-                .filter(MapStreamSyntax.not(ItemStack::isEmpty))
-                .forEach(s -> playerIn.dropItem(s, false));
+    public void removed(final Player playerIn) {
+        super.removed(playerIn);
+        if (!worldObj.isClientSide) {
+            IntStream.range(0, craftMatrix.getContainerSize())
+                .mapToObj(craftMatrix::removeItemNoUpdate)
+                .filter(Predicate.not(ItemStack::isEmpty))
+                .forEach(s -> playerIn.drop(s, false));
         }
     }
 
     @Override
-    public boolean canInteractWith(final PlayerEntity playerIn) {
-        return this.worldObj.getBlockState(pos).getBlock() == Holder.blockMover() && playerIn.getDistanceSq(Vector3d.copyCenteredHorizontally(pos)) <= 64.0D;
+    public boolean stillValid(Player playerIn) {
+        return this.worldObj.getBlockState(pos).is(Holder.BLOCK_MOVER) && playerIn.distanceToSqr(Vec3.atCenterOf(pos)) <= 64.0D;
     }
 
-    @Override
-    public void detectAndSendChanges() {
-        ItemStack pickaxe = craftMatrix.getStackInSlot(0);
-        Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(pickaxe);
-        ItemStack enchTile = craftMatrix.getStackInSlot(1);
-        if (enchantments.isEmpty() || enchTile.isEmpty()) {
-            avail.set(0);
-            list.setList(Collections.emptyList());
+    void updateEnchantmentList() {
+        var from = craftMatrix.getItem(0);
+        var to = craftMatrix.getItem(1);
+        if (from.isEmpty() ||
+            to.isEmpty() ||
+            from.getEnchantmentTags().isEmpty() ||
+            !(to.getItem() instanceof EnchantableItem)) {
+            movable = Collections.emptyList();
+            selected = null;
         } else {
-            int previousSize = list.size();
-            if (!enchTile.isEmpty() && enchTile.getItem() instanceof IEnchantableItem) {
-                IEnchantableItem item = (IEnchantableItem) enchTile.getItem();
-                list.setList(enchantments.entrySet().stream().map(Tuple::new)
-                    .filter(tuple -> item.canMove(enchTile, tuple.enchantment) &&
-                        EnchantmentHelper.getEnchantmentLevel(tuple.enchantment, enchTile) < tuple.enchantment.getMaxLevel())
-                    .collect(Collectors.toCollection(LinkedList::new)));
+            var newMovable = getMovable(from, to, (EnchantableItem) to.getItem());
+            if (newMovable.isEmpty()) {
+                selected = null;
             } else {
-                list.setList(enchantments.entrySet().stream().map(Tuple::new).collect(Collectors.toCollection(LinkedList::new)));
+                if (!newMovable.contains(selected))
+                    selected = newMovable.get(0);
             }
-            if (avail.get() % (previousSize == 0 ? 1 : previousSize) > list.size()) {
-                avail.set(0);
-            }
+            movable = newMovable;
         }
-        super.detectAndSendChanges();
     }
 
-
-    public void setAvail(D d) {
-        avail.set(avail.get() + d.offset);
-        if (!worldObj.isRemote) {
-            detectAndSendChanges();
-        }
+    @VisibleForTesting
+    static List<Enchantment> getMovable(ItemStack from, ItemStack to, Predicate<Enchantment> predicate) {
+        var given = EnchantmentHelper.getEnchantments(to);
+        return EnchantmentLevel.fromItem(from).stream()
+            .map(EnchantmentLevel::enchantment)
+            .filter(predicate)
+            .filter(e -> given.getOrDefault(e, 0) < e.getMaxLevel())
+            .filter(e -> given.keySet().stream().filter(Predicate.isEqual(e).negate()).allMatch(e::isCompatibleWith))
+            .toList();
     }
 
     public Optional<Enchantment> getEnchantment() {
-        return list.getOptional(avail.get()).map(tuple -> tuple.enchantment);
+        return Optional.ofNullable(selected);
     }
 
     @Override
-    public ItemStack transferStackInSlot(final PlayerEntity playerIn, final int index) {
+    public ItemStack quickMoveStack(Player playerIn, int index) {
         ItemStack src = ItemStack.EMPTY;
-        final Slot slot = this.inventorySlots.get(index);
-        if (slot != null && slot.getHasStack()) {
-            final ItemStack remain = slot.getStack();
+        final Slot slot = this.getSlot(index);
+        if (slot.hasItem()) {
+            final ItemStack remain = slot.getItem();
             src = remain.copy();
             if (index < 2) {
-                if (!mergeItemStack(remain, 2, 38, true))
+                if (!moveItemStackTo(remain, 2, 38, true))
                     return ItemStack.EMPTY;
             } else {
                 Slot toSlot;
                 final ItemStack put = ItemHandlerHelper.copyStackWithSize(remain, 1);
                 boolean changed = false;
-                toSlot = this.inventorySlots.get(0);
-                if (/*!changed(true) &&*/ toSlot.isItemValid(remain) && toSlot.getStack().isEmpty()) {
-                    toSlot.putStack(put);
+                toSlot = this.getSlot(0);
+                if (/*!changed(true) &&*/ toSlot.mayPlace(remain) && toSlot.getItem().isEmpty()) {
+                    toSlot.set(put);
                     remain.shrink(1);
                     changed = true;
                 }
-                toSlot = this.inventorySlots.get(1);
-                if (!changed && toSlot.isItemValid(remain) && toSlot.getStack().isEmpty()) {
-                    toSlot.putStack(put);
+                toSlot = this.getSlot(1);
+                if (!changed && toSlot.mayPlace(remain) && toSlot.getItem().isEmpty()) {
+                    toSlot.set(put);
                     remain.shrink(1);
                     changed = true;
                 }
@@ -160,9 +144,9 @@ public class ContainerMover extends Container {
                     return ItemStack.EMPTY;
             }
             if (remain.isEmpty())
-                slot.putStack(ItemStack.EMPTY);
+                slot.set(ItemStack.EMPTY);
             else
-                slot.onSlotChanged();
+                slot.setChanged();
             if (remain.getCount() == src.getCount())
                 return ItemStack.EMPTY;
             slot.onTake(playerIn, remain);
@@ -170,121 +154,86 @@ public class ContainerMover extends Container {
         return src;
     }
 
-    public void moveEnchant() {
-        Tuple tuple = list.get(avail.get());
-        ItemStack tileItem = craftMatrix.getStackInSlot(1);
-        if (tuple == null || tileItem.isEmpty() || !((IEnchantableItem) tileItem.getItem()).canMove(tileItem, tuple.enchantment)) {
-            return;
-        }
-        ListNBT list = tileItem.getEnchantmentTagList();
-        if (/*list == null ||*/ EnchantmentHelper.getEnchantmentLevel(tuple.enchantment, tileItem) == 0) {
-            //add new enchantment (Level 1)
-            tileItem.addEnchantment(tuple.enchantment, 1);
-            if (tuple.level == 1) {
-                this.list.remove(avail.get());
-            } else {
-                this.list.set(avail.get(), tuple.levelDown());
-            }
-            downLevel(tuple.enchantment, craftMatrix.getStackInSlot(0));
-        } else {
-            for (int i = 0; i < list.size(); i++) {
-                CompoundNBT nbt = list.getCompound(i);
-                if (ForgeRegistries.ENCHANTMENTS.getValue(new ResourceLocation(nbt.getString("id"))) == tuple.enchantment) {
-                    short l = nbt.getShort("lvl");
-                    if (l < tuple.enchantment.getMaxLevel()) {
-                        nbt.putShort("lvl", (short) (l + 1));
-                        if (tuple.level == 1) {
-                            this.list.remove(avail.get());
-                        } else {
-                            this.list.set(avail.get(), tuple.levelDown());
-                        }
-                        downLevel(tuple.enchantment, craftMatrix.getStackInSlot(0));
-                    }
-                    return;
-                }
-            }
+    public void moveEnchant(Enchantment enchantment) {
+        var from = craftMatrix.getItem(0);
+        var to = craftMatrix.getItem(1);
+        moveEnchantment(enchantment, from, to, this::updateEnchantmentList);
+    }
+
+    @VisibleForTesting
+    static void moveEnchantment(@Nullable Enchantment enchantment, ItemStack from, ItemStack to, Runnable after) {
+        if (enchantment == null || from.isEmpty() || to.isEmpty()) return;
+        if (!(to.getItem() instanceof EnchantableItem item) || item.test(enchantment)) {
+            upLevel(enchantment, to);
+            downLevel(enchantment, from);
+            after.run();
         }
     }
 
-    private static void downLevel(Enchantment enchantment, ItemStack stack) {
-        ListNBT list = stack.getEnchantmentTagList();
-        /*if (list != null) */
-        {
+    @VisibleForTesting
+    static void downLevel(Enchantment enchantment, ItemStack stack) {
+        var list = stack.getEnchantmentTags();
+        if (!list.isEmpty()) {
             for (int i = 0; i < list.size(); i++) {
-                CompoundNBT nbt = list.getCompound(i);
-                if (ForgeRegistries.ENCHANTMENTS.getValue(new ResourceLocation(nbt.getString("id"))) == enchantment) {
-                    short l = nbt.getShort("lvl");
+                var nbt = list.getCompound(i);
+                if (ForgeRegistries.ENCHANTMENTS.getValue(EnchantmentHelper.getEnchantmentId(nbt)) == enchantment) {
+                    int l = EnchantmentHelper.getEnchantmentLevel(nbt);
                     if (l == 1) {
                         list.remove(i);
                     } else {
-                        nbt.putShort("lvl", (short) (l - 1));
+                        EnchantmentHelper.setEnchantmentLevel(nbt, l - 1);
                     }
                     break;
                 }
             }
             if (list.isEmpty()) {
-                CompoundNBT compound = stack.getTag();
-                if (compound != null) {
-                    compound.remove("ench");
-                    if (compound.isEmpty())
-                        stack.setTag(null);
+                stack.removeTagKey("Enchantments");
+            }
+        }
+    }
+
+    @VisibleForTesting
+    static void upLevel(Enchantment enchantment, ItemStack stack) {
+        var level = EnchantmentHelper.getItemEnchantmentLevel(enchantment, stack);
+        if (level == 0) {
+            stack.enchant(enchantment, 1);
+        } else {
+            var list = stack.getEnchantmentTags();
+            for (int i = 0; i < list.size(); i++) {
+                var nbt = list.getCompound(i);
+                if (ForgeRegistries.ENCHANTMENTS.getValue(EnchantmentHelper.getEnchantmentId(nbt)) == enchantment) {
+                    EnchantmentHelper.setEnchantmentLevel(nbt, level + 1);
+                    break;
                 }
             }
         }
     }
+}
 
-    public enum D {
-        UP(-1), DOWN(+1);
-        public final int offset;
-
-        D(int offset) {
-            this.offset = offset;
-        }
+class SlotMover extends Slot {
+    public SlotMover(Container container, int index, int x, int y) {
+        super(container, index, x, y);
     }
 
-    private static class Tuple {
-        final Enchantment enchantment;
-        final int level;
-
-        public Tuple(Enchantment enchantment, int level) {
-            this.enchantment = enchantment;
-            this.level = level;
+    @Override
+    public boolean mayPlace(ItemStack stack) {
+        switch (this.getSlotIndex()) {
+            case 0:
+                if (stack.getEnchantmentTags().isEmpty())
+                    return false;
+                if (stack.getItem() instanceof TieredItem tieredItem) {
+                    return !TierSortingRegistry.getTiersLowerThan(Tiers.IRON).contains(tieredItem.getTier());
+                } else {
+                    return stack.getItem() instanceof BowItem;
+                }
+            case 1:
+                return stack.getItem() instanceof EnchantableItem;
         }
+        return false;
+    }
 
-        public Tuple(Map.Entry<Enchantment, Integer> entry) {
-            this(entry.getKey(), entry.getValue());
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == this)
-                return true;
-            if (obj instanceof Tuple) {
-                Tuple tuple = (Tuple) obj;
-                return tuple.enchantment == this.enchantment && tuple.level == this.level;
-            }
-            return false;
-        }
-
-        @Override
-        public int hashCode() {
-            return enchantment.hashCode() ^ level;
-        }
-
-        public Tuple levelDown() {
-            return cloneWithLevel(level - 1);
-        }
-
-        public Tuple cloneWithLevel(int newLevel) {
-            return new Tuple(enchantment, newLevel);
-        }
-
-        @Override
-        public String toString() {
-            return "Tuple{" +
-                "enchantment=" + enchantment.getRegistryName() +
-                ", level=" + level +
-                '}';
-        }
+    @Override
+    public int getMaxStackSize() {
+        return 1;
     }
 }

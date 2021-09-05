@@ -1,52 +1,26 @@
-# This is an example mods.toml file. It contains the data relating to the loading mods.
-# There are several mandatory fields (#mandatory), and many more that are optional (#optional).
-# The overall format is standard TOML format, v0.5.0.
-# Note that there are a couple of TOML lists in this file.
-# Find more information on toml format here:  https://github.com/toml-lang/toml
-# The name of the mod loader type to load - for regular FML @Mod mods it should be javafml
-modLoader="kotori_scala" #mandatory
-# A version range to match for said mod loader - for regular FML @Mod it will be the forge version
-loaderVersion="[2.13.3-build-3,2.14.0)" #mandatory
-# A URL to refer people to when problems occur with this mod
-issueTrackerURL="https://github.com/Kotori316/QuarryPlus/issues" #optional
+modLoader="javafml"
+loaderVersion="[37,)"
+issueTrackerURL="https://github.com/Kotori316/QuarryPlus/issues"
 license="GNU Lesser General Public License v3.0"
-# A list of mods - how many allowed here is determined by the individual mod loader
-[[mods]] #mandatory
-# The modid of the mod
-modId="quarryplus" #mandatory
-# The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
-version="${file.jarVersion}" #mandatory
- # A display name for the mod
-displayName="QuarryPlus" #mandatory
-# A URL to query for updates for this mod. See the JSON update specification <here>
-updateJSONURL="https://raw.githubusercontent.com/Kotori316/QuarryPlus/1.16/update.json" #optional
-# A URL for the "homepage" for this mod, displayed in the mod UI
-displayURL="https://github.com/Kotori316/QuarryPlus" #optional
-# A file name (in the root of the mod JAR) containing a logo for display
-# logoFile="examplemod.png" #optional
-# A text field displayed in the mod UI
-credits="Kotori316" #optional
-# A text field displayed in the mod UI
-authors="Kotori316" #optional
-# The description text for the mod (multi line!) (#mandatory)
+[[mods]] 
+modId="quarryplus"
+version="${file.jarVersion}"
+displayName="QuarryPlus"
+updateJSONURL="https://raw.githubusercontent.com/Kotori316/QuarryPlus/1.17/update.json"
+displayURL="https://github.com/Kotori316/QuarryPlus"
+credits="Kotori316"
+authors="Kotori316"
 description='''
-"This mod adds advanced quarry and more. This mod is UNOFFICIAL PORTED VERSION of QuarryPlus in 1.7.10.'''
-# A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
-[[dependencies.quarryplus]] #optional
-    # the modid of the dependency
-    modId="forge" #mandatory
-    # Does this dependency have to exist - if not, ordering below must be specified
-    mandatory=true #mandatory
-    # The version range of the dependency
-    versionRange="[34.1.0,)" #mandatory
-    # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
+Adds some machines to make a big hole in your world.'''
+[[dependencies.quarryplus]]
+    modId="forge" 
+    mandatory=true 
+    versionRange="[37,)"
     ordering="NONE"
-    # Side this dependency is applied on - BOTH, CLIENT or SERVER
     side="BOTH"
-# Here's another dependency
 [[dependencies.quarryplus]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16.3,)"
+    versionRange="[1.17.1, )"
     ordering="NONE"
     side="BOTH"

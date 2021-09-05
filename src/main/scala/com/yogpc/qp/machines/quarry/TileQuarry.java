@@ -1,710 +1,455 @@
-/*
- * Copyright (C) 2012,2013 yogpstop This program is free software: you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation, either version 3 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.yogpc.qp.machines.quarry;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.yogpc.qp.Config;
+import com.google.common.collect.Sets;
+import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.Area;
+import com.yogpc.qp.machines.BreakResult;
+import com.yogpc.qp.machines.CheckerLog;
+import com.yogpc.qp.machines.EnchantmentLevel;
+import com.yogpc.qp.machines.ItemConverter;
+import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.PowerManager;
-import com.yogpc.qp.machines.TranslationKeys;
-import com.yogpc.qp.machines.base.Area;
-import com.yogpc.qp.machines.base.IAttachment;
-import com.yogpc.qp.machines.base.IChunkLoadTile;
-import com.yogpc.qp.machines.base.IDebugSender;
-import com.yogpc.qp.machines.base.IMarker;
-import com.yogpc.qp.machines.base.IModule;
-import com.yogpc.qp.machines.base.QPBlock;
-import com.yogpc.qp.machines.pump.TilePump;
-import com.yogpc.qp.machines.replacer.TileReplacer;
+import com.yogpc.qp.machines.PowerTile;
+import com.yogpc.qp.machines.QPBlock;
+import com.yogpc.qp.machines.QuarryFakePlayer;
+import com.yogpc.qp.machines.module.ModuleInventory;
+import com.yogpc.qp.machines.module.QuarryModule;
+import com.yogpc.qp.machines.module.QuarryModuleProvider;
+import com.yogpc.qp.packet.ClientSync;
+import com.yogpc.qp.packet.ClientSyncMessage;
 import com.yogpc.qp.packet.PacketHandler;
-import com.yogpc.qp.packet.TileMessage;
-import com.yogpc.qp.packet.quarry.ModeMessage;
-import com.yogpc.qp.packet.quarry.MoveHead;
-import com.yogpc.qp.utils.Holder;
+import com.yogpc.qp.utils.MapMulti;
 import javax.annotation.Nullable;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import org.apache.commons.lang3.BooleanUtils;
-import scala.Option;
-import scala.Symbol;
-import scala.jdk.javaapi.CollectionConverters;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.BucketPickup;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.LiquidBlockContainer;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.registries.ForgeRegistries;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
 
-import static com.yogpc.qp.machines.base.IAttachment.Attachments.EXP_PUMP;
-import static com.yogpc.qp.machines.base.IAttachment.Attachments.FLUID_PUMP;
-import static com.yogpc.qp.machines.base.IAttachment.Attachments.REPLACER;
-import static jp.t2v.lab.syntax.MapStreamSyntax.byEntry;
-import static jp.t2v.lab.syntax.MapStreamSyntax.entryToMap;
-import static jp.t2v.lab.syntax.MapStreamSyntax.not;
-import static net.minecraft.state.properties.BlockStateProperties.FACING;
-
-public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTile {
-    public static final Symbol SYMBOL = Symbol.apply("QuarryPlus");
-    private int targetX, targetY, targetZ;
-    public int xMin, xMax, yMin, yMax = Integer.MIN_VALUE, zMin, zMax;
-    public boolean filler;
-
-    /**
-     * The marker of {@code IAreaProvider} or {@link IMarker}.
-     */
+public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.HasStorage,
+    EnchantmentLevel.HasEnchantments, ClientSync, ModuleInventory.HasModuleInventory {
+    private static final Marker MARKER = MarkerManager.getMarker("TileQuarry");
+    private static final EnchantmentRestriction RESTRICTION = EnchantmentRestriction.builder()
+        .add(Enchantments.BLOCK_EFFICIENCY)
+        .add(Enchantments.UNBREAKING)
+        .add(Enchantments.BLOCK_FORTUNE)
+        .add(Enchantments.SILK_TOUCH)
+        .build();
     @Nullable
-    private Object areaProvider = null;
+    public Target target;
+    public QuarryState state = QuarryState.FINISHED;
+    @Nullable
+    private Area area;
+    // May be unmodifiable
+    private List<EnchantmentLevel> enchantments = new ArrayList<>();
+    public MachineStorage storage = new MachineStorage();
+    public double headX, headY, headZ;
+    private boolean init = false;
+    public int digMinY = 0;
+    private final ItemConverter itemConverter = ItemConverter.defaultConverter();
+    private Set<QuarryModule> modules = new HashSet<>(); // May be immutable.
+    private final ModuleInventory moduleInventory;
 
-    public TileQuarry() {
-        super(Holder.quarryTileType());
-    }
-
-    public TileQuarry(TileEntityType<?> type) {
-        super(type);
-    }
-
-    @SuppressWarnings("fallthrough")
-    protected void S_updateEntity() {
-        if (this.areaProvider != null) {
-            if (this.areaProvider instanceof IMarker)
-                this.cacheItems.addAll(((IMarker) this.areaProvider).removeFromWorldWithItem());
-//            else if (bcLoaded && areaProvider instanceof IAreaProvider) {
-//                ((IAreaProvider) this.areaProvider).removeFromWorld();
-//            }
-            this.areaProvider = null;
-        }
-        Boolean faster = Config.common().fastQuarryHeadMove().get();
-        boolean broken = false;
-        for (int i = 0; i < efficiency + 1 && !broken; i++) {
-            if (!faster) broken = true;
-            switch (this.now) {
-                case MAKE_FRAME:
-                    if (S_makeFrame())
-                        while (!S_checkTarget())
-                            S_setNextTarget();
-                    broken = true;
-                    break;
-                case MOVE_HEAD:
-                    final boolean done = S_moveHead();
-                    MoveHead.send(this);
-                    if (!done) {
-                        broken = true;
-                        break;
-                    }
-                    setNow(Mode.BREAK_BLOCK);
-                    break;
-                //$FALL-THROUGH$
-                case NOT_NEED_BREAK:
-                    broken = !filler;
-                case BREAK_BLOCK:
-                    if (S_breakBlock())
-                        while (!S_checkTarget())
-                            S_setNextTarget();
-                    break;
-                case NONE:
-                    broken = true;
-                    break;
-            }
-        }
-        S_pollItems();
-    }
-
-    private boolean S_checkTarget() {
-        assert world != null;
-        if (this.targetY > this.yMax)
-            this.targetY = this.yMax;
-        BlockPos target = new BlockPos(this.targetX, this.targetY, this.targetZ);
-        final BlockState b = world.getBlockState(target);
-        final float blockHardness = b.getBlockHardness(world, target);
-        switch (this.now) {
-            case BREAK_BLOCK:
-            case MOVE_HEAD:
-                if (this.targetY < yLevel) {
-                    G_destroy();
-                    S_checkDropItem(new AxisAlignedBB(xMin - 2, yLevel - 3, zMin - 2, xMax + 2, yLevel + 2, zMax + 2));
-                    PacketHandler.sendToAround(ModeMessage.create(this), world, getPos());
-                    return true;
-                }
-                return isBreakableBlock(target, b, blockHardness);
-            case NOT_NEED_BREAK:
-                if (this.targetY < this.yMin) {
-                    if (this.filler) {
-                        G_destroy();
-//                        sendNowPacket(this);
-                        return true;
-                    }
-                    setNow(Mode.MAKE_FRAME);
-                    G_renew_powerConfigure();
-                    this.targetX = this.xMin;
-                    this.targetY = this.yMax;
-                    this.targetZ = this.zMin;
-                    this.addX = this.addZ = this.dug = true;
-                    this.changeZ = false;
-                    return S_checkTarget();
-                }
-                if (!isBreakableBlock(target, b, blockHardness))
-                    return false;
-                if (b.getBlock() == Holder.blockFrame() && !b.get(BlockFrame.DAMMING)) {
-                    return Stream.of(
-                        this.targetX == this.xMin || this.targetX == this.xMax,
-                        this.targetY == this.yMin || this.targetY == this.yMax,
-                        this.targetZ == this.zMin || this.targetZ == this.zMax)
-                        .mapToInt(BooleanUtils::toInteger)
-                        .sum() < 2; // true if 0 or 1 condition is true.
-                }
-                return true;
-            case MAKE_FRAME:
-                if (this.targetY < this.yMin) {
-                    setNow(Mode.MOVE_HEAD);
-                    G_renew_powerConfigure();
-                    this.targetX = this.xMin + 1;
-                    this.targetY = this.yMin;
-                    this.targetZ = this.zMin + 1;
-                    this.addX = this.addZ = this.dug = true;
-                    this.changeZ = false;
-                    return S_checkTarget();
-                }
-                if (b.getMaterial().isSolid()
-                    && !(b.getBlock() == Holder.blockFrame() && !b.get(BlockFrame.DAMMING))) {
-                    setNow(Mode.NOT_NEED_BREAK);
-                    G_renew_powerConfigure();
-                    this.targetX = this.xMin;
-                    this.targetZ = this.zMin;
-                    this.targetY = this.yMax;
-                    this.addX = this.addZ = this.dug = true;
-                    this.changeZ = false;
-                    return S_checkTarget();
-                }
-                byte flag = 0;
-                if (this.targetX == this.xMin || this.targetX == this.xMax)
-                    flag++;
-                if (this.targetY == this.yMin || this.targetY == this.yMax)
-                    flag++;
-                if (this.targetZ == this.zMin || this.targetZ == this.zMax)
-                    flag++;
-                return flag > 1 && (b.getBlock() != Holder.blockFrame() || b.get(BlockFrame.DAMMING));
-            case NONE:
-                break;
-        }
-        return true;
-    }
-
-    private boolean isBreakableBlock(BlockPos target, BlockState b, float blockHardness) {
-        return blockHardness >= 0 && // Not to break unbreakable
-            !b.getBlock().isAir(b, world, target) && // Avoid air
-            (now == Mode.NOT_NEED_BREAK || !facingMap.containsKey(REPLACER) || b != S_getFillBlock()) && // Avoid dummy block.
-            !(TilePump.isLiquid(b) && !facingMap.containsKey(FLUID_PUMP)) && // Fluid when pump isn't connected.
-            !skipped.contains(target); //Not skipped(unbreakable by events)
-    }
-
-    private boolean addX = true;
-    private boolean addZ = true;
-    private boolean dug = true;
-    private boolean changeZ = false;
-
-    private void S_setNextTarget() {
-        if (this.now == Mode.MAKE_FRAME) {
-            if (this.changeZ) {
-                if (this.addZ) {
-                    this.targetZ++;
-                } else {
-                    this.targetZ--;
-                }
-            } else if (this.addX) {
-                this.targetX++;
-            } else {
-                this.targetX--;
-            }
-            if (this.targetX < this.xMin || this.xMax < this.targetX) {
-                this.addX = !this.addX;
-                this.changeZ = true;
-                this.targetX = Math.max(this.xMin, Math.min(this.xMax, this.targetX));
-            }
-            if (this.targetZ < this.zMin || this.zMax < this.targetZ) {
-                this.addZ = !this.addZ;
-                this.changeZ = false;
-                this.targetZ = Math.max(this.zMin, Math.min(this.zMax, this.targetZ));
-            }
-            if (this.xMin == this.targetX && this.zMin == this.targetZ)
-                if (this.dug)
-                    this.dug = false;
-                else
-                    this.targetY--;
-        } else {
-            if (this.addX)
-                this.targetX++;
-            else
-                this.targetX--;
-            final int out = this.now == Mode.NOT_NEED_BREAK ? 0 : 1;
-            if (this.targetX < this.xMin + out || this.xMax - out < this.targetX) {
-                this.addX = !this.addX;
-                this.targetX = Math.max(this.xMin + out, Math.min(this.targetX, this.xMax - out));
-                if (this.addZ)
-                    this.targetZ++;
-                else
-                    this.targetZ--;
-                if (this.targetZ < this.zMin + out || this.zMax - out < this.targetZ) {
-                    this.addZ = !this.addZ;
-                    this.targetZ = Math.max(this.zMin + out, Math.min(this.targetZ, this.zMax - out));
-                    if (this.dug)
-                        this.dug = false;
-                    else {
-                        this.targetY--;
-                        skipped.clear();
-                        final double aa = S_getDistance(this.xMin + 1, this.targetY, this.zMin + out);
-                        final double ad = S_getDistance(this.xMin + 1, this.targetY, this.zMax - out);
-                        final double da = S_getDistance(this.xMax - 1, this.targetY, this.zMin + out);
-                        final double dd = S_getDistance(this.xMax - 1, this.targetY, this.zMax - out);
-                        final double res = Math.min(aa, Math.min(ad, Math.min(da, dd)));
-                        if (res == aa) {
-                            this.addX = true;
-                            this.addZ = true;
-                            this.targetX = this.xMin + out;
-                            this.targetZ = this.zMin + out;
-                        } else if (res == ad) {
-                            this.addX = true;
-                            this.addZ = false;
-                            this.targetX = this.xMin + out;
-                            this.targetZ = this.zMax - out;
-                        } else if (res == da) {
-                            this.addX = false;
-                            this.addZ = true;
-                            this.targetX = this.xMax - out;
-                            this.targetZ = this.zMin + out;
-                        } else if (res == dd) {
-                            this.addX = false;
-                            this.addZ = false;
-                            this.targetX = this.xMax - out;
-                            this.targetZ = this.zMax - out;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private double S_getDistance(final int x, final int y, final int z) {
-        return Math.sqrt(Math.pow(x - this.headPosX, 2) + Math.pow(y + 1 - this.headPosY, 2) + Math.pow(z - this.headPosZ, 2));
-    }
-
-    private boolean S_makeFrame() {
-        assert world != null;
-        this.dug = true;
-        if (!PowerManager.useEnergyFrameBuild(this, this.unbreaking))
-            return false;
-        world.setBlockState(new BlockPos(this.targetX, this.targetY, this.targetZ), Holder.blockFrame().getDefaultState());
-        S_setNextTarget();
-        return true;
-    }
-
-    private boolean S_breakBlock() {
-        this.dug = true;
-        if (S_breakBlock(this.targetX, this.targetY, this.targetZ, S_getFillBlock())) {
-            S_checkDropItem(new AxisAlignedBB(this.targetX - 4, this.targetY - 4, this.targetZ - 4,
-                this.targetX + 5, this.targetY + 3, this.targetZ + 5));
-            if (this.now == Mode.BREAK_BLOCK)
-                setNow(Mode.MOVE_HEAD);
-            S_setNextTarget();
-            return true;
-        }
-        return false;
-    }
-
-    private void S_checkDropItem(AxisAlignedBB axis) {
-        assert world != null;
-        final List<ItemEntity> result = world.getEntitiesWithinAABB(ItemEntity.class, axis);
-        result.stream().filter(ItemEntity::isAlive).map(ItemEntity::getItem).filter(not(ItemStack::isEmpty)).forEach(this.cacheItems::add);
-        result.forEach(QuarryPlus.proxy::removeEntity);
-
-        if (facingMap.containsKey(EXP_PUMP)) {
-            List<Entity> xpOrbs = world.getEntitiesWithinAABB(Entity.class, axis);
-            modules.forEach(iModule -> iModule.invoke(new IModule.CollectingItem(CollectionConverters.asScala(xpOrbs).toList())));
-        }
-
-    }
-
-    @SuppressWarnings("Duplicates") // To avoid BC's library error.
-    private void S_createBox() {
-        assert world != null;
-        if (this.yMax != Integer.MIN_VALUE)
-            return;
-
-        Direction facing = world.getBlockState(getPos()).get(FACING);
-        /*if (bcLoaded) {
-            Optional<IAreaProvider> marker = Stream.of(getNeighbors(facing))
-                .map(world::getTileEntity).filter(Objects::nonNull)
-                .flatMap(t ->
-                    Stream.concat(streamCast(IAreaProvider.class).apply(t), Stream.of(t.getCapability(TilesAPI.CAP_TILE_AREA_PROVIDER, null)))
-                ).filter(nonNull).findFirst();
-            if (marker.isPresent()) {
-                IAreaProvider provider = marker.get();
-                if (provider.min().getX() == provider.max().getX() || provider.min().getZ() == provider.max().getZ()) {
-                    setDefaultRange(getPos(), facing);
-                } else {
-                    this.xMin = provider.min().getX();
-                    this.yMin = provider.min().getY();
-                    this.zMin = provider.min().getZ();
-                    this.xMax = provider.max().getX();
-                    this.yMax = provider.max().getY();
-                    this.zMax = provider.max().getZ();
-
-                    if (getPos().getX() >= this.xMin && getPos().getX() <= this.xMax && getPos().getY() >= this.yMin
-                        && getPos().getY() <= this.yMax && getPos().getZ() >= this.zMin && getPos().getZ() <= this.zMax) {
-                        this.yMax = Integer.MIN_VALUE;
-                        setDefaultRange(getPos(), facing);
-                        return;
-                    }
-                    if (this.xMax - this.xMin < 2 || this.zMax - this.zMin < 2) {
-                        this.yMax = Integer.MIN_VALUE;
-                        setDefaultRange(getPos(), facing);
-                        return;
-                    }
-                    if (this.yMax - this.yMin < 2)
-                        this.yMax = this.yMin + 3;
-                    areaProvider = provider;
-                }
-                return;
-            }
-        }*/
-        Option<IMarker> marker = Area.findQuarryArea(facing, world, pos)._2;
-        if (marker.isDefined()) {
-            IMarker iMarker = marker.get();
-            this.xMin = iMarker.min().getX();
-            this.yMin = iMarker.min().getY();
-            this.zMin = iMarker.min().getZ();
-            this.xMax = iMarker.max().getX();
-            this.yMax = iMarker.max().getY();
-            this.zMax = iMarker.max().getZ();
-            if (getPos().getX() >= this.xMin && getPos().getX() <= this.xMax && getPos().getY() >= this.yMin
-                && getPos().getY() <= this.yMax && getPos().getZ() >= this.zMin && getPos().getZ() <= this.zMax) {
-                this.yMax = Integer.MIN_VALUE;
-                setDefaultRange(getPos(), facing.getOpposite());
-                return;
-            }
-            if (this.xMax - this.xMin < 2 || this.zMax - this.zMin < 2) {
-                this.yMax = Integer.MIN_VALUE;
-                setDefaultRange(getPos(), facing.getOpposite());
-                return;
-            }
-            if (this.yMax - this.yMin < 2)
-                this.yMax = this.yMin + 3;
-            areaProvider = iMarker;
-        } else {
-            setDefaultRange(getPos(), facing.getOpposite());
-        }
-    }
-
-    protected BlockState S_getFillBlock() {
-        assert world != null;
-        if (now == Mode.NOT_NEED_BREAK || !facingMap.containsKey(REPLACER))
-            return Blocks.AIR.getDefaultState();
-        else {
-            return Optional.ofNullable(facingMap.get(REPLACER))
-                .map(pos::offset).map(world::getTileEntity)
-                .flatMap(REPLACER)
-                .map(TileReplacer::getReplaceState)
-                .orElse(Blocks.AIR.getDefaultState());
-        }
-    }
-
-    @SuppressWarnings("Duplicates")
-    public void setDefaultRange(BlockPos pos, Direction facing) {
-        final int x = 11;
-        final int y = (x - 1) / 2;//5
-        pos = pos.offset(facing);
-        BlockPos pos1 = pos.offset(facing);
-        BlockPos pos2 = pos.offset(facing, x);
-        BlockPos pos3 = pos.offset(facing.rotateY(), y);
-        BlockPos pos4 = pos.offset(facing.rotateYCCW(), y);
-        if (facing.getAxis() == Direction.Axis.X) {
-            xMin = Math.min(pos1.getX(), pos2.getX());
-            xMax = Math.max(pos1.getX(), pos2.getX());
-            zMin = Math.min(pos3.getZ(), pos4.getZ());
-            zMax = Math.max(pos3.getZ(), pos4.getZ());
-        } else if (facing.getAxis() == Direction.Axis.Z) {
-            xMin = Math.min(pos3.getX(), pos4.getX());
-            xMax = Math.max(pos3.getX(), pos4.getX());
-            zMin = Math.min(pos1.getZ(), pos2.getZ());
-            zMax = Math.max(pos1.getZ(), pos2.getZ());
-        }
-        yMin = getPos().getY();
-        yMax = getPos().getY() + 3;
-    }
-
-    private void S_setFirstPos() {
-        this.targetX = this.xMin;
-        this.targetZ = this.zMin;
-        this.targetY = this.yMax;
-        this.headPosX = (this.xMin + this.xMax + 1) >> 1;
-        this.headPosZ = (this.zMin + this.zMax + 1) >> 1;
-        this.headPosY = this.yMax - 1;
-    }
-
-    private boolean S_moveHead() {
-        final double x = this.targetX - this.headPosX;
-        final double y = this.targetY + 1 - this.headPosY;
-        final double z = this.targetZ - this.headPosZ;
-        final double distance = Math.sqrt(x * x + y * y + z * z);
-        final double blocks = PowerManager.useEnergyQuarryHead(this, distance, this.unbreaking);
-        if (blocks * 2 >= distance) {
-            this.headPosX = this.targetX;
-            this.headPosY = this.targetY + 1;
-            this.headPosZ = this.targetZ;
-            return true;
-        }
-        if (blocks > 0) {
-            this.headPosX += x * blocks / distance;
-            this.headPosY += y * blocks / distance;
-            this.headPosZ += z * blocks / distance;
-        }
-        return false;
-    }
-
-    public Mode G_getNow() {
-        return this.now;
-    }
-
-    public void setNow(Mode now) {
-        this.now = now;
-        if (world != null && !world.isRemote) {
-            PacketHandler.sendToAround(ModeMessage.create(this), world, getPos());
-            BlockState state = world.getBlockState(getPos());
-            if (state.get(QPBlock.WORKING()) ^ isWorking()) {
-//                InvUtils.setNewState(world, getPos(), this, state.with(QPBlock.WORKING(), isWorking()));
-                world.setBlockState(getPos(), state.with(QPBlock.WORKING(), isWorking()));
-                if (isWorking()) {
-                    startWork();
-                } else {
-                    finishWork();
-                }
-            }
-        }
-    }
-
-    public BlockPos getMinPos() {
-        return new BlockPos(xMin, yMin, zMin);
-    }
-
-    public BlockPos getMaxPos() {
-        return new BlockPos(xMax, yMax, zMax);
+    public TileQuarry(BlockPos pos, BlockState state) {
+        super(Holder.QUARRY_TYPE, pos, state, 10000 * ONE_FE);
+        this.moduleInventory = new ModuleInventory(5, this::updateModules, m -> true, this);
     }
 
     @Override
-    protected void G_destroy() {
-        setNow(Mode.NONE);
-        G_renew_powerConfigure();
-    }
-
-    @Override
-    public void remove() {
-        IChunkLoadTile.super.releaseTicket();
-        super.remove();
-    }
-
-    @Override
-    public void G_ReInit() {
-        if (this.yMax == Integer.MIN_VALUE && world != null && !world.isRemote)
-            S_createBox();
-        setNow(Mode.NOT_NEED_BREAK);
-        G_renew_powerConfigure();
-        if (world != null && !world.isRemote) {
-            S_setFirstPos();
-            PacketHandler.sendToAround(TileMessage.create(this), world, getPos());
+    public CompoundTag save(CompoundTag nbt) {
+        if (target != null)
+            nbt.put("target", target.toNbt());
+        nbt.putString("state", state.name());
+        if (area != null)
+            nbt.put("area", area.toNBT());
+        {
+            var enchantments = new CompoundTag();
+            this.enchantments.forEach(e ->
+                enchantments.putInt(Objects.requireNonNull(e.enchantmentID(), "Invalid enchantment. " + e.enchantment()).toString(), e.level()));
+            nbt.put("enchantments", enchantments);
         }
+        nbt.putDouble("headX", headX);
+        nbt.putDouble("headY", headY);
+        nbt.putDouble("headZ", headZ);
+        nbt.put("storage", storage.toNbt());
+        nbt.putInt("digMinY", digMinY);
+        nbt.put("moduleInventory", moduleInventory.serializeNBT());
+        return super.save(nbt);
     }
 
     @Override
-    public void workInTick() {
-        if (!this.initialized) {
-            G_renew_powerConfigure();
-            this.initialized = true;
+    public void load(CompoundTag nbt) {
+        super.load(nbt);
+        target = nbt.contains("target") ? Target.fromNbt(nbt.getCompound("target")) : null;
+        state = QuarryState.valueOf(nbt.getString("state"));
+        area = Area.fromNBT(nbt.getCompound("area")).orElse(null);
+        {
+            var enchantments = nbt.getCompound("enchantments");
+            setEnchantments(enchantments.getAllKeys().stream()
+                .mapMulti(MapMulti.getEntry(ForgeRegistries.ENCHANTMENTS, enchantments::getInt))
+                .map(EnchantmentLevel::new)
+                .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR)
+                .toList());
         }
-        S_updateEntity();
+        headX = nbt.getDouble("headX");
+        headY = nbt.getDouble("headY");
+        headZ = nbt.getDouble("headZ");
+        storage.readNbt(nbt.getCompound("storage"));
+        digMinY = nbt.getInt("digMinY");
+        moduleInventory.deserializeNBT(nbt.getCompound("moduleInventory"));
+        init = true;
     }
 
     @Override
-    protected boolean isWorking() {
-        return now != Mode.NONE;
+    public final CompoundTag toClientTag(CompoundTag tag) {
+        if (area != null)
+            tag.put("area", area.toNBT());
+        tag.putString("state", state.name());
+        tag.putDouble("headX", headX);
+        tag.putDouble("headY", headY);
+        tag.putDouble("headZ", headZ);
+        return tag;
     }
 
     @Override
-    public void read(final CompoundNBT nbt) {
-        super.read(nbt);
-        this.xMin = nbt.getInt("xMin");
-        this.xMax = nbt.getInt("xMax");
-        this.yMin = nbt.getInt("yMin");
-        this.zMin = nbt.getInt("zMin");
-        this.zMax = nbt.getInt("zMax");
-        this.yMax = nbt.getInt("yMax");
-        this.targetX = nbt.getInt("targetX");
-        this.targetY = nbt.getInt("targetY");
-        this.targetZ = nbt.getInt("targetZ");
-        this.addZ = nbt.getBoolean("addZ");
-        this.addX = nbt.getBoolean("addX");
-        this.dug = nbt.getBoolean("dug");
-        this.changeZ = nbt.getBoolean("changeZ");
-        this.now = Mode.values()[nbt.getByte("now")];
-        this.headPosX = nbt.getDouble("headPosX");
-        this.headPosY = nbt.getDouble("headPosY");
-        this.headPosZ = nbt.getDouble("headPosZ");
-        this.filler = nbt.getBoolean("filler");
-        this.initialized = false;
+    public final void fromClientTag(CompoundTag tag) {
+        area = Area.fromNBT(tag.getCompound("area")).orElse(null);
+        state = QuarryState.valueOf(tag.getString("state"));
+        headX = tag.getDouble("headX");
+        headY = tag.getDouble("headY");
+        headZ = tag.getDouble("headZ");
     }
 
     @Override
-    public CompoundNBT write(final CompoundNBT nbt) {
-        nbt.putInt("xMin", this.xMin);
-        nbt.putInt("xMax", this.xMax);
-        nbt.putInt("yMin", this.yMin);
-        nbt.putInt("yMax", this.yMax);
-        nbt.putInt("zMin", this.zMin);
-        nbt.putInt("zMax", this.zMax);
-        nbt.putInt("targetX", this.targetX);
-        nbt.putInt("targetY", this.targetY);
-        nbt.putInt("targetZ", this.targetZ);
-        nbt.putBoolean("addZ", this.addZ);
-        nbt.putBoolean("addX", this.addX);
-        nbt.putBoolean("dug", this.dug);
-        nbt.putBoolean("changeZ", this.changeZ);
-        nbt.putByte("now", ((byte) this.now.ordinal()));
-        nbt.putDouble("headPosX", this.headPosX);
-        nbt.putDouble("headPosY", this.headPosY);
-        nbt.putDouble("headPosZ", this.headPosZ);
-        nbt.putBoolean("filler", this.filler);
-        return super.write(nbt);
-    }
-
-    @Override
-    public String getDebugName() {
-        return TranslationKeys.quarry;
+    public CompoundTag getUpdateTag() {
+        return save(new CompoundTag());
     }
 
     /**
-     * Get the name of this object. For players this returns their username
+     * Currently, not working. This method is never called.
      */
     @Override
-    public TranslationTextComponent getName() {
-        return new TranslationTextComponent(getDebugName());
+    public void onLoad() {
+        super.onLoad();
+        if (level != null && !level.isClientSide) {
+            updateModules();
+        }
     }
 
-
-    public double headPosX, headPosY, headPosZ;
-    private boolean initialized = true;
-
-    private Mode now = Mode.NONE;
-
-    @Override
-    public void G_renew_powerConfigure() {
-        assert world != null;
-        byte pmp = 0;
-        if (hasWorld()) {
-            Map<IAttachment.Attachments<?>, Direction> map = facingMap.entrySet().stream()
-                .filter(byEntry((attachments, facing) -> attachments.test(world.getTileEntity(getPos().offset(facing)))))
-                .collect(entryToMap());
-            facingMap.putAll(map);
-            pmp = Optional.ofNullable(facingMap.get(FLUID_PUMP))
-                .map(getPos()::offset)
-                .map(world::getTileEntity)
-                .flatMap(FLUID_PUMP)
-                .map(p -> p.unbreaking)
-                .orElse((byte) 0);
+    public void setArea(@Nullable Area area) {
+        this.area = area;
+        QuarryPlus.LOGGER.debug(MARKER, "Quarry({}) Area changed to {}.", getBlockPos(), area);
+        if (area != null) {
+            headX = area.maxX();
+            headY = area.minY();
+            headZ = area.maxZ();
         }
-        if (this.now == Mode.NONE)
-            PowerManager.configure0(this);
-        else if (this.now == Mode.MAKE_FRAME)
-            PowerManager.configureFrameBuild(this, this.efficiency, this.unbreaking, pmp);
+    }
+
+    @Nullable
+    public Area getArea() {
+        return area;
+    }
+
+    public void setState(QuarryState quarryState, BlockState blockState) {
+        if (this.state != quarryState) {
+            this.state = quarryState;
+            sync();
+            if (level != null) {
+                level.setBlock(getBlockPos(), blockState.setValue(QPBlock.WORKING, quarryState.isWorking), Block.UPDATE_ALL);
+                if (!level.isClientSide && !quarryState.isWorking) {
+                    logUsage(QuarryPlus.LOGGER::info);
+                }
+            }
+            QuarryPlus.LOGGER.debug(MARKER, "Quarry({}) State changed to {}.", getBlockPos(), quarryState);
+        }
+    }
+
+    public ServerLevel getTargetWorld() {
+        return (ServerLevel) getLevel();
+    }
+
+    public static void tick(Level world, BlockPos pos, BlockState state, TileQuarry quarry) {
+        if (quarry.hasEnoughEnergy()) {
+            if (quarry.init) {
+                quarry.updateModules();
+                quarry.init = false;
+            }
+            // In server world.
+            quarry.state.tick(world, pos, state, quarry);
+        }
+    }
+
+    public BreakResult breakBlock(BlockPos targetPos) {
+        return breakBlock(targetPos, true);
+    }
+
+    public BreakResult breakBlock(BlockPos targetPos, boolean requireEnergy) {
+        var targetWorld = getTargetWorld();
+        // Gather Drops
+        if (targetPos.getX() % 3 == 0 && targetPos.getZ() % 3 == 0) {
+            targetWorld.getEntitiesOfClass(ItemEntity.class, new AABB(targetPos).inflate(5), Predicate.not(i -> i.getItem().isEmpty()))
+                .forEach(i -> {
+                    storage.addItem(i.getItem());
+                    i.kill();
+                });
+        }
+        var pickaxe = getPickaxe();
+        var fakePlayer = QuarryFakePlayer.get(targetWorld);
+        fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, pickaxe);
+        // Check breakable
+        var state = targetWorld.getBlockState(targetPos);
+        var breakEvent = new BlockEvent.BreakEvent(targetWorld, targetPos, state, fakePlayer);
+        MinecraftForge.EVENT_BUS.post(breakEvent);
+        if (breakEvent.isCanceled()) {
+            if (target != null) target.addSkipped(targetPos);
+            return BreakResult.FAIL_EVENT;
+        }
+        if (state.isAir() || !canBreak(targetWorld, targetPos, state)) {
+            return BreakResult.SKIPPED;
+        }
+        if (hasPumpModule()) checkEdgeFluid(targetPos, targetWorld, this);
+
+        // Break block
+        var hardness = state.getDestroySpeed(targetWorld, targetPos);
+        if (requireEnergy && !useEnergy(PowerManager.getBreakEnergy(hardness, this), Reason.BREAK_BLOCK, false)) {
+            return BreakResult.NOT_ENOUGH_ENERGY;
+        }
+        var drops = Block.getDrops(state, targetWorld, targetPos, targetWorld.getBlockEntity(targetPos), null, pickaxe);
+        drops.stream().map(itemConverter::map).forEach(this.storage::addItem);
+        targetWorld.setBlock(targetPos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
+        var sound = state.getSoundType();
+        if (requireEnergy)
+            targetWorld.playSound(null, targetPos, sound.getBreakSound(), SoundSource.BLOCKS, (sound.getVolume() + 1.0F) / 4F, sound.getPitch() * 0.8F);
+
+        return BreakResult.SUCCESS;
+    }
+
+    static void checkEdgeFluid(BlockPos targetPos, ServerLevel targetWorld, TileQuarry quarry) {
+        var area = quarry.getArea();
+        assert area != null;
+        boolean flagMinX = targetPos.getX() - 1 == area.minX();
+        boolean flagMaxX = targetPos.getX() + 1 == area.maxX();
+        boolean flagMinZ = targetPos.getZ() - 1 == area.minZ();
+        boolean flagMaxZ = targetPos.getZ() + 1 == area.maxZ();
+        if (flagMinX) {
+            removeFluidAtEdge(targetWorld, new BlockPos(area.minX(), targetPos.getY(), targetPos.getZ()), quarry);
+        }
+        if (flagMaxX) {
+            removeFluidAtEdge(targetWorld, new BlockPos(area.maxX(), targetPos.getY(), targetPos.getZ()), quarry);
+        }
+        if (flagMinZ) {
+            removeFluidAtEdge(targetWorld, new BlockPos(targetPos.getX(), targetPos.getY(), area.minZ()), quarry);
+        }
+        if (flagMaxZ) {
+            removeFluidAtEdge(targetWorld, new BlockPos(targetPos.getX(), targetPos.getY(), area.maxZ()), quarry);
+        }
+        if (flagMinX && flagMinZ) {
+            removeFluidAtEdge(targetWorld, new BlockPos(area.minX(), targetPos.getY(), area.minZ()), quarry);
+        }
+        if (flagMinX && flagMaxZ) {
+            removeFluidAtEdge(targetWorld, new BlockPos(area.minX(), targetPos.getY(), area.maxZ()), quarry);
+        }
+        if (flagMaxX && flagMinZ) {
+            removeFluidAtEdge(targetWorld, new BlockPos(area.maxX(), targetPos.getY(), area.minZ()), quarry);
+        }
+        if (flagMaxX && flagMaxZ) {
+            removeFluidAtEdge(targetWorld, new BlockPos(area.maxX(), targetPos.getY(), area.maxZ()), quarry);
+        }
+    }
+
+    private static void removeFluidAtEdge(ServerLevel world, BlockPos pos, TileQuarry quarry) {
+        var state = world.getBlockState(pos);
+        var fluidState = world.getFluidState(pos);
+        if (!fluidState.isEmpty()) {
+            if (state.getBlock() instanceof BucketPickup fluidBlock) {
+                quarry.useEnergy(PowerManager.getBreakBlockFluidEnergy(quarry), Reason.REMOVE_FLUID, true);
+                var bucketItem = fluidBlock.pickupBlock(world, pos, state);
+                quarry.storage.addFluid(bucketItem);
+                if (world.getBlockState(pos).isAir() || (fluidBlock instanceof LiquidBlock && !fluidState.isSource())) {
+                    world.setBlock(pos, Holder.BLOCK_FRAME.getDammingState(), Block.UPDATE_ALL);
+                }
+            } else if (state.getBlock() instanceof LiquidBlockContainer) {
+                float hardness = state.getDestroySpeed(world, pos);
+                quarry.useEnergy(PowerManager.getBreakEnergy(hardness, quarry), Reason.REMOVE_FLUID, true);
+                var drops = Block.getDrops(state, world, pos, world.getBlockEntity(pos), null, quarry.getPickaxe());
+                drops.forEach(quarry.storage::addItem);
+                world.setBlock(pos, Holder.BLOCK_FRAME.getDammingState(), Block.UPDATE_ALL);
+            }
+        }
+    }
+
+    public void setEnchantments(Map<Enchantment, Integer> enchantments) {
+        setEnchantments(RESTRICTION.filterMap(enchantments).entrySet().stream()
+            .map(EnchantmentLevel::new)
+            .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR)
+            .toList());
+    }
+
+    public void setEnchantments(List<EnchantmentLevel> enchantments) {
+        this.enchantments = enchantments;
+        maxEnergy = 10000 * ONE_FE * (efficiencyLevel() + 1);
+    }
+
+    /**
+     * TODO, Is this really needed?
+     */
+    public void setTileDataFromItem(@Nullable CompoundTag tileData) {
+        if (tileData == null) {
+            digMinY = level == null ? 0 : level.getMinBuildHeight();
+            return;
+        }
+        if (tileData.contains("digMinY"))
+            digMinY = tileData.getInt("digMinY");
         else
-            PowerManager.configureQuarryWork(this, this.efficiency, this.unbreaking, pmp);
+            digMinY = level == null ? 0 : level.getMinBuildHeight();
+        // Module inventory is loaded in vanilla system.
     }
 
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public AxisAlignedBB getRenderBoundingBox() {
-        if (this.yMax == Integer.MIN_VALUE)
-            return new AxisAlignedBB(getPos().getX(), Double.NEGATIVE_INFINITY, getPos().getZ(),
-                getPos().getX() + 1, getPos().getY() + 1, getPos().getZ() + 1);
-        final double xn = this.xMin + 0.46875;
-        final double xx = this.xMax + 0.53125;
-        final double yx = this.yMax + 0.75;
-        final double zn = this.zMin + 0.46875;
-        final double zx = this.zMax + 0.53125;
-        double x1, x2, y2, z1, z2;
-        if (xn < getPos().getX())
-            x1 = xn;
-        else x1 = getPos().getX();
-
-        if (xx > getPos().getX() + 1)
-            x2 = xx;
-        else x2 = getPos().getX() + 1;
-
-        if (getPos().getY() + 1 < yx)
-            y2 = yx;
-        else y2 = getPos().getY() + 1;
-
-        if (zn < getPos().getZ())
-            z1 = zn;
-        else z1 = getPos().getZ();
-
-        if (zx > getPos().getZ() + 1)
-            z2 = zx;
-        else z2 = getPos().getZ() + 1;
-
-        return new AxisAlignedBB(x1, Double.NEGATIVE_INFINITY, z1, x2, y2, z2);
+    public CompoundTag getTileDataForItem() {
+        var tag = new CompoundTag();
+        if (digMinY != 0) tag.putInt("digMinY", digMinY);
+        return tag;
     }
 
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public double getMaxRenderDistanceSquared() {
-        if ((now == Mode.NOT_NEED_BREAK || now == Mode.MAKE_FRAME) && yMax != Integer.MIN_VALUE) {
-            return (xMax - xMin) * (xMax - xMin) + 25 + (zMax - zMin) * (zMax - zMin);
-        } else if (now == Mode.BREAK_BLOCK || now == Mode.MOVE_HEAD) {
-            return (xMax - xMin) * (xMax - xMin) + yMax * yMax + (zMax - zMin) * (zMax - zMin);
+    private ItemStack getPickaxe() {
+        var stack = new ItemStack(Items.NETHERITE_PICKAXE);
+        enchantments.forEach(e -> stack.enchant(e.enchantment(), e.level()));
+        return stack;
+    }
+
+    double headSpeed() {
+        int l = efficiencyLevel();
+        if (l >= 4) {
+            return Math.pow(2, l - 4);
         } else {
-            return super.getMaxRenderDistanceSquared();
+            return Math.pow(1.681792830507429, l) / 8;
+        }
+    }
+
+    void updateModules() {
+        // Blocks
+        Set<QuarryModule> blockModules;
+        if (level != null) {
+            blockModules = Arrays.stream(Direction.values())
+                .map(getBlockPos()::relative)
+                .map(level::getBlockState)
+                .map(BlockState::getBlock)
+                .mapMulti(MapMulti.cast(QuarryModuleProvider.Block.class))
+                .map(QuarryModuleProvider.Block::getModule)
+                .collect(Collectors.toSet());
+        } else blockModules = Collections.emptySet();
+
+        // Module Inventory
+        Set<QuarryModule> itemModules = Set.copyOf(moduleInventory.getModules());
+        this.modules = Sets.union(blockModules, itemModules);
+    }
+
+    boolean hasPumpModule() {
+        return modules.contains(QuarryModule.Constant.PUMP);
+    }
+
+    boolean hasBedrockModule() {
+        return modules.contains(QuarryModule.Constant.BEDROCK);
+    }
+
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    public boolean canBreak(Level targetWorld, BlockPos targetPos, BlockState state) {
+        if (target != null && target.alreadySkipped(targetPos)) return false;
+        var unbreakable = state.getDestroySpeed(targetWorld, targetPos) < 0;
+        if (unbreakable && hasBedrockModule() && state.getBlock() == Blocks.BEDROCK) {
+            var worldBottom = targetWorld.getMinBuildHeight();
+            if (targetWorld.dimension().equals(Level.NETHER)) {
+                return (worldBottom < targetPos.getY() && targetPos.getY() < worldBottom + 5) || (122 < targetPos.getY() && targetPos.getY() < QuarryPlus.config.common.netherTop.get());
+            } else {
+                return worldBottom < targetPos.getY() && targetPos.getY() < worldBottom + 5;
+            }
+        } else if (!targetWorld.getFluidState(targetPos).isEmpty()) {
+            return hasPumpModule();
+        } else {
+            return !unbreakable;
         }
     }
 
     @Override
-    public List<ITextComponent> getDebugMessages() {
-        List<ITextComponent> list = new ArrayList<>();
-        list.add(new TranslationTextComponent(TranslationKeys.CURRENT_MODE, G_getNow()));
-        list.add(new StringTextComponent(String.format("Next target : (%d, %d, %d)", targetX, targetY, targetZ)));
-        list.add(new StringTextComponent(String.format("Head Pos : (%s, %s, %s)", headPosX, headPosY, headPosZ)));
-        list.add(new StringTextComponent("X : " + xMin + " to " + xMax));
-        list.add(new StringTextComponent("Z : " + zMin + " to " + zMax));
-        list.add(new TranslationTextComponent(filler ? TranslationKeys.FILLER_MODE : TranslationKeys.QUARRY_MODE));
-        list.add(new TranslationTextComponent(TranslationKeys.Y_LEVEL, this.yLevel));
-        return list;
+    public List<? extends Component> getDebugLogs() {
+        return Stream.of(
+            "%sArea:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, area),
+            "%sTarget:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, target),
+            "%sState:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, state),
+            "%sRemoveBedrock:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, hasBedrockModule()),
+            "%sDigMinY:%s %d".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, digMinY),
+            "%sHead:%s (%f, %f, %f)".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, headX, headY, headZ),
+            "%sModules:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, modules),
+            "%sEnergy:%s %f FE (%d)".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, getEnergy() / (double) PowerTile.ONE_FE, getEnergy())
+        ).map(TextComponent::new).toList();
     }
 
-    public enum Mode {
-        NONE,
-        NOT_NEED_BREAK,
-        MAKE_FRAME,
-        MOVE_HEAD,
-        BREAK_BLOCK
+    @Override
+    public MachineStorage getStorage() {
+        return this.storage;
+    }
+
+    @Override
+    public List<EnchantmentLevel> getEnchantments() {
+        return Collections.unmodifiableList(enchantments);
+    }
+
+    public void sync() {
+        if (level != null && !level.isClientSide)
+            PacketHandler.sendToClient(new ClientSyncMessage(this), level);
+    }
+
+    @Override
+    public AABB getRenderBoundingBox() {
+        if (area != null)
+            return new AABB(area.minX(), 0, area.minZ(), area.maxX(), area.maxY(), area.maxZ());
+        else
+            return new AABB(getBlockPos(), getBlockPos().offset(1, 1, 1));
+    }
+
+    @Override
+    public ModuleInventory getModuleInventory() {
+        return moduleInventory;
+    }
+
+    @Override
+    public Set<QuarryModule> getLoadedModules() {
+        return modules;
     }
 }

@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1.0,
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "quarryplus:drop_function"
+            },
+            {
+              "function": "quarryplus:drop_function_module"
+            }
+          ],
+          "name": "quarryplus:adv_pump"
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "functions": []
+    }
+  ]
+}

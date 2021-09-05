@@ -1,183 +1,120 @@
 package com.yogpc.qp.machines.marker;
 
-import java.util.Optional;
-import java.util.stream.Stream;
+import com.yogpc.qp.Holder;
+import com.yogpc.qp.machines.QPBlock;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
-import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.machines.TranslationKeys;
-import com.yogpc.qp.utils.Holder;
-import javax.annotation.Nullable;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.WallTorchBlock;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING;
 
-import static jp.t2v.lab.syntax.MapStreamSyntax.optCast;
-import static jp.t2v.lab.syntax.MapStreamSyntax.streamCast;
-import static net.minecraft.state.properties.BlockStateProperties.FACING;
+public class BlockMarker extends QPBlock implements EntityBlock {
+    private static final VoxelShape STANDING_Shape = Shapes.box(.35, 0, .35, .65, .65, .65);
+    private static final VoxelShape DOWN_Shape = Shapes.box(.35, .35, .35, .65, 1, .65);
+    private static final VoxelShape NORTH_Shape = Shapes.box(.35, .35, .35, .65, .65, 1);
+    private static final VoxelShape SOUTH_Shape = Shapes.box(.35, .35, 0, .65, .65, .65);
+    private static final VoxelShape WEST_Shape = Shapes.box(.35, .35, .35, 1, .65, .65);
+    private static final VoxelShape EAST_Shape = Shapes.box(0.0D, .35, .35, .65, .65, .65);
 
-public class BlockMarker extends Block {
-    private static final VoxelShape STANDING_Shape = VoxelShapes.create(.35, 0, .35, .65, .65, .65);
-    private static final VoxelShape DOWN_Shape = VoxelShapes.create(.35, .35, .35, .65, 1, .65);
-    private static final VoxelShape NORTH_Shape = VoxelShapes.create(.35, .35, .35, .65, .65, 1);
-    private static final VoxelShape SOUTH_Shape = VoxelShapes.create(.35, .35, 0, .65, .65, .65);
-    private static final VoxelShape WEST_Shape = VoxelShapes.create(.35, .35, .35, 1, .65, .65);
-    private static final VoxelShape EAST_Shape = VoxelShapes.create(0.0D, .35, .35, .65, .65, .65);
-    public final BlockItem itemBlock;
+    public static final String NAME = "marker";
 
     public BlockMarker() {
-        super(Block.Properties.create(Material.MISCELLANEOUS).setLightLevel(o -> 7));
-        setRegistryName(QuarryPlus.modID, QuarryPlus.Names.marker);
-        itemBlock = new BlockItem(this, new Item.Properties().group(Holder.tab()));
-        itemBlock.setRegistryName(QuarryPlus.modID, QuarryPlus.Names.marker);
-        setDefaultState(getStateContainer().getBaseState().with(FACING, Direction.NORTH));
+        super(Properties.of(Material.DECORATION).lightLevel(value -> 7).noCollission(), NAME);
+        this.registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.UP));
     }
 
     @Override
-    public Item asItem() {
-        return itemBlock;
-    }
-
-    //---------- Setting of BlockState ----------
-    @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
         builder.add(FACING);
     }
 
     @Override
-    public BlockState getStateForPlacement(BlockItemUseContext context) {
-        return getDefaultState().with(FACING, context.getFace());
+    public BlockState getStateForPlacement(BlockPlaceContext ctx) {
+        return defaultBlockState().setValue(FACING, ctx.getClickedFace());
     }
 
-    //---------- Setting of Action ----------
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return Holder.MARKER_TYPE.create(pos, state);
+    }
 
     @Override
     @SuppressWarnings("deprecation")
-    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos,
-                                             PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
-        if (!worldIn.isRemote) {
-            TileEntity entity = worldIn.getTileEntity(pos);
-            if (entity instanceof TileMarker) {
-                TileMarker marker = (TileMarker) entity;
-                if (marker.enabled()) {
-                    if (!marker.hasLink()) {
-                        marker.activated();
-                    } else {
-                        player.sendStatusMessage(new StringTextComponent(marker.link.toString()), false);
-                    }
-                } else {
-                    player.sendStatusMessage(new TranslationTextComponent(TranslationKeys.DISABLE_MESSAGE, new TranslationTextComponent(getTranslationKey())), true);
-                }
+    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        if (!world.isClientSide) {
+            if (world.getBlockEntity(pos) instanceof TileMarker marker) {
+                marker.tryConnect(true);
+                marker.getArea().ifPresent(area ->
+                    player.displayClientMessage(new TextComponent("%sMarker Area%s: %s".formatted(ChatFormatting.AQUA, ChatFormatting.RESET, area)), false));
             }
         }
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
-        if (!worldIn.isRemote) {
-            Stream.of(worldIn.getTileEntity(pos))
-                .flatMap(streamCast(TileMarker.class))
-                .forEach(TileMarker::redstoneUpdate);
-        }
-        super.neighborChanged(state, worldIn, pos, blockIn, fromPos, isMoving);
-    }
-
-    @Override
-    public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-        super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
-        Optional.ofNullable(worldIn.getTileEntity(pos)).flatMap(optCast(TileMarker.class)).ifPresent(TileMarker.requestTicket);
-    }
-
-    //---------- Setting of TileEntity ----------
-    @Override
-    public boolean hasTileEntity(BlockState state) {
+    public boolean skipRendering(BlockState state, BlockState stateFrom, Direction direction) {
         return true;
     }
 
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return Holder.markerTileType().create();
+    @SuppressWarnings("deprecation")
+    public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
+        return switch (state.getValue(FACING)) {
+            case UP -> STANDING_Shape;
+            case DOWN -> DOWN_Shape;
+            case EAST -> EAST_Shape;
+            case WEST -> WEST_Shape;
+            case NORTH -> NORTH_Shape;
+            case SOUTH -> SOUTH_Shape;
+        };
     }
-
-    //---------- Setting of Block ----------
 
     @Override
     @SuppressWarnings("deprecation")
-    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-        switch (state.get(FACING)) {
-            default:
-            case UP:
-                return STANDING_Shape;
-            case DOWN:
-                return DOWN_Shape;
-            case NORTH:
-                return NORTH_Shape;
-            case SOUTH:
-                return SOUTH_Shape;
-            case WEST:
-                return WEST_Shape;
-            case EAST:
-                return EAST_Shape;
+    public boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
+        Direction direction = state.getValue(FACING);
+        BlockPos blockPos = pos.relative(direction.getOpposite());
+        BlockState blockState = world.getBlockState(blockPos);
+        return blockState.isFaceSturdy(world, blockPos, direction);
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos currentPos, BlockPos neighborPos) {
+        return state.canSurvive(world, currentPos) ? state : Blocks.AIR.defaultBlockState();
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
+        super.neighborChanged(state, world, pos, block, fromPos, notify);
+        if (!world.isClientSide) {
+            if (world.getBlockEntity(pos) instanceof TileMarker marker) {
+                marker.rsReceiving = world.hasNeighborSignal(pos);
+                marker.sync();
+            }
         }
-    }
-
-    @Override
-    @SuppressWarnings("deprecation")
-    public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-        return VoxelShapes.empty();
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    @SuppressWarnings("deprecation")
-    public boolean isSideInvisible(BlockState state, BlockState adjacentBlockState, Direction side) {
-        return true;
-    }
-
-    //---------- Setting of Placing block ----------
-
-    /**
-     * Just copied from {@link WallTorchBlock}.
-     */
-    @Override
-    @SuppressWarnings("deprecation")
-    public boolean isValidPosition(BlockState state, IWorldReader worldIn, BlockPos pos) {
-        Direction direction = state.get(FACING);
-        BlockPos blockpos = pos.offset(direction.getOpposite());
-        BlockState floorState = worldIn.getBlockState(blockpos);
-        return floorState.isSolidSide(worldIn, blockpos, direction);
-    }
-
-    @Override
-    @SuppressWarnings("deprecation")
-    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
-        return !stateIn.isValidPosition(worldIn, currentPos) ? Blocks.AIR.getDefaultState() : stateIn;
     }
 }

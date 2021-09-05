@@ -1,6 +1,12 @@
 {
   "type": "quarryplus:workbench_recipe",
-  "id": "quarryplus:builtin_item.remove_bedrock_module",
+  "subType": "default",
+  "result": {
+    "item": "quarryplus:remove_bedrock_module",
+    "count": 1
+  },
+  "energy": 640000.0,
+  "showInJEI": true,
   "ingredients": [
     {
       "tag": "forge:obsidian",
@@ -22,19 +28,9 @@
       ]
     }
   ],
-  "energy": 640000.0,
-  "showInJEI": true,
-  "result": {
-    "item": "quarryplus:remove_bedrock_module",
-    "count": 1
-  },
   "conditions": [
     {
-      "key": "RemoveBedrock",
-      "type": "quarryplus:is_config_true"
-    },
-    {
-      "value": "ModuleRemoveBedrock",
+      "value": "remove_bedrock_module",
       "type": "quarryplus:machine_enabled"
     }
   ]

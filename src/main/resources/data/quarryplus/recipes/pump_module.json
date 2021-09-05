@@ -3,7 +3,7 @@
   "group": "quarryplus:group_module",
   "ingredients": [
     {
-      "item": "quarryplus:pumpplus"
+      "item": "quarryplus:pump_plus"
     }
   ],
   "result": {
@@ -11,14 +11,7 @@
   },
   "conditions": [
     {
-      "value": {
-        "value": "WorkbenchPlus",
-        "type": "quarryplus:machine_enabled"
-      },
-      "type": "forge:not"
-    },
-    {
-      "value": "ModulePump",
+      "value": "pump_module",
       "type": "quarryplus:machine_enabled"
     }
   ]

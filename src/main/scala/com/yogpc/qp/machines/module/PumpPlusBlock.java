@@ -1,0 +1,20 @@
+package com.yogpc.qp.machines.module;
+
+import com.yogpc.qp.machines.QPBlock;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.Material;
+
+public class PumpPlusBlock extends QPBlock implements QuarryModuleProvider.Block {
+    public static final String NAME = "pump_plus";
+
+    public PumpPlusBlock() {
+        super(BlockBehaviour.Properties.of(Material.METAL)
+            .strength(3.0f), NAME);
+    }
+
+    @Override
+    public QuarryModule getModule() {
+        return QuarryModule.Constant.PUMP;
+    }
+
+}

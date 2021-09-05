@@ -1,7 +1,7 @@
 {
   "pack": {
-    "description": "QuarryPlus resources",
-    "pack_format": 6,
-    "_comment": "V6"
+    "description": "QuarryPlus",
+    "pack_format": 7,
+    "_comment": "V7"
   }
 }

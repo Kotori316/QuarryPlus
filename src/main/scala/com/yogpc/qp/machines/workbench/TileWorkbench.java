@@ -1,268 +1,250 @@
-/*
- * Copyright (C) 2012,2013 yogpstop This program is free software: you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation, either version 3 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
- */
 package com.yogpc.qp.machines.workbench;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
+import java.util.stream.Stream;
 
-import com.yogpc.qp.Config;
+import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.compat.InvUtils;
-import com.yogpc.qp.machines.PowerManager;
-import com.yogpc.qp.machines.TranslationKeys;
-import com.yogpc.qp.machines.base.APowerTile;
-import com.yogpc.qp.machines.base.EnergyUsage;
-import com.yogpc.qp.machines.base.HasInv;
-import com.yogpc.qp.machines.base.IDebugSender;
+import com.yogpc.qp.machines.CheckerLog;
+import com.yogpc.qp.machines.InvUtils;
+import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.TileMessage;
-import com.yogpc.qp.packet.workbench.UpdateOutputsMessage;
-import com.yogpc.qp.utils.Holder;
+import com.yogpc.qp.utils.MapMulti;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.InventoryHelper;
-import net.minecraft.inventory.ItemStackHelper;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.Direction;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.concurrent.TickDelayedTask;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.TickTask;
+import net.minecraft.world.Container;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.Containers;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
-import scala.Symbol;
 
-//@net.minecraftforge.fml.common.Optional.Interface(iface = "cofh.api.tileentity.IInventoryConnection", modid = QuarryPlus.Optionals.COFH_modID)
-public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, INamedContainerProvider {
-    public static final String GUI_ID = QuarryPlus.modID + ":gui_" + QuarryPlus.Names.workbench;
-    public static final Symbol SYMBOL = Symbol.apply("WorkbenchPlus");
-    public final NonNullList<ItemStack> inventory = NonNullList.withSize(27, ItemStack.EMPTY);
-    public final NonNullList<ItemStack> inventory2 = NonNullList.withSize(18, ItemStack.EMPTY);
-    public List<WorkbenchRecipes> recipesList = Collections.emptyList();
-    private WorkbenchRecipes currentRecipe = WorkbenchRecipes.dummyRecipe();
+public class TileWorkbench extends PowerTile implements Container, MenuProvider, CheckerLog {
+    List<ItemStack> ingredientInventory = NonNullList.withSize(27, ItemStack.EMPTY);
+    List<ItemStack> selectionInventory = NonNullList.withSize(18, ItemStack.EMPTY);
+    public List<WorkbenchRecipe> recipesList = Collections.emptyList();
+    private WorkbenchRecipe currentRecipe = WorkbenchRecipe.dummyRecipe();
     private final ItemHandler itemHandler = new ItemHandler();
     public boolean workContinue;
-    public boolean noEnergy = false; // Just for debugging. Use stick to machine in debug mode.
     private Runnable initRecipeTask = null;
+    private final List<Player> openPlayers = new ArrayList<>();
 
-    public TileWorkbench() {
-        super(Holder.workbenchTileType());
+    public TileWorkbench(BlockPos pos, BlockState state) {
+        super(Holder.WORKBENCH_TYPE, pos, state, 5);
     }
 
+    public void tick() {
+        if (!enabled || level == null || level.isClientSide) return;
+        if (this.initRecipeTask != null) {
+            this.initRecipeTask.run();
+            this.initRecipeTask = null;
+        }
+        if (currentRecipe.hasContent() && currentRecipe.getRequiredEnergy() <= getEnergy()) {
+            // Enough energy is collected. Create the item.
+            useEnergy(currentRecipe.getRequiredEnergy(), Reason.WORKBENCH, true);
+            ItemStack created = currentRecipe.getOutput(ingredientInventory);
+            ItemStack toSpawnInWorld = InvUtils.injectToNearTile(level, getBlockPos(), created);
+            if (!toSpawnInWorld.isEmpty()) {
+                Containers.dropItemStack(level, getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), toSpawnInWorld);
+            }
+            currentRecipe.consumeItems(ingredientInventory);
+            updateRecipeOutputs();
+            setCurrentRecipe(workContinue ? currentRecipe.getId() : WorkbenchRecipe.dummyRecipe().getId());
+        } else if (QuarryPlus.config.common.noEnergy.get()) {
+            addEnergy(currentRecipe.getRequiredEnergy() / 200, false);
+        } else {
+            addEnergy(5 * ONE_FE, false);
+        }
+        if (!openPlayers.isEmpty()) {
+            PacketHandler.sendToClient(new TileMessage(this), level);
+        }
+    }
+
+    // Overrides of BlockEntity
+
     @Override
-    public void workInTick() {
-        if (isWorking() && world != null) {
-            if (currentRecipe.microEnergy() <= getStoredEnergy()) {
-                PowerManager.useEnergy(this, currentRecipe.microEnergy(), EnergyUsage.WORKBENCH);
-                if (Config.common().noEnergy().get())
-                    this.setStoredEnergy(0); // Set current energy to 0 to make waiting time.
-                ItemStack stack = currentRecipe.getOutput(inventory);
-                ItemStack remain = InvUtils.injectToNearTile(world, getPos(), stack);
-                if (!remain.isEmpty()) {
-                    InventoryHelper.spawnItemStack(world, getPos().getX(), getPos().getY(), getPos().getZ(), stack);
-                }
-                currentRecipe.inputsJ().forEach(inputList -> {
-                    for (IngredientWithCount i : inputList) {
-                        if (inventory.stream().anyMatch(i::shrink)) break;
-                    }
-                });
-                for (int i = 0; i < inventory.size(); i++) {
-                    if (inventory.get(i).isEmpty())
-                        inventory.set(i, ItemStack.EMPTY);
-                }
-                markDirty();
-                updateRecipeOutputs();
-                setCurrentRecipeIndex(workContinue ? getRecipeIndex() : -1);
-                noEnergy = false;
-            } else if (Config.common().noEnergy().get() || noEnergy) {
-                getEnergy(currentRecipe.microEnergy() / 200, true, true); // 10 second to full.
-            } else {
-                getEnergy(Config.common().workbenchTickBonus().get() * APowerTile.FEtoMicroJ, true, true);
+    public void onLoad() {
+        super.onLoad();
+        if (level != null && !level.isClientSide && this.initRecipeTask != null) {
+            var server = level.getServer();
+            if (server != null) { // Must be true, as this is in the server world.
+                server.tell(new TickTask(server.getTickCount(), this.initRecipeTask));
+                this.initRecipeTask = null;
             }
         }
-        if (!openPlayers.isEmpty() /*&& !world.isRemote */) {
-            // To fix container in server showed wrong item count.
-            PacketHandler.sendToAround(TileMessage.create(this), Objects.requireNonNull(this.getWorld()), this.getPos());
-        }
     }
 
     @Override
-    public boolean isWorking() {
-        return enabled() && currentRecipe.hasContent();
-    }
-
-    @Override
-    public void read(CompoundNBT nbt) {
-        super.read(nbt);
-        ListNBT list = nbt.getList("Items", Constants.NBT.TAG_COMPOUND);
-        list.stream().map(b -> (CompoundNBT) b).forEach(nbtTagCompound -> {
-            int j = nbtTagCompound.getByte("Slot") & 255;
-            ItemStack stack = ItemStack.read(nbtTagCompound);
+    public void load(CompoundTag nbt) {
+        super.load(nbt);
+        ListTag list = nbt.getList("Items", Tag.TAG_COMPOUND);
+        list.stream().mapMulti(MapMulti.cast(CompoundTag.class)).forEach(nbtTagCompound -> {
+            var slot = nbtTagCompound.getByte("Slot");
+            var stack = ItemStack.of(nbtTagCompound);
             stack.setCount(nbtTagCompound.getInt("Count"));
-            inventory.set(j, stack);
+            ingredientInventory.set(slot, stack);
         });
-        markDirty();
-        if (nbt.contains("RecipeIndex")) {
-            int recipeIndex = nbt.getInt("RecipeIndex");
-            initRecipeTask = () -> {
-                updateRecipeOutputs();
-                setCurrentRecipeIndex(recipeIndex);
-            };
-        }
+        var recipeLocation = new ResourceLocation(nbt.getString("recipe"));
+        initRecipeTask = () -> {
+            updateRecipeOutputs();
+            setCurrentRecipe(recipeLocation);
+        };
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT nbt) {
-        ListNBT list = new ListNBT();
-        for (int i = 0; i < inventory.size(); i++) {
-            ItemStack stack = inventory.get(i);
-            CompoundNBT compoundNBT = new CompoundNBT();
-            compoundNBT.putByte("Slot", (byte) i);
-            stack.write(compoundNBT);
-            compoundNBT.remove("Count");
-            compoundNBT.putInt("Count", stack.getCount());
-            list.add(compoundNBT);
+    public CompoundTag save(CompoundTag nbt) {
+        ListTag items = new ListTag();
+        for (int i = 0; i < ingredientInventory.size(); i++) {
+            var stack = ingredientInventory.get(i);
+            if (!stack.isEmpty()) {
+                var compoundNBT = new CompoundTag();
+                compoundNBT.putByte("Slot", (byte) i);
+                stack.save(compoundNBT);
+                compoundNBT.remove("Count");
+                compoundNBT.putInt("Count", stack.getCount());
+                items.add(compoundNBT);
+            }
         }
-        nbt.put("Items", list);
-        nbt.putInt("RecipeIndex", getRecipeIndex());
-        return super.write(nbt);
+        nbt.put("Items", items);
+        nbt.putString("recipe", currentRecipe.getId().toString());
+        return super.save(nbt);
     }
 
+    // Implementation of Inventory.
     @Override
-    public int getSizeInventory() {
-        return inventory.size() + inventory2.size();
+    public int getContainerSize() {
+        return 27 + 18;
     }
 
     @Override
     public boolean isEmpty() {
-        return inventory.stream().allMatch(ItemStack::isEmpty);
+        return ingredientInventory.stream().allMatch(ItemStack::isEmpty);
     }
 
     @Override
-    public ItemStack getStackInSlot(int index) {
-        if (inventory.size() <= index && index < getSizeInventory()) {
-            return inventory2.get(index - inventory.size());
+    public ItemStack getItem(int index) {
+        if (ingredientInventory.size() <= index && index < getContainerSize()) {
+            return selectionInventory.get(index - ingredientInventory.size());
         }
-        return inventory.get(index);
+        return ingredientInventory.get(index);
     }
 
     @Override
-    public ItemStack decrStackSize(int index, int count) {
-        if (inventory.size() <= index && index < getSizeInventory())
-            return ItemStackHelper.getAndSplit(inventory2, index - inventory.size(), count);
+    public ItemStack removeItem(int index, int count) {
+        if (ingredientInventory.size() <= index && index < getContainerSize())
+            return ContainerHelper.removeItem(selectionInventory, index - ingredientInventory.size(), count);
         else {
-            ItemStack stack = ItemStackHelper.getAndSplit(inventory, index, count);
+            ItemStack stack = ContainerHelper.removeItem(ingredientInventory, index, count);
             updateRecipeOutputs();
             return stack;
         }
     }
 
     @Override
-    public ItemStack removeStackFromSlot(int index) {
-        if (inventory.size() <= index && index < getSizeInventory())
-            return ItemStackHelper.getAndRemove(inventory2, index - inventory.size());
-        return ItemStackHelper.getAndRemove(inventory, index);
+    public ItemStack removeItemNoUpdate(int index) {
+        if (ingredientInventory.size() <= index && index < getContainerSize())
+            return ContainerHelper.takeItem(selectionInventory, index - ingredientInventory.size());
+        return ContainerHelper.takeItem(ingredientInventory, index);
     }
 
     @Override
-    public void setInventorySlotContents(int index, ItemStack stack) {
-        if (inventory.size() <= index && index < getSizeInventory()) {
-            inventory2.set(index - inventory.size(), stack);
+    public void setItem(int index, ItemStack stack) {
+        if (ingredientInventory.size() <= index && index < getContainerSize()) {
+            selectionInventory.set(index - ingredientInventory.size(), stack);
         } else {
-            inventory.set(index, stack);
+            ingredientInventory.set(index, stack);
             updateRecipeOutputs();
         }
     }
 
     @Override
-    public int getInventoryStackLimit() {
+    public int getMaxStackSize() {
         return Integer.MAX_VALUE;
     }
 
     @Override
-    public boolean isUsableByPlayer(PlayerEntity player) {
-        return world != null && world.getTileEntity(getPos()) == this && player.getDistanceSq(pos.getX(), pos.getY(), pos.getZ()) <= 64;
+    public boolean stillValid(Player player) {
+        return level != null && player.distanceToSqr(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ()) <= 64;
     }
 
     @Override
-    public void markDirty() {
-        super.markDirty();
+    public void clearContent() {
+        ingredientInventory.clear();
+        updateRecipeOutputs();
     }
 
     @Override
-    public void onLoad() {
-        if (world != null && !world.isRemote() && this.initRecipeTask != null) {
-            MinecraftServer server = ((ServerWorld) world).getServer();
-            server.enqueue(new TickDelayedTask(server.getTickCounter(), this.initRecipeTask));
-            this.initRecipeTask = null;
-        }
+    public List<? extends Component> getDebugLogs() {
+        return Stream.of(
+            "%sRecipe:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, currentRecipe),
+            "%sWorkContinue:%s %b".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, workContinue),
+            "%sRecipe List:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, recipesList),
+            "%sEnergy:%s %d FE".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, getEnergyStored()),
+            "%sMaxEnergy:%s %d FE".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, getMaxEnergyStored())
+        ).map(TextComponent::new).toList();
     }
 
+    @Override
+    public Component getDisplayName() {
+        return getBlockState().getBlock().getName();
+    }
+
+    // Workbench Methods.
     private void updateRecipeOutputs() {
-        if (world != null && !world.isRemote()) {
-            recipesList = WorkbenchRecipes.getRecipe(inventory);
-            inventory2.clear();
+        if (level != null && !level.isClientSide) {
+            recipesList = WorkbenchRecipe.getRecipeFinder().getRecipes(ingredientInventory);
+            selectionInventory.clear();
             for (int i = 0; i < recipesList.size(); i++) {
-                setInventorySlotContents(inventory.size() + i, recipesList.get(i).getOutput(inventory));
+                setItem(ingredientInventory.size() + i, recipesList.get(i).getResultItem());
             }
-            if (getRecipeIndex() == -1) {
+            if (!recipesList.contains(currentRecipe)) {
                 if (currentRecipe.hasContent()) {
-                    setCurrentRecipeIndex(-1);
-                    finishWork();
+                    setCurrentRecipe(WorkbenchRecipe.dummyRecipe().getId());
+                    //Finish work
+                    logUsage(QuarryPlus.LOGGER::info);
                 }
-            } else {
-                startWork();
             }
-            PacketHandler.sendToAround(TileMessage.create(this), world, pos);
-            PacketHandler.sendToAround(UpdateOutputsMessage.create(this), world, pos);
+            PacketHandler.sendToClient(new TileMessage(this), level);
         }
     }
 
-    @Override
-    public boolean isItemValidForSlot(int index, ItemStack stack) {
-        return true;
-    }
-
-    @Override
-    public void clear() {
-        inventory.clear();
-    }
-
-    @Override
-    public List<StringTextComponent> getDebugMessages() {
-        return Arrays.asList(new StringTextComponent(currentRecipe.toString()),
-            new StringTextComponent("Work mode : " + (workContinue ? "Continue" : "Only once")));
-    }
-
-    @Override
-    public String getDebugName() {
-        return TranslationKeys.workbench;
+    /**
+     * Set the recipe. You should update recipeList before invoking this method.
+     * This method checks if the recipe exists in the recipe list.
+     * If not, dummy recipe(no output) is set as current recipe.
+     * If exists, the recipe given as parameter is set.
+     *
+     * @param recipeName the id of recipe.
+     */
+    public void setCurrentRecipe(ResourceLocation recipeName) {
+        this.currentRecipe = recipesList.stream().filter(r -> recipeName.equals(r.getId()))
+            .findFirst().orElse(WorkbenchRecipe.dummyRecipe());
+        maxEnergy = this.currentRecipe.getRequiredEnergy();
+        if (QuarryPlus.config.common.noEnergy.get()) {
+            setEnergy(0);
+        }
     }
 
     @Nonnull
@@ -274,54 +256,29 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
         return super.getCapability(cap, side);
     }
 
-    public void setCurrentRecipeIndex(int recipeIndex) {
-        if (recipeIndex >= 0 && recipesList.size() > recipeIndex) {
-            this.currentRecipe = recipesList.get(recipeIndex);
-        } else {
-            this.currentRecipe = WorkbenchRecipes.dummyRecipe();
-        }
-        configure(Config.common().workbenchMaxReceive().get() * APowerTile.MJToMicroMJ, currentRecipe.microEnergy());
-        if (Config.common().noEnergy().get()) {
-            this.setStoredEnergy(0); // Prevent item from being created as soon as clicked.
-        }
+    public WorkbenchRecipe getRecipe() {
+        return currentRecipe;
     }
 
     public int getProgressScaled(int scale) {
-        if (isWorking())
-            return (int) (getStoredEnergy() * scale / currentRecipe.microEnergy());
+        if (currentRecipe.hasContent())
+            return (int) (getEnergy() * scale / currentRecipe.getRequiredEnergy());
         else
             return 0;
     }
 
-    public int getRecipeIndex() {
-        return recipesList.indexOf(currentRecipe);
-    }
-
-//    @Override
-//    @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.COFH_modID)
-//    public ConnectionType canConnectInventory(EnumFacing from) {
-//        return ConnectionType.FORCE;
-//    }
-
     @Override
-    public Container createMenu(int p_createMenu_1_, PlayerInventory p_createMenu_2_, PlayerEntity p_createMenu_3_) {
-        return new ContainerWorkbench(p_createMenu_1_, p_createMenu_3_, pos);
+    public AbstractContainerMenu createMenu(int id, Inventory inv, Player player) {
+        return new ContainerWorkbench(id, player, getBlockPos());
     }
 
     @Override
-    public ITextComponent getName() {
-        return new TranslationTextComponent(getDebugName());
-    }
-
-    private final List<PlayerEntity> openPlayers = new ArrayList<>();
-
-    @Override
-    public void openInventory(PlayerEntity player) {
+    public void startOpen(Player player) {
         openPlayers.add(player);
     }
 
     @Override
-    public void closeInventory(PlayerEntity player) {
+    public void stopOpen(Player player) {
         openPlayers.remove(player);
     }
 
@@ -329,17 +286,17 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
 
         @Override
         public void setStackInSlot(int slot, ItemStack stack) {
-            setInventorySlotContents(slot, stack);
+            setItem(slot, stack);
         }
 
         @Override
         public int getSlots() {
-            return inventory.size();
+            return ingredientInventory.size();
         }
 
         @Override
         public ItemStack getStackInSlot(int slot) {
-            return TileWorkbench.this.getStackInSlot(slot);
+            return TileWorkbench.this.getItem(slot);
         }
 
         @Override
@@ -352,7 +309,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
                     if (!simulate) {
                         inSlot.grow(stack.getCount());
                         setStackInSlot(slot, inSlot);
-                        markDirty();
+                        setChanged();
                     }
                     return ItemStack.EMPTY;
                 } else {
@@ -361,7 +318,7 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
             } else {
                 if (!simulate) {
                     setStackInSlot(slot, stack.copy());
-                    markDirty();
+                    setChanged();
                 }
                 return ItemStack.EMPTY;
             }
@@ -374,12 +331,12 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
 
         @Override
         public int getSlotLimit(int slot) {
-            return getInventoryStackLimit();
+            return getMaxStackSize();
         }
 
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
-            return isItemValidForSlot(slot, stack);
+            return canPlaceItem(slot, stack);
         }
     }
 }

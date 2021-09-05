@@ -4,14 +4,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.yogpc.qp.Config;
+import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.machines.bookmover.BlockBookMover;
-import com.yogpc.qp.machines.bookmover.GuiBookMover;
-import com.yogpc.qp.machines.workbench.GuiWorkbench;
-import com.yogpc.qp.machines.workbench.WorkbenchRecipes;
-import com.yogpc.qp.utils.Holder;
-import com.yogpc.qp.utils.RecipeGetter;
+import com.yogpc.qp.machines.workbench.RecipeFinder;
+import com.yogpc.qp.machines.workbench.ScreenWorkbench;
+import com.yogpc.qp.machines.workbench.WorkbenchRecipe;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
@@ -20,59 +17,44 @@ import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 
 @JeiPlugin
 public class QuarryJeiPlugin implements IModPlugin {
     static IJeiRuntime jeiRuntime;
     static WorkBenchRecipeCategory workBenchRecipeCategory;
     static MoverRecipeCategory moverRecipeCategory;
-    static BookRecipeCategory bookRecipeCategory;
+//    static BookRecipeCategory bookRecipeCategory;
 
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
-        List<WorkbenchRecipes> recipes =
-            RecipeGetter.getRecipes(Objects.requireNonNull(Minecraft.getInstance().world).getRecipeManager(), WorkbenchRecipes.recipeType()).values().stream() // Synced by server.
-            .filter(WorkbenchRecipes::showInJEI)
-            .sorted(WorkbenchRecipes.recipeOrdering())
-            .collect(Collectors.toList());
-        registration.addRecipes(recipes, WorkBenchRecipeCategory.UID());
-        registration.addRecipes(MoverRecipeCategory.recipes(), MoverRecipeCategory.UID());
-        if (!Config.common().disabled().apply(BlockBookMover.SYMBOL).get())
-            registration.addRecipes(BookRecipeCategory.recipes(), BookRecipeCategory.UID());
+        List<WorkbenchRecipe> recipes =
+            RecipeFinder.find(Objects.requireNonNull(Minecraft.getInstance().level).getRecipeManager(), WorkbenchRecipe.RECIPE_TYPE).values().stream() // Synced by server.
+                .filter(WorkbenchRecipe::showInJEI)
+                .filter(WorkbenchRecipe::hasContent)
+                .sorted(WorkbenchRecipe.COMPARATOR)
+                .collect(Collectors.toList());
+        registration.addRecipes(recipes, WorkBenchRecipeCategory.UID);
+        registration.addRecipes(MoverRecipeCategory.recipes(), MoverRecipeCategory.UID);
+//        if (!Config.common().disabled().apply(BlockBookMover.SYMBOL).get())
+//            registration.addRecipes(BookRecipeCategory.recipes(), BookRecipeCategory.UID());
     }
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
-        registration.addRecipeCatalyst(new ItemStack(Holder.blockWorkbench()), WorkBenchRecipeCategory.UID());
-        registration.addRecipeCatalyst(new ItemStack(Holder.blockMover()), MoverRecipeCategory.UID());
-        if (!Config.common().disabled().apply(BlockBookMover.SYMBOL).get())
-            registration.addRecipeCatalyst(new ItemStack(Holder.blockBookMover()), BookRecipeCategory.UID());
+        registration.addRecipeCatalyst(new ItemStack(Holder.BLOCK_WORKBENCH), WorkBenchRecipeCategory.UID);
+        registration.addRecipeCatalyst(new ItemStack(Holder.BLOCK_MOVER), MoverRecipeCategory.UID);
+//        if (!Config.common().disabled().apply(BlockBookMover.SYMBOL).get())
+//            registration.addRecipeCatalyst(new ItemStack(Holder.blockBookMover()), BookRecipeCategory.UID());
     }
 
     @Override
     public void registerGuiHandlers(IGuiHandlerRegistration registration) {
-        registration.addRecipeClickArea(GuiWorkbench.class, 7, 74, 161, 11, WorkBenchRecipeCategory.UID());
-        if (!Config.common().disabled().apply(BlockBookMover.SYMBOL).get())
-            registration.addRecipeClickArea(GuiBookMover.class, 79, 35, 23, 16, BookRecipeCategory.UID());
+        registration.addRecipeClickArea(ScreenWorkbench.class, 7, 74, 161, 11, WorkBenchRecipeCategory.UID);
+//        if (!Config.common().disabled().apply(BlockBookMover.SYMBOL).get())
+//            registration.addRecipeClickArea(GuiBookMover.class, 79, 35, 23, 16, BookRecipeCategory.UID());
     }
-
-//    @Override
-//    public void register(IModRegistry registry) {
-//        registry.handleRecipes(MoverRecipeWrapper.MoverRecipe.class, MoverRecipeWrapper::new, MoverRecipeCategory.UID());
-//        registry.addRecipeCatalyst(new ItemStack(QuarryPlusI.blockMover()), MoverRecipeCategory.UID());
-//        registry.addRecipes(MoverRecipeWrapper.recipes(), MoverRecipeCategory.UID());
-//
-//        if (!Config.content().disableMapJ().get(BlockBookMover.SYMBOL)) {
-//            registry.handleRecipes(BookRecipeWrapper.BookRecipe.class, BookRecipeWrapper::new, BookRecipeCategory.UID());
-//            registry.addRecipeCatalyst(new ItemStack(QuarryPlusI.blockBookMover()), BookRecipeCategory.UID());
-//            registry.addRecipeClickArea(GuiBookMover.class, 79, 35, 23, 16, BookRecipeCategory.UID());
-//            registry.addRecipes(BookRecipeWrapper.recipes(), BookRecipeCategory.UID());
-//        }
-//
-//        MinecraftForge.EVENT_BUS.register(this);
-//    }
 
     @Override
     public ResourceLocation getPluginUid() {
@@ -85,10 +67,10 @@ public class QuarryJeiPlugin implements IModPlugin {
         registry.addRecipeCategories(workBenchRecipeCategory);
         moverRecipeCategory = new MoverRecipeCategory(registry.getJeiHelpers().getGuiHelper());
         registry.addRecipeCategories(moverRecipeCategory);
-        if (!Config.common().disabled().apply(BlockBookMover.SYMBOL).get()) {
-            bookRecipeCategory = new BookRecipeCategory(registry.getJeiHelpers().getGuiHelper());
-            registry.addRecipeCategories(bookRecipeCategory);
-        }
+//        if (!Config.common().disabled().apply(BlockBookMover.SYMBOL).get()) {
+//            bookRecipeCategory = new BookRecipeCategory(registry.getJeiHelpers().getGuiHelper());
+//            registry.addRecipeCategories(bookRecipeCategory);
+//        }
     }
 
     @Override

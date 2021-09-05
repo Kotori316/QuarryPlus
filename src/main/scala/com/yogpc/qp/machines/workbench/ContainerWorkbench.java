@@ -1,118 +1,111 @@
 package com.yogpc.qp.machines.workbench;
 
-import com.yogpc.qp.Config;
-import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.machines.base.APowerTile;
-import com.yogpc.qp.machines.base.SlotUnlimited;
-import com.yogpc.qp.machines.base.SlotWorkbench;
-import com.yogpc.qp.utils.Holder;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.ClickType;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.IntReferenceHolder;
-import net.minecraft.util.math.BlockPos;
+import java.util.Objects;
 
-public class ContainerWorkbench extends Container {
+import com.yogpc.qp.Holder;
+import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.PowerTile;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.DataSlot;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+
+public class ContainerWorkbench extends AbstractContainerMenu {
 
     final TileWorkbench tile;
     private static final int sourceSlot = 27;
     private static final int recipeSlot = 18;
     private static final int playerSlot = 36;
-    final IntReferenceHolder progress = this.trackInt(IntReferenceHolder.single());
-    final IntReferenceHolder isWorking = this.trackInt(IntReferenceHolder.single());
-    final IntReferenceHolder workContinue = this.trackInt(IntReferenceHolder.single());
-    final IntReferenceHolder recipeIndex = this.trackInt(IntReferenceHolder.single());
-    final IntReferenceHolder currentEnergy = this.trackInt(IntReferenceHolder.single());
-    final IntReferenceHolder requiredEnergy = this.trackInt(IntReferenceHolder.single());
+    final DataSlot progress = this.addDataSlot(DataSlot.standalone());
+    final DataSlot isWorking = this.addDataSlot(DataSlot.standalone());
+    final DataSlot workContinue = this.addDataSlot(DataSlot.standalone());
+    final DataSlot recipeIndex = this.addDataSlot(DataSlot.standalone());
 
-    public ContainerWorkbench(int id, final PlayerEntity player, BlockPos pos) {
-        super(Holder.workbenchContainerType(), id);
-        this.tile = ((TileWorkbench) player.getEntityWorld().getTileEntity(pos));
+    public ContainerWorkbench(int id, Player player, BlockPos pos) {
+        super(Holder.WORKBENCH_MENU_TYPE, id);
+        this.tile = Objects.requireNonNull(((TileWorkbench) player.level.getBlockEntity(pos)));
         int row;
         int col;
 
         //0-26
         for (row = 0; row < 3; ++row)
             for (col = 0; col < 9; ++col)
-                addSlot(new SlotUnlimited(tile, col + row * 9, 8 + col * 18, 18 + row * 18));
+                addSlot(new Slot(tile, col + row * 9, 8 + col * 18, 18 + row * 18));
 
         //27-44
         for (row = 0; row < 2; ++row)
             for (col = 0; col < 9; ++col)
-                addSlot(new SlotWorkbench(tile, col + row * 9 + sourceSlot, 8 + col * 18, 90 + row * 18));
+                addSlot(new Slot(tile, col + row * 9 + sourceSlot, 8 + col * 18, 90 + row * 18));
 
         //45-62
         for (row = 0; row < 3; ++row)
             for (col = 0; col < 9; ++col)
-                addSlot(new Slot(player.inventory, col + row * 9 + 9, 8 + col * 18, 140 + row * 18));
+                addSlot(new Slot(player.getInventory(), col + row * 9 + 9, 8 + col * 18, 140 + row * 18));
 
         //63-71
         for (col = 0; col < 9; ++col)
-            addSlot(new Slot(player.inventory, col, 8 + col * 18, 198));
+            addSlot(new Slot(player.getInventory(), col, 8 + col * 18, 198));
 
-        if (!player.world.isRemote && this.tile != null) {
+        if (!player.level.isClientSide) {
             setTrackValues();
-            tile.openInventory(player);
+            tile.startOpen(player);
         }
     }
 
     private void setTrackValues() {
         progress.set(this.tile.getProgressScaled(160));
-        isWorking.set(this.tile.isWorking() ? 1 : 0);
+        isWorking.set(this.tile.getRecipe().hasContent() ? 1 : 0);
         workContinue.set(this.tile.workContinue ? 1 : 0);
-        recipeIndex.set(this.tile.getRecipeIndex());
-        long required = recipeIndex.get() == -1 ? 0 : this.tile.recipesList.get(recipeIndex.get()).energy();
-        requiredEnergy.set((int) (required / APowerTile.FEtoMicroJ));
-        currentEnergy.set(this.tile.getEnergyStored());
+        recipeIndex.set(this.tile.recipesList.indexOf(this.tile.getRecipe()));
     }
 
     @Override
-    public boolean canInteractWith(final PlayerEntity playerIn) {
-        return this.tile.isUsableByPlayer(playerIn);
+    public boolean stillValid(Player playerIn) {
+        return this.tile.stillValid(playerIn);
     }
 
     /**
      * @param index The index of clicked slot, the source.
      */
     @Override
-    public ItemStack transferStackInSlot(final PlayerEntity playerIn, final int index) {
+    public ItemStack quickMoveStack(Player playerIn, int index) {
         if (sourceSlot <= index && index < sourceSlot + recipeSlot)
             return ItemStack.EMPTY;
         ItemStack src = ItemStack.EMPTY;
-        final Slot slot = this.inventorySlots.get(index);
-        if (slot != null && slot.getHasStack()) {
-            final ItemStack remain = slot.getStack();
+        final Slot slot = this.getSlot(index);
+        if (slot.hasItem()) {
+            final ItemStack remain = slot.getItem();
             src = remain.copy();
             if (index < sourceSlot) {
                 //To inventory
                 if (src.isStackable()) {
-                    if (!mergeItemStack(remain, sourceSlot + recipeSlot, sourceSlot + recipeSlot + playerSlot, true))
+                    if (!moveItemStackTo(remain, sourceSlot + recipeSlot, sourceSlot + recipeSlot + playerSlot, true))
                         return ItemStack.EMPTY;
                 } else {
                     for (int i = sourceSlot + recipeSlot + playerSlot - 1; i >= sourceSlot + recipeSlot && !remain.isEmpty(); i--) {
-                        Slot destinationSlot = inventorySlots.get(i);
+                        Slot destinationSlot = getSlot(i);
 
-                        if (!destinationSlot.getHasStack()) {
+                        if (!destinationSlot.hasItem()) {
                             //Just move
-                            int maxSize = Math.min(slot.getSlotStackLimit(), remain.getMaxStackSize());
-                            destinationSlot.putStack(remain.split(maxSize));
+                            int maxSize = Math.min(slot.getMaxStackSize(), remain.getMaxStackSize());
+                            destinationSlot.set(remain.split(maxSize));
                         } else {
-                            ItemStack dest = destinationSlot.getStack();
-                            if (areStack_Able(dest, remain)) {
+                            ItemStack dest = destinationSlot.getItem();
+                            if (ItemStack.isSameItemSameTags(dest, remain)) {
                                 int newSize = dest.getCount() + remain.getCount();
-                                int maxSize = Math.min(slot.getSlotStackLimit(), remain.getMaxStackSize());
+                                int maxSize = Math.min(slot.getMaxStackSize(), remain.getMaxStackSize());
 
                                 if (newSize <= maxSize) {
                                     remain.setCount(0);
                                     dest.setCount(newSize);
-                                    slot.onSlotChanged();
+                                    slot.setChanged();
                                 } else if (dest.getCount() < maxSize) {
                                     remain.shrink(maxSize - dest.getCount());
                                     dest.setCount(maxSize);
-                                    slot.onSlotChanged();
+                                    slot.setChanged();
                                 }
                             }
                         }
@@ -120,13 +113,13 @@ public class ContainerWorkbench extends Container {
                     if (!remain.isEmpty())
                         return ItemStack.EMPTY;
                 }
-            } else if (!n_mergeItemStack(remain))
+            } else if (!n_moveItemStackTo(remain))
                 //To workbench
                 return ItemStack.EMPTY;
             if (remain.isEmpty())
-                slot.putStack(ItemStack.EMPTY);
+                slot.set(ItemStack.EMPTY);
             else
-                slot.onSlotChanged();
+                slot.setChanged();
             if (remain.getCount() == src.getCount())
                 return ItemStack.EMPTY;
             slot.onTake(playerIn, remain);
@@ -135,11 +128,11 @@ public class ContainerWorkbench extends Container {
     }
 
     @Override
-    public void detectAndSendChanges() {
+    public void broadcastChanges() {
         if (this.tile != null) {
             setTrackValues();
         }
-        super.detectAndSendChanges();
+        super.broadcastChanges();
     }
 
     /**
@@ -147,128 +140,110 @@ public class ContainerWorkbench extends Container {
      * @param dragType    0 = left click, 1 right click, 2 middle click.
      * @param clickTypeIn NORMAL->PICKUP, Shift click->QUICK_MOVE, Middle click->CLONE
      * @param player      the player
-     * @return ???
      */
     @Override
-    public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, PlayerEntity player) {
+    public void clicked(int slotId, int dragType, ClickType clickTypeIn, Player player) {
         if (sourceSlot <= slotId && slotId < sourceSlot + recipeSlot && clickTypeIn == ClickType.PICKUP) {
             int index = slotId - sourceSlot;
             if (index < tile.recipesList.size()) {
                 if (dragType == 0) {
-                    if (index == tile.getRecipeIndex()) {
+                    var newRecipeId = tile.recipesList.get(index).getId();
+                    if (newRecipeId.equals(tile.getRecipe().getId())) {
                         tile.workContinue = !tile.workContinue;
                     } else {
-                        tile.setCurrentRecipeIndex(index);
+                        tile.setCurrentRecipe(newRecipeId);
                     }
                 } else if (dragType == 1) {
-                    tile.setCurrentRecipeIndex(-1);
+                    tile.setCurrentRecipe(WorkbenchRecipe.dummyRecipe().getId());
                 }
             }
-            return ItemStack.EMPTY;
         } else if (0 <= slotId && slotId < sourceSlot && clickTypeIn == ClickType.PICKUP) {
+            Slot slot = this.getSlot(slotId);
 
-            PlayerInventory playerInventory = player.inventory;
-            ItemStack itemstack = ItemStack.EMPTY;
+            ItemStack slotStack = slot.getItem();
+            ItemStack carrying = getCarried();
 
-            Slot slot = this.inventorySlots.get(slotId);
+            if (slotStack.isEmpty()) {
+                // push TO workbench.
+                if (!carrying.isEmpty() && slot.mayPlace(carrying)) {
+                    int l2 = dragType == 0 ? carrying.getCount() : 1;
 
-            if (slot != null) {
-                ItemStack slotStack = slot.getStack();
-                ItemStack playerStack = playerInventory.getItemStack();
-
-                if (!slotStack.isEmpty()) {
-                    itemstack = slotStack.copy();
-                }
-
-                if (slotStack.isEmpty()) {
-                    //put TO workbench.
-                    if (!playerStack.isEmpty() && slot.isItemValid(playerStack)) {
-                        int l2 = dragType == 0 ? playerStack.getCount() : 1;
-
-                        if (l2 > slot.getItemStackLimit(playerStack)) {
-                            l2 = slot.getItemStackLimit(playerStack);
-                        }
-                        slot.putStack(playerStack.split(l2));
+                    if (l2 > slot.getMaxStackSize(carrying)) {
+                        l2 = slot.getMaxStackSize(carrying);
                     }
-                } else {
-                    if (playerStack.isEmpty()) {
-                        //take ItemStack FROM workbench
-                        int k2;
-                        if (dragType == 0) {
-                            k2 = Math.min(slotStack.getCount(), slotStack.getMaxStackSize());
-                        } else {
-                            k2 = Math.min((slotStack.getCount() + 1) / 2, slotStack.getMaxStackSize());
-                        }
-                        playerInventory.setItemStack(slot.decrStackSize(k2));
-
-                        if (slotStack.isEmpty()) {
-                            slot.putStack(ItemStack.EMPTY);
-                        }
-
-                        slot.onTake(player, playerInventory.getItemStack());
+                    slot.set(carrying.split(l2));
+                }
+            } else {
+                if (carrying.isEmpty()) {
+                    // take ItemStack FROM workbench
+                    int k2;
+                    if (dragType == 0) {
+                        k2 = Math.min(slotStack.getCount(), slotStack.getMaxStackSize());
                     } else {
-                        //put TO workbench.
-                        if (areStack_Able(slotStack, playerStack)) {
-                            int j2 = dragType == 0 ? playerStack.getCount() : 1;
+                        k2 = Math.min((slotStack.getCount() + 1) / 2, slotStack.getMaxStackSize());
+                    }
+                    setCarried(slot.remove(k2));
 
-                            playerStack.shrink(j2);
-                            slotStack.grow(j2);
-                        }
-                        //Switching items. not need!
-                        /*else if (playerStack.getCount() <= slot.getItemStackLimit(playerStack)) {
+                    if (slotStack.isEmpty()) {
+                        slot.set(ItemStack.EMPTY);
+                    }
 
-                            slot.putStack(playerStack);
-                            playerInventory.setItemStack(slotStack);
-                        }*/
+                    slot.onTake(player, getCarried());
+                } else {
+                    // push TO workbench.
+                    if (ItemStack.isSameItemSameTags(slotStack, carrying)) {
+                        int j2 = dragType == 0 ? carrying.getCount() : 1;
+
+                        carrying.shrink(j2);
+                        slotStack.grow(j2);
                     }
                 }
-                slot.onSlotChanged();
             }
-            return itemstack;
+            slot.setChanged();
         } else
-            return super.slotClick(slotId, dragType, clickTypeIn, player);
+            super.clicked(slotId, dragType, clickTypeIn, player);
     }
 
-    protected boolean n_mergeItemStack(ItemStack stack) {
+    protected boolean n_moveItemStackTo(ItemStack stack) {
         boolean flag = false;
 
         for (int i = 0; i < sourceSlot && !stack.isEmpty(); i++) {
-            Slot slot = this.inventorySlots.get(i);
-            ItemStack itemstack = slot.getStack();
+            Slot slot = getSlot(i);
+            ItemStack itemstack = slot.getItem();
 
-            if (!itemstack.isEmpty() && areStack_Able(stack, itemstack)) {
+            if (!itemstack.isEmpty() && ItemStack.isSameItemSameTags(stack, itemstack)) {
                 int j = itemstack.getCount() + stack.getCount();
-                int maxSize = slot.getSlotStackLimit();// ignore limit of stack. Math.min(slot.getSlotStackLimit(), stack.getMaxStackSize());
+                int maxSize = slot.getMaxStackSize();// ignore limit of stack. Math.min(slot.getMaxStackSize(), stack.getMaxStackSize());
 
                 if (j <= maxSize) {
                     stack.setCount(0);
                     itemstack.setCount(j);
-                    slot.onSlotChanged();
+                    slot.setChanged();
                     flag = true;
                 } else if (itemstack.getCount() < maxSize) {
                     //come?
-                    if (Config.common().debug())
+                    if (QuarryPlus.config.debug())
                         QuarryPlus.LOGGER.info("ContainerWorkbench#mergeItemStack itemStack.getCount() < maxSize");
                     stack.shrink(maxSize - itemstack.getCount());
                     itemstack.setCount(maxSize);
-                    slot.onSlotChanged();
+                    slot.setChanged();
                     flag = true;
                 }
             }
         }
         if (!stack.isEmpty()) {
             for (int i = 0; i < sourceSlot; i++) {
-                Slot slot1 = this.inventorySlots.get(i);
-                ItemStack itemStack1 = slot1.getStack();
+                Slot slot1 = getSlot(i);
+                ItemStack itemStack1 = slot1.getItem();
 
-                if (itemStack1.isEmpty() && slot1.isItemValid(stack)) {
+                if (itemStack1.isEmpty() && slot1.mayPlace(stack)) {
                     //NEVER
-                    /* if (stack.getCount() > slot1.getSlotStackLimit()) {
-                        slot1.putStack(stack.split(slot1.getSlotStackLimit()));
+                    /* if (stack.getCount() > slot1.getMaxStackSize()) {
+                        slot1.set(stack.split(slot1.getMaxStackSize()));
                     } else */
-                    slot1.putStack(stack.split(stack.getCount()));
+                    slot1.set(stack.split(stack.getCount()));
 
-                    slot1.onSlotChanged();
+                    slot1.setChanged();
                     flag = true;
                     break;
                 }
@@ -277,13 +252,10 @@ public class ContainerWorkbench extends Container {
         return flag;
     }
 
-    private static boolean areStack_Able(ItemStack stack1, ItemStack stack2) {
-        return ItemStack.areItemsEqual(stack1, stack2) && ItemStack.areItemStackTagsEqual(stack1, stack2);
+    @Override
+    public void removed(Player playerIn) {
+        super.removed(playerIn);
+        this.tile.stopOpen(playerIn);
     }
 
-    @Override
-    public void onContainerClosed(PlayerEntity playerIn) {
-        super.onContainerClosed(playerIn);
-        this.tile.closeInventory(playerIn);
-    }
 }

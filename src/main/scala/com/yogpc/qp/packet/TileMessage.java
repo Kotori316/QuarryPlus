@@ -1,50 +1,48 @@
 package com.yogpc.qp.packet;
 
-import java.util.Optional;
 import java.util.function.Supplier;
 
-import com.yogpc.qp.QuarryPlus;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 /**
  * To both client and server.
  */
-public class TileMessage implements IMessage<TileMessage> {
-    private CompoundNBT compound;
+public class TileMessage implements IMessage {
+    private final CompoundTag tag;
+    private final BlockPos pos;
+    private final ResourceKey<Level> dim;
 
-    public static TileMessage create(TileEntity entity) {
-        TileMessage message = new TileMessage();
-        message.compound = entity.write(new CompoundNBT());
-        return message;
+    public TileMessage(BlockPos pos, ResourceKey<Level> dim, CompoundTag tag) {
+        this.tag = tag;
+        this.pos = pos;
+        this.dim = dim;
+    }
+
+    public TileMessage(BlockEntity entity) {
+        this(entity.getBlockPos(), PacketHandler.getDimension(entity), entity.save(new CompoundTag()));
+    }
+
+    public TileMessage(FriendlyByteBuf buf) {
+        this(buf.readBlockPos(), ResourceKey.create(Registry.DIMENSION_REGISTRY, buf.readResourceLocation()), buf.readNbt());
     }
 
     @Override
-    public TileMessage readFromBuffer(PacketBuffer buffer) {
-        compound = buffer.readCompoundTag();
-        return this;
+    public void write(FriendlyByteBuf buf) {
+        buf.writeBlockPos(this.pos);
+        buf.writeResourceLocation(this.dim.location());
+        buf.writeNbt(this.tag);
     }
 
-    @Override
-    public void writeToBuffer(PacketBuffer buffer) {
-        buffer.writeCompoundTag(compound);
-    }
-
-    @Override
-    public void onReceive(Supplier<NetworkEvent.Context> ctx) {
-        BlockPos pos = new BlockPos(compound.getInt("x"), compound.getInt("y"), compound.getInt("z"));
-        Optional<World> worldOptional = QuarryPlus.proxy.getPacketWorld(ctx.get()).filter(world -> world.isBlockPresent(pos));
-        Runnable runnable = () -> worldOptional.ifPresent(w -> {
-            TileEntity t = w.getTileEntity(pos);
-            if (t != null) {
-                t.read(w.getBlockState(pos), compound);
-            }
-        });
-        ctx.get().enqueueWork(runnable);
+    public static void onReceive(TileMessage message, Supplier<NetworkEvent.Context> supplier) {
+        var world = PacketHandler.getWorld(supplier.get(), message.pos, message.dim);
+        supplier.get().enqueueWork(() -> world.map(l -> l.getBlockEntity(message.pos)).ifPresent(t -> t.load(message.tag)));
     }
 
 }

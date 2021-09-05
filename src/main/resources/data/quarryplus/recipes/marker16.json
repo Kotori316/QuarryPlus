@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "R",
+    "T"
+  ],
+  "key": {
+    "R": {
+      "tag": "forge:dusts/redstone"
+    },
+    "T": {
+      "item": "quarryplus:marker"
+    }
+  },
+  "result": {
+    "item": "quarryplus:marker16"
+  }
+}

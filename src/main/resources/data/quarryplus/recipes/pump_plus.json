@@ -1,6 +1,12 @@
 {
   "type": "quarryplus:workbench_recipe",
-  "id": "quarryplus:builtin_pump_plus",
+  "subType": "default",
+  "result": {
+    "item": "quarryplus:pump_plus",
+    "count": 1
+  },
+  "energy": 320000.0,
+  "showInJEI": true,
   "ingredients": [
     {
       "tag": "forge:ingots/gold",
@@ -23,15 +29,9 @@
       "count": 80
     }
   ],
-  "energy": 320000.0,
-  "showInJEI": true,
-  "result": {
-    "item": "quarryplus:pumpplus",
-    "count": 1
-  },
   "conditions": [
     {
-      "value": "PumpPlus",
+      "value": "pump_plus",
       "type": "quarryplus:machine_enabled"
     }
   ]

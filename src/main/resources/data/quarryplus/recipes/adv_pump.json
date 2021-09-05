@@ -1,0 +1,36 @@
+{
+  "type": "quarryplus:workbench_recipe",
+  "subType": "default",
+  "result": {
+    "item": "quarryplus:adv_pump",
+    "count": 1
+  },
+  "energy": 3200000.0,
+  "showInJEI": true,
+  "ingredients": [
+    [
+      {
+        "item": "quarryplus:pump_plus",
+        "count": 2
+      },
+      {
+        "item": "quarryplus:pump_module",
+        "count": 2
+      }
+    ],
+    {
+      "item": "quarryplus:mining_well",
+      "count": 2
+    },
+    {
+      "item": "quarryplus:marker",
+      "count": 3
+    }
+  ],
+  "conditions": [
+    {
+      "value": "adv_pump",
+      "type": "quarryplus:machine_enabled"
+    }
+  ]
+}

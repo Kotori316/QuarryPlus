@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "E",
+    "T"
+  ],
+  "key": {
+    "E": {
+      "tag": "forge:gems/emerald"
+    },
+    "T": {
+      "item": "quarryplus:marker"
+    }
+  },
+  "result": {
+    "item": "quarryplus:flex_marker"
+  }
+}
