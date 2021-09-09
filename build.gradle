@@ -306,7 +306,7 @@ String getChangeLog() {
         return Stream.concat(
                 Stream.of(version, ""),
                 f.readLines()
-                        .drop(4)
+                        .drop(4 - 2)
                         .takeWhile { s -> !s.isEmpty() }
                         .stream()
         ).collect(Collectors.joining(System.lineSeparator()))

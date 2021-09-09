@@ -1,4 +1,12 @@
+## Version 17.1-SNAPSHOT
 
+* Added Exp Module(item)
+  * This module can collect experiment points of ores quarry dug.
+* Added Exp Pump(block)
+  * Same as item.
+* Fixed a bug of saving tile data
+* Improvement of Workbench
+  * The update timing of recipes was improved.
 
 ## Version 17.0-SNAPSHOT
 
