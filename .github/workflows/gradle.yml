@@ -127,7 +127,7 @@ jobs:
       - name: Java Toolchains
         run: chmod +x ./gradlew && ./gradlew --no-daemon javaToolchains --info
       - name: Test with JUnit
-        run: chmod +x ./gradlew && ./gradlew --no-daemon test --debug
+        run: chmod +x ./gradlew && ./gradlew --no-daemon test --info
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload failed test report
