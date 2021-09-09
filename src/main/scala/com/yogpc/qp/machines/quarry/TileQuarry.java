@@ -260,11 +260,13 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         drops.stream().map(itemConverter::map).forEach(this.storage::addItem);
         targetWorld.setBlock(targetPos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
         // Get experiments
-        getExpModule().ifPresent(e -> {
-            if (requireEnergy && breakEvent.getExpToDrop() > 0)
-                useEnergy(PowerManager.getExpCollectEnergy(breakEvent.getExpToDrop(), this), Reason.EXP_COLLECT, true);
-            e.addExp(breakEvent.getExpToDrop());
-        });
+        if (breakEvent.getExpToDrop() > 0) {
+            getExpModule().ifPresent(e -> {
+                if (requireEnergy)
+                    useEnergy(PowerManager.getExpCollectEnergy(breakEvent.getExpToDrop(), this), Reason.EXP_COLLECT, true);
+                e.addExp(breakEvent.getExpToDrop());
+            });
+        }
         // Sound
         var sound = state.getSoundType();
         if (requireEnergy)
