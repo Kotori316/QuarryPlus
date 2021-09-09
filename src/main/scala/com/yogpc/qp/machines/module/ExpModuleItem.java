@@ -10,6 +10,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
@@ -48,11 +49,12 @@ public class ExpModuleItem extends QPItem implements QuarryModuleProvider.Item {
         if (stack.getTag() != null) {
             int exp = stack.getTag().getInt(KEY_AMOUNT);
             if (!level.isClientSide) {
+                player.displayClientMessage(new TranslatableComponent("quarryplus.chat.give_exp", exp), false);
                 player.giveExperiencePoints(exp);
             }
             stack.removeTagKey(KEY_AMOUNT);
         }
-        return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
+        return InteractionResultHolder.success(stack);
     }
 
     static class ExpItemModule extends ExpModule {

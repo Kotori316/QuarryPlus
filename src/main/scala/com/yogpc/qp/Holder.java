@@ -29,6 +29,8 @@ import com.yogpc.qp.machines.module.BedrockModuleItem;
 import com.yogpc.qp.machines.module.ContainerQuarryModule;
 import com.yogpc.qp.machines.module.EnergyModuleItem;
 import com.yogpc.qp.machines.module.ExpModuleItem;
+import com.yogpc.qp.machines.module.ExpPumpBlock;
+import com.yogpc.qp.machines.module.ExpPumpTile;
 import com.yogpc.qp.machines.module.ModuleLootFunction;
 import com.yogpc.qp.machines.module.PumpModuleItem;
 import com.yogpc.qp.machines.module.PumpPlusBlock;
@@ -106,6 +108,7 @@ public class Holder {
     public static final MiningWellBlock BLOCK_MINING_WELL = registerBlock(new MiningWellBlock());
     public static final BlockMover BLOCK_MOVER = registerBlock(new BlockMover(), EnableOrNot.CONFIG_ON);
     public static final PumpPlusBlock BLOCK_PUMP = registerBlock(new PumpPlusBlock(), EnableOrNot.CONFIG_ON);
+    public static final ExpPumpBlock BLOCK_EXP_PUMP = registerBlock(new ExpPumpBlock());
     public static final BlockAdvPump BLOCK_ADV_PUMP = registerBlock(new BlockAdvPump());
     public static final BlockMarker BLOCK_MARKER = registerBlock(new BlockMarker());
     public static final BlockExMarker.BlockFlexMarker BLOCK_FLEX_MARKER = registerBlock(new BlockExMarker.BlockFlexMarker());
@@ -129,6 +132,7 @@ public class Holder {
     public static final BlockEntityType<TileAdvPump> ADV_PUMP_TYPE = registerEntityType(TileAdvPump::new, BLOCK_ADV_PUMP, EnableOrNot.CONFIG_ON);
     public static final BlockEntityType<TileWorkbench> WORKBENCH_TYPE = registerEntityType(TileWorkbench::new, BLOCK_WORKBENCH, EnableOrNot.CONFIG_ON);
     public static final BlockEntityType<MiningWellTile> MINING_WELL_TYPE = registerEntityType(MiningWellTile::new, BLOCK_MINING_WELL, EnableOrNot.CONFIG_ON);
+    public static final BlockEntityType<ExpPumpTile> EXP_PUMP_TYPE = registerEntityType(ExpPumpTile::new, BLOCK_EXP_PUMP, EnableOrNot.CONFIG_ON);
 
     public static final MenuType<ContainerMarker> FLEX_MARKER_MENU_TYPE = IForgeContainerType.create((windowId, inv, data) ->
         new ContainerMarker(windowId, inv.player, data.readBlockPos(), Holder.FLEX_MARKER_MENU_TYPE));
