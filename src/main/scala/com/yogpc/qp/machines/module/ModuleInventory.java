@@ -88,5 +88,14 @@ public class ModuleInventory extends SimpleContainer implements INBTSerializable
         ModuleInventory getModuleInventory();
 
         Set<QuarryModule> getLoadedModules();
+
+        default boolean hasPumpModule() {
+            return getLoadedModules().contains(QuarryModule.Constant.PUMP);
+        }
+
+        default boolean hasBedrockModule() {
+            return getLoadedModules().contains(QuarryModule.Constant.BEDROCK);
+        }
+
     }
 }

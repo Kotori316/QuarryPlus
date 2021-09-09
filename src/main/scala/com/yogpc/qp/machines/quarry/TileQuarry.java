@@ -370,14 +370,6 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         this.modules = Sets.union(blockModules, itemModules);
     }
 
-    boolean hasPumpModule() {
-        return modules.contains(QuarryModule.Constant.PUMP);
-    }
-
-    boolean hasBedrockModule() {
-        return modules.contains(QuarryModule.Constant.BEDROCK);
-    }
-
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean canBreak(Level targetWorld, BlockPos targetPos, BlockState state) {
         if (target != null && target.alreadySkipped(targetPos)) return false;
