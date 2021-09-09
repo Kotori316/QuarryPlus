@@ -79,6 +79,7 @@ public class PowerTile extends BlockEntity implements IEnergyStorage {
         if (!simulate && accepted != 0) {
             energy += accepted;
             energyCounter.getEnergy(level.getGameTime(), accepted);
+            setChanged();
         }
         return accepted;
     }
@@ -96,6 +97,7 @@ public class PowerTile extends BlockEntity implements IEnergyStorage {
         if (energy >= amount || force) {
             energy -= amount;
             energyCounter.useEnergy(level.getGameTime(), amount, reason);
+            setChanged();
             return true;
         } else {
             return false;
@@ -111,6 +113,7 @@ public class PowerTile extends BlockEntity implements IEnergyStorage {
                 // Energy is sent
                 energyCounter.getEnergy(level.getGameTime(), energy - this.energy);
             }
+            setChanged();
         }
         this.energy = energy;
     }

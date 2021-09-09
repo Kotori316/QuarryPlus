@@ -11,7 +11,7 @@ public class PowerManager {
     // Coefficient
     private static final double FIFTH_ROOT_OF_10 = 1.5848931924611136;
     private static final double FIFTH_ROOT_OF_5 = 1.379729661461215;
-    private static final double FORTUNE_COEFFICIENT = 1.5874010519681994;
+    private static final double FORTUNE_COEFFICIENT = 1.5874010519681996;
     private static final double SILKTOUCH_COEFFICIENT = 4;
 
     public static long getMakeFrameEnergy(EnchantmentLevel.HasEnchantments enchantments) {
