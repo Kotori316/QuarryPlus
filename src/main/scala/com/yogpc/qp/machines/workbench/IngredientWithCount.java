@@ -13,11 +13,13 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.common.crafting.NBTIngredient;
 import net.minecraftforge.items.ItemHandlerHelper;
+import org.apache.logging.log4j.LogManager;
 
 public record IngredientWithCount(Ingredient ingredient, int count) implements Predicate<ItemStack> {
     public IngredientWithCount(JsonObject jsonObject) {
-        this(CraftingHelper.getIngredient(jsonObject), GsonHelper.getAsInt(jsonObject, "count"));
+        this(CraftingHelper.getIngredient(modifyCount(jsonObject)), GsonHelper.getAsInt(jsonObject, "count"));
     }
 
     public IngredientWithCount(ItemStack stack) {
@@ -75,5 +77,28 @@ public record IngredientWithCount(Ingredient ingredient, int count) implements P
         var ingredient = Ingredient.fromNetwork(buf);
         var count = buf.readInt();
         return new IngredientWithCount(ingredient, count);
+    }
+
+    public static NBTIngredient createNbtIngredient(ItemStack stack) {
+        try {
+            var constructor = NBTIngredient.class.getDeclaredConstructor(ItemStack.class);
+            constructor.trySetAccessible();
+            return constructor.newInstance(stack);
+        } catch (ReflectiveOperationException exception) {
+            LogManager.getLogger(IngredientWithCount.class)
+                .error("Caught error when creating NBTIngredient instance. This should not be called in production.", exception);
+            return null;
+        }
+    }
+
+    static JsonObject modifyCount(JsonObject object) {
+        if (object.has("count")) {
+            var clone = new JsonObject();
+            object.entrySet().forEach(e -> clone.add(e.getKey(), e.getValue()));
+            clone.remove("count");
+            return clone;
+        } else {
+            return object;
+        }
     }
 }

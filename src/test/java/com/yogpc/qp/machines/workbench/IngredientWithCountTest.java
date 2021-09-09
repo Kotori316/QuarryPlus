@@ -9,6 +9,11 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.Potions;
+import net.minecraftforge.common.crafting.NBTIngredient;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -92,4 +97,91 @@ class IngredientWithCountTest extends QuarryPlusTest {
             () -> assertEquals(a2.toJson(), i.get(1).toJson())
         );
     }
+
+    @Nested
+    class NbtItems {
+        IngredientWithCount waterBottleIngredient;
+        IngredientWithCount waterBottleFromJson;
+
+        @BeforeEach
+        void setup() {
+            waterBottleIngredient = new IngredientWithCount(
+                IngredientWithCount.createNbtIngredient(PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER)), 1);
+            // language=json
+            var json = GSON.fromJson("""
+                {
+                  "type": "forge:nbt",
+                  "item": "minecraft:potion",
+                  "count": 128,
+                  "nbt": "{Potion:\\"minecraft:water\\"}"
+                }
+                """, JsonObject.class);
+            waterBottleFromJson = new IngredientWithCount(json);
+        }
+
+        @Test
+        void nbtItemPotion1() {
+            var i = waterBottleIngredient;
+            assertTrue(i.test(PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER)));
+        }
+
+        @Test
+        void nbtItemPotionOtherItem() {
+            var i = waterBottleIngredient;
+            assertFalse(i.test(new ItemStack(Items.APPLE)));
+        }
+
+        @Test
+        void nbtItemPotionNoTag() {
+            var i = waterBottleIngredient;
+            assertFalse(i.test(new ItemStack(Items.POTION)), "No Effect Potion");
+        }
+
+        @Test
+        void nbtItemPotionDifferentEffect() {
+            var i = waterBottleIngredient;
+            assertFalse(i.test(PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.HARMING)), "Different Effect Harming");
+        }
+
+        @Test
+        void nbtItemPotionEmptyEffect() {
+            var i = waterBottleIngredient;
+            assertFalse(i.test(PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.EMPTY)), "Different Effect Empty");
+        }
+
+        @Test
+        void nbtJsonItemIngredientInstance() {
+            var i = waterBottleFromJson.ingredient();
+            assertTrue(i instanceof NBTIngredient, "Actual Class: " + i.getClass() + " String: " + i);
+        }
+
+        @Test
+        void nbtJsonItemPotion1() {
+            var stack = PotionUtils.setPotion(new ItemStack(Items.POTION, 128), Potions.WATER);
+            assertTrue(waterBottleFromJson.test(stack),
+                "Water Potion, stack: " + stack + " tag: " + stack.getTag());
+        }
+
+        @Test
+        void nbtJsonItemPotionOtherItem() {
+            assertFalse(waterBottleFromJson.test(new ItemStack(Items.APPLE)));
+        }
+
+        @Test
+        void nbtJsonItemPotionNoTag() {
+            assertFalse(waterBottleFromJson.test(new ItemStack(Items.POTION)), "No Effect Potion");
+        }
+
+        @Test
+        void nbtJsonItemPotionDifferentEffect() {
+            assertFalse(waterBottleFromJson.test(PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.HARMING)), "Different Effect Harming");
+        }
+
+        @Test
+        void nbtJsonItemPotionEmptyEffect() {
+            assertFalse(waterBottleFromJson.test(PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.EMPTY)), "Different Effect Empty");
+        }
+
+    }
+
 }
