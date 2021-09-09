@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 import com.mojang.datafixers.DSL;
 import com.yogpc.qp.machines.EnchantedLootFunction;
 import com.yogpc.qp.machines.QPBlock;
-import com.yogpc.qp.machines.QPItem;
 import com.yogpc.qp.machines.advpump.BlockAdvPump;
 import com.yogpc.qp.machines.advpump.TileAdvPump;
 import com.yogpc.qp.machines.checker.ItemChecker;
@@ -29,6 +28,7 @@ import com.yogpc.qp.machines.misc.YSetterItem;
 import com.yogpc.qp.machines.module.BedrockModuleItem;
 import com.yogpc.qp.machines.module.ContainerQuarryModule;
 import com.yogpc.qp.machines.module.EnergyModuleItem;
+import com.yogpc.qp.machines.module.ExpModuleItem;
 import com.yogpc.qp.machines.module.ModuleLootFunction;
 import com.yogpc.qp.machines.module.PumpModuleItem;
 import com.yogpc.qp.machines.module.PumpPlusBlock;
@@ -119,6 +119,7 @@ public class Holder {
     public static final PumpModuleItem ITEM_PUMP_MODULE = registerItem(new PumpModuleItem(), EnableOrNot.CONFIG_ON);
     public static final BedrockModuleItem ITEM_BEDROCK_MODULE = registerItem(new BedrockModuleItem(), EnableOrNot.CONFIG_OFF);
     public static final EnergyModuleItem ITEM_FUEL_MODULE_NORMAL = registerItem(new EnergyModuleItem(5, "fuel_module_normal"), EnableOrNot.CONFIG_ON);
+    public static final ExpModuleItem ITEM_EXP_MODULE = registerItem(new ExpModuleItem(), EnableOrNot.CONFIG_ON);
 
     public static final BlockEntityType<TileQuarry> QUARRY_TYPE = registerEntityType(TileQuarry::new, BLOCK_QUARRY, EnableOrNot.CONFIG_ON);
     public static final BlockEntityType<TileMarker> MARKER_TYPE = registerEntityType(TileMarker::new, BLOCK_MARKER, EnableOrNot.ALWAYS_ON);

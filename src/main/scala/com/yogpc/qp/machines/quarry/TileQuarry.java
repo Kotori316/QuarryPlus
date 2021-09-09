@@ -39,6 +39,8 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.EntitySelector;
+import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -225,6 +227,12 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
                     storage.addItem(i.getItem());
                     i.kill();
                 });
+            getExpModule().ifPresent(e ->
+                targetWorld.getEntitiesOfClass(ExperienceOrb.class, new AABB(targetPos).inflate(5), EntitySelector.ENTITY_STILL_ALIVE)
+                    .forEach(orb -> {
+                        e.addExp(orb.getValue());
+                        orb.kill();
+                    }));
         }
         var pickaxe = getPickaxe();
         var fakePlayer = QuarryFakePlayer.get(targetWorld);
@@ -247,9 +255,17 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         if (requireEnergy && !useEnergy(PowerManager.getBreakEnergy(hardness, this), Reason.BREAK_BLOCK, false)) {
             return BreakResult.NOT_ENOUGH_ENERGY;
         }
+        // Get drops
         var drops = Block.getDrops(state, targetWorld, targetPos, targetWorld.getBlockEntity(targetPos), null, pickaxe);
         drops.stream().map(itemConverter::map).forEach(this.storage::addItem);
         targetWorld.setBlock(targetPos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
+        // Get experiments
+        getExpModule().ifPresent(e -> {
+            if (requireEnergy)
+                useEnergy(PowerManager.getExpCollectEnergy(breakEvent.getExpToDrop(), this), Reason.EXP_COLLECT, true);
+            e.addExp(breakEvent.getExpToDrop());
+        });
+        // Sound
         var sound = state.getSoundType();
         if (requireEnergy)
             targetWorld.playSound(null, targetPos, sound.getBreakSound(), SoundSource.BLOCKS, (sound.getVolume() + 1.0F) / 4F, sound.getPitch() * 0.8F);

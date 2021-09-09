@@ -40,7 +40,7 @@
   "item.quarryplus.status_checker": "状态检查器",
   "item.quarryplus.template": "列表模板",
   "item.quarryplus.pump_module": "采石场泵模块",
-  "item.quarryplus.exppump_module": "采石场经验收集模块",
+  "item.quarryplus.exp_module": "采石场经验收集模块",
   "item.quarryplus.replacer_module": "采石场替换模块",
   "item.quarryplus.torch_module": "采石场火把模块",
   "item.quarryplus.y_setter": "采石场 Y 设定器",

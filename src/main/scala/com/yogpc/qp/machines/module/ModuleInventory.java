@@ -2,6 +2,7 @@ package com.yogpc.qp.machines.module;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -15,6 +16,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.util.INBTSerializable;
 
 public class ModuleInventory extends SimpleContainer implements INBTSerializable<CompoundTag> {
@@ -61,6 +63,9 @@ public class ModuleInventory extends SimpleContainer implements INBTSerializable
     public void setChanged() {
         super.setChanged();
         onUpdate.accept(this);
+        if (holder instanceof BlockEntity entity) {
+            entity.setChanged();
+        }
     }
 
     @Override
@@ -97,5 +102,8 @@ public class ModuleInventory extends SimpleContainer implements INBTSerializable
             return getLoadedModules().contains(QuarryModule.Constant.BEDROCK);
         }
 
+        default Optional<ExpModule> getExpModule() {
+            return getLoadedModules().stream().mapMulti(MapMulti.cast(ExpModule.class)).findFirst();
+        }
     }
 }

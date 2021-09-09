@@ -40,7 +40,7 @@
   "item.quarryplus.status_checker": "Vérifieur Statut",
   "item.quarryplus.template": "Modèle Liste",
   "item.quarryplus.pump_module": "Module Pompe Carrière",
-  "item.quarryplus.exppump_module": "Module Collect Exp Carrière",
+  "item.quarryplus.exp_module": "Module Collect Exp Carrière",
   "item.quarryplus.replacer_module": "Module Remplacement Carrière",
   "item.quarryplus.torch_module": "Module Torche Carrère",
   "item.quarryplus.y_setter": "Régleur Y Carrière",

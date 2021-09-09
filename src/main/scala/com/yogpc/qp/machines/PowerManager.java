@@ -6,6 +6,7 @@ public class PowerManager {
     private static final long BREAK_BLOCK_BASE = PowerTile.ONE_FE * 25;
     private static final long BREAK_BLOCK_FLUID = BREAK_BLOCK_BASE * 5;
     private static final long MOVE_HEAD_BASE = PowerTile.ONE_FE;
+    private static final long EXP_COLLECT = BREAK_BLOCK_BASE / 10;
 
     // Coefficient
     private static final double FIFTH_ROOT_OF_10 = 1.5848931924611136;
@@ -48,5 +49,9 @@ public class PowerManager {
 
     public static long getBreakBlockFluidEnergy(EnchantmentLevel.HasEnchantments enchantments) {
         return BREAK_BLOCK_FLUID / (1 + Math.max(0, enchantments.unbreakingLevel()));
+    }
+
+    public static long getExpCollectEnergy(int exp, EnchantmentLevel.HasEnchantments enchantments) {
+        return EXP_COLLECT * exp * 2 / (2 + Math.max(enchantments.unbreakingLevel(), 0));
     }
 }

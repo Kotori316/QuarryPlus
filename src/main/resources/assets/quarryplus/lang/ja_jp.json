@@ -40,7 +40,7 @@
   "item.quarryplus.status_checker": "状態確認用具",
   "item.quarryplus.template": "一括更新テンプレート",
   "item.quarryplus.pump_module": "液体回収モジュール",
-  "item.quarryplus.exppump_module": "経験値回収モジュール",
+  "item.quarryplus.exp_module": "経験値回収モジュール",
   "item.quarryplus.replacer_module": "置き換えモジュール",
   "item.quarryplus.torch_module": "松明モジュール",
   "item.quarryplus.y_setter": "採掘機レベル設定用具",
