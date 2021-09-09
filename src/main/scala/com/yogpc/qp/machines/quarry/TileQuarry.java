@@ -1,7 +1,6 @@
 package com.yogpc.qp.machines.quarry;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -9,7 +8,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.google.common.collect.Sets;
@@ -35,7 +33,6 @@ import com.yogpc.qp.utils.MapMulti;
 import javax.annotation.Nullable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -364,16 +361,9 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
 
     void updateModules() {
         // Blocks
-        Set<QuarryModule> blockModules;
-        if (level != null) {
-            blockModules = Arrays.stream(Direction.values())
-                .map(getBlockPos()::relative)
-                .map(level::getBlockState)
-                .map(BlockState::getBlock)
-                .mapMulti(MapMulti.cast(QuarryModuleProvider.Block.class))
-                .map(QuarryModuleProvider.Block::getModule)
-                .collect(Collectors.toSet());
-        } else blockModules = Collections.emptySet();
+        Set<QuarryModule> blockModules = level != null
+            ? QuarryModuleProvider.Block.getModulesInWorld(level, getBlockPos())
+            : Collections.emptySet();
 
         // Module Inventory
         Set<QuarryModule> itemModules = Set.copyOf(moduleInventory.getModules());

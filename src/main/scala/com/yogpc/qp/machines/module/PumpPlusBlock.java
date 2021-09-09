@@ -1,7 +1,10 @@
 package com.yogpc.qp.machines.module;
 
 import com.yogpc.qp.machines.QPBlock;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
 
 public class PumpPlusBlock extends QPBlock implements QuarryModuleProvider.Block {
@@ -13,7 +16,7 @@ public class PumpPlusBlock extends QPBlock implements QuarryModuleProvider.Block
     }
 
     @Override
-    public QuarryModule getModule() {
+    public QuarryModule getModule(Level level, BlockPos pos, BlockState state) {
         return QuarryModule.Constant.PUMP;
     }
 
