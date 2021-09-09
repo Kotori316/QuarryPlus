@@ -211,6 +211,12 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
         return getBlockState().getBlock().getName();
     }
 
+    @Override
+    public void setChanged() {
+        super.setChanged();
+        updateRecipeOutputs();
+    }
+
     // Workbench Methods.
     private void updateRecipeOutputs() {
         if (level != null && !level.isClientSide) {

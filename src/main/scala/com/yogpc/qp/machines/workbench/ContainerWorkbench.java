@@ -4,7 +4,6 @@ import java.util.Objects;
 
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.machines.PowerTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -110,12 +109,15 @@ public class ContainerWorkbench extends AbstractContainerMenu {
                             }
                         }
                     }
-                    if (!remain.isEmpty())
+                    if (!remain.isEmpty()) {
+                        slot.setChanged();
                         return ItemStack.EMPTY;
+                    }
                 }
-            } else if (!n_moveItemStackTo(remain))
+            } else if (!n_moveItemStackTo(remain)) {
                 //To workbench
                 return ItemStack.EMPTY;
+            }
             if (remain.isEmpty())
                 slot.set(ItemStack.EMPTY);
             else
