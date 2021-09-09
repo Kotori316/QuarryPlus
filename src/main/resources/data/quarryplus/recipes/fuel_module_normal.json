@@ -9,7 +9,7 @@
   "showInJEI": true,
   "ingredients": [
     {
-      "tag": "forge:storage_blocks/gold",
+      "tag": "forge:ingots/gold",
       "count": 16
     },
     {

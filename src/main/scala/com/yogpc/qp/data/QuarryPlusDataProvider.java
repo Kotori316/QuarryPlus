@@ -2,6 +2,7 @@ package com.yogpc.qp.data;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -89,8 +90,10 @@ class BlockDrop extends QuarryPlusDataProvider.QuarryDataProvider {
             Holder.BLOCK_MINING_WELL,
             Holder.BLOCK_PUMP,
             Holder.BLOCK_WORKBENCH,
-            Holder.BLOCK_MOVER
-        ).map(LootTableSerializeHelper::withDrop);
+            Holder.BLOCK_MOVER,
+            Holder.BLOCK_EXP_PUMP,
+            null
+        ).filter(Objects::nonNull).map(LootTableSerializeHelper::withDrop);
         Stream<LootTableSerializeHelper> enchanted = Stream.<Block>of(
         ).map(LootTableSerializeHelper::withEnchantedDrop);
         var quarry = LootTableSerializeHelper.withEnchantedDrop(Holder.BLOCK_QUARRY)

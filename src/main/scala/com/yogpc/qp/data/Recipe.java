@@ -13,6 +13,8 @@ import com.yogpc.qp.machines.marker.BlockMarker;
 import com.yogpc.qp.machines.miningwell.MiningWellBlock;
 import com.yogpc.qp.machines.misc.YSetterItem;
 import com.yogpc.qp.machines.module.BedrockModuleItem;
+import com.yogpc.qp.machines.module.ExpModuleItem;
+import com.yogpc.qp.machines.module.ExpPumpBlock;
 import com.yogpc.qp.machines.module.PumpModuleItem;
 import com.yogpc.qp.machines.module.PumpPlusBlock;
 import com.yogpc.qp.machines.mover.BlockMover;
@@ -33,6 +35,8 @@ import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
@@ -143,6 +147,18 @@ public class Recipe extends QuarryPlusDataProvider.QuarryDataProvider {
             new IngredientList(new IngredientWithCount(Ingredient.of(Tags.Items.NETHERRACK), 64)),
             new IngredientList(new IngredientWithCount(Ingredient.of(Items.FURNACE), 3))
         )))).addCondition(new EnableCondition("fuel_module_normal")));
+        // Exp Pump
+        var waterBottle = PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER);
+        list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(
+            QuarryPlusDataProvider.location(ExpPumpBlock.NAME), new ItemStack(Holder.BLOCK_EXP_PUMP), 320000 * PowerTile.ONE_FE, true, List.of(
+            new IngredientList(new IngredientWithCount(Ingredient.of(Tags.Items.INGOTS_GOLD), 16)),
+            new IngredientList(new IngredientWithCount(Ingredient.of(Tags.Items.INGOTS_IRON), 40)),
+            new IngredientList(new IngredientWithCount(Ingredient.of(Tags.Items.DUSTS_REDSTONE), 64)),
+            new IngredientList(List.of(new IngredientWithCount(IngredientWithCount.createNbtIngredient(waterBottle), 128),
+                new IngredientWithCount(Ingredient.of(Items.EXPERIENCE_BOTTLE), 1))),
+            new IngredientList(new IngredientWithCount(Ingredient.of(Items.HAY_BLOCK), 32)),
+            new IngredientList(new IngredientWithCount(Ingredient.of(Tags.Items.ENDER_PEARLS), 2))
+        )))).addCondition(new EnableCondition(ExpPumpBlock.NAME)));
 
         return list;
     }
@@ -193,6 +209,14 @@ public class Recipe extends QuarryPlusDataProvider.QuarryDataProvider {
                     .requires(Holder.BLOCK_PUMP)
                     .group(MODULE_RECIPE_GROUP), null
             ).addCondition(new EnableCondition(PumpModuleItem.NAME))
+        );
+        list.add(
+            // Exp Module
+            RecipeSerializeHelper.by(
+                ShapelessRecipeBuilder.shapeless(Holder.ITEM_EXP_MODULE)
+                    .requires(Holder.BLOCK_EXP_PUMP)
+                    .group(MODULE_RECIPE_GROUP), null
+            ).addCondition(new EnableCondition(ExpModuleItem.NAME))
         );
         return list;
     }

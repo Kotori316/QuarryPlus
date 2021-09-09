@@ -20,6 +20,7 @@
       "type": "quarryplus:enchantment_ingredient",
       "item": "minecraft:diamond_pickaxe",
       "count": 1,
+      "checkDamage": false,
       "enchantments": [
         {
           "id": "minecraft:silk_touch",
