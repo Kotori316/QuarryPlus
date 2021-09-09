@@ -26,10 +26,10 @@ CurseForge - https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-m
 * Advanced Pump
   * Enchantment
 * Some modules
+* Exp Pump
 
 ## Planned (Future work)
 
-* ExpPump
 * Book Enchantment Mover
 * Spawner Controller
 * Chunk Destroyer
