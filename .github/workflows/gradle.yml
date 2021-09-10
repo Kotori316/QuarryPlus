@@ -71,6 +71,7 @@ jobs:
         run: chmod +x ./gradlew && (./gradlew clean downloadAssets || true)
         continue-on-error: true
       - name: Check Properties
+        if: ${{ matrix.forge != 'default' }}
         run: chmod +x ./gradlew && ./gradlew printProperties
       - name: Test with runData
         run: chmod +x ./gradlew && ( ./gradlew --no-daemon runData || ./gradlew --no-daemon runData)
