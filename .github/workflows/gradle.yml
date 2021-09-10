@@ -70,6 +70,8 @@ jobs:
       - name: download_assets
         run: chmod +x ./gradlew && (./gradlew clean downloadAssets || true)
         continue-on-error: true
+      - name: Check Properties
+        run: chmod +x ./gradlew && ./gradlew printProperties
       - name: Test with runData
         run: chmod +x ./gradlew && ( ./gradlew --no-daemon runData || ./gradlew --no-daemon runData)
       - id: check-test-started
