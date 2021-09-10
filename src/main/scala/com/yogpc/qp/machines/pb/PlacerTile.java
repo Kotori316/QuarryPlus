@@ -168,7 +168,7 @@ public class PlacerTile extends APacketTile implements
             BlockItem blockItem = (BlockItem) item;
             fake.setHeldItem(Hand.MAIN_HAND, stack);
             BlockItemUseContext context = new BlockItemUseContext(new ItemUseContext(fake, Hand.MAIN_HAND, rayTrace));
-            return blockItem.tryPlace(context).isSuccess();
+            return blockItem.tryPlace(context).isSuccessOrConsume();
         }
     }
 
@@ -177,6 +177,7 @@ public class PlacerTile extends APacketTile implements
     }
 
     void sendPacket() {
+        assert world != null;
         PacketHandler.sendToClient(TileMessage.create(this), world);
     }
 
