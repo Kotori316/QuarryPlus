@@ -41,7 +41,7 @@ jobs:
       fail-fast: false
       matrix:
         java: [ default, 11, 8 ]
-        forge: [ 1.16.4-latest, 1.16.5-latest, default ]
+        forge: [ 1.16.5-latest, default ]
     steps:
       - name: Set versions
         if: ${{ matrix.forge != 'default' }}
@@ -97,7 +97,7 @@ jobs:
       fail-fast: false
       matrix:
         java: [ default, 11, 8 ]
-        forge: [ 1.16.4-latest, 1.16.5-latest, default ]
+        forge: [ 1.16.5-latest, default ]
     steps:
       - name: Get latest version
         if: ${{ matrix.forge != 'default' }}
