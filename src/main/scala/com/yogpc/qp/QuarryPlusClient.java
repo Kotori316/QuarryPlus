@@ -5,6 +5,7 @@ import com.yogpc.qp.machines.marker.ScreenFlexMarker;
 import com.yogpc.qp.machines.misc.YSetterScreen;
 import com.yogpc.qp.machines.module.ScreenQuarryModule;
 import com.yogpc.qp.machines.mover.MoverScreen;
+import com.yogpc.qp.machines.placer.PlacerScreen;
 import com.yogpc.qp.machines.workbench.ScreenWorkbench;
 import com.yogpc.qp.render.Render16Marker;
 import com.yogpc.qp.render.RenderFlexMarker;
@@ -37,5 +38,6 @@ public class QuarryPlusClient {
         MenuScreens.register(Holder.WORKBENCH_MENU_TYPE, ScreenWorkbench::new);
         MenuScreens.register(Holder.MOVER_MENU_TYPE, MoverScreen::new);
         MenuScreens.register(Holder.MODULE_MENU_TYPE, ScreenQuarryModule::new);
+        MenuScreens.register(Holder.PLACER_MENU_TYPE, PlacerScreen::new);
     }
 }

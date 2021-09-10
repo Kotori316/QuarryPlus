@@ -36,6 +36,9 @@ import com.yogpc.qp.machines.module.PumpModuleItem;
 import com.yogpc.qp.machines.module.PumpPlusBlock;
 import com.yogpc.qp.machines.mover.BlockMover;
 import com.yogpc.qp.machines.mover.ContainerMover;
+import com.yogpc.qp.machines.placer.PlacerBlock;
+import com.yogpc.qp.machines.placer.PlacerContainer;
+import com.yogpc.qp.machines.placer.PlacerTile;
 import com.yogpc.qp.machines.quarry.FrameBlock;
 import com.yogpc.qp.machines.quarry.QuarryBlock;
 import com.yogpc.qp.machines.quarry.QuarryLootFunction;
@@ -113,6 +116,7 @@ public class Holder {
     public static final BlockMarker BLOCK_MARKER = registerBlock(new BlockMarker());
     public static final BlockExMarker.BlockFlexMarker BLOCK_FLEX_MARKER = registerBlock(new BlockExMarker.BlockFlexMarker());
     public static final BlockExMarker.Block16Marker BLOCK_16_MARKER = registerBlock(new BlockExMarker.Block16Marker());
+    public static final PlacerBlock BLOCK_PLACER = registerBlock(new PlacerBlock());
     public static final FrameBlock BLOCK_FRAME = registerBlock(new FrameBlock(), EnableOrNot.ALWAYS_ON);
     public static final BlockDummy BLOCK_DUMMY = new BlockDummy();
     public static final CreativeGeneratorBlock BLOCK_CREATIVE_GENERATOR = registerBlock(new CreativeGeneratorBlock());
@@ -133,6 +137,7 @@ public class Holder {
     public static final BlockEntityType<TileWorkbench> WORKBENCH_TYPE = registerEntityType(TileWorkbench::new, BLOCK_WORKBENCH, EnableOrNot.CONFIG_ON);
     public static final BlockEntityType<MiningWellTile> MINING_WELL_TYPE = registerEntityType(MiningWellTile::new, BLOCK_MINING_WELL, EnableOrNot.CONFIG_ON);
     public static final BlockEntityType<ExpPumpTile> EXP_PUMP_TYPE = registerEntityType(ExpPumpTile::new, BLOCK_EXP_PUMP, EnableOrNot.CONFIG_ON);
+    public static final BlockEntityType<PlacerTile> PLACER_TYPE = registerEntityType(PlacerTile::new, BLOCK_PLACER, EnableOrNot.CONFIG_ON);
 
     public static final MenuType<ContainerMarker> FLEX_MARKER_MENU_TYPE = IForgeContainerType.create((windowId, inv, data) ->
         new ContainerMarker(windowId, inv.player, data.readBlockPos(), Holder.FLEX_MARKER_MENU_TYPE));
@@ -146,6 +151,8 @@ public class Holder {
         new ContainerMover(windowId, inv.player, data.readBlockPos()));
     public static final MenuType<ContainerQuarryModule> MODULE_MENU_TYPE = IForgeContainerType.create((windowId, inv, data) ->
         new ContainerQuarryModule(windowId, inv.player, data.readBlockPos()));
+    public static final MenuType<PlacerContainer> PLACER_MENU_TYPE = IForgeContainerType.create((windowId, inv, data) ->
+        new PlacerContainer(windowId, inv.player, data.readBlockPos()));
 
     public static final LootItemFunctionType ENCHANTED_LOOT_TYPE = Registry.register(Registry.LOOT_FUNCTION_TYPE,
         new ResourceLocation(QuarryPlus.modID, EnchantedLootFunction.NAME), new LootItemFunctionType(EnchantedLootFunction.SERIALIZER));

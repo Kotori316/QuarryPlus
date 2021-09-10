@@ -4,6 +4,7 @@ import com.yogpc.qp.machines.marker.BlockExMarker;
 import com.yogpc.qp.machines.misc.YSetterContainer;
 import com.yogpc.qp.machines.module.ContainerQuarryModule;
 import com.yogpc.qp.machines.mover.BlockMover;
+import com.yogpc.qp.machines.placer.PlacerContainer;
 import com.yogpc.qp.machines.workbench.BlockWorkbench;
 import com.yogpc.qp.machines.workbench.EnableCondition;
 import com.yogpc.qp.machines.workbench.EnchantmentIngredient;
@@ -68,6 +69,7 @@ public class QuarryPlus {
             event.getRegistry().register(Holder.WORKBENCH_MENU_TYPE.setRegistryName(BlockWorkbench.GUI_ID));
             event.getRegistry().register(Holder.MOVER_MENU_TYPE.setRegistryName(BlockMover.GUI_ID));
             event.getRegistry().register(Holder.MODULE_MENU_TYPE.setRegistryName(ContainerQuarryModule.GUI_ID));
+            event.getRegistry().register(Holder.PLACER_MENU_TYPE.setRegistryName(PlacerContainer.GUI_ID));
         }
 
         @SubscribeEvent
