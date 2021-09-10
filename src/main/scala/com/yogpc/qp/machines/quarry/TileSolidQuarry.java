@@ -79,7 +79,7 @@ public class TileSolidQuarry extends TileQuarry implements INamedContainerProvid
                 getEnergy(fuelEfficiency, true);
             }
         } else {
-            int burn = ForgeHooks.getBurnTime(fuel);
+            int burn = ForgeHooks.getBurnTime(fuel, null);
             if (burn > 0) {
                 fuelCount += burn / 5;
                 if (fuel.hasContainerItem() && fuel.getCount() == 1) {

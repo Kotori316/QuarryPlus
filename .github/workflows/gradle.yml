@@ -15,21 +15,8 @@ on:
 jobs:
   assemble:
     runs-on: ubuntu-latest
-    outputs:
-      key: ${{ steps.step1.outputs.test }}
     steps:
       - uses: actions/checkout@v2
-      - id: step1
-        run: echo "::set-output name=test::${{ runner.os }}-gradle16-${{ hashFiles('**/forge_version.properties') }}"
-      - uses: actions/cache@v2
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle16-${{ hashFiles('**/forge_version.properties') }}
-      - name: Download Assets for Cache
-        run: |
-          chmod +x ./gradlew && (./gradlew clean || true)
-          ( ./gradlew downloadAssets extractNatives || ./gradlew downloadAssets extractNatives || \
-          (sleep 30s && ./gradlew downloadAssets extractNatives) || true)
       - name: Check Warning
         run: ./gradlew javaToolchains --no-daemon --warning-mode all
       - name: Compile
@@ -46,14 +33,13 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ assemble ]
     container:
-      image: docker.pkg.github.com/kotori316/fictional-meme/fictional-meme:latest
+      image: ghcr.io/kotori316/fictional-meme/fictional-meme:1.16.5
       credentials:
         username: kotori316
         password: ${{ secrets.GITHUB_TOKEN }}
     strategy:
       fail-fast: false
       matrix:
-        # test against latest update of each major Java version, as well as specific updates of LTS versions:
         java: [ default, 11, 8 ]
         forge: [ 1.16.4-latest, 1.16.5-latest, default ]
     steps:
@@ -72,12 +58,6 @@ jobs:
         if: ${{ matrix.java != 'default' }}
         with:
           java-version: ${{ matrix.java }}
-      - uses: actions/cache@v2
-        with:
-          path: ~/.gradle/caches
-          key: ${{needs.assemble.outputs.key}}
-          restore-keys: |
-            ${{ runner.os }}-gradle16
       - name: Download Mod Jar
         if: ${{ matrix.forge != 'default' }}
         uses: actions/download-artifact@v2
@@ -106,14 +86,13 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ assemble ]
     container:
-      image: docker.pkg.github.com/kotori316/fictional-meme/fictional-meme:latest
+      image: ghcr.io/kotori316/fictional-meme/fictional-meme:1.16.5
       credentials:
         username: kotori316
         password: ${{ secrets.GITHUB_TOKEN }}
     strategy:
       fail-fast: false
       matrix:
-        # test against latest update of each major Java version, as well as specific updates of LTS versions:
         java: [ default, 11, 8 ]
         forge: [ 1.16.4-latest, 1.16.5-latest, default ]
     steps:
@@ -126,12 +105,6 @@ jobs:
         if: ${{ matrix.java != 'default' }}
         with:
           java-version: ${{ matrix.java }}
-      - uses: actions/cache@v2
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle16-${{ hashFiles('**/forge_version.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle16
       - name: compile
         run: |
           chmod +x ./gradlew && (./gradlew clean || true)
