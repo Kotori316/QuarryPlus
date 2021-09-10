@@ -4,14 +4,13 @@ import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 public class YSetterContainer extends AbstractContainerMenu {
-    public static final ResourceLocation GUI_ID = new ResourceLocation(QuarryPlus.modID, "gui_y_setter");
+    public static final String GUI_ID = QuarryPlus.modID + ":gui_y_setter";
     @Nullable
     final YAccessor yAccessor;
 

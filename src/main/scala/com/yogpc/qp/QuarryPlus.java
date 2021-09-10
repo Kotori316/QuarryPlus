@@ -1,11 +1,5 @@
 package com.yogpc.qp;
 
-import com.yogpc.qp.machines.marker.BlockExMarker;
-import com.yogpc.qp.machines.misc.YSetterContainer;
-import com.yogpc.qp.machines.module.ContainerQuarryModule;
-import com.yogpc.qp.machines.mover.BlockMover;
-import com.yogpc.qp.machines.placer.PlacerContainer;
-import com.yogpc.qp.machines.workbench.BlockWorkbench;
 import com.yogpc.qp.machines.workbench.EnableCondition;
 import com.yogpc.qp.machines.workbench.EnchantmentIngredient;
 import com.yogpc.qp.machines.workbench.QuarryDebugCondition;
@@ -63,13 +57,7 @@ public class QuarryPlus {
 
         @SubscribeEvent
         public static void registerContainers(RegistryEvent.Register<MenuType<?>> event) {
-            event.getRegistry().register(Holder.FLEX_MARKER_MENU_TYPE.setRegistryName(BlockExMarker.GUI_FLEX_ID));
-            event.getRegistry().register(Holder.MARKER_16_MENU_TYPE.setRegistryName(BlockExMarker.GUI_16_ID));
-            event.getRegistry().register(Holder.Y_SETTER_MENU_TYPE.setRegistryName(YSetterContainer.GUI_ID));
-            event.getRegistry().register(Holder.WORKBENCH_MENU_TYPE.setRegistryName(BlockWorkbench.GUI_ID));
-            event.getRegistry().register(Holder.MOVER_MENU_TYPE.setRegistryName(BlockMover.GUI_ID));
-            event.getRegistry().register(Holder.MODULE_MENU_TYPE.setRegistryName(ContainerQuarryModule.GUI_ID));
-            event.getRegistry().register(Holder.PLACER_MENU_TYPE.setRegistryName(PlacerContainer.GUI_ID));
+            Holder.menuTypes().forEach(event.getRegistry()::register);
         }
 
         @SubscribeEvent
