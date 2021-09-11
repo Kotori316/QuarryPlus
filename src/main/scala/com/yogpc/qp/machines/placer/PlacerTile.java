@@ -198,9 +198,14 @@ public class PlacerTile extends BlockEntity implements
         try {
             redstoneMode = RedstoneMode.valueOf(compound.getString(KEY_RS_MODE));
         } catch (IllegalArgumentException e) {
-            QuarryPlus.LOGGER.error("Illegal name was passed to placer mode.", e);
+            QuarryPlus.LOGGER.error("Illegal name(%s) was passed to placer mode.".formatted(compound.getString(KEY_RS_MODE)), e);
             redstoneMode = RedstoneMode.PULSE;
         }
+    }
+
+    @Override
+    public CompoundTag getUpdateTag() {
+        return this.serializeNBT();
     }
 
     // -------------------- Capability --------------------
