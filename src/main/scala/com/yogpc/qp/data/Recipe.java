@@ -18,6 +18,7 @@ import com.yogpc.qp.machines.module.ExpPumpBlock;
 import com.yogpc.qp.machines.module.PumpModuleItem;
 import com.yogpc.qp.machines.module.PumpPlusBlock;
 import com.yogpc.qp.machines.mover.BlockMover;
+import com.yogpc.qp.machines.placer.PlacerBlock;
 import com.yogpc.qp.machines.quarry.QuarryBlock;
 import com.yogpc.qp.machines.workbench.BlockWorkbench;
 import com.yogpc.qp.machines.workbench.EnableCondition;
@@ -46,7 +47,10 @@ import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.Tags;
+import net.minecraftforge.common.crafting.conditions.NotCondition;
 import org.apache.commons.lang3.tuple.Pair;
+
+import static com.yogpc.qp.data.QuarryPlusDataProvider.location;
 
 public class Recipe extends QuarryPlusDataProvider.QuarryDataProvider {
     Recipe(DataGenerator generatorIn) {
@@ -67,7 +71,7 @@ public class Recipe extends QuarryPlusDataProvider.QuarryDataProvider {
         List<RecipeSerializeHelper> list = new ArrayList<>();
         // Quarry Plus
         list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(
-            QuarryPlusDataProvider.location(QuarryBlock.NAME), new ItemStack(Holder.BLOCK_QUARRY), 320000 * PowerTile.ONE_FE, true, List.of(
+            location(QuarryBlock.NAME), new ItemStack(Holder.BLOCK_QUARRY), 320000 * PowerTile.ONE_FE, true, List.of(
             makeList(Tags.Items.GEMS_DIAMOND, 32),
             makeList(Tags.Items.INGOTS_GOLD, 32),
             makeList(Tags.Items.INGOTS_IRON, 64),
@@ -76,7 +80,7 @@ public class Recipe extends QuarryPlusDataProvider.QuarryDataProvider {
         )))).addCondition(new EnableCondition(QuarryBlock.NAME)));
         // Pump Plus
         list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(
-            QuarryPlusDataProvider.location(PumpPlusBlock.NAME), new ItemStack(Holder.BLOCK_PUMP), 320000 * PowerTile.ONE_FE, true, List.of(
+            location(PumpPlusBlock.NAME), new ItemStack(Holder.BLOCK_PUMP), 320000 * PowerTile.ONE_FE, true, List.of(
             makeList(Tags.Items.INGOTS_GOLD, 16),
             makeList(Tags.Items.INGOTS_IRON, 48),
             makeList(Tags.Items.DUSTS_REDSTONE, 64),
@@ -85,14 +89,14 @@ public class Recipe extends QuarryPlusDataProvider.QuarryDataProvider {
         )))).addCondition(new EnableCondition(PumpPlusBlock.NAME)));
         // Adv Pump
         list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(
-            QuarryPlusDataProvider.location(BlockAdvPump.NAME), new ItemStack(Holder.BLOCK_ADV_PUMP), 3200000 * PowerTile.ONE_FE, true, List.of(
+            location(BlockAdvPump.NAME), new ItemStack(Holder.BLOCK_ADV_PUMP), 3200000 * PowerTile.ONE_FE, true, List.of(
             as(Pair.of(Ingredient.of(Holder.BLOCK_PUMP), 2), Pair.of(Ingredient.of(Holder.ITEM_PUMP_MODULE), 2)),
             makeList(Holder.BLOCK_MINING_WELL, 2),
             makeList(Holder.BLOCK_MARKER, 3)
         )))).addCondition(new EnableCondition(BlockAdvPump.NAME)));
         // Marker Plus
         list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(
-            QuarryPlusDataProvider.location(BlockMarker.NAME), new ItemStack(Holder.BLOCK_MARKER), 20000 * PowerTile.ONE_FE, true, List.of(
+            location(BlockMarker.NAME), new ItemStack(Holder.BLOCK_MARKER), 20000 * PowerTile.ONE_FE, true, List.of(
             makeList(Tags.Items.INGOTS_GOLD, 7),
             makeList(Tags.Items.INGOTS_IRON, 8),
             makeList(Tags.Items.DUSTS_REDSTONE, 12),
@@ -101,14 +105,14 @@ public class Recipe extends QuarryPlusDataProvider.QuarryDataProvider {
         )))).addCondition(new EnableCondition(BlockMarker.NAME)));
         // Mining Well Plus
         list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(
-            QuarryPlusDataProvider.location(MiningWellBlock.NAME), new ItemStack(Holder.BLOCK_MINING_WELL), 160000 * PowerTile.ONE_FE, true, List.of(
+            location(MiningWellBlock.NAME), new ItemStack(Holder.BLOCK_MINING_WELL), 160000 * PowerTile.ONE_FE, true, List.of(
             makeList(Tags.Items.INGOTS_GOLD, 3),
             makeList(Tags.Items.INGOTS_IRON, 16),
             makeList(Tags.Items.DUSTS_REDSTONE, 8)
         )))).addCondition(new EnableCondition(MiningWellBlock.NAME)));
         // Status Checker
         list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(
-            QuarryPlusDataProvider.location(ItemChecker.NAME), new ItemStack(Holder.ITEM_CHECKER), 80000 * PowerTile.ONE_FE, true, List.of(
+            location(ItemChecker.NAME), new ItemStack(Holder.ITEM_CHECKER), 80000 * PowerTile.ONE_FE, true, List.of(
             makeList(Tags.Items.INGOTS_GOLD, 16),
             makeList(Tags.Items.INGOTS_IRON, 24),
             makeList(Tags.Items.DUSTS_REDSTONE, 32),
@@ -117,7 +121,7 @@ public class Recipe extends QuarryPlusDataProvider.QuarryDataProvider {
         )))).addCondition(new EnableCondition(ItemChecker.NAME)));
         // Y Setter
         list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(
-            QuarryPlusDataProvider.location(YSetterItem.NAME), new ItemStack(Holder.ITEM_Y_SETTER), 80000 * PowerTile.ONE_FE, true, List.of(
+            location(YSetterItem.NAME), new ItemStack(Holder.ITEM_Y_SETTER), 80000 * PowerTile.ONE_FE, true, List.of(
             makeList(Tags.Items.INGOTS_GOLD, 32),
             makeList(Tags.Items.GEMS_QUARTZ, 64),
             makeList(Items.REPEATER, 16),
@@ -125,7 +129,7 @@ public class Recipe extends QuarryPlusDataProvider.QuarryDataProvider {
         )))).addCondition(new EnableCondition(YSetterItem.NAME)));
         // Enchantment Mover
         list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(
-            QuarryPlusDataProvider.location(BlockMover.NAME), new ItemStack(Holder.BLOCK_MOVER), 320000 * PowerTile.ONE_FE, true, List.of(
+            location(BlockMover.NAME), new ItemStack(Holder.BLOCK_MOVER), 320000 * PowerTile.ONE_FE, true, List.of(
             makeList(Tags.Items.GEMS_DIAMOND, 32),
             makeList(Tags.Items.INGOTS_GOLD, 8),
             makeList(Tags.Items.INGOTS_IRON, 8),
@@ -138,14 +142,14 @@ public class Recipe extends QuarryPlusDataProvider.QuarryDataProvider {
         var diamond_pickaxe = new ItemStack(Items.DIAMOND_PICKAXE);
         diamond_pickaxe.removeTagKey(ItemStack.TAG_DAMAGE);
         list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(
-            QuarryPlusDataProvider.location(BedrockModuleItem.NAME), new ItemStack(Holder.ITEM_BEDROCK_MODULE), 640000 * PowerTile.ONE_FE, true, List.of(
+            location(BedrockModuleItem.NAME), new ItemStack(Holder.ITEM_BEDROCK_MODULE), 640000 * PowerTile.ONE_FE, true, List.of(
             makeList(Tags.Items.OBSIDIAN, 32),
             makeList(Tags.Items.STORAGE_BLOCKS_DIAMOND, 16),
             new IngredientList(new IngredientWithCount(new EnchantmentIngredient(diamond_pickaxe, List.of(new EnchantmentInstance(Enchantments.SILK_TOUCH, 1)), false), 1))
         )))).addCondition(new EnableCondition(BedrockModuleItem.NAME)));
         // Fuel Module
         list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(
-            QuarryPlusDataProvider.location("fuel_module_normal"), new ItemStack(Holder.ITEM_FUEL_MODULE_NORMAL), 3200 * PowerTile.ONE_FE, true, List.of(
+            location("fuel_module_normal"), new ItemStack(Holder.ITEM_FUEL_MODULE_NORMAL), 3200 * PowerTile.ONE_FE, true, List.of(
             makeList(Tags.Items.INGOTS_GOLD, 16),
             makeList(Tags.Items.RODS_BLAZE, 5),
             makeList(Tags.Items.NETHERRACK, 64),
@@ -154,7 +158,7 @@ public class Recipe extends QuarryPlusDataProvider.QuarryDataProvider {
         // Exp Pump
         var waterBottle = PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER);
         list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(
-            QuarryPlusDataProvider.location(ExpPumpBlock.NAME), new ItemStack(Holder.BLOCK_EXP_PUMP), 320000 * PowerTile.ONE_FE, true, List.of(
+            location(ExpPumpBlock.NAME), new ItemStack(Holder.BLOCK_EXP_PUMP), 320000 * PowerTile.ONE_FE, true, List.of(
             makeList(Tags.Items.INGOTS_GOLD, 16),
             makeList(Tags.Items.INGOTS_IRON, 40),
             makeList(Tags.Items.DUSTS_REDSTONE, 64),
@@ -162,6 +166,15 @@ public class Recipe extends QuarryPlusDataProvider.QuarryDataProvider {
             makeList(Items.HAY_BLOCK, 32),
             makeList(Tags.Items.ENDER_PEARLS, 2)
         )))).addCondition(new EnableCondition(ExpPumpBlock.NAME)));
+        // Placer
+        list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(
+            location(PlacerBlock.NAME), new ItemStack(Holder.BLOCK_PLACER), 30000 * PowerTile.ONE_FE, true, List.of(
+            makeList(Items.DISPENSER, 1),
+            makeList(Tags.Items.INGOTS_GOLD, 2),
+            makeList(Tags.Items.INGOTS_IRON, 1),
+            makeList(Tags.Items.DUSTS_REDSTONE, 1),
+            makeList(Items.MOSSY_COBBLESTONE, 4)
+        )))).addCondition(new EnableCondition(PlacerBlock.NAME)));
 
         return list;
     }
@@ -231,6 +244,20 @@ public class Recipe extends QuarryPlusDataProvider.QuarryDataProvider {
                     .group(MODULE_RECIPE_GROUP), null
             ).addCondition(new EnableCondition(ExpModuleItem.NAME))
         );
+        list.add(
+            // WORKBENCH
+            RecipeSerializeHelper.by(
+                ShapedRecipeBuilder.shaped(Holder.BLOCK_PLACER)
+                    .pattern("GDG")
+                    .pattern("MRM")
+                    .pattern("MIM")
+                    .define('D', Items.DISPENSER)
+                    .define('R', Tags.Items.DUSTS_REDSTONE)
+                    .define('I', Tags.Items.INGOTS_IRON)
+                    .define('M', Items.MOSSY_COBBLESTONE)
+                    .define('G', Tags.Items.INGOTS_GOLD),
+                location("placer_plus_crafting")
+            ).addCondition(new EnableCondition(PlacerBlock.NAME)).addCondition(new NotCondition(new EnableCondition(BlockWorkbench.NAME))));
         return list;
     }
 
@@ -259,7 +286,7 @@ public class Recipe extends QuarryPlusDataProvider.QuarryDataProvider {
     }
 
     private static ResourceLocation testLocation(String path) {
-        return QuarryPlusDataProvider.location("test_" + path);
+        return location("test_" + path);
     }
 }
 
