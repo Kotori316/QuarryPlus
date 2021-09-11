@@ -19,3 +19,4 @@ run-server
 test_run
 logs
 Dockerfile
+src/generated/resources/.cache

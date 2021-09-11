@@ -84,7 +84,7 @@ minecraft {
             property "mixin.debug.export", "true"
             property 'forge.logging.console.level', 'info'
             forceExit false
-            args '--mod', 'quarryplus', '--all'
+            args '--mod', 'quarryplus', '--all', '--output', file('src/generated/resources/')
 
             mods {
                 quarryplus {
