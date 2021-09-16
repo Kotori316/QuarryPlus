@@ -42,12 +42,14 @@ public class QuarryPlus {
         public static void registerBlocks(RegistryEvent.Register<Block> event) {
             Holder.blocks().forEach(event.getRegistry()::register);
             event.getRegistry().register(Holder.BLOCK_DUMMY);
+            event.getRegistry().register(Holder.BLOCK_DUMMY_REPLACER);
         }
 
         @SubscribeEvent
         public static void registerItems(RegistryEvent.Register<Item> event) {
             Holder.items().forEach(event.getRegistry()::register);
             event.getRegistry().register(Holder.BLOCK_DUMMY.blockItem);
+            event.getRegistry().register(Holder.BLOCK_DUMMY_REPLACER.blockItem);
         }
 
         @SubscribeEvent

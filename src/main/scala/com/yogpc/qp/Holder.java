@@ -34,6 +34,7 @@ import com.yogpc.qp.machines.module.ExpPumpTile;
 import com.yogpc.qp.machines.module.ModuleLootFunction;
 import com.yogpc.qp.machines.module.PumpModuleItem;
 import com.yogpc.qp.machines.module.PumpPlusBlock;
+import com.yogpc.qp.machines.module.ReplacerDummyBlock;
 import com.yogpc.qp.machines.mover.BlockMover;
 import com.yogpc.qp.machines.mover.ContainerMover;
 import com.yogpc.qp.machines.placer.PlacerBlock;
@@ -133,6 +134,7 @@ public class Holder {
     public static final PlacerBlock BLOCK_PLACER = registerBlock(new PlacerBlock());
     public static final FrameBlock BLOCK_FRAME = registerBlock(new FrameBlock(), EnableOrNot.ALWAYS_ON);
     public static final BlockDummy BLOCK_DUMMY = new BlockDummy();
+    public static final ReplacerDummyBlock BLOCK_DUMMY_REPLACER = new ReplacerDummyBlock();
     public static final CreativeGeneratorBlock BLOCK_CREATIVE_GENERATOR = registerBlock(new CreativeGeneratorBlock());
 
     public static final ItemChecker ITEM_CHECKER = registerItem(new ItemChecker(), EnableOrNot.ALWAYS_ON);

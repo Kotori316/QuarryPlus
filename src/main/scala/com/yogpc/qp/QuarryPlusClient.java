@@ -26,6 +26,7 @@ public class QuarryPlusClient {
     public static void clientInit(FMLClientSetupEvent event) {
         ItemBlockRenderTypes.setRenderLayer(Holder.BLOCK_FRAME, RenderType.cutoutMipped());
         ItemBlockRenderTypes.setRenderLayer(Holder.BLOCK_DUMMY, RenderType.translucent());
+        ItemBlockRenderTypes.setRenderLayer(Holder.BLOCK_DUMMY_REPLACER, RenderType.translucent());
 
         BlockEntityRenderers.register(Holder.QUARRY_TYPE, RenderQuarry::new);
         BlockEntityRenderers.register(Holder.MARKER_TYPE, RenderMarker::new);
