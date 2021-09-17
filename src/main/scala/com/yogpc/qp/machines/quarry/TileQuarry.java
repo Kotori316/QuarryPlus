@@ -26,6 +26,7 @@ import com.yogpc.qp.machines.QuarryFakePlayer;
 import com.yogpc.qp.machines.module.ModuleInventory;
 import com.yogpc.qp.machines.module.QuarryModule;
 import com.yogpc.qp.machines.module.QuarryModuleProvider;
+import com.yogpc.qp.machines.module.ReplacerModule;
 import com.yogpc.qp.packet.ClientSync;
 import com.yogpc.qp.packet.ClientSyncMessage;
 import com.yogpc.qp.packet.PacketHandler;
@@ -258,7 +259,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         // Get drops
         var drops = Block.getDrops(state, targetWorld, targetPos, targetWorld.getBlockEntity(targetPos), null, pickaxe);
         drops.stream().map(itemConverter::map).forEach(this.storage::addItem);
-        targetWorld.setBlock(targetPos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
+        targetWorld.setBlock(targetPos, getReplacementState(), Block.UPDATE_ALL);
         // Get experiments
         if (breakEvent.getExpToDrop() > 0) {
             getExpModule().ifPresent(e -> {
@@ -388,21 +389,29 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         this.modules = Sets.union(blockModules, itemModules);
     }
 
+    BlockState getReplacementState() {
+        return getReplacerModule().map(ReplacerModule::getState).orElse(Blocks.AIR.defaultBlockState());
+    }
+
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean canBreak(Level targetWorld, BlockPos targetPos, BlockState state) {
         if (target != null && target.alreadySkipped(targetPos)) return false;
         var unbreakable = state.getDestroySpeed(targetWorld, targetPos) < 0;
-        if (unbreakable && hasBedrockModule() && state.getBlock() == Blocks.BEDROCK) {
-            var worldBottom = targetWorld.getMinBuildHeight();
-            if (targetWorld.dimension().equals(Level.NETHER)) {
-                return (worldBottom < targetPos.getY() && targetPos.getY() < worldBottom + 5) || (122 < targetPos.getY() && targetPos.getY() < QuarryPlus.config.common.netherTop.get());
+        if (unbreakable) {
+            if (hasBedrockModule() && state.getBlock() == Blocks.BEDROCK) {
+                var worldBottom = targetWorld.getMinBuildHeight();
+                if (targetWorld.dimension().equals(Level.NETHER)) {
+                    return (worldBottom < targetPos.getY() && targetPos.getY() < worldBottom + 5) || (122 < targetPos.getY() && targetPos.getY() < QuarryPlus.config.common.netherTop.get());
+                } else {
+                    return worldBottom < targetPos.getY() && targetPos.getY() < worldBottom + 5;
+                }
             } else {
-                return worldBottom < targetPos.getY() && targetPos.getY() < worldBottom + 5;
+                return false;
             }
         } else if (!targetWorld.getFluidState(targetPos).isEmpty()) {
             return hasPumpModule();
         } else {
-            return !unbreakable;
+            return getReplacementState() != state;
         }
     }
 

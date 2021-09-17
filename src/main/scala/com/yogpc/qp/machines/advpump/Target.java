@@ -10,11 +10,11 @@ import java.util.ListIterator;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import com.yogpc.qp.Holder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 
 class Target implements Iterator<BlockPos> {
     private final List<BlockPos> posList;
@@ -41,8 +41,8 @@ class Target implements Iterator<BlockPos> {
         return inRange;
     }
 
-    boolean checkAllFluidsRemoved(Level world, BlockPos center) {
-        var stillFluid = search(world, Set.copyOf(posList), inRange);
+    boolean checkAllFluidsRemoved(Level world, BlockPos center, Predicate<BlockState> isReplaceBlock) {
+        var stillFluid = search(world, Set.copyOf(posList), inRange, isReplaceBlock);
         if (stillFluid.isEmpty()) {
             return false;
         } else {
@@ -53,14 +53,14 @@ class Target implements Iterator<BlockPos> {
         }
     }
 
-    static Target getTarget(Level world, BlockPos initPos, Predicate<BlockPos> inRange) {
-        var result = search(world, Set.of(initPos), inRange);
+    static Target getTarget(Level world, BlockPos initPos, Predicate<BlockPos> inRange, Predicate<BlockState> isReplaceBlock) {
+        var result = search(world, Set.of(initPos), inRange, isReplaceBlock);
         result.sort(Comparator.comparingInt(Vec3i::getY).reversed()
             .thenComparing(Comparator.comparingInt(initPos::distManhattan).reversed()));
         return new Target(result, inRange);
     }
 
-    private static List<BlockPos> search(Level world, Set<BlockPos> initialPoses, Predicate<BlockPos> inRange) {
+    private static List<BlockPos> search(Level world, Set<BlockPos> initialPoses, Predicate<BlockPos> inRange, Predicate<BlockState> isReplaceBlock) {
         Set<BlockPos> counted = new HashSet<>();
         Set<BlockPos> checked = new HashSet<>();
         List<BlockPos> result = new ArrayList<>();
@@ -71,7 +71,7 @@ class Target implements Iterator<BlockPos> {
             checked.addAll(search);
             for (BlockPos pos : search) {
                 var isFluid = !world.getFluidState(pos).isEmpty();
-                if (isFluid || world.getBlockState(pos).is(Holder.BLOCK_DUMMY)) {
+                if (isFluid || isReplaceBlock.test(world.getBlockState(pos))) {
                     if (counted.add(pos)) {
                         if (isFluid) result.add(pos);
                         directions.stream()

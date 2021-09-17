@@ -34,6 +34,9 @@ import com.yogpc.qp.machines.module.ExpPumpTile;
 import com.yogpc.qp.machines.module.ModuleLootFunction;
 import com.yogpc.qp.machines.module.PumpModuleItem;
 import com.yogpc.qp.machines.module.PumpPlusBlock;
+import com.yogpc.qp.machines.module.ReplacerBlock;
+import com.yogpc.qp.machines.module.ReplacerDummyBlock;
+import com.yogpc.qp.machines.module.ReplacerModuleItem;
 import com.yogpc.qp.machines.mover.BlockMover;
 import com.yogpc.qp.machines.mover.ContainerMover;
 import com.yogpc.qp.machines.placer.PlacerBlock;
@@ -125,6 +128,7 @@ public class Holder {
     public static final MiningWellBlock BLOCK_MINING_WELL = registerBlock(new MiningWellBlock());
     public static final BlockMover BLOCK_MOVER = registerBlock(new BlockMover(), EnableOrNot.CONFIG_ON);
     public static final PumpPlusBlock BLOCK_PUMP = registerBlock(new PumpPlusBlock(), EnableOrNot.CONFIG_ON);
+    public static final ReplacerBlock BLOCK_REPLACER = registerBlock(new ReplacerBlock(), EnableOrNot.CONFIG_OFF);
     public static final ExpPumpBlock BLOCK_EXP_PUMP = registerBlock(new ExpPumpBlock());
     public static final BlockAdvPump BLOCK_ADV_PUMP = registerBlock(new BlockAdvPump());
     public static final BlockMarker BLOCK_MARKER = registerBlock(new BlockMarker());
@@ -133,6 +137,7 @@ public class Holder {
     public static final PlacerBlock BLOCK_PLACER = registerBlock(new PlacerBlock());
     public static final FrameBlock BLOCK_FRAME = registerBlock(new FrameBlock(), EnableOrNot.ALWAYS_ON);
     public static final BlockDummy BLOCK_DUMMY = new BlockDummy();
+    public static final ReplacerDummyBlock BLOCK_DUMMY_REPLACER = new ReplacerDummyBlock();
     public static final CreativeGeneratorBlock BLOCK_CREATIVE_GENERATOR = registerBlock(new CreativeGeneratorBlock());
 
     public static final ItemChecker ITEM_CHECKER = registerItem(new ItemChecker(), EnableOrNot.ALWAYS_ON);
@@ -141,6 +146,7 @@ public class Holder {
     public static final BedrockModuleItem ITEM_BEDROCK_MODULE = registerItem(new BedrockModuleItem(), EnableOrNot.CONFIG_OFF);
     public static final EnergyModuleItem ITEM_FUEL_MODULE_NORMAL = registerItem(new EnergyModuleItem(5, "fuel_module_normal"), EnableOrNot.CONFIG_ON);
     public static final ExpModuleItem ITEM_EXP_MODULE = registerItem(new ExpModuleItem(), EnableOrNot.CONFIG_ON);
+    public static final ReplacerModuleItem ITEM_REPLACER_MODULE = registerItem(new ReplacerModuleItem(), EnableOrNot.CONFIG_OFF);
 
     public static final BlockEntityType<TileQuarry> QUARRY_TYPE = registerEntityType(TileQuarry::new, BLOCK_QUARRY, EnableOrNot.CONFIG_ON);
     public static final BlockEntityType<TileMarker> MARKER_TYPE = registerEntityType(TileMarker::new, BLOCK_MARKER, EnableOrNot.ALWAYS_ON);

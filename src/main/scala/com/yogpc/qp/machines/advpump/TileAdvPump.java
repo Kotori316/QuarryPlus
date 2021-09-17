@@ -1,8 +1,10 @@
 package com.yogpc.qp.machines.advpump;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
@@ -14,9 +16,11 @@ import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.module.EnergyModuleItem;
 import com.yogpc.qp.machines.module.ModuleInventory;
 import com.yogpc.qp.machines.module.QuarryModule;
+import com.yogpc.qp.machines.module.ReplacerModule;
 import com.yogpc.qp.packet.ClientSync;
 import com.yogpc.qp.packet.ClientSyncMessage;
 import com.yogpc.qp.packet.PacketHandler;
+import javax.annotation.Nonnull;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -80,14 +84,13 @@ public class TileAdvPump extends PowerTile
             // In server world.
             if (pump.target == null) {
                 var initPos = pos.atY(pump.y);
-                pump.target = Target.getTarget(world, initPos, pump.enchantmentEfficiency.rangePredicate(initPos));
+                pump.target = Target.getTarget(world, initPos, pump.enchantmentEfficiency.rangePredicate(initPos), pump::isReplaceBlock);
                 world.setBlock(pos, state.setValue(BlockAdvPump.WORKING, true), Block.UPDATE_ALL);
             }
             if (pump.target.hasNext()) {
                 while (pump.target.hasNext()) {
                     var target = pump.target.next();
-                    var result = pump.pumpFluid(world, target,
-                        f -> f.is(FluidTags.WATER) ? Holder.BLOCK_DUMMY.defaultBlockState() : Blocks.AIR.defaultBlockState(), true);
+                    var result = pump.pumpFluid(world, target, pump::getStateForReplace, true);
                     if (!result.isSuccess())
                         break;
                     Direction.Plane.HORIZONTAL.stream().map(target::relative)
@@ -96,7 +99,7 @@ public class TileAdvPump extends PowerTile
                 }
             } else {
                 // Go to next y
-                if (!pump.target.checkAllFluidsRemoved(world, pos.atY(pump.y))) {
+                if (!pump.target.checkAllFluidsRemoved(world, pos.atY(pump.y), pump::isReplaceBlock)) {
                     pump.y -= 1;
                     var nextPos = pos.atY(pump.y);
                     if (shouldFinish(world, nextPos)) {
@@ -117,7 +120,7 @@ public class TileAdvPump extends PowerTile
                         }
                     } else {
                         // Go to the next Y.
-                        pump.target = Target.getTarget(world, nextPos, pump.enchantmentEfficiency.rangePredicate(nextPos));
+                        pump.target = Target.getTarget(world, nextPos, pump.enchantmentEfficiency.rangePredicate(nextPos), pump::isReplaceBlock);
                     }
                 }
             }
@@ -159,6 +162,20 @@ public class TileAdvPump extends PowerTile
         this.maxEnergy = enchantmentEfficiency.energyCapacity;
         if (level != null && !level.isClientSide)
             sync();
+    }
+
+    @Nonnull
+    private Optional<BlockState> getReplaceModuleState() {
+        return getReplacerModule().map(ReplacerModule::getState).filter(Predicate.not(BlockState::isAir));
+    }
+
+    private BlockState getStateForReplace(Fluid f) {
+        return getReplaceModuleState()
+            .orElse(f.is(FluidTags.WATER) ? Holder.BLOCK_DUMMY.defaultBlockState() : Blocks.AIR.defaultBlockState());
+    }
+
+    private boolean isReplaceBlock(BlockState state) {
+        return state == getReplaceModuleState().orElse(Holder.BLOCK_DUMMY.defaultBlockState());
     }
 
     public void reset() {
@@ -210,7 +227,7 @@ public class TileAdvPump extends PowerTile
     }
 
     static boolean isCapableModule(QuarryModule module) {
-        return module instanceof EnergyModuleItem.EnergyModule;
+        return module instanceof EnergyModuleItem.EnergyModule || module instanceof ReplacerModule;
     }
 
     @Override

@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.loading.FMLEnvironment;
-import net.minecraftforge.fml.loading.FMLLoader;
 
 public class Config {
     public final Common common;
