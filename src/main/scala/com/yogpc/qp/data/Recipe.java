@@ -17,6 +17,8 @@ import com.yogpc.qp.machines.module.ExpModuleItem;
 import com.yogpc.qp.machines.module.ExpPumpBlock;
 import com.yogpc.qp.machines.module.PumpModuleItem;
 import com.yogpc.qp.machines.module.PumpPlusBlock;
+import com.yogpc.qp.machines.module.ReplacerBlock;
+import com.yogpc.qp.machines.module.ReplacerModuleItem;
 import com.yogpc.qp.machines.mover.BlockMover;
 import com.yogpc.qp.machines.placer.PlacerBlock;
 import com.yogpc.qp.machines.quarry.QuarryBlock;
@@ -175,6 +177,20 @@ public class Recipe extends QuarryPlusDataProvider.QuarryDataProvider {
             makeList(Tags.Items.DUSTS_REDSTONE, 1),
             makeList(Items.MOSSY_COBBLESTONE, 4)
         )))).addCondition(new EnableCondition(PlacerBlock.NAME)));
+        // Replacer
+        list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(
+            location(ReplacerBlock.NAME), new ItemStack(Holder.BLOCK_REPLACER), 6400000 * PowerTile.ONE_FE, true, List.of(
+            makeList(Items.WATER_BUCKET, 32),
+            makeList(Items.LAVA_BUCKET, 32),
+            makeList(Tags.Items.INGOTS_GOLD, 16),
+            makeList(Tags.Items.INGOTS_IRON, 32),
+            makeList(Tags.Items.DUSTS_REDSTONE, 16),
+            makeList(Tags.Items.ENDER_PEARLS, 4),
+            makeList(Items.ENDER_EYE, 12),
+            makeList(Items.DRAGON_HEAD, 1),
+            makeList(Tags.Items.NETHER_STARS, 2),
+            makeList(Items.STONE, 1024)
+        )))).addCondition(new EnableCondition(ReplacerBlock.NAME)));
 
         return list;
     }
@@ -243,6 +259,14 @@ public class Recipe extends QuarryPlusDataProvider.QuarryDataProvider {
                     .requires(Holder.BLOCK_EXP_PUMP)
                     .group(MODULE_RECIPE_GROUP), null
             ).addCondition(new EnableCondition(ExpModuleItem.NAME))
+        );
+        list.add(
+            // Replacer Module
+            RecipeSerializeHelper.by(
+                ShapelessRecipeBuilder.shapeless(Holder.ITEM_REPLACER_MODULE)
+                    .requires(Holder.BLOCK_REPLACER)
+                    .group(MODULE_RECIPE_GROUP), null
+            ).addCondition(new EnableCondition(ReplacerModuleItem.NAME))
         );
         list.add(
             // WORKBENCH
