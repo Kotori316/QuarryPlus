@@ -64,12 +64,6 @@ jobs:
         if: ${{ matrix.java != 'default' }}
         with:
           java-version: ${{ matrix.java }}
-      - uses: actions/cache@v2
-        with:
-          path: ~/.gradle/caches
-          key: ${{needs.assemble.outputs.key}}
-          restore-keys: |
-            ${{ runner.os }}-gradle16
       - name: Download Mod Jar
         if: ${{ matrix.forge != 'default' }}
         uses: actions/download-artifact@v2
@@ -84,15 +78,6 @@ jobs:
         continue-on-error: true
       - name: Test with runData
         run: chmod +x ./gradlew && ( ./gradlew --no-daemon runData || ./gradlew --no-daemon runData)
-      - id: check-test-started
-        run: |
-          [ -f test_started.txt ]
-      - id: check-error
-        run: |
-          ! [ -f error-trace.txt ]
-      - id: show-failure-log
-        if: failure()
-        run: cat error-trace.txt
 
   cross-check-JUnit:
     runs-on: ubuntu-latest
