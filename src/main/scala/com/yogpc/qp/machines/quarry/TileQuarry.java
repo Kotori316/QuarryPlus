@@ -30,6 +30,7 @@ import com.yogpc.qp.machines.module.ReplacerModule;
 import com.yogpc.qp.packet.ClientSync;
 import com.yogpc.qp.packet.ClientSyncMessage;
 import com.yogpc.qp.packet.PacketHandler;
+import com.yogpc.qp.utils.CacheEntry;
 import com.yogpc.qp.utils.MapMulti;
 import javax.annotation.Nullable;
 import net.minecraft.ChatFormatting;
@@ -84,6 +85,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
     private final ItemConverter itemConverter = ItemConverter.defaultConverter();
     private Set<QuarryModule> modules = new HashSet<>(); // May be immutable.
     private final ModuleInventory moduleInventory;
+    private final QuarryCache cache = new QuarryCache();
 
     public TileQuarry(BlockPos pos, BlockState state) {
         super(Holder.QUARRY_TYPE, pos, state, 10000 * ONE_FE);
@@ -390,7 +392,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
     }
 
     BlockState getReplacementState() {
-        return getReplacerModule().map(ReplacerModule::getState).orElse(Blocks.AIR.defaultBlockState());
+        return cache.replaceState.getValue(level);
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
@@ -401,7 +403,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
             if (hasBedrockModule() && state.getBlock() == Blocks.BEDROCK) {
                 var worldBottom = targetWorld.getMinBuildHeight();
                 if (targetWorld.dimension().equals(Level.NETHER)) {
-                    return (worldBottom < targetPos.getY() && targetPos.getY() < worldBottom + 5) || (122 < targetPos.getY() && targetPos.getY() < QuarryPlus.config.common.netherTop.get());
+                    return (worldBottom < targetPos.getY() && targetPos.getY() < worldBottom + 5) || (122 < targetPos.getY() && targetPos.getY() < cache.netherTop.getValue(targetWorld));
                 } else {
                     return worldBottom < targetPos.getY() && targetPos.getY() < worldBottom + 5;
                 }
@@ -460,5 +462,49 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
     @Override
     public Set<QuarryModule> getLoadedModules() {
         return modules;
+    }
+
+    private EnchantmentHolder makeHolder() {
+        return new EnchantmentHolder(EnchantmentLevel.HasEnchantments.super.efficiencyLevel(),
+            EnchantmentLevel.HasEnchantments.super.unbreakingLevel(),
+            EnchantmentLevel.HasEnchantments.super.fortuneLevel(),
+            EnchantmentLevel.HasEnchantments.super.silktouchLevel());
+    }
+
+    @Override
+    public int efficiencyLevel() {
+        return cache.enchantments.getValue(getLevel()).efficiency();
+    }
+
+    @Override
+    public int unbreakingLevel() {
+        return cache.enchantments.getValue(getLevel()).unbreaking();
+    }
+
+    @Override
+    public int fortuneLevel() {
+        return cache.enchantments.getValue(getLevel()).fortune();
+    }
+
+    @Override
+    public int silktouchLevel() {
+        return cache.enchantments.getValue(getLevel()).silktouch();
+    }
+
+    private class QuarryCache {
+        final CacheEntry<BlockState> replaceState;
+        final CacheEntry<Integer> netherTop;
+        final CacheEntry<EnchantmentHolder> enchantments;
+
+        public QuarryCache() {
+            replaceState = CacheEntry.supplierCache(5,
+                () -> TileQuarry.this.getReplacerModule().map(ReplacerModule::getState).orElse(Blocks.AIR.defaultBlockState()));
+            netherTop = CacheEntry.supplierCache(100,
+                QuarryPlus.config.common.netherTop::get);
+            enchantments = CacheEntry.supplierCache(1000, TileQuarry.this::makeHolder);
+        }
+    }
+
+    private record EnchantmentHolder(int efficiency, int unbreaking, int fortune, int silktouch) {
     }
 }

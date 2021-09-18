@@ -20,6 +20,7 @@ import com.yogpc.qp.machines.module.ReplacerModule;
 import com.yogpc.qp.packet.ClientSync;
 import com.yogpc.qp.packet.ClientSyncMessage;
 import com.yogpc.qp.packet.PacketHandler;
+import com.yogpc.qp.utils.CacheEntry;
 import javax.annotation.Nonnull;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -48,6 +49,8 @@ public class TileAdvPump extends PowerTile
     public boolean deleteFluid = false;
     private final ModuleInventory moduleInventory;
     private Set<QuarryModule> modules = Set.of();
+    private boolean isBlockModuleLoaded = false;
+    private final AdvPumpCache cache = new AdvPumpCache();
 
     public TileAdvPump(BlockPos pos, BlockState state) {
         super(Holder.ADV_PUMP_TYPE, pos, state);
@@ -102,7 +105,7 @@ public class TileAdvPump extends PowerTile
                 if (!pump.target.checkAllFluidsRemoved(world, pos.atY(pump.y), pump::isReplaceBlock)) {
                     pump.y -= 1;
                     var nextPos = pos.atY(pump.y);
-                    if (shouldFinish(world, nextPos)) {
+                    if (pump.shouldFinish(world, nextPos)) {
                         // Next pos doesn't have fluid block. Finish.
                         pump.finished = true;
                         pump.target = null;
@@ -127,9 +130,9 @@ public class TileAdvPump extends PowerTile
         }
     }
 
-    private static boolean shouldFinish(Level world, BlockPos nextPos) {
+    private boolean shouldFinish(Level world, BlockPos nextPos) {
         var blockState = world.getBlockState(nextPos);
-        var blockCondition = blockState.isAir() || blockState.is(Holder.BLOCK_DUMMY);
+        var blockCondition = blockState.isAir() || blockState.is(Holder.BLOCK_DUMMY) || isReplaceBlock(blockState);
         return world.getFluidState(nextPos).isEmpty() && !blockCondition;
     }
 
@@ -166,7 +169,7 @@ public class TileAdvPump extends PowerTile
 
     @Nonnull
     private Optional<BlockState> getReplaceModuleState() {
-        return getReplacerModule().map(ReplacerModule::getState).filter(Predicate.not(BlockState::isAir));
+        return cache.replaceState.getValue(getLevel());
     }
 
     private BlockState getStateForReplace(Fluid f) {
@@ -238,5 +241,14 @@ public class TileAdvPump extends PowerTile
     @Override
     public Set<QuarryModule> getLoadedModules() {
         return modules;
+    }
+
+    private class AdvPumpCache {
+        final CacheEntry<Optional<BlockState>> replaceState;
+
+        public AdvPumpCache() {
+            replaceState = CacheEntry.supplierCache(5, () ->
+                getReplacerModule().map(ReplacerModule::getState).filter(Predicate.not(BlockState::isAir)));
+        }
     }
 }
