@@ -1,10 +1,13 @@
 package com.yogpc.qp.machines.advpump;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
@@ -16,12 +19,14 @@ import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.module.EnergyModuleItem;
 import com.yogpc.qp.machines.module.ModuleInventory;
 import com.yogpc.qp.machines.module.QuarryModule;
+import com.yogpc.qp.machines.module.QuarryModuleProvider;
 import com.yogpc.qp.machines.module.ReplacerModule;
 import com.yogpc.qp.packet.ClientSync;
 import com.yogpc.qp.packet.ClientSyncMessage;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.CacheEntry;
 import javax.annotation.Nonnull;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -79,9 +84,14 @@ public class TileAdvPump extends PowerTile
         finished = nbt.getBoolean("finished");
         deleteFluid = nbt.getBoolean("deleteFluid");
         moduleInventory.deserializeNBT(nbt.getCompound("moduleInventory"));
+        isBlockModuleLoaded = false;
     }
 
     public static void tick(Level world, BlockPos pos, BlockState state, TileAdvPump pump) {
+        if (!pump.isBlockModuleLoaded) {
+            pump.updateModule();
+            pump.isBlockModuleLoaded = true;
+        }
         long fluidSum = pump.storage.getFluidMap().values().stream().mapToLong(Long::longValue).sum();
         if (pump.hasEnoughEnergy() && !pump.finished && fluidSum <= pump.enchantmentEfficiency.fluidCapacity) {
             // In server world.
@@ -203,11 +213,11 @@ public class TileAdvPump extends PowerTile
             .map(e -> "%s: %d mB".formatted(e.getKey().getId(), e.getValue()))
             .map(TextComponent::new)
             .toList();
-        if (fluidSummery.isEmpty()) {
-            return List.of(new TextComponent("No Fluid."));
-        } else {
-            return fluidSummery;
-        }
+        var fluidMessage = fluidSummery.isEmpty() ? List.of(new TextComponent("No Fluid.")) : fluidSummery;
+        return Stream.concat(fluidMessage.stream(), Stream.of(
+            "%sModules:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, modules),
+            "%sRemove:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, deleteFluid)
+        ).map(TextComponent::new)).toList();
     }
 
     @Override
@@ -226,7 +236,14 @@ public class TileAdvPump extends PowerTile
     }
 
     void updateModule() {
-        this.modules = Set.copyOf(moduleInventory.getModules());
+        // Blocks
+        Set<QuarryModule> blockModules = level != null
+            ? QuarryModuleProvider.Block.getModulesInWorld(level, getBlockPos())
+            : Collections.emptySet();
+
+        // Module Inventory
+        var itemModules = moduleInventory.getModules();
+        this.modules = Stream.concat(blockModules.stream(), itemModules.stream()).collect(Collectors.toSet());
     }
 
     static boolean isCapableModule(QuarryModule module) {
@@ -248,7 +265,7 @@ public class TileAdvPump extends PowerTile
 
         public AdvPumpCache() {
             replaceState = CacheEntry.supplierCache(5, () ->
-                getReplacerModule().map(ReplacerModule::getState).filter(Predicate.not(BlockState::isAir)));
+                getReplacerModule().map(ReplacerModule::getState).filter(Predicate.not(BlockState::isAir)).filter(b -> !b.is(Holder.BLOCK_DUMMY_REPLACER)));
         }
     }
 }

@@ -102,6 +102,7 @@ public class BlockAdvPump extends QPBlock implements EntityBlock {
                 var preForced = QuarryChunkLoadUtil.makeChunkLoaded(level, pos, pump.enabled);
                 pump.setEnchantment(EnchantmentEfficiency.fromMap(EnchantmentHelper.getEnchantments(stack)));
                 pump.setChunkPreLoaded(preForced);
+                pump.updateModule();
             }
         }
     }
@@ -127,4 +128,12 @@ public class BlockAdvPump extends QPBlock implements EntityBlock {
         return stack;
     }
 
+    @Override
+    @SuppressWarnings("deprecation")
+    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
+        super.neighborChanged(state, world, pos, block, fromPos, notify);
+        if (!world.isClientSide) {
+            world.getBlockEntity(pos, Holder.ADV_PUMP_TYPE).ifPresent(TileAdvPump::updateModule);
+        }
+    }
 }
