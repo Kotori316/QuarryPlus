@@ -77,6 +77,14 @@ public abstract class Target {
     public static Target poses(List<BlockPos> pos) {
         return new PosesTarget(pos);
     }
+
+    static String posToStr(@Nullable BlockPos pos) {
+        if (pos == null) {
+            return "NULL POS";
+        } else {
+            return "{x=" + pos.getX() + ", y=" + pos.getY() + ", z=" + pos.getZ() + "}";
+        }
+    }
 }
 
 final class DigTarget extends Target {
@@ -154,7 +162,7 @@ final class DigTarget extends Target {
         return "DigTarget{" +
             "area=" + area +
             ", y=" + y +
-            ", currentTarget=" + currentTarget +
+            ", currentTarget=" + posToStr(currentTarget) +
             '}';
     }
 }
@@ -244,7 +252,7 @@ final class FrameTarget extends Target {
     public String toString() {
         return "FrameTarget{" +
             "area=" + area +
-            ", currentTarget=" + currentTarget +
+            ", currentTarget=" + posToStr(currentTarget) +
             ", hasNext=" + iterator.hasNext() +
             '}';
     }
@@ -298,7 +306,7 @@ final class PosesTarget extends Target {
     @Override
     public String toString() {
         return "PosesTarget{" +
-            "currentTarget=" + currentTarget +
+            "currentTarget=" + posToStr(currentTarget) +
             ", size=" + posList.size() +
             '}';
     }

@@ -97,4 +97,34 @@ class TargetTest {
             () -> assertEquals(new BlockPos(4, 0, 5), poses.get(29))
         );
     }
+
+    @Test
+    void pos2StrNull() {
+        var str = Target.posToStr(null);
+        assertEquals("NULL POS", str);
+    }
+
+    @Test
+    void pos2Str0() {
+        var str = Target.posToStr(BlockPos.ORIGIN);
+        assertEquals("{x=0, y=0, z=0}", str);
+    }
+
+    @Test
+    void pos2StrMutable() {
+        var str = Target.posToStr(new BlockPos.Mutable(0, 0, 0));
+        assertEquals("{x=0, y=0, z=0}", str);
+    }
+
+    @Test
+    void pos2Str2() {
+        var str = Target.posToStr(new BlockPos(1, 4, 8));
+        assertEquals("{x=1, y=4, z=8}", str);
+    }
+
+    @Test
+    void pos2Str3() {
+        var str = Target.posToStr(new BlockPos(-1, -54, 8));
+        assertEquals("{x=-1, y=-54, z=8}", str);
+    }
 }
