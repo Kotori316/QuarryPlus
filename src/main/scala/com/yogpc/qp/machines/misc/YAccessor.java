@@ -42,6 +42,7 @@ class QuarryYAccessor extends YAccessor {
     @Override
     public void setDigMinY(int newValue) {
         quarry.digMinY = newValue;
+        quarry.setChanged();
     }
 
     @Override
@@ -70,6 +71,7 @@ class MiningWellYAccessor extends YAccessor {
     @Override
     public void setDigMinY(int newValue) {
         miningWell.digMinY = newValue;
+        miningWell.setChanged();
     }
 
     @Override
