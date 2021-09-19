@@ -60,6 +60,10 @@ class EnchantmentEfficiency {
         };
     }
 
+    int areaSize() {
+        return (int) (Math.PI * range * range);
+    }
+
     static EnchantmentEfficiency fromNbt(CompoundTag tag) {
         var enchantmentLevels = tag.getAllKeys().stream()
             .mapMulti(MapMulti.getEntry(ForgeRegistries.ENCHANTMENTS, tag::getInt))

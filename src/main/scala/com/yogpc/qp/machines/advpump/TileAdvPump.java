@@ -100,7 +100,8 @@ public class TileAdvPump extends PowerTile
             // In server world.
             if (pump.target == null) {
                 var initPos = pos.atY(pump.y);
-                pump.target = Target.getTarget(world, initPos, pump.enchantmentEfficiency.rangePredicate(initPos), pump::isReplaceBlock);
+                pump.target = Target.getTarget(world, initPos, pump.enchantmentEfficiency.rangePredicate(initPos),
+                    pump::isReplaceBlock, pump.enchantmentEfficiency.areaSize());
                 world.setBlock(pos, state.setValue(BlockAdvPump.WORKING, true), Block.UPDATE_ALL);
             }
             if (pump.target.hasNext()) {
@@ -116,7 +117,7 @@ public class TileAdvPump extends PowerTile
                 }
             } else {
                 // Go to next y
-                if (!pump.target.checkAllFluidsRemoved(world, pos.atY(pump.y), pump::isReplaceBlock)) {
+                if (!pump.target.checkAllFluidsRemoved(world, pos.atY(pump.y))) {
                     pump.y -= 1;
                     var nextPos = pos.atY(pump.y);
                     if (pump.shouldFinish(world, nextPos)) {
@@ -129,7 +130,8 @@ public class TileAdvPump extends PowerTile
                             removeDummyBlock(world, pos, pump.y);
                     } else {
                         // Go to the next Y.
-                        pump.target = Target.getTarget(world, nextPos, pump.enchantmentEfficiency.rangePredicate(nextPos), pump::isReplaceBlock);
+                        pump.target = Target.getTarget(world, nextPos, pump.enchantmentEfficiency.rangePredicate(nextPos),
+                            pump::isReplaceBlock, pump.enchantmentEfficiency.areaSize());
                     }
                 }
             }

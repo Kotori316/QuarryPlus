@@ -41,33 +41,40 @@ class Target implements Iterator<BlockPos> {
         return inRange;
     }
 
-    boolean checkAllFluidsRemoved(Level world, BlockPos center, Predicate<BlockState> isReplaceBlock) {
-        var stillFluid = search(world, new HashSet<>(posList), inRange, isReplaceBlock);
+    boolean checkAllFluidsRemoved(Level world, BlockPos center) {
+        var stillFluid = posList.stream().<BlockPos>mapMulti((pos, consumer) -> {
+                consumer.accept(pos);
+                consumer.accept(pos.above());
+            })
+            .filter(p -> !world.getFluidState(p).isEmpty())
+            .filter(inRange)
+            .distinct()
+            .sorted(Comparator.comparingInt(Vec3i::getY).reversed()
+                .thenComparing(Comparator.comparingInt(center::distManhattan).reversed()))
+            .toList();
         if (stillFluid.isEmpty()) {
             return false;
         } else {
-            stillFluid.sort(Comparator.comparingInt(Vec3i::getY).reversed()
-                .thenComparing(Comparator.comparingInt(center::distManhattan).reversed()));
             this.iterator = stillFluid.listIterator();
             return true;
         }
     }
 
-    static Target getTarget(Level world, BlockPos initPos, Predicate<BlockPos> inRange, Predicate<BlockState> isReplaceBlock) {
-        var result = search(world, Set.of(initPos), inRange, isReplaceBlock);
+    static Target getTarget(Level world, BlockPos initPos, Predicate<BlockPos> inRange, Predicate<BlockState> isReplaceBlock, int sizeHint) {
+        var result = search(world, Set.of(initPos), inRange, isReplaceBlock, sizeHint);
         result.sort(Comparator.comparingInt(Vec3i::getY).reversed()
             .thenComparing(Comparator.comparingInt(initPos::distManhattan).reversed()));
         return new Target(result, inRange);
     }
 
-    private static List<BlockPos> search(Level world, Set<BlockPos> initialPoses, Predicate<BlockPos> inRange, Predicate<BlockState> isReplaceBlock) {
-        Set<BlockPos> counted = new HashSet<>();
-        Set<BlockPos> checked = new HashSet<>();
-        List<BlockPos> result = new ArrayList<>();
+    private static List<BlockPos> search(Level world, Set<BlockPos> initialPoses, Predicate<BlockPos> inRange, Predicate<BlockState> isReplaceBlock, int sizeHint) {
+        Set<BlockPos> counted = new HashSet<>(sizeHint);
+        Set<BlockPos> checked = new HashSet<>(sizeHint);
+        List<BlockPos> result = new ArrayList<>(sizeHint);
         Set<Direction> directions = EnumSet.of(Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST, Direction.UP);
         Set<BlockPos> search = initialPoses;
         while (!search.isEmpty()) {
-            Set<BlockPos> nextSearch = new HashSet<>();
+            Set<BlockPos> nextSearch = new HashSet<>(sizeHint);
             checked.addAll(search);
             for (BlockPos pos : search) {
                 var isFluid = !world.getFluidState(pos).isEmpty();
