@@ -1,55 +1,61 @@
 package com.yogpc.qp.integration;
 
-import java.util.EnumSet;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.PowerTile;
-import team.reborn.energy.EnergySide;
-import team.reborn.energy.EnergyStorage;
-import team.reborn.energy.EnergyTier;
+import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
+import net.fabricmc.fabric.api.transfer.v1.transaction.base.SnapshotParticipant;
+import team.reborn.energy.api.EnergyStorage;
 
-class RebornEnergyStorage implements EnergyStorage {
+@SuppressWarnings({"deprecation", "UnstableApiUsage"})
+class RebornEnergyStorage extends SnapshotParticipant<Long> implements EnergyStorage {
     public static final long CONVERSION_RATE = (long) (PowerTile.ONE_FE * QuarryPlus.config.power.rebornEnergyConversionCoefficient);
     private final PowerTile powerTile;
-    private final EnumSet<EnergySide> acceptableSize = EnumSet.allOf(EnergySide.class);
 
     public RebornEnergyStorage(PowerTile powerTile) {
         this.powerTile = powerTile;
     }
 
     @Override
-    public double getStored(EnergySide face) {
-        if (acceptableSize.contains(face))
-            return ((double) powerTile.getEnergy()) / CONVERSION_RATE;
-        else
-            return 0d;
+    public long getAmount() {
+        return powerTile.getEnergy() / CONVERSION_RATE;
     }
 
     @Override
-    public void setStored(double amount) {
+    protected void readSnapshot(Long snapshot) {
         long current = powerTile.getEnergy();
-        long updated = (long) (amount * CONVERSION_RATE);
+        long updated = snapshot;
         powerTile.addEnergy(updated - current, false);
     }
 
     @Override
-    public double getMaxStoredPower() {
-        return ((double) powerTile.getMaxEnergy()) / CONVERSION_RATE;
+    public long insert(long maxAmount, TransactionContext transaction) {
+        long inserted = Math.min(maxAmount, getCapacity() - getAmount());
+        if (inserted > 0) {
+            updateSnapshots(transaction);
+            powerTile.addEnergy(inserted * CONVERSION_RATE, false);
+            return inserted;
+        } else {
+            return 0;
+        }
     }
 
     @Override
-    public EnergyTier getTier() {
-        return EnergyTier.INSANE;
+    public long getCapacity() {
+        return powerTile.getMaxEnergy() / CONVERSION_RATE;
     }
 
     @Override
-    public double getMaxInput(EnergySide side) {
-        if (acceptableSize.contains(side)) return EnergyStorage.super.getMaxInput(side);
-        else return 0d;
+    public boolean supportsExtraction() {
+        return false; // This is not generator or storage. This machine only consumes energy.
     }
 
     @Override
-    public double getMaxOutput(EnergySide side) {
-        return 0; // This is not generator or storage. This machine only consumes energy.
+    public long extract(long maxAmount, TransactionContext transaction) {
+        return 0; // Not extractable.
+    }
+
+    @Override
+    protected Long createSnapshot() {
+        return powerTile.getEnergy();
     }
 }
