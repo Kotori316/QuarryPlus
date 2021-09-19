@@ -42,7 +42,7 @@ class Target implements Iterator<BlockPos> {
     }
 
     boolean checkAllFluidsRemoved(Level world, BlockPos center, Predicate<BlockState> isReplaceBlock) {
-        var stillFluid = search(world, Set.copyOf(posList), inRange, isReplaceBlock);
+        var stillFluid = search(world, new HashSet<>(posList), inRange, isReplaceBlock);
         if (stillFluid.isEmpty()) {
             return false;
         } else {

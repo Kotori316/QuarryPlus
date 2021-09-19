@@ -52,6 +52,7 @@ public class TileAdvPump extends PowerTile
     private EnchantmentEfficiency enchantmentEfficiency;
     private boolean finished = false;
     public boolean deleteFluid = false;
+    public boolean placeFrame = true;
     private final ModuleInventory moduleInventory;
     private Set<QuarryModule> modules = Set.of();
     private boolean isBlockModuleLoaded = false;
@@ -71,6 +72,7 @@ public class TileAdvPump extends PowerTile
         nbt.put("enchantments", enchantmentEfficiency.toNbt());
         nbt.putBoolean("finished", finished);
         nbt.putBoolean("deleteFluid", deleteFluid);
+        nbt.putBoolean("placeFrame", placeFrame);
         nbt.put("moduleInventory", moduleInventory.serializeNBT());
         return super.save(nbt);
     }
@@ -83,6 +85,7 @@ public class TileAdvPump extends PowerTile
         setEnchantment(EnchantmentEfficiency.fromNbt(nbt.getCompound("enchantments")));
         finished = nbt.getBoolean("finished");
         deleteFluid = nbt.getBoolean("deleteFluid");
+        placeFrame = nbt.getBoolean("placeFrame");
         moduleInventory.deserializeNBT(nbt.getCompound("moduleInventory"));
         isBlockModuleLoaded = false;
     }
@@ -106,9 +109,10 @@ public class TileAdvPump extends PowerTile
                     var result = pump.pumpFluid(world, target, pump::getStateForReplace, true);
                     if (!result.isSuccess())
                         break;
-                    Direction.Plane.HORIZONTAL.stream().map(target::relative)
-                        .filter(pump.target.getPredicate().negate())
-                        .forEach(p -> pump.pumpFluid(world, p, f -> Holder.BLOCK_FRAME.getDammingState(), false));
+                    if (pump.placeFrame)
+                        Direction.Plane.HORIZONTAL.stream().map(target::relative)
+                            .filter(pump.target.getPredicate().negate())
+                            .forEach(p -> pump.pumpFluid(world, p, f -> Holder.BLOCK_FRAME.getDammingState(), false));
                 }
             } else {
                 // Go to next y
@@ -121,21 +125,26 @@ public class TileAdvPump extends PowerTile
                         pump.target = null;
                         world.setBlock(pos, state.setValue(BlockAdvPump.WORKING, false), Block.UPDATE_ALL);
                         pump.logUsage(QuarryPlus.LOGGER::info);
-                        for (int i = pos.getY() - 1; i > pump.y; i--) {
-                            var withY = pos.atY(i);
-                            var blockState = world.getBlockState(withY);
-                            if (blockState.is(Holder.BLOCK_DUMMY)) {
-                                world.removeBlock(withY, false);
-                                break;
-                            } else if (!blockState.isAir()) {
-                                break;
-                            }
-                        }
+                        if (pump.placeFrame)
+                            removeDummyBlock(world, pos, pump.y);
                     } else {
                         // Go to the next Y.
                         pump.target = Target.getTarget(world, nextPos, pump.enchantmentEfficiency.rangePredicate(nextPos), pump::isReplaceBlock);
                     }
                 }
+            }
+        }
+    }
+
+    private static void removeDummyBlock(Level level, BlockPos pos, int minY) {
+        for (int i = pos.getY() - 1; i > minY; i--) {
+            var withY = pos.atY(i);
+            var blockState = level.getBlockState(withY);
+            if (blockState.is(Holder.BLOCK_DUMMY)) {
+                level.removeBlock(withY, false);
+                break;
+            } else if (!blockState.isAir()) {
+                break;
             }
         }
     }
@@ -179,7 +188,7 @@ public class TileAdvPump extends PowerTile
 
     @Nonnull
     private Optional<BlockState> getReplaceModuleState() {
-        return cache.replaceState.getValue(getLevel());
+        return cache.replaceModuleState.getValue(getLevel());
     }
 
     private BlockState getStateForReplace(Fluid f) {
@@ -216,7 +225,9 @@ public class TileAdvPump extends PowerTile
         var fluidMessage = fluidSummery.isEmpty() ? List.of(new TextComponent("No Fluid.")) : fluidSummery;
         return Stream.concat(fluidMessage.stream(), Stream.of(
             "%sModules:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, modules),
-            "%sRemove:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, deleteFluid)
+            "%sRemove:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, deleteFluid),
+            "%sFrame:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, placeFrame),
+            "%sEnergy:%s %f FE (%d)".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, getEnergy() / (double) PowerTile.ONE_FE, getMaxEnergyStored())
         ).map(TextComponent::new)).toList();
     }
 
@@ -244,6 +255,9 @@ public class TileAdvPump extends PowerTile
         // Module Inventory
         var itemModules = moduleInventory.getModules();
         this.modules = Stream.concat(blockModules.stream(), itemModules.stream()).collect(Collectors.toSet());
+        if (getReplacerModule().isPresent()) {
+            this.placeFrame = false;
+        }
     }
 
     static boolean isCapableModule(QuarryModule module) {
@@ -261,10 +275,10 @@ public class TileAdvPump extends PowerTile
     }
 
     private class AdvPumpCache {
-        final CacheEntry<Optional<BlockState>> replaceState;
+        final CacheEntry<Optional<BlockState>> replaceModuleState;
 
         public AdvPumpCache() {
-            replaceState = CacheEntry.supplierCache(5, () ->
+            replaceModuleState = CacheEntry.supplierCache(5, () ->
                 getReplacerModule().map(ReplacerModule::getState).filter(Predicate.not(BlockState::isAir)).filter(b -> !b.is(Holder.BLOCK_DUMMY_REPLACER)));
         }
     }
