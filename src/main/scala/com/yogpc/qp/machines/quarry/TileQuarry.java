@@ -398,6 +398,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean canBreak(Level targetWorld, BlockPos targetPos, BlockState state) {
         if (target != null && target.alreadySkipped(targetPos)) return false;
+        if (state.isAir()) return true;
         var unbreakable = state.getDestroySpeed(targetWorld, targetPos) < 0;
         if (unbreakable) {
             if (hasBedrockModule() && state.getBlock() == Blocks.BEDROCK) {
