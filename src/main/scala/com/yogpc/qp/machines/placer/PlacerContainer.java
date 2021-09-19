@@ -50,6 +50,7 @@ public class PlacerContainer extends AbstractContainerMenu {
     }
 
     @Override
+    @SuppressWarnings("DuplicatedCode")
     public ItemStack quickMoveStack(Player player, int index) {
         Slot slot = this.getSlot(index);
         if (slot.hasItem()) {
