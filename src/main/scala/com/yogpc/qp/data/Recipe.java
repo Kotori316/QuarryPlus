@@ -8,6 +8,7 @@ import com.google.gson.JsonObject;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.advpump.BlockAdvPump;
+import com.yogpc.qp.machines.bookmover.BookMoverBlock;
 import com.yogpc.qp.machines.checker.ItemChecker;
 import com.yogpc.qp.machines.marker.BlockMarker;
 import com.yogpc.qp.machines.miningwell.MiningWellBlock;
@@ -191,12 +192,20 @@ public class Recipe extends QuarryPlusDataProvider.QuarryDataProvider {
             makeList(Tags.Items.NETHER_STARS, 2),
             makeList(Items.STONE, 1024)
         )))).addCondition(new EnableCondition(ReplacerBlock.NAME)));
+        // Book Mover
+        list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(
+            location(BookMoverBlock.NAME), new ItemStack(Holder.BLOCK_BOOK_MOVER), 500000 * PowerTile.ONE_FE, true, List.of(
+            makeList(Holder.BLOCK_MOVER, 4),
+            makeList(Items.BEACON, 2),
+            makeList(Tags.Items.BOOKSHELVES, 64),
+            makeList(Tags.Items.GEMS_DIAMOND, 16)
+        )))).addCondition(new EnableCondition(BookMoverBlock.NAME)));
 
         return list;
     }
 
     @Nonnull
-    private IngredientList makeList(ItemLike item, int count) {
+    private static IngredientList makeList(ItemLike item, int count) {
         return new IngredientList(new IngredientWithCount(Ingredient.of(item), count));
     }
 
