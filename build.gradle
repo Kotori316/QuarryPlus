@@ -162,19 +162,20 @@ dependencies {
 }
 
 // Example for how to get properties into the manifest for reading at runtime.
+def jarAttributeMap = [
+        "Specification-Title"     : project.name,
+        "Specification-Vendor"    : "Kotori316",
+        "Specification-Version"   : "1", // We are version 1 of ourselves
+        "Implementation-Title"    : project.name,
+        "Implementation-Version"  : project.version,
+        "Implementation-Vendor"   : "Kotori316",
+        "Implementation-Timestamp": ZonedDateTime.now().format(DateTimeFormatter.ISO_INSTANT),
+        "Commit"                  : getCommit("1.17")
+]
+
 jar {
-    def timeFormat = DateTimeFormatter.ISO_INSTANT
     manifest {
-        attributes([
-                "Specification-Title"     : project.name,
-                "Specification-Vendor"    : "Kotori316",
-                "Specification-Version"   : "1", // We are version 1 of ourselves
-                "Implementation-Title"    : project.name,
-                "Implementation-Version"  : project.version,
-                "Implementation-Vendor"   : "Kotori316",
-                "Implementation-Timestamp": ZonedDateTime.now().format(timeFormat),
-                "Commit"                  : getCommit("1.17")
-        ])
+        attributes(jarAttributeMap)
     }
 }
 
@@ -200,6 +201,9 @@ task deobfJar(type: Jar) {
     from sourceSets.main.output
     archiveClassifier.set("deobf")
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest {
+        attributes(jarAttributeMap)
+    }
 }
 
 // Tell the artifact system about our extra jars
@@ -212,6 +216,27 @@ artifacts {
 jar.finalizedBy('reobfJar')
 // However if you are in a multi-project build, dev time needs unobfed jar files, so you can delay the obfuscation until publishing by doing
 // publish.dependsOn('reobfJar')
+
+jar.finalizedBy('signJar')
+
+task signJar(dependsOn: 'reobfJar') {
+    boolean executeCondition = project.hasProperty('keyStoreAlias') &&
+            project.hasProperty('keyStore') &&
+            project.hasProperty('keyStorePass')
+    onlyIf { executeCondition }
+    doLast {
+        //noinspection HttpUrlsUsage
+        ant.signjar(
+                jar: jar.archiveFile.get(),
+                alias: project.hasProperty('keyStoreAlias') ? project.getProperty('keyStoreAlias') : "",
+                keystore: project.hasProperty('keyStore') ? project.getProperty("keyStore") : "",
+                storepass: project.hasProperty('keyStorePass') ? project.getProperty('keyStorePass') : "",
+                sigalg: "SHA1withRSA",
+                digestalg: "SHA-256",
+                tsaurl: "http://timestamp.digicert.com"
+        )
+    }
+}
 
 def curseForgeLog() {
     def header = "Build with ${project.forgeVersion}, Mapping: Official 1.17.1" +
