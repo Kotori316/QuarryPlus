@@ -2,7 +2,10 @@ package com.yogpc.qp.machines.bookmover;
 
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QPBlock;
+import com.yogpc.qp.utils.CombinedBlockEntityTicker;
+import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -13,6 +16,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
@@ -57,5 +62,12 @@ public class BookMoverBlock extends QPBlock implements EntityBlock {
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return Holder.BOOK_MOVER_TYPE.create(pos, state);
+    }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+        return level.isClientSide ? null : checkType(type, Holder.BOOK_MOVER_TYPE,
+            new CombinedBlockEntityTicker<>(PowerTile.getGenerator(), (l, p, s, t) -> t.workInTick(), PowerTile.logTicker()));
     }
 }

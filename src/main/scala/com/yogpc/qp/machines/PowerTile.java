@@ -191,6 +191,6 @@ public class PowerTile extends BlockEntity implements IEnergyStorage {
     }
 
     public enum Reason {
-        MAKE_FRAME, BREAK_BLOCK, REMOVE_FLUID, MOVE_HEAD, ADV_PUMP_FLUID, WORKBENCH, FORCE, EXP_COLLECT
+        MAKE_FRAME, BREAK_BLOCK, REMOVE_FLUID, MOVE_HEAD, ADV_PUMP_FLUID, WORKBENCH, FORCE, EXP_COLLECT, BOOK_MOVER
     }
 }
