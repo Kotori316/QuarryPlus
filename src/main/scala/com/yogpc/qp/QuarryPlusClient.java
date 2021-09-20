@@ -3,6 +3,7 @@ package com.yogpc.qp;
 import com.yogpc.qp.machines.bookmover.BookMoverScreen;
 import com.yogpc.qp.machines.marker.Screen16Marker;
 import com.yogpc.qp.machines.marker.ScreenFlexMarker;
+import com.yogpc.qp.machines.misc.CreativeGeneratorScreen;
 import com.yogpc.qp.machines.misc.YSetterScreen;
 import com.yogpc.qp.machines.module.ScreenQuarryModule;
 import com.yogpc.qp.machines.mover.MoverScreen;
@@ -42,5 +43,6 @@ public class QuarryPlusClient {
         MenuScreens.register(Holder.MODULE_MENU_TYPE, ScreenQuarryModule::new);
         MenuScreens.register(Holder.PLACER_MENU_TYPE, PlacerScreen::new);
         MenuScreens.register(Holder.BOOK_MOVER_MENU_TYPE, BookMoverScreen::new);
+        MenuScreens.register(Holder.CREATIVE_GENERATOR_MENU_TYPE, CreativeGeneratorScreen::new);
     }
 }

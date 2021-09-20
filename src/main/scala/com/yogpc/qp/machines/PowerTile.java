@@ -68,6 +68,10 @@ public class PowerTile extends BlockEntity implements IEnergyStorage {
         return enabled && getEnergy() > 0;
     }
 
+    protected long getMaxReceive() {
+        return maxEnergy;
+    }
+
     /**
      * @param amount   the energy
      * @param simulate if simulating, the actual energy doesn't change.
@@ -75,7 +79,7 @@ public class PowerTile extends BlockEntity implements IEnergyStorage {
      */
     public final long addEnergy(long amount, boolean simulate) {
         assert level != null;
-        long accepted = Math.min(maxEnergy - energy, amount);
+        long accepted = Math.min(Math.min(maxEnergy - energy, amount), getMaxReceive());
         if (!simulate && accepted != 0) {
             energy += accepted;
             energyCounter.getEnergy(level.getGameTime(), accepted);
@@ -175,7 +179,7 @@ public class PowerTile extends BlockEntity implements IEnergyStorage {
     @Nullable
     public static BlockEntityTicker<PowerTile> getGenerator() {
         if (QuarryPlus.config.common.noEnergy.get()) {
-            return (w, p, s, tile) -> tile.addEnergy(tile.getMaxEnergy() - tile.getEnergy(), false);
+            return (w, p, s, tile) -> tile.setEnergy(tile.getMaxEnergy());
         } else {
             return null;
         }
