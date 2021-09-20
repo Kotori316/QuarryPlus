@@ -42,7 +42,7 @@ public class BookMoverMenu extends AbstractContainerMenu {
     }
 
     private void setTrackValues() {
-        this.progress.set(mover.getEnergyStored() / mover.getMaxEnergyStored() * 1000);
+        this.progress.set(1000 * mover.getEnergyStored() / mover.getMaxEnergyStored());
         this.isWorking.set(mover.isWorking() ? 1 : 0);
     }
 
