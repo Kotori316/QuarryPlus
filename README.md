@@ -33,14 +33,14 @@ CurseForge - https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-m
 * Some modules
 * Exp Pump
 * Placer Plus
+* Replacer
+* Book Enchantment Mover
 
 ## Planned (Future work)
 
-* Book Enchantment Mover
 * Spawner Controller
 * Chunk Destroyer
 * Mini Quarry
-* Replacer
 
 ## Maven repo
 
