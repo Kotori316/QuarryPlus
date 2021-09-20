@@ -89,6 +89,14 @@ public class BookMoverEntity extends PowerTile implements Container, MenuProvide
     }
 
     @Override
+    protected long getMaxReceive() {
+        if (isWorking())
+            return getMaxEnergy() / 300;
+        else
+            return 0;
+    }
+
+    @Override
     public int getContainerSize() {
         return 3;
     }
@@ -162,7 +170,7 @@ public class BookMoverEntity extends PowerTile implements Container, MenuProvide
     }
 
     boolean isWorking() {
-        return !inventory.get(0).isEmpty() && !inventory.get(0).isEmpty();
+        return !inventory.get(0).isEmpty() && !inventory.get(1).isEmpty();
     }
 
     @VisibleForTesting
