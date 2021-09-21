@@ -1,15 +1,33 @@
 package com.yogpc.qp.machines.advquarry;
 
+import java.util.function.Consumer;
+import java.util.stream.Stream;
+
 import com.yogpc.qp.Holder;
+import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.Area;
+import com.yogpc.qp.machines.EnchantmentLevel;
 import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QPBlock;
+import com.yogpc.qp.machines.QuarryMarker;
 import com.yogpc.qp.machines.module.EnergyModuleItem;
+import com.yogpc.qp.packet.ClientSyncMessage;
+import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.CombinedBlockEntityTicker;
+import com.yogpc.qp.utils.MapMulti;
 import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
@@ -20,6 +38,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraftforge.fmllegacy.network.NetworkHooks;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING;
 
@@ -61,6 +81,39 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
         }
     }
 
+    @Override
+    @SuppressWarnings("deprecation")
+    public InteractionResult use(BlockState state, Level level, BlockPos pos,
+                                 Player player, InteractionHand hand, BlockHitResult hit) {
+        if (!QuarryPlus.config.enableMap.enabled(NAME)) {
+            if (!level.isClientSide)
+                player.displayClientMessage(new TranslatableComponent("quarryplus.chat.disable_message", getName()), false);
+            return InteractionResult.sidedSuccess(level.isClientSide);
+        }
+        if (!player.isShiftKeyDown()) {
+            if (!level.isClientSide && level.getBlockEntity(pos) instanceof TileAdvQuarry quarry) {
+                NetworkHooks.openGui((ServerPlayer) player, quarry, pos);
+            }
+            return InteractionResult.SUCCESS;
+        }
+        return super.use(state, level, pos, player, hand, hit);
+    }
+
+    @Override
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
+        super.setPlacedBy(level, pos, state, entity, stack);
+        if (!level.isClientSide) {
+            if (level.getBlockEntity(pos) instanceof TileAdvQuarry quarry) {
+                Direction facing = state.getValue(FACING);
+                var enchantment = EnchantmentLevel.fromItem(stack);
+                enchantment.sort(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR);
+                quarry.setEnchantments(enchantment);
+                quarry.area = findArea(level, pos, facing, quarry.getStorage()::addItem);
+                PacketHandler.sendToClient(new ClientSyncMessage(quarry), level);
+            }
+        }
+    }
+
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
@@ -73,5 +126,21 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
                 MachineStorage.passItems(),
                 MachineStorage.passFluid())
         );
+    }
+
+    static Area findArea(Level world, BlockPos pos, Direction quarryBehind, Consumer<ItemStack> itemCollector) {
+        return Stream.of(quarryBehind, quarryBehind.getCounterClockWise(), quarryBehind.getClockWise())
+            .map(pos::relative)
+            .map(world::getBlockEntity)
+            .mapMulti(MapMulti.cast(QuarryMarker.class))
+            .flatMap(m -> m.getArea().stream().peek(a -> m.removeAndGetItems().forEach(itemCollector)))
+            .findFirst()
+            .orElseGet(() -> {
+                var chunkPos = new ChunkPos(pos);
+                return new Area(
+                    chunkPos.getMinBlockX(), pos.getY(), chunkPos.getMinBlockZ(),
+                    chunkPos.getMaxBlockX(), pos.getY(), chunkPos.getMaxBlockZ(), quarryBehind
+                );
+            });
     }
 }

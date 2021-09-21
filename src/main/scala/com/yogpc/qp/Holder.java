@@ -11,6 +11,7 @@ import com.yogpc.qp.machines.EnchantedLootFunction;
 import com.yogpc.qp.machines.QPBlock;
 import com.yogpc.qp.machines.advpump.BlockAdvPump;
 import com.yogpc.qp.machines.advpump.TileAdvPump;
+import com.yogpc.qp.machines.advquarry.AdvQuarryMenu;
 import com.yogpc.qp.machines.advquarry.BlockAdvQuarry;
 import com.yogpc.qp.machines.advquarry.TileAdvQuarry;
 import com.yogpc.qp.machines.bookmover.BookMoverBlock;
@@ -186,7 +187,9 @@ public class Holder {
     public static final MenuType<BookMoverMenu> BOOK_MOVER_MENU_TYPE = registerMenuType((windowId, inv, data) ->
         new BookMoverMenu(windowId, inv.player, data.readBlockPos()), BookMoverBlock.GUI_ID);
     public static final MenuType<CreativeGeneratorMenu> CREATIVE_GENERATOR_MENU_TYPE = registerMenuType((windowId, inv, data) ->
-        new CreativeGeneratorMenu(windowId, inv.player,data.readBlockPos()), CreativeGeneratorMenu.GUI_ID);
+        new CreativeGeneratorMenu(windowId, inv.player, data.readBlockPos()), CreativeGeneratorMenu.GUI_ID);
+    public static final MenuType<AdvQuarryMenu> ADV_QUARRY_MENU_TYPE = registerMenuType((windowId, inv, data) ->
+        new AdvQuarryMenu(windowId, inv.player, data.readBlockPos()), AdvQuarryMenu.GUI_ID);
 
     public static final LootItemFunctionType ENCHANTED_LOOT_TYPE = Registry.register(Registry.LOOT_FUNCTION_TYPE,
         new ResourceLocation(QuarryPlus.modID, EnchantedLootFunction.NAME), new LootItemFunctionType(EnchantedLootFunction.SERIALIZER));

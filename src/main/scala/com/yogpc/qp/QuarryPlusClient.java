@@ -1,5 +1,6 @@
 package com.yogpc.qp;
 
+import com.yogpc.qp.machines.advquarry.AdvQuarryScreen;
 import com.yogpc.qp.machines.bookmover.BookMoverScreen;
 import com.yogpc.qp.machines.marker.Screen16Marker;
 import com.yogpc.qp.machines.marker.ScreenFlexMarker;
@@ -10,6 +11,7 @@ import com.yogpc.qp.machines.mover.MoverScreen;
 import com.yogpc.qp.machines.placer.PlacerScreen;
 import com.yogpc.qp.machines.workbench.ScreenWorkbench;
 import com.yogpc.qp.render.Render16Marker;
+import com.yogpc.qp.render.RenderAdvQuarry;
 import com.yogpc.qp.render.RenderFlexMarker;
 import com.yogpc.qp.render.RenderMarker;
 import com.yogpc.qp.render.RenderQuarry;
@@ -34,6 +36,7 @@ public class QuarryPlusClient {
         BlockEntityRenderers.register(Holder.MARKER_TYPE, RenderMarker::new);
         BlockEntityRenderers.register(Holder.FLEX_MARKER_TYPE, RenderFlexMarker::new);
         BlockEntityRenderers.register(Holder.MARKER_16_TYPE, Render16Marker::new);
+        BlockEntityRenderers.register(Holder.ADV_QUARRY_TYPE, RenderAdvQuarry::new);
 
         MenuScreens.register(Holder.FLEX_MARKER_MENU_TYPE, ScreenFlexMarker::new);
         MenuScreens.register(Holder.MARKER_16_MENU_TYPE, Screen16Marker::new);
@@ -44,5 +47,6 @@ public class QuarryPlusClient {
         MenuScreens.register(Holder.PLACER_MENU_TYPE, PlacerScreen::new);
         MenuScreens.register(Holder.BOOK_MOVER_MENU_TYPE, BookMoverScreen::new);
         MenuScreens.register(Holder.CREATIVE_GENERATOR_MENU_TYPE, CreativeGeneratorScreen::new);
+        MenuScreens.register(Holder.ADV_QUARRY_MENU_TYPE, AdvQuarryScreen::new);
     }
 }
