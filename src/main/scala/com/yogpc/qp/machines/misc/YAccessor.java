@@ -5,6 +5,7 @@ import com.yogpc.qp.machines.quarry.TileQuarry;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.packet.LevelMessage;
 import javax.annotation.Nullable;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 public abstract class YAccessor {
@@ -15,6 +16,8 @@ public abstract class YAccessor {
     abstract IMessage makeMessage();
 
     abstract int getLimitTop();
+
+    abstract boolean stillValid(Player player);
 
     @Nullable
     public static YAccessor get(@Nullable BlockEntity entity) {
@@ -54,6 +57,11 @@ class QuarryYAccessor extends YAccessor {
     int getLimitTop() {
         return quarry.getArea() != null ? quarry.getArea().minY() : quarry.getBlockPos().getY();
     }
+
+    @Override
+    boolean stillValid(Player player) {
+        return quarry.stillValid(player);
+    }
 }
 
 class MiningWellYAccessor extends YAccessor {
@@ -82,5 +90,10 @@ class MiningWellYAccessor extends YAccessor {
     @Override
     int getLimitTop() {
         return miningWell.getBlockPos().getY();
+    }
+
+    @Override
+    boolean stillValid(Player player) {
+        return miningWell.stillValid(player);
     }
 }

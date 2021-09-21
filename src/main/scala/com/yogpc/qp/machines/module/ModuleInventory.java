@@ -11,10 +11,12 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.utils.MapMulti;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.util.INBTSerializable;
@@ -80,6 +82,13 @@ public class ModuleInventory extends SimpleContainer implements INBTSerializable
     public void deserializeNBT(CompoundTag nbt) {
         var list = nbt.getList("inventory", Tag.TAG_COMPOUND);
         fromTag(list);
+    }
+
+    @Override
+    public boolean stillValid(Player player) {
+        if (holder instanceof PowerTile powerTile)
+            return powerTile.stillValid(player);
+        return super.stillValid(player);
     }
 
     public static List<QuarryModule> loadModulesFromTag(CompoundTag tag) {

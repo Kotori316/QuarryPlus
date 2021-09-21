@@ -185,11 +185,6 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
     }
 
     @Override
-    public boolean stillValid(Player player) {
-        return level != null && player.distanceToSqr(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ()) <= 64;
-    }
-
-    @Override
     public void clearContent() {
         ingredientInventory.clear();
         updateRecipeOutputs();

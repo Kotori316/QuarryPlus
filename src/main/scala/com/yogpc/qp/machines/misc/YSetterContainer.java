@@ -31,7 +31,7 @@ public class YSetterContainer extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player playerIn) {
-        return true;
+        return yAccessor != null && yAccessor.stillValid(playerIn);
     }
 
     @Override
