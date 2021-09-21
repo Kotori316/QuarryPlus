@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -192,6 +193,10 @@ public class PowerTile extends BlockEntity implements IEnergyStorage {
             return CapabilityEnergy.ENERGY.orEmpty(cap, LazyOptional.of(() -> this));
         }
         return super.getCapability(cap, side);
+    }
+
+    public final Component getDisplayName() {
+        return getBlockState().getBlock().getName();
     }
 
     public enum Reason {

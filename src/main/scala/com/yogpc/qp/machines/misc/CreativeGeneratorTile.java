@@ -46,11 +46,6 @@ public class CreativeGeneratorTile extends PowerTile implements MenuProvider {
             .forEach(t -> t.addEnergy(tile.sendEnergy, false));
 
     @Override
-    public Component getDisplayName() {
-        return getBlockState().getBlock().getName();
-    }
-
-    @Override
     public AbstractContainerMenu createMenu(int id, Inventory inventory, Player player) {
         return new CreativeGeneratorMenu(id, player, getBlockPos());
     }
