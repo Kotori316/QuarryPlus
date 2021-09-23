@@ -3,8 +3,13 @@ package com.yogpc.qp.machines;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
@@ -58,4 +63,32 @@ public record Area(int minX, int minY, int minZ, int maxX, int maxY, int maxZ,
             ));
         }
     }
+
+    @Nonnull
+    public static Stream<BlockPos> getFramePosStream(@Nonnull Area area) {
+        return Stream.of(
+            makeSquare(area, area.minY()),
+            makePole(area, area.minY() + 1, area.maxY()),
+            makeSquare(area, area.maxY())
+        ).flatMap(Function.identity());
+    }
+
+    static Stream<BlockPos> makeSquare(Area area, int y) {
+        return Stream.of(
+            IntStream.rangeClosed(area.minX(), area.maxX()).mapToObj(x -> new BlockPos(x, y, area.minZ())), // minX -> maxX, minZ
+            IntStream.rangeClosed(area.minZ(), area.maxZ()).mapToObj(z -> new BlockPos(area.maxX(), y, z)), // maxX, minZ -> maxZ
+            IntStream.iterate(area.maxX(), x -> x >= area.minX(), x -> x - 1).mapToObj(x -> new BlockPos(x, y, area.maxZ())), // maxX -> minX, maxZ
+            IntStream.iterate(area.maxZ(), z -> z >= area.minZ(), z -> z - 1).mapToObj(z -> new BlockPos(area.minX(), y, z)) // minX, maxZ -> minZ
+        ).flatMap(Function.identity());
+    }
+
+    static Stream<BlockPos> makePole(Area area, int yMin, int yMax) {
+        return IntStream.rangeClosed(yMin, yMax).boxed().flatMap(y ->
+            Stream.of(
+                new BlockPos(area.minX(), y, area.minZ()),
+                new BlockPos(area.maxX(), y, area.minZ()),
+                new BlockPos(area.maxX(), y, area.maxZ()),
+                new BlockPos(area.minX(), y, area.maxZ())));
+    }
+
 }
