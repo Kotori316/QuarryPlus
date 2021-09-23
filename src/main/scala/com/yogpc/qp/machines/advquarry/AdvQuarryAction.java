@@ -204,16 +204,18 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
 
     public static class BreakBlock extends AdvQuarryAction {
         private final TargetIterator iterator;
+        private boolean searchEnergyConsumed;
 
         public BreakBlock(TileAdvQuarry quarry) {
             assert quarry.getArea() != null;
             this.iterator = TargetIterator.of(quarry.getArea());
         }
 
-        BreakBlock(TileAdvQuarry quarry, int x, int z) {
+        BreakBlock(TileAdvQuarry quarry, int x, int z, boolean searchEnergyConsumed) {
             assert quarry.getArea() != null;
             this.iterator = TargetIterator.of(quarry.getArea());
             this.iterator.setCurrent(new TargetIterator.XZPair(x, z));
+            this.searchEnergyConsumed = searchEnergyConsumed;
         }
 
         @Override
@@ -221,6 +223,7 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
             var xzPair = iterator.peek();
             tag.putInt("currentX", xzPair.x());
             tag.putInt("currentZ", xzPair.z());
+            tag.putBoolean("searchEnergyConsumed", searchEnergyConsumed);
             return tag;
         }
 
@@ -234,9 +237,15 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
             BreakResult result = null;
             while (result == null || result == BreakResult.SKIPPED) {
                 var target = iterator.peek();
+                if (!searchEnergyConsumed) {
+                    var energy = PowerManager.getAdvSearchEnergy(pos.getY() - quarry.digMinY, quarry);
+                    searchEnergyConsumed = quarry.useEnergy(energy, PowerTile.Reason.ADV_SEARCH, false);
+                }
+                if (!searchEnergyConsumed) break; // Not enough energy.
                 result = quarry.breakBlocks(target.x(), target.z());
                 if (result.isSuccess()) {
                     iterator.next();
+                    searchEnergyConsumed = false;
                     if (!iterator.hasNext()) {
                         // Go to the next work.
                         quarry.setAction(new CheckFluid(quarry));
@@ -258,7 +267,8 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
         AdvQuarryAction fromTag(CompoundTag tag, TileAdvQuarry quarry) {
             int x = tag.getInt("currentX");
             int z = tag.getInt("currentZ");
-            return new BreakBlock(quarry, x, z);
+            boolean searchEnergyConsumed = tag.getBoolean("searchEnergyConsumed");
+            return new BreakBlock(quarry, x, z, searchEnergyConsumed);
         }
     }
 

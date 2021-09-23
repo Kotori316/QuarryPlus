@@ -21,7 +21,13 @@ public class PowerManager {
     public static long getMoveEnergy(double distance, EnchantmentLevel.HasEnchantments enchantments) {
         double distanceEnergy = distance * MOVE_HEAD_BASE;
         double efficiencyBalanced = Math.pow(FIFTH_ROOT_OF_10, enchantments.efficiencyLevel()) * distanceEnergy;
-        return (long) efficiencyBalanced / (1 + Math.max(0, enchantments.unbreakingLevel()));
+        return (long) (efficiencyBalanced / (1 + Math.max(0, enchantments.unbreakingLevel())));
+    }
+
+    public static long getAdvSearchEnergy(int blocks, EnchantmentLevel.HasEnchantments enchantments) {
+        long heightEnergy = blocks * MOVE_HEAD_BASE * 50;
+        double efficiencyBalanced = Math.pow(FIFTH_ROOT_OF_10, enchantments.efficiencyLevel()) * heightEnergy;
+        return (long) (efficiencyBalanced / (1 + Math.max(0, enchantments.unbreakingLevel())));
     }
 
     /**
