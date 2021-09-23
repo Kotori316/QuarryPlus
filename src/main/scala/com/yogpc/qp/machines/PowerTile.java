@@ -100,14 +100,14 @@ public class PowerTile extends BlockEntity implements IEnergyStorage {
      */
     public final boolean useEnergy(long amount, Reason reason, boolean force) {
         assert level != null;
+        if (amount > maxEnergy && QuarryPlus.config.debug())
+            QuarryPlus.LOGGER.warn("{} required {} FE, which is over {}.", energyCounter.name, amount / ONE_FE, getMaxEnergyStored());
         if (energy >= amount || force) {
             energy -= amount;
             energyCounter.useEnergy(level.getGameTime(), amount, reason);
             setChanged();
             return true;
         } else {
-            if (amount > maxEnergy && QuarryPlus.config.debug())
-                QuarryPlus.LOGGER.warn("{} required {} FE, which is over {}.", energyCounter.name, amount / ONE_FE, getMaxEnergyStored());
             return false;
         }
     }
