@@ -100,7 +100,7 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
         @Override
         public void tick(Level level, BlockPos pos, BlockState state, TileAdvQuarry quarry) {
             if (quarry.getEnergy() > quarry.getMaxEnergy() / 4) {
-                quarry.action = new MakeFrame(quarry.getArea());
+                quarry.setAction(new MakeFrame(quarry.getArea()));
             }
         }
     }
@@ -166,7 +166,7 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
                     }
                 } else {
                     // Go to the next work.
-                    quarry.action = new BreakBlock(quarry);
+                    quarry.setAction(new BreakBlock(quarry));
                     break;
                 }
             }
@@ -234,7 +234,7 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
                 iterator.next();
                 if (!iterator.hasNext()) {
                     // Go to the next work.
-                    quarry.action = Finished.FINISHED;
+                    quarry.setAction(Finished.FINISHED);
                 }
             }
         }

@@ -27,6 +27,8 @@ import com.yogpc.qp.machines.module.QuarryModule;
 import com.yogpc.qp.machines.module.QuarryModuleProvider;
 import com.yogpc.qp.machines.module.ReplacerModule;
 import com.yogpc.qp.packet.ClientSync;
+import com.yogpc.qp.packet.ClientSyncMessage;
+import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.CacheEntry;
 import com.yogpc.qp.utils.MapMulti;
 import javax.annotation.Nullable;
@@ -73,7 +75,7 @@ public class TileAdvQuarry extends PowerTile implements
     @Nullable
     Area area = null;
     private List<EnchantmentLevel> enchantments = List.of();
-    AdvQuarryAction action = AdvQuarryAction.Waiting.WAITING;
+    private AdvQuarryAction action = AdvQuarryAction.Waiting.WAITING;
 
     public TileAdvQuarry(BlockPos pos, BlockState state) {
         super(Holder.ADV_QUARRY_TYPE, pos, state);
@@ -172,6 +174,20 @@ public class TileAdvQuarry extends PowerTile implements
 
     public AdvQuarryAction getAction() {
         return action;
+    }
+
+    void setAction(AdvQuarryAction action) {
+        if (this.action == AdvQuarryAction.Waiting.WAITING)
+            if (level != null) {
+                level.setBlock(getBlockPos(), getBlockState().setValue(BlockAdvQuarry.WORKING, true), Block.UPDATE_ALL);
+            }
+        this.action = action;
+        if (action == AdvQuarryAction.Finished.FINISHED)
+            if (level != null) {
+                level.setBlock(getBlockPos(), getBlockState().setValue(BlockAdvQuarry.WORKING, false), Block.UPDATE_ALL);
+            }
+        if (level != null && !level.isClientSide)
+            PacketHandler.sendToClient(new ClientSyncMessage(this), level);
     }
 
     @Override
