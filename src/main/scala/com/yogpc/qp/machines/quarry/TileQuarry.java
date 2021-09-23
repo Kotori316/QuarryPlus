@@ -16,6 +16,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.BreakResult;
 import com.yogpc.qp.machines.CheckerLog;
+import com.yogpc.qp.machines.EnchantmentHolder;
 import com.yogpc.qp.machines.EnchantmentLevel;
 import com.yogpc.qp.machines.ItemConverter;
 import com.yogpc.qp.machines.MachineStorage;
@@ -365,12 +366,6 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         return tag;
     }
 
-    private ItemStack getPickaxe() {
-        var stack = new ItemStack(Items.NETHERITE_PICKAXE);
-        enchantments.forEach(e -> stack.enchant(e.enchantment(), e.level()));
-        return stack;
-    }
-
     double headSpeed() {
         int l = efficiencyLevel();
         if (l >= 4) {
@@ -465,13 +460,6 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         return modules;
     }
 
-    private EnchantmentHolder makeHolder() {
-        return new EnchantmentHolder(EnchantmentLevel.HasEnchantments.super.efficiencyLevel(),
-            EnchantmentLevel.HasEnchantments.super.unbreakingLevel(),
-            EnchantmentLevel.HasEnchantments.super.fortuneLevel(),
-            EnchantmentLevel.HasEnchantments.super.silktouchLevel());
-    }
-
     @Override
     public int efficiencyLevel() {
         return cache.enchantments.getValue(getLevel()).efficiency();
@@ -502,10 +490,8 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
                 () -> TileQuarry.this.getReplacerModule().map(ReplacerModule::getState).orElse(Blocks.AIR.defaultBlockState()));
             netherTop = CacheEntry.supplierCache(100,
                 QuarryPlus.config.common.netherTop::get);
-            enchantments = CacheEntry.supplierCache(1000, TileQuarry.this::makeHolder);
+            enchantments = CacheEntry.supplierCache(1000, () -> EnchantmentHolder.makeHolder(TileQuarry.this));
         }
     }
 
-    private record EnchantmentHolder(int efficiency, int unbreaking, int fortune, int silktouch) {
-    }
 }
