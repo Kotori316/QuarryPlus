@@ -10,6 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
@@ -60,10 +61,10 @@ public class AdvActionMessage implements IMessage {
                 .ifPresent(quarry -> {
                     switch (message.action) {
                         case CHANGE_RANGE -> quarry.area = message.area;
-                        case MODULE_INV -> {
-                        }
-                        case QUICK_START -> {
-                        }
+                        case MODULE_INV -> PacketHandler.getPlayer(supplier.get())
+                            .flatMap(MapMulti.optCast(ServerPlayer.class))
+                            .ifPresent(quarry::openModuleGui);
+                        case QUICK_START -> quarry.setAction(new AdvQuarryAction.BreakBlock(quarry));
                     }
                 }));
     }

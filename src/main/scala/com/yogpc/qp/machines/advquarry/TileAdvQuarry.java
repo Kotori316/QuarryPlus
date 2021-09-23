@@ -22,6 +22,7 @@ import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QuarryFakePlayer;
+import com.yogpc.qp.machines.module.ContainerQuarryModule;
 import com.yogpc.qp.machines.module.ModuleInventory;
 import com.yogpc.qp.machines.module.QuarryModule;
 import com.yogpc.qp.machines.module.QuarryModuleProvider;
@@ -38,6 +39,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.EntitySelector;
@@ -428,6 +430,10 @@ public class TileAdvQuarry extends PowerTile implements
                 }
             }
         }
+    }
+
+    void openModuleGui(ServerPlayer player) {
+        ContainerQuarryModule.InteractionObject.openGUI(this, player, getDisplayName());
     }
 
     @Override
