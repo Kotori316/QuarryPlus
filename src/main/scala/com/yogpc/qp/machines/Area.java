@@ -73,17 +73,27 @@ public record Area(int minX, int minY, int minZ, int maxX, int maxY, int maxZ,
         ).flatMap(Function.identity());
     }
 
+    static IntStream to(int first, int endInclusive) {
+        if (first < endInclusive) {
+            return IntStream.rangeClosed(first, endInclusive);
+        } else if (first > endInclusive) {
+            return IntStream.iterate(first, i -> i >= endInclusive, i -> i - 1);
+        } else { // first == endInclusive
+            return IntStream.of(first);
+        }
+    }
+
     static Stream<BlockPos> makeSquare(Area area, int y) {
         return Stream.of(
-            IntStream.rangeClosed(area.minX(), area.maxX()).mapToObj(x -> new BlockPos(x, y, area.minZ())), // minX -> maxX, minZ
-            IntStream.rangeClosed(area.minZ(), area.maxZ()).mapToObj(z -> new BlockPos(area.maxX(), y, z)), // maxX, minZ -> maxZ
-            IntStream.iterate(area.maxX(), x -> x >= area.minX(), x -> x - 1).mapToObj(x -> new BlockPos(x, y, area.maxZ())), // maxX -> minX, maxZ
-            IntStream.iterate(area.maxZ(), z -> z >= area.minZ(), z -> z - 1).mapToObj(z -> new BlockPos(area.minX(), y, z)) // minX, maxZ -> minZ
+            to(area.minX(), area.maxX()).mapToObj(x -> new BlockPos(x, y, area.minZ())), // minX -> maxX, minZ
+            to(area.minZ(), area.maxZ()).mapToObj(z -> new BlockPos(area.maxX(), y, z)), // maxX, minZ -> maxZ
+            to(area.maxX(), area.minX()).mapToObj(x -> new BlockPos(x, y, area.maxZ())), // maxX -> minX, maxZ
+            to(area.maxZ(), area.minZ()).mapToObj(z -> new BlockPos(area.minX(), y, z)) // minX, maxZ -> minZ
         ).flatMap(Function.identity());
     }
 
     static Stream<BlockPos> makePole(Area area, int yMin, int yMax) {
-        return IntStream.rangeClosed(yMin, yMax).boxed().flatMap(y ->
+        return to(yMin, yMax).boxed().flatMap(y ->
             Stream.of(
                 new BlockPos(area.minX(), y, area.minZ()),
                 new BlockPos(area.maxX(), y, area.minZ()),

@@ -11,12 +11,15 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -82,6 +85,44 @@ class AreaTest {
                     new Area(new Vec3i(random.nextInt(1024) - 512, random.nextInt(1024) - 512, random.nextInt(1024) - 512),
                         new Vec3i(random.nextInt(1024) - 512, random.nextInt(1024) - 512, random.nextInt(1024) - 512), Direction.getRandom(random)))
                 .limit(50));
+    }
+
+    @Nested
+    class ToTest {
+        @Test
+        @DisplayName("0 to 4")
+        void intStreamTo1() {
+            var array = Area.to(0, 4).toArray();
+            assertArrayEquals(new int[]{0, 1, 2, 3, 4}, array);
+        }
+
+        @Test
+        @DisplayName("-2 to 3")
+        void intStreamTo2() {
+            var array = Area.to(-2, 3).toArray();
+            assertArrayEquals(new int[]{-2, -1, 0, 1, 2, 3}, array);
+        }
+
+        @Test
+        @DisplayName("4 to 0")
+        void intStreamTo3() {
+            var array = Area.to(4, 0).toArray();
+            assertArrayEquals(new int[]{4, 3, 2, 1, 0}, array);
+        }
+
+        @Test
+        @DisplayName("3 to -2")
+        void intStreamTo4() {
+            var array = Area.to(3, -2).toArray();
+            assertArrayEquals(new int[]{3, 2, 1, 0, -1, -2}, array);
+        }
+
+        @Test
+        @DisplayName("4 to 4")
+        void intStreamTo5() {
+            var array = Area.to(4, 4).toArray();
+            assertArrayEquals(new int[]{4}, array);
+        }
     }
 
     @Test
