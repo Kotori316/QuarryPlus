@@ -187,9 +187,12 @@ public class TileAdvQuarry extends PowerTile implements
         if (action == AdvQuarryAction.Finished.FINISHED)
             if (level != null) {
                 level.setBlock(getBlockPos(), getBlockState().setValue(BlockAdvQuarry.WORKING, false), Block.UPDATE_ALL);
+                logUsage(QuarryPlus.LOGGER::info);
             }
-        if (level != null && !level.isClientSide)
+        if (level != null && !level.isClientSide) {
             PacketHandler.sendToClient(new ClientSyncMessage(this), level);
+            QuarryPlus.LOGGER.debug("ChunkDestroyer({}) State changed to {}.", getBlockPos(), action);
+        }
     }
 
     @Override
@@ -291,7 +294,7 @@ public class TileAdvQuarry extends PowerTile implements
                 e.addExp(breakEvent.getExpToDrop());
             });
         }
-
+        setChanged();
         return BreakResult.SUCCESS;
     }
 
@@ -323,9 +326,11 @@ public class TileAdvQuarry extends PowerTile implements
             var state = targetWorld.getBlockState(mutableBlockPos);
             var fluidState = targetWorld.getFluidState(mutableBlockPos);
             if (fluidState.isEmpty()) {
+                if (state.isAir() || !canBreak(targetWorld, mutableBlockPos, state))
+                    continue;
                 var breakEvent = new BlockEvent.BreakEvent(targetWorld, mutableBlockPos, state, fakePlayer);
                 MinecraftForge.EVENT_BUS.post(breakEvent);
-                if (breakEvent.isCanceled() || state.isAir() || !canBreak(targetWorld, mutableBlockPos, state)) {
+                if (breakEvent.isCanceled()) {
                     continue; // Not breakable. Ignore.
                 }
                 exp.getAndAdd(breakEvent.getExpToDrop());
@@ -340,9 +345,9 @@ public class TileAdvQuarry extends PowerTile implements
                 toDrain.add(Pair.of(mutableBlockPos.immutable(), state));
             }
         }
-        if (!useEnergy(requiredEnergy, Reason.BREAK_BLOCK, false)) {
-            return BreakResult.NOT_ENOUGH_ENERGY;
-        }
+        if (toBreak.isEmpty() && toDrain.isEmpty()) return BreakResult.SKIPPED;
+        useEnergy(requiredEnergy, Reason.BREAK_BLOCK, true);
+
         // Drain fluids
         for (Pair<BlockPos, BlockState> pair : toDrain) {
             if (pair.getRight().getBlock() instanceof BucketPickup fluidBlock) {
@@ -367,6 +372,7 @@ public class TileAdvQuarry extends PowerTile implements
                 e.addExp(exp.get());
             });
         }
+        setChanged();
         return BreakResult.SUCCESS;
     }
 
