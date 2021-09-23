@@ -1,13 +1,19 @@
 package com.yogpc.qp.machines;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.Tag;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -36,6 +42,12 @@ public record ItemConverter(
             .orElse(before);
     }
 
+    public ItemConverter combined(ItemConverter other) {
+        var newList = new ArrayList<>(this.conversionMap());
+        newList.addAll(other.conversionMap());
+        return new ItemConverter(newList);
+    }
+
     public static ItemConverter defaultConverter() {
         if (QuarryPlus.config.common.convertDeepslateOres.get()) {
             return deepslateConverter();
@@ -59,5 +71,42 @@ public record ItemConverter(
             }
         };
         return new ItemConverter(List.of(Pair.of(predicate, function)));
+    }
+
+    /**
+     * This method will return an ItemConverter instance which removes these items.
+     * <ul>
+     *     <li>Stone</li>
+     *     <li>Cobblestone</li>
+     *     <li>Dirt</li>
+     *     <li>Grass Block</li>
+     *     <li>Netherrack</li>
+     *     <li>Sandstone</li>
+     *     <li>Deepslate</li>
+     * </ul>
+     *
+     * @return ItemConverter instance for {@link com.yogpc.qp.machines.advquarry.TileAdvQuarry Chunk Destroyer}.
+     */
+    @SuppressWarnings("SpellCheckingInspection") // For javadoc
+    public static ItemConverter advQuarryConverter() {
+        Function<ItemKey, ItemKey> function = itemKey -> new ItemKey(ItemStack.EMPTY);
+        return new ItemConverter(Stream.of(
+                tagPredicate(Tags.Items.STONE),
+                tagPredicate(Tags.Items.COBBLESTONE),
+                itemPredicate(Items.DIRT),
+                itemPredicate(Items.GRASS_BLOCK),
+                itemPredicate(Items.NETHERRACK),
+                itemPredicate(Items.DEEPSLATE),
+                tagPredicate(Tags.Items.SANDSTONE)
+            ).map(p -> Map.entry(p, function))
+            .toList());
+    }
+
+    static Predicate<ItemKey> tagPredicate(Tag.Named<Item> tag) {
+        return itemKey -> itemKey.item().getTags().contains(tag.getName());
+    }
+
+    static Predicate<ItemKey> itemPredicate(Item item) {
+        return itemKey -> itemKey.item() == item;
     }
 }
