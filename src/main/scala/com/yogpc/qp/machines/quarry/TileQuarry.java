@@ -45,8 +45,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
@@ -222,6 +220,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         return breakBlock(targetPos, true);
     }
 
+    @SuppressWarnings("DuplicatedCode")
     public BreakResult breakBlock(BlockPos targetPos, boolean requireEnergy) {
         var targetWorld = getTargetWorld();
         // Gather Drops
@@ -260,7 +259,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
             return BreakResult.NOT_ENOUGH_ENERGY;
         }
         // Get drops
-        var drops = Block.getDrops(state, targetWorld, targetPos, targetWorld.getBlockEntity(targetPos), null, pickaxe);
+        var drops = Block.getDrops(state, targetWorld, targetPos, targetWorld.getBlockEntity(targetPos), fakePlayer, pickaxe);
         drops.stream().map(itemConverter::map).forEach(this.storage::addItem);
         targetWorld.setBlock(targetPos, getReplacementState(), Block.UPDATE_ALL);
         // Get experiments
