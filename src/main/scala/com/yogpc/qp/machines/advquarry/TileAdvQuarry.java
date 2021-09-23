@@ -46,6 +46,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.BucketPickup;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.LiquidBlockContainer;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.MinecraftForge;
@@ -296,6 +299,7 @@ public class TileAdvQuarry extends PowerTile implements
                     e.addExp(orb.getValue());
                     orb.kill();
                 }));
+        checkEdgeFluid(x, z, targetWorld);
         long requiredEnergy = 0;
         var exp = new AtomicInteger(0);
         List<Pair<BlockPos, BlockState>> toBreak = new ArrayList<>();
@@ -332,6 +336,63 @@ public class TileAdvQuarry extends PowerTile implements
             });
         }
         return BreakResult.SUCCESS;
+    }
+
+    void checkEdgeFluid(int x, int z, ServerLevel targetWorld) {
+        assert area != null;
+        boolean flagMinX = x - 1 == area.minX();
+        boolean flagMaxX = x + 1 == area.maxX();
+        boolean flagMinZ = z - 1 == area.minZ();
+        boolean flagMaxZ = z + 1 == area.maxZ();
+        if (flagMinX) {
+            removeFluidAtEdge(area.minX(), z, targetWorld);
+        }
+        if (flagMaxX) {
+            removeFluidAtEdge(area.maxX(), z, targetWorld);
+        }
+        if (flagMinZ) {
+            removeFluidAtEdge(x, area.minZ(), targetWorld);
+        }
+        if (flagMaxZ) {
+            removeFluidAtEdge(x, area.maxZ(), targetWorld);
+        }
+        if (flagMinX && flagMinZ) {
+            removeFluidAtEdge(area.minX(), area.minZ(), targetWorld);
+        }
+        if (flagMinX && flagMaxZ) {
+            removeFluidAtEdge(area.minX(), area.maxZ(), targetWorld);
+        }
+        if (flagMaxX && flagMinZ) {
+            removeFluidAtEdge(area.maxX(), area.minZ(), targetWorld);
+        }
+        if (flagMaxX && flagMaxZ) {
+            removeFluidAtEdge(area.maxX(), area.maxZ(), targetWorld);
+        }
+    }
+
+    void removeFluidAtEdge(int x, int z, ServerLevel world) {
+        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(x, 0, z);
+        for (int y = getBlockPos().getY() - 1; y > digMinY; y--) {
+            pos.setY(y);
+            var fluidState = world.getFluidState(pos);
+            if (!fluidState.isEmpty()) {
+                var state = world.getBlockState(pos);
+                if (state.getBlock() instanceof BucketPickup fluidBlock) {
+                    useEnergy(PowerManager.getBreakBlockFluidEnergy(this), Reason.REMOVE_FLUID, true);
+                    var bucketItem = fluidBlock.pickupBlock(world, pos, state);
+                    storage.addFluid(bucketItem);
+                    if (world.getBlockState(pos).isAir() || (fluidBlock instanceof LiquidBlock && !fluidState.isSource())) {
+                        world.setBlock(pos, Holder.BLOCK_FRAME.getDammingState(), Block.UPDATE_ALL);
+                    }
+                } else if (state.getBlock() instanceof LiquidBlockContainer) {
+                    float hardness = state.getDestroySpeed(world, pos);
+                    useEnergy(PowerManager.getBreakEnergy(hardness, this), Reason.REMOVE_FLUID, true);
+                    var drops = Block.getDrops(state, world, pos, world.getBlockEntity(pos), null, this.getPickaxe());
+                    drops.forEach(this.storage::addItem);
+                    world.setBlock(pos, Holder.BLOCK_FRAME.getDammingState(), Block.UPDATE_ALL);
+                }
+            }
+        }
     }
 
     private class QuarryCache {
