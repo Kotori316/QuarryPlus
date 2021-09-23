@@ -103,9 +103,11 @@ class BlockDrop extends QuarryPlusDataProvider.QuarryDataProvider {
             .add(QuarryLootFunction.builder()).add(ModuleLootFunction.builder());
         var advPump = LootTableSerializeHelper.withEnchantedDrop(Holder.BLOCK_ADV_PUMP)
             .add(ModuleLootFunction.builder());
+        var advQuarry = LootTableSerializeHelper.withEnchantedDrop(Holder.BLOCK_ADV_QUARRY)
+            .add(ModuleLootFunction.builder());
 
         return Stream.of(notMachines, enchanted,
-                Stream.of(quarry, advPump))
+                Stream.of(quarry, advPump, advQuarry))
             .flatMap(Function.identity()).toList();
     }
 }
