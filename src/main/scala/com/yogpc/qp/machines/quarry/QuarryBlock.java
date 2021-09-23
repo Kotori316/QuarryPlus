@@ -176,6 +176,6 @@ public class QuarryBlock extends QPBlock implements EntityBlock {
             .findFirst()
             .map(a -> a.assureY(4))
             .orElse(new Area(pos.relative(quarryBehind).relative(quarryBehind.getCounterClockWise(), 5),
-                pos.relative(quarryBehind, 11).relative(quarryBehind.getClockWise(), 5).relative(Direction.UP, 4), quarryBehind.getOpposite()));
+                pos.relative(quarryBehind, 11).relative(quarryBehind.getClockWise(), 5).relative(Direction.UP, 4), quarryBehind));
     }
 }

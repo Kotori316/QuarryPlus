@@ -112,7 +112,7 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
                 var enchantment = EnchantmentLevel.fromItem(stack);
                 enchantment.sort(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR);
                 quarry.setEnchantments(enchantment);
-                quarry.area = findArea(level, pos, facing, quarry.getStorage()::addItem);
+                quarry.area = findArea(level, pos, facing.getOpposite(), quarry.getStorage()::addItem);
                 PacketHandler.sendToClient(new ClientSyncMessage(quarry), level);
             }
         }
