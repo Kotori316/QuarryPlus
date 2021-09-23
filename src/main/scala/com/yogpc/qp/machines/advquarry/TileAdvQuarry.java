@@ -411,6 +411,26 @@ public class TileAdvQuarry extends PowerTile implements
         }
     }
 
+    @Override
+    public int efficiencyLevel() {
+        return cache.enchantments.getValue(getLevel()).efficiency();
+    }
+
+    @Override
+    public int unbreakingLevel() {
+        return cache.enchantments.getValue(getLevel()).unbreaking();
+    }
+
+    @Override
+    public int fortuneLevel() {
+        return cache.enchantments.getValue(getLevel()).fortune();
+    }
+
+    @Override
+    public int silktouchLevel() {
+        return cache.enchantments.getValue(getLevel()).silktouch();
+    }
+
     private class QuarryCache {
         final CacheEntry<BlockState> replaceState;
         final CacheEntry<Integer> netherTop;
