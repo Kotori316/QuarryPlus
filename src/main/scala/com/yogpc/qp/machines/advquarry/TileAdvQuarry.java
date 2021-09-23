@@ -8,15 +8,23 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.yogpc.qp.Holder;
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
+import com.yogpc.qp.machines.BreakResult;
 import com.yogpc.qp.machines.CheckerLog;
+import com.yogpc.qp.machines.EnchantmentHolder;
 import com.yogpc.qp.machines.EnchantmentLevel;
+import com.yogpc.qp.machines.ItemConverter;
 import com.yogpc.qp.machines.MachineStorage;
+import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.PowerTile;
+import com.yogpc.qp.machines.QuarryFakePlayer;
 import com.yogpc.qp.machines.module.ModuleInventory;
 import com.yogpc.qp.machines.module.QuarryModule;
 import com.yogpc.qp.machines.module.QuarryModuleProvider;
+import com.yogpc.qp.machines.module.ReplacerModule;
 import com.yogpc.qp.packet.ClientSync;
+import com.yogpc.qp.utils.CacheEntry;
 import com.yogpc.qp.utils.MapMulti;
 import javax.annotation.Nullable;
 import net.minecraft.ChatFormatting;
@@ -24,12 +32,18 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class TileAdvQuarry extends PowerTile implements
@@ -43,6 +57,8 @@ public class TileAdvQuarry extends PowerTile implements
     private final MachineStorage storage = new MachineStorage();
 
     // Work
+    private final QuarryCache cache = new QuarryCache();
+    private final ItemConverter itemConverter = ItemConverter.defaultConverter();
     public int digMinY;
     @Nullable
     Area area = null;
@@ -57,6 +73,7 @@ public class TileAdvQuarry extends PowerTile implements
     public List<? extends Component> getDebugLogs() {
         return Stream.of(
             "%sArea:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, area),
+            "%sAction:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, action),
             "%sRemoveBedrock:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, hasBedrockModule()),
             "%sDigMinY:%s %d".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, digMinY),
             "%sModules:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, modules),
@@ -125,7 +142,7 @@ public class TileAdvQuarry extends PowerTile implements
             .map(EnchantmentLevel::new)
             .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR)
             .toList());
-        action = AdvQuarryAction.fromNbt(nbt.getCompound("action"));
+        action = AdvQuarryAction.fromNbt(nbt.getCompound("action"), this);
     }
 
     /**
@@ -150,6 +167,27 @@ public class TileAdvQuarry extends PowerTile implements
     @Override
     public List<EnchantmentLevel> getEnchantments() {
         return this.enchantments;
+    }
+
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    public boolean canBreak(Level targetWorld, BlockPos targetPos, BlockState state) {
+        if (state.isAir()) return true;
+        var unbreakable = state.getDestroySpeed(targetWorld, targetPos) < 0;
+        if (unbreakable) {
+            if (hasBedrockModule() && state.getBlock() == Blocks.BEDROCK) {
+                return !targetWorld.dimension().equals(Level.END);
+            } else {
+                return false;
+            }
+        } else if (!targetWorld.getFluidState(targetPos).isEmpty()) {
+            return true;
+        } else {
+            return getReplacementState() != state;
+        }
+    }
+
+    BlockState getReplacementState() {
+        return cache.replaceState.getValue(level);
     }
 
     @Override
@@ -191,4 +229,61 @@ public class TileAdvQuarry extends PowerTile implements
     public AdvQuarryMenu createMenu(int id, Inventory p, Player player) {
         return new AdvQuarryMenu(id, player, getBlockPos());
     }
+
+    public ServerLevel getTargetWorld() {
+        return (ServerLevel) this.level;
+    }
+
+    public BreakResult breakOneBlock(BlockPos targetPos, boolean requireEnergy) {
+        var targetWorld = getTargetWorld();
+        var pickaxe = getPickaxe();
+        var fakePlayer = QuarryFakePlayer.get(targetWorld);
+        fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, pickaxe);
+        // Check breakable
+        var state = targetWorld.getBlockState(targetPos);
+        var breakEvent = new BlockEvent.BreakEvent(targetWorld, targetPos, state, fakePlayer);
+        MinecraftForge.EVENT_BUS.post(breakEvent);
+        if (breakEvent.isCanceled()) {
+            return BreakResult.FAIL_EVENT;
+        }
+        if (state.isAir() || !canBreak(targetWorld, targetPos, state)) {
+            return BreakResult.SKIPPED;
+        }
+        // if (hasPumpModule()) checkEdgeFluid(targetPos, targetWorld, this);
+
+        // Break block
+        var hardness = state.getDestroySpeed(targetWorld, targetPos);
+        if (requireEnergy && !useEnergy(PowerManager.getBreakEnergy(hardness, this), Reason.BREAK_BLOCK, false)) {
+            return BreakResult.NOT_ENOUGH_ENERGY;
+        }
+        // Get drops
+        var drops = Block.getDrops(state, targetWorld, targetPos, targetWorld.getBlockEntity(targetPos), null, pickaxe);
+        drops.stream().map(itemConverter::map).forEach(this.storage::addItem);
+        targetWorld.setBlock(targetPos, getReplacementState(), Block.UPDATE_ALL);
+        // Get experiments
+        if (breakEvent.getExpToDrop() > 0) {
+            getExpModule().ifPresent(e -> {
+                if (requireEnergy)
+                    useEnergy(PowerManager.getExpCollectEnergy(breakEvent.getExpToDrop(), this), Reason.EXP_COLLECT, true);
+                e.addExp(breakEvent.getExpToDrop());
+            });
+        }
+
+        return BreakResult.SUCCESS;
+    }
+
+    private class QuarryCache {
+        final CacheEntry<BlockState> replaceState;
+        final CacheEntry<Integer> netherTop;
+        final CacheEntry<EnchantmentHolder> enchantments;
+
+        public QuarryCache() {
+            replaceState = CacheEntry.supplierCache(5,
+                () -> TileAdvQuarry.this.getReplacerModule().map(ReplacerModule::getState).orElse(Blocks.AIR.defaultBlockState()));
+            netherTop = CacheEntry.supplierCache(100,
+                QuarryPlus.config.common.netherTop::get);
+            enchantments = CacheEntry.supplierCache(1000, () -> EnchantmentHolder.makeHolder(TileAdvQuarry.this));
+        }
+    }
+
 }
