@@ -45,10 +45,10 @@ public class AdvQuarryScreen extends AbstractContainerScreen<AdvQuarryMenu> impl
         var range = getMenu().quarry.getArea();
         if (range != null) {
             var chunkPos = new ChunkPos(getMenu().quarry.getBlockPos());
-            double north = chunkPos.getMinBlockZ() - range.minZ();
-            double south = range.maxZ() - chunkPos.getMaxBlockZ();
-            double east = range.maxX() - chunkPos.getMaxBlockX();
-            double west = chunkPos.getMinBlockX() - range.minX();
+            double north = chunkPos.getMinBlockZ() - range.minZ() - 1;
+            double south = range.maxZ() - chunkPos.getMaxBlockZ() - 1;
+            double east = range.maxX() - chunkPos.getMaxBlockX() - 1;
+            double west = chunkPos.getMinBlockX() - range.minX() - 1;
             this.font.draw(matrices, String.valueOf(north / 16), 79, 17, 0x404040);
             this.font.draw(matrices, String.valueOf(south / 16), 79, 63, 0x404040);
             this.font.draw(matrices, String.valueOf(west / 16), 19, 40, 0x404040);
@@ -79,13 +79,13 @@ public class AdvQuarryScreen extends AbstractContainerScreen<AdvQuarryMenu> impl
         if (b instanceof IndexedButton button) {
             var tile = getMenu().quarry;
             if (button.id() == 8) {
-                if (tile.action == AdvQuarryAction.Waiting.WAITING) {
+                if (tile.getAction() == AdvQuarryAction.Waiting.WAITING) {
                     PacketHandler.sendToServer(new AdvActionMessage(tile, AdvActionMessage.Actions.QUICK_START));
                 }
             } else if (button.id() == 9) {
                 PacketHandler.sendToServer(new AdvActionMessage(tile, AdvActionMessage.Actions.MODULE_INV));
                 //      onClose()
-            } else if (tile.action == AdvQuarryAction.Waiting.WAITING) {
+            } else if (tile.getAction() == AdvQuarryAction.Waiting.WAITING) {
                 var direction = Direction.from3DDataValue(button.id() / 2 + 2);
                 var increase = button.id() % 2 == 0 ? 1 : -1;
                 var shift = Screen.hasShiftDown();
