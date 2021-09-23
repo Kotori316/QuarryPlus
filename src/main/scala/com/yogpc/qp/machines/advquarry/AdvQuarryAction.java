@@ -29,6 +29,7 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
         SERIALIZER_MAP = Stream.of(
                 new WaitingSerializer(),
                 new MakeFrameSerializer(),
+                new BreakBlockSerializer(),
                 new FinishedSerializer()
             ).map(s -> Map.entry(s.key(), s))
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -165,7 +166,7 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
                     }
                 } else {
                     // Go to the next work.
-                    quarry.action = Finished.FINISHED;
+                    quarry.action = new BreakBlock(quarry);
                     break;
                 }
             }
@@ -195,6 +196,62 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
         AdvQuarryAction fromTag(CompoundTag tag, TileAdvQuarry quarry) {
             var pos = tag.contains("current") ? BlockPos.of(tag.getLong("current")) : null;
             return new MakeFrame(quarry.getArea(), pos);
+        }
+    }
+
+    public static class BreakBlock extends AdvQuarryAction {
+        private final TargetIterator iterator;
+
+        public BreakBlock(TileAdvQuarry quarry) {
+            assert quarry.getArea() != null;
+            this.iterator = TargetIterator.of(quarry.getArea());
+        }
+
+        BreakBlock(TileAdvQuarry quarry, int x, int z) {
+            assert quarry.getArea() != null;
+            this.iterator = TargetIterator.of(quarry.getArea());
+            this.iterator.setCurrent(new TargetIterator.XZPair(x, z));
+        }
+
+        @Override
+        CompoundTag writeDetail(CompoundTag tag) {
+            var xzPair = iterator.peek();
+            tag.putInt("currentX", xzPair.x());
+            tag.putInt("currentZ", xzPair.z());
+            return tag;
+        }
+
+        @Override
+        String key() {
+            return "BreakBlock";
+        }
+
+        @Override
+        public void tick(Level level, BlockPos pos, BlockState state, TileAdvQuarry quarry) {
+            var target = iterator.peek();
+            var result = quarry.breakBlocks(target.x(), target.z());
+            if (result.isSuccess()) {
+                iterator.next();
+                if (!iterator.hasNext()) {
+                    // Go to the next work.
+                    quarry.action = Finished.FINISHED;
+                }
+            }
+        }
+    }
+
+    private static class BreakBlockSerializer extends Serializer {
+
+        @Override
+        String key() {
+            return "BreakBlock";
+        }
+
+        @Override
+        AdvQuarryAction fromTag(CompoundTag tag, TileAdvQuarry quarry) {
+            int x = tag.getInt("currentX");
+            int z = tag.getInt("currentZ");
+            return new BreakBlock(quarry, x, z);
         }
     }
 

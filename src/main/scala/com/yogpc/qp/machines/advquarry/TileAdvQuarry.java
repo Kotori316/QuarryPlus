@@ -1,9 +1,12 @@
 package com.yogpc.qp.machines.advquarry;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,6 +38,9 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.EntitySelector;
+import net.minecraft.world.entity.ExperienceOrb;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -45,6 +51,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class TileAdvQuarry extends PowerTile implements
     CheckerLog, ModuleInventory.HasModuleInventory, MachineStorage.HasStorage,
@@ -234,6 +241,7 @@ public class TileAdvQuarry extends PowerTile implements
         return (ServerLevel) this.level;
     }
 
+    @SuppressWarnings("DuplicatedCode")
     public BreakResult breakOneBlock(BlockPos targetPos, boolean requireEnergy) {
         var targetWorld = getTargetWorld();
         var pickaxe = getPickaxe();
@@ -249,7 +257,6 @@ public class TileAdvQuarry extends PowerTile implements
         if (state.isAir() || !canBreak(targetWorld, targetPos, state)) {
             return BreakResult.SKIPPED;
         }
-        // if (hasPumpModule()) checkEdgeFluid(targetPos, targetWorld, this);
 
         // Break block
         var hardness = state.getDestroySpeed(targetWorld, targetPos);
@@ -257,7 +264,7 @@ public class TileAdvQuarry extends PowerTile implements
             return BreakResult.NOT_ENOUGH_ENERGY;
         }
         // Get drops
-        var drops = Block.getDrops(state, targetWorld, targetPos, targetWorld.getBlockEntity(targetPos), null, pickaxe);
+        var drops = Block.getDrops(state, targetWorld, targetPos, targetWorld.getBlockEntity(targetPos), fakePlayer, pickaxe);
         drops.stream().map(itemConverter::map).forEach(this.storage::addItem);
         targetWorld.setBlock(targetPos, getReplacementState(), Block.UPDATE_ALL);
         // Get experiments
@@ -269,6 +276,61 @@ public class TileAdvQuarry extends PowerTile implements
             });
         }
 
+        return BreakResult.SUCCESS;
+    }
+
+    BreakResult breakBlocks(int x, int z) {
+        var targetWorld = getTargetWorld();
+        var pickaxe = getPickaxe();
+        var fakePlayer = QuarryFakePlayer.get(targetWorld);
+        fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, pickaxe);
+        var aabb = new AABB(x - 5, digMinY - 5, z - 5, x + 5, getBlockPos().getY() - 1, z + 5);
+        targetWorld.getEntitiesOfClass(ItemEntity.class, aabb, Predicate.not(i -> i.getItem().isEmpty()))
+            .forEach(i -> {
+                storage.addItem(i.getItem());
+                i.kill();
+            });
+        getExpModule().ifPresent(e ->
+            targetWorld.getEntitiesOfClass(ExperienceOrb.class, aabb, EntitySelector.ENTITY_STILL_ALIVE)
+                .forEach(orb -> {
+                    e.addExp(orb.getValue());
+                    orb.kill();
+                }));
+        long requiredEnergy = 0;
+        var exp = new AtomicInteger(0);
+        List<Pair<BlockPos, BlockState>> toBreak = new ArrayList<>();
+        BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos(x, 0, z);
+        for (int y = getBlockPos().getY() - 1; y > digMinY; y--) {
+            mutableBlockPos.setY(y);
+            var state = targetWorld.getBlockState(mutableBlockPos);
+            var breakEvent = new BlockEvent.BreakEvent(targetWorld, mutableBlockPos, state, fakePlayer);
+            MinecraftForge.EVENT_BUS.post(breakEvent);
+            if (breakEvent.isCanceled() || state.isAir() || !canBreak(targetWorld, mutableBlockPos, state)) {
+                continue; // Not breakable. Ignore.
+            }
+            exp.getAndAdd(breakEvent.getExpToDrop());
+            // Calc required energy
+            var hardness = state.getDestroySpeed(targetWorld, mutableBlockPos);
+            var energy = PowerManager.getBreakEnergy(hardness, this);
+            requiredEnergy += energy;
+            toBreak.add(Pair.of(mutableBlockPos.immutable(), state));
+        }
+        if (!useEnergy(requiredEnergy, Reason.BREAK_BLOCK, false)) {
+            return BreakResult.NOT_ENOUGH_ENERGY;
+        }
+        // Get drops
+        toBreak.stream().flatMap(p ->
+                Block.getDrops(p.getRight(), targetWorld, p.getLeft(), targetWorld.getBlockEntity(p.getLeft()), fakePlayer, pickaxe).stream())
+            .map(itemConverter::map).forEach(this.storage::addItem);
+        // Remove blocks
+        toBreak.stream().map(Pair::getLeft)
+            .forEach(p -> targetWorld.setBlock(p, getReplacementState(), Block.UPDATE_CLIENTS));
+        if (exp.get() > 0) {
+            getExpModule().ifPresent(e -> {
+                useEnergy(PowerManager.getExpCollectEnergy(exp.get(), this), Reason.EXP_COLLECT, true);
+                e.addExp(exp.get());
+            });
+        }
         return BreakResult.SUCCESS;
     }
 
