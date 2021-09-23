@@ -341,7 +341,8 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
 
     public void setEnchantments(List<EnchantmentLevel> enchantments) {
         this.enchantments = enchantments;
-        maxEnergy = 10000 * ONE_FE * (efficiencyLevel() + 1);
+        this.cache.enchantments.expire();
+        this.setMaxEnergy(10000 * ONE_FE * (efficiencyLevel() + 1));
     }
 
     /**
