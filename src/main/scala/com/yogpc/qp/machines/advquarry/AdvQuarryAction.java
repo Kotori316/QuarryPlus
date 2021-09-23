@@ -228,13 +228,17 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
 
         @Override
         public void tick(Level level, BlockPos pos, BlockState state, TileAdvQuarry quarry) {
-            var target = iterator.peek();
-            var result = quarry.breakBlocks(target.x(), target.z());
-            if (result.isSuccess()) {
-                iterator.next();
-                if (!iterator.hasNext()) {
-                    // Go to the next work.
-                    quarry.setAction(Finished.FINISHED);
+            BreakResult result = null;
+            while (result == null || result == BreakResult.SKIPPED) {
+                var target = iterator.peek();
+                result = quarry.breakBlocks(target.x(), target.z());
+                if (result.isSuccess()) {
+                    iterator.next();
+                    if (!iterator.hasNext()) {
+                        // Go to the next work.
+                        quarry.setAction(Finished.FINISHED);
+                        break;
+                    }
                 }
             }
         }
