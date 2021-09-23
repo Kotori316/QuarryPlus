@@ -134,12 +134,13 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
             .map(world::getBlockEntity)
             .mapMulti(MapMulti.cast(QuarryMarker.class))
             .flatMap(m -> m.getArea().stream().peek(a -> m.removeAndGetItems().forEach(itemCollector)))
+            .map(a -> a.assureY(4))
             .findFirst()
             .orElseGet(() -> {
                 var chunkPos = new ChunkPos(pos);
                 return new Area(
-                    chunkPos.getMinBlockX(), pos.getY(), chunkPos.getMinBlockZ(),
-                    chunkPos.getMaxBlockX(), pos.getY(), chunkPos.getMaxBlockZ(), quarryBehind
+                    chunkPos.getMinBlockX() - 1, pos.getY(), chunkPos.getMinBlockZ() - 1,
+                    chunkPos.getMaxBlockX() + 1, pos.getY() + 4, chunkPos.getMaxBlockZ() + 1, quarryBehind
                 );
             });
     }

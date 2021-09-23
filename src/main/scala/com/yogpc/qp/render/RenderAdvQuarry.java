@@ -1,7 +1,9 @@
 package com.yogpc.qp.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.advquarry.AdvQuarryAction;
+import com.yogpc.qp.machines.advquarry.BlockAdvQuarry;
 import com.yogpc.qp.machines.advquarry.TileAdvQuarry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -29,11 +31,12 @@ public class RenderAdvQuarry implements BlockEntityRenderer<TileAdvQuarry> {
     }
 
     @Override
+    @SuppressWarnings("DuplicatedCode") // for readability.
     public void render(TileAdvQuarry quarry, float tickDelta, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay) {
-        Minecraft.getInstance().getProfiler().push("quarryplus");
+        Minecraft.getInstance().getProfiler().push(QuarryPlus.modID);
 
         if (quarry.getAction() instanceof AdvQuarryAction.MakeFrame || (quarry.getAction() == AdvQuarryAction.Waiting.WAITING)) {
-            Minecraft.getInstance().getProfiler().push("chunkdestroyer");
+            Minecraft.getInstance().getProfiler().push(BlockAdvQuarry.NAME);
             var range = quarry.getArea();
             if (range != null) {
                 final double d = 1d / 16d;
@@ -46,22 +49,26 @@ public class RenderAdvQuarry implements BlockEntityRenderer<TileAdvQuarry> {
                 var playerZ = player == null ? pos.getZ() : player.getZ(); //z
                 matrices.pushPose();
                 matrices.translate(-pos.getX(), -pos.getY(), -pos.getZ()); // Offset
-                var b1 = Math.abs(playerZ - range.minZ() - 0.5) < 256;
-                var b2 = Math.abs(playerZ - range.maxZ() + 1.5) < 256;
-                var b3 = Math.abs(playerX - range.minX() - 0.5) < 256;
-                var b4 = Math.abs(playerX - range.maxX() + 1.5) < 256;
-                var xMin = Math.max(range.minX() - 0.5, playerX - 128);
-                var xMax = Math.min(range.maxX() + 1.5, playerX + 128);
-                var zMin = Math.max(range.minZ() - 0.5, playerZ - 128);
-                var zMax = Math.min(range.maxZ() + 1.5, playerZ + 128);
+                var startX = range.minX() + 0.5;
+                var startZ = range.minZ() + 0.5;
+                var endZ = range.maxZ() + 0.5;
+                var endX = range.maxX() + 0.5;
+                var b1 = Math.abs(playerZ - startZ) < 256;
+                var b2 = Math.abs(playerZ - endZ) < 256;
+                var b3 = Math.abs(playerX - startX) < 256;
+                var b4 = Math.abs(playerX - endX) < 256;
+                var xMin = Math.max(startX, playerX - 128);
+                var xMax = Math.min(endX, playerX + 128);
+                var zMin = Math.max(startZ, playerZ - 128);
+                var zMax = Math.min(endZ, playerZ + 128);
                 if (b1)
-                    Box.apply(xMin, range.minY(), range.minZ() - 0.5, xMax, range.maxY(), range.minZ() - 0.5, d, d, d, false, false).render(buffer, matrices, sprite, color);
+                    Box.apply(xMin, range.minY(), startZ, xMax, range.minY(), startZ, d, d, d, false, false).render(buffer, matrices, sprite, color);
                 if (b2)
-                    Box.apply(xMin, range.minY(), range.maxZ() + 1.5, xMax, range.maxY(), range.maxZ() + 1.5, d, d, d, false, false).render(buffer, matrices, sprite, color);
+                    Box.apply(xMin, range.minY(), endZ, xMax, range.minY(), endZ, d, d, d, false, false).render(buffer, matrices, sprite, color);
                 if (b3)
-                    Box.apply(range.minX() - 0.5, range.minY(), zMin, range.minX() - 0.5, range.maxY(), zMax, d, d, d, false, false).render(buffer, matrices, sprite, color);
+                    Box.apply(startX, range.minY(), zMin, startX, range.minY(), zMax, d, d, d, false, false).render(buffer, matrices, sprite, color);
                 if (b4)
-                    Box.apply(range.maxX() + 1.5, range.minY(), zMin, range.maxX() + 1.5, range.maxY(), zMax, d, d, d, false, false).render(buffer, matrices, sprite, color);
+                    Box.apply(endX, range.minY(), zMin, endX, range.minY(), zMax, d, d, d, false, false).render(buffer, matrices, sprite, color);
                 matrices.popPose();
             }
             Minecraft.getInstance().getProfiler().pop();
