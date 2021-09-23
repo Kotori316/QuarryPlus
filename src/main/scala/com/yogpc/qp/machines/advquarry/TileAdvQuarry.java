@@ -358,6 +358,7 @@ public class TileAdvQuarry extends PowerTile implements
             if (!state.isAir() && canBreak(targetWorld, pair.getLeft(), state)) {
                 breakOneBlock(pair.getLeft(), false);
             }
+            targetWorld.setBlock(pair.getLeft(), Holder.BLOCK_DUMMY.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
         }
         // Get drops
         toBreak.stream().flatMap(p ->
@@ -365,7 +366,7 @@ public class TileAdvQuarry extends PowerTile implements
             .map(itemConverter::map).forEach(this.storage::addItem);
         // Remove blocks
         toBreak.stream().map(Pair::getLeft)
-            .forEach(p -> targetWorld.setBlock(p, getReplacementState(), Block.UPDATE_CLIENTS));
+            .forEach(p -> targetWorld.setBlock(p, getReplacementState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE));
         if (exp.get() > 0) {
             getExpModule().ifPresent(e -> {
                 useEnergy(PowerManager.getExpCollectEnergy(exp.get(), this), Reason.EXP_COLLECT, true);

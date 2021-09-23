@@ -16,6 +16,8 @@ import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.state.BlockState;
 import org.apache.logging.log4j.LogManager;
@@ -30,6 +32,7 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
                 new WaitingSerializer(),
                 new MakeFrameSerializer(),
                 new BreakBlockSerializer(),
+                new CheckFluidSerializer(),
                 new FinishedSerializer()
             ).map(s -> Map.entry(s.key(), s))
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -236,7 +239,7 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
                     iterator.next();
                     if (!iterator.hasNext()) {
                         // Go to the next work.
-                        quarry.setAction(Finished.FINISHED);
+                        quarry.setAction(new CheckFluid(quarry));
                         break;
                     }
                 }
@@ -256,6 +259,72 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
             int x = tag.getInt("currentX");
             int z = tag.getInt("currentZ");
             return new BreakBlock(quarry, x, z);
+        }
+    }
+
+    public static class CheckFluid extends AdvQuarryAction {
+        private final TargetIterator iterator;
+
+        public CheckFluid(TileAdvQuarry quarry) {
+            assert quarry.getArea() != null;
+            this.iterator = TargetIterator.of(quarry.getArea());
+        }
+
+        CheckFluid(TileAdvQuarry quarry, int x, int z) {
+            assert quarry.getArea() != null;
+            this.iterator = TargetIterator.of(quarry.getArea());
+            this.iterator.setCurrent(new TargetIterator.XZPair(x, z));
+        }
+
+        @Override
+        CompoundTag writeDetail(CompoundTag tag) {
+            var xzPair = iterator.peek();
+            tag.putInt("currentX", xzPair.x());
+            tag.putInt("currentZ", xzPair.z());
+            return tag;
+        }
+
+        @Override
+        String key() {
+            return "CheckFluid";
+        }
+
+        @Override
+        public void tick(Level level, BlockPos pos, BlockState state, TileAdvQuarry quarry) {
+            int count = 0;
+            var targetWorld = quarry.getTargetWorld();
+            while (count < 32 && iterator.hasNext()) {
+                boolean flagRemoved = false;
+                var target = iterator.peek();
+                BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos(target.x(), 0, target.z());
+                for (int y = quarry.digMinY + 1; y < pos.getY() - 1; y++) {
+                    mutableBlockPos.setY(y);
+                    var blockState = targetWorld.getBlockState(mutableBlockPos);
+                    if (blockState.is(Holder.BLOCK_DUMMY) || blockState.is(Blocks.STONE) || blockState.is(Blocks.COBBLESTONE)) {
+                        targetWorld.setBlock(mutableBlockPos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
+                        flagRemoved = true;
+                    }
+                }
+                iterator.next();
+                if (flagRemoved) count += 1;
+            }
+            if (!iterator.hasNext()) {
+                quarry.setAction(Finished.FINISHED);
+            }
+        }
+    }
+
+    private static class CheckFluidSerializer extends Serializer {
+        @Override
+        String key() {
+            return "CheckFluid";
+        }
+
+        @Override
+        AdvQuarryAction fromTag(CompoundTag tag, TileAdvQuarry quarry) {
+            int x = tag.getInt("currentX");
+            int z = tag.getInt("currentZ");
+            return new CheckFluid(quarry, x, z);
         }
     }
 
