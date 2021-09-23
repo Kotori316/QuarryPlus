@@ -128,12 +128,6 @@ public class BookMoverEntity extends PowerTile implements Container, MenuProvide
     }
 
     @Override
-    public boolean stillValid(Player player) {
-        return level != null &&
-            player.distanceToSqr(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ()) <= 64;
-    }
-
-    @Override
     public void clearContent() {
         inventory.clear();
     }
@@ -150,11 +144,6 @@ public class BookMoverEntity extends PowerTile implements Container, MenuProvide
             case 1 -> stack.getItem() == Items.ENCHANTED_BOOK;
             default -> false;
         };
-    }
-
-    @Override
-    public Component getDisplayName() {
-        return getBlockState().getBlock().getName();
     }
 
     @Override

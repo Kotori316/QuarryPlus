@@ -185,11 +185,6 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
     }
 
     @Override
-    public boolean stillValid(Player player) {
-        return level != null && player.distanceToSqr(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ()) <= 64;
-    }
-
-    @Override
     public void clearContent() {
         ingredientInventory.clear();
         updateRecipeOutputs();
@@ -204,11 +199,6 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
             "%sEnergy:%s %d FE".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, getEnergyStored()),
             "%sMaxEnergy:%s %d FE".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, getMaxEnergyStored())
         ).map(TextComponent::new).toList();
-    }
-
-    @Override
-    public Component getDisplayName() {
-        return getBlockState().getBlock().getName();
     }
 
     @Override

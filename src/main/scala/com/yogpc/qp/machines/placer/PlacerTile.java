@@ -271,7 +271,7 @@ public class PlacerTile extends BlockEntity implements
 
     @Override
     public boolean stillValid(Player player) {
-        return player.distanceToSqr(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ()) <= 64;
+        return level != null && getBlockPos().distSqr(player.position(), true) < 64;
     }
 
     @Override

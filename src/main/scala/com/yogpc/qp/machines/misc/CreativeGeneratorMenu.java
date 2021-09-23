@@ -50,7 +50,7 @@ public class CreativeGeneratorMenu extends AbstractContainerMenu {
                     return ItemStack.EMPTY;
                 }
             } else if (index < 36) {
-                if (!this.moveItemStackTo(remain, 0, 9, false)) {
+                if (!this.moveItemStackTo(remain, 0, 27, false)) {
                     return ItemStack.EMPTY;
                 }
             }

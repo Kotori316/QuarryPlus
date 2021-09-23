@@ -249,11 +249,6 @@ public class TileAdvQuarry extends PowerTile implements
     }
 
     @Override
-    public Component getDisplayName() {
-        return getBlockState().getBlock().getName();
-    }
-
-    @Override
     public AdvQuarryMenu createMenu(int id, Inventory p, Player player) {
         return new AdvQuarryMenu(id, player, getBlockPos());
     }
