@@ -104,6 +104,8 @@ public class PowerTile extends BlockEntity implements IEnergyStorage {
             setChanged();
             return true;
         } else {
+            if (amount > maxEnergy && QuarryPlus.config.debug())
+                QuarryPlus.LOGGER.warn("{} required {} FE, which is over {}.", energyCounter.name, amount / ONE_FE, getMaxEnergyStored());
             return false;
         }
     }
