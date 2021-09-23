@@ -20,6 +20,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 
+@SuppressWarnings("DuplicatedCode")
 class QuarryItem extends QPBlock.QPBlockItem implements EnchantableItem {
     QuarryItem(QPBlock block) {
         super(block, new Item.Properties().fireResistant().tab(Holder.TAB));
