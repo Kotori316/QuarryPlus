@@ -319,24 +319,43 @@ public class TileAdvQuarry extends PowerTile implements
         long requiredEnergy = 0;
         var exp = new AtomicInteger(0);
         List<Pair<BlockPos, BlockState>> toBreak = new ArrayList<>();
+        List<Pair<BlockPos, BlockState>> toDrain = new ArrayList<>();
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos(x, 0, z);
         for (int y = getBlockPos().getY() - 1; y > digMinY; y--) {
             mutableBlockPos.setY(y);
             var state = targetWorld.getBlockState(mutableBlockPos);
-            var breakEvent = new BlockEvent.BreakEvent(targetWorld, mutableBlockPos, state, fakePlayer);
-            MinecraftForge.EVENT_BUS.post(breakEvent);
-            if (breakEvent.isCanceled() || state.isAir() || !canBreak(targetWorld, mutableBlockPos, state)) {
-                continue; // Not breakable. Ignore.
+            var fluidState = targetWorld.getFluidState(mutableBlockPos);
+            if (fluidState.isEmpty()) {
+                var breakEvent = new BlockEvent.BreakEvent(targetWorld, mutableBlockPos, state, fakePlayer);
+                MinecraftForge.EVENT_BUS.post(breakEvent);
+                if (breakEvent.isCanceled() || state.isAir() || !canBreak(targetWorld, mutableBlockPos, state)) {
+                    continue; // Not breakable. Ignore.
+                }
+                exp.getAndAdd(breakEvent.getExpToDrop());
+                // Calc required energy
+                var hardness = state.getDestroySpeed(targetWorld, mutableBlockPos);
+                var energy = PowerManager.getBreakEnergy(hardness, this);
+                requiredEnergy += energy;
+                toBreak.add(Pair.of(mutableBlockPos.immutable(), state));
+            } else {
+                var energy = PowerManager.getBreakBlockFluidEnergy(this);
+                requiredEnergy += energy;
+                toDrain.add(Pair.of(mutableBlockPos.immutable(), state));
             }
-            exp.getAndAdd(breakEvent.getExpToDrop());
-            // Calc required energy
-            var hardness = state.getDestroySpeed(targetWorld, mutableBlockPos);
-            var energy = PowerManager.getBreakEnergy(hardness, this);
-            requiredEnergy += energy;
-            toBreak.add(Pair.of(mutableBlockPos.immutable(), state));
         }
         if (!useEnergy(requiredEnergy, Reason.BREAK_BLOCK, false)) {
             return BreakResult.NOT_ENOUGH_ENERGY;
+        }
+        // Drain fluids
+        for (Pair<BlockPos, BlockState> pair : toDrain) {
+            if (pair.getRight().getBlock() instanceof BucketPickup fluidBlock) {
+                var bucketItem = fluidBlock.pickupBlock(targetWorld, pair.getLeft(), pair.getRight());
+                storage.addFluid(bucketItem);
+            }
+            var state = targetWorld.getBlockState(pair.getLeft());
+            if (!state.isAir() && canBreak(targetWorld, pair.getLeft(), state)) {
+                breakOneBlock(pair.getLeft(), false);
+            }
         }
         // Get drops
         toBreak.stream().flatMap(p ->
