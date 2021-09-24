@@ -17,7 +17,7 @@ import net.minecraftforge.fmllegacy.network.NetworkEvent;
 /**
  * To Server only
  */
-public class AdvActionMessage implements IMessage {
+public final class AdvActionMessage implements IMessage {
     private final BlockPos pos;
     private final ResourceKey<Level> dim;
     private final Area area;

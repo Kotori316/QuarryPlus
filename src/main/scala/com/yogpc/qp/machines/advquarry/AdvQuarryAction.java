@@ -84,7 +84,7 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
         abstract AdvQuarryAction fromTag(CompoundTag tag, TileAdvQuarry quarry);
     }
 
-    public static class Waiting extends AdvQuarryAction {
+    public static final class Waiting extends AdvQuarryAction {
         public static final Waiting WAITING = new Waiting();
 
         private Waiting() {
@@ -108,7 +108,7 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
         }
     }
 
-    private static class WaitingSerializer extends Serializer {
+    private static final class WaitingSerializer extends Serializer {
 
         @Override
         String key() {
@@ -121,7 +121,7 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
         }
     }
 
-    public static class MakeFrame extends AdvQuarryAction {
+    public static final class MakeFrame extends AdvQuarryAction {
         private Iterator<BlockPos> posIterator;
         @Nullable
         private BlockPos current;
@@ -188,7 +188,7 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
         }
     }
 
-    private static class MakeFrameSerializer extends Serializer {
+    private static final class MakeFrameSerializer extends Serializer {
 
         @Override
         String key() {
@@ -202,7 +202,7 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
         }
     }
 
-    public static class BreakBlock extends AdvQuarryAction {
+    public static final class BreakBlock extends AdvQuarryAction {
         private final TargetIterator iterator;
         private boolean searchEnergyConsumed;
 
@@ -256,7 +256,7 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
         }
     }
 
-    private static class BreakBlockSerializer extends Serializer {
+    private static final class BreakBlockSerializer extends Serializer {
 
         @Override
         String key() {
@@ -272,7 +272,7 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
         }
     }
 
-    public static class CheckFluid extends AdvQuarryAction {
+    public static final class CheckFluid extends AdvQuarryAction {
         private final TargetIterator iterator;
 
         public CheckFluid(TileAdvQuarry quarry) {
@@ -324,7 +324,7 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
         }
     }
 
-    private static class CheckFluidSerializer extends Serializer {
+    private static final class CheckFluidSerializer extends Serializer {
         @Override
         String key() {
             return "CheckFluid";
@@ -338,7 +338,7 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
         }
     }
 
-    public static class Finished extends AdvQuarryAction {
+    public static final class Finished extends AdvQuarryAction {
         public static final Finished FINISHED = new Finished();
 
         private Finished() {
@@ -359,7 +359,7 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
         }
     }
 
-    private static class FinishedSerializer extends Serializer {
+    private static final class FinishedSerializer extends Serializer {
 
         @Override
         String key() {

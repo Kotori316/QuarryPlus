@@ -40,7 +40,7 @@ abstract class TargetIterator implements Iterator<TargetIterator.XZPair> {
         return current;
     }
 
-    void setCurrent(XZPair current) {
+    final void setCurrent(XZPair current) {
         this.current = current;
     }
 
