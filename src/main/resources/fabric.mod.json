@@ -34,5 +34,8 @@
     "fabric": "*",
     "minecraft": "1.17.x",
     "cloth-config2": ">=5.0.0"
+  },
+  "conflicts": {
+    "team_reborn_energy": "<2.0.0"
   }
 }
