@@ -18,7 +18,7 @@ import net.minecraftforge.fmllegacy.network.NetworkEvent;
 /**
  * To server only.
  */
-public class Marker16Message implements IMessage {
+public final class Marker16Message implements IMessage {
 
     private final BlockPos pos;
     private final ResourceKey<Level> dim;

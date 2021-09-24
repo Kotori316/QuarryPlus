@@ -15,7 +15,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 /**
  * To Server only.
  */
-public class MoverMessage implements IMessage {
+public final class MoverMessage implements IMessage {
     private final BlockPos pos;
     private final int windowId;
     private final ResourceLocation enchantment;

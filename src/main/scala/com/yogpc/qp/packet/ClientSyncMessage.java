@@ -16,7 +16,7 @@ import static com.yogpc.qp.utils.MapMulti.optCast;
 /**
  * To client only.
  */
-public class ClientSyncMessage implements IMessage {
+public final class ClientSyncMessage implements IMessage {
     private final CompoundTag tag;
     private final BlockPos pos;
     private final ResourceKey<Level> dim;

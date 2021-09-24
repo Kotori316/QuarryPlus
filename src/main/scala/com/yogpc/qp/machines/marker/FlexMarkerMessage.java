@@ -17,7 +17,7 @@ import net.minecraftforge.fmllegacy.network.NetworkEvent;
 /**
  * To server only.
  */
-public class FlexMarkerMessage implements IMessage {
+public final class FlexMarkerMessage implements IMessage {
     private final BlockPos pos;
     private final ResourceKey<Level> dim;
     private final TileFlexMarker.Movable movable;

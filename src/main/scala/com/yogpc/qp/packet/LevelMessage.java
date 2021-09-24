@@ -13,7 +13,7 @@ import net.minecraftforge.fmllegacy.network.NetworkEvent;
 /**
  * To Server only.
  */
-public class LevelMessage implements IMessage {
+public final class LevelMessage implements IMessage {
     private final BlockPos pos;
     private final ResourceKey<Level> dim;
     private final int digMinY;

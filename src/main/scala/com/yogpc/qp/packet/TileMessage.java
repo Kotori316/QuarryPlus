@@ -14,7 +14,7 @@ import net.minecraftforge.fmllegacy.network.NetworkEvent;
 /**
  * To both client and server.
  */
-public class TileMessage implements IMessage {
+public final class TileMessage implements IMessage {
     private final CompoundTag tag;
     private final BlockPos pos;
     private final ResourceKey<Level> dim;
