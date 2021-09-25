@@ -25,7 +25,7 @@ public class PowerTile extends BlockEntity implements IEnergyStorage {
     public static final long ONE_FE = 1_000_000_000L;
     private final EnergyCounter energyCounter;
     private long energy;
-    protected long maxEnergy;
+    private long maxEnergy;
     protected boolean chunkPreLoaded;
     public final boolean enabled;
 
@@ -54,7 +54,7 @@ public class PowerTile extends BlockEntity implements IEnergyStorage {
         super.load(nbt);
         energy = nbt.getLong("energy");
         if (nbt.contains("maxEnergy"))
-            maxEnergy = nbt.getLong("maxEnergy");
+            setMaxEnergy(nbt.getLong("maxEnergy"));
         chunkPreLoaded = nbt.getBoolean("chunkPreLoaded");
     }
 
@@ -72,6 +72,10 @@ public class PowerTile extends BlockEntity implements IEnergyStorage {
 
     protected long getMaxReceive() {
         return maxEnergy;
+    }
+
+    protected final void setMaxEnergy(long maxEnergy) {
+        this.maxEnergy = maxEnergy;
     }
 
     /**
@@ -100,6 +104,8 @@ public class PowerTile extends BlockEntity implements IEnergyStorage {
      */
     public final boolean useEnergy(long amount, Reason reason, boolean force) {
         assert level != null;
+        if (amount > maxEnergy && QuarryPlus.config.debug())
+            QuarryPlus.LOGGER.warn("{} required {} FE, which is over {}.", energyCounter.name, amount / ONE_FE, getMaxEnergyStored());
         if (energy >= amount || force) {
             energy -= amount;
             energyCounter.useEnergy(level.getGameTime(), amount, reason);
@@ -205,6 +211,6 @@ public class PowerTile extends BlockEntity implements IEnergyStorage {
     }
 
     public enum Reason {
-        MAKE_FRAME, BREAK_BLOCK, REMOVE_FLUID, MOVE_HEAD, ADV_PUMP_FLUID, WORKBENCH, FORCE, EXP_COLLECT, BOOK_MOVER
+        MAKE_FRAME, BREAK_BLOCK, REMOVE_FLUID, MOVE_HEAD, ADV_PUMP_FLUID, WORKBENCH, FORCE, EXP_COLLECT, BOOK_MOVER, ADV_SEARCH
     }
 }

@@ -1,5 +1,6 @@
 package com.yogpc.qp.machines.misc;
 
+import com.yogpc.qp.machines.advquarry.TileAdvQuarry;
 import com.yogpc.qp.machines.miningwell.MiningWellTile;
 import com.yogpc.qp.machines.quarry.TileQuarry;
 import com.yogpc.qp.packet.IMessage;
@@ -25,6 +26,8 @@ public abstract class YAccessor {
             return new QuarryYAccessor(quarry);
         else if (entity instanceof MiningWellTile miningWell)
             return new MiningWellYAccessor(miningWell);
+        else if (entity instanceof TileAdvQuarry quarry)
+            return new AdvQuarryYAccessor(quarry);
         else
             return null;
     }
@@ -95,5 +98,39 @@ class MiningWellYAccessor extends YAccessor {
     @Override
     boolean stillValid(Player player) {
         return miningWell.stillValid(player);
+    }
+}
+
+class AdvQuarryYAccessor extends YAccessor {
+    private final TileAdvQuarry quarry;
+
+    AdvQuarryYAccessor(TileAdvQuarry quarry) {
+        this.quarry = quarry;
+    }
+
+    @Override
+    public int getDigMinY() {
+        return quarry.digMinY;
+    }
+
+    @Override
+    public void setDigMinY(int newValue) {
+        quarry.digMinY = newValue;
+        quarry.setChanged();
+    }
+
+    @Override
+    IMessage makeMessage() {
+        return new LevelMessage(quarry.getLevel(), quarry.getBlockPos(), getDigMinY());
+    }
+
+    @Override
+    int getLimitTop() {
+        return quarry.getArea() != null ? quarry.getArea().minY() : quarry.getBlockPos().getY();
+    }
+
+    @Override
+    boolean stillValid(Player player) {
+        return quarry.stillValid(player);
     }
 }

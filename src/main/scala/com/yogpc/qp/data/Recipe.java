@@ -8,6 +8,7 @@ import com.google.gson.JsonObject;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.advpump.BlockAdvPump;
+import com.yogpc.qp.machines.advquarry.BlockAdvQuarry;
 import com.yogpc.qp.machines.bookmover.BookMoverBlock;
 import com.yogpc.qp.machines.checker.ItemChecker;
 import com.yogpc.qp.machines.marker.BlockMarker;
@@ -200,6 +201,18 @@ public class Recipe extends QuarryPlusDataProvider.QuarryDataProvider {
             makeList(Tags.Items.BOOKSHELVES, 64),
             makeList(Tags.Items.GEMS_DIAMOND, 16)
         )))).addCondition(new EnableCondition(BookMoverBlock.NAME)));
+        // Chunk Destroyer.
+        list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(
+            location(BlockAdvQuarry.NAME), new ItemStack(Holder.BLOCK_ADV_QUARRY), 3200000 * PowerTile.ONE_FE, true, List.of(
+            makeList(Holder.BLOCK_QUARRY, 3),
+            as(Pair.of(Ingredient.of(Holder.BLOCK_PUMP), 2), Pair.of(Ingredient.of(Holder.ITEM_PUMP_MODULE), 2)),
+            makeList(Holder.BLOCK_MARKER, 3),
+            makeList(Tags.Items.STORAGE_BLOCKS_DIAMOND, 8),
+            makeList(Tags.Items.STORAGE_BLOCKS_EMERALD, 8),
+            makeList(Items.ENDER_EYE, 64),
+            makeList(Tags.Items.NETHER_STARS, 2),
+            makeList(Items.DRAGON_HEAD, 1)
+        )))).addCondition(new EnableCondition(BlockAdvQuarry.NAME)));
 
         return list;
     }

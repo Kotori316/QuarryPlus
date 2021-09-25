@@ -16,6 +16,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.BreakResult;
 import com.yogpc.qp.machines.CheckerLog;
+import com.yogpc.qp.machines.EnchantmentHolder;
 import com.yogpc.qp.machines.EnchantmentLevel;
 import com.yogpc.qp.machines.ItemConverter;
 import com.yogpc.qp.machines.MachineStorage;
@@ -44,8 +45,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
@@ -221,6 +220,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         return breakBlock(targetPos, true);
     }
 
+    @SuppressWarnings("DuplicatedCode")
     public BreakResult breakBlock(BlockPos targetPos, boolean requireEnergy) {
         var targetWorld = getTargetWorld();
         // Gather Drops
@@ -259,7 +259,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
             return BreakResult.NOT_ENOUGH_ENERGY;
         }
         // Get drops
-        var drops = Block.getDrops(state, targetWorld, targetPos, targetWorld.getBlockEntity(targetPos), null, pickaxe);
+        var drops = Block.getDrops(state, targetWorld, targetPos, targetWorld.getBlockEntity(targetPos), fakePlayer, pickaxe);
         drops.stream().map(itemConverter::map).forEach(this.storage::addItem);
         targetWorld.setBlock(targetPos, getReplacementState(), Block.UPDATE_ALL);
         // Get experiments
@@ -341,7 +341,8 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
 
     public void setEnchantments(List<EnchantmentLevel> enchantments) {
         this.enchantments = enchantments;
-        maxEnergy = 10000 * ONE_FE * (efficiencyLevel() + 1);
+        this.cache.enchantments.expire();
+        this.setMaxEnergy(10000 * ONE_FE * (efficiencyLevel() + 1));
     }
 
     /**
@@ -363,12 +364,6 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         var tag = new CompoundTag();
         if (digMinY != 0) tag.putInt("digMinY", digMinY);
         return tag;
-    }
-
-    private ItemStack getPickaxe() {
-        var stack = new ItemStack(Items.NETHERITE_PICKAXE);
-        enchantments.forEach(e -> stack.enchant(e.enchantment(), e.level()));
-        return stack;
     }
 
     double headSpeed() {
@@ -428,7 +423,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
             "%sDigMinY:%s %d".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, digMinY),
             "%sHead:%s (%f, %f, %f)".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, headX, headY, headZ),
             "%sModules:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, modules),
-            "%sEnergy:%s %f FE (%d)".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, getEnergy() / (double) PowerTile.ONE_FE, getEnergy())
+            "%sEnergy:%s %f/%d FE (%d)".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, getEnergy() / (double) PowerTile.ONE_FE, getMaxEnergyStored(), getEnergy())
         ).map(TextComponent::new).toList();
     }
 
@@ -465,13 +460,6 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         return modules;
     }
 
-    private EnchantmentHolder makeHolder() {
-        return new EnchantmentHolder(EnchantmentLevel.HasEnchantments.super.efficiencyLevel(),
-            EnchantmentLevel.HasEnchantments.super.unbreakingLevel(),
-            EnchantmentLevel.HasEnchantments.super.fortuneLevel(),
-            EnchantmentLevel.HasEnchantments.super.silktouchLevel());
-    }
-
     @Override
     public int efficiencyLevel() {
         return cache.enchantments.getValue(getLevel()).efficiency();
@@ -502,10 +490,8 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
                 () -> TileQuarry.this.getReplacerModule().map(ReplacerModule::getState).orElse(Blocks.AIR.defaultBlockState()));
             netherTop = CacheEntry.supplierCache(100,
                 QuarryPlus.config.common.netherTop::get);
-            enchantments = CacheEntry.supplierCache(1000, TileQuarry.this::makeHolder);
+            enchantments = CacheEntry.supplierCache(1000, () -> EnchantmentHolder.makeHolder(TileQuarry.this));
         }
     }
 
-    private record EnchantmentHolder(int efficiency, int unbreaking, int fortune, int silktouch) {
-    }
 }

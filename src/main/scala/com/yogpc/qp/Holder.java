@@ -11,6 +11,9 @@ import com.yogpc.qp.machines.EnchantedLootFunction;
 import com.yogpc.qp.machines.QPBlock;
 import com.yogpc.qp.machines.advpump.BlockAdvPump;
 import com.yogpc.qp.machines.advpump.TileAdvPump;
+import com.yogpc.qp.machines.advquarry.AdvQuarryMenu;
+import com.yogpc.qp.machines.advquarry.BlockAdvQuarry;
+import com.yogpc.qp.machines.advquarry.TileAdvQuarry;
 import com.yogpc.qp.machines.bookmover.BookMoverBlock;
 import com.yogpc.qp.machines.bookmover.BookMoverEntity;
 import com.yogpc.qp.machines.bookmover.BookMoverMenu;
@@ -136,6 +139,7 @@ public class Holder {
     public static final ReplacerBlock BLOCK_REPLACER = registerBlock(new ReplacerBlock(), EnableOrNot.CONFIG_OFF);
     public static final ExpPumpBlock BLOCK_EXP_PUMP = registerBlock(new ExpPumpBlock());
     public static final BlockAdvPump BLOCK_ADV_PUMP = registerBlock(new BlockAdvPump());
+    public static final BlockAdvQuarry BLOCK_ADV_QUARRY = registerBlock(new BlockAdvQuarry());
     public static final BlockMarker BLOCK_MARKER = registerBlock(new BlockMarker());
     public static final BlockExMarker.BlockFlexMarker BLOCK_FLEX_MARKER = registerBlock(new BlockExMarker.BlockFlexMarker());
     public static final BlockExMarker.Block16Marker BLOCK_16_MARKER = registerBlock(new BlockExMarker.Block16Marker());
@@ -159,6 +163,7 @@ public class Holder {
     public static final BlockEntityType<Tile16Marker> MARKER_16_TYPE = registerEntityType(Tile16Marker::new, BLOCK_16_MARKER, EnableOrNot.ALWAYS_ON);
     public static final BlockEntityType<CreativeGeneratorTile> CREATIVE_GENERATOR_TYPE = registerEntityType(CreativeGeneratorTile::new, BLOCK_CREATIVE_GENERATOR, EnableOrNot.ALWAYS_ON);
     public static final BlockEntityType<TileAdvPump> ADV_PUMP_TYPE = registerEntityType(TileAdvPump::new, BLOCK_ADV_PUMP, EnableOrNot.CONFIG_ON);
+    public static final BlockEntityType<TileAdvQuarry> ADV_QUARRY_TYPE = registerEntityType(TileAdvQuarry::new, BLOCK_ADV_QUARRY, EnableOrNot.CONFIG_ON);
     public static final BlockEntityType<TileWorkbench> WORKBENCH_TYPE = registerEntityType(TileWorkbench::new, BLOCK_WORKBENCH, EnableOrNot.CONFIG_ON);
     public static final BlockEntityType<MiningWellTile> MINING_WELL_TYPE = registerEntityType(MiningWellTile::new, BLOCK_MINING_WELL, EnableOrNot.CONFIG_ON);
     public static final BlockEntityType<ExpPumpTile> EXP_PUMP_TYPE = registerEntityType(ExpPumpTile::new, BLOCK_EXP_PUMP, EnableOrNot.CONFIG_ON);
@@ -183,6 +188,8 @@ public class Holder {
         new BookMoverMenu(windowId, inv.player, data.readBlockPos()), BookMoverBlock.GUI_ID);
     public static final MenuType<CreativeGeneratorMenu> CREATIVE_GENERATOR_MENU_TYPE = registerMenuType((windowId, inv, data) ->
         new CreativeGeneratorMenu(windowId, inv.player, data.readBlockPos()), CreativeGeneratorMenu.GUI_ID);
+    public static final MenuType<AdvQuarryMenu> ADV_QUARRY_MENU_TYPE = registerMenuType((windowId, inv, data) ->
+        new AdvQuarryMenu(windowId, inv.player, data.readBlockPos()), AdvQuarryMenu.GUI_ID);
 
     public static final LootItemFunctionType ENCHANTED_LOOT_TYPE = Registry.register(Registry.LOOT_FUNCTION_TYPE,
         new ResourceLocation(QuarryPlus.modID, EnchantedLootFunction.NAME), new LootItemFunctionType(EnchantedLootFunction.SERIALIZER));

@@ -1,4 +1,4 @@
-package com.yogpc.qp.machines.quarry;
+package com.yogpc.qp.machines.advquarry;
 
 import java.util.List;
 import java.util.Set;
@@ -13,7 +13,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -21,9 +20,9 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 
 @SuppressWarnings("DuplicatedCode")
-class QuarryItem extends QPBlock.QPBlockItem implements EnchantableItem {
-    QuarryItem(QPBlock block) {
-        super(block, new Item.Properties().fireResistant().tab(Holder.TAB));
+class ItemAdvQuarry extends QPBlock.QPBlockItem implements EnchantableItem {
+    ItemAdvQuarry(QPBlock block) {
+        super(block, new Properties().tab(Holder.TAB).fireResistant());
     }
 
     @Override

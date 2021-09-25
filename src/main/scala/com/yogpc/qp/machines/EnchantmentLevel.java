@@ -10,6 +10,7 @@ import com.yogpc.qp.utils.ManualOrder;
 import javax.annotation.Nullable;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -53,6 +54,11 @@ public record EnchantmentLevel(Enchantment enchantment, int level) {
             return getLevel(Enchantments.SILK_TOUCH);
         }
 
+        default ItemStack getPickaxe() {
+            var stack = new ItemStack(Items.NETHERITE_PICKAXE);
+            getEnchantments().forEach(e -> stack.enchant(e.enchantment(), e.level()));
+            return stack;
+        }
     }
 
     public enum NoEnchantments implements HasEnchantments {

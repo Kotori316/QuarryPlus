@@ -6,6 +6,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.advquarry.AdvActionMessage;
 import com.yogpc.qp.machines.marker.FlexMarkerMessage;
 import com.yogpc.qp.machines.marker.Marker16Message;
 import com.yogpc.qp.machines.mover.MoverMessage;
@@ -44,6 +45,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(id.getAndIncrement(), FlexMarkerMessage.class, FlexMarkerMessage::write, FlexMarkerMessage::new, setHandled(FlexMarkerMessage::onReceive));
         INSTANCE.registerMessage(id.getAndIncrement(), LevelMessage.class, LevelMessage::write, LevelMessage::new, setHandled(LevelMessage::onReceive));
         INSTANCE.registerMessage(id.getAndIncrement(), MoverMessage.class, MoverMessage::write, MoverMessage::new, setHandled(MoverMessage::onReceive));
+        INSTANCE.registerMessage(id.getAndIncrement(), AdvActionMessage.class, AdvActionMessage::write, AdvActionMessage::new, setHandled(AdvActionMessage::onReceive));
     }
 
     public static void sendToClient(IMessage message, Level world) {
