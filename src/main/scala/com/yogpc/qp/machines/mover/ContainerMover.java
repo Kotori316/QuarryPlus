@@ -69,7 +69,7 @@ public class ContainerMover extends AbstractContainerMenu {
             IntStream.range(0, craftMatrix.getContainerSize())
                 .mapToObj(craftMatrix::removeItemNoUpdate)
                 .filter(Predicate.not(ItemStack::isEmpty))
-                .forEach(s -> playerIn.drop(s, false));
+                .forEach(playerIn.getInventory()::placeItemBackInInventory);
         }
     }
 
