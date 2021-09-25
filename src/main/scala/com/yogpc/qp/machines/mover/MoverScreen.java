@@ -3,6 +3,7 @@ package com.yogpc.qp.machines.mover;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.misc.IndexedButton;
 import com.yogpc.qp.packet.PacketHandler;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -22,6 +23,7 @@ public class MoverScreen extends AbstractContainerScreen<ContainerMover> impleme
     private static final ResourceLocation LOCATION = new ResourceLocation(QuarryPlus.modID, "textures/gui/mover.png");
 
     private final BlockPos pos;
+    private IndexedButton enchantmentMoveButton;
 
     public MoverScreen(ContainerMover containerMarker, Inventory inventory, Component component) {
         super(containerMarker, inventory, component);
@@ -36,9 +38,10 @@ public class MoverScreen extends AbstractContainerScreen<ContainerMover> impleme
     public void init() {
         super.init();
         var width = 120;
-        this.addRenderableWidget(new Button(getGuiLeft() + (imageWidth - width) / 2, getGuiTop() + 20, width, 20, new TranslatableComponent("FD.up"), this));
-        this.addRenderableWidget(new Button(getGuiLeft() + (imageWidth - width) / 2, getGuiTop() + 40, width, 20, new TextComponent(""), this));
-        this.addRenderableWidget(new Button(getGuiLeft() + (imageWidth - width) / 2, getGuiTop() + 60, width, 20, new TranslatableComponent("FD.down"), this));
+        this.addRenderableWidget(new IndexedButton(0, getGuiLeft() + (imageWidth - width) / 2, getGuiTop() + 20, width, 20, new TranslatableComponent("FD.up"), this));
+        enchantmentMoveButton = new IndexedButton(1, getGuiLeft() + (imageWidth - width) / 2, getGuiTop() + 40, width, 20, new TextComponent(""), this);
+        this.addRenderableWidget(enchantmentMoveButton);
+        this.addRenderableWidget(new IndexedButton(2, getGuiLeft() + (imageWidth - width) / 2, getGuiTop() + 60, width, 20, new TranslatableComponent("FD.down"), this));
     }
 
     @Override
@@ -61,19 +64,19 @@ public class MoverScreen extends AbstractContainerScreen<ContainerMover> impleme
         super.containerTick();
         var enchantment = this.getMenu().getEnchantment();
         var name = enchantment.map(Enchantment::getDescriptionId).<Component>map(TranslatableComponent::new).orElse(new TextComponent(""));
-        ((Button) this.renderables.get(1)).setMessage(name);
+        enchantmentMoveButton.setMessage(name);
     }
 
     @Override
     public void onPress(Button button) {
         if (!button.active || getMenu().selected == null)
             return;
-
-        switch (children().indexOf(button)) {
-            case 1 -> PacketHandler.sendToServer(new MoverMessage(pos, getMenu().containerId, getMenu().selected));
-            case 0 -> selectPrevious();
-            case 2 -> selectNext();
-        }
+        if (button instanceof IndexedButton indexedButton)
+            switch (indexedButton.id()) {
+                case 1 -> moveEnchantment();
+                case 0 -> selectPrevious();
+                case 2 -> selectNext();
+            }
     }
 
     private void selectNext() {
@@ -97,5 +100,10 @@ public class MoverScreen extends AbstractContainerScreen<ContainerMover> impleme
                 getMenu().selected = getMenu().movable.get(index - 1);
             }
         }
+    }
+
+    private void moveEnchantment() {
+        assert getMenu().selected != null;
+        PacketHandler.sendToServer(new MoverMessage(pos, getMenu().containerId, getMenu().selected));
     }
 }
