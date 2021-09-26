@@ -157,9 +157,15 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
         public void tick(Level level, BlockPos pos, BlockState state, TileAdvQuarry quarry) {
             for (int i = 0; i < 4; i++) {
                 if (current != null) {
-                    var result = quarry.breakOneBlock(current, true);
+                    var targetState = quarry.getTargetWorld().getBlockState(current);
+                    BreakResult result;
+                    if (targetState.isAir()) {
+                        result = BreakResult.SUCCESS;
+                    } else {
+                        result = quarry.breakOneBlock(current, true);
+                    }
                     if (result.isSuccess()) {
-                        if (result == BreakResult.FAIL_EVENT) {
+                        if (result == BreakResult.FAIL_EVENT || result == BreakResult.SKIPPED) {
                             // Not breakable. Go next.
                             current = skipIterator(this.posIterator, MakeFrame.skipFramePlace(quarry));
                         } else if (quarry.useEnergy(PowerManager.getMakeFrameEnergy(quarry), PowerTile.Reason.MAKE_FRAME, false)) {
