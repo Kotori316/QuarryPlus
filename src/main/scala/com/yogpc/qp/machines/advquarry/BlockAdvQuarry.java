@@ -18,6 +18,7 @@ import com.yogpc.qp.packet.ClientSyncMessage;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.CombinedBlockEntityTicker;
 import com.yogpc.qp.utils.MapMulti;
+import com.yogpc.qp.utils.QuarryChunkLoadUtil;
 import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -113,6 +114,8 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
                 enchantment.sort(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR);
                 quarry.setEnchantments(enchantment);
                 quarry.area = findArea(level, pos, facing.getOpposite(), quarry.getStorage()::addItem);
+                var preForced = QuarryChunkLoadUtil.makeChunkLoaded(level, pos, quarry.enabled);
+                quarry.setChunkPreLoaded(preForced);
                 PacketHandler.sendToClient(new ClientSyncMessage(quarry), level);
             }
         }
