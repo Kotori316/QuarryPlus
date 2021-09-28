@@ -194,7 +194,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
             if (level != null) {
                 level.setBlock(getBlockPos(), blockState.setValue(QPBlock.WORKING, quarryState.isWorking), Block.UPDATE_ALL);
                 if (!level.isClientSide && !quarryState.isWorking) {
-                    logUsage(QuarryPlus.LOGGER::info);
+                    logUsage();
                 }
             }
             QuarryPlus.LOGGER.debug(MARKER, "Quarry({}) State changed to {}.", getBlockPos(), quarryState);

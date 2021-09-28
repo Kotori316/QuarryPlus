@@ -188,7 +188,7 @@ public class TileAdvQuarry extends PowerTile implements
         if (action == AdvQuarryAction.Finished.FINISHED)
             if (level != null) {
                 level.setBlock(getBlockPos(), getBlockState().setValue(BlockAdvQuarry.WORKING, false), Block.UPDATE_ALL);
-                logUsage(QuarryPlus.LOGGER::info);
+                logUsage();
             }
         if (level != null && !level.isClientSide) {
             PacketHandler.sendToClient(new ClientSyncMessage(this), level);

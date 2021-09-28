@@ -219,7 +219,7 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
                 if (currentRecipe.hasContent()) {
                     setCurrentRecipe(WorkbenchRecipe.dummyRecipe().getId());
                     //Finish work
-                    logUsage(QuarryPlus.LOGGER::info);
+                    logUsage();
                 }
             }
             PacketHandler.sendToClient(new TileMessage(this), level);

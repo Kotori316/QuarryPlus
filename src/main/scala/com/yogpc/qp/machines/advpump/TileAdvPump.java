@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.yogpc.qp.Holder;
-import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.BreakResult;
 import com.yogpc.qp.machines.CheckerLog;
 import com.yogpc.qp.machines.EnchantmentLevel;
@@ -125,7 +124,7 @@ public class TileAdvPump extends PowerTile
                         pump.finished = true;
                         pump.target = null;
                         world.setBlock(pos, state.setValue(BlockAdvPump.WORKING, false), Block.UPDATE_ALL);
-                        pump.logUsage(QuarryPlus.LOGGER::info);
+                        pump.logUsage();
                         if (pump.placeFrame)
                             removeDummyBlock(world, pos, pump.y);
                     } else {

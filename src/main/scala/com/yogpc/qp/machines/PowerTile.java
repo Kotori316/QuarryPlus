@@ -1,7 +1,6 @@
 package com.yogpc.qp.machines;
 
 import java.util.Objects;
-import java.util.function.Consumer;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.utils.QuarryChunkLoadUtil;
@@ -161,9 +160,9 @@ public class PowerTile extends BlockEntity implements IEnergyStorage {
         return true;
     }
 
-    protected void logUsage(Consumer<String> logger) {
+    protected void logUsage() {
         // Debug or Production check is done in counter instance.
-        energyCounter.logUsageMap(logger);
+        energyCounter.logUsageMap();
     }
 
     public final void setChunkPreLoaded(boolean chunkPreLoaded) {

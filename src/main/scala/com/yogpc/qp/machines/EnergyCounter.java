@@ -3,14 +3,17 @@ package com.yogpc.qp.machines;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
 
 public abstract class EnergyCounter {
     private static final Logger LOGGER = LogManager.getLogger(EnergyCounter.class);
+    private static final Marker MARKER_TICK = MarkerManager.getMarker("TickLog");
+    private static final Marker MARKER_FINAL = MarkerManager.getMarker("Total");
     final String name;
     final long logInterval;
 
@@ -26,7 +29,7 @@ public abstract class EnergyCounter {
 
     public abstract void logOutput(long time);
 
-    public abstract void logUsageMap(Consumer<String> logger);
+    public abstract void logUsageMap();
 
     public abstract void useEnergy(long time, long amount, PowerTile.Reason reason);
 
@@ -57,7 +60,7 @@ public abstract class EnergyCounter {
                 var use = useCounter.values().stream().collect(Collectors.summarizingLong(Long::longValue));
                 var get = getCounter.values().stream().collect(Collectors.summarizingLong(Long::longValue));
                 if (use.getSum() != 0 && get.getSum() != 0)
-                    LOGGER.info("{}: Used {} FE in {} ticks({} FE/t). Got {} FE in {} ticks({} FE/t).", name,
+                    LOGGER.info(MARKER_TICK, "{}: Used {} FE in {} ticks({} FE/t). Got {} FE in {} ticks({} FE/t).", name,
                         use.getSum() / PowerTile.ONE_FE, use.getCount(), use.getAverage() / PowerTile.ONE_FE,
                         get.getSum() / PowerTile.ONE_FE, get.getCount(), get.getAverage() / PowerTile.ONE_FE);
                 useCounter.clear();
@@ -66,10 +69,10 @@ public abstract class EnergyCounter {
         }
 
         @Override
-        public void logUsageMap(Consumer<String> logger) {
+        public void logUsageMap() {
             usageMap.entrySet().stream()
                 .map(e -> "%s -> %f".formatted(e.getKey(), (double) e.getValue() / PowerTile.ONE_FE))
-                .forEach(logger);
+                .forEach(s -> LOGGER.info(MARKER_FINAL, s));
         }
 
         private void checkTime(long time, String name) {
@@ -105,7 +108,7 @@ public abstract class EnergyCounter {
         }
 
         @Override
-        public void logUsageMap(Consumer<String> logger) {
+        public void logUsageMap() {
         }
 
         @Override
