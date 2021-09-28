@@ -12,12 +12,8 @@ public class QuarryChunkLoadUtil {
     private static final Logger LOGGER = LogManager.getLogger(QuarryChunkLoadUtil.class);
 
     public static boolean isChunkLoaded(Level world, BlockPos pos) {
-        return isChunkLoaded(world, pos.getX(), pos.getZ());
-    }
-
-    public static boolean isChunkLoaded(Level world, int x, int z) {
         if (world instanceof ServerLevel serverWorld) {
-            var key = new ChunkPos(SectionPos.blockToSectionCoord(x), SectionPos.blockToSectionCoord(z)).toLong();
+            var key = new ChunkPos(pos).toLong();
             return serverWorld.getForcedChunks().contains(key);
         } else {
             return false;
