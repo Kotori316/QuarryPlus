@@ -167,7 +167,7 @@ public class TileAdvQuarry extends PowerTile implements
     public void setEnchantments(List<EnchantmentLevel> enchantments) {
         this.enchantments = enchantments;
         this.cache.enchantments.expire();
-        this.setMaxEnergy(30000 * ONE_FE * (efficiencyLevel() + 1));
+        this.setMaxEnergy(50000 * ONE_FE * (efficiencyLevel() + 1));
     }
 
     @Nullable
