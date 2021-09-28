@@ -83,6 +83,7 @@ public record ItemConverter(
      *     <li>Netherrack</li>
      *     <li>Sandstone</li>
      *     <li>Deepslate</li>
+     *     <li>Blackstone</li>
      * </ul>
      *
      * @return ItemConverter instance for {@link com.yogpc.qp.machines.advquarry.TileAdvQuarry Chunk Destroyer}.
@@ -97,6 +98,7 @@ public record ItemConverter(
                 itemPredicate(Items.GRASS_BLOCK),
                 itemPredicate(Items.NETHERRACK),
                 itemPredicate(Items.DEEPSLATE),
+                itemPredicate(Items.BLACKSTONE),
                 tagPredicate(Tags.Items.SANDSTONE)
             ).map(p -> Map.entry(p, function))
             .toList());
