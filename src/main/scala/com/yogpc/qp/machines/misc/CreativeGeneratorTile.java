@@ -8,6 +8,7 @@ import com.yogpc.qp.utils.MapMulti;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -41,6 +42,11 @@ public class CreativeGeneratorTile extends PowerTile implements MenuProvider {
             .map(world::getBlockEntity)
             .mapMulti(MapMulti.cast(PowerTile.class))
             .forEach(t -> t.addEnergy(tile.sendEnergy, false));
+
+    @Override
+    public Component getDisplayName() {
+        return getBlockState().getBlock().getName();
+    }
 
     @Override
     public AbstractContainerMenu createMenu(int id, Inventory inventory, Player player) {

@@ -147,6 +147,11 @@ public class BookMoverEntity extends PowerTile implements Container, MenuProvide
     }
 
     @Override
+    public Component getDisplayName() {
+        return getBlockState().getBlock().getName();
+    }
+
+    @Override
     public List<? extends Component> getDebugLogs() {
         return Stream.of(
             "%sEnergy:%s %f FE (%d)".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, getEnergy() / (double) PowerTile.ONE_FE, getEnergy())

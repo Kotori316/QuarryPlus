@@ -435,6 +435,11 @@ public class TileAdvQuarry extends PowerTile implements
         }
     }
 
+    @Override
+    public Component getDisplayName() {
+        return getBlockState().getBlock().getName();
+    }
+
     void openModuleGui(ServerPlayer player) {
         ContainerQuarryModule.InteractionObject.openGUI(this, player, getDisplayName());
     }
