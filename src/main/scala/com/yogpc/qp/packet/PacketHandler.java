@@ -7,6 +7,8 @@ import java.util.function.Supplier;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.advquarry.AdvActionMessage;
+import com.yogpc.qp.machines.controller.ControllerOpenMessage;
+import com.yogpc.qp.machines.controller.SetSpawnerEntityMessage;
 import com.yogpc.qp.machines.marker.FlexMarkerMessage;
 import com.yogpc.qp.machines.marker.Marker16Message;
 import com.yogpc.qp.machines.mover.MoverMessage;
@@ -46,6 +48,8 @@ public class PacketHandler {
         INSTANCE.registerMessage(id.getAndIncrement(), LevelMessage.class, LevelMessage::write, LevelMessage::new, setHandled(LevelMessage::onReceive));
         INSTANCE.registerMessage(id.getAndIncrement(), MoverMessage.class, MoverMessage::write, MoverMessage::new, setHandled(MoverMessage::onReceive));
         INSTANCE.registerMessage(id.getAndIncrement(), AdvActionMessage.class, AdvActionMessage::write, AdvActionMessage::new, setHandled(AdvActionMessage::onReceive));
+        INSTANCE.registerMessage(id.getAndIncrement(), SetSpawnerEntityMessage.class, SetSpawnerEntityMessage::write, SetSpawnerEntityMessage::new, setHandled(SetSpawnerEntityMessage::onReceive));
+        INSTANCE.registerMessage(id.getAndIncrement(), ControllerOpenMessage.class, ControllerOpenMessage::write, ControllerOpenMessage::new, setHandled(ControllerOpenMessage::onReceive));
     }
 
     public static void sendToClient(IMessage message, Level world) {

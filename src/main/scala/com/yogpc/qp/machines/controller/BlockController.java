@@ -2,7 +2,6 @@ package com.yogpc.qp.machines.controller;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -10,6 +9,7 @@ import java.util.stream.Stream;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPBlock;
+import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.MapMulti;
 import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
@@ -18,6 +18,7 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
@@ -36,6 +37,8 @@ import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.ForgeRegistryEntry;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -62,10 +65,10 @@ public class BlockController extends QPBlock {
         builder.add(WORKING);
     }
 
-    private static Optional<BaseSpawner> getSpawner(Level level, BlockPos pos) {
+    private static Optional<Pair<BaseSpawner, BlockPos>> getSpawner(Level level, BlockPos pos) {
         return Stream.of(Direction.values()).map(pos::relative).map(level::getBlockEntity)
             .mapMulti(MapMulti.cast(SpawnerBlockEntity.class))
-            .map(SpawnerBlockEntity::getSpawner).findFirst();
+            .map(s -> Pair.of(s.getSpawner(), s.getBlockPos())).findFirst();
     }
 
     @Override
@@ -82,16 +85,18 @@ public class BlockController extends QPBlock {
                 if (player.getItemInHand(hand).is(Holder.ITEM_CHECKER)) {
                     // Tell spawner info
                     getSpawner(level, pos)
-                        .flatMap(logic -> getEntityId(logic, level, pos))
+                        .flatMap(p -> getEntityId(p.getLeft(), level, p.getRight()))
                         .map(ResourceLocation::toString)
                         .map(s -> "Spawner Mob: " + s)
                         .map(TextComponent::new)
                         .ifPresent(s -> player.displayClientMessage(s, false));
                 } else {
                     // Open GUI
-                    List<EntityType<?>> entries = ForgeRegistries.ENTITIES.getValues().stream()
+                    var entries = ForgeRegistries.ENTITIES.getValues().stream()
                         .filter(BlockController::canSpawnFromSpawner)
+                        .map(ForgeRegistryEntry::getRegistryName)
                         .collect(Collectors.toList());
+                    PacketHandler.sendToClientPlayer(new ControllerOpenMessage(pos, level.dimension(), entries), (ServerPlayer) player);
                 }
             }
             return InteractionResult.sidedSuccess(level.isClientSide);
@@ -118,10 +123,10 @@ public class BlockController extends QPBlock {
             Optional.of(name)
                 .map(ForgeRegistries.ENTITIES::getValue)
                 .filter(BlockController::canSpawnFromSpawner)
-                .ifPresent(logic::setEntityId);
-            Optional.ofNullable(logic.getSpawnerBlockEntity()).ifPresent(BlockEntity::setChanged);
-            BlockState state = world.getBlockState(pos);
-            world.sendBlockUpdated(pos, state, state, Constants.BlockFlags.DEFAULT);
+                .ifPresent(logic.getLeft()::setEntityId);
+            Optional.ofNullable(logic.getLeft().getSpawnerBlockEntity()).ifPresent(BlockEntity::setChanged);
+            BlockState state = world.getBlockState(logic.getRight());
+            world.sendBlockUpdated(logic.getRight(), state, state, Constants.BlockFlags.NO_RERENDER);
         });
     }
 
@@ -134,16 +139,16 @@ public class BlockController extends QPBlock {
             if (powered && !m) {
                 getSpawner(level, pos).ifPresent(logic -> {
                     try {
-                        logic_spawnDelay.setInt(logic, 0);
+                        logic_spawnDelay.setInt(logic.getLeft(), 0);
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                         return;
                     }
                     FakePlayer fakePlayer = FakePlayerFactory.getMinecraft((ServerLevel) level);
                     fakePlayer.setLevel((ServerLevel) level);
-                    fakePlayer.setPos(pos.getX(), pos.getY(), pos.getZ());
+                    fakePlayer.setPos(logic.getRight().getX(), logic.getRight().getY(), logic.getRight().getZ());
 //                    logic.getWorld().players.add(fakePlayer);
-                    logic.serverTick((ServerLevel) level, pos);
+                    logic.getLeft().serverTick((ServerLevel) level, logic.getRight());
 //                    logic.getWorld().players.remove(fakePlayer);
                 });
             }
