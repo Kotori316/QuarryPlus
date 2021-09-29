@@ -14,6 +14,7 @@ import com.yogpc.qp.machines.QPBlock;
 import com.yogpc.qp.machines.QuarryMarker;
 import com.yogpc.qp.machines.module.EnergyModuleItem;
 import com.yogpc.qp.machines.module.ModuleLootFunction;
+import com.yogpc.qp.machines.module.QuarryModuleProvider;
 import com.yogpc.qp.packet.ClientSyncMessage;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.CombinedBlockEntityTicker;
@@ -95,9 +96,14 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
                 player.displayClientMessage(new TranslatableComponent("quarryplus.chat.disable_message", getName()), false);
             return InteractionResult.sidedSuccess(level.isClientSide);
         }
+        var stack = player.getItemInHand(hand);
         if (!player.isShiftKeyDown()) {
             if (!level.isClientSide && level.getBlockEntity(pos) instanceof TileAdvQuarry quarry) {
-                NetworkHooks.openGui((ServerPlayer) player, quarry, pos);
+                if (stack.getItem() instanceof QuarryModuleProvider.Item) {
+                    quarry.openModuleGui((ServerPlayer) player);
+                } else {
+                    NetworkHooks.openGui((ServerPlayer) player, quarry, pos);
+                }
             }
             return InteractionResult.SUCCESS;
         }
