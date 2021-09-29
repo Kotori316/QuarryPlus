@@ -84,8 +84,7 @@ public class MachineStorage {
         return Map.copyOf(fluidMap); // Return copy to avoid ConcurrentModificationException
     }
 
-    private void putFluid(Fluid fluid, long amount) {
-        var key = new FluidKey(fluid, null);
+    private void putFluid(FluidKey key, long amount) {
         if (amount <= 0) {
             fluidMap.remove(key);
         } else {
@@ -155,9 +154,9 @@ public class MachineStorage {
                     var handler = optional.get();
                     var fluidMap = new ArrayList<>(storage.getFluidMap().entrySet());
                     for (Map.Entry<FluidKey, Long> entry : fluidMap) {
-                        var filled = handler.fill(new FluidStack(entry.getKey().fluid(), (int) Math.min(entry.getValue(), Integer.MAX_VALUE)), IFluidHandler.FluidAction.EXECUTE);
+                        var filled = handler.fill(entry.getKey().toStack((int) Math.min(entry.getValue(), Integer.MAX_VALUE)), IFluidHandler.FluidAction.EXECUTE);
                         if (filled > 0) { // Fluid is transferred.
-                            storage.putFluid(entry.getKey().fluid(), entry.getValue() - filled);
+                            storage.putFluid(entry.getKey(), entry.getValue() - filled);
                             count += 1;
                             if (count > MAX_TRANSFER) return;
                         }
