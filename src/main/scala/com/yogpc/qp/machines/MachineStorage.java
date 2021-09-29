@@ -13,14 +13,13 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -41,10 +40,10 @@ public class MachineStorage {
     }
 
     public void addFluid(ItemStack bucketItem) {
-        if (bucketItem.getItem() instanceof BucketItem bucket) {
-            var key = getFluidInBucket(bucket);
-            fluidMap.merge(key, (long) FluidAttributes.BUCKET_VOLUME, Long::sum);
-        }
+        FluidUtil.getFluidContained(bucketItem).ifPresent(f -> {
+            var key = new FluidKey(f);
+            fluidMap.merge(key, (long) f.getAmount(), Long::sum);
+        });
     }
 
     public void addFluid(Fluid fluid, long amount) {
@@ -91,11 +90,6 @@ public class MachineStorage {
         } else {
             fluidMap.put(key, amount);
         }
-    }
-
-    private static FluidKey getFluidInBucket(BucketItem bucket) {
-        // TODO USE FLUID HANDLER
-        return new FluidKey(bucket.getFluid(), null);
     }
 
     public interface HasStorage {
