@@ -5,6 +5,7 @@ import java.util.stream.Stream;
 
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.integration.wrench.WrenchItems;
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.EnchantedLootFunction;
 import com.yogpc.qp.machines.EnchantmentLevel;
@@ -97,6 +98,13 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
             return InteractionResult.sidedSuccess(level.isClientSide);
         }
         var stack = player.getItemInHand(hand);
+        if (WrenchItems.isWrenchItem(stack)) {
+            if (!level.isClientSide && level.getBlockEntity(pos) instanceof TileAdvQuarry quarry) {
+                quarry.setAction(AdvQuarryAction.Waiting.WAITING);
+                player.displayClientMessage(new TranslatableComponent("quarryplus.chat.quarry.restart"), false);
+            }
+            return InteractionResult.SUCCESS;
+        }
         if (!player.isShiftKeyDown()) {
             if (!level.isClientSide && level.getBlockEntity(pos) instanceof TileAdvQuarry quarry) {
                 if (stack.getItem() instanceof QuarryModuleProvider.Item) {
