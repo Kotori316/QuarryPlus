@@ -6,7 +6,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.google.common.collect.Iterators;
 import com.yogpc.qp.utils.MapMulti;
+import javax.annotation.Nonnull;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -16,17 +18,20 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class MachineStorage {
     private Map<ItemKey, Long> itemMap = new LinkedHashMap<>();
     private Map<FluidKey, Long> fluidMap = new LinkedHashMap<>();
+    protected LazyOptional<IItemHandler> itemHandler = LazyOptional.of(StorageItemHandler::new);
 
     public void addItem(ItemStack stack) {
         if (stack.isEmpty()) return; // No need to store empty item.
@@ -160,5 +165,67 @@ public class MachineStorage {
                 }
             }
         };
+    }
+
+    private class StorageItemHandler implements IItemHandler {
+        @Override
+        public int getSlots() {
+            return itemMap.size();
+        }
+
+        private Optional<Map.Entry<ItemKey, Long>> getByIndex(int index) {
+            if (0 <= index && index < getSlots()) {
+                return Optional.of(Iterators.get(itemMap.entrySet().iterator(), index));
+            } else {
+                return Optional.empty();
+            }
+        }
+
+        @Nonnull
+        @Override
+        public ItemStack getStackInSlot(int slot) {
+            return getByIndex(slot)
+                .map(e -> e.getKey().toStack((int) Math.min(e.getValue(), Integer.MAX_VALUE)))
+                .orElse(ItemStack.EMPTY);
+        }
+
+        @Nonnull
+        @Override
+        public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+            // Not insertable
+            return stack;
+        }
+
+        @Nonnull
+        @Override
+        public ItemStack extractItem(int slot, int amount, boolean simulate) {
+            var entry = getByIndex(slot);
+            if (entry.isPresent()) {
+                var key = entry.get().getKey();
+                long storageCount = entry.get().getValue();
+                int size = (int) Math.min(amount, storageCount);
+                if (!simulate) {
+                    if (storageCount > amount) {
+                        itemMap.put(key, storageCount - amount);
+                    } else {
+                        itemMap.remove(key);
+                    }
+                }
+                return key.toStack(size);
+            } else {
+                return ItemStack.EMPTY;
+            }
+        }
+
+        @Override
+        public int getSlotLimit(int slot) {
+            return Integer.MAX_VALUE;
+        }
+
+        @Override
+        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+            // Not insertable
+            return false;
+        }
     }
 }
