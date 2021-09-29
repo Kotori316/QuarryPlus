@@ -2,6 +2,7 @@ package com.yogpc.qp.machines.miningwell;
 
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.integration.wrench.WrenchItems;
 import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QPBlock;
@@ -15,7 +16,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -72,7 +72,7 @@ public class MiningWellBlock extends QPBlock implements EntityBlock {
             return InteractionResult.sidedSuccess(world.isClientSide);
         }
         var stack = player.getItemInHand(hand);
-        if (stack.getItem() == Items.STICK) {
+        if (WrenchItems.isWrenchItem(stack)) {
             if (!world.isClientSide) {
                 world.getBlockEntity(pos, Holder.MINING_WELL_TYPE)
                     .ifPresent(MiningWellTile::reset);

@@ -2,6 +2,7 @@ package com.yogpc.qp.machines.advpump;
 
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.integration.wrench.WrenchItems;
 import com.yogpc.qp.machines.EnchantedLootFunction;
 import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.PowerTile;
@@ -73,7 +74,7 @@ public class BlockAdvPump extends QPBlock implements EntityBlock {
             return InteractionResult.sidedSuccess(world.isClientSide);
         }
         var stack = player.getItemInHand(hand);
-        if (stack.getItem() == Items.STICK) {
+        if (WrenchItems.isWrenchItem(stack)) {
             if (!world.isClientSide) {
                 if (world.getBlockEntity(pos) instanceof TileAdvPump pump) {
                     pump.reset();
