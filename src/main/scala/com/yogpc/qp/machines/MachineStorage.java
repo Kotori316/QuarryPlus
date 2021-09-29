@@ -32,6 +32,7 @@ public class MachineStorage {
     private Map<ItemKey, Long> itemMap = new LinkedHashMap<>();
     private Map<FluidKey, Long> fluidMap = new LinkedHashMap<>();
     protected LazyOptional<IItemHandler> itemHandler = LazyOptional.of(StorageItemHandler::new);
+    protected LazyOptional<IFluidHandler> fluidHandler = LazyOptional.of(StorageFluidHandler::new);
 
     public void addItem(ItemStack stack) {
         if (stack.isEmpty()) return; // No need to store empty item.
@@ -93,6 +94,7 @@ public class MachineStorage {
     }
 
     private static FluidKey getFluidInBucket(BucketItem bucket) {
+        // TODO USE FLUID HANDLER
         return new FluidKey(bucket.getFluid(), null);
     }
 
@@ -225,6 +227,75 @@ public class MachineStorage {
         public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
             // Not insertable
             return false;
+        }
+    }
+
+    private final class StorageFluidHandler implements IFluidHandler {
+        @Override
+        public int getTanks() {
+            return fluidMap.size();
+        }
+
+        private Optional<Map.Entry<FluidKey, Long>> getByIndex(int index) {
+            if (0 <= index && index < getTanks()) {
+                return Optional.of(Iterators.get(fluidMap.entrySet().iterator(), index));
+            } else {
+                return Optional.empty();
+            }
+        }
+
+        @Nonnull
+        @Override
+        public FluidStack getFluidInTank(int tank) {
+            return getByIndex(tank)
+                .map(e -> e.getKey().toStack((int) Math.min(e.getValue(), Integer.MAX_VALUE)))
+                .orElse(FluidStack.EMPTY);
+        }
+
+        @Override
+        public int getTankCapacity(int tank) {
+            return Integer.MAX_VALUE;
+        }
+
+        @Override
+        public boolean isFluidValid(int tank, @Nonnull FluidStack stack) {
+            // Not insertable
+            return false;
+        }
+
+        @Override
+        public int fill(FluidStack resource, FluidAction action) {
+            // Not insertable
+            return 0;
+        }
+
+        @Nonnull
+        @Override
+        public FluidStack drain(FluidStack resource, FluidAction action) {
+            var key = new FluidKey(resource);
+            return Optional.ofNullable(fluidMap.get(key))
+                .map(l -> Map.entry(key, l))
+                .map(e -> drainInternal(e, resource.getAmount(), action))
+                .orElse(FluidStack.EMPTY);
+        }
+
+        @Nonnull
+        @Override
+        public FluidStack drain(int maxDrain, FluidAction action) {
+            var iterator = fluidMap.entrySet().iterator();
+            if (iterator.hasNext()) {
+                return drainInternal(iterator.next(), maxDrain, action);
+            } else {
+                return FluidStack.EMPTY;
+            }
+        }
+
+        private FluidStack drainInternal(Map.Entry<FluidKey, Long> entry, int maxDrain, FluidAction action) {
+            var drained = entry.getKey().toStack((int) Math.min(entry.getValue(), maxDrain));
+            if (action.execute()) {
+                putFluid(entry.getKey(), entry.getValue() - drained.getAmount());
+            }
+            return drained;
         }
     }
 }

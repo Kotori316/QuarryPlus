@@ -8,6 +8,9 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public record FluidKey(Fluid fluid, @Nullable CompoundTag nbt) {
+    public FluidKey(FluidStack stack) {
+        this(stack.getFluid(), stack.getTag());
+    }
 
     public CompoundTag createNbt(long amount) {
         var tag = new CompoundTag();
