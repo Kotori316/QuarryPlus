@@ -1,3 +1,10 @@
+## Version 17.4-SNAPSHOT
+
+* Fixed crash of Chunk Destroyer GUI.
+  * Open Module inventory directly if player has module item in hand.
+* Implement item/fluid handler for machines.
+  * This may improve connection of pipes from other mods.
+
 ## Version 17.3-SNAPSHOT
 
 * Added Chunk Destroyer
