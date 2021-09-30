@@ -24,6 +24,8 @@ import com.yogpc.qp.machines.marker.ContainerMarker;
 import com.yogpc.qp.machines.marker.Tile16Marker;
 import com.yogpc.qp.machines.marker.TileFlexMarker;
 import com.yogpc.qp.machines.marker.TileMarker;
+import com.yogpc.qp.machines.mini_quarry.MiniQuarryBlock;
+import com.yogpc.qp.machines.mini_quarry.MiniQuarryTile;
 import com.yogpc.qp.machines.miningwell.MiningWellBlock;
 import com.yogpc.qp.machines.miningwell.MiningWellTile;
 import com.yogpc.qp.machines.misc.BlockDummy;
@@ -140,6 +142,7 @@ public class Holder {
     public static final ExpPumpBlock BLOCK_EXP_PUMP = registerBlock(new ExpPumpBlock());
     public static final BlockAdvPump BLOCK_ADV_PUMP = registerBlock(new BlockAdvPump());
     public static final BlockAdvQuarry BLOCK_ADV_QUARRY = registerBlock(new BlockAdvQuarry());
+    public static final MiniQuarryBlock BLOCK_MINI_QUARRY = registerBlock(new MiniQuarryBlock());
     public static final BlockMarker BLOCK_MARKER = registerBlock(new BlockMarker());
     public static final BlockExMarker.BlockFlexMarker BLOCK_FLEX_MARKER = registerBlock(new BlockExMarker.BlockFlexMarker());
     public static final BlockExMarker.Block16Marker BLOCK_16_MARKER = registerBlock(new BlockExMarker.Block16Marker());
@@ -169,6 +172,7 @@ public class Holder {
     public static final BlockEntityType<ExpPumpTile> EXP_PUMP_TYPE = registerEntityType(ExpPumpTile::new, BLOCK_EXP_PUMP, EnableOrNot.CONFIG_ON);
     public static final BlockEntityType<PlacerTile> PLACER_TYPE = registerEntityType(PlacerTile::new, BLOCK_PLACER, EnableOrNot.CONFIG_ON);
     public static final BlockEntityType<BookMoverEntity> BOOK_MOVER_TYPE = registerEntityType(BookMoverEntity::new, BLOCK_BOOK_MOVER, EnableOrNot.CONFIG_OFF);
+    public static final BlockEntityType<MiniQuarryTile> MINI_QUARRY_TYPE = registerEntityType(MiniQuarryTile::new, BLOCK_MINI_QUARRY, EnableOrNot.CONFIG_ON);
 
     public static final MenuType<ContainerMarker> FLEX_MARKER_MENU_TYPE = registerMenuType((windowId, inv, data) ->
         new ContainerMarker(windowId, inv.player, data.readBlockPos(), Holder.FLEX_MARKER_MENU_TYPE), BlockExMarker.GUI_FLEX_ID);
