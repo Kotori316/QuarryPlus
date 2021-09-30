@@ -1,10 +1,9 @@
-package com.yogpc.qp.machines.advquarry;
+package com.yogpc.qp.machines;
 
 import java.util.List;
 import java.util.stream.StreamSupport;
 
 import com.yogpc.qp.QuarryPlusTest;
-import com.yogpc.qp.machines.Area;
 import net.minecraft.core.Direction;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
