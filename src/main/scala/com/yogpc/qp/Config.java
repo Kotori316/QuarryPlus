@@ -1,6 +1,7 @@
 package com.yogpc.qp;
 
 import java.util.List;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -50,6 +51,7 @@ public class Config {
             builder.comment("QuarryPlus Machines. Set true to enable machine or item.").push("machines");
             machinesMap = Holder.conditionHolders().stream()
                 .filter(Holder.EntryConditionHolder::configurable)
+                .sorted(Comparator.comparing(Holder.EntryConditionHolder::path))
                 .map(n -> Map.entry(n.path(), builder.define(n.path(), !FMLEnvironment.production || n.condition().on())))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
             builder.pop();

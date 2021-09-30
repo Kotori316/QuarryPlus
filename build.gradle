@@ -1,5 +1,6 @@
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
@@ -147,8 +148,9 @@ repositories {
 }
 
 dependencies {
-    String mcVersion = System.getenv("CI_FORGE") ?: project.forgeVersion
-    minecraft('net.minecraftforge:forge:' + mcVersion)
+    String forgeVersion = System.getenv("CI_FORGE") ?: project.forgeVersion
+    minecraft('net.minecraftforge:forge:' + forgeVersion)
+    System.out.println(('Selected version: ' + 'net.minecraftforge:forge:' + forgeVersion) as String)
 
     implementation fg.deobf("mezz.jei:jei-1.17.1:" + project.jeiVersion)
 
@@ -255,7 +257,7 @@ curseforge {
         releaseType = 'release'
         addGameVersion '1.17.1'
         mainArtifact(jar) {
-            displayName = 'v' + project.version
+            displayName = 'v' + project.version + '-forge'
         }
         addArtifact deobfJar
         addArtifact srcJar
@@ -325,17 +327,21 @@ static String getCommit(String branch) {
 }
 
 String getChangeLog() {
+    def header = ("""\
+        For Minecraft 1.17.1 and Minecraft Forge
+        Released at ${ZonedDateTime.now(ZoneId.of('Asia/Tokyo')).withNano(0).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)}
+        """ as String).stripIndent()
     def f = file("temp_changelog.md")
     if (f.exists()) {
         def version = f.readLines().find { s -> s.startsWith("#") }
-        return Stream.concat(
+        return header + System.lineSeparator() + Stream.concat(
                 Stream.of(version, ""),
                 f.readLines()
                         .drop(4 - 2)
                         .takeWhile { s -> !s.isEmpty() }
                         .stream()
         ).collect(Collectors.joining(System.lineSeparator()))
-    } else return ""
+    } else return header
 }
 
 task CheckCompileOption() {
