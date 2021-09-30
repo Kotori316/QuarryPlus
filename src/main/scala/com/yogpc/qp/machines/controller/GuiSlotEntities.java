@@ -10,7 +10,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class GuiSlotEntities extends ObjectSelectionList<GuiSlotEntities.Entry> {
+final class GuiSlotEntities extends ObjectSelectionList<GuiSlotEntities.Entry> {
 
     private final GuiController parent;
 
@@ -25,7 +25,7 @@ public class GuiSlotEntities extends ObjectSelectionList<GuiSlotEntities.Entry> 
         parent.buildModList(this::addEntry, Entry::new); // add
     }
 
-    public class Entry extends ObjectSelectionList.Entry<Entry> {
+    final class Entry extends ObjectSelectionList.Entry<Entry> {
         public final ResourceLocation location;
 
         public Entry(ResourceLocation location) {

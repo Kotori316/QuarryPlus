@@ -55,7 +55,7 @@ public class GuiController extends Screen implements Button.OnPress {
         this.addRenderableWidget(slot);
         setInitialFocus(slot);
         addRenderableWidget(new IndexedButton(-1, width / 2 - 125, height - 26, 250, 20, new TranslatableComponent("gui.done"), this));
-        this.search = new EditBox(font, width / 2 - 125, height - 56, 250, 20, new TextComponent(""));
+        this.search = new EditBox(font, width / 2 - 125, height - 56, 250, 20, new TextComponent("edit box"));
         this.addRenderableWidget(search);
         search.setCanLoseFocus(true);
         search.setResponder(this::searchEntities);
