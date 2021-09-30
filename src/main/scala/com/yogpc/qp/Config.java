@@ -1,5 +1,6 @@
 package com.yogpc.qp;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,6 +27,7 @@ public class Config {
         private final ForgeConfigSpec.BooleanValue debug;
         public final ForgeConfigSpec.BooleanValue noEnergy;
         public final ForgeConfigSpec.BooleanValue convertDeepslateOres;
+        public final ForgeConfigSpec.ConfigValue<List<? extends String>> spawnerBlackList;
 
         public Common(ForgeConfigSpec.Builder builder) {
             var inDev = !FMLEnvironment.production;
@@ -34,6 +36,9 @@ public class Config {
             debug = builder.comment("debug mode").define("debug", inDev);
             noEnergy = builder.comment("no energy").define("noEnergy", false);
             convertDeepslateOres = builder.comment("Whether quarry converts deepslate ore to normal ore.").define("convertDeepslateOres", false);
+            var disabledEntities = List.of("minecraft:ender_dragon", "minecraft:wither",
+                "minecraft:area_effect_cloud", "minecraft:item", "minecraft:player");
+            spawnerBlackList = builder.comment("Spawner Controller Blacklist").defineListAllowEmpty(List.of("spawnerBlacklist"), () -> disabledEntities, s -> s instanceof String);
             builder.pop();
         }
     }

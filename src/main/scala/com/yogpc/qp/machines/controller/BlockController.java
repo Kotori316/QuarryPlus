@@ -115,7 +115,9 @@ public class BlockController extends QPBlock {
     }
 
     private static boolean canSpawnFromSpawner(EntityType<?> entityType) {
-        return true;
+        if (QuarryPlus.config == null) return true;
+        else if (!entityType.canSummon()) return false;
+        return !QuarryPlus.config.common.spawnerBlackList.get().contains(String.valueOf(entityType.getRegistryName()));
     }
 
     public static void setSpawnerEntity(Level world, BlockPos pos, ResourceLocation name) {
