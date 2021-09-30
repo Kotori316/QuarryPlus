@@ -11,6 +11,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPBlock;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.MapMulti;
+import cpw.mods.modlauncher.Launcher;
 import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -45,13 +46,8 @@ import org.apache.logging.log4j.Logger;
 public class BlockController extends QPBlock {
     public static final String NAME = "spawner_controller";
     private static final Logger LOGGER = LogManager.getLogger(BlockController.class);
-    private static final Field logic_spawnDelay; //
-    private static final Method logic_getEntityID; // (Level, BlockPos) -> ResourceLocation
-
-    static {
-        logic_spawnDelay = ObfuscationReflectionHelper.findField(BaseSpawner.class, "f_45442_");
-        logic_getEntityID = ObfuscationReflectionHelper.findMethod(BaseSpawner.class, "m_151332_", Level.class, BlockPos.class);
-    }
+    private static final Field logic_spawnDelay = getSpawnDelayField(); // int
+    private static final Method logic_getEntityID = getEntityIdGetter(); // (Level, BlockPos) -> ResourceLocation
 
     public BlockController() {
         super(Properties.of(Material.DECORATION)
@@ -157,5 +153,33 @@ public class BlockController extends QPBlock {
             level.setBlock(pos, state.setValue(QPBlock.WORKING, powered), Block.UPDATE_ALL);
         }
         super.neighborChanged(state, level, pos, blockIn, fromPos, isMoving);
+    }
+
+    private static Field getSpawnDelayField() {
+        if (Launcher.INSTANCE != null) {
+            return ObfuscationReflectionHelper.findField(BaseSpawner.class, "f_45442_");
+        } else {
+            try {
+                var f = BaseSpawner.class.getDeclaredField("spawnDelay");
+                f.setAccessible(true);
+                return f;
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private static Method getEntityIdGetter() {
+        if (Launcher.INSTANCE != null) {
+            return ObfuscationReflectionHelper.findMethod(BaseSpawner.class, "m_151332_", Level.class, BlockPos.class);
+        } else {
+            try {
+                var m = BaseSpawner.class.getDeclaredMethod("getEntityId", Level.class, BlockPos.class);
+                m.setAccessible(true);
+                return m;
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }
