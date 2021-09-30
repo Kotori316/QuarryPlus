@@ -1,10 +1,8 @@
-package com.yogpc.qp.machines.advquarry;
+package com.yogpc.qp.machines;
 
 import java.util.Iterator;
 
-import com.yogpc.qp.machines.Area;
-
-abstract class TargetIterator implements Iterator<TargetIterator.XZPair> {
+public abstract class TargetIterator implements Iterator<TargetIterator.XZPair> {
     protected XZPair current;
     protected final Area area;
 
@@ -12,7 +10,7 @@ abstract class TargetIterator implements Iterator<TargetIterator.XZPair> {
         this.area = area;
     }
 
-    static TargetIterator of(Area area) {
+    public static TargetIterator of(Area area) {
         return switch (area.direction()) {
             case NORTH, UP, DOWN -> new North(area);
             case SOUTH -> new South(area);
@@ -40,11 +38,11 @@ abstract class TargetIterator implements Iterator<TargetIterator.XZPair> {
         return current;
     }
 
-    final void setCurrent(XZPair current) {
+    public final void setCurrent(XZPair current) {
         this.current = current;
     }
 
-    final record XZPair(int x, int z) {
+    public final record XZPair(int x, int z) {
     }
 
     private static final class North extends TargetIterator {
