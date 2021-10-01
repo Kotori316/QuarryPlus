@@ -60,4 +60,8 @@ public class PowerManager {
     public static long getExpCollectEnergy(int exp, EnchantmentLevel.HasEnchantments enchantments) {
         return EXP_COLLECT * exp * 2 / (2 + Math.max(enchantments.unbreakingLevel(), 0));
     }
+
+    public static long getMiniQuarryEnergy(EnchantmentLevel.HasEnchantments enchantments) {
+        return 20 * PowerTile.ONE_FE / (1 + Math.max(0, enchantments.unbreakingLevel()));
+    }
 }
