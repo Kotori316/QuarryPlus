@@ -3,7 +3,9 @@ package com.yogpc.qp.machines.mini_quarry;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.EnchantmentLevel;
+import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QPBlock;
+import com.yogpc.qp.utils.CombinedBlockEntityTicker;
 import com.yogpc.qp.utils.QuarryChunkLoadUtil;
 import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
@@ -22,6 +24,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -64,8 +68,8 @@ public class MiniQuarryBlock extends QPBlock implements EntityBlock {
         }
         if (!player.isShiftKeyDown()) {
             if (!level.isClientSide) {
-                level.getBlockEntity(pos, Holder.MINI_QUARRY_TYPE)
-                    .ifPresent(t -> NetworkHooks.openGui((ServerPlayer) player, t, pos));
+//                level.getBlockEntity(pos, Holder.MINI_QUARRY_TYPE)
+//                    .ifPresent(t -> NetworkHooks.openGui((ServerPlayer) player, t, pos));
             }
             return InteractionResult.SUCCESS;
         } else {
@@ -120,5 +124,16 @@ public class MiniQuarryBlock extends QPBlock implements EntityBlock {
             }
             super.onRemove(state, level, pos, newState, moved);
         }
+    }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
+        return level.isClientSide ? null : checkType(blockEntityType, Holder.MINI_QUARRY_TYPE,
+            new CombinedBlockEntityTicker<>(
+                PowerTile.getGenerator(),
+                (w, p, s, t) -> t.work(),
+                PowerTile.logTicker())
+        );
     }
 }

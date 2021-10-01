@@ -11,23 +11,34 @@ import com.yogpc.qp.machines.EnchantmentLevel;
 import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QPBlock;
+import com.yogpc.qp.machines.QuarryFakePlayer;
 import com.yogpc.qp.machines.QuarryMarker;
 import com.yogpc.qp.utils.MapMulti;
+import javax.annotation.Nullable;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.Containers;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.MenuProvider;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraftforge.common.ForgeHooks;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -35,9 +46,12 @@ import net.minecraftforge.registries.ForgeRegistries;
 public final class MiniQuarryTile extends PowerTile implements CheckerLog,
     EnchantmentLevel.HasEnchantments, MenuProvider {
     private List<EnchantmentLevel> enchantments;
+    @Nullable
     Area area = null;
     boolean rs;
-    SimpleContainer container = new SimpleContainer(5);
+    MiniQuarryInventory container = new MiniQuarryInventory();
+    @Nullable
+    MiniTarget targetIterator;
 
     public MiniQuarryTile(BlockPos pos, BlockState state) {
         super(Holder.MINI_QUARRY_TYPE, pos, state);
@@ -46,11 +60,57 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
 
     void work() {
         assert level != null;
-        if (level.getGameTime() % interval(efficiencyLevel()) == 0) {
-            if (useEnergy(PowerManager.getMiniQuarryEnergy(this), Reason.MINI_QUARRY, false)) {
+        // Interval check
+        if (level.getGameTime() % interval(efficiencyLevel()) != 0 || targetIterator == null) return;
+        // Energy consumption
+        if (!useEnergy(PowerManager.getMiniQuarryEnergy(this), Reason.MINI_QUARRY, false)) return;
+        var tools = container.tools();
+        // Break block
+        while (targetIterator.hasNext()) {
+            var level = getTargetWorld();
+            var pos = targetIterator.next();
+            var state = level.getBlockState(pos);
+            if (!canBreak(level, pos, state)) continue; // The block is in deny list or unbreakable.
 
-            }
+            var fakePlayer = QuarryFakePlayer.get(level);
+            var event = new BlockEvent.BreakEvent(level, pos, state, fakePlayer);
+            if (!MinecraftForge.EVENT_BUS.post(event)) break; // Denied to break block.
+
+            var tool = tools.stream().filter(t -> {
+                fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, t);
+                return fakePlayer.hasCorrectToolForDrops(state);
+            }).findFirst().or(() -> tools.stream().filter(t -> {
+                fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, t);
+                return ForgeHooks.isCorrectToolForDrops(state, fakePlayer);
+            }).findFirst());
+            tool.ifPresent(t -> {
+                fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, t);
+                var drops = Block.getDrops(state, level, pos, level.getBlockEntity(pos), fakePlayer, t);
+                drops.forEach(this::insertOrDropItem);
+                var damage = fakePlayer.hasCorrectToolForDrops(state) ? 1 : 4;
+                for (int i = 0; i < damage; i++) {
+                    t.mineBlock(level, state, pos, fakePlayer);
+                }
+                level.removeBlock(pos, false);
+                var sound = state.getSoundType();
+                level.playSound(null, pos, sound.getBreakSound(), SoundSource.BLOCKS, (sound.getVolume() + 1.0F) / 4F, sound.getPitch() * 0.8F);
+            });
+            break;
         }
+        if (!targetIterator.hasNext()) {
+            area = null;
+            targetIterator = null;
+            finishWork();
+        }
+    }
+
+    boolean canBreak(Level level, BlockPos pos, BlockState state) {
+        return !state.isAir() &&
+            state.getDestroySpeed(level, pos) >= 0;
+    }
+
+    ServerLevel getTargetWorld() {
+        return (ServerLevel) level;
     }
 
     boolean isWorking() {
@@ -65,17 +125,25 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
         }
     }
 
+    public void setArea(@Nullable Area area) {
+        this.area = area;
+        if (area != null)
+            this.targetIterator = new MiniTarget(area);
+    }
+
     void startWork() {
         assert level != null;
-        var facing = getBlockState().getValue(BlockStateProperties.FACING);
-        area = Stream.of(facing, facing.getCounterClockWise(), facing.getClockWise())
+        var behind = getBlockState().getValue(BlockStateProperties.FACING).getOpposite();
+        setArea(Stream.of(behind, behind.getCounterClockWise(), behind.getClockWise())
             .map(getBlockPos()::relative)
             .flatMap(p -> {
                 if (level.getBlockEntity(p) instanceof QuarryMarker marker) return Stream.of(marker);
                 else return Stream.empty();
             })
             .flatMap(m -> m.getArea().stream().peek(a -> m.removeAndGetItems().forEach(this::insertOrDropItem)))
-            .findFirst().orElse(null);
+            .findFirst()
+            .map(a -> new Area(a.minX() - 1, a.minY(), a.minZ() - 1, a.maxX() + 1, a.maxY(), a.maxZ() + 1, a.direction()))
+            .orElse(null));
         if (area != null)
             level.setBlock(getBlockPos(), getBlockState().setValue(QPBlock.WORKING, true), Block.UPDATE_ALL);
     }
@@ -106,6 +174,9 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
         this.enchantments.forEach(e ->
             enchantments.putInt(String.valueOf(e.enchantmentID()), e.level()));
         nbt.put("enchantments", enchantments);
+        if (targetIterator != null)
+            nbt.putLong("current", targetIterator.peek().asLong());
+        nbt.put("inventory", container.createTag());
         return super.save(nbt);
     }
 
@@ -113,18 +184,25 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
     public void load(CompoundTag nbt) {
         super.load(nbt);
         rs = nbt.getBoolean("rs");
-        area = Area.fromNBT(nbt.getCompound("area")).orElse(null);
+        setArea(Area.fromNBT(nbt.getCompound("area")).orElse(null));
         var enchantments = nbt.getCompound("enchantments");
         setEnchantments(enchantments.getAllKeys().stream()
             .mapMulti(MapMulti.getEntry(ForgeRegistries.ENCHANTMENTS, enchantments::getInt))
             .map(EnchantmentLevel::new)
             .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR)
             .toList());
+        if (nbt.contains("current") && targetIterator != null)
+            targetIterator.setCurrent(BlockPos.of(nbt.getLong("current")));
+        container.fromTag(nbt.getList("inventory", Constants.NBT.TAG_COMPOUND));
     }
 
     @Override
     public List<? extends Component> getDebugLogs() {
-        return null;
+        return Stream.of(
+            "%sArea:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, area),
+            "%sTarget:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, Optional.ofNullable(targetIterator).map(MiniTarget::peek).orElse(null)),
+            "%sEnergy:%s %f/%d FE (%d)".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, getEnergy() / (double) PowerTile.ONE_FE, getMaxEnergyStored(), getEnergy())
+        ).map(TextComponent::new).toList();
     }
 
     public void setEnchantments(List<EnchantmentLevel> enchantments) {
