@@ -24,6 +24,23 @@ class TargetIteratorTest extends QuarryPlusTest {
         }
 
         @Test
+        void head() {
+            var iterator = TargetIterator.of(area);
+            assertEquals(new TargetIterator.XZPair(-1002, 91), iterator.head());
+            iterator.next();
+            assertEquals(new TargetIterator.XZPair(-1002, 91), iterator.head());
+        }
+
+        @Test
+        void reset() {
+            var iterator = TargetIterator.of(area);
+            iterator.next();
+            iterator.next();
+            iterator.reset();
+            assertEquals(iterator.head(), iterator.peek());
+        }
+
+        @Test
         void checkAll() {
             Iterable<TargetIterator.XZPair> iterable = () -> TargetIterator.of(area);
             var allElements = StreamSupport.stream(iterable.spliterator(), false).toList();
@@ -49,6 +66,23 @@ class TargetIteratorTest extends QuarryPlusTest {
         void init() {
             var iterator = TargetIterator.of(area);
             assertEquals(new TargetIterator.XZPair(-1005, 92), iterator.peek());
+        }
+
+        @Test
+        void head() {
+            var iterator = TargetIterator.of(area);
+            assertEquals(new TargetIterator.XZPair(-1005, 92), iterator.head());
+            iterator.next();
+            assertEquals(new TargetIterator.XZPair(-1005, 92), iterator.head());
+        }
+
+        @Test
+        void reset() {
+            var iterator = TargetIterator.of(area);
+            iterator.next();
+            iterator.next();
+            iterator.reset();
+            assertEquals(iterator.head(), iterator.peek());
         }
 
         @Test
@@ -80,6 +114,23 @@ class TargetIteratorTest extends QuarryPlusTest {
         }
 
         @Test
+        void head() {
+            var iterator = TargetIterator.of(area);
+            assertEquals(new TargetIterator.XZPair(-1005, 91), iterator.head());
+            iterator.next();
+            assertEquals(new TargetIterator.XZPair(-1005, 91), iterator.head());
+        }
+
+        @Test
+        void reset() {
+            var iterator = TargetIterator.of(area);
+            iterator.next();
+            iterator.next();
+            iterator.reset();
+            assertEquals(iterator.head(), iterator.peek());
+        }
+
+        @Test
         void checkAll() {
             Iterable<TargetIterator.XZPair> iterable = () -> TargetIterator.of(area);
             var allElements = StreamSupport.stream(iterable.spliterator(), false).toList();
@@ -105,6 +156,23 @@ class TargetIteratorTest extends QuarryPlusTest {
         void init() {
             var iterator = TargetIterator.of(area);
             assertEquals(new TargetIterator.XZPair(-1002, 92), iterator.peek());
+        }
+
+        @Test
+        void head() {
+            var iterator = TargetIterator.of(area);
+            assertEquals(new TargetIterator.XZPair(-1002, 92), iterator.head());
+            iterator.next();
+            assertEquals(new TargetIterator.XZPair(-1002, 92), iterator.head());
+        }
+
+        @Test
+        void reset() {
+            var iterator = TargetIterator.of(area);
+            iterator.next();
+            iterator.next();
+            iterator.reset();
+            assertEquals(iterator.head(), iterator.peek());
         }
 
         @Test

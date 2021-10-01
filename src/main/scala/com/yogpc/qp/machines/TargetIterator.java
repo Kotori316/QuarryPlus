@@ -8,6 +8,7 @@ public abstract class TargetIterator implements Iterator<TargetIterator.XZPair> 
 
     TargetIterator(Area area) {
         this.area = area;
+        reset();
     }
 
     public static TargetIterator of(Area area) {
@@ -34,6 +35,12 @@ public abstract class TargetIterator implements Iterator<TargetIterator.XZPair> 
             area.minZ() < current.z() && current.z() < area.maxZ();
     }
 
+    abstract XZPair head();
+
+    public final void reset() {
+        this.current = head();
+    }
+
     public final XZPair peek() {
         return current;
     }
@@ -49,7 +56,6 @@ public abstract class TargetIterator implements Iterator<TargetIterator.XZPair> 
 
         North(Area area) {
             super(area);
-            current = new XZPair(area.maxX() - 1, area.minZ() + 1);
         }
 
         @Override
@@ -61,13 +67,17 @@ public abstract class TargetIterator implements Iterator<TargetIterator.XZPair> 
                 return new XZPair(current.x(), current.z() + 1);
             }
         }
+
+        @Override
+        XZPair head() {
+            return new XZPair(area.maxX() - 1, area.minZ() + 1);
+        }
     }
 
     private static final class South extends TargetIterator {
 
         South(Area area) {
             super(area);
-            current = new XZPair(area.minX() + 1, area.maxZ() - 1);
         }
 
         @Override
@@ -79,13 +89,17 @@ public abstract class TargetIterator implements Iterator<TargetIterator.XZPair> 
                 return new XZPair(current.x(), current.z() - 1);
             }
         }
+
+        @Override
+        XZPair head() {
+            return new XZPair(area.minX() + 1, area.maxZ() - 1);
+        }
     }
 
     private static final class West extends TargetIterator {
 
         West(Area area) {
             super(area);
-            current = new XZPair(area.minX() + 1, area.minZ() + 1);
         }
 
         @Override
@@ -97,13 +111,17 @@ public abstract class TargetIterator implements Iterator<TargetIterator.XZPair> 
                 return new XZPair(current.x() + 1, current.z());
             }
         }
+
+        @Override
+        XZPair head() {
+            return new XZPair(area.minX() + 1, area.minZ() + 1);
+        }
     }
 
     private static final class East extends TargetIterator {
 
         East(Area area) {
             super(area);
-            current = new XZPair(area.maxX() - 1, area.maxZ() - 1);
         }
 
         @Override
@@ -114,6 +132,11 @@ public abstract class TargetIterator implements Iterator<TargetIterator.XZPair> 
             } else {
                 return new XZPair(current.x() - 1, current.z());
             }
+        }
+
+        @Override
+        XZPair head() {
+            return new XZPair(area.maxX() - 1, area.maxZ() - 1);
         }
     }
 }
