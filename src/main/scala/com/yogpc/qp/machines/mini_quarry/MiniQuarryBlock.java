@@ -113,7 +113,7 @@ public class MiniQuarryBlock extends QPBlock implements EntityBlock {
     @Override
     @SuppressWarnings("deprecation")
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moved) {
-        if (state.is(newState.getBlock())) {
+        if (!state.is(newState.getBlock())) {
             if (level.getBlockEntity(pos) instanceof MiniQuarryTile tile) {
                 Containers.dropContents(level, pos, tile.getInv());
                 level.updateNeighbourForOutputSignal(pos, this);
