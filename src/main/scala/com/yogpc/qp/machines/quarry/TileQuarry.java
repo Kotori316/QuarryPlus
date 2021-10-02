@@ -341,13 +341,19 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
     }
 
     double headSpeed() {
-        final int defaultSpeed = -7;
-        return enchantments.stream()
+        return headSpeed(enchantments.stream()
             .filter(e -> e.enchantment() == Enchantments.EFFICIENCY)
             .mapToInt(EnchantmentLevel::level)
-            .mapToDouble(l -> Math.pow(2, defaultSpeed + l * (1 - defaultSpeed) / 5d))
-            .findFirst()
-            .orElse(Math.pow(2, defaultSpeed));
+            .findFirst().orElse(0));
+    }
+
+    static double headSpeed(int efficiency) {
+        if (efficiency >= 4) {
+            return Math.pow(2, efficiency - 4);
+        } else {
+            // 4th root of 8.
+            return Math.pow(1.681792830507429, efficiency) / 8;
+        }
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
