@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Sets;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
@@ -368,10 +369,16 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
 
     double headSpeed() {
         int l = efficiencyLevel();
-        if (l >= 4) {
-            return Math.pow(2, l - 4);
+        return headSpeed(l);
+    }
+
+    @VisibleForTesting
+    static double headSpeed(int efficiency) {
+        if (efficiency >= 4) {
+            return Math.pow(2, efficiency - 4);
         } else {
-            return Math.pow(1.681792830507429, l) / 8;
+            // 4th root of 8.
+            return Math.pow(1.681792830507429, efficiency) / 8;
         }
     }
 
