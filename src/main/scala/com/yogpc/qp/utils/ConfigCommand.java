@@ -4,6 +4,8 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.ChatFormatting;
@@ -28,17 +30,18 @@ public final class ConfigCommand {
         event.getDispatcher().register(parent.then(configCommand.then(setCommand)));
     }
 
-    private static int changeMachineSetting(String name, boolean enabled, CommandContext<CommandSourceStack> commandContext) {
+    private static int changeMachineSetting(String name, boolean enabled, CommandContext<CommandSourceStack> commandContext) throws CommandSyntaxException {
         if (QuarryPlus.config != null) {
             QuarryPlus.config.enableMap.set(name, enabled);
             commandContext.getSource().sendSuccess(new TextComponent("%s changed to %B".formatted(name, enabled)), true);
             return Command.SINGLE_SUCCESS;
         } else {
-            return 0;
+            var supplier = new SimpleCommandExceptionType(new TextComponent("QuarryPlus.config is NULL."));
+            throw supplier.create();
         }
     }
 
-    private static int getConfigValues(CommandContext<CommandSourceStack> commandContext) {
+    private static int getConfigValues(CommandContext<CommandSourceStack> commandContext) throws CommandSyntaxException {
         if (QuarryPlus.config != null) {
             commandContext.getSource().sendSuccess(new TextComponent(
                 String.format("%sQuarryPlus Machine List%s", ChatFormatting.UNDERLINE, ChatFormatting.RESET)
@@ -52,7 +55,8 @@ public final class ConfigCommand {
                 .forEach(c -> commandContext.getSource().sendSuccess(c, false));
             return Command.SINGLE_SUCCESS;
         } else {
-            return 0;
+            var supplier = new SimpleCommandExceptionType(new TextComponent("QuarryPlus.config is NULL."));
+            throw supplier.create();
         }
     }
 }
