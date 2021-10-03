@@ -19,13 +19,13 @@ public final class MiniQuarryMenu extends AbstractContainerMenu {
     public MiniQuarryMenu(int id, Player player, BlockPos pos) {
         super(Holder.MINI_QUARRY_MENU_TYPE, id);
         miniQuarry = Objects.requireNonNull((MiniQuarryTile) player.level.getBlockEntity(pos));
-        this.allSlots = miniQuarry.container.getContainerSize();
+        this.allSlots = miniQuarry.getInv().getContainerSize();
         final int oneBox = 18;
 
         for (int i = 0; i < allSlots; i++) {
             int verticalFix = i < 5 ? i : i - 5;
             int horizontalFix = i / 5;
-            addSlot(new SlotContainer(miniQuarry.container, i, 44 + verticalFix * oneBox, 27 + horizontalFix * oneBox));
+            addSlot(new SlotContainer(miniQuarry.getInv(), i, 44 + verticalFix * oneBox, 27 + horizontalFix * oneBox));
         }
 
         for (int h = 0; h < 3; h++) {
