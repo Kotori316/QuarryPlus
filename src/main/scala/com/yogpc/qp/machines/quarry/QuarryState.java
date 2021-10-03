@@ -44,6 +44,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
     BREAK_INSIDE_FRAME(true) {
         @Override
         public void tick(Level world, BlockPos quarryPos, BlockState state, TileQuarry quarry) {
+            if (world.getGameTime() % headInterval(quarry) != 0) return;
             Objects.requireNonNull(quarry.getArea());
             if (quarry.target == null) {
                 // Initial
@@ -225,6 +226,10 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
             search = nextSearch;
         }
         return counted;
+    }
+
+    static int headInterval(TileQuarry quarry) {
+        return (int) Math.ceil(1 / quarry.headSpeed());
     }
 }
 

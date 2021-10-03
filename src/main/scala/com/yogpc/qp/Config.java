@@ -3,6 +3,7 @@ package com.yogpc.qp;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
 import net.minecraft.resources.ResourceLocation;
@@ -40,7 +41,7 @@ public class Config {
     }
 
     public static class EnableMap {
-        private final Map<String, ForgeConfigSpec.BooleanValue> machinesMap;
+        private final Map<String, BooleanSupplier> machinesMap;
 
         public EnableMap(ForgeConfigSpec.Builder builder) {
             builder.comment("QuarryPlus Machines. Set true to enable machine or item.").push("machines");
@@ -48,13 +49,14 @@ public class Config {
                 .filter(Holder.EntryConditionHolder::configurable)
                 .sorted(Comparator.comparing(Holder.EntryConditionHolder::path))
                 .map(n -> Map.entry(n.path(), builder.define(n.path(), !FMLEnvironment.production || n.condition().on())))
+                .map(e -> Map.entry(e.getKey(), (BooleanSupplier) (() -> e.getValue().get())))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
             builder.pop();
         }
 
         public boolean enabled(String s) {
             return Optional.ofNullable(machinesMap.get(s))
-                .map(ForgeConfigSpec.ConfigValue::get)
+                .map(BooleanSupplier::getAsBoolean)
                 .or(() -> Holder.conditionHolders().stream()
                     .filter(h -> h.path().equals(s))
                     .findFirst()
@@ -65,6 +67,10 @@ public class Config {
 
         public boolean enabled(ResourceLocation location) {
             return enabled(location.getPath());
+        }
+
+        public void set(String name, boolean value) {
+            this.machinesMap.put(name, () -> value);
         }
     }
 }
