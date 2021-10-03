@@ -29,7 +29,6 @@ class MoverRecipeCategory implements IRecipeCategory<MoverRecipeCategory.MoverRe
     private static final ResourceLocation backGround = new ResourceLocation(QuarryPlus.modID, "textures/gui/mover_jei.png");
     private static final int xOff = 0;
     private static final int yOff = 0;
-    private static final int o = 18;
     private final IGuiHelper helper;
     private final List<ItemStack> pickaxes;
 

@@ -25,7 +25,6 @@ public class QuarryJeiPlugin implements IModPlugin {
     static IJeiRuntime jeiRuntime;
     static WorkBenchRecipeCategory workBenchRecipeCategory;
     static MoverRecipeCategory moverRecipeCategory;
-//    static BookRecipeCategory bookRecipeCategory;
 
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
@@ -37,23 +36,17 @@ public class QuarryJeiPlugin implements IModPlugin {
                 .collect(Collectors.toList());
         registration.addRecipes(recipes, WorkBenchRecipeCategory.UID);
         registration.addRecipes(MoverRecipeCategory.recipes(), MoverRecipeCategory.UID);
-//        if (!Config.common().disabled().apply(BlockBookMover.SYMBOL).get())
-//            registration.addRecipes(BookRecipeCategory.recipes(), BookRecipeCategory.UID());
     }
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
         registration.addRecipeCatalyst(new ItemStack(Holder.BLOCK_WORKBENCH), WorkBenchRecipeCategory.UID);
         registration.addRecipeCatalyst(new ItemStack(Holder.BLOCK_MOVER), MoverRecipeCategory.UID);
-//        if (!Config.common().disabled().apply(BlockBookMover.SYMBOL).get())
-//            registration.addRecipeCatalyst(new ItemStack(Holder.blockBookMover()), BookRecipeCategory.UID());
     }
 
     @Override
     public void registerGuiHandlers(IGuiHandlerRegistration registration) {
         registration.addRecipeClickArea(ScreenWorkbench.class, 7, 74, 161, 11, WorkBenchRecipeCategory.UID);
-//        if (!Config.common().disabled().apply(BlockBookMover.SYMBOL).get())
-//            registration.addRecipeClickArea(GuiBookMover.class, 79, 35, 23, 16, BookRecipeCategory.UID());
     }
 
     @Override
@@ -67,10 +60,6 @@ public class QuarryJeiPlugin implements IModPlugin {
         registry.addRecipeCategories(workBenchRecipeCategory);
         moverRecipeCategory = new MoverRecipeCategory(registry.getJeiHelpers().getGuiHelper());
         registry.addRecipeCategories(moverRecipeCategory);
-//        if (!Config.common().disabled().apply(BlockBookMover.SYMBOL).get()) {
-//            bookRecipeCategory = new BookRecipeCategory(registry.getJeiHelpers().getGuiHelper());
-//            registry.addRecipeCategories(bookRecipeCategory);
-//        }
     }
 
     @Override

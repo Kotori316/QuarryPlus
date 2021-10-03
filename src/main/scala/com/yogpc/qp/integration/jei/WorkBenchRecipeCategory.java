@@ -26,7 +26,6 @@ class WorkBenchRecipeCategory implements IRecipeCategory<WorkbenchRecipe> {
     private static final ResourceLocation backGround = new ResourceLocation(QuarryPlus.modID, "textures/gui/workbench_jei2.png");
     private static final int xOff = 0;
     private static final int yOff = 0;
-    private static final int o = 18;
     private final IGuiHelper helper;
     private final IDrawableAnimated animateBar;
 
@@ -86,6 +85,7 @@ class WorkBenchRecipeCategory implements IRecipeCategory<WorkbenchRecipe> {
         var stacks = recipeLayout.getItemStacks();
         //7, 17 -- 7, 89
         int x0 = 3;
+        final int o = 18;
         for (int i = 0; i < recipe.inputs().size(); i++) {
             if (i < 9) {
                 stacks.init(i, true, x0 + o * i - xOff, x0 - yOff);
