@@ -57,6 +57,7 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
     }
 
     void work() {
+        if (!hasEnoughEnergy()) return;
         assert level != null;
         // Interval check
         if (level.getGameTime() % interval(efficiencyLevel()) != 0 || targetIterator == null) return;
@@ -72,7 +73,7 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
 
             var fakePlayer = QuarryFakePlayer.get(level);
             var event = new BlockEvent.BreakEvent(level, pos, state, fakePlayer);
-            if (!MinecraftForge.EVENT_BUS.post(event)) break; // Denied to break block.
+            if (MinecraftForge.EVENT_BUS.post(event)) break; // Denied to break block.
 
             var tool = tools.stream().filter(t -> {
                 fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, t);
