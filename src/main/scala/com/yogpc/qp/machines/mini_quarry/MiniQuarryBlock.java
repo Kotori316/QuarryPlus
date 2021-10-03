@@ -68,8 +68,8 @@ public class MiniQuarryBlock extends QPBlock implements EntityBlock {
         }
         if (!player.isShiftKeyDown()) {
             if (!level.isClientSide) {
-//                level.getBlockEntity(pos, Holder.MINI_QUARRY_TYPE)
-//                    .ifPresent(t -> NetworkHooks.openGui((ServerPlayer) player, t, pos));
+                level.getBlockEntity(pos, Holder.MINI_QUARRY_TYPE)
+                    .ifPresent(t -> NetworkHooks.openGui((ServerPlayer) player, t, pos));
             }
             return InteractionResult.SUCCESS;
         } else {

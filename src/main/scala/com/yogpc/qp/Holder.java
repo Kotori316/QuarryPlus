@@ -25,6 +25,7 @@ import com.yogpc.qp.machines.marker.Tile16Marker;
 import com.yogpc.qp.machines.marker.TileFlexMarker;
 import com.yogpc.qp.machines.marker.TileMarker;
 import com.yogpc.qp.machines.mini_quarry.MiniQuarryBlock;
+import com.yogpc.qp.machines.mini_quarry.MiniQuarryMenu;
 import com.yogpc.qp.machines.mini_quarry.MiniQuarryTile;
 import com.yogpc.qp.machines.miningwell.MiningWellBlock;
 import com.yogpc.qp.machines.miningwell.MiningWellTile;
@@ -194,6 +195,8 @@ public class Holder {
         new CreativeGeneratorMenu(windowId, inv.player, data.readBlockPos()), CreativeGeneratorMenu.GUI_ID);
     public static final MenuType<AdvQuarryMenu> ADV_QUARRY_MENU_TYPE = registerMenuType((windowId, inv, data) ->
         new AdvQuarryMenu(windowId, inv.player, data.readBlockPos()), AdvQuarryMenu.GUI_ID);
+    public static final MenuType<MiniQuarryMenu> MINI_QUARRY_MENU_TYPE = registerMenuType((windowId, inv, data) ->
+        new MiniQuarryMenu(windowId, inv.player, data.readBlockPos()), MiniQuarryMenu.GUI_ID);
 
     public static final LootItemFunctionType ENCHANTED_LOOT_TYPE = Registry.register(Registry.LOOT_FUNCTION_TYPE,
         new ResourceLocation(QuarryPlus.modID, EnchantedLootFunction.NAME), new LootItemFunctionType(EnchantedLootFunction.SERIALIZER));

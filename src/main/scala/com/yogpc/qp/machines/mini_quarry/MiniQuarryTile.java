@@ -219,7 +219,7 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
 
     @Override
     public AbstractContainerMenu createMenu(int id, Inventory inv, Player player) {
-        return null;
+        return new MiniQuarryMenu(id, player, getBlockPos());
     }
 
     static int interval(int efficiency) {
