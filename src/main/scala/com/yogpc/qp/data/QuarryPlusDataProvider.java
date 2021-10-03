@@ -98,6 +98,7 @@ class BlockDrop extends QuarryPlusDataProvider.QuarryDataProvider {
             null
         ).filter(Objects::nonNull).map(LootTableSerializeHelper::withDrop);
         Stream<LootTableSerializeHelper> enchanted = Stream.<Block>of(
+            Holder.BLOCK_MINI_QUARRY
         ).map(LootTableSerializeHelper::withEnchantedDrop);
         var quarry = LootTableSerializeHelper.withEnchantedDrop(Holder.BLOCK_QUARRY)
             .add(QuarryLootFunction.builder()).add(ModuleLootFunction.builder());
