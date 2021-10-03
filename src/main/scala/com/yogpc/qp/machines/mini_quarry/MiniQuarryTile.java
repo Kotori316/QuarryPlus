@@ -8,6 +8,7 @@ import com.yogpc.qp.Holder;
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.CheckerLog;
 import com.yogpc.qp.machines.EnchantmentLevel;
+import com.yogpc.qp.machines.InvUtils;
 import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QPBlock;
@@ -17,7 +18,6 @@ import com.yogpc.qp.utils.MapMulti;
 import javax.annotation.Nullable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -39,8 +39,6 @@ import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.event.world.BlockEvent;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public final class MiniQuarryTile extends PowerTile implements CheckerLog,
@@ -156,13 +154,9 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
 
     void insertOrDropItem(ItemStack stack) {
         assert level != null;
-        for (var direction : Direction.values()) {
-            var dest = Optional.ofNullable(level.getBlockEntity(getBlockPos().relative(direction)))
-                .flatMap(e -> e.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite()).resolve());
-            var rest = dest.map(h -> ItemHandlerHelper.insertItem(h, stack, false)).orElse(stack);
-            if (rest.isEmpty()) return; // Inserted all items to inventory.
-            Containers.dropItemStack(level, getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), rest);
-        }
+        var rest = InvUtils.injectToNearTile(level, getBlockPos(), stack);
+        if (rest.isEmpty()) return; // Inserted all items to inventory.
+        Containers.dropItemStack(level, getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), rest);
     }
 
     @Override
