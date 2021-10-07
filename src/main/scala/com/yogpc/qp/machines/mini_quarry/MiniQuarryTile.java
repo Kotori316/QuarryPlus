@@ -57,6 +57,7 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
     }
 
     void work() {
+        container.getEnergyModule().ifPresent(e -> addEnergy(e.energy(), false));
         if (!hasEnoughEnergy()) return;
         assert level != null;
         // Interval check
