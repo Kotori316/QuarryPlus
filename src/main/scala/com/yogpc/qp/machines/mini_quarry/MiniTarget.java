@@ -6,10 +6,10 @@ import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.TargetIterator;
 import net.minecraft.core.BlockPos;
 
-final class MiniTarget implements Iterator<BlockPos> {
-    private final Area area;
-    private final TargetIterator targetIterator;
-    private int y;
+abstract class MiniTarget implements Iterator<BlockPos> {
+    protected final Area area;
+    protected final TargetIterator targetIterator;
+    protected int y;
 
     MiniTarget(Area area) {
         this.area = area;
@@ -17,10 +17,12 @@ final class MiniTarget implements Iterator<BlockPos> {
         this.y = area.maxY();
     }
 
-    @Override
-    public boolean hasNext() {
-        if (this.y > area.minY()) return true;
-        else return targetIterator.hasNext(); // The last y.
+    static MiniTarget of(Area area, boolean repeat) {
+        if (repeat) {
+            return new Repeat(area);
+        } else {
+            return new Single(area);
+        }
     }
 
     public BlockPos peek() {
@@ -36,13 +38,57 @@ final class MiniTarget implements Iterator<BlockPos> {
             return current;
         } else {
             targetIterator.reset();
-            y -= 1;
+            y = nextY();
             return next();
         }
     }
 
+    protected abstract int nextY();
+
     void setCurrent(BlockPos pos) {
         this.y = pos.getY();
         this.targetIterator.setCurrent(new TargetIterator.XZPair(pos.getX(), pos.getZ()));
+    }
+
+    private static class Single extends MiniTarget {
+        Single(Area area) {
+            super(area);
+        }
+
+        @Override
+        public boolean hasNext() {
+            if (this.y > area.minY()) return true;
+            else return targetIterator.hasNext(); // The last y.
+        }
+
+        @Override
+        protected int nextY() {
+            return y - 1;
+        }
+    }
+
+    private static class Repeat extends MiniTarget {
+        private boolean isRepeating;
+
+        Repeat(Area area) {
+            super(area);
+        }
+
+        @Override
+        public boolean hasNext() {
+            if (!isRepeating || this.y > area.minY()) return true;
+            else return targetIterator.hasNext(); // The last y.
+        }
+
+        @Override
+        protected int nextY() {
+            if (isRepeating) {
+                isRepeating = false;
+                return y - 1;
+            } else {
+                isRepeating = true;
+                return y;
+            }
+        }
     }
 }

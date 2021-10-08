@@ -128,7 +128,7 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
     public void setArea(@Nullable Area area) {
         this.area = area;
         if (area != null)
-            this.targetIterator = new MiniTarget(area);
+            this.targetIterator = MiniTarget.of(area, true);
     }
 
     void startWork() {
