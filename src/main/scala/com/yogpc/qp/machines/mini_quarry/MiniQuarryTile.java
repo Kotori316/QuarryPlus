@@ -95,7 +95,7 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
                 var sound = state.getSoundType();
                 level.playSound(null, pos, sound.getBreakSound(), SoundSource.BLOCKS, (sound.getVolume() + 1.0F) / 4F, sound.getPitch() * 0.8F);
             });
-            break;
+            if (tool.isPresent()) break; // Continue if no tools available
         }
         if (!targetIterator.hasNext()) {
             area = null;
