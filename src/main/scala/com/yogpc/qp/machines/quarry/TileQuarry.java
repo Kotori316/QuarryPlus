@@ -162,13 +162,11 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         return save(new CompoundTag());
     }
 
-    /**
-     * Currently, not working. This method is never called.
-     */
     @Override
     public void onLoad() {
         super.onLoad();
         if (level != null && !level.isClientSide) {
+            this.init = true;
             updateModules();
         }
     }
