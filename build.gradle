@@ -262,9 +262,9 @@ curseforge {
         }
         addArtifact deobfJar
         addArtifact srcJar
-        // relations {
-        //     requiredDependency 'scalable-cats-force'
-        // }
+         relations {
+             requiredDependency 'scalable-cats-force'
+         }
     }
     options {
         curseGradleOptions.debug = false // defaults to false
@@ -331,6 +331,8 @@ String getChangeLog() {
     def header = ("""\
         For Minecraft 1.17.1 and Minecraft Forge
         Released at ${ZonedDateTime.now(ZoneId.of('Asia/Tokyo')).withNano(0).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)}
+
+        This mod requires [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force)
         """ as String).stripIndent()
     def f = file("temp_changelog.md")
     if (f.exists()) {
