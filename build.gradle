@@ -172,7 +172,8 @@ def jarAttributeMap = [
         "Implementation-Version"  : project.version,
         "Implementation-Vendor"   : "Kotori316",
         "Implementation-Timestamp": ZonedDateTime.now().format(DateTimeFormatter.ISO_INSTANT),
-        "Commit"                  : getCommit("1.17")
+        "Commit"                  : getCommit("1.17"),
+        'Automatic-Module-Name'   : 'quarryplus',
 ]
 
 jar {
