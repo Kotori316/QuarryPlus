@@ -1,5 +1,6 @@
 package com.yogpc.qp.machines.misc;
 
+import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.advquarry.TileAdvQuarry;
 import com.yogpc.qp.machines.miningwell.MiningWellTile;
 import com.yogpc.qp.machines.quarry.TileQuarry;
@@ -63,7 +64,7 @@ class QuarryYAccessor extends YAccessor {
 
     @Override
     boolean stillValid(Player player) {
-        return quarry.stillValid(player);
+        return PowerTile.stillValid(quarry, player);
     }
 }
 
@@ -97,7 +98,7 @@ class MiningWellYAccessor extends YAccessor {
 
     @Override
     boolean stillValid(Player player) {
-        return miningWell.stillValid(player);
+        return PowerTile.stillValid(miningWell, player);
     }
 }
 
@@ -131,6 +132,6 @@ class AdvQuarryYAccessor extends YAccessor {
 
     @Override
     boolean stillValid(Player player) {
-        return quarry.stillValid(player);
+        return PowerTile.stillValid(quarry, player);
     }
 }

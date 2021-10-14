@@ -206,8 +206,8 @@ public class PowerTile extends BlockEntity implements IEnergyStorage {
         return super.getCapability(cap, side);
     }
 
-    public final boolean stillValid(Player player) {
-        return level != null && getBlockPos().distSqr(player.position(), true) < 64;
+    public static boolean stillValid(PowerTile tile, Player player) {
+        return tile.level != null && tile.getBlockPos().distSqr(player.position(), true) < 64;
     }
 
     public enum Reason {

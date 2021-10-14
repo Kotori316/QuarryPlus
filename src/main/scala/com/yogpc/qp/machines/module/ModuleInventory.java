@@ -87,7 +87,7 @@ public class ModuleInventory extends SimpleContainer implements INBTSerializable
     @Override
     public boolean stillValid(Player player) {
         if (holder instanceof PowerTile powerTile)
-            return powerTile.stillValid(player);
+            return PowerTile.stillValid(powerTile, player);
         return super.stillValid(player);
     }
 
