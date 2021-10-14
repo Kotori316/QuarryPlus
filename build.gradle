@@ -164,7 +164,7 @@ dependencies {
     System.out.println(('Selected version: ' + 'net.minecraftforge:forge:' + forgeVersion) as String)
 
     implementation fg.deobf("mezz.jei:jei-1.17.1:" + project.jeiVersion)
-    runtimeOnly(group: "com.kotori316", name: "ScalableCatsForce".toLowerCase(), version: "2.13.6-build-4", classifier: "with-library"){
+    runtimeOnly(group: "com.kotori316", name: "ScalableCatsForce".toLowerCase(), version: "2.13.6-build-4", classifier: "with-library") {
         transitive(false)
     }
 
