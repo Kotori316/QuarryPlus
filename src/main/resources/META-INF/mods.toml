@@ -1,5 +1,5 @@
-modLoader="javafml"
-loaderVersion="[37,)"
+modLoader="kotori_scala"
+loaderVersion="[2.13.6-build-3, ),[37,)"
 issueTrackerURL="https://github.com/Kotori316/QuarryPlus/issues"
 license="GNU Lesser General Public License v3.0"
 [[mods]] 

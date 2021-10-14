@@ -140,6 +140,17 @@ repositories {
             includeModule("dev.ftb.mods", "ftb-library-forge")
         }
     }
+
+    maven {
+        name = "Azure-SLP"
+        url = uri("https://pkgs.dev.azure.com/Kotori316/minecraft/_packaging/mods/maven/v1")
+        content {
+            it.includeModule("com.kotori316", "ScalableCatsForce".toLowerCase())
+            it.includeVersion("org.typelevel", "cats-core_2.13", "2.6.2-kotori")
+            it.includeVersion("org.typelevel", "cats-kernel_2.13", "2.6.2-kotori")
+        }
+    }
+
     repositories.stream().filter { it instanceof MavenArtifactRepository }.forEach { repo ->
         repo.content {
             excludeVersionByRegex(".*", ".*", ".*_mapped_snapshot_.*")
@@ -153,6 +164,9 @@ dependencies {
     System.out.println(('Selected version: ' + 'net.minecraftforge:forge:' + forgeVersion) as String)
 
     implementation fg.deobf("mezz.jei:jei-1.17.1:" + project.jeiVersion)
+    runtimeOnly(group: "com.kotori316", name: "ScalableCatsForce".toLowerCase(), version: "2.13.6-build-4", classifier: "with-library"){
+        transitive(false)
+    }
 
     // Test Dependencies.
     final def JUPITER_VERSION = '5.7.0'
