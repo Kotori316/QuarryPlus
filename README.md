@@ -13,6 +13,8 @@ Copyright (C) 2012, 2013 yogpstop, Copyright (C) 2017-2021 Kotori316
 
 CurseForge - https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner
 
+Requires [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force/files/3488867).
+
 ## Finished Work
 
 * Marker
@@ -37,10 +39,10 @@ CurseForge - https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-m
 * Book Enchantment Mover
 * Chunk Destroyer
   * Enchantment
+* Spawner Controller
 
 ## Planned (Future work)
 
-* Spawner Controller
 * Mini Quarry
 
 ## Maven repo

@@ -1,3 +1,11 @@
+## Version 17.5-SNAPSHOT
+
+* Set automatic module name
+* Fixed crash when player opened WorkbenchPlus. [#139](https://github.com/Kotori316/QuarryPlus/issues/139)
+* Sort machine names in config.
+* Slow down quarry speed when it's breaking blocks inside frame.
+* Added Spawner Controller.
+
 ## Version 17.4-SNAPSHOT
 
 * Fixed crash of Chunk Destroyer GUI.
