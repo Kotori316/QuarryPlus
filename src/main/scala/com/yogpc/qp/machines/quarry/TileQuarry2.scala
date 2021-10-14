@@ -3,6 +3,7 @@ package com.yogpc.qp.machines.quarry
 import cats.implicits._
 import com.yogpc.qp._
 import com.yogpc.qp.machines.base._
+import com.yogpc.qp.machines.quarry.QuarryAction.BreakBlock
 import com.yogpc.qp.machines.{PowerManager, TranslationKeys}
 import com.yogpc.qp.packet.{PacketHandler, TileMessage}
 import com.yogpc.qp.utils.{Holder, ItemDamage}
@@ -74,7 +75,10 @@ class TileQuarry2 extends APowerTile(Holder.quarry2)
       if (!faster) broken = true
       action.action(target)
       if (action.canGoNext(self)) {
-        action = action.nextAction(self)
+        val nextAction = action.nextAction(self)
+        if (!action.isInstanceOf[BreakBlock] || !nextAction.isInstanceOf[BreakBlock])
+          QuarryPlus.LOGGER.debug(QuarryAction.MARKER, s"Action updated from ${action.mode} to ${nextAction.mode}. $pos in ${getWorld.getDimensionKey.getLocation}")
+        action = nextAction
         if (action == QuarryAction.none) {
           PowerManager.configure0(self)
         }
@@ -307,7 +311,7 @@ object TileQuarry2 {
 
   //---------- Data ----------
 
-  sealed class Mode(override val toString: String)
+  final class Mode(override val toString: String)
 
   val none = new Mode("none")
   val waiting = new Mode("waiting")
