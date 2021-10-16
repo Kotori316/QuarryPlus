@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.yogpc.qp.Holder;
@@ -21,6 +22,8 @@ import javax.annotation.Nullable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerLevel;
@@ -180,6 +183,8 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
         if (targetIterator != null)
             nbt.putLong("current", targetIterator.peek().asLong());
         nbt.put("inventory", container.createTag());
+        nbt.put("denyList", denyList.stream().map(BlockStatePredicate::toTag).collect(Collectors.toCollection(ListTag::new)));
+        nbt.put("allowList", allowList.stream().map(BlockStatePredicate::toTag).collect(Collectors.toCollection(ListTag::new)));
         return super.save(nbt);
     }
 
@@ -197,6 +202,10 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
         if (nbt.contains("current") && targetIterator != null)
             targetIterator.setCurrent(BlockPos.of(nbt.getLong("current")));
         container.fromTag(nbt.getList("inventory", Constants.NBT.TAG_COMPOUND));
+        denyList = nbt.getList("denyList", Tag.TAG_COMPOUND).stream()
+            .mapMulti(MapMulti.cast(CompoundTag.class)).map(BlockStatePredicate::fromTag).toList();
+        allowList = nbt.getList("allowList", Tag.TAG_COMPOUND).stream()
+            .mapMulti(MapMulti.cast(CompoundTag.class)).map(BlockStatePredicate::fromTag).toList();
     }
 
     @Override
