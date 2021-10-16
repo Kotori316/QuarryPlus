@@ -11,6 +11,8 @@ import com.yogpc.qp.machines.controller.ControllerOpenMessage;
 import com.yogpc.qp.machines.controller.SetSpawnerEntityMessage;
 import com.yogpc.qp.machines.marker.FlexMarkerMessage;
 import com.yogpc.qp.machines.marker.Marker16Message;
+import com.yogpc.qp.machines.mini_quarry.MiniListSyncMessage;
+import com.yogpc.qp.machines.mini_quarry.MiniRequestListMessage;
 import com.yogpc.qp.machines.mover.MoverMessage;
 import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
@@ -50,6 +52,8 @@ public class PacketHandler {
         INSTANCE.registerMessage(id.getAndIncrement(), AdvActionMessage.class, AdvActionMessage::write, AdvActionMessage::new, setHandled(AdvActionMessage::onReceive));
         INSTANCE.registerMessage(id.getAndIncrement(), SetSpawnerEntityMessage.class, SetSpawnerEntityMessage::write, SetSpawnerEntityMessage::new, setHandled(SetSpawnerEntityMessage::onReceive));
         INSTANCE.registerMessage(id.getAndIncrement(), ControllerOpenMessage.class, ControllerOpenMessage::write, ControllerOpenMessage::new, setHandled(ControllerOpenMessage::onReceive));
+        INSTANCE.registerMessage(id.getAndIncrement(), MiniListSyncMessage.class, MiniListSyncMessage::write, MiniListSyncMessage::new, setHandled(MiniListSyncMessage::onReceive));
+        INSTANCE.registerMessage(id.getAndIncrement(), MiniRequestListMessage.class, MiniRequestListMessage::write, MiniRequestListMessage::new, setHandled(MiniRequestListMessage::onReceive));
     }
 
     public static void sendToClient(IMessage message, Level world) {

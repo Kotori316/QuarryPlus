@@ -43,12 +43,12 @@ public class MiniQuarryListGui extends Screen implements Button.OnPress {
         int buttonWidth = 80;
         int width = this.width;
         int height = this.height;
+        list = new EntryList(this.getMinecraft(), width, height, 30, height - 70, 18, this, this::getEntries);
+        addRenderableWidget(list); // Add?
         addRenderableWidget(new IndexedButton(0, width / 3 - buttonWidth / 2, height - 35, buttonWidth, 20, new TranslatableComponent("quarryplus.gui.blacklist"), this));
         addRenderableWidget(new IndexedButton(1, width / 3 * 2 - buttonWidth / 2, height - 35, buttonWidth, 20, new TranslatableComponent("gui.done"), this));
         addRenderableWidget(new IndexedButton(2, width / 2 - buttonWidth, height - 60, buttonWidth, 20, new TranslatableComponent("quarryplus.gui.new_entry"), this));
         addRenderableWidget(new IndexedButton(3, width / 2, height - 60, buttonWidth, 20, new TranslatableComponent("selectWorld.delete"), this));
-        list = new EntryList(this.getMinecraft(), width, height, 30, height - 70, 18, this, this::getEntries);
-        addRenderableWidget(list); // Add?
         this.setInitialFocus(list); // setFocus
     }
 

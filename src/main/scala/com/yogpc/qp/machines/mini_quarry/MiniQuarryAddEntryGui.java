@@ -46,9 +46,10 @@ public class MiniQuarryAddEntryGui extends Screen implements Button.OnPress {
         textField.setMaxLength(512);
         list = new EntryList(this.getMinecraft(), width, height, 30, height - 70, 18, this, this::getEntries);
         IndexedButton button = new IndexedButton(1, width / 2 - buttonWidth / 2, height - 35, buttonWidth, 20, new TranslatableComponent("tof.add_new_ore"), this);
-        this.addRenderableWidget(button);
+
         this.addRenderableWidget(list);
         this.addRenderableWidget(textField);
+        this.addRenderableWidget(button);
         this.setInitialFocus(list);
         textField.setCanLoseFocus(true);
         textField.setResponder(s -> {
@@ -60,7 +61,7 @@ public class MiniQuarryAddEntryGui extends Screen implements Button.OnPress {
     @Override
     public void render(PoseStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
         list.render(matrixStack, mouseX, mouseY, partialTicks);
-        textField.renderButton(matrixStack, mouseX, mouseY, partialTicks);
+        //textField.renderButton(matrixStack, mouseX, mouseY, partialTicks);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
         drawCenteredString(matrixStack, this.font, new TranslatableComponent("quarryplus.gui.new_entry"), this.width / 2, 8, 0xFFFFFF);
     }
