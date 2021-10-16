@@ -106,7 +106,7 @@ public class MiniQuarryListGui extends Screen implements Button.OnPress {
                     MiniQuarryListEntry selected = list.getSelected(); // getSelected
                     if (selected != null) {
                         BlockStatePredicate data = selected.getData();
-                        if (!MiniQuarryTile.defaultBlackList().contains(data)) {
+                        if (whiteListFlag || !MiniQuarryTile.defaultBlackList().contains(data)) {
                             getEntries().remove(data);
                             list.updateList();
                             PacketHandler.sendToServer(new MiniListSyncMessage(pos, dim, blackList, whiteList));

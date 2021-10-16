@@ -27,7 +27,7 @@ public final class MiniListSyncMessage implements IMessage {
     private final Collection<BlockStatePredicate> allowList;
     private final Collection<BlockStatePredicate> denyList;
 
-    public MiniListSyncMessage(BlockPos pos, ResourceKey<Level> dim, Collection<BlockStatePredicate> allowList, Collection<BlockStatePredicate> denyList) {
+    public MiniListSyncMessage(BlockPos pos, ResourceKey<Level> dim, Collection<BlockStatePredicate> denyList, Collection<BlockStatePredicate> allowList) {
         this.pos = pos;
         this.dim = dim;
         this.allowList = allowList;
@@ -35,7 +35,7 @@ public final class MiniListSyncMessage implements IMessage {
     }
 
     public MiniListSyncMessage(MiniQuarryTile tile) {
-        this(tile.getBlockPos(), PacketHandler.getDimension(tile), tile.allowList, tile.denyList);
+        this(tile.getBlockPos(), PacketHandler.getDimension(tile), tile.denyList, tile.allowList);
     }
 
     public MiniListSyncMessage(FriendlyByteBuf buf) {
