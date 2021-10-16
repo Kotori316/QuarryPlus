@@ -18,6 +18,7 @@ import com.yogpc.qp.machines.bookmover.BookMoverBlock;
 import com.yogpc.qp.machines.bookmover.BookMoverEntity;
 import com.yogpc.qp.machines.bookmover.BookMoverMenu;
 import com.yogpc.qp.machines.checker.ItemChecker;
+import com.yogpc.qp.machines.controller.BlockController;
 import com.yogpc.qp.machines.marker.BlockExMarker;
 import com.yogpc.qp.machines.marker.BlockMarker;
 import com.yogpc.qp.machines.marker.ContainerMarker;
@@ -148,6 +149,7 @@ public class Holder {
     public static final BlockExMarker.BlockFlexMarker BLOCK_FLEX_MARKER = registerBlock(new BlockExMarker.BlockFlexMarker());
     public static final BlockExMarker.Block16Marker BLOCK_16_MARKER = registerBlock(new BlockExMarker.Block16Marker());
     public static final PlacerBlock BLOCK_PLACER = registerBlock(new PlacerBlock());
+    public static final BlockController BLOCK_CONTROLLER = registerBlock(new BlockController(), EnableOrNot.CONFIG_OFF);
     public static final FrameBlock BLOCK_FRAME = registerBlock(new FrameBlock(), EnableOrNot.ALWAYS_ON);
     public static final BlockDummy BLOCK_DUMMY = new BlockDummy();
     public static final ReplacerDummyBlock BLOCK_DUMMY_REPLACER = new ReplacerDummyBlock();

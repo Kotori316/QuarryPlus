@@ -152,6 +152,11 @@ public class BookMoverEntity extends PowerTile implements Container, MenuProvide
     }
 
     @Override
+    public boolean stillValid(Player player) {
+        return stillValid(this, player);
+    }
+
+    @Override
     public List<? extends Component> getDebugLogs() {
         return Stream.of(
             "%sEnergy:%s %f FE (%d)".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, getEnergy() / (double) PowerTile.ONE_FE, getEnergy())

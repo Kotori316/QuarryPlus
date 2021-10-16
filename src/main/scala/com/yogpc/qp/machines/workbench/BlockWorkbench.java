@@ -39,7 +39,7 @@ public class BlockWorkbench extends QPBlock implements EntityBlock {
                                  Player player, InteractionHand hand, BlockHitResult hit) {
         if (!QuarryPlus.config.enableMap.enabled(NAME)) {
             if (!level.isClientSide)
-                player.displayClientMessage(new TranslatableComponent("quarryplus.chat.disable_message", getName()), false);
+                player.displayClientMessage(new TranslatableComponent("quarryplus.chat.disable_message", getName()), true);
             return InteractionResult.sidedSuccess(level.isClientSide);
         }
         if (!player.isShiftKeyDown()) {

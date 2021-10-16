@@ -10,23 +10,31 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 public class InvUtils {
+    /**
+     * Move the item to neighbor inventory of the pos.
+     * The search order is the same as {@link Direction} declaration.
+     *
+     * @param level the level where destination and source exists
+     * @param pos   the <b>source</b> pos.
+     * @param stack the item to move.
+     * @return the item which is not inserted (remaining stack)
+     */
     public static ItemStack injectToNearTile(Level level, BlockPos pos, ItemStack stack) {
         var remain = stack.copy();
         for (Direction d : Direction.values()) {
-            if (!remain.isEmpty()) {
-                Optional.ofNullable(level.getBlockEntity(pos.relative(d)))
-                    .flatMap(t -> t.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, d.getOpposite()).resolve())
-                    .ifPresent(handler -> {
-                        var simulate = ItemHandlerHelper.insertItem(handler, remain.copy(), true);
-                        if (simulate.getCount() < remain.getCount()) {
-                            var notMoved = ItemHandlerHelper.insertItem(handler,
-                                ItemHandlerHelper.copyStackWithSize(remain, remain.getCount() - simulate.getCount()), false);
-                            // notMoved should be empty.
-                            int remainCount = simulate.getCount() + notMoved.getCount();
-                            remain.setCount(remainCount);
-                        }
-                    });
-            }
+            Optional.ofNullable(level.getBlockEntity(pos.relative(d)))
+                .flatMap(t -> t.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, d.getOpposite()).resolve())
+                .ifPresent(handler -> {
+                    var simulate = ItemHandlerHelper.insertItem(handler, remain.copy(), true);
+                    if (simulate.getCount() < remain.getCount()) {
+                        var notMoved = ItemHandlerHelper.insertItem(handler,
+                            ItemHandlerHelper.copyStackWithSize(remain, remain.getCount() - simulate.getCount()), false);
+                        // notMoved should be empty.
+                        int remainCount = simulate.getCount() + notMoved.getCount();
+                        remain.setCount(remainCount);
+                    }
+                });
+            if (remain.isEmpty()) return ItemStack.EMPTY;
         }
         return remain;
     }

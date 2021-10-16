@@ -207,6 +207,11 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
     }
 
     @Override
+    public boolean stillValid(Player player) {
+        return stillValid(this, player);
+    }
+
+    @Override
     public void setChanged() {
         super.setChanged();
         updateRecipeOutputs();
