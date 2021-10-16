@@ -21,7 +21,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -70,7 +69,7 @@ public class BlockAdvPump extends QPBlock implements EntityBlock {
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!QuarryPlus.config.enableMap.enabled(NAME)) {
             if (!world.isClientSide)
-                player.displayClientMessage(new TranslatableComponent("quarryplus.chat.disable_message", getName()), false);
+                player.displayClientMessage(new TranslatableComponent("quarryplus.chat.disable_message", getName()), true);
             return InteractionResult.sidedSuccess(world.isClientSide);
         }
         var stack = player.getItemInHand(hand);

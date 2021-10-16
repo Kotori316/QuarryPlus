@@ -36,7 +36,7 @@ public class BookMoverBlock extends QPBlock implements EntityBlock {
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!QuarryPlus.config.enableMap.enabled(NAME)) {
             if (!world.isClientSide)
-                player.displayClientMessage(new TranslatableComponent("quarryplus.chat.disable_message", getName()), false);
+                player.displayClientMessage(new TranslatableComponent("quarryplus.chat.disable_message", getName()), true);
             return InteractionResult.sidedSuccess(world.isClientSide);
         }
         if (!player.isShiftKeyDown()) {

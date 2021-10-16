@@ -52,7 +52,7 @@ public class ExpPumpBlock extends QPBlock implements EntityBlock, QuarryModulePr
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!QuarryPlus.config.enableMap.enabled(NAME)) {
             if (!level.isClientSide)
-                player.displayClientMessage(new TranslatableComponent("quarryplus.chat.disable_message", getName()), false);
+                player.displayClientMessage(new TranslatableComponent("quarryplus.chat.disable_message", getName()), true);
             return InteractionResult.SUCCESS;
         }
         if (!level.isClientSide) {
