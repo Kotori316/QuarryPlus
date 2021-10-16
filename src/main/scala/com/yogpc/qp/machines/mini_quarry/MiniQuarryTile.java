@@ -202,10 +202,10 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
         if (nbt.contains("current") && targetIterator != null)
             targetIterator.setCurrent(BlockPos.of(nbt.getLong("current")));
         container.fromTag(nbt.getList("inventory", Constants.NBT.TAG_COMPOUND));
-        denyList = nbt.getList("denyList", Tag.TAG_COMPOUND).stream()
-            .mapMulti(MapMulti.cast(CompoundTag.class)).map(BlockStatePredicate::fromTag).toList();
+        denyList = Stream.concat(nbt.getList("denyList", Tag.TAG_COMPOUND).stream()
+            .mapMulti(MapMulti.cast(CompoundTag.class)).map(BlockStatePredicate::fromTag), defaultBlackList().stream()).collect(Collectors.toSet());
         allowList = nbt.getList("allowList", Tag.TAG_COMPOUND).stream()
-            .mapMulti(MapMulti.cast(CompoundTag.class)).map(BlockStatePredicate::fromTag).toList();
+            .mapMulti(MapMulti.cast(CompoundTag.class)).map(BlockStatePredicate::fromTag).collect(Collectors.toSet());
     }
 
     @Override
