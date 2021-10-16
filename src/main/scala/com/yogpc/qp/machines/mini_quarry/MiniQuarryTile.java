@@ -1,7 +1,9 @@
 package com.yogpc.qp.machines.mini_quarry;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import com.yogpc.qp.Holder;
@@ -50,6 +52,8 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
     MiniQuarryInventory container = new MiniQuarryInventory();
     @Nullable
     MiniTarget targetIterator;
+    Collection<BlockStatePredicate> denyList = defaultBlackList();
+    Collection<BlockStatePredicate> allowList = Set.of();
 
     public MiniQuarryTile(BlockPos pos, BlockState state) {
         super(Holder.MINI_QUARRY_TYPE, pos, state);
@@ -105,8 +109,11 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
     }
 
     boolean canBreak(Level level, BlockPos pos, BlockState state) {
-        return !state.isAir() &&
-            state.getDestroySpeed(level, pos) >= 0;
+        if (allowList.stream().anyMatch(t -> t.test(state, level, pos))) {
+            return true;
+        }
+        return state.getDestroySpeed(level, pos) >= 0 &&
+            denyList.stream().noneMatch(t -> t.test(state, level, pos));
     }
 
     ServerLevel getTargetWorld() {
@@ -237,5 +244,9 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
                 else yield 1;
             }
         };
+    }
+
+    static Set<BlockStatePredicate> defaultBlackList() {
+        return Set.of(BlockStatePredicate.air(), BlockStatePredicate.fluid());
     }
 }
