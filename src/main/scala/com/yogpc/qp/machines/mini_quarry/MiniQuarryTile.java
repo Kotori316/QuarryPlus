@@ -104,7 +104,6 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
             if (tool.isPresent()) break; // Continue if no tools available
         }
         if (!targetIterator.hasNext()) {
-            area = null;
             targetIterator = null;
             finishWork();
         }
@@ -123,7 +122,7 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
     }
 
     boolean isWorking() {
-        return area != null;
+        return targetIterator != null;
     }
 
     void gotRSPulse() {
@@ -143,22 +142,30 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
     void startWork() {
         assert level != null;
         var behind = getBlockState().getValue(BlockStateProperties.FACING).getOpposite();
-        setArea(Stream.of(behind, behind.getCounterClockWise(), behind.getClockWise())
-            .map(getBlockPos()::relative)
-            .flatMap(p -> {
-                if (level.getBlockEntity(p) instanceof QuarryMarker marker) return Stream.of(marker);
-                else return Stream.empty();
-            })
-            .flatMap(m -> m.getArea().stream().peek(a -> m.removeAndGetItems().forEach(this::insertOrDropItem)))
-            .findFirst()
-            .map(a -> new Area(a.minX() - 1, a.minY(), a.minZ() - 1, a.maxX() + 1, a.maxY(), a.maxZ() + 1, a.direction()))
-            .orElse(null));
-        if (area != null)
+        Area area;
+        if (this.area == null) {
+            area = Stream.of(behind, behind.getCounterClockWise(), behind.getClockWise())
+                .map(getBlockPos()::relative)
+                .flatMap(p -> {
+                    if (level.getBlockEntity(p) instanceof QuarryMarker marker) return Stream.of(marker);
+                    else return Stream.empty();
+                })
+                .flatMap(m -> m.getArea().stream().peek(a -> m.removeAndGetItems().forEach(this::insertOrDropItem)))
+                .findFirst()
+                .map(a -> new Area(a.minX() - 1, a.minY(), a.minZ() - 1, a.maxX() + 1, a.maxY(), a.maxZ() + 1, a.direction()))
+                .map(a -> a.aboveY(level.getMinBuildHeight() + 1)) // Do not dig the floor of world.
+                .orElse(null);
+        } else {
+            area = this.area;
+        }
+        setArea(area);
+        if (this.area != null)
             level.setBlock(getBlockPos(), getBlockState().setValue(QPBlock.WORKING, true), Block.UPDATE_ALL);
     }
 
     void finishWork() {
         assert level != null;
+        this.targetIterator = null;
         level.setBlock(getBlockPos(), getBlockState().setValue(QPBlock.WORKING, false), Block.UPDATE_ALL);
         logUsage();
     }
