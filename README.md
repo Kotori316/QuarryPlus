@@ -40,9 +40,6 @@ Requires [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/sca
 * Chunk Destroyer
   * Enchantment
 * Spawner Controller
-
-## Planned (Future work)
-
 * Mini Quarry
 
 ## Maven repo
