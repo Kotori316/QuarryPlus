@@ -5,6 +5,7 @@ import java.util.stream.StreamSupport;
 
 import com.yogpc.qp.QuarryPlusTest;
 import net.minecraft.core.Direction;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -189,6 +190,18 @@ class TargetIteratorTest extends QuarryPlusTest {
                 new TargetIterator.XZPair(-1004, 91),
                 new TargetIterator.XZPair(-1005, 91)
             ), allElements);
+        }
+    }
+
+    @Nested
+    class Other {
+        @Test
+        @DisplayName("One for each y")
+        void one() {
+            var area = new Area(3, 10, 6, 5, 14, 8, Direction.NORTH);
+            Iterable<TargetIterator.XZPair> iterable = () -> TargetIterator.of(area);
+            var allElements = StreamSupport.stream(iterable.spliterator(), false).toList();
+            assertEquals(List.of(new TargetIterator.XZPair(4, 7)), allElements);
         }
     }
 }

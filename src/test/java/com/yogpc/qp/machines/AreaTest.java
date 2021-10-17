@@ -42,6 +42,47 @@ class AreaTest {
     }
 
     @Test
+    @DisplayName("Above: New Y is 5, updated")
+    void aboveY1() {
+        var newArea = area.aboveY(5);
+        assertEquals(5, newArea.minY());
+        assertEquals(new Area(3, 5, 5, 9, 8, 7, Direction.UP), newArea);
+    }
+
+    @Test
+    @DisplayName("Above: New Y is 4, not updated")
+    void aboveY2() {
+        var newArea = area.aboveY(4);
+        assertEquals(4, newArea.minY());
+        assertEquals(area, newArea);
+    }
+
+    @Test
+    @DisplayName("Above: New Y is 0, not updated")
+    void aboveY3() {
+        var newArea = area.aboveY(0);
+        assertEquals(4, newArea.minY());
+        assertEquals(area, newArea);
+    }
+
+    @Test
+    @DisplayName("Above: New Y is 8, updated")
+    void aboveY5() {
+        var newArea = area.aboveY(8);
+        assertEquals(8, newArea.minY());
+        assertEquals(new Area(3, 8, 5, 9, 8, 7, Direction.UP), newArea);
+    }
+
+    @ParameterizedTest
+    @DisplayName("Above: New Y is over 9, not updated")
+    @ValueSource(ints = {10, 20, 50, 100, 9})
+    void aboveY6(int newY) {
+        var newArea = area.aboveY(newY);
+        assertEquals(4, newArea.minY());
+        assertEquals(area, newArea);
+    }
+
+    @Test
     void isInAreaIgnoreY() {
         Set<BlockPos> inner = BlockPos.betweenClosedStream(4, 0, 6, 8, 55, 6).map(BlockPos::immutable).collect(Collectors.toUnmodifiableSet());
         assertAll(inner.stream().map(p -> () -> assertTrue(area.isInAreaIgnoreY(p), "Should be in area: %s".formatted(p))));

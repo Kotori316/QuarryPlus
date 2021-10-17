@@ -2,7 +2,7 @@ modLoader="kotori_scala"
 loaderVersion="[2.13.6-build-3, ),[37,)"
 issueTrackerURL="https://github.com/Kotori316/QuarryPlus/issues"
 license="GNU Lesser General Public License v3.0"
-[[mods]] 
+[[mods]]
 modId="quarryplus"
 version="${file.jarVersion}"
 displayName="QuarryPlus"
@@ -13,9 +13,9 @@ authors="Kotori316"
 description='''
 Adds some machines to make a big hole in your world.'''
 [[dependencies.quarryplus]]
-    modId="forge" 
-    mandatory=true 
-    versionRange="[37,)"
+    modId="forge"
+    mandatory=true
+    versionRange = "[37.0.86,)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.quarryplus]]

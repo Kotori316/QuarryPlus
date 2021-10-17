@@ -66,7 +66,7 @@ public class Tile16Marker extends BlockEntity implements QuarryMarker, CheckerLo
         return size;
     }
 
-    // TileEntity overrides
+    // BlockEntity overrides
     @Override
     public void load(CompoundTag compound) {
         super.load(compound);
