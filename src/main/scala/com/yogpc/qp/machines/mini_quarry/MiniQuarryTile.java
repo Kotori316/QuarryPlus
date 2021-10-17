@@ -71,7 +71,6 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
         if (level.getGameTime() % interval(efficiencyLevel()) != 0 || targetIterator == null) return;
         // Energy consumption
         if (!useEnergy(PowerManager.getMiniQuarryEnergy(this), Reason.MINI_QUARRY, false)) return;
-        var tools = container.tools();
         // Break block
         while (targetIterator.hasNext()) {
             var level = getTargetWorld();
@@ -83,10 +82,10 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
             var event = new BlockEvent.BreakEvent(level, pos, state, fakePlayer);
             if (MinecraftForge.EVENT_BUS.post(event)) break; // Denied to break block.
 
-            var tool = tools.stream().filter(t -> {
-                fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, t);
-                return fakePlayer.hasCorrectToolForDrops(state);
-            }).findFirst().or(() -> tools.stream().filter(t -> {
+            var tools = container.tools();
+            var tool = tools.stream().filter(t ->
+                t.isCorrectToolForDrops(state)
+            ).findFirst().or(() -> tools.stream().filter(t -> {
                 fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, t);
                 return ForgeHooks.isCorrectToolForDrops(state, fakePlayer);
             }).findFirst());
@@ -94,7 +93,7 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
                 fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, t);
                 var drops = Block.getDrops(state, level, pos, level.getBlockEntity(pos), fakePlayer, t);
                 drops.forEach(this::insertOrDropItem);
-                var damage = fakePlayer.hasCorrectToolForDrops(state) ? 1 : 4;
+                var damage = t.isCorrectToolForDrops(state) ? 1 : 4;
                 for (int i = 0; i < damage; i++) {
                     t.mineBlock(level, state, pos, fakePlayer);
                 }
