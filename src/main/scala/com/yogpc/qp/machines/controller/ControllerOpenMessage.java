@@ -12,6 +12,8 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 /**
@@ -43,6 +45,11 @@ public final class ControllerOpenMessage implements IMessage {
     }
 
     public static void onReceive(ControllerOpenMessage message, Supplier<NetworkEvent.Context> supplier) {
-        supplier.get().enqueueWork(() -> Minecraft.getInstance().setScreen(new GuiController(message.dim, message.pos, message.allEntities)));
+        supplier.get().enqueueWork(() -> openScreen(message));
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    private static void openScreen(ControllerOpenMessage message) {
+        Minecraft.getInstance().setScreen(new GuiController(message.dim, message.pos, message.allEntities));
     }
 }
