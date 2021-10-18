@@ -1,3 +1,9 @@
+## Version 17.6-SNAPSHOT
+
+* Fixed crash in dedicated server. [#141](https://github.com/Kotori316/QuarryPlus/issues/141)
+* Show disable message of machines as game info.
+* Added Mini Quarry. [#137](https://github.com/Kotori316/QuarryPlus/pull/137)
+
 ## Version 17.5-SNAPSHOT
 
 * Set automatic module name
