@@ -17,6 +17,7 @@ import com.yogpc.qp.tile.APowerTile;
 import com.yogpc.qp.tile.DetailDataCollector;
 import com.yogpc.qp.tile.EnergyUsage;
 import com.yogpc.qp.tile.TileMiningWell;
+import com.yogpc.qp.tile.TileSolidQuarry;
 import net.minecraft.block.state.IBlockState;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
@@ -28,6 +29,7 @@ public class PowerManager {
     private static long QuarryWork_BP;
     private static double QuarryWork_CE, QuarryWork_CU;
     private static long QuarryWork_XR, QuarryWork_MS;// Quarry:BreakBlock
+    private static long S_QuarryWork_BP, S_QuarryWork_XR, S_QuarryWork_MS, S_MoveHead_BP; // SolidFuelQuarry:BreakBlock
     private static long FrameBuild_BP;
     private static double FrameBuild_CE, FrameBuild_CU;
     private static long FrameBuild_XR, FrameBuild_MS;// Quarry:MakeFrame
@@ -97,6 +99,14 @@ public class PowerManager {
         FrameBuild_XR = (long) (micro * get(c, "BaseMaxRecieve", 100));
         FrameBuild_MS = (long) (micro * get(c, "BaseMaxStored", 15000));
 
+        cn2 = cn + "SolidFuelQuarry" + Configuration.CATEGORY_SPLITTER;
+        c = cg.getCategory(cn2 + "BreakBlock");
+        S_QuarryWork_BP = (long) (micro * get(c, "BasePower", (int) (QuarryWork_BP / micro)));
+        S_QuarryWork_XR = (long) (micro * get(c, "BaseMaxReceive", (int) (QuarryWork_XR / micro)));
+        S_QuarryWork_MS = (long) (micro * get(c, "BaseMaxStored", (int) (QuarryWork_MS / micro)));
+        c = cg.getCategory(cn2 + "BreakBlock" + Configuration.CATEGORY_SPLITTER + "MoveHead");
+        S_MoveHead_BP = (long) (micro * get(c, "BasePower", (int) (MoveHead_BP / micro)));
+
         cn2 = cn + "Pump" + Configuration.CATEGORY_SPLITTER;
         c = cg.getCategory(cn2 + "DrainLiquid");
         PumpDrain_BP = (long) (micro * get(c, "BasePower", 10));
@@ -154,7 +164,10 @@ public class PowerManager {
     }*/
 
     public static void configureQuarryWork(final APowerTile pp, final int efficiencyLevel, final int unbreakingLevel, final int pump) {
-        configure(pp, QuarryWork_CE, efficiencyLevel, unbreakingLevel, QuarryWork_CU, QuarryWork_XR, QuarryWork_MS, pump);
+        if (pp instanceof TileSolidQuarry)
+            configure(pp, 1, 0, 0, 1, S_QuarryWork_XR, S_QuarryWork_MS, 0);
+        else
+            configure(pp, QuarryWork_CE, efficiencyLevel, unbreakingLevel, QuarryWork_CU, QuarryWork_XR, QuarryWork_MS, pump);
     }
 
     public static void configureMiningWell(final APowerTile pp, final int efficiencyLevel, final int unbreakingLevel, final int pump) {
@@ -176,8 +189,8 @@ public class PowerManager {
     /**
      * Consume energy.
      *
-     * @param pp     the machine which used the energy.
-     * @param energy amount of energy. Unit is micro MJ.
+     * @param pp     The machine which used the energy.
+     * @param energy The amount of energy. Unit is micro MJ.
      * @param usage  What is this energy used for?
      * @return whether energy is consumed.
      */
@@ -225,6 +238,10 @@ public class PowerManager {
             BP = MiningWell_BP;
             CU = MiningWell_CU;
             CSP = enchantMode < 0 ? MiningWell_CS : Math.pow(MiningWell_CF, enchantMode);
+        } else if (pp instanceof TileSolidQuarry) {
+            BP = S_QuarryWork_BP;
+            CU = 1;
+            CSP = 1; // No enchantment is allowed.
         } else {
             BP = QuarryWork_BP;
             CU = QuarryWork_CU;
@@ -277,7 +294,12 @@ public class PowerManager {
 
     @SuppressWarnings("deprecation")
     public static double useEnergyQuarryHead(final APowerTile pp, final double dist, final int U) {
-        double bp = (double) MoveHead_BP / APowerTile.MJToMicroMJ;
+        double bp;
+        if (pp instanceof TileSolidQuarry) {
+            bp = (double) S_MoveHead_BP / APowerTile.MJToMicroMJ;
+        } else {
+            bp = (double) MoveHead_BP / APowerTile.MJToMicroMJ;
+        }
         double pw;
         if (!Config.content().fastQuarryHeadMove()) {
             pw = Math.min(2 + (double) pp.getStoredEnergy() / 500 / APowerTile.MJToMicroMJ, (dist / 2) * bp / (U * MoveHead_CU + 1));
