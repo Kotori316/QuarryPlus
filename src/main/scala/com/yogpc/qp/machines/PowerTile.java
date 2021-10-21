@@ -28,6 +28,7 @@ public class PowerTile extends BlockEntity implements IEnergyStorage {
     private long maxEnergy;
     protected boolean chunkPreLoaded;
     public final boolean enabled;
+    private LazyOptional<IEnergyStorage> energyHandler = LazyOptional.of(() -> this);
 
     public PowerTile(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         this(type, pos, state, ONE_FE * 1000);
@@ -193,11 +194,30 @@ public class PowerTile extends BlockEntity implements IEnergyStorage {
         }
     }
 
+    @Override
+    public void invalidateCaps() {
+        super.invalidateCaps();
+        energyHandler.invalidate();
+        if (this instanceof MachineStorage.HasStorage storage) {
+            storage.getStorage().itemHandler.invalidate();
+            storage.getStorage().fluidHandler.invalidate();
+        }
+    }
+
+    @Override
+    public void reviveCaps() {
+        super.reviveCaps();
+        energyHandler = LazyOptional.of(() -> this);
+        if (this instanceof MachineStorage.HasStorage storage) {
+            storage.getStorage().setHandler();
+        }
+    }
+
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
         if (cap == CapabilityEnergy.ENERGY) {
-            return CapabilityEnergy.ENERGY.orEmpty(cap, LazyOptional.of(() -> this));
+            return CapabilityEnergy.ENERGY.orEmpty(cap, energyHandler);
         } else if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && this instanceof MachineStorage.HasStorage storage) {
             return storage.getStorage().itemHandler.cast();
         } else if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && this instanceof MachineStorage.HasStorage storage) {

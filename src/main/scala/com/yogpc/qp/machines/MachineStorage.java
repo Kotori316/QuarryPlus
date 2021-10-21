@@ -30,8 +30,17 @@ import org.apache.commons.lang3.tuple.Pair;
 public class MachineStorage {
     private Map<ItemKey, Long> itemMap = new LinkedHashMap<>();
     private Map<FluidKey, Long> fluidMap = new LinkedHashMap<>();
-    protected LazyOptional<IItemHandler> itemHandler = LazyOptional.of(StorageItemHandler::new);
-    protected LazyOptional<IFluidHandler> fluidHandler = LazyOptional.of(StorageFluidHandler::new);
+    protected LazyOptional<IItemHandler> itemHandler;
+    protected LazyOptional<IFluidHandler> fluidHandler;
+
+    public MachineStorage() {
+        setHandler();
+    }
+
+    protected void setHandler() {
+        itemHandler = LazyOptional.of(StorageItemHandler::new);
+        fluidHandler = LazyOptional.of(StorageFluidHandler::new);
+    }
 
     public void addItem(ItemStack stack) {
         if (stack.isEmpty()) return; // No need to store empty item.
