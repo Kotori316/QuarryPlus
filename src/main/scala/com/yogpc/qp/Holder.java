@@ -85,17 +85,20 @@ public class Holder {
     private static <T extends QPBlock> T registerBlock(T block, EnableOrNot condition) {
         BLOCKS.add(block);
         CONDITION_HOLDERS.add(new EntryConditionHolder(block.getRegistryName(), condition));
+        ((QuarryCreativeTab) TAB).addItem(block);
         return block;
     }
 
     private static <T extends QPBlock & EntityBlock> T registerBlock(T block) {
         BLOCKS.add(block);
+        ((QuarryCreativeTab) TAB).addItem(block);
         return block;
     }
 
     private static <T extends Item> T registerItem(T item, EnableOrNot condition) {
         ITEMS.add(item);
         CONDITION_HOLDERS.add(new EntryConditionHolder(item.getRegistryName(), condition));
+        ((QuarryCreativeTab) TAB).addItem(item);
         return item;
     }
 
@@ -158,10 +161,10 @@ public class Holder {
     public static final ItemChecker ITEM_CHECKER = registerItem(new ItemChecker(), EnableOrNot.ALWAYS_ON);
     public static final YSetterItem ITEM_Y_SETTER = registerItem(new YSetterItem(), EnableOrNot.ALWAYS_ON);
     public static final PumpModuleItem ITEM_PUMP_MODULE = registerItem(new PumpModuleItem(), EnableOrNot.CONFIG_ON);
+    public static final ReplacerModuleItem ITEM_REPLACER_MODULE = registerItem(new ReplacerModuleItem(), EnableOrNot.CONFIG_OFF);
+    public static final ExpModuleItem ITEM_EXP_MODULE = registerItem(new ExpModuleItem(), EnableOrNot.CONFIG_ON);
     public static final BedrockModuleItem ITEM_BEDROCK_MODULE = registerItem(new BedrockModuleItem(), EnableOrNot.CONFIG_OFF);
     public static final EnergyModuleItem ITEM_FUEL_MODULE_NORMAL = registerItem(new EnergyModuleItem(5, "fuel_module_normal"), EnableOrNot.CONFIG_ON);
-    public static final ExpModuleItem ITEM_EXP_MODULE = registerItem(new ExpModuleItem(), EnableOrNot.CONFIG_ON);
-    public static final ReplacerModuleItem ITEM_REPLACER_MODULE = registerItem(new ReplacerModuleItem(), EnableOrNot.CONFIG_OFF);
 
     public static final BlockEntityType<TileQuarry> QUARRY_TYPE = registerEntityType(TileQuarry::new, BLOCK_QUARRY, EnableOrNot.CONFIG_ON);
     public static final BlockEntityType<TileMarker> MARKER_TYPE = registerEntityType(TileMarker::new, BLOCK_MARKER, EnableOrNot.ALWAYS_ON);
