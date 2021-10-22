@@ -4,6 +4,7 @@ import java.util.stream.Stream;
 
 import com.yogpc.qp.QuarryPlusTest;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.EmptyBlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -27,7 +28,7 @@ final class BlockStatePredicateTest extends QuarryPlusTest {
     }
 
     static Stream<BlockState> normalBlocks() {
-        return Stream.of(Blocks.STONE, Blocks.GLASS, Blocks.FURNACE).map(Block::defaultBlockState);
+        return Stream.of(Blocks.STONE, Blocks.GLASS, Blocks.FURNACE, Blocks.DIAMOND_ORE).map(Block::defaultBlockState);
     }
 
     static Stream<BlockState> fluidBlocks() {
@@ -83,6 +84,39 @@ final class BlockStatePredicateTest extends QuarryPlusTest {
         @MethodSource("com.yogpc.qp.machines.mini_quarry.BlockStatePredicateTest#fluidBlocks")
         void testFluid(BlockState state) {
             assertTrue(BlockStatePredicate.fluid().test(state, EmptyBlockGetter.INSTANCE, BlockPos.ZERO));
+        }
+    }
+
+    @Nested
+    class NameTest {
+        static BlockStatePredicate predicate1 = BlockStatePredicate.name(new ResourceLocation("minecraft", "cobblestone"));
+        static BlockStatePredicate predicate2 = BlockStatePredicate.name(new ResourceLocation("minecraft", "chest"));
+
+        static Stream<BlockStatePredicate> namePredicates() {
+            return Stream.of(predicate1, predicate2);
+        }
+
+        static Stream<Object[]> blockWithPredicates() {
+            return namePredicates().flatMap(p -> Stream.of(
+                airBlocks(), normalBlocks(), fluidBlocks()
+            ).flatMap(s -> s.map(b -> new Object[]{p, b})));
+        }
+
+        @ParameterizedTest
+        @MethodSource("namePredicates")
+        void containType(BlockStatePredicate p) {
+            BlockStatePredicateTest.containType(p);
+        }
+
+        @ParameterizedTest
+        @MethodSource("blockWithPredicates")
+        void testBlocks(BlockStatePredicate p, BlockState state) {
+            assertFalse(p.test(state, EmptyBlockGetter.INSTANCE, BlockPos.ZERO));
+        }
+
+        @Test
+        void testCobblestone() {
+            assertTrue(predicate1.test(Blocks.COBBLESTONE.defaultBlockState(), EmptyBlockGetter.INSTANCE, BlockPos.ZERO));
         }
     }
 }
