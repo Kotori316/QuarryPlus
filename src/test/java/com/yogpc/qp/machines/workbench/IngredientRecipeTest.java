@@ -16,6 +16,7 @@ import com.yogpc.qp.QuarryPlusTest;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.advpump.BlockAdvPump;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import org.junit.jupiter.api.Test;
@@ -48,6 +49,7 @@ class IngredientRecipeTest extends QuarryPlusTest {
         assertNotNull(recipe);
         assertEquals(5000 * PowerTile.ONE_FE, recipe.getRequiredEnergy());
         assertTrue(recipe.showInJEI());
+        assertEquals(Items.EMERALD_BLOCK, recipe.getResultItem().getItem());
     }
 
     @ParameterizedTest
