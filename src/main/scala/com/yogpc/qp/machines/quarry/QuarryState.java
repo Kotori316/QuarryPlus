@@ -23,6 +23,7 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fluids.FluidAttributes;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
@@ -49,7 +50,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
             if (quarry.target == null) {
                 // Initial
                 quarry.target = Target.newFrameInside(quarry.getArea(), quarry.getArea().minY(), quarry.getArea().maxY());
-                QuarryPlus.LOGGER.debug(MARKER, "Quarry({}) Target changed to {} in {}.", quarryPos, quarry.target, name());
+                LOGGER.debug(MARKER, "Quarry({}) Target changed to {} in {}.", quarryPos, quarry.target, name());
             }
             var targetPos = QuarryState.dropUntilPos(quarry.target, StateConditions.skipNoBreak(quarry));
             if (targetPos == null) {
@@ -73,7 +74,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
             Objects.requireNonNull(quarry.getArea());
             if (quarry.target == null) {
                 quarry.target = Target.newFrameTarget(quarry.getArea());
-                QuarryPlus.LOGGER.debug(MARKER, "Quarry({}) Target changed to {} in {}.", quarryPos, quarry.target, name());
+                LOGGER.debug(MARKER, "Quarry({}) Target changed to {} in {}.", quarryPos, quarry.target, name());
             }
             var targetPos = QuarryState.dropUntilPos(quarry.target, StateConditions.skipFramePlace(quarry));
             if (targetPos == null) {
@@ -88,13 +89,14 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
             }
         }
     },
+
     MOVE_HEAD(true) {
         @Override
         public void tick(Level world, BlockPos quarryPos, BlockState state, TileQuarry quarry) {
             Objects.requireNonNull(quarry.getArea());
             if (quarry.target == null) {
                 quarry.target = Target.newDigTarget(quarry.getArea(), quarry.getArea().minY());
-                QuarryPlus.LOGGER.debug(MARKER, "Quarry({}) Target changed to {} in {}.", quarryPos, quarry.target, name());
+                LOGGER.debug(MARKER, "Quarry({}) Target changed to {} in {}.", quarryPos, quarry.target, name());
             }
             var blockTarget = QuarryState.dropUntilPos(quarry.target, StateConditions.skipNoBreak(quarry));
             if (blockTarget == null) {
@@ -103,7 +105,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
                 if (!quarry.hasPumpModule() || fluidPoses.isEmpty()) {
                     // Change Y
                     quarry.target = Target.nextY(quarry.target, quarry.getArea(), quarry.digMinY);
-                    QuarryPlus.LOGGER.debug(MARKER, "Quarry({}) Target changed to {} in {}.", quarryPos, quarry.target, name());
+                    LOGGER.debug(MARKER, "Quarry({}) Target changed to {} in {}.", quarryPos, quarry.target, name());
                     if (quarry.target != null)
                         tick(world, quarryPos, state, quarry);
                     else
@@ -133,13 +135,14 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
             }
         }
     },
+
     BREAK_BLOCK(true) {
         @Override
         public void tick(Level world, BlockPos quarryPos, BlockState state, TileQuarry quarry) {
             Objects.requireNonNull(quarry.getArea());
             if (quarry.target == null) {
                 quarry.target = Target.newDigTarget(quarry.getArea(), quarry.getArea().minY());
-                QuarryPlus.LOGGER.debug(MARKER, "Quarry({}) Target changed to {} in {}.", quarryPos, quarry.target, name());
+                LOGGER.debug(MARKER, "Quarry({}) Target changed to {} in {}.", quarryPos, quarry.target, name());
             }
             if (!quarry.getTargetWorld().getFluidState(Objects.requireNonNull(quarry.target.get(false))).isEmpty()) {
                 if (quarry.hasPumpModule())
@@ -153,13 +156,14 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
             }
         }
     },
+
     REMOVE_FLUID(true) {
         @Override
         public void tick(Level world, BlockPos quarryPos, BlockState state, TileQuarry quarry) {
             Objects.requireNonNull(quarry.getArea());
             if (quarry.target == null) {
                 quarry.target = Target.newDigTarget(quarry.getArea(), quarry.getArea().minY());
-                QuarryPlus.LOGGER.debug(MARKER, "Quarry({}) Target changed to {} in {}.", quarryPos, quarry.target, name());
+                LOGGER.debug(MARKER, "Quarry({}) Target changed to {} in {}.", quarryPos, quarry.target, name());
             }
             var original = Objects.requireNonNull(quarry.target.get(false));
             var targetWorld = quarry.getTargetWorld();
@@ -186,6 +190,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
         }
     };
     public final boolean isWorking;
+    private static final Logger LOGGER = QuarryPlus.LOGGER;
     private static final Marker MARKER = MarkerManager.getMarker("QuarryState");
 
     QuarryState(boolean isWorking) {

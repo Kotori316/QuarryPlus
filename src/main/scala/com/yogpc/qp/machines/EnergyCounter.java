@@ -5,13 +5,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.logging.log4j.LogManager;
+import com.yogpc.qp.QuarryPlus;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
 public abstract class EnergyCounter {
-    private static final Logger LOGGER = LogManager.getLogger(EnergyCounter.class);
+    private static final Logger LOGGER = QuarryPlus.LOGGER;
     private static final Marker MARKER_TICK = MarkerManager.getMarker("TickLog");
     private static final Marker MARKER_FINAL = MarkerManager.getMarker("Total");
     final String name;
@@ -79,7 +79,7 @@ public abstract class EnergyCounter {
             if (lastLogTick == 0) {
                 lastLogTick = time;
             } else if (time - lastLogTick > logInterval) {
-                LOGGER.warn("The last log time reset? Last: {}, Now({}): {}", lastLogTick, name, time);
+                LOGGER.warn(MARKER_TICK, "The last log time reset? Last: {}, Now({}): {}", lastLogTick, name, time);
             }
         }
 

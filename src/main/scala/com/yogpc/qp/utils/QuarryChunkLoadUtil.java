@@ -1,15 +1,15 @@
 package com.yogpc.qp.utils;
 
+import com.yogpc.qp.QuarryPlus;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class QuarryChunkLoadUtil {
-    private static final Logger LOGGER = LogManager.getLogger(QuarryChunkLoadUtil.class);
+    private static final Logger LOGGER = QuarryPlus.getLogger(QuarryChunkLoadUtil.class);
 
     public static boolean isChunkLoaded(Level world, BlockPos pos) {
         if (world instanceof ServerLevel serverWorld) {

@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.yogpc.qp.Holder;
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.BreakResult;
 import com.yogpc.qp.machines.PowerManager;
@@ -21,11 +22,10 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.state.BlockState;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry> {
-    private static final Logger LOGGER = LogManager.getLogger(AdvQuarryAction.class);
+    private static final Logger LOGGER = QuarryPlus.getLogger(AdvQuarryAction.class);
     static final Map<String, Serializer> SERIALIZER_MAP;
 
     static {

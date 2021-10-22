@@ -5,9 +5,11 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.StreamSupport;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.yogpc.qp.QuarryPlus;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
@@ -15,7 +17,6 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.NBTIngredient;
 import net.minecraftforge.items.ItemHandlerHelper;
-import org.apache.logging.log4j.LogManager;
 
 public record IngredientWithCount(Ingredient ingredient, int count) implements Predicate<ItemStack> {
     public IngredientWithCount(JsonObject jsonObject) {
@@ -79,13 +80,14 @@ public record IngredientWithCount(Ingredient ingredient, int count) implements P
         return new IngredientWithCount(ingredient, count);
     }
 
+    @VisibleForTesting
     public static NBTIngredient createNbtIngredient(ItemStack stack) {
         try {
             var constructor = NBTIngredient.class.getDeclaredConstructor(ItemStack.class);
             constructor.trySetAccessible();
             return constructor.newInstance(stack);
         } catch (ReflectiveOperationException exception) {
-            LogManager.getLogger(IngredientWithCount.class)
+            QuarryPlus.LOGGER
                 .error("Caught error when creating NBTIngredient instance. This should not be called in production.", exception);
             return null;
         }

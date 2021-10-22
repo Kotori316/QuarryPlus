@@ -4,6 +4,7 @@ import java.util.Locale;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.yogpc.qp.QuarryPlus;
 import javax.annotation.Nullable;
 import net.minecraft.commands.arguments.blocks.BlockPredicateArgument;
 import net.minecraft.core.BlockPos;
@@ -15,7 +16,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 interface BlockStatePredicate {
@@ -164,7 +164,7 @@ interface BlockStatePredicate {
     }
 
     final class VanillaBlockPredicate implements BlockStatePredicate {
-        private static final Logger LOGGER = LogManager.getLogger(VanillaBlockPredicate.class);
+        private static final Logger LOGGER = QuarryPlus.getLogger(VanillaBlockPredicate.class);
         private final String blockPredicate;
         @Nullable
         private BlockPredicateArgument.Result argument;

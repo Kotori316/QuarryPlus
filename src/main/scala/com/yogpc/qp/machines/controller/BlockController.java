@@ -40,12 +40,11 @@ import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class BlockController extends QPBlock {
     public static final String NAME = "spawner_controller";
-    private static final Logger LOGGER = LogManager.getLogger(BlockController.class);
+    private static final Logger LOGGER = QuarryPlus.getLogger(BlockController.class);
     private static final Field logic_spawnDelay = getSpawnDelayField(); // int
     private static final Method logic_getEntityID = getEntityIdGetter(); // (Level, BlockPos) -> ResourceLocation
 

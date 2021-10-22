@@ -19,14 +19,13 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Mod(QuarryPlus.modID)
 public class QuarryPlus {
     public static final String Mod_Name = "QuarryPlus";
     public static final String modID = "quarryplus";
-    public static final Logger LOGGER = LogManager.getLogger(Mod_Name);
+    public static final Logger LOGGER = getLogger(Mod_Name);
     public static Config config;
 
     public QuarryPlus() {
@@ -75,5 +74,20 @@ public class QuarryPlus {
             PacketHandler.init();
         }
 
+    }
+
+    public static Logger getLogger(Class<?> clazz) {
+        return getLogger(clazz.getName());
+    }
+
+    public static Logger getLogger(String name) {
+        try {
+            var field = Class.forName("net.minecraftforge.fml.ModLoader").getDeclaredField("LOGGER");
+            field.setAccessible(true);
+            var loaderLogger = (org.apache.logging.log4j.core.Logger) field.get(null);
+            return loaderLogger.getContext().getLogger(name);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException("Can't access to LOGGER in loader.", e);
+        }
     }
 }
