@@ -26,7 +26,8 @@ public class PowerTile extends BlockEntity implements IEnergyStorage {
     private final EnergyCounter energyCounter;
     private long energy;
     private long maxEnergy;
-    protected boolean chunkPreLoaded;
+    @Nullable
+    private Boolean chunkPreLoaded = null;
     public final boolean enabled;
     private LazyOptional<IEnergyStorage> energyHandler = LazyOptional.of(() -> this);
 
@@ -46,7 +47,8 @@ public class PowerTile extends BlockEntity implements IEnergyStorage {
     public CompoundTag save(CompoundTag nbt) {
         nbt.putLong("energy", energy);
         nbt.putLong("maxEnergy", maxEnergy);
-        nbt.putBoolean("chunkPreLoaded", chunkPreLoaded);
+        if (chunkPreLoaded != null)
+            nbt.putBoolean("chunkPreLoaded", chunkPreLoaded);
         return super.save(nbt);
     }
 
@@ -56,7 +58,8 @@ public class PowerTile extends BlockEntity implements IEnergyStorage {
         energy = nbt.getLong("energy");
         if (nbt.contains("maxEnergy"))
             setMaxEnergy(nbt.getLong("maxEnergy"));
-        chunkPreLoaded = nbt.getBoolean("chunkPreLoaded");
+        if (nbt.contains("chunkPreLoaded", CompoundTag.TAG_BYTE))
+            chunkPreLoaded = nbt.getBoolean("chunkPreLoaded");
     }
 
     public final long getEnergy() {
@@ -174,7 +177,7 @@ public class PowerTile extends BlockEntity implements IEnergyStorage {
     @Override
     public void setRemoved() {
         super.setRemoved();
-        if (level != null && !level.isClientSide && enabled)
+        if (level != null && !level.isClientSide && enabled && chunkPreLoaded != null)
             QuarryChunkLoadUtil.makeChunkUnloaded(level, getBlockPos(), chunkPreLoaded);
     }
 
