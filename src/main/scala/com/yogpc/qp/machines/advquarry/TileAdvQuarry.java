@@ -180,6 +180,7 @@ public class TileAdvQuarry extends PowerTile implements
     }
 
     void setAction(AdvQuarryAction action) {
+        var pre = this.action;
         if (this.action == AdvQuarryAction.Waiting.WAITING)
             if (level != null) {
                 level.setBlock(getBlockPos(), getBlockState().setValue(BlockAdvQuarry.WORKING, true), Block.UPDATE_ALL);
@@ -192,7 +193,7 @@ public class TileAdvQuarry extends PowerTile implements
             }
         if (level != null && !level.isClientSide) {
             PacketHandler.sendToClient(new ClientSyncMessage(this), level);
-            QuarryPlus.LOGGER.debug("ChunkDestroyer({}) State changed to {}.", getBlockPos(), action);
+            QuarryPlus.LOGGER.debug("ChunkDestroyer({}) State changed from {} to {}.", getBlockPos(), pre, action);
         }
     }
 
