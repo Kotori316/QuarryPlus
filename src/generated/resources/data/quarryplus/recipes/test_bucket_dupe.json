@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "minecraft:water_bucket"
+    },
+    {
+      "item": "minecraft:magma_block"
+    }
+  ],
+  "result": {
+    "item": "minecraft:lava_bucket"
+  },
+  "conditions": [
+    {
+      "type": "quarryplus:debug_enabled"
+    }
+  ]
+}

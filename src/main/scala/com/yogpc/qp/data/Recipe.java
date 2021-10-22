@@ -202,7 +202,7 @@ public class Recipe extends QuarryPlusDataProvider.QuarryDataProvider {
             makeList(Tags.Items.BOOKSHELVES, 64),
             makeList(Tags.Items.GEMS_DIAMOND, 16)
         )))).addCondition(new EnableCondition(BookMoverBlock.NAME)));
-        // Chunk Destroyer.
+        // Chunk Destroyer
         list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(
             location(BlockAdvQuarry.NAME), new ItemStack(Holder.BLOCK_ADV_QUARRY), 3200000 * PowerTile.ONE_FE, true, List.of(
             makeList(Holder.BLOCK_QUARRY, 3),
@@ -301,7 +301,7 @@ public class Recipe extends QuarryPlusDataProvider.QuarryDataProvider {
             ).addCondition(new EnableCondition(ReplacerModuleItem.NAME))
         );
         list.add(
-            // WORKBENCH
+            // Placer
             RecipeSerializeHelper.by(
                 ShapedRecipeBuilder.shaped(Holder.BLOCK_PLACER)
                     .pattern("GDG")
@@ -326,7 +326,11 @@ public class Recipe extends QuarryPlusDataProvider.QuarryDataProvider {
             RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(
                 testLocation("diamond2"), new ItemStack(Items.DIAMOND, 2), 640 * PowerTile.ONE_FE, true, List.of(
                 as(Pair.of(Ingredient.of(Items.IRON_INGOT), 8), Pair.of(Ingredient.of(Tags.Items.INGOTS_GOLD), 4))
-            ))))
+            )))),
+            RecipeSerializeHelper.by(ShapelessRecipeBuilder.shapeless(Items.LAVA_BUCKET)
+                .requires(Items.WATER_BUCKET)
+                .requires(Items.MAGMA_BLOCK), testLocation("bucket_dupe")
+            )
         );
 
         return list.stream().map(r -> r.addCondition(new QuarryDebugCondition())).toList();
