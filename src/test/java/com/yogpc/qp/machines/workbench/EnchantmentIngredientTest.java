@@ -1,6 +1,8 @@
 package com.yogpc.qp.machines.workbench;
 
 import java.util.List;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -16,6 +18,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -282,6 +285,98 @@ class EnchantmentIngredientTest extends QuarryPlusTest {
             var e1 = new EnchantmentIngredient(new ItemStack(Items.ENCHANTED_BOOK), List.of(new EnchantmentInstance(Enchantments.BLOCK_FORTUNE, 1)), false);
             var stack = EnchantedBookItem.createForEnchantment(new EnchantmentInstance(Enchantments.BLOCK_FORTUNE, i));
             assertTrue(e1.test(stack));
+        }
+
+        @Nested
+        class Many {
+            EnchantmentIngredient e1 = new EnchantmentIngredient(new ItemStack(Items.DIAMOND_PICKAXE), List.of(
+                new EnchantmentInstance(Enchantments.BLOCK_EFFICIENCY, 1),
+                new EnchantmentInstance(Enchantments.UNBREAKING, 2)
+            ), false);
+
+            static Stream<Object[]> e1Level() {
+                return IntStream.rangeClosed(1, 5).boxed().flatMap(e ->
+                    IntStream.rangeClosed(2, 3).mapToObj(u -> new Object[]{e, u}));
+            }
+
+            @ParameterizedTest
+            @MethodSource("e1Level")
+            void matchMany(int efficiencyLevel, int unbreakingLevel) {
+                var stack = new ItemStack(Items.DIAMOND_PICKAXE);
+                stack.enchant(Enchantments.BLOCK_EFFICIENCY, efficiencyLevel);
+                stack.enchant(Enchantments.UNBREAKING, unbreakingLevel);
+                assertTrue(e1.test(stack));
+            }
+
+            @ParameterizedTest
+            @MethodSource("e1Level")
+            void matchManyWithFortune(int efficiencyLevel, int unbreakingLevel) {
+                var stack = new ItemStack(Items.DIAMOND_PICKAXE);
+                stack.enchant(Enchantments.BLOCK_EFFICIENCY, efficiencyLevel);
+                stack.enchant(Enchantments.UNBREAKING, unbreakingLevel);
+                stack.enchant(Enchantments.BLOCK_FORTUNE, 2);
+                assertTrue(e1.test(stack));
+            }
+
+            @Test
+            @DisplayName("E=1, U=1")
+            void notMatch1() {
+                var efficiencyLevel = 1;
+                var unbreakingLevel = 1;
+                var stack = new ItemStack(Items.DIAMOND_PICKAXE);
+                stack.enchant(Enchantments.BLOCK_EFFICIENCY, efficiencyLevel);
+                stack.enchant(Enchantments.UNBREAKING, unbreakingLevel);
+                assertFalse(e1.test(stack));
+            }
+
+            @ParameterizedTest
+            @ValueSource(ints = {1, 2, 3, 4, 5})
+            void onlyEfficiency(int efficiencyLevel) {
+                var stack = new ItemStack(Items.DIAMOND_PICKAXE);
+                stack.enchant(Enchantments.BLOCK_EFFICIENCY, efficiencyLevel);
+                assertFalse(e1.test(stack));
+            }
+
+            @ParameterizedTest
+            @ValueSource(ints = {1, 2, 3, 4, 5})
+            void onlyUnbreaking(int unbreakingLevel) {
+                var stack = new ItemStack(Items.DIAMOND_PICKAXE);
+                stack.enchant(Enchantments.UNBREAKING, unbreakingLevel);
+                assertFalse(e1.test(stack));
+            }
+        }
+    }
+
+    @Nested
+    class CheckDamage {
+        EnchantmentIngredient checkDamage = new EnchantmentIngredient(getDamaged(20), List.of(new EnchantmentInstance(Enchantments.SILK_TOUCH, 1)),
+            true);
+
+        static ItemStack getDamaged(int damage) {
+            var stack = new ItemStack(Items.DIAMOND_PICKAXE);
+            stack.setDamageValue(damage);
+            return stack;
+        }
+
+        @Test
+        void sameValue() {
+            var stack = getDamaged(20);
+            stack.enchant(Enchantments.SILK_TOUCH, 1);
+            assertTrue(checkDamage.test(stack));
+        }
+
+        @Test
+        void low() {
+            var stack = getDamaged(19);
+            stack.enchant(Enchantments.SILK_TOUCH, 1);
+            assertFalse(checkDamage.test(stack));
+        }
+
+        @Test
+        void high() {
+            var stack = getDamaged(21);
+            stack.enchant(Enchantments.SILK_TOUCH, 1);
+            assertFalse(checkDamage.test(stack));
         }
     }
 }

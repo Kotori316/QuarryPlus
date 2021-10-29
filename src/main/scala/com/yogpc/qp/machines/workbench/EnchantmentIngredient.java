@@ -43,12 +43,7 @@ public class EnchantmentIngredient extends Ingredient {
         super(Stream.of(new Ingredient.ItemValue(addEnchantments(stack, enchantments))));
         this.stack = stack;
         this.enchantments = enchantments;
-        this.withoutEnchantment = Optional.ofNullable(stack.getShareTag()).map(CompoundTag::copy).map(c -> {
-            c.remove(ItemStack.TAG_ENCH);
-            c.remove(EnchantedBookItem.TAG_STORED_ENCHANTMENTS);
-            if (!checkDamage) c.remove(ItemStack.TAG_DAMAGE);
-            return c;
-        }).filter(Predicate.not(CompoundTag::isEmpty)).orElse(null);
+        this.withoutEnchantment = getTagWithoutEnchantment(stack, checkDamage);
         this.checkDamage = checkDamage;
     }
 
@@ -76,12 +71,7 @@ public class EnchantmentIngredient extends Ingredient {
         if (!this.enchantments.stream().allMatch(d -> enchantments.getOrDefault(d.enchantment, 0) >= d.level)) {
             return false;
         }
-        CompoundTag nbt = Optional.ofNullable(stack.getShareTag()).map(CompoundTag::copy).map(c -> {
-            c.remove(ItemStack.TAG_ENCH);
-            c.remove(EnchantedBookItem.TAG_STORED_ENCHANTMENTS);
-            if (!checkDamage) c.remove(ItemStack.TAG_DAMAGE);
-            return c;
-        }).filter(Predicate.not(CompoundTag::isEmpty)).orElse(null);
+        CompoundTag nbt = getTagWithoutEnchantment(stack, checkDamage);
         return Objects.equals(this.withoutEnchantment, nbt);
     }
 
@@ -89,6 +79,16 @@ public class EnchantmentIngredient extends Ingredient {
         ItemStack toEnchantment = stack.copy();
         enchantments.forEach(d -> toEnchantment.enchant(d.enchantment, d.level));
         return toEnchantment;
+    }
+
+    @Nullable
+    private static CompoundTag getTagWithoutEnchantment(ItemStack stack, boolean checkDamage) {
+        return Optional.ofNullable(stack.getShareTag()).map(CompoundTag::copy).map(c -> {
+            c.remove(ItemStack.TAG_ENCH);
+            c.remove(EnchantedBookItem.TAG_STORED_ENCHANTMENTS);
+            if (!checkDamage) c.remove(ItemStack.TAG_DAMAGE);
+            return c;
+        }).filter(Predicate.not(CompoundTag::isEmpty)).orElse(null);
     }
 
     @Override
