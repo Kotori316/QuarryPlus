@@ -54,6 +54,7 @@ public class MiniQuarryAddEntryGui extends Screen implements Button.OnPress {
         this.setInitialFocus(list);
         textField.setCanLoseFocus(true);
         textField.setResponder(s -> {
+            list.setSelected(null);
             list.updateList();
             list.setScrollAmount(list.getScrollAmount()); // Scroll
         });
