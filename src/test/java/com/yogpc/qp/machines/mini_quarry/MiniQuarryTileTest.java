@@ -11,6 +11,14 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MiniQuarryTileTest extends QuarryPlusTest {
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1, 2, 3, 4, 5, 6})
+    void intervalTest(int level) {
+        int interval1 = MiniQuarryTile.interval(level - 1);
+        int interval2 = MiniQuarryTile.interval(level);
+        assertTrue(interval1 > interval2);
+    }
+
     @Nested
     class PredicateSetting {
         @Test
