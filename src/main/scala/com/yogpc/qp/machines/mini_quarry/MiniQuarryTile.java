@@ -82,6 +82,10 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
             var event = new BlockEvent.BreakEvent(level, pos, state, fakePlayer);
             if (MinecraftForge.EVENT_BUS.post(event)) break; // Denied to break block.
 
+            if (state.getDestroySpeed(level, pos) < 0) {
+                // Consume additional energy if quarry tries to remove bedrock.
+                useEnergy(PowerManager.getBreakEnergy(-1, this), Reason.BREAK_BLOCK, true);
+            }
             var tools = container.tools();
             var tool = tools.stream().filter(t ->
                 t.isCorrectToolForDrops(state)
