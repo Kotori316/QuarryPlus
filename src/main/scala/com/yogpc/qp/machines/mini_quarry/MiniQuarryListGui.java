@@ -87,24 +87,20 @@ public class MiniQuarryListGui extends Screen implements Button.OnPress {
     public void onPress(Button button) {
         if (button instanceof IndexedButton indexedButton) {
             switch (indexedButton.id()) {
-                case 0: // Change list
+                case 0 -> { // Change list
                     setWhiteListFlag(!whiteListFlag);
                     button.setMessage(new TranslatableComponent(whiteListFlag ? "quarryplus.gui.whitelist" : "quarryplus.gui.blacklist"));
-                    break;
-                case 1:
-                    onClose();
-                    break;
-                case 2: // New Entry
-                    getMinecraft().pushGuiLayer(new MiniQuarryAddEntryGui(this,
-                        e -> {
-                            if (MiniQuarryTile.canAddInList(whiteListFlag, e)) {
-                                getEntries().add(e);
-                                list.updateList();
-                                PacketHandler.sendToServer(new MiniListSyncMessage(pos, dim, blackList, whiteList));
-                            }
-                        }));
-                    break;
-                case 3: // Delete
+                }
+                case 1 -> onClose();
+                case 2 -> getMinecraft().pushGuiLayer(new MiniQuarryAddEntryGui(this, // New Entry
+                    e -> {
+                        if (MiniQuarryTile.canAddInList(whiteListFlag, e)) {
+                            getEntries().add(e);
+                            list.updateList();
+                            PacketHandler.sendToServer(new MiniListSyncMessage(pos, dim, blackList, whiteList));
+                        }
+                    }));
+                case 3 -> { // Delete
                     MiniQuarryListEntry selected = list.getSelected(); // getSelected
                     if (selected != null) {
                         BlockStatePredicate data = selected.getData();
@@ -114,7 +110,7 @@ public class MiniQuarryListGui extends Screen implements Button.OnPress {
                             PacketHandler.sendToServer(new MiniListSyncMessage(pos, dim, blackList, whiteList));
                         }
                     }
-                    break;
+                }
             }
         }
     }

@@ -90,17 +90,10 @@ public class MiniQuarryAddEntryGui extends Screen implements Button.OnPress {
                 if (entry != null) {
                     String location = entry.getData();
                     switch (entry.getKind()) {
-                        case BLOCK:
-                            callback.accept(BlockStatePredicate.name(new ResourceLocation(location)));
-                            break;
-                        case TAG:
-                            callback.accept(BlockStatePredicate.tag(new ResourceLocation(location)));
-                            break;
-                        case ALL:
-                            callback.accept(BlockStatePredicate.all());
-                            break;
-                        default:
-                            QuarryPlus.LOGGER.warn("Not registered kind {} for {}.", entry.getKind(), location);
+                        case BLOCK -> callback.accept(BlockStatePredicate.name(new ResourceLocation(location)));
+                        case TAG -> callback.accept(BlockStatePredicate.tag(new ResourceLocation(location)));
+                        case ALL -> callback.accept(BlockStatePredicate.all());
+                        default -> QuarryPlus.LOGGER.warn("Not registered kind {} for {}.", entry.getKind(), location);
                     }
                 } else {
                     String maybePredicate = textField.getValue();
@@ -119,6 +112,7 @@ public class MiniQuarryAddEntryGui extends Screen implements Button.OnPress {
     }
 
     @Override
+    @SuppressWarnings("DuplicatedCode")
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         InputConstants.Key mouseKey = InputConstants.getKey(keyCode, scanCode);
         if (keyCode == GLFW.GLFW_KEY_ESCAPE || (!textField.isFocused() && this.getMinecraft().options.keyInventory.isActiveAndMatches(mouseKey))) {

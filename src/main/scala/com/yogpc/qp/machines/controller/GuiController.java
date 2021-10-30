@@ -79,6 +79,7 @@ public class GuiController extends Screen implements Button.OnPress {
     }
 
     @Override
+    @SuppressWarnings("DuplicatedCode")
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         InputConstants.Key mouseKey = InputConstants.getKey(keyCode, scanCode);
         if (keyCode == GLFW.GLFW_KEY_ESCAPE || (!search.isFocused() && this.getMinecraft().options.keyInventory.isActiveAndMatches(mouseKey))) {
