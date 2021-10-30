@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -66,15 +67,18 @@ public class MiniQuarryAddEntryGui extends Screen implements Button.OnPress {
         drawCenteredString(matrixStack, this.font, new TranslatableComponent("quarryplus.gui.new_entry"), this.width / 2, 8, 0xFFFFFF);
     }
 
-    private Pair<Kind, List<ResourceLocation>> getEntries() {
+    private List<Pair<Kind, List<String>>> getEntries() {
         String filterText = textField == null ? "" : textField.getValue();
         if (filterText.startsWith("#")) {
             String f = filterText.substring(1); // Remove first #
-            return Pair.of(Kind.TAG, BlockTags.getAllTags().getAvailableTags()
-                .stream().filter(r -> r.toString().contains(f)).sorted().collect(Collectors.toList()));
+            return List.of(Pair.of(Kind.TAG, BlockTags.getAllTags().getAvailableTags()
+                .stream().map(ResourceLocation::toString).filter(r -> r.contains(f)).sorted().collect(Collectors.toList())));
         } else {
-            return Pair.of(Kind.BLOCK, ForgeRegistries.BLOCKS.getKeys().stream()
-                .filter(r -> r.toString().contains(filterText)).sorted().collect(Collectors.toList()));
+            return List.of(
+                Pair.of(Kind.ALL, Stream.of("ALL").filter(r -> r.contains(filterText)).toList()),
+                Pair.of(Kind.BLOCK, ForgeRegistries.BLOCKS.getKeys().stream()
+                    .map(ResourceLocation::toString).filter(r -> r.contains(filterText)).sorted().collect(Collectors.toList()))
+            );
         }
     }
 
@@ -84,13 +88,16 @@ public class MiniQuarryAddEntryGui extends Screen implements Button.OnPress {
             if (indexedButton.id() == 1) {
                 LocationEntry entry = list.getSelected();
                 if (entry != null) {
-                    ResourceLocation location = entry.getData();
+                    String location = entry.getData();
                     switch (entry.getKind()) {
                         case BLOCK:
-                            callback.accept(BlockStatePredicate.name(location));
+                            callback.accept(BlockStatePredicate.name(new ResourceLocation(location)));
                             break;
                         case TAG:
-                            callback.accept(BlockStatePredicate.tag(location));
+                            callback.accept(BlockStatePredicate.tag(new ResourceLocation(location)));
+                            break;
+                        case ALL:
+                            callback.accept(BlockStatePredicate.all());
                             break;
                         default:
                             QuarryPlus.LOGGER.warn("Not registered kind {} for {}.", entry.getKind(), location);
@@ -124,9 +131,9 @@ public class MiniQuarryAddEntryGui extends Screen implements Button.OnPress {
     static class EntryList extends ObjectSelectionList<LocationEntry> {
 
         private final Screen parent;
-        private final Supplier<Pair<Kind, List<ResourceLocation>>> entriesSupplier;
+        private final Supplier<List<Pair<Kind, List<String>>>> entriesSupplier;
 
-        public EntryList(Minecraft mcIn, int widthIn, int heightIn, int topIn, int bottomIn, int slotHeightIn, Screen parent, Supplier<Pair<Kind, List<ResourceLocation>>> entriesSupplier) {
+        public EntryList(Minecraft mcIn, int widthIn, int heightIn, int topIn, int bottomIn, int slotHeightIn, Screen parent, Supplier<List<Pair<Kind, List<String>>>> entriesSupplier) {
             super(mcIn, widthIn, heightIn, topIn, bottomIn, slotHeightIn);
             this.parent = parent;
             this.entriesSupplier = entriesSupplier;
@@ -135,27 +142,31 @@ public class MiniQuarryAddEntryGui extends Screen implements Button.OnPress {
 
         public void updateList() {
             this.clearEntries();
-            Pair<Kind, List<ResourceLocation>> kindListPair = entriesSupplier.get();
-            kindListPair.getValue().stream().map(e -> new LocationEntry(e, this.parent, this::setSelected, kindListPair.getKey())).forEach(this::addEntry);
+            List<Pair<Kind, List<String>>> kindListPairs = entriesSupplier.get();
+            kindListPairs.forEach(kindListPair ->
+                kindListPair.getValue().stream()
+                    .map(e -> new LocationEntry(e, this.parent, this::setSelected, kindListPair.getKey()))
+                    .forEach(this::addEntry)
+            );
         }
 
     }
 
     static class LocationEntry extends ObjectSelectionList.Entry<LocationEntry> {
 
-        private final ResourceLocation data;
+        private final String data;
         private final Screen parent;
         private final Consumer<LocationEntry> setSelected;
         private final Kind kind;
 
-        LocationEntry(ResourceLocation data, Screen parent, Consumer<LocationEntry> setSelected, Kind kind) {
+        LocationEntry(String data, Screen parent, Consumer<LocationEntry> setSelected, Kind kind) {
             this.data = data;
             this.parent = parent;
             this.setSelected = setSelected;
             this.kind = kind;
         }
 
-        public ResourceLocation getData() {
+        public String getData() {
             return data;
         }
 
@@ -166,7 +177,7 @@ public class MiniQuarryAddEntryGui extends Screen implements Button.OnPress {
         @Override
         @SuppressWarnings("IntegerDivisionInFloatingPointContext")
         public void render(PoseStack m, int entryIdx, int top, int left, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean p_render_8_, float partialTicks) {
-            String name = (kind == Kind.TAG ? "#" : "") + data.toString();
+            String name = (kind == Kind.TAG ? "#" : "") + data;
             // drawCenteredString(m, Minecraft.getInstance().font, name, parent.width, top + 1, 0xFFFFFF);
             Minecraft.getInstance().font.draw(m, name,
                 (parent.width - Minecraft.getInstance().font.width(name)) / 2, top + 2, 0xFFFFFF);
@@ -185,6 +196,6 @@ public class MiniQuarryAddEntryGui extends Screen implements Button.OnPress {
     }
 
     private enum Kind {
-        BLOCK, TAG
+        BLOCK, TAG, ALL
     }
 }

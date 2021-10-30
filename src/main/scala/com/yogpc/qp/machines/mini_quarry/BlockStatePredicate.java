@@ -41,6 +41,10 @@ interface BlockStatePredicate {
         return new VanillaBlockPredicate(location);
     }
 
+    static BlockStatePredicate all() {
+        return All.INSTANCE;
+    }
+
     /**
      * Create predicate from nbt tag. Tag must contain "type" to specify type of the predicate.
      * Also, it should contain property for each predicate, such as block name and tag name.
@@ -48,6 +52,7 @@ interface BlockStatePredicate {
     static BlockStatePredicate fromTag(CompoundTag tag) {
         var type = tag.getString("type");
         return switch (type) {
+            case "all" -> all();
             case "air" -> air();
             case "fluid" -> fluid();
             case "name" -> name(new ResourceLocation(tag.getString("location")));
@@ -58,6 +63,30 @@ interface BlockStatePredicate {
     }
 
     CompoundTag toTag();
+
+    final class All implements BlockStatePredicate {
+        private static final All INSTANCE = new All();
+
+        private All() {
+        }
+
+        @Override
+        public boolean test(BlockState state, BlockGetter level, BlockPos pos) {
+            return true;
+        }
+
+        @Override
+        public CompoundTag toTag() {
+            var tag = new CompoundTag();
+            tag.putString("type", toString().toLowerCase(Locale.ROOT));
+            return tag;
+        }
+
+        @Override
+        public String toString() {
+            return "All";
+        }
+    }
 
     final class Air implements BlockStatePredicate {
         private static final Air INSTANCE = new Air();

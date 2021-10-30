@@ -1,5 +1,6 @@
 package com.yogpc.qp.machines.mini_quarry;
 
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import com.yogpc.qp.QuarryPlusTest;
@@ -117,6 +118,24 @@ final class BlockStatePredicateTest extends QuarryPlusTest {
         @Test
         void testCobblestone() {
             assertTrue(predicate1.test(Blocks.COBBLESTONE.defaultBlockState(), EmptyBlockGetter.INSTANCE, BlockPos.ZERO));
+        }
+    }
+
+    @Nested
+    class AllTest {
+        @Test
+        void containType() {
+            BlockStatePredicateTest.containType(BlockStatePredicate.air());
+        }
+
+        static Stream<BlockState> allBlocks() {
+            return Stream.of(airBlocks(), fluidBlocks(), normalBlocks()).flatMap(Function.identity());
+        }
+
+        @ParameterizedTest
+        @MethodSource("allBlocks")
+        void test(BlockState state) {
+            assertTrue(BlockStatePredicate.all().test(state, EmptyBlockGetter.INSTANCE, BlockPos.ZERO));
         }
     }
 }

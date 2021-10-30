@@ -264,4 +264,12 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
     static Set<BlockStatePredicate> defaultBlackList() {
         return Set.of(BlockStatePredicate.air(), BlockStatePredicate.fluid());
     }
+
+    static boolean canAddInList(boolean isAllowList, BlockStatePredicate newData) {
+        if (isAllowList) {
+            return newData != BlockStatePredicate.all() && newData != BlockStatePredicate.air();
+        } else {
+            return !defaultBlackList().contains(newData);
+        }
+    }
 }
