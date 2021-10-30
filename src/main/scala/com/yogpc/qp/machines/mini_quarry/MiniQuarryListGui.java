@@ -97,9 +97,11 @@ public class MiniQuarryListGui extends Screen implements Button.OnPress {
                 case 2: // New Entry
                     getMinecraft().pushGuiLayer(new MiniQuarryAddEntryGui(this,
                         e -> {
-                            getEntries().add(e);
-                            list.updateList();
-                            PacketHandler.sendToServer(new MiniListSyncMessage(pos, dim, blackList, whiteList));
+                            if (MiniQuarryTile.canAddInList(whiteListFlag, e)) {
+                                getEntries().add(e);
+                                list.updateList();
+                                PacketHandler.sendToServer(new MiniListSyncMessage(pos, dim, blackList, whiteList));
+                            }
                         }));
                     break;
                 case 3: // Delete
