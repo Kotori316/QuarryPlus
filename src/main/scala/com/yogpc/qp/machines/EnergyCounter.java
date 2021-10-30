@@ -73,6 +73,7 @@ public abstract class EnergyCounter {
             usageMap.entrySet().stream()
                 .map(e -> "%s -> %f".formatted(e.getKey(), (double) e.getValue() / PowerTile.ONE_FE))
                 .forEach(s -> LOGGER.info(MARKER_FINAL, s));
+            usageMap.clear();
         }
 
         private void checkTime(long time, String name) {
