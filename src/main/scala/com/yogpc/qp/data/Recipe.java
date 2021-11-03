@@ -57,7 +57,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import static com.yogpc.qp.data.QuarryPlusDataProvider.location;
 
-public class Recipe extends QuarryPlusDataProvider.QuarryDataProvider {
+class Recipe extends QuarryPlusDataProvider.QuarryDataProvider {
     Recipe(DataGenerator generatorIn) {
         super(generatorIn);
     }
@@ -348,34 +348,34 @@ public class Recipe extends QuarryPlusDataProvider.QuarryDataProvider {
     private static ResourceLocation testLocation(String path) {
         return location("test_" + path);
     }
-}
 
-record FinishedWorkbenchRecipe(WorkbenchRecipe recipe) implements FinishedRecipe {
+    record FinishedWorkbenchRecipe(WorkbenchRecipe recipe) implements FinishedRecipe {
 
-    @Override
-    public void serializeRecipeData(JsonObject object) {
-        WorkbenchRecipe.SERIALIZER.toJson(recipe, object);
-    }
+        @Override
+        public void serializeRecipeData(JsonObject object) {
+            WorkbenchRecipe.SERIALIZER.toJson(recipe, object);
+        }
 
-    @Override
-    public ResourceLocation getId() {
-        return recipe.getId();
-    }
+        @Override
+        public ResourceLocation getId() {
+            return recipe.getId();
+        }
 
-    @Override
-    public RecipeSerializer<?> getType() {
-        return WorkbenchRecipe.SERIALIZER;
-    }
+        @Override
+        public RecipeSerializer<?> getType() {
+            return WorkbenchRecipe.SERIALIZER;
+        }
 
-    @Nullable
-    @Override
-    public JsonObject serializeAdvancement() {
-        return null;
-    }
+        @Nullable
+        @Override
+        public JsonObject serializeAdvancement() {
+            return null;
+        }
 
-    @Nullable
-    @Override
-    public ResourceLocation getAdvancementId() {
-        return null;
+        @Nullable
+        @Override
+        public ResourceLocation getAdvancementId() {
+            return null;
+        }
     }
 }

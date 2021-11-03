@@ -21,6 +21,7 @@ buildscript {
 }
 plugins {
     id("maven-publish")
+    id("scala")
     id "com.github.breadmoirai.github-release" version "2.2.12"
 }
 apply plugin: 'net.minecraftforge.gradle'
@@ -165,9 +166,11 @@ dependencies {
     String forgeVersion = System.getenv("CI_FORGE") ?: project.forgeVersion
     minecraft('net.minecraftforge:forge:' + forgeVersion)
     System.out.println(('Selected version: ' + 'net.minecraftforge:forge:' + forgeVersion) as String)
+    compileOnly(group: 'org.scala-lang', name: 'scala-library', version: '2.13.7')
+    compileOnly(group: 'org.typelevel', name: "cats-core_2.13", version: '2.6.2-kotori')
 
     implementation fg.deobf("mezz.jei:jei-1.17.1:" + project.jeiVersion)
-    runtimeOnly(group: "com.kotori316", name: "ScalableCatsForce".toLowerCase(), version: "2.13.6-build-4", classifier: "with-library") {
+    runtimeOnly(group: "com.kotori316", name: "ScalableCatsForce".toLowerCase(), version: "2.13.7-build-1", classifier: "with-library") {
         transitive(false)
     }
 
@@ -201,9 +204,6 @@ jar {
 
 sourceSets {
     main {
-        java {
-            srcDir 'src/main/scala'
-        }
         resources {
             srcDir 'src/main/resources'
             srcDir 'src/generated/resources'

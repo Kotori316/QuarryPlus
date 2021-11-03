@@ -1,24 +1,30 @@
 package com.yogpc.qp;
 
+import com.yogpc.qp.data.QuarryPlusDataProvider;
 import com.yogpc.qp.machines.workbench.EnableCondition;
 import com.yogpc.qp.machines.workbench.EnchantmentIngredient;
 import com.yogpc.qp.machines.workbench.QuarryDebugCondition;
 import com.yogpc.qp.machines.workbench.WorkbenchRecipe;
 import com.yogpc.qp.packet.PacketHandler;
+import com.yogpc.qp.utils.ConfigCommand;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.Logger;
 
 @Mod(QuarryPlus.modID)
@@ -32,9 +38,13 @@ public class QuarryPlus {
         ForgeConfigSpec.Builder common = new ForgeConfigSpec.Builder();
         config = new Config(common);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, common.build());
+        FMLJavaModLoadingContext.get().getModEventBus().register(Register.class);
+        FMLJavaModLoadingContext.get().getModEventBus().register(QuarryPlusDataProvider.class);
+        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> QuarryPlusClient::registerClientBus);
+        MinecraftForge.EVENT_BUS.register(ConfigCommand.class);
     }
 
-    @Mod.EventBusSubscriber(modid = modID, bus = Mod.EventBusSubscriber.Bus.MOD)
+    // @Mod.EventBusSubscriber(modid = modID, bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class Register {
 
         @SubscribeEvent
