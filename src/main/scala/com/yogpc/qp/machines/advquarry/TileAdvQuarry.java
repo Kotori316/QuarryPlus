@@ -120,7 +120,7 @@ public class TileAdvQuarry extends PowerTile implements
         this.enchantments.forEach(e -> enchantments.putInt(Objects.requireNonNull(e.enchantmentID()).toString(), e.level()));
         nbt.put("enchantments", enchantments);
         nbt.put("action", action.toNbt());
-        nbt.putBoolean("removeBedrock", removeBedrock);
+        nbt.putBoolean("bedrockRemove", removeBedrock);
         return nbt;
     }
 
@@ -134,7 +134,7 @@ public class TileAdvQuarry extends PowerTile implements
             .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR)
             .toList());
         action = AdvQuarryAction.fromNbt(nbt.getCompound("action"), this);
-        removeBedrock = nbt.getBoolean("removeBedrock");
+        removeBedrock = nbt.getBoolean("bedrockRemove");
     }
 
     /**
