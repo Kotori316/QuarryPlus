@@ -65,12 +65,12 @@ public class QuarryPlus implements ModInitializer {
         Registry.register(Registry.BLOCK_ENTITY_TYPE, new ResourceLocation(modID, BlockMarker.NAME), ModObjects.MARKER_TYPE);
         Registry.register(Registry.ITEM, new ResourceLocation(modID, YSetterItem.NAME), ModObjects.ITEM_Y_SETTER);
         Registry.register(Registry.ITEM, ModObjects.ITEM_BEDROCK_MODULE.getRegistryName(), ModObjects.ITEM_BEDROCK_MODULE);
-        Registry.register(Registry.BLOCK, new ResourceLocation(modID, BlockExMarker.BlockFlexMarker.NAME), ModObjects.BLOCK_FLEX_MARKER);
-        Registry.register(Registry.ITEM, new ResourceLocation(modID, BlockExMarker.BlockFlexMarker.NAME), ModObjects.BLOCK_FLEX_MARKER.blockItem);
-        Registry.register(Registry.BLOCK_ENTITY_TYPE, new ResourceLocation(modID, BlockExMarker.BlockFlexMarker.NAME), ModObjects.FLEX_MARKER_TYPE);
-        Registry.register(Registry.BLOCK, new ResourceLocation(modID, BlockExMarker.Block16Marker.NAME), ModObjects.BLOCK_16_MARKER);
-        Registry.register(Registry.ITEM, new ResourceLocation(modID, BlockExMarker.Block16Marker.NAME), ModObjects.BLOCK_16_MARKER.blockItem);
-        Registry.register(Registry.BLOCK_ENTITY_TYPE, new ResourceLocation(modID, BlockExMarker.Block16Marker.NAME), ModObjects.MARKER_16_TYPE);
+        Registry.register(Registry.BLOCK, ModObjects.BLOCK_FLEX_MARKER.getRegistryName(), ModObjects.BLOCK_FLEX_MARKER);
+        Registry.register(Registry.ITEM, ModObjects.BLOCK_FLEX_MARKER.getRegistryName(), ModObjects.BLOCK_FLEX_MARKER.blockItem);
+        Registry.register(Registry.BLOCK_ENTITY_TYPE, ModObjects.BLOCK_FLEX_MARKER.getRegistryName(), ModObjects.FLEX_MARKER_TYPE);
+        Registry.register(Registry.BLOCK, ModObjects.BLOCK_16_MARKER.getRegistryName(), ModObjects.BLOCK_16_MARKER);
+        Registry.register(Registry.ITEM, ModObjects.BLOCK_16_MARKER.getRegistryName(), ModObjects.BLOCK_16_MARKER.blockItem);
+        Registry.register(Registry.BLOCK_ENTITY_TYPE, ModObjects.BLOCK_16_MARKER.getRegistryName(), ModObjects.MARKER_16_TYPE);
         Registry.register(Registry.BLOCK, ModObjects.BLOCK_CREATIVE_GENERATOR.getRegistryName(), ModObjects.BLOCK_CREATIVE_GENERATOR);
         Registry.register(Registry.ITEM, ModObjects.BLOCK_CREATIVE_GENERATOR.getRegistryName(), ModObjects.BLOCK_CREATIVE_GENERATOR.blockItem);
         Registry.register(Registry.BLOCK_ENTITY_TYPE, ModObjects.BLOCK_CREATIVE_GENERATOR.getRegistryName(), ModObjects.CREATIVE_GENERATOR_TYPE);
