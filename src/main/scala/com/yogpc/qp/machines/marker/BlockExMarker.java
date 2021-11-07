@@ -1,6 +1,7 @@
 package com.yogpc.qp.machines.marker;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.QPBlock;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -15,14 +16,11 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.RenderShape;
@@ -36,13 +34,11 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class BlockExMarker extends Block implements EntityBlock {
+public abstract class BlockExMarker extends QPBlock implements EntityBlock {
     private static final VoxelShape STANDING_Shape = Shapes.box(.35, 0, .35, .65, .65, .65);
 
-    public final BlockItem blockItem = new BlockItem(this, new Item.Properties().tab(QuarryPlus.CREATIVE_TAB));
-
-    public BlockExMarker() {
-        super(Properties.of(Material.DECORATION).lightLevel(value -> 7).noCollission());
+    public BlockExMarker(String name) {
+        super(Properties.of(Material.DECORATION).lightLevel(value -> 7).noCollission(), name);
     }
 
     protected abstract void openGUI(Level worldIn, BlockPos pos, Player playerIn);
@@ -113,6 +109,10 @@ public abstract class BlockExMarker extends Block implements EntityBlock {
     public static class BlockFlexMarker extends BlockExMarker {
         public static final String NAME = "flex_marker";
 
+        public BlockFlexMarker() {
+            super(NAME);
+        }
+
         @Override
         public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
             return QuarryPlus.ModObjects.FLEX_MARKER_TYPE.create(pos, state);
@@ -135,6 +135,10 @@ public abstract class BlockExMarker extends Block implements EntityBlock {
     public static class Block16Marker extends BlockExMarker {
         private static final Range RANGE = new Range(0, 360);
         public static final String NAME = "marker16";
+
+        public Block16Marker() {
+            super(NAME);
+        }
 
         @Override
         protected void openGUI(Level worldIn, BlockPos pos, Player playerIn) {

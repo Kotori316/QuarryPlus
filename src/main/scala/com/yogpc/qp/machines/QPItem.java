@@ -1,17 +1,21 @@
 package com.yogpc.qp.machines;
 
+import com.yogpc.qp.QuarryPlus;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
+import org.jetbrains.annotations.NotNull;
 
 public class QPItem extends Item {
-    private ResourceLocation internalName;
+    private final ResourceLocation internalName;
 
-    public QPItem(Item.Properties properties) {
+    public QPItem(Item.Properties properties, String path) {
         super(properties);
+        this.internalName = new ResourceLocation(QuarryPlus.modID, path);
     }
 
-    public void setRegistryName(String modId, String name) {
-        internalName = new ResourceLocation(modId, name);
+    @NotNull
+    public ResourceLocation getRegistryName() {
+        return internalName;
     }
 
     /**

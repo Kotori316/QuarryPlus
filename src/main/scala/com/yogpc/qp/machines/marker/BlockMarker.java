@@ -1,6 +1,7 @@
 package com.yogpc.qp.machines.marker;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.QPBlock;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -8,17 +9,14 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -30,7 +28,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING;
 
-public class BlockMarker extends BaseEntityBlock {
+public class BlockMarker extends QPBlock implements EntityBlock {
     private static final VoxelShape STANDING_Shape = Shapes.box(.35, 0, .35, .65, .65, .65);
     private static final VoxelShape DOWN_Shape = Shapes.box(.35, .35, .35, .65, 1, .65);
     private static final VoxelShape NORTH_Shape = Shapes.box(.35, .35, .35, .65, .65, 1);
@@ -39,16 +37,10 @@ public class BlockMarker extends BaseEntityBlock {
     private static final VoxelShape EAST_Shape = Shapes.box(0.0D, .35, .35, .65, .65, .65);
 
     public static final String NAME = "marker";
-    public final BlockItem blockItem = new BlockItem(this, new Item.Properties().tab(QuarryPlus.CREATIVE_TAB));
 
     public BlockMarker() {
-        super(Properties.of(Material.DECORATION).lightLevel(value -> 7).noCollission());
+        super(Properties.of(Material.DECORATION).lightLevel(value -> 7).noCollission(), NAME);
         registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.UP));
-    }
-
-    @Override
-    public RenderShape getRenderShape(BlockState state) {
-        return RenderShape.MODEL;
     }
 
     @Override

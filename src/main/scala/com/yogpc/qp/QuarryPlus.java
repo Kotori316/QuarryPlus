@@ -5,6 +5,7 @@ import com.yogpc.qp.integration.EnergyIntegration;
 import com.yogpc.qp.integration.QuarryFluidTransfer;
 import com.yogpc.qp.integration.QuarryItemTransfer;
 import com.yogpc.qp.machines.EnchantedLootFunction;
+import com.yogpc.qp.machines.QPItem;
 import com.yogpc.qp.machines.advpump.BlockAdvPump;
 import com.yogpc.qp.machines.advpump.TileAdvPump;
 import com.yogpc.qp.machines.checker.ItemChecker;
@@ -38,7 +39,6 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
@@ -57,29 +57,29 @@ public class QuarryPlus implements ModInitializer {
     @Override
     public void onInitialize() {
         QuarryPlus.LOGGER.info("Common init is called. {} ", QuarryPlus.modID);
-        Registry.register(Registry.BLOCK, new ResourceLocation(modID, BlockQuarry.NAME), ModObjects.BLOCK_QUARRY);
-        Registry.register(Registry.ITEM, new ResourceLocation(modID, BlockQuarry.NAME), ModObjects.BLOCK_QUARRY.blockItem);
-        Registry.register(Registry.BLOCK_ENTITY_TYPE, new ResourceLocation(modID, BlockQuarry.NAME), ModObjects.QUARRY_TYPE);
-        Registry.register(Registry.BLOCK, new ResourceLocation(modID, BlockFrame.NAME), ModObjects.BLOCK_FRAME);
-        Registry.register(Registry.ITEM, new ResourceLocation(modID, BlockFrame.NAME), ModObjects.BLOCK_FRAME.blockItem);
-        Registry.register(Registry.ITEM, new ResourceLocation(modID, ItemChecker.NAME), ModObjects.ITEM_CHECKER);
-        Registry.register(Registry.BLOCK, new ResourceLocation(modID, BlockMarker.NAME), ModObjects.BLOCK_MARKER);
-        Registry.register(Registry.ITEM, new ResourceLocation(modID, BlockMarker.NAME), ModObjects.BLOCK_MARKER.blockItem);
-        Registry.register(Registry.BLOCK_ENTITY_TYPE, new ResourceLocation(modID, BlockMarker.NAME), ModObjects.MARKER_TYPE);
-        Registry.register(Registry.ITEM, new ResourceLocation(modID, YSetterItem.NAME), ModObjects.ITEM_Y_SETTER);
-        Registry.register(Registry.ITEM, new ResourceLocation(modID, "remove_bedrock_module"), ModObjects.ITEM_BEDROCK_MODULE);
-        Registry.register(Registry.BLOCK, new ResourceLocation(modID, BlockExMarker.BlockFlexMarker.NAME), ModObjects.BLOCK_FLEX_MARKER);
-        Registry.register(Registry.ITEM, new ResourceLocation(modID, BlockExMarker.BlockFlexMarker.NAME), ModObjects.BLOCK_FLEX_MARKER.blockItem);
-        Registry.register(Registry.BLOCK_ENTITY_TYPE, new ResourceLocation(modID, BlockExMarker.BlockFlexMarker.NAME), ModObjects.FLEX_MARKER_TYPE);
-        Registry.register(Registry.BLOCK, new ResourceLocation(modID, BlockExMarker.Block16Marker.NAME), ModObjects.BLOCK_16_MARKER);
-        Registry.register(Registry.ITEM, new ResourceLocation(modID, BlockExMarker.Block16Marker.NAME), ModObjects.BLOCK_16_MARKER.blockItem);
-        Registry.register(Registry.BLOCK_ENTITY_TYPE, new ResourceLocation(modID, BlockExMarker.Block16Marker.NAME), ModObjects.MARKER_16_TYPE);
-        Registry.register(Registry.BLOCK, new ResourceLocation(modID, CreativeGeneratorBlock.NAME), ModObjects.BLOCK_CREATIVE_GENERATOR);
-        Registry.register(Registry.ITEM, new ResourceLocation(modID, CreativeGeneratorBlock.NAME), ModObjects.BLOCK_CREATIVE_GENERATOR.blockItem);
-        Registry.register(Registry.BLOCK_ENTITY_TYPE, new ResourceLocation(modID, CreativeGeneratorBlock.NAME), ModObjects.CREATIVE_GENERATOR_TYPE);
-        Registry.register(Registry.BLOCK, new ResourceLocation(modID, BlockAdvPump.NAME), ModObjects.BLOCK_ADV_PUMP);
-        Registry.register(Registry.ITEM, new ResourceLocation(modID, BlockAdvPump.NAME), ModObjects.BLOCK_ADV_PUMP.blockItem);
-        Registry.register(Registry.BLOCK_ENTITY_TYPE, new ResourceLocation(modID, BlockAdvPump.NAME), ModObjects.ADV_PUMP_TYPE);
+        Registry.register(Registry.BLOCK, ModObjects.BLOCK_QUARRY.getRegistryName(), ModObjects.BLOCK_QUARRY);
+        Registry.register(Registry.ITEM, ModObjects.BLOCK_QUARRY.getRegistryName(), ModObjects.BLOCK_QUARRY.blockItem);
+        Registry.register(Registry.BLOCK_ENTITY_TYPE, ModObjects.BLOCK_QUARRY.getRegistryName(), ModObjects.QUARRY_TYPE);
+        Registry.register(Registry.BLOCK, ModObjects.BLOCK_FRAME.getRegistryName(), ModObjects.BLOCK_FRAME);
+        Registry.register(Registry.ITEM, ModObjects.BLOCK_FRAME.getRegistryName(), ModObjects.BLOCK_FRAME.blockItem);
+        Registry.register(Registry.ITEM, ModObjects.ITEM_CHECKER.getRegistryName(), ModObjects.ITEM_CHECKER);
+        Registry.register(Registry.BLOCK, ModObjects.BLOCK_MARKER.getRegistryName(), ModObjects.BLOCK_MARKER);
+        Registry.register(Registry.ITEM, ModObjects.BLOCK_MARKER.getRegistryName(), ModObjects.BLOCK_MARKER.blockItem);
+        Registry.register(Registry.BLOCK_ENTITY_TYPE, ModObjects.BLOCK_MARKER.getRegistryName(), ModObjects.MARKER_TYPE);
+        Registry.register(Registry.ITEM, ModObjects.ITEM_Y_SETTER.getRegistryName(), ModObjects.ITEM_Y_SETTER);
+        Registry.register(Registry.ITEM, ModObjects.ITEM_BEDROCK_MODULE.getRegistryName(), ModObjects.ITEM_BEDROCK_MODULE);
+        Registry.register(Registry.BLOCK, ModObjects.BLOCK_FLEX_MARKER.getRegistryName(), ModObjects.BLOCK_FLEX_MARKER);
+        Registry.register(Registry.ITEM, ModObjects.BLOCK_FLEX_MARKER.getRegistryName(), ModObjects.BLOCK_FLEX_MARKER.blockItem);
+        Registry.register(Registry.BLOCK_ENTITY_TYPE, ModObjects.BLOCK_FLEX_MARKER.getRegistryName(), ModObjects.FLEX_MARKER_TYPE);
+        Registry.register(Registry.BLOCK, ModObjects.BLOCK_16_MARKER.getRegistryName(), ModObjects.BLOCK_16_MARKER);
+        Registry.register(Registry.ITEM, ModObjects.BLOCK_16_MARKER.getRegistryName(), ModObjects.BLOCK_16_MARKER.blockItem);
+        Registry.register(Registry.BLOCK_ENTITY_TYPE, ModObjects.BLOCK_16_MARKER.getRegistryName(), ModObjects.MARKER_16_TYPE);
+        Registry.register(Registry.BLOCK, ModObjects.BLOCK_CREATIVE_GENERATOR.getRegistryName(), ModObjects.BLOCK_CREATIVE_GENERATOR);
+        Registry.register(Registry.ITEM, ModObjects.BLOCK_CREATIVE_GENERATOR.getRegistryName(), ModObjects.BLOCK_CREATIVE_GENERATOR.blockItem);
+        Registry.register(Registry.BLOCK_ENTITY_TYPE, ModObjects.BLOCK_CREATIVE_GENERATOR.getRegistryName(), ModObjects.CREATIVE_GENERATOR_TYPE);
+        Registry.register(Registry.BLOCK, ModObjects.BLOCK_ADV_PUMP.getRegistryName(), ModObjects.BLOCK_ADV_PUMP);
+        Registry.register(Registry.ITEM, ModObjects.BLOCK_ADV_PUMP.getRegistryName(), ModObjects.BLOCK_ADV_PUMP.blockItem);
+        Registry.register(Registry.BLOCK_ENTITY_TYPE, ModObjects.BLOCK_ADV_PUMP.getRegistryName(), ModObjects.ADV_PUMP_TYPE);
         Registry.register(Registry.BLOCK, ModObjects.BLOCK_PLACER.getRegistryName(), ModObjects.BLOCK_PLACER);
         Registry.register(Registry.ITEM, ModObjects.BLOCK_PLACER.getRegistryName(), ModObjects.BLOCK_PLACER.blockItem);
         Registry.register(Registry.BLOCK_ENTITY_TYPE, ModObjects.BLOCK_PLACER.getRegistryName(), ModObjects.PLACER_TYPE);
@@ -117,7 +117,7 @@ public class QuarryPlus implements ModInitializer {
         public static final MenuType<YSetterContainer> Y_SETTER_HANDLER_TYPE = ScreenHandlerRegistry.registerExtended(YSetterContainer.GUI_ID,
             (syncId, inventory, buf) -> new YSetterContainer(syncId, inventory.player, buf.readBlockPos()));
 
-        public static final Item ITEM_BEDROCK_MODULE = new Item(new Item.Properties().tab(QuarryPlus.CREATIVE_TAB));
+        public static final QPItem ITEM_BEDROCK_MODULE = new QPItem(new QPItem.Properties().tab(QuarryPlus.CREATIVE_TAB), "remove_bedrock_module");
 
         public static final PlacerBlock BLOCK_PLACER = new PlacerBlock();
         public static final BlockEntityType<PlacerTile> PLACER_TYPE = FabricBlockEntityTypeBuilder.create(PlacerTile::new, BLOCK_PLACER).build(DSL.emptyPartType());
