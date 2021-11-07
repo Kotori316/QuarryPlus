@@ -4,13 +4,18 @@ import java.util.function.Function;
 
 import com.yogpc.qp.QuarryPlus;
 import javax.annotation.Nullable;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
 public class QPBlock extends Block {
@@ -46,6 +51,21 @@ public class QPBlock extends Block {
 
     public ResourceLocation getRegistryName() {
         return internalName;
+    }
+
+    @Override
+    @org.jetbrains.annotations.Nullable
+    @SuppressWarnings("deprecation")
+    public MenuProvider getMenuProvider(BlockState blockState, Level level, BlockPos blockPos) {
+        BlockEntity blockEntity = level.getBlockEntity(blockPos);
+        if (blockEntity instanceof ExtendedScreenHandlerFactory e) {
+            return e;
+        } else if (blockEntity instanceof MenuProvider m) {
+            QuarryPlus.LOGGER.warn("BlockEntity {} implements menu provider instead of extended one.", m.getClass());
+            return m;
+        } else {
+            return null;
+        }
     }
 
     /**
