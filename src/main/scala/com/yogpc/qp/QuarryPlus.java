@@ -20,6 +20,9 @@ import com.yogpc.qp.machines.misc.CreativeGeneratorBlock;
 import com.yogpc.qp.machines.misc.CreativeGeneratorTile;
 import com.yogpc.qp.machines.misc.YSetterContainer;
 import com.yogpc.qp.machines.misc.YSetterItem;
+import com.yogpc.qp.machines.placer.PlacerBlock;
+import com.yogpc.qp.machines.placer.PlacerContainer;
+import com.yogpc.qp.machines.placer.PlacerTile;
 import com.yogpc.qp.machines.quarry.BlockFrame;
 import com.yogpc.qp.machines.quarry.BlockQuarry;
 import com.yogpc.qp.machines.quarry.QuarryLootFunction;
@@ -77,6 +80,9 @@ public class QuarryPlus implements ModInitializer {
         Registry.register(Registry.BLOCK, ModObjects.BLOCK_ADV_PUMP.getRegistryName(), ModObjects.BLOCK_ADV_PUMP);
         Registry.register(Registry.ITEM, ModObjects.BLOCK_ADV_PUMP.getRegistryName(), ModObjects.BLOCK_ADV_PUMP.blockItem);
         Registry.register(Registry.BLOCK_ENTITY_TYPE, ModObjects.BLOCK_ADV_PUMP.getRegistryName(), ModObjects.ADV_PUMP_TYPE);
+        Registry.register(Registry.BLOCK, ModObjects.BLOCK_PLACER.getRegistryName(), ModObjects.BLOCK_PLACER);
+        Registry.register(Registry.ITEM, ModObjects.BLOCK_PLACER.getRegistryName(), ModObjects.BLOCK_PLACER.blockItem);
+        Registry.register(Registry.BLOCK_ENTITY_TYPE, ModObjects.BLOCK_PLACER.getRegistryName(), ModObjects.PLACER_TYPE);
         Registry.register(Registry.BLOCK, new ResourceLocation(modID, BlockDummy.NAME), ModObjects.BLOCK_DUMMY);
         Registry.register(Registry.ITEM, new ResourceLocation(modID, BlockDummy.NAME), ModObjects.BLOCK_DUMMY.blockItem);
 
@@ -112,6 +118,11 @@ public class QuarryPlus implements ModInitializer {
             (syncId, inventory, buf) -> new YSetterContainer(syncId, inventory.player, buf.readBlockPos()));
 
         public static final QPItem ITEM_BEDROCK_MODULE = new QPItem(new QPItem.Properties().tab(QuarryPlus.CREATIVE_TAB), "remove_bedrock_module");
+
+        public static final PlacerBlock BLOCK_PLACER = new PlacerBlock();
+        public static final BlockEntityType<PlacerTile> PLACER_TYPE = FabricBlockEntityTypeBuilder.create(PlacerTile::new, BLOCK_PLACER).build(DSL.emptyPartType());
+        public static final MenuType<PlacerContainer> PLACER_MENU_TYPE = ScreenHandlerRegistry.registerExtended(new ResourceLocation(PlacerContainer.GUI_ID),
+            (syncId, inventory, buf) -> new PlacerContainer(syncId, inventory.player, buf.readBlockPos()));
 
         public static final LootItemFunctionType ENCHANTED_LOOT_TYPE = new LootItemFunctionType(EnchantedLootFunction.SERIALIZER);
         public static final LootItemFunctionType QUARRY_LOOT_TYPE = new LootItemFunctionType(QuarryLootFunction.SERIALIZER);
