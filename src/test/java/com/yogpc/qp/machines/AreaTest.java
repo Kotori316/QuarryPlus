@@ -7,7 +7,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
@@ -52,7 +52,7 @@ class AreaTest {
     @Test
     void deserializeInvalid() {
         assertAll(
-            () -> assertTrue(Area.fromNBT(new NbtCompound()).isEmpty()),
+            () -> assertTrue(Area.fromNBT(new CompoundTag()).isEmpty()),
             () -> assertTrue(Area.fromNBT(null).isEmpty())
         );
     }

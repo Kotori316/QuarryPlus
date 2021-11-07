@@ -3,17 +3,17 @@ package com.yogpc.qp.packet;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 
 public interface IMessage<T extends IMessage<T>> {
-    static <T extends IMessage<T>> Function<PacketByteBuf, T> decode(Supplier<T> supplier) {
+    static <T extends IMessage<T>> Function<FriendlyByteBuf, T> decode(Supplier<T> supplier) {
         return buffer -> supplier.get().readFromBuffer(buffer);
     }
 
-    T readFromBuffer(PacketByteBuf buffer);
+    T readFromBuffer(FriendlyByteBuf buffer);
 
-    void writeToBuffer(PacketByteBuf buffer);
+    void writeToBuffer(FriendlyByteBuf buffer);
 
-    Identifier getIdentifier();
+    ResourceLocation getIdentifier();
 }

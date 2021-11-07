@@ -1,19 +1,19 @@
 package com.yogpc.qp.machines;
 
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-public record ItemKey(Item item, @Nullable NbtCompound nbt) {
+public record ItemKey(Item item, @Nullable CompoundTag nbt) {
     public ItemKey(ItemStack stack) {
-        this(stack.getItem(), stack.getNbt());
+        this(stack.getItem(), stack.getTag());
     }
 
-    public NbtCompound createNbt(long itemCount) {
-        var tag = new NbtCompound();
+    public CompoundTag createNbt(long itemCount) {
+        var tag = new CompoundTag();
         tag.putString("item", getId().toString());
         if (nbt != null)
             tag.put("tag", nbt);
@@ -21,19 +21,19 @@ public record ItemKey(Item item, @Nullable NbtCompound nbt) {
         return tag;
     }
 
-    static ItemKey fromNbt(NbtCompound tag) {
-        var item = Registry.ITEM.get(new Identifier(tag.getString("item")));
+    static ItemKey fromNbt(CompoundTag tag) {
+        var item = Registry.ITEM.get(new ResourceLocation(tag.getString("item")));
         var nbt = tag.contains("tag") ? tag.getCompound("tag") : null;
         return new ItemKey(item, nbt);
     }
 
     public ItemStack toStack(int count) {
         var stack = new ItemStack(item, count);
-        stack.setNbt(nbt);
+        stack.setTag(nbt);
         return stack;
     }
 
-    public Identifier getId() {
-        return Registry.ITEM.getId(item);
+    public ResourceLocation getId() {
+        return Registry.ITEM.getKey(item);
     }
 }

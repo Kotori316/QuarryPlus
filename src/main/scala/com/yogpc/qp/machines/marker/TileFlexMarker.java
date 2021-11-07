@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
@@ -13,15 +14,15 @@ import com.yogpc.qp.render.Box;
 import com.yogpc.qp.render.RenderMarker;
 import javax.annotation.Nullable;
 import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 
 public class TileFlexMarker extends BlockEntity implements QuarryMarker, CheckerLog, BlockEntityClientSerializable {
 
@@ -41,20 +42,20 @@ public class TileFlexMarker extends BlockEntity implements QuarryMarker, Checker
 
     public void init(Direction facing) {
         this.direction = facing;
-        this.min = getPos();
-        this.max = getPos();
+        this.min = getBlockPos();
+        this.max = getBlockPos();
         move(Movable.LEFT, 5);
         move(Movable.RIGHT, 5);
         move(Movable.FORWARD, 10);
-        if (world != null && world.isClient) setRender();
+        if (level != null && level.isClientSide) setRender();
     }
 
     @SuppressWarnings("Duplicates")
     public void move(Movable movable, int amount) {
         Direction facing = movable.getActualFacing(direction);
-        BlockPos offset = getPos();
-        if (facing.getDirection() == Direction.AxisDirection.POSITIVE) {
-            max = max.offset(facing, amount);
+        BlockPos offset = getBlockPos();
+        if (facing.getAxisDirection() == Direction.AxisDirection.POSITIVE) {
+            max = max.relative(facing, amount);
             int d = getDistance(max, offset, facing.getAxis());
             if (d > 64) {
                 max = getLimited(max, offset, facing, 64);
@@ -62,7 +63,7 @@ public class TileFlexMarker extends BlockEntity implements QuarryMarker, Checker
                 max = getLimited(max, offset, facing, 1);
             }
         } else {
-            min = min.offset(facing, amount);
+            min = min.relative(facing, amount);
             int d = getDistance(offset, min, facing.getAxis());
             if (d > 64) {
                 min = getLimited(min, offset, facing, 64);
@@ -76,52 +77,52 @@ public class TileFlexMarker extends BlockEntity implements QuarryMarker, Checker
     }
 
     private void setRender() {
-        if (world == null)
+        if (level == null)
             return;
         var area = new Area(min, max, direction);
         boxes = RenderMarker.getRenderBox(area);
-        net.minecraft.util.math.Box bb;
+        net.minecraft.world.phys.AABB bb;
         final double a = 0.5d, c = 6d / 16d;
         if (direction == null) {
             // dummy
-            bb = new net.minecraft.util.math.Box(getPos().getX() + a, getPos().getY() + a, getPos().getZ() + a,
-                getPos().getX() + a, getPos().getY() + a, getPos().getZ() + a);
+            bb = new net.minecraft.world.phys.AABB(getBlockPos().getX() + a, getBlockPos().getY() + a, getBlockPos().getZ() + a,
+                getBlockPos().getX() + a, getBlockPos().getY() + a, getBlockPos().getZ() + a);
         } else if (direction.getAxis() == Direction.Axis.X) {
-            bb = new net.minecraft.util.math.Box(getPos().getX() - c + a, getPos().getY() + a, getPos().getZ() + a,
-                getPos().getX() + c + a, getPos().getY() + a, getPos().getZ() + a);
+            bb = new net.minecraft.world.phys.AABB(getBlockPos().getX() - c + a, getBlockPos().getY() + a, getBlockPos().getZ() + a,
+                getBlockPos().getX() + c + a, getBlockPos().getY() + a, getBlockPos().getZ() + a);
         } else {
-            bb = new net.minecraft.util.math.Box(getPos().getX() + a, getPos().getY() + a, getPos().getZ() - c + a,
-                getPos().getX() + a, getPos().getY() + a, getPos().getZ() + c + a);
+            bb = new net.minecraft.world.phys.AABB(getBlockPos().getX() + a, getBlockPos().getY() + a, getBlockPos().getZ() - c + a,
+                getBlockPos().getX() + a, getBlockPos().getY() + a, getBlockPos().getZ() + c + a);
         }
-        directionBox = Box.apply(bb.offset(Vec3d.of(direction.getVector()).multiply(a)), 1d / 8d, 1d / 8d, 1d / 8d, true, true);
+        directionBox = Box.apply(bb.move(Vec3.atLowerCornerOf(direction.getNormal()).scale(a)), 1d / 8d, 1d / 8d, 1d / 8d, true, true);
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound compound) {
+    public CompoundTag save(CompoundTag compound) {
         compound.putLong("min", min.asLong());
         compound.putLong("max", max.asLong());
         compound.putString("direction", Optional.ofNullable(direction).map(Direction::toString).orElse(""));
-        return super.writeNbt(compound);
+        return super.save(compound);
     }
 
     @Override
-    public void readNbt(NbtCompound compound) {
-        super.readNbt(compound);
-        min = BlockPos.fromLong(compound.getLong("min"));
-        max = BlockPos.fromLong(compound.getLong("max"));
+    public void load(CompoundTag compound) {
+        super.load(compound);
+        min = BlockPos.of(compound.getLong("min"));
+        max = BlockPos.of(compound.getLong("max"));
         direction = Direction.byName(compound.getString("direction"));
-        if (world != null && world.isClient) {
+        if (level != null && level.isClientSide) {
             setRender();
         }
     }
 
     @Override
-    public List<? extends Text> getDebugLogs() {
-        return List.of(
+    public List<? extends Component> getDebugLogs() {
+        return Stream.of(
             "Direction: " + direction,
             "Min: " + min,
             "Max: " + max
-        ).stream().map(LiteralText::new).toList();
+        ).map(TextComponent::new).toList();
     }
 
     @Override
@@ -131,26 +132,26 @@ public class TileFlexMarker extends BlockEntity implements QuarryMarker, Checker
 
     @Override
     public List<ItemStack> removeAndGetItems() {
-        assert world != null;
-        world.removeBlock(pos, false);
+        assert level != null;
+        level.removeBlock(worldPosition, false);
         return List.of(new ItemStack(QuarryPlus.ModObjects.BLOCK_FLEX_MARKER));
     }
 
     @Override
-    public void fromClientTag(NbtCompound tag) {
-        readNbt(tag);
+    public void fromClientTag(CompoundTag tag) {
+        load(tag);
     }
 
     @Override
-    public NbtCompound toClientTag(NbtCompound tag) {
-        return writeNbt(tag);
+    public CompoundTag toClientTag(CompoundTag tag) {
+        return save(tag);
     }
 
     public enum Movable {
         UP(facing -> Direction.UP),
-        LEFT(Direction::rotateYCounterclockwise),
+        LEFT(Direction::getCounterClockWise),
         FORWARD(UnaryOperator.identity()),
-        RIGHT(Direction::rotateYClockwise),
+        RIGHT(Direction::getClockWise),
         DOWN(facing -> Direction.DOWN);
 
         private final UnaryOperator<Direction> operator;
@@ -186,9 +187,9 @@ public class TileFlexMarker extends BlockEntity implements QuarryMarker, Checker
 
     public static BlockPos getLimited(BlockPos to, BlockPos from, Direction facing, int limit) {
         return switch (facing.getAxis()) {
-            case X -> new BlockPos(from.getX(), to.getY(), to.getZ()).offset(facing, limit);
-            case Y -> new BlockPos(to.getX(), from.getY(), to.getZ()).offset(facing, limit);
-            case Z -> new BlockPos(to.getX(), to.getY(), from.getZ()).offset(facing, limit);
+            case X -> new BlockPos(from.getX(), to.getY(), to.getZ()).relative(facing, limit);
+            case Y -> new BlockPos(to.getX(), from.getY(), to.getZ()).relative(facing, limit);
+            case Z -> new BlockPos(to.getX(), to.getY(), from.getZ()).relative(facing, limit);
         };
     }
 }

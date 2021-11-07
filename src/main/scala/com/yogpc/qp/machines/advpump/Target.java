@@ -11,9 +11,10 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 import com.yogpc.qp.QuarryPlus;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
+import net.minecraft.world.level.Level;
 
 class Target implements Iterator<BlockPos> {
     private final List<BlockPos> posList;
@@ -40,26 +41,26 @@ class Target implements Iterator<BlockPos> {
         return inRange;
     }
 
-    public boolean checkAllFluidsRemoved(World world, BlockPos center) {
+    public boolean checkAllFluidsRemoved(Level world, BlockPos center) {
         var stillFluid = search(world, Set.copyOf(posList), inRange);
         if (stillFluid.isEmpty()) {
             return false;
         } else {
-            stillFluid.sort(Comparator.comparingInt(BlockPos::getY).reversed()
-                .thenComparing(Comparator.comparingInt(center::getManhattanDistance).reversed()));
+            stillFluid.sort(Comparator.comparingInt(Vec3i::getY).reversed()
+                .thenComparing(Comparator.comparingInt(center::distManhattan).reversed()));
             this.iterator = stillFluid.listIterator();
             return true;
         }
     }
 
-    static Target getTarget(World world, BlockPos initPos, Predicate<BlockPos> inRange) {
+    static Target getTarget(Level world, BlockPos initPos, Predicate<BlockPos> inRange) {
         var result = search(world, Set.of(initPos), inRange);
-        result.sort(Comparator.comparingInt(BlockPos::getY).reversed()
-            .thenComparing(Comparator.comparingInt(initPos::getManhattanDistance).reversed()));
+        result.sort(Comparator.comparingInt(Vec3i::getY).reversed()
+            .thenComparing(Comparator.comparingInt(initPos::distManhattan).reversed()));
         return new Target(result, inRange);
     }
 
-    private static List<BlockPos> search(World world, Set<BlockPos> initialPoses, Predicate<BlockPos> inRange) {
+    private static List<BlockPos> search(Level world, Set<BlockPos> initialPoses, Predicate<BlockPos> inRange) {
         Set<BlockPos> counted = new HashSet<>();
         Set<BlockPos> checked = new HashSet<>();
         List<BlockPos> result = new ArrayList<>();
@@ -69,12 +70,12 @@ class Target implements Iterator<BlockPos> {
             Set<BlockPos> nextSearch = new HashSet<>();
             checked.addAll(search);
             for (BlockPos pos : search) {
-                var isFluid = !world.getFluidState(pos).isEmpty();
-                if (isFluid || world.getBlockState(pos).isOf(QuarryPlus.ModObjects.BLOCK_DUMMY)) {
+                boolean isFluid = !world.getFluidState(pos).isEmpty();
+                if (isFluid || world.getBlockState(pos).is(QuarryPlus.ModObjects.BLOCK_DUMMY)) {
                     if (counted.add(pos)) {
                         if (isFluid) result.add(pos);
                         directions.stream()
-                            .map(pos::offset)
+                            .map(pos::relative)
                             .filter(inRange)
                             .filter(Predicate.not(checked::contains))
                             .forEach(nextSearch::add);

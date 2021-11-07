@@ -6,63 +6,63 @@ import java.util.Map;
 
 import com.yogpc.qp.QuarryPlus;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.screen.PlayerScreenHandler;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.InventoryMenu;
 
 public class Sprites implements ClientSpriteRegistryCallback {
     public static final Sprites INSTANCE = new Sprites();
     private static final List<String> spriteNames = List.of("laser_1", "laser_2", "laser_3", "laser_4", "white", "stripes_h", "stripes_v", "stripes_blue", "stripes_red", "drill", "drill_head");
-    private final Map<String, Sprite> spriteMap = new HashMap<>();
+    private final Map<String, TextureAtlasSprite> spriteMap = new HashMap<>();
 
     private Sprites() {
     }
 
     public static void register() {
-        ClientSpriteRegistryCallback.event(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).register(Sprites.INSTANCE);
+        ClientSpriteRegistryCallback.event(InventoryMenu.BLOCK_ATLAS).register(Sprites.INSTANCE);
     }
 
     @Override
-    public void registerSprites(SpriteAtlasTexture atlasTexture, ClientSpriteRegistryCallback.Registry registry) {
-        spriteNames.stream().map(s -> new Identifier(QuarryPlus.modID, "entities/" + s)).forEach(registry::register);
+    public void registerSprites(TextureAtlas atlasTexture, ClientSpriteRegistryCallback.Registry registry) {
+        spriteNames.stream().map(s -> new ResourceLocation(QuarryPlus.modID, "entities/" + s)).forEach(registry::register);
     }
 
-    private Sprite getSprite(String name) {
+    private TextureAtlasSprite getSprite(String name) {
         return spriteMap.computeIfAbsent(name, s ->
-            MinecraftClient.getInstance().getSpriteAtlas(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).apply(new Identifier(QuarryPlus.modID, "entities/" + s)));
+            Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(new ResourceLocation(QuarryPlus.modID, "entities/" + s)));
     }
 
-    public Sprite getMarkerBlue() {
+    public TextureAtlasSprite getMarkerBlue() {
         return getSprite("laser_4");
     }
 
-    public Sprite getFrameV() {
+    public TextureAtlasSprite getFrameV() {
         return getSprite("stripes_v");
     }
 
-    public Sprite getFrameH() {
+    public TextureAtlasSprite getFrameH() {
         return getSprite("stripes_h");
     }
 
-    public Sprite getBoxBlueStripe() {
+    public TextureAtlasSprite getBoxBlueStripe() {
         return getSprite("stripes_blue");
     }
 
-    public Sprite getBoxRedStripe() {
+    public TextureAtlasSprite getBoxRedStripe() {
         return getSprite("stripes_red");
     }
 
-    public Sprite getDrillStripe() {
+    public TextureAtlasSprite getDrillStripe() {
         return getSprite("drill");
     }
 
-    public Sprite getDrillHeadStripe() {
+    public TextureAtlasSprite getDrillHeadStripe() {
         return getSprite("drill_head");
     }
 
-    public Sprite getWhite() {
+    public TextureAtlasSprite getWhite() {
         return getSprite("white");
     }
 }

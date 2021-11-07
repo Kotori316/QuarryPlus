@@ -1,8 +1,8 @@
 package com.yogpc.qp.render;
 
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.util.math.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
 class BoxXZ extends Box {
 
@@ -11,7 +11,7 @@ class BoxXZ extends Box {
     }
 
     @Override
-    public void render(final VertexConsumer buffer, MatrixStack matrixStack, final Sprite sprite, final ColorBox colorBox) {
+    public void render(final VertexConsumer buffer, PoseStack matrixStack, final TextureAtlasSprite sprite, final ColorBox colorBox) {
         double n2Size = this.length;
         this.renderInternal(buffer, matrixStack, sprite, 0.0D, 0.5D, 0.0D, -this.dz / n2Size / (double) 2, this.dx / n2Size / (double) 2, colorBox.alpha(), colorBox.red(), colorBox.green(), colorBox.blue());
     }

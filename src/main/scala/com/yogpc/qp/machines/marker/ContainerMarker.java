@@ -1,18 +1,18 @@
 package com.yogpc.qp.machines.marker;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 
-public class ContainerMarker extends ScreenHandler {
+public class ContainerMarker extends AbstractContainerMenu {
 
-    public final PlayerEntity player;
+    public final Player player;
     public final BlockPos pos;
 
-    public ContainerMarker(int id, PlayerEntity player, BlockPos pos, ScreenHandlerType<?> type) {
+    public ContainerMarker(int id, Player player, BlockPos pos, MenuType<?> type) {
         super(type, id);
         this.player = player;
         this.pos = pos;
@@ -28,12 +28,12 @@ public class ContainerMarker extends ScreenHandler {
     }
 
     @Override
-    public boolean canUse(PlayerEntity player) {
+    public boolean stillValid(Player player) {
         return true;
     }
 
     @Override
-    public ItemStack transferSlot(PlayerEntity player, int index) {
+    public ItemStack quickMoveStack(Player player, int index) {
         return ItemStack.EMPTY;
     }
 }

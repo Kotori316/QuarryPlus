@@ -8,12 +8,12 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Direction8;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
-import net.minecraft.block.AbstractGlassBlock;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Material;
-import net.minecraft.item.BlockItem;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.AbstractGlassBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
 
 public class BlockDummy extends AbstractGlassBlock {
     public static final String NAME = "dummy";
@@ -28,26 +28,26 @@ public class BlockDummy extends AbstractGlassBlock {
             .suffocates((state, world, pos) -> false)
             .blockVision((state, world, pos) -> false)
         );
-        blockItem = new BlockItem(this, new FabricItemSettings().group(QuarryPlus.CREATIVE_TAB));
+        blockItem = new BlockItem(this, new FabricItemSettings().tab(QuarryPlus.CREATIVE_TAB));
     }
 
     private boolean breaking = false;
 
     @Override
     @SuppressWarnings("deprecation")
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved) {
         if (state.getBlock() != newState.getBlock()) {
             if (!breaking) {
                 breaking = true;
                 breakChain(world, pos);
                 breaking = false;
             }
-            super.onStateReplaced(state, world, pos, newState, moved);
+            super.onRemove(state, world, pos, newState, moved);
         }
     }
 
-    private void breakChain(World world, BlockPos first) {
-        if (!world.isClient) {
+    private void breakChain(Level world, BlockPos first) {
+        if (!world.isClientSide) {
             var chains = new HashSet<BlockPos>();
             chains.add(first);
             var nextCheck = new ArrayList<BlockPos>();
@@ -55,9 +55,9 @@ public class BlockDummy extends AbstractGlassBlock {
             while (!nextCheck.isEmpty()) {
                 var list = List.copyOf(nextCheck);
                 nextCheck.clear();
-                for (var pos : list) {
+                for (BlockPos pos : list) {
                     for (var dir : Direction8.DIRECTIONS) {
-                        var nPos = pos.add(dir.vec());
+                        var nPos = pos.offset(dir.vec());
                         var nBlock = world.getBlockState(nPos);
                         if (nBlock.getBlock() == this) {
                             if (chains.add(nPos))

@@ -12,12 +12,12 @@ import alexiil.mc.lib.attributes.item.impl.EmptyItemExtractable;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.quarry.TileQuarry;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.block.entity.HopperBlockEntity;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.Container;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import org.jetbrains.annotations.NotNull;
 
 public class QuarryItemTransfer {
@@ -32,9 +32,9 @@ public class QuarryItemTransfer {
         transfers.add(new VanillaItemTransfer());
     }
 
-    public static ItemStack transfer(World world, BlockPos pos, ItemStack send, Direction direction) {
+    public static ItemStack transfer(Level world, BlockPos pos, ItemStack send, Direction direction) {
         for (ItemTransfer<?> transfer : transfers) {
-            var rest = transferInternal(transfer, world, pos, send, direction);
+            ItemStack rest = transferInternal(transfer, world, pos, send, direction);
             if (send.getCount() != rest.getCount()) {
                 return rest;
             }
@@ -42,14 +42,14 @@ public class QuarryItemTransfer {
         return send;
     }
 
-    public static boolean destinationExists(World world, BlockPos pos, Direction direction) {
+    public static boolean destinationExists(Level world, BlockPos pos, Direction direction) {
         return transfers.stream().anyMatch(t -> destinationExists(t, world, pos, direction));
     }
 
-    private static <T> ItemStack transferInternal(ItemTransfer<T> transfer, World world, BlockPos pos, ItemStack send, Direction direction) {
+    private static <T> ItemStack transferInternal(ItemTransfer<T> transfer, Level world, BlockPos pos, ItemStack send, Direction direction) {
         var dest = transfer.getDestination(world, pos, direction);
         if (transfer.isValidDestination(dest)) {
-            var rest = transfer.transfer(dest, send, direction);
+            ItemStack rest = transfer.transfer(dest, send, direction);
             if (send.getCount() != rest.getCount()) {
                 return rest;
             } else {
@@ -60,13 +60,13 @@ public class QuarryItemTransfer {
         }
     }
 
-    private static <T> boolean destinationExists(ItemTransfer<T> transfer, World world, BlockPos pos, Direction direction) {
+    private static <T> boolean destinationExists(ItemTransfer<T> transfer, Level world, BlockPos pos, Direction direction) {
         return transfer.isValidDestination(transfer.getDestination(world, pos, direction));
     }
 }
 
 interface ItemTransfer<T> {
-    T getDestination(World world, BlockPos pos, Direction direction);
+    T getDestination(Level world, BlockPos pos, Direction direction);
 
     boolean isValidDestination(T t);
 
@@ -77,21 +77,21 @@ interface ItemTransfer<T> {
     ItemStack transfer(T destination, ItemStack send, Direction direction);
 }
 
-class VanillaItemTransfer implements ItemTransfer<Inventory> {
+class VanillaItemTransfer implements ItemTransfer<Container> {
 
     @Override
-    public Inventory getDestination(World world, BlockPos pos, Direction direction) {
-        return HopperBlockEntity.getInventoryAt(world, pos);
+    public Container getDestination(Level world, BlockPos pos, Direction direction) {
+        return HopperBlockEntity.getContainerAt(world, pos);
     }
 
     @Override
-    public boolean isValidDestination(Inventory inventory) {
+    public boolean isValidDestination(Container inventory) {
         return inventory != null;
     }
 
     @Override
-    public ItemStack transfer(Inventory destination, ItemStack send, Direction direction) {
-        return HopperBlockEntity.transfer(null, destination, send, direction);
+    public ItemStack transfer(Container destination, ItemStack send, Direction direction) {
+        return HopperBlockEntity.addItem(null, destination, send, direction);
     }
 }
 
@@ -109,7 +109,7 @@ class BCItemRegister {
 class BCItemTransfer implements ItemTransfer<ItemInsertable> {
 
     @Override
-    public ItemInsertable getDestination(World world, BlockPos pos, Direction direction) {
+    public ItemInsertable getDestination(Level world, BlockPos pos, Direction direction) {
         return ItemAttributes.INSERTABLE.get(world, pos, SearchOptions.inDirection(direction.getOpposite()));
     }
 
@@ -120,7 +120,7 @@ class BCItemTransfer implements ItemTransfer<ItemInsertable> {
 
     @Override
     public ItemStack transfer(ItemInsertable destination, ItemStack send, Direction direction) {
-        var simulation = destination.attemptInsertion(send, Simulation.SIMULATE);
+        ItemStack simulation = destination.attemptInsertion(send, Simulation.SIMULATE);
         if (simulation.getCount() < send.getCount()) {
             return destination.attemptInsertion(send, Simulation.ACTION);
         } else {

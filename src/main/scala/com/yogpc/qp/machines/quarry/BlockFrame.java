@@ -11,42 +11,42 @@ import java.util.stream.Stream;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Direction8;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.ConnectingBlock;
-import net.minecraft.block.Material;
-import net.minecraft.block.ShapeContext;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.PipeBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.apache.commons.lang3.tuple.Pair;
 
-import static net.minecraft.state.property.Properties.DOWN;
-import static net.minecraft.state.property.Properties.EAST;
-import static net.minecraft.state.property.Properties.NORTH;
-import static net.minecraft.state.property.Properties.SOUTH;
-import static net.minecraft.state.property.Properties.UP;
-import static net.minecraft.state.property.Properties.WEST;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.DOWN;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.EAST;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.NORTH;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.SOUTH;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.UP;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WEST;
 
 public class BlockFrame extends Block {
     public static final String NAME = "frame";
-    public static final BooleanProperty DAMMING = BooleanProperty.of("damming");
-    public static final VoxelShape BOX_AABB = VoxelShapes.cuboid(0.25, 0.25, 0.25, 0.75, 0.75, 0.75);
-    public static final VoxelShape North_AABB = VoxelShapes.cuboid(0.25, 0.25, 0, 0.75, 0.75, 0.25);
-    public static final VoxelShape South_AABB = VoxelShapes.cuboid(0.25, 0.25, .75, 0.75, 0.75, 1);
-    public static final VoxelShape West_AABB = VoxelShapes.cuboid(0, 0.25, 0.25, .25, 0.75, 0.75);
-    public static final VoxelShape East_AABB = VoxelShapes.cuboid(.75, 0.25, 0.25, 1, 0.75, 0.75);
-    public static final VoxelShape UP_AABB = VoxelShapes.cuboid(0.25, .75, 0.25, 0.75, 1, 0.75);
-    public static final VoxelShape Down_AABB = VoxelShapes.cuboid(0.25, 0, 0.25, 0.75, .25, 0.75);
+    public static final BooleanProperty DAMMING = BooleanProperty.create("damming");
+    public static final VoxelShape BOX_AABB = Shapes.box(0.25, 0.25, 0.25, 0.75, 0.75, 0.75);
+    public static final VoxelShape North_AABB = Shapes.box(0.25, 0.25, 0, 0.75, 0.75, 0.25);
+    public static final VoxelShape South_AABB = Shapes.box(0.25, 0.25, .75, 0.75, 0.75, 1);
+    public static final VoxelShape West_AABB = Shapes.box(0, 0.25, 0.25, .25, 0.75, 0.75);
+    public static final VoxelShape East_AABB = Shapes.box(.75, 0.25, 0.25, 1, 0.75, 0.75);
+    public static final VoxelShape UP_AABB = Shapes.box(0.25, .75, 0.25, 0.75, 1, 0.75);
+    public static final VoxelShape Down_AABB = Shapes.box(0.25, 0, 0.25, 0.75, .25, 0.75);
     private static final Map<BooleanProperty, VoxelShape> SHAPE_MAP = Stream.of(
         Pair.of(NORTH, North_AABB),
         Pair.of(SOUTH, South_AABB),
@@ -56,49 +56,49 @@ public class BlockFrame extends Block {
         Pair.of(DOWN, Down_AABB)
     ).collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
-    private static final BiPredicate<World, BlockPos> HAS_NEIGHBOUR_LIQUID = (world, pos) ->
-        Stream.of(Direction.values()).map(pos::offset)
+    private static final BiPredicate<Level, BlockPos> HAS_NEIGHBOUR_LIQUID = (world, pos) ->
+        Stream.of(Direction.values()).map(pos::relative)
             .anyMatch(p -> !world.getFluidState(p).isEmpty());
-    public final BlockItem blockItem = new BlockItem(this, new Item.Settings().group(QuarryPlus.CREATIVE_TAB));
+    public final BlockItem blockItem = new BlockItem(this, new Item.Properties().tab(QuarryPlus.CREATIVE_TAB));
 
     public BlockFrame() {
-        super(Settings.of(Material.GLASS).strength(0.5f).dropsNothing());
-        this.setDefaultState(this.getStateManager().getDefaultState()
-            .with(NORTH, false).with(EAST, false).with(SOUTH, false)
-            .with(WEST, false).with(UP, false).with(DOWN, false)
-            .with(DAMMING, false));
+        super(Properties.of(Material.GLASS).strength(0.5f).noDrops());
+        this.registerDefaultState(this.getStateDefinition().any()
+            .setValue(NORTH, false).setValue(EAST, false).setValue(SOUTH, false)
+            .setValue(WEST, false).setValue(UP, false).setValue(DOWN, false)
+            .setValue(DAMMING, false));
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        super.appendProperties(builder);
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
         builder.add(NORTH, EAST, SOUTH, WEST, UP, DOWN, DAMMING);
     }
 
     @Override
-    public BlockState getPlacementState(ItemPlacementContext context) {
-        World worldIn = context.getWorld();
-        BlockPos pos = context.getBlockPos();
-        return this.getDefaultState()
-            .with(NORTH, canConnectTo(worldIn, pos.north()))
-            .with(EAST, canConnectTo(worldIn, pos.east()))
-            .with(SOUTH, canConnectTo(worldIn, pos.south()))
-            .with(WEST, canConnectTo(worldIn, pos.west()))
-            .with(DOWN, canConnectTo(worldIn, pos.down()))
-            .with(UP, canConnectTo(worldIn, pos.up()));
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        Level worldIn = context.getLevel();
+        BlockPos pos = context.getClickedPos();
+        return this.defaultBlockState()
+            .setValue(NORTH, canConnectTo(worldIn, pos.north()))
+            .setValue(EAST, canConnectTo(worldIn, pos.east()))
+            .setValue(SOUTH, canConnectTo(worldIn, pos.south()))
+            .setValue(WEST, canConnectTo(worldIn, pos.west()))
+            .setValue(DOWN, canConnectTo(worldIn, pos.below()))
+            .setValue(UP, canConnectTo(worldIn, pos.above()));
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos currentPos, BlockPos neighborPos) {
-        return state.with(ConnectingBlock.FACING_PROPERTIES.get(direction), canConnectTo(world, currentPos.offset(direction)));
+    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos currentPos, BlockPos neighborPos) {
+        return state.setValue(PipeBlock.PROPERTY_BY_DIRECTION.get(direction), canConnectTo(world, currentPos.relative(direction)));
     }
 
     private boolean breaking = false;
 
     @Override
     @SuppressWarnings("deprecation")
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved) {
         if (state.getBlock() != newState.getBlock()) {
             if (!breaking) {
                 breaking = true;
@@ -107,13 +107,13 @@ public class BlockFrame extends Block {
                 }
                 breaking = false;
             }
-            super.onStateReplaced(state, world, pos, newState, moved);
+            super.onRemove(state, world, pos, newState, moved);
         }
     }
 
     @SuppressWarnings("unchecked")
-    private void breakChain(World world, BlockPos first) {
-        if (!world.isClient) {
+    private void breakChain(Level world, BlockPos first) {
+        if (!world.isClientSide) {
             Set<BlockPos> set = new HashSet<>();
             set.add(first);
             ArrayList<BlockPos> nextCheck = new ArrayList<>();
@@ -123,7 +123,7 @@ public class BlockFrame extends Block {
                 nextCheck.clear();
                 for (BlockPos pos : list) {
                     for (Direction8 dir : Direction8.DIRECTIONS) {
-                        BlockPos nPos = pos.add(dir.vec());
+                        BlockPos nPos = pos.offset(dir.vec());
                         BlockState nBlock = world.getBlockState(nPos);
                         if (nBlock.getBlock() == this) {
                             if (!HAS_NEIGHBOUR_LIQUID.test(world, nPos) && set.add(nPos))
@@ -136,35 +136,35 @@ public class BlockFrame extends Block {
         }
     }
 
-    private boolean canConnectTo(BlockView worldIn, BlockPos pos) {
+    private boolean canConnectTo(BlockGetter worldIn, BlockPos pos) {
         return worldIn.getBlockState(pos).getBlock() == this;
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public boolean isSideInvisible(BlockState state, BlockState stateFrom, Direction direction) {
+    public boolean skipRendering(BlockState state, BlockState stateFrom, Direction direction) {
         return true;
     }
 
     public BlockState getDammingState() {
-        return getDefaultState().with(DAMMING, true);
+        return defaultBlockState().setValue(DAMMING, true);
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
         return SHAPE_MAP.entrySet().stream()
-            .filter(e -> state.get(e.getKey()))
+            .filter(e -> state.getValue(e.getKey()))
             .map(Map.Entry::getValue)
-            .reduce(BOX_AABB, VoxelShapes::union);
+            .reduce(BOX_AABB, Shapes::or);
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
-        super.neighborUpdate(state, world, pos, block, fromPos, notify);
-        if (state.get(DAMMING)) {
-            world.setBlockState(pos, state.with(DAMMING, HAS_NEIGHBOUR_LIQUID.test(world, pos)), 2);
+    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
+        super.neighborChanged(state, world, pos, block, fromPos, notify);
+        if (state.getValue(DAMMING)) {
+            world.setBlock(pos, state.setValue(DAMMING, HAS_NEIGHBOUR_LIQUID.test(world, pos)), 2);
         }
     }
 }

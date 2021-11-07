@@ -13,15 +13,15 @@ import com.yogpc.qp.machines.QuarryMarker;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,16 +35,16 @@ public class TileMarker extends BlockEntity implements QuarryMarker, CheckerLog,
     }
 
     void tryConnect(boolean first) {
-        assert getWorld() != null;
+        assert getLevel() != null;
         Optional<TileMarker> zMarker = IntStream.range(1, MAX_SEARCH)
             .flatMap(i -> IntStream.of(i, -i))
-            .mapToObj(i -> getPos().offset(Direction.NORTH, i))
-            .flatMap(p -> getWorld().getBlockEntity(p, QuarryPlus.ModObjects.MARKER_TYPE).stream())
+            .mapToObj(i -> getBlockPos().relative(Direction.NORTH, i))
+            .flatMap(p -> getLevel().getBlockEntity(p, QuarryPlus.ModObjects.MARKER_TYPE).stream())
             .findFirst();
         Optional<TileMarker> xMarker = IntStream.range(1, MAX_SEARCH)
             .flatMap(i -> IntStream.of(i, -i))
-            .mapToObj(i -> getPos().offset(Direction.EAST, i))
-            .flatMap(p -> getWorld().getBlockEntity(p, QuarryPlus.ModObjects.MARKER_TYPE).stream())
+            .mapToObj(i -> getBlockPos().relative(Direction.EAST, i))
+            .flatMap(p -> getLevel().getBlockEntity(p, QuarryPlus.ModObjects.MARKER_TYPE).stream())
             .findFirst();
         MarkerConnection.set(this, xMarker.orElse(null), zMarker.orElse(null));
         if (first && this.markerConnection == MarkerConnection.EMPTY) {
@@ -56,10 +56,10 @@ public class TileMarker extends BlockEntity implements QuarryMarker, CheckerLog,
     }
 
     @Override
-    public void markRemoved() {
-        super.markRemoved();
-        if (world != null && !world.isClient)
-            markerConnection.markerPlaces().stream().flatMap(p -> world.getBlockEntity(p, QuarryPlus.ModObjects.MARKER_TYPE).stream())
+    public void setRemoved() {
+        super.setRemoved();
+        if (level != null && !level.isClientSide)
+            markerConnection.markerPlaces().stream().flatMap(p -> level.getBlockEntity(p, QuarryPlus.ModObjects.MARKER_TYPE).stream())
                 .forEach(TileMarker::resetConnection);
     }
 
@@ -81,28 +81,28 @@ public class TileMarker extends BlockEntity implements QuarryMarker, CheckerLog,
 
     @Override
     public List<ItemStack> removeAndGetItems() {
-        assert getWorld() != null;
+        assert getLevel() != null;
         var count = markerConnection.markerPlaces().size();
-        markerConnection.markerPlaces().forEach(p -> getWorld().removeBlock(p, false));
+        markerConnection.markerPlaces().forEach(p -> getLevel().removeBlock(p, false));
         return List.of(new ItemStack(QuarryPlus.ModObjects.BLOCK_MARKER, count));
     }
 
     @Override
-    public List<? extends Text> getDebugLogs() {
+    public List<? extends Component> getDebugLogs() {
         return List.of(
-            new LiteralText("%sMarker Area%s: %s".formatted(Formatting.AQUA, Formatting.RESET, markerConnection.getArea())),
-            new LiteralText("%sMarker Poses%s: %s".formatted(Formatting.AQUA, Formatting.RESET, markerConnection.markerPlaces()))
+            new TextComponent("%sMarker Area%s: %s".formatted(ChatFormatting.AQUA, ChatFormatting.RESET, markerConnection.getArea())),
+            new TextComponent("%sMarker Poses%s: %s".formatted(ChatFormatting.AQUA, ChatFormatting.RESET, markerConnection.markerPlaces()))
         );
     }
 
     @Override
-    public void fromClientTag(NbtCompound tag) {
+    public void fromClientTag(CompoundTag tag) {
         this.markerConnection = MarkerConnection.fromClientNbt(tag.getCompound("markerConnection"));
         this.rsReceiving = tag.getBoolean("rsReceiving");
     }
 
     @Override
-    public NbtCompound toClientTag(NbtCompound tag) {
+    public CompoundTag toClientTag(CompoundTag tag) {
         tag.put("markerConnection", markerConnection.toClientNbt());
         tag.putBoolean("rsReceiving", rsReceiving);
         return tag;
@@ -113,10 +113,10 @@ public class TileMarker extends BlockEntity implements QuarryMarker, CheckerLog,
 
         static void set(TileMarker thisMarker, @Nullable TileMarker xMarker, @Nullable TileMarker zMarker) {
             if (xMarker != null && zMarker != null) {
-                var connectionParent = new MarkerConnection(new Area(xMarker.getPos(), zMarker.getPos().up(4), Direction.UP),
-                    Set.of(thisMarker.getPos(), xMarker.getPos(), zMarker.getPos()), true);
-                var connectionChild = new MarkerConnection(new Area(xMarker.getPos(), zMarker.getPos().up(4), Direction.UP),
-                    Set.of(thisMarker.getPos(), xMarker.getPos(), zMarker.getPos()), false);
+                var connectionParent = new MarkerConnection(new Area(xMarker.getBlockPos(), zMarker.getBlockPos().above(4), Direction.UP),
+                    Set.of(thisMarker.getBlockPos(), xMarker.getBlockPos(), zMarker.getBlockPos()), true);
+                var connectionChild = new MarkerConnection(new Area(xMarker.getBlockPos(), zMarker.getBlockPos().above(4), Direction.UP),
+                    Set.of(thisMarker.getBlockPos(), xMarker.getBlockPos(), zMarker.getBlockPos()), false);
 
                 thisMarker.markerConnection = connectionParent;
                 xMarker.markerConnection = connectionChild;
@@ -132,14 +132,14 @@ public class TileMarker extends BlockEntity implements QuarryMarker, CheckerLog,
             return Optional.ofNullable(area);
         }
 
-        NbtCompound toClientNbt() {
-            var tag = new NbtCompound();
+        CompoundTag toClientNbt() {
+            var tag = new CompoundTag();
             if (area != null) tag.put("area", area.toNBT());
             tag.putBoolean("render", render);
             return tag;
         }
 
-        static MarkerConnection fromClientNbt(NbtCompound tag) {
+        static MarkerConnection fromClientNbt(CompoundTag tag) {
             var area = tag.contains("area") ? Area.fromNBT(tag.getCompound("area")) : Optional.<Area>empty();
             if (area.isEmpty()) return EMPTY;
             else return new MarkerConnection(area.orElse(null), Collections.emptySet(), tag.getBoolean("render"));

@@ -4,35 +4,35 @@ import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 import com.yogpc.qp.QuarryPlus;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.recipe.RecipeSerializer;
-import net.minecraft.recipe.ShapelessRecipe;
-import net.minecraft.recipe.SpecialRecipeSerializer;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.world.World;
+import net.minecraft.core.NonNullList;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.ShapelessRecipe;
+import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
+import net.minecraft.world.level.Level;
 
 public class QuarryBedrockModuleRecipe extends ShapelessRecipe {
-    public static final Identifier NAME = new Identifier(QuarryPlus.modID, "quarry_bedrock_recipe");
-    public static final SpecialRecipeSerializer<QuarryBedrockModuleRecipe> SERIALIZER = new SpecialRecipeSerializer<>(QuarryBedrockModuleRecipe::new);
+    public static final ResourceLocation NAME = new ResourceLocation(QuarryPlus.modID, "quarry_bedrock_recipe");
+    public static final SimpleRecipeSerializer<QuarryBedrockModuleRecipe> SERIALIZER = new SimpleRecipeSerializer<>(QuarryBedrockModuleRecipe::new);
 
-    public QuarryBedrockModuleRecipe(Identifier id) {
+    public QuarryBedrockModuleRecipe(ResourceLocation id) {
         super(id, "", makeOutputStack(),
-            DefaultedList.copyOf(Ingredient.empty(), Ingredient.ofItems(QuarryPlus.ModObjects.BLOCK_QUARRY), Ingredient.ofItems(QuarryPlus.ModObjects.ITEM_BEDROCK_MODULE)));
+            NonNullList.of(Ingredient.of(), Ingredient.of(QuarryPlus.ModObjects.BLOCK_QUARRY), Ingredient.of(QuarryPlus.ModObjects.ITEM_BEDROCK_MODULE)));
     }
 
     @Override
-    public boolean matches(CraftingInventory inventory, World world) {
-        var stacks = IntStream.range(0, inventory.size())
-            .mapToObj(inventory::getStack)
+    public boolean matches(CraftingContainer inventory, Level world) {
+        var stacks = IntStream.range(0, inventory.getContainerSize())
+            .mapToObj(inventory::getItem)
             .filter(Predicate.not(ItemStack::isEmpty))
             .toList();
         if (stacks.size() == 2) {
             var quarryStack = stacks.stream().filter(s -> s.getItem() == QuarryPlus.ModObjects.BLOCK_QUARRY.blockItem).findFirst().map(ItemStack::copy).orElse(ItemStack.EMPTY);
-            var subNbt = quarryStack.getSubNbt(BlockItem.BLOCK_ENTITY_TAG_KEY);
+            var subNbt = quarryStack.getTagElement(BlockItem.BLOCK_ENTITY_TAG);
             var hasQuarry = !quarryStack.isEmpty() && (subNbt == null || !subNbt.getBoolean("bedrockRemove"));
             var hasModule = stacks.stream().map(ItemStack::getItem).anyMatch(Predicate.isEqual(QuarryPlus.ModObjects.ITEM_BEDROCK_MODULE));
             return hasQuarry && hasModule;
@@ -42,18 +42,18 @@ public class QuarryBedrockModuleRecipe extends ShapelessRecipe {
 
     private static ItemStack makeOutputStack() {
         var quarryStack = new ItemStack(QuarryPlus.ModObjects.BLOCK_QUARRY);
-        quarryStack.getOrCreateSubNbt(BlockItem.BLOCK_ENTITY_TAG_KEY).putBoolean("bedrockRemove", true);
+        quarryStack.getOrCreateTagElement(BlockItem.BLOCK_ENTITY_TAG).putBoolean("bedrockRemove", true);
         return quarryStack;
     }
 
     @Override
-    public ItemStack craft(CraftingInventory inventory) {
-        var stacks = IntStream.range(0, inventory.size())
-            .mapToObj(inventory::getStack)
+    public ItemStack assemble(CraftingContainer inventory) {
+        var stacks = IntStream.range(0, inventory.getContainerSize())
+            .mapToObj(inventory::getItem)
             .filter(Predicate.not(ItemStack::isEmpty))
             .toList();
         var quarryStack = stacks.stream().filter(s -> s.getItem() == QuarryPlus.ModObjects.BLOCK_QUARRY.blockItem).findFirst().map(ItemStack::copy).orElseThrow();
-        quarryStack.getOrCreateSubNbt(BlockItem.BLOCK_ENTITY_TAG_KEY).putBoolean("bedrockRemove", true);
+        quarryStack.getOrCreateTagElement(BlockItem.BLOCK_ENTITY_TAG).putBoolean("bedrockRemove", true);
         return quarryStack;
     }
 

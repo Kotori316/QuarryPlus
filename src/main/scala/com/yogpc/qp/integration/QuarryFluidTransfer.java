@@ -9,6 +9,7 @@ import alexiil.mc.lib.attributes.SearchOptions;
 import alexiil.mc.lib.attributes.Simulation;
 import alexiil.mc.lib.attributes.fluid.FluidAttributes;
 import alexiil.mc.lib.attributes.fluid.FluidExtractable;
+import alexiil.mc.lib.attributes.fluid.FluidInsertable;
 import alexiil.mc.lib.attributes.fluid.FluidVolumeUtil;
 import alexiil.mc.lib.attributes.fluid.amount.FluidAmount;
 import alexiil.mc.lib.attributes.fluid.filter.FluidFilter;
@@ -26,11 +27,11 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.material.Fluid;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
@@ -61,7 +62,7 @@ public class QuarryFluidTransfer {
     /**
      * @return A pair of fluid and amount which were NOT transferred. The excess amount.
      */
-    public static Pair<Fluid, Long> transfer(World world, BlockPos pos, @NotNull BlockEntity destination, Fluid fluid, long amount, Direction direction) {
+    public static Pair<Fluid, Long> transfer(Level world, BlockPos pos, @NotNull BlockEntity destination, Fluid fluid, long amount, Direction direction) {
         if (!registered) return Pair.of(fluid, amount);
 
         for (FluidTransfer transfer : transfers) {
@@ -80,10 +81,10 @@ public class QuarryFluidTransfer {
 }
 
 interface FluidTransfer {
-    boolean acceptable(World world, BlockPos pos, Direction direction, BlockEntity entity);
+    boolean acceptable(Level world, BlockPos pos, Direction direction, BlockEntity entity);
 
     @NotNull
-    Pair<Fluid, Long> transfer(World world, BlockPos pos, @NotNull BlockEntity destination, Direction direction, long amount, Fluid fluid);
+    Pair<Fluid, Long> transfer(Level world, BlockPos pos, @NotNull BlockEntity destination, Direction direction, long amount, Fluid fluid);
 }
 
 class BCFluidRegister {
@@ -102,20 +103,20 @@ class BCFluidRegister {
 class BCFluidTransfer implements FluidTransfer {
 
     @Override
-    public boolean acceptable(World world, BlockPos pos, Direction direction, BlockEntity entity) {
-        var attribute = FluidAttributes.INSERTABLE.get(world, pos, SearchOptions.inDirection(direction.getOpposite()));
+    public boolean acceptable(Level world, BlockPos pos, Direction direction, BlockEntity entity) {
+        FluidInsertable attribute = FluidAttributes.INSERTABLE.get(world, pos, SearchOptions.inDirection(direction.getOpposite()));
         return attribute != RejectingFluidInsertable.NULL;
     }
 
     @Override
     @NotNull
-    public Pair<Fluid, Long> transfer(World world, BlockPos pos, @NotNull BlockEntity destination, Direction direction, long amount, Fluid fluid) {
-        var volume = FluidKeys.get(fluid).withAmount(FluidAmount.of(amount, 1000)); // I'm assuming one bucket is equal to 1000 mB.
-        var insertable = FluidAttributes.INSERTABLE.get(world, pos, SearchOptions.inDirection(direction.getOpposite()));
-        var attemptResult = insertable.attemptInsertion(volume, Simulation.SIMULATE);
+    public Pair<Fluid, Long> transfer(Level world, BlockPos pos, @NotNull BlockEntity destination, Direction direction, long amount, Fluid fluid) {
+        FluidVolume volume = FluidKeys.get(fluid).withAmount(FluidAmount.of(amount, 1000)); // int'm assuming one bucket is equal to 1000 mB.
+        FluidInsertable insertable = FluidAttributes.INSERTABLE.get(world, pos, SearchOptions.inDirection(direction.getOpposite()));
+        FluidVolume attemptResult = insertable.attemptInsertion(volume, Simulation.SIMULATE);
         if (!attemptResult.equals(volume)) {
             // Accepted.
-            var exceeded = insertable.insert(volume);
+            FluidVolume exceeded = insertable.insert(volume);
             return Pair.of(exceeded.getRawFluid(), exceeded.amount().asLong(1000L));
         } else {
             return Pair.of(fluid, amount);
@@ -132,7 +133,7 @@ class BCExtractable implements FluidExtractable {
 
     @Override
     public FluidVolume attemptExtraction(FluidFilter filter, FluidAmount maxAmount, Simulation simulation) {
-        var storage = this.storageHolder.getStorage();
+        MachineStorage storage = this.storageHolder.getStorage();
         for (Map.Entry<FluidKey, Long> entry : storage.getFluidMap().entrySet()) {
             var fluidKey = FluidKeys.get(entry.getKey().fluid());
             if (filter.matches(fluidKey)) {
@@ -153,12 +154,12 @@ class FabricFluidTransfer implements FluidTransfer {
     }
 
     @Override
-    public boolean acceptable(World world, BlockPos pos, Direction direction, BlockEntity entity) {
+    public boolean acceptable(Level world, BlockPos pos, Direction direction, BlockEntity entity) {
         return FluidStorage.SIDED.find(world, pos, null, entity, direction) != null;
     }
 
     @Override
-    public @NotNull Pair<Fluid, Long> transfer(World world, BlockPos pos, @NotNull BlockEntity destination, Direction direction, long amount, Fluid fluid) {
+    public @NotNull Pair<Fluid, Long> transfer(Level world, BlockPos pos, @NotNull BlockEntity destination, Direction direction, long amount, Fluid fluid) {
         var storage = FluidStorage.SIDED.find(world, pos, null, destination, direction);
         if (storage == null) {
             // Not fluid container.

@@ -3,7 +3,7 @@ package com.yogpc.qp.machines;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import net.minecraft.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantment;
 
 public interface EnchantableItem extends Predicate<Enchantment> {
     Set<Enchantment> acceptEnchantments();

@@ -1,22 +1,22 @@
 package com.yogpc.qp.machines.misc;
 
 import com.yogpc.qp.QuarryPlus;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-public class YSetterContainer extends ScreenHandler {
-    public static final Identifier GUI_ID = new Identifier(QuarryPlus.modID, "gui_y_setter");
+public class YSetterContainer extends AbstractContainerMenu {
+    public static final ResourceLocation GUI_ID = new ResourceLocation(QuarryPlus.modID, "gui_y_setter");
     @Nullable
     final YAccessor yAccessor;
 
-    public YSetterContainer(int syncId, PlayerEntity player, BlockPos pos) {
+    public YSetterContainer(int syncId, Player player, BlockPos pos) {
         super(QuarryPlus.ModObjects.Y_SETTER_HANDLER_TYPE, syncId);
-        yAccessor = YAccessor.get(player.world.getBlockEntity(pos));
+        yAccessor = YAccessor.get(player.level.getBlockEntity(pos));
 
         final int oneBox = 18;
         for (int h = 0; h < 3; h++) {
@@ -30,12 +30,12 @@ public class YSetterContainer extends ScreenHandler {
     }
 
     @Override
-    public boolean canUse(PlayerEntity player) {
+    public boolean stillValid(Player player) {
         return true;
     }
 
     @Override
-    public ItemStack transferSlot(PlayerEntity player, int index) {
+    public ItemStack quickMoveStack(Player player, int index) {
         return ItemStack.EMPTY;
     }
 }

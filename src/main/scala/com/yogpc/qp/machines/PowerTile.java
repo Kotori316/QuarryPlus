@@ -5,12 +5,12 @@ import java.util.function.Consumer;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.integration.EnergyIntegration;
 import com.yogpc.qp.utils.QuarryChunkLoadUtil;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityTicker;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 public class PowerTile extends BlockEntity {
@@ -31,16 +31,16 @@ public class PowerTile extends BlockEntity {
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound nbt) {
+    public CompoundTag save(CompoundTag nbt) {
         nbt.putLong("energy", energy);
         nbt.putLong("maxEnergy", maxEnergy);
         nbt.putBoolean("chunkPreLoaded", chunkPreLoaded);
-        return super.writeNbt(nbt);
+        return super.save(nbt);
     }
 
     @Override
-    public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
+    public void load(CompoundTag nbt) {
+        super.load(nbt);
         energy = nbt.getLong("energy");
         if (nbt.contains("maxEnergy"))
             maxEnergy = nbt.getLong("maxEnergy");
@@ -65,11 +65,11 @@ public class PowerTile extends BlockEntity {
      * @return the amount of <strong>accepted</strong> energy.
      */
     public long addEnergy(long amount, boolean simulate) {
-        assert world != null;
+        assert level != null;
         long accepted = Math.min(maxEnergy - energy, amount);
         if (!simulate) {
             energy += accepted;
-            energyCounter.getEnergy(world.getTime(), accepted);
+            energyCounter.getEnergy(level.getGameTime(), accepted);
         }
         return accepted;
     }
@@ -83,10 +83,10 @@ public class PowerTile extends BlockEntity {
      * @return {@code true} if the energy is consumed. When {@code false}, the machine doesn't have enough energy to work.
      */
     public boolean useEnergy(long amount, Reason reason, boolean force) {
-        assert world != null;
+        assert level != null;
         if (energy >= amount || force) {
             energy -= amount;
-            energyCounter.useEnergy(world.getTime(), amount, reason);
+            energyCounter.useEnergy(level.getGameTime(), amount, reason);
             return true;
         } else {
             return false;
@@ -102,16 +102,16 @@ public class PowerTile extends BlockEntity {
     }
 
     @Override
-    public void markRemoved() {
-        super.markRemoved();
-        if (world != null && !world.isClient)
-            QuarryChunkLoadUtil.makeChunkUnloaded(world, pos, chunkPreLoaded);
+    public void setRemoved() {
+        super.setRemoved();
+        if (level != null && !level.isClientSide)
+            QuarryChunkLoadUtil.makeChunkUnloaded(level, worldPosition, chunkPreLoaded);
     }
 
     @Nullable
     public static BlockEntityTicker<PowerTile> logTicker() {
         if (QuarryPlus.config.common.debug)
-            return (w, p, s, blockEntity) -> blockEntity.energyCounter.logOutput(w.getTime());
+            return (w, p, s, blockEntity) -> blockEntity.energyCounter.logOutput(w.getGameTime());
         else return null;
     }
 

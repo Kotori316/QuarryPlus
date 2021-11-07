@@ -4,7 +4,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.PowerTile;
 import dev.technici4n.fasttransferlib.api.Simulation;
 import dev.technici4n.fasttransferlib.api.energy.EnergyIo;
-import net.minecraft.util.math.Direction;
+import net.minecraft.core.Direction;
 
 class FastTransferLibEnergyIO implements EnergyIo {
     public static final long CONVERSION_RATE = (long) (PowerTile.ONE_FE * QuarryPlus.config.power.fastTransferEnergyConversionCoefficient);

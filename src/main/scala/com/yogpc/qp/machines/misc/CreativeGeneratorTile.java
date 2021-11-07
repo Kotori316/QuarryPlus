@@ -5,11 +5,11 @@ import java.util.Arrays;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.utils.MapMulti;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntityTicker;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class CreativeGeneratorTile extends PowerTile {
     private long sendEnergy = ONE_FE * 1000L;
@@ -19,20 +19,20 @@ public class CreativeGeneratorTile extends PowerTile {
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound nbt) {
+    public CompoundTag save(CompoundTag nbt) {
         nbt.putLong("sendEnergy", sendEnergy);
-        return super.writeNbt(nbt);
+        return super.save(nbt);
     }
 
     @Override
-    public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
+    public void load(CompoundTag nbt) {
+        super.load(nbt);
         sendEnergy = nbt.getLong("sendEnergy");
     }
 
     static final BlockEntityTicker<CreativeGeneratorTile> TICKER = (world, pos, state, tile) ->
         Arrays.stream(Direction.values())
-            .map(pos::offset)
+            .map(pos::relative)
             .map(world::getBlockEntity)
             .mapMulti(MapMulti.cast(PowerTile.class))
             .forEach(t -> t.addEnergy(tile.sendEnergy, false));

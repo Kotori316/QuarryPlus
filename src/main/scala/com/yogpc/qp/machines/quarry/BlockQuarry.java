@@ -10,115 +10,108 @@ import com.yogpc.qp.machines.MachineBlock;
 import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QuarryMarker;
-import com.yogpc.qp.packet.PacketHandler;
-import com.yogpc.qp.packet.QuarryPlacedMessage;
 import com.yogpc.qp.utils.CombinedBlockEntityTicker;
 import com.yogpc.qp.utils.QuarryChunkLoadUtil;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.tool.attribute.v1.FabricToolTags;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Material;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityTicker;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.Properties;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.BlockHitResult;
 
 public class BlockQuarry extends MachineBlock {
     public static final String NAME = "quarry";
-    public final BlockItem blockItem = new ItemQuarry(this, new FabricItemSettings().group(QuarryPlus.CREATIVE_TAB).fireproof());
+    public final BlockItem blockItem = new ItemQuarry(this, new FabricItemSettings().tab(QuarryPlus.CREATIVE_TAB).fireResistant());
 
     public BlockQuarry() {
         super(FabricBlockSettings.of(Material.METAL)
             .strength(1.5f, 10f)
-            .sounds(BlockSoundGroup.STONE)
+            .sounds(SoundType.STONE)
             .breakByTool(FabricToolTags.PICKAXES));
-        setDefaultState(getStateManager().getDefaultState()
-            .with(Properties.FACING, Direction.NORTH)
-            .with(WORKING, false));
+        registerDefaultState(getStateDefinition().any()
+            .setValue(BlockStateProperties.FACING, Direction.NORTH)
+            .setValue(WORKING, false));
     }
 
     @Override
-    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return QuarryPlus.ModObjects.QUARRY_TYPE.instantiate(pos, state);
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return QuarryPlus.ModObjects.QUARRY_TYPE.create(pos, state);
     }
 
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return world.isClient ? null : checkType(type, QuarryPlus.ModObjects.QUARRY_TYPE,
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type) {
+        return world.isClientSide ? null : createTickerHelper(type, QuarryPlus.ModObjects.QUARRY_TYPE,
             new CombinedBlockEntityTicker<>(PowerTile.getGenerator(), TileQuarry::tick, PowerTile.logTicker(), MachineStorage.passItems(), MachineStorage.passFluid()));
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        super.appendProperties(builder);
-        builder.add(Properties.FACING, WORKING);
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
+        builder.add(BlockStateProperties.FACING, WORKING);
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        var stack = player.getStackInHand(hand);
-        if (stack.getItem() == Items.STICK) {
-            if (!world.isClient) {
-                if (world.getBlockEntity(pos) instanceof TileQuarry quarry) {
-                    quarry.setState(QuarryState.WAITING, state);
-                    quarry.target = null;
-                }
-            }
-            return ActionResult.SUCCESS;
-        }
-        return super.onUse(state, world, pos, player, hand, hit);
-    }
-
-    @Override
-    public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
-        super.onPlaced(world, pos, state, placer, itemStack);
-        if (!world.isClient) {
-            var facing = placer != null ? placer.getHorizontalFacing().getOpposite() : Direction.NORTH;
-            world.setBlockState(pos, state.with(Properties.FACING, facing), 2);
-            if (world.getBlockEntity(pos) instanceof TileQuarry quarry) {
-                quarry.setEnchantments(EnchantmentHelper.get(itemStack));
-                quarry.setTileDataFromItem(itemStack.getSubNbt(BlockItem.BLOCK_ENTITY_TAG_KEY));
-                var area = findArea(world, pos, facing.getOpposite(), quarry.storage::addItem);
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state, @javax.annotation.Nullable LivingEntity entity, ItemStack stack) {
+        super.setPlacedBy(level, pos, state, entity, stack);
+        if (!level.isClientSide) {
+            Direction facing = entity == null ? Direction.NORTH : entity.getDirection().getOpposite();
+            if (level.getBlockEntity(pos) instanceof TileQuarry quarry) {
+                quarry.setEnchantments(EnchantmentHelper.getEnchantments(stack));
+                quarry.setTileDataFromItem(stack.getTagElement(BlockItem.BLOCK_ENTITY_TAG));
+                var area = findArea(level, pos, facing.getOpposite(), quarry.storage::addItem);
                 if (area.maxX() - area.minX() > 1 && area.maxZ() - area.minZ() > 1) {
-                    quarry.setState(QuarryState.WAITING, state.with(Properties.FACING, facing));
+                    quarry.setState(QuarryState.WAITING, state.setValue(BlockStateProperties.FACING, facing));
                     quarry.setArea(area);
                 } else {
-                    if (placer instanceof PlayerEntity player)
-                        player.sendMessage(new TranslatableText("quarryplus.chat.warn_area"), false);
+                    if (entity instanceof Player player)
+                        player.displayClientMessage(new TranslatableComponent("quarryplus.chat.warn_area"), false);
                 }
-                if (placer instanceof ServerPlayerEntity p)
-                    PacketHandler.sendToClientPlayer(new QuarryPlacedMessage(quarry), p);
-                var preForced = QuarryChunkLoadUtil.makeChunkLoaded(world, pos);
+                var preForced = QuarryChunkLoadUtil.makeChunkLoaded(level, pos);
                 quarry.setChunkPreLoaded(preForced);
             }
         }
     }
 
     @Override
-    public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+    @SuppressWarnings("deprecation")
+    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        var stack = player.getItemInHand(hand);
+        if (stack.getItem() == Items.STICK) {
+            if (!world.isClientSide) {
+                if (world.getBlockEntity(pos) instanceof TileQuarry quarry) {
+                    quarry.setState(QuarryState.WAITING, state);
+                    quarry.target = null;
+                }
+            }
+            return InteractionResult.SUCCESS;
+        }
+        return super.use(state, world, pos, player, hand, hit);
+    }
+
+    @Override
+    public ItemStack getCloneItemStack(BlockGetter world, BlockPos pos, BlockState state) {
         // Called in client.
-        var stack = super.getPickStack(world, pos, state);
+        var stack = super.getCloneItemStack(world, pos, state);
         if (world.getBlockEntity(pos) instanceof TileQuarry quarry) {
             QuarryLootFunction.process(stack, quarry);
             EnchantedLootFunction.process(stack, quarry);
@@ -126,9 +119,9 @@ public class BlockQuarry extends MachineBlock {
         return stack;
     }
 
-    static Area findArea(World world, BlockPos pos, Direction quarryBehind, Consumer<ItemStack> itemCollector) {
-        return Stream.of(quarryBehind, quarryBehind.rotateYCounterclockwise(), quarryBehind.rotateYClockwise())
-            .map(pos::offset)
+    static Area findArea(Level world, BlockPos pos, Direction quarryBehind, Consumer<ItemStack> itemCollector) {
+        return Stream.of(quarryBehind, quarryBehind.getCounterClockWise(), quarryBehind.getClockWise())
+            .map(pos::relative)
             .flatMap(p -> {
                 if (world.getBlockEntity(p) instanceof QuarryMarker marker) return Stream.of(marker);
                 else return Stream.empty();
@@ -136,7 +129,7 @@ public class BlockQuarry extends MachineBlock {
             .flatMap(m -> m.getArea().stream().peek(a -> m.removeAndGetItems().forEach(itemCollector)))
             .findFirst()
             .map(a -> a.assureY(4))
-            .orElse(new Area(pos.offset(quarryBehind).offset(quarryBehind.rotateYCounterclockwise(), 5),
-                pos.offset(quarryBehind, 11).offset(quarryBehind.rotateYClockwise(), 5).offset(Direction.UP, 4), quarryBehind.getOpposite()));
+            .orElse(new Area(pos.relative(quarryBehind).relative(quarryBehind.getCounterClockWise(), 5),
+                pos.relative(quarryBehind, 11).relative(quarryBehind.getClockWise(), 5).relative(Direction.UP, 4), quarryBehind));
     }
 }

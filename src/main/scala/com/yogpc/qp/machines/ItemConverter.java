@@ -6,9 +6,9 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import com.yogpc.qp.QuarryPlus;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.tuple.Pair;
 
 public record ItemConverter(
@@ -50,8 +50,8 @@ public record ItemConverter(
         };
         Function<ItemKey, ItemKey> function = i -> {
             var newPath = i.getId().getPath().replace("deepslate_", "").replace("_deepslate", "");
-            var id = new Identifier(i.getId().getNamespace(), newPath);
-            return Registry.ITEM.getOrEmpty(id).map(item -> new ItemKey(item, i.nbt())).orElse(null);
+            var id = new ResourceLocation(i.getId().getNamespace(), newPath);
+            return Registry.ITEM.getOptional(id).map(item -> new ItemKey(item, i.nbt())).orElse(null);
         };
         return new ItemConverter(List.of(Pair.of(predicate, function)));
     }

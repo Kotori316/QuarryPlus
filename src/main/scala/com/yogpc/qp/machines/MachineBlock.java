@@ -1,19 +1,19 @@
 package com.yogpc.qp.machines;
 
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.BlockWithEntity;
-import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
-public abstract class MachineBlock extends BlockWithEntity {
-    public static final BooleanProperty WORKING = BooleanProperty.of("working");
+public abstract class MachineBlock extends BaseEntityBlock {
+    public static final BooleanProperty WORKING = BooleanProperty.create("working");
 
-    protected MachineBlock(Settings settings) {
+    protected MachineBlock(Properties settings) {
         super(settings);
     }
 
     @Override
-    public final BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.MODEL;
+    public final RenderShape getRenderShape(BlockState state) {
+        return RenderShape.MODEL;
     }
 }

@@ -7,13 +7,13 @@ import java.util.function.Predicate;
 
 import com.yogpc.qp.machines.EnchantmentLevel;
 import com.yogpc.qp.machines.PowerTile;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
 
 class EnchantmentEfficiency {
     private final List<EnchantmentLevel> enchantments;
@@ -25,13 +25,13 @@ class EnchantmentEfficiency {
 
     EnchantmentEfficiency(List<EnchantmentLevel> enchantments) {
         this.enchantments = enchantments;
-        int efficiency = getLevel(enchantments, Enchantments.EFFICIENCY);
+        int efficiency = getLevel(enchantments, Enchantments.BLOCK_EFFICIENCY);
         int unbreaking = getLevel(enchantments, Enchantments.UNBREAKING);
-        int rangeLevel = Math.max(getLevel(enchantments, Enchantments.FORTUNE), 3 * Math.min(getLevel(enchantments, Enchantments.SILK_TOUCH), 1));
+        int rangeLevel = Math.max(getLevel(enchantments, Enchantments.BLOCK_FORTUNE), 3 * Math.min(getLevel(enchantments, Enchantments.SILK_TOUCH), 1));
         this.range = (rangeLevel + 1) * 32;
         this.energyCapacity = (int) Math.pow(2, 10 + efficiency) * PowerTile.ONE_FE;
         this.fluidCapacity = 512 * 1000 * (efficiency + 1);
-        this.baseEnergy = baseEnergyMap.get(MathHelper.clamp(unbreaking, 0, 3)) * PowerTile.ONE_FE;
+        this.baseEnergy = baseEnergyMap.get(Mth.clamp(unbreaking, 0, 3)) * PowerTile.ONE_FE;
     }
 
     static int getLevel(List<EnchantmentLevel> enchantments, Enchantment enchantment) {
@@ -40,8 +40,8 @@ class EnchantmentEfficiency {
             .mapToInt(EnchantmentLevel::level).max().orElse(0);
     }
 
-    NbtCompound toNbt() {
-        var tag = new NbtCompound();
+    CompoundTag toNbt() {
+        CompoundTag tag = new CompoundTag();
         for (EnchantmentLevel enchantment : enchantments) {
             tag.putInt(Objects.requireNonNull(enchantment.enchantmentID()).toString(), enchantment.level());
         }
@@ -54,16 +54,16 @@ class EnchantmentEfficiency {
 
     public Predicate<BlockPos> rangePredicate(BlockPos center) {
         return p -> {
-            var xDiff = center.getX() - p.getX();
-            var zDiff = center.getZ() - p.getZ();
+            int xDiff = center.getX() - p.getX();
+            int zDiff = center.getZ() - p.getZ();
             return xDiff * xDiff + zDiff * zDiff < range * range;
         };
     }
 
-    static EnchantmentEfficiency fromNbt(NbtCompound tag) {
-        var enchantmentLevels = tag.getKeys().stream()
+    static EnchantmentEfficiency fromNbt(CompoundTag tag) {
+        var enchantmentLevels = tag.getAllKeys().stream()
             .flatMap(k ->
-                Registry.ENCHANTMENT.getOrEmpty(new Identifier(k))
+                Registry.ENCHANTMENT.getOptional(new ResourceLocation(k))
                     .map(e -> Map.entry(e, tag.getInt(k)))
                     .stream())
             .map(EnchantmentLevel::new)

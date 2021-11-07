@@ -11,16 +11,16 @@ import com.yogpc.qp.integration.QuarryFluidTransfer;
 import com.yogpc.qp.integration.QuarryItemTransfer;
 import com.yogpc.qp.utils.MapMulti;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityTicker;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.BucketItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.util.math.Direction;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.item.BucketItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class MachineStorage {
@@ -50,26 +50,26 @@ public class MachineStorage {
         );
     }
 
-    public NbtCompound toNbt() {
-        var tag = new NbtCompound();
-        var itemTag = new NbtList();
+    public CompoundTag toNbt() {
+        var tag = new CompoundTag();
+        var itemTag = new ListTag();
         itemMap.forEach((itemKey, count) -> itemTag.add(itemKey.createNbt(count)));
-        var fluidTag = new NbtList();
+        var fluidTag = new ListTag();
         fluidMap.forEach((fluidKey, amount) -> fluidTag.add(fluidKey.createNbt(amount)));
         tag.put("items", itemTag);
         tag.put("fluids", fluidTag);
         return tag;
     }
 
-    public void readNbt(NbtCompound tag) {
-        var itemTag = tag.getList("items", NbtElement.COMPOUND_TYPE);
+    public void readNbt(CompoundTag tag) {
+        var itemTag = tag.getList("items", Tag.TAG_COMPOUND);
         itemMap = itemTag.stream()
-            .mapMulti(MapMulti.cast(NbtCompound.class))
+            .mapMulti(MapMulti.cast(CompoundTag.class))
             .map(n -> Pair.of(ItemKey.fromNbt(n), n.getLong("count")))
             .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
-        var fluidTag = tag.getList("fluids", NbtElement.COMPOUND_TYPE);
+        var fluidTag = tag.getList("fluids", Tag.TAG_COMPOUND);
         fluidMap = fluidTag.stream()
-            .mapMulti(MapMulti.cast(NbtCompound.class))
+            .mapMulti(MapMulti.cast(CompoundTag.class))
             .map(n -> Pair.of(FluidKey.fromNbt(n), n.getLong("amount")))
             .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
     }
@@ -129,14 +129,14 @@ public class MachineStorage {
             var storage = blockEntity.getStorage();
             int count = 0;
             for (var direction : Direction.values()) {
-                if (QuarryItemTransfer.destinationExists(world, pos.offset(direction), direction.getOpposite())) {
+                if (QuarryItemTransfer.destinationExists(world, pos.relative(direction), direction.getOpposite())) {
                     var itemMap = new ArrayList<>(storage.itemMap.entrySet());
                     for (Map.Entry<ItemKey, Long> entry : itemMap) {
                         long beforeCount = entry.getValue();
                         boolean flag = true;
                         while (beforeCount > 0 && flag && count < MAX_TRANSFER) {
-                            int itemCount = (int) Math.min(entry.getKey().item().getMaxCount(), beforeCount);
-                            var rest = QuarryItemTransfer.transfer(world, pos.offset(direction), entry.getKey().toStack(itemCount), direction.getOpposite());
+                            int itemCount = (int) Math.min(entry.getKey().item().getMaxStackSize(), beforeCount);
+                            var rest = QuarryItemTransfer.transfer(world, pos.relative(direction), entry.getKey().toStack(itemCount), direction.getOpposite());
                             if (itemCount != rest.getCount()) {
                                 // Item transferred.
                                 long remain = beforeCount - (itemCount - rest.getCount());
@@ -165,7 +165,7 @@ public class MachineStorage {
             var storage = blockEntity.getStorage();
             int count = 0;
             for (Direction direction : Direction.values()) {
-                var destPos = pos.offset(direction);
+                var destPos = pos.relative(direction);
                 var tile = world.getBlockEntity(destPos);
                 if (tile != null) {
                     var fluidMap = new ArrayList<>(storage.getFluidMap().entrySet());

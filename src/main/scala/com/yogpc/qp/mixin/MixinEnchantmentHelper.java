@@ -6,11 +6,11 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import com.yogpc.qp.machines.EnchantableItem;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.EnchantmentLevelEntry;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.Registry;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -19,17 +19,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(EnchantmentHelper.class)
 public class MixinEnchantmentHelper {
 
-    @Inject(method = "getPossibleEntries", at = @At("HEAD"), cancellable = true)
-    private static void getPossibleEntries(int power, ItemStack stack, boolean treasureAllowed, CallbackInfoReturnable<List<EnchantmentLevelEntry>> cir) {
+    @Inject(method = "getAvailableEnchantmentResults", at = @At("HEAD"), cancellable = true)
+    private static void getPossibleEntries(int power, ItemStack stack, boolean treasureAllowed, CallbackInfoReturnable<List<EnchantmentInstance>> cir) {
         if (stack.getItem() instanceof EnchantableItem enchantableItem) {
-            List<EnchantmentLevelEntry> entries = Registry.ENCHANTMENT.stream()
-                .filter(e -> !e.isTreasure() || treasureAllowed)
-                .filter(Enchantment::isAvailableForRandomSelection)
+            List<EnchantmentInstance> entries = Registry.ENCHANTMENT.stream()
+                .filter(e -> !e.isTreasureOnly() || treasureAllowed)
+                .filter(Enchantment::isDiscoverable)
                 .filter(enchantableItem)
                 .flatMap(e ->
                     IntStream.iterate(e.getMaxLevel(), i -> i >= e.getMinLevel(), i -> i - 1)
-                        .filter(level -> e.getMinPower(level) <= power && power <= e.getMaxPower(level))
-                        .mapToObj(level -> new EnchantmentLevelEntry(e, level))
+                        .filter(level -> e.getMinCost(level) <= power && power <= e.getMaxCost(level))
+                        .mapToObj(level -> new EnchantmentInstance(e, level))
                         .findFirst()
                         .stream())
                 .collect(Collectors.toList());

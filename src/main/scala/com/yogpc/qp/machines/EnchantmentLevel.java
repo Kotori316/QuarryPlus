@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.yogpc.qp.utils.ManualOrder;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
 import org.jetbrains.annotations.Nullable;
 
 public record EnchantmentLevel(Enchantment enchantment, int level) {
@@ -16,13 +16,13 @@ public record EnchantmentLevel(Enchantment enchantment, int level) {
         this(entry.getKey(), entry.getValue());
     }
 
-    public EnchantmentLevel(Identifier enchantmentID, int level) {
+    public EnchantmentLevel(ResourceLocation enchantmentID, int level) {
         this(Registry.ENCHANTMENT.get(enchantmentID), level);
     }
 
     @Nullable
-    public Identifier enchantmentID() {
-        return Registry.ENCHANTMENT.getId(enchantment());
+    public ResourceLocation enchantmentID() {
+        return Registry.ENCHANTMENT.getKey(enchantment());
     }
 
     public interface HasEnchantments {
@@ -38,7 +38,7 @@ public record EnchantmentLevel(Enchantment enchantment, int level) {
         }
 
         default int fortuneLevel() {
-            return getLevel(Enchantments.FORTUNE);
+            return getLevel(Enchantments.BLOCK_FORTUNE);
         }
 
         default int silktouchLevel() {
@@ -47,14 +47,14 @@ public record EnchantmentLevel(Enchantment enchantment, int level) {
     }
 
     public static final Comparator<EnchantmentLevel> COMPARATOR =
-        Comparator.comparingInt((EnchantmentLevel e) -> Registry.ENCHANTMENT.getRawId(e.enchantment()))
+        Comparator.comparingInt((EnchantmentLevel e) -> Registry.ENCHANTMENT.getId(e.enchantment()))
             .thenComparingInt(EnchantmentLevel::level);
     public static final Comparator<EnchantmentLevel> QUARRY_ENCHANTMENT_COMPARATOR =
         Comparator.comparing(EnchantmentLevel::enchantment,
-            ManualOrder.builder(Comparator.comparingInt(Registry.ENCHANTMENT::getRawId))
-                .add(Enchantments.EFFICIENCY)
+            ManualOrder.builder(Comparator.comparingInt(Registry.ENCHANTMENT::getId))
+                .add(Enchantments.BLOCK_EFFICIENCY)
                 .add(Enchantments.UNBREAKING)
-                .add(Enchantments.FORTUNE)
+                .add(Enchantments.BLOCK_FORTUNE)
                 .add(Enchantments.SILK_TOUCH)
                 .build()
         ).thenComparingInt(EnchantmentLevel::level);

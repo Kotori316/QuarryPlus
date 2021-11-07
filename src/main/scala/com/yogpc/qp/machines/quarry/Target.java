@@ -9,9 +9,9 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import com.yogpc.qp.machines.Area;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtLongArray;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.LongArrayTag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,9 +28,9 @@ public abstract class Target {
     public abstract Stream<BlockPos> allPoses();
 
     @NotNull
-    public abstract NbtCompound toNbt();
+    public abstract CompoundTag toNbt();
 
-    public static Target fromNbt(NbtCompound tag) {
+    public static Target fromNbt(CompoundTag tag) {
         return switch (tag.getString("target")) {
             case "DigTarget" -> DigTarget.from(tag);
             case "FrameTarget" -> FrameTarget.from(tag);
@@ -91,13 +91,13 @@ final class DigTarget extends Target {
     final Area area;
     final int y;
     @Nullable
-    private BlockPos.Mutable currentTarget;
+    private BlockPos.MutableBlockPos currentTarget;
 
     DigTarget(Area area, int y) {
         this.area = area;
         this.y = y;
         var x = y % 2 == 0 ? area.minX() + 1 : area.maxX() - 1;
-        currentTarget = new BlockPos.Mutable(
+        currentTarget = new BlockPos.MutableBlockPos(
             x, y, initZ(x, this.y, area.minZ() + 1, area.maxZ() - 1)
         );
     }
@@ -106,7 +106,7 @@ final class DigTarget extends Target {
     @Nullable
     public BlockPos get(boolean goNext) {
         if (currentTarget == null) return null;
-        var pre = currentTarget.toImmutable();
+        var pre = currentTarget.immutable();
         if (goNext) {
             var nextZ = pre.getX() % 2 == 0 ^ this.y % 2 == 0 ? pre.getZ() + 1 : pre.getZ() - 1;
             if (area.minZ() < nextZ && nextZ < area.maxZ()) {
@@ -128,13 +128,13 @@ final class DigTarget extends Target {
 
     @Override
     public @NotNull Stream<BlockPos> allPoses() {
-        return BlockPos.stream(area.minX(), y, area.minZ(), area.maxX(), y, area.maxZ());
+        return BlockPos.betweenClosedStream(area.minX(), y, area.minZ(), area.maxX(), y, area.maxZ());
     }
 
     @Override
     @NotNull
-    public NbtCompound toNbt() {
-        var tag = new NbtCompound();
+    public CompoundTag toNbt() {
+        var tag = new CompoundTag();
         tag.putString("target", getClass().getSimpleName());
         tag.put("area", area.toNBT());
         tag.putInt("y", y);
@@ -142,7 +142,7 @@ final class DigTarget extends Target {
         return tag;
     }
 
-    static DigTarget from(NbtCompound tag) {
+    static DigTarget from(CompoundTag tag) {
         var target = new DigTarget(Area.fromNBT(tag.getCompound("area")).orElseThrow(), tag.getInt("y"));
         if (tag.contains("currentTarget")) {
             assert target.currentTarget != null;
@@ -217,8 +217,8 @@ final class FrameTarget extends Target {
 
     @Override
     @NotNull
-    public NbtCompound toNbt() {
-        var tag = new NbtCompound();
+    public CompoundTag toNbt() {
+        var tag = new CompoundTag();
         tag.putString("target", getClass().getSimpleName());
         tag.put("area", area.toNBT());
         tag.putLong("currentTarget", Objects.requireNonNullElse(currentTarget, new BlockPos(area.minX(), area.maxY(), area.minZ() + 1)).asLong());
@@ -226,8 +226,8 @@ final class FrameTarget extends Target {
         return tag;
     }
 
-    static FrameTarget from(NbtCompound tag) {
-        return new FrameTarget(Area.fromNBT(tag.getCompound("area")).orElseThrow(), BlockPos.fromLong(tag.getLong("currentTarget")));
+    static FrameTarget from(CompoundTag tag) {
+        return new FrameTarget(Area.fromNBT(tag.getCompound("area")).orElseThrow(), BlockPos.of(tag.getLong("currentTarget")));
     }
 
     static Stream<BlockPos> makeSquare(Area area, int y) {
@@ -271,8 +271,8 @@ final class PosesTarget extends Target {
             currentTarget = iterator.next();
     }
 
-    public static PosesTarget from(NbtCompound tag) {
-        var poses = Arrays.stream(tag.getLongArray("poses")).mapToObj(BlockPos::fromLong).toList();
+    public static PosesTarget from(CompoundTag tag) {
+        var poses = Arrays.stream(tag.getLongArray("poses")).mapToObj(BlockPos::of).toList();
         return new PosesTarget(poses);
     }
 
@@ -295,10 +295,10 @@ final class PosesTarget extends Target {
     }
 
     @Override
-    public @NotNull NbtCompound toNbt() {
-        var tag = new NbtCompound();
+    public @NotNull CompoundTag toNbt() {
+        var tag = new CompoundTag();
         tag.putString("target", getClass().getSimpleName());
-        var list = new NbtLongArray(allPoses().mapToLong(BlockPos::asLong).toArray());
+        var list = new LongArrayTag(allPoses().mapToLong(BlockPos::asLong).toArray());
         tag.put("poses", list);
         return tag;
     }
@@ -340,13 +340,13 @@ final class FrameInsideTarget extends Target {
 
     @Override
     public @NotNull Stream<BlockPos> allPoses() {
-        return BlockPos.stream(area.minX() + 1, minY, area.minZ() + 1,
+        return BlockPos.betweenClosedStream(area.minX() + 1, minY, area.minZ() + 1,
             area.maxX() - 1, maxY, area.maxZ() - 1);
     }
 
     @Override
-    public @NotNull NbtCompound toNbt() {
-        var tag = new NbtCompound();
+    public @NotNull CompoundTag toNbt() {
+        var tag = new CompoundTag();
         tag.put("area", area.toNBT());
         tag.putInt("minY", minY);
         tag.putInt("maxY", maxY);
@@ -354,7 +354,7 @@ final class FrameInsideTarget extends Target {
         return tag;
     }
 
-    public static FrameInsideTarget from(NbtCompound tag) {
+    public static FrameInsideTarget from(CompoundTag tag) {
         var area = Area.fromNBT(tag.getCompound("area")).orElseThrow();
         var minY = tag.getInt("minY");
         var maxY = tag.getInt("maxY");

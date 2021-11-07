@@ -2,6 +2,7 @@ package com.yogpc.qp.machines;
 
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.LongSummaryStatistics;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -54,8 +55,8 @@ public abstract class EnergyCounter {
         public void logOutput(long time) {
             if (time - lastLogTick >= logInterval) {
                 lastLogTick = time;
-                var use = useCounter.values().stream().collect(Collectors.summarizingLong(Long::longValue));
-                var get = getCounter.values().stream().collect(Collectors.summarizingLong(Long::longValue));
+                LongSummaryStatistics use = useCounter.values().stream().collect(Collectors.summarizingLong(Long::longValue));
+                LongSummaryStatistics get = getCounter.values().stream().collect(Collectors.summarizingLong(Long::longValue));
                 if (use.getSum() != 0 && get.getSum() != 0)
                     LOGGER.info("{}: Used {} FE in {} ticks({} FE/t). Got {} FE in {} ticks({} FE/t).", name,
                         use.getSum() / PowerTile.ONE_FE, use.getCount(), use.getAverage() / PowerTile.ONE_FE,

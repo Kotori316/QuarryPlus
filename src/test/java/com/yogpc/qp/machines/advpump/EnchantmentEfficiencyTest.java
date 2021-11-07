@@ -10,7 +10,7 @@ import com.yogpc.qp.QuarryPlusTest;
 import com.yogpc.qp.machines.EnchantmentLevel;
 import com.yogpc.qp.machines.PowerTile;
 import net.minecraft.enchantment.Enchantments;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.registry.Registry;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -38,7 +38,7 @@ class EnchantmentEfficiencyTest extends QuarryPlusTest {
 
     @Test
     void emptyNbt() {
-        var deserialized = EnchantmentEfficiency.fromNbt(new NbtCompound());
+        var deserialized = EnchantmentEfficiency.fromNbt(new CompoundTag());
         assertEquals(List.of(), deserialized.getEnchantments());
     }
 

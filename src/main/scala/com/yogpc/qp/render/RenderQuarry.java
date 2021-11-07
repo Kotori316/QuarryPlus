@@ -1,18 +1,18 @@
 package com.yogpc.qp.render;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.quarry.TileQuarry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.block.entity.BlockEntityRenderer;
-import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.core.Vec3i;
+import net.minecraft.util.Mth;
 
 @Environment(EnvType.CLIENT)
 @SuppressWarnings("DuplicatedCode")
@@ -21,25 +21,25 @@ public class RenderQuarry implements BlockEntityRenderer<TileQuarry> {
     private static final double d4 = 4d / 16d;
 
     @SuppressWarnings("unused")
-    public RenderQuarry(BlockEntityRendererFactory.Context context) {
+    public RenderQuarry(BlockEntityRendererProvider.Context context) {
     }
 
     @Override
-    public boolean rendersOutsideBoundingBox(TileQuarry blockEntity) {
+    public boolean shouldRenderOffScreen(TileQuarry blockEntity) {
         return true;
     }
 
     @Override
-    public int getRenderDistance() {
+    public int getViewDistance() {
         return 256;
     }
 
     @Override
-    public void render(TileQuarry quarry, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        MinecraftClient.getInstance().getProfiler().push(QuarryPlus.modID);
-        MinecraftClient.getInstance().getProfiler().push("RenderQuarry");
-        matrices.push();
-        var pos = quarry.getPos();
+    public void render(TileQuarry quarry, float tickDelta, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay) {
+        Minecraft.getInstance().getProfiler().push(QuarryPlus.modID);
+        Minecraft.getInstance().getProfiler().push("RenderQuarry");
+        matrices.pushPose();
+        var pos = quarry.getBlockPos();
         matrices.translate(-pos.getX(), -pos.getY(), -pos.getZ());
         if (quarry.getArea() != null) {
             switch (quarry.state) {
@@ -48,15 +48,15 @@ public class RenderQuarry implements BlockEntityRenderer<TileQuarry> {
             }
         }
 
-        matrices.pop();
-        MinecraftClient.getInstance().getProfiler().pop();
-        MinecraftClient.getInstance().getProfiler().pop();
+        matrices.popPose();
+        Minecraft.getInstance().getProfiler().pop();
+        Minecraft.getInstance().getProfiler().pop();
     }
 
-    private void renderFrame(TileQuarry quarry, MatrixStack matrices, VertexConsumerProvider vertexConsumers) {
+    private void renderFrame(TileQuarry quarry, PoseStack matrices, MultiBufferSource vertexConsumers) {
         assert quarry.getArea() != null; // Null check is done.
 
-        var buffer = new Buffer(vertexConsumers.getBuffer(RenderLayer.getCutout()), matrices);
+        Buffer buffer = new Buffer(vertexConsumers.getBuffer(RenderType.cutout()), matrices);
         matrices.translate(0.5, 0.5, 0.5);
         var minX = quarry.getArea().minX();
         var minY = quarry.getArea().minY();
@@ -82,14 +82,14 @@ public class RenderQuarry implements BlockEntityRenderer<TileQuarry> {
         var spriteV = Sprites.INSTANCE.getFrameV();
         var spriteH = Sprites.INSTANCE.getFrameH();
         var boxStripe = Sprites.INSTANCE.getBoxBlueStripe();
-        var V_minU = spriteV.getMinU();
-        var V_minV = spriteV.getMinV();
-        var V_maxU = spriteV.getFrameU(8);
-        var V_maxV = spriteV.getFrameV(8);
-        var B_minU = boxStripe.getMinU();
-        var B_minV = boxStripe.getMinV();
-        var B_maxU = boxStripe.getMaxU();
-        var B_maxV = boxStripe.getMaxV();
+        var V_minU = spriteV.getU0();
+        var V_minV = spriteV.getV0();
+        var V_maxU = spriteV.getU(8);
+        var V_maxV = spriteV.getV(8);
+        var B_minU = boxStripe.getU0();
+        var B_minV = boxStripe.getV0();
+        var B_maxU = boxStripe.getU1();
+        var B_maxV = boxStripe.getV1();
         for (int i = 0; i < subtract.getX(); i++) {
             var n = i == subtract.getX() - 1 ? 1 - d1 * 2 : 1d;
             var mXi = mXP + i + 0;
@@ -101,10 +101,10 @@ public class RenderQuarry implements BlockEntityRenderer<TileQuarry> {
         }
         for (int i = 0; i < subtract.getY(); i++) {
             var n = i == subtract.getY() - 1 ? 1 - d1 * 2 : 1d;
-            var H_minU = spriteH.getMinU();
-            var H_minV = spriteH.getMinV();
-            var H_maxU = spriteH.getFrameU(8);
-            var H_maxV = spriteH.getFrameV(8);
+            var H_minU = spriteH.getU0();
+            var H_minV = spriteH.getV0();
+            var H_maxU = spriteH.getU(8);
+            var H_maxV = spriteH.getV(8);
 
             var y0 = mYP + i + 0;
             var yn = mYP + i + n;
@@ -428,9 +428,9 @@ public class RenderQuarry implements BlockEntityRenderer<TileQuarry> {
         buffer.pos(MXm, MYP, MZP).colored().tex(B_maxU, B_minV).lightedAndEnd();
     }
 
-    private void renderDrill(TileQuarry quarry, MatrixStack matrices, VertexConsumerProvider vertexConsumers) {
+    private void renderDrill(TileQuarry quarry, PoseStack matrices, MultiBufferSource vertexConsumers) {
         assert quarry.getArea() != null; // Null check is done.
-        var buffer = new Buffer(vertexConsumers.getBuffer(RenderLayer.getCutout()), matrices);
+        var buffer = new Buffer(vertexConsumers.getBuffer(RenderType.cutout()), matrices);
         matrices.translate(0.5, 1.0, 0.5);
         var minX = quarry.getArea().minX();
         var minZ = quarry.getArea().minZ();
@@ -443,10 +443,10 @@ public class RenderQuarry implements BlockEntityRenderer<TileQuarry> {
 
         var drillStripe = Sprites.INSTANCE.getDrillStripe();
         var headSprite = Sprites.INSTANCE.getDrillHeadStripe();
-        var D_minU = drillStripe.getMinU();
-        var D_minV = drillStripe.getMinV();
-        var D_maxU = drillStripe.getFrameU(8);
-        var D_maxV = drillStripe.getMaxV();
+        var D_minU = drillStripe.getU0();
+        var D_minV = drillStripe.getV0();
+        var D_maxU = drillStripe.getU(8);
+        var D_maxV = drillStripe.getV1();
 
         var hXmd = headPosX - d4;
         var hXPd = headPosX + d4;
@@ -458,28 +458,28 @@ public class RenderQuarry implements BlockEntityRenderer<TileQuarry> {
         //X lines
         //positive(East)
         var xp_length = maxX - headPosX - d4 * 2;
-        var xp_floor = MathHelper.floor(xp_length);
+        var xp_floor = Mth.floor(xp_length);
         xLineDrill(buffer, true, xp_floor, xp_length, headPosX, drillStripe, MYmd, MYPd, hZmd, hZPd, D_minU, D_maxU, D_minV, D_maxV);
         //negative(West)
         var xn_length = headPosX - minX - d4 * 2;
-        var xn_floor = MathHelper.floor(xn_length);
+        var xn_floor = Mth.floor(xn_length);
         xLineDrill(buffer, false, xn_floor, xn_length, headPosX, drillStripe, MYmd, MYPd, hZmd, hZPd, D_minU, D_maxU, D_minV, D_maxV);
         //Z lines
         //positive(South)
         var zp_length = maxZ - headPosZ - d4 * 2;
-        var zp_floor = MathHelper.floor(zp_length);
+        var zp_floor = Mth.floor(zp_length);
         zLineDrill(buffer, true, zp_floor, zp_length, headPosZ, drillStripe, hXmd, hXPd, MYmd, MYPd, D_minU, D_maxU, D_minV, D_maxV);
         //negative(North)
         var zn_length = headPosZ - minZ - d4 * 2;
-        var zn_floor = MathHelper.floor(zn_length);
+        var zn_floor = Mth.floor(zn_length);
         zLineDrill(buffer, false, zn_floor, zn_length, headPosZ, drillStripe, hXmd, hXPd, MYmd, MYPd, D_minU, D_maxU, D_minV, D_maxV);
 
         var y_length = maxY - headPosY - 0.75;
-        var y_floor = MathHelper.floor(y_length);
+        var y_floor = Mth.floor(y_length);
         yLineDrill(buffer, y_floor, y_length, drillStripe, headSprite, headPosX, headPosY, headPosZ, hXmd, hXPd, MYPd, hZmd, hZPd, D_minU, D_maxU, D_minV);
     }
 
-    private static void xLineDrill(Buffer buffer, boolean plus, int floor, double length, double headPosX, Sprite drillStripe,
+    private static void xLineDrill(Buffer buffer, boolean plus, int floor, double length, double headPosX, TextureAtlasSprite drillStripe,
                                    double MYmd, double MYPd, double hZmd, double hZPd, float D_minU, float D_maxU, float D_minV, float D_maxV) {
         for (int i1 = 0; i1 < floor; i1++) {
             int i2 = i1 + 1;
@@ -527,7 +527,7 @@ public class RenderQuarry implements BlockEntityRenderer<TileQuarry> {
                 buffer.pos(fX1, MYPd, hZPd).colored().tex(D_maxU, D_minV).lightedAndEnd();
             }
         }
-        var fixedV = drillStripe.getFrameV((length - floor) * 16);
+        var fixedV = drillStripe.getV((length - floor) * 16);
         var xF = plus ? headPosX + (d4 + floor) : headPosX - (d4 + floor);
         var xL = plus ? headPosX + (d4 + length) : headPosX - (d4 + length);
         if (plus) {
@@ -573,15 +573,15 @@ public class RenderQuarry implements BlockEntityRenderer<TileQuarry> {
         }
     }
 
-    private static void yLineDrill(Buffer buffer, int floor, double length, Sprite drillStripe, Sprite headSprite, double headPosX, double headPosY, double headPosZ,
+    private static void yLineDrill(Buffer buffer, int floor, double length, TextureAtlasSprite drillStripe, TextureAtlasSprite headSprite, double headPosX, double headPosY, double headPosZ,
                                    double hXmd, double hXPd, double MYPd, double hZmd, double hZPd, float D_minU, float D_maxU, float D_minV) {
-        var D_I8dV = drillStripe.getFrameV(8d);
-        var D_16dU = drillStripe.getMaxU();
+        var D_I8dV = drillStripe.getV(8d);
+        var D_16dU = drillStripe.getU1();
         //Top
         buffer.pos(hXmd, MYPd, hZmd).colored().tex(D_minU, D_I8dV).lightedAndEnd();
         buffer.pos(hXmd, MYPd, hZPd).colored().tex(D_maxU, D_I8dV).lightedAndEnd();
-        buffer.pos(hXPd, MYPd, hZPd).colored().tex(D_maxU, drillStripe.getMaxV()).lightedAndEnd();
-        buffer.pos(hXPd, MYPd, hZmd).colored().tex(D_minU, drillStripe.getMaxV()).lightedAndEnd();
+        buffer.pos(hXPd, MYPd, hZPd).colored().tex(D_maxU, drillStripe.getV1()).lightedAndEnd();
+        buffer.pos(hXPd, MYPd, hZmd).colored().tex(D_minU, drillStripe.getV1()).lightedAndEnd();
         for (int i1 = 0; i1 < floor; i1++) {
             int i2 = i1 + 1;
             var MY1 = MYPd - i1;
@@ -606,7 +606,7 @@ public class RenderQuarry implements BlockEntityRenderer<TileQuarry> {
             buffer.pos(hXmd, MY2, hZmd).colored().tex(D_16dU, D_I8dV).lightedAndEnd();
             buffer.pos(hXmd, MY2, hZPd).colored().tex(D_16dU, D_minV).lightedAndEnd();
         }
-        var fixedU = drillStripe.getFrameU((length - floor) * 16);
+        var fixedU = drillStripe.getU((length - floor) * 16);
         var MYF = MYPd - floor;
         var MYL = MYPd - length;
         buffer.pos(hXPd, MYF, hZmd).colored().tex(D_minU, D_minV).lightedAndEnd();
@@ -631,8 +631,8 @@ public class RenderQuarry implements BlockEntityRenderer<TileQuarry> {
 
         //Bottom
         buffer.pos(hXmd, MYL, hZmd).colored().tex(D_minU, D_I8dV).lightedAndEnd();
-        buffer.pos(hXPd, MYL, hZmd).colored().tex(D_minU, drillStripe.getMaxV()).lightedAndEnd();
-        buffer.pos(hXPd, MYL, hZPd).colored().tex(D_maxU, drillStripe.getMaxV()).lightedAndEnd();
+        buffer.pos(hXPd, MYL, hZmd).colored().tex(D_minU, drillStripe.getV1()).lightedAndEnd();
+        buffer.pos(hXPd, MYL, hZPd).colored().tex(D_maxU, drillStripe.getV1()).lightedAndEnd();
         buffer.pos(hXmd, MYL, hZPd).colored().tex(D_maxU, D_I8dV).lightedAndEnd();
 
         //Drill
@@ -642,10 +642,10 @@ public class RenderQuarry implements BlockEntityRenderer<TileQuarry> {
         double zP = headPosZ + d4 / 2;
         double yT = headPosY + 1;
         double yB = headPosY + 0;
-        var hmU = headSprite.getMinU();
-        var hMU = headSprite.getMaxU();
-        var hmV = headSprite.getMinV();
-        var hMV = headSprite.getFrameV(4);
+        var hmU = headSprite.getU0();
+        var hMU = headSprite.getU1();
+        var hmV = headSprite.getV0();
+        var hMV = headSprite.getV(4);
         buffer.pos(xP, yT, zm).colored().tex(hmU, hmV).lightedAndEnd();
         buffer.pos(xP, yB, zm).colored().tex(hMU, hmV).lightedAndEnd();
         buffer.pos(xm, yB, zm).colored().tex(hMU, hMV).lightedAndEnd();
@@ -667,7 +667,7 @@ public class RenderQuarry implements BlockEntityRenderer<TileQuarry> {
         buffer.pos(xm, yT, zP).colored().tex(hmU, hMV).lightedAndEnd();
     }
 
-    private static void zLineDrill(Buffer buffer, boolean plus, int floor, double length, double headPosZ, Sprite drillStripe,
+    private static void zLineDrill(Buffer buffer, boolean plus, int floor, double length, double headPosZ, TextureAtlasSprite drillStripe,
                                    double hXmd, double hXPd, double MYmd, double MYPd, float D_minU, float D_maxU, float D_minV, float D_maxV) {
         for (int i1 = 0; i1 < floor; i1++) {
             int i2 = i1 + 1;
@@ -715,7 +715,7 @@ public class RenderQuarry implements BlockEntityRenderer<TileQuarry> {
                 buffer.pos(hXPd, MYmd, fZ2).colored().tex(D_minU, D_maxV).lightedAndEnd();
             }
         }
-        var fixedV = drillStripe.getFrameV((length - floor) * 16);
+        var fixedV = drillStripe.getV((length - floor) * 16);
         var zF = plus ? headPosZ + (d4 + floor) : headPosZ - (d4 + floor);
         var zL = plus ? headPosZ + (d4 + length) : headPosZ - (d4 + length);
         if (plus) {

@@ -5,22 +5,22 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.yogpc.qp.machines.EnchantableItem;
-import net.minecraft.block.Block;
-import net.minecraft.client.item.TooltipContext;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.world.World;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 
 class ItemQuarry extends BlockItem implements EnchantableItem {
-    ItemQuarry(Block block, Settings settings) {
+    ItemQuarry(Block block, Properties settings) {
         super(block, settings);
     }
 
@@ -30,39 +30,39 @@ class ItemQuarry extends BlockItem implements EnchantableItem {
     }
 
     @Override
-    public int getEnchantability() {
+    public int getEnchantmentValue() {
         return 25;
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-        super.appendTooltip(stack, world, tooltip, context);
-        var tag = Optional.ofNullable(stack.getSubNbt(BLOCK_ENTITY_TAG_KEY)).orElse(new NbtCompound());
+    public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag context) {
+        super.appendHoverText(stack, world, tooltip, context);
+        CompoundTag tag = Optional.ofNullable(stack.getTagElement(BLOCK_ENTITY_TAG)).orElse(new CompoundTag());
         if (tag.getBoolean("bedrockRemove")) {
-            tooltip.add(new LiteralText("BedrockRemove on"));
+            tooltip.add(new TextComponent("BedrockRemove on"));
         }
         if (tag.contains("digMinY")) {
-            tooltip.add(new LiteralText("DigMinY " + tag.getInt("digMinY")));
+            tooltip.add(new TextComponent("DigMinY " + tag.getInt("digMinY")));
         }
     }
 
     @Override
-    public void appendStacks(ItemGroup group, DefaultedList<ItemStack> stacks) {
-        super.appendStacks(group, stacks);
-        if (this.isIn(group)) {
-            var stack = new ItemStack(this);
+    public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> stacks) {
+        super.fillItemCategory(group, stacks);
+        if (this.allowdedIn(group)) {
+            ItemStack stack = new ItemStack(this);
             {
-                var copy = stack.copy();
-                copy.addEnchantment(Enchantments.EFFICIENCY, 5);
-                copy.addEnchantment(Enchantments.UNBREAKING, 3);
-                copy.addEnchantment(Enchantments.FORTUNE, 3);
+                ItemStack copy = stack.copy();
+                copy.enchant(Enchantments.BLOCK_EFFICIENCY, 5);
+                copy.enchant(Enchantments.UNBREAKING, 3);
+                copy.enchant(Enchantments.BLOCK_FORTUNE, 3);
                 stacks.add(copy);
             }
             {
-                var copy = stack.copy();
-                copy.addEnchantment(Enchantments.EFFICIENCY, 5);
-                copy.addEnchantment(Enchantments.UNBREAKING, 3);
-                copy.addEnchantment(Enchantments.SILK_TOUCH, 1);
+                ItemStack copy = stack.copy();
+                copy.enchant(Enchantments.BLOCK_EFFICIENCY, 5);
+                copy.enchant(Enchantments.UNBREAKING, 3);
+                copy.enchant(Enchantments.SILK_TOUCH, 1);
                 stacks.add(copy);
             }
         }
@@ -70,6 +70,6 @@ class ItemQuarry extends BlockItem implements EnchantableItem {
 
     @Override
     public Set<Enchantment> acceptEnchantments() {
-        return Set.of(Enchantments.EFFICIENCY, Enchantments.UNBREAKING, Enchantments.FORTUNE, Enchantments.SILK_TOUCH);
+        return Set.of(Enchantments.BLOCK_EFFICIENCY, Enchantments.UNBREAKING, Enchantments.BLOCK_FORTUNE, Enchantments.SILK_TOUCH);
     }
 }

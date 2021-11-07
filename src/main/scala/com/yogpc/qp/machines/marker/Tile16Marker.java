@@ -14,18 +14,18 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class Tile16Marker extends BlockEntity implements QuarryMarker, CheckerLog, BlockEntityClientSerializable {
-    private BlockPos min = BlockPos.ORIGIN;
-    private BlockPos max = BlockPos.ORIGIN;
+    private BlockPos min = BlockPos.ZERO;
+    private BlockPos max = BlockPos.ZERO;
     @Nullable
     public Box[] boxes;
     //private boolean bcLoaded = ModList.get().isLoaded(BC_TILE_ID);
@@ -43,22 +43,22 @@ public class Tile16Marker extends BlockEntity implements QuarryMarker, CheckerLo
     }
 
     public void changeSize(int size) {
-        int y = getPos().getY();
+        int y = getBlockPos().getY();
         changeSize(size, y, y);
     }
 
     public void changeSize(int size, int yMax, int yMin) {
         this.size = size;
-        BlockPos edge1 = getPos().add(xDirection.offset() * (size + 1), 0, zDirection.offset() * (size + 1));
-        BlockPos edge2 = getPos();
+        BlockPos edge1 = getBlockPos().offset(xDirection.getStep() * (size + 1), 0, zDirection.getStep() * (size + 1));
+        BlockPos edge2 = getBlockPos();
         min = new BlockPos(Math.min(edge1.getX(), edge2.getX()), yMin, Math.min(edge1.getZ(), edge2.getZ()));
         max = new BlockPos(Math.max(edge1.getX(), edge2.getX()), yMax, Math.max(edge1.getZ(), edge2.getZ()));
-        if (world != null && world.isClient) setRender();
+        if (level != null && level.isClientSide) setRender();
     }
 
     private void setRender() {
-        assert world != null;
-        boxes = RenderMarker.getRenderBox(new Area(min, max, Direction.from(Direction.Axis.X, xDirection)));
+        assert level != null;
+        boxes = RenderMarker.getRenderBox(new Area(min, max, Direction.fromAxisAndDirection(Direction.Axis.X, xDirection)));
     }
 
     @Environment(EnvType.CLIENT)
@@ -68,66 +68,66 @@ public class Tile16Marker extends BlockEntity implements QuarryMarker, CheckerLo
 
     // TileEntity overrides
     @Override
-    public void readNbt(NbtCompound compound) {
-        super.readNbt(compound);
-        min = BlockPos.fromLong(compound.getLong("min"));
-        max = BlockPos.fromLong(compound.getLong("max"));
+    public void load(CompoundTag compound) {
+        super.load(compound);
+        min = BlockPos.of(compound.getLong("min"));
+        max = BlockPos.of(compound.getLong("max"));
         xDirection = compound.getBoolean("x") ? Direction.AxisDirection.POSITIVE : Direction.AxisDirection.NEGATIVE;
         zDirection = compound.getBoolean("z") ? Direction.AxisDirection.POSITIVE : Direction.AxisDirection.NEGATIVE;
         size = compound.getInt("size");
-        if (world != null && world.isClient) {
+        if (level != null && level.isClientSide) {
             setRender();
         }
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound compound) {
+    public CompoundTag save(CompoundTag compound) {
         compound.putLong("min", min.asLong());
         compound.putLong("max", max.asLong());
         compound.putBoolean("x", xDirection == Direction.AxisDirection.POSITIVE);
         compound.putBoolean("z", zDirection == Direction.AxisDirection.POSITIVE);
         compound.putInt("size", size);
-        return super.writeNbt(compound);
+        return super.save(compound);
     }
 
     @Override
-    public void fromClientTag(NbtCompound tag) {
-        readNbt(tag);
+    public void fromClientTag(CompoundTag tag) {
+        load(tag);
     }
 
     @Override
-    public NbtCompound toClientTag(NbtCompound tag) {
-        return writeNbt(tag);
+    public CompoundTag toClientTag(CompoundTag tag) {
+        return save(tag);
     }
 
     // Interface implementations
 
     public BlockPos min() {
-        return min == BlockPos.ZERO ? getPos() : min;
+        return min == BlockPos.ZERO ? getBlockPos() : min;
     }
 
     public BlockPos max() {
-        return max == BlockPos.ZERO ? getPos() : max;
+        return max == BlockPos.ZERO ? getBlockPos() : max;
     }
 
     @Override
-    public List<? extends Text> getDebugLogs() {
+    public List<? extends Component> getDebugLogs() {
         return List.of(
             "Size: " + size,
             "Min: " + min(),
             "Max: " + max()
-        ).stream().map(LiteralText::new).toList();
+        ).stream().map(TextComponent::new).toList();
     }
 
     @Override
     public Optional<Area> getArea() {
-        return Optional.of(new Area(min, max, Direction.from(Direction.Axis.X, xDirection)));
+        return Optional.of(new Area(min, max, Direction.fromAxisAndDirection(Direction.Axis.X, xDirection)));
     }
 
     @Override
     public List<ItemStack> removeAndGetItems() {
-        assert world != null;
-        world.removeBlock(pos, false);
+        assert level != null;
+        level.removeBlock(worldPosition, false);
         return List.of(new ItemStack(QuarryPlus.ModObjects.BLOCK_16_MARKER));
     }
 }

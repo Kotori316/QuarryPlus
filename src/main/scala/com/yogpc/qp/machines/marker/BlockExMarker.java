@@ -2,87 +2,87 @@ package com.yogpc.qp.machines.marker;
 
 import com.yogpc.qp.QuarryPlus;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockEntityProvider;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.Material;
-import net.minecraft.block.ShapeContext;
-import net.minecraft.block.WallTorchBlock;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
-import net.minecraft.world.WorldView;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.WallTorchBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class BlockExMarker extends Block implements BlockEntityProvider {
-    private static final VoxelShape STANDING_Shape = VoxelShapes.cuboid(.35, 0, .35, .65, .65, .65);
+public abstract class BlockExMarker extends Block implements EntityBlock {
+    private static final VoxelShape STANDING_Shape = Shapes.box(.35, 0, .35, .65, .65, .65);
 
-    public final BlockItem blockItem = new BlockItem(this, new Item.Settings().group(QuarryPlus.CREATIVE_TAB));
+    public final BlockItem blockItem = new BlockItem(this, new Item.Properties().tab(QuarryPlus.CREATIVE_TAB));
 
     public BlockExMarker() {
-        super(Settings.of(Material.DECORATION).luminance(value -> 7).noCollision());
+        super(Properties.of(Material.DECORATION).lightLevel(value -> 7).noCollission());
     }
 
-    protected abstract void openGUI(World worldIn, BlockPos pos, PlayerEntity playerIn);
+    protected abstract void openGUI(Level worldIn, BlockPos pos, Player playerIn);
 
     @Override
     @SuppressWarnings("deprecation")
-    public ActionResult onUse(BlockState state, World world, BlockPos pos,
-                              PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (!player.isSneaking()) {
-            if (!world.isClient) {
+    public InteractionResult use(BlockState state, Level world, BlockPos pos,
+                                 Player player, InteractionHand hand, BlockHitResult hit) {
+        if (!player.isShiftKeyDown()) {
+            if (!world.isClientSide) {
                 openGUI(world, pos, player);
-                return ActionResult.CONSUME;
+                return InteractionResult.CONSUME;
             } else {
-                return ActionResult.SUCCESS;
+                return InteractionResult.SUCCESS;
             }
         }
-        return super.onUse(state, world, pos, player, hand, hit);
+        return super.use(state, world, pos, player, hand, hit);
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.MODEL;
+    public RenderShape getRenderShape(BlockState state) {
+        return RenderShape.MODEL;
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public boolean isSideInvisible(BlockState state, BlockState stateFrom, Direction direction) {
+    public boolean skipRendering(BlockState state, BlockState stateFrom, Direction direction) {
         return true;
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return VoxelShapes.empty();
+    public VoxelShape getCollisionShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
+        return Shapes.empty();
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
         return STANDING_Shape;
     }
 
@@ -91,43 +91,43 @@ public abstract class BlockExMarker extends Block implements BlockEntityProvider
      */
     @Override
     @SuppressWarnings("deprecation")
-    public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+    public boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
         Direction direction = Direction.UP;
-        BlockPos blockPos = pos.offset(direction.getOpposite());
+        BlockPos blockPos = pos.relative(direction.getOpposite());
         BlockState blockState = world.getBlockState(blockPos);
-        return blockState.isSideSolidFullSquare(world, blockPos, direction);
+        return blockState.isFaceSturdy(world, blockPos, direction);
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
-        return state.canPlaceAt(world, pos) ? state : Blocks.AIR.getDefaultState();
+    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
+        return state.canSurvive(world, pos) ? state : Blocks.AIR.defaultBlockState();
     }
 
     @Override
-    public abstract void onPlaced(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack);
+    public abstract void setPlacedBy(Level worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack);
 
     @Override
-    public abstract BlockEntity createBlockEntity(BlockPos pos, BlockState state);
+    public abstract BlockEntity newBlockEntity(BlockPos pos, BlockState state);
 
     public static class BlockFlexMarker extends BlockExMarker {
         public static final String NAME = "flex_marker";
 
         @Override
-        public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-            return QuarryPlus.ModObjects.FLEX_MARKER_TYPE.instantiate(pos, state);
+        public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+            return QuarryPlus.ModObjects.FLEX_MARKER_TYPE.create(pos, state);
         }
 
         @Override
-        protected void openGUI(World worldIn, BlockPos pos, PlayerEntity playerIn) {
-            playerIn.openHandledScreen(new InteractionObject(pos, QuarryPlus.ModObjects.FLEX_MARKER_HANDLER_TYPE, getTranslationKey()));
+        protected void openGUI(Level worldIn, BlockPos pos, Player playerIn) {
+            playerIn.openMenu(new InteractionObject(pos, QuarryPlus.ModObjects.FLEX_MARKER_HANDLER_TYPE, getDescriptionId()));
         }
 
         @Override
-        public void onPlaced(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-            float rotationYawHead = placer != null ? placer.getHeadYaw() : 0f;
+        public void setPlacedBy(Level worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+            float rotationYawHead = placer != null ? placer.getYHeadRot() : 0f;
             worldIn.getBlockEntity(pos, QuarryPlus.ModObjects.FLEX_MARKER_TYPE)
-                .ifPresent(t -> t.init(Direction.fromRotation(rotationYawHead)));
+                .ifPresent(t -> t.init(Direction.fromYRot(rotationYawHead)));
         }
 
     }
@@ -137,21 +137,21 @@ public abstract class BlockExMarker extends Block implements BlockEntityProvider
         public static final String NAME = "marker16";
 
         @Override
-        protected void openGUI(World worldIn, BlockPos pos, PlayerEntity playerIn) {
-            playerIn.openHandledScreen(new InteractionObject(pos, QuarryPlus.ModObjects.MARKER_16_HANDLER_TYPE, getTranslationKey()));
+        protected void openGUI(Level worldIn, BlockPos pos, Player playerIn) {
+            playerIn.openMenu(new InteractionObject(pos, QuarryPlus.ModObjects.MARKER_16_HANDLER_TYPE, getDescriptionId()));
         }
 
         @Override
-        public void onPlaced(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-            float angle = RANGE.convert(placer != null ? placer.getHeadYaw() : 0f);
+        public void setPlacedBy(Level worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+            float angle = RANGE.convert(placer != null ? placer.getYHeadRot() : 0f);
             Direction.AxisDirection z = angle < 90 || angle >= 270 ? Direction.AxisDirection.POSITIVE : Direction.AxisDirection.NEGATIVE;
             Direction.AxisDirection x = angle > 180 ? Direction.AxisDirection.POSITIVE : Direction.AxisDirection.NEGATIVE;
             worldIn.getBlockEntity(pos, QuarryPlus.ModObjects.MARKER_16_TYPE).ifPresent(t -> t.init(x, z));
         }
 
         @Override
-        public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-            return QuarryPlus.ModObjects.MARKER_16_TYPE.instantiate(pos, state);
+        public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+            return QuarryPlus.ModObjects.MARKER_16_TYPE.create(pos, state);
         }
 
     }
@@ -159,21 +159,21 @@ public abstract class BlockExMarker extends Block implements BlockEntityProvider
     public static final String GUI_FLEX_ID = QuarryPlus.modID + ":gui_" + "flex_marker";
     public static final String GUI_16_ID = QuarryPlus.modID + ":gui_" + "marker16";
 
-    private record InteractionObject(BlockPos pos, ScreenHandlerType<?> type,
+    private record InteractionObject(BlockPos pos, MenuType<?> type,
                                      String name) implements ExtendedScreenHandlerFactory {
 
         @Override
-        public Text getDisplayName() {
-            return new TranslatableText(name);
+        public Component getDisplayName() {
+            return new TranslatableComponent(name);
         }
 
         @Override
-        public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
+        public AbstractContainerMenu createMenu(int syncId, Inventory inv, Player player) {
             return new ContainerMarker(syncId, player, this.pos, type);
         }
 
         @Override
-        public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
+        public void writeScreenOpeningData(ServerPlayer player, FriendlyByteBuf buf) {
             buf.writeBlockPos(pos);
         }
     }

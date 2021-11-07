@@ -3,32 +3,32 @@ package com.yogpc.qp.machines.checker;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.CheckerLog;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.text.LiteralText;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.BlockHitResult;
 
 public class ItemChecker extends Item implements UseBlockCallback {
     public static final String NAME = "status_checker";
 
     public ItemChecker() {
-        super(new Settings().group(QuarryPlus.CREATIVE_TAB));
+        super(new Properties().tab(QuarryPlus.CREATIVE_TAB));
         UseBlockCallback.EVENT.register(this);
     }
 
     @Override
-    public ActionResult interact(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult) {
-        if (player.isSpectator() || player.getStackInHand(hand).getItem() != this) return ActionResult.PASS;
+    public InteractionResult interact(Player player, Level world, InteractionHand hand, BlockHitResult hitResult) {
+        if (player.isSpectator() || player.getItemInHand(hand).getItem() != this) return InteractionResult.PASS;
         if (world.getBlockEntity(hitResult.getBlockPos()) instanceof CheckerLog debug) {
-            player.sendMessage(new LiteralText(Formatting.YELLOW + (world.isClient ? "Client" : "Server") + Formatting.RESET), false);
-            debug.getDebugLogs().forEach(t -> player.sendMessage(t, false));
-            return ActionResult.SUCCESS;
+            player.displayClientMessage(new TextComponent(ChatFormatting.YELLOW + (world.isClientSide ? "Client" : "Server") + ChatFormatting.RESET), false);
+            debug.getDebugLogs().forEach(t -> player.displayClientMessage(t, false));
+            return InteractionResult.SUCCESS;
         } else {
-            return ActionResult.PASS;
+            return InteractionResult.PASS;
         }
     }
 }

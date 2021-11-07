@@ -3,7 +3,7 @@ package com.yogpc.qp.machines.misc;
 import com.yogpc.qp.machines.quarry.TileQuarry;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.packet.LevelMessage;
-import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.Nullable;
 
 abstract class YAccessor {
@@ -43,11 +43,11 @@ class QuarryYAccessor extends YAccessor {
 
     @Override
     IMessage<?> makeMessage() {
-        return LevelMessage.create(quarry.getWorld(), quarry.getPos(), getDigMinY());
+        return LevelMessage.create(quarry.getLevel(), quarry.getBlockPos(), getDigMinY());
     }
 
     @Override
     int getLimitTop() {
-        return quarry.getArea() != null ? quarry.getArea().minY() : quarry.getPos().getY();
+        return quarry.getArea() != null ? quarry.getArea().minY() : quarry.getBlockPos().getY();
     }
 }

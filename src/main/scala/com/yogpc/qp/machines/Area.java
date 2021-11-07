@@ -4,9 +4,9 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.Optional;
 
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
+import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 
 public record Area(int minX, int minY, int minZ, int maxX, int maxY, int maxZ,
@@ -35,8 +35,8 @@ public record Area(int minX, int minY, int minZ, int maxX, int maxY, int maxZ,
         return (maxX() - minX()) * (maxZ() - minZ());
     }
 
-    public NbtCompound toNBT() {
-        var tag = new NbtCompound();
+    public CompoundTag toNBT() {
+        var tag = new CompoundTag();
         tag.putInt("minX", this.minX);
         tag.putInt("minY", this.minY);
         tag.putInt("minZ", this.minZ);
@@ -47,7 +47,7 @@ public record Area(int minX, int minY, int minZ, int maxX, int maxY, int maxZ,
         return tag;
     }
 
-    public static Optional<Area> fromNBT(@Nullable NbtCompound tag) {
+    public static Optional<Area> fromNBT(@Nullable CompoundTag tag) {
         if (tag == null || tag.isEmpty()) {
             return Optional.empty();
         } else {

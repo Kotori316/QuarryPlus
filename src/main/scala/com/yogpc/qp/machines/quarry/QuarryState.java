@@ -10,16 +10,16 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.PowerTile;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.FluidBlock;
-import net.minecraft.block.FluidDrainable;
-import net.minecraft.block.entity.BlockEntityTicker;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.BucketPickup;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.Nullable;
@@ -27,13 +27,13 @@ import org.jetbrains.annotations.Nullable;
 public enum QuarryState implements BlockEntityTicker<TileQuarry> {
     FINISHED(false) {
         @Override
-        public void tick(World world, BlockPos quarryPos, BlockState state, TileQuarry quarry) {
+        public void tick(Level world, BlockPos quarryPos, BlockState state, TileQuarry quarry) {
             // Nothing to do.
         }
     },
     WAITING(false) {
         @Override
-        public void tick(World world, BlockPos quarryPos, BlockState state, TileQuarry quarry) {
+        public void tick(Level world, BlockPos quarryPos, BlockState state, TileQuarry quarry) {
             if (quarry.getArea() != null && quarry.getEnergy() > quarry.getMaxEnergy() / 200) {
                 quarry.setState(BREAK_INSIDE_FRAME, state);
             }
@@ -41,8 +41,8 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
     },
     BREAK_INSIDE_FRAME(true) {
         @Override
-        public void tick(World world, BlockPos quarryPos, BlockState state, TileQuarry quarry) {
-            if (world.getTime() % headInterval(quarry) != 0) return;
+        public void tick(Level world, BlockPos quarryPos, BlockState state, TileQuarry quarry) {
+            if (world.getGameTime() % headInterval(quarry) != 0) return;
             Objects.requireNonNull(quarry.getArea());
             if (quarry.target == null) {
                 // Initial
@@ -64,7 +64,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
     },
     MAKE_FRAME(true) {
         @Override
-        public void tick(World world, BlockPos quarryPos, BlockState state, TileQuarry quarry) {
+        public void tick(Level world, BlockPos quarryPos, BlockState state, TileQuarry quarry) {
             Objects.requireNonNull(quarry.getArea());
             if (quarry.target == null) {
                 quarry.target = Target.newFrameTarget(quarry.getArea());
@@ -77,7 +77,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
                 var breakResult = quarry.breakBlock(targetPos);
                 if (breakResult.isSuccess()) {
                     if (quarry.useEnergy(PowerTile.Constants.getMakeFrameEnergy(quarry), PowerTile.Reason.MAKE_FRAME, false)) {
-                        quarry.getTargetWorld().setBlockState(targetPos, QuarryPlus.ModObjects.BLOCK_FRAME.getDefaultState());
+                        quarry.getTargetWorld().setBlockAndUpdate(targetPos, QuarryPlus.ModObjects.BLOCK_FRAME.defaultBlockState());
                     }
                 }
             }
@@ -85,7 +85,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
     },
     MOVE_HEAD(true) {
         @Override
-        public void tick(World world, BlockPos quarryPos, BlockState state, TileQuarry quarry) {
+        public void tick(Level world, BlockPos quarryPos, BlockState state, TileQuarry quarry) {
             Objects.requireNonNull(quarry.getArea());
             if (quarry.target == null) {
                 quarry.target = Target.newDigTarget(quarry.getArea(), quarry.getArea().minY());
@@ -94,7 +94,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
             var blockTarget = QuarryState.dropUntilPos(quarry.target, StateConditions.skipNoBreak(quarry));
             if (blockTarget == null) {
                 var fluidPoses = quarry.target.allPoses()
-                    .filter(p -> !quarry.getTargetWorld().getFluidState(p).isEmpty()).map(BlockPos::toImmutable).toList();
+                    .filter(p -> !quarry.getTargetWorld().getFluidState(p).isEmpty()).map(BlockPos::immutable).toList();
                 if (fluidPoses.isEmpty()) {
                     // Change Y
                     quarry.target = Target.nextY(quarry.target, quarry.getArea(), quarry.digMinY);
@@ -108,9 +108,9 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
                     quarry.setState(REMOVE_FLUID, state);
                 }
             } else {
-                var difference = new Vec3d(blockTarget.getX() - quarry.headX,
+                var difference = new Vec3(blockTarget.getX() - quarry.headX,
                     blockTarget.getY() - quarry.headY, blockTarget.getZ() - quarry.headZ);
-                var squaredDistance = difference.lengthSquared();
+                var squaredDistance = difference.lengthSqr();
                 if (squaredDistance > 1e-8) {
                     var moveDistance = Math.min(squaredDistance, quarry.headSpeed());
                     var required = PowerTile.Constants.getMoveEnergy(Math.sqrt(moveDistance), quarry);
@@ -118,19 +118,19 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
                         return;
                     }
                     var normalized = difference.normalize();
-                    quarry.headX += normalized.getX() * Math.sqrt(moveDistance);
-                    quarry.headY += normalized.getY() * Math.sqrt(moveDistance);
-                    quarry.headZ += normalized.getZ() * Math.sqrt(moveDistance);
+                    quarry.headX += normalized.x() * Math.sqrt(moveDistance);
+                    quarry.headY += normalized.y() * Math.sqrt(moveDistance);
+                    quarry.headZ += normalized.z() * Math.sqrt(moveDistance);
                     quarry.sync();
                 }
-                if (blockTarget.getSquaredDistance(quarry.headX, quarry.headY, quarry.headZ, false) <= 1e-8)
+                if (blockTarget.distSqr(quarry.headX, quarry.headY, quarry.headZ, false) <= 1e-8)
                     BREAK_BLOCK.tick(world, quarryPos, state, quarry);
             }
         }
     },
     BREAK_BLOCK(true) {
         @Override
-        public void tick(World world, BlockPos quarryPos, BlockState state, TileQuarry quarry) {
+        public void tick(Level world, BlockPos quarryPos, BlockState state, TileQuarry quarry) {
             Objects.requireNonNull(quarry.getArea());
             if (quarry.target == null) {
                 quarry.target = Target.newDigTarget(quarry.getArea(), quarry.getArea().minY());
@@ -148,7 +148,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
     },
     REMOVE_FLUID(true) {
         @Override
-        public void tick(World world, BlockPos quarryPos, BlockState state, TileQuarry quarry) {
+        public void tick(Level world, BlockPos quarryPos, BlockState state, TileQuarry quarry) {
             Objects.requireNonNull(quarry.getArea());
             if (quarry.target == null) {
                 quarry.target = Target.newDigTarget(quarry.getArea(), quarry.getArea().minY());
@@ -160,17 +160,17 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
             if (quarry.useEnergy(PowerTile.Constants.getBreakBlockFluidEnergy(quarry) * fluidPoses.size(), PowerTile.Reason.REMOVE_FLUID, true)) {
                 for (BlockPos fluidPos : fluidPoses) {
                     var blockState = targetWorld.getBlockState(fluidPos);
-                    if (blockState.getBlock() instanceof FluidBlock) {
+                    if (blockState.getBlock() instanceof LiquidBlock) {
                         var fluidState = targetWorld.getFluidState(fluidPos);
-                        if (!fluidState.isEmpty() && fluidState.isStill())
-                            quarry.storage.addFluid(fluidState.getFluid(), MachineStorage.ONE_BUCKET);
-                        targetWorld.setBlockState(fluidPos, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
-                    } else if (blockState.getBlock() instanceof FluidDrainable drain) {
-                        var bucket = drain.tryDrainFluid(targetWorld, fluidPos, blockState);
+                        if (!fluidState.isEmpty() && fluidState.isSource())
+                            quarry.storage.addFluid(fluidState.getType(), MachineStorage.ONE_BUCKET);
+                        targetWorld.setBlock(fluidPos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
+                    } else if (blockState.getBlock() instanceof BucketPickup drain) {
+                        var bucket = drain.pickupBlock(targetWorld, fluidPos, blockState);
                         quarry.storage.addFluid(bucket);
                     } else {
                         // What ?
-                        targetWorld.setBlockState(fluidPos, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
+                        targetWorld.setBlock(fluidPos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
                     }
                     TileQuarry.checkEdgeFluid(fluidPos, false, targetWorld, quarry);
                 }
@@ -186,7 +186,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
     }
 
     @Override
-    public abstract void tick(World world, BlockPos quarryPos, BlockState state, TileQuarry quarry);
+    public abstract void tick(Level world, BlockPos quarryPos, BlockState state, TileQuarry quarry);
 
     @Nullable
     private static BlockPos dropUntilPos(Target target, Predicate<BlockPos> condition) {
@@ -197,7 +197,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
         return pos;
     }
 
-    private static Set<BlockPos> countFluid(World world, BlockPos originalPos, Area area) {
+    private static Set<BlockPos> countFluid(Level world, BlockPos originalPos, Area area) {
         Set<BlockPos> counted = new HashSet<>();
         Set<Direction> directions = EnumSet.of(Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST, Direction.UP);
         Set<BlockPos> search = Set.of(originalPos);
@@ -209,7 +209,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
                 if (!world.getFluidState(pos).isEmpty()) {
                     if (counted.add(pos)) {
                         directions.stream()
-                            .map(pos::offset)
+                            .map(pos::relative)
                             .filter(area::isInAreaIgnoreY)
                             .filter(Predicate.not(checked::contains))
                             .forEach(nextSearch::add);
@@ -232,7 +232,7 @@ class StateConditions {
         assert world != null; // This must be called in tick update.
         return pos -> {
             var state = world.getBlockState(pos);
-            return state.isOf(QuarryPlus.ModObjects.BLOCK_FRAME) // Frame
+            return state.is(QuarryPlus.ModObjects.BLOCK_FRAME) // Frame
                 || !quarry.canBreak(world, pos, state) // Unbreakable
                 ;
         };

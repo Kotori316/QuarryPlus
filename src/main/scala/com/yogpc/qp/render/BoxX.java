@@ -1,9 +1,9 @@
 package com.yogpc.qp.render;
 
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.MathHelper;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.util.Mth;
 
 class BoxX extends Box {
 
@@ -13,14 +13,14 @@ class BoxX extends Box {
 
     @Override
     @SuppressWarnings("DuplicatedCode")
-    public void render(VertexConsumer b, MatrixStack matrixStack, Sprite sprite, ColorBox colorBox) {
-        int count = MathHelper.floor(this.length / super.sizeX);
-        float minU = sprite.getMinU();
-        float minV = sprite.getMinV();
-        float maXV = sprite.getFrameV(super.sizeX / this.maxSize * (double) 16);
-        float maYU = sprite.getFrameU(super.sizeY / this.maxSize * (double) 16);
-        float maZU = sprite.getFrameU(super.sizeZ / this.maxSize * (double) 16);
-        float maZV = sprite.getFrameV(super.sizeZ / this.maxSize * (double) 16);
+    public void render(VertexConsumer b, PoseStack matrixStack, TextureAtlasSprite sprite, ColorBox colorBox) {
+        int count = Mth.floor(this.length / super.sizeX);
+        float minU = sprite.getU0();
+        float minV = sprite.getV0();
+        float maXV = sprite.getV(super.sizeX / this.maxSize * (double) 16);
+        float maYU = sprite.getU(super.sizeY / this.maxSize * (double) 16);
+        float maZU = sprite.getU(super.sizeZ / this.maxSize * (double) 16);
+        float maZV = sprite.getV(super.sizeZ / this.maxSize * (double) 16);
         int red = colorBox.red();
         int green = colorBox.green();
         int blue = colorBox.blue();

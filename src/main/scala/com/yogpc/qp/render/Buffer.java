@@ -1,26 +1,26 @@
 package com.yogpc.qp.render;
 
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vector4f;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Vector4f;
 
 final class Buffer {
     private final VertexConsumer bufferBuilder;
-    private final MatrixStack matrix;
+    private final PoseStack matrix;
     private final Vector4f vector4f = new Vector4f();
 
-    Buffer(VertexConsumer bufferBuilder, MatrixStack matrixStack) {
+    Buffer(VertexConsumer bufferBuilder, PoseStack matrixStack) {
         this.bufferBuilder = bufferBuilder;
         matrix = matrixStack;
     }
 
     final Buffer pos(double x, double y, double z) {
-        Matrix4f matrix4f = matrix.peek().getModel();
+        Matrix4f matrix4f = matrix.last().pose();
 
         vector4f.set((float) x, (float) y, (float) z, 1.0F);
         vector4f.transform(matrix4f);
-        bufferBuilder.vertex(vector4f.getX(), vector4f.getY(), vector4f.getZ());
+        bufferBuilder.vertex(vector4f.x(), vector4f.y(), vector4f.z());
         return this;
     }
 
@@ -39,7 +39,7 @@ final class Buffer {
     }
 
     final Buffer tex(float u, float v) {
-        bufferBuilder.texture(u, v);
+        bufferBuilder.uv(u, v);
         return this;
     }
 
@@ -47,7 +47,7 @@ final class Buffer {
      * {@code buffer.lightmap(240, 0).endVertex()}
      */
     final void lightedAndEnd() {
-        bufferBuilder.overlay(10, 10).light(240, 0).normal(0, 1, 0).next();
+        bufferBuilder.overlayCoords(10, 10).uv2(240, 0).normal(0, 1, 0).endVertex();
     }
 
     final boolean bufferEq(VertexConsumer builder) {

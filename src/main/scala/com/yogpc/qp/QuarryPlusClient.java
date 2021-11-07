@@ -13,15 +13,15 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
-import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.renderer.RenderType;
 
 public class QuarryPlusClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         QuarryPlus.LOGGER.info("Client init is called. {} ", QuarryPlus.modID);
         PacketHandler.Client.initClient();
-        BlockRenderLayerMap.INSTANCE.putBlock(QuarryPlus.ModObjects.BLOCK_FRAME, RenderLayer.getCutoutMipped());
-        BlockRenderLayerMap.INSTANCE.putBlock(QuarryPlus.ModObjects.BLOCK_DUMMY, RenderLayer.getTranslucent());
+        BlockRenderLayerMap.INSTANCE.putBlock(QuarryPlus.ModObjects.BLOCK_FRAME, RenderType.cutoutMipped());
+        BlockRenderLayerMap.INSTANCE.putBlock(QuarryPlus.ModObjects.BLOCK_DUMMY, RenderType.translucent());
         Sprites.register();
 
         BlockEntityRendererRegistry.INSTANCE.register(QuarryPlus.ModObjects.MARKER_TYPE, RenderMarker::new);

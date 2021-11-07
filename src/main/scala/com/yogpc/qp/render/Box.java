@@ -1,9 +1,9 @@
 package com.yogpc.qp.render;
 
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.MathHelper;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.util.Mth;
 
 public class Box {
     final double startX;
@@ -27,7 +27,7 @@ public class Box {
     final double offZ;
     final double maxSize;
 
-    public void render(final VertexConsumer buffer, final MatrixStack matrixStack, final Sprite sprite, final ColorBox colorBox) {
+    public void render(final VertexConsumer buffer, final PoseStack matrixStack, final TextureAtlasSprite sprite, final ColorBox colorBox) {
         double n1X = this.dx;
         double n1Y = Box.normalY(this.dx, this.dy, this.dz);
         double n1Z = this.dz;
@@ -40,7 +40,7 @@ public class Box {
     }
 
     @SuppressWarnings({"UnnecessaryLocalVariable", "DuplicatedCode"})
-    protected final void renderInternal(final VertexConsumer b, final MatrixStack matrixStack, final Sprite sprite, final double n1X, final double n1Y, final double n1Z,
+    protected final void renderInternal(final VertexConsumer b, final PoseStack matrixStack, final TextureAtlasSprite sprite, final double n1X, final double n1Y, final double n1Z,
                                         final double n2X, final double n2Z, final int alpha, final int red, final int green, final int blue) {
         double eX = this.dx / this.length * this.sizeX;
         double eY = this.dy / this.length * this.sizeY;
@@ -59,40 +59,40 @@ public class Box {
         double e4Z = this.startZ + n1Z * this.sizeZ - n2Z * this.sizeZ;
         Buffer buffer = new Buffer(b, matrixStack);
         if (this.firstSide) {
-            buffer.pos(e1X, e1Y, e1Z).color(red, green, blue, alpha).tex(sprite.getMinU(), sprite.getMinV()).lightedAndEnd();
-            buffer.pos(e2X, e2Y, e2Z).color(red, green, blue, alpha).tex(sprite.getMaxU(), sprite.getMinV()).lightedAndEnd();
-            buffer.pos(e3X, e3Y, e3Z).color(red, green, blue, alpha).tex(sprite.getMaxU(), sprite.getMaxV()).lightedAndEnd();
-            buffer.pos(e4X, e4Y, e4Z).color(red, green, blue, alpha).tex(sprite.getMinU(), sprite.getMaxV()).lightedAndEnd();
+            buffer.pos(e1X, e1Y, e1Z).color(red, green, blue, alpha).tex(sprite.getU0(), sprite.getV0()).lightedAndEnd();
+            buffer.pos(e2X, e2Y, e2Z).color(red, green, blue, alpha).tex(sprite.getU1(), sprite.getV0()).lightedAndEnd();
+            buffer.pos(e3X, e3Y, e3Z).color(red, green, blue, alpha).tex(sprite.getU1(), sprite.getV1()).lightedAndEnd();
+            buffer.pos(e4X, e4Y, e4Z).color(red, green, blue, alpha).tex(sprite.getU0(), sprite.getV1()).lightedAndEnd();
         }
 
         double l = Math.sqrt(this.dx / this.sizeX * this.dx / this.sizeX + this.dy / this.sizeY * this.dy / this.sizeY + this.dz / this.sizeZ * this.dz / this.sizeZ);
-        int lengthFloor = MathHelper.floor(l);
+        int lengthFloor = Mth.floor(l);
 
         for (int i1 = 0; i1 <= lengthFloor; ++i1) {
             double i2 = i1 == lengthFloor ? l : (double) (i1 + 1);
-            buffer.pos(e1X + eX * i2, e1Y + eY * i2, e1Z + eZ * i2).color(red, green, blue, alpha).tex(sprite.getMinU(), sprite.getMinV()).lightedAndEnd();
-            buffer.pos(e1X + eX * (double) i1, e1Y + eY * (double) i1, e1Z + eZ * (double) i1).color(red, green, blue, alpha).tex(sprite.getMaxU(), sprite.getMinV()).lightedAndEnd();
-            buffer.pos(e2X + eX * (double) i1, e2Y + eY * (double) i1, e2Z + eZ * (double) i1).color(red, green, blue, alpha).tex(sprite.getMaxU(), sprite.getMaxV()).lightedAndEnd();
-            buffer.pos(e2X + eX * i2, e2Y + eY * i2, e2Z + eZ * i2).color(red, green, blue, alpha).tex(sprite.getMinU(), sprite.getMaxV()).lightedAndEnd();
-            buffer.pos(e2X + eX * i2, e2Y + eY * i2, e2Z + eZ * i2).color(red, green, blue, alpha).tex(sprite.getMinU(), sprite.getMinV()).lightedAndEnd();
-            buffer.pos(e2X + eX * (double) i1, e2Y + eY * (double) i1, e2Z + eZ * (double) i1).color(red, green, blue, alpha).tex(sprite.getMaxU(), sprite.getMinV()).lightedAndEnd();
-            buffer.pos(e3X + eX * (double) i1, e3Y + eY * (double) i1, e3Z + eZ * (double) i1).color(red, green, blue, alpha).tex(sprite.getMaxU(), sprite.getMaxV()).lightedAndEnd();
-            buffer.pos(e3X + eX * i2, e3Y + eY * i2, e3Z + eZ * i2).color(red, green, blue, alpha).tex(sprite.getMinU(), sprite.getMaxV()).lightedAndEnd();
-            buffer.pos(e3X + eX * i2, e3Y + eY * i2, e3Z + eZ * i2).color(red, green, blue, alpha).tex(sprite.getMinU(), sprite.getMinV()).lightedAndEnd();
-            buffer.pos(e3X + eX * (double) i1, e3Y + eY * (double) i1, e3Z + eZ * (double) i1).color(red, green, blue, alpha).tex(sprite.getMaxU(), sprite.getMinV()).lightedAndEnd();
-            buffer.pos(e4X + eX * (double) i1, e4Y + eY * (double) i1, e4Z + eZ * (double) i1).color(red, green, blue, alpha).tex(sprite.getMaxU(), sprite.getMaxV()).lightedAndEnd();
-            buffer.pos(e4X + eX * i2, e4Y + eY * i2, e4Z + eZ * i2).color(red, green, blue, alpha).tex(sprite.getMinU(), sprite.getMaxV()).lightedAndEnd();
-            buffer.pos(e4X + eX * i2, e4Y + eY * i2, e4Z + eZ * i2).color(red, green, blue, alpha).tex(sprite.getMinU(), sprite.getMinV()).lightedAndEnd();
-            buffer.pos(e4X + eX * (double) i1, e4Y + eY * (double) i1, e4Z + eZ * (double) i1).color(red, green, blue, alpha).tex(sprite.getMaxU(), sprite.getMinV()).lightedAndEnd();
-            buffer.pos(e1X + eX * (double) i1, e1Y + eY * (double) i1, e1Z + eZ * (double) i1).color(red, green, blue, alpha).tex(sprite.getMaxU(), sprite.getMaxV()).lightedAndEnd();
-            buffer.pos(e1X + eX * i2, e1Y + eY * i2, e1Z + eZ * i2).color(red, green, blue, alpha).tex(sprite.getMinU(), sprite.getMaxV()).lightedAndEnd();
+            buffer.pos(e1X + eX * i2, e1Y + eY * i2, e1Z + eZ * i2).color(red, green, blue, alpha).tex(sprite.getU0(), sprite.getV0()).lightedAndEnd();
+            buffer.pos(e1X + eX * (double) i1, e1Y + eY * (double) i1, e1Z + eZ * (double) i1).color(red, green, blue, alpha).tex(sprite.getU1(), sprite.getV0()).lightedAndEnd();
+            buffer.pos(e2X + eX * (double) i1, e2Y + eY * (double) i1, e2Z + eZ * (double) i1).color(red, green, blue, alpha).tex(sprite.getU1(), sprite.getV1()).lightedAndEnd();
+            buffer.pos(e2X + eX * i2, e2Y + eY * i2, e2Z + eZ * i2).color(red, green, blue, alpha).tex(sprite.getU0(), sprite.getV1()).lightedAndEnd();
+            buffer.pos(e2X + eX * i2, e2Y + eY * i2, e2Z + eZ * i2).color(red, green, blue, alpha).tex(sprite.getU0(), sprite.getV0()).lightedAndEnd();
+            buffer.pos(e2X + eX * (double) i1, e2Y + eY * (double) i1, e2Z + eZ * (double) i1).color(red, green, blue, alpha).tex(sprite.getU1(), sprite.getV0()).lightedAndEnd();
+            buffer.pos(e3X + eX * (double) i1, e3Y + eY * (double) i1, e3Z + eZ * (double) i1).color(red, green, blue, alpha).tex(sprite.getU1(), sprite.getV1()).lightedAndEnd();
+            buffer.pos(e3X + eX * i2, e3Y + eY * i2, e3Z + eZ * i2).color(red, green, blue, alpha).tex(sprite.getU0(), sprite.getV1()).lightedAndEnd();
+            buffer.pos(e3X + eX * i2, e3Y + eY * i2, e3Z + eZ * i2).color(red, green, blue, alpha).tex(sprite.getU0(), sprite.getV0()).lightedAndEnd();
+            buffer.pos(e3X + eX * (double) i1, e3Y + eY * (double) i1, e3Z + eZ * (double) i1).color(red, green, blue, alpha).tex(sprite.getU1(), sprite.getV0()).lightedAndEnd();
+            buffer.pos(e4X + eX * (double) i1, e4Y + eY * (double) i1, e4Z + eZ * (double) i1).color(red, green, blue, alpha).tex(sprite.getU1(), sprite.getV1()).lightedAndEnd();
+            buffer.pos(e4X + eX * i2, e4Y + eY * i2, e4Z + eZ * i2).color(red, green, blue, alpha).tex(sprite.getU0(), sprite.getV1()).lightedAndEnd();
+            buffer.pos(e4X + eX * i2, e4Y + eY * i2, e4Z + eZ * i2).color(red, green, blue, alpha).tex(sprite.getU0(), sprite.getV0()).lightedAndEnd();
+            buffer.pos(e4X + eX * (double) i1, e4Y + eY * (double) i1, e4Z + eZ * (double) i1).color(red, green, blue, alpha).tex(sprite.getU1(), sprite.getV0()).lightedAndEnd();
+            buffer.pos(e1X + eX * (double) i1, e1Y + eY * (double) i1, e1Z + eZ * (double) i1).color(red, green, blue, alpha).tex(sprite.getU1(), sprite.getV1()).lightedAndEnd();
+            buffer.pos(e1X + eX * i2, e1Y + eY * i2, e1Z + eZ * i2).color(red, green, blue, alpha).tex(sprite.getU0(), sprite.getV1()).lightedAndEnd();
         }
 
         if (this.endSide) {
-            buffer.pos(e1X + this.dx, e1Y + this.dy, e1Z + this.dz).color(red, green, blue, alpha).tex(sprite.getMinU(), sprite.getMinV()).lightedAndEnd();
-            buffer.pos(e2X + this.dx, e2Y + this.dy, e2Z + this.dz).color(red, green, blue, alpha).tex(sprite.getMaxU(), sprite.getMinV()).lightedAndEnd();
-            buffer.pos(e3X + this.dx, e3Y + this.dy, e3Z + this.dz).color(red, green, blue, alpha).tex(sprite.getMaxU(), sprite.getMaxV()).lightedAndEnd();
-            buffer.pos(e4X + this.dx, e4Y + this.dy, e4Z + this.dz).color(red, green, blue, alpha).tex(sprite.getMinU(), sprite.getMaxV()).lightedAndEnd();
+            buffer.pos(e1X + this.dx, e1Y + this.dy, e1Z + this.dz).color(red, green, blue, alpha).tex(sprite.getU0(), sprite.getV0()).lightedAndEnd();
+            buffer.pos(e2X + this.dx, e2Y + this.dy, e2Z + this.dz).color(red, green, blue, alpha).tex(sprite.getU1(), sprite.getV0()).lightedAndEnd();
+            buffer.pos(e3X + this.dx, e3Y + this.dy, e3Z + this.dz).color(red, green, blue, alpha).tex(sprite.getU1(), sprite.getV1()).lightedAndEnd();
+            buffer.pos(e4X + this.dx, e4Y + this.dy, e4Z + this.dz).color(red, green, blue, alpha).tex(sprite.getU0(), sprite.getV1()).lightedAndEnd();
         }
 
     }
@@ -141,7 +141,7 @@ public class Box {
         return -(x * x + z * z) / y;
     }
 
-    public static Box apply(final net.minecraft.util.math.Box axisAlignedBB, final double sizeX, final double sizeY, final double sizeZ, final boolean firstSide, final boolean endSide) {
+    public static Box apply(final net.minecraft.world.phys.AABB axisAlignedBB, final double sizeX, final double sizeY, final double sizeZ, final boolean firstSide, final boolean endSide) {
         return Box.apply(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.minZ, axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.maxZ, sizeX, sizeY, sizeZ, firstSide, endSide);
     }
 
