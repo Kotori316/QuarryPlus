@@ -164,7 +164,7 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
                         result = quarry.breakOneBlock(current, true);
                     }
                     if (result.isSuccess()) {
-                        if (result == BreakResult.FAIL_EVENT || result == BreakResult.SKIPPED) {
+                        if (result == BreakResult.SKIPPED) {
                             // Not breakable. Go next.
                             current = skipIterator(this.posIterator, MakeFrame.skipFramePlace(quarry));
                         } else if (quarry.useEnergy(PowerTile.Constants.getMakeFrameEnergy(quarry), PowerTile.Reason.MAKE_FRAME, false)) {
