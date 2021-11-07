@@ -119,7 +119,7 @@ public class PlacerBlock extends QPBlock implements EntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return level.isClientSide ? null : checkType(type, QuarryPlus.ModObjects.PLACER_TYPE, (l, p, s, placer) -> placer.tick());
+        return level.isClientSide ? null : createTickerHelper(type, QuarryPlus.ModObjects.PLACER_TYPE, (l, p, s, placer) -> placer.tick());
     }
 
     @Override
