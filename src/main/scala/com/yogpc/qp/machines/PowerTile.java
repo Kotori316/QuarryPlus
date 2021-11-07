@@ -55,6 +55,10 @@ public class PowerTile extends BlockEntity {
         return maxEnergy;
     }
 
+    public void setMaxEnergy(long maxEnergy) {
+        this.maxEnergy = maxEnergy;
+    }
+
     protected boolean hasEnoughEnergy() {
         return getEnergy() > 0;
     }

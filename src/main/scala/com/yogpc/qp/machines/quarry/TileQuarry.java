@@ -28,8 +28,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
@@ -332,12 +330,6 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
         if (bedrockRemove) tag.putBoolean("bedrockRemove", true);
         if (digMinY != 0) tag.putInt("digMinY", digMinY);
         return tag;
-    }
-
-    private ItemStack getPickaxe() {
-        ItemStack stack = new ItemStack(Items.NETHERITE_PICKAXE);
-        enchantments.forEach(e -> stack.enchant(e.enchantment(), e.level()));
-        return stack;
     }
 
     double headSpeed() {
