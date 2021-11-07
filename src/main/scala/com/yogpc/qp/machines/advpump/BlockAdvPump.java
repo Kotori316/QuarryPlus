@@ -2,12 +2,11 @@ package com.yogpc.qp.machines.advpump;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.EnchantedLootFunction;
-import com.yogpc.qp.machines.MachineBlock;
 import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.PowerTile;
+import com.yogpc.qp.machines.QPBlock;
 import com.yogpc.qp.utils.CombinedBlockEntityTicker;
 import com.yogpc.qp.utils.QuarryChunkLoadUtil;
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.tool.attribute.v1.FabricToolTags;
 import net.minecraft.core.BlockPos;
@@ -15,13 +14,13 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -32,18 +31,16 @@ import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
-public class BlockAdvPump extends MachineBlock {
+public class BlockAdvPump extends QPBlock implements EntityBlock {
     public static final String NAME = "adv_pump";
-    public final BlockItem blockItem;
 
     public BlockAdvPump() {
         super(FabricBlockSettings.of(Material.METAL)
             .strength(1.5f, 10f)
             .sounds(SoundType.STONE)
-            .breakByTool(FabricToolTags.PICKAXES));
+            .breakByTool(FabricToolTags.PICKAXES), NAME, ItemAdvPump::new);
         registerDefaultState(getStateDefinition().any()
             .setValue(WORKING, false));
-        blockItem = new ItemAdvPump(this, new FabricItemSettings().tab(QuarryPlus.CREATIVE_TAB).fireResistant());
     }
 
     @Override
