@@ -2,6 +2,7 @@ package com.yogpc.qp.packet;
 
 import java.util.List;
 
+import com.yogpc.qp.machines.advquarry.AdvActionMessage;
 import javax.annotation.Nonnull;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -16,6 +17,7 @@ public class PacketHandler {
         public static void initServer() {
             var list = List.of(
                 new ServerPacketInit(LevelMessage.NAME, LevelMessage.handler),
+                new ServerPacketInit(AdvActionMessage.NAME, AdvActionMessage.handler),
                 new ServerPacketInit(FlexMarkerMessage.NAME, FlexMarkerMessage.handler),
                 new ServerPacketInit(Marker16Message.NAME, Marker16Message.handler)
             );

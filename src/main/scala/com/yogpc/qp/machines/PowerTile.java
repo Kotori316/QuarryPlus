@@ -137,6 +137,13 @@ public class PowerTile extends BlockEntity {
             return MAKE_FRAME / (1 + Math.max(0, enchantments.unbreakingLevel()));
         }
 
+        public static long getAdvSearchEnergy(int blocks, EnchantmentLevel.HasEnchantments enchantments) {
+            final double FIFTH_ROOT_OF_10 = 1.5848931924611136;
+            long heightEnergy = blocks * MOVE_HEAD_BASE * 50;
+            double efficiencyBalanced = Math.pow(FIFTH_ROOT_OF_10, enchantments.efficiencyLevel()) * heightEnergy;
+            return (long) (efficiencyBalanced / (1 + Math.max(0, enchantments.unbreakingLevel())));
+        }
+
         public static long getBreakEnergy(float hardness, EnchantmentLevel.HasEnchantments enchantments) {
             if (hardness < 0 || Float.isInfinite(hardness)) return 200 * BREAK_BLOCK_BASE;
             double modified = ((double) hardness) / (1 + Math.max(0, enchantments.unbreakingLevel()));
@@ -157,6 +164,6 @@ public class PowerTile extends BlockEntity {
     }
 
     public enum Reason {
-        MAKE_FRAME, BREAK_BLOCK, REMOVE_FLUID, MOVE_HEAD, ADV_PUMP_FLUID
+        MAKE_FRAME, BREAK_BLOCK, REMOVE_FLUID, MOVE_HEAD, ADV_PUMP_FLUID, ADV_SEARCH
     }
 }
