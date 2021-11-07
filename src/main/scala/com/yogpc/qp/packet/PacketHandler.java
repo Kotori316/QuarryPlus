@@ -30,7 +30,7 @@ public class PacketHandler {
     public static class Client {
         public static void initClient() {
             var list = List.of(
-                new ClientPacketInit(QuarryPlacedMessage.NAME, QuarryPlacedMessage.Holder.HANDLER)
+                new ClientPacketInit(QuarryPlacedMessage.NAME, QuarryPlacedMessage.HandlerHolder.HANDLER)
             );
             list.forEach(i -> ClientPlayNetworking.registerGlobalReceiver(i.name(), i.handler()));
         }

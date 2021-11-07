@@ -71,7 +71,7 @@ public class QuarryPlacedMessage implements IMessage<QuarryPlacedMessage> {
     }
 
     @Environment(EnvType.CLIENT)
-    static class Holder {
+    static class HandlerHolder {
         static final ClientPlayNetworking.PlayChannelHandler HANDLER = (client, handler, buf, responseSender) -> {
             var message = IMessage.decode(QuarryPlacedMessage::new).apply(buf);
             var world = client.level;
