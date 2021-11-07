@@ -3,7 +3,6 @@ package com.yogpc.qp.machines;
 import java.util.function.Function;
 
 import com.yogpc.qp.QuarryPlus;
-import javax.annotation.Nullable;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -17,6 +16,8 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class QPBlock extends Block {
     public static final BooleanProperty WORKING = BooleanProperty.create("working");
@@ -49,12 +50,13 @@ public class QPBlock extends Block {
         return String.valueOf(internalName);
     }
 
+    @NotNull
     public ResourceLocation getRegistryName() {
         return internalName;
     }
 
     @Override
-    @org.jetbrains.annotations.Nullable
+    @Nullable
     @SuppressWarnings("deprecation")
     public MenuProvider getMenuProvider(BlockState blockState, Level level, BlockPos blockPos) {
         BlockEntity blockEntity = level.getBlockEntity(blockPos);
