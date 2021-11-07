@@ -57,8 +57,8 @@ public class QuarryPlus implements ModInitializer {
         Registry.register(Registry.BLOCK, ModObjects.BLOCK_QUARRY.getRegistryName(), ModObjects.BLOCK_QUARRY);
         Registry.register(Registry.ITEM, ModObjects.BLOCK_QUARRY.getRegistryName(), ModObjects.BLOCK_QUARRY.blockItem);
         Registry.register(Registry.BLOCK_ENTITY_TYPE, ModObjects.BLOCK_QUARRY.getRegistryName(), ModObjects.QUARRY_TYPE);
-        Registry.register(Registry.BLOCK, new ResourceLocation(modID, BlockFrame.NAME), ModObjects.BLOCK_FRAME);
-        Registry.register(Registry.ITEM, new ResourceLocation(modID, BlockFrame.NAME), ModObjects.BLOCK_FRAME.blockItem);
+        Registry.register(Registry.BLOCK, ModObjects.BLOCK_FRAME.getRegistryName(), ModObjects.BLOCK_FRAME);
+        Registry.register(Registry.ITEM, ModObjects.BLOCK_FRAME.getRegistryName(), ModObjects.BLOCK_FRAME.blockItem);
         Registry.register(Registry.ITEM, new ResourceLocation(modID, ItemChecker.NAME), ModObjects.ITEM_CHECKER);
         Registry.register(Registry.BLOCK, new ResourceLocation(modID, BlockMarker.NAME), ModObjects.BLOCK_MARKER);
         Registry.register(Registry.ITEM, new ResourceLocation(modID, BlockMarker.NAME), ModObjects.BLOCK_MARKER.blockItem);
