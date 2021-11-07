@@ -1,5 +1,6 @@
 package com.yogpc.qp.machines;
 
+import com.yogpc.qp.QuarryPlus;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 
@@ -10,8 +11,17 @@ public class QPItem extends Item {
         super(properties);
     }
 
+    public QPItem(Item.Properties properties, String path) {
+        super(properties);
+        this.internalName = new ResourceLocation(QuarryPlus.modID, path);
+    }
+
     public void setRegistryName(String modId, String name) {
         internalName = new ResourceLocation(modId, name);
+    }
+
+    public ResourceLocation getRegistryName() {
+        return internalName;
     }
 
     /**

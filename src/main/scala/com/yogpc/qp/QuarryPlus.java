@@ -5,6 +5,7 @@ import com.yogpc.qp.integration.EnergyIntegration;
 import com.yogpc.qp.integration.QuarryFluidTransfer;
 import com.yogpc.qp.integration.QuarryItemTransfer;
 import com.yogpc.qp.machines.EnchantedLootFunction;
+import com.yogpc.qp.machines.QPItem;
 import com.yogpc.qp.machines.advpump.BlockAdvPump;
 import com.yogpc.qp.machines.advpump.TileAdvPump;
 import com.yogpc.qp.machines.checker.ItemChecker;
@@ -35,7 +36,6 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
@@ -59,12 +59,12 @@ public class QuarryPlus implements ModInitializer {
         Registry.register(Registry.BLOCK_ENTITY_TYPE, ModObjects.BLOCK_QUARRY.getRegistryName(), ModObjects.QUARRY_TYPE);
         Registry.register(Registry.BLOCK, ModObjects.BLOCK_FRAME.getRegistryName(), ModObjects.BLOCK_FRAME);
         Registry.register(Registry.ITEM, ModObjects.BLOCK_FRAME.getRegistryName(), ModObjects.BLOCK_FRAME.blockItem);
-        Registry.register(Registry.ITEM, new ResourceLocation(modID, ItemChecker.NAME), ModObjects.ITEM_CHECKER);
+        Registry.register(Registry.ITEM, ModObjects.ITEM_CHECKER.getRegistryName(), ModObjects.ITEM_CHECKER);
         Registry.register(Registry.BLOCK, new ResourceLocation(modID, BlockMarker.NAME), ModObjects.BLOCK_MARKER);
         Registry.register(Registry.ITEM, new ResourceLocation(modID, BlockMarker.NAME), ModObjects.BLOCK_MARKER.blockItem);
         Registry.register(Registry.BLOCK_ENTITY_TYPE, new ResourceLocation(modID, BlockMarker.NAME), ModObjects.MARKER_TYPE);
         Registry.register(Registry.ITEM, new ResourceLocation(modID, YSetterItem.NAME), ModObjects.ITEM_Y_SETTER);
-        Registry.register(Registry.ITEM, new ResourceLocation(modID, "remove_bedrock_module"), ModObjects.ITEM_BEDROCK_MODULE);
+        Registry.register(Registry.ITEM, ModObjects.ITEM_BEDROCK_MODULE.getRegistryName(), ModObjects.ITEM_BEDROCK_MODULE);
         Registry.register(Registry.BLOCK, new ResourceLocation(modID, BlockExMarker.BlockFlexMarker.NAME), ModObjects.BLOCK_FLEX_MARKER);
         Registry.register(Registry.ITEM, new ResourceLocation(modID, BlockExMarker.BlockFlexMarker.NAME), ModObjects.BLOCK_FLEX_MARKER.blockItem);
         Registry.register(Registry.BLOCK_ENTITY_TYPE, new ResourceLocation(modID, BlockExMarker.BlockFlexMarker.NAME), ModObjects.FLEX_MARKER_TYPE);
@@ -111,7 +111,7 @@ public class QuarryPlus implements ModInitializer {
         public static final MenuType<YSetterContainer> Y_SETTER_HANDLER_TYPE = ScreenHandlerRegistry.registerExtended(YSetterContainer.GUI_ID,
             (syncId, inventory, buf) -> new YSetterContainer(syncId, inventory.player, buf.readBlockPos()));
 
-        public static final Item ITEM_BEDROCK_MODULE = new Item(new Item.Properties().tab(QuarryPlus.CREATIVE_TAB));
+        public static final QPItem ITEM_BEDROCK_MODULE = new QPItem(new QPItem.Properties().tab(QuarryPlus.CREATIVE_TAB), "remove_bedrock_module");
 
         public static final LootItemFunctionType ENCHANTED_LOOT_TYPE = new LootItemFunctionType(EnchantedLootFunction.SERIALIZER);
         public static final LootItemFunctionType QUARRY_LOOT_TYPE = new LootItemFunctionType(QuarryLootFunction.SERIALIZER);
