@@ -11,7 +11,7 @@ import com.yogpc.qp.render.RenderQuarry;
 import com.yogpc.qp.render.Sprites;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
-import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
 import net.minecraft.client.renderer.RenderType;
 
@@ -24,10 +24,10 @@ public class QuarryPlusClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(QuarryPlus.ModObjects.BLOCK_DUMMY, RenderType.translucent());
         Sprites.register();
 
-        BlockEntityRendererRegistry.INSTANCE.register(QuarryPlus.ModObjects.MARKER_TYPE, RenderMarker::new);
-        BlockEntityRendererRegistry.INSTANCE.register(QuarryPlus.ModObjects.QUARRY_TYPE, RenderQuarry::new);
-        BlockEntityRendererRegistry.INSTANCE.register(QuarryPlus.ModObjects.FLEX_MARKER_TYPE, RenderFlexMarker::new);
-        BlockEntityRendererRegistry.INSTANCE.register(QuarryPlus.ModObjects.MARKER_16_TYPE, Render16Marker::new);
+        BlockEntityRendererRegistry.register(QuarryPlus.ModObjects.MARKER_TYPE, RenderMarker::new);
+        BlockEntityRendererRegistry.register(QuarryPlus.ModObjects.QUARRY_TYPE, RenderQuarry::new);
+        BlockEntityRendererRegistry.register(QuarryPlus.ModObjects.FLEX_MARKER_TYPE, RenderFlexMarker::new);
+        BlockEntityRendererRegistry.register(QuarryPlus.ModObjects.MARKER_16_TYPE, Render16Marker::new);
 
         ScreenRegistry.register(QuarryPlus.ModObjects.Y_SETTER_HANDLER_TYPE, YSetterScreen::new);
         ScreenRegistry.register(QuarryPlus.ModObjects.FLEX_MARKER_HANDLER_TYPE, ScreenFlexMarker::new);
