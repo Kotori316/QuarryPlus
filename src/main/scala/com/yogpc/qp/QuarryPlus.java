@@ -71,9 +71,9 @@ public class QuarryPlus implements ModInitializer {
         Registry.register(Registry.BLOCK, new ResourceLocation(modID, BlockExMarker.Block16Marker.NAME), ModObjects.BLOCK_16_MARKER);
         Registry.register(Registry.ITEM, new ResourceLocation(modID, BlockExMarker.Block16Marker.NAME), ModObjects.BLOCK_16_MARKER.blockItem);
         Registry.register(Registry.BLOCK_ENTITY_TYPE, new ResourceLocation(modID, BlockExMarker.Block16Marker.NAME), ModObjects.MARKER_16_TYPE);
-        Registry.register(Registry.BLOCK, new ResourceLocation(modID, CreativeGeneratorBlock.NAME), ModObjects.BLOCK_CREATIVE_GENERATOR);
-        Registry.register(Registry.ITEM, new ResourceLocation(modID, CreativeGeneratorBlock.NAME), ModObjects.BLOCK_CREATIVE_GENERATOR.blockItem);
-        Registry.register(Registry.BLOCK_ENTITY_TYPE, new ResourceLocation(modID, CreativeGeneratorBlock.NAME), ModObjects.CREATIVE_GENERATOR_TYPE);
+        Registry.register(Registry.BLOCK, ModObjects.BLOCK_CREATIVE_GENERATOR.getRegistryName(), ModObjects.BLOCK_CREATIVE_GENERATOR);
+        Registry.register(Registry.ITEM, ModObjects.BLOCK_CREATIVE_GENERATOR.getRegistryName(), ModObjects.BLOCK_CREATIVE_GENERATOR.blockItem);
+        Registry.register(Registry.BLOCK_ENTITY_TYPE, ModObjects.BLOCK_CREATIVE_GENERATOR.getRegistryName(), ModObjects.CREATIVE_GENERATOR_TYPE);
         Registry.register(Registry.BLOCK, new ResourceLocation(modID, BlockAdvPump.NAME), ModObjects.BLOCK_ADV_PUMP);
         Registry.register(Registry.ITEM, new ResourceLocation(modID, BlockAdvPump.NAME), ModObjects.BLOCK_ADV_PUMP.blockItem);
         Registry.register(Registry.BLOCK_ENTITY_TYPE, new ResourceLocation(modID, BlockAdvPump.NAME), ModObjects.ADV_PUMP_TYPE);

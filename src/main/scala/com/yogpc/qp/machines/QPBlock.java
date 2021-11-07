@@ -16,11 +16,11 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 public class QPBlock extends Block {
     public static final BooleanProperty WORKING = BooleanProperty.create("working");
     public final QPBlockItem blockItem;
-    private ResourceLocation internalName;
+    private final ResourceLocation internalName;
 
     public QPBlock(Properties properties, String name, Function<QPBlock, QPBlockItem> itemFunction) {
         super(properties);
-        setRegistryName(QuarryPlus.modID, name);
+        internalName = new ResourceLocation(QuarryPlus.modID, name);
         blockItem = itemFunction.apply(this);
         blockItem.setRegistryName(QuarryPlus.modID, name);
     }
@@ -44,10 +44,6 @@ public class QPBlock extends Block {
         return String.valueOf(internalName);
     }
 
-    public void setRegistryName(String modId, String name) {
-        this.internalName = new ResourceLocation(modId, name);
-    }
-
     public ResourceLocation getRegistryName() {
         return internalName;
     }
@@ -57,7 +53,7 @@ public class QPBlock extends Block {
      */
     @Nullable
     @SuppressWarnings("unchecked")
-    protected static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> checkType(BlockEntityType<A> type1, BlockEntityType<E> exceptedType, BlockEntityTicker<? super E> ticker) {
+    protected static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> createTickerHelper(BlockEntityType<A> type1, BlockEntityType<E> exceptedType, BlockEntityTicker<? super E> ticker) {
         return exceptedType == type1 ? (BlockEntityTicker<A>) ticker : null;
     }
 
