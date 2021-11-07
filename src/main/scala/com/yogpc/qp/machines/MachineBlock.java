@@ -5,8 +5,9 @@ import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
+@Deprecated(forRemoval = true)
 public abstract class MachineBlock extends BaseEntityBlock {
-    public static final BooleanProperty WORKING = BooleanProperty.create("working");
+    public static final BooleanProperty WORKING = QPBlock.WORKING;
 
     protected MachineBlock(Properties settings) {
         super(settings);
