@@ -1,6 +1,7 @@
 package com.yogpc.qp.machines.misc;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.QPItem;
 import com.yogpc.qp.machines.quarry.TileQuarry;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.QuarryPlacedMessage;
@@ -16,16 +17,15 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.BlockHitResult;
 
-public class YSetterItem extends Item implements UseBlockCallback {
+public class YSetterItem extends QPItem implements UseBlockCallback {
     public static final String NAME = "y_setter";
 
     public YSetterItem() {
-        super(new FabricItemSettings().tab(QuarryPlus.CREATIVE_TAB));
+        super(new FabricItemSettings().tab(QuarryPlus.CREATIVE_TAB), NAME);
         UseBlockCallback.EVENT.register(this);
     }
 

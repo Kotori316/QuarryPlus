@@ -6,13 +6,12 @@ import java.util.stream.Stream;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.EnchantedLootFunction;
-import com.yogpc.qp.machines.MachineBlock;
 import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.PowerTile;
+import com.yogpc.qp.machines.QPBlock;
 import com.yogpc.qp.machines.QuarryMarker;
 import com.yogpc.qp.utils.CombinedBlockEntityTicker;
 import com.yogpc.qp.utils.QuarryChunkLoadUtil;
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.tool.attribute.v1.FabricToolTags;
 import net.minecraft.core.BlockPos;
@@ -29,6 +28,7 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -39,15 +39,14 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 
-public class BlockQuarry extends MachineBlock {
+public class BlockQuarry extends QPBlock implements EntityBlock {
     public static final String NAME = "quarry";
-    public final BlockItem blockItem = new ItemQuarry(this, new FabricItemSettings().tab(QuarryPlus.CREATIVE_TAB).fireResistant());
 
     public BlockQuarry() {
         super(FabricBlockSettings.of(Material.METAL)
             .strength(1.5f, 10f)
             .sounds(SoundType.STONE)
-            .breakByTool(FabricToolTags.PICKAXES));
+            .breakByTool(FabricToolTags.PICKAXES), NAME, ItemQuarry::new);
         registerDefaultState(getStateDefinition().any()
             .setValue(BlockStateProperties.FACING, Direction.NORTH)
             .setValue(WORKING, false));

@@ -4,24 +4,25 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.EnchantableItem;
+import com.yogpc.qp.machines.QPBlock;
+import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 
-class ItemQuarry extends BlockItem implements EnchantableItem {
-    ItemQuarry(Block block, Properties settings) {
-        super(block, settings);
+class ItemQuarry extends QPBlock.QPBlockItem implements EnchantableItem {
+    ItemQuarry(QPBlock block) {
+        super(block, new FabricItemSettings().tab(QuarryPlus.CREATIVE_TAB).fireResistant());
     }
 
     @Override

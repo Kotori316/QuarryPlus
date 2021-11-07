@@ -9,12 +9,10 @@ import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Direction8;
+import com.yogpc.qp.machines.QPBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -37,7 +35,7 @@ import static net.minecraft.world.level.block.state.properties.BlockStatePropert
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.UP;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WEST;
 
-public class BlockFrame extends Block {
+public class BlockFrame extends QPBlock {
     public static final String NAME = "frame";
     public static final BooleanProperty DAMMING = BooleanProperty.create("damming");
     public static final VoxelShape BOX_AABB = Shapes.box(0.25, 0.25, 0.25, 0.75, 0.75, 0.75);
@@ -59,10 +57,9 @@ public class BlockFrame extends Block {
     private static final BiPredicate<Level, BlockPos> HAS_NEIGHBOUR_LIQUID = (world, pos) ->
         Stream.of(Direction.values()).map(pos::relative)
             .anyMatch(p -> !world.getFluidState(p).isEmpty());
-    public final BlockItem blockItem = new BlockItem(this, new Item.Properties().tab(QuarryPlus.CREATIVE_TAB));
 
     public BlockFrame() {
-        super(Properties.of(Material.GLASS).strength(0.5f).noDrops());
+        super(Properties.of(Material.GLASS).strength(0.5f).noDrops(), NAME);
         this.registerDefaultState(this.getStateDefinition().any()
             .setValue(NORTH, false).setValue(EAST, false).setValue(SOUTH, false)
             .setValue(WEST, false).setValue(UP, false).setValue(DOWN, false)

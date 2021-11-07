@@ -5,6 +5,9 @@ import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
+/**
+ * @deprecated Use {@link QPBlock} instead.
+ */
 @Deprecated(forRemoval = true)
 public abstract class MachineBlock extends BaseEntityBlock {
     public static final BooleanProperty WORKING = QPBlock.WORKING;

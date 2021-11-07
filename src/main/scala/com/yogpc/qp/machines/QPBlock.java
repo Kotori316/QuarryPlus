@@ -3,24 +3,30 @@ package com.yogpc.qp.machines;
 import java.util.function.Function;
 
 import com.yogpc.qp.QuarryPlus;
-import javax.annotation.Nullable;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class QPBlock extends Block {
     public static final BooleanProperty WORKING = BooleanProperty.create("working");
     public final QPBlockItem blockItem;
-    private ResourceLocation internalName;
+    private final ResourceLocation internalName;
 
     public QPBlock(Properties properties, String name, Function<QPBlock, QPBlockItem> itemFunction) {
         super(properties);
-        setRegistryName(QuarryPlus.modID, name);
+        internalName = new ResourceLocation(QuarryPlus.modID, name);
         blockItem = itemFunction.apply(this);
         blockItem.setRegistryName(QuarryPlus.modID, name);
     }
@@ -44,12 +50,24 @@ public class QPBlock extends Block {
         return String.valueOf(internalName);
     }
 
-    public void setRegistryName(String modId, String name) {
-        this.internalName = new ResourceLocation(modId, name);
-    }
-
+    @NotNull
     public ResourceLocation getRegistryName() {
         return internalName;
+    }
+
+    @Override
+    @Nullable
+    @SuppressWarnings("deprecation")
+    public MenuProvider getMenuProvider(BlockState blockState, Level level, BlockPos blockPos) {
+        BlockEntity blockEntity = level.getBlockEntity(blockPos);
+        if (blockEntity instanceof ExtendedScreenHandlerFactory e) {
+            return e;
+        } else if (blockEntity instanceof MenuProvider m) {
+            QuarryPlus.LOGGER.warn("BlockEntity {} implements menu provider instead of extended one.", m.getClass());
+            return m;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -57,7 +75,7 @@ public class QPBlock extends Block {
      */
     @Nullable
     @SuppressWarnings("unchecked")
-    protected static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> checkType(BlockEntityType<A> type1, BlockEntityType<E> exceptedType, BlockEntityTicker<? super E> ticker) {
+    protected static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> createTickerHelper(BlockEntityType<A> type1, BlockEntityType<E> exceptedType, BlockEntityTicker<? super E> ticker) {
         return exceptedType == type1 ? (BlockEntityTicker<A>) ticker : null;
     }
 

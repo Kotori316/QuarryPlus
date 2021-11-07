@@ -2,18 +2,19 @@ package com.yogpc.qp.machines.advpump;
 
 import java.util.Set;
 
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.EnchantableItem;
+import com.yogpc.qp.machines.QPBlock;
+import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.core.NonNullList;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.level.block.Block;
 
-class ItemAdvPump extends BlockItem implements EnchantableItem {
-    ItemAdvPump(Block block, Properties settings) {
-        super(block, settings);
+class ItemAdvPump extends QPBlock.QPBlockItem implements EnchantableItem {
+    ItemAdvPump(QPBlock block) {
+        super(block, new FabricItemSettings().tab(QuarryPlus.CREATIVE_TAB).fireResistant());
     }
 
     @Override
