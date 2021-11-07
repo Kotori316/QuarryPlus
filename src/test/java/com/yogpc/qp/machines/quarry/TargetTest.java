@@ -7,8 +7,8 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import com.yogpc.qp.machines.Area;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -54,8 +54,8 @@ class TargetTest {
     void frame2() {
         var targetList = getAllPos(() -> new FrameTarget(area)).toList();
         assertAll("Not Contains Inside Pos",
-            BlockPos.stream(area.minX() + 1, area.minY(), area.minZ() + 1, area.maxX() - 1, area.maxY(), area.maxZ() - 1)
-                .map(BlockPos::toImmutable)
+            BlockPos.betweenClosedStream(area.minX() + 1, area.minY(), area.minZ() + 1, area.maxX() - 1, area.maxY(), area.maxZ() - 1)
+                .map(BlockPos::immutable)
                 .map(p -> () -> assertFalse(targetList.contains(p), "Pos: " + p))
         );
         assertFalse(targetList.contains(new BlockPos(5, 3, 4)));
@@ -66,7 +66,7 @@ class TargetTest {
         return Stream.generate(() -> {
             var p = target.get(true);
             if (p == null) return null;
-            else return p.toImmutable();
+            else return p.immutable();
         }).takeWhile(Objects::nonNull);
     }
 
@@ -106,13 +106,13 @@ class TargetTest {
 
     @Test
     void pos2Str0() {
-        var str = Target.posToStr(BlockPos.ORIGIN);
+        var str = Target.posToStr(BlockPos.ZERO);
         assertEquals("{x=0, y=0, z=0}", str);
     }
 
     @Test
     void pos2StrMutable() {
-        var str = Target.posToStr(new BlockPos.Mutable(0, 0, 0));
+        var str = Target.posToStr(new BlockPos.MutableBlockPos(0, 0, 0));
         assertEquals("{x=0, y=0, z=0}", str);
     }
 

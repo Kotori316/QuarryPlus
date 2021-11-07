@@ -7,11 +7,11 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import com.yogpc.qp.QuarryPlusTest;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -79,7 +79,7 @@ class ItemConverterTest extends QuarryPlusTest {
         ));
         var before = new ItemStack(Items.STONE, count);
         var converted = converter.map(before);
-        assertTrue(ItemStack.areEqual(before, converted), "Comparing of %s, %s".formatted(before, converted));
+        assertTrue(ItemStack.isSameItemSameTags(before, converted), "Comparing of %s, %s".formatted(before, converted));
     }
 
     @ParameterizedTest
@@ -89,7 +89,7 @@ class ItemConverterTest extends QuarryPlusTest {
         Function<ItemKey, ItemKey> convertFunction = i -> {
             var name = i.getId();
             var pickaxeName = name.getPath().replace("_ingot", "").replace("gold", "golden") + "_pickaxe";
-            var pickaxeItem = Registry.ITEM.get(new Identifier(name.getNamespace(), pickaxeName));
+            var pickaxeItem = Registry.ITEM.get(new ResourceLocation(name.getNamespace(), pickaxeName));
             return new ItemKey(pickaxeItem, i.nbt());
         };
         var converter = new ItemConverter(List.of(Pair.of(keys::contains, convertFunction)));
@@ -123,7 +123,7 @@ class ItemConverterTest extends QuarryPlusTest {
             Pair.of(Items.LAPIS_LAZULI, Items.LAPIS_LAZULI),
             Pair.of(Items.GOLDEN_APPLE, Items.GOLDEN_APPLE),
             Pair.of(Items.DEEPSLATE, Items.DEEPSLATE),
-            Pair.of(Items.DEEPSLATE_WALL, Items.DEEPSLATE_WALL),
+            Pair.of(Items.DEEPSLATE_TILE_WALL, Items.DEEPSLATE_TILE_WALL),
             Pair.of(Items.DEEPSLATE_BRICKS, Items.DEEPSLATE_BRICKS),
             Pair.of(Items.COAL_ORE, Items.DEEPSLATE_COAL_ORE),
             Pair.of(Items.IRON_ORE, Items.DEEPSLATE_IRON_ORE),

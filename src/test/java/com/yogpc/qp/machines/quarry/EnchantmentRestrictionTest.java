@@ -4,9 +4,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.yogpc.qp.QuarryPlusTest;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.Registry;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -18,9 +18,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class EnchantmentRestrictionTest extends QuarryPlusTest {
     @Test
     void instance() {
-        var expected = new EnchantmentRestriction(Map.of(Enchantments.EFFICIENCY, 3, Enchantments.UNBREAKING, 1, Enchantments.SHARPNESS, Enchantments.SHARPNESS.getMaxLevel()));
+        var expected = new EnchantmentRestriction(Map.of(Enchantments.BLOCK_EFFICIENCY, 3, Enchantments.UNBREAKING, 1, Enchantments.SHARPNESS, Enchantments.SHARPNESS.getMaxLevel()));
         EnchantmentRestriction fromBuilder = EnchantmentRestriction.builder()
-            .add(Enchantments.EFFICIENCY, 3)
+            .add(Enchantments.BLOCK_EFFICIENCY, 3)
             .add(Enchantments.SHARPNESS)
             .add(Enchantments.UNBREAKING, 1)
             .build();
@@ -61,28 +61,28 @@ class EnchantmentRestrictionTest extends QuarryPlusTest {
     @Test
     void limitLevel1() {
         EnchantmentRestriction fromBuilder = EnchantmentRestriction.builder()
-            .add(Enchantments.EFFICIENCY)
+            .add(Enchantments.BLOCK_EFFICIENCY)
             .add(Enchantments.SHARPNESS)
             .add(Enchantments.UNBREAKING)
             .build();
         var map = Registry.ENCHANTMENT.stream().map(e -> Map.entry(e, e.getMaxLevel()))
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         var result = fromBuilder.filterMap(map);
-        assertEquals(Map.of(Enchantments.EFFICIENCY, 5, Enchantments.UNBREAKING, 3, Enchantments.SHARPNESS, Enchantments.SHARPNESS.getMaxLevel()),
+        assertEquals(Map.of(Enchantments.BLOCK_EFFICIENCY, 5, Enchantments.UNBREAKING, 3, Enchantments.SHARPNESS, Enchantments.SHARPNESS.getMaxLevel()),
             result);
     }
 
     @Test
     void limitLevel2() {
         EnchantmentRestriction fromBuilder = EnchantmentRestriction.builder()
-            .add(Enchantments.EFFICIENCY, 3)
+            .add(Enchantments.BLOCK_EFFICIENCY, 3)
             .add(Enchantments.SHARPNESS)
             .add(Enchantments.UNBREAKING, 1)
             .build();
         var map = Registry.ENCHANTMENT.stream().map(e -> Map.entry(e, 1))
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         var result = fromBuilder.filterMap(map);
-        assertEquals(Map.of(Enchantments.EFFICIENCY, 1, Enchantments.UNBREAKING, 1, Enchantments.SHARPNESS, 1),
+        assertEquals(Map.of(Enchantments.BLOCK_EFFICIENCY, 1, Enchantments.UNBREAKING, 1, Enchantments.SHARPNESS, 1),
             result);
     }
 }

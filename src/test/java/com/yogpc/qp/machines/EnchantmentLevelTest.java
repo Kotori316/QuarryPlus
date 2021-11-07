@@ -8,9 +8,9 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import com.yogpc.qp.QuarryPlusTest;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.Registry;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -34,7 +34,7 @@ class EnchantmentLevelTest extends QuarryPlusTest {
     @ParameterizedTest
     @MethodSource("enchantments")
     void fromId(Enchantment enchantment) {
-        var id = Registry.ENCHANTMENT.getId(enchantment);
+        var id = Registry.ENCHANTMENT.getKey(enchantment);
         var ans = new EnchantmentLevel(enchantment, 1);
         var fromName = new EnchantmentLevel(id, 1);
         assertEquals(ans, fromName);
@@ -44,7 +44,7 @@ class EnchantmentLevelTest extends QuarryPlusTest {
     @ParameterizedTest
     @ValueSource(ints = {0, 1, 2, 3, 4, 5, 10})
     void sortSameLevel1(int level) {
-        var ans = Stream.of(Enchantments.PROTECTION, Enchantments.EFFICIENCY, Enchantments.SILK_TOUCH, Enchantments.UNBREAKING, Enchantments.FORTUNE, Enchantments.MENDING)
+        var ans = Stream.of(Enchantments.ALL_DAMAGE_PROTECTION, Enchantments.BLOCK_EFFICIENCY, Enchantments.SILK_TOUCH, Enchantments.UNBREAKING, Enchantments.BLOCK_FORTUNE, Enchantments.MENDING)
             .map(e -> new EnchantmentLevel(e, level)).toList();
         var shuffled = new ArrayList<>(ans);
         Collections.shuffle(shuffled, new Random(865));

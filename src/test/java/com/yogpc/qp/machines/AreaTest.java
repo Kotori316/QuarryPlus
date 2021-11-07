@@ -7,10 +7,10 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3i;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -40,11 +40,11 @@ class AreaTest {
 
     @Test
     void isInAreaIgnoreY() {
-        Set<BlockPos> inner = BlockPos.stream(4, 0, 6, 8, 55, 6).map(BlockPos::toImmutable).collect(Collectors.toUnmodifiableSet());
+        Set<BlockPos> inner = BlockPos.betweenClosedStream(4, 0, 6, 8, 55, 6).map(BlockPos::immutable).collect(Collectors.toUnmodifiableSet());
         assertAll(inner.stream().map(p -> () -> assertTrue(area.isInAreaIgnoreY(p), "Should be in area: %s".formatted(p))));
 
-        Stream<BlockPos> outer = BlockPos.stream(area.minX(), 0, area.minZ(), area.maxX(), 55, area.maxZ())
-            .map(BlockPos::toImmutable)
+        Stream<BlockPos> outer = BlockPos.betweenClosedStream(area.minX(), 0, area.minZ(), area.maxX(), 55, area.maxZ())
+            .map(BlockPos::immutable)
             .filter(Predicate.not(inner::contains));
         assertAll(outer.map(p -> () -> assertFalse(area.isInAreaIgnoreY(p), "Should not be in area: %s".formatted(p))));
     }
@@ -76,11 +76,11 @@ class AreaTest {
         Random random = new Random(564);
         return Stream.concat(Stream.generate(() ->
                 new Area(new Vec3i(random.nextInt(), random.nextInt(), random.nextInt()),
-                    new Vec3i(random.nextInt(), random.nextInt(), random.nextInt()), Direction.random(random)))
+                    new Vec3i(random.nextInt(), random.nextInt(), random.nextInt()), Direction.getRandom(random)))
                 .limit(50),
             Stream.generate(() ->
                 new Area(new Vec3i(random.nextInt(1024) - 512, random.nextInt(1024) - 512, random.nextInt(1024) - 512),
-                    new Vec3i(random.nextInt(1024) - 512, random.nextInt(1024) - 512, random.nextInt(1024) - 512), Direction.random(random)))
+                    new Vec3i(random.nextInt(1024) - 512, random.nextInt(1024) - 512, random.nextInt(1024) - 512), Direction.getRandom(random)))
                 .limit(50));
     }
 

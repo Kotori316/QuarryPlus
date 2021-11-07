@@ -9,9 +9,9 @@ import java.util.stream.Stream;
 import com.yogpc.qp.QuarryPlusTest;
 import com.yogpc.qp.machines.EnchantmentLevel;
 import com.yogpc.qp.machines.PowerTile;
-import net.minecraft.enchantment.Enchantments;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.world.item.enchantment.Enchantments;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EmptySource;
@@ -72,9 +72,9 @@ class EnchantmentEfficiencyTest extends QuarryPlusTest {
     @Test
     void range() {
         var f0 = new EnchantmentEfficiency(List.of());
-        var f1 = new EnchantmentEfficiency(List.of(new EnchantmentLevel(Enchantments.FORTUNE, 1)));
-        var f2 = new EnchantmentEfficiency(List.of(new EnchantmentLevel(Enchantments.FORTUNE, 2)));
-        var f3 = new EnchantmentEfficiency(List.of(new EnchantmentLevel(Enchantments.FORTUNE, 3)));
+        var f1 = new EnchantmentEfficiency(List.of(new EnchantmentLevel(Enchantments.BLOCK_FORTUNE, 1)));
+        var f2 = new EnchantmentEfficiency(List.of(new EnchantmentLevel(Enchantments.BLOCK_FORTUNE, 2)));
+        var f3 = new EnchantmentEfficiency(List.of(new EnchantmentLevel(Enchantments.BLOCK_FORTUNE, 3)));
         var s1 = new EnchantmentEfficiency(List.of(new EnchantmentLevel(Enchantments.SILK_TOUCH, 1)));
         var s2 = new EnchantmentEfficiency(List.of(new EnchantmentLevel(Enchantments.SILK_TOUCH, 2)));
 
@@ -90,11 +90,11 @@ class EnchantmentEfficiencyTest extends QuarryPlusTest {
     @Test
     void energyCapacity() {
         var e0 = new EnchantmentEfficiency(List.of());
-        var e1 = new EnchantmentEfficiency(List.of(new EnchantmentLevel(Enchantments.EFFICIENCY, 1)));
-        var e2 = new EnchantmentEfficiency(List.of(new EnchantmentLevel(Enchantments.EFFICIENCY, 2)));
-        var e3 = new EnchantmentEfficiency(List.of(new EnchantmentLevel(Enchantments.EFFICIENCY, 3)));
-        var e4 = new EnchantmentEfficiency(List.of(new EnchantmentLevel(Enchantments.EFFICIENCY, 4)));
-        var e5 = new EnchantmentEfficiency(List.of(new EnchantmentLevel(Enchantments.EFFICIENCY, 5)));
+        var e1 = new EnchantmentEfficiency(List.of(new EnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, 1)));
+        var e2 = new EnchantmentEfficiency(List.of(new EnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, 2)));
+        var e3 = new EnchantmentEfficiency(List.of(new EnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, 3)));
+        var e4 = new EnchantmentEfficiency(List.of(new EnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, 4)));
+        var e5 = new EnchantmentEfficiency(List.of(new EnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, 5)));
         assertAll(
             () -> assertTrue(e0.energyCapacity < e1.energyCapacity),
             () -> assertTrue(e1.energyCapacity < e2.energyCapacity),
@@ -107,11 +107,11 @@ class EnchantmentEfficiencyTest extends QuarryPlusTest {
     @Test
     void fluidCapacity() {
         var e0 = new EnchantmentEfficiency(List.of());
-        var e1 = new EnchantmentEfficiency(List.of(new EnchantmentLevel(Enchantments.EFFICIENCY, 1)));
-        var e2 = new EnchantmentEfficiency(List.of(new EnchantmentLevel(Enchantments.EFFICIENCY, 2)));
-        var e3 = new EnchantmentEfficiency(List.of(new EnchantmentLevel(Enchantments.EFFICIENCY, 3)));
-        var e4 = new EnchantmentEfficiency(List.of(new EnchantmentLevel(Enchantments.EFFICIENCY, 4)));
-        var e5 = new EnchantmentEfficiency(List.of(new EnchantmentLevel(Enchantments.EFFICIENCY, 5)));
+        var e1 = new EnchantmentEfficiency(List.of(new EnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, 1)));
+        var e2 = new EnchantmentEfficiency(List.of(new EnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, 2)));
+        var e3 = new EnchantmentEfficiency(List.of(new EnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, 3)));
+        var e4 = new EnchantmentEfficiency(List.of(new EnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, 4)));
+        var e5 = new EnchantmentEfficiency(List.of(new EnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, 5)));
         assertAll(
             () -> assertTrue(e0.fluidCapacity < e1.fluidCapacity),
             () -> assertTrue(e1.fluidCapacity < e2.fluidCapacity),

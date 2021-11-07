@@ -3,7 +3,7 @@ package com.yogpc.qp.machines;
 import java.util.List;
 
 import com.yogpc.qp.QuarryPlusTest;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.core.Vec3i;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -23,7 +23,7 @@ class Direction8Test extends QuarryPlusTest {
     @MethodSource
     void vectorLength(Direction8 direction8) {
         var vec = direction8.vec();
-        var length = vec.getManhattanDistance(Vec3i.ZERO);
+        var length = vec.distManhattan(Vec3i.ZERO);
         if (length > 3) {
             fail("Invalid vector length: " + length);
         }

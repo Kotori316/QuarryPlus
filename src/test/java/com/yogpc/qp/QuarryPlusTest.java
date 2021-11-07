@@ -2,8 +2,8 @@ package com.yogpc.qp;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
+import net.minecraft.server.Bootstrap;
 import org.junit.jupiter.api.BeforeAll;
 
 public class QuarryPlusTest {
@@ -12,8 +12,8 @@ public class QuarryPlusTest {
     @BeforeAll
     public static void init() {
         if (!INITIALIZED.getAndSet(true)) {
-            SharedConstants.createGameVersion();
-            Bootstrap.initialize();
+            SharedConstants.tryDetectVersion();
+            Bootstrap.bootStrap();
         }
     }
 }
