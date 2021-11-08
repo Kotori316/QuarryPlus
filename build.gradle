@@ -10,7 +10,7 @@ plugins {
     // id("scala")
     id("maven-publish")
     // https://maven.fabricmc.net/net/fabricmc/fabric-loom/
-    id 'fabric-loom' version "0.9.31"
+    id 'fabric-loom' version "0.10.50"
     //noinspection SpellCheckingInspection
     id "com.github.breadmoirai.github-release" version "2.2.12"
     //noinspection SpellCheckingInspection
@@ -32,7 +32,7 @@ if (isInCI()) {
 
 group = "com.kotori316"
 
-minecraft {
+loom {
     runs {
         it.configure {
             client {
@@ -226,7 +226,7 @@ curseforge {
             displayName = "v" + project.version + "-fabric"
         }
         relations {
-            // requiredDependency 'fabric-language-scala'
+            requiredDependency 'fabric-language-scala'
             requiredDependency 'fabric-api'
             requiredDependency 'cloth-config'
             //noinspection SpellCheckingInspection
