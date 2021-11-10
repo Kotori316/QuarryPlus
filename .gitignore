@@ -25,5 +25,6 @@ FILES
 run-server
 
 # fabric
-
 run/
+remappedSrc/
+.vscode/

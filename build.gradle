@@ -102,21 +102,21 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     //noinspection SpellCheckingInspection
-    modRuntime "net.fabricmc:fabric-language-scala:${project.fabric_scala_version}"
+    modRuntimeOnly "net.fabricmc:fabric-language-scala:${project.fabric_scala_version}"
 
     // library
     // implementation "org.scala-lang:scala-library:2.13.4"
     implementation "com.google.code.findbugs:jsr305:3.0.1"
     modImplementation "alexiil.mc.lib:libblockattributes-all:${project.bc_attribute_version}"
 
-    modRuntime("alexiil.mc.mod:simplepipes-all:${project.simple_pipe_version}")
+    modRuntimeOnly("alexiil.mc.mod:simplepipes-all:${project.simple_pipe_version}")
     if (Boolean.parseBoolean(System.getenv("FABRIC_SERVER") ?: "false")) {
         modCompileOnly("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}")
     } else {
-        modRuntime("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}")
+        modRuntimeOnly("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}")
     }
     modImplementation("RebornCore:RebornCore-1.17:${project.RebornCore_version}")
-    modRuntime("TechReborn:TechReborn-1.17:${project.TechReborn_version}")
+    modRuntimeOnly("TechReborn:TechReborn-1.17:${project.TechReborn_version}")
     modImplementation("dev.technici4n:FastTransferLib:${project.ftl_version}")
 
     modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_version}") {
