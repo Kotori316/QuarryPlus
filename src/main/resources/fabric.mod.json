@@ -36,6 +36,6 @@
     "cloth-config2": ">=5.0.0"
   },
   "conflicts": {
-    "team_reborn_energy": "<2.0.0"
+    "team_reborn_energy": "<2.0.0-beta0"
   }
 }
