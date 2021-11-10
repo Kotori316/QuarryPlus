@@ -172,6 +172,7 @@ java {
         it.languageVersion = JavaLanguageVersion.of(16)
     }
 }
+def BRANCH = "1.17-fabric"
 
 jar {
     from "LICENSE"
@@ -185,7 +186,7 @@ jar {
                 "Implementation-Version"  : project.version,
                 "Implementation-Vendor"   : "Kotori316",
                 "Implementation-Timestamp": ZonedDateTime.now().format(timeFormat),
-                "Commit"                  : getCommit("1.17-fabric")
+                "Commit"                  : getCommit(BRANCH)
         ])
     }
 }
@@ -196,7 +197,7 @@ def joinedLog = String.join("\n",
         "",
         isInCI() ? "RELEASED VIA Ci/CD. It may contain bugs." : "Manually built.",
         "",
-        "Commit: ${getCommit('1.17-fabric')}",
+        "Commit: [${getCommit(BRANCH)}](https://github.com/Kotori316/QuarryPlus/tree/${getCommit(BRANCH)})",
         "",
         "Requires:",
         "",
@@ -209,6 +210,7 @@ def joinedLog = String.join("\n",
         "Built with:",
         "",
         "* Minecraft ${project.minecraft_version}",
+        "* Mapping Official",
         "* Fabric API ${project.fabric_version}",
         "* Fabric Loader ${project.loader_version}",
 )
@@ -243,7 +245,7 @@ curseforge {
 githubRelease {
     repo.set('QuarryPlus')
     token = project.findProperty("githubToken") ?: System.getenv("REPO_TOKEN") ?: ""
-    targetCommitish.set('1.17-fabric')
+    targetCommitish.set(BRANCH)
     prerelease.set(project.version.toString().contains("SNAPSHOT"))
 
     body.set(joinedLog)
@@ -278,9 +280,9 @@ task CheckCompileOption() {
         strings.add("Is in CI: " + isInCI())
         strings.add("project.group: ${project.group}")
         strings.add("version: $version")
-        strings.add("runs: ${minecraft.getRunConfigs().asMap.toMapString()}")
-        strings.add("Absolute Client RunDir: ${project.projectDir.toPath().resolve(minecraft.getRunConfigs().getByName("client").runDir).toAbsolutePath()}")
-        strings.add("Absolute Server RunDir: ${project.projectDir.toPath().resolve(minecraft.getRunConfigs().getByName("server").runDir).toAbsolutePath()}")
+        strings.add("runs: ${loom.getRunConfigs().asMap.toMapString()}")
+        strings.add("Absolute Client RunDir: ${project.projectDir.toPath().resolve(loom.getRunConfigs().getByName("client").runDir).toAbsolutePath()}")
+        strings.add("Absolute Server RunDir: ${project.projectDir.toPath().resolve(loom.getRunConfigs().getByName("server").runDir).toAbsolutePath()}")
         strings.add("-" * 20)
         strings.add("Jar: ${jar.getArchiveFile().get()}")
         strings.add("Remap Jar ${remapJar.getArchiveFile().get()}")
