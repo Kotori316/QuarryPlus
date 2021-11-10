@@ -148,7 +148,7 @@ class BCExtractable implements FluidExtractable {
     }
 }
 
-@SuppressWarnings({"deprecation", "UnstableApiUsage"})
+@SuppressWarnings({"UnstableApiUsage"})
 class FabricFluidTransfer implements FluidTransfer {
     static void register() { // STUB for future.
     }

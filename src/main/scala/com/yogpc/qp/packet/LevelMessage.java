@@ -15,24 +15,20 @@ import net.minecraft.world.level.Level;
  */
 public class LevelMessage implements IMessage<LevelMessage> {
     public static final ResourceLocation NAME = new ResourceLocation(QuarryPlus.modID, "y_message");
-    private BlockPos pos;
-    private ResourceKey<Level> dim;
-    private int digMinY;
+    private final BlockPos pos;
+    private final ResourceKey<Level> dim;
+    private final int digMinY;
 
-    public static LevelMessage create(Level world, BlockPos pos, int digMinY) {
-        var message = new LevelMessage();
-        message.pos = pos;
-        message.dim = world != null ? world.dimension() : Level.OVERWORLD;
-        message.digMinY = digMinY;
-        return message;
+    public LevelMessage(Level world, BlockPos pos, int digMinY) {
+        this.pos = pos;
+        this.dim = world != null ? world.dimension() : Level.OVERWORLD;
+        this.digMinY = digMinY;
     }
 
-    @Override
-    public LevelMessage readFromBuffer(FriendlyByteBuf buffer) {
-        pos = buffer.readBlockPos();
-        dim = ResourceKey.create(Registry.DIMENSION_REGISTRY, buffer.readResourceLocation());
-        digMinY = buffer.readInt();
-        return this;
+    public LevelMessage(FriendlyByteBuf buffer) {
+        this.pos = buffer.readBlockPos();
+        this.dim = ResourceKey.create(Registry.DIMENSION_REGISTRY, buffer.readResourceLocation());
+        this.digMinY = buffer.readInt();
     }
 
     @Override
@@ -47,7 +43,7 @@ public class LevelMessage implements IMessage<LevelMessage> {
     }
 
     static final ServerPlayNetworking.PlayChannelHandler handler = (server, player, handler1, buf, responseSender) -> {
-        var message = IMessage.decode(LevelMessage::new).apply(buf);
+        var message = new LevelMessage(buf);
         server.execute(() -> {
             var world = server.getLevel(message.dim);
             if (world != null) {

@@ -35,11 +35,6 @@ public class FlexMarkerMessage implements IMessage<FlexMarkerMessage> {
     }
 
     @Override
-    public FlexMarkerMessage readFromBuffer(FriendlyByteBuf buffer) {
-        return new FlexMarkerMessage(buffer);
-    }
-
-    @Override
     public void writeToBuffer(FriendlyByteBuf buffer) {
         buffer.writeBlockPos(pos).writeResourceLocation(dim.location());
         buffer.writeEnum(movable);

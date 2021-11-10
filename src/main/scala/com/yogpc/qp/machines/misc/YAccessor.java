@@ -43,7 +43,7 @@ class QuarryYAccessor extends YAccessor {
 
     @Override
     IMessage<?> makeMessage() {
-        return LevelMessage.create(quarry.getLevel(), quarry.getBlockPos(), getDigMinY());
+        return new LevelMessage(quarry.getLevel(), quarry.getBlockPos(), getDigMinY());
     }
 
     @Override

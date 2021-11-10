@@ -21,7 +21,6 @@ public final class AdvActionMessage implements IMessage<AdvActionMessage> {
     private final Area area;
     private final Actions action;
 
-
     AdvActionMessage(TileAdvQuarry quarry, Actions action, Area area) {
         this.pos = quarry.getBlockPos();
         this.dim = quarry.getLevel() != null ? quarry.getLevel().dimension() : Level.OVERWORLD;
@@ -45,11 +44,6 @@ public final class AdvActionMessage implements IMessage<AdvActionMessage> {
         buf.writeBlockPos(this.pos).writeResourceLocation(this.dim.location());
         buf.writeNbt(this.area.toNBT());
         buf.writeEnum(this.action);
-    }
-
-    @Override
-    public AdvActionMessage readFromBuffer(FriendlyByteBuf buffer) {
-        return new AdvActionMessage(buffer);
     }
 
     @Override

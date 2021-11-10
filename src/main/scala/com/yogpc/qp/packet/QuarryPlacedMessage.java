@@ -25,13 +25,10 @@ import org.apache.commons.lang3.tuple.Pair;
  */
 public class QuarryPlacedMessage implements IMessage<QuarryPlacedMessage> {
     public static final ResourceLocation NAME = new ResourceLocation(QuarryPlus.modID, "quarry_placed_message");
-    private BlockPos pos;
-    private ResourceKey<Level> dim;
-    private List<EnchantmentLevel> levels;
-    private CompoundTag otherData;
-
-    public QuarryPlacedMessage() {
-    }
+    private final BlockPos pos;
+    private final ResourceKey<Level> dim;
+    private final List<EnchantmentLevel> levels;
+    private final CompoundTag otherData;
 
     public QuarryPlacedMessage(TileQuarry quarry) {
         this(quarry.getLevel(), quarry.getBlockPos(), quarry.getEnchantments(), quarry.getTileDataForItem());
@@ -44,15 +41,13 @@ public class QuarryPlacedMessage implements IMessage<QuarryPlacedMessage> {
         this.dim = world != null ? world.dimension() : Level.OVERWORLD;
     }
 
-    @Override
-    public QuarryPlacedMessage readFromBuffer(FriendlyByteBuf buffer) {
-        pos = buffer.readBlockPos();
-        dim = ResourceKey.create(Registry.DIMENSION_REGISTRY, buffer.readResourceLocation());
-        levels = IntStream.range(0, buffer.readInt())
+    public QuarryPlacedMessage(FriendlyByteBuf buffer) {
+        this.pos = buffer.readBlockPos();
+        this.dim = ResourceKey.create(Registry.DIMENSION_REGISTRY, buffer.readResourceLocation());
+        this.levels = IntStream.range(0, buffer.readInt())
             .mapToObj(i -> new EnchantmentLevel(buffer.readResourceLocation(), buffer.readInt()))
             .toList();
-        otherData = buffer.readNbt();
-        return this;
+        this.otherData = buffer.readNbt();
     }
 
     @Override
@@ -73,7 +68,7 @@ public class QuarryPlacedMessage implements IMessage<QuarryPlacedMessage> {
     @Environment(EnvType.CLIENT)
     static class HandlerHolder {
         static final ClientPlayNetworking.PlayChannelHandler HANDLER = (client, handler, buf, responseSender) -> {
-            var message = IMessage.decode(QuarryPlacedMessage::new).apply(buf);
+            var message = new QuarryPlacedMessage(buf);
             var world = client.level;
             if (world != null && world.dimension().equals(message.dim)) {
                 if (world.getBlockEntity(message.pos) instanceof TileQuarry quarry) {

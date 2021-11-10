@@ -1,10 +1,12 @@
 package com.yogpc.qp.machines.marker;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.misc.IndexedButton;
 import com.yogpc.qp.packet.FlexMarkerMessage;
 import com.yogpc.qp.packet.PacketHandler;
 import net.fabricmc.api.EnvType;
@@ -19,7 +21,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
 @Environment(EnvType.CLIENT)
-public class ScreenFlexMarker extends AbstractContainerScreen<ContainerMarker> {
+public class ScreenFlexMarker extends AbstractContainerScreen<ContainerMarker> implements Button.OnPress {
     private static final ResourceLocation LOCATION = new ResourceLocation(QuarryPlus.modID, "textures/gui/marker.png");
     private static final int upSide = 1;
     private static final int center = 3;
@@ -41,20 +43,24 @@ public class ScreenFlexMarker extends AbstractContainerScreen<ContainerMarker> {
         int w = 10;
         int h = 20;
         int top = 16;
+        AtomicInteger counter = new AtomicInteger();
 
         for (int i = 0; i < upSide; i++) {
             for (int j = 0; j < mp.length; j++) {
-                addRenderableWidget(new Button(this.leftPos + imageWidth / 2 - 4 * w * upSide / 2 + w * j, this.topPos + top, w, h, mp[j], this::actionPerformed));
+                addRenderableWidget(new IndexedButton(counter.getAndIncrement(),
+                    this.leftPos + imageWidth / 2 - 4 * w * upSide / 2 + w * j, this.topPos + top, w, h, mp[j], this));
             }
         }
         for (int i = 0; i < center; i++) {
             for (int j = 0; j < mp.length; j++) {
-                addRenderableWidget(new Button(this.leftPos + imageWidth / 2 - 4 * w * center / 2 + i * w * mp.length + w * j, this.topPos + top + 35, w, h, mp[j], this::actionPerformed));
+                addRenderableWidget(new IndexedButton(counter.getAndIncrement(),
+                    this.leftPos + imageWidth / 2 - 4 * w * center / 2 + i * w * mp.length + w * j, this.topPos + top + 35, w, h, mp[j], this));
             }
         }
         for (int i = 0; i < downSide; i++) {
             for (int j = 0; j < mp.length; j++) {
-                addRenderableWidget(new Button(this.leftPos + imageWidth / 2 - 4 * w * downSide / 2 + w * j, this.topPos + top + 70, w, h, mp[j], this::actionPerformed));
+                addRenderableWidget(new IndexedButton(counter.getAndIncrement(),
+                    this.leftPos + imageWidth / 2 - 4 * w * downSide / 2 + w * j, this.topPos + top + 70, w, h, mp[j], this));
             }
         }
     }
@@ -88,8 +94,10 @@ public class ScreenFlexMarker extends AbstractContainerScreen<ContainerMarker> {
         this.font.draw(matrices, s, ((float) this.imageWidth - font.width(s)) / 2, 6 + 70, 0x404040);
     }
 
-    public void actionPerformed(Button button) {
-        int id = super.children().indexOf(button);
+    @Override
+    public void onPress(Button button) {
+        if (!(button instanceof IndexedButton ib)) return;
+        int id = ib.id();
         if (id >= 0) {
             TileFlexMarker.Movable movable = TileFlexMarker.Movable.valueOf(id / 4);
             FlexMarkerMessage message = new FlexMarkerMessage(getMenu().player.level, getMenu().pos, movable, amounts[id % 4]);

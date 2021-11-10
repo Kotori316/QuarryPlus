@@ -3,6 +3,7 @@ package com.yogpc.qp.machines.marker;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.misc.IndexedButton;
 import com.yogpc.qp.packet.Marker16Message;
 import com.yogpc.qp.packet.PacketHandler;
 import net.minecraft.client.gui.components.Button;
@@ -61,17 +62,18 @@ public class Screen16Marker extends AbstractContainerScreen<ContainerMarker> imp
         super.init();
         final int tp = 15;
         final int middle = leftPos + this.imageWidth / 2;
-        this.addRenderableWidget(new Button(middle - BUTTON_WIDTH / 2, topPos + tp, BUTTON_WIDTH, 20, new TextComponent("+"), this));
-        this.addRenderableWidget(new Button(middle - BUTTON_WIDTH / 2, topPos + tp + 33, BUTTON_WIDTH, 20, new TextComponent("-"), this));
-        this.addRenderableWidget(new Button(middle + BUTTON_WIDTH / 2 + 10, topPos + tp, BUTTON_WIDTH, 20, new TextComponent("Top+"), this));
-        this.addRenderableWidget(new Button(middle + BUTTON_WIDTH / 2 + 10, topPos + tp + 33, BUTTON_WIDTH, 20, new TextComponent("Top-"), this));
-        this.addRenderableWidget(new Button(middle - BUTTON_WIDTH / 2 - 10 - BUTTON_WIDTH, topPos + tp, BUTTON_WIDTH, 20, new TextComponent("Bottom+"), this));
-        this.addRenderableWidget(new Button(middle - BUTTON_WIDTH / 2 - 10 - BUTTON_WIDTH, topPos + tp + 33, BUTTON_WIDTH, 20, new TextComponent("Bottom-"), this));
+        this.addRenderableWidget(new IndexedButton(0, middle - BUTTON_WIDTH / 2, topPos + tp, BUTTON_WIDTH, 20, new TextComponent("+"), this));
+        this.addRenderableWidget(new IndexedButton(1, middle - BUTTON_WIDTH / 2, topPos + tp + 33, BUTTON_WIDTH, 20, new TextComponent("-"), this));
+        this.addRenderableWidget(new IndexedButton(2, middle + BUTTON_WIDTH / 2 + 10, topPos + tp, BUTTON_WIDTH, 20, new TextComponent("Top+"), this));
+        this.addRenderableWidget(new IndexedButton(3, middle + BUTTON_WIDTH / 2 + 10, topPos + tp + 33, BUTTON_WIDTH, 20, new TextComponent("Top-"), this));
+        this.addRenderableWidget(new IndexedButton(4, middle - BUTTON_WIDTH / 2 - 10 - BUTTON_WIDTH, topPos + tp, BUTTON_WIDTH, 20, new TextComponent("Bottom+"), this));
+        this.addRenderableWidget(new IndexedButton(5, middle - BUTTON_WIDTH / 2 - 10 - BUTTON_WIDTH, topPos + tp + 33, BUTTON_WIDTH, 20, new TextComponent("Bottom-"), this));
 
     }
 
     @Override
-    public void onPress(Button button) {
+    public void onPress(Button b) {
+        if (!(b instanceof IndexedButton)) return;
         int size = marker.getSize();
         int yMin = marker.min().getY(), yMax = marker.max().getY();
         int n;
@@ -82,7 +84,7 @@ public class Screen16Marker extends AbstractContainerScreen<ContainerMarker> imp
         } else {
             n = 1;
         }
-        switch (children().indexOf(button)) {
+        switch (((IndexedButton) b).id()) {
             case 0: // Plus
                 size = marker.getSize() + CHUNK;
                 break;

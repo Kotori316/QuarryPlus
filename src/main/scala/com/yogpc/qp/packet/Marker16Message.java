@@ -39,11 +39,6 @@ public class Marker16Message implements IMessage<Marker16Message> {
     }
 
     @Override
-    public Marker16Message readFromBuffer(FriendlyByteBuf buffer) {
-        return new Marker16Message(buffer);
-    }
-
-    @Override
     public void writeToBuffer(FriendlyByteBuf buffer) {
         buffer.writeBlockPos(pos).writeResourceLocation(dim.location());
         buffer.writeVarInt(amount);
