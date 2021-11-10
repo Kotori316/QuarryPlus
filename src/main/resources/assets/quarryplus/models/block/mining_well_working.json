@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "particle": "quarryplus:blocks/mining_well",
+    "down": "quarryplus:blocks/mining_well",
+    "up": "quarryplus:blocks/mining_well_top_w",
+    "north": "quarryplus:blocks/mining_well_front",
+    "east": "quarryplus:blocks/mining_well",
+    "south": "quarryplus:blocks/mining_well_back",
+    "west": "quarryplus:blocks/mining_well"
+  }
+}

@@ -1,3 +1,4 @@
 {
-  "type": "quarryplus:quarry_bedrock_recipe"
+  "type": "quarryplus:quarry_bedrock_recipe",
+  "target": "quarryplus:quarry"
 }

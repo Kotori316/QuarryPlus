@@ -9,6 +9,9 @@ import com.yogpc.qp.machines.QPBlock;
 import com.yogpc.qp.machines.QPItem;
 import com.yogpc.qp.machines.advpump.BlockAdvPump;
 import com.yogpc.qp.machines.advpump.TileAdvPump;
+import com.yogpc.qp.machines.advquarry.AdvQuarryMenu;
+import com.yogpc.qp.machines.advquarry.BlockAdvQuarry;
+import com.yogpc.qp.machines.advquarry.TileAdvQuarry;
 import com.yogpc.qp.machines.checker.ItemChecker;
 import com.yogpc.qp.machines.marker.BlockExMarker;
 import com.yogpc.qp.machines.marker.BlockMarker;
@@ -70,6 +73,7 @@ public class QuarryPlus implements ModInitializer {
         register(ModObjects.BLOCK_CREATIVE_GENERATOR, ModObjects.CREATIVE_GENERATOR_TYPE);
         register(ModObjects.BLOCK_ADV_PUMP, ModObjects.ADV_PUMP_TYPE);
         register(ModObjects.BLOCK_PLACER, ModObjects.PLACER_TYPE);
+        register(ModObjects.BLOCK_ADV_QUARRY, ModObjects.ADV_QUARRY_TYPE);
         Registry.register(Registry.BLOCK, new ResourceLocation(modID, BlockDummy.NAME), ModObjects.BLOCK_DUMMY);
         Registry.register(Registry.ITEM, new ResourceLocation(modID, BlockDummy.NAME), ModObjects.BLOCK_DUMMY.blockItem);
 
@@ -122,6 +126,11 @@ public class QuarryPlus implements ModInitializer {
         public static final BlockEntityType<PlacerTile> PLACER_TYPE = FabricBlockEntityTypeBuilder.create(PlacerTile::new, BLOCK_PLACER).build(DSL.emptyPartType());
         public static final MenuType<PlacerContainer> PLACER_MENU_TYPE = ScreenHandlerRegistry.registerExtended(new ResourceLocation(PlacerContainer.GUI_ID),
             (syncId, inventory, buf) -> new PlacerContainer(syncId, inventory.player, buf.readBlockPos()));
+
+        public static final BlockAdvQuarry BLOCK_ADV_QUARRY = new BlockAdvQuarry();
+        public static final BlockEntityType<TileAdvQuarry> ADV_QUARRY_TYPE = FabricBlockEntityTypeBuilder.create(TileAdvQuarry::new, BLOCK_ADV_QUARRY).build(DSL.emptyPartType());
+        public static final MenuType<AdvQuarryMenu> ADV_QUARRY_MENU_TYPE = ScreenHandlerRegistry.registerExtended(new ResourceLocation(AdvQuarryMenu.GUI_ID),
+            (syncId, inventory, buf) -> new AdvQuarryMenu(syncId, inventory.player, buf.readBlockPos()));
 
         public static final LootItemFunctionType ENCHANTED_LOOT_TYPE = new LootItemFunctionType(EnchantedLootFunction.SERIALIZER);
         public static final LootItemFunctionType QUARRY_LOOT_TYPE = new LootItemFunctionType(QuarryLootFunction.SERIALIZER);

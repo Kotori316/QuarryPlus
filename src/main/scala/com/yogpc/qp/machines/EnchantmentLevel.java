@@ -1,5 +1,7 @@
 package com.yogpc.qp.machines;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -7,7 +9,10 @@ import java.util.Map;
 import com.yogpc.qp.utils.ManualOrder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,6 +38,10 @@ public record EnchantmentLevel(Enchantment enchantment, int level) {
                 .mapToInt(EnchantmentLevel::level).findFirst().orElse(0);
         }
 
+        default int efficiencyLevel() {
+            return getLevel(Enchantments.BLOCK_EFFICIENCY);
+        }
+
         default int unbreakingLevel() {
             return getLevel(Enchantments.UNBREAKING);
         }
@@ -44,6 +53,27 @@ public record EnchantmentLevel(Enchantment enchantment, int level) {
         default int silktouchLevel() {
             return getLevel(Enchantments.SILK_TOUCH);
         }
+
+        default ItemStack getPickaxe() {
+            var stack = new ItemStack(Items.NETHERITE_PICKAXE);
+            getEnchantments().forEach(e -> stack.enchant(e.enchantment(), e.level()));
+            return stack;
+        }
+    }
+
+    public static List<EnchantmentLevel> fromItem(ItemStack stack) {
+        var enchantmentList = stack.getEnchantmentTags();
+        if (enchantmentList.isEmpty()) return Collections.emptyList();
+        List<EnchantmentLevel> list = new ArrayList<>(enchantmentList.size());
+        for (int i = 0; i < enchantmentList.size(); i++) {
+            var tag = enchantmentList.getCompound(i);
+            var name = EnchantmentHelper.getEnchantmentId(tag);
+            var level = EnchantmentHelper.getEnchantmentLevel(tag);
+            if (name != null && Registry.ENCHANTMENT.containsKey(name)) {
+                list.add(new EnchantmentLevel(name, level));
+            }
+        }
+        return list;
     }
 
     public static final Comparator<EnchantmentLevel> COMPARATOR =
