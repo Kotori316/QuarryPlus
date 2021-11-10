@@ -24,7 +24,7 @@ jobs:
         run: echo "${MESSAGES}"
         env:
           MESSAGES: ${{ toJSON(github.event.commits.*.message) }}
-      - name: Check Publish
+      - name: Check Publish ${{ !contains(github.event.head_commit.message, '[skip release]') }}
         run: echo "Release ${{ !contains(github.event.head_commit.message, '[skip release]') }}"
 
   build:
@@ -35,7 +35,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: 16
-          distribution: 'adopt'
+          distribution: 'temurin'
       - name: Dummy
         run: |
           echo "::group::IGNORE ME"
