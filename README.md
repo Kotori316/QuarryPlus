@@ -44,6 +44,7 @@ unexpected crashes.
     * You can add enchantments with Enchantment Table.
   * Place this block above fluid, and send energy.
   * Water is replaced with dummy block, which is removed at the end of work.
+* Placer Plus
 * Chunk Destroyer
   * Render
   * Enchantment
