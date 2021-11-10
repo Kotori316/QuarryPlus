@@ -45,6 +45,7 @@ public class EnergyIntegration {
     static BlockEntityType<?>[] getBlockEntityTypes() {
         return new BlockEntityType<?>[]{
             QuarryPlus.ModObjects.QUARRY_TYPE,
+            QuarryPlus.ModObjects.ADV_QUARRY_TYPE,
             QuarryPlus.ModObjects.ADV_PUMP_TYPE
         };
     }
