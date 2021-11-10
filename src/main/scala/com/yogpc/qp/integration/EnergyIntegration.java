@@ -5,6 +5,7 @@ import com.yogpc.qp.machines.PowerTile;
 import dev.technici4n.fasttransferlib.api.energy.EnergyApi;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import team.reborn.energy.api.EnergyStorage;
 
 @SuppressWarnings("SpellCheckingInspection")
@@ -40,6 +41,13 @@ public class EnergyIntegration {
     public static boolean hasAnyEnergyModule() {
         return registered;
     }
+
+    static BlockEntityType<?>[] getBlockEntityTypes() {
+        return new BlockEntityType<?>[]{
+            QuarryPlus.ModObjects.QUARRY_TYPE,
+            QuarryPlus.ModObjects.ADV_PUMP_TYPE
+        };
+    }
 }
 
 class RebornEnergyRegister {
@@ -48,7 +56,7 @@ class RebornEnergyRegister {
                 if (blockEntity instanceof PowerTile powerTile) return new RebornEnergyStorage(powerTile);
                 else return null;
             },
-            QuarryPlus.ModObjects.QUARRY_TYPE);
+            EnergyIntegration.getBlockEntityTypes());
         return true;
     }
 }
@@ -59,7 +67,7 @@ class FastTransferLibRegister {
                 if (blockEntity instanceof PowerTile powerTile) return new FastTransferLibEnergyIO(powerTile, context);
                 else return null;
             },
-            QuarryPlus.ModObjects.QUARRY_TYPE);
+            EnergyIntegration.getBlockEntityTypes());
         return true;
     }
 }
