@@ -12,7 +12,7 @@ final class ConstantEntry<T> extends CacheEntry<T> {
 
     @Override
     protected void setNewCache() {
-        if (cached == null) {
+        if (cached == null && supplier != null) {
             cached = supplier.get();
             supplier = null; // GC
         }
