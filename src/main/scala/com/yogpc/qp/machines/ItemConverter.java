@@ -101,6 +101,7 @@ public record ItemConverter(
                 itemPredicate(Items.GRASS_BLOCK),
                 itemPredicate(Items.NETHERRACK),
                 itemPredicate(Items.DEEPSLATE),
+                itemPredicate(Items.TUFF),
                 itemPredicate(Items.BLACKSTONE),
                 itemPredicate(Items.SANDSTONE)
             ).map(p -> Map.entry(p, function))
