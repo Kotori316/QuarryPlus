@@ -44,6 +44,9 @@ unexpected crashes.
     * You can add enchantments with Enchantment Table.
   * Place this block above fluid, and send energy.
   * Water is replaced with dummy block, which is removed at the end of work.
+* Chunk Destroyer
+  * Render
+  * Enchantment
 
 ## Other works
 
@@ -61,7 +64,3 @@ unexpected crashes.
   * To enchant machines, use vanilla system.
 * Spawner Controller
   * I think it's not related to quarry...
-
-### Future works(plan)
-
-* Chunk Destroyer
