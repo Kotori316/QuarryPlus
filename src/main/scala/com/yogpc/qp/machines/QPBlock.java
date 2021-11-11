@@ -47,7 +47,7 @@ public class QPBlock extends Block {
 
     @Override
     public String toString() {
-        return String.valueOf(internalName);
+        return "Block{" + internalName + '}';
     }
 
     @NotNull
