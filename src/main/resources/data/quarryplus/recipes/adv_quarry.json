@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "mem",
+    "gqg",
+    "mem"
+  ],
+  "key": {
+    "g": {
+      "item": "minecraft:green_dye"
+    },
+    "e": {
+      "item": "minecraft:emerald"
+    },
+    "q": {
+      "item": "quarryplus:quarry"
+    },
+    "m": {
+      "item": "quarryplus:marker16"
+    }
+  },
+  "result": {
+    "item": "quarryplus:adv_quarry"
+  }
+}
