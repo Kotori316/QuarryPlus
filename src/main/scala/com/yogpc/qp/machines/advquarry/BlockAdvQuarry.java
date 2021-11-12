@@ -107,6 +107,7 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
                 enchantment.sort(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR);
                 quarry.setEnchantments(enchantment);
                 quarry.area = findArea(level, pos, facing.getOpposite(), quarry.getStorage()::addItem);
+                quarry.setDigMinYDefault();
                 var preForced = QuarryChunkLoadUtil.makeChunkLoaded(level, pos);
                 quarry.setChunkPreLoaded(preForced);
                 quarry.sync();

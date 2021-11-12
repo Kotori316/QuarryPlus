@@ -153,6 +153,11 @@ public class TileAdvQuarry extends PowerTile implements
         return area;
     }
 
+    public void setDigMinYDefault() {
+        Objects.requireNonNull(level);
+        this.digMinY = level.getMinBuildHeight();
+    }
+
     public AdvQuarryAction getAction() {
         return action;
     }
