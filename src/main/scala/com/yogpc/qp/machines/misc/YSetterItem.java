@@ -5,6 +5,7 @@ import com.yogpc.qp.machines.QPItem;
 import com.yogpc.qp.machines.quarry.TileQuarry;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.QuarryPlacedMessage;
+import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
@@ -32,11 +33,15 @@ public class YSetterItem extends QPItem implements UseBlockCallback {
     @Override
     public InteractionResult interact(Player player, Level world, InteractionHand hand, BlockHitResult hitResult) {
         if (player.isSpectator() || player.getItemInHand(hand).getItem() != this) return InteractionResult.PASS;
-        if (world.getBlockEntity(hitResult.getBlockPos()) instanceof TileQuarry quarry) {
+        var blockEntity = world.getBlockEntity(hitResult.getBlockPos());
+        if (blockEntity != null && YAccessor.get(blockEntity) != null) {
             if (!world.isClientSide) {
-                if (player instanceof ServerPlayer p)
+                if (blockEntity instanceof TileQuarry quarry && player instanceof ServerPlayer p) {
                     PacketHandler.sendToClientPlayer(new QuarryPlacedMessage(quarry), p);
-                player.openMenu(new YSetterScreenHandler(quarry.getBlockPos(), quarry.getBlockState().getBlock()));
+                } else if (blockEntity instanceof BlockEntityClientSerializable clientSerializable) {
+                    clientSerializable.sync();
+                }
+                player.openMenu(new YSetterScreenHandler(blockEntity.getBlockPos(), blockEntity.getBlockState().getBlock()));
                 return InteractionResult.CONSUME;
             } else {
                 return InteractionResult.SUCCESS;

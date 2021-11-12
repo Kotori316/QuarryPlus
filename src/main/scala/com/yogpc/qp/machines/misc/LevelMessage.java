@@ -1,7 +1,7 @@
-package com.yogpc.qp.packet;
+package com.yogpc.qp.machines.misc;
 
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.machines.quarry.TileQuarry;
+import com.yogpc.qp.packet.IMessage;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
@@ -42,13 +42,17 @@ public class LevelMessage implements IMessage<LevelMessage> {
         return NAME;
     }
 
-    static final ServerPlayNetworking.PlayChannelHandler handler = (server, player, handler1, buf, responseSender) -> {
+    public static final ServerPlayNetworking.PlayChannelHandler handler = (server, player, handler1, buf, responseSender) -> {
         var message = new LevelMessage(buf);
         server.execute(() -> {
             var world = server.getLevel(message.dim);
             if (world != null) {
-                if (world.getBlockEntity(message.pos) instanceof TileQuarry quarry) {
-                    quarry.digMinY = message.digMinY;
+                YAccessor accessor = YAccessor.get(world.getBlockEntity(message.pos));
+                if (accessor != null) {
+                    accessor.setDigMinY(message.digMinY);
+                } else {
+                    QuarryPlus.LOGGER.warn("({}) YAccessor for {} is absent. At {} in {}",
+                        NAME, world.getBlockEntity(message.pos), message.pos, message.dim);
                 }
             }
         });

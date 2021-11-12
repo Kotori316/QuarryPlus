@@ -3,6 +3,7 @@ package com.yogpc.qp.packet;
 import java.util.List;
 
 import com.yogpc.qp.machines.advquarry.AdvActionMessage;
+import com.yogpc.qp.machines.misc.LevelMessage;
 import javax.annotation.Nonnull;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

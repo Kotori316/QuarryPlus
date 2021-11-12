@@ -95,7 +95,6 @@ public class TileAdvQuarry extends PowerTile implements
     public CompoundTag save(CompoundTag nbt) {
         nbt.put("storage", storage.toNbt());
         toClientTag(nbt);
-        nbt.putInt("digMinY", digMinY);
         return super.save(nbt);
     }
 
@@ -109,7 +108,6 @@ public class TileAdvQuarry extends PowerTile implements
         super.load(nbt);
         storage.readNbt(nbt.getCompound("storage"));
         fromClientTag(nbt);
-        digMinY = nbt.getInt("digMinY");
         isBlockModuleLoaded = false;
     }
 
@@ -120,6 +118,7 @@ public class TileAdvQuarry extends PowerTile implements
         this.enchantments.forEach(e -> enchantments.putInt(Objects.requireNonNull(e.enchantmentID()).toString(), e.level()));
         nbt.put("enchantments", enchantments);
         nbt.put("action", action.toNbt());
+        nbt.putInt("digMinY", digMinY);
         nbt.putBoolean("bedrockRemove", removeBedrock);
         return nbt;
     }
@@ -134,6 +133,7 @@ public class TileAdvQuarry extends PowerTile implements
             .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR)
             .toList());
         action = AdvQuarryAction.fromNbt(nbt.getCompound("action"), this);
+        digMinY = nbt.getInt("digMinY");
         removeBedrock = nbt.getBoolean("bedrockRemove");
     }
 
