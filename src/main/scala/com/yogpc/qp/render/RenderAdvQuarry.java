@@ -2,7 +2,6 @@ package com.yogpc.qp.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.machines.advquarry.AdvQuarryAction;
 import com.yogpc.qp.machines.advquarry.BlockAdvQuarry;
 import com.yogpc.qp.machines.advquarry.TileAdvQuarry;
 import net.fabricmc.api.EnvType;
@@ -35,7 +34,7 @@ public class RenderAdvQuarry implements BlockEntityRenderer<TileAdvQuarry> {
     public void render(TileAdvQuarry quarry, float tickDelta, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay) {
         Minecraft.getInstance().getProfiler().push(QuarryPlus.modID);
 
-        if (quarry.getAction() instanceof AdvQuarryAction.MakeFrame || (quarry.getAction() == AdvQuarryAction.Waiting.WAITING)) {
+        if ("MakeFrame".equals(quarry.actionKey) || "Waiting".equals(quarry.actionKey)) {
             Minecraft.getInstance().getProfiler().push(BlockAdvQuarry.NAME);
             var range = quarry.getArea();
             if (range != null) {

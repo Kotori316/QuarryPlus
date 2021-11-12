@@ -79,13 +79,13 @@ public class AdvQuarryScreen extends AbstractContainerScreen<AdvQuarryMenu> impl
         if (b instanceof IndexedButton button) {
             var tile = getMenu().quarry;
             if (button.id() == 8) {
-                if (tile.getAction() == AdvQuarryAction.Waiting.WAITING) {
+                if ("Waiting".equals(tile.actionKey)) {
                     PacketHandler.sendToServer(new AdvActionMessage(tile, AdvActionMessage.Actions.QUICK_START));
                 }
             } else if (button.id() == 9) {
                 PacketHandler.sendToServer(new AdvActionMessage(tile, AdvActionMessage.Actions.MODULE_INV));
                 //      onClose()
-            } else if (tile.getAction() == AdvQuarryAction.Waiting.WAITING) {
+            } else if ("Waiting".equals(tile.actionKey)) {
                 var direction = Direction.from3DDataValue(button.id() / 2 + 2);
                 var increase = button.id() % 2 == 0 ? 1 : -1;
                 var shift = Screen.hasShiftDown();
