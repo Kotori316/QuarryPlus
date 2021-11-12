@@ -4,7 +4,6 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LongSummaryStatistics;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
@@ -27,7 +26,7 @@ public abstract class EnergyCounter {
 
     public abstract void logOutput(long time);
 
-    public abstract void logUsageMap(Consumer<String> logger);
+    public abstract void logUsageMap();
 
     public abstract void useEnergy(long time, long amount, PowerTile.Reason reason);
 
@@ -57,20 +56,23 @@ public abstract class EnergyCounter {
                 lastLogTick = time;
                 LongSummaryStatistics use = useCounter.values().stream().collect(Collectors.summarizingLong(Long::longValue));
                 LongSummaryStatistics get = getCounter.values().stream().collect(Collectors.summarizingLong(Long::longValue));
-                if (use.getSum() != 0 && get.getSum() != 0)
+                if (use.getSum() != 0 && get.getSum() != 0) {
+                    var useAverage = String.format("%.2f", use.getAverage() / PowerTile.ONE_FE);
+                    var getAverage = String.format("%.2f", get.getAverage() / PowerTile.ONE_FE);
                     LOGGER.info("{}: Used {} FE in {} ticks({} FE/t). Got {} FE in {} ticks({} FE/t).", name,
-                        use.getSum() / PowerTile.ONE_FE, use.getCount(), use.getAverage() / PowerTile.ONE_FE,
-                        get.getSum() / PowerTile.ONE_FE, get.getCount(), get.getAverage() / PowerTile.ONE_FE);
+                        use.getSum() / PowerTile.ONE_FE, use.getCount(), useAverage,
+                        get.getSum() / PowerTile.ONE_FE, get.getCount(), getAverage);
+                }
                 useCounter.clear();
                 getCounter.clear();
             }
         }
 
         @Override
-        public void logUsageMap(Consumer<String> logger) {
+        public void logUsageMap() {
             usageMap.entrySet().stream()
                 .map(e -> "%s -> %d".formatted(e.getKey(), e.getValue()))
-                .forEach(logger);
+                .forEach(LOGGER::info);
         }
 
         private void checkTime(long time, String name) {
@@ -106,7 +108,7 @@ public abstract class EnergyCounter {
         }
 
         @Override
-        public void logUsageMap(Consumer<String> logger) {
+        public void logUsageMap() {
         }
 
         @Override

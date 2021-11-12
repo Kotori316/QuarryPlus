@@ -1,7 +1,5 @@
 package com.yogpc.qp.machines;
 
-import java.util.function.Consumer;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.integration.EnergyIntegration;
 import com.yogpc.qp.utils.QuarryChunkLoadUtil;
@@ -27,7 +25,8 @@ public class PowerTile extends BlockEntity {
     public PowerTile(BlockEntityType<?> type, BlockPos pos, BlockState state, long maxEnergy) {
         super(type, pos, state);
         this.maxEnergy = maxEnergy;
-        this.energyCounter = EnergyCounter.createInstance(QuarryPlus.config.common.debug, "%s(%s)".formatted(getClass().getSimpleName(), pos));
+        this.energyCounter = EnergyCounter.createInstance(QuarryPlus.config.common.debug,
+            "%s(%d, %d, %d)".formatted(getClass().getSimpleName(), pos.getX(), pos.getY(), pos.getZ()));
     }
 
     @Override
@@ -97,8 +96,8 @@ public class PowerTile extends BlockEntity {
         }
     }
 
-    protected void logUsage(Consumer<String> logger) {
-        energyCounter.logUsageMap(logger);
+    protected void logUsage() {
+        energyCounter.logUsageMap();
     }
 
     public void setChunkPreLoaded(boolean chunkPreLoaded) {

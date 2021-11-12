@@ -73,7 +73,7 @@ public class TileAdvQuarry extends PowerTile implements
             "%sActionKey:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, actionKey),
             "%sRemoveBedrock:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, hasBedrockModule()),
             "%sDigMinY:%s %d".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, digMinY),
-            "%sEnergy:%s %f/%d FE (%d)".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, getEnergy() / (double) PowerTile.ONE_FE, getMaxEnergy() / PowerTile.ONE_FE, getEnergy())
+            "%sEnergy:%s %.1f/%d FE (%d)".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, getEnergy() / (double) PowerTile.ONE_FE, getMaxEnergy() / PowerTile.ONE_FE, getEnergy())
         ).map(TextComponent::new).toList();
     }
 
@@ -172,7 +172,7 @@ public class TileAdvQuarry extends PowerTile implements
         if (action == AdvQuarryAction.Finished.FINISHED)
             if (level != null) {
                 level.setBlock(getBlockPos(), getBlockState().setValue(BlockAdvQuarry.WORKING, false), Block.UPDATE_ALL);
-                logUsage(QuarryPlus.config.common.debug ? QuarryPlus.LOGGER::info : QuarryPlus.LOGGER::debug);
+                logUsage();
             }
         if (level != null && !level.isClientSide) {
             sync();

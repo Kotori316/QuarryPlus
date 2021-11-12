@@ -155,7 +155,7 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
             if (level != null) {
                 level.setBlock(worldPosition, blockState.setValue(QPBlock.WORKING, quarryState.isWorking), Block.UPDATE_CLIENTS);
                 if (!level.isClientSide && !quarryState.isWorking) {
-                    logUsage(QuarryPlus.config.common.debug ? QuarryPlus.LOGGER::info : QuarryPlus.LOGGER::debug);
+                    logUsage();
                 }
             }
             QuarryPlus.LOGGER.debug(MARKER, "Quarry({}) State changed to {}.", worldPosition, quarryState);

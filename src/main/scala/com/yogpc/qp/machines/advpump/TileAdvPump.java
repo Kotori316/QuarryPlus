@@ -88,7 +88,7 @@ public class TileAdvPump extends PowerTile
                         pump.finished = true;
                         pump.target = null;
                         world.setBlockAndUpdate(pos, state.setValue(BlockAdvPump.WORKING, false));
-                        pump.logUsage(QuarryPlus.LOGGER::info);
+                        pump.logUsage();
                         for (int i = pos.getY() - 1; i > pump.y; i--) {
                             BlockPos withY = pos.atY(i);
                             BlockState blockState = world.getBlockState(withY);
