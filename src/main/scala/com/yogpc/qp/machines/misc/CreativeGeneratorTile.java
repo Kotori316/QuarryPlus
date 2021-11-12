@@ -12,10 +12,11 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class CreativeGeneratorTile extends PowerTile {
-    private long sendEnergy = ONE_FE * 1000L;
+    private long sendEnergy = 0;
 
     public CreativeGeneratorTile(BlockPos pos, BlockState state) {
         super(QuarryPlus.ModObjects.CREATIVE_GENERATOR_TYPE, pos, state);
+        setSendEnergy(ONE_FE * 1000L);
     }
 
     @Override
@@ -27,7 +28,13 @@ public class CreativeGeneratorTile extends PowerTile {
     @Override
     public void load(CompoundTag nbt) {
         super.load(nbt);
-        sendEnergy = nbt.getLong("sendEnergy");
+        setSendEnergy(nbt.getLong("sendEnergy"));
+    }
+
+    private void setSendEnergy(long sendEnergy) {
+        this.sendEnergy = sendEnergy;
+        this.maxEnergy = sendEnergy;
+        this.energy = sendEnergy;
     }
 
     static final BlockEntityTicker<CreativeGeneratorTile> TICKER = (world, pos, state, tile) ->

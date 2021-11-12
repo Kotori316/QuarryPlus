@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 public class PowerTile extends BlockEntity {
     public static final long ONE_FE = 1_000_000_000L;
     private final EnergyCounter energyCounter;
-    private long energy;
+    protected long energy;
     protected long maxEnergy;
     protected boolean chunkPreLoaded;
 
