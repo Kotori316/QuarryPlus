@@ -81,6 +81,7 @@ repositories {
         name = "What The Hell Is That"
         url = "https://maven.bai.lol"
         content {
+            it.includeVersion("mcp.mobius.waila", "wthit-api", "fabric-${project.wthit_version}")
             it.includeVersion("mcp.mobius.waila", "wthit", "fabric-${project.wthit_version}")
         }
     }
@@ -125,6 +126,7 @@ dependencies {
     modImplementation("RebornCore:RebornCore-1.17:${project.RebornCore_version}")
     modRuntimeOnly("TechReborn:TechReborn-1.17:${project.TechReborn_version}")
     modImplementation("dev.technici4n:FastTransferLib:${project.ftl_version}")
+    modCompileOnly("mcp.mobius.waila:wthit-api:fabric-${project.wthit_version}")
     modRuntimeOnly("mcp.mobius.waila:wthit:fabric-${project.wthit_version}")
 
     modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_version}") {

@@ -37,5 +37,13 @@
   },
   "conflicts": {
     "team_reborn_energy": "<2.0.0-beta0"
+  },
+  "custom": {
+    "waila:plugins": [
+      {
+        "id": "quarryplus:wthit_plugin",
+        "initializer": "com.yogpc.qp.integration.wthit.QuarryWthitPlugin"
+      }
+    ]
   }
 }
