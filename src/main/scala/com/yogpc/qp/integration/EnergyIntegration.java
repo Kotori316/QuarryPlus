@@ -58,6 +58,7 @@ class RebornEnergyRegister {
                 else return null;
             },
             EnergyIntegration.getBlockEntityTypes());
+        EnergyStorage.SIDED.registerForBlockEntity((g, d) -> new RebornEnergyGenerator(g), QuarryPlus.ModObjects.CREATIVE_GENERATOR_TYPE);
         return true;
     }
 }

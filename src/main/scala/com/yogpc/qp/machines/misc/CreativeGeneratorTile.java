@@ -31,10 +31,14 @@ public class CreativeGeneratorTile extends PowerTile {
         setSendEnergy(nbt.getLong("sendEnergy"));
     }
 
-    private void setSendEnergy(long sendEnergy) {
+    public void setSendEnergy(long sendEnergy) {
         this.sendEnergy = sendEnergy;
         this.maxEnergy = sendEnergy;
         this.energy = sendEnergy;
+    }
+
+    public long getSendEnergy() {
+        return sendEnergy;
     }
 
     static final BlockEntityTicker<CreativeGeneratorTile> TICKER = (world, pos, state, tile) ->
