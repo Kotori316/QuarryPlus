@@ -44,6 +44,7 @@ public class QuarryConfig implements ConfigData {
 
         // Quarry Energy Config
         @ConfigEntry.Category(Constant.COMMON_POWER_CATEGORY)
+        @ConfigEntry.Gui.RequiresRestart
         public double quarryEnergyCapacity = 10000d;
         @ConfigEntry.Category(Constant.COMMON_POWER_CATEGORY)
         public double quarryEnergyMakeFrame = 15d;
@@ -56,12 +57,14 @@ public class QuarryConfig implements ConfigData {
 
         // Advanced Pump
         @ConfigEntry.Category(Constant.COMMON_POWER_CATEGORY)
+        @ConfigEntry.Gui.RequiresRestart
         public double advPumpEnergyCapacity = 1000d;
         @ConfigEntry.Category(Constant.COMMON_POWER_CATEGORY)
         public double advPumpEnergyRemoveFluid = 20d;
 
         // Chunk Destroyer Energy Config
         @ConfigEntry.Category(Constant.COMMON_POWER_CATEGORY)
+        @ConfigEntry.Gui.RequiresRestart
         public double advQuarryEnergyCapacity = 50000d;
         @ConfigEntry.Category(Constant.COMMON_POWER_CATEGORY)
         public double advQuarryEnergyMakeFrame = 15d;
