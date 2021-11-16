@@ -8,21 +8,21 @@ enum QuarryEnergyConfigAccessor implements EnergyConfigAccessor {
 
     @Override
     public double makeFrame() {
-        return QuarryPlus.config.power.quarryEnergyMakeFrame;
+        return QuarryPlus.config.quarry.quarryEnergyMakeFrame;
     }
 
     @Override
     public double moveHead() {
-        return QuarryPlus.config.power.quarryEnergyMoveHead;
+        return QuarryPlus.config.quarry.quarryEnergyMoveHead;
     }
 
     @Override
     public double breakBlock() {
-        return QuarryPlus.config.power.quarryEnergyBreakBlock;
+        return QuarryPlus.config.quarry.quarryEnergyBreakBlock;
     }
 
     @Override
     public double removeFluid() {
-        return QuarryPlus.config.power.quarryEnergyRemoveFluid;
+        return QuarryPlus.config.quarry.quarryEnergyRemoveFluid;
     }
 }

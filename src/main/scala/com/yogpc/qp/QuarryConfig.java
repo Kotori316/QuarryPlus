@@ -19,6 +19,12 @@ public class QuarryConfig implements ConfigData {
     public Common common = new Common();
     @ConfigEntry.Gui.CollapsibleObject
     public Power power = new Power();
+    @ConfigEntry.Gui.CollapsibleObject
+    public Quarry quarry = new Quarry();
+    @ConfigEntry.Gui.CollapsibleObject
+    public AdvPump adv_pump = new AdvPump();
+    @ConfigEntry.Gui.CollapsibleObject
+    public AdvQuarry adv_quarry = new AdvQuarry();
 
     public static class Common {
         @ConfigEntry.Category(Constant.COMMON_CATEGORY)
@@ -41,7 +47,9 @@ public class QuarryConfig implements ConfigData {
         @ConfigEntry.Category(Constant.COMMON_POWER_CATEGORY)
         @ConfigEntry.Gui.RequiresRestart
         public double fastTransferEnergyConversionCoefficient = 1d / 16d;
+    }
 
+    public static class Quarry {
         // Quarry Energy Config
         @ConfigEntry.Category(Constant.COMMON_POWER_CATEGORY)
         @ConfigEntry.Gui.RequiresRestart
@@ -54,14 +62,18 @@ public class QuarryConfig implements ConfigData {
         public double quarryEnergyRemoveFluid = quarryEnergyBreakBlock * 5;
         @ConfigEntry.Category(Constant.COMMON_POWER_CATEGORY)
         public double quarryEnergyMoveHead = 0.5d;
+    }
 
+    public static class AdvPump {
         // Advanced Pump
         @ConfigEntry.Category(Constant.COMMON_POWER_CATEGORY)
         @ConfigEntry.Gui.RequiresRestart
         public double advPumpEnergyCapacity = 1000d;
         @ConfigEntry.Category(Constant.COMMON_POWER_CATEGORY)
         public double advPumpEnergyRemoveFluid = 20d;
+    }
 
+    public static class AdvQuarry {
         // Chunk Destroyer Energy Config
         @ConfigEntry.Category(Constant.COMMON_POWER_CATEGORY)
         @ConfigEntry.Gui.RequiresRestart

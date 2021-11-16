@@ -8,21 +8,21 @@ enum AdvQuarryEnergyConfigAccessor implements EnergyConfigAccessor {
 
     @Override
     public double makeFrame() {
-        return QuarryPlus.config.power.advQuarryEnergyMakeFrame;
+        return QuarryPlus.config.adv_quarry.advQuarryEnergyMakeFrame;
     }
 
     @Override
     public double moveHead() {
-        return QuarryPlus.config.power.advQuarryEnergyMoveHead;
+        return QuarryPlus.config.adv_quarry.advQuarryEnergyMoveHead;
     }
 
     @Override
     public double breakBlock() {
-        return QuarryPlus.config.power.advQuarryEnergyBreakBlock;
+        return QuarryPlus.config.adv_quarry.advQuarryEnergyBreakBlock;
     }
 
     @Override
     public double removeFluid() {
-        return QuarryPlus.config.power.advQuarryEnergyRemoveFluid;
+        return QuarryPlus.config.adv_quarry.advQuarryEnergyRemoveFluid;
     }
 }

@@ -63,7 +63,7 @@ public class TileAdvQuarry extends PowerTile implements
     public String actionKey;
 
     public TileAdvQuarry(BlockPos pos, BlockState state) {
-        super(QuarryPlus.ModObjects.ADV_QUARRY_TYPE, pos, state, (long) (ONE_FE * QuarryPlus.config.power.advQuarryEnergyCapacity));
+        super(QuarryPlus.ModObjects.ADV_QUARRY_TYPE, pos, state, (long) (ONE_FE * QuarryPlus.config.adv_quarry.advQuarryEnergyCapacity));
     }
 
     @Override
@@ -150,7 +150,7 @@ public class TileAdvQuarry extends PowerTile implements
     public void setEnchantments(List<EnchantmentLevel> enchantments) {
         this.enchantments = enchantments;
         this.cache.enchantments.expire();
-        this.setMaxEnergy((long) (QuarryPlus.config.power.advQuarryEnergyCapacity * ONE_FE * (efficiencyLevel() + 1)));
+        this.setMaxEnergy((long) (QuarryPlus.config.adv_quarry.advQuarryEnergyCapacity * ONE_FE * (efficiencyLevel() + 1)));
     }
 
     @Nullable
