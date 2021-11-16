@@ -85,6 +85,6 @@ public class QuarryConfig implements ConfigData {
         @ConfigEntry.Category(Constant.COMMON_POWER_CATEGORY)
         public double advQuarryEnergyRemoveFluid = advQuarryEnergyBreakBlock * 5;
         @ConfigEntry.Category(Constant.COMMON_POWER_CATEGORY)
-        public double advQuarryEnergyMoveHead = 0.5d;
+        public double advQuarryEnergyMoveHead = 25d;
     }
 }
