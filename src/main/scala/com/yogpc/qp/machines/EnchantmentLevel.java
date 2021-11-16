@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.utils.ManualOrder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -58,6 +59,11 @@ public record EnchantmentLevel(Enchantment enchantment, int level) {
             var stack = new ItemStack(Items.NETHERITE_PICKAXE);
             getEnchantments().forEach(e -> stack.enchant(e.enchantment(), e.level()));
             return stack;
+        }
+
+        default EnergyConfigAccessor getAccessor() {
+            QuarryPlus.LOGGER.warn("Default implementation of HasEnchantments#getAccessor is called. {}", getClass());
+            return EnergyConfigAccessor.ONES;
         }
     }
 

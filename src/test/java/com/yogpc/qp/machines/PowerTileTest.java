@@ -16,6 +16,27 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PowerTileTest extends QuarryPlusTest {
+    final static class TestConfigAccessor implements EnergyConfigAccessor {
+        @Override
+        public double makeFrame() {
+            return 15d;
+        }
+
+        @Override
+        public double moveHead() {
+            return 0.5d;
+        }
+
+        @Override
+        public double breakBlock() {
+            return 10d;
+        }
+
+        @Override
+        public double removeFluid() {
+            return breakBlock() * 5;
+        }
+    }
 
     record Holder(Map<Enchantment, Integer> enchantmentMap) implements EnchantmentLevel.HasEnchantments {
         @Override
@@ -26,6 +47,11 @@ class PowerTileTest extends QuarryPlusTest {
         @Override
         public int getLevel(Enchantment enchantment) {
             return enchantmentMap().getOrDefault(enchantment, 0);
+        }
+
+        @Override
+        public EnergyConfigAccessor getAccessor() {
+            return new TestConfigAccessor();
         }
     }
 

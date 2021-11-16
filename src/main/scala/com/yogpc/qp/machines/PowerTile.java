@@ -127,38 +127,35 @@ public class PowerTile extends BlockEntity {
     }
 
     public static class Constants {
-        private static final long MAKE_FRAME = ONE_FE * 15;
-        private static final long BREAK_BLOCK_BASE = ONE_FE * 10;
-        private static final long BREAK_BLOCK_FLUID = BREAK_BLOCK_BASE * 5;
-        private static final long MOVE_HEAD_BASE = ONE_FE / 2;
 
         public static long getMakeFrameEnergy(EnchantmentLevel.HasEnchantments enchantments) {
-            return MAKE_FRAME / (1 + Math.max(0, enchantments.unbreakingLevel()));
+            return (long) (enchantments.getAccessor().makeFrame() * ONE_FE / (1 + Math.max(0, enchantments.unbreakingLevel())));
         }
 
         public static long getAdvSearchEnergy(int blocks, EnchantmentLevel.HasEnchantments enchantments) {
             final double FIFTH_ROOT_OF_10 = 1.5848931924611136;
-            long heightEnergy = blocks * MOVE_HEAD_BASE * 50;
+            double heightEnergy = blocks * enchantments.getAccessor().moveHead() * ONE_FE * 50;
             double efficiencyBalanced = Math.pow(FIFTH_ROOT_OF_10, enchantments.efficiencyLevel()) * heightEnergy;
             return (long) (efficiencyBalanced / (1 + Math.max(0, enchantments.unbreakingLevel())));
         }
 
         public static long getBreakEnergy(float hardness, EnchantmentLevel.HasEnchantments enchantments) {
-            if (hardness < 0 || Float.isInfinite(hardness)) return 200 * BREAK_BLOCK_BASE;
+            if (hardness < 0 || Float.isInfinite(hardness))
+                return (long) (200 * enchantments.getAccessor().breakBlock() * ONE_FE);
             double modified = ((double) hardness) / (1 + Math.max(0, enchantments.unbreakingLevel()));
             var fortune = enchantments.fortuneLevel();
             if (fortune != 0) modified *= (fortune + 1);
             if (enchantments.silktouchLevel() != 0) modified = (float) Math.pow(modified, 1.4d);
 
-            return (long) (modified * BREAK_BLOCK_BASE);
+            return (long) (modified * enchantments.getAccessor().breakBlock() * ONE_FE);
         }
 
         public static long getMoveEnergy(double distance, EnchantmentLevel.HasEnchantments enchantments) {
-            return (long) (distance * MOVE_HEAD_BASE) / (1 + Math.max(0, enchantments.unbreakingLevel()));
+            return (long) (distance * enchantments.getAccessor().moveHead() * ONE_FE) / (1 + Math.max(0, enchantments.unbreakingLevel()));
         }
 
         public static long getBreakBlockFluidEnergy(EnchantmentLevel.HasEnchantments enchantments) {
-            return BREAK_BLOCK_FLUID / (1 + Math.max(0, enchantments.unbreakingLevel()));
+            return (long) (enchantments.getAccessor().removeFluid() * ONE_FE / (1 + Math.max(0, enchantments.unbreakingLevel())));
         }
     }
 
