@@ -38,7 +38,7 @@ public class BlockAdvPump extends QPBlock implements EntityBlock {
         super(FabricBlockSettings.of(Material.METAL)
             .strength(1.5f, 10f)
             .sounds(SoundType.STONE)
-            .breakByTool(FabricToolTags.PICKAXES), NAME, ItemAdvPump::new);
+            .requiresTool(), NAME, ItemAdvPump::new);
         registerDefaultState(getStateDefinition().any()
             .setValue(WORKING, false));
     }

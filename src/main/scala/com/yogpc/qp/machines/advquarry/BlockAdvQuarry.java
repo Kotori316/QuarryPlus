@@ -47,7 +47,8 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
     public BlockAdvQuarry() {
         super(Properties.of(Material.METAL)
             .strength(1.5f, 10f)
-            .sound(SoundType.STONE), NAME, ItemAdvQuarry::new);
+            .sound(SoundType.STONE)
+            .requiresCorrectToolForDrops(), NAME, ItemAdvQuarry::new);
         registerDefaultState(getStateDefinition().any()
             .setValue(WORKING, false)
             .setValue(FACING, Direction.NORTH));

@@ -13,7 +13,6 @@ import com.yogpc.qp.machines.QuarryMarker;
 import com.yogpc.qp.utils.CombinedBlockEntityTicker;
 import com.yogpc.qp.utils.QuarryChunkLoadUtil;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
-import net.fabricmc.fabric.api.tool.attribute.v1.FabricToolTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -46,7 +45,7 @@ public class BlockQuarry extends QPBlock implements EntityBlock {
         super(FabricBlockSettings.of(Material.METAL)
             .strength(1.5f, 10f)
             .sounds(SoundType.STONE)
-            .breakByTool(FabricToolTags.PICKAXES), NAME, ItemQuarry::new);
+            .requiresTool(), NAME, ItemQuarry::new);
         registerDefaultState(getStateDefinition().any()
             .setValue(BlockStateProperties.FACING, Direction.NORTH)
             .setValue(WORKING, false));

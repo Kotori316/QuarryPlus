@@ -42,7 +42,7 @@ public class PlacerBlock extends QPBlock implements EntityBlock {
     public static final String NAME = "placer_plus";
 
     public PlacerBlock() {
-        super(Properties.of(Material.METAL).strength(1.2f), NAME);
+        super(Properties.of(Material.METAL).strength(1.2f).requiresCorrectToolForDrops(), NAME);
         registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.NORTH).setValue(TRIGGERED, Boolean.FALSE));
     }
 

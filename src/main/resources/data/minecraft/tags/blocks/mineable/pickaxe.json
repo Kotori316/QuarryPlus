@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "quarryplus:quarry",
+    "quarryplus:adv_pump",
+    "quarryplus:adv_quarry",
+    "quarryplus:placer_plus"
+  ]
+}
