@@ -62,6 +62,9 @@ public class QuarryPlus implements ModInitializer {
     @Override
     public void onInitialize() {
         QuarryPlus.LOGGER.info("Common init is called. {} ", QuarryPlus.modID);
+        AutoConfig.register(QuarryConfig.class, Toml4jConfigSerializer::new);
+        QuarryPlus.config = AutoConfig.getConfigHolder(QuarryConfig.class).getConfig();
+
         register(ModObjects.BLOCK_QUARRY, ModObjects.QUARRY_TYPE);
         register(ModObjects.BLOCK_FRAME, null);
         Registry.register(Registry.ITEM, ModObjects.ITEM_CHECKER.getRegistryName(), ModObjects.ITEM_CHECKER);
@@ -86,8 +89,6 @@ public class QuarryPlus implements ModInitializer {
         EnergyIntegration.register();
         QuarryFluidTransfer.register();
         QuarryItemTransfer.register();
-        AutoConfig.register(QuarryConfig.class, Toml4jConfigSerializer::new);
-        QuarryPlus.config = AutoConfig.getConfigHolder(QuarryConfig.class).getConfig();
     }
 
     private static void register(QPBlock block, @Nullable BlockEntityType<?> entityType) {
