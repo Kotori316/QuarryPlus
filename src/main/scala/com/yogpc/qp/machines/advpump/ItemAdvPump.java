@@ -14,7 +14,7 @@ import net.minecraft.world.item.enchantment.Enchantments;
 
 class ItemAdvPump extends QPBlock.QPBlockItem implements EnchantableItem {
     ItemAdvPump(QPBlock block) {
-        super(block, new FabricItemSettings().tab(QuarryPlus.CREATIVE_TAB).fireResistant());
+        super(block, new FabricItemSettings().tab(QuarryPlus.ModObjects.CREATIVE_TAB).fireResistant());
     }
 
     @Override

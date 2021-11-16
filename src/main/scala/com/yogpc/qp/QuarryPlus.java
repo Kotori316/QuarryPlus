@@ -54,9 +54,6 @@ public class QuarryPlus implements ModInitializer {
     public static final String modID = "quarryplus";
     public static final String MOD_NAME = "QuarryPlus";
     public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
-    public static final CreativeModeTab CREATIVE_TAB = FabricItemGroupBuilder.build(
-        new ResourceLocation(modID, modID), () -> new ItemStack(ModObjects.BLOCK_QUARRY)
-    );
     public static QuarryConfig config = null;
 
     @Override
@@ -108,6 +105,9 @@ public class QuarryPlus implements ModInitializer {
     }
 
     public static class ModObjects {
+        public static final CreativeModeTab CREATIVE_TAB = FabricItemGroupBuilder.build(
+            new ResourceLocation(modID, modID), () -> new ItemStack(ModObjects.BLOCK_QUARRY)
+        );
         public static final BlockQuarry BLOCK_QUARRY = new BlockQuarry();
         public static final BlockEntityType<TileQuarry> QUARRY_TYPE = FabricBlockEntityTypeBuilder.create(TileQuarry::new, BLOCK_QUARRY).build(DSL.emptyPartType());
 
@@ -121,7 +121,7 @@ public class QuarryPlus implements ModInitializer {
         public static final MenuType<YSetterContainer> Y_SETTER_HANDLER_TYPE = ScreenHandlerRegistry.registerExtended(YSetterContainer.GUI_ID,
             (syncId, inventory, buf) -> new YSetterContainer(syncId, inventory.player, buf.readBlockPos()));
 
-        public static final QPItem ITEM_BEDROCK_MODULE = new QPItem(new QPItem.Properties().tab(QuarryPlus.CREATIVE_TAB), "remove_bedrock_module");
+        public static final QPItem ITEM_BEDROCK_MODULE = new QPItem(new QPItem.Properties().tab(CREATIVE_TAB), "remove_bedrock_module");
 
         public static final PlacerBlock BLOCK_PLACER = new PlacerBlock();
         public static final BlockEntityType<PlacerTile> PLACER_TYPE = FabricBlockEntityTypeBuilder.create(PlacerTile::new, BLOCK_PLACER).build(DSL.emptyPartType());

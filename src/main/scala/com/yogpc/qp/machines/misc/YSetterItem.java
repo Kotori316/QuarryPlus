@@ -26,7 +26,7 @@ public class YSetterItem extends QPItem implements UseBlockCallback {
     public static final String NAME = "y_setter";
 
     public YSetterItem() {
-        super(new FabricItemSettings().tab(QuarryPlus.CREATIVE_TAB), NAME);
+        super(new FabricItemSettings().tab(QuarryPlus.ModObjects.CREATIVE_TAB), NAME);
         UseBlockCallback.EVENT.register(this);
     }
 

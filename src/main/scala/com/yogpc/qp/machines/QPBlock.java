@@ -32,7 +32,7 @@ public class QPBlock extends Block {
     }
 
     public QPBlock(Properties properties, String name) {
-        this(properties, name, b -> new QPBlockItem(b, new Item.Properties().tab(QuarryPlus.CREATIVE_TAB)));
+        this(properties, name, b -> new QPBlockItem(b, new Item.Properties().tab(QuarryPlus.ModObjects.CREATIVE_TAB)));
     }
 
     /**

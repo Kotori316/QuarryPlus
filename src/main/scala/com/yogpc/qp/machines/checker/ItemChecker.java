@@ -16,7 +16,7 @@ public class ItemChecker extends QPItem implements UseBlockCallback {
     public static final String NAME = "status_checker";
 
     public ItemChecker() {
-        super(new Properties().tab(QuarryPlus.CREATIVE_TAB), NAME);
+        super(new Properties().tab(QuarryPlus.ModObjects.CREATIVE_TAB), NAME);
         UseBlockCallback.EVENT.register(this);
     }
 

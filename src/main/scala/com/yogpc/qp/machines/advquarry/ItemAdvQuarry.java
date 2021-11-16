@@ -21,7 +21,7 @@ import net.minecraft.world.level.Level;
 @SuppressWarnings("DuplicatedCode")
 class ItemAdvQuarry extends QPBlock.QPBlockItem implements EnchantableItem {
     ItemAdvQuarry(QPBlock block) {
-        super(block, new Properties().tab(QuarryPlus.CREATIVE_TAB).fireResistant());
+        super(block, new Properties().tab(QuarryPlus.ModObjects.CREATIVE_TAB).fireResistant());
     }
 
     @Override

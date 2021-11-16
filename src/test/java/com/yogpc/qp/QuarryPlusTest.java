@@ -14,6 +14,7 @@ public class QuarryPlusTest {
         if (!INITIALIZED.getAndSet(true)) {
             SharedConstants.tryDetectVersion();
             Bootstrap.bootStrap();
+            QuarryPlus.config = new QuarryConfig();
         }
     }
 }

@@ -28,7 +28,7 @@ public class BlockDummy extends AbstractGlassBlock {
             .suffocates((state, world, pos) -> false)
             .blockVision((state, world, pos) -> false)
         );
-        blockItem = new BlockItem(this, new FabricItemSettings().tab(QuarryPlus.CREATIVE_TAB));
+        blockItem = new BlockItem(this, new FabricItemSettings().tab(QuarryPlus.ModObjects.CREATIVE_TAB));
     }
 
     private boolean breaking = false;

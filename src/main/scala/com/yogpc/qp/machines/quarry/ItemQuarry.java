@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 
 class ItemQuarry extends QPBlock.QPBlockItem implements EnchantableItem {
     ItemQuarry(QPBlock block) {
-        super(block, new FabricItemSettings().tab(QuarryPlus.CREATIVE_TAB).fireResistant());
+        super(block, new FabricItemSettings().tab(QuarryPlus.ModObjects.CREATIVE_TAB).fireResistant());
     }
 
     @Override
