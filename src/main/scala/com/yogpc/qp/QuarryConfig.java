@@ -41,5 +41,35 @@ public class QuarryConfig implements ConfigData {
         @ConfigEntry.Category(Constant.COMMON_POWER_CATEGORY)
         @ConfigEntry.Gui.RequiresRestart
         public double fastTransferEnergyConversionCoefficient = 1d / 16d;
+
+        // Quarry Energy Config
+        @ConfigEntry.Category(Constant.COMMON_POWER_CATEGORY)
+        public double quarryEnergyCapacity = 10000d;
+        @ConfigEntry.Category(Constant.COMMON_POWER_CATEGORY)
+        public double quarryEnergyMakeFrame = 15d;
+        @ConfigEntry.Category(Constant.COMMON_POWER_CATEGORY)
+        public double quarryEnergyBreakBlock = 10d;
+        @ConfigEntry.Category(Constant.COMMON_POWER_CATEGORY)
+        public double quarryEnergyRemoveFluid = quarryEnergyBreakBlock * 5;
+        @ConfigEntry.Category(Constant.COMMON_POWER_CATEGORY)
+        public double quarryEnergyMoveHead = 0.5d;
+
+        // Advanced Pump
+        @ConfigEntry.Category(Constant.COMMON_POWER_CATEGORY)
+        public double advPumpEnergyCapacity = 1000d;
+        @ConfigEntry.Category(Constant.COMMON_POWER_CATEGORY)
+        public double advPumpEnergyRemoveFluid = 20d;
+
+        // Chunk Destroyer Energy Config
+        @ConfigEntry.Category(Constant.COMMON_POWER_CATEGORY)
+        public double advQuarryEnergyCapacity = 50000d;
+        @ConfigEntry.Category(Constant.COMMON_POWER_CATEGORY)
+        public double advQuarryEnergyMakeFrame = 15d;
+        @ConfigEntry.Category(Constant.COMMON_POWER_CATEGORY)
+        public double advQuarryEnergyBreakBlock = 10d;
+        @ConfigEntry.Category(Constant.COMMON_POWER_CATEGORY)
+        public double advQuarryEnergyRemoveFluid = advQuarryEnergyBreakBlock * 5;
+        @ConfigEntry.Category(Constant.COMMON_POWER_CATEGORY)
+        public double advQuarryEnergyMoveHead = 0.5d;
     }
 }

@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
 
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.EnchantmentLevel;
 import com.yogpc.qp.machines.PowerTile;
 import net.minecraft.core.BlockPos;
@@ -20,7 +21,7 @@ class EnchantmentEfficiency {
     final long energyCapacity;
     final int fluidCapacity;
     final long baseEnergy;
-    static final List<Integer> baseEnergyMap = List.of(100, 80, 50, 20);
+    static final List<Double> baseEnergyMap = List.of(5d, 4d, 2.5, 1d);
     final int range;
 
     EnchantmentEfficiency(List<EnchantmentLevel> enchantments) {
@@ -31,7 +32,7 @@ class EnchantmentEfficiency {
         this.range = (rangeLevel + 1) * 32;
         this.energyCapacity = (int) Math.pow(2, 10 + efficiency) * PowerTile.ONE_FE;
         this.fluidCapacity = 512 * 1000 * (efficiency + 1);
-        this.baseEnergy = baseEnergyMap.get(Mth.clamp(unbreaking, 0, 3)) * PowerTile.ONE_FE;
+        this.baseEnergy = (long) (baseEnergyMap.get(Mth.clamp(unbreaking, 0, 3)) * PowerTile.ONE_FE * QuarryPlus.config.power.advPumpEnergyRemoveFluid);
     }
 
     static int getLevel(List<EnchantmentLevel> enchantments, Enchantment enchantment) {

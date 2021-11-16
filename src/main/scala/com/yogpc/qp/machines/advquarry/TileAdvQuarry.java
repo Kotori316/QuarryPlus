@@ -12,6 +12,7 @@ import com.yogpc.qp.machines.BreakResult;
 import com.yogpc.qp.machines.CheckerLog;
 import com.yogpc.qp.machines.EnchantmentHolder;
 import com.yogpc.qp.machines.EnchantmentLevel;
+import com.yogpc.qp.machines.EnergyConfigAccessor;
 import com.yogpc.qp.machines.ItemConverter;
 import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.PowerTile;
@@ -62,7 +63,7 @@ public class TileAdvQuarry extends PowerTile implements
     public String actionKey;
 
     public TileAdvQuarry(BlockPos pos, BlockState state) {
-        super(QuarryPlus.ModObjects.ADV_QUARRY_TYPE, pos, state);
+        super(QuarryPlus.ModObjects.ADV_QUARRY_TYPE, pos, state, (long) (ONE_FE * QuarryPlus.config.power.advQuarryEnergyCapacity));
     }
 
     @Override
@@ -391,6 +392,11 @@ public class TileAdvQuarry extends PowerTile implements
     @Override
     public int silktouchLevel() {
         return cache.enchantments.getValue(getLevel()).silktouch();
+    }
+
+    @Override
+    public EnergyConfigAccessor getAccessor() {
+        return AdvQuarryEnergyConfigAccessor.INSTANCE;
     }
 
     private class QuarryCache {

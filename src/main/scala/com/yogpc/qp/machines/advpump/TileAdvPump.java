@@ -35,7 +35,7 @@ public class TileAdvPump extends PowerTile
     private boolean finished = false;
 
     public TileAdvPump(BlockPos pos, BlockState state) {
-        super(QuarryPlus.ModObjects.ADV_PUMP_TYPE, pos, state);
+        super(QuarryPlus.ModObjects.ADV_PUMP_TYPE, pos, state, (long) (ONE_FE * QuarryPlus.config.power.advPumpEnergyCapacity));
         y = pos.getY() - 1;
         enchantmentEfficiency = new EnchantmentEfficiency(List.of());
     }

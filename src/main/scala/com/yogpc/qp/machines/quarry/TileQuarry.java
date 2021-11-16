@@ -13,6 +13,7 @@ import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.BreakResult;
 import com.yogpc.qp.machines.CheckerLog;
 import com.yogpc.qp.machines.EnchantmentLevel;
+import com.yogpc.qp.machines.EnergyConfigAccessor;
 import com.yogpc.qp.machines.ItemConverter;
 import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.PowerTile;
@@ -65,7 +66,7 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
     private final ItemConverter itemConverter = ItemConverter.defaultConverter();
 
     public TileQuarry(BlockPos pos, BlockState state) {
-        super(QuarryPlus.ModObjects.QUARRY_TYPE, pos, state, 10000 * ONE_FE);
+        super(QuarryPlus.ModObjects.QUARRY_TYPE, pos, state, (long) (10000 * QuarryPlus.config.power.quarryEnergyCapacity));
     }
 
     @Override
@@ -383,5 +384,10 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
     @Override
     public List<EnchantmentLevel> getEnchantments() {
         return Collections.unmodifiableList(enchantments);
+    }
+
+    @Override
+    public EnergyConfigAccessor getAccessor() {
+        return QuarryEnergyConfigAccessor.INSTANCE;
     }
 }
