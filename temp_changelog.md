@@ -1,5 +1,9 @@
 This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).
 
+## Version 16.1.10
+
+* Quarry now removes blocks in water.
+
 ## Version 16.1.9
 
 * Added a way to register the block for Replacer Module.
