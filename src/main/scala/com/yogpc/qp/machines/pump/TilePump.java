@@ -37,7 +37,6 @@ import com.yogpc.qp.machines.base.QPBlock;
 import com.yogpc.qp.machines.quarry.TileQuarry;
 import com.yogpc.qp.machines.quarry.TileQuarry2;
 import com.yogpc.qp.packet.PacketHandler;
-import com.yogpc.qp.packet.pump.Mappings;
 import com.yogpc.qp.packet.pump.Now;
 import com.yogpc.qp.utils.Holder;
 import javax.annotation.Nonnull;
@@ -411,7 +410,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
                         if (this.blocks[this.py - this.yOffset][this.px][bz] != 0) {
                             bb = this.storageArray[this.px >> 4][bz >> 4][this.py >> 4].getBlockState(this.px & 0xF, this.py & 0xF, bz & 0xF);
                             mutableBlockPos.setPos(this.px + this.xOffset, this.py, bz + this.zOffset);
-                            if (isLiquid(bb, Config.common().removeOnlySource().get(), world, mutableBlockPos))
+                            if (isLiquid(bb, Config.common().removeOnlySource().get(), world, mutableBlockPos, true))
                                 count++;
                         }
                 }
@@ -476,20 +475,27 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
      * @param pos        When source is false, it can be any value.
      * @return true if the blockstate is liquid state.
      */
-    public static boolean isLiquid(@Nonnull final BlockState state, final boolean findSource, final World world, final BlockPos pos) {
-        if (state.getFluidState() != Fluids.EMPTY.getDefaultState())
+    public static boolean isLiquid(@Nonnull final BlockState state, final boolean findSource, final World world, final BlockPos pos, boolean findWaterLogged) {
+        if (findWaterLogged && state.getFluidState() != Fluids.EMPTY.getDefaultState())
             return !findSource || state.getFluidState().isSource();
         Block block = state.getBlock();
-        if (block instanceof IFluidBlock)
+        if (block instanceof IFluidBlock) {
             return !findSource || ((IFluidBlock) block).canDrain(world, pos);
-        else {
-            return (block == Blocks.WATER || block == Blocks.LAVA || state.getMaterial().isLiquid())
-                && (!findSource || state.get(FlowingFluidBlock.LEVEL) == 0);
+        } else {
+            if (block instanceof FlowingFluidBlock) {
+                return !findSource || state.get(FlowingFluidBlock.LEVEL) == 0;
+            } else {
+                return state.getMaterial().isLiquid();
+            }
         }
     }
 
     public static boolean isLiquid(@Nonnull BlockState state) {
-        return isLiquid(state, false, null, null);
+        return isLiquid(state, false, null, null, true);
+    }
+
+    public static boolean isLiquidIgnoreWaterLogged(@Nonnull BlockState state) {
+        return isLiquid(state, false, null, null, false);
     }
 
     private void drainBlock(final int bx, final int bz, final BlockState tb) {

@@ -43,7 +43,7 @@ public class TileReplacer extends APacketTile implements IAttachment, IDebugSend
     public static final List<Predicate<BlockState>> rejects = new ArrayList<>(Arrays.asList(
         state -> state.getBlock().hasTileEntity(state),
         state -> state.getMaterial() == Material.MISCELLANEOUS,
-        TilePump::isLiquid,
+        TilePump::isLiquidIgnoreWaterLogged,
         always_false()
     ));
     private Direction facing;

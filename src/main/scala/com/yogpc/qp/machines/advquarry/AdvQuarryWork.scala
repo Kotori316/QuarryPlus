@@ -8,13 +8,14 @@ import com.yogpc.qp.machines.base.{Area, EnergyUsage, IModule, QuarryBlackList}
 import com.yogpc.qp.machines.pump.TilePump
 import com.yogpc.qp.machines.quarry.QuarryFakePlayer
 import com.yogpc.qp.utils.Holder
-import net.minecraft.block.Blocks
+import net.minecraft.block.{Block, Blocks}
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.ItemEntity
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos}
 import net.minecraft.util.{Direction, EntityPredicates, Hand}
 import net.minecraft.world.World
+import net.minecraft.world.server.ServerWorld
 import net.minecraftforge.common.util.Constants.NBT
 import org.apache.logging.log4j.MarkerManager
 
@@ -158,7 +159,7 @@ object AdvQuarryWork {
       @scala.annotation.tailrec
       def loop(pos: BlockPos, count: Int, list: List[Reason]): List[Reason] = {
         val targets = Range(tile.yLevel, area.yMin).reverse.map(yPos => pos.copy(y = yPos))
-        checkWater(tile.getDiggingWorld, targets)
+        checkWater(tile.getDiggingWorld, targets, tile)
         val storage1 = new AdvStorage
 
         // drop check
@@ -242,41 +243,43 @@ object AdvQuarryWork {
       }
     }
 
-    def checkWater(world: World, targets: Seq[BlockPos]): Unit = {
+    def checkWater(world: World, targets: Seq[BlockPos], tile: TileAdvQuarry): Unit = {
       val pos1 = targets.head
       val flags = Array(pos1.getX == area.xMin, pos1.getX == area.xMax, pos1.getZ == area.zMin, pos1.getZ == area.zMax)
       if (flags.exists(identity)) {
         targets.foreach { pos =>
           if (flags(0)) { //-x
-            checkAndSetFrame(world, pos.offset(Direction.WEST))
+            checkAndSetFrame(world, pos.offset(Direction.WEST), tile)
             if (flags(2)) { //-z, -x
-              checkAndSetFrame(world, pos.offset(Direction.NORTH, Direction.WEST))
+              checkAndSetFrame(world, pos.offset(Direction.NORTH, Direction.WEST), tile)
             }
             else if (flags(3)) { //+z, -x
-              checkAndSetFrame(world, pos.offset(Direction.SOUTH, Direction.WEST))
+              checkAndSetFrame(world, pos.offset(Direction.SOUTH, Direction.WEST), tile)
             }
           }
           else if (flags(1)) { //+x
-            checkAndSetFrame(world, pos.offset(Direction.EAST))
+            checkAndSetFrame(world, pos.offset(Direction.EAST), tile)
             if (flags(2)) { //-z, +x
-              checkAndSetFrame(world, pos.offset(Direction.NORTH, Direction.EAST))
+              checkAndSetFrame(world, pos.offset(Direction.NORTH, Direction.EAST), tile)
             }
             else if (flags(3)) { //+z, +x
-              checkAndSetFrame(world, pos.offset(Direction.SOUTH, Direction.EAST))
+              checkAndSetFrame(world, pos.offset(Direction.SOUTH, Direction.EAST), tile)
             }
           }
           if (flags(2)) { //-z
-            checkAndSetFrame(world, pos.offset(Direction.NORTH))
+            checkAndSetFrame(world, pos.offset(Direction.NORTH), tile)
           }
           else if (flags(3)) { //+z
-            checkAndSetFrame(world, pos.offset(Direction.SOUTH))
+            checkAndSetFrame(world, pos.offset(Direction.SOUTH), tile)
           }
         }
       }
     }
 
-    def checkAndSetFrame(world: World, thatPos: BlockPos): Unit = {
-      if (TilePump.isLiquid(world.getBlockState(thatPos))) {
+    private def checkAndSetFrame(world: World, thatPos: BlockPos, tile: TileAdvQuarry): Unit = {
+      val state = world.getBlockState(thatPos)
+      if (TilePump.isLiquid(state)) {
+        Block.getDrops(state, world.asInstanceOf[ServerWorld], target, null).forEach(tile.storage.insertItem)
         world.setBlockState(thatPos, Holder.blockFrame.getDammingState)
       }
     }

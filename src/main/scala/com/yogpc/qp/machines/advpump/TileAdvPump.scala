@@ -143,7 +143,7 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
 
     toDig match {
       case next :: rest => toDig = rest
-        if (TilePump.isLiquid(getWorld.getBlockState(next), true, getWorld, next)) {
+        if (TilePump.isLiquid(getWorld.getBlockState(next), true, getWorld, next, true)) {
           target = next
         } else {
           if (i > ench.maxAmount / 1000) {
@@ -188,7 +188,7 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
           if (TilePump.isLiquid(state)) {
             checked.add(downPos)
             paths.put(downPos, List(downPos))
-            if (TilePump.isLiquid(state, true, getWorld, downPos))
+            if (TilePump.isLiquid(state, true, getWorld, downPos, true))
               toDig = downPos :: toDig
             nextPosesToCheck += downPos
 
@@ -223,7 +223,7 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
             if (findFluid(state) isEquivalentTo fluid) {
               paths += ((offsetPos, offsetPos :: paths(posToCheck)))
               nextPosesToCheck += offsetPos
-              if (TilePump.isLiquid(state, true, getWorld, offsetPos))
+              if (TilePump.isLiquid(state, true, getWorld, offsetPos, true))
                 toDig = offsetPos :: toDig
               else if (TilePump.isLiquid(state))
                 toDelete = offsetPos :: toDelete
@@ -244,7 +244,7 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
           val energy = ench.getEnergy(placeFrame)
           val state = getWorld.getBlockState(target)
           val isLiquid = TilePump.isLiquid(state)
-          val isSource = TilePump.isLiquid(state, true, getWorld, target)
+          val isSource = TilePump.isLiquid(state, true, getWorld, target, true)
           if (isLiquid && !isSource) {
             getWorld.removeBlock(target, false)
             nextPos()
@@ -307,7 +307,7 @@ class TileAdvPump extends APowerTile(Holder.advPumpType)
       Direction.Plane.HORIZONTAL.iterator().asScala.foreach { facing =>
         val offset = pos.offset(facing)
         // TODO CHECK
-        if (!inRange.contains(offset) && TilePump.isLiquid(getWorld.getBlockState(offset))) {
+        if (!inRange.contains(offset) && TilePump.isLiquidIgnoreWaterLogged(getWorld.getBlockState(offset))) {
           getWorld.setBlockState(offset, Holder.blockFrame.getDammingState)
         }
       }

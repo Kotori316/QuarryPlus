@@ -209,7 +209,7 @@ object QuarryBlackList {
 
   object Fluids extends Entry(ID_FLUID) {
     override def test(state: BlockState, world: IBlockReader, pos: BlockPos): Boolean =
-      TilePump.isLiquid(state)
+      TilePump.isLiquidIgnoreWaterLogged(state)
 
     override def toString: String = "BlackList of Fluids"
   }

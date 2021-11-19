@@ -198,8 +198,8 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
             }
             boolean b = ((TilePump) te).S_removeLiquids(this, x, y, z);
             if (blockState.getMaterial().isLiquid()) return b;
-            // fluid should be replaced with air.
-            // other blocks will be replaced with block.
+            // Fluid should be replaced with air.
+            // Other blocks will be replaced with block.
         }
         // Replace block
         world.playEvent(Constants.WorldEvents.BREAK_BLOCK_EFFECTS, pos, Block.getStateId(blockState));

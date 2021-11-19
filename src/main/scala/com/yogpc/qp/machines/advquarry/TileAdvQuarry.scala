@@ -146,7 +146,7 @@ class TileAdvQuarry extends APowerTile(Holder.advQuarryType)
         storage.insertItems(drops.seq)
       }
 
-      if (!TilePump.isLiquid(state) && searchReplacer) {
+      if (!TilePump.isLiquidIgnoreWaterLogged(state) && searchReplacer) {
         val replaced = self.modules.foldMap(_.invoke(IModule.AfterBreak(getDiggingWorld, target, state, getDiggingWorld.getGameTime, breakEvent.getExpToDrop)))
         if (!replaced.done) {
           // Not replaced

@@ -243,7 +243,7 @@ object QuarryAction {
               if (b.break) {
                 val state = quarry2.getDiggingWorld.getBlockState(target)
                 // Replacer works for non liquid block.
-                if (!TilePump.isLiquid(state) && !state.getBlock.isAir(state, quarry2.getDiggingWorld, target)) {
+                if (!TilePump.isLiquidIgnoreWaterLogged(state) && !state.getBlock.isAir(state, quarry2.getDiggingWorld, target)) {
                   val replaced = quarry2.modules.foldMap(_.invoke(IModule.AfterBreak(quarry2.getDiggingWorld, target, state, quarry2.getDiggingWorld.getGameTime, xp)))
                   if (!replaced.done) { // Not replaced
                     quarry2.getDiggingWorld.setBlockState(target, Blocks.AIR.getDefaultState)
@@ -380,7 +380,7 @@ object QuarryAction {
     !QuarryBlackList.contains(state, world, pos) &&
       !unbreakable &&
       !modules.flatMap(IModule.replaceBlocks(pos.getY)).contains(state) &&
-      (!TilePump.isLiquid(state) || modules.exists(IModule.hasPumpModule))
+      (!TilePump.isLiquidIgnoreWaterLogged(state) || modules.exists(IModule.hasPumpModule))
   }
 
   val getNamed: (CompoundNBT, String) => CompoundNBT = _.getCompound(_)

@@ -292,7 +292,7 @@ public abstract class PumpModule implements IModule {
                             if (this.blocks[this.py - this.yOffset][this.px][bz] != 0) {
                                 bb = this.storageArray[this.px >> 4][bz >> 4][this.py >> 4].getBlockState(this.px & 0xF, this.py & 0xF, bz & 0xF);
                                 mutableBlockPos.setPos(this.px + this.xOffset, this.py, bz + this.zOffset);
-                                if (TilePump.isLiquid(bb, Config.common().removeOnlySource().get(), world, mutableBlockPos))
+                                if (TilePump.isLiquid(bb, Config.common().removeOnlySource().get(), world, mutableBlockPos, true))
                                     count++;
                             }
                     }
