@@ -220,10 +220,6 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         }
     }
 
-    public void S_OpenGUI(Direction facing, final PlayerEntity ep) {
-        PacketHandler.sendToClient(Mappings.All.create(this, facing), world);
-    }
-
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private static final int Y_SIZE = 256;
     private static final int CHUNK_SCALE = 16;
