@@ -65,9 +65,9 @@ public class QuarryPlus implements ModInitializer {
         register(ModObjects.BLOCK_QUARRY, ModObjects.QUARRY_TYPE);
         register(ModObjects.BLOCK_FRAME, null);
         Registry.register(Registry.ITEM, ModObjects.ITEM_CHECKER.getRegistryName(), ModObjects.ITEM_CHECKER);
-        register(ModObjects.BLOCK_MARKER, ModObjects.MARKER_TYPE);
         Registry.register(Registry.ITEM, ModObjects.ITEM_Y_SETTER.getRegistryName(), ModObjects.ITEM_Y_SETTER);
         Registry.register(Registry.ITEM, ModObjects.ITEM_BEDROCK_MODULE.getRegistryName(), ModObjects.ITEM_BEDROCK_MODULE);
+        register(ModObjects.BLOCK_MARKER, ModObjects.MARKER_TYPE);
         register(ModObjects.BLOCK_FLEX_MARKER, ModObjects.FLEX_MARKER_TYPE);
         register(ModObjects.BLOCK_16_MARKER, ModObjects.MARKER_16_TYPE);
         register(ModObjects.BLOCK_CREATIVE_GENERATOR, ModObjects.CREATIVE_GENERATOR_TYPE);
