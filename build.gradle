@@ -162,7 +162,7 @@ private static boolean isInCI() {
 // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
 tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"
-    options.release.set(16)
+    options.release.set(17)
 }
 
 sourceSets {
@@ -215,7 +215,7 @@ def joinedLog = String.join("\n",
         "* [Fabric Language Scala](https://www.curseforge.com/minecraft/mc-mods/fabric-language-scala)",
         "* [Cloth Config API (Fabric)](https://www.curseforge.com/minecraft/mc-mods/cloth-config)",
         "",
-        "See https://github.com/Kotori316/QuarryPlus/commits/1.17-fabric to get all change log.",
+        "See https://github.com/Kotori316/QuarryPlus/commits/${project.minecraft_version} to get all change log.",
         "",
         "Built with:",
         "",
@@ -231,11 +231,11 @@ curseforge {
         id = '282837'
         changelogType = 'markdown'
         addGameVersion 'Fabric'
-        addGameVersion '1.18'
+        addGameVersion '1.18-Snapshot'
         changelog = joinedLog
         releaseType = isInCI() ? 'alpha' : 'beta'
         mainArtifact(remapJar) {
-            displayName = "v" + project.version + "-fabric"
+            displayName = "v" + project.version + "-fabric" + " [${project.minecraft_version}]"
         }
         relations {
             requiredDependency 'fabric-language-scala'
@@ -290,6 +290,7 @@ task CheckCompileOption() {
         strings.add("Is in CI: " + isInCI())
         strings.add("project.group: ${project.group}")
         strings.add("version: $version")
+        strings.add("Display name: ${"v" + project.version + "-fabric" + " [${project.minecraft_version}]"}")
         strings.add("runs: ${loom.getRunConfigs().asMap.toMapString()}")
         strings.add("Absolute Client RunDir: ${project.projectDir.toPath().resolve(loom.getRunConfigs().getByName("client").runDir).toAbsolutePath()}")
         strings.add("Absolute Server RunDir: ${project.projectDir.toPath().resolve(loom.getRunConfigs().getByName("server").runDir).toAbsolutePath()}")
