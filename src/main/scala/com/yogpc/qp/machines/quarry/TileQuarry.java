@@ -66,7 +66,7 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
     private final ItemConverter itemConverter = ItemConverter.defaultConverter();
 
     public TileQuarry(BlockPos pos, BlockState state) {
-        super(QuarryPlus.ModObjects.QUARRY_TYPE, pos, state, (long) (10000 * QuarryPlus.config.quarry.quarryEnergyCapacity));
+        super(QuarryPlus.ModObjects.QUARRY_TYPE, pos, state, (long) (PowerTile.ONE_FE * QuarryPlus.config.quarry.quarryEnergyCapacity));
     }
 
     @Override
