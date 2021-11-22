@@ -4,7 +4,6 @@ import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.impl.launch.FabricLauncherBase;
 
 @Config(name = QuarryPlus.modID)
 public class QuarryConfig implements ConfigData {
@@ -28,16 +27,27 @@ public class QuarryConfig implements ConfigData {
 
     public static class Common {
         @ConfigEntry.Category(Constant.COMMON_CATEGORY)
-        public boolean debug = FabricLauncherBase.getLauncher() == null || FabricLoader.getInstance().isDevelopmentEnvironment();
+        public boolean debug;
         @ConfigEntry.Category(Constant.COMMON_CATEGORY)
         @ConfigEntry.BoundedDiscrete(min = -128, max = 512)
-        public int netherTop = FabricLauncherBase.getLauncher() == null || FabricLoader.getInstance().isDevelopmentEnvironment() ? 128 : 127;
+        public int netherTop;
         @ConfigEntry.Category(Constant.COMMON_CATEGORY)
         @ConfigEntry.Gui.RequiresRestart
         public boolean noEnergy = false;
         @ConfigEntry.Category(Constant.COMMON_CATEGORY)
         @ConfigEntry.Gui.RequiresRestart
         public boolean convertDeepslateOres = false;
+
+        public Common() {
+            try {
+                debug = FabricLoader.getInstance().isDevelopmentEnvironment();
+                netherTop = FabricLoader.getInstance().isDevelopmentEnvironment() ? 128 : 127;
+            } catch (Throwable ignore) {
+                // In test environment.
+                debug = true;
+                netherTop = 128;
+            }
+        }
     }
 
     public static class Power {
