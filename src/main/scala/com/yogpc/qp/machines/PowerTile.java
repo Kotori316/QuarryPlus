@@ -31,11 +31,11 @@ public class PowerTile extends BlockEntity {
     }
 
     @Override
-    public CompoundTag save(CompoundTag nbt) {
+    public void saveAdditional(CompoundTag nbt) {
         nbt.putLong("energy", energy);
         nbt.putLong("maxEnergy", maxEnergy);
         nbt.putBoolean("chunkPreLoaded", chunkPreLoaded);
-        return super.save(nbt);
+        super.saveAdditional(nbt);
     }
 
     @Override

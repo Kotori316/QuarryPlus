@@ -1,5 +1,5 @@
 package com.yogpc.qp.integration.wthit;
-
+/*
 import com.yogpc.qp.machines.PowerTile;
 import mcp.mobius.waila.api.IRegistrar;
 import mcp.mobius.waila.api.IWailaPlugin;
@@ -14,3 +14,4 @@ public final class QuarryWthitPlugin implements IWailaPlugin {
         registrar.addBlockData(provider, PowerTile.class);
     }
 }
+*/

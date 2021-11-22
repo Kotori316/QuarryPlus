@@ -17,7 +17,7 @@ plugins {
     id "com.matthewprenger.cursegradle" version "1.4.0"
 }
 
-archivesBaseName = "AdditionalEnchantedMiner-1.17-fabric"
+archivesBaseName = "AdditionalEnchantedMiner-1.18-fabric"
 version = project.mod_version
 if (isInCI()) {
     String postFix = System.getenv("GITHUB_RUN_NUMBER") ?: "SNAPSHOT"
@@ -115,7 +115,7 @@ dependencies {
     // library
     // implementation "org.scala-lang:scala-library:2.13.4"
     implementation "com.google.code.findbugs:jsr305:3.0.1"
-    modImplementation "alexiil.mc.lib:libblockattributes-all:${project.bc_attribute_version}"
+    /*modImplementation "alexiil.mc.lib:libblockattributes-all:${project.bc_attribute_version}"
 
     modRuntimeOnly("alexiil.mc.mod:simplepipes-all:${project.simple_pipe_version}")
     if (Boolean.parseBoolean(System.getenv("FABRIC_SERVER") ?: "false")) {
@@ -127,7 +127,7 @@ dependencies {
     modRuntimeOnly("TechReborn:TechReborn-1.17:${project.TechReborn_version}")
     modImplementation("dev.technici4n:FastTransferLib:${project.ftl_version}")
     modCompileOnly("mcp.mobius.waila:wthit-api:fabric-${project.wthit_version}")
-    modRuntimeOnly("mcp.mobius.waila:wthit:fabric-${project.wthit_version}")
+    modRuntimeOnly("mcp.mobius.waila:wthit:fabric-${project.wthit_version}")*/
 
     modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_version}") {
         //noinspection SpellCheckingInspection
@@ -179,10 +179,10 @@ java {
     // If you remove this line, sources will not be generated.
     withSourcesJar()
     toolchain {
-        it.languageVersion = JavaLanguageVersion.of(16)
+        it.languageVersion = JavaLanguageVersion.of(17)
     }
 }
-def BRANCH = "1.17-fabric"
+def BRANCH = "1.18-fabric"
 
 jar {
     from "LICENSE"
@@ -203,7 +203,7 @@ jar {
 
 // PUBLISH
 def joinedLog = String.join("\n",
-        "Additional Enchanted Miner for 1.17.1 and Fabric.",
+        "Additional Enchanted Miner for ${project.minecraft_version} and Fabric.",
         "",
         isInCI() ? "RELEASED VIA Ci/CD. It may contain bugs." : "Manually built.",
         "",
@@ -231,7 +231,7 @@ curseforge {
         id = '282837'
         changelogType = 'markdown'
         addGameVersion 'Fabric'
-        addGameVersion '1.17.1'
+        addGameVersion '1.18'
         changelog = joinedLog
         releaseType = isInCI() ? 'alpha' : 'beta'
         mainArtifact(remapJar) {

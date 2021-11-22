@@ -6,10 +6,10 @@ import java.util.function.Function;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.BreakResult;
 import com.yogpc.qp.machines.CheckerLog;
+import com.yogpc.qp.packet.ClientSync;
 import com.yogpc.qp.machines.EnchantmentLevel;
 import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.PowerTile;
-import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -26,7 +26,7 @@ import net.minecraft.world.level.material.Fluid;
 
 public class TileAdvPump extends PowerTile
     implements MachineStorage.HasStorage, EnchantmentLevel.HasEnchantments,
-    CheckerLog, BlockEntityClientSerializable {
+    CheckerLog, ClientSync {
 
     private final MachineStorage storage = new MachineStorage();
     private int y;
@@ -41,12 +41,12 @@ public class TileAdvPump extends PowerTile
     }
 
     @Override
-    public CompoundTag save(CompoundTag nbt) {
+    public void saveAdditional(CompoundTag nbt) {
         nbt.put("storage", storage.toNbt());
         nbt.putInt("y", y);
         nbt.put("enchantments", enchantmentEfficiency.toNbt());
         nbt.putBoolean("finished", finished);
-        return super.save(nbt);
+        super.saveAdditional(nbt);
     }
 
     @Override
@@ -180,6 +180,6 @@ public class TileAdvPump extends PowerTile
 
     @Override
     public CompoundTag toClientTag(CompoundTag tag) {
-        return save(tag);
+        return saveWithFullMetadata();
     }
 }

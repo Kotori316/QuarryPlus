@@ -10,10 +10,10 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.CheckerLog;
 import com.yogpc.qp.machines.QuarryMarker;
+import com.yogpc.qp.packet.ClientSync;
 import com.yogpc.qp.render.Box;
 import com.yogpc.qp.render.RenderMarker;
 import javax.annotation.Nullable;
-import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -24,7 +24,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
-public class TileFlexMarker extends BlockEntity implements QuarryMarker, CheckerLog, BlockEntityClientSerializable {
+public class TileFlexMarker extends BlockEntity implements QuarryMarker, CheckerLog, ClientSync {
 
     private BlockPos min;
     private BlockPos max;
@@ -98,11 +98,11 @@ public class TileFlexMarker extends BlockEntity implements QuarryMarker, Checker
     }
 
     @Override
-    public CompoundTag save(CompoundTag compound) {
+    public void saveAdditional(CompoundTag compound) {
         compound.putLong("min", min.asLong());
         compound.putLong("max", max.asLong());
         compound.putString("direction", Optional.ofNullable(direction).map(Direction::toString).orElse(""));
-        return super.save(compound);
+        super.saveAdditional(compound);
     }
 
     @Override
@@ -144,7 +144,7 @@ public class TileFlexMarker extends BlockEntity implements QuarryMarker, Checker
 
     @Override
     public CompoundTag toClientTag(CompoundTag tag) {
-        return save(tag);
+        return saveWithFullMetadata();
     }
 
     public enum Movable {

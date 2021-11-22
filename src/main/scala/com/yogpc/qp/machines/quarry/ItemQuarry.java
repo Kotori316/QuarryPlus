@@ -38,7 +38,7 @@ class ItemQuarry extends QPBlock.QPBlockItem implements EnchantableItem {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag context) {
         super.appendHoverText(stack, world, tooltip, context);
-        CompoundTag tag = Optional.ofNullable(stack.getTagElement(BLOCK_ENTITY_TAG)).orElse(new CompoundTag());
+        CompoundTag tag = Optional.ofNullable(getBlockEntityData(stack)).orElse(new CompoundTag());
         if (tag.getBoolean("bedrockRemove")) {
             tooltip.add(new TextComponent("BedrockRemove on"));
         }

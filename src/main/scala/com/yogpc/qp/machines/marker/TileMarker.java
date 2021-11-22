@@ -10,9 +10,9 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.CheckerLog;
 import com.yogpc.qp.machines.QuarryMarker;
+import com.yogpc.qp.packet.ClientSync;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -25,7 +25,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class TileMarker extends BlockEntity implements QuarryMarker, CheckerLog, BlockEntityClientSerializable {
+public class TileMarker extends BlockEntity implements QuarryMarker, CheckerLog, ClientSync {
     public static final int MAX_SEARCH = 256;
     private MarkerConnection markerConnection = MarkerConnection.EMPTY;
     public boolean rsReceiving;

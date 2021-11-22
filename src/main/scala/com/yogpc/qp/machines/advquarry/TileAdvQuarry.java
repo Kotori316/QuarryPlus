@@ -10,6 +10,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.BreakResult;
 import com.yogpc.qp.machines.CheckerLog;
+import com.yogpc.qp.packet.ClientSync;
 import com.yogpc.qp.machines.EnchantmentHolder;
 import com.yogpc.qp.machines.EnchantmentLevel;
 import com.yogpc.qp.machines.EnergyConfigAccessor;
@@ -19,7 +20,6 @@ import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.utils.CacheEntry;
 import com.yogpc.qp.utils.MapMulti;
 import javax.annotation.Nullable;
-import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -45,7 +45,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 public class TileAdvQuarry extends PowerTile implements
     CheckerLog, MachineStorage.HasStorage,
-    EnchantmentLevel.HasEnchantments, BlockEntityClientSerializable, ExtendedScreenHandlerFactory {
+    EnchantmentLevel.HasEnchantments, ClientSync, ExtendedScreenHandlerFactory {
 
     // Inventory
     private boolean isBlockModuleLoaded = false;
@@ -95,16 +95,16 @@ public class TileAdvQuarry extends PowerTile implements
     }
 
     @Override
-    public CompoundTag save(CompoundTag nbt) {
+    public void saveAdditional(CompoundTag nbt) {
         toClientTag(nbt);
         nbt.put("storage", storage.toNbt());
         nbt.put("action", action.toNbt());
-        return super.save(nbt);
+        super.saveAdditional(nbt);
     }
 
     @Override
     public CompoundTag getUpdateTag() {
-        return save(new CompoundTag());
+        return saveWithFullMetadata();
     }
 
     @Override

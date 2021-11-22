@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.integration.QuarryItemTransfer;
 import com.yogpc.qp.machines.CheckerLog;
-import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
+import com.yogpc.qp.packet.ClientSync;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -47,7 +47,7 @@ public class PlacerTile extends BlockEntity implements
     Container,
     CheckerLog,
     ExtendedScreenHandlerFactory,
-    BlockEntityClientSerializable {
+    ClientSync {
     public static final String KEY_ITEM = "items";
     public static final String KEY_LAST_PLACED = "last_placed";
     public static final String KEY_RS_MODE = "redstone_mode";
@@ -167,11 +167,11 @@ public class PlacerTile extends BlockEntity implements
     // -------------------- NBT --------------------
 
     @Override
-    public CompoundTag save(CompoundTag compound) {
+    public void saveAdditional(CompoundTag compound) {
         compound.put(KEY_ITEM, ContainerHelper.saveAllItems(new CompoundTag(), inventory));
         compound.putInt(KEY_LAST_PLACED, lastPlacedIndex);
         compound.putString(KEY_RS_MODE, redstoneMode.name());
-        return super.save(compound);
+        super.saveAdditional(compound);
     }
 
     @Override
@@ -189,7 +189,7 @@ public class PlacerTile extends BlockEntity implements
 
     @Override
     public CompoundTag getUpdateTag() {
-        return this.save(new CompoundTag());
+        return saveWithFullMetadata();
     }
 
     @Override
@@ -199,7 +199,7 @@ public class PlacerTile extends BlockEntity implements
 
     @Override
     public CompoundTag toClientTag(CompoundTag tag) {
-        return save(tag);
+        return saveWithFullMetadata();
     }
 
     // -------------------- Inventory --------------------

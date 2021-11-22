@@ -3,9 +3,9 @@ package com.yogpc.qp.machines.misc;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPItem;
 import com.yogpc.qp.machines.quarry.TileQuarry;
+import com.yogpc.qp.packet.ClientSync;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.QuarryPlacedMessage;
-import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
@@ -38,7 +38,7 @@ public class YSetterItem extends QPItem implements UseBlockCallback {
             if (!world.isClientSide) {
                 if (blockEntity instanceof TileQuarry quarry && player instanceof ServerPlayer p) {
                     PacketHandler.sendToClientPlayer(new QuarryPlacedMessage(quarry), p);
-                } else if (blockEntity instanceof BlockEntityClientSerializable clientSerializable) {
+                } else if (blockEntity instanceof ClientSync clientSerializable) {
                     clientSerializable.sync();
                 }
                 player.openMenu(new YSetterScreenHandler(blockEntity.getBlockPos(), blockEntity.getBlockState().getBlock()));

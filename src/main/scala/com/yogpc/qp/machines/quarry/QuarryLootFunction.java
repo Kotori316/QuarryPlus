@@ -36,7 +36,7 @@ public class QuarryLootFunction extends LootItemConditionalFunction {
     static void process(ItemStack stack, TileQuarry quarry) {
         CompoundTag tileDataForItem = quarry.getTileDataForItem();
         if (!tileDataForItem.isEmpty())
-            stack.addTagElement(BlockItem.BLOCK_ENTITY_TAG, tileDataForItem);
+            BlockItem.setBlockEntityData(stack, quarry.getType(), tileDataForItem);
     }
 }
 

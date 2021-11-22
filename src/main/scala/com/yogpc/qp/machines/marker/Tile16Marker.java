@@ -8,12 +8,12 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.CheckerLog;
 import com.yogpc.qp.machines.QuarryMarker;
+import com.yogpc.qp.packet.ClientSync;
 import com.yogpc.qp.render.Box;
 import com.yogpc.qp.render.RenderMarker;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -23,7 +23,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class Tile16Marker extends BlockEntity implements QuarryMarker, CheckerLog, BlockEntityClientSerializable {
+public class Tile16Marker extends BlockEntity implements QuarryMarker, CheckerLog, ClientSync {
     private BlockPos min = BlockPos.ZERO;
     private BlockPos max = BlockPos.ZERO;
     @Nullable
@@ -81,13 +81,13 @@ public class Tile16Marker extends BlockEntity implements QuarryMarker, CheckerLo
     }
 
     @Override
-    public CompoundTag save(CompoundTag compound) {
+    public void saveAdditional(CompoundTag compound) {
         compound.putLong("min", min.asLong());
         compound.putLong("max", max.asLong());
         compound.putBoolean("x", xDirection == Direction.AxisDirection.POSITIVE);
         compound.putBoolean("z", zDirection == Direction.AxisDirection.POSITIVE);
         compound.putInt("size", size);
-        return super.save(compound);
+        super.saveAdditional(compound);
     }
 
     @Override
@@ -97,7 +97,7 @@ public class Tile16Marker extends BlockEntity implements QuarryMarker, CheckerLo
 
     @Override
     public CompoundTag toClientTag(CompoundTag tag) {
-        return save(tag);
+        return saveWithFullMetadata();
     }
 
     // Interface implementations

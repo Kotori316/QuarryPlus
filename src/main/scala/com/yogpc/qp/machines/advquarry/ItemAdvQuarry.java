@@ -49,7 +49,7 @@ class ItemAdvQuarry extends QPBlock.QPBlockItem implements EnchantableItem {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> list, TooltipFlag flag) {
         super.appendHoverText(stack, level, list, flag);
-        var entityTag = stack.getTagElement(BlockItem.BLOCK_ENTITY_TAG);
+        var entityTag = BlockItem.getBlockEntityData(stack);
         if (entityTag != null) {
             if (entityTag.getBoolean("bedrockRemove")) {
                 list.add(new TextComponent("BedrockRemove on"));

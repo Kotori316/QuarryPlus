@@ -1,5 +1,5 @@
 package com.yogpc.qp.integration;
-
+/*
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.PowerTile;
 import dev.technici4n.fasttransferlib.api.Simulation;
@@ -50,3 +50,4 @@ class FastTransferLibEnergyIO implements EnergyIo {
             '}';
     }
 }
+*/

@@ -12,13 +12,13 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.BreakResult;
 import com.yogpc.qp.machines.CheckerLog;
+import com.yogpc.qp.packet.ClientSync;
 import com.yogpc.qp.machines.EnchantmentLevel;
 import com.yogpc.qp.machines.EnergyConfigAccessor;
 import com.yogpc.qp.machines.ItemConverter;
 import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QPBlock;
-import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
@@ -44,7 +44,7 @@ import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.Nullable;
 
-public class TileQuarry extends PowerTile implements BlockEntityClientSerializable, CheckerLog, MachineStorage.HasStorage, EnchantmentLevel.HasEnchantments {
+public class TileQuarry extends PowerTile implements ClientSync, CheckerLog, MachineStorage.HasStorage, EnchantmentLevel.HasEnchantments {
     private static final Marker MARKER = MarkerManager.getMarker("TileQuarry");
     private static final EnchantmentRestriction RESTRICTION = EnchantmentRestriction.builder()
         .add(Enchantments.BLOCK_EFFICIENCY)
@@ -70,7 +70,7 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
     }
 
     @Override
-    public CompoundTag save(CompoundTag nbt) {
+    public void saveAdditional(CompoundTag nbt) {
         if (target != null)
             nbt.put("target", target.toNbt());
         nbt.putString("state", state.name());
@@ -88,7 +88,7 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
         nbt.put("storage", storage.toNbt());
         nbt.putBoolean("bedrockRemove", bedrockRemove);
         nbt.putInt("digMinY", digMinY);
-        return super.save(nbt);
+        super.saveAdditional(nbt);
     }
 
     @Override

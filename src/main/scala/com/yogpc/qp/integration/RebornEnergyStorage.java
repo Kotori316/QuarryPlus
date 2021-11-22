@@ -1,5 +1,5 @@
 package com.yogpc.qp.integration;
-
+/*
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.PowerTile;
 import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
@@ -59,3 +59,4 @@ class RebornEnergyStorage extends SnapshotParticipant<Long> implements EnergySto
         return powerTile.getEnergy();
     }
 }
+*/

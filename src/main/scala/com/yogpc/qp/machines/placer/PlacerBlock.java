@@ -133,13 +133,13 @@ public class PlacerBlock extends QPBlock implements EntityBlock {
         if (poweredNow && !poweredOld) {
             if (worldIn.getBlockEntity(pos, QuarryPlus.ModObjects.PLACER_TYPE)
                 .filter(p -> p.redstoneMode.isPulse()).isPresent()) {
-                worldIn.getBlockTicks().scheduleTick(pos, this, 1);
+                worldIn.scheduleTick(pos, this, 1);
             }
             worldIn.setBlock(pos, state.setValue(TRIGGERED, Boolean.TRUE), Block.UPDATE_INVISIBLE);
         } else if (!poweredNow && poweredOld) {
             if (worldIn.getBlockEntity(pos, QuarryPlus.ModObjects.PLACER_TYPE)
                 .filter(p -> p.redstoneMode.isPulse()).isPresent()) {
-                worldIn.getBlockTicks().scheduleTick(pos, this, 1);
+                worldIn.scheduleTick(pos, this, 1);
             }
             worldIn.setBlock(pos, state.setValue(TRIGGERED, Boolean.FALSE), Block.UPDATE_INVISIBLE);
         }

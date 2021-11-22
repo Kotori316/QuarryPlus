@@ -1,5 +1,5 @@
 package com.yogpc.qp.integration;
-
+/*
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.misc.CreativeGeneratorTile;
@@ -52,3 +52,4 @@ final class RebornEnergyGenerator extends SnapshotParticipant<Long> implements E
         return generator.getMaxEnergy() / CONVERSION_RATE;
     }
 }
+*/

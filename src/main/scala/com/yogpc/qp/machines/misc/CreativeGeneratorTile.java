@@ -20,9 +20,9 @@ public class CreativeGeneratorTile extends PowerTile {
     }
 
     @Override
-    public CompoundTag save(CompoundTag nbt) {
+    public void saveAdditional(CompoundTag nbt) {
         nbt.putLong("sendEnergy", sendEnergy);
-        return super.save(nbt);
+        super.saveAdditional(nbt);
     }
 
     @Override

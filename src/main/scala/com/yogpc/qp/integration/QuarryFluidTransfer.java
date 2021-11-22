@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import alexiil.mc.lib.attributes.AttributeSourceType;
+/*import alexiil.mc.lib.attributes.AttributeSourceType;
 import alexiil.mc.lib.attributes.SearchOptions;
 import alexiil.mc.lib.attributes.Simulation;
 import alexiil.mc.lib.attributes.fluid.FluidAttributes;
@@ -16,7 +16,7 @@ import alexiil.mc.lib.attributes.fluid.filter.FluidFilter;
 import alexiil.mc.lib.attributes.fluid.impl.EmptyFluidExtractable;
 import alexiil.mc.lib.attributes.fluid.impl.RejectingFluidInsertable;
 import alexiil.mc.lib.attributes.fluid.volume.FluidKeys;
-import alexiil.mc.lib.attributes.fluid.volume.FluidVolume;
+import alexiil.mc.lib.attributes.fluid.volume.FluidVolume;*/
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.FluidKey;
 import com.yogpc.qp.machines.MachineStorage;
@@ -47,8 +47,8 @@ public class QuarryFluidTransfer {
     public static void register() {
         if (FabricLoader.getInstance().isModLoaded("libblockattributes_fluids")) {
             QuarryPlus.LOGGER.debug("Trying to register LBA fluid handler.");
-            transfers.add(BCFluidRegister.getBCTransfer());
-            BCFluidRegister.registerAttributes();
+//            transfers.add(BCFluidRegister.getBCTransfer());
+//            BCFluidRegister.registerAttributes();
             registered = true;
         }
         if (FabricLoader.getInstance().isModLoaded("fabric-transfer-api-v1")) {
@@ -87,7 +87,7 @@ interface FluidTransfer {
     Pair<Fluid, Long> transfer(Level world, BlockPos pos, @NotNull BlockEntity destination, Direction direction, long amount, Fluid fluid);
 }
 
-class BCFluidRegister {
+/*class BCFluidRegister {
     static void registerAttributes() {
         FluidAttributes.EXTRACTABLE.setBlockEntityAdder(AttributeSourceType.COMPAT_WRAPPER, QuarryPlus.ModObjects.QUARRY_TYPE, TileQuarry.class,
             (blockEntity, to) -> to.add(new BCExtractable(blockEntity)));
@@ -146,7 +146,7 @@ class BCExtractable implements FluidExtractable {
         }
         return FluidVolumeUtil.EMPTY;
     }
-}
+}*/
 
 @SuppressWarnings({"UnstableApiUsage"})
 class FabricFluidTransfer implements FluidTransfer {

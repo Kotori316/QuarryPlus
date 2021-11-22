@@ -3,12 +3,12 @@ package com.yogpc.qp.integration;
 import java.util.ArrayList;
 import java.util.List;
 
-import alexiil.mc.lib.attributes.AttributeSourceType;
+/*import alexiil.mc.lib.attributes.AttributeSourceType;
 import alexiil.mc.lib.attributes.SearchOptions;
 import alexiil.mc.lib.attributes.Simulation;
 import alexiil.mc.lib.attributes.item.ItemAttributes;
 import alexiil.mc.lib.attributes.item.ItemInsertable;
-import alexiil.mc.lib.attributes.item.impl.EmptyItemExtractable;
+import alexiil.mc.lib.attributes.item.impl.EmptyItemExtractable;*/
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.quarry.TileQuarry;
 import net.fabricmc.loader.api.FabricLoader;
@@ -26,8 +26,8 @@ public class QuarryItemTransfer {
     @SuppressWarnings("SpellCheckingInspection")
     public static void register() {
         if (FabricLoader.getInstance().isModLoaded("libblockattributes_items")) {
-            transfers.add(BCItemRegister.bcTransfer());
-            BCItemRegister.registerAttributes();
+//            transfers.add(BCItemRegister.bcTransfer());
+//            BCItemRegister.registerAttributes();
         }
         transfers.add(new VanillaItemTransfer());
     }
@@ -95,7 +95,7 @@ class VanillaItemTransfer implements ItemTransfer<Container> {
     }
 }
 
-class BCItemRegister {
+/*class BCItemRegister {
     static void registerAttributes() {
         ItemAttributes.EXTRACTABLE.setBlockEntityAdder(AttributeSourceType.INSTANCE,
             QuarryPlus.ModObjects.QUARRY_TYPE, TileQuarry.class, (blockEntity, to) -> to.add(EmptyItemExtractable.SUPPLIER));
@@ -128,3 +128,4 @@ class BCItemTransfer implements ItemTransfer<ItemInsertable> {
         }
     }
 }
+*/

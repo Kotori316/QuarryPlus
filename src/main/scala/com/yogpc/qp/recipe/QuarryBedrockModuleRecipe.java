@@ -39,7 +39,7 @@ public class QuarryBedrockModuleRecipe extends ShapelessRecipe {
             .toList();
         if (stacks.size() == 2) {
             var quarryStack = stacks.stream().filter(s -> s.getItem() == targetBlock.blockItem).findFirst().map(ItemStack::copy).orElse(ItemStack.EMPTY);
-            var subNbt = quarryStack.getTagElement(BlockItem.BLOCK_ENTITY_TAG);
+            var subNbt = BlockItem.getBlockEntityData(quarryStack);
             var hasQuarry = !quarryStack.isEmpty() && (subNbt == null || !subNbt.getBoolean("bedrockRemove"));
             var hasModule = stacks.stream().map(ItemStack::getItem).anyMatch(Predicate.isEqual(QuarryPlus.ModObjects.ITEM_BEDROCK_MODULE));
             return hasQuarry && hasModule;
@@ -49,7 +49,7 @@ public class QuarryBedrockModuleRecipe extends ShapelessRecipe {
 
     private static ItemStack makeOutputStack(Block targetBlock) {
         var quarryStack = new ItemStack(targetBlock);
-        quarryStack.getOrCreateTagElement(BlockItem.BLOCK_ENTITY_TAG).putBoolean("bedrockRemove", true);
+        quarryStack.getOrCreateTagElement("BlockEntityTag").putBoolean("bedrockRemove", true);
         return quarryStack;
     }
 
@@ -60,7 +60,7 @@ public class QuarryBedrockModuleRecipe extends ShapelessRecipe {
             .filter(Predicate.not(ItemStack::isEmpty))
             .toList();
         var quarryStack = stacks.stream().filter(s -> s.getItem() == targetBlock.blockItem).findFirst().map(ItemStack::copy).orElseThrow();
-        quarryStack.getOrCreateTagElement(BlockItem.BLOCK_ENTITY_TAG).putBoolean("bedrockRemove", true);
+        quarryStack.getOrCreateTagElement("BlockEntityTag").putBoolean("bedrockRemove", true);
         return quarryStack;
     }
 

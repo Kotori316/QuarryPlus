@@ -1,5 +1,5 @@
 package com.yogpc.qp.integration.wthit;
-
+/*
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.PowerTile;
 import mcp.mobius.waila.api.IBlockAccessor;
@@ -21,6 +21,7 @@ final class PowerTileDataProvider implements IServerDataProvider<PowerTile>, IBl
      *     <li>Max Energy</li>
      * </ul>
      */
+/*
     @Override
     public void appendServerData(CompoundTag data, ServerPlayer player, Level world, PowerTile powerTile) {
         data.putLong("currentEnergy", powerTile.getEnergy());
@@ -39,3 +40,4 @@ final class PowerTileDataProvider implements IServerDataProvider<PowerTile>, IBl
         tooltip.add(new TextComponent(energy));
     }
 }
+*/
