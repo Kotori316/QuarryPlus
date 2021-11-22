@@ -3,12 +3,14 @@ package com.yogpc.qp.machines;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import com.yogpc.qp.QuarryPlusTest;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -121,5 +123,24 @@ class PowerTileTest extends QuarryPlusTest {
                 .map(h -> PowerTile.Constants.getBreakEnergy(unbreakableHardness, h))
                 .map(required -> () -> assertEquals(base, required))
         );
+    }
+
+    @ParameterizedTest
+    @MethodSource("debugEnergyParameters")
+    void debugEnergy(boolean hasEnergyMod, boolean isDebug, boolean noEnergyConfig, boolean expected, String message) {
+        assertEquals(expected, PowerTile.isInfiniteEnergyEnabled(hasEnergyMod, isDebug, noEnergyConfig), message);
+    }
+
+    static Stream<Object[]> debugEnergyParameters() {
+        return Stream.of(
+            List.of(true, false, false, false, "Has energy mod in production"),
+            List.of(false, false, false, true, "No energy mods in production"),
+            List.of(true, false, true, true, "Config on with energy mod"),
+            List.of(false, false, true, true, "Config on without energy mod"),
+            List.of(true, true, false, false, "Debug on with energy mod"),
+            List.of(false, true, false, false, "Debug on without energy mod"),
+            List.of(true, true, true, true, "Debug on with energy mod"),
+            List.of(false, true, true, true, "Debug on without energy mod")
+        ).map(List::toArray);
     }
 }

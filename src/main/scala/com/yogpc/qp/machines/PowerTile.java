@@ -10,6 +10,7 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.VisibleForTesting;
 
 public class PowerTile extends BlockEntity {
     public static final long ONE_FE = 1_000_000_000L;
@@ -120,10 +121,15 @@ public class PowerTile extends BlockEntity {
 
     @Nullable
     public static BlockEntityTicker<PowerTile> getGenerator() {
-        if (EnergyIntegration.hasAnyEnergyModule() && !QuarryPlus.config.common.noEnergy)
+        if (!isInfiniteEnergyEnabled(EnergyIntegration.hasAnyEnergyModule(), QuarryPlus.config.common.debug, QuarryPlus.config.common.noEnergy))
             return null;
         else
             return (w, p, s, tile) -> tile.addEnergy(tile.getMaxEnergy() - tile.getEnergy(), false);
+    }
+
+    @VisibleForTesting
+    static boolean isInfiniteEnergyEnabled(boolean hasEnergyMod, boolean isDebug, boolean noEnergyConfig) {
+        return (!hasEnergyMod && !isDebug) || noEnergyConfig;
     }
 
     public static class Constants {
