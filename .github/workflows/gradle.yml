@@ -52,7 +52,6 @@ jobs:
         env:
           CURSEFORGE_KEY: ${{ secrets.CURSEFORGE_KEY }}
       - name: Upload Artifacts
-        if: ${{ contains(github.event.head_commit.message, '[release]') }}
         uses: actions/upload-artifact@v2
         with:
           path: build/libs/*
