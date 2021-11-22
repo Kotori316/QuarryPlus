@@ -96,9 +96,9 @@ public class TileAdvQuarry extends PowerTile implements
 
     @Override
     public CompoundTag save(CompoundTag nbt) {
+        toClientTag(nbt);
         nbt.put("storage", storage.toNbt());
         nbt.put("action", action.toNbt());
-        toClientTag(nbt);
         return super.save(nbt);
     }
 
@@ -110,9 +110,9 @@ public class TileAdvQuarry extends PowerTile implements
     @Override
     public void load(CompoundTag nbt) {
         super.load(nbt);
+        fromClientTag(nbt);
         storage.readNbt(nbt.getCompound("storage"));
         action = AdvQuarryAction.fromNbt(nbt.getCompound("action"), this);
-        fromClientTag(nbt);
         isBlockModuleLoaded = false;
     }
 
