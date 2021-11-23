@@ -10,7 +10,7 @@ plugins {
     // id("scala")
     id("maven-publish")
     // https://maven.fabricmc.net/net/fabricmc/fabric-loom/
-    id 'fabric-loom' version "0.10.50"
+    id 'fabric-loom' version "0.10-SNAPSHOT"
     //noinspection SpellCheckingInspection
     id "com.github.breadmoirai.github-release" version "2.2.12"
     //noinspection SpellCheckingInspection
@@ -338,9 +338,25 @@ publishing {
         }
     }
     publications {
-        gpr(MavenPublication) {
+        mavenJava(MavenPublication) {
             artifactId = "AdditionalEnchantedMiner-Fabric".toLowerCase()
-            artifact remapJar
+            from components.java
+            pom {
+                name = archivesBaseName
+                description = "QuarryPlus for Minecraft ${project.minecraft_version}, build with Fabric ${project.fabric_version}"
+                url = 'https://github.com/Kotori316/QuarryPlus/commits/' + BRANCH
+                packaging = "jar"
+                withXml {
+                    List<String> requiredArtifacts = ["cloth", "fabric-language-scala"]
+                    def pomNode = asNode() as Node
+                    pomNode.dependencies.'*'.findAll() { Node node ->
+                        def valueList = node.value() as NodeList
+                        String artifactId = ((valueList.get(1) as Node).value() as NodeList).get(0)
+                        if (requiredArtifacts.stream().noneMatch { artifactId.contains(it) })
+                            node.parent().remove(node)
+                    }
+                }
+            }
         }
     }
 }
