@@ -24,8 +24,8 @@ jobs:
         run: echo "${MESSAGES}"
         env:
           MESSAGES: ${{ toJSON(github.event.commits.*.message) }}
-      - name: Check Publish ${{ contains(github.event.head_commit.message, '[release]') }}
-        run: echo "Release ${{ contains(github.event.head_commit.message, '[release]') }}"
+      - name: Check Publish ${{ !contains(github.event.head_commit.message, '[skip release]') }}
+        run: echo "Release ${{ !contains(github.event.head_commit.message, '[skip release]') }}"
 
   build:
     runs-on: ubuntu-latest
@@ -44,14 +44,15 @@ jobs:
       - name: Check Warning
         run: chmod +x ./gradlew && ./gradlew javaToolchains CheckCompileOption --no-daemon --warning-mode all
       - name: Test Only
-        if: ${{ !contains(github.event.head_commit.message, '[release]') }}
+        if: ${{ contains(github.event.head_commit.message, '[skip release]') }}
         run: chmod +x ./gradlew && ./gradlew build --no-daemon
       - name: Test and Publish
-        if: ${{ contains(github.event.head_commit.message, '[release]') }}
+        if: ${{ !contains(github.event.head_commit.message, '[skip release]') }}
         run: chmod +x ./gradlew && ./gradlew build curseforge --no-daemon
         env:
           CURSEFORGE_KEY: ${{ secrets.CURSEFORGE_KEY }}
       - name: Upload Artifacts
+        if: ${{ !contains(github.event.head_commit.message, '[skip release]') }}
         uses: actions/upload-artifact@v2
         with:
           path: build/libs/*
