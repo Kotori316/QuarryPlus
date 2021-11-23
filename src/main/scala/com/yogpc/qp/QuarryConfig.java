@@ -57,6 +57,8 @@ public class QuarryConfig implements ConfigData {
         @ConfigEntry.Category(Constant.COMMON_POWER_CATEGORY)
         @ConfigEntry.Gui.RequiresRestart
         public double fastTransferEnergyConversionCoefficient = 1d / 16d;
+        @ConfigEntry.Category(Constant.COMMON_POWER_CATEGORY)
+        public int creativeGeneratorGeneration = 1000;
     }
 
     public static class Quarry {
