@@ -16,7 +16,7 @@ public class CreativeGeneratorTile extends PowerTile {
 
     public CreativeGeneratorTile(BlockPos pos, BlockState state) {
         super(QuarryPlus.ModObjects.CREATIVE_GENERATOR_TYPE, pos, state);
-        setSendEnergy(ONE_FE * 1000L);
+        setSendEnergy(ONE_FE * QuarryPlus.config.power.creativeGeneratorGeneration);
     }
 
     @Override
