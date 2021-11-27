@@ -42,7 +42,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -211,7 +210,7 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
             .toList());
         if (nbt.contains("current") && targetIterator != null)
             targetIterator.setCurrent(BlockPos.of(nbt.getLong("current")));
-        container.fromTag(nbt.getList("inventory", Constants.NBT.TAG_COMPOUND));
+        container.fromTag(nbt.getList("inventory", Tag.TAG_COMPOUND));
         denyList = Stream.concat(nbt.getList("denyList", Tag.TAG_COMPOUND).stream()
             .mapMulti(MapMulti.cast(CompoundTag.class)).map(BlockStatePredicate::fromTag), defaultBlackList().stream()).collect(Collectors.toSet());
         allowList = nbt.getList("allowList", Tag.TAG_COMPOUND).stream()

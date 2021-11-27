@@ -33,7 +33,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
@@ -123,7 +122,7 @@ public class BlockController extends QPBlock {
                 .ifPresent(logic.getLeft()::setEntityId);
             Optional.ofNullable(logic.getLeft().getSpawnerBlockEntity()).ifPresent(BlockEntity::setChanged);
             BlockState state = world.getBlockState(logic.getRight());
-            world.sendBlockUpdated(logic.getRight(), state, state, Constants.BlockFlags.NO_RERENDER);
+            world.sendBlockUpdated(logic.getRight(), state, state, Block.UPDATE_INVISIBLE);
         });
     }
 
