@@ -72,6 +72,29 @@ class PowerManagerTest extends QuarryPlusTest {
     }
 
     @Test
+    void breakEnergyInfinity() {
+        var base = PowerManager.getBreakEnergy(Float.POSITIVE_INFINITY, new Holder(Map.of()));
+        var hardness200 = PowerManager.getBreakEnergy(200f, new Holder(Map.of()));
+        assertEquals(hardness200, base);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1, 2, 3})
+    void breakEnergyInfinityIgnoresUnbreaking(int unbreaking) {
+        var base = PowerManager.getBreakEnergy(Float.POSITIVE_INFINITY, new Holder(Map.of()));
+        var withUnbreaking = PowerManager.getBreakEnergy(Float.POSITIVE_INFINITY, new Holder(Map.of(Enchantments.UNBREAKING, unbreaking)));
+        assertEquals(base, withUnbreaking);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1, 2, 3, 4, 5, 6})
+    void breakEnergyInfinityEfficiency(int efficiency) {
+        var base = PowerManager.getBreakEnergy(Float.POSITIVE_INFINITY, new Holder(Map.of(Enchantments.BLOCK_EFFICIENCY, efficiency)));
+        var hardness200 = PowerManager.getBreakEnergy(200f, new Holder(Map.of(Enchantments.BLOCK_EFFICIENCY, efficiency)));
+        assertTrue(base >= hardness200, "Infinity: %d, 200: %d".formatted(base, hardness200));
+    }
+
+    @Test
     void breakEnergy1() {
         var base = PowerManager.getBreakEnergy(1, new Holder(Map.of()));
         assertTrue(base > 0);

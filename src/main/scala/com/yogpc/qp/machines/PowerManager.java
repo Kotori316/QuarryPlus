@@ -33,14 +33,20 @@ public class PowerManager {
     /**
      * Use quarry's values. (BasePower, CoEfficiency, and so on.)
      *
-     * @return Energy required to break the block. (Micro MJ)
+     * @return Energy required to break the block. (Micro MJ) <br>
+     * Special cases:
+     * <ul>
+     *     <li>NaN(Not a Number, {@link Float#NaN}) -> 0</li>
+     *     <li>Infinity({@link Float#POSITIVE_INFINITY}, {@link Float#NEGATIVE_INFINITY}) -> Treated as hardness = 200</li>
+     *     <li>0 -> 0</li>
+     * </ul>
      */
     public static long getBreakEnergy(float hardness, int efficiency, int fortune, int unbreaking, boolean silktouch) {
-        if (hardness < 0 || Float.isInfinite(hardness)) return 200 * BREAK_BLOCK_BASE * (efficiency + 1);
-        double coefficient = ((double) hardness) / (1 + Math.max(0, unbreaking));
-        coefficient *= Math.pow(FORTUNE_COEFFICIENT, fortune);
-        if (silktouch) coefficient *= SILKTOUCH_COEFFICIENT;
-        coefficient *= Math.pow(FIFTH_ROOT_OF_5, efficiency);
+        if (Float.isNaN(hardness) || hardness == 0) return 0;
+        // Base energy, considering Fortune and Silktouch. Efficiency and Unbreaking should be calculated later.
+        long base = (long) (BREAK_BLOCK_BASE * Math.pow(FORTUNE_COEFFICIENT, fortune) * Math.pow(SILKTOUCH_COEFFICIENT, silktouch ? 1 : 0));
+        if (hardness < 0 || Float.isInfinite(hardness)) return 200 * base * (efficiency + 1);
+        double coefficient = ((double) hardness) * Math.pow(FIFTH_ROOT_OF_5, efficiency) / (1 + Math.max(0, unbreaking));
 
         return (long) (coefficient * BREAK_BLOCK_BASE);
     }
