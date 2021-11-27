@@ -233,6 +233,10 @@ public class PowerTile extends BlockEntity implements IEnergyStorage {
         return tile.level != null && tile.getBlockPos().distSqr(player.position(), true) < 64;
     }
 
+    public static boolean isFullFluidBlock(BlockState state) {
+        return state.getMaterial().isLiquid();
+    }
+
     public enum Reason {
         MAKE_FRAME, BREAK_BLOCK, REMOVE_FLUID, MOVE_HEAD, ADV_PUMP_FLUID, WORKBENCH, FORCE, EXP_COLLECT, BOOK_MOVER, ADV_SEARCH, MINI_QUARRY
     }

@@ -252,7 +252,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         if (state.isAir() || !canBreak(targetWorld, targetPos, state)) {
             return BreakResult.SKIPPED;
         }
-        if (hasPumpModule()) checkEdgeFluid(targetPos, targetWorld, this);
+        if (hasPumpModule()) removeEdgeFluid(targetPos, targetWorld, this);
 
         // Break block
         var hardness = state.getDestroySpeed(targetWorld, targetPos);
@@ -279,7 +279,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         return BreakResult.SUCCESS;
     }
 
-    static void checkEdgeFluid(BlockPos targetPos, ServerLevel targetWorld, TileQuarry quarry) {
+    static void removeEdgeFluid(BlockPos targetPos, ServerLevel targetWorld, TileQuarry quarry) {
         var area = quarry.getArea();
         assert area != null;
         boolean flagMinX = targetPos.getX() - 1 == area.minX();
@@ -287,32 +287,32 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         boolean flagMinZ = targetPos.getZ() - 1 == area.minZ();
         boolean flagMaxZ = targetPos.getZ() + 1 == area.maxZ();
         if (flagMinX) {
-            removeFluidAtEdge(targetWorld, new BlockPos(area.minX(), targetPos.getY(), targetPos.getZ()), quarry);
+            removeFluidAtPos(targetWorld, new BlockPos(area.minX(), targetPos.getY(), targetPos.getZ()), quarry);
         }
         if (flagMaxX) {
-            removeFluidAtEdge(targetWorld, new BlockPos(area.maxX(), targetPos.getY(), targetPos.getZ()), quarry);
+            removeFluidAtPos(targetWorld, new BlockPos(area.maxX(), targetPos.getY(), targetPos.getZ()), quarry);
         }
         if (flagMinZ) {
-            removeFluidAtEdge(targetWorld, new BlockPos(targetPos.getX(), targetPos.getY(), area.minZ()), quarry);
+            removeFluidAtPos(targetWorld, new BlockPos(targetPos.getX(), targetPos.getY(), area.minZ()), quarry);
         }
         if (flagMaxZ) {
-            removeFluidAtEdge(targetWorld, new BlockPos(targetPos.getX(), targetPos.getY(), area.maxZ()), quarry);
+            removeFluidAtPos(targetWorld, new BlockPos(targetPos.getX(), targetPos.getY(), area.maxZ()), quarry);
         }
         if (flagMinX && flagMinZ) {
-            removeFluidAtEdge(targetWorld, new BlockPos(area.minX(), targetPos.getY(), area.minZ()), quarry);
+            removeFluidAtPos(targetWorld, new BlockPos(area.minX(), targetPos.getY(), area.minZ()), quarry);
         }
         if (flagMinX && flagMaxZ) {
-            removeFluidAtEdge(targetWorld, new BlockPos(area.minX(), targetPos.getY(), area.maxZ()), quarry);
+            removeFluidAtPos(targetWorld, new BlockPos(area.minX(), targetPos.getY(), area.maxZ()), quarry);
         }
         if (flagMaxX && flagMinZ) {
-            removeFluidAtEdge(targetWorld, new BlockPos(area.maxX(), targetPos.getY(), area.minZ()), quarry);
+            removeFluidAtPos(targetWorld, new BlockPos(area.maxX(), targetPos.getY(), area.minZ()), quarry);
         }
         if (flagMaxX && flagMaxZ) {
-            removeFluidAtEdge(targetWorld, new BlockPos(area.maxX(), targetPos.getY(), area.maxZ()), quarry);
+            removeFluidAtPos(targetWorld, new BlockPos(area.maxX(), targetPos.getY(), area.maxZ()), quarry);
         }
     }
 
-    private static void removeFluidAtEdge(ServerLevel world, BlockPos pos, TileQuarry quarry) {
+    private static void removeFluidAtPos(ServerLevel world, BlockPos pos, TileQuarry quarry) {
         var state = world.getBlockState(pos);
         var fluidState = world.getFluidState(pos);
         if (!fluidState.isEmpty()) {
@@ -413,7 +413,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
             } else {
                 return false;
             }
-        } else if (!targetWorld.getFluidState(targetPos).isEmpty()) {
+        } else if (isFullFluidBlock(state)) {
             return hasPumpModule();
         } else {
             return getReplacementState() != state;

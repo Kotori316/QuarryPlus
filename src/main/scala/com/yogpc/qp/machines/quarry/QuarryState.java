@@ -27,6 +27,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
+@SuppressWarnings("DuplicatedCode") // For null check and static analysis.
 public enum QuarryState implements BlockEntityTicker<TileQuarry> {
     FINISHED(false) {
         @Override
@@ -58,7 +59,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
                 quarry.setState(MAKE_FRAME, state);
                 return;
             }
-            if (!quarry.getTargetWorld().getFluidState(targetPos).isEmpty()) {
+            if (TileQuarry.isFullFluidBlock(quarry.getTargetWorld().getBlockState(targetPos))) {
                 if (quarry.hasPumpModule())
                     quarry.setState(REMOVE_FLUID, state);
                 else
@@ -101,7 +102,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
             var blockTarget = QuarryState.dropUntilPos(quarry.target, StateConditions.skipNoBreak(quarry));
             if (blockTarget == null) {
                 var fluidPoses = quarry.target.allPoses()
-                    .filter(p -> !quarry.getTargetWorld().getFluidState(p).isEmpty()).map(BlockPos::immutable).toList();
+                    .filter(p -> TileQuarry.isFullFluidBlock(quarry.getTargetWorld().getBlockState(p))).map(BlockPos::immutable).toList();
                 if (!quarry.hasPumpModule() || fluidPoses.isEmpty()) {
                     // Change Y
                     quarry.target = Target.nextY(quarry.target, quarry.getArea(), quarry.digMinY);
@@ -144,11 +145,12 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
                 quarry.target = Target.newDigTarget(quarry.getArea(), quarry.getArea().minY());
                 LOGGER.debug(MARKER, "Quarry({}) Target changed to {} in {}.", quarryPos, quarry.target, name());
             }
-            if (!quarry.getTargetWorld().getFluidState(Objects.requireNonNull(quarry.target.get(false))).isEmpty()) {
+            var targetPos = Objects.requireNonNull(quarry.target.get(false));
+            if (TileQuarry.isFullFluidBlock(quarry.getTargetWorld().getBlockState(targetPos))) {
                 if (quarry.hasPumpModule())
                     quarry.setState(REMOVE_FLUID, state);
                 else quarry.target.get(true); // Set next pos. Ignore fluid block.
-            } else if (quarry.breakBlock(Objects.requireNonNull(quarry.target.get(false))).isSuccess()) {
+            } else if (quarry.breakBlock(targetPos).isSuccess()) {
                 quarry.target.get(true); // Set next pos.
                 quarry.setState(MOVE_HEAD, state);
             } else {
@@ -183,7 +185,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
                         // What ?
                         targetWorld.setBlock(fluidPos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
                     }
-                    TileQuarry.checkEdgeFluid(fluidPos, targetWorld, quarry);
+                    TileQuarry.removeEdgeFluid(fluidPos, targetWorld, quarry);
                 }
                 quarry.setState(BREAK_BLOCK, state);
             }
