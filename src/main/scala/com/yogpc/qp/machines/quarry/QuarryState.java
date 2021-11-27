@@ -185,7 +185,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
                         // What ?
                         targetWorld.setBlock(fluidPos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
                     }
-                    TileQuarry.checkEdgeFluid(fluidPos, targetWorld, quarry);
+                    TileQuarry.removeEdgeFluid(fluidPos, targetWorld, quarry);
                 }
                 quarry.setState(BREAK_BLOCK, state);
             }
