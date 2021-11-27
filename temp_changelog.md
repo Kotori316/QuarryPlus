@@ -1,3 +1,13 @@
+## Version 17.7
+
+* Fixed waterlogged blocks were not removed if QuarryPlus doesn't have Pump Module.
+* Sort items in Creative Tab.
+* Log debug info to `debug.log`.
+* Improved chunk loading.
+* "All" condition is added to MiniQuarry.
+  * Useful to enable allow-only mode.
+  * The mode MiniQuarry removes blocks only in the list.
+
 ## Version 17.6-SNAPSHOT
 
 * Fixed crash in dedicated server. [#141](https://github.com/Kotori316/QuarryPlus/issues/141)
