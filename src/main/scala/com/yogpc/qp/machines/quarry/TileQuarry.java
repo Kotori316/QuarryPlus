@@ -413,7 +413,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
             } else {
                 return false;
             }
-        } else if (!targetWorld.getFluidState(targetPos).isEmpty()) {
+        } else if (isFullFluidBlock(state)) {
             return hasPumpModule();
         } else {
             return getReplacementState() != state;
