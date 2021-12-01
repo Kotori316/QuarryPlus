@@ -3,14 +3,14 @@ name: PullRequest Test
 on:
   pull_request:
     branches:
-      - "1.17"
+      - "1.18"
 
 jobs:
   pr-check:
     runs-on: ubuntu-latest
 
     container:
-      image: ghcr.io/kotori316/fictional-meme/fictional-meme:1.17.1
+      image: ghcr.io/kotori316/fictional-meme/fictional-meme:1.18
     steps:
       - uses: actions/checkout@v2
       - name: Compile
