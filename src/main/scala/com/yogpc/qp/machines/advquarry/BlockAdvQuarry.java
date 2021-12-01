@@ -126,7 +126,7 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
                 Direction facing = state.getValue(FACING);
                 var enchantment = EnchantmentLevel.fromItem(stack);
                 enchantment.sort(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR);
-                quarry.setEnchantments(enchantment);
+                quarry.initialSetting(enchantment);
                 quarry.area = findArea(level, pos, facing.getOpposite(), quarry.getStorage()::addItem);
                 var preForced = QuarryChunkLoadUtil.makeChunkLoaded(level, pos, quarry.enabled);
                 quarry.setChunkPreLoaded(preForced);
