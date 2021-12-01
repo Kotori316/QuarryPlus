@@ -96,12 +96,11 @@ public class MiningWellTile extends PowerTile implements CheckerLog, MachineStor
     }
 
     @Override
-    public CompoundTag save(CompoundTag nbt) {
+    public void saveNbtData(CompoundTag nbt) {
         nbt.put("storage", storage.toNbt());
         nbt.putInt("digMinY", digMinY);
         nbt.putInt("waitingTick", interval);
         nbt.putBoolean("finished", finished);
-        return super.save(nbt);
     }
 
     @Override

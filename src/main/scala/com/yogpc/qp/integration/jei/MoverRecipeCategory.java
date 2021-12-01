@@ -1,5 +1,5 @@
 package com.yogpc.qp.integration.jei;
-
+/*
 import java.util.Collections;
 import java.util.List;
 
@@ -112,4 +112,4 @@ class MoverRecipeCategory implements IRecipeCategory<MoverRecipeCategory.MoverRe
             .map(i -> new MoverRecipe((EnchantableItem) i, new ItemStack(i)))
             .toList();
     }
-}
+}*/

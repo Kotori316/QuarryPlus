@@ -11,29 +11,26 @@ buildscript {
     repositories {
         // These repositories are only for Gradle plugins, put any other repositories in the repository block further below
         maven { url = 'https://maven.minecraftforge.net' }
-        maven { url = "https://plugins.gradle.org/m2/" }
         mavenCentral()
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-        classpath "gradle.plugin.com.matthewprenger:CurseGradle:1.4.0"
     }
 }
 plugins {
     id("maven-publish")
     id("scala")
     id "com.github.breadmoirai.github-release" version "2.2.12"
+    id "com.matthewprenger.cursegradle" version "1.4.0"
 }
 apply plugin: 'net.minecraftforge.gradle'
-apply plugin: "com.matthewprenger.cursegradle"
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
 version = project.modVersion
 group = 'com.kotori316' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'AdditionalEnchantedMiner-1.17'
+archivesBaseName = 'AdditionalEnchantedMiner-' + project.minecraftVersion
 
-// Mojang ships Java 16 to end users in 1.17+ instead of Java 8 in 1.16 or lower, so your mod should target Java 16.
-java.toolchain.languageVersion = JavaLanguageVersion.of(16)
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 @SuppressWarnings("SpellCheckingInspection")
 private static boolean isInCI() {
@@ -45,7 +42,7 @@ println("Java: ${System.getProperty('java.version')} " +
         "JVM: ${System.getProperty('java.vm.version')}(${System.getProperty('java.vendor')}) " +
         "Arch: ${System.getProperty('os.arch')}")
 minecraft {
-    mappings channel: 'official', version: '1.17.1'
+    mappings channel: 'official', version: project.minecraftVersion
 
     runs {
         client {
@@ -55,6 +52,7 @@ minecraft {
             property('mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg")
             property "mixin.debug.export", "true"
             property 'forge.logging.console.level', 'debug'
+            args("--username", "Kotori")
 
             mods {
                 quarryplus {
@@ -169,13 +167,13 @@ dependencies {
     compileOnly(group: 'org.scala-lang', name: 'scala-library', version: '2.13.7')
     compileOnly(group: 'org.typelevel', name: "cats-core_2.13", version: '2.6.2-kotori')
 
-    implementation fg.deobf("mezz.jei:jei-1.17.1:" + project.jeiVersion)
+    // implementation fg.deobf("mezz.jei:jei-1.17.1:" + project.jeiVersion)
     runtimeOnly(group: "com.kotori316", name: "ScalableCatsForce".toLowerCase(), version: "2.13.7-build-1", classifier: "with-library") {
         transitive(false)
     }
 
     // Test Dependencies.
-    final def JUPITER_VERSION = '5.7.0'
+    final def JUPITER_VERSION = '5.7.1'
     testImplementation(group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: JUPITER_VERSION)
     testImplementation(group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: JUPITER_VERSION)
     testRuntimeOnly(group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: JUPITER_VERSION)
@@ -192,7 +190,7 @@ def jarAttributeMap = [
         "Implementation-Version"  : project.version,
         "Implementation-Vendor"   : "Kotori316",
         "Implementation-Timestamp": ZonedDateTime.now().format(DateTimeFormatter.ISO_INSTANT),
-        "Commit"                  : getCommit("1.17"),
+        "Commit"                  : getCommit(project.branch),
         'Automatic-Module-Name'   : 'quarryplus',
 ]
 
@@ -260,25 +258,25 @@ task signJar(dependsOn: 'reobfJar') {
 
 def curseForgeLog() {
     def header = ("""\
-            For Minecraft 1.17.1 and Minecraft Forge
+            For Minecraft ${project.minecraftVersion} and Minecraft Forge
             Released at ${ZonedDateTime.now(ZoneId.of('Asia/Tokyo')).withNano(0).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)}
 
             This mod requires [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force)
-            Build with ${project.forgeVersion}, Mapping: Official 1.17.1
+            Build with ${project.forgeVersion}, Mapping: Official ${project.minecraftVersion}
             """ as String).stripIndent() + System.lineSeparator() * 2
     def file = new File("temp_changelog.md")
     def fileText = file.exists() ? file.text : "No changelog provided."
     return header + fileText
 }
 
-curseforge {
+/*curseforge {
     apiKey = project.hasProperty("curseforge_additional-enchanted-miner_key") ? getProperty("curseforge_additional-enchanted-miner_key") : ""
     project {
         id = '282837'
         changelogType = 'markdown'
         changelog = curseForgeLog()
         releaseType = 'release'
-        addGameVersion '1.17.1'
+        addGameVersion ${project.minecraftVersion}
         mainArtifact(jar) {
             displayName = 'v' + project.version + '-forge'
         }
@@ -292,16 +290,16 @@ curseforge {
         curseGradleOptions.debug = false // defaults to false
         javaVersionAutoDetect = false
     }
-}
+}*/
 
 githubRelease {
     repo.set('QuarryPlus')
     token = project.findProperty("githubToken") ?: System.getenv("REPO_TOKEN") ?: ""
-    targetCommitish.set('1.17')
+    targetCommitish.set(project.branch)
     prerelease.set(project.version.toString().contains("SNAPSHOT"))
     body.set(getChangeLog() +
             System.lineSeparator() * 2 +
-            "Build with ${project.forgeVersion}, Mapping: Official 1.17.1")
+            "Build with ${project.forgeVersion}, Mapping: Official ${project.minecraftVersion}")
     releaseAssets = files(
             jar.getArchiveFile().get(),
             deobfJar.getArchiveFile().get(),
@@ -351,7 +349,7 @@ static String getCommit(String branch) {
 
 String getChangeLog() {
     def header = ("""\
-        For Minecraft 1.17.1 and Minecraft Forge
+        For Minecraft ${project.minecraftVersion} and Minecraft Forge
         Released at ${ZonedDateTime.now(ZoneId.of('Asia/Tokyo')).withNano(0).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)}
 
         This mod requires [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force)
@@ -377,7 +375,7 @@ task CheckCompileOption() {
         System.out.println(getChangeLog())
         System.out.println("-" * 30)
         System.out.println("Git commit")
-        System.out.println(getCommit("1.17"))
+        System.out.println(getCommit(project.branch))
         System.out.println("-" * 30)
     }
 }

@@ -80,7 +80,7 @@ public class QuarryBlock extends QPBlock implements EntityBlock {
             Direction facing = entity == null ? Direction.NORTH : entity.getDirection().getOpposite();
             if (level.getBlockEntity(pos) instanceof TileQuarry quarry) {
                 quarry.setEnchantments(EnchantmentHelper.getEnchantments(stack));
-                quarry.setTileDataFromItem(stack.getTagElement(BlockItem.BLOCK_ENTITY_TAG));
+                quarry.setTileDataFromItem(BlockItem.getBlockEntityData(stack));
                 var area = findArea(level, pos, facing.getOpposite(), quarry.storage::addItem);
                 if (area.maxX() - area.minX() > 1 && area.maxZ() - area.minZ() > 1) {
                     quarry.setState(QuarryState.WAITING, state.setValue(BlockStateProperties.FACING, facing));
@@ -146,8 +146,8 @@ public class QuarryBlock extends QPBlock implements EntityBlock {
     }
 
     @Override
-    public ItemStack getPickBlock(BlockState state, HitResult target, BlockGetter world, BlockPos pos, Player player) {
-        var stack = super.getPickBlock(state, target, world, pos, player);
+    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter world, BlockPos pos, Player player) {
+        var stack = super.getCloneItemStack(state, target, world, pos, player);
         if (world.getBlockEntity(pos) instanceof TileQuarry quarry) {
             QuarryLootFunction.process(stack, quarry);
             EnchantedLootFunction.process(stack, quarry);

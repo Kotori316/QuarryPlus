@@ -1,5 +1,5 @@
 package com.yogpc.qp.integration.jei;
-
+/*
 import java.util.Collections;
 
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -96,4 +96,4 @@ class WorkBenchRecipeCategory implements IRecipeCategory<WorkbenchRecipe> {
         stacks.init(recipe.inputs().size(), false, x0 - xOff, x0 + 64 - yOff);
         stacks.set(ingredients);
     }
-}
+}*/

@@ -1,7 +1,7 @@
 package com.yogpc.qp.machines.misc;
 
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.fmlclient.gui.widget.ExtendedButton;
+import net.minecraftforge.client.gui.widget.ExtendedButton;
 
 public class IndexedButton extends ExtendedButton {
 

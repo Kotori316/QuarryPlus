@@ -114,12 +114,11 @@ public class TileAdvQuarry extends PowerTile implements
     }
 
     @Override
-    public CompoundTag save(CompoundTag nbt) {
+    public void saveNbtData(CompoundTag nbt) {
         nbt.put("moduleInventory", moduleInventory.serializeNBT());
         nbt.put("storage", storage.toNbt());
         toClientTag(nbt);
         nbt.putInt("digMinY", digMinY);
-        return super.save(nbt);
     }
 
     @Override

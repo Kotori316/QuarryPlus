@@ -47,9 +47,8 @@ public class BookMoverEntity extends PowerTile implements Container, MenuProvide
     }
 
     @Override
-    public CompoundTag save(CompoundTag nbt) {
+    public void saveNbtData(CompoundTag nbt) {
         ContainerHelper.saveAllItems(nbt, inventory);
-        return super.save(nbt);
     }
 
     @Override

@@ -71,8 +71,8 @@ import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
-import net.minecraftforge.common.extensions.IForgeContainerType;
-import net.minecraftforge.fmllegacy.network.IContainerFactory;
+import net.minecraftforge.common.extensions.IForgeMenuType;
+import net.minecraftforge.network.IContainerFactory;
 
 public class Holder {
     public static final CreativeModeTab TAB = new QuarryCreativeTab();
@@ -111,7 +111,7 @@ public class Holder {
     }
 
     private static <T extends AbstractContainerMenu> MenuType<T> registerMenuType(IContainerFactory<T> factory, String guiId) {
-        MenuType<T> type = IForgeContainerType.create(factory);
+        MenuType<T> type = IForgeMenuType.create(factory);
         type.setRegistryName(guiId);
         MENU_TYPES.add(type);
         return type;

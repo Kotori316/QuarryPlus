@@ -36,7 +36,7 @@ public class ModuleLootFunction extends LootItemConditionalFunction {
     public static void process(ItemStack stack, ModuleInventory.HasModuleInventory holder) {
         var moduleInventory = holder.getModuleInventory();
         if (!moduleInventory.isEmpty()) {
-            var blockTag = stack.getOrCreateTagElement(BlockItem.BLOCK_ENTITY_TAG);
+            var blockTag = stack.getOrCreateTagElement("BlockEntityTag");
             blockTag.put("moduleInventory", moduleInventory.serializeNBT());
         }
     }

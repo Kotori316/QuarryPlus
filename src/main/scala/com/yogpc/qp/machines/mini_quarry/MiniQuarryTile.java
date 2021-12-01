@@ -181,7 +181,7 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
     }
 
     @Override
-    public CompoundTag save(CompoundTag nbt) {
+    public void saveNbtData(CompoundTag nbt) {
         nbt.putBoolean("rs", rs);
         if (area != null)
             nbt.put("area", area.toNBT());
@@ -194,7 +194,6 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
         nbt.put("inventory", container.createTag());
         nbt.put("denyList", denyList.stream().map(BlockStatePredicate::toTag).collect(Collectors.toCollection(ListTag::new)));
         nbt.put("allowList", allowList.stream().map(BlockStatePredicate::toTag).collect(Collectors.toCollection(ListTag::new)));
-        return super.save(nbt);
     }
 
     @Override

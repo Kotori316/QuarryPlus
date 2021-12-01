@@ -25,9 +25,8 @@ public class CreativeGeneratorTile extends PowerTile implements MenuProvider {
     }
 
     @Override
-    public CompoundTag save(CompoundTag nbt) {
+    public void saveNbtData(CompoundTag nbt) {
         nbt.putLong("sendEnergy", sendEnergy);
-        return super.save(nbt);
     }
 
     @Override

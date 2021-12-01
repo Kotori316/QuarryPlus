@@ -21,7 +21,7 @@ import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 
-public class PowerTile extends BlockEntity implements IEnergyStorage {
+public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
     public static final long ONE_FE = 1_000_000_000L;
     private final EnergyCounter energyCounter;
     private long energy;
@@ -44,13 +44,22 @@ public class PowerTile extends BlockEntity implements IEnergyStorage {
     }
 
     @Override
-    public CompoundTag save(CompoundTag nbt) {
+    public final CompoundTag save(CompoundTag nbt) {
+        saveAdditional(nbt);
+        return super.save(nbt);
+    }
+
+    @Override
+    protected void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         nbt.putLong("energy", energy);
         nbt.putLong("maxEnergy", maxEnergy);
         if (chunkPreLoaded != null)
             nbt.putBoolean("chunkPreLoaded", chunkPreLoaded);
-        return super.save(nbt);
+        saveNbtData(nbt);
     }
+
+    protected abstract void saveNbtData(CompoundTag nbt);
 
     @Override
     public void load(CompoundTag nbt) {

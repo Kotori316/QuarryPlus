@@ -114,7 +114,7 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
     }
 
     @Override
-    public CompoundTag save(CompoundTag nbt) {
+    public void saveNbtData(CompoundTag nbt) {
         ListTag items = new ListTag();
         for (int i = 0; i < ingredientInventory.size(); i++) {
             var stack = ingredientInventory.get(i);
@@ -129,7 +129,6 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
         }
         nbt.put("Items", items);
         nbt.putString("recipe", currentRecipe.getId().toString());
-        return super.save(nbt);
     }
 
     // Implementation of Inventory.

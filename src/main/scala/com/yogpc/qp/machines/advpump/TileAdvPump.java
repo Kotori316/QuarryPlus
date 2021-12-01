@@ -65,7 +65,7 @@ public class TileAdvPump extends PowerTile
     }
 
     @Override
-    public CompoundTag save(CompoundTag nbt) {
+    public void saveNbtData(CompoundTag nbt) {
         nbt.put("storage", storage.toNbt());
         nbt.putInt("y", y);
         nbt.put("enchantments", enchantmentEfficiency.toNbt());
@@ -73,7 +73,6 @@ public class TileAdvPump extends PowerTile
         nbt.putBoolean("deleteFluid", deleteFluid);
         nbt.putBoolean("placeFrame", placeFrame);
         nbt.put("moduleInventory", moduleInventory.serializeNBT());
-        return super.save(nbt);
     }
 
     @Override

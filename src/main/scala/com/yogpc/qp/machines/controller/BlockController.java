@@ -1,7 +1,6 @@
 package com.yogpc.qp.machines.controller;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -12,7 +11,6 @@ import com.yogpc.qp.machines.QPBlock;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.MapMulti;
 import cpw.mods.modlauncher.Launcher;
-import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.TextComponent;
@@ -26,6 +24,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.SpawnData;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
@@ -45,7 +44,7 @@ public class BlockController extends QPBlock {
     public static final String NAME = "spawner_controller";
     private static final Logger LOGGER = QuarryPlus.getLogger(BlockController.class);
     private static final Field logic_spawnDelay = getSpawnDelayField(); // int
-    private static final Method logic_getEntityID = getEntityIdGetter(); // (Level, BlockPos) -> ResourceLocation
+    private static final Field logic_nextSpawnData = getNextSpawnDataField(); // (Level, BlockPos) -> ResourceLocation
 
     public BlockController() {
         super(Properties.of(Material.DECORATION)
@@ -79,7 +78,8 @@ public class BlockController extends QPBlock {
                 if (player.getItemInHand(hand).is(Holder.ITEM_CHECKER)) {
                     // Tell spawner info
                     getSpawner(level, pos)
-                        .flatMap(p -> getEntityId(p.getLeft(), level, p.getRight()))
+                        .map(Pair::getLeft)
+                        .flatMap(BlockController::getEntityId)
                         .map(ResourceLocation::toString)
                         .map(s -> "Spawner Mob: " + s)
                         .map(TextComponent::new)
@@ -98,10 +98,13 @@ public class BlockController extends QPBlock {
         return InteractionResult.PASS;
     }
 
-    private static Optional<ResourceLocation> getEntityId(BaseSpawner spawner, @Nullable Level level, BlockPos pos) {
+    private static Optional<ResourceLocation> getEntityId(BaseSpawner spawner) {
         try {
-            return Optional.ofNullable(logic_getEntityID.invoke(spawner, level, pos))
-                .flatMap(MapMulti.optCast(ResourceLocation.class));
+            return Optional.ofNullable(logic_nextSpawnData.get(spawner))
+                .flatMap(MapMulti.optCast(SpawnData.class))
+                .map(SpawnData::getEntityToSpawn)
+                .flatMap(EntityType::by)
+                .map(ForgeRegistryEntry::getRegistryName);
         } catch (ReflectiveOperationException e) {
             LOGGER.error("Exception occurred in getting entity id.", e);
             return Optional.empty();
@@ -167,14 +170,14 @@ public class BlockController extends QPBlock {
         }
     }
 
-    private static Method getEntityIdGetter() {
+    private static Field getNextSpawnDataField() {
         if (Launcher.INSTANCE != null) {
-            return ObfuscationReflectionHelper.findMethod(BaseSpawner.class, "m_151332_", Level.class, BlockPos.class);
+            return ObfuscationReflectionHelper.findField(BaseSpawner.class, "f_45444_");
         } else {
             try {
-                var m = BaseSpawner.class.getDeclaredMethod("getEntityId", Level.class, BlockPos.class);
-                m.setAccessible(true);
-                return m;
+                var f = BaseSpawner.class.getDeclaredField("nextSpawnData");
+                f.setAccessible(true);
+                return f;
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
             }

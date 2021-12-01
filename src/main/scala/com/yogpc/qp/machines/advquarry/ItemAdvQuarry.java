@@ -50,7 +50,7 @@ class ItemAdvQuarry extends QPBlock.QPBlockItem implements EnchantableItem {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> list, TooltipFlag flag) {
         super.appendHoverText(stack, level, list, flag);
-        var entityTag = stack.getTagElement(BlockItem.BLOCK_ENTITY_TAG);
+        var entityTag = BlockItem.getBlockEntityData(stack);
         if (entityTag != null) {
             var modules = ModuleInventory.loadModulesFromTag(entityTag.getCompound("moduleInventory"));
             modules.stream().map(Object::toString).map(TextComponent::new).forEach(list::add);

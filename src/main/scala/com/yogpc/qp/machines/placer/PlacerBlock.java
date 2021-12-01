@@ -36,7 +36,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.fmllegacy.network.NetworkHooks;
+import net.minecraftforge.network.NetworkHooks;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.TRIGGERED;
@@ -142,13 +142,13 @@ public class PlacerBlock extends QPBlock implements EntityBlock {
         if (poweredNow && !poweredOld) {
             if (worldIn.getBlockEntity(pos, Holder.PLACER_TYPE)
                 .filter(p -> p.redstoneMode.isPulse()).isPresent()) {
-                worldIn.getBlockTicks().scheduleTick(pos, this, 1);
+                worldIn.scheduleTick(pos, this, 1);
             }
             worldIn.setBlock(pos, state.setValue(TRIGGERED, Boolean.TRUE), Block.UPDATE_INVISIBLE);
         } else if (!poweredNow && poweredOld) {
             if (worldIn.getBlockEntity(pos, Holder.PLACER_TYPE)
                 .filter(p -> p.redstoneMode.isPulse()).isPresent()) {
-                worldIn.getBlockTicks().scheduleTick(pos, this, 1);
+                worldIn.scheduleTick(pos, this, 1);
             }
             worldIn.setBlock(pos, state.setValue(TRIGGERED, Boolean.FALSE), Block.UPDATE_INVISIBLE);
         }
