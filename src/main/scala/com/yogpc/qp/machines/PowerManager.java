@@ -43,12 +43,12 @@ public class PowerManager {
      */
     public static long getBreakEnergy(float hardness, int efficiency, int fortune, int unbreaking, boolean silktouch) {
         if (Float.isNaN(hardness) || hardness == 0) return 0;
+        if (hardness < 0 || Float.isInfinite(hardness)) return 200 * BREAK_BLOCK_BASE * (efficiency + 1);
         // Base energy, considering Fortune and Silktouch. Efficiency and Unbreaking should be calculated later.
         long base = (long) (BREAK_BLOCK_BASE * Math.pow(FORTUNE_COEFFICIENT, fortune) * Math.pow(SILKTOUCH_COEFFICIENT, silktouch ? 1 : 0));
-        if (hardness < 0 || Float.isInfinite(hardness)) return 200 * base * (efficiency + 1);
         double coefficient = ((double) hardness) * Math.pow(FIFTH_ROOT_OF_5, efficiency) / (1 + Math.max(0, unbreaking));
 
-        return (long) (coefficient * BREAK_BLOCK_BASE);
+        return (long) (coefficient * base);
     }
 
     /**
