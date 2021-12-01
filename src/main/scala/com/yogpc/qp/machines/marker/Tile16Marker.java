@@ -82,12 +82,18 @@ public class Tile16Marker extends BlockEntity implements QuarryMarker, CheckerLo
 
     @Override
     public CompoundTag save(CompoundTag compound) {
+        saveAdditional(compound);
+        return super.save(compound);
+    }
+
+    @Override
+    protected void saveAdditional(CompoundTag compound) {
         compound.putLong("min", min.asLong());
         compound.putLong("max", max.asLong());
         compound.putBoolean("x", xDirection == Direction.AxisDirection.POSITIVE);
         compound.putBoolean("z", zDirection == Direction.AxisDirection.POSITIVE);
         compound.putInt("size", size);
-        return super.save(compound);
+        super.saveAdditional(compound);
     }
 
     // Interface implementations
