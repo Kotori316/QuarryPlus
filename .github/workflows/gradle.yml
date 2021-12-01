@@ -48,9 +48,11 @@ jobs:
         run: chmod +x ./gradlew && ./gradlew build --no-daemon
       - name: Test and Publish
         if: ${{ !contains(github.event.head_commit.message, '[skip release]') }}
-        run: chmod +x ./gradlew && ./gradlew build curseforge --no-daemon
+        run: chmod +x ./gradlew && ./gradlew build curseforge publish --no-daemon
         env:
           CURSEFORGE_KEY: ${{ secrets.CURSEFORGE_KEY }}
+          AZURE_USER_NAME: 'Kotori316'
+          AZURE_TOKEN: ${{ secrets.AZURE_TOKEN }}
       - name: Upload Artifacts
         if: ${{ !contains(github.event.head_commit.message, '[skip release]') }}
         uses: actions/upload-artifact@v2

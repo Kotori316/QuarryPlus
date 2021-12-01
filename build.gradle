@@ -231,7 +231,7 @@ curseforge {
         id = '282837'
         changelogType = 'markdown'
         addGameVersion 'Fabric'
-        addGameVersion '1.18-Snapshot'
+        addGameVersion '1.18'
         changelog = joinedLog
         releaseType = isInCI() ? 'alpha' : 'beta'
         mainArtifact(remapJar) {
@@ -340,6 +340,10 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             artifactId = "AdditionalEnchantedMiner-Fabric".toLowerCase()
+            if (isInCI()) {
+                // Set as SNAPSHOT
+                version = project.mod_version + "-SNAPSHOT"
+            }
             from components.java
             pom {
                 name = archivesBaseName
