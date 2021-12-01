@@ -107,10 +107,12 @@ public class TileAdvQuarry extends PowerTile implements
 
     @Override
     public AABB getRenderBoundingBox() {
-        if (area != null)
-            return new AABB(area.minX(), 0, area.minZ(), area.maxX(), area.maxY(), area.maxZ());
-        else
+        if (area != null) {
+            var bottom = this.level == null ? 0 : level.getMinBuildHeight();
+            return new AABB(area.minX(), bottom, area.minZ(), area.maxX(), area.maxY(), area.maxZ());
+        } else {
             return new AABB(getBlockPos(), getBlockPos().offset(1, 1, 1));
+        }
     }
 
     @Override
@@ -168,6 +170,13 @@ public class TileAdvQuarry extends PowerTile implements
         this.enchantments = enchantments;
         this.cache.enchantments.expire();
         this.setMaxEnergy(50000 * ONE_FE * (efficiencyLevel() + 1));
+    }
+
+    void initialSetting(List<EnchantmentLevel> enchantments) {
+        setEnchantments(enchantments);
+        if (this.level != null) {
+            this.digMinY = level.getMinBuildHeight();
+        }
     }
 
     @Nullable
@@ -317,7 +326,7 @@ public class TileAdvQuarry extends PowerTile implements
                     e.addExp(orb.getValue());
                     orb.kill();
                 }));
-        checkEdgeFluid(x, z, targetWorld);
+        removeEdgeFluid(x, z, targetWorld);
         long requiredEnergy = 0;
         var exp = new AtomicInteger(0);
         List<Pair<BlockPos, BlockState>> toBreak = new ArrayList<>();
@@ -379,39 +388,39 @@ public class TileAdvQuarry extends PowerTile implements
         return BreakResult.SUCCESS;
     }
 
-    void checkEdgeFluid(int x, int z, ServerLevel targetWorld) {
+    void removeEdgeFluid(int x, int z, ServerLevel targetWorld) {
         assert area != null;
         boolean flagMinX = x - 1 == area.minX();
         boolean flagMaxX = x + 1 == area.maxX();
         boolean flagMinZ = z - 1 == area.minZ();
         boolean flagMaxZ = z + 1 == area.maxZ();
         if (flagMinX) {
-            removeFluidAtEdge(area.minX(), z, targetWorld);
+            removeFluidAtXZ(area.minX(), z, targetWorld);
         }
         if (flagMaxX) {
-            removeFluidAtEdge(area.maxX(), z, targetWorld);
+            removeFluidAtXZ(area.maxX(), z, targetWorld);
         }
         if (flagMinZ) {
-            removeFluidAtEdge(x, area.minZ(), targetWorld);
+            removeFluidAtXZ(x, area.minZ(), targetWorld);
         }
         if (flagMaxZ) {
-            removeFluidAtEdge(x, area.maxZ(), targetWorld);
+            removeFluidAtXZ(x, area.maxZ(), targetWorld);
         }
         if (flagMinX && flagMinZ) {
-            removeFluidAtEdge(area.minX(), area.minZ(), targetWorld);
+            removeFluidAtXZ(area.minX(), area.minZ(), targetWorld);
         }
         if (flagMinX && flagMaxZ) {
-            removeFluidAtEdge(area.minX(), area.maxZ(), targetWorld);
+            removeFluidAtXZ(area.minX(), area.maxZ(), targetWorld);
         }
         if (flagMaxX && flagMinZ) {
-            removeFluidAtEdge(area.maxX(), area.minZ(), targetWorld);
+            removeFluidAtXZ(area.maxX(), area.minZ(), targetWorld);
         }
         if (flagMaxX && flagMaxZ) {
-            removeFluidAtEdge(area.maxX(), area.maxZ(), targetWorld);
+            removeFluidAtXZ(area.maxX(), area.maxZ(), targetWorld);
         }
     }
 
-    void removeFluidAtEdge(int x, int z, ServerLevel world) {
+    void removeFluidAtXZ(int x, int z, ServerLevel world) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(x, 0, z);
         for (int y = getBlockPos().getY() - 1; y > digMinY; y--) {
             pos.setY(y);
