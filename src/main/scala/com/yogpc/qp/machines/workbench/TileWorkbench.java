@@ -13,8 +13,6 @@ import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.TileMessage;
 import com.yogpc.qp.utils.MapMulti;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -40,6 +38,8 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class TileWorkbench extends PowerTile implements Container, MenuProvider, CheckerLog {
     List<ItemStack> ingredientInventory = NonNullList.withSize(27, ItemStack.EMPTY);
@@ -252,9 +252,9 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
         }
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+    public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
         if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
             return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.orEmpty(cap, LazyOptional.of(() -> itemHandler));
         }

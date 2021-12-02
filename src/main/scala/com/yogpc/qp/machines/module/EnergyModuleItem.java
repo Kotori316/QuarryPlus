@@ -8,7 +8,6 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QPItem;
 import com.yogpc.qp.utils.MapMulti;
-import javax.annotation.Nullable;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -16,6 +15,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import org.jetbrains.annotations.Nullable;
 
 public class EnergyModuleItem extends QPItem implements QuarryModuleProvider.Item {
     public static final ResourceLocation LOCATION = new ResourceLocation(QuarryPlus.modID, "energy_module");

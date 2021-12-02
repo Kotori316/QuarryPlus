@@ -14,7 +14,6 @@ import com.yogpc.qp.machines.BreakResult;
 import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.TargetIterator;
-import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
@@ -23,6 +22,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.state.BlockState;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry> {
     private static final Logger LOGGER = QuarryPlus.getLogger(AdvQuarryAction.class);

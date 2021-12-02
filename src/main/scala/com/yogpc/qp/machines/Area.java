@@ -7,12 +7,12 @@ import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public record Area(int minX, int minY, int minZ, int maxX, int maxY, int maxZ,
                    Direction direction) implements Serializable {
@@ -72,8 +72,8 @@ public record Area(int minX, int minY, int minZ, int maxX, int maxY, int maxZ,
         }
     }
 
-    @Nonnull
-    public static Stream<BlockPos> getFramePosStream(@Nonnull Area area) {
+    @NotNull
+    public static Stream<BlockPos> getFramePosStream(@NotNull Area area) {
         return Stream.of(
             makeSquare(area, area.minY()),
             makePole(area, area.minY() + 1, area.maxY()),

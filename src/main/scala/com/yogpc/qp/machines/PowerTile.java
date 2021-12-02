@@ -4,8 +4,6 @@ import java.util.Objects;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.utils.QuarryChunkLoadUtil;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -20,6 +18,8 @@ import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
     public static final long ONE_FE = 1_000_000_000L;
@@ -225,9 +225,9 @@ public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
         }
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+    public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
         if (cap == CapabilityEnergy.ENERGY) {
             return CapabilityEnergy.ENERGY.orEmpty(cap, energyHandler);
         } else if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && this instanceof MachineStorage.HasStorage storage) {

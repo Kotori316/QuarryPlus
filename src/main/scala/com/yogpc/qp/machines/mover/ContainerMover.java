@@ -10,7 +10,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.machines.EnchantableItem;
 import com.yogpc.qp.machines.EnchantmentLevel;
-import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -29,6 +28,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.TierSortingRegistry;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.Nullable;
 
 public class ContainerMover extends AbstractContainerMenu {
     public final Container craftMatrix = new SimpleContainer(2) {

@@ -32,7 +32,6 @@ import com.yogpc.qp.packet.ClientSyncMessage;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.CacheEntry;
 import com.yogpc.qp.utils.MapMulti;
-import javax.annotation.Nullable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -59,6 +58,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 
 public class TileAdvQuarry extends PowerTile implements
     CheckerLog, ModuleInventory.HasModuleInventory, MachineStorage.HasStorage,

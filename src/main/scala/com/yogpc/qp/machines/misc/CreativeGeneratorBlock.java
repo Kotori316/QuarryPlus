@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.machines.QPBlock;
-import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -25,6 +24,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
+import org.jetbrains.annotations.Nullable;
 
 public class CreativeGeneratorBlock extends QPBlock implements EntityBlock {
     public static final String NAME = "creative_generator";

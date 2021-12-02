@@ -5,7 +5,6 @@ import java.util.function.Function;
 
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
-import javax.annotation.Nullable;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -13,6 +12,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import org.jetbrains.annotations.Nullable;
 
 public class QPBlock extends Block {
     public static final BooleanProperty WORKING = BooleanProperty.create("working");

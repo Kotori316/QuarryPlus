@@ -9,7 +9,6 @@ import java.util.function.Predicate;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPBlock;
-import javax.annotation.Nullable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -37,6 +36,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
+import org.jetbrains.annotations.Nullable;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.TRIGGERED;

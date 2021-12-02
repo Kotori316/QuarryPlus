@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.yogpc.qp.utils.ManualOrder;
-import javax.annotation.Nullable;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -15,6 +14,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.Nullable;
 
 public record EnchantmentLevel(Enchantment enchantment, int level) {
     public EnchantmentLevel(Map.Entry<Enchantment, Integer> entry) {

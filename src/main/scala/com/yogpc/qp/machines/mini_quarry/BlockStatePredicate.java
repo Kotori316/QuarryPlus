@@ -5,7 +5,6 @@ import java.util.Locale;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.yogpc.qp.QuarryPlus;
-import javax.annotation.Nullable;
 import net.minecraft.commands.arguments.blocks.BlockPredicateArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -17,6 +16,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 interface BlockStatePredicate {
     boolean test(BlockState state, BlockGetter level, BlockPos pos);

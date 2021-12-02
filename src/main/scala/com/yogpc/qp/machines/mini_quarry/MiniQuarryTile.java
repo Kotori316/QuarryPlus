@@ -18,7 +18,6 @@ import com.yogpc.qp.machines.QPBlock;
 import com.yogpc.qp.machines.QuarryFakePlayer;
 import com.yogpc.qp.machines.QuarryMarker;
 import com.yogpc.qp.utils.MapMulti;
-import javax.annotation.Nullable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -44,6 +43,7 @@ import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.Nullable;
 
 public final class MiniQuarryTile extends PowerTile implements CheckerLog,
     EnchantmentLevel.HasEnchantments, MenuProvider {

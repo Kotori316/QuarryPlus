@@ -6,9 +6,9 @@ import com.yogpc.qp.machines.miningwell.MiningWellTile;
 import com.yogpc.qp.machines.quarry.TileQuarry;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.packet.LevelMessage;
-import javax.annotation.Nullable;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class YAccessor {
     public abstract int getDigMinY();

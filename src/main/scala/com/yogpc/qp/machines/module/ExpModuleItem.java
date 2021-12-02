@@ -6,8 +6,6 @@ import java.util.stream.Stream;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPItem;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -17,6 +15,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class ExpModuleItem extends QPItem implements QuarryModuleProvider.Item {
     public static final String NAME = "exp_module";
@@ -28,7 +28,7 @@ public class ExpModuleItem extends QPItem implements QuarryModuleProvider.Item {
     }
 
     @Override
-    public QuarryModule getModule(@Nonnull ItemStack stack) {
+    public QuarryModule getModule(@NotNull ItemStack stack) {
         return new ExpItemModule(stack);
     }
 

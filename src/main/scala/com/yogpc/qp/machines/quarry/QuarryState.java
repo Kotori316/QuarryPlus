@@ -11,7 +11,6 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.PowerTile;
-import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
@@ -26,6 +25,7 @@ import net.minecraftforge.fluids.FluidAttributes;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
+import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("DuplicatedCode") // For null check and static analysis.
 public enum QuarryState implements BlockEntityTicker<TileQuarry> {

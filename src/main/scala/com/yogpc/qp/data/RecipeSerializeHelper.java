@@ -7,7 +7,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import com.google.gson.JsonElement;
 import com.yogpc.qp.utils.MapMulti;
-import javax.annotation.Nullable;
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
@@ -15,6 +14,7 @@ import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.conditions.ICondition;
+import org.jetbrains.annotations.Nullable;
 
 record RecipeSerializeHelper(
     FinishedRecipe recipe,

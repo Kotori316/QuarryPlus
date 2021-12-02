@@ -21,7 +21,6 @@ import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.CombinedBlockEntityTicker;
 import com.yogpc.qp.utils.MapMulti;
 import com.yogpc.qp.utils.QuarryChunkLoadUtil;
-import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -47,6 +46,7 @@ import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.network.NetworkHooks;
+import org.jetbrains.annotations.Nullable;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING;
 

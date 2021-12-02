@@ -5,7 +5,6 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QPBlock;
 import com.yogpc.qp.utils.CombinedBlockEntityTicker;
-import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -23,6 +22,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
+import org.jetbrains.annotations.Nullable;
 
 public class BlockWorkbench extends QPBlock implements EntityBlock {
     public static final String NAME = "workbench";

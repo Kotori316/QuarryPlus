@@ -33,8 +33,6 @@ import com.yogpc.qp.machines.workbench.IngredientRecipe;
 import com.yogpc.qp.machines.workbench.IngredientWithCount;
 import com.yogpc.qp.machines.workbench.QuarryDebugCondition;
 import com.yogpc.qp.machines.workbench.WorkbenchRecipe;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
@@ -54,6 +52,8 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.conditions.NotCondition;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static com.yogpc.qp.data.QuarryPlusDataProvider.location;
 
@@ -227,12 +227,12 @@ class Recipe extends QuarryPlusDataProvider.QuarryDataProvider {
         return list;
     }
 
-    @Nonnull
+    @NotNull
     private static IngredientList makeList(ItemLike item, int count) {
         return new IngredientList(new IngredientWithCount(Ingredient.of(item), count));
     }
 
-    @Nonnull
+    @NotNull
     private static IngredientList makeList(Tag<Item> tag, int count) {
         return new IngredientList(new IngredientWithCount(Ingredient.of(tag), count));
     }

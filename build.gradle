@@ -32,6 +32,10 @@ archivesBaseName = 'AdditionalEnchantedMiner-' + project.minecraftVersion
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
+compileScala {
+    scalaCompileOptions.additionalParameters = ["-Wconf:cat=deprecation:w,any:e"]
+}
+
 @SuppressWarnings("SpellCheckingInspection")
 private static boolean isInCI() {
     return Boolean.parseBoolean(System.getenv("GITHUB_ACTIONS")) || Boolean.parseBoolean(System.getenv("CI")) ||
@@ -232,8 +236,6 @@ artifacts {
 // Example configuration to allow publishing using the maven-publish plugin
 // This is the preferred method to reobfuscate your jar file
 jar.finalizedBy('reobfJar')
-// However if you are in a multi-project build, dev time needs unobfed jar files, so you can delay the obfuscation until publishing by doing
-// publish.dependsOn('reobfJar')
 
 jar.finalizedBy('signJar')
 
@@ -256,7 +258,7 @@ task signJar(dependsOn: 'reobfJar') {
     }
 }
 
-def curseForgeLog() {
+def combinedLog() {
     def header = ("""\
             For Minecraft ${project.minecraftVersion} and Minecraft Forge
             Released at ${ZonedDateTime.now(ZoneId.of('Asia/Tokyo')).withNano(0).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)}
@@ -269,14 +271,14 @@ def curseForgeLog() {
     return header + fileText
 }
 
-/*curseforge {
+curseforge {
     apiKey = project.hasProperty("curseforge_additional-enchanted-miner_key") ? getProperty("curseforge_additional-enchanted-miner_key") : ""
     project {
         id = '282837'
         changelogType = 'markdown'
-        changelog = curseForgeLog()
+        changelog = combinedLog()
         releaseType = 'release'
-        addGameVersion ${project.minecraftVersion}
+        addGameVersion(project.minecraftVersion)
         mainArtifact(jar) {
             displayName = 'v' + project.version + '-forge'
         }
@@ -290,7 +292,7 @@ def curseForgeLog() {
         curseGradleOptions.debug = false // defaults to false
         javaVersionAutoDetect = false
     }
-}*/
+}
 
 githubRelease {
     repo.set('QuarryPlus')

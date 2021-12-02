@@ -24,7 +24,6 @@ import com.yogpc.qp.packet.ClientSync;
 import com.yogpc.qp.packet.ClientSyncMessage;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.CacheEntry;
-import javax.annotation.Nonnull;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -40,6 +39,7 @@ import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidAttributes;
+import org.jetbrains.annotations.NotNull;
 
 public class TileAdvPump extends PowerTile
     implements MachineStorage.HasStorage, EnchantmentLevel.HasEnchantments,
@@ -186,7 +186,7 @@ public class TileAdvPump extends PowerTile
             sync();
     }
 
-    @Nonnull
+    @NotNull
     private Optional<BlockState> getReplaceModuleState() {
         return cache.replaceModuleState.getValue(getLevel());
     }

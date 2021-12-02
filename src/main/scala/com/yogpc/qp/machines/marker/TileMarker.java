@@ -13,8 +13,6 @@ import com.yogpc.qp.machines.QuarryMarker;
 import com.yogpc.qp.packet.ClientSync;
 import com.yogpc.qp.packet.ClientSyncMessage;
 import com.yogpc.qp.packet.PacketHandler;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -26,6 +24,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class TileMarker extends BlockEntity implements QuarryMarker, CheckerLog, ClientSync {
     public static final int MAX_SEARCH = 256;
@@ -115,7 +115,7 @@ public class TileMarker extends BlockEntity implements QuarryMarker, CheckerLog,
             PacketHandler.sendToClient(new ClientSyncMessage(this), level);
     }
 
-    record MarkerConnection(@Nullable Area area, @Nonnull Set<BlockPos> markerPlaces, boolean render) {
+    record MarkerConnection(@Nullable Area area, @NotNull Set<BlockPos> markerPlaces, boolean render) {
         static final MarkerConnection EMPTY = new MarkerConnection(null, Collections.emptySet(), false);
 
         static void set(TileMarker thisMarker, @Nullable TileMarker xMarker, @Nullable TileMarker zMarker) {

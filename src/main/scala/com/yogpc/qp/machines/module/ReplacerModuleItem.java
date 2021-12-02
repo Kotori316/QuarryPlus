@@ -7,8 +7,6 @@ import java.util.function.Predicate;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPItem;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
@@ -21,6 +19,8 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class ReplacerModuleItem extends QPItem implements QuarryModuleProvider.Item {
     public static final String NAME = "replacer_module";
@@ -32,7 +32,7 @@ public class ReplacerModuleItem extends QPItem implements QuarryModuleProvider.I
     }
 
     @Override
-    public ReplacerModule getModule(@Nonnull ItemStack stack) {
+    public ReplacerModule getModule(@NotNull ItemStack stack) {
         BlockState state = Optional.ofNullable(stack.getTagElement(KEY_STATE))
             .flatMap(this::getStateFromTag)
             .orElse(Holder.BLOCK_DUMMY_REPLACER.defaultBlockState());

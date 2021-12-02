@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import com.google.common.collect.Iterators;
 import com.yogpc.qp.utils.MapMulti;
-import javax.annotation.Nonnull;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -26,6 +25,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 
 public class MachineStorage {
     private Map<ItemKey, Long> itemMap = new LinkedHashMap<>();
@@ -185,7 +185,7 @@ public class MachineStorage {
             }
         }
 
-        @Nonnull
+        @NotNull
         @Override
         public ItemStack getStackInSlot(int slot) {
             return getByIndex(slot)
@@ -193,14 +193,14 @@ public class MachineStorage {
                 .orElse(ItemStack.EMPTY);
         }
 
-        @Nonnull
+        @NotNull
         @Override
-        public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+        public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
             // Not insertable
             return stack;
         }
 
-        @Nonnull
+        @NotNull
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
             var entry = getByIndex(slot);
@@ -227,7 +227,7 @@ public class MachineStorage {
         }
 
         @Override
-        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+        public boolean isItemValid(int slot, @NotNull ItemStack stack) {
             // Not insertable
             return false;
         }
@@ -247,7 +247,7 @@ public class MachineStorage {
             }
         }
 
-        @Nonnull
+        @NotNull
         @Override
         public FluidStack getFluidInTank(int tank) {
             return getByIndex(tank)
@@ -261,7 +261,7 @@ public class MachineStorage {
         }
 
         @Override
-        public boolean isFluidValid(int tank, @Nonnull FluidStack stack) {
+        public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
             // Not insertable
             return false;
         }
@@ -272,7 +272,7 @@ public class MachineStorage {
             return 0;
         }
 
-        @Nonnull
+        @NotNull
         @Override
         public FluidStack drain(FluidStack resource, FluidAction action) {
             var key = new FluidKey(resource);
@@ -282,7 +282,7 @@ public class MachineStorage {
                 .orElse(FluidStack.EMPTY);
         }
 
-        @Nonnull
+        @NotNull
         @Override
         public FluidStack drain(int maxDrain, FluidAction action) {
             var iterator = fluidMap.entrySet().iterator();

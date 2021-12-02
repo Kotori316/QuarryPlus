@@ -9,11 +9,11 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import com.yogpc.qp.machines.Area;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.LongArrayTag;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class Target {
     private final Set<BlockPos> skippedPoses = new HashSet<>();
@@ -26,10 +26,10 @@ public abstract class Target {
         return get(false);  // Fetch the next pos.
     }
 
-    @Nonnull
+    @NotNull
     public abstract Stream<BlockPos> allPoses();
 
-    @Nonnull
+    @NotNull
     public abstract CompoundTag toNbt();
 
     public void addSkipped(BlockPos pos) {
@@ -83,7 +83,7 @@ public abstract class Target {
         }
     }
 
-    @Nonnull
+    @NotNull
     public static Target poses(List<BlockPos> pos) {
         return new PosesTarget(pos);
     }
@@ -129,13 +129,13 @@ final class DigTarget extends Target {
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public Stream<BlockPos> allPoses() {
         return BlockPos.betweenClosedStream(area.minX(), y, area.minZ(), area.maxX(), y, area.maxZ());
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public CompoundTag toNbt() {
         var tag = new CompoundTag();
         tag.putString("target", getClass().getSimpleName());
@@ -204,13 +204,13 @@ final class FrameTarget extends Target {
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public Stream<BlockPos> allPoses() {
         return Area.getFramePosStream(area);
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public CompoundTag toNbt() {
         var tag = new CompoundTag();
         tag.putString("target", getClass().getSimpleName());
@@ -267,13 +267,13 @@ final class PosesTarget extends Target {
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public Stream<BlockPos> allPoses() {
         return posList.stream();
     }
 
     @Override
-    public @Nonnull
+    public @NotNull
     CompoundTag toNbt() {
         var tag = new CompoundTag();
         tag.putString("target", getClass().getSimpleName());
@@ -319,14 +319,14 @@ final class FrameInsideTarget extends Target {
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public Stream<BlockPos> allPoses() {
         return BlockPos.betweenClosedStream(area.minX() + 1, minY, area.minZ() + 1,
             area.maxX() - 1, maxY, area.maxZ() - 1);
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public CompoundTag toNbt() {
         var tag = new CompoundTag();
         tag.put("area", area.toNBT());

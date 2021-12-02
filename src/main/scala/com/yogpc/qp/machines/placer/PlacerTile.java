@@ -16,8 +16,6 @@ import com.yogpc.qp.machines.CheckerLog;
 import com.yogpc.qp.machines.QuarryFakePlayer;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.TileMessage;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -49,6 +47,8 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.wrapper.InvWrapper;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING;
 
@@ -216,9 +216,9 @@ public class PlacerTile extends BlockEntity implements
     // -------------------- Capability --------------------
     private final LazyOptional<IItemHandler> itemHandlerOpt = LazyOptional.of(() -> itemHandler);
 
-    @Nonnull
+    @NotNull
     @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+    public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
         if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
             return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.orEmpty(cap, itemHandlerOpt);
         return super.getCapability(cap, side);

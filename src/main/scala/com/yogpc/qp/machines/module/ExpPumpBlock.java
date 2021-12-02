@@ -3,7 +3,6 @@ package com.yogpc.qp.machines.module;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPBlock;
-import javax.annotation.Nonnull;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerLevel;
@@ -17,6 +16,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
+import org.jetbrains.annotations.NotNull;
 
 public class ExpPumpBlock extends QPBlock implements EntityBlock, QuarryModuleProvider.Block {
     public static final String NAME = "exp_pump";
@@ -39,7 +39,7 @@ public class ExpPumpBlock extends QPBlock implements EntityBlock, QuarryModulePr
     }
 
     @Override
-    public QuarryModule getModule(@Nonnull Level level, BlockPos pos, BlockState state) {
+    public QuarryModule getModule(@NotNull Level level, BlockPos pos, BlockState state) {
         if (level.getBlockEntity(pos) instanceof ExpPumpTile expPump) {
             return expPump.getModule();
         } else {

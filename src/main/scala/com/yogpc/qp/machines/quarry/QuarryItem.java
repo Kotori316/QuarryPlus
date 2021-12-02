@@ -7,7 +7,6 @@ import com.yogpc.qp.Holder;
 import com.yogpc.qp.machines.EnchantableItem;
 import com.yogpc.qp.machines.QPBlock;
 import com.yogpc.qp.machines.module.ModuleInventory;
-import javax.annotation.Nullable;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -19,6 +18,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("DuplicatedCode")
 class QuarryItem extends QPBlock.QPBlockItem implements EnchantableItem {

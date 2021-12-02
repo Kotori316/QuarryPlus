@@ -34,7 +34,6 @@ import com.yogpc.qp.packet.ClientSyncMessage;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.CacheEntry;
 import com.yogpc.qp.utils.MapMulti;
-import javax.annotation.Nullable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -61,6 +60,7 @@ import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
+import org.jetbrains.annotations.Nullable;
 
 public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.HasStorage,
     EnchantmentLevel.HasEnchantments, ClientSync, ModuleInventory.HasModuleInventory {

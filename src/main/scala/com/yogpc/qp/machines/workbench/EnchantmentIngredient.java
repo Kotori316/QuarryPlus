@@ -16,7 +16,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.JsonOps;
-import javax.annotation.Nullable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.FriendlyByteBuf;
@@ -31,6 +30,7 @@ import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.IIngredientSerializer;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.Nullable;
 
 public class EnchantmentIngredient extends Ingredient {
     public static final String NAME = "enchantment_ingredient";

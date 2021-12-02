@@ -12,7 +12,6 @@ import com.yogpc.qp.machines.CheckerLog;
 import com.yogpc.qp.machines.QuarryMarker;
 import com.yogpc.qp.render.Box;
 import com.yogpc.qp.render.RenderMarker;
-import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -23,6 +22,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
 public class TileFlexMarker extends BlockEntity implements QuarryMarker, CheckerLog {
 

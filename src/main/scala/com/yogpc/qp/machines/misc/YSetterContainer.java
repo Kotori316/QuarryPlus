@@ -2,12 +2,12 @@ package com.yogpc.qp.machines.misc;
 
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
-import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 public class YSetterContainer extends AbstractContainerMenu {
     public static final String GUI_ID = QuarryPlus.modID + ":gui_y_setter";

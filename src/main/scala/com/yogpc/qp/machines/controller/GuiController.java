@@ -33,7 +33,7 @@ public class GuiController extends Screen implements Button.OnPress {
     private GuiSlotEntities slot;
     private EditBox search;
     List<ResourceLocation> names;
-    @javax.annotation.Nonnull
+    @org.jetbrains.annotations.NotNull
     private final List<ResourceLocation> allEntities;
     private final ResourceKey<Level> dim;
     private final BlockPos pos;

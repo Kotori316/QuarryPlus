@@ -4,12 +4,12 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.misc.YAccessor;
-import javax.annotation.Nullable;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import org.jetbrains.annotations.Nullable;
 
 public class ScreenQuarryModule extends AbstractContainerScreen<ContainerQuarryModule> {
 
