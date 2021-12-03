@@ -1,3 +1,7 @@
+## Version 18.0
+
+* Initial release for 1.18
+
 ## Version 17.7
 
 * Fixed waterlogged blocks were not removed if QuarryPlus doesn't have Pump Module.
