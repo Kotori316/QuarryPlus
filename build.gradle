@@ -424,6 +424,12 @@ publishing {
                 getArchiveExtension().set('jar')
             }
             artifact jar
+            pom {
+                name = archivesBaseName
+                description = "QuarryPlus for Minecraft ${project.minecraftVersion}, build with forge ${project.forgeVersion}"
+                url = 'https://github.com/Kotori316/QuarryPlus'
+                packaging = "jar"
+            }
         }
     }
 }
