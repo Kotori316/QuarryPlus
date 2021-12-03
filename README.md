@@ -1,4 +1,4 @@
-# QuarryPlus for 1.17.1
+# QuarryPlus for 1.18
 
 This program is licensed under GNU LESSER GENERAL PUBLIC LICENSE.
 
@@ -13,7 +13,7 @@ Copyright (C) 2012, 2013 yogpstop, Copyright (C) 2017-2021 Kotori316
 
 CurseForge - https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner
 
-Requires [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force/files/3488867).
+Requires [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force/files/3543266).
 
 ## Finished Work
 

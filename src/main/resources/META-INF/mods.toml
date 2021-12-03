@@ -6,7 +6,7 @@ license="GNU Lesser General Public License v3.0"
 modId="quarryplus"
 version="${file.jarVersion}"
 displayName="QuarryPlus"
-updateJSONURL="https://raw.githubusercontent.com/Kotori316/QuarryPlus/1.17/update.json"
+updateJSONURL="https://raw.githubusercontent.com/Kotori316/QuarryPlus/1.18/update.json"
 displayURL="https://github.com/Kotori316/QuarryPlus"
 credits="Kotori316"
 authors="Kotori316"
@@ -15,12 +15,12 @@ Adds some machines to make a big hole in your world.'''
 [[dependencies.quarryplus]]
     modId="forge"
     mandatory=true
-    versionRange = "[37.0.86,)"
+    versionRange = "[38,)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.quarryplus]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.17.1, )"
+    versionRange="[1.18, )"
     ordering="NONE"
     side="BOTH"
