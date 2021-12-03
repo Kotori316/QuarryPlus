@@ -426,7 +426,7 @@ publishing {
             artifact jar
             pom {
                 name = archivesBaseName
-                description = "QuarryPlus for Minecraft ${project.minecraftVersion}, build with forge ${project.forgeVersion}"
+                description = "QuarryPlus for Minecraft ${project.minecraftVersion} and Forge ${project.forgeVersion}"
                 url = 'https://github.com/Kotori316/QuarryPlus'
                 packaging = "jar"
             }
