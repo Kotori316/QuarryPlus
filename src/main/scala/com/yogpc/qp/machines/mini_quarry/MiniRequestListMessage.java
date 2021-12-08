@@ -1,5 +1,6 @@
 package com.yogpc.qp.machines.mini_quarry;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import com.yogpc.qp.Holder;
@@ -36,7 +37,8 @@ public final class MiniRequestListMessage implements IMessage {
 
     public static void onReceive(MiniRequestListMessage message, Supplier<NetworkEvent.Context> supplier) {
         supplier.get().enqueueWork(() -> PacketHandler.getWorld(supplier.get(), message.pos, message.dim)
-            .ifPresent(l -> l.getBlockEntity(message.pos, Holder.MINI_QUARRY_TYPE).ifPresent(t ->
-                PacketHandler.sendToClient(new MiniListSyncMessage(t), l))));
+            .flatMap(l -> l.getBlockEntity(message.pos, Holder.MINI_QUARRY_TYPE))
+            .ifPresent(t ->
+                PacketHandler.sendToClientPlayer(new MiniListSyncMessage(t), Objects.requireNonNull(supplier.get().getSender()))));
     }
 }
