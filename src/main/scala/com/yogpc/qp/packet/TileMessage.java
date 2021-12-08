@@ -26,7 +26,7 @@ public final class TileMessage implements IMessage {
     }
 
     public TileMessage(BlockEntity entity) {
-        this(entity.getBlockPos(), PacketHandler.getDimension(entity), entity.save(new CompoundTag()));
+        this(entity.getBlockPos(), PacketHandler.getDimension(entity), entity.saveWithoutMetadata());
     }
 
     public TileMessage(FriendlyByteBuf buf) {
