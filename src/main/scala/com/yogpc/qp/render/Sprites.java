@@ -13,6 +13,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import org.jetbrains.annotations.NotNull;
 
 // @Mod.EventBusSubscriber(modid = QuarryPlus.modID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 @OnlyIn(Dist.CLIENT)
@@ -27,7 +28,7 @@ public class Sprites {
     @SubscribeEvent
     public static void register(TextureStitchEvent.Pre event) {
         if (event.getAtlas().location().equals(InventoryMenu.BLOCK_ATLAS)) {
-            spriteNames.stream().map(s -> new ResourceLocation(QuarryPlus.modID, "entities/" + s)).forEach(event::addSprite);
+            spriteNames.stream().map(Sprites::getSpriteLocation).forEach(event::addSprite);
         }
     }
 
@@ -35,7 +36,7 @@ public class Sprites {
     public static void registerSprites(TextureStitchEvent.Post event) {
         if (event.getAtlas().location().equals(InventoryMenu.BLOCK_ATLAS)) {
             spriteNames.forEach(s -> {
-                var name = new ResourceLocation(QuarryPlus.modID, "entities/" + s);
+                var name = getSpriteLocation(s);
                 var sprite = event.getAtlas().getSprite(name);
                 INSTANCE.spriteMap.put(s, sprite);
             });
@@ -44,7 +45,12 @@ public class Sprites {
 
     private TextureAtlasSprite getSprite(String name) {
         return spriteMap.computeIfAbsent(name, s ->
-            Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(new ResourceLocation(QuarryPlus.modID, "entities/" + s)));
+            Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(getSpriteLocation(s)));
+    }
+
+    @NotNull
+    private static ResourceLocation getSpriteLocation(String s) {
+        return new ResourceLocation(QuarryPlus.modID, "entities/" + s);
     }
 
     public TextureAtlasSprite getMarkerBlue() {
