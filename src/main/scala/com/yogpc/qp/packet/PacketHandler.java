@@ -29,6 +29,7 @@ import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class PacketHandler {
@@ -56,18 +57,19 @@ public class PacketHandler {
         INSTANCE.registerMessage(id.getAndIncrement(), MiniRequestListMessage.class, MiniRequestListMessage::write, MiniRequestListMessage::new, setHandled(MiniRequestListMessage::onReceive));
     }
 
-    public static void sendToClient(IMessage message, Level world) {
+    public static void sendToClient(@NotNull IMessage message, @NotNull Level world) {
         INSTANCE.send(PacketDistributor.DIMENSION.with(world::dimension), message);
     }
 
-    public static void sendToClientPlayer(IMessage message, ServerPlayer player) {
+    public static void sendToClientPlayer(@NotNull IMessage message, @NotNull ServerPlayer player) {
         INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), message);
     }
 
-    public static void sendToServer(IMessage message) {
+    public static void sendToServer(@NotNull IMessage message) {
         INSTANCE.sendToServer(message);
     }
 
+    @NotNull
     public static ResourceKey<Level> getDimension(@Nullable BlockEntity entity) {
         return Optional.ofNullable(entity)
             .map(BlockEntity::getLevel)
@@ -75,13 +77,15 @@ public class PacketHandler {
             .orElse(Level.OVERWORLD);
     }
 
-    public static Optional<Level> getWorld(NetworkEvent.Context context, BlockPos pos, ResourceKey<Level> expectedDim) {
+    @NotNull
+    public static Optional<Level> getWorld(@NotNull NetworkEvent.Context context, @NotNull BlockPos pos, @NotNull ResourceKey<Level> expectedDim) {
         return PROXY.getPacketWorld(context)
             .filter(l -> l.dimension().equals(expectedDim))
             .filter(l -> l.isLoaded(pos));
     }
 
-    public static Optional<Player> getPlayer(NetworkEvent.Context context) {
+    @NotNull
+    public static Optional<Player> getPlayer(@NotNull NetworkEvent.Context context) {
         return PROXY.getPacketPlayer(context);
     }
 
@@ -93,6 +97,7 @@ public class PacketHandler {
     }
 
     private static class ProxyProvider {
+        @NotNull
         private static Proxy getInstance() {
             return switch (FMLLoader.getDist()) {
                 case CLIENT -> new ClientSupplier().get();
@@ -115,9 +120,11 @@ public class PacketHandler {
     }
 
     private static abstract class Proxy {
-        abstract Optional<Level> getPacketWorld(NetworkEvent.Context context);
+        @NotNull
+        abstract Optional<Level> getPacketWorld(@NotNull NetworkEvent.Context context);
 
-        abstract Optional<Player> getPacketPlayer(NetworkEvent.Context context);
+        @NotNull
+        abstract Optional<Player> getPacketPlayer(@NotNull NetworkEvent.Context context);
     }
 
     private static class ProxyServer extends Proxy {
