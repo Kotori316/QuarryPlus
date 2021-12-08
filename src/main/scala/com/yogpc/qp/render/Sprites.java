@@ -5,14 +5,13 @@ import java.util.List;
 import java.util.Map;
 
 import com.yogpc.qp.QuarryPlus;
+import javax.annotation.Nonnull;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 
 // @Mod.EventBusSubscriber(modid = QuarryPlus.modID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class Sprites {
@@ -26,7 +25,7 @@ public class Sprites {
     @SubscribeEvent
     public static void register(TextureStitchEvent.Pre event) {
         if (event.getMap().location().equals(InventoryMenu.BLOCK_ATLAS)) {
-            spriteNames.stream().map(s -> new ResourceLocation(QuarryPlus.modID, "entities/" + s)).forEach(event::addSprite);
+            spriteNames.stream().map(Sprites::getSpriteLocation).forEach(event::addSprite);
         }
     }
 
@@ -34,7 +33,7 @@ public class Sprites {
     public static void registerSprites(TextureStitchEvent.Post event) {
         if (event.getMap().location().equals(InventoryMenu.BLOCK_ATLAS)) {
             spriteNames.forEach(s -> {
-                var name = new ResourceLocation(QuarryPlus.modID, "entities/" + s);
+                var name = getSpriteLocation(s);
                 var sprite = event.getMap().getSprite(name);
                 INSTANCE.spriteMap.put(s, sprite);
             });
@@ -43,7 +42,12 @@ public class Sprites {
 
     private TextureAtlasSprite getSprite(String name) {
         return spriteMap.computeIfAbsent(name, s ->
-            Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(new ResourceLocation(QuarryPlus.modID, "entities/" + s)));
+            Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(getSpriteLocation(s)));
+    }
+
+    @Nonnull
+    private static ResourceLocation getSpriteLocation(String s) {
+        return new ResourceLocation(QuarryPlus.modID, "entities/" + s);
     }
 
     public TextureAtlasSprite getMarkerBlue() {
