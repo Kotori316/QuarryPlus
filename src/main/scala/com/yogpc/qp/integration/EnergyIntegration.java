@@ -1,12 +1,12 @@
 package com.yogpc.qp.integration;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.PowerTile;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-// import team.reborn.energy.api.EnergyStorage;
+import team.reborn.energy.api.EnergyStorage;
 
-@SuppressWarnings("SpellCheckingInspection")
 public class EnergyIntegration {
     private static boolean registered = false;
 
@@ -14,9 +14,9 @@ public class EnergyIntegration {
         if (FabricLoader.getInstance().isModLoaded("team_reborn_energy")) {
             QuarryPlus.LOGGER.debug("Trying to register Reborn Energy Handler.");
             try {
-                /*if (RebornEnergyRegister.register()) {
+                if (RebornEnergyRegister.register()) {
                     registered = true;
-                }*/
+                }
             } catch (Throwable error) {
                 var rebornMods = FabricLoader.getInstance().getAllMods().stream()
                     .map(ModContainer::getMetadata).filter(s -> s.getId().contains("reborn"))
@@ -39,7 +39,7 @@ public class EnergyIntegration {
     }
 }
 
-/*class RebornEnergyRegister {
+class RebornEnergyRegister {
     static boolean register() {
         EnergyStorage.SIDED.registerForBlockEntities((blockEntity, context) -> {
                 if (blockEntity instanceof PowerTile powerTile) return new RebornEnergyStorage(powerTile);
@@ -49,4 +49,4 @@ public class EnergyIntegration {
         EnergyStorage.SIDED.registerForBlockEntity((g, d) -> new RebornEnergyGenerator(g), QuarryPlus.ModObjects.CREATIVE_GENERATOR_TYPE);
         return true;
     }
-}*/
+}
