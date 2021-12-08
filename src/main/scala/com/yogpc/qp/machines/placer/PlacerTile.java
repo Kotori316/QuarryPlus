@@ -96,7 +96,7 @@ public class PlacerTile extends BlockEntity implements
         }
     }
 
-    public void breakBlock() {
+    void breakBlock() {
         if (level == null || !redstoneMode.canBreak()) return;
         Direction facing = getBlockState().getValue(FACING);
         BlockPos pos = getBlockPos().relative(facing);
@@ -110,7 +110,7 @@ public class PlacerTile extends BlockEntity implements
             .filter(Predicate.not(ItemStack::isEmpty)).forEach(s -> Block.popResource(level, getBlockPos(), s));
     }
 
-    public void placeBlock() {
+    void placeBlock() {
         if (isEmpty() || !redstoneMode.canPlace()) return;
         Direction facing = getBlockState().getValue(FACING);
         BlockPos pos = getBlockPos().relative(facing);
@@ -119,7 +119,7 @@ public class PlacerTile extends BlockEntity implements
         Player fake = QuarryFakePlayer.get(((ServerLevel) level));
 
         findEntry(inventory,
-            i -> isItemPlaceable(i, fake, rayTrace),
+            i -> tryPlaceItem(i, fake, rayTrace),
             lastPlacedIndex).ifPresent(i -> {
             if (!getItem(i).isEmpty())
                 this.lastPlacedIndex = i;
@@ -153,7 +153,7 @@ public class PlacerTile extends BlockEntity implements
         }
     }
 
-    public static boolean isItemPlaceable(ItemStack stack, Player fake, BlockHitResult rayTrace) {
+    static boolean tryPlaceItem(ItemStack stack, Player fake, BlockHitResult rayTrace) {
         if (stack.isEmpty()) return false;
         Item item = stack.getItem();
         if (item instanceof BlockItem blockItem) {
@@ -183,7 +183,8 @@ public class PlacerTile extends BlockEntity implements
     // -------------------- NBT --------------------
 
     @Override
-    public CompoundTag save(CompoundTag compound) {saveAdditional(compound);
+    public CompoundTag save(CompoundTag compound) {
+        saveAdditional(compound);
         return super.save(compound);
     }
 
