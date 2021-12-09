@@ -87,11 +87,9 @@ class WorkBenchRecipeCategory implements IRecipeCategory<WorkbenchRecipe> {
         int x0 = 3;
         final int o = 18;
         for (int i = 0; i < recipe.inputs().size(); i++) {
-            if (i < 9) {
-                stacks.init(i, true, x0 + o * i - xOff, x0 - yOff);
-            } else if (i < 18) {
-                stacks.init(i, true, x0 + o * (i - 9) - xOff, x0 + o - yOff);
-            }
+            int xIndex = i % 9;
+            int yIndex = i / 9;
+            stacks.init(i, true, x0 + o * xIndex - xOff, x0 + o * yIndex - yOff);
         }
         stacks.init(recipe.inputs().size(), false, x0 - xOff, x0 + 64 - yOff);
         stacks.set(ingredients);

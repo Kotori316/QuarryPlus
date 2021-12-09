@@ -31,14 +31,16 @@ public class PowerManager {
     }
 
     /**
+     * Get energy to break a block, respecting its hardness and enchantments of the machine.
      * Use quarry's values. (BasePower, CoEfficiency, and so on.)
      *
      * @return Energy required to break the block. (Micro MJ) <br>
-     * Special cases:
+     * Special cases: (left side is hardness)
      * <ul>
      *     <li>NaN(Not a Number, {@link Float#NaN}) -> 0</li>
-     *     <li>Infinity({@link Float#POSITIVE_INFINITY}, {@link Float#NEGATIVE_INFINITY}) -> Treated as hardness = 200</li>
      *     <li>0 -> 0</li>
+     *     <li>-1 -> As hardness = 200</li>
+     *     <li>Infinity({@link Float#POSITIVE_INFINITY}, {@link Float#NEGATIVE_INFINITY}) -> Treated as hardness = 200</li>
      * </ul>
      */
     public static long getBreakEnergy(float hardness, int efficiency, int fortune, int unbreaking, boolean silktouch) {
