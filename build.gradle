@@ -297,40 +297,20 @@ curseforge {
 githubRelease {
     repo.set('QuarryPlus')
     token = project.findProperty("githubToken") ?: System.getenv("REPO_TOKEN") ?: ""
-    targetCommitish.set(project.branch)
+    targetCommitish.set(project.branch as String)
     prerelease.set(project.version.toString().contains("SNAPSHOT"))
     body.set(getChangeLog() +
             System.lineSeparator() * 2 +
             "Build with ${project.forgeVersion}, Mapping: Official ${project.minecraftVersion}")
     releaseAssets = files(
-            jar.getArchiveFile().get(),
-            deobfJar.getArchiveFile().get(),
-            srcJar.getArchiveFile().get()
+            jar,
+            deobfJar,
+            srcJar,
     )
 }
 
 test {
     useJUnitPlatform()
-}
-
-/*task signJar(type: net.minecraftforge.gradle.common.task.SignJar) {
-    alias = project.hasProperty('keyStoreAlias') ? project.getProperty('keyStoreAlias') : ""
-    keyStore = project.hasProperty('keyStore') ? project.getProperty("keyStore") : ""
-    storePass = project.hasProperty('keyStorePass') ? project.getProperty('keyStorePass') : ""
-    keyPass = project.hasProperty("keyStoreKeyPass") ? project.getProperty('keyStoreKeyPass') : ""
-
-    inputFile = jar.archiveFile.get()
-    outputFile = jar.archiveFile.get()
-
-    onlyIf {
-        project.hasProperty('keyStoreAlias') &&
-                project.hasProperty('keyStore') &&
-                project.hasProperty('keyStorePass')
-    }
-}*/
-
-if (!isInCI()) {
-    //assemble.dependsOn(signJar)
 }
 
 static String getCommit(String branch) {
