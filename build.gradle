@@ -171,7 +171,7 @@ dependencies {
     compileOnly(group: 'org.scala-lang', name: 'scala-library', version: '2.13.7')
     compileOnly(group: 'org.typelevel', name: "cats-core_2.13", version: '2.6.2-kotori')
 
-    // implementation fg.deobf("mezz.jei:jei-1.17.1:" + project.jeiVersion)
+    implementation fg.deobf("mezz.jei:jei-1.18:" + project.jeiVersion)
     runtimeOnly(group: "com.kotori316", name: "ScalableCatsForce".toLowerCase(), version: "2.13.7-build-1", classifier: "with-library") {
         transitive(false)
     }
@@ -194,7 +194,7 @@ def jarAttributeMap = [
         "Implementation-Version"  : project.version,
         "Implementation-Vendor"   : "Kotori316",
         "Implementation-Timestamp": ZonedDateTime.now().format(DateTimeFormatter.ISO_INSTANT),
-        "Commit"                  : getCommit(project.branch),
+        "Commit"                  : getCommit(project.branch as String),
         'Automatic-Module-Name'   : 'quarryplus',
 ]
 
@@ -358,13 +358,13 @@ String getChangeLog() {
         """ as String).stripIndent()
     def f = file("temp_changelog.md")
     if (f.exists()) {
-        def version = f.readLines().find { s -> s.startsWith("#") }
+        String version = f.readLines().find { s -> s.startsWith("#") }
         return header + System.lineSeparator() + Stream.concat(
                 Stream.of(version, ""),
                 f.readLines()
                         .drop(4 - 2)
                         .takeWhile { s -> !s.isEmpty() }
-                        .stream()
+                        .stream() as Stream<String>
         ).collect(Collectors.joining(System.lineSeparator()))
     } else return header
 }
@@ -373,12 +373,12 @@ task CheckCompileOption() {
     setDescription("Verify the compile option.")
     doLast {
         System.out.println("Changelog for GitHub")
-        System.out.println("-" * 30)
+        System.out.println("-" * 30 as String)
         System.out.println(getChangeLog())
-        System.out.println("-" * 30)
+        System.out.println("-" * 30 as String)
         System.out.println("Git commit")
-        System.out.println(getCommit(project.branch))
-        System.out.println("-" * 30)
+        System.out.println(getCommit(project.branch as String))
+        System.out.println("-" * 30 as String)
     }
 }
 
