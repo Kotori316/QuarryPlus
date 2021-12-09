@@ -115,14 +115,14 @@ dependencies {
     // library
     // implementation "org.scala-lang:scala-library:2.13.4"
     implementation "com.google.code.findbugs:jsr305:3.0.1"
-    /*modImplementation "alexiil.mc.lib:libblockattributes-all:${project.bc_attribute_version}"
+    modImplementation "alexiil.mc.lib:libblockattributes-all:${project.bc_attribute_version}"
 
     modRuntimeOnly("alexiil.mc.mod:simplepipes-all:${project.simple_pipe_version}")
     if (Boolean.parseBoolean(System.getenv("FABRIC_SERVER") ?: "false")) {
         modCompileOnly("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}")
     } else {
         modRuntimeOnly("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}")
-    }*/
+    }
     modImplementation("RebornCore:RebornCore-1.18:${project.RebornCore_version}") {
         //noinspection SpellCheckingInspection
         exclude(group: "net.fabricmc.fabric-api")
