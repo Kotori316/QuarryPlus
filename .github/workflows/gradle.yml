@@ -51,7 +51,7 @@ jobs:
       - name: Set versions
         if: ${{ matrix.forge != 'default' }}
         run: |
-          version=$(java -jar $(find / -maxdepth 1 -name "*.jar") ${{ matrix.forge }})
+          version=$(java -jar $(find / -maxdepth 1 -name "fictional*.jar") ${{ matrix.forge }})
           echo "CI_FORGE=${version}" >> $GITHUB_ENV
           echo ${version}
       - name: Test with runData
@@ -74,7 +74,7 @@ jobs:
       - name: Get latest version
         if: ${{ matrix.forge != 'default' }}
         run: |
-          version=$(java -jar $(find / -maxdepth 1 -name "*.jar") ${{ matrix.forge }})
+          version=$(java -jar $(find / -maxdepth 1 -name "fictional*.jar") ${{ matrix.forge }})
           echo "CI_FORGE=${version}" >> $GITHUB_ENV
           echo ${version}
       - uses: actions/checkout@v2
