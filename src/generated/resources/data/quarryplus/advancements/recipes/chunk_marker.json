@@ -17,17 +17,9 @@
       "conditions": {
         "items": [
           {
-            "item": "quarryplus:marker"
-          }
-        ]
-      }
-    },
-    "has_gems/emerald": {
-      "trigger": "minecraft:inventory_changed",
-      "conditions": {
-        "items": [
-          {
-            "tag": "forge:gems/emerald"
+            "items": [
+              "quarryplus:marker"
+            ]
           }
         ]
       }
@@ -36,17 +28,7 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_marker",
-      "has_gems/emerald"
+      "has_marker"
     ]
-  ],
-  "conditions": [
-    {
-      "value": {
-        "tag": "forge:gems/emerald",
-        "type": "forge:tag_empty"
-      },
-      "type": "forge:not"
-    }
   ]
 }
