@@ -1,3 +1,9 @@
+## Version 18.1
+
+* Added JEI integration
+* Fixed advancement of recipe had wrong format.
+* Fixed potential issue of sync.
+
 ## Version 18.0
 
 * Initial release for 1.18
