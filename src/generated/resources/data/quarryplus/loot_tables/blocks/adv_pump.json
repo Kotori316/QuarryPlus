@@ -10,9 +10,6 @@
           "functions": [
             {
               "function": "quarryplus:drop_function"
-            },
-            {
-              "function": "quarryplus:drop_function_module"
             }
           ],
           "name": "quarryplus:adv_pump"
@@ -22,8 +19,7 @@
         {
           "condition": "minecraft:survives_explosion"
         }
-      ],
-      "functions": []
+      ]
     }
   ]
 }
