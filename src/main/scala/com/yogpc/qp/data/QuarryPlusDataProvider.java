@@ -20,6 +20,7 @@ public class QuarryPlusDataProvider {
         if (event.includeServer()) {
             event.getGenerator().addProvider(new BlockDrop(event.getGenerator()));
             event.getGenerator().addProvider(new Recipe(event.getGenerator()));
+            event.getGenerator().addProvider(new RecipeAdvancement(event.getGenerator()));
         }
     }
 

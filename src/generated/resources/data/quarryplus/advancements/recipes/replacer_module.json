@@ -1,0 +1,40 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "quarryplus:replacer_module"
+    ]
+  },
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "quarryplus:replacer_module"
+      }
+    },
+    "has_replacer": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "quarryplus:replacer"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_replacer"
+    ]
+  ],
+  "conditions": [
+    {
+      "value": "replacer_module",
+      "type": "quarryplus:machine_enabled"
+    }
+  ]
+}

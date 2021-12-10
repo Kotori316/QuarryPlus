@@ -1,0 +1,78 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "quarryplus:placer_plus_crafting"
+    ]
+  },
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "quarryplus:placer_plus_crafting"
+      }
+    },
+    "has_dispenser": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:dispenser"
+            ]
+          }
+        ]
+      }
+    },
+    "has_mossy_cobblestone": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:mossy_cobblestone"
+            ]
+          }
+        ]
+      }
+    },
+    "has_ingots/gold": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "tag": "forge:ingots/gold"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_dispenser",
+      "has_mossy_cobblestone",
+      "has_ingots/gold"
+    ]
+  ],
+  "conditions": [
+    {
+      "value": {
+        "value": "workbench",
+        "type": "quarryplus:machine_enabled"
+      },
+      "type": "forge:not"
+    },
+    {
+      "value": "placer_plus",
+      "type": "quarryplus:machine_enabled"
+    },
+    {
+      "value": {
+        "tag": "forge:ingots/gold",
+        "type": "forge:tag_empty"
+      },
+      "type": "forge:not"
+    }
+  ]
+}

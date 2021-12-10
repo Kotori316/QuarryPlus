@@ -31,18 +31,31 @@
           }
         ]
       }
+    },
+    "has_redstone": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:redstone"
+            ]
+          }
+        ]
+      }
     }
   },
   "requirements": [
     [
       "has_the_recipe",
       "has_storage_blocks/iron",
-      "has_storage_blocks/gold"
+      "has_storage_blocks/gold",
+      "has_redstone"
     ]
   ],
   "conditions": [
     {
-      "value": "WorkbenchPlus",
+      "value": "workbench",
       "type": "quarryplus:machine_enabled"
     },
     {
