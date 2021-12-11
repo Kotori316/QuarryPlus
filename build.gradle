@@ -123,13 +123,12 @@ dependencies {
     } else {
         modRuntimeOnly("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}")
     }
+    modImplementation("teamreborn:energy:${project.tech_energy_version}")
     modImplementation("RebornCore:RebornCore-1.18:${project.RebornCore_version}") {
-        //noinspection SpellCheckingInspection
-        exclude(group: "net.fabricmc.fabric-api")
+        transitive = false
     }
-    modRuntimeOnly("TechReborn:TechReborn-1.18:${project.TechReborn_version}") {
-        //noinspection SpellCheckingInspection
-        exclude(group: "net.fabricmc.fabric-api")
+    modImplementation("TechReborn:TechReborn-1.18:${project.TechReborn_version}") {
+        transitive = false
     }
     // modImplementation("dev.technici4n:FastTransferLib:${project.ftl_version}")
     modCompileOnly("mcp.mobius.waila:wthit-api:fabric-${project.wthit_version}")
