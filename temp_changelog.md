@@ -1,3 +1,7 @@
+## Version 18.2
+
+* Release for 1.18.1
+
 ## Version 18.1
 
 * Added JEI integration
