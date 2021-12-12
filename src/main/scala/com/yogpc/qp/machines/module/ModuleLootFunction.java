@@ -3,7 +3,6 @@ package com.yogpc.qp.machines.module;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.yogpc.qp.Holder;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;

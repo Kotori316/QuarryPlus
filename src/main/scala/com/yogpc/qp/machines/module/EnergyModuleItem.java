@@ -28,8 +28,19 @@ public class EnergyModuleItem extends QPItem implements QuarryModuleProvider.Ite
     }
 
     @Override
-    public QuarryModule getModule(ItemStack stack) {
-        return new EnergyModule(energy * stack.getCount());
+    // Overload for test.
+    public EnergyModule getModule(ItemStack stack) {
+        if (this.energy > 0) {
+            try {
+                var energy = Math.multiplyExact(this.energy, stack.getCount());
+                return new EnergyModule(energy);
+            } catch (ArithmeticException ignore) {
+                return new EnergyModule(Integer.MAX_VALUE);
+            }
+        } else {
+            // I shouldn't extract energy as this is energy supplier module. So set to 0.
+            return new EnergyModule(0);
+        }
     }
 
     @Override
@@ -46,7 +57,7 @@ public class EnergyModuleItem extends QPItem implements QuarryModuleProvider.Ite
                 .ifPresent(e -> blockEntity.addEnergy(e.energy * PowerTile.ONE_FE, false));
     }
 
-    public static record EnergyModule(int energy) implements QuarryModule {
+    public record EnergyModule(int energy) implements QuarryModule {
 
         @Override
         public ResourceLocation moduleId() {
