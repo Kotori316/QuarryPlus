@@ -37,6 +37,7 @@ loom {
         it.configure {
             client {
                 runDir = Boolean.parseBoolean(System.getenv("FABRIC_SERVER") ?: "false") ? "run-server" : "run"
+                programArgs(List.of("--username", "Kotori"))
             }
             server {
                 runDir = "run-server"
@@ -89,6 +90,14 @@ repositories {
         name = "ModMaven" // Here as fallback.
         url = "https://modmaven.dev/"
     }
+    maven { url = "https://maven.kyrptonaught.dev" }
+    maven {
+        name = "Curse Maven"
+        url = "https://www.cursemaven.com"
+        content {
+            it.includeGroup("curse.maven")
+        }
+    }
     repositories.stream()
             .filter { repo -> repo instanceof MavenArtifactRepository && !repo.getUrl().getScheme().contains("file") }
             .forEach { repo ->
@@ -133,6 +142,10 @@ dependencies {
     // modImplementation("dev.technici4n:FastTransferLib:${project.ftl_version}")
     modCompileOnly("mcp.mobius.waila:wthit-api:fabric-${project.wthit_version}")
     modRuntimeOnly("mcp.mobius.waila:wthit:fabric-${project.wthit_version}")
+
+    modRuntimeOnly("curse.maven:mining-dimensions-fabric-442921:3566587")
+    //noinspection SpellCheckingInspection
+    modRuntimeOnly("net.kyrptonaught:customportalapi:0.0.1-beta47-1.18")
 
     modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_version}") {
         //noinspection SpellCheckingInspection
