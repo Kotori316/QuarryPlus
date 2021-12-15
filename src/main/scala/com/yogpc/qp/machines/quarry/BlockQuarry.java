@@ -80,6 +80,7 @@ public class BlockQuarry extends QPBlock implements EntityBlock {
                 if (area.maxX() - area.minX() > 1 && area.maxZ() - area.minZ() > 1) {
                     quarry.setState(QuarryState.WAITING, state.setValue(BlockStateProperties.FACING, facing));
                     quarry.setArea(area);
+                    quarry.sync();
                 } else {
                     if (entity instanceof Player player)
                         player.displayClientMessage(new TranslatableComponent("quarryplus.chat.warn_area"), false);
