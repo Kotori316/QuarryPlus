@@ -370,6 +370,7 @@ public class TileQuarry extends PowerTile implements ClientSync, CheckerLog, Mac
             "%sTarget:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, target),
             "%sState:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, state),
             "%sRemoveBedrock:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, bedrockRemove),
+            "%sEnchantment:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, enchantments),
             "%sDigMinY:%s %d".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, digMinY),
             "%sHead:%s (%f, %f, %f)".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, headX, headY, headZ),
             "%sEnergy:%s %f FE (%d)".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, getEnergy() / (double) PowerTile.ONE_FE, getEnergy())
