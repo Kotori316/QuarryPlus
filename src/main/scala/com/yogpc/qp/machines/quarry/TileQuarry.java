@@ -53,6 +53,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BucketPickup;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.LiquidBlockContainer;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.MinecraftForge;
@@ -90,6 +91,13 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
     public TileQuarry(BlockPos pos, BlockState state) {
         super(Holder.QUARRY_TYPE, pos, state, 10000 * ONE_FE);
         this.moduleInventory = new ModuleInventory(5, this::updateModules, m -> true, this);
+    }
+
+    TileQuarry(BlockEntityType<?> entityType, BlockPos pos, BlockState state) {
+        super(entityType, pos, state, 1000 * ONE_FE);
+        // This is SFQ so no module is acceptable.
+        this.moduleInventory = new ModuleInventory(0, () -> {
+        }, m -> false, this);
     }
 
     @Override
