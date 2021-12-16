@@ -12,13 +12,13 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.BreakResult;
 import com.yogpc.qp.machines.CheckerLog;
-import com.yogpc.qp.packet.ClientSync;
 import com.yogpc.qp.machines.EnchantmentLevel;
 import com.yogpc.qp.machines.EnergyConfigAccessor;
 import com.yogpc.qp.machines.ItemConverter;
 import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QPBlock;
+import com.yogpc.qp.packet.ClientSync;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
@@ -71,8 +71,9 @@ public class TileQuarry extends PowerTile implements ClientSync, CheckerLog, Mac
 
     @Override
     public void saveAdditional(CompoundTag nbt) {
-        if (target != null)
-            nbt.put("target", target.toNbt());
+        if (target != null) {
+            nbt.put("target", Target.toNbt(target));
+        }
         nbt.putString("state", state.name());
         if (area != null)
             nbt.put("area", area.toNBT());
