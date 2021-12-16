@@ -13,10 +13,12 @@ import com.yogpc.qp.machines.Area;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.LongArrayTag;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class Target {
+    static boolean THROW_IF_INVALID_NBT = !FMLEnvironment.production;
     private final Set<BlockPos> skippedPoses = new HashSet<>();
 
     @Nullable
@@ -54,7 +56,7 @@ public abstract class Target {
             case "PosesTarget" -> PosesTarget.from(tag);
             case "FrameInsideTarget" -> FrameInsideTarget.from(tag);
             default -> {
-                if (QuarryPlus.config.common.debug) {
+                if (THROW_IF_INVALID_NBT) {
                     throw new IllegalArgumentException("Invalid target nbt. " + tag);
                 } else {
                     QuarryPlus.LOGGER.error("Invalid target nbt in Quarry Target. %s".formatted(tag));

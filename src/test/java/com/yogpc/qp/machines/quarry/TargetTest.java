@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -175,14 +174,14 @@ class TargetTest {
 
         @Test
         void notThrowIfNonDebug() {
-            var before = QuarryPlus.config.common.debug;
-            QuarryPlus.config.common.debug = false;
+            var before = Target.THROW_IF_INVALID_NBT;
+            Target.THROW_IF_INVALID_NBT = false;
             try {
                 var target = assertDoesNotThrow(() -> Target.fromNbt(new CompoundTag()),
                     "Safe fast in real environment.");
                 assertNull(target);
             } finally {
-                QuarryPlus.config.common.debug = before;
+                Target.THROW_IF_INVALID_NBT = before;
             }
         }
     }
