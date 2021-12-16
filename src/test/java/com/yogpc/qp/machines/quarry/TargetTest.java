@@ -1,14 +1,17 @@
 package com.yogpc.qp.machines.quarry;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import com.yogpc.qp.machines.Area;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -96,5 +99,59 @@ class TargetTest {
             () -> assertEquals(new BlockPos(4, 1, 5), poses.get(23)),
             () -> assertEquals(new BlockPos(4, 0, 5), poses.get(29))
         );
+    }
+
+    @Nested
+    class SerializeTest {
+        private static void serializeTest(Target target) {
+            var allPoses = target.allPoses().collect(Collectors.toSet());
+
+            var tag = target.toNbt();
+            var deserialized = Target.fromNbt(tag);
+            var poses = deserialized.allPoses().collect(Collectors.toSet());
+            assertEquals(allPoses, poses);
+        }
+
+        @Test
+        void DigTargetTest() {
+            var target = new DigTarget(area, area.maxY() - 1);
+            serializeTest(target);
+        }
+
+        @Test
+        void FrameTargetTest1() {
+            var target = new FrameTarget(area);
+            serializeTest(target);
+        }
+
+        @Test
+        void FrameTargetTest2() {
+            var target = new FrameTarget(area, new BlockPos(2, 3, 4));
+            serializeTest(target);
+        }
+
+        @Test
+        void PosesTargetTest1() {
+            var target = new PosesTarget(List.of());
+            serializeTest(target);
+        }
+
+        @Test
+        void PosesTargetTest2() {
+            var target = new PosesTarget(List.of(BlockPos.ZERO, new BlockPos(1, 2, 3)));
+            serializeTest(target);
+        }
+
+        @Test
+        void PosesTargetTest3() {
+            var target = new PosesTarget(Area.getFramePosStream(area).toList());
+            serializeTest(target);
+        }
+
+        @Test
+        void FrameInsideTargetTest() {
+            var target = new FrameInsideTarget(area, area.minY(), area.maxY());
+            serializeTest(target);
+        }
     }
 }

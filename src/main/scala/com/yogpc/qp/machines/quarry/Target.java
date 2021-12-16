@@ -247,7 +247,7 @@ final class PosesTarget extends Target {
             currentTarget = iterator.next();
     }
 
-    public static PosesTarget from(CompoundTag tag) {
+    static PosesTarget from(CompoundTag tag) {
         var poses = Arrays.stream(tag.getLongArray("poses")).mapToObj(BlockPos::of).toList();
         return new PosesTarget(poses);
     }
