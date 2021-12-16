@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 import com.yogpc.qp.machines.Area;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.Tag;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -106,10 +107,16 @@ class TargetTest {
         private static void serializeTest(Target target) {
             var allPoses = target.allPoses().collect(Collectors.toSet());
 
-            var tag = target.toNbt();
-            var deserialized = Target.fromNbt(tag);
-            var poses = deserialized.allPoses().collect(Collectors.toSet());
-            assertEquals(allPoses, poses);
+            {
+                var tag = target.toNbt();
+                assertFalse(tag.contains("target", Tag.TAG_STRING));
+            }
+            {
+                var tag = Target.toNbt(target);
+                var deserialized = Target.fromNbt(tag);
+                var poses = deserialized.allPoses().collect(Collectors.toSet());
+                assertEquals(allPoses, poses);
+            }
         }
 
         @Test

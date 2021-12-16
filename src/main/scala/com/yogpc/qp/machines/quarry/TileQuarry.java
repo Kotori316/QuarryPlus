@@ -94,8 +94,9 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
 
     @Override
     public void saveNbtData(CompoundTag nbt) {
-        if (target != null)
-            nbt.put("target", target.toNbt());
+        if (target != null) {
+            nbt.put("target", Target.toNbt(target));
+        }
         nbt.putString("state", state.name());
         if (area != null)
             nbt.put("area", area.toNBT());
