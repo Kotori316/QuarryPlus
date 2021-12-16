@@ -3,18 +3,18 @@ name: PullRequest Test
 on:
   pull_request:
     branches:
-      - "1.17-fabric"
+      - "1.18-fabric"
 
 jobs:
   pr-check:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/kotori316/fictional-meme/fictional-meme:1.18.1
+      credentials:
+        username: kotori316
+        password: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - uses: actions/checkout@v2
-      - name: Set up JDK 16
-        uses: actions/setup-java@v2
-        with:
-          java-version: 16
-          distribution: 'adopt'
       - name: Test
-        run: chmod +x ./gradlew && ./gradlew build --stacktrace --no-daemon --warning-mode all
+        run: chmod +x ./gradlew && ./gradlew build --stacktrace --no-daemon

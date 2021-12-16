@@ -1,19 +1,28 @@
 package com.yogpc.qp.machines.quarry;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTimeout;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -126,5 +135,85 @@ class TargetTest {
     void pos2Str3() {
         var str = Target.posToStr(new BlockPos(-1, -54, 8));
         assertEquals("{x=-1, y=-54, z=8}", str);
+    }
+
+    @Nested
+    class SerializeTest {
+        private static void serializeTest(Target target) {
+            var allPoses = target.allPoses().collect(Collectors.toSet());
+
+            {
+                var tag = target.toNbt();
+                assertFalse(tag.contains("target", Tag.TAG_STRING));
+            }
+            {
+                var tag = Target.toNbt(target);
+                var deserialized = Target.fromNbt(tag);
+                var poses = deserialized.allPoses().collect(Collectors.toSet());
+                assertEquals(allPoses, poses);
+            }
+        }
+
+        @Test
+        void DigTargetTest() {
+            var target = new DigTarget(area, area.maxY() - 1);
+            serializeTest(target);
+        }
+
+        @Test
+        void FrameTargetTest1() {
+            var target = new FrameTarget(area);
+            serializeTest(target);
+        }
+
+        @Test
+        void FrameTargetTest2() {
+            var target = new FrameTarget(area, new BlockPos(2, 3, 4));
+            serializeTest(target);
+        }
+
+        @Test
+        void PosesTargetTest1() {
+            var target = new PosesTarget(List.of());
+            serializeTest(target);
+        }
+
+        @Test
+        void PosesTargetTest2() {
+            var target = new PosesTarget(List.of(BlockPos.ZERO, new BlockPos(1, 2, 3)));
+            serializeTest(target);
+        }
+
+        @Test
+        void PosesTargetTest3() {
+            var target = new PosesTarget(Area.getFramePosStream(area).toList());
+            serializeTest(target);
+        }
+
+        @Test
+        void FrameInsideTargetTest() {
+            var target = new FrameInsideTarget(area, area.minY(), area.maxY());
+            serializeTest(target);
+        }
+
+        @Test
+        void throwErrorIfEmpty() {
+            var tag = new CompoundTag();
+            assertThrows(IllegalArgumentException.class,
+                () -> Target.fromNbt(tag));
+        }
+
+        @Test
+        void notThrowIfNonDebug() {
+            var before = QuarryPlus.config.common.debug;
+            QuarryPlus.config.common.debug = false;
+            try {
+                var target = assertDoesNotThrow(() -> Target.fromNbt(new CompoundTag()),
+                    "Safe fast in real environment.");
+                assertNull(target);
+            } finally {
+                QuarryPlus.config.common.debug = before;
+            }
+        }
     }
 }
