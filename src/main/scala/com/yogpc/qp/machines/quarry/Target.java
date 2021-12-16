@@ -47,6 +47,7 @@ public abstract class Target {
                 if (QuarryPlus.config.common.debug) {
                     throw new IllegalArgumentException("Invalid target nbt. " + tag);
                 } else {
+                    QuarryPlus.LOGGER.error("Invalid target nbt in Quarry Target. %s".formatted(tag));
                     yield null;
                 }
             }
