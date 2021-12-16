@@ -71,8 +71,9 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
 
     @Override
     public CompoundTag save(CompoundTag nbt) {
-        if (target != null)
-            nbt.put("target", target.toNbt());
+        if (target != null) {
+            nbt.put("target", Target.toNbt(target));
+        }
         nbt.putString("state", state.name());
         if (area != null)
             nbt.put("area", area.toNBT());
@@ -370,6 +371,7 @@ public class TileQuarry extends PowerTile implements BlockEntityClientSerializab
             "%sTarget:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, target),
             "%sState:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, state),
             "%sRemoveBedrock:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, bedrockRemove),
+            "%sEnchantment:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, enchantments),
             "%sDigMinY:%s %d".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, digMinY),
             "%sHead:%s (%f, %f, %f)".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, headX, headY, headZ),
             "%sEnergy:%s %f FE (%d)".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, getEnergy() / (double) PowerTile.ONE_FE, getEnergy())

@@ -28,7 +28,13 @@ public abstract class Target {
     public abstract Stream<BlockPos> allPoses();
 
     @NotNull
-    public abstract CompoundTag toNbt();
+    protected abstract CompoundTag toNbt();
+
+    public static CompoundTag toNbt(Target target) {
+        var tag = target.toNbt();
+        tag.putString("target", target.getClass().getSimpleName());
+        return tag;
+    }
 
     public static Target fromNbt(CompoundTag tag) {
         return switch (tag.getString("target")) {
@@ -135,7 +141,6 @@ final class DigTarget extends Target {
     @NotNull
     public CompoundTag toNbt() {
         var tag = new CompoundTag();
-        tag.putString("target", getClass().getSimpleName());
         tag.put("area", area.toNBT());
         tag.putInt("y", y);
         if (currentTarget != null) tag.putLong("currentTarget", currentTarget.asLong());
@@ -219,7 +224,6 @@ final class FrameTarget extends Target {
     @NotNull
     public CompoundTag toNbt() {
         var tag = new CompoundTag();
-        tag.putString("target", getClass().getSimpleName());
         tag.put("area", area.toNBT());
         tag.putLong("currentTarget", Objects.requireNonNullElse(currentTarget, new BlockPos(area.minX(), area.maxY(), area.minZ() + 1)).asLong());
 
@@ -297,7 +301,6 @@ final class PosesTarget extends Target {
     @Override
     public @NotNull CompoundTag toNbt() {
         var tag = new CompoundTag();
-        tag.putString("target", getClass().getSimpleName());
         var list = new LongArrayTag(allPoses().mapToLong(BlockPos::asLong).toArray());
         tag.put("poses", list);
         return tag;
