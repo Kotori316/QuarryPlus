@@ -8,16 +8,21 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTimeout;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -159,6 +164,26 @@ class TargetTest {
         void FrameInsideTargetTest() {
             var target = new FrameInsideTarget(area, area.minY(), area.maxY());
             serializeTest(target);
+        }
+
+        @Test
+        void throwErrorIfEmpty() {
+            var tag = new CompoundTag();
+            assertThrows(IllegalArgumentException.class,
+                () -> Target.fromNbt(tag));
+        }
+
+        @Test
+        void notThrowIfNonDebug() {
+            var before = QuarryPlus.config.common.debug;
+            QuarryPlus.config.common.debug = false;
+            try {
+                var target = assertDoesNotThrow(() -> Target.fromNbt(new CompoundTag()),
+                    "Safe fast in real environment.");
+                assertNull(target);
+            } finally {
+                QuarryPlus.config.common.debug = before;
+            }
         }
     }
 }

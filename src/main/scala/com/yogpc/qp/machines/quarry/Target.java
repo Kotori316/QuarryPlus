@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -52,7 +53,13 @@ public abstract class Target {
             case "FrameTarget" -> FrameTarget.from(tag);
             case "PosesTarget" -> PosesTarget.from(tag);
             case "FrameInsideTarget" -> FrameInsideTarget.from(tag);
-            default -> throw new IllegalArgumentException("Invalid target nbt. " + tag);
+            default -> {
+                if (QuarryPlus.config.common.debug) {
+                    throw new IllegalArgumentException("Invalid target nbt. " + tag);
+                } else {
+                    yield null;
+                }
+            }
         };
     }
 
