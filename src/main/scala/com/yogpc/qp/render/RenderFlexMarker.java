@@ -30,7 +30,8 @@ public class RenderFlexMarker implements BlockEntityRenderer<TileFlexMarker> {
         matrices.translate(-markerPos.getX(), -markerPos.getY(), -markerPos.getZ());
         if (te.boxes != null) {
             for (Box box : te.boxes) {
-                box.render(buffer, matrices, Sprites.INSTANCE.getWhite(), ColorBox.redColor);
+                if (box != null)
+                    box.render(buffer, matrices, Sprites.INSTANCE.getWhite(), ColorBox.redColor);
             }
         }
         if (te.directionBox != null) {

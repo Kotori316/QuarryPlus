@@ -9,10 +9,16 @@ final class Buffer {
     private final VertexConsumer bufferBuilder;
     private final PoseStack matrix;
     private final Vector4f vector4f = new Vector4f();
+    private final ColorBox colorBox;
 
     Buffer(VertexConsumer bufferBuilder, PoseStack matrixStack) {
+        this(bufferBuilder, matrixStack, ColorBox.white);
+    }
+
+    Buffer(VertexConsumer bufferBuilder, PoseStack matrix, ColorBox colorBox) {
         this.bufferBuilder = bufferBuilder;
-        matrix = matrixStack;
+        this.matrix = matrix;
+        this.colorBox = colorBox;
     }
 
     Buffer pos(double x, double y, double z) {
@@ -30,11 +36,16 @@ final class Buffer {
      * @return this
      */
     Buffer colored() {
-        return this.color(255, 255, 255, 255);
+        return this.color(colorBox);
     }
 
     Buffer color(int red, int green, int blue, int alpha) {
         bufferBuilder.color(red, green, blue, alpha);
+        return this;
+    }
+
+    Buffer color(ColorBox colors) {
+        bufferBuilder.color(colors.red(), colors.green(), colors.blue(), colors.alpha());
         return this;
     }
 

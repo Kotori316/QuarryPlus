@@ -8,14 +8,17 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.LongArrayTag;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class Target {
+    static boolean THROW_IF_INVALID_NBT = !FMLEnvironment.production;
     private final Set<BlockPos> skippedPoses = new HashSet<>();
 
     @Nullable
@@ -30,7 +33,13 @@ public abstract class Target {
     public abstract Stream<BlockPos> allPoses();
 
     @NotNull
-    public abstract CompoundTag toNbt();
+    protected abstract CompoundTag toNbt();
+
+    public static CompoundTag toNbt(Target target) {
+        var tag = target.toNbt();
+        tag.putString("target", target.getClass().getSimpleName());
+        return tag;
+    }
 
     public void addSkipped(BlockPos pos) {
         skippedPoses.add(pos);
@@ -46,7 +55,14 @@ public abstract class Target {
             case "FrameTarget" -> FrameTarget.from(tag);
             case "PosesTarget" -> PosesTarget.from(tag);
             case "FrameInsideTarget" -> FrameInsideTarget.from(tag);
-            default -> throw new IllegalArgumentException("Invalid target nbt. " + tag);
+            default -> {
+                if (THROW_IF_INVALID_NBT) {
+                    throw new IllegalArgumentException("Invalid target nbt. " + tag);
+                } else {
+                    QuarryPlus.LOGGER.error("Invalid target nbt in Quarry Target. %s".formatted(tag));
+                    yield null;
+                }
+            }
         };
     }
 
@@ -138,7 +154,6 @@ final class DigTarget extends Target {
     @NotNull
     public CompoundTag toNbt() {
         var tag = new CompoundTag();
-        tag.putString("target", getClass().getSimpleName());
         tag.put("area", area.toNBT());
         tag.putInt("y", y);
         if (currentTarget != null) tag.putLong("currentTarget", currentTarget.asLong());
@@ -213,7 +228,6 @@ final class FrameTarget extends Target {
     @NotNull
     public CompoundTag toNbt() {
         var tag = new CompoundTag();
-        tag.putString("target", getClass().getSimpleName());
         tag.put("area", area.toNBT());
         tag.putLong("currentTarget", Objects.requireNonNullElse(currentTarget, new BlockPos(area.minX(), area.maxY(), area.minZ() + 1)).asLong());
 
@@ -247,7 +261,7 @@ final class PosesTarget extends Target {
             currentTarget = iterator.next();
     }
 
-    public static PosesTarget from(CompoundTag tag) {
+    static PosesTarget from(CompoundTag tag) {
         var poses = Arrays.stream(tag.getLongArray("poses")).mapToObj(BlockPos::of).toList();
         return new PosesTarget(poses);
     }
@@ -276,7 +290,6 @@ final class PosesTarget extends Target {
     public @NotNull
     CompoundTag toNbt() {
         var tag = new CompoundTag();
-        tag.putString("target", getClass().getSimpleName());
         var list = new LongArrayTag(allPoses().mapToLong(BlockPos::asLong).toArray());
         tag.put("poses", list);
         return tag;
