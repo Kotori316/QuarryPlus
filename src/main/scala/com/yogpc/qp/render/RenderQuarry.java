@@ -53,10 +53,14 @@ public class RenderQuarry implements BlockEntityRenderer<TileQuarry> {
         Minecraft.getInstance().getProfiler().pop();
     }
 
+    Buffer getBuffer(MultiBufferSource vertexConsumers, PoseStack matrices) {
+        return new Buffer(vertexConsumers.getBuffer(RenderType.cutout()), matrices);
+    }
+
     private void renderFrame(TileQuarry quarry, PoseStack matrices, MultiBufferSource vertexConsumers) {
         assert quarry.getArea() != null; // Null check is done.
 
-        var buffer = new Buffer(vertexConsumers.getBuffer(RenderType.cutout()), matrices);
+        var buffer = getBuffer(vertexConsumers, matrices);
         matrices.translate(0.5, 0.5, 0.5);
         var minX = quarry.getArea().minX();
         var minY = quarry.getArea().minY();
@@ -430,7 +434,7 @@ public class RenderQuarry implements BlockEntityRenderer<TileQuarry> {
 
     private void renderDrill(TileQuarry quarry, PoseStack matrices, MultiBufferSource vertexConsumers) {
         assert quarry.getArea() != null; // Null check is done.
-        var buffer = new Buffer(vertexConsumers.getBuffer(RenderType.cutout()), matrices);
+        var buffer = getBuffer(vertexConsumers, matrices);
         matrices.translate(0.5, 1.0, 0.5);
         var minX = quarry.getArea().minX();
         var minZ = quarry.getArea().minZ();
