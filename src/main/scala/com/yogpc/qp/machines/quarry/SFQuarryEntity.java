@@ -8,6 +8,7 @@ import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.EnchantmentLevel;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
@@ -22,6 +23,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.FurnaceBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.ForgeHooks;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.wrapper.InvWrapper;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public final class SFQuarryEntity extends TileQuarry implements MenuProvider {
@@ -73,6 +79,7 @@ public final class SFQuarryEntity extends TileQuarry implements MenuProvider {
         return false;
     }
 
+    @SuppressWarnings("unused")
     public static void tickFuel(Level world, BlockPos pos, BlockState state, SFQuarryEntity quarry) {
         if ((world == null || world.isClientSide) || !quarry.enabled) return;
         double energyInFE = QuarryPlus.config.common.sfqEnergy.get();
@@ -85,6 +92,7 @@ public final class SFQuarryEntity extends TileQuarry implements MenuProvider {
                     quarry.fuelContainer.setItem(0, fuel.getContainerItem());
                 } else {
                     fuel.shrink(1);
+                    quarry.fuelContainer.setChanged();
                 }
             }
         }
@@ -92,6 +100,15 @@ public final class SFQuarryEntity extends TileQuarry implements MenuProvider {
             quarry.addEnergy(tickEnergy, false);
             quarry.fuelCount -= 1;
         }
+    }
+
+    @Override
+    @NotNull
+    public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+            return LazyOptional.of(() -> new InvWrapper(this.fuelContainer)).cast();
+        }
+        return super.getCapability(cap, side);
     }
 
     @Override
