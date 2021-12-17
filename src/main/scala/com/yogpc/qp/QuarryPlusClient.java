@@ -45,6 +45,7 @@ public class QuarryPlusClient {
         BlockEntityRenderers.register(Holder.FLEX_MARKER_TYPE, RenderFlexMarker::new);
         BlockEntityRenderers.register(Holder.MARKER_16_TYPE, Render16Marker::new);
         BlockEntityRenderers.register(Holder.ADV_QUARRY_TYPE, RenderAdvQuarry::new);
+        BlockEntityRenderers.register(Holder.SOLID_FUEL_QUARRY_TYPE, RenderQuarry::new);
 
         MenuScreens.register(Holder.FLEX_MARKER_MENU_TYPE, ScreenFlexMarker::new);
         MenuScreens.register(Holder.MARKER_16_MENU_TYPE, Screen16Marker::new);
