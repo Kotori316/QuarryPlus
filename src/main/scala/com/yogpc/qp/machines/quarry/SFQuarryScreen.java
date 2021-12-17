@@ -37,7 +37,7 @@ public final class SFQuarryScreen extends AbstractContainerScreen<SFQuarryMenu> 
     @Override
     protected void renderLabels(PoseStack matrices, int mouseX, int mouseY) {
         super.renderLabels(matrices, mouseX, mouseY);
-        var fuelCount = "FuelCount: " + getMenu().quarry.fuelCount;
+        var fuelCount = "FuelCount: " + getMenu().fuelCountData.get();
         this.font.draw(matrices, fuelCount, titleLabelX, titleLabelY + 10, 0x404040);
     }
 }

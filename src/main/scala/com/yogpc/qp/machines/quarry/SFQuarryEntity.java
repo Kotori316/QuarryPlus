@@ -49,18 +49,6 @@ public final class SFQuarryEntity extends TileQuarry implements MenuProvider {
     }
 
     @Override
-    public CompoundTag toClientTag(CompoundTag tag) {
-        tag.putInt("fuelCount", fuelCount);
-        return super.toClientTag(tag);
-    }
-
-    @Override
-    public void fromClientTag(CompoundTag tag) {
-        fuelCount = tag.getInt("fuelCount");
-        super.fromClientTag(tag);
-    }
-
-    @Override
     public List<EnchantmentLevel> getEnchantments() {
         return Collections.emptyList();
     }

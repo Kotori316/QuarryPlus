@@ -8,12 +8,14 @@ import com.yogpc.qp.machines.misc.SlotContainer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 public final class SFQuarryMenu extends AbstractContainerMenu {
     public static final String GUI_ID = QuarryPlus.modID + ":gui_" + SFQuarryBlock.NAME;
+    final DataSlot fuelCountData = this.addDataSlot(DataSlot.standalone());
     @NotNull
     SFQuarryEntity quarry;
     private final int allSlots;
@@ -38,6 +40,12 @@ public final class SFQuarryMenu extends AbstractContainerMenu {
     @Override
     public boolean stillValid(Player player) {
         return quarry.enabled;
+    }
+
+    @Override
+    public void broadcastChanges() {
+        fuelCountData.set(Math.min(quarry.fuelCount, Short.MAX_VALUE));
+        super.broadcastChanges();
     }
 
     @Override
