@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.yogpc.qp.Holder;
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.EnchantmentLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -86,11 +87,12 @@ public final class SFQuarryEntity extends TileQuarry implements MenuProvider {
 
     public static void tickFuel(Level world, BlockPos pos, BlockState state, SFQuarryEntity quarry) {
         if ((world == null || world.isClientSide) || !quarry.enabled) return;
-        var tickEnergy = 40 * ONE_FE;
+        double energyInFE = QuarryPlus.config.common.sfqEnergy.get();
+        var tickEnergy = (long) (energyInFE * ONE_FE);
         if (quarry.fuelCount <= 0) {
             var fuel = quarry.fuelContainer.getItem(0);
             if (FurnaceBlockEntity.isFuel(fuel)) {
-                quarry.fuelCount += ForgeHooks.getBurnTime(fuel, null) / 5;
+                quarry.fuelCount += (int) (ForgeHooks.getBurnTime(fuel, null) * 4 / energyInFE);
                 if (fuel.hasContainerItem()) {
                     quarry.fuelContainer.setItem(0, fuel.getContainerItem());
                 } else {
