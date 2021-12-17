@@ -8,12 +8,14 @@ import com.yogpc.qp.machines.module.ExpModuleItem;
 import com.yogpc.qp.machines.module.PumpModuleItem;
 import com.yogpc.qp.machines.module.ReplacerModuleItem;
 import com.yogpc.qp.machines.placer.PlacerBlock;
+import com.yogpc.qp.machines.quarry.SFQuarryBlock;
 import com.yogpc.qp.machines.workbench.BlockWorkbench;
 import com.yogpc.qp.machines.workbench.EnableCondition;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.common.Tags;
+import net.minecraftforge.common.crafting.conditions.FalseCondition;
 import net.minecraftforge.common.crafting.conditions.NotCondition;
 
 final class RecipeAdvancement extends QuarryPlusDataProvider.QuarryDataProvider {
@@ -59,7 +61,13 @@ final class RecipeAdvancement extends QuarryPlusDataProvider.QuarryDataProvider 
                 .addItemCriterion(Items.MOSSY_COBBLESTONE)
                 .addTagCriterion(Tags.Items.INGOTS_GOLD)
                 .addCondition(new EnableCondition(PlacerBlock.NAME))
-                .addCondition(new NotCondition(new EnableCondition(BlockWorkbench.NAME)))
+                .addCondition(new NotCondition(new EnableCondition(BlockWorkbench.NAME))),
+            // Solid Fuel Quarry
+            AdvancementSerializeHelper.apply(Holder.BLOCK_SOLID_FUEL_QUARRY.getRegistryName())
+                .addItemCriterion(Items.DIAMOND_PICKAXE)
+                .addTagCriterion(Tags.Items.STORAGE_BLOCKS_GOLD)
+                .addCondition(new EnableCondition(SFQuarryBlock.NAME))
+                .addCondition(FalseCondition.INSTANCE)
         );
     }
 
