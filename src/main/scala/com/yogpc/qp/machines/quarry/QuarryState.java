@@ -51,7 +51,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
             if (quarry.target == null) {
                 // Initial
                 quarry.target = Target.newFrameInside(quarry.getArea(), quarry.getArea().minY(), quarry.getArea().maxY());
-                LOGGER.debug(MARKER, "Quarry({}) Target changed to {} in {}.", quarryPos, quarry.target, name());
+                LOGGER.debug(MARKER, "{}({}) Target changed to {} in {}.", quarry.getClass().getSimpleName(), quarryPos, quarry.target, name());
             }
             var targetPos = QuarryState.dropUntilPos(quarry.target, StateConditions.skipNoBreak(quarry));
             if (targetPos == null) {
@@ -75,7 +75,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
             Objects.requireNonNull(quarry.getArea());
             if (quarry.target == null) {
                 quarry.target = Target.newFrameTarget(quarry.getArea());
-                LOGGER.debug(MARKER, "Quarry({}) Target changed to {} in {}.", quarryPos, quarry.target, name());
+                logTargetChange(quarryPos, quarry);
             }
             var targetPos = QuarryState.dropUntilPos(quarry.target, StateConditions.skipFramePlace(quarry));
             if (targetPos == null) {
@@ -97,7 +97,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
             Objects.requireNonNull(quarry.getArea());
             if (quarry.target == null) {
                 quarry.target = Target.newDigTarget(quarry.getArea(), quarry.getArea().minY());
-                LOGGER.debug(MARKER, "Quarry({}) Target changed to {} in {}.", quarryPos, quarry.target, name());
+                logTargetChange(quarryPos, quarry);
             }
             var blockTarget = QuarryState.dropUntilPos(quarry.target, StateConditions.skipNoBreak(quarry));
             if (blockTarget == null) {
@@ -106,7 +106,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
                 if (!quarry.hasPumpModule() || fluidPoses.isEmpty()) {
                     // Change Y
                     quarry.target = Target.nextY(quarry.target, quarry.getArea(), quarry.digMinY);
-                    LOGGER.debug(MARKER, "Quarry({}) Target changed to {} in {}.", quarryPos, quarry.target, name());
+                    logTargetChange(quarryPos, quarry);
                     if (quarry.target != null)
                         tick(world, quarryPos, state, quarry);
                     else
@@ -143,7 +143,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
             Objects.requireNonNull(quarry.getArea());
             if (quarry.target == null) {
                 quarry.target = Target.newDigTarget(quarry.getArea(), quarry.getArea().minY());
-                LOGGER.debug(MARKER, "Quarry({}) Target changed to {} in {}.", quarryPos, quarry.target, name());
+                logTargetChange(quarryPos, quarry);
             }
             var targetPos = Objects.requireNonNull(quarry.target.get(false));
             if (TileQuarry.isFullFluidBlock(quarry.getTargetWorld().getBlockState(targetPos))) {
@@ -165,7 +165,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
             Objects.requireNonNull(quarry.getArea());
             if (quarry.target == null) {
                 quarry.target = Target.newDigTarget(quarry.getArea(), quarry.getArea().minY());
-                LOGGER.debug(MARKER, "Quarry({}) Target changed to {} in {}.", quarryPos, quarry.target, name());
+                logTargetChange(quarryPos, quarry);
             }
             var original = Objects.requireNonNull(quarry.target.get(false));
             var targetWorld = quarry.getTargetWorld();
@@ -237,6 +237,10 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
 
     static int headInterval(TileQuarry quarry) {
         return (int) Math.ceil(1 / quarry.headSpeed());
+    }
+
+    void logTargetChange(BlockPos quarryPos, TileQuarry quarry) {
+        LOGGER.debug(MARKER, "{}({}) Target changed to {} in {}.", quarry.getClass().getSimpleName(), quarryPos, quarry.target, name());
     }
 }
 

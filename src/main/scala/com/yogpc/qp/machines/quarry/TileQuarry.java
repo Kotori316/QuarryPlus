@@ -180,7 +180,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
 
     public void setArea(@Nullable Area area) {
         this.area = area;
-        QuarryPlus.LOGGER.debug(MARKER, "Quarry({}) Area changed to {}.", getBlockPos(), area);
+        QuarryPlus.LOGGER.debug(MARKER, "{}({}) Area changed to {}.", getClass().getSimpleName(), getBlockPos(), area);
         if (area != null) {
             headX = area.maxX();
             headY = area.minY();
@@ -205,7 +205,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
                 }
             }
             if (pre != QuarryState.MOVE_HEAD && pre != QuarryState.BREAK_BLOCK && pre != QuarryState.REMOVE_FLUID)
-                QuarryPlus.LOGGER.debug(MARKER, "Quarry({}) State changed from {} to {}.", getBlockPos(), pre, quarryState);
+                QuarryPlus.LOGGER.debug(MARKER, "{}({}) State changed from {} to {}.", getClass().getSimpleName(), getBlockPos(), pre, quarryState);
         }
     }
 
