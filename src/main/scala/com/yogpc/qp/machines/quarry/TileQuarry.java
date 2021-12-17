@@ -145,7 +145,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
     }
 
     @Override
-    public final CompoundTag toClientTag(CompoundTag tag) {
+    public CompoundTag toClientTag(CompoundTag tag) {
         if (area != null)
             tag.put("area", area.toNBT());
         tag.putString("state", state.name());
@@ -156,7 +156,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
     }
 
     @Override
-    public final void fromClientTag(CompoundTag tag) {
+    public void fromClientTag(CompoundTag tag) {
         area = Area.fromNBT(tag.getCompound("area")).orElse(null);
         state = QuarryState.valueOf(tag.getString("state"));
         headX = tag.getDouble("headX");
@@ -166,7 +166,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
 
     @Override
     public CompoundTag getUpdateTag() {
-        return save(new CompoundTag());
+        return saveWithoutMetadata();
     }
 
     @Override

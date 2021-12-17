@@ -10,6 +10,7 @@ import com.yogpc.qp.machines.misc.YSetterScreen;
 import com.yogpc.qp.machines.module.ScreenQuarryModule;
 import com.yogpc.qp.machines.mover.MoverScreen;
 import com.yogpc.qp.machines.placer.PlacerScreen;
+import com.yogpc.qp.machines.quarry.SFQuarryScreen;
 import com.yogpc.qp.machines.workbench.ScreenWorkbench;
 import com.yogpc.qp.render.Render16Marker;
 import com.yogpc.qp.render.RenderAdvQuarry;
@@ -56,5 +57,6 @@ public class QuarryPlusClient {
         MenuScreens.register(Holder.CREATIVE_GENERATOR_MENU_TYPE, CreativeGeneratorScreen::new);
         MenuScreens.register(Holder.ADV_QUARRY_MENU_TYPE, AdvQuarryScreen::new);
         MenuScreens.register(Holder.MINI_QUARRY_MENU_TYPE, MiniQuarryScreen::new);
+        MenuScreens.register(Holder.SOLID_FUEL_QUARRY_MENU_TYPE, SFQuarryScreen::new);
     }
 }
