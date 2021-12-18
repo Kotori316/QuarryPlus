@@ -1,3 +1,8 @@
+## Version 18.3
+
+* Fixed critical bug in QuarryPlus. The nbt data was not saved correctly in some situation.
+* Added Solid Fuel Quarry.
+
 ## Version 18.2
 
 * Release for 1.18.1
