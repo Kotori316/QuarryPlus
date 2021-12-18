@@ -56,6 +56,9 @@ import com.yogpc.qp.machines.placer.PlacerTile;
 import com.yogpc.qp.machines.quarry.FrameBlock;
 import com.yogpc.qp.machines.quarry.QuarryBlock;
 import com.yogpc.qp.machines.quarry.QuarryLootFunction;
+import com.yogpc.qp.machines.quarry.SFQuarryBlock;
+import com.yogpc.qp.machines.quarry.SFQuarryEntity;
+import com.yogpc.qp.machines.quarry.SFQuarryMenu;
 import com.yogpc.qp.machines.quarry.TileQuarry;
 import com.yogpc.qp.machines.workbench.BlockWorkbench;
 import com.yogpc.qp.machines.workbench.ContainerWorkbench;
@@ -138,6 +141,7 @@ public class Holder {
     }
 
     public static final QuarryBlock BLOCK_QUARRY = registerBlock(new QuarryBlock());
+    public static final SFQuarryBlock BLOCK_SOLID_FUEL_QUARRY = registerBlock(new SFQuarryBlock());
     public static final BlockWorkbench BLOCK_WORKBENCH = registerBlock(new BlockWorkbench());
     public static final MiningWellBlock BLOCK_MINING_WELL = registerBlock(new MiningWellBlock());
     public static final BlockMover BLOCK_MOVER = registerBlock(new BlockMover(), EnableOrNot.CONFIG_ON);
@@ -167,6 +171,7 @@ public class Holder {
     public static final EnergyModuleItem ITEM_FUEL_MODULE_NORMAL = registerItem(new EnergyModuleItem(5, "fuel_module_normal"), EnableOrNot.CONFIG_ON);
 
     public static final BlockEntityType<TileQuarry> QUARRY_TYPE = registerEntityType(TileQuarry::new, BLOCK_QUARRY, EnableOrNot.CONFIG_ON);
+    public static final BlockEntityType<SFQuarryEntity> SOLID_FUEL_QUARRY_TYPE = registerEntityType(SFQuarryEntity::new, BLOCK_SOLID_FUEL_QUARRY, EnableOrNot.CONFIG_ON);
     public static final BlockEntityType<TileMarker> MARKER_TYPE = registerEntityType(TileMarker::new, BLOCK_MARKER, EnableOrNot.ALWAYS_ON);
     public static final BlockEntityType<TileFlexMarker> FLEX_MARKER_TYPE = registerEntityType(TileFlexMarker::new, BLOCK_FLEX_MARKER, EnableOrNot.ALWAYS_ON);
     public static final BlockEntityType<Tile16Marker> MARKER_16_TYPE = registerEntityType(Tile16Marker::new, BLOCK_16_MARKER, EnableOrNot.ALWAYS_ON);
@@ -202,6 +207,8 @@ public class Holder {
         new AdvQuarryMenu(windowId, inv.player, data.readBlockPos()), AdvQuarryMenu.GUI_ID);
     public static final MenuType<MiniQuarryMenu> MINI_QUARRY_MENU_TYPE = registerMenuType((windowId, inv, data) ->
         new MiniQuarryMenu(windowId, inv.player, data.readBlockPos()), MiniQuarryMenu.GUI_ID);
+    public static final MenuType<SFQuarryMenu> SOLID_FUEL_QUARRY_MENU_TYPE = registerMenuType((windowId, inv, data) ->
+        new SFQuarryMenu(windowId, inv.player, data.readBlockPos()), SFQuarryMenu.GUI_ID);
 
     public static final LootItemFunctionType ENCHANTED_LOOT_TYPE = Registry.register(Registry.LOOT_FUNCTION_TYPE,
         new ResourceLocation(QuarryPlus.modID, EnchantedLootFunction.NAME), new LootItemFunctionType(EnchantedLootFunction.SERIALIZER));

@@ -37,6 +37,7 @@ class BlockDrop extends QuarryPlusDataProvider.QuarryDataProvider {
             Holder.BLOCK_PLACER,
             Holder.BLOCK_REPLACER,
             Holder.BLOCK_BOOK_MOVER,
+            Holder.BLOCK_SOLID_FUEL_QUARRY,
             null
         ).filter(Objects::nonNull).map(LootTableSerializeHelper::withDrop);
         Stream<LootTableSerializeHelper> enchanted = Stream.<Block>of(

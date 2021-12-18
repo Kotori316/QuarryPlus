@@ -10,12 +10,14 @@ import com.yogpc.qp.machines.misc.YSetterScreen;
 import com.yogpc.qp.machines.module.ScreenQuarryModule;
 import com.yogpc.qp.machines.mover.MoverScreen;
 import com.yogpc.qp.machines.placer.PlacerScreen;
+import com.yogpc.qp.machines.quarry.SFQuarryScreen;
 import com.yogpc.qp.machines.workbench.ScreenWorkbench;
 import com.yogpc.qp.render.Render16Marker;
 import com.yogpc.qp.render.RenderAdvQuarry;
 import com.yogpc.qp.render.RenderFlexMarker;
 import com.yogpc.qp.render.RenderMarker;
 import com.yogpc.qp.render.RenderQuarry;
+import com.yogpc.qp.render.RenderSFQuarry;
 import com.yogpc.qp.render.Sprites;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -44,6 +46,7 @@ public class QuarryPlusClient {
         BlockEntityRenderers.register(Holder.FLEX_MARKER_TYPE, RenderFlexMarker::new);
         BlockEntityRenderers.register(Holder.MARKER_16_TYPE, Render16Marker::new);
         BlockEntityRenderers.register(Holder.ADV_QUARRY_TYPE, RenderAdvQuarry::new);
+        BlockEntityRenderers.register(Holder.SOLID_FUEL_QUARRY_TYPE, RenderSFQuarry::new);
 
         MenuScreens.register(Holder.FLEX_MARKER_MENU_TYPE, ScreenFlexMarker::new);
         MenuScreens.register(Holder.MARKER_16_MENU_TYPE, Screen16Marker::new);
@@ -56,5 +59,6 @@ public class QuarryPlusClient {
         MenuScreens.register(Holder.CREATIVE_GENERATOR_MENU_TYPE, CreativeGeneratorScreen::new);
         MenuScreens.register(Holder.ADV_QUARRY_MENU_TYPE, AdvQuarryScreen::new);
         MenuScreens.register(Holder.MINI_QUARRY_MENU_TYPE, MiniQuarryScreen::new);
+        MenuScreens.register(Holder.SOLID_FUEL_QUARRY_MENU_TYPE, SFQuarryScreen::new);
     }
 }

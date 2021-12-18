@@ -1,0 +1,34 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "III",
+    "GDG",
+    "RRR"
+  ],
+  "key": {
+    "D": {
+      "tag": "forge:storage_blocks/gold"
+    },
+    "R": {
+      "item": "minecraft:redstone_torch"
+    },
+    "I": {
+      "item": "minecraft:furnace"
+    },
+    "G": {
+      "item": "minecraft:diamond_pickaxe"
+    }
+  },
+  "result": {
+    "item": "quarryplus:solid_fuel_quarry"
+  },
+  "conditions": [
+    {
+      "value": "solid_fuel_quarry",
+      "type": "quarryplus:machine_enabled"
+    },
+    {
+      "type": "forge:false"
+    }
+  ]
+}

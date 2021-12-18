@@ -25,6 +25,7 @@ import com.yogpc.qp.machines.module.ReplacerModuleItem;
 import com.yogpc.qp.machines.mover.BlockMover;
 import com.yogpc.qp.machines.placer.PlacerBlock;
 import com.yogpc.qp.machines.quarry.QuarryBlock;
+import com.yogpc.qp.machines.quarry.SFQuarryBlock;
 import com.yogpc.qp.machines.workbench.BlockWorkbench;
 import com.yogpc.qp.machines.workbench.EnableCondition;
 import com.yogpc.qp.machines.workbench.EnchantmentIngredient;
@@ -50,6 +51,7 @@ import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.Tags;
+import net.minecraftforge.common.crafting.conditions.FalseCondition;
 import net.minecraftforge.common.crafting.conditions.NotCondition;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -314,6 +316,18 @@ class Recipe extends QuarryPlusDataProvider.QuarryDataProvider {
                     .define('G', Tags.Items.INGOTS_GOLD),
                 location("placer_plus_crafting")
             ).addCondition(new EnableCondition(PlacerBlock.NAME)).addCondition(new NotCondition(new EnableCondition(BlockWorkbench.NAME))));
+        list.add(
+            // Solid Fuel Quarry
+            RecipeSerializeHelper.by(
+                ShapedRecipeBuilder.shaped(Holder.BLOCK_SOLID_FUEL_QUARRY)
+                    .pattern("III")
+                    .pattern("GDG")
+                    .pattern("RRR")
+                    .define('D', Tags.Items.STORAGE_BLOCKS_GOLD)
+                    .define('R', Items.REDSTONE_TORCH)
+                    .define('I', Items.FURNACE)
+                    .define('G', Items.DIAMOND_PICKAXE), null
+            ).addCondition(new EnableCondition(SFQuarryBlock.NAME)).addCondition(FalseCondition.INSTANCE));
         return list;
     }
 

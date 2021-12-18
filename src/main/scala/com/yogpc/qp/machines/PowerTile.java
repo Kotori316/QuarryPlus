@@ -50,7 +50,7 @@ public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag nbt) {
+    protected final void saveAdditional(CompoundTag nbt) {
         super.saveAdditional(nbt);
         nbt.putLong("energy", energy);
         nbt.putLong("maxEnergy", maxEnergy);
@@ -229,7 +229,8 @@ public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
     @Override
     public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
         if (cap == CapabilityEnergy.ENERGY) {
-            return CapabilityEnergy.ENERGY.orEmpty(cap, energyHandler);
+            if (this.canReceive() || this.canExtract())
+                return CapabilityEnergy.ENERGY.orEmpty(cap, energyHandler);
         } else if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && this instanceof MachineStorage.HasStorage storage) {
             return storage.getStorage().itemHandler.cast();
         } else if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && this instanceof MachineStorage.HasStorage storage) {

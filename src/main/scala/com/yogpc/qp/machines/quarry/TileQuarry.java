@@ -53,6 +53,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BucketPickup;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.LiquidBlockContainer;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.MinecraftForge;
@@ -90,6 +91,13 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
     public TileQuarry(BlockPos pos, BlockState state) {
         super(Holder.QUARRY_TYPE, pos, state, 10000 * ONE_FE);
         this.moduleInventory = new ModuleInventory(5, this::updateModules, m -> true, this);
+    }
+
+    TileQuarry(BlockEntityType<?> entityType, BlockPos pos, BlockState state) {
+        super(entityType, pos, state, 1000 * ONE_FE);
+        // This is SFQ so no module is acceptable.
+        this.moduleInventory = new ModuleInventory(0, () -> {
+        }, m -> false, this);
     }
 
     @Override
@@ -138,7 +146,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
     }
 
     @Override
-    public final CompoundTag toClientTag(CompoundTag tag) {
+    public CompoundTag toClientTag(CompoundTag tag) {
         if (area != null)
             tag.put("area", area.toNBT());
         tag.putString("state", state.name());
@@ -149,7 +157,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
     }
 
     @Override
-    public final void fromClientTag(CompoundTag tag) {
+    public void fromClientTag(CompoundTag tag) {
         area = Area.fromNBT(tag.getCompound("area")).orElse(null);
         state = QuarryState.valueOf(tag.getString("state"));
         headX = tag.getDouble("headX");
@@ -159,7 +167,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
 
     @Override
     public CompoundTag getUpdateTag() {
-        return save(new CompoundTag());
+        return saveWithoutMetadata();
     }
 
     @Override
@@ -173,7 +181,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
 
     public void setArea(@Nullable Area area) {
         this.area = area;
-        QuarryPlus.LOGGER.debug(MARKER, "Quarry({}) Area changed to {}.", getBlockPos(), area);
+        QuarryPlus.LOGGER.debug(MARKER, "{}({}) Area changed to {}.", getClass().getSimpleName(), getBlockPos(), area);
         if (area != null) {
             headX = area.maxX();
             headY = area.minY();
@@ -198,7 +206,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
                 }
             }
             if (pre != QuarryState.MOVE_HEAD && pre != QuarryState.BREAK_BLOCK && pre != QuarryState.REMOVE_FLUID)
-                QuarryPlus.LOGGER.debug(MARKER, "Quarry({}) State changed from {} to {}.", getBlockPos(), pre, quarryState);
+                QuarryPlus.LOGGER.debug(MARKER, "{}({}) State changed from {} to {}.", getClass().getSimpleName(), getBlockPos(), pre, quarryState);
         }
     }
 
