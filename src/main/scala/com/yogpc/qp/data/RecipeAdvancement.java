@@ -15,7 +15,6 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.crafting.conditions.FalseCondition;
 import net.minecraftforge.common.crafting.conditions.NotCondition;
 
 final class RecipeAdvancement extends QuarryPlusDataProvider.QuarryDataProvider {
@@ -67,7 +66,6 @@ final class RecipeAdvancement extends QuarryPlusDataProvider.QuarryDataProvider 
                 .addItemCriterion(Items.DIAMOND_PICKAXE)
                 .addTagCriterion(Tags.Items.STORAGE_BLOCKS_GOLD)
                 .addCondition(new EnableCondition(SFQuarryBlock.NAME))
-                .addCondition(FalseCondition.INSTANCE)
         );
     }
 

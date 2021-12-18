@@ -26,9 +26,6 @@
     {
       "value": "solid_fuel_quarry",
       "type": "quarryplus:machine_enabled"
-    },
-    {
-      "type": "forge:false"
     }
   ]
 }

@@ -51,7 +51,6 @@ import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.crafting.conditions.FalseCondition;
 import net.minecraftforge.common.crafting.conditions.NotCondition;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -327,7 +326,7 @@ class Recipe extends QuarryPlusDataProvider.QuarryDataProvider {
                     .define('R', Items.REDSTONE_TORCH)
                     .define('I', Items.FURNACE)
                     .define('G', Items.DIAMOND_PICKAXE), null
-            ).addCondition(new EnableCondition(SFQuarryBlock.NAME)).addCondition(FalseCondition.INSTANCE));
+            ).addCondition(new EnableCondition(SFQuarryBlock.NAME)));
         return list;
     }
 
