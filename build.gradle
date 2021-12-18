@@ -11,10 +11,12 @@ buildscript {
     repositories {
         // These repositories are only for Gradle plugins, put any other repositories in the repository block further below
         maven { url = 'https://maven.minecraftforge.net' }
+        maven { url = 'https://maven.parchmentmc.org' }
         mavenCentral()
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath 'org.parchmentmc:librarian:1.+'
     }
 }
 plugins {
@@ -24,6 +26,7 @@ plugins {
     id "com.matthewprenger.cursegradle" version "1.4.0"
 }
 apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'org.parchmentmc.librarian.forgegradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
 version = project.modVersion
@@ -46,7 +49,7 @@ println("Java: ${System.getProperty('java.version')} " +
         "JVM: ${System.getProperty('java.vm.version')}(${System.getProperty('java.vendor')}) " +
         "Arch: ${System.getProperty('os.arch')}")
 minecraft {
-    mappings channel: 'official', version: project.minecraftVersion
+    mappings channel: 'parchment', version: project.parchmentMapping
 
     runs {
         client {
