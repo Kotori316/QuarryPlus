@@ -4,9 +4,11 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.yogpc.qp.integration.QuarryFluidTransfer;
 import com.yogpc.qp.integration.QuarryItemTransfer;
 import com.yogpc.qp.utils.MapMulti;
@@ -24,8 +26,8 @@ import net.minecraft.world.level.material.Fluids;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class MachineStorage {
-    private Map<ItemKey, Long> itemMap = new LinkedHashMap<>();
-    private Map<FluidKey, Long> fluidMap = new LinkedHashMap<>();
+    protected Map<ItemKey, Long> itemMap = new LinkedHashMap<>();
+    protected Map<FluidKey, Long> fluidMap = new LinkedHashMap<>();
 
     public void addItem(ItemStack stack) {
         if (stack.isEmpty()) return; // No need to store empty item.
@@ -126,12 +128,14 @@ public class MachineStorage {
     }
 
     private static final int MAX_TRANSFER = 4;
+    @VisibleForTesting
+    static final List<Direction> INSERT_ORDER = List.of(Direction.SOUTH, Direction.WEST, Direction.NORTH, Direction.EAST, Direction.DOWN, Direction.UP);
 
     public static <T extends BlockEntity & HasStorage> BlockEntityTicker<T> passItems() {
         return (world, pos, state, blockEntity) -> {
             var storage = blockEntity.getStorage();
             int count = 0;
-            for (var direction : Direction.values()) {
+            for (var direction : INSERT_ORDER) {
                 if (QuarryItemTransfer.destinationExists(world, pos.relative(direction), direction.getOpposite())) {
                     var itemMap = new ArrayList<>(storage.itemMap.entrySet());
                     for (Map.Entry<ItemKey, Long> entry : itemMap) {
@@ -167,7 +171,7 @@ public class MachineStorage {
         if (QuarryFluidTransfer.isRegistered()) return (world, pos, state, blockEntity) -> {
             var storage = blockEntity.getStorage();
             int count = 0;
-            for (Direction direction : Direction.values()) {
+            for (Direction direction : INSERT_ORDER) {
                 var destPos = pos.relative(direction);
                 var tile = world.getBlockEntity(destPos);
                 if (tile != null) {
