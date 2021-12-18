@@ -2,10 +2,12 @@ package com.yogpc.qp.machines;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Iterators;
 import com.yogpc.qp.utils.MapMulti;
 import net.minecraft.core.Direction;
@@ -28,8 +30,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
 public class MachineStorage {
-    private Map<ItemKey, Long> itemMap = new LinkedHashMap<>();
-    private Map<FluidKey, Long> fluidMap = new LinkedHashMap<>();
+    protected Map<ItemKey, Long> itemMap = new LinkedHashMap<>();
+    protected Map<FluidKey, Long> fluidMap = new LinkedHashMap<>();
     protected LazyOptional<IItemHandler> itemHandler;
     protected LazyOptional<IFluidHandler> fluidHandler;
 
@@ -106,12 +108,14 @@ public class MachineStorage {
     }
 
     private static final int MAX_TRANSFER = 4;
+    @VisibleForTesting
+    static final List<Direction> INSERT_ORDER = List.of(Direction.SOUTH, Direction.WEST, Direction.NORTH, Direction.EAST, Direction.DOWN, Direction.UP);
 
     public static <T extends BlockEntity & HasStorage> BlockEntityTicker<T> passItems() {
         return (world, pos, state, blockEntity) -> {
             var storage = blockEntity.getStorage();
             int count = 0;
-            for (var direction : Direction.values()) {
+            for (var direction : INSERT_ORDER) {
                 var destination = Optional.ofNullable(world.getBlockEntity(pos.relative(direction)));
                 var optional = destination.flatMap(d -> d.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite()).resolve());
                 if (optional.isPresent()) {
@@ -151,7 +155,7 @@ public class MachineStorage {
         return (world, pos, state, blockEntity) -> {
             var storage = blockEntity.getStorage();
             int count = 0;
-            for (Direction direction : Direction.values()) {
+            for (Direction direction : INSERT_ORDER) {
                 var destPos = pos.relative(direction);
                 var optional = Optional.ofNullable(world.getBlockEntity(destPos))
                     .flatMap(d -> d.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, direction.getOpposite()).resolve());
