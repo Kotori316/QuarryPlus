@@ -200,7 +200,8 @@ java {
         it.languageVersion = JavaLanguageVersion.of(17)
     }
 }
-def BRANCH = "1.18-fabric"
+
+static def BRANCH() { return "1.18-fabric" }
 
 jar {
     from "LICENSE"
@@ -214,34 +215,41 @@ jar {
                 "Implementation-Version"  : project.version,
                 "Implementation-Vendor"   : "Kotori316",
                 "Implementation-Timestamp": ZonedDateTime.now().format(timeFormat),
-                "Commit"                  : getCommit(BRANCH)
+                "Commit"                  : getCommit(BRANCH())
         ])
     }
 }
 
 // PUBLISH
-def joinedLog = String.join("\n",
-        "Additional Enchanted Miner for ${project.minecraft_version} and Fabric.",
-        "",
-        isInCI() ? "RELEASED VIA Ci/CD. It may contain bugs." : "Manually built.",
-        "",
-        "Commit: [${getCommit(BRANCH)}](https://github.com/Kotori316/QuarryPlus/tree/${getCommit(BRANCH)})",
-        "",
-        "Requires:",
-        "",
-        "* [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api)",
-        "* [Fabric Language Scala](https://www.curseforge.com/minecraft/mc-mods/fabric-language-scala)",
-        "* [Cloth Config API (Fabric)](https://www.curseforge.com/minecraft/mc-mods/cloth-config)",
-        "",
-        "See https://github.com/Kotori316/QuarryPlus/commits/${BRANCH} to get all change log.",
-        "",
-        "Built with:",
-        "",
-        "* Minecraft ${project.minecraft_version}",
-        "* Mapping Official",
-        "* Fabric API ${project.fabric_version}",
-        "* Fabric Loader ${project.loader_version}",
-)
+String joinedLog() {
+    return String.join("\n",
+            "Additional Enchanted Miner for ${project.minecraft_version} and Fabric.",
+            "",
+            isInCI() ? "RELEASED VIA Ci/CD. It may contain bugs." : "Manually built.",
+            "",
+            "Commit: [${getCommit(BRANCH())}](https://github.com/Kotori316/QuarryPlus/tree/${getCommit(BRANCH())})",
+            "",
+            "Requires:",
+            "",
+            "* [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api)",
+            "* [Fabric Language Scala](https://www.curseforge.com/minecraft/mc-mods/fabric-language-scala)",
+            "* [Cloth Config API (Fabric)](https://www.curseforge.com/minecraft/mc-mods/cloth-config)",
+            "",
+            "Built with:",
+            "",
+            "* Minecraft ${project.minecraft_version}",
+            "* Mapping Official",
+            "* Fabric API ${project.fabric_version}",
+            "* Fabric Loader ${project.loader_version}",
+    )
+}
+
+String curseChangelog() {
+    String fromFile = file("changelog.md").exists() ? file("changelog.md").getText() : ""
+    String base = joinedLog()
+    String last = "See https://github.com/Kotori316/QuarryPlus/commits/${BRANCH()} to get all change log."
+    return base + System.lineSeparator() * 2 + fromFile + System.lineSeparator() + last
+}
 
 curseforge {
     apiKey = project.hasProperty("curseforge_additional-enchanted-miner_key") ? getProperty("curseforge_additional-enchanted-miner_key") : (System.getenv("CURSEFORGE_KEY") ?: "")
@@ -250,7 +258,7 @@ curseforge {
         changelogType = 'markdown'
         addGameVersion 'Fabric'
         addGameVersion '1.18.1'
-        changelog = joinedLog
+        changelog = curseChangelog()
         releaseType = isInCI() ? 'alpha' : 'beta'
         mainArtifact(remapJar) {
             displayName = "v" + project.version + "-fabric" + " [${project.minecraft_version}]"
@@ -273,10 +281,10 @@ curseforge {
 githubRelease {
     repo.set('QuarryPlus')
     token = project.findProperty("githubToken") ?: System.getenv("REPO_TOKEN") ?: ""
-    targetCommitish.set(BRANCH)
+    targetCommitish.set(BRANCH())
     prerelease.set(project.version.toString().contains("SNAPSHOT"))
 
-    body.set(joinedLog)
+    body.set(joinedLog())
     releaseAssets = fileTree("build/libs")
 }
 
@@ -305,6 +313,7 @@ task CheckCompileOption() {
         List<String> strings = new ArrayList<>()
         strings.add("archivesBaseName: $archivesBaseName")
         strings.add("group: $group")
+        strings.add("BRANCH: ${BRANCH()}")
         strings.add("Is in CI: " + isInCI())
         strings.add("project.group: ${project.group}")
         strings.add("version: $version")
@@ -330,7 +339,7 @@ task CheckCompileOption() {
         println(strings.stream().collect(Collectors.joining(System.lineSeparator())))
         println("*" * 20)
         println("ChangeLog")
-        println(joinedLog)
+        println(curseChangelog())
     }
 }
 
@@ -366,7 +375,7 @@ publishing {
             pom {
                 name = archivesBaseName
                 description = "QuarryPlus for Minecraft ${project.minecraft_version}, build with Fabric ${project.fabric_version}"
-                url = 'https://github.com/Kotori316/QuarryPlus/commits/' + BRANCH
+                url = 'https://github.com/Kotori316/QuarryPlus/commits/' + BRANCH()
                 packaging = "jar"
                 withXml {
                     List<String> requiredArtifacts = ["cloth", "fabric-language-scala"]
