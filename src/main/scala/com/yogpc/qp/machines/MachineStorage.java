@@ -35,7 +35,7 @@ public class MachineStorage {
 
     public void addFluid(ItemStack bucketItem) {
         if (bucketItem.getItem() instanceof BucketItem bucket) {
-            var key = getFluidInBucket(bucket);
+            var key = BucketFluidAccessor.getFluidInBucket(bucket);
             fluidMap.merge(key, ONE_BUCKET, Long::sum);
         }
     }
@@ -87,36 +87,39 @@ public class MachineStorage {
         }
     }
 
-    private static final Map<BucketItem, Fluid> BUCKET_ITEM_FLUID_MAP = new HashMap<>();
+    private static class BucketFluidAccessor {
+        private static final Map<BucketItem, Fluid> BUCKET_ITEM_FLUID_MAP = new HashMap<>();
 
-    private static FluidKey getFluidInBucket(BucketItem bucket) {
-        // How do I get nbt of Fluid?
-        var fluid = BUCKET_ITEM_FLUID_MAP.computeIfAbsent(bucket, t -> {
+        private static FluidKey getFluidInBucket(BucketItem bucket) {
+            // How do I get nbt of Fluid?
+            var fluid = BUCKET_ITEM_FLUID_MAP.computeIfAbsent(bucket, t -> {
+                try {
+                    return (Fluid) BUCKET_FLUID_FIELD.get(t);
+                } catch (ReflectiveOperationException ignore) {
+                    return Fluids.EMPTY;
+                }
+            });
+            return new FluidKey(fluid, null);
+        }
+
+        private static final Field BUCKET_FLUID_FIELD;
+
+        static {
             try {
-                return (Fluid) BUCKET_FLUID_FIELD.get(t);
-            } catch (ReflectiveOperationException ignore) {
-                return Fluids.EMPTY;
+                var bucketItemClassName = FabricLoader.getInstance().getMappingResolver().unmapClassName("intermediary", BucketItem.class.getName());
+                var fluidClassName = FabricLoader.getInstance().getMappingResolver().unmapClassName("intermediary", Fluid.class.getName());
+
+                var fluidFieldBucketItem = FabricLoader.getInstance().getMappingResolver().mapFieldName("intermediary",
+                    bucketItemClassName, "field_7905", "L%s;".formatted(fluidClassName.replace('.', '/')));
+                BUCKET_FLUID_FIELD = BucketItem.class.getDeclaredField(fluidFieldBucketItem);
+                BUCKET_FLUID_FIELD.trySetAccessible();
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeException(e);
             }
-        });
-        return new FluidKey(fluid, null);
-    }
-
-    private static final Field BUCKET_FLUID_FIELD;
-    public static final long ONE_BUCKET = 1000;
-
-    static {
-        try {
-            var bucketItemClassName = FabricLoader.getInstance().getMappingResolver().unmapClassName("intermediary", BucketItem.class.getName());
-            var fluidClassName = FabricLoader.getInstance().getMappingResolver().unmapClassName("intermediary", Fluid.class.getName());
-
-            var fluidFieldBucketItem = FabricLoader.getInstance().getMappingResolver().mapFieldName("intermediary",
-                bucketItemClassName, "field_7905", "L%s;".formatted(fluidClassName.replace('.', '/')));
-            BUCKET_FLUID_FIELD = BucketItem.class.getDeclaredField(fluidFieldBucketItem);
-            BUCKET_FLUID_FIELD.trySetAccessible();
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
         }
     }
+
+    public static final long ONE_BUCKET = 1000;
 
     public interface HasStorage {
         MachineStorage getStorage();
