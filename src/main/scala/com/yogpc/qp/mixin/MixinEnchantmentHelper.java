@@ -2,7 +2,6 @@ package com.yogpc.qp.mixin;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import com.yogpc.qp.machines.EnchantableItem;
@@ -32,7 +31,7 @@ public class MixinEnchantmentHelper {
                         .mapToObj(level -> new EnchantmentInstance(e, level))
                         .findFirst()
                         .stream())
-                .collect(Collectors.toList());
+                .toList();
             cir.setReturnValue(new ArrayList<>(entries)); // This method must return mutable list.
         }
     }
