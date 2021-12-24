@@ -43,7 +43,7 @@ public class BookMoverEntity extends PowerTile implements Container, MenuProvide
     static final Set<Enchantment> VALID_ENCHANTMENTS = ForgeRegistries.ENCHANTMENTS.getValues().stream().filter(e -> CATEGORIES.contains(e.category)).collect(Collectors.toSet());
 
     public BookMoverEntity(BlockPos pos, BlockState state) {
-        super(Holder.BOOK_MOVER_TYPE, pos, state, 50000 * ONE_FE);
+        super(Holder.BOOK_MOVER_TYPE, pos, state);
     }
 
     @Override

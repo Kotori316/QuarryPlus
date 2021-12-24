@@ -52,7 +52,7 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
     private final List<Player> openPlayers = new ArrayList<>();
 
     public TileWorkbench(BlockPos pos, BlockState state) {
-        super(Holder.WORKBENCH_TYPE, pos, state, 5);
+        super(Holder.WORKBENCH_TYPE, pos, state);
     }
 
     public void tick() {

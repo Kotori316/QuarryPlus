@@ -8,8 +8,11 @@ public interface PowerConfig {
 
     static PowerConfig getMachineConfig(String machineName) {
         if (QuarryPlus.config == null) return DEFAULT;
+        else if (!QuarryPlus.config.powerMap.has(machineName)) return DEFAULT;
         else return new MachinePowerConfig(machineName);
     }
+
+    long maxEnergy();
 
     long makeFrame();
 
@@ -50,6 +53,7 @@ class DefaultConfig implements PowerConfig {
     private static final double SILKTOUCH_COEFFICIENT = 4;
 
     // @formatter:off
+    @Override public long maxEnergy() {return 1000 * PowerTile.ONE_FE;}
     @Override public long makeFrame() {return MAKE_FRAME;}
     @Override public long breakBlockBase() {return BREAK_BLOCK_BASE;}
     @Override public long breakBlockFluid() {return BREAK_BLOCK_FLUID;}
@@ -64,6 +68,7 @@ class DefaultConfig implements PowerConfig {
 
 class MachinePowerConfig implements PowerConfig {
     private final String machineName;
+    final double maxEnergy;
     final double makeFrame;
     final double breakBlockBase;
     final double breakBlockFluid;
@@ -78,6 +83,7 @@ class MachinePowerConfig implements PowerConfig {
         this.machineName = machineName;
         var powerMap = QuarryPlus.config.powerMap;
 
+        this.maxEnergy = powerMap.get(machineName, "maxEnergy").orElse((double) DEFAULT.maxEnergy() / PowerTile.ONE_FE);
         this.makeFrame = powerMap.get(machineName, "makeFrame").orElse((double) DEFAULT.makeFrame() / PowerTile.ONE_FE);
         this.breakBlockBase = powerMap.get(machineName, "breakBlockBase").orElse((double) DEFAULT.breakBlockBase() / PowerTile.ONE_FE);
         this.breakBlockFluid = powerMap.get(machineName, "breakBlockFluid").orElse((double) DEFAULT.breakBlockFluid() / PowerTile.ONE_FE);
@@ -97,6 +103,7 @@ class MachinePowerConfig implements PowerConfig {
     }
 
     // @formatter:off
+    @Override public long maxEnergy() {return (long) (maxEnergy * PowerTile.ONE_FE);}
     @Override public long makeFrame() {return (long) (makeFrame * PowerTile.ONE_FE);}
     @Override public long breakBlockBase() {return (long) (breakBlockBase * PowerTile.ONE_FE);}
     @Override public long breakBlockFluid() {return (long) (breakBlockFluid * PowerTile.ONE_FE);}

@@ -90,12 +90,12 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
     private final QuarryCache cache = new QuarryCache();
 
     public TileQuarry(BlockPos pos, BlockState state) {
-        super(Holder.QUARRY_TYPE, pos, state, 10000 * ONE_FE);
+        super(Holder.QUARRY_TYPE, pos, state);
         this.moduleInventory = new ModuleInventory(5, this::updateModules, m -> true, this);
     }
 
     TileQuarry(BlockEntityType<?> entityType, BlockPos pos, BlockState state) {
-        super(entityType, pos, state, 1000 * ONE_FE);
+        super(entityType, pos, state);
         // This is SFQ so no module is acceptable.
         this.moduleInventory = new ModuleInventory(0, () -> {
         }, m -> false, this);
@@ -352,7 +352,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
     public void setEnchantments(List<EnchantmentLevel> enchantments) {
         this.enchantments = enchantments;
         this.cache.enchantments.expire();
-        this.setMaxEnergy(10000 * ONE_FE * (efficiencyLevel() + 1));
+        this.setMaxEnergy(getPowerConfig().maxEnergy() * ONE_FE * (efficiencyLevel() + 1));
     }
 
     /**

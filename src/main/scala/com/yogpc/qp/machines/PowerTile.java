@@ -33,16 +33,12 @@ public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
     protected final PowerConfig powerConfig;
 
     public PowerTile(BlockEntityType<?> type, BlockPos pos, BlockState state) {
-        this(type, pos, state, ONE_FE * 1000);
-    }
-
-    public PowerTile(BlockEntityType<?> type, BlockPos pos, BlockState state, long maxEnergy) {
         super(type, pos, state);
-        this.maxEnergy = maxEnergy;
         this.enabled = QuarryPlus.config.enableMap.enabled(Objects.requireNonNull(type.getRegistryName()));
         this.energyCounter = EnergyCounter.createInstance(QuarryPlus.config.debug() && enabled,
             "%s(%d, %d, %d)".formatted(getClass().getSimpleName(), pos.getX(), pos.getY(), pos.getZ()));
         this.powerConfig = PowerConfig.getMachineConfig(Objects.requireNonNull(type.getRegistryName()).getPath());
+        this.maxEnergy = this.powerConfig.maxEnergy();
     }
 
     @Override
