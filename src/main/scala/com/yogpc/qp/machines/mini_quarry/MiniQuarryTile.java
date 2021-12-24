@@ -12,6 +12,7 @@ import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.CheckerLog;
 import com.yogpc.qp.machines.EnchantmentLevel;
 import com.yogpc.qp.machines.InvUtils;
+import com.yogpc.qp.machines.PowerConfig;
 import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QPBlock;
@@ -46,7 +47,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
 public final class MiniQuarryTile extends PowerTile implements CheckerLog,
-    EnchantmentLevel.HasEnchantments, MenuProvider {
+    EnchantmentLevel.HasEnchantments, MenuProvider, PowerConfig.Provider {
     private List<EnchantmentLevel> enchantments;
     @Nullable
     Area area = null;

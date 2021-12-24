@@ -17,7 +17,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PowerManagerTest extends QuarryPlusTest {
 
-    record Holder(Map<Enchantment, Integer> enchantmentMap) implements EnchantmentLevel.HasEnchantments {
+    record Holder(
+        Map<Enchantment, Integer> enchantmentMap) implements EnchantmentLevel.HasEnchantments, PowerConfig.Provider {
         @Override
         public List<EnchantmentLevel> getEnchantments() {
             return enchantmentMap.entrySet().stream().map(EnchantmentLevel::new).toList();
@@ -27,12 +28,33 @@ class PowerManagerTest extends QuarryPlusTest {
         public int getLevel(Enchantment enchantment) {
             return enchantmentMap().getOrDefault(enchantment, 0);
         }
+
+        @Override
+        public PowerConfig getPowerConfig() {
+            return PowerConfig.DEFAULT;
+        }
     }
 
     @Test
     void makeFrame() {
         var makeFrameBase = PowerManager.getMakeFrameEnergy(new Holder(Map.of()));
         assertTrue(makeFrameBase > PowerTile.ONE_FE);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1, 2, 3})
+    void moveUnbreakingTest(int unbreaking) {
+        var makeFrameBase = PowerManager.getMoveEnergy(3, new Holder(Map.of()));
+        var reduced = PowerManager.getMoveEnergy(3, new Holder(Map.of(Enchantments.UNBREAKING, unbreaking)));
+        assertEquals(makeFrameBase / (1 + unbreaking), reduced);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {-1, -100, 0})
+    void moveInvalidLevel(int unbreaking) {
+        var makeFrameBase = PowerManager.getMoveEnergy(3, new Holder(Map.of()));
+        var notChanged = PowerManager.getMoveEnergy(3, new Holder(Map.of(Enchantments.UNBREAKING, unbreaking)));
+        assertEquals(makeFrameBase, notChanged);
     }
 
     @ParameterizedTest

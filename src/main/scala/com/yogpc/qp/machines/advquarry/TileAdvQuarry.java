@@ -19,6 +19,7 @@ import com.yogpc.qp.machines.EnchantmentHolder;
 import com.yogpc.qp.machines.EnchantmentLevel;
 import com.yogpc.qp.machines.ItemConverter;
 import com.yogpc.qp.machines.MachineStorage;
+import com.yogpc.qp.machines.PowerConfig;
 import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QuarryFakePlayer;
@@ -62,7 +63,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class TileAdvQuarry extends PowerTile implements
     CheckerLog, ModuleInventory.HasModuleInventory, MachineStorage.HasStorage,
-    EnchantmentLevel.HasEnchantments, ClientSync, MenuProvider {
+    EnchantmentLevel.HasEnchantments, ClientSync, MenuProvider, PowerConfig.Provider {
 
     // Inventory
     private final ModuleInventory moduleInventory = new ModuleInventory(5, this::updateModule, TileAdvQuarry::moduleFilter, this);

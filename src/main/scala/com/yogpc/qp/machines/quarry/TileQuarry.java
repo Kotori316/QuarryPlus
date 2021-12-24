@@ -21,6 +21,7 @@ import com.yogpc.qp.machines.EnchantmentHolder;
 import com.yogpc.qp.machines.EnchantmentLevel;
 import com.yogpc.qp.machines.ItemConverter;
 import com.yogpc.qp.machines.MachineStorage;
+import com.yogpc.qp.machines.PowerConfig;
 import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QPBlock;
@@ -64,7 +65,7 @@ import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.Nullable;
 
 public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.HasStorage,
-    EnchantmentLevel.HasEnchantments, ClientSync, ModuleInventory.HasModuleInventory {
+    EnchantmentLevel.HasEnchantments, ClientSync, ModuleInventory.HasModuleInventory, PowerConfig.Provider {
     private static final Marker MARKER = MarkerManager.getMarker("TileQuarry");
     private static final EnchantmentRestriction RESTRICTION = EnchantmentRestriction.builder()
         .add(Enchantments.BLOCK_EFFICIENCY)

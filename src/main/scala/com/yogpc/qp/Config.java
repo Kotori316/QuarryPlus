@@ -1,12 +1,22 @@
 package com.yogpc.qp;
 
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalDouble;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
+import com.yogpc.qp.machines.PowerConfig;
+import com.yogpc.qp.machines.PowerTile;
+import com.yogpc.qp.machines.advquarry.BlockAdvQuarry;
+import com.yogpc.qp.machines.mini_quarry.MiniQuarryBlock;
+import com.yogpc.qp.machines.quarry.QuarryBlock;
+import com.yogpc.qp.machines.quarry.SFQuarryBlock;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.loading.FMLEnvironment;
@@ -14,10 +24,12 @@ import net.minecraftforge.fml.loading.FMLEnvironment;
 public class Config {
     public final Common common;
     public final EnableMap enableMap;
+    public final PowerMap powerMap;
 
     public Config(ForgeConfigSpec.Builder builder) {
         common = new Common(builder);
         enableMap = new EnableMap(builder);
+        powerMap = new PowerMap(builder);
     }
 
     public boolean debug() {
@@ -78,6 +90,61 @@ public class Config {
 
         public void set(String name, boolean value) {
             this.machinesMap.put(name, () -> value);
+        }
+    }
+
+    public static class PowerMap {
+        private final Map<String, Map<String, ForgeConfigSpec.DoubleValue>> map;
+
+        PowerMap(ForgeConfigSpec.Builder builder) {
+            map = new HashMap<>();
+            builder.comment("Power settings of each machines").push("powers");
+            var machines = List.of(QuarryBlock.NAME, SFQuarryBlock.NAME, BlockAdvQuarry.NAME);
+            for (var name : machines) {
+                builder.push(name);
+                var values =
+                    Arrays.stream(PowerConfig.class.getMethods())
+                        .filter(m -> Character.isLowerCase(m.getName().charAt(0)))
+                        .filter(m -> m.getReturnType() == Long.TYPE || m.getReturnType() == Double.TYPE)
+                        .map(PowerMap::getDefaultValue)
+                        .map(e -> Map.entry(e.getKey(), builder.defineInRange(e.getKey(), e.getValue(), 0d, 1e9)))
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                map.put(name, values);
+                builder.pop();
+            }
+            {// Mini Quarry
+                Map<String, ForgeConfigSpec.DoubleValue> mMap = new HashMap<>();
+                builder.push(MiniQuarryBlock.NAME);
+                mMap.put("breakBlockBase", builder.comment("Energy required to remove one block.").defineInRange("breakBlockBase", 20d, 0, 1e9));
+                builder.pop();
+                map.put(MiniQuarryBlock.NAME, mMap);
+            }
+
+            builder.pop();
+        }
+
+        public OptionalDouble get(String machineName, String configName) {
+            return Optional.ofNullable(this.map.get(machineName))
+                .flatMap(m -> Optional.ofNullable(m.get(configName)))
+                .map(ForgeConfigSpec.ConfigValue::get)
+                .map(OptionalDouble::of)
+                .orElse(OptionalDouble.empty());
+        }
+
+        private static Map.Entry<String, Double> getDefaultValue(Method method) {
+            var name = method.getName();
+            try {
+                var value = method.invoke(PowerConfig.DEFAULT);
+                if (value instanceof Long aLong) {
+                    return Map.entry(name, aLong.doubleValue() / PowerTile.ONE_FE);
+                } else if (value instanceof Double aDouble) {
+                    return Map.entry(name, aDouble);
+                } else {
+                    throw new IllegalStateException("Non expected value was returned in executing %s. value=%s".formatted(method, value));
+                }
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }
