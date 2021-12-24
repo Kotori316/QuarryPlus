@@ -54,4 +54,10 @@ class PowerConfigTest extends QuarryPlusTest {
                 .map(name -> () -> assertTrue(config.has(name), "%s doesn't exist in %s".formatted(name, config.keySet())))
         );
     }
+
+    @Test
+    void getRealConfig() {
+        var config = PowerConfig.getMachineConfig(QuarryBlock.NAME);
+        assertTrue(config instanceof MachinePowerConfig);
+    }
 }

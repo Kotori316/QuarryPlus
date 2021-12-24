@@ -16,6 +16,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.Bootstrap;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.crafting.CompoundIngredient;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.NBTIngredient;
@@ -54,6 +55,9 @@ public class QuarryPlusTest {
             Bootstrap.bootStrap();
             ModLoadingContext.get().setActiveContainer(new DummyModContainer());
             registerRecipes();
+            ForgeConfigSpec.Builder common = new ForgeConfigSpec.Builder();
+            QuarryPlus.config = new Config(common);
+            common.build();
         }
     }
 
