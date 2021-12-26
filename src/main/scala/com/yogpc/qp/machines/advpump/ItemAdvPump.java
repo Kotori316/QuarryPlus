@@ -18,16 +18,6 @@ class ItemAdvPump extends QPBlock.QPBlockItem implements EnchantableItem {
     }
 
     @Override
-    public boolean isEnchantable(ItemStack stack) {
-        return stack.getCount() == 1;
-    }
-
-    @Override
-    public int getEnchantmentValue() {
-        return 25;
-    }
-
-    @Override
     public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> stacks) {
         super.fillItemCategory(group, stacks);
         if (this.allowdedIn(group)) {

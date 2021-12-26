@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -98,5 +99,18 @@ public class QPBlock extends Block {
         public void setRegistryName(String modId, String name) {
             internalName = new ResourceLocation(modId, name);
         }
+
+        @Override
+        public boolean isEnchantable(ItemStack stack) {
+            if (this instanceof EnchantableItem) return stack.getCount() == 1;
+            else return super.isEnchantable(stack);
+        }
+
+        @Override
+        public int getEnchantmentValue() {
+            if (this instanceof EnchantableItem) return 25;
+            else return super.getEnchantmentValue();
+        }
+
     }
 }
