@@ -2,7 +2,7 @@
 
 This program is licensed under GNU LESSER GENERAL PUBLIC LICENSE.
 
-Copyright (C) 2012, 2013 yogpstop, Copyright (C) 2017-2021 Kotori316
+Copyright (C) 2012, 2013 yogpstop, Copyright (C) 2017-2022 Kotori316
 
 ===========
 

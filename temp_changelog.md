@@ -1,3 +1,8 @@
+## Version 18.4
+
+* Added some config option to change power setting.
+* Chunk Destroyer now removes some base blocks (no drop).
+
 ## Version 18.3
 
 * Fixed critical bug in QuarryPlus. The nbt data was not saved correctly in some situation.
