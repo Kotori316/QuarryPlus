@@ -46,6 +46,7 @@ public class Config {
         public final ForgeConfigSpec.BooleanValue noEnergy;
         public final ForgeConfigSpec.BooleanValue convertDeepslateOres;
         public final ForgeConfigSpec.DoubleValue sfqEnergy;
+        public final ForgeConfigSpec.BooleanValue removeCommonMaterialsByCD;
         public final ForgeConfigSpec.ConfigValue<List<? extends String>> spawnerBlackList;
 
         public Common(ForgeConfigSpec.Builder builder) {
@@ -59,6 +60,7 @@ public class Config {
                 "minecraft:area_effect_cloud", "minecraft:item", "minecraft:player");
             spawnerBlackList = builder.comment("Spawner Controller Blacklist").defineListAllowEmpty(List.of("spawnerBlacklist"), () -> disabledEntities, s -> s instanceof String);
             sfqEnergy = builder.comment("The amount of energy that Solid Fuel Quarry generates in a tick.").defineInRange("sfqEnergy", 2d, 0d, 100d);
+            removeCommonMaterialsByCD = builder.comment("Remove common materials(Stone, Dirt, Grass, Sand) obtained by Chunk Destroyer").define("removeCommonMaterialsByCD", true);
             builder.pop();
         }
     }
