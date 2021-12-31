@@ -2,7 +2,6 @@ package com.yogpc.qp;
 
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -119,9 +118,7 @@ public class Config {
             ));
             var valuesFromJson = getKeys(defaultConfig);
             var keys = valuesFromJson.stream().map(KeyPair::key).collect(Collectors.toSet());
-            var valuesNotInJson = Arrays.stream(PowerConfig.class.getMethods())
-                .filter(m -> Character.isLowerCase(m.getName().charAt(0)))
-                .filter(m -> m.getReturnType() == Long.TYPE || m.getReturnType() == Double.TYPE)
+            var valuesNotInJson = PowerConfig.getAllMethods()
                 .flatMap(m -> Stream.of(QuarryBlock.NAME, SFQuarryBlock.NAME, BlockAdvQuarry.NAME)
                     .filter(name -> !keys.contains(new Key(name, m.getName())))
                     .map(name -> new KeyPair(new Key(name, m.getName()), getDefaultValue(m)))
