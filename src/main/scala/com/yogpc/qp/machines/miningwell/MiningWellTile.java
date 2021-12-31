@@ -8,6 +8,7 @@ import com.yogpc.qp.machines.CheckerLog;
 import com.yogpc.qp.machines.EnchantmentLevel;
 import com.yogpc.qp.machines.ItemConverter;
 import com.yogpc.qp.machines.MachineStorage;
+import com.yogpc.qp.machines.PowerConfig;
 import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QuarryFakePlayer;
@@ -69,7 +70,7 @@ public class MiningWellTile extends PowerTile implements CheckerLog, MachineStor
             if (breakEvent.isCanceled()) continue;
 
             if (!fluid.isEmpty()) {
-                if (useEnergy(PowerManager.getBreakBlockFluidEnergy(EnchantmentLevel.NoEnchantments.INSTANCE), Reason.REMOVE_FLUID, false)) {
+                if (useEnergy(PowerManager.getBreakBlockFluidEnergy(EnchantmentLevel.NoEnchantments.INSTANCE, PowerConfig.DEFAULT), Reason.REMOVE_FLUID, false)) {
                     if (state.getBlock() instanceof LiquidBlock) {
                         if (!fluid.isEmpty() && fluid.isSource())
                             storage.addFluid(fluid.getType(), FluidAttributes.BUCKET_VOLUME);
@@ -133,7 +134,7 @@ public class MiningWellTile extends PowerTile implements CheckerLog, MachineStor
 
     private void breakBlock(Level level, BlockPos pos, BlockState state) {
         var hardness = state.getDestroySpeed(level, pos);
-        if (useEnergy(PowerManager.getBreakEnergy(hardness, EnchantmentLevel.NoEnchantments.INSTANCE), Reason.BREAK_BLOCK, false)) {
+        if (useEnergy(PowerManager.getBreakEnergy(hardness, EnchantmentLevel.NoEnchantments.INSTANCE, PowerConfig.DEFAULT), Reason.BREAK_BLOCK, false)) {
             var drops = Block.getDrops(state, (ServerLevel) level, pos, level.getBlockEntity(pos), null, new ItemStack(Items.NETHERITE_PICKAXE));
             drops.stream().map(itemConverter::map).forEach(this.storage::addItem);
             level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);

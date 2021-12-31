@@ -1,23 +1,39 @@
 package com.yogpc.qp;
 
+import java.io.InputStreamReader;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.OptionalDouble;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import com.google.gson.JsonObject;
+import com.yogpc.qp.machines.PowerConfig;
+import com.yogpc.qp.machines.PowerTile;
+import com.yogpc.qp.machines.advquarry.BlockAdvQuarry;
+import com.yogpc.qp.machines.quarry.QuarryBlock;
+import com.yogpc.qp.machines.quarry.SFQuarryBlock;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
 public class Config {
     public final Common common;
     public final EnableMap enableMap;
+    public final PowerMap powerMap;
 
     public Config(ForgeConfigSpec.Builder builder) {
         common = new Common(builder);
         enableMap = new EnableMap(builder);
+        powerMap = new PowerMap(builder);
     }
 
     public boolean debug() {
@@ -78,6 +94,85 @@ public class Config {
 
         public void set(String name, boolean value) {
             this.machinesMap.put(name, () -> value);
+        }
+    }
+
+    public static class PowerMap {
+        private final Map<String, Map<String, ForgeConfigSpec.DoubleValue>> map;
+
+        private record Key(String machineName, String configName) {
+        }
+
+        private record KeyPair(Key key, double value) {
+            String machineName() {
+                return key().machineName();
+            }
+        }
+
+        PowerMap(ForgeConfigSpec.Builder builder) {
+            map = new HashMap<>();
+            builder.comment("Power settings of each machines").push("powers");
+            var defaultConfig = GsonHelper.parse(new InputStreamReader(
+                Objects.requireNonNull(PowerMap.class.getResourceAsStream("/power_default.json"), "Content in Jar must not be absent.")
+            ));
+            var valuesFromJson = getKeys(defaultConfig);
+            var keys = valuesFromJson.stream().map(KeyPair::key).collect(Collectors.toSet());
+            var valuesNotInJson = Arrays.stream(PowerConfig.class.getMethods())
+                .filter(m -> Character.isLowerCase(m.getName().charAt(0)))
+                .filter(m -> m.getReturnType() == Long.TYPE || m.getReturnType() == Double.TYPE)
+                .flatMap(m -> Stream.of(QuarryBlock.NAME, SFQuarryBlock.NAME, BlockAdvQuarry.NAME)
+                    .filter(name -> !keys.contains(new Key(name, m.getName())))
+                    .map(name -> new KeyPair(new Key(name, m.getName()), getDefaultValue(m)))
+                );
+            Stream.concat(valuesFromJson.stream(), valuesNotInJson)
+                .collect(Collectors.groupingBy(KeyPair::machineName))
+                .entrySet()
+                .stream().map(e -> {
+                    var key = e.getKey();
+                    builder.push(key);
+                    var m = e.getValue().stream().map(keyPair ->
+                        Map.entry(keyPair.key().configName(), builder.defineInRange(keyPair.key().configName(), keyPair.value(), 0, 1e9))
+                    ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                    builder.pop();
+                    return Map.entry(key, m);
+                })
+                .forEach(e -> map.put(e.getKey(), e.getValue()));
+            builder.pop();
+        }
+
+        public OptionalDouble get(String machineName, String configName) {
+            return Optional.ofNullable(this.map.get(machineName))
+                .flatMap(m -> Optional.ofNullable(m.get(configName)))
+                .map(ForgeConfigSpec.ConfigValue::get)
+                .map(OptionalDouble::of)
+                .orElse(OptionalDouble.empty());
+        }
+
+        public boolean has(String machineName) {
+            return this.map.containsKey(machineName);
+        }
+
+        private static double getDefaultValue(Method method) {
+            try {
+                var value = method.invoke(PowerConfig.DEFAULT);
+                if (value instanceof Long aLong) {
+                    return aLong.doubleValue() / PowerTile.ONE_FE;
+                } else if (value instanceof Double aDouble) {
+                    return aDouble;
+                } else {
+                    throw new IllegalStateException("Non expected value was returned in executing %s. value=%s".formatted(method, value));
+                }
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        private static List<KeyPair> getKeys(JsonObject object) {
+            return object.keySet().stream()
+                .flatMap(machineName ->
+                    object.getAsJsonObject(machineName).entrySet().stream()
+                        .map(e -> new KeyPair(new Key(machineName, e.getKey()), e.getValue().getAsDouble())))
+                .toList();
         }
     }
 }
