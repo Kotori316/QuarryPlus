@@ -9,10 +9,13 @@ import java.util.stream.Stream;
 
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.Tag;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
@@ -97,9 +100,8 @@ public record ItemConverter(
                 tagPredicate(Tags.Items.COBBLESTONE),
                 itemPredicate(Items.DIRT),
                 itemPredicate(Items.GRASS_BLOCK),
-                itemPredicate(Items.NETHERRACK),
-                itemPredicate(Items.DEEPSLATE),
-                itemPredicate(Items.BLACKSTONE),
+                blockTagPredicate(BlockTags.BASE_STONE_OVERWORLD),
+                blockTagPredicate(BlockTags.BASE_STONE_NETHER),
                 tagPredicate(Tags.Items.SANDSTONE)
             ).map(p -> Map.entry(p, function))
             .toList());
@@ -107,6 +109,12 @@ public record ItemConverter(
 
     static Predicate<ItemKey> tagPredicate(Tag.Named<Item> tag) {
         return itemKey -> itemKey.item().getTags().contains(tag.getName());
+    }
+
+    static Predicate<ItemKey> blockTagPredicate(Tag.Named<Block> tag) {
+        return itemKey ->
+            (itemKey.item() instanceof BlockItem blockItem)
+                && blockItem.getBlock().getTags().contains(tag.getName());
     }
 
     static Predicate<ItemKey> itemPredicate(Item item) {
