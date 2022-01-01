@@ -1,5 +1,8 @@
 # 1.18
 
+* Fixed a crash related to client sync.
+* Fixed - Enchantment couldn't be moved from Enchanted Book to machines with Anvil.
+* Fixed - Chunk Destroyer couldn't be enchanted in Enchantment Table.
 * Changed the order to search inventories. Some tests for MachineStorage.
 * Fixed - Quarry configuration was sometimes deleted. Close #157
 * Fixed - Guideline(yellow and black) wasn't shown after placing quarry.

@@ -1,4 +1,4 @@
-# QuarryPlus for 1.17-fabric
+# QuarryPlus for 1.18-fabric
 ===========
 
 [![](https://github.com/Kotori316/QuarryPlus/workflows/Build%20Check%20and%20Publish/badge.svg)](https://github.com/Kotori316/QuarryPlus/actions)
