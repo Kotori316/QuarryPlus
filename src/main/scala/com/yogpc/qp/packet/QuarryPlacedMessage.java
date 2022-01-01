@@ -71,10 +71,12 @@ public class QuarryPlacedMessage implements IMessage<QuarryPlacedMessage> {
             var message = new QuarryPlacedMessage(buf);
             var world = client.level;
             if (world != null && world.dimension().equals(message.dim)) {
-                if (world.getBlockEntity(message.pos) instanceof TileQuarry quarry) {
-                    quarry.setEnchantments(message.levels.stream().map(e -> Pair.of(e.enchantment(), e.level())).collect(Collectors.toMap(Pair::getKey, Pair::getValue)));
-                    quarry.setTileDataFromItem(message.otherData);
-                }
+                client.execute(() -> {
+                    if (world.getBlockEntity(message.pos) instanceof TileQuarry quarry) {
+                        quarry.setEnchantments(message.levels.stream().map(e -> Pair.of(e.enchantment(), e.level())).collect(Collectors.toMap(Pair::getKey, Pair::getValue)));
+                        quarry.setTileDataFromItem(message.otherData);
+                    }
+                });
             }
         };
     }

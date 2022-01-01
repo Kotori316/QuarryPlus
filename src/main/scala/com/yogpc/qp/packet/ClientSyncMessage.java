@@ -49,9 +49,11 @@ public final class ClientSyncMessage implements IMessage<ClientSyncMessage> {
             var message = new ClientSyncMessage(buf);
             var world = client.level;
             if (world != null && world.dimension().equals(message.dim)) {
-                if (world.getBlockEntity(message.pos) instanceof ClientSync tile) {
-                    tile.fromClientTag(message.tag);
-                }
+                client.execute(() -> {
+                    if (world.getBlockEntity(message.pos) instanceof ClientSync tile) {
+                        tile.fromClientTag(message.tag);
+                    }
+                });
             }
         };
     }
