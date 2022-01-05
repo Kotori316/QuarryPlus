@@ -1,3 +1,7 @@
+## Version 18.5
+
+* Fixed - the calculation of Quarry Energy was wrong. Close [#166](https://github.com/Kotori316/QuarryPlus/issues/166)
+
 ## Version 18.4
 
 * Added some config option to change power setting.
