@@ -144,7 +144,13 @@ public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
     @Override
     public int receiveEnergy(int maxReceive, boolean simulate) {
         long accepted = addEnergy(maxReceive * ONE_FE, simulate);
-        return (int) (accepted / ONE_FE);
+        int acceptedInFE = (int) (accepted / ONE_FE);
+        if (acceptedInFE > maxReceive || acceptedInFE < 0) {
+            QuarryPlus.LOGGER.warn("{} got unexpected energy({} FE, {} micro MJ), MaxReceive={}",
+                energyCounter.name, acceptedInFE, acceptedInFE, maxReceive);
+            return maxReceive;
+        }
+        return acceptedInFE;
     }
 
     @Override
