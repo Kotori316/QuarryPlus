@@ -6,7 +6,6 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.machines.EnchantableItem;
 import com.yogpc.qp.machines.EnchantmentLevel;
@@ -29,6 +28,7 @@ import net.minecraftforge.common.TierSortingRegistry;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.VisibleForTesting;
 
 public class ContainerMover extends AbstractContainerMenu {
     public final Container craftMatrix = new SimpleContainer(2) {

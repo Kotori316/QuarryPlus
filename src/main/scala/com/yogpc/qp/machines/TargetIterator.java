@@ -49,7 +49,7 @@ public abstract class TargetIterator implements Iterator<TargetIterator.XZPair> 
         this.current = current;
     }
 
-    public final record XZPair(int x, int z) {
+    public record XZPair(int x, int z) {
     }
 
     private static final class North extends TargetIterator {

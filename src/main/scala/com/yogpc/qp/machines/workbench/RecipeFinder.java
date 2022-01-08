@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import net.minecraft.resources.ResourceLocation;
@@ -39,8 +40,7 @@ public interface RecipeFinder {
     @SuppressWarnings({"SameParameterValue"})
     static <C extends Container, T extends Recipe<C>> Map<ResourceLocation, T> find(RecipeManager manager, RecipeType<T> recipeType) {
         return manager.getAllRecipesFor(recipeType).stream()
-            .map(recipe -> Map.entry(recipe.getId(), recipe))
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            .collect(Collectors.toMap(Recipe::getId, Function.identity()));
     }
 
 }

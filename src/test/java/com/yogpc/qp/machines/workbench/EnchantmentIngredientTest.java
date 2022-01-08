@@ -48,7 +48,7 @@ class EnchantmentIngredientTest extends QuarryPlusTest {
     }
 
     @Nested
-    class FromJson {
+    class FromJsonTest {
         @Test
         @DisplayName("Diamond Pickaxe with Silktouch")
         void fromJson1() {
@@ -205,7 +205,7 @@ class EnchantmentIngredientTest extends QuarryPlusTest {
     }
 
     @Nested
-    class Match {
+    class MatchTest {
         @Test
         void noMatchEmpty() {
             var ei = new EnchantmentIngredient(diamondPickaxe, List.of(new EnchantmentInstance(Enchantments.SILK_TOUCH, 1)), false);
@@ -288,7 +288,7 @@ class EnchantmentIngredientTest extends QuarryPlusTest {
         }
 
         @Nested
-        class Many {
+        class ManyEnchantmentTest {
             EnchantmentIngredient e1 = new EnchantmentIngredient(new ItemStack(Items.DIAMOND_PICKAXE), List.of(
                 new EnchantmentInstance(Enchantments.BLOCK_EFFICIENCY, 1),
                 new EnchantmentInstance(Enchantments.UNBREAKING, 2)
@@ -348,7 +348,7 @@ class EnchantmentIngredientTest extends QuarryPlusTest {
     }
 
     @Nested
-    class CheckDamage {
+    class CheckDamageTest {
         EnchantmentIngredient checkDamage = new EnchantmentIngredient(getDamaged(20), List.of(new EnchantmentInstance(Enchantments.SILK_TOUCH, 1)),
             true);
 

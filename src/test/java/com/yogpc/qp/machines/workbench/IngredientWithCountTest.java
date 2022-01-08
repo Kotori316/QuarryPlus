@@ -99,7 +99,7 @@ class IngredientWithCountTest extends QuarryPlusTest {
     }
 
     @Nested
-    class NbtItems {
+    class NbtItemsTest {
         IngredientWithCount waterBottleIngredient;
         IngredientWithCount waterBottleFromJson;
 

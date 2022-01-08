@@ -40,6 +40,7 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.VisibleForTesting;
 
 public class TileWorkbench extends PowerTile implements Container, MenuProvider, CheckerLog {
     List<ItemStack> ingredientInventory = NonNullList.withSize(27, ItemStack.EMPTY);
@@ -219,11 +220,7 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
     // Workbench Methods.
     private void updateRecipeOutputs() {
         if (level != null && !level.isClientSide) {
-            recipesList = WorkbenchRecipe.getRecipeFinder().getRecipes(ingredientInventory);
-            selectionInventory.clear();
-            for (int i = 0; i < recipesList.size(); i++) {
-                setItem(ingredientInventory.size() + i, recipesList.get(i).getResultItem());
-            }
+            updateRecipeList();
             if (!recipesList.contains(currentRecipe)) {
                 if (currentRecipe.hasContent()) {
                     setCurrentRecipe(WorkbenchRecipe.dummyRecipe().getId());
@@ -232,6 +229,15 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
                 }
             }
             PacketHandler.sendToClient(new TileMessage(this), level);
+        }
+    }
+
+    @VisibleForTesting
+    void updateRecipeList() {
+        recipesList = WorkbenchRecipe.getRecipeFinder().getRecipes(ingredientInventory);
+        selectionInventory.clear();
+        for (int i = 0; i < recipesList.size(); i++) {
+            setItem(ingredientInventory.size() + i, recipesList.get(i).getResultItem());
         }
     }
 

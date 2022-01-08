@@ -3,9 +3,7 @@ package com.yogpc.qp.machines.workbench;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -14,6 +12,7 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.VisibleForTesting;
 
 public abstract class WorkbenchRecipe implements Recipe<TileWorkbench> {
     public static final ResourceLocation recipeLocation = new ResourceLocation(QuarryPlus.modID, "workbench_recipe");
@@ -125,7 +124,7 @@ public abstract class WorkbenchRecipe implements Recipe<TileWorkbench> {
     protected abstract ItemStack getOutput(List<ItemStack> inventory);
 
     protected boolean hasAllRequiredItems(List<ItemStack> inventory) {
-        var copied = inventory.stream().map(ItemStack::copy).collect(Collectors.toList());
+        var copied = inventory.stream().map(ItemStack::copy).toList();
         for (IngredientList input : this.inputs()) {
             var found = copied.stream().anyMatch(input::shrink);
             if (!found) return false;
