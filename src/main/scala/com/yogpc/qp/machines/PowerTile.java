@@ -1,6 +1,7 @@
 package com.yogpc.qp.machines;
 
 import java.util.Objects;
+import java.util.function.LongSupplier;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.utils.QuarryChunkLoadUtil;
@@ -20,6 +21,7 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.VisibleForTesting;
 
 public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
     public static final long ONE_FE = 1_000_000_000L;
@@ -31,6 +33,7 @@ public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
     public final boolean enabled;
     private LazyOptional<IEnergyStorage> energyHandler = LazyOptional.of(() -> this);
     protected final PowerConfig powerConfig;
+    private LongSupplier timeProvider;
 
     public PowerTile(BlockEntityType<?> type, @NotNull BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -39,6 +42,7 @@ public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
             "%s(%d, %d, %d)".formatted(getClass().getSimpleName(), pos.getX(), pos.getY(), pos.getZ()));
         this.powerConfig = PowerConfig.getMachineConfig(Objects.requireNonNull(type.getRegistryName()).getPath());
         this.maxEnergy = this.powerConfig.maxEnergy();
+        setTimeProvider(() -> Objects.requireNonNull(this.level, "Level in block entity is null. Are you in test?").getGameTime());
     }
 
     @Override
@@ -95,11 +99,10 @@ public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
      * @return the amount of <strong>accepted</strong> energy.
      */
     public final long addEnergy(long amount, boolean simulate) {
-        assert level != null;
         long accepted = Math.min(Math.min(maxEnergy - energy, amount), getMaxReceive());
         if (!simulate && accepted != 0) {
             energy += accepted;
-            energyCounter.getEnergy(level.getGameTime(), accepted);
+            energyCounter.getEnergy(this.timeProvider.getAsLong(), accepted);
             setChanged();
         }
         return accepted;
@@ -114,12 +117,11 @@ public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
      * @return {@code true} if the energy is consumed. When {@code false}, the machine doesn't have enough energy to work.
      */
     public final boolean useEnergy(long amount, Reason reason, boolean force) {
-        assert level != null;
         if (amount > maxEnergy && QuarryPlus.config.debug())
             QuarryPlus.LOGGER.warn("{} required {} FE, which is over {}.", energyCounter.name, amount / ONE_FE, getMaxEnergyStored());
         if (energy >= amount || force) {
             energy -= amount;
-            energyCounter.useEnergy(level.getGameTime(), amount, reason);
+            energyCounter.useEnergy(this.timeProvider.getAsLong(), amount, reason);
             setChanged();
             return true;
         } else {
@@ -128,16 +130,14 @@ public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
     }
 
     protected final void setEnergy(long energy) {
-        if (level != null) {
-            if (this.energy > energy) {
-                // Energy is consumed
-                energyCounter.useEnergy(level.getGameTime(), this.energy - energy, Reason.FORCE);
-            } else {
-                // Energy is sent
-                energyCounter.getEnergy(level.getGameTime(), energy - this.energy);
-            }
-            setChanged();
+        if (this.energy > energy) {
+            // Energy is consumed
+            energyCounter.useEnergy(this.timeProvider.getAsLong(), this.energy - energy, Reason.FORCE);
+        } else {
+            // Energy is sent
+            energyCounter.getEnergy(this.timeProvider.getAsLong(), energy - this.energy);
         }
+        setChanged();
         this.energy = energy;
     }
 
@@ -204,7 +204,7 @@ public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
     @Nullable
     public static BlockEntityTicker<PowerTile> logTicker() {
         if (QuarryPlus.config.debug())
-            return (w, p, s, blockEntity) -> blockEntity.energyCounter.logOutput(w.getGameTime());
+            return (w, p, s, blockEntity) -> blockEntity.energyCounter.logOutput(blockEntity.timeProvider.getAsLong());
         else return null;
     }
 
@@ -256,6 +256,11 @@ public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
 
     public static boolean isFullFluidBlock(BlockState state) {
         return state.getMaterial().isLiquid();
+    }
+
+    @VisibleForTesting
+    void setTimeProvider(LongSupplier timeProvider) {
+        this.timeProvider = timeProvider;
     }
 
     public enum Reason {

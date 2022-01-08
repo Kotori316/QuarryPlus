@@ -194,7 +194,7 @@ class TargetIteratorTest extends QuarryPlusTest {
     }
 
     @Nested
-    class Other {
+    class OtherTests {
         @Test
         @DisplayName("One for each y")
         void one() {

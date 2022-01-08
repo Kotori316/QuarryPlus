@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MiniTargetTest extends QuarryPlusTest {
     @Nested
-    class Single {
+    class SingleTest {
         @Test
         void itemCount() {
             // (1, 4, 7) -> (2, 8, 10)
@@ -43,7 +43,7 @@ class MiniTargetTest extends QuarryPlusTest {
     }
 
     @Nested
-    class Repeat {
+    class RepeatTest {
         @Test
         void itemCount() {
             // (1, 4, 7) -> (2, 8, 10)

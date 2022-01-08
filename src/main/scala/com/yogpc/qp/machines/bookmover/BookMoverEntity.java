@@ -7,7 +7,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.machines.CheckerLog;
 import com.yogpc.qp.machines.EnchantableItem;
@@ -34,6 +33,7 @@ import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.VisibleForTesting;
 
 public class BookMoverEntity extends PowerTile implements Container, MenuProvider, CheckerLog {
     private final NonNullList<ItemStack> inventory = NonNullList.withSize(getContainerSize(), ItemStack.EMPTY);

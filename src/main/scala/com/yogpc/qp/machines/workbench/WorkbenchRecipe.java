@@ -4,7 +4,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -13,6 +12,7 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.VisibleForTesting;
 
 public abstract class WorkbenchRecipe implements Recipe<TileWorkbench> {
     public static final ResourceLocation recipeLocation = new ResourceLocation(QuarryPlus.modID, "workbench_recipe");
