@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class PowerTileTest extends QuarryPlusTest {
+public class PowerTileTest extends QuarryPlusTest {
     static Stream<Block> fluidBlocks() {
         return Stream.of(
             Blocks.WATER,
@@ -116,5 +116,11 @@ class PowerTileTest extends QuarryPlusTest {
                 () -> assertTrue(withWaterFluidState.isSource())
             );
         }
+    }
+
+    public static void capacityTest(PowerTile tile) {
+        double maxEnergy = tile.getMaxEnergy();
+        var digit = Math.log10(maxEnergy / PowerTile.ONE_FE);
+        assertTrue(digit < 5, "Energy: %f, Default should be less than 10^5.".formatted(maxEnergy));
     }
 }

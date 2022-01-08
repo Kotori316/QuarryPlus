@@ -1,6 +1,9 @@
 package com.yogpc.qp.machines.mini_quarry;
 
+import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlusTest;
+import com.yogpc.qp.machines.PowerTileTest;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -20,7 +23,7 @@ class MiniQuarryTileTest extends QuarryPlusTest {
     }
 
     @Nested
-    class PredicateSetting {
+    class PredicateSettingTest {
         @Test
         void disallowAirInAllowList() {
             assertFalse(MiniQuarryTile.canAddInList(true, BlockStatePredicate.air()));
@@ -46,5 +49,10 @@ class MiniQuarryTileTest extends QuarryPlusTest {
         void allowNameInList(boolean isAllowList) {
             assertTrue(MiniQuarryTile.canAddInList(isAllowList, BlockStatePredicate.name(new ResourceLocation("minecraft", "stone"))));
         }
+    }
+
+    @Test
+    void energyCapacityTest() {
+        PowerTileTest.capacityTest(new MiniQuarryTile(BlockPos.ZERO, Holder.BLOCK_MINI_QUARRY.defaultBlockState()));
     }
 }

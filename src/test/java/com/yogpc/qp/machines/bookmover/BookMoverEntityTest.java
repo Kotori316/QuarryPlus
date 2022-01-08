@@ -1,6 +1,9 @@
 package com.yogpc.qp.machines.bookmover;
 
+import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlusTest;
+import com.yogpc.qp.machines.PowerTileTest;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -68,5 +71,10 @@ class BookMoverEntityTest extends QuarryPlusTest {
         assertFalse(post.containsKey(Enchantments.BLOCK_EFFICIENCY));
         assertEquals(3, post.get(Enchantments.UNBREAKING));
         assertFalse(post.isEmpty());
+    }
+
+    @Test
+    void capacityTest() {
+        PowerTileTest.capacityTest(new BookMoverEntity(BlockPos.ZERO, Holder.BLOCK_BOOK_MOVER.defaultBlockState()));
     }
 }

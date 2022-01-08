@@ -106,6 +106,12 @@ class EnchantmentEfficiencyTest extends QuarryPlusTest {
     }
 
     @Test
+    void energyCapacityRange() {
+        var e0 = new EnchantmentEfficiency(List.of());
+        assertTrue(Math.log10((double) e0.energyCapacity / PowerTile.ONE_FE) < 4);
+    }
+
+    @Test
     void fluidCapacity() {
         var e0 = new EnchantmentEfficiency(List.of());
         var e1 = new EnchantmentEfficiency(List.of(new EnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, 1)));

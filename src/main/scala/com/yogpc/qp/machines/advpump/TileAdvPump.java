@@ -60,7 +60,7 @@ public class TileAdvPump extends PowerTile
     public TileAdvPump(BlockPos pos, BlockState state) {
         super(Holder.ADV_PUMP_TYPE, pos, state);
         y = pos.getY() - 1;
-        enchantmentEfficiency = new EnchantmentEfficiency(List.of());
+        setEnchantment(new EnchantmentEfficiency(List.of()));
         moduleInventory = new ModuleInventory(5, this::updateModule, TileAdvPump::isCapableModule, this);
     }
 

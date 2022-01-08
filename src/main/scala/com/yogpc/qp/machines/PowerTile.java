@@ -32,7 +32,7 @@ public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
     private LazyOptional<IEnergyStorage> energyHandler = LazyOptional.of(() -> this);
     protected final PowerConfig powerConfig;
 
-    public PowerTile(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+    public PowerTile(BlockEntityType<?> type, @NotNull BlockPos pos, BlockState state) {
         super(type, pos, state);
         this.enabled = QuarryPlus.config.enableMap.enabled(Objects.requireNonNull(type.getRegistryName()));
         this.energyCounter = EnergyCounter.createInstance(QuarryPlus.config.debug() && enabled,
