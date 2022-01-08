@@ -3,7 +3,6 @@ package com.yogpc.qp.machines.workbench;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.yogpc.qp.QuarryPlus;
@@ -125,7 +124,7 @@ public abstract class WorkbenchRecipe implements Recipe<TileWorkbench> {
     protected abstract ItemStack getOutput(List<ItemStack> inventory);
 
     protected boolean hasAllRequiredItems(List<ItemStack> inventory) {
-        var copied = inventory.stream().map(ItemStack::copy).collect(Collectors.toList());
+        var copied = inventory.stream().map(ItemStack::copy).toList();
         for (IngredientList input : this.inputs()) {
             var found = copied.stream().anyMatch(input::shrink);
             if (!found) return false;
