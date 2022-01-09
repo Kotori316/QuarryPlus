@@ -29,11 +29,11 @@ class RebornEnergyStorage extends SnapshotParticipant<Long> implements EnergySto
 
     @Override
     public long insert(long maxAmount, TransactionContext transaction) {
-        long inserted = Math.min(maxAmount, getCapacity() - getAmount());
-        if (inserted > 0) {
+        long insertSimulate = Math.min(maxAmount, getCapacity() - getAmount());
+        if (insertSimulate > 0) {
             updateSnapshots(transaction);
-            powerTile.addEnergy(inserted * CONVERSION_RATE, false);
-            return inserted;
+            long inserted = powerTile.addEnergy(insertSimulate * CONVERSION_RATE, false);
+            return inserted / CONVERSION_RATE;
         } else {
             return 0;
         }

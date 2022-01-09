@@ -151,7 +151,7 @@ public class PowerTile extends BlockEntity {
             double modified = ((double) hardness) / (1 + Math.max(0, enchantments.unbreakingLevel()));
             var fortune = enchantments.fortuneLevel();
             if (fortune != 0) modified *= (fortune + 1);
-            if (enchantments.silktouchLevel() != 0) modified = (float) Math.pow(modified, 1.4d);
+            if (enchantments.silktouchLevel() != 0) modified = Math.pow(modified, 1.4d);
 
             return (long) (modified * enchantments.getAccessor().breakBlock() * ONE_FE);
         }
