@@ -23,8 +23,9 @@ unexpected crashes.
   * Render
   * Guideline with RS signal
 * Flexible Marker
+* Chunk Marker
 * QuarryPlus
-  * Render
+  * Render of drill
   * Enchantment
     * You can enchant with Enchantment Table.
   * Pump Plus is integrated.
@@ -32,13 +33,11 @@ unexpected crashes.
     * It seems it doesn't work in some cases.
 * Quarry Frame
 * Y-Setter
-  * With this item, quarry digs to any y value, not only 0.
+  * With this item, quarry digs to any y value, not only the bottom of the world.
 * Bedrock Remove Module
   * Craft with quarry.
 * Energy system
-  * [TechReborn](https://github.com/TechReborn/TechReborn)
-  * [FastTransferLib](https://github.com/Technici4n/FastTransferLib)
-    * Used in [Industrial Revolution](https://github.com/GabrielOlvH/Industrial-Revolution)
+  * [TechReborn/Energy](https://github.com/TechReborn/Energy)
 * Advanced Pump
   * Enchantment
     * You can add enchantments with Enchantment Table.
@@ -46,7 +45,7 @@ unexpected crashes.
   * Water is replaced with dummy block, which is removed at the end of work.
 * Placer Plus
 * Chunk Destroyer
-  * Render
+  * Render of guideline
   * Enchantment
 
 ## Other works
