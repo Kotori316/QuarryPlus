@@ -94,4 +94,12 @@ public record EnchantmentLevel(Enchantment enchantment, int level) {
                 .add(Enchantments.SILK_TOUCH)
                 .build()
         ).thenComparingInt(EnchantmentLevel::level);
+
+    @Override
+    public String toString() {
+        return "EnchantmentLevel[" +
+            "enchantment=" + enchantment.getClass().getSimpleName().replace("Enchantment", "") +
+            ", level=" + level +
+            ']';
+    }
 }

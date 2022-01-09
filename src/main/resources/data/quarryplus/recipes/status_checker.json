@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ggg",
+    "lrl"
+  ],
+  "key": {
+    "r": {
+      "item": "quarryplus:marker"
+    },
+    "g": {
+      "item": "minecraft:glass"
+    },
+    "l": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "result": {
+    "item": "quarryplus:status_checker"
+  }
+}
