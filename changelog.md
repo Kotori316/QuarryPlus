@@ -1,5 +1,7 @@
 # 1.18
 
+* Fixed - Frame line of QuarryPlus disappeared after world was loaded.
+* Added recipe of Status Checker.
 * Fixed a crash related to client sync.
 * Fixed - Enchantment couldn't be moved from Enchanted Book to machines with Anvil.
 * Fixed - Chunk Destroyer couldn't be enchanted in Enchantment Table.
