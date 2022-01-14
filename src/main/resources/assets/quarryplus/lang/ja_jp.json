@@ -48,7 +48,7 @@
   "item.quarryplus.remote_controller": "採掘機のリモコン",
   "quarryplus.chat.change_mode": "動作モードを%sに切り替えました",
   "quarryplus.chat.current_mode": "現在%sで動作しています",
-  "quarryplus.chat.disable_message": "%sは無効になっています",
+  "quarryplus.chat.disable_message": "%sは無効になっています。コンフィグで有効化してください。",
   "quarryplus.chat.filler_mode": "フレームモード",
   "quarryplus.chat.give_exp": "%sの経験値を取得しました",
   "quarryplus.chat.indent": "-    %s%s",
