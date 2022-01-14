@@ -25,7 +25,6 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.VisibleForTesting;
 
@@ -82,13 +81,11 @@ public class MachineStorage {
         var itemTag = tag.getList("items", Tag.TAG_COMPOUND);
         itemMap = itemTag.stream()
             .mapMulti(MapMulti.cast(CompoundTag.class))
-            .map(n -> Pair.of(ItemKey.fromNbt(n), n.getLong("count")))
-            .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
+            .collect(Collectors.toMap(ItemKey::fromNbt, n -> n.getLong("count")));
         var fluidTag = tag.getList("fluids", Tag.TAG_COMPOUND);
         fluidMap = fluidTag.stream()
             .mapMulti(MapMulti.cast(CompoundTag.class))
-            .map(n -> Pair.of(FluidKey.fromNbt(n), n.getLong("amount")))
-            .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
+            .collect(Collectors.toMap(FluidKey::fromNbt, n -> n.getLong("amount")));
     }
 
     public Map<FluidKey, Long> getFluidMap() {

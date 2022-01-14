@@ -3,6 +3,7 @@ package com.yogpc.qp.machines.advquarry;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,13 +31,12 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
 
     static {
         SERIALIZER_MAP = Stream.of(
-                new WaitingSerializer(),
-                new MakeFrameSerializer(),
-                new BreakBlockSerializer(),
-                new CheckFluidSerializer(),
-                new FinishedSerializer()
-            ).map(s -> Map.entry(s.key(), s))
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            new WaitingSerializer(),
+            new MakeFrameSerializer(),
+            new BreakBlockSerializer(),
+            new CheckFluidSerializer(),
+            new FinishedSerializer()
+        ).collect(Collectors.toMap(Serializer::key, Function.identity()));
     }
 
     final CompoundTag toNbt() {

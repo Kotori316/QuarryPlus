@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiPredicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.yogpc.qp.machines.Direction8;
@@ -26,7 +25,6 @@ import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import org.apache.commons.lang3.tuple.Pair;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.DOWN;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.EAST;
@@ -45,14 +43,14 @@ public class FrameBlock extends QPBlock {
     public static final VoxelShape East_AABB = Shapes.box(.75, 0.25, 0.25, 1, 0.75, 0.75);
     public static final VoxelShape UP_AABB = Shapes.box(0.25, .75, 0.25, 0.75, 1, 0.75);
     public static final VoxelShape Down_AABB = Shapes.box(0.25, 0, 0.25, 0.75, .25, 0.75);
-    private static final Map<BooleanProperty, VoxelShape> SHAPE_MAP = Stream.of(
-        Pair.of(NORTH, North_AABB),
-        Pair.of(SOUTH, South_AABB),
-        Pair.of(WEST, West_AABB),
-        Pair.of(EAST, East_AABB),
-        Pair.of(UP, UP_AABB),
-        Pair.of(DOWN, Down_AABB)
-    ).collect(Collectors.toMap(Pair::getKey, Pair::getValue));
+    private static final Map<BooleanProperty, VoxelShape> SHAPE_MAP = Map.of(
+        NORTH, North_AABB,
+        SOUTH, South_AABB,
+        WEST, West_AABB,
+        EAST, East_AABB,
+        UP, UP_AABB,
+        DOWN, Down_AABB
+    );
 
     private static final BiPredicate<Level, BlockPos> HAS_NEIGHBOUR_LIQUID = (world, pos) ->
         Stream.of(Direction.values()).map(pos::relative)
