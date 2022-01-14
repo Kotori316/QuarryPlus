@@ -215,7 +215,7 @@ public class ContainerWorkbench extends AbstractContainerMenu {
 
             if (!itemstack.isEmpty() && ItemStack.isSameItemSameTags(stack, itemstack)) {
                 int j = itemstack.getCount() + stack.getCount();
-                int maxSize = slot.getMaxStackSize();// ignore limit of stack. Math.min(slot.getMaxStackSize(), stack.getMaxStackSize());
+                int maxSize = slot.getMaxStackSize();// Ignore limit of stack. Math.min(slot.getMaxStackSize(), stack.getMaxStackSize());
 
                 if (j <= maxSize) {
                     stack.setCount(0);

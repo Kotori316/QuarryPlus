@@ -52,7 +52,7 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
     @Nullable
     Area area = null;
     boolean rs;
-    MiniQuarryInventory container = new MiniQuarryInventory();
+    final MiniQuarryInventory container = new MiniQuarryInventory();
     @Nullable
     MiniTarget targetIterator;
     Collection<BlockStatePredicate> denyList = defaultBlackList();

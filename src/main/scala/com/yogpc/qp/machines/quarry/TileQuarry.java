@@ -80,7 +80,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
     private Area area;
     // May be unmodifiable
     private List<EnchantmentLevel> enchantments = new ArrayList<>();
-    public MachineStorage storage = new MachineStorage();
+    public final MachineStorage storage = new MachineStorage();
     public double headX, headY, headZ;
     private boolean init = false;
     public int digMinY = 0;

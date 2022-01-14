@@ -17,6 +17,7 @@ public final class SFQuarryMenu extends AbstractContainerMenu {
     public static final String GUI_ID = QuarryPlus.modID + ":gui_" + SFQuarryBlock.NAME;
     final DataSlot fuelCountData = this.addDataSlot(DataSlot.standalone());
     @NotNull
+    final
     SFQuarryEntity quarry;
     private final int allSlots;
 

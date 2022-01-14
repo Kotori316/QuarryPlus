@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.state.BlockState;
 
-public final record CombinedBlockEntityTicker<T extends BlockEntity>(
+public record CombinedBlockEntityTicker<T extends BlockEntity>(
     List<BlockEntityTicker<? super T>> tickers) implements BlockEntityTicker<T> {
     @SafeVarargs
     public CombinedBlockEntityTicker(BlockEntityTicker<? super T>... ts) {

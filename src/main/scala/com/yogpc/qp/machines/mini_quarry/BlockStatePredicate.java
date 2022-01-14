@@ -136,12 +136,7 @@ interface BlockStatePredicate {
         }
     }
 
-    final class Name implements BlockStatePredicate {
-        private final ResourceLocation location;
-
-        private Name(ResourceLocation location) {
-            this.location = location;
-        }
+    record Name(ResourceLocation location) implements BlockStatePredicate {
 
         @Override
         public boolean test(BlockState state, BlockGetter level, BlockPos pos) {

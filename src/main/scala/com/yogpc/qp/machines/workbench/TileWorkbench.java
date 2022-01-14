@@ -43,8 +43,8 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
 public class TileWorkbench extends PowerTile implements Container, MenuProvider, CheckerLog {
-    List<ItemStack> ingredientInventory = NonNullList.withSize(27, ItemStack.EMPTY);
-    List<ItemStack> selectionInventory = NonNullList.withSize(18, ItemStack.EMPTY);
+    final List<ItemStack> ingredientInventory = NonNullList.withSize(27, ItemStack.EMPTY);
+    final List<ItemStack> selectionInventory = NonNullList.withSize(18, ItemStack.EMPTY);
     public List<WorkbenchRecipe> recipesList = Collections.emptyList();
     private WorkbenchRecipe currentRecipe = WorkbenchRecipe.dummyRecipe();
     private final ItemHandler itemHandler = new ItemHandler();

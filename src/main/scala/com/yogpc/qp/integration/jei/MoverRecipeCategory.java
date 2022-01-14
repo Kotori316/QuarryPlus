@@ -91,7 +91,7 @@ class MoverRecipeCategory implements IRecipeCategory<MoverRecipeCategory.MoverRe
         }
     }
 
-    static record MoverRecipe(EnchantableItem item, ItemStack stack) {
+    record MoverRecipe(EnchantableItem item, ItemStack stack) {
         List<Pair<Enchantment, ItemStack>> makeInput(List<ItemStack> pickaxes) {
             return item.acceptEnchantments().stream()
                 .flatMap(e -> pickaxes.stream().map(ItemStack::copy).peek(i -> i.enchant(e, e.getMaxLevel()))

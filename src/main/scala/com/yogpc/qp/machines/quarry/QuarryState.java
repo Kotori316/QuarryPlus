@@ -27,7 +27,6 @@ import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.Nullable;
 
-@SuppressWarnings("DuplicatedCode") // For null check and static analysis.
 public enum QuarryState implements BlockEntityTicker<TileQuarry> {
     FINISHED(false) {
         @Override
