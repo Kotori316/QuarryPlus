@@ -23,6 +23,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.loading.FMLEnvironment;
+import org.jetbrains.annotations.VisibleForTesting;
 
 public class Config {
     public final Common common;
@@ -73,8 +74,7 @@ public class Config {
                 .filter(Holder.EntryConditionHolder::configurable)
                 .sorted(Comparator.comparing(Holder.EntryConditionHolder::path))
                 .map(n -> Map.entry(n.path(), builder.define(n.path(), !FMLEnvironment.production || n.condition().on())))
-                .map(e -> Map.entry(e.getKey(), (BooleanSupplier) (() -> e.getValue().get())))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> () -> e.getValue().get()));
             builder.pop();
         }
 
@@ -99,7 +99,8 @@ public class Config {
     }
 
     public static class PowerMap {
-        private final Map<String, Map<String, ForgeConfigSpec.DoubleValue>> map;
+        @VisibleForTesting
+        final Map<String, Map<String, ForgeConfigSpec.DoubleValue>> map;
 
         private record Key(String machineName, String configName) {
         }
