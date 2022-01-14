@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.electronwill.nightconfig.core.CommentedConfig;
 import com.yogpc.qp.machines.workbench.EnableCondition;
 import com.yogpc.qp.machines.workbench.EnchantmentIngredient;
 import com.yogpc.qp.machines.workbench.QuarryDebugCondition;
@@ -55,9 +56,7 @@ public class QuarryPlusTest {
             Bootstrap.bootStrap();
             ModLoadingContext.get().setActiveContainer(new DummyModContainer());
             registerRecipes();
-            ForgeConfigSpec.Builder common = new ForgeConfigSpec.Builder();
-            QuarryPlus.config = new Config(common);
-            common.build();
+            setConfig();
         }
     }
 
@@ -108,6 +107,15 @@ public class QuarryPlusTest {
         CraftingHelper.register(new ResourceLocation("forge", "nbt"), NBTIngredient.Serializer.INSTANCE);
         CraftingHelper.register(new ResourceLocation("minecraft", "item"), VanillaIngredientSerializer.INSTANCE);
         CraftingHelper.register(new ResourceLocation(QuarryPlus.modID, EnchantmentIngredient.NAME), EnchantmentIngredient.Serializer.INSTANCE);
+    }
+
+    private static void setConfig() {
+        ForgeConfigSpec.Builder common = new ForgeConfigSpec.Builder();
+        QuarryPlus.config = new Config(common);
+        var config = common.build();
+        final CommentedConfig commentedConfig = CommentedConfig.inMemory();
+        config.correct(commentedConfig);
+        config.acceptConfig(commentedConfig);
     }
 
     protected static ResourceLocation id(String location) {

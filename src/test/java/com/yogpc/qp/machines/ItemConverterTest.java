@@ -7,6 +7,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusTest;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -14,6 +15,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -21,6 +24,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -163,5 +167,82 @@ class ItemConverterTest extends QuarryPlusTest {
     void dummy() {
         assertTrue(pickaxeConvert().findAny().isPresent());
         assertTrue(deepOres().findAny().isPresent());
+    }
+
+    @Disabled("SKIP: Should not access the tags.")
+    @ParameterizedTest
+    @MethodSource("com.yogpc.qp.machines.ItemConverterTest#shouldBeRemovedAdvQuarry")
+    void advQuarryConverterRemove1(Item item) {
+        var converter = ItemConverter.advQuarryConverter();
+        assertTrue(converter.map(new ItemStack(item)).isEmpty());
+    }
+
+    @ParameterizedTest
+    @MethodSource("com.yogpc.qp.machines.ItemConverterTest#shouldNotBeRemovedAdvQuarry")
+    void advQuarryConverterRemove2(Item item) {
+        var converter = ItemConverter.advQuarryConverter();
+        assertFalse(converter.map(new ItemStack(item)).isEmpty());
+    }
+
+    static Stream<Item> shouldBeRemovedAdvQuarry() {
+        return Stream.of(
+            Items.STONE,
+            Items.ANDESITE,
+            Items.POLISHED_GRANITE,
+            Items.COBBLESTONE,
+            Items.DIRT,
+            Items.DEEPSLATE,
+            Items.COBBLED_DEEPSLATE,
+            Items.SANDSTONE,
+            Items.RED_SANDSTONE,
+            Items.GRASS_BLOCK,
+            Items.NETHERRACK
+        );
+    }
+
+    static Stream<Item> shouldNotBeRemovedAdvQuarry() {
+        return Stream.of(
+            Items.END_STONE,
+            Items.FLINT,
+            Items.DIAMOND_ORE,
+            Items.BEDROCK
+        );
+    }
+
+    @Nested
+    class ConfigBasedConverterTest {
+        @Test
+        void getDefaultConverter1() {
+            try {
+                QuarryPlus.config.common.convertDeepslateOres.set(true);
+                var converter = ItemConverter.defaultConverter();
+                assertFalse(converter.conversionMap().isEmpty());
+            } finally {
+                // Default is false.
+                QuarryPlus.config.common.convertDeepslateOres.set(false);
+            }
+        }
+
+        @Test
+        void advQuarryConverter1() {
+            try {
+                QuarryPlus.config.common.removeCommonMaterialsByCD.set(true);
+                var converter = ItemConverter.advQuarryConverter();
+                assertFalse(converter.conversionMap().isEmpty());
+            } finally {
+                QuarryPlus.config.common.removeCommonMaterialsByCD.set(true);
+            }
+        }
+
+        @Test
+        void advQuarryConverter2() {
+            try {
+                QuarryPlus.config.common.removeCommonMaterialsByCD.set(false);
+                var converter = ItemConverter.advQuarryConverter();
+                assertTrue(converter.conversionMap().isEmpty());
+            } finally {
+                QuarryPlus.config.common.removeCommonMaterialsByCD.set(true);
+            }
+        }
     }
 }

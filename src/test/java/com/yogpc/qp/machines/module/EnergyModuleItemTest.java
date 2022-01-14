@@ -46,4 +46,12 @@ class EnergyModuleItemTest {
         var module = creativeModuleItem.getModule(new ItemStack(creativeModuleItem, stackSize));
         assertEquals(Integer.MAX_VALUE, module.energy());
     }
+
+    @ParameterizedTest
+    @ValueSource(ints = {-1, -4, -5, -10, -16, -43, -64})
+    void minusStackSize(int stackSize) {
+        var stack = new ItemStack(Holder.ITEM_FUEL_MODULE_NORMAL, stackSize);
+        var module = Holder.ITEM_FUEL_MODULE_NORMAL.getModule(stack);
+        assertEquals(0, module.energy());
+    }
 }
