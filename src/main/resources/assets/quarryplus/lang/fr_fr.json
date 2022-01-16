@@ -123,6 +123,7 @@
   "quarryplus.status.item": "%s éléments au total",
   "quarryplus.status.require": "Réclamé",
   "quarryplus.status.receive": "recu",
+  "quarryplus.tooltip.item_disable_message": "DISABLED. Please enable it in config.",
   "quarryplus.tooltip.advpump": "Ce bloc est une pompre autonome.%1$sPlacez la au-dessus d'un bloc de fluide.",
   "quarryplus.tooltip.advpump.gui_delete": "Actif: les fluides sont envoyé au Néant...\nUtile pour supprimer l'eau\nInactif: les fluides sont envoyé au réservoir.",
   "quarryplus.tooltip.blockpump": "Ce bloc est un complément pour %1$s.%2$sPlacez le près de %1$s.",

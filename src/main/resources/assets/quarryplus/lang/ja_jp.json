@@ -123,6 +123,7 @@
   "quarryplus.status.item": "合計%s個のアイテムがあります",
   "quarryplus.status.require": "必要なエネルギー",
   "quarryplus.status.receive": "受け取れるエネルギー",
+  "quarryplus.tooltip.item_disable_message": "DISABLED コンフィグで有効化してください。",
   "quarryplus.tooltip.advpump": "このブロックはポンプです。%1$s液体ブロックの上に設置してください。",
   "quarryplus.tooltip.advpump.gui_delete": "On: 液体は消去されます。\n水を除去するときに便利\nOff: 液体はタンクへ送られます。",
   "quarryplus.tooltip.blockpump": "このブロックは%1$s用の機械です。%2$s%1$sの隣に設置してください。",

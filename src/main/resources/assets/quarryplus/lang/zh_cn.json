@@ -123,6 +123,7 @@
   "quarryplus.status.item": "总共有%s物品",
   "quarryplus.status.require": "需要",
   "quarryplus.status.receive": "接收",
+  "quarryplus.tooltip.item_disable_message": "DISABLED. Please enable it in config.",
   "quarryplus.tooltip.advpump": "该方块为独立泵。%1$s把这个放在流体方块上面。",
   "quarryplus.tooltip.advpump.gui_delete": "开启：液体被送至虚空... \n对于消除水源很有用\n关闭：液体被移至储罐。",
   "quarryplus.tooltip.blockpump": "这个方块是%1$s的附件。%2$s把这个放在%1$s旁边。",

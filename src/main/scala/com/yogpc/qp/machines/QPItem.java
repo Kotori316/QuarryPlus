@@ -30,7 +30,7 @@ public class QPItem extends Item {
     public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> tooltips, TooltipFlag pIsAdvanced) {
         super.appendHoverText(pStack, pLevel, tooltips, pIsAdvanced);
         if (!QuarryPlus.config.enableMap.enabled(getRegistryName())) {
-            tooltips.add(new TranslatableComponent("quarryplus.chat.disable_message", getName(pStack)));
+            tooltips.add(new TranslatableComponent("quarryplus.tooltip.item_disable_message"));
         }
     }
 }
