@@ -46,6 +46,7 @@
   "item.quarryplus.torch_module": "松明モジュール",
   "item.quarryplus.y_setter": "採掘機レベル設定用具",
   "item.quarryplus.remote_controller": "採掘機のリモコン",
+  "quarryplus.chat.bedrock_module_description": "このアイテムを機械に入れると岩盤を除去できます",
   "quarryplus.chat.change_mode": "動作モードを%sに切り替えました",
   "quarryplus.chat.current_mode": "現在%sで動作しています",
   "quarryplus.chat.disable_message": "%sは無効になっています。コンフィグで有効化してください。",

@@ -46,6 +46,7 @@
   "item.quarryplus.torch_module": "采石场火把模块",
   "item.quarryplus.y_setter": "采石场 Y 设定器",
   "item.quarryplus.remote_controller": "移除控制器",
+  "quarryplus.chat.bedrock_module_description": "Install this to a machine to remove Bedrock.",
   "quarryplus.chat.change_mode": "工作模式被修改为 %s",
   "quarryplus.chat.current_mode": "当前工作模式为 %s",
   "quarryplus.chat.disable_message": "%s被禁用",

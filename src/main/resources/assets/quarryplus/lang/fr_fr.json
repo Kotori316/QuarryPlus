@@ -46,6 +46,7 @@
   "item.quarryplus.torch_module": "Module Torche Carrère",
   "item.quarryplus.y_setter": "Régleur Y Carrière",
   "item.quarryplus.remote_controller": "Contrôleur Distant",
+  "quarryplus.chat.bedrock_module_description": "Install this to a machine to remove Bedrock.",
   "quarryplus.chat.change_mode": "Le mode de travail a été changé en %s",
   "quarryplus.chat.current_mode": "Actuellement, travaillant dans %s",
   "quarryplus.chat.disable_message": "%s est désactivé.",
