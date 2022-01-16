@@ -30,10 +30,6 @@
   },
   "conditions": [
     {
-      "key": "RemoveBedrock",
-      "type": "quarryplus:is_config_true"
-    },
-    {
       "value": "ModuleRemoveBedrock",
       "type": "quarryplus:machine_enabled"
     }

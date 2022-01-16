@@ -17,7 +17,7 @@ import com.yogpc.qp.machines.pump.TilePump
 import com.yogpc.qp.machines.quarry.{BlockSolidQuarry, TileMiningWell, TileQuarry, TileQuarry2}
 import com.yogpc.qp.machines.replacer.TileReplacer
 import com.yogpc.qp.machines.workbench.{IngredientWithCount, TileWorkbench}
-import com.yogpc.qp.utils.{EnableCondition, EnchantmentIngredient, Holder, QuarryConfigCondition}
+import com.yogpc.qp.utils.{EnableCondition, EnchantmentIngredient, Holder}
 import net.minecraft.data._
 import net.minecraft.enchantment.{EnchantmentData, Enchantments}
 import net.minecraft.item.crafting.Ingredient
@@ -153,7 +153,6 @@ final class Recipe(f: DataGenerator) extends QuarryPlusDataProvider.DataProvider
         IngredientWithCount(new EnchantmentIngredient(diamond_pickaxe, Collections.singletonList(new EnchantmentData(Enchantments.SILK_TOUCH, 1))), 1),
       )), saveName = location("remove_bedrock_module"))
       .addCondition(new EnableCondition(Holder.itemRemoveBedrockModule.getSymbol))
-      .addCondition(new QuarryConfigCondition("RemoveBedrock"))
     // Spawner Controller
     buffer += RecipeSerializeHelper(new FinishedWorkbenchRecipe("quarryplus:builtin_spawner_controller", new ItemStack(Holder.blockController),
       1000000, true,
