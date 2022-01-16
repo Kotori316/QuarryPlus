@@ -45,6 +45,7 @@
   "item.quarryplus.torch_module": "Quarry Torch Module",
   "item.quarryplus.y_setter": "Quarry Y Setter",
   "item.quarryplus.remote_controller": "Remote Controller",
+  "quarryplus.chat.bedrock_module_description": "Install this to a machine to remove Bedrock.",
   "quarryplus.chat.change_mode": "Режим работы был изменен на %s",
   "quarryplus.chat.current_mode": "Сейчас, работая в %s",
   "quarryplus.chat.disable_message": "%s is disabled.",

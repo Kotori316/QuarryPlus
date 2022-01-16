@@ -14,6 +14,7 @@ public class TranslationKeys {
     public static final String ADD = "tof.add_new_ore";
     public static final String ADD_FLUID_SURE = "tof.add_fluid_sure";
     public static final String ALREADY_REGISTERED_ERROR = "tof.already_error";
+    public static final String BEDROCK_MODULE_DESCRIPTION = "quarryplus.chat.bedrock_module_description";
     public static final String BLACKLIST = "quarryplus.gui.blacklist";
     public static final String CANCEL = "gui.cancel";
     public static final String CHANGEMODE = "quarryplus.chat.change_mode";
