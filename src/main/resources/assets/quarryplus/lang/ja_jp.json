@@ -47,7 +47,7 @@
   "item.quarryplus.remote_controller": "採掘機のリモコン",
   "quarryplus.chat.change_mode": "動作モードを%sに切り替えました",
   "quarryplus.chat.current_mode": "現在%sで動作しています",
-  "quarryplus.chat.disable_message": "%sは無効になっています",
+  "quarryplus.chat.disable_message": "%sは無効になっています。使用するにはコンフィグを変更してください",
   "quarryplus.chat.filler_mode": "フレームモード",
   "quarryplus.chat.indent": "-    %s%s",
   "quarryplus.chat.marker_area": "この改良型マーカーの指定範囲は下記のとおりです：",
