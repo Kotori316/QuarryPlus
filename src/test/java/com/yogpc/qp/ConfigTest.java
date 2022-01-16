@@ -1,14 +1,27 @@
 package com.yogpc.qp;
 
+import java.util.stream.Stream;
+
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.quarry.QuarryBlock;
 import com.yogpc.qp.machines.quarry.TileQuarry;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Items;
+import net.minecraftforge.registries.ForgeRegistryEntry;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 final class ConfigTest extends QuarryPlusTest {
 
@@ -38,6 +51,54 @@ final class ConfigTest extends QuarryPlusTest {
             assertEquals(40d * PowerTile.ONE_FE, tile.getPowerConfig().makeFrame());
         } finally {
             QuarryPlus.config.powerMap.map.get(QuarryBlock.NAME).get("makeFrame").set(before);
+        }
+    }
+
+    @Nested
+    class EnableMapTest {
+        @ParameterizedTest
+        @NullSource
+        @MethodSource("getAllNames")
+        @DisplayName("Access Enable Map in Config")
+        void accessEnableMap(ResourceLocation location) {
+            assertDoesNotThrow(() -> QuarryPlus.config.enableMap.enabled(location));
+        }
+
+        @ParameterizedTest
+        @MethodSource("getDefaultOn")
+        void onConfig(ResourceLocation location) {
+            assertTrue(QuarryPlus.config.enableMap.enabled(location));
+        }
+
+        @ParameterizedTest
+        @MethodSource("getDefaultOff")
+        void offConfig(ResourceLocation location) {
+            // In test environment, all items are enabled.
+            assertTrue(QuarryPlus.config.enableMap.enabled(location));
+        }
+
+        @ParameterizedTest
+        @MethodSource("notQuarryItems")
+        @NullSource
+        void invalidConfig(ResourceLocation location) {
+            assertFalse(QuarryPlus.config.enableMap.enabled(location));
+        }
+
+        static Stream<ResourceLocation> getAllNames() {
+            return Stream.concat(getDefaultOn(), getDefaultOff());
+        }
+
+        static Stream<ResourceLocation> getDefaultOn() {
+            return Holder.conditionHolders().stream().filter(e -> e.condition().on()).map(Holder.EntryConditionHolder::location);
+        }
+
+        static Stream<ResourceLocation> getDefaultOff() {
+            return Holder.conditionHolders().stream().filter(e -> !e.condition().on()).map(Holder.EntryConditionHolder::location);
+        }
+
+        static Stream<ResourceLocation> notQuarryItems() {
+            return Stream.of(Items.DIRT, Items.AIR, EntityType.BAT, EntityType.ZOMBIE)
+                .map(ForgeRegistryEntry::getRegistryName);
         }
     }
 }

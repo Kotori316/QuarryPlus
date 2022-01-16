@@ -23,6 +23,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.loading.FMLEnvironment;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
 public class Config {
@@ -89,7 +90,8 @@ public class Config {
                 .orElse(Boolean.FALSE);
         }
 
-        public boolean enabled(ResourceLocation location) {
+        public boolean enabled(@Nullable ResourceLocation location) {
+            if (location == null) return false;
             return enabled(location.getPath());
         }
 
