@@ -8,21 +8,19 @@ import com.yogpc.qp.machines.base.EnchantmentHolder;
 import com.yogpc.qp.machines.base.HasStorage;
 import com.yogpc.qp.machines.base.IDisabled;
 import com.yogpc.qp.machines.base.IModule;
+import com.yogpc.qp.machines.base.QPItem;
 import com.yogpc.qp.machines.pump.PumpModule;
 import com.yogpc.qp.machines.quarry.ContainerQuarryModule;
-import com.yogpc.qp.utils.Holder;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Rarity;
 import scala.Symbol;
 
-public class ItemPumpModule extends Item implements IDisabled, IModuleItem {
+public class ItemPumpModule extends QPItem implements IDisabled, IModuleItem {
 
     public ItemPumpModule() {
-        super(new Properties().group(Holder.tab()).rarity(Rarity.UNCOMMON));
-        setRegistryName(QuarryPlus.modID, QuarryPlus.Names.pumpModule);
+        super(QuarryPlus.Names.pumpModule, p -> p.rarity(Rarity.UNCOMMON));
     }
 
     @Override

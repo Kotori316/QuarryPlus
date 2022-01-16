@@ -9,14 +9,13 @@ import com.yogpc.qp.machines.base.APowerTile;
 import com.yogpc.qp.machines.base.HasStorage;
 import com.yogpc.qp.machines.base.IDisabled;
 import com.yogpc.qp.machines.base.IModule;
+import com.yogpc.qp.machines.base.QPItem;
 import com.yogpc.qp.machines.exppump.ExpPumpModule;
 import com.yogpc.qp.machines.quarry.ContainerQuarryModule;
-import com.yogpc.qp.utils.Holder;
 import javax.annotation.Nullable;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.item.ExperienceOrbEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Rarity;
 import net.minecraft.nbt.NBTDynamicOps;
@@ -28,12 +27,11 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import scala.Symbol;
 
-public class ItemExpPumpModule extends Item implements IDisabled, IModuleItem {
+public class ItemExpPumpModule extends QPItem implements IDisabled, IModuleItem {
     public static final String Key_xp = "xp";
 
     public ItemExpPumpModule() {
-        super(new Item.Properties().group(Holder.tab()).rarity(Rarity.UNCOMMON));
-        setRegistryName(QuarryPlus.modID, QuarryPlus.Names.exppumpModule);
+        super(QuarryPlus.Names.exppumpModule, p -> p.rarity(Rarity.UNCOMMON));
     }
 
     @Override

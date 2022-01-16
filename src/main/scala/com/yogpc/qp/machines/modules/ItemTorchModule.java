@@ -7,18 +7,16 @@ import com.yogpc.qp.machines.base.APowerTile;
 import com.yogpc.qp.machines.base.HasStorage;
 import com.yogpc.qp.machines.base.IDisabled;
 import com.yogpc.qp.machines.base.IModule;
+import com.yogpc.qp.machines.base.QPItem;
 import com.yogpc.qp.machines.quarry.ContainerQuarryModule;
-import com.yogpc.qp.utils.Holder;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Rarity;
 import scala.Symbol;
 
-public class ItemTorchModule extends Item implements IDisabled, IModuleItem {
+public class ItemTorchModule extends QPItem implements IDisabled, IModuleItem {
 
     public ItemTorchModule() {
-        super(new Item.Properties().group(Holder.tab()).rarity(Rarity.UNCOMMON));
-        setRegistryName(QuarryPlus.modID, QuarryPlus.Names.torchModule);
+        super(QuarryPlus.Names.torchModule, p -> p.rarity(Rarity.UNCOMMON));
     }
 
     @Override

@@ -6,17 +6,15 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.base.APowerTile;
 import com.yogpc.qp.machines.base.HasStorage;
 import com.yogpc.qp.machines.base.IModule;
+import com.yogpc.qp.machines.base.QPItem;
 import com.yogpc.qp.machines.quarry.ContainerQuarryModule;
-import com.yogpc.qp.utils.Holder;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Rarity;
 import scala.Symbol;
 
-public class ItemBedrockModule extends Item implements IModuleItem {
+public class ItemBedrockModule extends QPItem implements IModuleItem {
     public ItemBedrockModule() {
-        super(new Item.Properties().group(Holder.tab()).rarity(Rarity.UNCOMMON));
-        setRegistryName(QuarryPlus.modID, QuarryPlus.Names.bedrockModule);
+        super(QuarryPlus.Names.bedrockModule, p -> p.rarity(Rarity.UNCOMMON));
     }
 
     @Override

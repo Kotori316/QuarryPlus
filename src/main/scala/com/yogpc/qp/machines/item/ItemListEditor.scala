@@ -6,7 +6,7 @@ import cats._
 import cats.data._
 import cats.implicits._
 import com.mojang.serialization.{Dynamic => SerializeDynamic}
-import com.yogpc.qp.machines.base.{EnchantmentFilter, IEnchantableItem, IEnchantableTile, QuarryBlackList}
+import com.yogpc.qp.machines.base.{EnchantmentFilter, IEnchantableItem, IEnchantableTile, QPItem, QuarryBlackList}
 import com.yogpc.qp.utils.Holder
 import com.yogpc.qp.{QuarryPlus, _}
 import net.minecraft.client.util.ITooltipFlag
@@ -27,8 +27,7 @@ import net.minecraftforge.registries.ForgeRegistries
 
 import scala.jdk.CollectionConverters._
 
-class ItemListEditor extends Item((new Item.Properties).group(Holder.tab)) with IEnchantableItem {
-  setRegistryName(QuarryPlus.modID, QuarryPlus.Names.listeditor)
+class ItemListEditor extends QPItem(QuarryPlus.Names.listeditor) with IEnchantableItem {
 
   /**
    * You should not think max enchantment level in this method

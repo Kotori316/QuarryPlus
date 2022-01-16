@@ -11,6 +11,7 @@ import com.yogpc.qp.machines.base.APowerTile;
 import com.yogpc.qp.machines.base.HasStorage;
 import com.yogpc.qp.machines.base.IDisabled;
 import com.yogpc.qp.machines.base.IModule;
+import com.yogpc.qp.machines.base.QPItem;
 import com.yogpc.qp.machines.quarry.ContainerQuarryModule;
 import com.yogpc.qp.machines.replacer.ReplacerModule;
 import com.yogpc.qp.machines.replacer.TileReplacer;
@@ -18,7 +19,6 @@ import com.yogpc.qp.utils.Holder;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.item.Rarity;
@@ -35,12 +35,11 @@ import scala.Symbol;
 
 import static jp.t2v.lab.syntax.MapStreamSyntax.always_false;
 
-public class ItemReplacerModule extends Item implements IDisabled, IModuleItem {
+public class ItemReplacerModule extends QPItem implements IDisabled, IModuleItem {
     public static final String Key_state = "state";
 
     public ItemReplacerModule() {
-        super(new Item.Properties().group(Holder.tab()).rarity(Rarity.UNCOMMON));
-        setRegistryName(QuarryPlus.modID, QuarryPlus.Names.replacerModule);
+        super(QuarryPlus.Names.replacerModule, p -> p.rarity(Rarity.UNCOMMON));
     }
 
     @Override

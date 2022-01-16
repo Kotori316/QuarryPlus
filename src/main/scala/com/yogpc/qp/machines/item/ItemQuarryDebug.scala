@@ -1,20 +1,17 @@
 package com.yogpc.qp.machines.item
 
-import com.yogpc.qp.machines.base.{APowerTile, IDebugSender}
-import com.yogpc.qp.utils.Holder
+import com.yogpc.qp.machines.base.{APowerTile, IDebugSender, QPItem}
 import com.yogpc.qp.{Config, QuarryPlus}
-import net.minecraft.item.{Item, ItemGroup, ItemStack, ItemUseContext}
+import net.minecraft.item.{ItemGroup, ItemStack, ItemUseContext}
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.text.{ITextComponent, StringTextComponent, TranslationTextComponent}
 import net.minecraft.util.{ActionResultType, NonNullList}
 
 import scala.util.Try
 
-class ItemQuarryDebug extends Item((new Item.Properties).group(Holder.tab)) {
+class ItemQuarryDebug extends QPItem(QuarryPlus.Names.debug) {
 
   import ItemQuarryDebug._
-
-  setRegistryName(QuarryPlus.modID, QuarryPlus.Names.debug)
 
   override def onItemUseFirst(stack: ItemStack, context: ItemUseContext): ActionResultType = {
     val worldIn = context.getWorld

@@ -7,7 +7,7 @@ import cats.data._
 import cats.implicits._
 import com.mojang.serialization.Dynamic
 import com.yogpc.qp.machines.TranslationKeys
-import com.yogpc.qp.machines.base.{EnchantmentFilter, IEnchantableItem, QuarryBlackList}
+import com.yogpc.qp.machines.base.{EnchantmentFilter, IEnchantableItem, QPItem, QuarryBlackList}
 import com.yogpc.qp.machines.item.ItemListEditor._
 import com.yogpc.qp.utils.Holder
 import com.yogpc.qp.{QuarryPlus, _}
@@ -15,7 +15,7 @@ import net.minecraft.client.util.ITooltipFlag
 import net.minecraft.enchantment.{Enchantment, Enchantments}
 import net.minecraft.entity.player.{PlayerEntity, PlayerInventory, ServerPlayerEntity}
 import net.minecraft.inventory.container.INamedContainerProvider
-import net.minecraft.item.{Item, ItemGroup, ItemStack, ItemUseContext}
+import net.minecraft.item.{ItemGroup, ItemStack, ItemUseContext}
 import net.minecraft.nbt.{CompoundNBT, ListNBT, NBTDynamicOps}
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.{ITextComponent, TranslationTextComponent}
@@ -26,11 +26,9 @@ import net.minecraftforge.fml.network.NetworkHooks
 
 import scala.jdk.CollectionConverters._
 
-class ItemTemplate extends Item(new Item.Properties().maxStackSize(1).group(Holder.tab)) with IEnchantableItem {
+class ItemTemplate extends QPItem(QuarryPlus.Names.template, _.maxStackSize(1)) with IEnchantableItem {
 
   import ItemTemplate._
-
-  setRegistryName(QuarryPlus.modID, QuarryPlus.Names.template)
 
   /**
    * You should not think max enchantment level in this method
