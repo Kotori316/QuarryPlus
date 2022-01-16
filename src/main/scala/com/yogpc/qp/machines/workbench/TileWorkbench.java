@@ -254,7 +254,7 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
             .findFirst().orElse(WorkbenchRecipe.dummyRecipe());
         setMaxEnergy(this.currentRecipe.getRequiredEnergy());
         if (QuarryPlus.config.common.noEnergy.get()) {
-            setEnergy(0);
+            setEnergy(0, true);
         }
     }
 

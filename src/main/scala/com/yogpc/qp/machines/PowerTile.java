@@ -102,7 +102,7 @@ public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
         long accepted = Math.min(Math.min(maxEnergy - energy, amount), getMaxReceive());
         if (!simulate && accepted != 0) {
             energy += accepted;
-            energyCounter.getEnergy(this.timeProvider.getAsLong(), accepted);
+            energyCounter.getEnergy(this.timeProvider, accepted);
             setChanged();
         }
         return accepted;
@@ -121,7 +121,7 @@ public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
             QuarryPlus.LOGGER.warn("{} required {} FE, which is over {}.", energyCounter.name, amount / ONE_FE, getMaxEnergyStored());
         if (energy >= amount || force) {
             energy -= amount;
-            energyCounter.useEnergy(this.timeProvider.getAsLong(), amount, reason);
+            energyCounter.useEnergy(this.timeProvider, amount, reason);
             setChanged();
             return true;
         } else {
@@ -129,13 +129,13 @@ public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
         }
     }
 
-    protected final void setEnergy(long energy) {
+    protected final void setEnergy(long energy, boolean log) {
         if (this.energy > energy) {
             // Energy is consumed
-            energyCounter.useEnergy(this.timeProvider.getAsLong(), this.energy - energy, Reason.FORCE);
+            energyCounter.useEnergy(log ? this.timeProvider : () -> 1L, this.energy - energy, Reason.FORCE);
         } else {
             // Energy is sent
-            energyCounter.getEnergy(this.timeProvider.getAsLong(), energy - this.energy);
+            energyCounter.getEnergy(log ? this.timeProvider : () -> 1L, energy - this.energy);
         }
         setChanged();
         this.energy = energy;
@@ -211,7 +211,7 @@ public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
     @Nullable
     public static BlockEntityTicker<PowerTile> getGenerator() {
         if (QuarryPlus.config.common.noEnergy.get()) {
-            return (w, p, s, tile) -> tile.setEnergy(tile.getMaxEnergy());
+            return (w, p, s, tile) -> tile.setEnergy(tile.getMaxEnergy(), true);
         } else {
             return null;
         }

@@ -3,6 +3,7 @@ package com.yogpc.qp.machines;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.LongSupplier;
 import java.util.stream.Collectors;
 
 import com.yogpc.qp.QuarryPlus;
@@ -31,9 +32,9 @@ public abstract class EnergyCounter {
 
     public abstract void logUsageMap();
 
-    public abstract void useEnergy(long time, long amount, PowerTile.Reason reason);
+    public abstract void useEnergy(LongSupplier time, long amount, PowerTile.Reason reason);
 
-    public abstract void getEnergy(long time, long amount);
+    public abstract void getEnergy(LongSupplier time, long amount);
 
     @Override
     public String toString() {
@@ -85,14 +86,16 @@ public abstract class EnergyCounter {
         }
 
         @Override
-        public void useEnergy(long time, long amount, PowerTile.Reason reason) {
+        public void useEnergy(LongSupplier timeGetter, long amount, PowerTile.Reason reason) {
+            var time = timeGetter.getAsLong();
             checkTime(time, "USE");
             useCounter.merge(time, amount, Long::sum);
             usageMap.merge(reason, amount, Long::sum);
         }
 
         @Override
-        public void getEnergy(long time, long amount) {
+        public void getEnergy(LongSupplier timeGetter, long amount) {
+            var time = timeGetter.getAsLong();
             checkTime(time, "GET");
             getCounter.merge(time, amount, Long::sum);
         }
@@ -113,11 +116,11 @@ public abstract class EnergyCounter {
         }
 
         @Override
-        public void useEnergy(long time, long amount, PowerTile.Reason reason) {
+        public void useEnergy(LongSupplier timeGetter, long amount, PowerTile.Reason reason) {
         }
 
         @Override
-        public void getEnergy(long time, long amount) {
+        public void getEnergy(LongSupplier timeGetter, long amount) {
         }
     }
 }

@@ -21,7 +21,7 @@ public class CreativeGeneratorTile extends PowerTile implements MenuProvider {
 
     public CreativeGeneratorTile(BlockPos pos, BlockState state) {
         super(Holder.CREATIVE_GENERATOR_TYPE, pos, state);
-        setEnergy(getMaxEnergy());
+        setEnergy(getMaxEnergy(), false);
     }
 
     @Override
