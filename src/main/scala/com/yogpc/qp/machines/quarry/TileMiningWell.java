@@ -16,7 +16,6 @@ package com.yogpc.qp.machines.quarry;
 import java.util.Map;
 import java.util.Optional;
 
-import com.yogpc.qp.Config;
 import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.TranslationKeys;
 import com.yogpc.qp.machines.base.IAttachment;
@@ -79,7 +78,7 @@ public class TileMiningWell extends TileBasic implements ITickableTileEntity {
         int depth = getPos().getY() - 1;
         while (!S_checkTarget(depth)) {
             BlockPos pos = new BlockPos(getPos().getX(), depth, getPos().getZ());
-            if (this.working && (Config.common().removeBedrock().get() || world.getBlockState(pos).getBlockHardness(world, pos) >= 0)) {
+            if (this.working && world.getBlockState(pos).getBlockHardness(world, pos) >= 0) {
                 world.setBlockState(pos, Holder.blockPlainPipe().getDefaultState());
             }
             depth--;
