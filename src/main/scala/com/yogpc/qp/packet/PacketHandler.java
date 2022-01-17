@@ -25,8 +25,6 @@ import com.yogpc.qp.packet.listtemplate.TemplateMessage;
 import com.yogpc.qp.packet.marker.LinkReply;
 import com.yogpc.qp.packet.marker.LinkRequest;
 import com.yogpc.qp.packet.marker.LinkUpdate;
-import com.yogpc.qp.packet.marker.RemoveLaser;
-import com.yogpc.qp.packet.marker.RemoveLink;
 import com.yogpc.qp.packet.pump.Mappings;
 import com.yogpc.qp.packet.pump.Now;
 import com.yogpc.qp.packet.quarry.LevelMessage;
@@ -68,8 +66,6 @@ public class PacketHandler {
         wrapper.registerMessage(handler, LinkRequest.class, id.getAndIncrement(), Side.SERVER);
         wrapper.registerMessage(handler, LinkReply.class, id.getAndIncrement(), Side.CLIENT);
         wrapper.registerMessage(handler, LinkUpdate.class, id.getAndIncrement(), Side.CLIENT);
-        wrapper.registerMessage(handler, RemoveLaser.class, id.getAndIncrement(), Side.CLIENT);
-        wrapper.registerMessage(handler, RemoveLink.class, id.getAndIncrement(), Side.CLIENT);
         //workbench
         wrapper.registerMessage(handler, WorkbenchMessage.class, id.getAndIncrement(), Side.SERVER);
         wrapper.registerMessage(handler, RecipeSyncMessage.class, id.getAndIncrement(), Side.CLIENT);

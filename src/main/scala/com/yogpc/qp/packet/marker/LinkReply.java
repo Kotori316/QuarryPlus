@@ -1,9 +1,13 @@
 package com.yogpc.qp.packet.marker;
 
+import java.io.IOException;
+
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.tile.TileMarker;
+import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -15,27 +19,25 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  */
 public class LinkReply implements IMessage {
     BlockPos pos;
-    BlockPos linkMin;
-    BlockPos linkMax;
+    @Nullable
+    NBTTagCompound tagCompound;
 
-    public static LinkReply create(TileMarker marker) {
+    public static LinkReply create(BlockPos pos, @Nullable TileMarker.Link link) {
         LinkReply reply = new LinkReply();
-        reply.pos = marker.getPos();
-        reply.linkMax = marker.link.maxPos();
-        reply.linkMin = marker.link.minPos();
+        reply.pos = pos;
+        reply.tagCompound = link != null ? link.toNbt() : null;
         return reply;
     }
 
     @Override
-    public void fromBytes(PacketBuffer buffer) {
+    public void fromBytes(PacketBuffer buffer) throws IOException {
         pos = buffer.readBlockPos();
-        linkMin = buffer.readBlockPos();
-        linkMax = buffer.readBlockPos();
+        tagCompound = buffer.readCompoundTag();
     }
 
     @Override
     public void toBytes(PacketBuffer buffer) {
-        buffer.writeBlockPos(pos).writeBlockPos(linkMin).writeBlockPos(linkMax);
+        buffer.writeBlockPos(pos).writeCompoundTag(tagCompound);
     }
 
     @Override
@@ -44,12 +46,12 @@ public class LinkReply implements IMessage {
         TileMarker marker = (TileMarker) QuarryPlus.proxy.getPacketWorld(ctx.netHandler).getTileEntity(pos);
         if (marker != null) {
             Minecraft.getMinecraft().addScheduledTask(() -> {
-                if (marker.link != null) {
-                    marker.link.removeConnection(false);
+                if (tagCompound == null) {
+                    marker.link = null;
+                } else {
+                    marker.link = new TileMarker.Link(tagCompound);
+                    marker.link.makeLaser(true);
                 }
-                marker.link = new TileMarker.Link(marker.getWorld(), linkMax, linkMin);
-                marker.link.init();
-                marker.link.makeLaser();
                 marker.G_updateSignal();
             });
         }

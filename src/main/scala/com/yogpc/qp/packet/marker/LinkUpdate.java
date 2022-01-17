@@ -48,7 +48,7 @@ public class LinkUpdate implements IMessage {
             if (marker != null) {
                 Minecraft.getMinecraft().addScheduledTask(() -> {
                     if (b) {
-                        marker.laser = new TileMarker.Laser(marker.getWorld(), marker.getPos(), marker.link);
+                        marker.laser = new TileMarker.Laser(marker.getPos(), marker.link, true);
                     } else {
                         marker.G_updateSignal();
                     }

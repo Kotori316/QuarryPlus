@@ -139,7 +139,7 @@ public class BlockMarker extends Block implements ITileEntityProvider {//BlockCo
             if (entity instanceof TileMarker) {
                 TileMarker marker = (TileMarker) entity;
                 if (marker.link != null) {
-                    marker.link.removeConnection(false);
+                    marker.link.removeLink(worldIn);
                 }
             }
         }

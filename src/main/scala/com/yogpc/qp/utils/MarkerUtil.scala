@@ -14,8 +14,8 @@ import javax.annotation.Nullable
 
 object MarkerUtil {
   def getMarker: PartialFunction[TileEntity, IMarker] = if (Loader.isModLoaded(QuarryPlus.Optionals.BuildCraft_core)) {
-    case provider: IAreaProvider => new IMarker.BCWrapper(provider)
     case m: IMarker if m.hasLink => m
+    case provider: IAreaProvider => new IMarker.BCWrapper(provider)
     case t: TileEntity if t.hasCapability(TilesAPI.CAP_TILE_AREA_PROVIDER, null) => new IMarker.BCWrapper(t.getCapability(TilesAPI.CAP_TILE_AREA_PROVIDER, null))
   } else {
     case m: IMarker if m.hasLink => m

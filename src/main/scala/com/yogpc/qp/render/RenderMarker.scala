@@ -16,13 +16,14 @@ object RenderMarker extends FastTESR[TileMarker] {
   override def isGlobalRenderer(te: TileMarker): Boolean = true
 
   override def renderTileEntityFast(te: TileMarker, x: Double, y: Double, z: Double, partialTicks: Float, destroyStage: Int, partial: Float, buffer: BufferBuilder): Unit = {
-    Minecraft.getMinecraft.mcProfiler.startSection("quarryplus")
-    Minecraft.getMinecraft.mcProfiler.startSection("marker")
+    val profiler = Minecraft.getMinecraft.mcProfiler
+    profiler.startSection("quarryplus")
+    profiler.startSection("marker")
 
     val pos = te.getPos
     buffer.setTranslation(x - pos.getX, y - pos.getY, z - pos.getZ)
     if (te.laser != null) {
-      Minecraft.getMinecraft.mcProfiler.startSection("laser")
+      profiler.startSection("laser")
       if (te.laser.boxes != null) {
         te.laser.boxes.foreach(_.render(buffer, sprite_B))
       } else {
@@ -30,10 +31,10 @@ object RenderMarker extends FastTESR[TileMarker] {
           QuarryPlus.LOGGER.info("RenderMarker te.laser.boxes == null. " + pos)
         }
       }
-      Minecraft.getMinecraft.mcProfiler.endSection()
+      profiler.endSection()
     }
-    if (te.link != null) {
-      Minecraft.getMinecraft.mcProfiler.startSection("link")
+    if (te.link != null && te.link.shouldBeRendered) {
+      profiler.startSection("link")
       if (te.link.boxes != null) {
         te.link.boxes.foreach(_.render(buffer, sprite_R))
       } else {
@@ -41,11 +42,11 @@ object RenderMarker extends FastTESR[TileMarker] {
           QuarryPlus.LOGGER.info("RenderMarker te.link.boxes == null. " + pos)
         }
       }
-      Minecraft.getMinecraft.mcProfiler.endSection()
+      profiler.endSection()
     }
     buffer.setTranslation(0, 0, 0)
-    Minecraft.getMinecraft.mcProfiler.endSection()
-    Minecraft.getMinecraft.mcProfiler.endSection()
+    profiler.endSection()
+    profiler.endSection()
   }
 
 }
