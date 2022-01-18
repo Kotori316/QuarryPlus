@@ -38,7 +38,6 @@ import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -56,7 +55,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import scala.Symbol;
 
 @net.minecraftforge.fml.common.Optional.Interface(iface = "buildcraft.api.tiles.ITileAreaProvider", modid = QuarryPlus.Optionals.Buildcraft_tiles)
-public class TileMarker extends APacketTile implements ITileAreaProvider, ITickable, IChunkLoadTile, IDebugSender, IMarker {
+public class TileMarker extends APacketTile implements ITileAreaProvider, IChunkLoadTile, IDebugSender, IMarker {
     private static final int MAX_SIZE = 256;
     public static final Symbol SYMBOL = Symbol.apply("MarkerPlus");
     private final boolean bcLoaded;
@@ -75,11 +74,6 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
     public Link link;
     @Nullable
     public Laser laser;
-
-    @Override
-    public void update() {
-
-    }
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
