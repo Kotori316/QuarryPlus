@@ -17,12 +17,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class LinkUpdate implements IMessage {
     BlockPos pos;
     int dim;
-    boolean b;
+    boolean createLaser;
 
     public static LinkUpdate create(TileMarker marker, boolean create) {
         LinkUpdate linkUpdate = new LinkUpdate();
         linkUpdate.pos = marker.getPos();
-        linkUpdate.b = create;
+        linkUpdate.createLaser = create;
         linkUpdate.dim = marker.getWorld().provider.getDimension();
         return linkUpdate;
     }
@@ -30,24 +30,24 @@ public class LinkUpdate implements IMessage {
     @Override
     public void fromBytes(PacketBuffer buffer) {
         pos = buffer.readBlockPos();
-        b = buffer.readBoolean();
+        createLaser = buffer.readBoolean();
         dim = buffer.readInt();
     }
 
     @Override
     public void toBytes(PacketBuffer buffer) {
-        buffer.writeBlockPos(pos).writeBoolean(b).writeInt(dim);
+        buffer.writeBlockPos(pos).writeBoolean(createLaser).writeInt(dim);
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public IMessage onReceive(IMessage message, MessageContext ctx) {
         World world = QuarryPlus.proxy.getPacketWorld(ctx.netHandler);
-        if (world.provider.getDimension() == dim) {
+        if (world != null && world.provider.getDimension() == dim) {
             TileMarker marker = (TileMarker) world.getTileEntity(pos);
             if (marker != null) {
                 Minecraft.getMinecraft().addScheduledTask(() -> {
-                    if (b) {
+                    if (createLaser) {
                         marker.laser = new TileMarker.Laser(marker.getPos(), marker.link, true);
                     } else {
                         marker.G_updateSignal();
