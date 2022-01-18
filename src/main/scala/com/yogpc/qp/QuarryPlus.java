@@ -30,7 +30,6 @@ import com.yogpc.qp.recipe.BuiltinRecipes;
 import com.yogpc.qp.recipe.EnergyUnit;
 import com.yogpc.qp.recipe.WorkbenchRecipe;
 import com.yogpc.qp.tile.ItemDamage;
-import com.yogpc.qp.tile.TileMarker;
 import com.yogpc.qp.version.VersionDiff;
 import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.block.Block;
@@ -48,7 +47,6 @@ import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
@@ -265,19 +263,6 @@ public class QuarryPlus {
         ModelLoader.setCustomModelResourceLocation(torchModule(), 0, proxy.fromEntry(torchModule()));
         ModelLoader.setCustomModelResourceLocation(fuelModuleNormal(), 0, proxy.fromEntry(fuelModuleNormal()));
         ModelLoader.setCustomModelResourceLocation(fuelModuleCreative(), 0, proxy.fromEntry(fuelModuleCreative()));
-    }
-
-    @SubscribeEvent
-    public void onWorldUnload(WorldEvent.Unload event) {
-        TileMarker.Link[] la = TileMarker.linkList.toArray(new TileMarker.Link[0]);
-        for (TileMarker.Link link : la) {
-            if (link.w == event.getWorld()) link.removeConnection(false);
-        }
-
-        TileMarker.Laser[] lb = TileMarker.laserList.toArray(new TileMarker.Laser[0]);
-        for (TileMarker.Laser laser : lb) {
-            if (laser.w == event.getWorld()) laser.destructor();
-        }
     }
 
     /**

@@ -40,8 +40,7 @@ public class LinkRequest implements IMessage {
         if (world.provider.getDimension() == dim) {
             TileMarker marker = (TileMarker) world.getTileEntity(pos);
             if (marker != null) {
-                if (marker.link != null)
-                    return LinkReply.create(marker);
+                return LinkReply.create(pos, marker.link);
             }
         }
         return null;

@@ -13,12 +13,12 @@
 
 package com.yogpc.qp.tile;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.function.BiPredicate;
+import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import buildcraft.api.tiles.ITileAreaProvider;
@@ -27,23 +27,17 @@ import buildcraft.lib.misc.PositionUtil;
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusI;
-import com.yogpc.qp.block.BlockMarker;
 import com.yogpc.qp.gui.TranslationKeys;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.marker.LinkReply;
-import com.yogpc.qp.packet.marker.LinkRequest;
 import com.yogpc.qp.packet.marker.LinkUpdate;
-import com.yogpc.qp.packet.marker.RemoveLink;
 import com.yogpc.qp.render.Box;
-import com.yogpc.qp.utils.IndexOnlyList;
 import javax.annotation.Nullable;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import jp.t2v.lab.syntax.MapStreamSyntax;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -56,18 +50,12 @@ import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.ForgeChunkManager.Type;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import scala.Symbol;
 
-@Optional.Interface(iface = "buildcraft.api.tiles.ITileAreaProvider", modid = QuarryPlus.Optionals.Buildcraft_tiles)
-public class TileMarker extends APacketTile implements ITileAreaProvider, ITickable, IChunkLoadTile, IDebugSender, IMarker {
-    public static final List<Link> linkList = Collections.synchronizedList(new ArrayList<>());
-    public static final List<Laser> laserList = Collections.synchronizedList(new ArrayList<>());
-    public static final IndexOnlyList<Link> LINK_INDEX = new IndexOnlyList<>(linkList, linkList);
-    public static final IndexOnlyList<Laser> LASER_INDEX = new IndexOnlyList<>(laserList, laserList);
-
+@net.minecraftforge.fml.common.Optional.Interface(iface = "buildcraft.api.tiles.ITileAreaProvider", modid = QuarryPlus.Optionals.Buildcraft_tiles)
+public class TileMarker extends APacketTile implements ITileAreaProvider, IChunkLoadTile, IDebugSender, IMarker {
     private static final int MAX_SIZE = 256;
     public static final Symbol SYMBOL = Symbol.apply("MarkerPlus");
     private final boolean bcLoaded;
@@ -88,18 +76,17 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
     public Laser laser;
 
     @Override
-    public void update() {
-        if (this.vlF) {
-            this.vlF = false;
-            int i = LINK_INDEX.indexOf(this);
-            if (i >= 0)
-                this.link = linkList.get(i);
-            int i2 = LASER_INDEX.indexOf(this);
-            if (i2 >= 0)
-                this.laser = laserList.get(i2);
-            G_updateSignal();
-            if (this.getWorld().isRemote)
-                PacketHandler.sendToServer(LinkRequest.create(this));
+    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+        if (this.laser != null)
+            compound.setLong("laser", this.laser.getLaserPos().toLong());
+        return super.writeToNBT(compound);
+    }
+
+    @Override
+    public void readFromNBT(NBTTagCompound compound) {
+        super.readFromNBT(compound);
+        if (compound.hasKey("laser") && this.world != null) {
+            this.laser = new Laser(BlockPos.fromLong(compound.getLong("laser")), this.link, this.world.isRemote);
         }
     }
 
@@ -121,11 +108,11 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
     @Override
     public void removeFromWorld() {
         if (this.link == null) {
-            QuarryPlusI.blockMarker().dropBlockAsItem(getWorld(), getPos(), getWorld().getBlockState(getPos()), 0);
+            this.getBlockType().dropBlockAsItem(getWorld(), getPos(), getWorld().getBlockState(getPos()), 0);
             getWorld().setBlockToAir(getPos());
             return;
         }
-        final ArrayList<ItemStack> al = this.link.removeConnection(true);
+        final List<ItemStack> al = this.link.removeAndGetItem(getWorld());
         for (final ItemStack is : al) {
             InventoryHelper.spawnItemStack(getWorld(), getPos().getX(), getPos().getY(), getPos().getZ(), is);
         }
@@ -134,92 +121,65 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
     @Override
     public List<ItemStack> removeFromWorldWithItem() {
         if (this.link != null)
-            return this.link.removeConnection(true);
+            return this.link.removeAndGetItem(getWorld());
         NonNullList<ItemStack> ret = NonNullList.create();
         QuarryPlusI.blockMarker().getDrops(ret, getWorld(), getPos(), getWorld().getBlockState(getPos()), 0);
         getWorld().setBlockToAir(getPos());
         return ret;
     }
 
-    private static void S_renewConnection(final Link l, final World w, final int x, final int y, final int z) {
-        int tx = 0, ty = 0, tz = 0;
-        Block b;
-        if (l.xMax == l.xMin) {
-            for (tx = 1; tx <= MAX_SIZE; tx++) {
-                b = w.getBlockState(new BlockPos(x + tx, y, z)).getBlock();
-                if (b instanceof BlockMarker && !LINK_INDEX.contains(new BlockIndex(w, x + tx, y, z))) {
-                    l.xMax = x + tx;
-                    break;
-                }
-                b = w.getBlockState(new BlockPos(x - tx, y, z)).getBlock();
-                if (b instanceof BlockMarker && !LINK_INDEX.contains(new BlockIndex(w, x - tx, y, z))) {
-                    tx = -tx;
-                    l.xMin = x + tx;
-                    break;
-                }
+    private static Optional<Link> S_renewConnection(World world, BlockPos basePos, boolean first) {
+        @Nullable
+        TileMarker xMarker = IntStream.range(1, MAX_SIZE).flatMap(i -> IntStream.of(i, -i))
+            .mapToObj(i -> basePos.add(i, 0, 0))
+            .map(world::getTileEntity)
+            .flatMap(MapStreamSyntax.streamCast(TileMarker.class))
+            .findFirst().orElse(null);
+        @Nullable
+        TileMarker yMarker = IntStream.range(1, MAX_SIZE).flatMap(i -> IntStream.of(i, -i))
+            .mapToObj(i -> basePos.add(0, i, 0))
+            .filter(world::isValid)
+            .map(world::getTileEntity)
+            .flatMap(MapStreamSyntax.streamCast(TileMarker.class))
+            .findFirst().orElse(null);
+        @Nullable
+        TileMarker zMarker = IntStream.range(1, MAX_SIZE).flatMap(i -> IntStream.of(i, -i))
+            .mapToObj(i -> basePos.add(0, 0, i))
+            .map(world::getTileEntity)
+            .flatMap(MapStreamSyntax.streamCast(TileMarker.class))
+            .findFirst().orElse(null);
+        if (xMarker != null && zMarker != null) {
+            // Create link!
+            if (yMarker != null) {
+                // Consider Y
+                int yMin = Math.min(xMarker.getPos().getY(), yMarker.getPos().getY());
+                int yMax = Math.max(xMarker.getPos().getY(), yMarker.getPos().getY());
+                BlockPos xPos = new BlockPos(xMarker.getPos().getX(), yMin, xMarker.getPos().getZ());
+                BlockPos zPos = new BlockPos(zMarker.getPos().getX(), yMax, zMarker.getPos().getZ());
+                return Optional.of(new Link(xPos, zPos, true));
+            } else {
+                return Optional.of(new Link(xMarker.getPos(), zMarker.getPos(), true));
             }
-            if (l.xMax == l.xMin)
-                tx = 0;
+        } else if (first) {
+            // Check x
+            Optional<Link> x = Optional.ofNullable(xMarker).flatMap(m -> S_renewConnection(world, m.getPos(), false));
+            if (x.isPresent()) return x;
+            // Check z
+            return Optional.ofNullable(zMarker).flatMap(m -> S_renewConnection(world, m.getPos(), false));
+        } else {
+            return Optional.empty();
         }
-        if (l.yMax == l.yMin) {
-            for (ty = 1; ty <= MAX_SIZE; ty++) {
-                b = w.getBlockState(new BlockPos(x, y + ty, z)).getBlock();
-                if (b instanceof BlockMarker && !LINK_INDEX.contains(new BlockIndex(w, x, y + ty, z))) {
-                    l.yMax = y + ty;
-                    break;
-                }
-                b = w.getBlockState(new BlockPos(x, y - ty, z)).getBlock();
-                if (b instanceof BlockMarker && !LINK_INDEX.contains(new BlockIndex(w, x, y - ty, z))) {
-                    ty = -ty;
-                    l.yMin = y + ty;
-                    break;
-                }
-            }
-            if (l.yMax == l.yMin)
-                ty = 0;
-        }
-        if (l.zMax == l.zMin) {
-            for (tz = 1; tz <= MAX_SIZE; tz++) {
-                b = w.getBlockState(new BlockPos(x, y, z + tz)).getBlock();
-                if (b instanceof BlockMarker && !LINK_INDEX.contains(new BlockIndex(w, x, y, z + tz))) {
-                    l.zMax = z + tz;
-                    break;
-                }
-                b = w.getBlockState(new BlockPos(x, y, z - tz)).getBlock();
-                if (b instanceof BlockMarker && !LINK_INDEX.contains(new BlockIndex(w, x, y, z - tz))) {
-                    tz = -tz;
-                    l.zMin = z + tz;
-                    break;
-                }
-            }
-            if (l.zMax == l.zMin)
-                tz = 0;
-        }
-        if (l.xMax == l.xMin && ty != 0)
-            S_renewConnection(l, w, x, y + ty, z);
-        if (l.xMax == l.xMin && tz != 0)
-            S_renewConnection(l, w, x, y, z + tz);
-        if (l.yMax == l.yMin && tx != 0)
-            S_renewConnection(l, w, x + tx, y, z);
-        if (l.yMax == l.yMin && tz != 0)
-            S_renewConnection(l, w, x, y, z + tz);
-        if (l.zMax == l.zMin && tx != 0)
-            S_renewConnection(l, w, x + tx, y, z);
-        if (l.zMax == l.zMin && ty != 0)
-            S_renewConnection(l, w, x, y + ty, z);
-
     }
 
     public void G_updateSignal() {
         if (this.laser != null) {
-            this.laser.destructor();
             this.laser = null;
         }
         if (!this.getWorld().isRemote && !Config.content().disableMapJ().get(TileMarker.SYMBOL)) {
             if (getWorld().isBlockPowered(getPos()) && (this.link == null ||
                 this.link.xMin == this.link.xMax || this.link.yMin == this.link.yMax || this.link.zMin == this.link.zMax)) {
                 //create
-                this.laser = new Laser(this.getWorld(), getPos(), this.link);
+                this.laser = new Laser(getPos(), this.link, false);
                 PacketHandler.sendToAround(LinkUpdate.create(this, true), getWorld(), getPos());
             } else {
                 //remove
@@ -228,26 +188,33 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
         }
     }
 
-    public void S_tryConnection() {// onBlockActivated
-        if (this.link != null)
-            this.link.removeConnection(false);
-        this.link = new Link(getWorld(), getPos());
-        S_renewConnection(this.link, getWorld(), getPos().getX(), getPos().getY(), getPos().getZ());
-        if (this.link.xMax == this.link.xMin && this.link.yMax == this.link.yMin && this.link.zMax == this.link.zMin) {
-            this.link = null;
-            return;
+    public void S_tryConnection() { // onBlockActivated
+        if (this.link != null) {
+            // Remove markers' link related to this one.
+            this.link.removeLink(getWorld());
         }
-        this.link.init();
-        this.link.makeLaser();
-        PacketHandler.sendToAround(LinkReply.create(this), getWorld(), getPos());
+        S_renewConnection(getWorld(), getPos(), true).ifPresent(this::setLink);
+    }
+
+    void setLink(Link parentLink) {
+        this.link = parentLink;
+        Link childLink = link.noRender();
+        link.edgePoses()
+            .filter(Predicate.isEqual(getPos()).negate())
+            .map(getWorld()::getTileEntity)
+            .flatMap(MapStreamSyntax.streamCast(TileMarker.class))
+            .forEach(marker -> marker.link = childLink);
+        PacketHandler.sendToAround(LinkReply.create(getPos(), parentLink), getWorld(), getPos());
         G_updateSignal();
     }
 
     void G_destroy() {
-        if (this.link != null)
-            this.link.removeConnection(false);
+        if (world != null && !world.isRemote) {
+            if (this.link != null)
+                this.link.removeLink(getWorld());
+        }
         if (this.laser != null)
-            this.laser.destructor();
+            this.laser = null;
         ForgeChunkManager.releaseTicket(this.chunkTicket);
     }
 
@@ -267,8 +234,6 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
             this.chunkTicket = ticket;
         ForgeChunkManager.forceChunk(ticket, new ChunkPos(getPos()));
     }
-
-    private boolean vlF;
 
     @Override
     @SideOnly(Side.CLIENT)
@@ -310,7 +275,6 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
     @Override
     public void validate() {
         super.validate();
-        this.vlF = true;
     }
 
     @Override
@@ -321,7 +285,12 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
     }
 
     @Override
-    @Optional.Method(modid = QuarryPlus.Optionals.BuildCraft_core)
+    public void onChunkUnload() {
+        super.onChunkUnload();
+    }
+
+    @Override
+    @net.minecraftforge.fml.common.Optional.Method(modid = QuarryPlus.Optionals.BuildCraft_core)
     public boolean isValidFromLocation(BlockPos pos) {
         if (link != null) {
             boolean xFlag = link.xMin <= pos.getX() && link.xMax <= pos.getX();
@@ -344,7 +313,8 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
     @Override
     public List<? extends ITextComponent> getDebugMessages() {
         return Arrays.asList(new TextComponentString("Link : " + link),
-            new TextComponentString("Laser : " + laser));
+            new TextComponentString("Laser : " + laser),
+            new TextComponentString("0x" + Integer.toHexString(this.hashCode())));
     }
 
     public static class BlockIndex {
@@ -364,7 +334,6 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
      * The guide of placing marker.
      */
     public static class Laser {
-        public final World w;
         final int x, y, z;
         /**
          * index 0=x , 1=y , 2=z
@@ -373,15 +342,14 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
         @Nullable
         public final Box[] boxes;
 
-        public Laser(World w, BlockPos pos, Link link) {
-            this(w, pos.getX(), pos.getY(), pos.getZ(), link);
+        public Laser(BlockPos pos, Link link, boolean isRemote) {
+            this(pos.getX(), pos.getY(), pos.getZ(), link, isRemote);
         }
 
-        private Laser(final World pw, final int px, final int py, final int pz, final Link l) {
+        private Laser(final int px, final int py, final int pz, final @Nullable Link l, boolean isRemote) {
             this.x = px;
             this.y = py;
             this.z = pz;
-            this.w = pw;
             double b = 10d / 16d, c = 6d / 16d;
             if (l == null || l.xMin == l.xMax) {
                 lineBoxes[0] = new AxisAlignedBB(px + b - MAX_SIZE, py + 0.5, pz + 0.5, px + c, py + 0.5, pz + 0.5);
@@ -395,7 +363,7 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
                 lineBoxes[2] = new AxisAlignedBB(px + 0.5, py + 0.5, pz + b - MAX_SIZE, px + 0.5, py + 0.5, pz + c);
                 lineBoxes[5] = new AxisAlignedBB(px + 0.5, py + 0.5, pz + b, px + 0.5, py + 0.5, pz + c + MAX_SIZE);
             }
-            if (pw.isRemote && !Config.content().disableRendering()) {
+            if (isRemote && !Config.content().disableRendering()) {
                 boxes = Arrays.stream(lineBoxes).filter(nonNull)
                     .map(range -> Box.apply(range, 1d / 8d, 1d / 8d, 1d / 8d, false, false))
                     .toArray(Box[]::new);
@@ -403,25 +371,6 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
                 //Server
                 boxes = null;
             }
-            destructor();
-            laserList.add(this);
-        }
-
-        public void destructor() {
-            laserList.remove(this);
-        }
-
-        @Override
-        public boolean equals(final Object o) {
-            if (!(o instanceof Laser))
-                return false;
-            final Laser l = (Laser) o;
-            return l.x == this.x && l.y == this.y && l.z == this.z && l.w == this.w;
-        }
-
-        @Override
-        public int hashCode() {
-            return this.x << 21 ^ this.y << 11 ^ this.z;
         }
 
         @Override
@@ -429,102 +378,58 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
             long i = Stream.of(lineBoxes).filter(nonNull).count();
             return x + " " + y + " " + z + " Lasers : " + i;
         }
+
+        BlockPos getLaserPos() {
+            return new BlockPos(x, y, z);
+        }
     }
 
     /**
      * Link with other markers.
      */
     public static class Link {
-        public int xMax, xMin, yMax, yMin, zMax, zMin;
-        public final AxisAlignedBB[] lineBoxes = new AxisAlignedBB[12];
+        public final int xMax, xMin, yMax, yMin, zMax, zMin;
         @Nullable // Null in server world.
         public Box[] boxes;
-        public final World w;
+        public final boolean shouldBeRendered;
 
-        Link(World world, BlockPos pos) {
-            this(world, pos.getX(), pos.getY(), pos.getZ());
+        public Link(int xMax, int xMin, int yMax, int yMin, int zMax, int zMin, boolean shouldBeRendered) {
+            this.xMax = xMax;
+            this.xMin = xMin;
+            this.yMax = yMax;
+            this.yMin = yMin;
+            this.zMax = zMax;
+            this.zMin = zMin;
+            this.shouldBeRendered = shouldBeRendered;
         }
 
-        public Link(World world, BlockPos max, BlockPos min) {
-            this(world, max.getX(), min.getX(), max.getY(), min.getY(), max.getZ(), min.getZ());
+        public Link(BlockPos pos1, BlockPos pos2, boolean shouldBeRendered) {
+            this.xMin = Math.min(pos1.getX(), pos2.getX());
+            this.yMin = Math.min(pos1.getY(), pos2.getY());
+            this.zMin = Math.min(pos1.getZ(), pos2.getZ());
+            this.xMax = Math.max(pos1.getX(), pos2.getX());
+            this.yMax = Math.max(pos1.getY(), pos2.getY());
+            this.zMax = Math.max(pos1.getZ(), pos2.getZ());
+            this.shouldBeRendered = shouldBeRendered;
         }
 
-        Link(final World pw, final int vx, final int vy, final int vz) {
-            this(pw, vx, vx, vy, vy, vz, vz);
+        public Link(NBTTagCompound compound) {
+            BlockPos max = BlockPos.fromLong(compound.getLong("maxPos"));
+            BlockPos min = BlockPos.fromLong(compound.getLong("minPos"));
+            this.shouldBeRendered = compound.getBoolean("shouldBeRendered");
+            this.xMax = max.getX();
+            this.yMax = max.getY();
+            this.zMax = max.getZ();
+            this.xMin = min.getX();
+            this.yMin = min.getY();
+            this.zMin = min.getZ();
         }
 
-        Link(final World pw, final int vxx, final int vxn, final int vyx, final int vyn, final int vzx, final int vzn) {
-            this.xMax = vxx;
-            this.xMin = vxn;
-            this.yMax = vyx;
-            this.yMin = vyn;
-            this.zMax = vzx;
-            this.zMin = vzn;
-            this.w = pw;
-        }
-
-        private void connect(final TileEntity te) {
-            if (te instanceof TileMarker) {
-                TileMarker marker = (TileMarker) te;
-                if (marker.link != null && marker.link != this) {
-                    marker.link.removeConnection(false);
-                }
-                marker.link = this;
-            }
-        }
-
-        private NonNullList<ItemStack> removeLink(final int x, final int y, final int z, final boolean bb) {
-            NonNullList<ItemStack> ret = NonNullList.create();
-            BlockPos pos = new BlockPos(x, y, z);
-            TileEntity te = this.w.getTileEntity(pos);
-            IBlockState state = w.getBlockState(pos);
-            if (state.getBlock() instanceof BlockMarker) {
-                if (te instanceof TileMarker)
-                    ((TileMarker) te).link = null;
-                state.getBlock().getDrops(ret, this.w, pos, state, 0);
-                if (bb)
-                    this.w.setBlockToAir(pos);
-            }
-            return ret;
-        }
-
-        public void init() {
-            final int i = linkList.indexOf(this);
-            if (i >= 0)
-                linkList.get(i).removeConnection(false);
-            linkList.add(this);
-            connect(this.w.getTileEntity(minPos()));
-            connect(this.w.getTileEntity(new BlockPos(this.xMin, this.yMin, this.zMax)));
-            connect(this.w.getTileEntity(new BlockPos(this.xMin, this.yMax, this.zMin)));
-            connect(this.w.getTileEntity(new BlockPos(this.xMin, this.yMax, this.zMax)));
-            connect(this.w.getTileEntity(new BlockPos(this.xMax, this.yMin, this.zMin)));
-            connect(this.w.getTileEntity(new BlockPos(this.xMax, this.yMin, this.zMax)));
-            connect(this.w.getTileEntity(new BlockPos(this.xMax, this.yMax, this.zMin)));
-            connect(this.w.getTileEntity(maxPos()));
-        }
-
-        public ArrayList<ItemStack> removeConnection(final boolean bb) {
-            linkList.remove(this);
-            if (!this.w.isRemote) {
-                PacketHandler.sendToDimension(RemoveLink.create(minPos(), maxPos(), w.provider.getDimension()), w.provider.getDimension());
-            }
-            deleteLaser();
-            final ArrayList<ItemStack> i = new ArrayList<>();
-            i.addAll(removeLink(this.xMin, this.yMin, this.zMin, bb));
-            i.addAll(removeLink(this.xMin, this.yMin, this.zMax, bb));
-            i.addAll(removeLink(this.xMin, this.yMax, this.zMin, bb));
-            i.addAll(removeLink(this.xMin, this.yMax, this.zMax, bb));
-            i.addAll(removeLink(this.xMax, this.yMin, this.zMin, bb));
-            i.addAll(removeLink(this.xMax, this.yMin, this.zMax, bb));
-            i.addAll(removeLink(this.xMax, this.yMax, this.zMin, bb));
-            i.addAll(removeLink(this.xMax, this.yMax, this.zMax, bb));
-            return i;
-        }
-
-        public void makeLaser() {
-            deleteLaser();
+        public void makeLaser(boolean isRemote) {
+            if (!isRemote || !shouldBeRendered) return;
             byte flag = 0;
             final double a = 0.5d, b = 10d / 16d, c = 6d / 16d;
+            AxisAlignedBB[] lineBoxes = new AxisAlignedBB[12];
             if (this.xMin != this.xMax)
                 flag |= 1;
             if (this.yMin != this.yMax)
@@ -557,16 +462,9 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
                 lineBoxes[7] = new AxisAlignedBB(xMax + a, yMin + b, zMax + a, xMax + a, yMax + c, zMax + a);
                 lineBoxes[11] = new AxisAlignedBB(xMax + a, yMax + a, zMin + b, xMax + a, yMax + a, zMax + c);
             }
-            if (w.isRemote) {
-                boxes = Arrays.stream(lineBoxes).filter(nonNull)
-                    .map(range -> Box.apply(range, 1d / 8d, 1d / 8d, 1d / 8d, false, false))
-                    .toArray(Box[]::new);
-            } else {
-                boxes = null;
-            }
-        }
-
-        public void deleteLaser() {
+            boxes = Arrays.stream(lineBoxes).filter(nonNull)
+                .map(range -> Box.apply(range, 1d / 8d, 1d / 8d, 1d / 8d, false, false))
+                .toArray(Box[]::new);
         }
 
         public BlockPos minPos() {
@@ -577,62 +475,59 @@ public class TileMarker extends APacketTile implements ITileAreaProvider, ITicka
             return new BlockPos(xMax, yMax, zMax);
         }
 
+        Stream<BlockPos> edgePoses() {
+            return Stream.of(minPos(),
+                new BlockPos(xMin, yMin, zMax),
+                new BlockPos(xMin, yMax, zMin),
+                new BlockPos(xMin, yMax, zMax),
+                new BlockPos(xMax, yMin, zMin),
+                new BlockPos(xMax, yMin, zMax),
+                new BlockPos(xMax, yMax, zMin),
+                maxPos());
+        }
+
+        Link noRender() {
+            return new Link(xMax, xMin, yMax, yMin, zMax, zMin, false);
+        }
+
+        /**
+         * Remove all link related to this one.
+         * Must be called only in server.
+         *
+         * @param world the world where this link exists.
+         */
+        public void removeLink(World world) {
+            edgePoses().map(world::getTileEntity)
+                .flatMap(MapStreamSyntax.streamCast(TileMarker.class))
+                .forEach(marker -> {
+                    marker.link = null;
+                    PacketHandler.sendToAround(LinkReply.create(marker.getPos(), null), marker.getWorld(), marker.getPos());
+                });
+        }
+
+        List<ItemStack> removeAndGetItem(World world) {
+            List<TileMarker> markers = edgePoses().distinct().map(world::getTileEntity)
+                .flatMap(MapStreamSyntax.streamCast(TileMarker.class))
+                .collect(Collectors.toList());
+            NonNullList<ItemStack> stacks = NonNullList.create();
+            markers.forEach(m -> m.getBlockType().getDrops(stacks, world, m.getPos(), world.getBlockState(m.getPos()), 0));
+            markers.stream().map(TileMarker::getPos).forEach(world::setBlockToAir);
+            return stacks;
+        }
+
+        public NBTTagCompound toNbt() {
+            NBTTagCompound compound = new NBTTagCompound();
+            compound.setLong("maxPos", maxPos().toLong());
+            compound.setLong("minPos", minPos().toLong());
+            compound.setBoolean("shouldBeRendered", shouldBeRendered);
+            return compound;
+        }
+
         @Override
         public String toString() {
-            long i = Stream.of(lineBoxes).filter(nonNull).count();
-            return minPos() + " to " + maxPos() + " Lasers : " + i;
-        }
-
-        @Override
-        public boolean equals(final Object o) {
-            if (!(o instanceof Link))
-                return false;
-            final Link l = (Link) o;
-            return l.xMin == this.xMin && l.xMax == this.xMax && l.yMin == this.yMin &&
-                l.yMax == this.yMax && l.zMin == this.zMin && l.zMax == this.zMax && l.w == this.w;
-        }
-
-        @Override
-        public int hashCode() {
-            return (xMin << 10 + yMin << 5 + zMin) + (xMax << 10 + yMax << 5 + zMax);
+            return String.format("Link{(%d, %d, %d) -> (%d, %d, %d), shouldBeRendered=%b}",
+                xMin, yMin, zMin, xMax, yMax, zMax, shouldBeRendered);
         }
     }
 
-    static {
-        BiPredicate<Link, Object> p1 = (link1, r) -> {
-            if (r instanceof BlockIndex) {
-                BlockIndex bi = ((BlockIndex) r);
-                return (bi.x == link1.xMin || bi.x == link1.xMax) && (bi.y == link1.yMin || bi.y == link1.yMax) && (bi.z == link1.zMin || bi.z == link1.zMax) && link1.w == bi.w;
-            }
-            return false;
-        };
-        BiPredicate<Link, Object> p2 = (link1, r) -> {
-            if (r instanceof TileEntity) {
-                final TileEntity te = (TileEntity) r;
-                return (te.getPos().equals(link1.minPos()) || te.getPos().equals(link1.maxPos())) && link1.w == te.getWorld();
-            }
-            return false;
-        };
-
-        BiPredicate<Laser, Object> p3 = (laser1, r) -> {
-            if (r instanceof BlockIndex) {
-                BlockIndex bi = ((BlockIndex) r);
-                return bi.x == laser1.x && bi.y == laser1.y && bi.z == laser1.z && bi.w == laser1.w;
-            }
-            return false;
-        };
-        BiPredicate<Laser, Object> p4 = (laser1, r) -> {
-            if (r instanceof TileEntity) {
-                final TileEntity te = (TileEntity) r;
-                return te.getPos().equals(new BlockPos(laser1.x, laser1.y, laser1.z)) && laser1.w == te.getWorld();
-            }
-            return false;
-        };
-
-        LINK_INDEX.addPredicate(p1);
-        LINK_INDEX.addPredicate(p2);
-
-        LASER_INDEX.addPredicate(p3);
-        LASER_INDEX.addPredicate(p4);
-    }
 }
