@@ -1,14 +1,18 @@
+# Version 12.5.6
+
+* Fixed - marker laser disappear and remain unavailable even if you get close to marker.
+
 # Version 12.5.5
 
 * Added config option to change Solid Fuel Quarry setting. Close #142
 
 # Version 12.5.4
 
-* Fixed dirt and clay dropped bees if you have `Ex Nihilo: Creatio` installed. #121
+* Fixed - Dirt and Clay dropped bees if you have `Ex Nihilo: Creatio` installed. #121
 
 # Version 12.5.3
 
-* Fixed the comparator didn't respect metadata of items.
+* Fixed - The comparator didn't respect metadata of items.
 
 # Version 12.5.2
 
