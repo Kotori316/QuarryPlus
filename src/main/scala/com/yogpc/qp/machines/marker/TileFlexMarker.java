@@ -98,12 +98,6 @@ public class TileFlexMarker extends BlockEntity implements QuarryMarker, Checker
     }
 
     @Override
-    public CompoundTag save(CompoundTag compound) {
-        saveAdditional(compound);
-        return super.save(compound);
-    }
-
-    @Override
     protected void saveAdditional(CompoundTag compound) {
         compound.putLong("min", min.asLong());
         compound.putLong("max", max.asLong());

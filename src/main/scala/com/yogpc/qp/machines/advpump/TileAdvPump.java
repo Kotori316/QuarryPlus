@@ -238,7 +238,7 @@ public class TileAdvPump extends PowerTile
 
     @Override
     public CompoundTag toClientTag(CompoundTag tag) {
-        return save(tag);
+        return saveWithoutMetadata();
     }
 
     public void sync() {

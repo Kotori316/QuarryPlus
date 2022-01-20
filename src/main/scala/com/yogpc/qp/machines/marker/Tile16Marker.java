@@ -57,7 +57,6 @@ public class Tile16Marker extends BlockEntity implements QuarryMarker, CheckerLo
     }
 
     private void setRender() {
-        assert level != null;
         boxes = RenderMarker.getRenderBox(new Area(min, max, Direction.fromAxisAndDirection(Direction.Axis.X, xDirection)));
     }
 
@@ -78,12 +77,6 @@ public class Tile16Marker extends BlockEntity implements QuarryMarker, CheckerLo
         if (level != null && level.isClientSide) {
             setRender();
         }
-    }
-
-    @Override
-    public CompoundTag save(CompoundTag compound) {
-        saveAdditional(compound);
-        return super.save(compound);
     }
 
     @Override

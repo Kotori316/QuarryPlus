@@ -46,12 +46,6 @@ public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
     }
 
     @Override
-    public final CompoundTag save(CompoundTag nbt) {
-        saveAdditional(nbt);
-        return super.save(nbt);
-    }
-
-    @Override
     protected final void saveAdditional(CompoundTag nbt) {
         super.saveAdditional(nbt);
         nbt.putLong("energy", energy);

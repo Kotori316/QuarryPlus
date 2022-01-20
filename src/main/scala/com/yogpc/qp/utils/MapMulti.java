@@ -15,7 +15,7 @@ import net.minecraftforge.registries.IForgeRegistryEntry;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class MapMulti {
-    public static <FROM, TO> BiConsumer<FROM, Consumer<TO>> cast(Class<TO> toClass) {
+    public static <FROM, TO extends FROM> BiConsumer<FROM, Consumer<TO>> cast(Class<TO> toClass) {
         Objects.requireNonNull(toClass);
         return (from, toConsumer) -> {
             if (toClass.isInstance(from)) {
@@ -24,7 +24,7 @@ public class MapMulti {
         };
     }
 
-    public static <FROM, TO> Function<FROM, Optional<TO>> optCast(Class<TO> toClass) {
+    public static <FROM, TO extends FROM> Function<FROM, Optional<TO>> optCast(Class<TO> toClass) {
         return from -> toClass.isInstance(from) ? Optional.of(toClass.cast(from)) : Optional.empty();
     }
 

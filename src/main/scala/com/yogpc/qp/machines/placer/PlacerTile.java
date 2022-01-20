@@ -183,12 +183,6 @@ public class PlacerTile extends BlockEntity implements
     // -------------------- NBT --------------------
 
     @Override
-    public CompoundTag save(CompoundTag compound) {
-        saveAdditional(compound);
-        return super.save(compound);
-    }
-
-    @Override
     protected void saveAdditional(CompoundTag compound) {
         compound.put(KEY_ITEM, ContainerHelper.saveAllItems(new CompoundTag(), inventory));
         compound.putInt(KEY_LAST_PLACED, lastPlacedIndex);

@@ -59,7 +59,19 @@ minecraft {
             property('mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg")
             property "mixin.debug.export", "true"
             property 'forge.logging.console.level', 'debug'
-            args("--username", "Kotori")
+            // From https://github.com/SlimeKnights/TinkersConstruct/blob/1.18/build.gradle
+            if (project.hasProperty('mc_uuid')) {
+                // Your uuid without any dashes in the middle
+                args '--uuid', project.getProperty('mc_uuid')
+            }
+            if (project.hasProperty('mc_username')) {
+                // Your username/display name, this is the name that shows up in chat
+                // Note: This is not your email, even if you have a Mojang account
+                args '--username', project.getProperty('mc_username')
+            }
+            // Your access token, you can find it in your '.minecraft/launcher_profiles.json' file
+            // If not set, use "0" to prevent authentication exception.
+            args '--accessToken', project.findProperty('mc_token') ?: "0"
 
             mods {
                 quarryplus {

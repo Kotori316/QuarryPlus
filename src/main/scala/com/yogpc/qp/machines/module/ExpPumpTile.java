@@ -22,12 +22,6 @@ public class ExpPumpTile extends BlockEntity implements CheckerLog {
     }
 
     @Override
-    public CompoundTag save(CompoundTag tag) {
-        saveAdditional(tag);
-        return super.save(tag);
-    }
-
-    @Override
     protected void saveAdditional(CompoundTag tag) {
         tag.putInt("exp", module.getExp());
         super.saveAdditional(tag);
