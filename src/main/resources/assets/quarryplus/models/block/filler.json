@@ -1,0 +1,7 @@
+{
+  "parent": "block/cube_column",
+  "textures": {
+    "end": "quarryplus:blocks/filler_top",
+    "side": "quarryplus:blocks/filler_side"
+  }
+}
