@@ -166,6 +166,6 @@ public class PowerTile extends BlockEntity {
     }
 
     public enum Reason {
-        MAKE_FRAME, BREAK_BLOCK, REMOVE_FLUID, MOVE_HEAD, ADV_PUMP_FLUID, ADV_SEARCH
+        MAKE_FRAME, BREAK_BLOCK, REMOVE_FLUID, MOVE_HEAD, ADV_PUMP_FLUID, ADV_SEARCH, FILLER
     }
 }
