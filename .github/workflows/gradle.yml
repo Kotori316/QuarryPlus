@@ -18,10 +18,10 @@ jobs:
     steps:
       - name: Log Commit
         env:
-          COMMIT_CONTEXT: ${{ toJSON(github.event.head_commit) }}
-        run: echo ${COMMIT_CONTEXT}
+          COMMIT_CONTEXT: ${{ toJSON(github.event) }}
+        run: echo ${COMMIT_CONTEXT} | jq
       - name: Show commit messages
-        run: echo "${MESSAGES}"
+        run: echo "${MESSAGES}" | jq
         env:
           MESSAGES: ${{ toJSON(github.event.commits.*.message) }}
       - name: Check Publish ${{ !contains(github.event.head_commit.message, '[skip release]') }}
