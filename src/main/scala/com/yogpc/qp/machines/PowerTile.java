@@ -139,9 +139,9 @@ public class PowerTile extends BlockEntity {
         }
 
         public static long getAdvSearchEnergy(int blocks, EnchantmentLevel.HasEnchantments enchantments) {
-            final double FIFTH_ROOT_OF_10 = 1.5848931924611136;
+            final double FIFTH_ROOT_OF_2 = 1.148698354997035;
             double heightEnergy = blocks * enchantments.getAccessor().moveHead() * ONE_FE;
-            double efficiencyBalanced = Math.pow(FIFTH_ROOT_OF_10, enchantments.efficiencyLevel()) * heightEnergy;
+            double efficiencyBalanced = Math.pow(FIFTH_ROOT_OF_2, enchantments.efficiencyLevel()) * heightEnergy;
             return (long) (efficiencyBalanced / (1 + Math.max(0, enchantments.unbreakingLevel())));
         }
 
