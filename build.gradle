@@ -34,14 +34,14 @@ group = "com.kotori316"
 
 loom {
     runs {
-        it.configure {
-            client {
-                runDir = Boolean.parseBoolean(System.getenv("FABRIC_SERVER") ?: "false") ? "run-server" : "run"
-                programArgs(List.of("--username", "Kotori"))
-            }
-            server {
-                runDir = "run-server"
-            }
+        client {
+            configName = "Client"
+            runDir = Boolean.parseBoolean(System.getenv("FABRIC_SERVER")) ? "run-server" : "run"
+            programArgs(List.of("--username", "Kotori"))
+        }
+        server {
+            configName = "Server"
+            runDir = "run-server"
         }
     }
 }
@@ -60,15 +60,6 @@ repositories {
     maven {
         name = "REI-Architectury"
         url = "https://maven.shedaniel.me/"
-    }
-    maven {
-        //noinspection SpellCheckingInspection
-        name = "Technici4n"
-        url = "https://raw.githubusercontent.com/Technici4n/Technici4n-maven/master/"
-        content {
-            //noinspection SpellCheckingInspection
-            includeGroup "dev.technici4n"
-        }
     }
     maven {
         name = "ModMenu"
@@ -126,8 +117,7 @@ dependencies {
     implementation "com.google.code.findbugs:jsr305:3.0.1"
     modImplementation "alexiil.mc.lib:libblockattributes-all:${project.bc_attribute_version}"
 
-    modRuntimeOnly("alexiil.mc.mod:simplepipes-all:${project.simple_pipe_version}")
-    if (Boolean.parseBoolean(System.getenv("FABRIC_SERVER") ?: "false")) {
+    if (Boolean.parseBoolean(System.getenv("FABRIC_SERVER"))) {
         modCompileOnly("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}")
     } else {
         modRuntimeOnly("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}")
@@ -139,13 +129,8 @@ dependencies {
     modImplementation("TechReborn:TechReborn-1.18:${project.TechReborn_version}") {
         transitive = false
     }
-    // modImplementation("dev.technici4n:FastTransferLib:${project.ftl_version}")
     modCompileOnly("mcp.mobius.waila:wthit-api:fabric-${project.wthit_version}")
     modRuntimeOnly("mcp.mobius.waila:wthit:fabric-${project.wthit_version}")
-
-    modRuntimeOnly("curse.maven:mining-dimensions-fabric-442921:3566587")
-    //noinspection SpellCheckingInspection
-    modRuntimeOnly("net.kyrptonaught:customportalapi:0.0.1-beta47-1.18")
 
     modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_version}") {
         //noinspection SpellCheckingInspection
@@ -154,6 +139,12 @@ dependencies {
     modApi("com.terraformersmc:modmenu:${project.mod_menu_version}") {
         transitive = false
     }
+
+    // Runtime Checks
+    modRuntimeOnly("alexiil.mc.mod:simplepipes-all:${project.simple_pipe_version}")
+    modRuntimeOnly("curse.maven:mining-dimensions-fabric-442921:3566587")
+    //noinspection SpellCheckingInspection
+    modRuntimeOnly("net.kyrptonaught:customportalapi:0.0.1-beta47-1.18")
 
     // Test Dependencies.
     testImplementation(group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.6.2')
@@ -222,25 +213,34 @@ jar {
 
 // PUBLISH
 String joinedLog() {
+    def commit = getCommit(BRANCH())
     return String.join("\n",
-            "Additional Enchanted Miner for ${project.minecraft_version} and Fabric.",
+            "# Additional Enchanted Miner for ${project.minecraft_version} and Fabric.",
             "",
             isInCI() ? "RELEASED VIA Ci/CD. It may contain bugs." : "Manually built.",
             "",
-            "Commit: [${getCommit(BRANCH())}](https://github.com/Kotori316/QuarryPlus/tree/${getCommit(BRANCH())})",
+            "## Commit",
             "",
-            "Requires:",
+            "[$commit](https://github.com/Kotori316/QuarryPlus/tree/$commit)",
+            "",
+            "## Requires",
             "",
             "* [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api)",
             "* [Fabric Language Scala](https://www.curseforge.com/minecraft/mc-mods/fabric-language-scala)",
             "* [Cloth Config API (Fabric)](https://www.curseforge.com/minecraft/mc-mods/cloth-config)",
             "",
-            "Built with:",
+            "## Built with",
             "",
             "* Minecraft ${project.minecraft_version}",
             "* Mapping Official",
             "* Fabric API ${project.fabric_version}",
             "* Fabric Loader ${project.loader_version}",
+            "* Lib Block Attributes ${project.bc_attribute_version}",
+            "* TechReborn Energy ${project.tech_energy_version}",
+            "* TechReborn ${project.TechReborn_version}",
+            "* Cloth ${project.cloth_version}",
+            "* Mod Menu ${project.mod_menu_version}",
+            "* WTHIT ${project.wthit_version}",
     )
 }
 
@@ -248,7 +248,9 @@ String curseChangelog() {
     String fromFile = file("changelog.md").exists() ? file("changelog.md").getText() : ""
     String base = joinedLog()
     String last = "See https://github.com/Kotori316/QuarryPlus/commits/${BRANCH()} to get all change log."
-    return base + System.lineSeparator() * 2 + fromFile + System.lineSeparator() + last
+    return base + System.lineSeparator() * 2 +
+            "# Changelog" + System.lineSeparator() + fromFile + System.lineSeparator() +
+            last
 }
 
 curseforge {

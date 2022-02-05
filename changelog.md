@@ -1,4 +1,4 @@
-# 1.18
+## 1.18
 
 * Fixed - Frame line of QuarryPlus disappeared after world was loaded.
 * Added recipe of Status Checker.
