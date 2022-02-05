@@ -21,7 +21,7 @@ class EnchantmentEfficiency {
     final long energyCapacity;
     final int fluidCapacity;
     final long baseEnergy;
-    static final List<Double> baseEnergyMap = List.of(5d, 4d, 2.5, 1d);
+    static final float[] baseEnergyMap = {5f, 4f, 2.5f, 1f};
     final int range;
 
     EnchantmentEfficiency(List<EnchantmentLevel> enchantments) {
@@ -32,7 +32,7 @@ class EnchantmentEfficiency {
         this.range = (rangeLevel + 1) * 32;
         this.energyCapacity = (int) Math.pow(2, 10 + efficiency) * PowerTile.ONE_FE;
         this.fluidCapacity = 512 * 1000 * (efficiency + 1);
-        this.baseEnergy = (long) (baseEnergyMap.get(Mth.clamp(unbreaking, 0, 3)) * PowerTile.ONE_FE * QuarryPlus.config.adv_pump.advPumpEnergyRemoveFluid);
+        this.baseEnergy = (long) (baseEnergyMap[Mth.clamp(unbreaking, 0, 3)] * PowerTile.ONE_FE * QuarryPlus.config.adv_pump.advPumpEnergyRemoveFluid);
     }
 
     static int getLevel(List<EnchantmentLevel> enchantments, Enchantment enchantment) {
