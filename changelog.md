@@ -1,5 +1,8 @@
 ## 1.18
 
+* Added - config option to disable removing common material in ChunkDestroyer.
+* Changed - Reduced work energy of Chunk Destroyer. (Changed coefficient of Efficiency)
+* Fixed - performance issue of rendering of ChunkDestroyer.
 * Fixed - Frame line of QuarryPlus disappeared after world was loaded.
 * Added recipe of Status Checker.
 * Fixed a crash related to client sync.
