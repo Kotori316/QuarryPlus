@@ -61,13 +61,13 @@ public class RenderAdvQuarry implements BlockEntityRenderer<TileAdvQuarry> {
                 var zMin = Math.max(startZ, playerZ - 128);
                 var zMax = Math.min(endZ, playerZ + 128);
                 if (b1)
-                    Box.apply(xMin, range.minY(), startZ, xMax, range.minY(), startZ, d, d, d, false, false).render(buffer, matrices, sprite, color);
+                    Box.apply(xMin, range.minY(), startZ, xMax, range.minY(), startZ, xMax - xMin, d, d, false, false).render(buffer, matrices, sprite, color);
                 if (b2)
-                    Box.apply(xMin, range.minY(), endZ, xMax, range.minY(), endZ, d, d, d, false, false).render(buffer, matrices, sprite, color);
+                    Box.apply(xMin, range.minY(), endZ, xMax, range.minY(), endZ, xMax - xMin, d, d, false, false).render(buffer, matrices, sprite, color);
                 if (b3)
-                    Box.apply(startX, range.minY(), zMin, startX, range.minY(), zMax, d, d, d, false, false).render(buffer, matrices, sprite, color);
+                    Box.apply(startX, range.minY(), zMin, startX, range.minY(), zMax, d, d, zMax - zMin, false, false).render(buffer, matrices, sprite, color);
                 if (b4)
-                    Box.apply(endX, range.minY(), zMin, endX, range.minY(), zMax, d, d, d, false, false).render(buffer, matrices, sprite, color);
+                    Box.apply(endX, range.minY(), zMin, endX, range.minY(), zMax, d, d, zMax - zMin, false, false).render(buffer, matrices, sprite, color);
                 matrices.popPose();
             }
             Minecraft.getInstance().getProfiler().pop();
