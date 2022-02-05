@@ -37,6 +37,9 @@ public class QuarryConfig implements ConfigData {
         @ConfigEntry.Category(Constant.COMMON_CATEGORY)
         @ConfigEntry.Gui.RequiresRestart
         public boolean convertDeepslateOres = false;
+        @ConfigEntry.Category(Constant.COMMON_CATEGORY)
+        @ConfigEntry.Gui.RequiresRestart
+        public boolean removesCommonMaterialAdvQuarry = true;
 
         public Common() {
             try {
@@ -54,9 +57,6 @@ public class QuarryConfig implements ConfigData {
         @ConfigEntry.Category(Constant.COMMON_POWER_CATEGORY)
         @ConfigEntry.Gui.RequiresRestart
         public double rebornEnergyConversionCoefficient = 1d / 16d;
-        @ConfigEntry.Category(Constant.COMMON_POWER_CATEGORY)
-        @ConfigEntry.Gui.RequiresRestart
-        public double fastTransferEnergyConversionCoefficient = 1d / 16d;
         @ConfigEntry.Category(Constant.COMMON_POWER_CATEGORY)
         public int creativeGeneratorGeneration = 1000;
     }

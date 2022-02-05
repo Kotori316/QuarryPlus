@@ -90,22 +90,26 @@ public record ItemConverter(
      */
     @SuppressWarnings("SpellCheckingInspection") // For javadoc
     public static ItemConverter advQuarryConverter() {
-        Function<ItemKey, ItemKey> function = itemKey -> new ItemKey(ItemStack.EMPTY);
-        return new ItemConverter(Stream.of(
-                itemPredicate(Items.STONE),
-                itemPredicate(Items.GRANITE),
-                itemPredicate(Items.DIORITE),
-                itemPredicate(Items.ANDESITE),
-                tagPredicate(ItemTags.STONE_TOOL_MATERIALS),
-                itemPredicate(Items.DIRT),
-                itemPredicate(Items.GRASS_BLOCK),
-                itemPredicate(Items.NETHERRACK),
-                itemPredicate(Items.DEEPSLATE),
-                itemPredicate(Items.TUFF),
-                itemPredicate(Items.BLACKSTONE),
-                itemPredicate(Items.SANDSTONE)
-            ).map(p -> Map.entry(p, function))
-            .toList());
+        if (QuarryPlus.config.common.removesCommonMaterialAdvQuarry) {
+            Function<ItemKey, ItemKey> function = itemKey -> new ItemKey(ItemStack.EMPTY);
+            return new ItemConverter(Stream.of(
+                    itemPredicate(Items.STONE),
+                    itemPredicate(Items.GRANITE),
+                    itemPredicate(Items.DIORITE),
+                    itemPredicate(Items.ANDESITE),
+                    tagPredicate(ItemTags.STONE_TOOL_MATERIALS),
+                    itemPredicate(Items.DIRT),
+                    itemPredicate(Items.GRASS_BLOCK),
+                    itemPredicate(Items.NETHERRACK),
+                    itemPredicate(Items.DEEPSLATE),
+                    itemPredicate(Items.TUFF),
+                    itemPredicate(Items.BLACKSTONE),
+                    itemPredicate(Items.SANDSTONE)
+                ).map(p -> Map.entry(p, function))
+                .toList());
+        } else {
+            return new ItemConverter(List.of());
+        }
     }
 
     static Predicate<ItemKey> tagPredicate(Tag.Named<Item> tag) {

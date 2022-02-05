@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusTest;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -19,6 +20,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -138,5 +140,29 @@ class ItemConverterTest extends QuarryPlusTest {
     void dummy() {
         assertTrue(pickaxeConvert().findAny().isPresent());
         assertTrue(deepOres().findAny().isPresent());
+    }
+
+    @Test
+    void advQuarryConverter1() {
+        var pre = QuarryPlus.config.common.removesCommonMaterialAdvQuarry;
+        try {
+            QuarryPlus.config.common.removesCommonMaterialAdvQuarry = true;
+            var converter = ItemConverter.advQuarryConverter();
+            assertFalse(converter.conversionMap().isEmpty());
+        } finally {
+            QuarryPlus.config.common.removesCommonMaterialAdvQuarry = pre;
+        }
+    }
+
+    @Test
+    void advQuarryConverter2() {
+        var pre = QuarryPlus.config.common.removesCommonMaterialAdvQuarry;
+        try {
+            QuarryPlus.config.common.removesCommonMaterialAdvQuarry = false;
+            var converter = ItemConverter.advQuarryConverter();
+            assertTrue(converter.conversionMap().isEmpty());
+        } finally {
+            QuarryPlus.config.common.removesCommonMaterialAdvQuarry = pre;
+        }
     }
 }
