@@ -3,11 +3,15 @@ package com.yogpc.qp.machines.misc;
 import java.util.List;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QPBlock;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
@@ -19,6 +23,7 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
 public class CreativeGeneratorBlock extends QPBlock implements EntityBlock {
@@ -45,5 +50,22 @@ public class CreativeGeneratorBlock extends QPBlock implements EntityBlock {
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter world, List<Component> tooltip, TooltipFlag options) {
         super.appendHoverText(stack, world, tooltip, options);
         tooltip.add(new TextComponent("Works only for Quarry"));
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        if (!player.isShiftKeyDown()) {
+            if (!level.isClientSide) {
+                level.getBlockEntity(pos, QuarryPlus.ModObjects.CREATIVE_GENERATOR_TYPE)
+                    .ifPresent(t -> {
+                        t.cycleMagnification();
+                        String message = "Creative Generator: %d".formatted(t.getSendEnergy() / PowerTile.ONE_FE);
+                        player.displayClientMessage(new TextComponent(message), false);
+                    });
+            }
+            return InteractionResult.sidedSuccess(level.isClientSide);
+        }
+        return super.use(state, level, pos, player, hand, hitResult);
     }
 }
