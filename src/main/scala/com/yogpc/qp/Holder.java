@@ -21,6 +21,7 @@ import com.yogpc.qp.machines.checker.ItemChecker;
 import com.yogpc.qp.machines.controller.BlockController;
 import com.yogpc.qp.machines.filler.FillerBlock;
 import com.yogpc.qp.machines.filler.FillerEntity;
+import com.yogpc.qp.machines.filler.FillerMenu;
 import com.yogpc.qp.machines.marker.BlockExMarker;
 import com.yogpc.qp.machines.marker.BlockMarker;
 import com.yogpc.qp.machines.marker.ContainerMarker;
@@ -213,6 +214,8 @@ public class Holder {
         new MiniQuarryMenu(windowId, inv.player, data.readBlockPos()), MiniQuarryMenu.GUI_ID);
     public static final MenuType<SFQuarryMenu> SOLID_FUEL_QUARRY_MENU_TYPE = registerMenuType((windowId, inv, data) ->
         new SFQuarryMenu(windowId, inv.player, data.readBlockPos()), SFQuarryMenu.GUI_ID);
+    public static final MenuType<FillerMenu> FILLER_MENU_TYPE = registerMenuType((windowId, inv, data) ->
+        new FillerMenu(windowId, inv.player, data.readBlockPos()), FillerMenu.GUI_ID);
 
     public static final LootItemFunctionType ENCHANTED_LOOT_TYPE = Registry.register(Registry.LOOT_FUNCTION_TYPE,
         new ResourceLocation(QuarryPlus.modID, EnchantedLootFunction.NAME), new LootItemFunctionType(EnchantedLootFunction.SERIALIZER));

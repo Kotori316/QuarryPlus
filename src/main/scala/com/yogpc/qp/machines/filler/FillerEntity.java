@@ -14,9 +14,13 @@ import com.yogpc.qp.utils.MapMulti;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.DirectionalPlaceContext;
 import net.minecraft.world.level.Level;
@@ -28,10 +32,11 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class FillerEntity extends PowerTile implements PowerConfig.Provider {
+public final class FillerEntity extends PowerTile implements PowerConfig.Provider, MenuProvider {
     private static final Logger LOGGER = QuarryPlus.getLogger(FillerEntity.class);
     @Nullable
     SkipIterator iterator = null;
+    final FillerContainer container = new FillerContainer(27);
 
     public FillerEntity(@NotNull BlockPos pos, BlockState state) {
         super(Holder.FILLER_TYPE, pos, state);
@@ -64,22 +69,25 @@ public final class FillerEntity extends PowerTile implements PowerConfig.Provide
                 return;
             }
             var energy = PowerManager.getFillerEnergy(this);
-            var blockStack = new ItemStack(Items.STONE);
-            var targetPos = this.iterator.peek(predicate(level, blockStack));
-            if (targetPos == null) {
-                // Finished.
-                this.iterator = null;
-                logUsage();
-            } else {
-                if (useEnergy(energy, Reason.FILLER, false)) {
-                    var context = new DirectionalPlaceContext(level, targetPos, Direction.DOWN, blockStack, Direction.UP);
-                    var state = getStateFromItem((BlockItem) blockStack.getItem(), context);
-                    if (state != null) {
-                        level.setBlock(targetPos, state, Block.UPDATE_ALL);
+            var maybeStack = this.container.getFirstItem();
+            maybeStack.ifPresent(blockStack -> {
+                var targetPos = this.iterator.peek(predicate(level, blockStack));
+                if (targetPos == null) {
+                    // Finished.
+                    this.iterator = null;
+                    logUsage();
+                } else {
+                    if (useEnergy(energy, Reason.FILLER, false)) {
+                        var context = new DirectionalPlaceContext(level, targetPos, Direction.DOWN, blockStack, Direction.UP);
+                        var state = getStateFromItem((BlockItem) blockStack.getItem(), context);
+                        if (state != null) {
+                            level.setBlock(targetPos, state, Block.UPDATE_ALL);
+                            blockStack.shrink(1);
+                        }
+                        this.iterator.commit(targetPos, false);
                     }
-                    this.iterator.commit(targetPos, false);
                 }
-            }
+            });
         }
     }
 
@@ -127,5 +135,15 @@ public final class FillerEntity extends PowerTile implements PowerConfig.Provide
             LOGGER.error("Caught exception in Filler", e);
             return null;
         }
+    }
+
+    @Override
+    public Component getDisplayName() {
+        return getBlockState().getBlock().getName();
+    }
+
+    @Override
+    public AbstractContainerMenu createMenu(int pContainerId, Inventory pInventory, Player pPlayer) {
+        return new FillerMenu(pContainerId, pPlayer, this.getBlockPos());
     }
 }

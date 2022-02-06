@@ -1,10 +1,16 @@
 package com.yogpc.qp.machines.filler;
 
 import com.yogpc.qp.Holder;
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QPBlock;
 import com.yogpc.qp.utils.CombinedBlockEntityTicker;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
@@ -14,6 +20,8 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 public final class FillerBlock extends QPBlock implements EntityBlock {
@@ -38,6 +46,24 @@ public final class FillerBlock extends QPBlock implements EntityBlock {
             level.getBlockEntity(pos, Holder.FILLER_TYPE)
                 .ifPresent(FillerEntity::start);
         }
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public InteractionResult use(BlockState state, Level level, BlockPos pos,
+                                 Player player, InteractionHand hand, BlockHitResult hit) {
+        if (!QuarryPlus.config.enableMap.enabled(NAME)) {
+            if (!level.isClientSide)
+                player.displayClientMessage(new TranslatableComponent("quarryplus.chat.disable_message", getName()), true);
+            return InteractionResult.sidedSuccess(level.isClientSide);
+        }
+        if (!player.isShiftKeyDown()) {
+            if (!level.isClientSide && level.getBlockEntity(pos) instanceof FillerEntity filler) {
+                NetworkHooks.openGui((ServerPlayer) player, filler, pos);
+            }
+            return InteractionResult.sidedSuccess(level.isClientSide);
+        }
+        return super.use(state, level, pos, player, hand, hit);
     }
 
     @Nullable
