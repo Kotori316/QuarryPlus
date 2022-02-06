@@ -44,5 +44,9 @@
   },
   "book_mover": {
     "maxEnergy": 50000.0
+  },
+  "filler": {
+    "maxEnergy": 1000.0,
+    "breakBlockBase": 15.0
   }
 }

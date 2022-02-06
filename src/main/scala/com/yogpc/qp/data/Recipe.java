@@ -19,6 +19,7 @@ import com.yogpc.qp.machines.misc.YSetterItem;
 import com.yogpc.qp.machines.module.BedrockModuleItem;
 import com.yogpc.qp.machines.module.ExpModuleItem;
 import com.yogpc.qp.machines.module.ExpPumpBlock;
+import com.yogpc.qp.machines.module.FillerModuleItem;
 import com.yogpc.qp.machines.module.PumpModuleItem;
 import com.yogpc.qp.machines.module.PumpPlusBlock;
 import com.yogpc.qp.machines.module.ReplacerBlock;
@@ -335,6 +336,13 @@ class Recipe extends QuarryPlusDataProvider.QuarryDataProvider {
                     .define('I', Items.FURNACE)
                     .define('G', Items.DIAMOND_PICKAXE), null
             ).addCondition(new EnableCondition(SFQuarryBlock.NAME)));
+        list.add(
+            // Filler Module
+            RecipeSerializeHelper.by(
+                ShapelessRecipeBuilder.shapeless(Holder.ITEM_FILLER_MODULE)
+                    .requires(Holder.BLOCK_FILLER)
+                    .group(MODULE_RECIPE_GROUP), null
+            ).addCondition(new EnableCondition(FillerModuleItem.NAME)));
         return list;
     }
 

@@ -208,7 +208,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
                     area.maxX() - 1, area.minY() - 1, area.maxZ() - 1, area.direction()));
             }
             var action = ((FillerTarget) quarry.target).fillerAction;
-            var energy = PowerManager.getFillerEnergy(quarry);
+            var energy = PowerManager.getFillerEnergy(quarry) * 10;
             action.tick(() -> Optional.of(new ItemStack(Items.STONE)), quarry, energy);
             if (action.isFinished()) {
                 quarry.target = null;

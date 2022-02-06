@@ -5,6 +5,7 @@ import java.util.List;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.module.ExpModuleItem;
+import com.yogpc.qp.machines.module.FillerModuleItem;
 import com.yogpc.qp.machines.module.PumpModuleItem;
 import com.yogpc.qp.machines.module.ReplacerModuleItem;
 import com.yogpc.qp.machines.placer.PlacerBlock;
@@ -65,7 +66,11 @@ final class RecipeAdvancement extends QuarryPlusDataProvider.QuarryDataProvider 
             AdvancementSerializeHelper.apply(Holder.BLOCK_SOLID_FUEL_QUARRY.getRegistryName())
                 .addItemCriterion(Items.DIAMOND_PICKAXE)
                 .addTagCriterion(Tags.Items.STORAGE_BLOCKS_GOLD)
-                .addCondition(new EnableCondition(SFQuarryBlock.NAME))
+                .addCondition(new EnableCondition(SFQuarryBlock.NAME)),
+            // Filler Module
+            AdvancementSerializeHelper.apply(Holder.ITEM_FILLER_MODULE.getRegistryName())
+                .addItemCriterion(Holder.BLOCK_FILLER)
+                .addCondition(new EnableCondition(FillerModuleItem.NAME))
         );
     }
 
