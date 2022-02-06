@@ -3,6 +3,7 @@ package com.yogpc.qp.machines.quarry;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -13,6 +14,8 @@ import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.PowerTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -108,8 +111,11 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
                     logTargetChange(quarryPos, quarry);
                     if (quarry.target != null)
                         tick(world, quarryPos, state, quarry);
-                    else
-                        quarry.setState(FINISHED, state);
+                    else {
+                        // quarry.target == null
+                        if (quarry.hasFillerModule()) quarry.setState(FILLER, state);
+                        else quarry.setState(FINISHED, state);
+                    }
                 } else {
                     quarry.target = Target.poses(fluidPoses);
                     quarry.setState(REMOVE_FLUID, state);
@@ -187,6 +193,26 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
                     TileQuarry.removeEdgeFluid(fluidPos, targetWorld, quarry);
                 }
                 quarry.setState(BREAK_BLOCK, state);
+            }
+        }
+    },
+
+    FILLER(true) {
+        @Override
+        public void tick(Level world, BlockPos quarryPos, BlockState state, TileQuarry quarry) {
+            Objects.requireNonNull(quarry.getArea());
+            if (!(quarry.target instanceof FillerTarget)) {
+                var area = quarry.getArea();
+                quarry.target = Target.newFillerTarget(new Area(
+                    area.minX() + 1, quarry.digMinY + 1, area.minZ() + 1,
+                    area.maxX() - 1, area.minY() - 1, area.maxZ() - 1, area.direction()));
+            }
+            var action = ((FillerTarget) quarry.target).fillerAction;
+            var energy = PowerManager.getFillerEnergy(quarry) * 10;
+            action.tick(() -> Optional.of(new ItemStack(Items.STONE)), quarry, energy);
+            if (action.isFinished()) {
+                quarry.target = null;
+                quarry.setState(FINISHED, state);
             }
         }
     };

@@ -9,6 +9,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.advquarry.AdvActionMessage;
 import com.yogpc.qp.machines.controller.ControllerOpenMessage;
 import com.yogpc.qp.machines.controller.SetSpawnerEntityMessage;
+import com.yogpc.qp.machines.filler.FillerButtonMessage;
 import com.yogpc.qp.machines.marker.FlexMarkerMessage;
 import com.yogpc.qp.machines.marker.Marker16Message;
 import com.yogpc.qp.machines.mini_quarry.MiniListSyncMessage;
@@ -55,6 +56,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(id.getAndIncrement(), ControllerOpenMessage.class, ControllerOpenMessage::write, ControllerOpenMessage::new, setHandled(ControllerOpenMessage::onReceive));
         INSTANCE.registerMessage(id.getAndIncrement(), MiniListSyncMessage.class, MiniListSyncMessage::write, MiniListSyncMessage::new, setHandled(MiniListSyncMessage::onReceive));
         INSTANCE.registerMessage(id.getAndIncrement(), MiniRequestListMessage.class, MiniRequestListMessage::write, MiniRequestListMessage::new, setHandled(MiniRequestListMessage::onReceive));
+        INSTANCE.registerMessage(id.getAndIncrement(), FillerButtonMessage.class, FillerButtonMessage::write, FillerButtonMessage::new, setHandled(FillerButtonMessage::onReceive));
     }
 
     public static void sendToClient(@NotNull IMessage message, @NotNull Level world) {

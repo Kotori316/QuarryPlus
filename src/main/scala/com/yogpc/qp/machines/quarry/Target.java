@@ -6,10 +6,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.Spliterators;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
+import com.yogpc.qp.machines.filler.FillerAction;
+import com.yogpc.qp.machines.filler.FillerTargetPosIterator;
+import com.yogpc.qp.machines.filler.SkipIterator;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.LongArrayTag;
@@ -55,6 +60,7 @@ public abstract class Target {
             case "FrameTarget" -> FrameTarget.from(tag);
             case "PosesTarget" -> PosesTarget.from(tag);
             case "FrameInsideTarget" -> FrameInsideTarget.from(tag);
+            case "FillerTarget" -> FillerTarget.from(tag);
             default -> {
                 if (THROW_IF_INVALID_NBT) {
                     throw new IllegalArgumentException("Invalid target nbt. " + tag);
@@ -76,6 +82,10 @@ public abstract class Target {
 
     public static Target newFrameInside(Area area, int minY, int maxY) {
         return new FrameInsideTarget(area, minY, maxY);
+    }
+
+    public static Target newFillerTarget(Area area) {
+        return new FillerTarget(area);
     }
 
     @Nullable
@@ -367,5 +377,48 @@ final class FrameInsideTarget extends Target {
             ", maxY=" + maxY +
             ", index=" + index +
             '}';
+    }
+}
+
+final class FillerTarget extends Target {
+    private final Area area;
+    final FillerAction fillerAction;
+
+    FillerTarget(Area area) {
+        this.area = area;
+        this.fillerAction = new FillerAction();
+        this.fillerAction.setIterator(new SkipIterator(area, FillerTargetPosIterator::box));
+    }
+
+    public static FillerTarget from(CompoundTag tag) {
+        var area = Area.fromNBT(tag.getCompound("area")).orElseThrow();
+        var target = new FillerTarget(area);
+        target.fillerAction.fromNbt(tag.getCompound("fillerAction"));
+        return target;
+    }
+
+    /**
+     * Dummy method. Don't use.
+     *
+     * @deprecated
+     */
+    @Override
+    @Deprecated
+    public @Nullable BlockPos get(boolean goNext) {
+        return null;
+    }
+
+    @Override
+    public @NotNull Stream<BlockPos> allPoses() {
+        var itr = FillerTargetPosIterator.box(area);
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(itr, 0), false);
+    }
+
+    @Override
+    protected @NotNull CompoundTag toNbt() {
+        var tag = new CompoundTag();
+        tag.put("area", area.toNBT());
+        tag.put("fillerAction", fillerAction.toNbt());
+        return tag;
     }
 }

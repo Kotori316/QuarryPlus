@@ -11,6 +11,7 @@ import com.yogpc.qp.machines.advpump.BlockAdvPump;
 import com.yogpc.qp.machines.advquarry.BlockAdvQuarry;
 import com.yogpc.qp.machines.bookmover.BookMoverBlock;
 import com.yogpc.qp.machines.checker.ItemChecker;
+import com.yogpc.qp.machines.filler.FillerBlock;
 import com.yogpc.qp.machines.marker.BlockMarker;
 import com.yogpc.qp.machines.mini_quarry.MiniQuarryBlock;
 import com.yogpc.qp.machines.miningwell.MiningWellBlock;
@@ -18,6 +19,7 @@ import com.yogpc.qp.machines.misc.YSetterItem;
 import com.yogpc.qp.machines.module.BedrockModuleItem;
 import com.yogpc.qp.machines.module.ExpModuleItem;
 import com.yogpc.qp.machines.module.ExpPumpBlock;
+import com.yogpc.qp.machines.module.FillerModuleItem;
 import com.yogpc.qp.machines.module.PumpModuleItem;
 import com.yogpc.qp.machines.module.PumpPlusBlock;
 import com.yogpc.qp.machines.module.ReplacerBlock;
@@ -224,6 +226,13 @@ class Recipe extends QuarryPlusDataProvider.QuarryDataProvider {
             makeList(Tags.Items.DUSTS_REDSTONE, 8),
             makeList(Items.COMPARATOR, 4)
         )))).addCondition(new EnableCondition(MiniQuarryBlock.NAME)));
+        // Filler
+        list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(
+            location(FillerBlock.NAME), new ItemStack(Holder.BLOCK_FILLER), 160000 * PowerTile.ONE_FE, true, List.of(
+            makeList(Tags.Items.INGOTS_IRON, 32),
+            makeList(Items.LADDER, 32),
+            makeList(Items.IRON_AXE, 6)
+        )))).addCondition(new EnableCondition(FillerBlock.NAME)));
 
         return list;
     }
@@ -327,6 +336,13 @@ class Recipe extends QuarryPlusDataProvider.QuarryDataProvider {
                     .define('I', Items.FURNACE)
                     .define('G', Items.DIAMOND_PICKAXE), null
             ).addCondition(new EnableCondition(SFQuarryBlock.NAME)));
+        list.add(
+            // Filler Module
+            RecipeSerializeHelper.by(
+                ShapelessRecipeBuilder.shapeless(Holder.ITEM_FILLER_MODULE)
+                    .requires(Holder.BLOCK_FILLER)
+                    .group(MODULE_RECIPE_GROUP), null
+            ).addCondition(new EnableCondition(FillerModuleItem.NAME)));
         return list;
     }
 

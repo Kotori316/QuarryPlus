@@ -11,6 +11,7 @@ public interface QuarryModule {
         DUMMY(new ResourceLocation(QuarryPlus.modID, "dummy")),
         PUMP(Holder.BLOCK_PUMP.getRegistryName()),
         BEDROCK(Holder.ITEM_BEDROCK_MODULE.getRegistryName()),
+        FILLER(Holder.ITEM_FILLER_MODULE.getRegistryName()),
         ;
 
         private final ResourceLocation moduleId;

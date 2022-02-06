@@ -19,6 +19,9 @@ import com.yogpc.qp.machines.bookmover.BookMoverEntity;
 import com.yogpc.qp.machines.bookmover.BookMoverMenu;
 import com.yogpc.qp.machines.checker.ItemChecker;
 import com.yogpc.qp.machines.controller.BlockController;
+import com.yogpc.qp.machines.filler.FillerBlock;
+import com.yogpc.qp.machines.filler.FillerEntity;
+import com.yogpc.qp.machines.filler.FillerMenu;
 import com.yogpc.qp.machines.marker.BlockExMarker;
 import com.yogpc.qp.machines.marker.BlockMarker;
 import com.yogpc.qp.machines.marker.ContainerMarker;
@@ -42,6 +45,7 @@ import com.yogpc.qp.machines.module.EnergyModuleItem;
 import com.yogpc.qp.machines.module.ExpModuleItem;
 import com.yogpc.qp.machines.module.ExpPumpBlock;
 import com.yogpc.qp.machines.module.ExpPumpTile;
+import com.yogpc.qp.machines.module.FillerModuleItem;
 import com.yogpc.qp.machines.module.ModuleLootFunction;
 import com.yogpc.qp.machines.module.PumpModuleItem;
 import com.yogpc.qp.machines.module.PumpPlusBlock;
@@ -152,6 +156,7 @@ public class Holder {
     public static final BlockAdvPump BLOCK_ADV_PUMP = registerBlock(new BlockAdvPump());
     public static final BlockAdvQuarry BLOCK_ADV_QUARRY = registerBlock(new BlockAdvQuarry());
     public static final MiniQuarryBlock BLOCK_MINI_QUARRY = registerBlock(new MiniQuarryBlock());
+    public static final FillerBlock BLOCK_FILLER = registerBlock(new FillerBlock());
     public static final BlockMarker BLOCK_MARKER = registerBlock(new BlockMarker());
     public static final BlockExMarker.BlockFlexMarker BLOCK_FLEX_MARKER = registerBlock(new BlockExMarker.BlockFlexMarker());
     public static final BlockExMarker.Block16Marker BLOCK_16_MARKER = registerBlock(new BlockExMarker.Block16Marker());
@@ -169,6 +174,7 @@ public class Holder {
     public static final ExpModuleItem ITEM_EXP_MODULE = registerItem(new ExpModuleItem(), EnableOrNot.CONFIG_ON);
     public static final BedrockModuleItem ITEM_BEDROCK_MODULE = registerItem(new BedrockModuleItem(), EnableOrNot.CONFIG_OFF);
     public static final EnergyModuleItem ITEM_FUEL_MODULE_NORMAL = registerItem(new EnergyModuleItem(5, "fuel_module_normal"), EnableOrNot.CONFIG_ON);
+    public static final FillerModuleItem ITEM_FILLER_MODULE = registerItem(new FillerModuleItem(), EnableOrNot.CONFIG_ON);
 
     public static final BlockEntityType<TileQuarry> QUARRY_TYPE = registerEntityType(TileQuarry::new, BLOCK_QUARRY, EnableOrNot.CONFIG_ON);
     public static final BlockEntityType<SFQuarryEntity> SOLID_FUEL_QUARRY_TYPE = registerEntityType(SFQuarryEntity::new, BLOCK_SOLID_FUEL_QUARRY, EnableOrNot.CONFIG_ON);
@@ -184,6 +190,7 @@ public class Holder {
     public static final BlockEntityType<PlacerTile> PLACER_TYPE = registerEntityType(PlacerTile::new, BLOCK_PLACER, EnableOrNot.CONFIG_ON);
     public static final BlockEntityType<BookMoverEntity> BOOK_MOVER_TYPE = registerEntityType(BookMoverEntity::new, BLOCK_BOOK_MOVER, EnableOrNot.CONFIG_OFF);
     public static final BlockEntityType<MiniQuarryTile> MINI_QUARRY_TYPE = registerEntityType(MiniQuarryTile::new, BLOCK_MINI_QUARRY, EnableOrNot.CONFIG_ON);
+    public static final BlockEntityType<FillerEntity> FILLER_TYPE = registerEntityType(FillerEntity::new, BLOCK_FILLER, EnableOrNot.CONFIG_ON);
 
     public static final MenuType<ContainerMarker> FLEX_MARKER_MENU_TYPE = registerMenuType((windowId, inv, data) ->
         new ContainerMarker(windowId, inv.player, data.readBlockPos(), Holder.FLEX_MARKER_MENU_TYPE), BlockExMarker.GUI_FLEX_ID);
@@ -209,6 +216,8 @@ public class Holder {
         new MiniQuarryMenu(windowId, inv.player, data.readBlockPos()), MiniQuarryMenu.GUI_ID);
     public static final MenuType<SFQuarryMenu> SOLID_FUEL_QUARRY_MENU_TYPE = registerMenuType((windowId, inv, data) ->
         new SFQuarryMenu(windowId, inv.player, data.readBlockPos()), SFQuarryMenu.GUI_ID);
+    public static final MenuType<FillerMenu> FILLER_MENU_TYPE = registerMenuType((windowId, inv, data) ->
+        new FillerMenu(windowId, inv.player, data.readBlockPos()), FillerMenu.GUI_ID);
 
     public static final LootItemFunctionType ENCHANTED_LOOT_TYPE = Registry.register(Registry.LOOT_FUNCTION_TYPE,
         new ResourceLocation(QuarryPlus.modID, EnchantedLootFunction.NAME), new LootItemFunctionType(EnchantedLootFunction.SERIALIZER));

@@ -74,4 +74,8 @@ public class PowerManager {
     public static <T extends EnchantmentLevel.HasEnchantments & PowerConfig.Provider> long getMiniQuarryEnergy(T enchantments) {
         return enchantments.getPowerConfig().breakBlockBase() / (1 + Math.max(0, enchantments.unbreakingLevel()));
     }
+
+    public static <T extends PowerConfig.Provider> long getFillerEnergy(T enchantments) {
+        return enchantments.getPowerConfig().breakBlockBase();
+    }
 }
