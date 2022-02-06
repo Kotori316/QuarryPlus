@@ -111,6 +111,10 @@ public class ModuleInventory extends SimpleContainer implements INBTSerializable
             return getLoadedModules().contains(QuarryModule.Constant.BEDROCK);
         }
 
+        default boolean hasFillerModule() {
+            return getLoadedModules().contains(QuarryModule.Constant.FILLER);
+        }
+
         default Optional<ExpModule> getExpModule() {
             return getLoadedModules().stream().mapMulti(MapMulti.cast(ExpModule.class)).findFirst();
         }

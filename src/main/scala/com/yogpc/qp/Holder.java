@@ -45,6 +45,7 @@ import com.yogpc.qp.machines.module.EnergyModuleItem;
 import com.yogpc.qp.machines.module.ExpModuleItem;
 import com.yogpc.qp.machines.module.ExpPumpBlock;
 import com.yogpc.qp.machines.module.ExpPumpTile;
+import com.yogpc.qp.machines.module.FillerModuleItem;
 import com.yogpc.qp.machines.module.ModuleLootFunction;
 import com.yogpc.qp.machines.module.PumpModuleItem;
 import com.yogpc.qp.machines.module.PumpPlusBlock;
@@ -173,6 +174,7 @@ public class Holder {
     public static final ExpModuleItem ITEM_EXP_MODULE = registerItem(new ExpModuleItem(), EnableOrNot.CONFIG_ON);
     public static final BedrockModuleItem ITEM_BEDROCK_MODULE = registerItem(new BedrockModuleItem(), EnableOrNot.CONFIG_OFF);
     public static final EnergyModuleItem ITEM_FUEL_MODULE_NORMAL = registerItem(new EnergyModuleItem(5, "fuel_module_normal"), EnableOrNot.CONFIG_ON);
+    public static final FillerModuleItem ITEM_FILLER_MODULE = registerItem(new FillerModuleItem(), EnableOrNot.CONFIG_ON);
 
     public static final BlockEntityType<TileQuarry> QUARRY_TYPE = registerEntityType(TileQuarry::new, BLOCK_QUARRY, EnableOrNot.CONFIG_ON);
     public static final BlockEntityType<SFQuarryEntity> SOLID_FUEL_QUARRY_TYPE = registerEntityType(SFQuarryEntity::new, BLOCK_SOLID_FUEL_QUARRY, EnableOrNot.CONFIG_ON);
