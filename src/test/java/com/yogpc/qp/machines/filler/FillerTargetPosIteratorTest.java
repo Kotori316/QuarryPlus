@@ -1,5 +1,6 @@
 package com.yogpc.qp.machines.filler;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Set;
 
@@ -10,10 +11,15 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FillerTargetPosIteratorTest extends QuarryPlusTest {
     static final Area AREA = new Area(-3, 5, 10, 2, 8, 13, Direction.WEST);
@@ -112,6 +118,29 @@ class FillerTargetPosIteratorTest extends QuarryPlusTest {
                 new BlockPos(1, 6, -2)
             );
             assertIterableEquals(expected, list);
+        }
+    }
+
+    @Nested
+    class WallTest {
+        @ParameterizedTest
+        @EnumSource(value = Direction.class, names = {"NORTH", "SOUTH", "EAST", "WEST"})
+        void simpleBox1(Direction direction) {
+            var area = new Area(0, 0, 0, 2, 2, 2, direction);
+            var itr = new FillerTargetPosIterator.Wall(area);
+            var list = assertTimeoutPreemptively(Duration.ofSeconds(3), () -> Lists.newArrayList(itr));
+            assertEquals(26, list.size());
+            assertFalse(list.contains(new BlockPos(1, 1, 1)));
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = Direction.class, names = {"NORTH", "SOUTH", "EAST", "WEST"})
+        void simpleBox2(Direction direction) {
+            var area = new Area(1, 1, 1, 4, 4, 4, direction);
+            var itr = new FillerTargetPosIterator.Wall(area);
+            var list = assertTimeoutPreemptively(Duration.ofSeconds(3), () -> Lists.newArrayList(itr));
+            assertEquals(4 * 4 * 4 - 8, list.size());
+            assertTrue(list.stream().allMatch(p -> p.getX() == 1 || p.getX() == 4 || p.getY() == 1 || p.getY() == 4 || p.getZ() == 1 || p.getZ() == 4));
         }
     }
 }

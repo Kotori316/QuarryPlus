@@ -6,6 +6,11 @@ public abstract class PickIterator<T> implements Iterator<T> {
 
     protected T current;
 
+    /**
+     * Update this iterator and set current to new one.
+     *
+     * @return the next element.
+     */
     protected abstract T update();
 
     @Override

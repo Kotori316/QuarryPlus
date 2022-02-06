@@ -57,8 +57,7 @@ public final class FillerScreen extends AbstractContainerScreen<FillerMenu> impl
         if (pButton instanceof IndexedButton indexedButton) {
             switch (indexedButton.getIndex()) {
                 case 0 -> PacketHandler.sendToServer(new FillerButtonMessage(menu.filler, FillerEntity.Action.BOX));
-                case 1 -> { //PacketHandler.sendToServer(new FillerButtonMessage(menu.filler, FillerEntity.Action.WALL));
-                }
+                case 1 -> PacketHandler.sendToServer(new FillerButtonMessage(menu.filler, FillerEntity.Action.WALL));
                 default -> QuarryPlus.LOGGER.error("Unknown button({}, {}) is pushed in {}", indexedButton, indexedButton.getIndex(), this);
             }
         } else {
