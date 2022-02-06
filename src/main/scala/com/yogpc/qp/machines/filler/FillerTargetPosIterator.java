@@ -4,6 +4,7 @@ import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.PickIterator;
 import com.yogpc.qp.machines.TargetIterator;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 
 public abstract class FillerTargetPosIterator extends PickIterator<BlockPos> {
     final Area area;
@@ -78,12 +79,47 @@ public abstract class FillerTargetPosIterator extends PickIterator<BlockPos> {
 
         @Override
         protected BlockPos update() {
-            return null;
+            final BlockPos next;
+            if (current.getY() == minY || current.getY() == maxY) {
+                if (current.getX() < area.maxX()) {
+                    // Move x
+                    next = current.relative(Direction.Axis.X, 1);
+                } else {
+                    if (current.getZ() < area.maxZ()) {
+                        // Move z and reset x
+                        next = new BlockPos(area.minX(), current.getY(), current.getZ() + 1);
+                    } else {
+                        // Move y and reset x, z
+                        next = new BlockPos(area.minX(), current.getY() + 1, area.minZ());
+                    }
+                }
+            } else {
+                if (current.getX() == area.minX()) {
+                    if (current.getZ() == area.maxZ()) next = current.relative(Direction.Axis.X, 1);
+                    else next = current.relative(Direction.Axis.Z, 1);
+                } else if (current.getZ() == area.maxZ()) {
+                    if (current.getX() == area.maxX()) next = current.relative(Direction.Axis.Z, -1);
+                    else next = current.relative(Direction.Axis.X, 1);
+                } else if (current.getX() == area.maxX()) {
+                    if (current.getZ() == area.minZ()) next = current.relative(Direction.Axis.X, -1);
+                    else next = current.relative(Direction.Axis.Z, -1);
+                } else if (current.getZ() == area.minZ()) {
+                    if (current.getX() == area.minX() + 1) {
+                        // Go to next Y
+                        next = new BlockPos(area.minX(), current.getY() + 1, area.minZ());
+                    } else next = current.relative(Direction.Axis.X, -1);
+                } else {
+                    // What?
+                    throw new IllegalStateException("Bad Position(%s) in %s".formatted(current, area));
+                }
+            }
+            current = next;
+            return next;
         }
 
         @Override
         public BlockPos head() {
-            return null;
+            return new BlockPos(area.minX(), minY, area.minZ());
         }
     }
 }

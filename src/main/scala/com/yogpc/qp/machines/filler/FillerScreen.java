@@ -30,9 +30,9 @@ public final class FillerScreen extends AbstractContainerScreen<FillerMenu> impl
         super.init();
         var id = new AtomicInteger(0);
         this.addRenderableWidget(new IndexedButton(id.getAndIncrement(), this.getGuiLeft() + this.getXSize() - 60 - 8, this.getGuiTop() + 7,
-            60, 20, new TextComponent("FillAll"), this));
-        this.addRenderableWidget(new IndexedButton(id.getAndIncrement(), this.getGuiLeft() + this.getXSize() - 60 - 8, this.getGuiTop() + 7 + 20,
             60, 20, new TextComponent("FillBox"), this));
+        this.addRenderableWidget(new IndexedButton(id.getAndIncrement(), this.getGuiLeft() + this.getXSize() - 60 - 8, this.getGuiTop() + 7 + 20,
+            60, 20, new TextComponent("FillWall"), this));
         // this.addRenderableWidget(new IndexedButton(id.getAndIncrement(), this.getGuiLeft() + 110, this.getGuiTop() + this.getYSize() - 97,
         //     60, 14, new TextComponent("Modules"), this));
     }
@@ -57,8 +57,7 @@ public final class FillerScreen extends AbstractContainerScreen<FillerMenu> impl
         if (pButton instanceof IndexedButton indexedButton) {
             switch (indexedButton.getIndex()) {
                 case 0 -> PacketHandler.sendToServer(new FillerButtonMessage(menu.filler, FillerEntity.Action.BOX));
-                case 1 -> { //PacketHandler.sendToServer(new FillerButtonMessage(menu.filler, FillerEntity.Action.WALL));
-                }
+                case 1 -> PacketHandler.sendToServer(new FillerButtonMessage(menu.filler, FillerEntity.Action.WALL));
                 default -> QuarryPlus.LOGGER.error("Unknown button({}, {}) is pushed in {}", indexedButton, indexedButton.getIndex(), this);
             }
         } else {
