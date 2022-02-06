@@ -23,7 +23,8 @@ public class PacketHandler {
                 new ServerPacketInit(LevelMessage.NAME, LevelMessage.handler),
                 new ServerPacketInit(AdvActionMessage.NAME, AdvActionMessage.handler),
                 new ServerPacketInit(FlexMarkerMessage.NAME, FlexMarkerMessage.handler),
-                new ServerPacketInit(Marker16Message.NAME, Marker16Message.handler)
+                new ServerPacketInit(Marker16Message.NAME, Marker16Message.handler),
+                new ServerPacketInit(FlexMarkerMessage.NAME, FlexMarkerMessage.handler)
             );
             list.forEach(i -> ServerPlayNetworking.registerGlobalReceiver(i.name(), i.handler()));
         }

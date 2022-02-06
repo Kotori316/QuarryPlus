@@ -6,6 +6,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.misc.IndexedButton;
+import com.yogpc.qp.packet.PacketHandler;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
@@ -55,9 +56,8 @@ public final class FillerScreen extends AbstractContainerScreen<FillerMenu> impl
     public void onPress(Button pButton) {
         if (pButton instanceof IndexedButton indexedButton) {
             switch (indexedButton.getIndex()) {
-                case 0 -> {
-                }
-                case 1 -> {
+                case 0 -> PacketHandler.sendToServer(new FillerButtonMessage(menu.filler, FillerEntity.Action.BOX));
+                case 1 -> { //PacketHandler.sendToServer(new FillerButtonMessage(menu.filler, FillerEntity.Action.WALL));
                 }
                 default -> QuarryPlus.LOGGER.error("Unknown button({}, {}) is pushed in {}", indexedButton, indexedButton.getIndex(), this);
             }
