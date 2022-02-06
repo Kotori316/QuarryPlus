@@ -2,7 +2,6 @@ package com.yogpc.qp.machines.filler;
 
 import java.util.List;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import com.yogpc.qp.Holder;
@@ -24,24 +23,15 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.item.context.DirectionalPlaceContext;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public final class FillerEntity extends PowerTile implements CheckerLog, PowerConfig.Provider, MenuProvider {
     private static final Logger LOGGER = QuarryPlus.getLogger(FillerEntity.class);
-    @Nullable
-    SkipIterator iterator = null;
     final FillerContainer container = new FillerContainer(27);
+    final FillerAction fillerAction = new FillerAction(this.container::getFirstItem, this);
 
     public FillerEntity(@NotNull BlockPos pos, BlockState state) {
         super(Holder.FILLER_TYPE, pos, state);
@@ -49,58 +39,38 @@ public final class FillerEntity extends PowerTile implements CheckerLog, PowerCo
 
     @Override
     protected void saveNbtData(CompoundTag nbt) {
-        if (this.iterator != null) {
-            nbt.put("iterator", this.iterator.toNbt());
+        if (!fillerAction.isFinished()) {
+            nbt.put("fillerAction", this.fillerAction.toNbt());
         }
     }
 
     @Override
     public void load(CompoundTag nbt) {
         super.load(nbt);
-        if (nbt.contains("iterator")) {
-            var tag = nbt.getCompound("iterator");
-            Area.fromNBT(tag.getCompound("area"))
-                .ifPresent(a -> {
-                    this.iterator = new SkipIterator(a, FillerTargetPosIterator.Box::new);
-                    this.iterator.fromNbt(tag);
-                });
+        if (nbt.contains("fillerAction")) {
+            this.fillerAction.fromNbt(nbt.getCompound("fillerAction"));
         }
     }
 
     @Override
     public List<? extends Component> getDebugLogs() {
         return Stream.of(
-            "Iterator: %s".formatted(this.iterator),
+            "Iterator: %s".formatted(this.fillerAction.iterator),
             "%sEnergy:%s %f/%d FE (%d)".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, getEnergy() / (double) PowerTile.ONE_FE, getMaxEnergyStored(), getEnergy())
         ).map(TextComponent::new).toList();
     }
 
     void tick() {
-        if (iterator != null && hasEnoughEnergy()) {
+        if (!this.fillerAction.isFinished() && hasEnoughEnergy()) {
             if (level == null) {
                 LOGGER.error("Level is NULL in {}#tick at {}", getClass().getSimpleName(), getBlockPos());
                 return;
             }
             var energy = PowerManager.getFillerEnergy(this);
-            var maybeStack = this.container.getFirstItem();
-            maybeStack.ifPresent(blockStack -> {
-                var targetPos = this.iterator.peek(predicate(level, blockStack));
-                if (targetPos == null) {
-                    // Finished.
-                    this.iterator = null;
-                    logUsage();
-                } else {
-                    if (useEnergy(energy, Reason.FILLER, false)) {
-                        var context = new DirectionalPlaceContext(level, targetPos, Direction.DOWN, blockStack, Direction.UP);
-                        var state = getStateFromItem((BlockItem) blockStack.getItem(), context);
-                        if (state != null) {
-                            level.setBlock(targetPos, state, Block.UPDATE_ALL);
-                            blockStack.shrink(1);
-                        }
-                        this.iterator.commit(targetPos, false);
-                    }
-                }
-            });
+            this.fillerAction.tick(energy);
+            if (this.fillerAction.isFinished()) {
+                logUsage();
+            }
         }
     }
 
@@ -110,7 +80,7 @@ public final class FillerEntity extends PowerTile implements CheckerLog, PowerCo
      * Must be called in server.
      */
     void start(Action fillerAction) {
-        if (this.iterator != null) return;
+        if (!this.fillerAction.isFinished()) return;
         assert level != null;
         Stream.of(Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST)
             .map(getBlockPos()::relative)
@@ -118,36 +88,9 @@ public final class FillerEntity extends PowerTile implements CheckerLog, PowerCo
             .mapMulti(MapMulti.cast(QuarryMarker.class))
             .findFirst()
             .ifPresent(m -> {
-                this.iterator = m.getArea().map(a -> new SkipIterator(a, fillerAction.iteratorProvider)).orElse(null);
+                this.fillerAction.setIterator(m.getArea().map(a -> new SkipIterator(a, fillerAction.iteratorProvider)).orElse(null));
                 m.removeAndGetItems().forEach(stack -> Block.popResource(level, getBlockPos().above(), stack));
             });
-    }
-
-    private static Predicate<BlockPos> predicate(Level level, ItemStack stack) {
-        if (stack.getItem() instanceof BlockItem blockItem) {
-            return pos -> {
-                var context = new DirectionalPlaceContext(level, pos, Direction.DOWN, stack, Direction.UP);
-                var state = getStateFromItem(blockItem, context);
-                if (!context.canPlace() || state == null) {
-                    return false;
-                } else {
-                    return level.isUnobstructed(state, pos, CollisionContext.empty());
-                }
-            };
-        } else {
-            return pos -> false;
-        }
-    }
-
-    @Nullable
-    private static BlockState getStateFromItem(BlockItem blockItem, DirectionalPlaceContext context) {
-        try {
-            return (BlockState) ObfuscationReflectionHelper.findMethod(BlockItem.class, "m_5965_", BlockPlaceContext.class)
-                .invoke(blockItem, context);
-        } catch (ReflectiveOperationException e) {
-            LOGGER.error("Caught exception in Filler", e);
-            return null;
-        }
     }
 
     @Override

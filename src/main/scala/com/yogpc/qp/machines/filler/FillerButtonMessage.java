@@ -46,7 +46,7 @@ public final class FillerButtonMessage implements IMessage {
                 .flatMap(MapMulti.optCast(FillerEntity.class))
                 .ifPresent(f -> {
                     f.start(message.action);
-                    if (f.iterator == null) {
+                    if (f.fillerAction.isFinished()) {
                         // Filler work is not started.
                         PacketHandler.getPlayer(supplier.get()).ifPresent(p ->
                             p.displayClientMessage(new TextComponent("Filler work isn't started."), false));
