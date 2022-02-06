@@ -118,7 +118,8 @@ public class MiningWellTile extends PowerTile implements CheckerLog, MachineStor
         return Stream.of(
             "MinY: " + digMinY,
             "Interval: " + interval,
-            "Finished: " + finished
+            "Finished: " + finished,
+            energyString()
         ).map(TextComponent::new).toList();
     }
 

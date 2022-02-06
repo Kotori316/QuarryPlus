@@ -12,7 +12,6 @@ import com.yogpc.qp.machines.CheckerLog;
 import com.yogpc.qp.machines.EnchantableItem;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.utils.MapMulti;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -158,7 +157,7 @@ public class BookMoverEntity extends PowerTile implements Container, MenuProvide
     @Override
     public List<? extends Component> getDebugLogs() {
         return Stream.of(
-            "%sEnergy:%s %f FE (%d)".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, getEnergy() / (double) PowerTile.ONE_FE, getEnergy())
+            energyString()
         ).map(TextComponent::new).toList();
     }
 

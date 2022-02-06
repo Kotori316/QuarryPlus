@@ -196,8 +196,7 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
             "%sRecipe:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, currentRecipe),
             "%sWorkContinue:%s %b".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, workContinue),
             "%sRecipe List:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, recipesList),
-            "%sEnergy:%s %d FE".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, getEnergyStored()),
-            "%sMaxEnergy:%s %d FE".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, getMaxEnergyStored())
+            energyString()
         ).map(TextComponent::new).toList();
     }
 

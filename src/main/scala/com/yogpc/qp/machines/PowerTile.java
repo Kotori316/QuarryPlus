@@ -5,6 +5,7 @@ import java.util.function.LongSupplier;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.utils.QuarryChunkLoadUtil;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -170,6 +171,10 @@ public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
     @Override
     public boolean canReceive() {
         return true;
+    }
+
+    protected final String energyString() {
+        return "%sEnergy:%s %f/%d FE (%d)".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, getEnergy() / (double) PowerTile.ONE_FE, getMaxEnergyStored(), getEnergy());
     }
 
     /**

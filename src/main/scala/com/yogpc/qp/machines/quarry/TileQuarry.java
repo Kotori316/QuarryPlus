@@ -439,7 +439,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
             "%sDigMinY:%s %d".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, digMinY),
             "%sHead:%s (%f, %f, %f)".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, headX, headY, headZ),
             "%sModules:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, modules),
-            "%sEnergy:%s %f/%d FE (%d)".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, getEnergy() / (double) PowerTile.ONE_FE, getMaxEnergyStored(), getEnergy())
+            energyString()
         ).map(TextComponent::new).toList();
     }
 

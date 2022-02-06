@@ -92,7 +92,7 @@ public class TileAdvQuarry extends PowerTile implements
             "%sRemoveBedrock:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, hasBedrockModule()),
             "%sDigMinY:%s %d".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, digMinY),
             "%sModules:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, modules),
-            "%sEnergy:%s %f/%d FE (%d)".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, getEnergy() / (double) PowerTile.ONE_FE, getMaxEnergyStored(), getEnergy())
+            energyString()
         ).map(TextComponent::new).toList();
     }
 

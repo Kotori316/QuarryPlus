@@ -222,7 +222,7 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
         return Stream.of(
             "%sArea:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, area),
             "%sTarget:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, Optional.ofNullable(targetIterator).map(MiniTarget::peek).orElse(null)),
-            "%sEnergy:%s %f/%d FE (%d)".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, getEnergy() / (double) PowerTile.ONE_FE, getMaxEnergyStored(), getEnergy())
+            energyString()
         ).map(TextComponent::new).toList();
     }
 

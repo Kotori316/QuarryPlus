@@ -227,7 +227,7 @@ public class TileAdvPump extends PowerTile
             "%sModules:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, modules),
             "%sRemove:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, deleteFluid),
             "%sFrame:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, placeFrame),
-            "%sEnergy:%s %f FE (%d)".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, getEnergy() / (double) PowerTile.ONE_FE, getMaxEnergyStored())
+            energyString()
         ).map(TextComponent::new)).toList();
     }
 
