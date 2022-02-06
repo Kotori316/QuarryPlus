@@ -1,5 +1,6 @@
 package com.yogpc.qp.machines.filler;
 
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -96,7 +97,7 @@ public final class FillerEntity extends PowerTile implements PowerConfig.Provide
      * The markers are dropped near this block.
      * Must be called in server.
      */
-    void start() {
+    void start(Action fillerAction) {
         if (this.iterator != null) return;
         assert level != null;
         Stream.of(Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST)
@@ -105,7 +106,7 @@ public final class FillerEntity extends PowerTile implements PowerConfig.Provide
             .mapMulti(MapMulti.cast(QuarryMarker.class))
             .findFirst()
             .ifPresent(m -> {
-                this.iterator = m.getArea().map(a -> new SkipIterator(a, FillerTargetPosIterator.Box::new)).orElse(null);
+                this.iterator = m.getArea().map(a -> new SkipIterator(a, fillerAction.iteratorProvider)).orElse(null);
                 m.removeAndGetItems().forEach(stack -> Block.popResource(level, getBlockPos().above(), stack));
             });
     }
@@ -145,5 +146,14 @@ public final class FillerEntity extends PowerTile implements PowerConfig.Provide
     @Override
     public AbstractContainerMenu createMenu(int pContainerId, Inventory pInventory, Player pPlayer) {
         return new FillerMenu(pContainerId, pPlayer, this.getBlockPos());
+    }
+
+    public enum Action {
+        BOX(FillerTargetPosIterator.Box::new), WALL(FillerTargetPosIterator.Wall::new);
+        final Function<Area, FillerTargetPosIterator> iteratorProvider;
+
+        Action(Function<Area, FillerTargetPosIterator> iteratorProvider) {
+            this.iteratorProvider = iteratorProvider;
+        }
     }
 }

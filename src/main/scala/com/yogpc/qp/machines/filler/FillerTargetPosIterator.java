@@ -69,4 +69,21 @@ public abstract class FillerTargetPosIterator extends PickIterator<BlockPos> {
             iterator = TargetIterator.of(fixedArea);
         }
     }
+
+    static final class Wall extends FillerTargetPosIterator {
+        Wall(Area area) {
+            super(area);
+            reset();
+        }
+
+        @Override
+        protected BlockPos update() {
+            return null;
+        }
+
+        @Override
+        public BlockPos head() {
+            return null;
+        }
+    }
 }

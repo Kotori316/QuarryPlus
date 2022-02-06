@@ -44,7 +44,7 @@ public final class FillerBlock extends QPBlock implements EntityBlock {
         super.neighborChanged(state, level, pos, blockIn, fromPos, isMoving);
         if (!level.isClientSide && level.hasNeighborSignal(pos)) {
             level.getBlockEntity(pos, Holder.FILLER_TYPE)
-                .ifPresent(FillerEntity::start);
+                .ifPresent(f -> f.start(FillerEntity.Action.BOX));
         }
     }
 
