@@ -129,10 +129,30 @@ class SkipIteratorTest extends QuarryPlusTest {
         }
         assertEquals(list.get(4), i2.peek(TRUE_PREDICATE));
         var tag = i2.toNbt();
-        var i3 = new SkipIterator(AREA, FillerTargetPosIterator.Box::new);
-        i3.fromNbt(tag);
+        var i3 = SkipIterator.fromNbt(tag);
+        assertEquals(FillerTargetPosIterator.Box.class, i3.posIterator.getClass());
         assertEquals(list.get(4), i3.next(TRUE_PREDICATE));
         assertEquals(list.get(5), i3.next(TRUE_PREDICATE));
+        assertEquals(list.get(6), i3.peek(TRUE_PREDICATE));
+        assertEquals(list.get(6), i3.next(TRUE_PREDICATE));
+    }
+
+    @Test
+    void setCurrent3() {
+        var i1 = new SkipIterator(AREA, FillerTargetPosIterator.Wall::new);
+        var list = assertTimeoutPreemptively(Duration.ofMillis(3000L), () -> Stream.generate(() -> i1.next(TRUE_PREDICATE))
+            .takeWhile(Objects::nonNull).toList());
+        var i2 = new SkipIterator(AREA, FillerTargetPosIterator.Wall::new);
+        for (int i = 0; i < 4; i++) {
+            i2.next(TRUE_PREDICATE);
+        }
+        assertEquals(list.get(4), i2.peek(TRUE_PREDICATE));
+        var tag = i2.toNbt();
+        var i3 = SkipIterator.fromNbt(tag);
+        assertEquals(FillerTargetPosIterator.Wall.class, i3.posIterator.getClass());
+        assertEquals(list.get(4), i3.next(TRUE_PREDICATE));
+        assertEquals(list.get(5), i3.next(TRUE_PREDICATE));
+        assertEquals(list.get(6), i3.peek(TRUE_PREDICATE));
         assertEquals(list.get(6), i3.next(TRUE_PREDICATE));
     }
 

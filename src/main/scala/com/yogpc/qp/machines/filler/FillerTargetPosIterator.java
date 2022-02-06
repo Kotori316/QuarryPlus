@@ -24,6 +24,8 @@ public abstract class FillerTargetPosIterator extends PickIterator<BlockPos> {
             this.minY <= current.getY() && current.getY() <= this.maxY;
     }
 
+    abstract FillerEntity.Action type();
+
     static final class Box extends FillerTargetPosIterator {
         TargetIterator iterator;
 
@@ -31,6 +33,11 @@ public abstract class FillerTargetPosIterator extends PickIterator<BlockPos> {
             super(area);
             setNewIterator();
             reset();
+        }
+
+        @Override
+        FillerEntity.Action type() {
+            return FillerEntity.Action.BOX;
         }
 
         @Override
@@ -75,6 +82,11 @@ public abstract class FillerTargetPosIterator extends PickIterator<BlockPos> {
         Wall(Area area) {
             super(area);
             reset();
+        }
+
+        @Override
+        FillerEntity.Action type() {
+            return FillerEntity.Action.WALL;
         }
 
         @Override
