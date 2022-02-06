@@ -51,7 +51,8 @@ public class TileFlexMarker extends BlockEntity implements QuarryMarker, Checker
     }
 
     @SuppressWarnings("Duplicates")
-    public void move(Movable movable, int amount) {
+    void move(Movable movable, int amount) {
+        assert level != null;
         Direction facing = movable.getActualFacing(direction);
         BlockPos offset = getBlockPos();
         if (facing.getAxisDirection() == Direction.AxisDirection.POSITIVE) {
@@ -70,8 +71,8 @@ public class TileFlexMarker extends BlockEntity implements QuarryMarker, Checker
             } else if (d < 1) {
                 min = getLimited(min, offset, facing, 1);
             }
-            if (facing == Direction.DOWN && min.getY() < 0) {
-                min = new BlockPos(min.getX(), 0, min.getZ());
+            if (facing == Direction.DOWN && min.getY() < level.getMinBuildHeight()) {
+                min = new BlockPos(min.getX(), level.getMinBuildHeight(), min.getZ());
             }
         }
     }
