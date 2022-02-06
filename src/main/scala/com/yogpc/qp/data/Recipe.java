@@ -11,6 +11,7 @@ import com.yogpc.qp.machines.advpump.BlockAdvPump;
 import com.yogpc.qp.machines.advquarry.BlockAdvQuarry;
 import com.yogpc.qp.machines.bookmover.BookMoverBlock;
 import com.yogpc.qp.machines.checker.ItemChecker;
+import com.yogpc.qp.machines.filler.FillerBlock;
 import com.yogpc.qp.machines.marker.BlockMarker;
 import com.yogpc.qp.machines.mini_quarry.MiniQuarryBlock;
 import com.yogpc.qp.machines.miningwell.MiningWellBlock;
@@ -224,6 +225,13 @@ class Recipe extends QuarryPlusDataProvider.QuarryDataProvider {
             makeList(Tags.Items.DUSTS_REDSTONE, 8),
             makeList(Items.COMPARATOR, 4)
         )))).addCondition(new EnableCondition(MiniQuarryBlock.NAME)));
+        // Filler
+        list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(
+            location(FillerBlock.NAME), new ItemStack(Holder.BLOCK_FILLER), 160000 * PowerTile.ONE_FE, true, List.of(
+            makeList(Tags.Items.INGOTS_IRON, 32),
+            makeList(Items.LADDER, 32),
+            makeList(Items.IRON_AXE, 6)
+        )))).addCondition(new EnableCondition(FillerBlock.NAME)));
 
         return list;
     }
