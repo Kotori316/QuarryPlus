@@ -80,6 +80,23 @@ class SkipIteratorTest extends QuarryPlusTest {
     }
 
     @Test
+    void commitSkips2() {
+        var i = new SkipIterator(AREA, FillerTargetPosIterator.Box::new);
+        var set = new HashSet<BlockPos>();
+        assertTimeoutPreemptively(Duration.ofSeconds(3), () -> {
+            BlockPos pos;
+            // Use predicate to prevent infinite loop.
+            while ((pos = i.peek(Predicate.not(set::contains))) != null) {
+                set.add(pos);
+                i.commit(pos, true);
+            }
+        });
+        var first = i.peek(TRUE_PREDICATE);
+        var notCommitted = i.peek(TRUE_PREDICATE);
+        assertEquals(first, notCommitted);
+    }
+
+    @Test
     void condition1() {
         Predicate<BlockPos> condition = pos -> pos.getY() % 2 == 0;
         var i = new SkipIterator(AREA, FillerTargetPosIterator.Box::new);
@@ -126,5 +143,26 @@ class SkipIteratorTest extends QuarryPlusTest {
         assertEquals(new BlockPos(-3, 6, 10), y6);
         var y5 = i1.next(p -> p.getY() < 6);
         assertEquals(new BlockPos(-3, 5, 10), y5);
+    }
+
+    @Test
+    void reuseSkipped2() {
+        var area = new Area(1, 1, 1, 5, 6, 7, Direction.WEST);
+        Predicate<BlockPos> cond = Predicate.not(pos -> pos.getX() == 3 && pos.getY() < 3 && pos.getZ() == 4);
+        var iterator = new SkipIterator(area, FillerTargetPosIterator.Box::new);
+        for (int i = 0; i < 68; i++) {
+            var p = iterator.peek(cond);
+            iterator.commit(p, false);
+        }
+        var p69 = iterator.peek(cond);
+        assertEquals(new BlockPos(1, 3, 1), p69);
+        var skipped1 = iterator.peek(TRUE_PREDICATE);
+        assertEquals(new BlockPos(3, 1, 4), skipped1);
+        iterator.commit(skipped1, false);
+        var skipped2 = iterator.peek(TRUE_PREDICATE);
+        assertEquals(new BlockPos(3, 2, 4), skipped2);
+        iterator.commit(skipped2, false);
+        var p69_2 = iterator.peek(cond);
+        assertEquals(p69, p69_2);
     }
 }

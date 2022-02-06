@@ -27,7 +27,6 @@ final class SkipIterator {
     BlockPos peek(Predicate<BlockPos> filter) {
         var skipped = this.skipped.stream().filter(filter).findFirst();
         if (skipped.isPresent()) {
-            this.skipped.remove(skipped.get());
             return skipped.get();
         }
         while (this.posIterator.hasNext()) {
@@ -42,10 +41,11 @@ final class SkipIterator {
     }
 
     void commit(BlockPos pos, boolean skip) {
+        boolean alreadySkipped = skipped.remove(pos); // If the skipped contains the pos, the pos is not from the iterator.
         if (skip) {
             this.skipped.add(pos);
         }
-        this.posIterator.next();
+        if (!alreadySkipped) this.posIterator.next();
     }
 
     @VisibleForTesting
