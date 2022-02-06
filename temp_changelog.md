@@ -1,6 +1,7 @@
 ## Version 18.6
 
 * Fixed - Flexible Marker can't be used under 0.
+* Changed - the value change in Y Setter GUI is now the same as Chunk Marker. (Shift: 16, Ctrl: 4, Other: 1)
 
 ## Version 18.5
 

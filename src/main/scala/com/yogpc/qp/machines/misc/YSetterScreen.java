@@ -57,7 +57,8 @@ public class YSetterScreen extends AbstractContainerScreen<YSetterContainer> {
     private void changeDigY(boolean plus) {
         var accessor = getMenu().yAccessor;
         if (accessor != null) {
-            var count = (plus ? 1 : -1) * (Screen.hasControlDown() ? 10 : 1);
+            int n = Screen.hasShiftDown() ? 16 : Screen.hasControlDown() ? 4 : 1;
+            var count = (plus ? 1 : -1) * n;
             var topLimit = accessor.getLimitTop();
             if (count + accessor.getDigMinY() < topLimit) {
                 accessor.setDigMinY(count + accessor.getDigMinY());
