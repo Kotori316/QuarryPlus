@@ -21,6 +21,7 @@ public final class FillerScreen extends AbstractContainerScreen<FillerMenu> impl
         super(pMenu, pPlayerInventory, pTitle);
         this.imageWidth = 176;
         this.imageHeight = 222;
+        this.inventoryLabelY = this.imageHeight - 94;
     }
 
     @Override
