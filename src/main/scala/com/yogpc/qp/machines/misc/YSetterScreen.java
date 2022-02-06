@@ -34,8 +34,10 @@ public class YSetterScreen extends AbstractContainerScreen<YSetterContainer> {
     @Override
     protected void renderLabels(PoseStack matrices, int mouseX, int mouseY) {
         super.renderLabels(matrices, mouseX, mouseY);
-        var level = getMenu().yAccessor != null ? String.valueOf(getMenu().yAccessor.getDigMinY() + 1) : "Not supported";
-        this.font.draw(matrices, level, ((float) this.imageWidth - font.width(level)) / 2, tp + 23, 0x404040);
+        if (getMenu().yAccessor != null) {
+            var level = String.valueOf(getMenu().yAccessor.getDigMinY() + 1);
+            this.font.draw(matrices, level, ((float) this.imageWidth - font.width(level)) / 2, tp + 23, 0x404040);
+        }
     }
 
     @Override

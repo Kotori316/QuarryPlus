@@ -1,8 +1,11 @@
 package com.yogpc.qp.machines.marker;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.misc.IndexedButton;
 import com.yogpc.qp.packet.PacketHandler;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
@@ -63,13 +66,19 @@ public class Screen16Marker extends AbstractContainerScreen<ContainerMarker> imp
         super.init();
         final int tp = 15;
         final int middle = getGuiLeft() + this.imageWidth / 2;
-        this.addRenderableWidget(new Button(middle - BUTTON_WIDTH / 2, getGuiTop() + tp, BUTTON_WIDTH, 20, new TextComponent("+"), this));
-        this.addRenderableWidget(new Button(middle - BUTTON_WIDTH / 2, getGuiTop() + tp + 33, BUTTON_WIDTH, 20, new TextComponent("-"), this));
-        this.addRenderableWidget(new Button(middle + BUTTON_WIDTH / 2 + 10, getGuiTop() + tp, BUTTON_WIDTH, 20, new TextComponent("Top+"), this));
-        this.addRenderableWidget(new Button(middle + BUTTON_WIDTH / 2 + 10, getGuiTop() + tp + 33, BUTTON_WIDTH, 20, new TextComponent("Top-"), this));
-        this.addRenderableWidget(new Button(middle - BUTTON_WIDTH / 2 - 10 - BUTTON_WIDTH, getGuiTop() + tp, BUTTON_WIDTH, 20, new TextComponent("Bottom+"), this));
-        this.addRenderableWidget(new Button(middle - BUTTON_WIDTH / 2 - 10 - BUTTON_WIDTH, getGuiTop() + tp + 33, BUTTON_WIDTH, 20, new TextComponent("Bottom-"), this));
-
+        var id = new AtomicInteger(0);
+        this.addRenderableWidget(new IndexedButton(id.getAndIncrement(), middle - BUTTON_WIDTH / 2, getGuiTop() + tp,
+            BUTTON_WIDTH, 20, new TextComponent("+"), this));
+        this.addRenderableWidget(new IndexedButton(id.getAndIncrement(), middle - BUTTON_WIDTH / 2, getGuiTop() + tp + 33,
+            BUTTON_WIDTH, 20, new TextComponent("-"), this));
+        this.addRenderableWidget(new IndexedButton(id.getAndIncrement(), middle + BUTTON_WIDTH / 2 + 10, getGuiTop() + tp,
+            BUTTON_WIDTH, 20, new TextComponent("Top+"), this));
+        this.addRenderableWidget(new IndexedButton(id.getAndIncrement(), middle + BUTTON_WIDTH / 2 + 10, getGuiTop() + tp + 33,
+            BUTTON_WIDTH, 20, new TextComponent("Top-"), this));
+        this.addRenderableWidget(new IndexedButton(id.getAndIncrement(), middle - BUTTON_WIDTH / 2 - 10 - BUTTON_WIDTH, getGuiTop() + tp,
+            BUTTON_WIDTH, 20, new TextComponent("Bottom+"), this));
+        this.addRenderableWidget(new IndexedButton(id.getAndIncrement(), middle - BUTTON_WIDTH / 2 - 10 - BUTTON_WIDTH, getGuiTop() + tp + 33,
+            BUTTON_WIDTH, 20, new TextComponent("Bottom-"), this));
     }
 
     @Override
@@ -79,34 +88,26 @@ public class Screen16Marker extends AbstractContainerScreen<ContainerMarker> imp
         int n;
         if (Screen.hasShiftDown()) { // Shift
             n = 16;
-        } else if (Screen.hasControlDown()) {
+        } else if (Screen.hasControlDown()) { // Ctrl
             n = 4;
         } else {
             n = 1;
         }
-        switch (children().indexOf(button)) {
-            case 0: // Plus
-                size = marker.getSize() + CHUNK;
-                break;
-            case 1: // Minus
-                if (marker.getSize() > CHUNK) {
-                    size = marker.getSize() - CHUNK;
-                } else {
-                    size = marker.getSize();
+        if (button instanceof IndexedButton) {
+            switch (((IndexedButton) button).getIndex()) {
+                case 0 -> size = marker.getSize() + CHUNK; // Plus
+                case 1 -> { // Minus
+                    if (marker.getSize() > CHUNK) {
+                        size = marker.getSize() - CHUNK;
+                    } else {
+                        size = marker.getSize();
+                    }
                 }
-                break;
-            case 2:
-                yMax = marker.max().getY() + n;
-                break;
-            case 3:
-                yMax = Math.max(marker.max().getY() - n, yMin);
-                break;
-            case 4:
-                yMin = Math.min(marker.min().getY() + n, yMax);
-                break;
-            case 5:
-                yMin = marker.min().getY() - n;
-                break;
+                case 2 -> yMax = marker.max().getY() + n;
+                case 3 -> yMax = Math.max(marker.max().getY() - n, yMin);
+                case 4 -> yMin = Math.min(marker.min().getY() + n, yMax);
+                case 5 -> yMin = marker.min().getY() - n;
+            }
         }
         PacketHandler.sendToServer(new Marker16Message(marker.getLevel(), marker.getBlockPos(), size, yMax, yMin));
     }
