@@ -31,7 +31,7 @@ import org.jetbrains.annotations.NotNull;
 public final class FillerEntity extends PowerTile implements CheckerLog, PowerConfig.Provider, MenuProvider {
     private static final Logger LOGGER = QuarryPlus.getLogger(FillerEntity.class);
     final FillerContainer container = new FillerContainer(27);
-    final FillerAction fillerAction = new FillerAction(this.container::getFirstItem, this);
+    final FillerAction fillerAction = new FillerAction();
 
     public FillerEntity(@NotNull BlockPos pos, BlockState state) {
         super(Holder.FILLER_TYPE, pos, state);
@@ -67,7 +67,7 @@ public final class FillerEntity extends PowerTile implements CheckerLog, PowerCo
                 return;
             }
             var energy = PowerManager.getFillerEnergy(this);
-            this.fillerAction.tick(energy);
+            this.fillerAction.tick(this.container::getFirstItem, this, energy);
             if (this.fillerAction.isFinished()) {
                 logUsage();
             }

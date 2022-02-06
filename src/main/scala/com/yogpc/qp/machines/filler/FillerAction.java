@@ -23,17 +23,13 @@ import org.jetbrains.annotations.Nullable;
 
 public final class FillerAction {
     private static final Logger LOGGER = QuarryPlus.getLogger(FillerAction.class);
-    final Supplier<Optional<ItemStack>> stackProvider;
-    final PowerTile powerSource;
     @Nullable
     SkipIterator iterator = null;
 
-    public FillerAction(Supplier<Optional<ItemStack>> stackProvider, PowerTile powerSource) {
-        this.stackProvider = stackProvider;
-        this.powerSource = powerSource;
+    public FillerAction() {
     }
 
-    void tick(long energy) {
+    public void tick(Supplier<Optional<ItemStack>> stackProvider, PowerTile powerSource, long energy) {
         if (this.iterator == null || powerSource.getLevel() == null) return;
         var maybeStack = stackProvider.get();
         var level = powerSource.getLevel();
@@ -70,7 +66,7 @@ public final class FillerAction {
 
     public void fromNbt(CompoundTag tag) {
         if (tag.contains("iterator")) {
-            this.iterator = SkipIterator.fromNbt(tag);
+            this.iterator = SkipIterator.fromNbt(tag.getCompound("iterator"));
         }
     }
 

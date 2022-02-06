@@ -166,6 +166,12 @@ class TargetTest {
         }
 
         @Test
+        void FillerTargetTest() {
+            var target = new FillerTarget(area);
+            serializeTest(target);
+        }
+
+        @Test
         void throwErrorIfEmpty() {
             var tag = new CompoundTag();
             assertThrows(IllegalArgumentException.class,

@@ -12,19 +12,19 @@ import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
-final class SkipIterator {
+public final class SkipIterator {
     FillerTargetPosIterator posIterator;
     List<BlockPos> skipped;
     private final Area area;
 
-    SkipIterator(Area area, Function<Area, FillerTargetPosIterator> constructor) {
+    public SkipIterator(Area area, Function<Area, FillerTargetPosIterator> constructor) {
         this.area = area;
         this.posIterator = constructor.apply(area);
         this.skipped = new ArrayList<>();
     }
 
     @Nullable
-    BlockPos peek(Predicate<BlockPos> filter) {
+    public BlockPos peek(Predicate<BlockPos> filter) {
         var skipped = this.skipped.stream().filter(filter).findFirst();
         if (skipped.isPresent()) {
             return skipped.get();
@@ -40,7 +40,7 @@ final class SkipIterator {
         return null;
     }
 
-    void commit(BlockPos pos, boolean skip) {
+    public void commit(BlockPos pos, boolean skip) {
         boolean alreadySkipped = skipped.remove(pos); // If the skipped contains the pos, the pos is not from the iterator.
         if (skip) {
             this.skipped.add(pos);

@@ -26,6 +26,10 @@ public abstract class FillerTargetPosIterator extends PickIterator<BlockPos> {
 
     abstract FillerEntity.Action type();
 
+    public static FillerTargetPosIterator box(Area area) {
+        return new Box(area);
+    }
+
     static final class Box extends FillerTargetPosIterator {
         TargetIterator iterator;
 
