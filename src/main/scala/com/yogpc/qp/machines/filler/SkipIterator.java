@@ -72,4 +72,9 @@ final class SkipIterator {
             .mapToObj(BlockPos::of)
             .forEach(this.skipped::add);
     }
+
+    @Override
+    public String toString() {
+        return "SkipIterator{area=%s, skipped=%d}".formatted(this.area, this.skipped.size());
+    }
 }

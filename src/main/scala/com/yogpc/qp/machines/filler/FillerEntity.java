@@ -1,5 +1,6 @@
 package com.yogpc.qp.machines.filler;
 
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -7,15 +8,18 @@ import java.util.stream.Stream;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
+import com.yogpc.qp.machines.CheckerLog;
 import com.yogpc.qp.machines.PowerConfig;
 import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QuarryMarker;
 import com.yogpc.qp.utils.MapMulti;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -33,7 +37,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class FillerEntity extends PowerTile implements PowerConfig.Provider, MenuProvider {
+public final class FillerEntity extends PowerTile implements CheckerLog, PowerConfig.Provider, MenuProvider {
     private static final Logger LOGGER = QuarryPlus.getLogger(FillerEntity.class);
     @Nullable
     SkipIterator iterator = null;
@@ -61,6 +65,14 @@ public final class FillerEntity extends PowerTile implements PowerConfig.Provide
                     this.iterator.fromNbt(tag);
                 });
         }
+    }
+
+    @Override
+    public List<? extends Component> getDebugLogs() {
+        return Stream.of(
+            "Iterator: %s".formatted(this.iterator),
+            "%sEnergy:%s %f/%d FE (%d)".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, getEnergy() / (double) PowerTile.ONE_FE, getMaxEnergyStored(), getEnergy())
+        ).map(TextComponent::new).toList();
     }
 
     void tick() {
