@@ -261,7 +261,7 @@ public class TileAdvPump extends PowerTile
     }
 
     static boolean isCapableModule(QuarryModule module) {
-        return module instanceof EnergyModuleItem.EnergyModule || module instanceof ReplacerModule;
+        return module instanceof EnergyModuleItem.EnergyModule || module instanceof ReplacerModule || module == QuarryModule.Constant.FILLER;
     }
 
     @Override
@@ -279,7 +279,11 @@ public class TileAdvPump extends PowerTile
 
         public AdvPumpCache() {
             replaceModuleState = CacheEntry.supplierCache(5, () ->
-                getReplacerModule().map(ReplacerModule::getState).filter(Predicate.not(BlockState::isAir)).filter(b -> !b.is(Holder.BLOCK_DUMMY_REPLACER)));
+                getReplacerModule()
+                    .map(ReplacerModule::getState)
+                    .filter(Predicate.not(BlockState::isAir))
+                    .filter(b -> !b.is(Holder.BLOCK_DUMMY_REPLACER))
+                    .or(() -> hasFillerModule() ? Optional.of(Blocks.STONE.defaultBlockState()) : Optional.empty()));
         }
     }
 }
