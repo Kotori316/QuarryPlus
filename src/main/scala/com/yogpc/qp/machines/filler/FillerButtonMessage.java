@@ -56,7 +56,7 @@ public final class FillerButtonMessage implements IMessage<FillerButtonMessage> 
                     f.start(message.action);
                     if (f.fillerAction.isFinished()) {
                         // Filler work is not started.
-                        player.displayClientMessage(new TextComponent("Filler work isn't started."), false);
+                        player.displayClientMessage(new TextComponent("Filler work isn't started. You must place a marker near Filler."), false);
                     }
                 }));
     };
