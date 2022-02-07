@@ -337,8 +337,14 @@ public class TileAdvQuarry extends PowerTile implements
             var state = targetWorld.getBlockState(mutableBlockPos);
             var fluidState = targetWorld.getFluidState(mutableBlockPos);
             if (fluidState.isEmpty()) {
-                if (state.isAir() || !canBreak(targetWorld, mutableBlockPos, state))
+                if (state.isAir())
                     continue;
+                if (!canBreak(targetWorld, mutableBlockPos, state)) {
+                    if (state.getBlock() == Blocks.NETHER_PORTAL) {
+                        targetWorld.removeBlock(mutableBlockPos, false);
+                    }
+                    continue;
+                }
                 var breakEvent = new BlockEvent.BreakEvent(targetWorld, mutableBlockPos, state, fakePlayer);
                 MinecraftForge.EVENT_BUS.post(breakEvent);
                 if (breakEvent.isCanceled()) {
