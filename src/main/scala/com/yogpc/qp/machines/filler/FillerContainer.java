@@ -7,6 +7,9 @@ import com.yogpc.qp.machines.module.ReplacerModule;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.wrapper.InvWrapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.VisibleForTesting;
 
@@ -31,5 +34,9 @@ public final class FillerContainer extends SimpleContainer {
             .mapToObj(this::getItem)
             .filter(FillerContainer::canAccept)
             .findFirst();
+    }
+
+    LazyOptional<IItemHandler> createHandler() {
+        return LazyOptional.of(() -> new InvWrapper(this));
     }
 }

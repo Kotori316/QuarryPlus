@@ -13,7 +13,6 @@ import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QuarryMarker;
 import com.yogpc.qp.utils.MapMulti;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -25,16 +24,25 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public final class FillerEntity extends PowerTile implements CheckerLog, PowerConfig.Provider, MenuProvider {
     private static final Logger LOGGER = QuarryPlus.getLogger(FillerEntity.class);
-    final FillerContainer container = new FillerContainer(27);
-    final FillerAction fillerAction = new FillerAction();
+    final FillerContainer container;
+    LazyOptional<IItemHandler> handler;
+    final FillerAction fillerAction;
 
     public FillerEntity(@NotNull BlockPos pos, BlockState state) {
         super(Holder.FILLER_TYPE, pos, state);
+        container = new FillerContainer(27);
+        handler = container.createHandler();
+        fillerAction = new FillerAction();
     }
 
     @Override
@@ -56,7 +64,7 @@ public final class FillerEntity extends PowerTile implements CheckerLog, PowerCo
     public List<? extends Component> getDebugLogs() {
         return Stream.of(
             "Iterator: %s".formatted(this.fillerAction.iterator),
-            "%sEnergy:%s %f/%d FE (%d)".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, getEnergy() / (double) PowerTile.ONE_FE, getMaxEnergyStored(), getEnergy())
+            energyString()
         ).map(TextComponent::new).toList();
     }
 
@@ -91,6 +99,26 @@ public final class FillerEntity extends PowerTile implements CheckerLog, PowerCo
                 this.fillerAction.setIterator(m.getArea().map(a -> new SkipIterator(a, fillerAction.iteratorProvider)).orElse(null));
                 m.removeAndGetItems().forEach(stack -> Block.popResource(level, getBlockPos().above(), stack));
             });
+    }
+
+    @Override
+    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+            return handler.cast();
+        }
+        return super.getCapability(cap, side);
+    }
+
+    @Override
+    public void invalidateCaps() {
+        super.invalidateCaps();
+        this.handler.invalidate();
+    }
+
+    @Override
+    public void reviveCaps() {
+        super.reviveCaps();
+        this.handler = container.createHandler();
     }
 
     @Override
