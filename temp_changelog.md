@@ -2,6 +2,9 @@
 
 * Fixed - Flexible Marker can't be used under 0.
 * Changed - the value change in Y Setter GUI is now the same as Chunk Marker. (Shift: 16, Ctrl: 4, Other: 1)
+* Added - Filler
+* Added - Filler Module
+  * You can use it with QuarryPlus, then Stone will be placed in the work area.
 
 ## Version 18.5
 
@@ -14,7 +17,7 @@
 
 ## Version 18.3
 
-* Fixed critical bug in QuarryPlus. The nbt data was not saved correctly in some situation.
+* Fixed a critical bug in QuarryPlus. The nbt data was not saved correctly in some situation.
 * Added Solid Fuel Quarry.
 
 ## Version 18.2
