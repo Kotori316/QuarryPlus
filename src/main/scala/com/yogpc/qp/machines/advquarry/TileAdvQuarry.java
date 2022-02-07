@@ -10,13 +10,13 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.BreakResult;
 import com.yogpc.qp.machines.CheckerLog;
-import com.yogpc.qp.packet.ClientSync;
 import com.yogpc.qp.machines.EnchantmentHolder;
 import com.yogpc.qp.machines.EnchantmentLevel;
 import com.yogpc.qp.machines.EnergyConfigAccessor;
 import com.yogpc.qp.machines.ItemConverter;
 import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.PowerTile;
+import com.yogpc.qp.packet.ClientSync;
 import com.yogpc.qp.utils.CacheEntry;
 import com.yogpc.qp.utils.MapMulti;
 import javax.annotation.Nullable;
@@ -280,8 +280,14 @@ public class TileAdvQuarry extends PowerTile implements
             var state = targetWorld.getBlockState(mutableBlockPos);
             var fluidState = targetWorld.getFluidState(mutableBlockPos);
             if (fluidState.isEmpty()) {
-                if (state.isAir() || !canBreak(targetWorld, mutableBlockPos, state))
+                if (state.isAir())
                     continue;
+                if (!canBreak(targetWorld, mutableBlockPos, state)) {
+                    if (state.getBlock() == Blocks.NETHER_PORTAL) {
+                        targetWorld.removeBlock(mutableBlockPos, false);
+                    }
+                    continue;
+                }
                 // Calc required energy
                 var hardness = state.getDestroySpeed(targetWorld, mutableBlockPos);
                 var energy = Constants.getBreakEnergy(hardness, this);
