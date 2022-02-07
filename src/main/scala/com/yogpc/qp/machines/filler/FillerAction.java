@@ -9,12 +9,14 @@ import com.yogpc.qp.machines.PowerTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.DirectionalPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
@@ -29,6 +31,12 @@ public final class FillerAction {
     public FillerAction() {
     }
 
+    /**
+     * Place block of the given stack and shrink the stack.
+     * The block is placed in the world where powerSource exists.
+     *
+     * @param powerSource - The block entity which provides energy. In the same level as this entity, block is placed.
+     */
     public void tick(Supplier<Optional<ItemStack>> stackProvider, PowerTile powerSource, long energy) {
         if (this.iterator == null || powerSource.getLevel() == null) return;
         var maybeStack = stackProvider.get();
@@ -50,6 +58,27 @@ public final class FillerAction {
                 }
             }
         });
+    }
+
+    /**
+     * Place block selected the pos and dimension.
+     * The block is placed in the given world.
+     *
+     * @param level - where the block is placed. It doesn't have to be equal to world of powerSource.
+     */
+    public void tick(Level level, PowerTile powerSource, long energy) {
+        if (this.iterator == null || powerSource.getLevel() == null) return;
+        var targetPos = this.iterator.peek(predicate(level));
+        if (targetPos == null) {
+            // Finished.
+            this.iterator = null;
+        } else {
+            var toPlace = getToReplace(level.dimension(), targetPos);
+            if (powerSource.useEnergy(energy, PowerTile.Reason.FILLER, false)) {
+                level.setBlock(targetPos, toPlace, Block.UPDATE_ALL);
+                this.iterator.commit(targetPos, false);
+            }
+        }
     }
 
     public boolean isFinished() {
@@ -90,6 +119,19 @@ public final class FillerAction {
         }
     }
 
+    private static Predicate<BlockPos> predicate(Level level) {
+        return pos -> {
+            var state = getToReplace(level.dimension(), pos);
+            var stack = new ItemStack(state.getBlock());
+            var context = new DirectionalPlaceContext(level, pos, Direction.DOWN, stack, Direction.UP);
+            if (!context.canPlace()) {
+                return false;
+            } else {
+                return level.isUnobstructed(state, pos, CollisionContext.empty());
+            }
+        };
+    }
+
     @Nullable
     private static BlockState getStateFromItem(BlockItem blockItem, DirectionalPlaceContext context) {
         try {
@@ -98,6 +140,21 @@ public final class FillerAction {
         } catch (ReflectiveOperationException e) {
             LOGGER.error("Caught exception in Filler", e);
             return null;
+        }
+    }
+
+    public static BlockState getToReplace(ResourceKey<Level> dimension, BlockPos pos) {
+        if (dimension.equals(Level.NETHER)) {
+            return Blocks.NETHERRACK.defaultBlockState();
+        } else if (dimension.equals(Level.END)) {
+            return Blocks.END_STONE.defaultBlockState();
+        } else if (dimension.equals(Level.OVERWORLD)) {
+            if (pos.getY() >= 0)
+                return Blocks.STONE.defaultBlockState();
+            else
+                return Blocks.DEEPSLATE.defaultBlockState();
+        } else {
+            return Blocks.STONE.defaultBlockState();
         }
     }
 }

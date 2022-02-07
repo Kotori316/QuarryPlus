@@ -15,6 +15,7 @@ import com.yogpc.qp.machines.BreakResult;
 import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.TargetIterator;
+import com.yogpc.qp.machines.filler.FillerAction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
@@ -35,6 +36,7 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
             new MakeFrameSerializer(),
             new BreakBlockSerializer(),
             new CheckFluidSerializer(),
+            new FillerWorkSerializer(),
             new FinishedSerializer()
         ).collect(Collectors.toMap(Serializer::key, Function.identity()));
     }
@@ -317,7 +319,9 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
                 for (int y = quarry.digMinY + 1; y < pos.getY() - 1; y++) {
                     mutableBlockPos.setY(y);
                     var blockState = targetWorld.getBlockState(mutableBlockPos);
-                    if (blockState.is(Holder.BLOCK_DUMMY) || blockState.is(Blocks.STONE) || blockState.is(Blocks.COBBLESTONE)) {
+                    var blockCondition = blockState.is(Holder.BLOCK_DUMMY) || blockState.is(Blocks.STONE) || blockState.is(Blocks.COBBLESTONE);
+                    var blockIsReplaced = quarry.getReplacementState() == blockState;
+                    if (blockCondition && !blockIsReplaced) {
                         targetWorld.setBlock(mutableBlockPos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
                         flagRemoved = true;
                     }
@@ -326,7 +330,10 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
                 if (flagRemoved) count += 1;
             }
             if (!iterator.hasNext()) {
-                quarry.setAction(Finished.FINISHED);
+                if (quarry.hasFillerModule())
+                    quarry.setAction(new FillerWork(quarry));
+                else
+                    quarry.setAction(Finished.FINISHED);
             }
         }
     }
@@ -376,6 +383,72 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
         @Override
         AdvQuarryAction fromTag(CompoundTag tag, TileAdvQuarry quarry) {
             return Finished.FINISHED;
+        }
+    }
+
+    public static final class FillerWork extends AdvQuarryAction {
+        private final TargetIterator iterator;
+
+        public FillerWork(TileAdvQuarry quarry) {
+            assert quarry.getArea() != null;
+            this.iterator = TargetIterator.of(quarry.getArea());
+        }
+
+        FillerWork(TileAdvQuarry quarry, int x, int z) {
+            assert quarry.getArea() != null;
+            this.iterator = TargetIterator.of(quarry.getArea());
+            this.iterator.setCurrent(new TargetIterator.XZPair(x, z));
+        }
+
+        @Override
+        CompoundTag writeDetail(CompoundTag tag) {
+            var xzPair = iterator.peek();
+            tag.putInt("currentX", xzPair.x());
+            tag.putInt("currentZ", xzPair.z());
+            return tag;
+        }
+
+        @Override
+        String key() {
+            return "FillerWork";
+        }
+
+        @Override
+        public void tick(Level level, BlockPos pos, BlockState state, TileAdvQuarry quarry) {
+            var target = this.iterator.peek();
+            var mutablePos = new BlockPos.MutableBlockPos(target.x(), 0, target.z());
+            for (int y = quarry.digMinY + 1; y < pos.getY(); y++) {
+                mutablePos.setY(y);
+                var targetState = quarry.getTargetWorld().getBlockState(mutablePos);
+                if (targetState.getMaterial().isReplaceable()) {
+                    var energy = PowerManager.getFillerEnergy(quarry) * 10;
+                    if (quarry.useEnergy(energy, PowerTile.Reason.FILLER, false)) {
+                        var toReplace = FillerAction.getToReplace(quarry.getTargetWorld().dimension(), mutablePos);
+                        quarry.getTargetWorld().setBlockAndUpdate(mutablePos, toReplace);
+                    } else {
+                        return; // Insufficient energy.
+                    }
+                }
+            }
+            this.iterator.next();
+            if (!iterator.hasNext()) {
+                quarry.setAction(Finished.FINISHED);
+            }
+        }
+    }
+
+    private static final class FillerWorkSerializer extends Serializer {
+
+        @Override
+        String key() {
+            return "FillerWork";
+        }
+
+        @Override
+        FillerWork fromTag(CompoundTag tag, TileAdvQuarry quarry) {
+            int x = tag.getInt("currentX");
+            int z = tag.getInt("currentZ");
+            return new FillerWork(quarry, x, z);
         }
     }
 }

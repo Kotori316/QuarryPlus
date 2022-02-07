@@ -3,7 +3,6 @@ package com.yogpc.qp.machines.quarry;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -14,8 +13,6 @@ import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.PowerTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -211,7 +208,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
             var action = ((FillerTarget) quarry.target).fillerAction;
             var energy = PowerManager.getFillerEnergy(quarry) * 10;
             for (int i = 0; i < quarry.efficiencyLevel() + 1; i++) {
-                action.tick(() -> Optional.of(new ItemStack(Items.STONE)), quarry, energy);
+                action.tick(quarry.getTargetWorld(), quarry, energy);
             }
             if (action.isFinished()) {
                 quarry.target = null;
