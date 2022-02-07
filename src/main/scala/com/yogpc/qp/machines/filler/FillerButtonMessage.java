@@ -49,7 +49,7 @@ public final class FillerButtonMessage implements IMessage {
                     if (f.fillerAction.isFinished()) {
                         // Filler work is not started.
                         PacketHandler.getPlayer(supplier.get()).ifPresent(p ->
-                            p.displayClientMessage(new TextComponent("Filler work isn't started."), false));
+                            p.displayClientMessage(new TextComponent("Filler work isn't started. You must place a marker near Filler."), false));
                     }
                 }));
     }
