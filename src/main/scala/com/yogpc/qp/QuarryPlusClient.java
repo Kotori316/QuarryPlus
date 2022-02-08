@@ -1,6 +1,7 @@
 package com.yogpc.qp;
 
 import com.yogpc.qp.machines.advquarry.AdvQuarryScreen;
+import com.yogpc.qp.machines.filler.FillerScreen;
 import com.yogpc.qp.machines.marker.Screen16Marker;
 import com.yogpc.qp.machines.marker.ScreenFlexMarker;
 import com.yogpc.qp.machines.misc.YSetterScreen;
@@ -38,5 +39,6 @@ public class QuarryPlusClient implements ClientModInitializer {
         ScreenRegistry.register(QuarryPlus.ModObjects.MARKER_16_HANDLER_TYPE, Screen16Marker::new);
         ScreenRegistry.register(QuarryPlus.ModObjects.PLACER_MENU_TYPE, PlacerScreen::new);
         ScreenRegistry.register(QuarryPlus.ModObjects.ADV_QUARRY_MENU_TYPE, AdvQuarryScreen::new);
+        ScreenRegistry.register(QuarryPlus.ModObjects.FILLER_MENU_TYPE, FillerScreen::new);
     }
 }

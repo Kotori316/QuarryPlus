@@ -163,6 +163,10 @@ public class PowerTile extends BlockEntity {
         public static long getBreakBlockFluidEnergy(EnchantmentLevel.HasEnchantments enchantments) {
             return (long) (enchantments.getAccessor().removeFluid() * ONE_FE / (1 + Math.max(0, enchantments.unbreakingLevel())));
         }
+
+        public static long getFillerEnergy(EnchantmentLevel.HasEnchantments enchantments) {
+            return (long) (enchantments.getAccessor().breakBlock() * ONE_FE);
+        }
     }
 
     public enum Reason {
