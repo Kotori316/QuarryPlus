@@ -1,3 +1,7 @@
+## Version 18.7
+
+* Fixed - Filler didn't save the inventory.
+
 ## Version 18.6
 
 * Fixed - Flexible Marker can't be used under 0.
