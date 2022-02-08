@@ -16,6 +16,7 @@ import com.yogpc.qp.utils.MapMulti;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.MenuProvider;
@@ -50,6 +51,7 @@ public final class FillerEntity extends PowerTile implements CheckerLog, PowerCo
         if (!fillerAction.isFinished()) {
             nbt.put("fillerAction", this.fillerAction.toNbt());
         }
+        nbt.put("container", container.createTag());
     }
 
     @Override
@@ -58,6 +60,7 @@ public final class FillerEntity extends PowerTile implements CheckerLog, PowerCo
         if (nbt.contains("fillerAction")) {
             this.fillerAction.fromNbt(nbt.getCompound("fillerAction"));
         }
+        container.fromTag(nbt.getList("container", Tag.TAG_COMPOUND));
     }
 
     @Override
