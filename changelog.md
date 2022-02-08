@@ -1,5 +1,9 @@
 ## 1.18
 
+* Added - Filler
+* Fixed - AdvQuarry ignores nether portal.
+* Fixed - Flexible Marker can't be used under 0.
+* Changed - The amount of Y if Shift or Ctrl is pressed.
 * Added - config option to disable removing common material in ChunkDestroyer.
 * Changed - Reduced work energy of Chunk Destroyer. (Changed coefficient of Efficiency)
 * Fixed - performance issue of rendering of ChunkDestroyer.
