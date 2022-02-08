@@ -4,7 +4,7 @@
 * Changed - the value change in Y Setter GUI is now the same as Chunk Marker. (Shift: 16, Ctrl: 4, Other: 1)
 * Added - Filler
 * Added - Filler Module
-  * You can use it with QuarryPlus, then Stone will be placed in the work area.
+  * You can use it with QuarryPlus and Chunk Destroyer, then Stone will be placed in the work area.
 
 ## Version 18.5
 
