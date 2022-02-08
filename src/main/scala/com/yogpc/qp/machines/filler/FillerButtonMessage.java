@@ -46,7 +46,7 @@ public final class FillerButtonMessage implements IMessage<FillerButtonMessage> 
         return NAME;
     }
 
-    static final ServerPlayNetworking.PlayChannelHandler handler = (server, player, handler1, buf, responseSender) -> {
+    public static final ServerPlayNetworking.PlayChannelHandler handler = (server, player, handler1, buf, responseSender) -> {
         var message = new FillerButtonMessage(buf);
         server.execute(() ->
             Optional.ofNullable(server.getLevel(message.dim))

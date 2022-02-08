@@ -3,6 +3,7 @@ package com.yogpc.qp.packet;
 import java.util.List;
 
 import com.yogpc.qp.machines.advquarry.AdvActionMessage;
+import com.yogpc.qp.machines.filler.FillerButtonMessage;
 import com.yogpc.qp.machines.misc.LevelMessage;
 import javax.annotation.Nonnull;
 import net.fabricmc.api.EnvType;
@@ -24,7 +25,7 @@ public class PacketHandler {
                 new ServerPacketInit(AdvActionMessage.NAME, AdvActionMessage.handler),
                 new ServerPacketInit(FlexMarkerMessage.NAME, FlexMarkerMessage.handler),
                 new ServerPacketInit(Marker16Message.NAME, Marker16Message.handler),
-                new ServerPacketInit(FlexMarkerMessage.NAME, FlexMarkerMessage.handler)
+                new ServerPacketInit(FillerButtonMessage.NAME, FillerButtonMessage.handler)
             );
             list.forEach(i -> ServerPlayNetworking.registerGlobalReceiver(i.name(), i.handler()));
         }
