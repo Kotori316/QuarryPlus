@@ -24,6 +24,8 @@ public class QuarryConfig implements ConfigData {
     public AdvPump adv_pump = new AdvPump();
     @ConfigEntry.Gui.CollapsibleObject
     public AdvQuarry adv_quarry = new AdvQuarry();
+    @ConfigEntry.Gui.CollapsibleObject
+    public Filler filler = new Filler();
 
     public static class Common {
         @ConfigEntry.Category(Constant.COMMON_CATEGORY)
@@ -98,5 +100,14 @@ public class QuarryConfig implements ConfigData {
         public double advQuarryEnergyRemoveFluid = advQuarryEnergyBreakBlock * 5;
         @ConfigEntry.Category(Constant.COMMON_POWER_CATEGORY)
         public double advQuarryEnergyMoveHead = 25d;
+    }
+
+    public static class Filler {
+        // Filler
+        @ConfigEntry.Category(Constant.COMMON_POWER_CATEGORY)
+        @ConfigEntry.Gui.RequiresRestart
+        public double fillerEnergyCapacity = 1000d;
+        @ConfigEntry.Category(Constant.COMMON_POWER_CATEGORY)
+        public double fillerEnergyBreakBlock = 10d;
     }
 }

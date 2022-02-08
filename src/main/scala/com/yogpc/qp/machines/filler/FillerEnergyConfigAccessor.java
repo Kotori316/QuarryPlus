@@ -8,21 +8,21 @@ enum FillerEnergyConfigAccessor implements EnergyConfigAccessor {
 
     @Override
     public double makeFrame() {
-        return QuarryPlus.config.quarry.quarryEnergyMakeFrame;
+        return EnergyConfigAccessor.ONES.makeFrame();
     }
 
     @Override
     public double moveHead() {
-        return QuarryPlus.config.quarry.quarryEnergyMoveHead;
+        return EnergyConfigAccessor.ONES.moveHead();
     }
 
     @Override
     public double breakBlock() {
-        return QuarryPlus.config.quarry.quarryEnergyBreakBlock;
+        return QuarryPlus.config.filler.fillerEnergyBreakBlock;
     }
 
     @Override
     public double removeFluid() {
-        return QuarryPlus.config.quarry.quarryEnergyRemoveFluid;
+        return EnergyConfigAccessor.ONES.removeFluid();
     }
 }

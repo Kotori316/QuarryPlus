@@ -36,7 +36,7 @@ public final class FillerEntity extends PowerTile implements CheckerLog, Enchant
     final FillerAction fillerAction = new FillerAction(this.container::getFirstItem, this);
 
     public FillerEntity(@NotNull BlockPos pos, BlockState state) {
-        super(QuarryPlus.ModObjects.FILLER_TYPE, pos, state);
+        super(QuarryPlus.ModObjects.FILLER_TYPE, pos, state, (long) (ONE_FE * QuarryPlus.config.filler.fillerEnergyCapacity));
     }
 
     @Override
