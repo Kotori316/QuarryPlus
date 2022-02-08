@@ -17,6 +17,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -43,6 +44,7 @@ public final class FillerEntity extends PowerTile implements CheckerLog, Enchant
         if (!fillerAction.isFinished()) {
             nbt.put("fillerAction", this.fillerAction.toNbt());
         }
+        nbt.put("container", container.createTag());
         super.saveAdditional(nbt);
     }
 
@@ -52,6 +54,7 @@ public final class FillerEntity extends PowerTile implements CheckerLog, Enchant
         if (nbt.contains("fillerAction")) {
             this.fillerAction.fromNbt(nbt.getCompound("fillerAction"));
         }
+        container.fromTag(nbt.getList("container", Tag.TAG_COMPOUND));
     }
 
     @Override
