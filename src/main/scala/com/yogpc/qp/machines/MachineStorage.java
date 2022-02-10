@@ -3,6 +3,7 @@ package com.yogpc.qp.machines;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,14 @@ import com.google.common.annotations.VisibleForTesting;
 import com.yogpc.qp.integration.QuarryFluidTransfer;
 import com.yogpc.qp.integration.QuarryItemTransfer;
 import com.yogpc.qp.utils.MapMulti;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
+import net.fabricmc.fabric.api.transfer.v1.storage.StorageView;
+import net.fabricmc.fabric.api.transfer.v1.storage.base.CombinedStorage;
+import net.fabricmc.fabric.api.transfer.v1.storage.base.ExtractionOnlyStorage;
+import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleSlotStorage;
+import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
+import net.fabricmc.fabric.api.transfer.v1.transaction.base.SnapshotParticipant;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -26,8 +35,8 @@ import net.minecraft.world.level.material.Fluids;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class MachineStorage {
-    protected Map<ItemKey, Long> itemMap = new LinkedHashMap<>();
-    protected Map<FluidKey, Long> fluidMap = new LinkedHashMap<>();
+    protected LinkedHashMap<ItemKey, Long> itemMap = new LinkedHashMap<>();
+    protected LinkedHashMap<FluidKey, Long> fluidMap = new LinkedHashMap<>();
 
     public void addItem(ItemStack stack) {
         if (stack.isEmpty()) return; // No need to store empty item.
@@ -68,12 +77,12 @@ public class MachineStorage {
         itemMap = itemTag.stream()
             .mapMulti(MapMulti.cast(CompoundTag.class))
             .map(n -> Pair.of(ItemKey.fromNbt(n), n.getLong("count")))
-            .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
+            .collect(Collectors.toMap(Pair::getKey, Pair::getValue, Long::sum, LinkedHashMap::new));
         var fluidTag = tag.getList("fluids", Tag.TAG_COMPOUND);
         fluidMap = fluidTag.stream()
             .mapMulti(MapMulti.cast(CompoundTag.class))
             .map(n -> Pair.of(FluidKey.fromNbt(n), n.getLong("amount")))
-            .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
+            .collect(Collectors.toMap(Pair::getKey, Pair::getValue, Long::sum, LinkedHashMap::new));
     }
 
     public Map<FluidKey, Long> getFluidMap() {
@@ -188,5 +197,186 @@ public class MachineStorage {
             }
         };
         else return null;
+    }
+
+    @SuppressWarnings({"UnstableApiUsage", "unused"})
+    public static ExtractionOnlyStorage<ItemVariant> getItemStorage(BlockEntity blockEntity, Direction context) {
+        if (blockEntity instanceof HasStorage hasStorage) {
+            return hasStorage.getStorage().fabricItemStorageSnapshot;
+        } else {
+            return null;
+        }
+    }
+
+    @SuppressWarnings({"UnstableApiUsage", "unused"})
+    public static ExtractionOnlyStorage<FluidVariant> getFluidStorage(BlockEntity blockEntity, Direction context) {
+        if (blockEntity instanceof HasStorage hasStorage) {
+            return hasStorage.getStorage().fabricFluidStorageSnapshot;
+        } else {
+            return null;
+        }
+    }
+
+    private final FabricItemStorageSnapshot fabricItemStorageSnapshot = new FabricItemStorageSnapshot();
+    private final FabricFluidStorageSnapshot fabricFluidStorageSnapshot = new FabricFluidStorageSnapshot();
+
+    @SuppressWarnings("UnstableApiUsage")
+    private class FabricItemStorageSnapshot extends SnapshotParticipant<LinkedHashMap<ItemKey, Long>> implements ExtractionOnlyStorage<ItemVariant> {
+
+        @Override
+        protected LinkedHashMap<ItemKey, Long> createSnapshot() {
+            return new LinkedHashMap<>(itemMap); // Create copy of map, as the field is mutable.
+        }
+
+        @Override
+        protected void readSnapshot(LinkedHashMap<ItemKey, Long> snapshot) {
+            itemMap = snapshot;
+        }
+
+        @Override
+        public long extract(ItemVariant resource, long maxAmount, TransactionContext transaction) {
+            var key = new ItemKey(resource.getItem(), resource.getNbt());
+            if (itemMap.containsKey(key)) {
+                long amount = itemMap.get(key);
+                var extracted = Math.min(maxAmount, amount);
+                var remain = amount - extracted;
+                updateSnapshots(transaction);
+                if (remain > 0) {
+                    // the item still exists.
+                    itemMap.put(key, remain);
+                } else {
+                    // the items all have been transferred.
+                    itemMap.remove(key);
+                }
+                return extracted;
+            } else {
+                return 0;
+            }
+        }
+
+        @Override
+        public Iterator<StorageView<ItemVariant>> iterator(TransactionContext transaction) {
+            var combinedStorage = new CombinedStorage<>(itemMap.entrySet().stream().map(Element::new).toList());
+            return combinedStorage.iterator(transaction);
+        }
+
+        private final class Element implements ExtractionOnlyStorage<ItemVariant>, SingleSlotStorage<ItemVariant> {
+            private final ItemKey itemKey;
+            private final long amount;
+
+            private Element(ItemKey itemKey, long amount) {
+                this.itemKey = itemKey;
+                this.amount = amount;
+            }
+
+            private Element(Map.Entry<ItemKey, Long> entry) {
+                this(entry.getKey(), entry.getValue());
+            }
+
+            @Override
+            public long extract(ItemVariant resource, long maxAmount, TransactionContext transaction) {
+                return FabricItemStorageSnapshot.this.extract(resource, maxAmount, transaction);
+            }
+
+            @Override
+            public boolean isResourceBlank() {
+                return getResource().isBlank();
+            }
+
+            @Override
+            public ItemVariant getResource() {
+                return ItemVariant.of(itemKey.item(), itemKey.nbt());
+            }
+
+            @Override
+            public long getAmount() {
+                return amount;
+            }
+
+            @Override
+            public long getCapacity() {
+                return Integer.MAX_VALUE;
+            }
+
+            @Override
+            public String toString() {
+                return "Element[" +
+                    "itemKey=" + itemKey + ", " +
+                    "amount=" + amount + ']';
+            }
+        }
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
+    private class FabricFluidStorageSnapshot extends SnapshotParticipant<LinkedHashMap<FluidKey, Long>> implements ExtractionOnlyStorage<FluidVariant> {
+
+        @Override
+        protected LinkedHashMap<FluidKey, Long> createSnapshot() {
+            return new LinkedHashMap<>(fluidMap); // Create copy of map, as the field is mutable.
+        }
+
+        @Override
+        protected void readSnapshot(LinkedHashMap<FluidKey, Long> snapshot) {
+            fluidMap = snapshot;
+        }
+
+        @Override
+        public long extract(FluidVariant resource, long maxAmount, TransactionContext transaction) {
+            var key = new FluidKey(resource.getFluid(), resource.getNbt());
+            if (fluidMap.containsKey(key)) {
+                long amount = fluidMap.get(key);
+                updateSnapshots(transaction);
+                var extracted = Math.min(maxAmount, amount);
+                addFluid(key.fluid(), -extracted);
+                return extracted;
+            } else {
+                return 0;
+            }
+        }
+
+        @Override
+        public Iterator<StorageView<FluidVariant>> iterator(TransactionContext transaction) {
+            var combinedStorage = new CombinedStorage<>(fluidMap.entrySet().stream().map(Element::new).toList());
+            return combinedStorage.iterator(transaction);
+        }
+
+        private final class Element implements ExtractionOnlyStorage<FluidVariant>, SingleSlotStorage<FluidVariant> {
+            private final FluidKey fluidKey;
+            private final long amount;
+
+            private Element(FluidKey fluidKey, long amount) {
+                this.fluidKey = fluidKey;
+                this.amount = amount;
+            }
+
+            private Element(Map.Entry<FluidKey, Long> entry) {
+                this(entry.getKey(), entry.getValue());
+            }
+
+            @Override
+            public long extract(FluidVariant resource, long maxAmount, TransactionContext transaction) {
+                return FabricFluidStorageSnapshot.this.extract(resource, maxAmount, transaction);
+            }
+
+            @Override
+            public boolean isResourceBlank() {
+                return getResource().isBlank();
+            }
+
+            @Override
+            public FluidVariant getResource() {
+                return FluidVariant.of(fluidKey.fluid(), fluidKey.nbt());
+            }
+
+            @Override
+            public long getAmount() {
+                return amount;
+            }
+
+            @Override
+            public long getCapacity() {
+                return Long.MAX_VALUE;
+            }
+        }
     }
 }
