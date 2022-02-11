@@ -26,14 +26,12 @@ import com.yogpc.qp.machines.quarry.TileQuarry;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
-import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.material.Fluid;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -155,15 +153,9 @@ class BCExtractable implements FluidExtractable {
 
 @SuppressWarnings({"UnstableApiUsage"})
 class FabricFluidTransfer implements FluidTransfer {
-    static void register() { // STUB for future.
-        ItemStorage.SIDED.registerForBlockEntities(MachineStorage::getItemStorage,
-            assume(QuarryPlus.ModObjects.ADV_QUARRY_TYPE), assume(QuarryPlus.ModObjects.QUARRY_TYPE));
+    static void register() {
         FluidStorage.SIDED.registerForBlockEntities(MachineStorage::getFluidStorage,
-            assume(QuarryPlus.ModObjects.ADV_QUARRY_TYPE), assume(QuarryPlus.ModObjects.QUARRY_TYPE), assume(QuarryPlus.ModObjects.ADV_PUMP_TYPE));
-    }
-
-    private static <T extends BlockEntity & MachineStorage.HasStorage> BlockEntityType<T> assume(BlockEntityType<T> t) {
-        return t;
+            QuarryPlus.ModObjects.ADV_QUARRY_TYPE, QuarryPlus.ModObjects.QUARRY_TYPE, QuarryPlus.ModObjects.ADV_PUMP_TYPE);
     }
 
     @Override

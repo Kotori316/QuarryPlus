@@ -10,8 +10,10 @@ import alexiil.mc.lib.attributes.item.ItemAttributes;
 import alexiil.mc.lib.attributes.item.ItemInsertable;
 import alexiil.mc.lib.attributes.item.impl.EmptyItemExtractable;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.advquarry.TileAdvQuarry;
 import com.yogpc.qp.machines.quarry.TileQuarry;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -29,6 +31,10 @@ public class QuarryItemTransfer {
         if (FabricLoader.getInstance().isModLoaded("libblockattributes_items")) {
             transfers.add(BCItemRegister.bcTransfer());
             BCItemRegister.registerAttributes();
+        }
+        if (FabricLoader.getInstance().isModLoaded("fabric-transfer-api-v1")) {
+            QuarryPlus.LOGGER.debug("Trying to register fabric item transfer api.");
+            FabricItemTransfer.register();
         }
         transfers.add(new VanillaItemTransfer());
     }
@@ -93,6 +99,14 @@ class VanillaItemTransfer implements ItemTransfer<Container> {
     @Override
     public ItemStack transfer(Container destination, ItemStack send, Direction direction) {
         return HopperBlockEntity.addItem(null, destination, send, direction);
+    }
+}
+
+@SuppressWarnings("UnstableApiUsage")
+class FabricItemTransfer {
+    static void register() {
+        ItemStorage.SIDED.registerForBlockEntities(MachineStorage::getItemStorage,
+            QuarryPlus.ModObjects.ADV_QUARRY_TYPE, QuarryPlus.ModObjects.QUARRY_TYPE);
     }
 }
 
