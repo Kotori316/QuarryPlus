@@ -256,21 +256,15 @@ public class MachineStorage {
 
         @Override
         public Iterator<StorageView<ItemVariant>> iterator(TransactionContext transaction) {
-            var combinedStorage = new CombinedStorage<>(itemMap.entrySet().stream().map(Element::new).toList());
+            var combinedStorage = new CombinedStorage<>(itemMap.keySet().stream().map(Element::new).toList());
             return combinedStorage.iterator(transaction);
         }
 
         private final class Element implements ExtractionOnlyStorage<ItemVariant>, SingleSlotStorage<ItemVariant> {
             private final ItemKey itemKey;
-            private final long amount;
 
-            private Element(ItemKey itemKey, long amount) {
+            private Element(ItemKey itemKey) {
                 this.itemKey = itemKey;
-                this.amount = amount;
-            }
-
-            private Element(Map.Entry<ItemKey, Long> entry) {
-                this(entry.getKey(), entry.getValue());
             }
 
             @Override
@@ -290,7 +284,7 @@ public class MachineStorage {
 
             @Override
             public long getAmount() {
-                return amount;
+                return itemMap.getOrDefault(itemKey, 0L);
             }
 
             @Override
@@ -300,9 +294,9 @@ public class MachineStorage {
 
             @Override
             public String toString() {
-                return "Element[" +
+                return "ItemElement[" +
                     "itemKey=" + itemKey + ", " +
-                    "amount=" + amount + ']';
+                    "amount=" + getAmount() + ']';
             }
         }
     }
@@ -336,21 +330,15 @@ public class MachineStorage {
 
         @Override
         public Iterator<StorageView<FluidVariant>> iterator(TransactionContext transaction) {
-            var combinedStorage = new CombinedStorage<>(fluidMap.entrySet().stream().map(Element::new).toList());
+            var combinedStorage = new CombinedStorage<>(fluidMap.keySet().stream().map(Element::new).toList());
             return combinedStorage.iterator(transaction);
         }
 
         private final class Element implements ExtractionOnlyStorage<FluidVariant>, SingleSlotStorage<FluidVariant> {
             private final FluidKey fluidKey;
-            private final long amount;
 
-            private Element(FluidKey fluidKey, long amount) {
+            private Element(FluidKey fluidKey) {
                 this.fluidKey = fluidKey;
-                this.amount = amount;
-            }
-
-            private Element(Map.Entry<FluidKey, Long> entry) {
-                this(entry.getKey(), entry.getValue());
             }
 
             @Override
@@ -370,12 +358,19 @@ public class MachineStorage {
 
             @Override
             public long getAmount() {
-                return amount;
+                return fluidMap.getOrDefault(fluidKey, 0L);
             }
 
             @Override
             public long getCapacity() {
                 return Long.MAX_VALUE;
+            }
+
+            @Override
+            public String toString() {
+                return "FluidElement{" +
+                    "fluidKey=" + fluidKey + ", " +
+                    "amount=" + getAmount() + ']';
             }
         }
     }
