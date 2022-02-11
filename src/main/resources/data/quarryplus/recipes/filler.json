@@ -1,30 +1,22 @@
 {
-  "type": "quarryplus:workbench_recipe",
-  "subType": "default",
-  "result": {
-    "item": "quarryplus:filler",
-    "count": 1
-  },
-  "energy": 160000.0,
-  "showInJEI": true,
-  "ingredients": [
-    {
-      "tag": "forge:ingots/iron",
-      "count": 32
-    },
-    {
-      "item": "minecraft:ladder",
-      "count": 32
-    },
-    {
-      "item": "minecraft:iron_axe",
-      "count": 6
-    }
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "iii",
+    "ala",
+    "iii"
   ],
-  "conditions": [
-    {
-      "value": "filler",
-      "type": "quarryplus:machine_enabled"
+  "key": {
+    "i": {
+      "item": "minecraft:iron_ingot"
+    },
+    "a": {
+      "item": "minecraft:iron_axe"
+    },
+    "l": {
+      "item": "minecraft:ladder"
     }
-  ]
+  },
+  "result": {
+    "item": "quarryplus:filler"
+  }
 }
