@@ -2,6 +2,7 @@ package com.yogpc.qp.integration;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import alexiil.mc.lib.attributes.AttributeSourceType;
 import alexiil.mc.lib.attributes.SearchOptions;
@@ -14,6 +15,9 @@ import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.advquarry.TileAdvQuarry;
 import com.yogpc.qp.machines.quarry.TileQuarry;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
+import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
+import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -21,7 +25,9 @@ import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class QuarryItemTransfer {
     private static final List<ItemTransfer<?>> transfers = new ArrayList<>();
@@ -35,6 +41,7 @@ public class QuarryItemTransfer {
         if (FabricLoader.getInstance().isModLoaded("fabric-transfer-api-v1")) {
             QuarryPlus.LOGGER.debug("Trying to register fabric item transfer api.");
             FabricItemTransfer.register();
+            transfers.add(FabricItemTransfer.fabricTransfer());
         }
         transfers.add(new VanillaItemTransfer());
     }
@@ -73,9 +80,11 @@ public class QuarryItemTransfer {
 }
 
 interface ItemTransfer<T> {
+    @Nullable
     T getDestination(Level world, BlockPos pos, Direction direction);
 
-    boolean isValidDestination(T t);
+    @Contract("null -> false")
+    boolean isValidDestination(@Nullable T t);
 
     /**
      * @return stacks which were NOT transferred to the destination.
@@ -87,12 +96,13 @@ interface ItemTransfer<T> {
 class VanillaItemTransfer implements ItemTransfer<Container> {
 
     @Override
+    @Nullable
     public Container getDestination(Level world, BlockPos pos, Direction direction) {
         return HopperBlockEntity.getContainerAt(world, pos);
     }
 
     @Override
-    public boolean isValidDestination(Container inventory) {
+    public boolean isValidDestination(@Nullable Container inventory) {
         return inventory != null;
     }
 
@@ -103,10 +113,49 @@ class VanillaItemTransfer implements ItemTransfer<Container> {
 }
 
 @SuppressWarnings("UnstableApiUsage")
-class FabricItemTransfer {
+class FabricItemTransfer implements ItemTransfer<Storage<ItemVariant>> {
     static void register() {
         ItemStorage.SIDED.registerForBlockEntities(MachineStorage::getItemStorage,
             QuarryPlus.ModObjects.ADV_QUARRY_TYPE, QuarryPlus.ModObjects.QUARRY_TYPE);
+    }
+
+    static ItemTransfer<?> fabricTransfer() {
+        return new FabricItemTransfer();
+    }
+
+    @Override
+    @Nullable
+    public Storage<ItemVariant> getDestination(Level world, BlockPos pos, Direction direction) {
+        var state = world.getBlockState(pos);
+        if (state.isAir()) return null;
+        return ItemStorage.SIDED.find(world, pos, state, null, direction);
+    }
+
+    @Override
+    public boolean isValidDestination(Storage<ItemVariant> itemVariantStorage) {
+        return itemVariantStorage != null && itemVariantStorage.supportsInsertion();
+    }
+
+    @Override
+    public @NotNull ItemStack transfer(Storage<ItemVariant> destination, ItemStack send, Direction direction) {
+        Objects.requireNonNull(destination, "The destination must be checked with a method `isValidDestination`.");
+        long insertAmount;
+        try (var simulationTransaction = Transaction.openOuter()) {
+            insertAmount = destination.insert(ItemVariant.of(send), send.getCount(), simulationTransaction);
+            simulationTransaction.abort();
+        }
+        if (insertAmount > 0) {
+            var copy = send.copy();
+            long inserted;
+            try (var executionTransaction = Transaction.openOuter()) {
+                inserted = destination.insert(ItemVariant.of(send), insertAmount, executionTransaction);
+                executionTransaction.commit();
+            }
+            copy.shrink((int) inserted);
+            return copy;
+        } else {
+            return send;
+        }
     }
 }
 
@@ -126,13 +175,15 @@ class BCItemRegister {
 class BCItemTransfer implements ItemTransfer<ItemInsertable> {
 
     @Override
+    @NotNull
     public ItemInsertable getDestination(Level world, BlockPos pos, Direction direction) {
         return ItemAttributes.INSERTABLE.get(world, pos, SearchOptions.inDirection(direction.getOpposite()));
     }
 
     @Override
     public boolean isValidDestination(ItemInsertable itemInsertable) {
-        return itemInsertable != ItemAttributes.INSERTABLE.defaultValue;
+        return itemInsertable != null &&
+            itemInsertable != ItemAttributes.INSERTABLE.defaultValue;
     }
 
     @Override
