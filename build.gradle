@@ -171,12 +171,6 @@ repositories {
             it.includeVersion("org.typelevel", "cats-kernel_2.13", "2.8.0-kotori")
         }
     }
-
-    repositories.stream().filter { it instanceof MavenArtifactRepository }.forEach { repo ->
-        repo.content {
-            excludeVersionByRegex(".*", ".*", ".*_mapped_snapshot_.*")
-        }
-    }
 }
 
 dependencies {
