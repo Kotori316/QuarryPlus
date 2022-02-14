@@ -1,6 +1,7 @@
 package com.yogpc.qp.integration.jei;
 
 import java.util.Collections;
+import java.util.List;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.yogpc.qp.Holder;
@@ -9,12 +10,14 @@ import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.workbench.IngredientList;
 import com.yogpc.qp.machines.workbench.WorkbenchRecipe;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.IRecipeLayout;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -57,12 +60,11 @@ class WorkBenchRecipeCategory implements IRecipeCategory<WorkbenchRecipe> {
 
     @Override
     public IDrawable getIcon() {
-        return helper.createDrawableIngredient(new ItemStack(Holder.BLOCK_WORKBENCH));
+        return helper.createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(Holder.BLOCK_WORKBENCH));
     }
 
     @Override
-    public void draw(WorkbenchRecipe recipe, PoseStack stack, double mouseX, double mouseY) {
-        IRecipeCategory.super.draw(recipe, stack, mouseX, mouseY);
+    public void draw(WorkbenchRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack stack, double mouseX, double mouseY) {
         animateBar.draw(stack, 4, 60);
         Minecraft.getInstance().font.draw(stack, (recipe.getRequiredEnergy() / PowerTile.ONE_FE) + "MJ", 36 - xOff, 70 - yOff, 0x404040);
         // Enchantment copy
@@ -71,27 +73,22 @@ class WorkBenchRecipeCategory implements IRecipeCategory<WorkbenchRecipe> {
     }
 
     @Override
-    public void setIngredients(WorkbenchRecipe recipe, IIngredients ingredients) {
+    public void setRecipe(IRecipeLayoutBuilder builder, WorkbenchRecipe recipe, List<? extends IFocus<?>> focuses) {
         var input = recipe.inputs().stream()
             .map(IngredientList::stackList)
             .toList();
         var output = Collections.singletonList(recipe.getResultItem());
-        ingredients.setInputLists(VanillaTypes.ITEM, input);
-        ingredients.setOutputs(VanillaTypes.ITEM, output);
-    }
 
-    @Override
-    public void setRecipe(IRecipeLayout recipeLayout, WorkbenchRecipe recipe, IIngredients ingredients) {
-        var stacks = recipeLayout.getItemStacks();
-        //7, 17 -- 7, 89
-        int x0 = 3;
+        int x0 = 4;
         final int o = 18;
         for (int i = 0; i < recipe.inputs().size(); i++) {
             int xIndex = i % 9;
             int yIndex = i / 9;
-            stacks.init(i, true, x0 + o * xIndex - xOff, x0 + o * yIndex - yOff);
+            var slotInput = input.get(i);
+            builder.addSlot(RecipeIngredientRole.INPUT, x0 + o * xIndex - xOff, x0 + o * yIndex - yOff)
+                .addItemStacks(slotInput);
         }
-        stacks.init(recipe.inputs().size(), false, x0 - xOff, x0 + 64 - yOff);
-        stacks.set(ingredients);
+        builder.addSlot(RecipeIngredientRole.OUTPUT, x0 - xOff, x0 + 64 - yOff)
+            .addItemStacks(output);
     }
 }

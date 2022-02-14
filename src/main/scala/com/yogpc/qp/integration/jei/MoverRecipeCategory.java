@@ -1,6 +1,5 @@
 package com.yogpc.qp.integration.jei;
 
-import java.util.Collections;
 import java.util.List;
 
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -9,10 +8,12 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.EnchantableItem;
 import com.yogpc.qp.machines.EnchantmentLevel;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.IRecipeLayout;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -59,30 +60,22 @@ class MoverRecipeCategory implements IRecipeCategory<MoverRecipeCategory.MoverRe
 
     @Override
     public IDrawable getIcon() {
-        return helper.createDrawableIngredient(new ItemStack(Holder.BLOCK_MOVER));
+        return helper.createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(Holder.BLOCK_MOVER));
     }
 
     @Override
-    public void setIngredients(MoverRecipe recipe, IIngredients ingredients) {
+    public void setRecipe(IRecipeLayoutBuilder builder, MoverRecipe recipe, List<? extends IFocus<?>> focuses) {
         var input = recipe.makeInput(pickaxes);
         var output = input.stream().map(Pair::getKey).map(recipe::makeOutput).toList();
-        ingredients.setInputLists(VanillaTypes.ITEM, Collections.singletonList(input.stream().map(Pair::getValue).toList()));
-        ingredients.setOutputLists(VanillaTypes.ITEM, Collections.singletonList(output));
+
+        builder.addSlot(RecipeIngredientRole.INPUT, 4, 31)
+            .addItemStacks(input.stream().map(Pair::getValue).toList());
+        builder.addSlot(RecipeIngredientRole.OUTPUT, 4 + 144, 31)
+            .addItemStacks(output);
     }
 
     @Override
-    public void setRecipe(IRecipeLayout recipeLayout, MoverRecipe recipe, IIngredients ingredients) {
-        var stackGroup = recipeLayout.getItemStacks();
-
-        stackGroup.init(0, true, 3, 30);
-        stackGroup.init(1, false, 3 + 144, 30);
-
-        stackGroup.set(ingredients);
-    }
-
-    @Override
-    public void draw(MoverRecipe recipe, PoseStack stack, double mouseX, double mouseY) {
-        IRecipeCategory.super.draw(recipe, stack, mouseX, mouseY);
+    public void draw(MoverRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack stack, double mouseX, double mouseY) {
         var enchantments = recipe.item.acceptEnchantments().stream().map(e -> new EnchantmentLevel(e, 1))
             .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR).map(EnchantmentLevel::enchantment).toList();
         for (int i = 0; i < enchantments.size(); i++) {
