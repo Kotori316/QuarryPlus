@@ -4,7 +4,6 @@ import com.yogpc.qp.machines.TargetIterator.XZPair
 
 import scala.jdk.javaapi.CollectionConverters
 
-//noinspection DuplicatedCode
 object CircleGenerator {
   def makeCircle(center: XZPair, diameter: Int): Seq[XZPair] = {
     val distanceGetter: XZPair => Double =
@@ -16,7 +15,7 @@ object CircleGenerator {
     val r2 = Math.pow(radius, 2)
     val distancePair = for {
       theta <- angle(radius)
-      xz <- adjacent(center, radius, theta)
+      xz <- adjacent(center, radius, theta).toSeq
       distance = distanceGetter(xz)
       if r1 < distance && distance <= r2
     } yield (xz, distance)
@@ -31,12 +30,13 @@ object CircleGenerator {
     Range.BigDecimal(0d, 2 * Math.PI, delta).map(_.toDouble)
   }
 
-  private def adjacent(center: XZPair, radius: Double, theta: Double): Seq[XZPair] = {
+  private def adjacent(center: XZPair, radius: Double, theta: Double): Set[XZPair] = {
     val x = (radius * Math.cos(theta)).toInt
     val z = (radius * Math.sin(theta)).toInt
+    val set = Range.inclusive(-1, 1).toSet
     for {
-      xDelta <- Range.inclusive(-1, 1)
-      zDelta <- Range.inclusive(-1, 1)
+      xDelta <- set
+      zDelta <- set
     } yield new XZPair(center.x() + x + xDelta, center.z() + z + zDelta)
   }
 
