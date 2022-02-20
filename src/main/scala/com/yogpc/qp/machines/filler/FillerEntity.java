@@ -135,7 +135,7 @@ public final class FillerEntity extends PowerTile implements CheckerLog, PowerCo
     }
 
     public enum Action {
-        BOX(FillerTargetPosIterator.Box::new), WALL(FillerTargetPosIterator.Wall::new);
+        BOX(FillerTargetPosIterator.Box::new), WALL(FillerTargetPosIterator.Wall::new), PILLAR(FillerTargetPosIterator.Pillar::new);
         final Function<Area, FillerTargetPosIterator> iteratorProvider;
 
         Action(Function<Area, FillerTargetPosIterator> iteratorProvider) {

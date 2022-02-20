@@ -19,10 +19,15 @@ object CircleGenerator {
       distance = distanceGetter(xz)
       if r1 < distance && distance <= r2
     } yield (xz, distance)
-    val maxDistance = distancePair.map(_._2).max
-    distancePair.collect { case (pair, d) if d != maxDistance => pair }
-      .distinct
-      .sortBy(xz => Math.atan2(xz.z() - center.z(), xz.x() - center.x()))
+    if (distancePair.map(_._2).toSet.sizeIs > 2) {
+      val maxDistance = distancePair.map(_._2).max
+      distancePair.collect { case (pair, d) if d != maxDistance => pair }
+        .distinct
+        .sortBy(xz => Math.atan2(xz.z() - center.z(), xz.x() - center.x()))
+    } else {
+      distancePair.map(_._1).distinct
+        .sortBy(xz => Math.atan2(xz.z() - center.z(), xz.x() - center.x()))
+    }
   }
 
   private def angle(radius: Double): Seq[Double] = {
@@ -41,7 +46,7 @@ object CircleGenerator {
   }
 
   def testAdjacent(center: XZPair, radius: Double, theta: Double): java.util.Set[XZPair] =
-    CollectionConverters.asJava(adjacent(center, radius, theta).toSet)
+    CollectionConverters.asJava(adjacent(center, radius, theta))
 
   def testCircle(center: XZPair, diameter: Int): java.util.List[XZPair] =
     CollectionConverters.asJava(makeCircle(center, diameter))

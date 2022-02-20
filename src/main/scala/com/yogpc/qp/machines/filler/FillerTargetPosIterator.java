@@ -6,6 +6,7 @@ import com.yogpc.qp.machines.TargetIterator;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 
+@SuppressWarnings("DuplicatedCode")
 public abstract class FillerTargetPosIterator extends PickIterator<BlockPos> {
     final Area area;
     final int maxY;
@@ -136,6 +137,62 @@ public abstract class FillerTargetPosIterator extends PickIterator<BlockPos> {
         @Override
         public BlockPos head() {
             return new BlockPos(area.minX(), minY, area.minZ());
+        }
+    }
+
+    static final class Pillar extends FillerTargetPosIterator {
+        private scala.collection.Iterator<TargetIterator.XZPair> iterator;
+
+        Pillar(Area area) {
+            super(area);
+            setNewIterator();
+            reset();
+        }
+
+        @Override
+        protected BlockPos update() {
+            if (this.iterator.hasNext()) {
+                var xz = this.iterator.next();
+                return new BlockPos(xz.x(), current.getY(), xz.z());
+            } else {
+                setNewIterator();
+                var xz = this.iterator.next();
+                return new BlockPos(xz.x(), current.getY() + 1, xz.z());
+            }
+        }
+
+        @Override
+        public BlockPos head() {
+            var firstXZ = CircleGenerator.makeCircle(
+                new TargetIterator.XZPair((area.minX() + area.maxX()) / 2, (area.minZ() + area.maxZ()) / 2),
+                Math.min(area.maxX() - area.minX(), area.maxZ() - area.minZ())
+            ).head();
+            return new BlockPos(firstXZ.x(), minY, firstXZ.z());
+        }
+
+        @Override
+        public void reset() {
+            this.iterator.next(); // Go to the next because we already get the first element.
+            super.reset();
+        }
+
+        @Override
+        public void setCurrent(BlockPos current) {
+            super.setCurrent(current);
+            var t = new TargetIterator.XZPair(current.getX(), current.getZ());
+            this.iterator = this.iterator.dropWhile(p -> !p.equals(t)).drop(1);
+        }
+
+        private void setNewIterator() {
+            this.iterator = CircleGenerator.makeCircle(
+                new TargetIterator.XZPair((area.minX() + area.maxX()) / 2, (area.minZ() + area.maxZ()) / 2),
+                Math.min(area.maxX() - area.minX(), area.maxZ() - area.minZ())
+            ).iterator();
+        }
+
+        @Override
+        FillerEntity.Action type() {
+            return FillerEntity.Action.PILLAR;
         }
     }
 }

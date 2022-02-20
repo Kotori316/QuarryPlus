@@ -3,6 +3,7 @@ package com.yogpc.qp.machines.filler;
 import java.time.Duration;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import com.google.common.collect.Lists;
 import com.yogpc.qp.QuarryPlusTest;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -142,5 +144,59 @@ class FillerTargetPosIteratorTest extends QuarryPlusTest {
             assertEquals(4 * 4 * 4 - 8, list.size());
             assertTrue(list.stream().allMatch(p -> p.getX() == 1 || p.getX() == 4 || p.getY() == 1 || p.getY() == 4 || p.getZ() == 1 || p.getZ() == 4));
         }
+    }
+
+    @Nested
+    class PillarTest {
+        static Stream<Area> areas() {
+            return Stream.of(
+                new Area(0, 0, 0, 4, 0, 6, Direction.WEST),
+                new Area(0, 0, 0, 5, 0, 7, Direction.WEST),
+                new Area(1, 0, 1, 5, 0, 7, Direction.WEST),
+                new Area(1, 0, 1, 6, 0, 8, Direction.WEST),
+                new Area(0, 0, 0, 4, 3, 6, Direction.WEST),
+                new Area(0, 0, 0, 5, 3, 7, Direction.WEST),
+                new Area(1, 0, 1, 5, 3, 7, Direction.WEST),
+                new Area(1, 0, 1, 6, 3, 8, Direction.WEST),
+                AREA
+            );
+        }
+
+        @Test
+        void createInstance() {
+            var area = new Area(0, 0, 0, 4, 0, 6, Direction.WEST);
+            var itr = new FillerTargetPosIterator.Pillar(area);
+            assertNotNull(itr);
+        }
+
+        @ParameterizedTest
+        @MethodSource("com.yogpc.qp.machines.filler.FillerTargetPosIteratorTest$PillarTest#areas")
+        void terminateTest(Area area) {
+            var itr = new FillerTargetPosIterator.Pillar(area);
+            var list = assertTimeoutPreemptively(Duration.ofSeconds(3), () -> Lists.newArrayList(itr));
+            assertTrue(list.size() > 0);
+            assertEquals(list.size(), Set.copyOf(list).size());
+        }
+
+        @Test
+        void setCurrent1() {
+            var area = new Area(0, 0, 0, 4, 0, 6, Direction.WEST);
+            var itr = new FillerTargetPosIterator.Pillar(area);
+            itr.next();
+            itr.next();
+            var third = itr.next();
+            var fourth = itr.peek();
+
+            var itr2 = new FillerTargetPosIterator.Pillar(area);
+            itr2.setCurrent(third);
+            assertEquals(third, itr2.peek());
+            itr2.next();
+            assertEquals(fourth, itr2.peek());
+        }
+    }
+
+    @Test
+    void dummy() {
+        assertTrue(PillarTest.areas().findAny().isPresent());
     }
 }
