@@ -24,6 +24,7 @@ public class ScreenFlexMarker extends AbstractContainerScreen<ContainerMarker> {
     private static final int center = 3;
     private static final int downSide = 1;
     private static final int[] amounts = {-16, -1, 1, 16};
+    private final TileFlexMarker marker;
 
     public ScreenFlexMarker(ContainerMarker containerMarker, Inventory inventory, Component component) {
         super(containerMarker, inventory, component);
@@ -31,6 +32,7 @@ public class ScreenFlexMarker extends AbstractContainerScreen<ContainerMarker> {
         this.imageWidth = 217;
         this.imageHeight = 188;
         this.inventoryLabelY = this.imageHeight - 96 + 2; // y position of text, inventory
+        marker = (TileFlexMarker) containerMarker.player.getLevel().getBlockEntity(containerMarker.pos);
     }
 
     @Override
@@ -86,6 +88,14 @@ public class ScreenFlexMarker extends AbstractContainerScreen<ContainerMarker> {
         this.font.draw(matrices, s, ((float) this.imageWidth - font.width(s)) / 2 + 40, 6 + 35, 0x404040);
         s = new TranslatableComponent(TileFlexMarker.Movable.DOWN.transName);
         this.font.draw(matrices, s, ((float) this.imageWidth - font.width(s)) / 2, 6 + 70, 0x404040);
+
+        marker.getArea().ifPresent(area -> {
+            var start = "(%d, %d, %d)".formatted(area.minX(), area.minY(), area.minZ());
+            var end = "(%d, %d, %d)".formatted(area.maxX(), area.maxY(), area.maxZ());
+            var x = (float) this.imageWidth - Math.max(font.width(start), font.width(end)) - 10;
+            font.draw(matrices, start, x, 6 + 75, 0x404040);
+            font.draw(matrices, end, x, 6 + 85, 0x404040);
+        });
     }
 
     public void actionPerformed(Button button) {
