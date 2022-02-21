@@ -7,8 +7,8 @@ import scala.jdk.javaapi.CollectionConverters
 object CircleGenerator {
   def makeCircle(center: XZPair, diameter: Int): Seq[XZPair] = {
     val distanceGetter: XZPair => Double =
-      if (diameter % 2 == 0) xz => Math.pow(xz.x() - center.x() + 0.5d, 2) + Math.pow(xz.z() - center.z() + 0.5d, 2)
-      else xz => Math.pow(xz.x() - center.x(), 2) + Math.pow(xz.z() - center.z(), 2)
+      if (diameter % 2 == 0) xz => Math.pow(xz.x - center.x + 0.5d, 2) + Math.pow(xz.z - center.z + 0.5d, 2)
+      else xz => Math.pow(xz.x - center.x, 2) + Math.pow(xz.z - center.z, 2)
 
     val radius = diameter.toDouble / 2
     val r1 = Math.pow(radius - 1, 2)
@@ -23,10 +23,10 @@ object CircleGenerator {
       val maxDistance = distancePair.map(_._2).max
       distancePair.collect { case (pair, d) if d != maxDistance => pair }
         .distinct
-        .sortBy(xz => Math.atan2(xz.z() - center.z(), xz.x() - center.x()))
+        .sortBy(xz => Math.atan2(xz.z - center.z, xz.x - center.x))
     } else {
       distancePair.map(_._1).distinct
-        .sortBy(xz => Math.atan2(xz.z() - center.z(), xz.x() - center.x()))
+        .sortBy(xz => Math.atan2(xz.z - center.z, xz.x - center.x))
     }
   }
 
@@ -42,7 +42,7 @@ object CircleGenerator {
     for {
       xDelta <- set
       zDelta <- set
-    } yield new XZPair(center.x() + x + xDelta, center.z() + z + zDelta)
+    } yield new XZPair(center.x + x + xDelta, center.z + z + zDelta)
   }
 
   def testAdjacent(center: XZPair, radius: Double, theta: Double): java.util.Set[XZPair] =
