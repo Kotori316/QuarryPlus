@@ -8,8 +8,8 @@ Copyright (C) 2012, 2013 yogpstop, Copyright (C) 2017-2022 Kotori316
 
 [![](https://github.com/Kotori316/QuarryPlus/workflows/Build%20Check%20and%20Publish/badge.svg)](https://github.com/Kotori316/QuarryPlus/actions)
 
-[![](https://cf.way2muchnoise.eu/versions/additional-enchanted-miner.svg)](https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner)
-[![](https://cf.way2muchnoise.eu/full_additional-enchanted-miner_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner)
+[![](https://cf.way2muchnoise.eu/versions/282837.svg)](https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner)
+[![](https://cf.way2muchnoise.eu/full_282837.svg)](https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner)
 
 CurseForge - https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner
 
