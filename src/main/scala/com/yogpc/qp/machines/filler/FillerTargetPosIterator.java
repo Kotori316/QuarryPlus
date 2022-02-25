@@ -5,6 +5,7 @@ import com.yogpc.qp.machines.PickIterator;
 import com.yogpc.qp.machines.TargetIterator;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import scala.collection.immutable.Seq;
 
 @SuppressWarnings("DuplicatedCode")
 public abstract class FillerTargetPosIterator extends PickIterator<BlockPos> {
@@ -161,12 +162,16 @@ public abstract class FillerTargetPosIterator extends PickIterator<BlockPos> {
             }
         }
 
+        private Seq<TargetIterator.XZPair> getCircle() {
+            return CircleGenerator.makeCircle(
+                new TargetIterator.XZPair((area.minX() + area.maxX() + 1) / 2, (area.minZ() + area.maxZ() + 1) / 2),
+                Math.min(area.maxX() - area.minX() + 1, area.maxZ() - area.minZ() + 1)
+            );
+        }
+
         @Override
         public BlockPos head() {
-            var firstXZ = CircleGenerator.makeCircle(
-                new TargetIterator.XZPair((area.minX() + area.maxX()) / 2, (area.minZ() + area.maxZ()) / 2),
-                Math.min(area.maxX() - area.minX(), area.maxZ() - area.minZ())
-            ).head();
+            var firstXZ = getCircle().head();
             return new BlockPos(firstXZ.x(), minY, firstXZ.z());
         }
 
@@ -184,10 +189,7 @@ public abstract class FillerTargetPosIterator extends PickIterator<BlockPos> {
         }
 
         private void setNewIterator() {
-            this.iterator = CircleGenerator.makeCircle(
-                new TargetIterator.XZPair((area.minX() + area.maxX()) / 2, (area.minZ() + area.maxZ()) / 2),
-                Math.min(area.maxX() - area.minX(), area.maxZ() - area.minZ())
-            ).iterator();
+            this.iterator = getCircle().iterator();
         }
 
         @Override

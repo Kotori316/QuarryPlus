@@ -33,6 +33,8 @@ public final class FillerScreen extends AbstractContainerScreen<FillerMenu> impl
             60, 20, new TextComponent("FillAll"), this));
         this.addRenderableWidget(new IndexedButton(id.getAndIncrement(), this.getGuiLeft() + this.getXSize() - 60 - 8, this.getGuiTop() + 7 + 20,
             60, 20, new TextComponent("FillBox"), this));
+        this.addRenderableWidget(new IndexedButton(id.getAndIncrement(), this.getGuiLeft() + this.getXSize() - 60 - 8, this.getGuiTop() + 7 + 40,
+            60, 20, new TextComponent("Pillar"), this));
         // this.addRenderableWidget(new IndexedButton(id.getAndIncrement(), this.getGuiLeft() + 110, this.getGuiTop() + this.getYSize() - 97,
         //     60, 14, new TextComponent("Modules"), this));
     }
@@ -58,6 +60,7 @@ public final class FillerScreen extends AbstractContainerScreen<FillerMenu> impl
             switch (indexedButton.getIndex()) {
                 case 0 -> PacketHandler.sendToServer(new FillerButtonMessage(menu.filler, FillerEntity.Action.BOX));
                 case 1 -> PacketHandler.sendToServer(new FillerButtonMessage(menu.filler, FillerEntity.Action.WALL));
+                case 2 -> PacketHandler.sendToServer(new FillerButtonMessage(menu.filler, FillerEntity.Action.PILLAR));
                 default -> QuarryPlus.LOGGER.error("Unknown button({}, {}) is pushed in {}", indexedButton, indexedButton.getIndex(), this);
             }
         } else {

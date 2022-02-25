@@ -2,7 +2,10 @@ package com.yogpc.qp.machines.filler;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.google.common.collect.Lists;
@@ -175,7 +178,10 @@ class FillerTargetPosIteratorTest extends QuarryPlusTest {
             var itr = new FillerTargetPosIterator.Pillar(area);
             var list = assertTimeoutPreemptively(Duration.ofSeconds(3), () -> Lists.newArrayList(itr));
             assertTrue(list.size() > 0);
-            assertEquals(list.size(), Set.copyOf(list).size());
+            var duplicates = list.stream().collect(Collectors.groupingBy(Function.identity()))
+                .entrySet().stream().filter(e -> e.getValue().size() > 1)
+                .map(Map.Entry::getKey).toList();
+            assertEquals(list.size(), Set.copyOf(list).size(), "Duplication: " + duplicates);
         }
 
         @Test
