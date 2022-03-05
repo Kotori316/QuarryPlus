@@ -12,7 +12,7 @@ import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
@@ -64,7 +64,7 @@ class MoverRecipeCategory implements IRecipeCategory<MoverRecipeCategory.MoverRe
     }
 
     @Override
-    public void setRecipe(IRecipeLayoutBuilder builder, MoverRecipe recipe, List<? extends IFocus<?>> focuses) {
+    public void setRecipe(IRecipeLayoutBuilder builder, MoverRecipe recipe, IFocusGroup focuses) {
         var input = recipe.makeInput(pickaxes);
         var output = input.stream().map(Pair::getKey).map(recipe::makeOutput).toList();
 

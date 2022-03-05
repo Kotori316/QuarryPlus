@@ -25,6 +25,5 @@ jobs:
           name: Test-Report
       - name: Test
         run: chmod +x ./gradlew && ./gradlew -Dfml.earlyprogresswindow=false runData --info
-        continue-on-error: true
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
