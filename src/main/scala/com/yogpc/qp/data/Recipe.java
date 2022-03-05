@@ -41,7 +41,7 @@ import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -243,7 +243,7 @@ class Recipe extends QuarryPlusDataProvider.QuarryDataProvider {
     }
 
     @NotNull
-    private static IngredientList makeList(Tag<Item> tag, int count) {
+    private static IngredientList makeList(TagKey<Item> tag, int count) {
         return new IngredientList(new IngredientWithCount(Ingredient.of(tag), count));
     }
 

@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -107,14 +107,14 @@ public record ItemConverter(
             .toList());
     }
 
-    static Predicate<ItemKey> tagPredicate(Tag.Named<Item> tag) {
-        return itemKey -> itemKey.item().getTags().contains(tag.getName());
+    static Predicate<ItemKey> tagPredicate(TagKey<Item> tag) {
+        return itemKey -> itemKey.toStack(1).is(tag);
     }
 
-    static Predicate<ItemKey> blockTagPredicate(Tag.Named<Block> tag) {
+    static Predicate<ItemKey> blockTagPredicate(TagKey<Block> tag) {
         return itemKey ->
             (itemKey.item() instanceof BlockItem blockItem)
-                && blockItem.getBlock().getTags().contains(tag.getName());
+                && blockItem.getBlock().defaultBlockState().is(tag);
     }
 
     static Predicate<ItemKey> itemPredicate(Item item) {

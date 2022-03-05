@@ -40,7 +40,7 @@ public final class MiniQuarryMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player player) {
-        return miniQuarry.getBlockPos().distSqr(player.position(), true) < 64;
+        return miniQuarry.getBlockPos().distToCenterSqr(player.position()) < 64;
     }
 
     @Override

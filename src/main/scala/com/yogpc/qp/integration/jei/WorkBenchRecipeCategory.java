@@ -1,7 +1,6 @@
 package com.yogpc.qp.integration.jei;
 
 import java.util.Collections;
-import java.util.List;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.yogpc.qp.Holder;
@@ -16,7 +15,7 @@ import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
@@ -73,7 +72,7 @@ class WorkBenchRecipeCategory implements IRecipeCategory<WorkbenchRecipe> {
     }
 
     @Override
-    public void setRecipe(IRecipeLayoutBuilder builder, WorkbenchRecipe recipe, List<? extends IFocus<?>> focuses) {
+    public void setRecipe(IRecipeLayoutBuilder builder, WorkbenchRecipe recipe, IFocusGroup focuses) {
         var input = recipe.inputs().stream()
             .map(IngredientList::stackList)
             .toList();

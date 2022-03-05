@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: ghcr.io/kotori316/fictional-meme/fictional-meme:1.18.1
+      image: ghcr.io/kotori316/fictional-meme/fictional-meme:1.18.2
     steps:
       - uses: actions/checkout@v2
       - name: Compile
@@ -25,6 +25,5 @@ jobs:
           name: Test-Report
       - name: Test
         run: chmod +x ./gradlew && ./gradlew -Dfml.earlyprogresswindow=false runData --info
-        continue-on-error: true
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN  }}

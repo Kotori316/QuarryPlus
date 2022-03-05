@@ -18,11 +18,12 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
+import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.TagKey;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.glfw.GLFW;
@@ -68,12 +69,13 @@ public class MiniQuarryAddEntryGui extends Screen implements Button.OnPress {
         drawCenteredString(matrixStack, this.font, new TranslatableComponent("quarryplus.gui.new_entry"), this.width / 2, 8, 0xFFFFFF);
     }
 
+    @SuppressWarnings("deprecation")
     private List<Pair<Kind, List<String>>> getEntries() {
         String filterText = textField == null ? "" : textField.getValue();
         if (filterText.startsWith("#")) {
             String f = filterText.substring(1); // Remove first #
-            return List.of(Pair.of(Kind.TAG, BlockTags.getAllTags().getAvailableTags()
-                .stream().map(ResourceLocation::toString).filter(r -> r.contains(f)).sorted().collect(Collectors.toList())));
+            return List.of(Pair.of(Kind.TAG, Registry.BLOCK.getTagNames()
+                .map(TagKey::location).map(ResourceLocation::toString).filter(r -> r.contains(f)).sorted().collect(Collectors.toList())));
         } else {
             return List.of(
                 Pair.of(Kind.ALL, Stream.of("ALL").filter(r -> r.contains(filterText)).toList()),
