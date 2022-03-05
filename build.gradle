@@ -275,17 +275,52 @@ task signJar(dependsOn: 'reobfJar') {
     }
 }
 
-def combinedLog() {
-    def header = ("""\
+def changeLogHeader() {
+    return ("""\
             For Minecraft ${project.minecraftVersion} and Minecraft Forge
             Released at ${ZonedDateTime.now(ZoneId.of('Asia/Tokyo')).withNano(0).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)}
 
             This mod requires [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force)
             Build with ${project.forgeVersion}, Mapping: Official ${project.minecraftVersion}
-            """ as String).stripIndent() + System.lineSeparator() * 2
+            """ as String).stripIndent()
+}
+
+def combinedLog() {
+    def header = changeLogHeader() + System.lineSeparator() * 2
     def file = new File("temp_changelog.md")
     def fileText = file.exists() ? file.text : "No changelog provided."
     return header + fileText
+}
+
+static String getCommit(String branch) {
+    try {
+        ProcessBuilder builder = new ProcessBuilder("git", "rev-parse", branch)
+        def process = builder.start()
+        process.waitFor(1L, TimeUnit.SECONDS)
+        def reader = new BufferedReader(new InputStreamReader(process.getInputStream()))
+        def commit = reader.readLine()
+        reader.close()
+        return commit ?: ""
+    } catch (IOException ignored) {
+        if (!isInCI())
+            println("Caught $ignored")
+        return ""
+    }
+}
+
+String getChangeLog() {
+    def header = changeLogHeader()
+    def f = file("temp_changelog.md")
+    if (f.exists()) {
+        String version = f.readLines().find { s -> s.startsWith("#") }
+        return header + System.lineSeparator() + Stream.concat(
+                Stream.of(version, ""),
+                f.readLines()
+                        .drop(4 - 2)
+                        .takeWhile { s -> !s.isEmpty() }
+                        .stream() as Stream<String>
+        ).collect(Collectors.joining(System.lineSeparator()))
+    } else return header
 }
 
 curseforge {
@@ -316,9 +351,7 @@ githubRelease {
     token = project.findProperty("githubToken") ?: System.getenv("REPO_TOKEN") ?: ""
     targetCommitish.set(project.branch as String)
     prerelease.set(project.version.toString().contains("SNAPSHOT"))
-    body.set(getChangeLog() +
-            System.lineSeparator() * 2 +
-            "Build with ${project.forgeVersion}, Mapping: Official ${project.minecraftVersion}")
+    body.set(getChangeLog())
     releaseAssets = files(
             jar,
             deobfJar,
@@ -328,42 +361,6 @@ githubRelease {
 
 test {
     useJUnitPlatform()
-}
-
-static String getCommit(String branch) {
-    try {
-        ProcessBuilder builder = new ProcessBuilder("git", "rev-parse", branch)
-        def process = builder.start()
-        process.waitFor(1L, TimeUnit.SECONDS)
-        def reader = new BufferedReader(new InputStreamReader(process.getInputStream()))
-        def commit = reader.readLine()
-        reader.close()
-        return commit ?: ""
-    } catch (IOException ignored) {
-        if (!isInCI())
-            println("Caught $ignored")
-        return ""
-    }
-}
-
-String getChangeLog() {
-    def header = ("""\
-        For Minecraft ${project.minecraftVersion} and Minecraft Forge
-        Released at ${ZonedDateTime.now(ZoneId.of('Asia/Tokyo')).withNano(0).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)}
-
-        This mod requires [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force)
-        """ as String).stripIndent()
-    def f = file("temp_changelog.md")
-    if (f.exists()) {
-        String version = f.readLines().find { s -> s.startsWith("#") }
-        return header + System.lineSeparator() + Stream.concat(
-                Stream.of(version, ""),
-                f.readLines()
-                        .drop(4 - 2)
-                        .takeWhile { s -> !s.isEmpty() }
-                        .stream() as Stream<String>
-        ).collect(Collectors.joining(System.lineSeparator()))
-    } else return header
 }
 
 task CheckCompileOption() {
