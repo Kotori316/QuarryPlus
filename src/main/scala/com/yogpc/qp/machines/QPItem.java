@@ -29,7 +29,7 @@ public class QPItem extends Item {
     @Override
     public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> tooltips, TooltipFlag pIsAdvanced) {
         super.appendHoverText(pStack, pLevel, tooltips, pIsAdvanced);
-        if (!QuarryPlus.config.enableMap.enabled(getRegistryName())) {
+        if (QuarryPlus.config != null && !QuarryPlus.config.enableMap.enabled(getRegistryName())) {
             tooltips.add(new TranslatableComponent("quarryplus.tooltip.item_disable_message"));
         }
     }
