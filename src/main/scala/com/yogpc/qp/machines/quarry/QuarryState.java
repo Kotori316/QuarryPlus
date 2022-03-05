@@ -133,7 +133,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
                     quarry.headZ += normalized.z() * moveDistance;
                     quarry.sync();
                 }
-                if (blockTarget.distSqr(quarry.headX, quarry.headY, quarry.headZ, false) <= 1e-8)
+                if (blockTarget.distToLowCornerSqr(quarry.headX, quarry.headY, quarry.headZ) <= 1e-8)
                     BREAK_BLOCK.tick(world, quarryPos, state, quarry);
             }
         }

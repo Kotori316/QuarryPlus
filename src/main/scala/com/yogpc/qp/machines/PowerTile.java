@@ -250,7 +250,7 @@ public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
     }
 
     public static boolean stillValid(PowerTile tile, Player player) {
-        return tile.level != null && tile.getBlockPos().distSqr(player.position(), true) < 64;
+        return tile.level != null && tile.getBlockPos().distToCenterSqr(player.position()) < 64;
     }
 
     public static boolean isFullFluidBlock(BlockState state) {
