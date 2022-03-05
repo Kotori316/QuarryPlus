@@ -37,23 +37,29 @@ import net.minecraftforge.fml.loading.targets.FMLDataUserdevLaunchHandler;
 import net.minecraftforge.forgespi.language.IConfigurable;
 import net.minecraftforge.forgespi.language.IModFileInfo;
 import net.minecraftforge.forgespi.language.IModInfo;
+import net.minecraftforge.registries.GameData;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.junit.jupiter.api.BeforeAll;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class QuarryPlusTest {
+public abstract class QuarryPlusTest {
     private static final AtomicBoolean INITIALIZED = new AtomicBoolean(false);
 
     @BeforeAll
-    public static void init() {
+    static void init() {
+        setup();
+    }
+
+    static synchronized void setup() {
         if (!INITIALIZED.getAndSet(true)) {
             SharedConstants.tryDetectVersion();
             //initLoader();
             changeDist();
             setHandler();
             Bootstrap.bootStrap();
+            GameData.unfreezeData();
             ModLoadingContext.get().setActiveContainer(new DummyModContainer());
             registerRecipes();
             setConfig();
