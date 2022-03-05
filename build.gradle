@@ -49,7 +49,8 @@ println("Java: ${System.getProperty('java.version')} " +
         "JVM: ${System.getProperty('java.vm.version')}(${System.getProperty('java.vendor')}) " +
         "Arch: ${System.getProperty('os.arch')}")
 minecraft {
-    mappings channel: 'parchment', version: project.parchmentMapping
+    // mappings channel: 'parchment', version: (project.parchmentMapping as String)
+    mappings channel: 'official', version: (project.minecraftVersion as String)
 
     runs {
         client {
