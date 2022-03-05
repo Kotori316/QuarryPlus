@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: ghcr.io/kotori316/fictional-meme/fictional-meme:1.18.1
+      image: ghcr.io/kotori316/fictional-meme/fictional-meme:1.18.2
     steps:
       - uses: actions/checkout@v2
       - name: Compile
