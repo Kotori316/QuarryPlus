@@ -4,7 +4,7 @@ import com.google.gson.{JsonArray, JsonElement, JsonObject}
 import net.minecraft.advancements.critereon.{InventoryChangeTrigger, ItemPredicate, RecipeUnlockedTrigger}
 import net.minecraft.advancements.{Advancement, AdvancementRewards, RequirementsStrategy}
 import net.minecraft.resources.ResourceLocation
-import net.minecraft.tags.Tag
+import net.minecraft.tags.TagKey
 import net.minecraft.world.item.Item
 import net.minecraft.world.level.ItemLike
 import net.minecraftforge.common.crafting.CraftingHelper
@@ -31,11 +31,11 @@ case class AdvancementSerializeHelper private(location: ResourceLocation,
     this.copy(builder = builder.addCriterion(s"has_$name", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item.of(item).build)))
   }
 
-  def addTagCriterion(tag: Tag.Named[Item]): AdvancementSerializeHelper = {
-    val name = tag.getName.getPath
+  def addTagCriterion(tag: TagKey[Item]): AdvancementSerializeHelper = {
+    val name = tag.location.getPath
     this.copy(
       builder = builder.addCriterion(s"has_$name", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item.of(tag).build)),
-      conditions = new NotCondition(new TagEmptyCondition(tag.getName)) :: conditions)
+      conditions = new NotCondition(new TagEmptyCondition(tag.location)) :: conditions)
   }
 
   def addCondition(condition: ICondition): AdvancementSerializeHelper = {

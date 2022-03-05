@@ -1,15 +1,18 @@
 package com.yogpc.qp.machines.mini_quarry;
 
 import java.util.Locale;
+import java.util.Optional;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.commands.arguments.blocks.BlockPredicateArgument;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.BlockTags;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -160,17 +163,17 @@ interface BlockStatePredicate {
     }
 
     final class Tag implements BlockStatePredicate {
-        private final net.minecraft.tags.Tag<Block> tag;
+        private final TagKey<Block> tag;
         private final ResourceLocation location;
 
         private Tag(ResourceLocation tagName) {
             this.location = tagName;
-            this.tag = BlockTags.getAllTags().getTag(tagName);
+            this.tag = TagKey.create(Registry.BLOCK_REGISTRY, tagName);
         }
 
         @Override
         public boolean test(BlockState state, BlockGetter level, BlockPos pos) {
-            return tag.contains(state.getBlock());
+            return state.is(tag);
         }
 
         @Override
@@ -207,7 +210,8 @@ interface BlockStatePredicate {
         public boolean test(BlockState state, BlockGetter blockGetter, BlockPos pos) {
             if (argument != null && (blockGetter instanceof Level level)) {
                 try {
-                    return argument.create(level.getTagManager())
+                    return argument.create(Optional.ofNullable(level.getServer()).map(MinecraftServer::registryAccess)
+                            .flatMap(a -> a.<Block>registry(Registry.BLOCK_REGISTRY)).orElseThrow())
                         .test(new BlockInWorld(level, pos, true));
                 } catch (CommandSyntaxException e) {
                     LOGGER.warn("Caught error in creating predicate.", e);
