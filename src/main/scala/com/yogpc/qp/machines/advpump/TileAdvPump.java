@@ -37,7 +37,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BucketPickup;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraftforge.fluids.FluidAttributes;
 import org.jetbrains.annotations.NotNull;
 
@@ -155,13 +155,13 @@ public class TileAdvPump extends PowerTile
         return world.getFluidState(nextPos).isEmpty() && !blockCondition;
     }
 
-    private BreakResult pumpFluid(Level world, BlockPos target, Function<Fluid, BlockState> replaceBlockGetter, boolean useEnergy) {
+    private BreakResult pumpFluid(Level world, BlockPos target, Function<FluidState, BlockState> replaceBlockGetter, boolean useEnergy) {
         var fluidState = world.getFluidState(target);
         if (fluidState.isEmpty()) {
             return BreakResult.SKIPPED;
         } else if (!fluidState.isSource()) {
             // Just remove with no cost.
-            world.setBlock(target, replaceBlockGetter.apply(fluidState.getType()), Block.UPDATE_ALL);
+            world.setBlock(target, replaceBlockGetter.apply(fluidState), Block.UPDATE_ALL);
             return BreakResult.SUCCESS;
         } else {
             if (useEnergy && !useEnergy(this.enchantmentEfficiency.baseEnergy, Reason.ADV_PUMP_FLUID, false)) {
@@ -173,7 +173,7 @@ public class TileAdvPump extends PowerTile
                 if (!deleteFluid) this.storage.addFluid(drained);
             } else {
                 if (!deleteFluid) this.storage.addFluid(fluidState.getType(), FluidAttributes.BUCKET_VOLUME);
-                world.setBlock(target, replaceBlockGetter.apply(fluidState.getType()), Block.UPDATE_ALL);
+                world.setBlock(target, replaceBlockGetter.apply(fluidState), Block.UPDATE_ALL);
             }
             return BreakResult.SUCCESS;
         }
@@ -191,7 +191,7 @@ public class TileAdvPump extends PowerTile
         return cache.replaceModuleState.getValue(getLevel());
     }
 
-    private BlockState getStateForReplace(Fluid f) {
+    private BlockState getStateForReplace(FluidState f) {
         return getReplaceModuleState()
             .orElse(f.is(FluidTags.WATER) ? Holder.BLOCK_DUMMY.defaultBlockState() : Blocks.AIR.defaultBlockState());
     }
