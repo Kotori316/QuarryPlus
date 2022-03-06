@@ -260,7 +260,7 @@ curseforge {
         id = '282837'
         changelogType = 'markdown'
         addGameVersion 'Fabric'
-        addGameVersion '1.18.1'
+        addGameVersion project.minecraft_version
         changelog = curseChangelog()
         releaseType = isInCI() ? 'alpha' : 'beta'
         mainArtifact(remapJar) {
