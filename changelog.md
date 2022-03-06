@@ -1,5 +1,6 @@
 ## 1.18
 
+* Update for 1.18.2
 * Added - Filler
 * Fixed - AdvQuarry ignores nether portal.
 * Fixed - Flexible Marker can't be used under 0.
