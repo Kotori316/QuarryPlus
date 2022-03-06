@@ -11,7 +11,7 @@ import com.yogpc.qp.QuarryPlus;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -112,8 +112,8 @@ public record ItemConverter(
         }
     }
 
-    static Predicate<ItemKey> tagPredicate(Tag.Named<Item> tag) {
-        return itemKey -> tag.contains(itemKey.item());
+    static Predicate<ItemKey> tagPredicate(TagKey<Item> tag) {
+        return itemKey -> itemKey.toStack(1).is(tag);
     }
 
     static Predicate<ItemKey> itemPredicate(Item item) {

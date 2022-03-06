@@ -38,8 +38,8 @@ public final class FillerMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public boolean stillValid(Player pPlayer) {
-        return filler.getBlockPos().distSqr(pPlayer.position(), true) < 64;
+    public boolean stillValid(Player player) {
+        return filler.getBlockPos().distToCenterSqr(player.position()) < 64;
     }
 
     @Override

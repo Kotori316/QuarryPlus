@@ -34,7 +34,7 @@ public class AdvQuarryMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player player) {
-        return quarry.getBlockPos().distSqr(player.position(), true) < 64;
+        return quarry.getBlockPos().distToCenterSqr(player.position()) < 64;
     }
 
     @Override
