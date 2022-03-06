@@ -227,11 +227,11 @@ public class Holder {
         new ResourceLocation(QuarryPlus.modID, ModuleLootFunction.NAME), new LootItemFunctionType(ModuleLootFunction.SERIALIZER));
 
     public record EntryConditionHolder(ResourceLocation location, EnableOrNot condition) {
-        boolean configurable() {
+        public boolean configurable() {
             return condition.configurable();
         }
 
-        String path() {
+        public String path() {
             return location.getPath();
         }
     }

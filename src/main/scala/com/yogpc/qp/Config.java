@@ -71,7 +71,12 @@ public class Config {
 
         public EnableMap(ForgeConfigSpec.Builder builder) {
             builder.comment("QuarryPlus Machines. Set true to enable machine or item.").push("machines");
-            machinesMap = Holder.conditionHolders().stream()
+            var defaultConfig = GsonHelper.parse(new InputStreamReader(
+                Objects.requireNonNull(PowerMap.class.getResourceAsStream("/machine_default.json"), "Content in Jar must not be absent.")
+            ));
+            machinesMap = defaultConfig.entrySet().stream()
+                .map(e -> Map.entry(new ResourceLocation(QuarryPlus.modID, e.getKey()), Holder.EnableOrNot.valueOf(e.getValue().getAsString())))
+                .map(e -> new Holder.EntryConditionHolder(e.getKey(), e.getValue()))
                 .filter(Holder.EntryConditionHolder::configurable)
                 .sorted(Comparator.comparing(Holder.EntryConditionHolder::path))
                 .map(n -> Map.entry(n.path(), builder.define(n.path(), !FMLEnvironment.production || n.condition().on())))

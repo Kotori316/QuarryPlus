@@ -35,6 +35,9 @@ public class QuarryPlus {
     public static Config config;
 
     public QuarryPlus() {
+        ForgeConfigSpec.Builder common = new ForgeConfigSpec.Builder();
+        config = new Config(common);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, common.build());
         FMLJavaModLoadingContext.get().getModEventBus().register(Register.class);
         FMLJavaModLoadingContext.get().getModEventBus().register(QuarryPlusDataProvider.class);
         DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> QuarryPlusClient::registerClientBus);
@@ -78,9 +81,6 @@ public class QuarryPlus {
 
         @SubscribeEvent
         public static void setup(FMLCommonSetupEvent event) {
-            ForgeConfigSpec.Builder common = new ForgeConfigSpec.Builder();
-            config = new Config(common);
-            ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, common.build());
             PacketHandler.init();
         }
 
