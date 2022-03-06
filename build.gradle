@@ -11,7 +11,7 @@ plugins {
     id("idea")
     id("maven-publish")
     // https://maven.fabricmc.net/net/fabricmc/fabric-loom/
-    id 'fabric-loom' version "0.11-SNAPSHOT"
+    id 'fabric-loom' version "0.12-SNAPSHOT"
     //noinspection SpellCheckingInspection
     id "com.github.breadmoirai.github-release" version "2.2.12"
     //noinspection SpellCheckingInspection
@@ -143,9 +143,9 @@ dependencies {
 
     // Runtime Checks
     modRuntimeOnly("alexiil.mc.mod:simplepipes-all:${project.simple_pipe_version}")
-    modRuntimeOnly("curse.maven:mining-dimensions-fabric-442921:3566587")
+    // modRuntimeOnly("curse.maven:mining-dimensions-fabric-442921:3566587")
     //noinspection SpellCheckingInspection
-    modRuntimeOnly("net.kyrptonaught:customportalapi:0.0.1-beta47-1.18")
+    // modRuntimeOnly("net.kyrptonaught:customportalapi:0.0.1-beta47-1.18")
 
     // Test Dependencies.
     testImplementation(group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.6.2')
