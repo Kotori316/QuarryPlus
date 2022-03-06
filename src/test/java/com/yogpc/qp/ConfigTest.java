@@ -1,5 +1,10 @@
 package com.yogpc.qp;
 
+import java.io.InputStreamReader;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.yogpc.qp.machines.PowerTile;
@@ -7,6 +12,7 @@ import com.yogpc.qp.machines.quarry.QuarryBlock;
 import com.yogpc.qp.machines.quarry.TileQuarry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.registries.ForgeRegistryEntry;
@@ -20,6 +26,7 @@ import org.junit.jupiter.params.provider.NullSource;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -99,6 +106,22 @@ final class ConfigTest extends QuarryPlusTest {
         static Stream<ResourceLocation> notQuarryItems() {
             return Stream.of(Items.DIRT, Items.AIR, EntityType.BAT, EntityType.ZOMBIE)
                 .map(ForgeRegistryEntry::getRegistryName);
+        }
+
+        @Test
+        void containsAll() {
+            var expected = Holder.conditionHolders().stream()
+                .filter(Holder.EntryConditionHolder::configurable)
+                .sorted(Comparator.comparing(Holder.EntryConditionHolder::location))
+                .collect(Collectors.toList());
+            var loaded = GsonHelper.parse(new InputStreamReader(
+                    Objects.requireNonNull(Config.PowerMap.class.getResourceAsStream("/machine_default.json"), "Content in Jar must not be absent.")
+                )).entrySet().stream()
+                .map(e -> Map.entry(new ResourceLocation(QuarryPlus.modID, e.getKey()), Holder.EnableOrNot.valueOf(e.getValue().getAsString())))
+                .map(e -> new Holder.EntryConditionHolder(e.getKey(), e.getValue()))
+                .sorted(Comparator.comparing(Holder.EntryConditionHolder::location))
+                .collect(Collectors.toList());
+            assertIterableEquals(expected, loaded);
         }
     }
 }
