@@ -1,3 +1,7 @@
+## Version 18.8
+
+* Update for 1.18.2
+
 ## Version 18.7
 
 * Fixed - Filler didn't save the inventory.

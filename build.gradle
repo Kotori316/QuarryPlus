@@ -332,7 +332,7 @@ curseforge {
         releaseType = 'release'
         addGameVersion(project.minecraftVersion)
         mainArtifact(jar) {
-            displayName = 'v' + project.version + '-forge'
+            displayName = 'v' + project.version + '-forge' + " [${project.minecraftVersion}]"
         }
         addArtifact deobfJar
         addArtifact srcJar
