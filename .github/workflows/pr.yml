@@ -23,12 +23,16 @@ jobs:
         with:
           path: build/reports/tests/*
           name: Test-Report
-      - name: RunData
-        run: chmod +x ./gradlew && ./gradlew -Dfml.earlyprogresswindow=false runData --info
-      - name: File tree
-        run: apt-get update && apt-get install -y tree && tree
       - name: GameTest
         run: chmod +x ./gradlew && ./gradlew copyGameTestTemplate runGameTestServer --stacktrace
       - name: Check report of game test
         run: |
           ! test -d "build/game_test/crash-reports"
+      - name: RunData
+        run: chmod +x ./gradlew && ./gradlew -Dfml.earlyprogresswindow=false runData --info
+      - name: File tree
+        run: |
+          apt-get update && apt-get install -y tree
+          ./gradlew clean
+          tree
+          git status

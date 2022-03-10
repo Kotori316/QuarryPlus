@@ -46,7 +46,14 @@ class LootTableSerializeHelper extends BlockLoot implements QuarryPlusDataProvid
         var copy = new ArrayList<>(functions);
         copy.add(builder);
         return new LootTableSerializeHelper(block, copy);
+    }
 
+    @Override
+    public String toString() {
+        return "LootTableSerializeHelper{" +
+            "block=" + block +
+            ", functions=" + functions +
+            '}';
     }
 
     static LootTableSerializeHelper withDrop(Block block) {

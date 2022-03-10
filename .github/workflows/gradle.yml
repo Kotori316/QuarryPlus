@@ -103,7 +103,7 @@ jobs:
     steps:
       - name: Checkout QuarryPlus repo
         uses: actions/checkout@v2
-      - name: Test with runData
+      - name: GameTest
         run: chmod +x ./gradlew && ./gradlew --no-daemon copyGameTestTemplate runGameTestServer --stacktrace
       - name: Check report
         run: ! test -d "build/game_test/crash-reports"
