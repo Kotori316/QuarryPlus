@@ -23,7 +23,7 @@ jobs:
         with:
           path: build/reports/tests/*
           name: Test-Report
-      - name: Test
+      - name: RunData
         run: chmod +x ./gradlew && ./gradlew -Dfml.earlyprogresswindow=false runData --info
-        env:
-          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
+      - name: GameTest
+        run: chmod +x ./gradlew && ./gradlew copyGameTestTemplate runGameTestServer --stacktrace

@@ -92,3 +92,16 @@ jobs:
         with:
           path: build/reports/tests/*
           name: Test-Report-${{ matrix.java }}
+
+  check-game-test:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/kotori316/fictional-meme/fictional-meme:1.18.2
+      credentials:
+        username: kotori316
+        password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout QuarryPlus repo
+        uses: actions/checkout@v2
+      - name: Test with runData
+        run: chmod +x ./gradlew && ./gradlew --no-daemon copyGameTestTemplate runGameTestServer --stacktrace
