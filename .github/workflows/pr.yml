@@ -30,4 +30,5 @@ jobs:
       - name: GameTest
         run: chmod +x ./gradlew && ./gradlew copyGameTestTemplate runGameTestServer --stacktrace
       - name: Check report of game test
-        run: ! test -d "build/game_test/crash-reports"
+        run: |
+          ! test -d "build/game_test/crash-reports"
