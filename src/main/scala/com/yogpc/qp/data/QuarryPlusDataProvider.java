@@ -49,7 +49,9 @@ public class QuarryPlusDataProvider {
             var path = generatorIn.getOutputFolder();
             var gson = new GsonBuilder().setPrettyPrinting().create();
             for (DataBuilder builder : data()) {
-                var out = path.resolve("data/%s/%s/%s.json".formatted(builder.location().getNamespace(), directory(), builder.location().getPath())).toAbsolutePath();
+                var out = path.resolve("data/%s/%s/%s.json".formatted(builder.location().getNamespace(), directory(), builder.location().getPath()))
+                    .normalize()
+                    .toAbsolutePath();
                 try {
                     LOGGER.info("Generating {}", out);
                     var json = builder.build();
