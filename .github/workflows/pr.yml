@@ -25,6 +25,8 @@ jobs:
           name: Test-Report
       - name: RunData
         run: chmod +x ./gradlew && ./gradlew -Dfml.earlyprogresswindow=false runData --info
+      - name: File tree
+        run: apt update && apt install -y tree & tree
       - name: GameTest
         run: chmod +x ./gradlew && ./gradlew copyGameTestTemplate runGameTestServer --stacktrace
       - name: Check report of game test
