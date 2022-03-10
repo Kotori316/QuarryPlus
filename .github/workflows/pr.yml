@@ -27,3 +27,5 @@ jobs:
         run: chmod +x ./gradlew && ./gradlew -Dfml.earlyprogresswindow=false runData --info
       - name: GameTest
         run: chmod +x ./gradlew && ./gradlew copyGameTestTemplate runGameTestServer --stacktrace
+      - name: Check report of game test
+        run: ! test -d "build/game_test/crash-reports"

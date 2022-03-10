@@ -105,3 +105,5 @@ jobs:
         uses: actions/checkout@v2
       - name: Test with runData
         run: chmod +x ./gradlew && ./gradlew --no-daemon copyGameTestTemplate runGameTestServer --stacktrace
+      - name: Check report
+        run: ! test -d "build/game_test/crash-reports"
