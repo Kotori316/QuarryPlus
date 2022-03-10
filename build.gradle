@@ -115,7 +115,41 @@ minecraft {
                 }
             }
         }
+
+        gameTestServer {
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property('mixin.env.remapRefMap', 'true')
+            property('mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg")
+            property "mixin.debug.export", "true"
+            property 'forge.logging.console.level', 'debug'
+            property 'forge.enabledGameTestNamespaces', 'QuarryPlus'.toLowerCase()
+            workingDirectory file("${project.buildDir}/game_test")
+            setForceExit(false)
+            jvmArgs("-EnableAssertions".toLowerCase())
+
+            mods {
+                quarryplus {
+                    source sourceSets.test
+                }
+            }
+            lazyToken("minecraft_classpath") {
+                configurations.game_test.collect { it.absolutePath }.join(File.pathSeparator)
+            }
+        }
     }
+}
+
+task deleteGateTestWorld(type: Delete) {
+    delete("${project.buildDir}/game_test")
+    onlyIf { file("${project.buildDir}/game_test").exists() }
+}
+
+task copyGameTestTemplate(type: Copy, dependsOn: deleteGateTestWorld) {
+    //noinspection SpellCheckingInspection
+    String structureDir = "src/test/resources/data/quarryplus/gameteststructures/"
+    from(structureDir)
+    into("${project.buildDir}/game_test/gameteststructures/")
+    onlyIf { file(structureDir).exists() }
 }
 
 processResources {
@@ -174,6 +208,10 @@ repositories {
     }
 }
 
+configurations {
+    game_test
+}
+
 dependencies {
     String forgeVersion = System.getenv("CI_FORGE") ?: project.forgeVersion
     minecraft('net.minecraftforge:forge:' + forgeVersion)
@@ -193,6 +231,11 @@ dependencies {
     testRuntimeOnly(group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: JUPITER_VERSION)
     // https://mvnrepository.com/artifact/org.junit.platform/junit-platform-launcher
     testImplementation(group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.7.0')
+
+    game_test(group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: JUPITER_VERSION)
+    game_test(group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: JUPITER_VERSION)
+    game_test(group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: JUPITER_VERSION)
+    game_test(group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.7.0')
 }
 
 configurations.all {
