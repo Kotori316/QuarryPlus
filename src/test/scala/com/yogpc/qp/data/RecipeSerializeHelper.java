@@ -20,7 +20,7 @@ record RecipeSerializeHelper(
     FinishedRecipe recipe,
     List<ICondition> conditions,
     @Nullable ResourceLocation saveName
-) implements QuarryPlusDataProvider.DataBuilder {
+) implements DataBuilder {
     @Override
     public ResourceLocation location() {
         return saveName == null ? recipe.getId() : saveName;

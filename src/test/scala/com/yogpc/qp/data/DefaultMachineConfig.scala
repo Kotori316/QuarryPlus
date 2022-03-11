@@ -10,15 +10,15 @@ import net.minecraft.resources.ResourceLocation
 import scala.jdk.javaapi.CollectionConverters
 
 class DefaultMachineConfig(generator: DataGenerator)
-  extends QuarryPlusDataProvider.QuarryDataProvider(generator) {
+  extends QuarryDataProvider(generator) {
   override def directory(): String = "../.." // To save to root dir
 
-  override def data(): java.util.List[_ <: QuarryPlusDataProvider.DataBuilder] = {
+  override def data(): java.util.List[_ <: DataBuilder] = {
     Collections.singletonList(DefaultMachineConfig)
   }
 }
 
-private object DefaultMachineConfig extends QuarryPlusDataProvider.DataBuilder {
+private object DefaultMachineConfig extends DataBuilder {
   override def location(): ResourceLocation = new ResourceLocation(QuarryPlus.modID, "machine_default")
 
   override def build(): JsonObject = {

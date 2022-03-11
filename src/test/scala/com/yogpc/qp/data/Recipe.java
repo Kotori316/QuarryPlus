@@ -60,7 +60,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static com.yogpc.qp.data.QuarryPlusDataProvider.location;
 
-class Recipe extends QuarryPlusDataProvider.QuarryDataProvider {
+class Recipe extends QuarryDataProvider {
     Recipe(DataGenerator generatorIn) {
         super(generatorIn);
     }
@@ -71,7 +71,7 @@ class Recipe extends QuarryPlusDataProvider.QuarryDataProvider {
     }
 
     @Override
-    List<? extends QuarryPlusDataProvider.DataBuilder> data() {
+    List<? extends DataBuilder> data() {
         return Stream.of(workbenchRecipes(), crafting(), debug()).flatMap(List::stream).toList();
     }
 
