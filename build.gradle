@@ -112,6 +112,7 @@ minecraft {
             mods {
                 quarryplus {
                     source sourceSets.main
+                    source sourceSets.test
                 }
             }
         }

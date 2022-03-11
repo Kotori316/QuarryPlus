@@ -1,6 +1,5 @@
 package com.yogpc.qp;
 
-import com.yogpc.qp.data.QuarryPlusDataProvider;
 import com.yogpc.qp.machines.workbench.EnableCondition;
 import com.yogpc.qp.machines.workbench.EnchantmentIngredient;
 import com.yogpc.qp.machines.workbench.QuarryDebugCondition;
@@ -39,7 +38,6 @@ public class QuarryPlus {
         config = new Config(common);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, common.build());
         FMLJavaModLoadingContext.get().getModEventBus().register(Register.class);
-        FMLJavaModLoadingContext.get().getModEventBus().register(QuarryPlusDataProvider.class);
         DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> QuarryPlusClient::registerClientBus);
         MinecraftForge.EVENT_BUS.register(ConfigCommand.class);
     }
