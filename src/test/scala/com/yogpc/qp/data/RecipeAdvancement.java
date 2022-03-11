@@ -18,7 +18,7 @@ import net.minecraft.world.item.Items;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.conditions.NotCondition;
 
-final class RecipeAdvancement extends QuarryPlusDataProvider.QuarryDataProvider {
+final class RecipeAdvancement extends QuarryDataProvider {
     RecipeAdvancement(DataGenerator generatorIn) {
         super(generatorIn);
     }
@@ -29,7 +29,7 @@ final class RecipeAdvancement extends QuarryPlusDataProvider.QuarryDataProvider 
     }
 
     @Override
-    List<? extends QuarryPlusDataProvider.DataBuilder> data() {
+    List<? extends DataBuilder> data() {
         return List.of(
             // Workbench
             AdvancementSerializeHelper.apply(Holder.BLOCK_WORKBENCH.getRegistryName())

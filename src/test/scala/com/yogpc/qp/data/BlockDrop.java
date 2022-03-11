@@ -11,7 +11,7 @@ import com.yogpc.qp.machines.quarry.QuarryLootFunction;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.world.level.block.Block;
 
-class BlockDrop extends QuarryPlusDataProvider.QuarryDataProvider {
+class BlockDrop extends QuarryDataProvider {
     protected BlockDrop(DataGenerator generatorIn) {
         super(generatorIn);
     }
@@ -22,7 +22,7 @@ class BlockDrop extends QuarryPlusDataProvider.QuarryDataProvider {
     }
 
     @Override
-    List<? extends QuarryPlusDataProvider.DataBuilder> data() {
+    List<? extends DataBuilder> data() {
         var notMachines = Stream.of(
             Holder.BLOCK_CREATIVE_GENERATOR,
             Holder.BLOCK_16_MARKER,
