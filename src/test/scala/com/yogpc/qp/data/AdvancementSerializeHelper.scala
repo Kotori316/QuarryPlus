@@ -13,7 +13,7 @@ import net.minecraftforge.common.crafting.conditions.{ICondition, NotCondition, 
 case class AdvancementSerializeHelper private(location: ResourceLocation,
                                               builder: Advancement.Builder,
                                               conditions: List[ICondition])
-  extends QuarryPlusDataProvider.DataBuilder {
+  extends DataBuilder {
 
   override def build(): JsonElement = {
     val obj: JsonObject = builder.serializeToJson()

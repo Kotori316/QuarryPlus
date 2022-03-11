@@ -18,7 +18,7 @@ import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 
-class LootTableSerializeHelper extends BlockLoot implements QuarryPlusDataProvider.DataBuilder {
+class LootTableSerializeHelper extends BlockLoot implements DataBuilder {
     private final Block block;
     private final List<LootItemFunction.Builder> functions;
 

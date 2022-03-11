@@ -112,6 +112,7 @@ minecraft {
             mods {
                 quarryplus {
                     source sourceSets.main
+                    source sourceSets.test
                 }
             }
         }
@@ -217,11 +218,13 @@ dependencies {
     String forgeVersion = System.getenv("CI_FORGE") ?: project.forgeVersion
     minecraft('net.minecraftforge:forge:' + forgeVersion)
     System.out.println(('Selected version: ' + 'net.minecraftforge:forge:' + forgeVersion) as String)
-    compileOnly(group: 'org.scala-lang', name: 'scala-library', version: '2.13.8')
-    compileOnly(group: 'org.typelevel', name: "cats-core_2.13", version: '2.8.0-kotori')
+    compileOnly(group: 'org.scala-lang', name: 'scala-library', version: project.scalaVersion)
+    compileOnly(group: 'org.typelevel', name: "cats-core_2.13", version: project.catsVersion)
+    testCompileOnly(group: 'org.scala-lang', name: 'scala-library', version: project.scalaVersion)
+    testCompileOnly(group: 'org.typelevel', name: "cats-core_2.13", version: project.catsVersion)
 
     implementation fg.deobf("mezz.jei:jei-1.18.2:" + project.jeiVersion)
-    runtimeOnly(group: "com.kotori316", name: "ScalableCatsForce".toLowerCase(), version: "2.13.8-build-2", classifier: "with-library") {
+    runtimeOnly(group: "com.kotori316", name: "ScalableCatsForce".toLowerCase(), version: project.slpVersion, classifier: "with-library") {
         transitive(false)
     }
 
