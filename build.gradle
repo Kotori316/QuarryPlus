@@ -344,10 +344,11 @@ static String getCommit(String branch) {
         ProcessBuilder builder = new ProcessBuilder("git", "rev-parse", branch)
         def process = builder.start()
         process.waitFor(1L, TimeUnit.SECONDS)
-        def reader = new BufferedReader(new InputStreamReader(process.getInputStream()))
-        def commit = reader.readLine()
-        reader.close()
-        return commit ?: ""
+        try (def stream = new InputStreamReader(process.getInputStream())
+             def reader = new BufferedReader(stream)) {
+            def commit = reader.readLine()
+            return commit ?: ""
+        }
     } catch (IOException ignored) {
         if (!isInCI())
             println("Caught $ignored")
