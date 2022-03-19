@@ -17,6 +17,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -24,7 +25,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
 class WorkBenchRecipeCategory implements IRecipeCategory<WorkbenchRecipe> {
-    public static final ResourceLocation UID = new ResourceLocation(QuarryPlus.modID, "jei_workbenchplus");
+    public static final RecipeType<WorkbenchRecipe> RECIPE_TYPE = RecipeType.create(QuarryPlus.modID, "jei_workbenchplus", WorkbenchRecipe.class);
     private static final ResourceLocation backGround = new ResourceLocation(QuarryPlus.modID, "textures/gui/workbench_jei2.png");
     private static final int xOff = 0;
     private static final int yOff = 0;
@@ -38,13 +39,20 @@ class WorkBenchRecipeCategory implements IRecipeCategory<WorkbenchRecipe> {
     }
 
     @Override
-    public ResourceLocation getUid() {
-        return UID;
+    public RecipeType<WorkbenchRecipe> getRecipeType() {
+        return RECIPE_TYPE;
     }
 
     @Override
+    @SuppressWarnings("removal")
+    public ResourceLocation getUid() {
+        return RECIPE_TYPE.getUid();
+    }
+
+    @Override
+    @SuppressWarnings("removal")
     public Class<? extends WorkbenchRecipe> getRecipeClass() {
-        return WorkbenchRecipe.class;
+        return RECIPE_TYPE.getRecipeClass();
     }
 
     @Override

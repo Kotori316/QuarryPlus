@@ -34,19 +34,19 @@ public class QuarryJeiPlugin implements IModPlugin {
                 .filter(WorkbenchRecipe::hasContent)
                 .sorted(WorkbenchRecipe.COMPARATOR)
                 .collect(Collectors.toList());
-        registration.addRecipes(recipes, WorkBenchRecipeCategory.UID);
-        registration.addRecipes(MoverRecipeCategory.recipes(), MoverRecipeCategory.UID);
+        registration.addRecipes(WorkBenchRecipeCategory.RECIPE_TYPE, recipes);
+        registration.addRecipes(MoverRecipeCategory.RECIPE_TYPE, MoverRecipeCategory.recipes());
     }
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
-        registration.addRecipeCatalyst(new ItemStack(Holder.BLOCK_WORKBENCH), WorkBenchRecipeCategory.UID);
-        registration.addRecipeCatalyst(new ItemStack(Holder.BLOCK_MOVER), MoverRecipeCategory.UID);
+        registration.addRecipeCatalyst(new ItemStack(Holder.BLOCK_WORKBENCH), WorkBenchRecipeCategory.RECIPE_TYPE);
+        registration.addRecipeCatalyst(new ItemStack(Holder.BLOCK_MOVER), MoverRecipeCategory.RECIPE_TYPE);
     }
 
     @Override
     public void registerGuiHandlers(IGuiHandlerRegistration registration) {
-        registration.addRecipeClickArea(ScreenWorkbench.class, 7, 74, 161, 11, WorkBenchRecipeCategory.UID);
+        registration.addRecipeClickArea(ScreenWorkbench.class, 7, 74, 161, 11, WorkBenchRecipeCategory.RECIPE_TYPE);
     }
 
     @Override

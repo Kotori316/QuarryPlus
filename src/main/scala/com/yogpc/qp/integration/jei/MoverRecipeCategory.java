@@ -14,6 +14,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -26,7 +27,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 
 class MoverRecipeCategory implements IRecipeCategory<MoverRecipeCategory.MoverRecipe> {
-    public static final ResourceLocation UID = new ResourceLocation(QuarryPlus.modID, "quarryplus.enchantmover");
+    public static final RecipeType<MoverRecipe> RECIPE_TYPE = RecipeType.create(QuarryPlus.modID, "quarryplus.enchantmover", MoverRecipe.class);
     private static final ResourceLocation backGround = new ResourceLocation(QuarryPlus.modID, "textures/gui/mover_jei.png");
     private static final int xOff = 0;
     private static final int yOff = 0;
@@ -39,13 +40,20 @@ class MoverRecipeCategory implements IRecipeCategory<MoverRecipeCategory.MoverRe
     }
 
     @Override
-    public ResourceLocation getUid() {
-        return UID;
+    public RecipeType<MoverRecipe> getRecipeType() {
+        return RECIPE_TYPE;
     }
 
     @Override
+    @SuppressWarnings("removal")
+    public ResourceLocation getUid() {
+        return RECIPE_TYPE.getUid();
+    }
+
+    @Override
+    @SuppressWarnings("removal")
     public Class<? extends MoverRecipe> getRecipeClass() {
-        return MoverRecipe.class;
+        return RECIPE_TYPE.getRecipeClass();
     }
 
     @Override
