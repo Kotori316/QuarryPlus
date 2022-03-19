@@ -12,8 +12,10 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -93,11 +95,11 @@ class AreaTest {
         assertAll(outer.map(p -> () -> assertFalse(area.isInAreaIgnoreY(p), "Should not be in area: %s".formatted(p))));
     }
 
-    @Test
-    void deserializeInvalid() {
-        assertAll(
-            () -> assertTrue(Area.fromNBT(new CompoundTag()).isEmpty()),
-            () -> assertTrue(Area.fromNBT(null).isEmpty())
+    @TestFactory
+    Stream<DynamicTest> deserializeInvalid() {
+        return Stream.of(
+            DynamicTest.dynamicTest("Empty", () -> assertTrue(Area.fromNBT(new CompoundTag()).isEmpty())),
+            DynamicTest.dynamicTest("Null", () -> assertTrue(Area.fromNBT(null).isEmpty()))
         );
     }
 

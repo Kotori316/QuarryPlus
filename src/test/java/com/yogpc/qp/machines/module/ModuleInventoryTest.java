@@ -7,12 +7,14 @@ import java.util.stream.Stream;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlusTest;
 import net.minecraft.world.item.ItemStack;
+import org.junit.jupiter.api.DynamicNode;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -56,15 +58,15 @@ class ModuleInventoryTest extends QuarryPlusTest {
 
     @Nested
     class InventoryTest {
-        @Test
-        void empty() {
+        @TestFactory
+        Stream<DynamicNode> empty() {
             var inv = new InventoryHolder();
-            assertAll(
-                () -> assertFalse(inv.hasPumpModule()),
-                () -> assertFalse(inv.hasBedrockModule()),
-                () -> assertFalse(inv.hasFillerModule()),
-                () -> assertTrue(inv.getExpModule().isEmpty()),
-                () -> assertTrue(inv.getReplacerModule().isEmpty())
+            return Stream.of(
+                DynamicTest.dynamicTest("Pump Module", () -> assertFalse(inv.hasPumpModule())),
+                DynamicTest.dynamicTest("Bedrock Module", () -> assertFalse(inv.hasBedrockModule())),
+                DynamicTest.dynamicTest("Filler Module", () -> assertFalse(inv.hasFillerModule())),
+                DynamicTest.dynamicTest("Exp Module", () -> assertTrue(inv.getExpModule().isEmpty())),
+                DynamicTest.dynamicTest("Replacer Module", () -> assertTrue(inv.getReplacerModule().isEmpty()))
             );
         }
 
@@ -100,18 +102,18 @@ class ModuleInventoryTest extends QuarryPlusTest {
             assertTrue(inv.getExpModule().isPresent());
         }
 
-        @Test
-        void multi() {
+        @TestFactory
+        Stream<DynamicNode> multi() {
             var inv = new InventoryHolder();
             inv.inventory.setItem(0, new ItemStack(Holder.ITEM_PUMP_MODULE));
             inv.inventory.setItem(1, new ItemStack(Holder.ITEM_BEDROCK_MODULE));
             inv.inventory.setItem(2, new ItemStack(Holder.ITEM_FILLER_MODULE));
             inv.inventory.setItem(3, new ItemStack(Holder.ITEM_EXP_MODULE));
-            assertAll(
-                () -> assertTrue(inv.hasFillerModule()),
-                () -> assertTrue(inv.hasBedrockModule()),
-                () -> assertTrue(inv.hasPumpModule()),
-                () -> assertTrue(inv.getExpModule().isPresent())
+            return Stream.of(
+                DynamicTest.dynamicTest("Filler Module", () -> assertTrue(inv.hasFillerModule())),
+                DynamicTest.dynamicTest("Bedrock Module", () -> assertTrue(inv.hasBedrockModule())),
+                DynamicTest.dynamicTest("Pump Module", () -> assertTrue(inv.hasPumpModule())),
+                DynamicTest.dynamicTest("Exp Module", () -> assertTrue(inv.getExpModule().isPresent()))
             );
         }
     }
