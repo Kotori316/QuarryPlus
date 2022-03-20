@@ -4,22 +4,20 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.GameTestInfo;
 import net.minecraft.world.level.block.entity.StructureBlockEntity;
-import org.junit.jupiter.api.Assertions;
+import org.junit.platform.commons.function.Try;
+import org.junit.platform.commons.util.ReflectionUtils;
 
 final class TestUtil {
     static final String EMPTY_STRUCTURE = "empty";
 
     static BlockPos getBasePos(GameTestHelper helper) {
-        try {
-            var f = GameTestHelper.class.getDeclaredField("testInfo");
-            f.setAccessible(true);
-            var info = (GameTestInfo) f.get(helper);
-            var pos = info.getStructureBlockPos();
-            var structure = (StructureBlockEntity) helper.getLevel().getBlockEntity(pos);
-            Assertions.assertNotNull(structure);
-            return structure.getStructurePos();
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
-        }
+        return Try.call(() -> GameTestHelper.class.getDeclaredField("testInfo"))
+            .andThen(f -> ReflectionUtils.tryToReadFieldValue(f, helper))
+            .andThenTry(GameTestInfo.class::cast)
+            .andThenTry(GameTestInfo::getStructureBlockPos)
+            .andThenTry(helper.getLevel()::getBlockEntity)
+            .andThenTry(StructureBlockEntity.class::cast)
+            .andThenTry(StructureBlockEntity::getStructurePos)
+            .getOrThrow(RuntimeException::new);
     }
 }
