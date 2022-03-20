@@ -16,6 +16,8 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ArmorMaterials;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TieredItem;
@@ -222,7 +224,13 @@ class SlotMover extends Slot {
                 if (stack.getEnchantmentTags().isEmpty())
                     return false;
                 if (stack.getItem() instanceof TieredItem tieredItem) {
-                    return !TierSortingRegistry.getTiersLowerThan(Tiers.IRON).contains(tieredItem.getTier());
+                    return !TierSortingRegistry.getTiersLowerThan(Tiers.DIAMOND).contains(tieredItem.getTier());
+                } else if (stack.getItem() instanceof ArmorItem armorItem) {
+                    if (armorItem.getMaterial() instanceof ArmorMaterials material) {
+                        return material.ordinal() >= ArmorMaterials.DIAMOND.ordinal();
+                    } else {
+                        return false; // Not vanilla armor.
+                    }
                 } else {
                     return stack.getItem() instanceof BowItem;
                 }
