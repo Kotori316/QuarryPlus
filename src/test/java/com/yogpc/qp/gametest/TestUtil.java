@@ -1,8 +1,12 @@
 package com.yogpc.qp.gametest;
 
+import java.util.function.Consumer;
+
+import com.yogpc.qp.QuarryPlus;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.GameTestInfo;
+import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.world.level.block.entity.StructureBlockEntity;
 import org.junit.platform.commons.function.Try;
 import org.junit.platform.commons.util.ReflectionUtils;
@@ -19,5 +23,12 @@ final class TestUtil {
             .andThenTry(StructureBlockEntity.class::cast)
             .andThenTry(StructureBlockEntity::getStructurePos)
             .getOrThrow(RuntimeException::new);
+    }
+
+    static TestFunction create(String name, Consumer<GameTestHelper> test) {
+        return new TestFunction(
+            "defaultBatch", name, QuarryPlus.modID + ":" + EMPTY_STRUCTURE, 100, 0L,
+            true, test
+        );
     }
 }
