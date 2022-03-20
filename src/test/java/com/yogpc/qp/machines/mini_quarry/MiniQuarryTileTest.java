@@ -7,13 +7,15 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class MiniQuarryTileTest extends QuarryPlusTest {
+@ExtendWith(QuarryPlusTest.class)
+class MiniQuarryTileTest {
     @ParameterizedTest
     @ValueSource(ints = {0, 1, 2, 3, 4, 5, 6})
     void intervalTest(int level) {

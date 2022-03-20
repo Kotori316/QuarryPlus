@@ -8,6 +8,7 @@ import com.yogpc.qp.QuarryPlusTest;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -15,7 +16,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class PowerManagerTest extends QuarryPlusTest {
+@ExtendWith(QuarryPlusTest.class)
+class PowerManagerTest {
 
     record Holder(
         Map<Enchantment, Integer> enchantmentMap) implements EnchantmentLevel.HasEnchantments, PowerConfig.Provider {

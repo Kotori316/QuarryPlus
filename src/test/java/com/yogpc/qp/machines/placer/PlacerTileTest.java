@@ -9,11 +9,13 @@ import java.util.stream.IntStream;
 
 import com.yogpc.qp.QuarryPlusTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import static com.yogpc.qp.machines.placer.PlacerTile.findEntry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class PlacerTileTest extends QuarryPlusTest {
+@ExtendWith(QuarryPlusTest.class)
+class PlacerTileTest {
     @Test
     void empty() {
         List<String> strings = Collections.emptyList();

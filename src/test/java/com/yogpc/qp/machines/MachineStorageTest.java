@@ -2,6 +2,7 @@ package com.yogpc.qp.machines;
 
 import java.util.Arrays;
 
+import com.yogpc.qp.QuarryPlusTest;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
@@ -11,6 +12,7 @@ import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.items.wrapper.EmptyHandler;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -20,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@ExtendWith(QuarryPlusTest.class)
 class MachineStorageTest {
     @Test
     void hasAllDirection() {

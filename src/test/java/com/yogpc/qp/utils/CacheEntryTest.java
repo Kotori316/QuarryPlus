@@ -4,11 +4,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.yogpc.qp.QuarryPlusTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-class CacheEntryTest extends QuarryPlusTest {
+@ExtendWith(QuarryPlusTest.class)
+class CacheEntryTest {
     @Test
     void instance() {
         var cache = CacheEntry.supplierCache(1, () -> 4);

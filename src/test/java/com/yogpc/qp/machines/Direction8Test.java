@@ -5,6 +5,7 @@ import java.util.List;
 import com.yogpc.qp.QuarryPlusTest;
 import net.minecraft.core.Vec3i;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -12,7 +13,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
-class Direction8Test extends QuarryPlusTest {
+@ExtendWith(QuarryPlusTest.class)
+class Direction8Test {
     @Test
     void direction8() {
         assertEquals(26, Direction8.DIRECTIONS.size());

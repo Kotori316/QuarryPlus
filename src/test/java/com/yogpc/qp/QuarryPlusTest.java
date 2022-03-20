@@ -40,15 +40,16 @@ import net.minecraftforge.forgespi.language.IModInfo;
 import net.minecraftforge.registries.GameData;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
-public abstract class QuarryPlusTest {
+public final class QuarryPlusTest implements BeforeAllCallback {
     private static final AtomicBoolean INITIALIZED = new AtomicBoolean(false);
 
-    @BeforeAll
-    static void init() {
+    @Override
+    public void beforeAll(ExtensionContext context) {
         setup();
     }
 
@@ -124,7 +125,7 @@ public abstract class QuarryPlusTest {
         config.acceptConfig(commentedConfig);
     }
 
-    protected static ResourceLocation id(String location) {
+    public static ResourceLocation id(String location) {
         return new ResourceLocation(QuarryPlus.modID, location);
     }
 

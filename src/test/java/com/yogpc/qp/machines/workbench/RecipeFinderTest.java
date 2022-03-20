@@ -15,13 +15,15 @@ import net.minecraft.world.item.Items;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class RecipeFinderTest extends QuarryPlusTest {
+@ExtendWith(QuarryPlusTest.class)
+class RecipeFinderTest {
     static List<IngredientList> createList(ItemStack first, ItemStack... stacks) {
         return Stream.concat(Stream.of(first), Stream.of(stacks))
             .map(IngredientWithCount::new)

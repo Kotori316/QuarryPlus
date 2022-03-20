@@ -14,6 +14,7 @@ import com.yogpc.qp.machines.advquarry.BlockAdvQuarry;
 import com.yogpc.qp.machines.quarry.QuarryBlock;
 import com.yogpc.qp.machines.quarry.SFQuarryBlock;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -24,7 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class PowerConfigTest extends QuarryPlusTest {
+@ExtendWith(QuarryPlusTest.class)
+class PowerConfigTest {
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
 
     @Test

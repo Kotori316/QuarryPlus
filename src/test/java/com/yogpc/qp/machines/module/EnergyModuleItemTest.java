@@ -1,14 +1,17 @@
 package com.yogpc.qp.machines.module;
 
 import com.yogpc.qp.Holder;
+import com.yogpc.qp.QuarryPlusTest;
 import net.minecraft.world.item.ItemStack;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@ExtendWith(QuarryPlusTest.class)
 class EnergyModuleItemTest {
     @Test
     void noOverflow() {

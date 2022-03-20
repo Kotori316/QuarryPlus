@@ -13,13 +13,15 @@ import net.minecraft.world.item.Items;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class TileWorkbenchTest extends QuarryPlusTest {
+@ExtendWith(QuarryPlusTest.class)
+class TileWorkbenchTest {
     static TileWorkbench tile() {
         return new TileWorkbench(BlockPos.ZERO, Holder.BLOCK_WORKBENCH.defaultBlockState());
     }

@@ -3,10 +3,12 @@ package com.yogpc.qp.utils;
 import com.yogpc.qp.QuarryPlusTest;
 import net.minecraft.core.SectionPos;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class QuarryChunkLoadUtilTest extends QuarryPlusTest {
+@ExtendWith(QuarryPlusTest.class)
+class QuarryChunkLoadUtilTest {
     @Test
     void biasTest1() {
         var x = 20;

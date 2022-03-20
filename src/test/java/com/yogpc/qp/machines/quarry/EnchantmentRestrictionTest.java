@@ -8,6 +8,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -15,7 +16,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class EnchantmentRestrictionTest extends QuarryPlusTest {
+@ExtendWith(QuarryPlusTest.class)
+class EnchantmentRestrictionTest {
     @Test
     void instance() {
         var expected = new EnchantmentRestriction(Map.of(Enchantments.BLOCK_EFFICIENCY, 3, Enchantments.UNBREAKING, 1, Enchantments.SHARPNESS, Enchantments.SHARPNESS.getMaxLevel()));

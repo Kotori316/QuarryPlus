@@ -11,13 +11,15 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.enchantment.Enchantments;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class TileQuarryTest extends QuarryPlusTest {
+@ExtendWith(QuarryPlusTest.class)
+class TileQuarryTest {
 
     @Test
     void headSpeed() {

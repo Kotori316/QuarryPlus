@@ -10,6 +10,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -17,7 +18,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Disabled("SlotMoverTest: TierSortingRegistry cause initial crash.")
-class SlotMoverTest extends QuarryPlusTest {
+@ExtendWith(QuarryPlusTest.class)
+class SlotMoverTest {
     @Test
     void dummy() {
         assertTrue(diamondTools().findAny().isPresent());

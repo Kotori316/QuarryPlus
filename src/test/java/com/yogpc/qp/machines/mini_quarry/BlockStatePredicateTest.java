@@ -12,13 +12,15 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-final class BlockStatePredicateTest extends QuarryPlusTest {
+@ExtendWith(QuarryPlusTest.class)
+final class BlockStatePredicateTest {
     static void containType(BlockStatePredicate predicate) {
         var tag = predicate.toTag();
         assertTrue(tag.contains("type"));

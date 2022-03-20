@@ -8,11 +8,13 @@ import net.minecraft.core.Direction;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
-class TargetIteratorTest extends QuarryPlusTest {
+@ExtendWith(QuarryPlusTest.class)
+class TargetIteratorTest {
     @Nested
     class NorthTest {
         // Dig area: -1005, 91 -> -1002, 92

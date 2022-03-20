@@ -20,15 +20,18 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import static com.yogpc.qp.QuarryPlusTest.id;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class IngredientRecipeTest extends QuarryPlusTest {
+@ExtendWith(QuarryPlusTest.class)
+class IngredientRecipeTest {
     static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
     static final IngredientRecipeSerialize SERIALIZE = new IngredientRecipeSerialize();
 

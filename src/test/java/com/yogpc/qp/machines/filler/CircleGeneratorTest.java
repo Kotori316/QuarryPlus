@@ -7,11 +7,13 @@ import com.yogpc.qp.QuarryPlusTest;
 import com.yogpc.qp.machines.TargetIterator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
-class CircleGeneratorTest extends QuarryPlusTest {
+@ExtendWith(QuarryPlusTest.class)
+class CircleGeneratorTest {
     private static TargetIterator.XZPair xz(int x, int z) {
         return new TargetIterator.XZPair(x, z);
     }

@@ -12,6 +12,7 @@ import com.yogpc.qp.machines.Area;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -20,7 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class SkipIteratorTest extends QuarryPlusTest {
+@ExtendWith(QuarryPlusTest.class)
+class SkipIteratorTest {
     static final Area AREA = new Area(-3, 5, 10, 2, 8, 13, Direction.WEST);
     public static final Predicate<BlockPos> TRUE_PREDICATE = p -> true;
 

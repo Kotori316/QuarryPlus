@@ -14,16 +14,19 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import static com.yogpc.qp.QuarryPlusTest.id;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class WorkbenchRecipeTest extends QuarryPlusTest {
+@ExtendWith(QuarryPlusTest.class)
+class WorkbenchRecipeTest {
     CompareRecipe stone = new CompareRecipe(id("test_stone"), new ItemStack(Items.STONE), 10);
     CompareRecipe bedrock = new CompareRecipe(id("test_bedrock"), new ItemStack(Items.BEDROCK), 10);
     CompareRecipe diamond1 = new CompareRecipe(id("test_diamond1"), new ItemStack(Items.DIAMOND, 1), 5);

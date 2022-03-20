@@ -6,13 +6,15 @@ import java.util.stream.Stream;
 import com.yogpc.qp.QuarryPlusTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class AdvQuarryActionTest extends QuarryPlusTest {
+@ExtendWith(QuarryPlusTest.class)
+class AdvQuarryActionTest {
     @Test
     void dummy() {
         var clazz = AdvQuarryAction.class;

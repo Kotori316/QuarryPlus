@@ -11,11 +11,13 @@ import net.minecraft.core.Direction;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class MiniTargetTest extends QuarryPlusTest {
+@ExtendWith(QuarryPlusTest.class)
+class MiniTargetTest {
     @Nested
     class SingleTest {
         @Test
