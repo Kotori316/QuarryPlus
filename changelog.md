@@ -1,5 +1,6 @@
 ## 1.18
 
+* Fixed - Filler didn't accept items from Hopper. Close #175
 * Added - Filler
 * Fixed - AdvQuarry ignores nether portal.
 * Fixed - Flexible Marker can't be used under 0.

@@ -13,6 +13,7 @@ import alexiil.mc.lib.attributes.item.impl.EmptyItemExtractable;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.advquarry.TileAdvQuarry;
+import com.yogpc.qp.machines.filler.FillerEntity;
 import com.yogpc.qp.machines.quarry.TileQuarry;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
@@ -121,6 +122,8 @@ class FabricItemTransfer implements ItemTransfer<Storage<ItemVariant>> {
     static void register() {
         ItemStorage.SIDED.registerForBlockEntities(MachineStorage::getItemStorage,
             QuarryPlus.ModObjects.ADV_QUARRY_TYPE, QuarryPlus.ModObjects.QUARRY_TYPE);
+        ItemStorage.SIDED.registerForBlockEntities(FillerEntity::getFillerStorage,
+            QuarryPlus.ModObjects.FILLER_TYPE);
     }
 
     static ItemTransfer<?> fabricTransfer() {
