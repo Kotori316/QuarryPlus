@@ -13,6 +13,7 @@ import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QuarryMarker;
 import com.yogpc.qp.utils.MapMulti;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
+import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -26,6 +27,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -121,6 +123,15 @@ public final class FillerEntity extends PowerTile implements CheckerLog, Enchant
     @Override
     public void writeScreenOpeningData(ServerPlayer player, FriendlyByteBuf buf) {
         buf.writeBlockPos(getBlockPos());
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
+    public static InventoryStorage getFillerStorage(BlockEntity entity, Direction context) {
+        if (entity instanceof FillerEntity filler) {
+            return InventoryStorage.of(filler.container, context);
+        } else {
+            return null;
+        }
     }
 
     public enum Action {

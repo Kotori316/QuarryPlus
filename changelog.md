@@ -1,5 +1,6 @@
 ## 1.18
 
+* Fixed - Filler didn't accept items from Hopper. Close #175
 * Update for 1.18.2
 * Added - Filler
 * Fixed - AdvQuarry ignores nether portal.
