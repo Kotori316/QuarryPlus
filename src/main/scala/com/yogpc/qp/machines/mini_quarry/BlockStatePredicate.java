@@ -40,8 +40,8 @@ interface BlockStatePredicate {
         return new Tag(location);
     }
 
-    static BlockStatePredicate predicateString(String location) {
-        return new VanillaBlockPredicate(location);
+    static BlockStatePredicate predicateString(String blockPredicate) {
+        return new VanillaBlockPredicate(blockPredicate);
     }
 
     static BlockStatePredicate all() {
@@ -188,6 +188,21 @@ interface BlockStatePredicate {
         public String toString() {
             return "Tag{" + location + "}";
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Tag tag = (Tag) o;
+
+            return location.equals(tag.location);
+        }
+
+        @Override
+        public int hashCode() {
+            return location.hashCode();
+        }
     }
 
     final class VanillaBlockPredicate implements BlockStatePredicate {
@@ -236,6 +251,21 @@ interface BlockStatePredicate {
                 "blockPredicate='" + blockPredicate + '\'' +
                 "valid=" + (argument != null) +
                 '}';
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            VanillaBlockPredicate that = (VanillaBlockPredicate) o;
+
+            return blockPredicate.equals(that.blockPredicate);
+        }
+
+        @Override
+        public int hashCode() {
+            return blockPredicate.hashCode();
         }
     }
 }
