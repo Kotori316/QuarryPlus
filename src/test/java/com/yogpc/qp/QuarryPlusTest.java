@@ -14,6 +14,8 @@ import com.yogpc.qp.machines.workbench.EnchantmentIngredient;
 import com.yogpc.qp.machines.workbench.QuarryDebugCondition;
 import cpw.mods.modlauncher.Launcher;
 import net.minecraft.SharedConstants;
+import net.minecraft.core.MappedRegistry;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.Bootstrap;
 import net.minecraftforge.api.distmarker.Dist;
@@ -60,7 +62,7 @@ public final class QuarryPlusTest implements BeforeAllCallback {
             changeDist();
             setHandler();
             Bootstrap.bootStrap();
-            GameData.unfreezeData();
+            unfreezeGameData();
             ModLoadingContext.get().setActiveContainer(new DummyModContainer());
             registerRecipes();
             setConfig();
@@ -96,6 +98,14 @@ public final class QuarryPlusTest implements BeforeAllCallback {
         } catch (Exception e) {
             fail(e);
         }
+    }
+
+    /**
+     * Copied from {@link GameData#unfreezeData()} to avoid caller check which is to be installed in {@link GameData} class.
+     */
+    @SuppressWarnings("deprecation")
+    private static void unfreezeGameData() {
+        Registry.REGISTRY.stream().filter(r -> r instanceof MappedRegistry).forEach(r -> ((MappedRegistry<?>) r).unfreeze());
     }
 
     private static void registerRecipes() {
