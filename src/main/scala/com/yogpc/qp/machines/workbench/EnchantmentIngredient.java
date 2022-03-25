@@ -116,7 +116,7 @@ public class EnchantmentIngredient extends Ingredient {
         @Override
         public EnchantmentIngredient parse(JsonObject json) {
             ItemStack stack = CraftingHelper.getItemStack(json, true);
-            boolean checkDamage = GsonHelper.getAsBoolean(json, "json", false);
+            boolean checkDamage = GsonHelper.getAsBoolean(json, "checkDamage", false);
             List<EnchantmentInstance> data;
             if (json.has("enchantments")) {
                 JsonArray enchantmentArray = json.getAsJsonArray("enchantments");

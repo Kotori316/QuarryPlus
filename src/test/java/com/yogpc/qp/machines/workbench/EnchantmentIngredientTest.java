@@ -22,6 +22,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -60,7 +61,7 @@ class EnchantmentIngredientTest {
                   "type": "quarryplus:enchantment_ingredient",
                   "item": "minecraft:diamond_pickaxe",
                   "count": 1,
-                  "checkDamage":false,
+                  "checkDamage": false,
                   "enchantments": [
                     {
                       "id": "minecraft:silk_touch",
@@ -84,7 +85,7 @@ class EnchantmentIngredientTest {
                   "type": "quarryplus:enchantment_ingredient",
                   "item": "minecraft:diamond_pickaxe",
                   "count": 1,
-                  "checkDamage":false,
+                  "checkDamage": false,
                   "enchantments": [
                     {
                       "id": "minecraft:efficiency",
@@ -108,7 +109,7 @@ class EnchantmentIngredientTest {
                   "type": "quarryplus:enchantment_ingredient",
                   "item": "minecraft:diamond_pickaxe",
                   "count": 1,
-                  "checkDamage":false,
+                  "checkDamage": false,
                   "enchantments": [
                     {
                       "id": "minecraft:efficiency",
@@ -137,7 +138,7 @@ class EnchantmentIngredientTest {
                   "type": "quarryplus:enchantment_ingredient",
                   "item": "minecraft:diamond_pickaxe",
                   "count": 1,
-                  "checkDamage":false,
+                  "checkDamage": false,
                   "enchantments": [
                     {
                       "id": "minecraft:silk_touch",
@@ -166,7 +167,7 @@ class EnchantmentIngredientTest {
                   "type": "quarryplus:enchantment_ingredient",
                   "item": "minecraft:stone",
                   "count": 1,
-                  "checkDamage":false,
+                  "checkDamage": false,
                   "enchantments": [
                     {
                       "id": "minecraft:silk_touch",
@@ -190,7 +191,7 @@ class EnchantmentIngredientTest {
                   "type": "quarryplus:enchantment_ingredient",
                   "item": "minecraft:enchanted_book",
                   "count": 1,
-                  "checkDamage":false,
+                  "checkDamage": false,
                   "enchantments": [
                     {
                       "id": "minecraft:silk_touch",
@@ -204,13 +205,46 @@ class EnchantmentIngredientTest {
             assertEquals(json, loaded.toJson());
             assertEquals(expect.toJson(), loaded.toJson());
         }
+
+        @Test
+        @DisplayName("checkDamage: true")
+        void fromJson7() {
+            // language=json
+            var json = GSON.fromJson("""
+                {
+                  "type": "quarryplus:enchantment_ingredient",
+                  "item": "minecraft:diamond_pickaxe",
+                  "count": 1,
+                  "nbt": {
+                    "Damage": 0
+                  },
+                  "checkDamage": true,
+                  "enchantments": [
+                    {
+                      "id": "minecraft:silk_touch",
+                      "level": 1
+                    }
+                  ]
+                }
+                                """, JsonObject.class);
+            var loaded = EnchantmentIngredient.Serializer.INSTANCE.parse(json);
+            var expect = new EnchantmentIngredient(new ItemStack(Items.DIAMOND_PICKAXE), List.of(new EnchantmentInstance(Enchantments.SILK_TOUCH, 1)), true);
+            assertEquals(json, loaded.toJson());
+            assertEquals(expect.toJson(), loaded.toJson());
+        }
     }
 
     @Nested
     class MatchTest {
         @Test
-        void noMatchEmpty() {
+        void noMatchEmpty1() {
             var ei = new EnchantmentIngredient(diamondPickaxe, List.of(new EnchantmentInstance(Enchantments.SILK_TOUCH, 1)), false);
+            assertFalse(ei.test(ItemStack.EMPTY));
+        }
+
+        @Test
+        void noMatchEmpty2() {
+            var ei = new EnchantmentIngredient(diamondPickaxe, List.of(), false);
             assertFalse(ei.test(ItemStack.EMPTY));
         }
 
@@ -236,6 +270,27 @@ class EnchantmentIngredientTest {
         void noMatchNoEnchantment() {
             var ei = new EnchantmentIngredient(diamondPickaxe, List.of(new EnchantmentInstance(Enchantments.SILK_TOUCH, 1)), false);
             assertFalse(ei.test(diamondPickaxe));
+        }
+
+        @Test
+        @DisplayName("Match if ingredient has no enchantment.")
+        void matchNoEnchantment() {
+            var ei = new EnchantmentIngredient(diamondPickaxe, List.of(), false);
+            assertAll(
+                () -> assertTrue(ei.test(diamondPickaxe)),
+                () -> assertTrue(ei.test(new ItemStack(Items.DIAMOND_PICKAXE))),
+                () -> assertFalse(ei.test(new ItemStack(Items.IRON_PICKAXE))),
+                () -> {
+                    var s = new ItemStack(Items.DIAMOND_PICKAXE);
+                    s.enchant(Enchantments.SILK_TOUCH, 1);
+                    assertTrue(ei.test(s));
+                }, () -> {
+                    var s = new ItemStack(Items.DIAMOND_PICKAXE);
+                    s.enchant(Enchantments.SILK_TOUCH, 1);
+                    s.enchant(Enchantments.BLOCK_EFFICIENCY, 1);
+                    assertTrue(ei.test(s));
+                }
+            );
         }
 
         @Test
@@ -379,6 +434,45 @@ class EnchantmentIngredientTest {
             var stack = getDamaged(21);
             stack.enchant(Enchantments.SILK_TOUCH, 1);
             assertFalse(checkDamage.test(stack));
+        }
+    }
+
+    @Nested
+    class NoDamageTest {
+        @Test
+        @DisplayName("No check of damage. No damage tag. Diamond")
+        void noCheckNoDamage1() {
+            var ingredient = new EnchantmentIngredient(diamondPickaxe, List.of(), false);
+            assertTrue(ingredient.test(new ItemStack(Items.DIAMOND_PICKAXE)), "Diamond pickaxe should match.");
+            assertTrue(ingredient.test(diamondPickaxe), "Diamond pickaxe without damage should match.");
+            assertTrue(ingredient.test(CheckDamageTest.getDamaged(15)), "Diamond pickaxe with damage(15) should match.");
+            assertTrue(ingredient.test(CheckDamageTest.getDamaged(1)), "Diamond pickaxe with damage(1) should match.");
+            assertTrue(ingredient.test(CheckDamageTest.getDamaged(0)), "Diamond pickaxe with damage(0) should match.");
+            assertTrue(ingredient.test(CheckDamageTest.getDamaged(100)), "Diamond pickaxe with damage(100) should match.");
+        }
+
+        @Test
+        @DisplayName("No check of damage. Damage tag. Diamond")
+        void noCheckNoDamage2() {
+            var ingredient = new EnchantmentIngredient(new ItemStack(Items.DIAMOND_PICKAXE), List.of(), false);
+            assertTrue(ingredient.test(new ItemStack(Items.DIAMOND_PICKAXE)), "Diamond pickaxe should match.");
+            assertTrue(ingredient.test(diamondPickaxe), "Diamond pickaxe without damage should match.");
+            assertTrue(ingredient.test(CheckDamageTest.getDamaged(15)), "Diamond pickaxe with damage(15) should match.");
+            assertTrue(ingredient.test(CheckDamageTest.getDamaged(1)), "Diamond pickaxe with damage(1) should match.");
+            assertTrue(ingredient.test(CheckDamageTest.getDamaged(0)), "Diamond pickaxe with damage(0) should match.");
+            assertTrue(ingredient.test(CheckDamageTest.getDamaged(100)), "Diamond pickaxe with damage(100) should match.");
+        }
+
+        @Test
+        @DisplayName("No check of damage. Damage tag. invalid item")
+        void noCheckNoDamage3() {
+            var ingredient = new EnchantmentIngredient(new ItemStack(Items.IRON_PICKAXE), List.of(), false);
+            assertFalse(ingredient.test(new ItemStack(Items.DIAMOND_PICKAXE)), "Diamond pickaxe shouldn't match.");
+            assertFalse(ingredient.test(diamondPickaxe), "Diamond pickaxe without damage shouldn't match.");
+            assertFalse(ingredient.test(CheckDamageTest.getDamaged(15)), "Diamond pickaxe with damage(15) shouldn't match.");
+            assertFalse(ingredient.test(CheckDamageTest.getDamaged(1)), "Diamond pickaxe with damage(1) shouldn't match.");
+            assertFalse(ingredient.test(CheckDamageTest.getDamaged(0)), "Diamond pickaxe with damage(0) shouldn't match.");
+            assertFalse(ingredient.test(CheckDamageTest.getDamaged(100)), "Diamond pickaxe with damage(100) shouldn't match.");
         }
     }
 }
