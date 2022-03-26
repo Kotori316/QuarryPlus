@@ -42,8 +42,12 @@ import net.minecraftforge.forgespi.language.IModInfo;
 import net.minecraftforge.registries.GameData;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
+import org.jline.terminal.Terminal;
+import org.jline.utils.InfoCmp;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.platform.commons.function.Try;
+import org.junit.platform.commons.util.ReflectionUtils;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -57,6 +61,7 @@ public final class QuarryPlusTest implements BeforeAllCallback {
 
     static synchronized void setup() {
         if (!INITIALIZED.getAndSet(true)) {
+            resolveInfoCmpError();
             SharedConstants.tryDetectVersion();
             //initLoader();
             changeDist();
@@ -67,6 +72,17 @@ public final class QuarryPlusTest implements BeforeAllCallback {
             registerRecipes();
             setConfig();
         }
+    }
+
+    private static void resolveInfoCmpError() {
+        var name = Terminal.TYPE_DUMB_COLOR;
+        InfoCmp.setDefaultInfoCmp(name, () ->
+            Try.call(() -> InfoCmp.class.getDeclaredMethod("loadDefaultInfoCmp", String.class))
+                // Setting name is dumb-color, but file name is dumb-colors
+                .andThenTry(m -> ReflectionUtils.invokeMethod(m, null, name + "s"))
+                .andThenTry(String.class::cast)
+                .getOrThrow(RuntimeException::new)
+        );
     }
 
     private static void changeDist() {
