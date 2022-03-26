@@ -15,12 +15,15 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SnowyDirtBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
 import org.apache.commons.lang3.tuple.Pair;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -94,6 +97,22 @@ public final class BlockStatePredicateTagsTest {
         helper.succeed();
     }
 
+    @GameTestGenerator
+    public List<TestFunction> cycleVanillaPredicate() {
+        var names = Stream.of(
+            "#forge:stone",
+            "minecraft:stone",
+            "#forge:stone",
+            "#forge:glass",
+            "minecraft:glass",
+            "minecraft:grass_block[snowy=true]",
+            "#minecraft:dirt"
+        );
+        return names.map(BlockStatePredicate::predicateString)
+            .map(p -> TestUtil.create(p.toString(), g -> cycle(p)))
+            .toList();
+    }
+
     static void vanillaPredicateTest(String predicate, BlockState state, GameTestHelper helper, boolean isTrue) {
         var pos = TestUtil.getBasePos(helper).above();
         var p = BlockStatePredicate.predicateString(predicate);
@@ -117,6 +136,7 @@ public final class BlockStatePredicateTagsTest {
             Pair.of("#forge:stone", Blocks.ANDESITE.defaultBlockState()),
             Pair.of("#forge:glass", Blocks.GLASS.defaultBlockState()),
             Pair.of("minecraft:glass", Blocks.GLASS.defaultBlockState()),
+            Pair.of("minecraft:grass_block[snowy=true]", Blocks.GRASS_BLOCK.defaultBlockState().setValue(SnowyDirtBlock.SNOWY, true)),
             Pair.of("#minecraft:dirt", Blocks.GRASS_BLOCK.defaultBlockState())
         );
         return tests
@@ -131,10 +151,33 @@ public final class BlockStatePredicateTagsTest {
             Pair.of("minecraft:stone", Blocks.ANDESITE.defaultBlockState()),
             Pair.of("#forge:stone", Blocks.GRASS_BLOCK.defaultBlockState()),
             Pair.of("minecraft:glass", Blocks.AIR.defaultBlockState()),
+            Pair.of("minecraft:grass_block[snowy=true]", Blocks.GRASS_BLOCK.defaultBlockState()),
             Pair.of("#minecraft:dirt", Blocks.GLASS.defaultBlockState())
         );
         return tests
             .map(e -> TestUtil.create("Vanilla(false): " + e.getKey(), g -> vanillaPredicateTest(e.getKey(), e.getValue(), g, false)))
             .toList();
+    }
+
+    @GameTest(template = TestUtil.EMPTY_STRUCTURE)
+    public void invalidPredicateCreateInstance(GameTestHelper helper) {
+        var predicate = "minecraft:not_exist";
+        assertDoesNotThrow(() -> BlockStatePredicate.predicateString(predicate));
+        helper.succeed();
+    }
+
+    @GameTest(template = TestUtil.EMPTY_STRUCTURE)
+    public void invalidPredicateReturnFalse(GameTestHelper helper) {
+        var predicate = "minecraft:not_exist";
+        var p = assertDoesNotThrow(() -> BlockStatePredicate.predicateString(predicate));
+        assertAll(
+            Stream.of(Blocks.GLASS.defaultBlockState(),
+                    Blocks.ANDESITE.defaultBlockState(),
+                    Blocks.GRASS_BLOCK.defaultBlockState(),
+                    Blocks.AIR.defaultBlockState())
+                .map(s -> () -> assertFalse(p.test(s, helper.getLevel(), BlockPos.ZERO)))
+        );
+        assertTrue(p.toString().contains("valid=false"));
+        helper.succeed();
     }
 }

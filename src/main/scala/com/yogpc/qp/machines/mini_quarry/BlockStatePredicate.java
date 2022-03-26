@@ -18,6 +18,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
+import net.minecraftforge.gametest.ForgeGameTestHooks;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
@@ -216,7 +217,8 @@ interface BlockStatePredicate {
             try {
                 argument = BlockPredicateArgument.blockPredicate().parse(new StringReader(blockPredicate));
             } catch (CommandSyntaxException e) {
-                LOGGER.warn("Caught invalid BlockState predicate.", e);
+                if (!ForgeGameTestHooks.isGametestServer()) // Suppress warning in game test.
+                    LOGGER.warn("Caught invalid BlockState predicate.", e);
                 argument = null;
             }
         }
