@@ -76,4 +76,10 @@ class FluidKeyTest {
         var fromKey = key1.toStack(6500);
         assertTrue(expect.isFluidStackIdentical(fromKey), String.format("%s should be same as %s", fromKey, expect));
     }
+
+    @Test
+    void fromEmpty() {
+        var stack = new FluidStack(Fluids.WATER, 0);
+        assertEquals(new FluidKey(Fluids.EMPTY, null), new FluidKey(stack));
+    }
 }

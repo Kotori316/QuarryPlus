@@ -95,6 +95,14 @@ class ItemKeyTest {
     }
 
     @Test
+    @DisplayName("Key from empty stacks.")
+    void fromEmpty() {
+        var key = new ItemKey(Items.AIR, null);
+        assertEquals(key, new ItemKey(ItemStack.EMPTY));
+        assertEquals(key, new ItemKey(new ItemStack(Items.APPLE, 0)));
+    }
+
+    @Test
     @DisplayName("Key from tag with nbt and item should be same.")
     void fromTagWithNbt() {
         var tag = new CompoundTag();
