@@ -229,17 +229,17 @@ dependencies {
     }
 
     // Test Dependencies.
-    final def JUPITER_VERSION = '5.7.1'
+    final def JUPITER_VERSION = '5.8.2'
     testImplementation(group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: JUPITER_VERSION)
     testImplementation(group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: JUPITER_VERSION)
     testRuntimeOnly(group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: JUPITER_VERSION)
     // https://mvnrepository.com/artifact/org.junit.platform/junit-platform-launcher
-    testImplementation(group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.7.0')
+    testImplementation(group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.8.2')
 
     game_test(group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: JUPITER_VERSION)
     game_test(group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: JUPITER_VERSION)
     game_test(group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: JUPITER_VERSION)
-    game_test(group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.7.0')
+    game_test(group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.8.2')
 }
 
 configurations.all {
