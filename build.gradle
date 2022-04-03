@@ -328,7 +328,7 @@ task CheckCompileOption() {
         strings.add("Jar: ${jar.getArchiveFile().get()}")
         strings.add("Remap Jar ${remapJar.getArchiveFile().get()}")
         strings.add("Source Jar ${sourcesJar.getArchiveFile().get()}")
-        strings.add("RemapSource Jar ${remapSourcesJar.getOutput()}")
+        strings.add("RemapSource Jar ${remapSourcesJar.getArchiveFile().get()}")
         strings.add(String.valueOf(fileTree("build/libs").getFiles()))
         strings.add("-" * 20)
         strings.add("Now: " + ZonedDateTime.now().format(DateTimeFormatter.ISO_INSTANT))
