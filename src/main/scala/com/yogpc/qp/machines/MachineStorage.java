@@ -28,6 +28,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.material.Fluid;
@@ -77,11 +78,13 @@ public class MachineStorage {
         itemMap = itemTag.stream()
             .mapMulti(MapMulti.cast(CompoundTag.class))
             .map(n -> Pair.of(ItemKey.fromNbt(n), n.getLong("count")))
+            .filter(p -> p.getLeft().item() != Items.AIR)
             .collect(Collectors.toMap(Pair::getKey, Pair::getValue, Long::sum, LinkedHashMap::new));
         var fluidTag = tag.getList("fluids", Tag.TAG_COMPOUND);
         fluidMap = fluidTag.stream()
             .mapMulti(MapMulti.cast(CompoundTag.class))
             .map(n -> Pair.of(FluidKey.fromNbt(n), n.getLong("amount")))
+            .filter(p -> p.getLeft().fluid() != Fluids.EMPTY)
             .collect(Collectors.toMap(Pair::getKey, Pair::getValue, Long::sum, LinkedHashMap::new));
     }
 

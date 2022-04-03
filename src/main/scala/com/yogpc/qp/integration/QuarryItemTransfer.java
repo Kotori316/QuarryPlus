@@ -47,6 +47,10 @@ public class QuarryItemTransfer {
     }
 
     public static ItemStack transfer(Level world, BlockPos pos, ItemStack send, Direction direction) {
+        if (send.isEmpty()) {
+            QuarryPlus.LOGGER.warn("Empty items are tried to be transferred from {}.", pos.relative(direction.getOpposite()));
+            return ItemStack.EMPTY;
+        }
         for (ItemTransfer<?> transfer : transfers) {
             ItemStack rest = transferInternal(transfer, world, pos, send, direction);
             if (send.getCount() != rest.getCount()) {
