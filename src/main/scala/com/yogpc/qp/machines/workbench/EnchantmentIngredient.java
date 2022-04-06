@@ -27,12 +27,13 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
+import net.minecraftforge.common.crafting.AbstractIngredient;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.IIngredientSerializer;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
-public class EnchantmentIngredient extends Ingredient {
+public class EnchantmentIngredient extends AbstractIngredient {
     public static final String NAME = "enchantment_ingredient";
     private final ItemStack stack;
     private final List<EnchantmentInstance> enchantments;
