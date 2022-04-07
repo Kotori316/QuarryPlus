@@ -7,7 +7,7 @@ import net.minecraft.util.GsonHelper;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.IConditionSerializer;
 
-public class EnableCondition implements ICondition {
+public final class EnableCondition implements ICondition {
     public static final ResourceLocation NAME = new ResourceLocation("quarryplus:machine_enabled");
     private final String machineName;
 
@@ -21,7 +21,13 @@ public class EnableCondition implements ICondition {
     }
 
     @Override
+    @SuppressWarnings("removal")
     public boolean test() {
+        return this.test(IContext.EMPTY);
+    }
+
+    @Override
+    public boolean test(IContext context) {
         if (QuarryPlus.config == null) {
             return true; // Ignore in tests.
         } else {

@@ -6,7 +6,7 @@ import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.IConditionSerializer;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
-public class QuarryDebugCondition implements ICondition {
+public final class QuarryDebugCondition implements ICondition {
     public static final ResourceLocation NAME = new ResourceLocation("quarryplus:debug_enabled");
 
     public QuarryDebugCondition() {
@@ -18,7 +18,13 @@ public class QuarryDebugCondition implements ICondition {
     }
 
     @Override
+    @SuppressWarnings("removal")
     public boolean test() {
+        return this.test(IContext.EMPTY);
+    }
+
+    @Override
+    public boolean test(IContext context) {
         return !FMLEnvironment.production;
     }
 
