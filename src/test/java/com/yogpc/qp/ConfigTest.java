@@ -67,7 +67,7 @@ final class ConfigTest {
     class EnableMapTest {
         @ParameterizedTest
         @NullSource
-        @MethodSource("getAllNames")
+        @MethodSource({"getDefaultOn", "getDefaultOff", "notQuarryItems"})
         @DisplayName("Access Enable Map in Config")
         void accessEnableMap(ResourceLocation location) {
             assertDoesNotThrow(() -> QuarryPlus.config.enableMap.enabled(location));
@@ -91,10 +91,6 @@ final class ConfigTest {
         @NullSource
         void invalidConfig(ResourceLocation location) {
             assertFalse(QuarryPlus.config.enableMap.enabled(location));
-        }
-
-        static Stream<ResourceLocation> getAllNames() {
-            return Stream.concat(getDefaultOn(), getDefaultOff());
         }
 
         static Stream<ResourceLocation> getDefaultOn() {

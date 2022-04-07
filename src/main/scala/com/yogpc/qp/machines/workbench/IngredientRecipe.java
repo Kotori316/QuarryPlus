@@ -12,6 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.common.crafting.conditions.ICondition;
 
 public class IngredientRecipe extends WorkbenchRecipe {
     private final List<IngredientList> input;
@@ -46,7 +47,7 @@ public class IngredientRecipe extends WorkbenchRecipe {
 class IngredientRecipeSerialize implements WorkbenchRecipeSerializer.PacketSerialize<IngredientRecipe> {
 
     @Override
-    public IngredientRecipe fromJson(ResourceLocation id, JsonObject jsonObject) {
+    public IngredientRecipe fromJson(ResourceLocation id, JsonObject jsonObject, ICondition.IContext context) {
         var result = CraftingHelper.getItemStack(jsonObject.getAsJsonObject("result"), true);
         long energy = (long) (GsonHelper.getAsDouble(jsonObject, "energy", 1000) * PowerTile.ONE_FE);
         var showInJei = GsonHelper.getAsBoolean(jsonObject, "showInJEI", true);

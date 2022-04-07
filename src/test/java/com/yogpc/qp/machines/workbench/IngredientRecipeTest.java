@@ -19,6 +19,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
+import net.minecraftforge.common.crafting.conditions.ICondition;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -48,7 +49,7 @@ class IngredientRecipeTest {
              Reader reader = new InputStreamReader(Objects.requireNonNull(stream))) {
             jsonObject = GSON.fromJson(reader, JsonObject.class);
         }
-        var recipe = SERIALIZE.fromJson(id("dummy_block_recipe"), jsonObject);
+        var recipe = SERIALIZE.fromJson(id("dummy_block_recipe"), jsonObject, ICondition.IContext.EMPTY);
         assertNotNull(recipe);
         assertEquals(5000 * PowerTile.ONE_FE, recipe.getRequiredEnergy());
         assertTrue(recipe.showInJEI());

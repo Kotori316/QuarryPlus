@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 public class WorkbenchRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<WorkbenchRecipe> {
@@ -22,9 +23,15 @@ public class WorkbenchRecipeSerializer extends ForgeRegistryEntry<RecipeSerializ
     }
 
     @Override
+    @Deprecated
     public WorkbenchRecipe fromJson(ResourceLocation id, JsonObject jsonObject) {
-        var subType = GsonHelper.getAsString(jsonObject, "subType", "default");
-        return serializeMap.get(subType).fromJson(id, jsonObject);
+        return fromJson(id, jsonObject, ICondition.IContext.EMPTY);
+    }
+
+    @Override
+    public WorkbenchRecipe fromJson(ResourceLocation id, JsonObject recipeJson, ICondition.IContext context) {
+        var subType = GsonHelper.getAsString(recipeJson, "subType", "default");
+        return serializeMap.get(subType).fromJson(id, recipeJson, context);
     }
 
     public JsonObject toJson(WorkbenchRecipe recipe, JsonObject o) {
@@ -55,7 +62,7 @@ public class WorkbenchRecipeSerializer extends ForgeRegistryEntry<RecipeSerializ
     }
 
     interface PacketSerialize<T extends WorkbenchRecipe> {
-        T fromJson(ResourceLocation id, JsonObject jsonObject);
+        T fromJson(ResourceLocation id, JsonObject jsonObject, ICondition.IContext context);
 
         JsonObject toJson(JsonObject jsonObject, T recipe);
 
