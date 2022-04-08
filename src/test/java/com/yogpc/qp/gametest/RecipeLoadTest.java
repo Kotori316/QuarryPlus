@@ -53,7 +53,8 @@ public final class RecipeLoadTest {
              var reader = new InputStreamReader(Objects.requireNonNull(stream))) {
             jsonObject = GsonHelper.parse(reader);
         }
-        var recipe = assertDoesNotThrow(() -> RecipeManager.fromJson(new ResourceLocation(QuarryPlus.modID, "marker"), jsonObject));
+        var context = GameTestUtil.getContext(helper);
+        var recipe = assertDoesNotThrow(() -> RecipeManager.fromJson(new ResourceLocation(QuarryPlus.modID, "marker"), jsonObject, context));
         assertAll(
             () -> assertTrue(recipe instanceof WorkbenchRecipe),
             () -> assertTrue(ItemStack.isSame(recipe.getResultItem(), new ItemStack(Holder.BLOCK_MARKER)))
@@ -72,6 +73,7 @@ public final class RecipeLoadTest {
 
     @GameTest(template = GameTestUtil.EMPTY_STRUCTURE)
     public void loadWithoutType(GameTestHelper helper) {
+        var context = GameTestUtil.getContext(helper);
         JsonObject object = GsonHelper.parse("""
             {
               "type": "quarryplus:workbench_recipe",
@@ -92,8 +94,8 @@ public final class RecipeLoadTest {
                 "count": 1
               }
             }""");
-        var r1 = RecipeManager.fromJson(new ResourceLocation("quarryplus:cheat_diamond2"), object);
-        var r2 = WorkbenchRecipe.SERIALIZER.fromJson(new ResourceLocation("quarryplus:cheat_diamond2"), object);
+        var r1 = RecipeManager.fromJson(new ResourceLocation("quarryplus:cheat_diamond2"), object, context);
+        var r2 = WorkbenchRecipe.SERIALIZER.fromJson(new ResourceLocation("quarryplus:cheat_diamond2"), object, context);
         assertEquals(r1, r2);
 
         var inputs = r2.inputs().stream().flatMap(i -> i.stackList().stream()).toList();
