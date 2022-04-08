@@ -1,7 +1,7 @@
 package com.yogpc.qp.utils
 
+import com.kotori316.testutil.ScalaRawOps._
 import com.yogpc.qp.QuarryPlusTest
-import com.yogpc.qp.ScalaRawOps._
 import net.minecraft.nbt._
 import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.extension.ExtendWith

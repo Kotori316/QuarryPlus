@@ -14,6 +14,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
+import com.kotori316.testutil.GameTestUtil;
+
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -24,9 +26,9 @@ import static org.junit.jupiter.api.Assertions.fail;
 @GameTestHolder(QuarryPlus.modID)
 @PrefixGameTestTemplate(value = false)
 public final class DropTest {
-    @GameTest(template = TestUtil.EMPTY_STRUCTURE)
+    @GameTest(template = GameTestUtil.EMPTY_STRUCTURE)
     public void existence(GameTestHelper helper) {
-        var pos = TestUtil.getBasePos(helper).above();
+        var pos = GameTestUtil.getBasePos(helper).above();
 
         helper.startSequence()
             .thenExecute(() -> helper.setBlock(pos, Holder.BLOCK_QUARRY))
@@ -38,9 +40,9 @@ public final class DropTest {
             .thenSucceed();
     }
 
-    @GameTest(template = TestUtil.EMPTY_STRUCTURE)
+    @GameTest(template = GameTestUtil.EMPTY_STRUCTURE)
     public void dropOfQuarryPlus1(GameTestHelper helper) {
-        var pos = TestUtil.getBasePos(helper).above();
+        var pos = GameTestUtil.getBasePos(helper).above();
 
         helper.startSequence()
             .thenExecute(() -> helper.setBlock(pos, Holder.BLOCK_QUARRY))
@@ -58,9 +60,9 @@ public final class DropTest {
             .thenSucceed();
     }
 
-    @GameTest(template = TestUtil.EMPTY_STRUCTURE)
+    @GameTest(template = GameTestUtil.EMPTY_STRUCTURE)
     public void dropOfQuarryPlus2(GameTestHelper helper) {
-        var pos = TestUtil.getBasePos(helper).above();
+        var pos = GameTestUtil.getBasePos(helper).above();
         var enchantments = Map.of(
             Enchantments.BLOCK_EFFICIENCY, 3
         );

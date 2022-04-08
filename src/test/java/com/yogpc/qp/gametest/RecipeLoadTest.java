@@ -24,6 +24,8 @@ import net.minecraftforge.common.Tags;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
+import com.kotori316.testutil.GameTestUtil;
+
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @GameTestHolder(QuarryPlus.modID)
 @PrefixGameTestTemplate(value = false)
 public final class RecipeLoadTest {
-    @GameTest(template = TestUtil.EMPTY_STRUCTURE)
+    @GameTest(template = GameTestUtil.EMPTY_STRUCTURE)
     public void accessTag(GameTestHelper helper) {
         assertAll(
             () -> new ItemStack(Items.STONE).is(Tags.Items.STONE),
@@ -44,7 +46,7 @@ public final class RecipeLoadTest {
         helper.succeed();
     }
 
-    @GameTest(template = TestUtil.EMPTY_STRUCTURE)
+    @GameTest(template = GameTestUtil.EMPTY_STRUCTURE)
     public void loadMarker(GameTestHelper helper) throws IOException {
         JsonObject jsonObject;
         try (var stream = getClass().getResourceAsStream("/data/quarryplus/recipes/marker.json");
@@ -68,7 +70,7 @@ public final class RecipeLoadTest {
         helper.succeed();
     }
 
-    @GameTest(template = TestUtil.EMPTY_STRUCTURE)
+    @GameTest(template = GameTestUtil.EMPTY_STRUCTURE)
     public void loadWithoutType(GameTestHelper helper) {
         JsonObject object = GsonHelper.parse("""
             {

@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.gametest.TestUtil;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestGenerator;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -19,13 +18,15 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
+import com.kotori316.testutil.GameTestUtil;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @GameTestHolder(QuarryPlus.modID)
 @PrefixGameTestTemplate(value = false)
 public final class SlotMoverTest {
-    @GameTest(template = TestUtil.EMPTY_STRUCTURE)
+    @GameTest(template = GameTestUtil.EMPTY_STRUCTURE)
     public void dummy(GameTestHelper helper) {
         assertTrue(diamondTools().findAny().isPresent());
         assertTrue(netheriteTools().findAny().isPresent());
@@ -36,21 +37,21 @@ public final class SlotMoverTest {
     @GameTestGenerator
     public List<TestFunction> canPlaceDiamond() {
         return diamondTools().map(d ->
-            TestUtil.create("canPlaceDiamond:" + d, g -> canPlaceDiamond(d, g))
+            GameTestUtil.create(QuarryPlus.modID, "canPlaceDiamond:" + d, g -> canPlaceDiamond(d, g))
         ).toList();
     }
 
     @GameTestGenerator
     public List<TestFunction> canPlaceNetherite() {
         return netheriteTools().map(d ->
-            TestUtil.create("canPlaceNetherite:" + d, g -> canPlaceNetherite(d, g))
+            GameTestUtil.create(QuarryPlus.modID, "canPlaceNetherite:" + d, g -> canPlaceNetherite(d, g))
         ).toList();
     }
 
     @GameTestGenerator
     public List<TestFunction> canPlaceIron() {
         return ironTools().map(d ->
-            TestUtil.create("canPlaceIron:" + d, g -> canPlaceIron(d, g))
+            GameTestUtil.create(QuarryPlus.modID, "canPlaceIron:" + d, g -> canPlaceIron(d, g))
         ).toList();
     }
 
