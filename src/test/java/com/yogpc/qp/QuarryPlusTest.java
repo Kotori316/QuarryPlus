@@ -1,7 +1,5 @@
 package com.yogpc.qp;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import com.electronwill.nightconfig.core.CommentedConfig;
 import com.yogpc.qp.machines.workbench.EnchantmentIngredient;
 import net.minecraft.resources.ResourceLocation;
@@ -13,19 +11,15 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import com.kotori316.testutil.MCTestInitializer;
 
 public final class QuarryPlusTest implements BeforeAllCallback {
-    private static final AtomicBoolean INITIALIZED = new AtomicBoolean(false);
 
     @Override
     public void beforeAll(ExtensionContext context) {
-        MCTestInitializer.setUp(QuarryPlus.modID);
-        setup();
+        MCTestInitializer.setUp(QuarryPlus.modID, QuarryPlusTest::setup);
     }
 
-    static synchronized void setup() {
-        if (!INITIALIZED.getAndSet(true)) {
-            registerRecipes();
-            setConfig();
-        }
+    static void setup() {
+        registerRecipes();
+        setConfig();
     }
 
     private static void registerRecipes() {
