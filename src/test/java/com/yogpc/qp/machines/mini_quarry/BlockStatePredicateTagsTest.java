@@ -36,6 +36,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @GameTestHolder(QuarryPlus.modID)
 @PrefixGameTestTemplate(value = false)
 public final class BlockStatePredicateTagsTest {
+    private static final String BATCH = "BlockStatePredicateTags";
+
     static void cycle(BlockStatePredicate predicate) {
         var tag = predicate.toTag();
         var fromTag = BlockStatePredicate.fromTag(tag);
@@ -45,7 +47,7 @@ public final class BlockStatePredicateTagsTest {
     @GameTestGenerator
     public List<TestFunction> cycleConstant() {
         return Stream.of(BlockStatePredicate.air(), BlockStatePredicate.all(), BlockStatePredicate.fluid())
-            .map(p -> GameTestUtil.create(QuarryPlus.modID, p.toString(), g -> cycle(p)))
+            .map(p -> GameTestUtil.create(QuarryPlus.modID, BATCH, p.toString(), g -> cycle(p)))
             .toList();
     }
 
@@ -55,7 +57,7 @@ public final class BlockStatePredicateTagsTest {
         var abnormalNames = Stream.of("as", "a:t", "", "fe:").map(ResourceLocation::new);
         return Stream.concat(names, abnormalNames)
             .map(BlockStatePredicate::name)
-            .map(p -> GameTestUtil.create(QuarryPlus.modID, p.toString(), g -> cycle(p)))
+            .map(p -> GameTestUtil.create(QuarryPlus.modID, BATCH, p.toString(), g -> cycle(p)))
             .toList();
     }
 
@@ -64,7 +66,7 @@ public final class BlockStatePredicateTagsTest {
         var names = Stream.of(Tags.Blocks.STONE, Tags.Blocks.COBBLESTONE, BlockTags.ACACIA_LOGS, BlockTags.BEACON_BASE_BLOCKS)
             .map(TagKey::location);
         return names.map(BlockStatePredicate::tag)
-            .map(p -> GameTestUtil.create(QuarryPlus.modID, p.toString(), g -> cycle(p)))
+            .map(p -> GameTestUtil.create(QuarryPlus.modID, BATCH, p.toString(), g -> cycle(p)))
             .toList();
     }
 
@@ -84,7 +86,7 @@ public final class BlockStatePredicateTagsTest {
             Pair.of(BlockTags.DIRT, Blocks.GRASS_BLOCK.defaultBlockState())
         );
         return tests
-            .map(e -> GameTestUtil.create(QuarryPlus.modID, "TagTest: " + e.getKey().location(), g -> tagTest(e.getKey(), e.getValue(), g)))
+            .map(e -> GameTestUtil.create(QuarryPlus.modID, BATCH, "TagTest: " + e.getKey().location(), g -> tagTest(e.getKey(), e.getValue(), g)))
             .toList();
     }
 
@@ -110,7 +112,7 @@ public final class BlockStatePredicateTagsTest {
             "#minecraft:dirt"
         );
         return names.map(BlockStatePredicate::predicateString)
-            .map(p -> GameTestUtil.create(QuarryPlus.modID, p.toString(), g -> cycle(p)))
+            .map(p -> GameTestUtil.create(QuarryPlus.modID, BATCH, p.toString(), g -> cycle(p)))
             .toList();
     }
 
@@ -141,7 +143,7 @@ public final class BlockStatePredicateTagsTest {
             Pair.of("#minecraft:dirt", Blocks.GRASS_BLOCK.defaultBlockState())
         );
         return tests
-            .map(e -> GameTestUtil.create(QuarryPlus.modID, "Vanilla(true): " + e.getKey(), g -> vanillaPredicateTest(e.getKey(), e.getValue(), g, true)))
+            .map(e -> GameTestUtil.create(QuarryPlus.modID, BATCH, "Vanilla(true): " + e.getKey(), g -> vanillaPredicateTest(e.getKey(), e.getValue(), g, true)))
             .toList();
     }
 
@@ -156,7 +158,7 @@ public final class BlockStatePredicateTagsTest {
             Pair.of("#minecraft:dirt", Blocks.GLASS.defaultBlockState())
         );
         return tests
-            .map(e -> GameTestUtil.create(QuarryPlus.modID, "Vanilla(false): " + e.getKey(), g -> vanillaPredicateTest(e.getKey(), e.getValue(), g, false)))
+            .map(e -> GameTestUtil.create(QuarryPlus.modID, BATCH, "Vanilla(false): " + e.getKey(), g -> vanillaPredicateTest(e.getKey(), e.getValue(), g, false)))
             .toList();
     }
 

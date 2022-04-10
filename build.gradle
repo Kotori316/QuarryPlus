@@ -236,17 +236,12 @@ dependencies {
     testRuntimeOnly(group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: JUPITER_VERSION)
     // https://mvnrepository.com/artifact/org.junit.platform/junit-platform-launcher
     testImplementation(group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.8.2')
-    testImplementation(group: "com.kotori316", name: "test_utility", version: "18.2-SNAPSHOT", classifier: "deobf") {
-        transitive(false)
-    }
+    testImplementation(fg.deobf(group: "com.kotori316", name: "test_utility", version: "18.2-SNAPSHOT"))
 
     game_test(group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: JUPITER_VERSION)
     game_test(group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: JUPITER_VERSION)
     game_test(group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: JUPITER_VERSION)
     game_test(group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.8.2')
-    game_test(group: "com.kotori316", name: "test_utility", version: "18.2-SNAPSHOT", classifier: "deobf") {
-        transitive(false)
-    }
 }
 
 configurations.all {

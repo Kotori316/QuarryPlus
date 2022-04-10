@@ -26,6 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @GameTestHolder(QuarryPlus.modID)
 @PrefixGameTestTemplate(value = false)
 public final class SlotMoverTest {
+    private static final String BATCH = "SlotMover";
+
     @GameTest(template = GameTestUtil.EMPTY_STRUCTURE)
     public void dummy(GameTestHelper helper) {
         assertTrue(diamondTools().findAny().isPresent());
@@ -37,21 +39,21 @@ public final class SlotMoverTest {
     @GameTestGenerator
     public List<TestFunction> canPlaceDiamond() {
         return diamondTools().map(d ->
-            GameTestUtil.create(QuarryPlus.modID, "canPlaceDiamond:" + d, g -> canPlaceDiamond(d, g))
+            GameTestUtil.create(QuarryPlus.modID, BATCH, "canPlaceDiamond:" + d, g -> canPlaceDiamond(d, g))
         ).toList();
     }
 
     @GameTestGenerator
     public List<TestFunction> canPlaceNetherite() {
         return netheriteTools().map(d ->
-            GameTestUtil.create(QuarryPlus.modID, "canPlaceNetherite:" + d, g -> canPlaceNetherite(d, g))
+            GameTestUtil.create(QuarryPlus.modID, BATCH, "canPlaceNetherite:" + d, g -> canPlaceNetherite(d, g))
         ).toList();
     }
 
     @GameTestGenerator
     public List<TestFunction> canPlaceIron() {
         return ironTools().map(d ->
-            GameTestUtil.create(QuarryPlus.modID, "canPlaceIron:" + d, g -> canPlaceIron(d, g))
+            GameTestUtil.create(QuarryPlus.modID, BATCH, "canPlaceIron:" + d, g -> canPlaceIron(d, g))
         ).toList();
     }
 
