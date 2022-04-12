@@ -5,13 +5,12 @@ import com.yogpc.qp.machines.PowerTile;
 import mcp.mobius.waila.api.IBlockAccessor;
 import mcp.mobius.waila.api.IBlockComponentProvider;
 import mcp.mobius.waila.api.IPluginConfig;
+import mcp.mobius.waila.api.IServerAccessor;
 import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.ITooltip;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.Level;
 
 final class PowerTileDataProvider implements IServerDataProvider<PowerTile>, IBlockComponentProvider {
     /**
@@ -22,7 +21,8 @@ final class PowerTileDataProvider implements IServerDataProvider<PowerTile>, IBl
      * </ul>
      */
     @Override
-    public void appendServerData(CompoundTag data, ServerPlayer player, Level world, PowerTile powerTile) {
+    public void appendServerData(CompoundTag data, IServerAccessor<PowerTile> accessor, IPluginConfig config) {
+        PowerTile powerTile = accessor.getTarget();
         data.putLong("currentEnergy", powerTile.getEnergy());
         data.putLong("maxEnergy", powerTile.getMaxEnergy());
     }
@@ -35,7 +35,7 @@ final class PowerTileDataProvider implements IServerDataProvider<PowerTile>, IBl
         long maxEnergy = tag.contains("maxEnergy", Tag.TAG_LONG) ? tag.getLong("maxEnergy") : 0;
         String percent = String.format("Energy: %.1f%%", 100d * currentEnergy / maxEnergy);
         String energy = String.format("%d / %d FE", currentEnergy / PowerTile.ONE_FE, maxEnergy / PowerTile.ONE_FE);
-        tooltip.add(new TextComponent(percent));
-        tooltip.add(new TextComponent(energy));
+        tooltip.addLine(new TextComponent(percent));
+        tooltip.addLine(new TextComponent(energy));
     }
 }
