@@ -16,7 +16,7 @@ import com.yogpc.qp.render.Sprites;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
-import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
+import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.RenderType;
 
 public class QuarryPlusClient implements ClientModInitializer {
@@ -34,11 +34,11 @@ public class QuarryPlusClient implements ClientModInitializer {
         BlockEntityRendererRegistry.register(QuarryPlus.ModObjects.MARKER_16_TYPE, Render16Marker::new);
         BlockEntityRendererRegistry.register(QuarryPlus.ModObjects.ADV_QUARRY_TYPE, RenderAdvQuarry::new);
 
-        ScreenRegistry.register(QuarryPlus.ModObjects.Y_SETTER_HANDLER_TYPE, YSetterScreen::new);
-        ScreenRegistry.register(QuarryPlus.ModObjects.FLEX_MARKER_HANDLER_TYPE, ScreenFlexMarker::new);
-        ScreenRegistry.register(QuarryPlus.ModObjects.MARKER_16_HANDLER_TYPE, Screen16Marker::new);
-        ScreenRegistry.register(QuarryPlus.ModObjects.PLACER_MENU_TYPE, PlacerScreen::new);
-        ScreenRegistry.register(QuarryPlus.ModObjects.ADV_QUARRY_MENU_TYPE, AdvQuarryScreen::new);
-        ScreenRegistry.register(QuarryPlus.ModObjects.FILLER_MENU_TYPE, FillerScreen::new);
+        MenuScreens.register(QuarryPlus.ModObjects.Y_SETTER_HANDLER_TYPE, YSetterScreen::new);
+        MenuScreens.register(QuarryPlus.ModObjects.FLEX_MARKER_HANDLER_TYPE, ScreenFlexMarker::new);
+        MenuScreens.register(QuarryPlus.ModObjects.MARKER_16_HANDLER_TYPE, Screen16Marker::new);
+        MenuScreens.register(QuarryPlus.ModObjects.PLACER_MENU_TYPE, PlacerScreen::new);
+        MenuScreens.register(QuarryPlus.ModObjects.ADV_QUARRY_MENU_TYPE, AdvQuarryScreen::new);
+        MenuScreens.register(QuarryPlus.ModObjects.FILLER_MENU_TYPE, FillerScreen::new);
     }
 }
