@@ -41,10 +41,9 @@ import me.shedaniel.autoconfig.serializer.Toml4jConfigSerializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
-import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -86,6 +85,13 @@ public class QuarryPlus implements ModInitializer {
 
         Registry.register(Registry.RECIPE_SERIALIZER, QuarryBedrockModuleRecipe.NAME, QuarryBedrockModuleRecipe.SERIALIZER);
 
+        Registry.register(Registry.MENU, YSetterContainer.GUI_ID, ModObjects.Y_SETTER_HANDLER_TYPE);
+        Registry.register(Registry.MENU, PlacerContainer.GUI_ID, ModObjects.PLACER_MENU_TYPE);
+        Registry.register(Registry.MENU, AdvQuarryMenu.GUI_ID, ModObjects.ADV_QUARRY_MENU_TYPE);
+        Registry.register(Registry.MENU, FillerMenu.GUI_ID, ModObjects.FILLER_MENU_TYPE);
+        Registry.register(Registry.MENU, BlockExMarker.GUI_FLEX_ID, ModObjects.FLEX_MARKER_HANDLER_TYPE);
+        Registry.register(Registry.MENU, BlockExMarker.GUI_16_ID, ModObjects.MARKER_16_HANDLER_TYPE);
+
         PacketHandler.Server.initServer();
         EnergyIntegration.register();
         QuarryFluidTransfer.register();
@@ -122,24 +128,24 @@ public class QuarryPlus implements ModInitializer {
         public static final BlockEntityType<TileMarker> MARKER_TYPE = FabricBlockEntityTypeBuilder.create(TileMarker::new, BLOCK_MARKER).build(DSL.emptyPartType());
 
         public static final YSetterItem ITEM_Y_SETTER = new YSetterItem();
-        public static final MenuType<YSetterContainer> Y_SETTER_HANDLER_TYPE = ScreenHandlerRegistry.registerExtended(YSetterContainer.GUI_ID,
+        public static final ExtendedScreenHandlerType<YSetterContainer> Y_SETTER_HANDLER_TYPE = new ExtendedScreenHandlerType<>(
             (syncId, inventory, buf) -> new YSetterContainer(syncId, inventory.player, buf.readBlockPos()));
 
         public static final QPItem ITEM_BEDROCK_MODULE = new QPItem(new QPItem.Properties().tab(CREATIVE_TAB), "remove_bedrock_module");
 
         public static final PlacerBlock BLOCK_PLACER = new PlacerBlock();
         public static final BlockEntityType<PlacerTile> PLACER_TYPE = FabricBlockEntityTypeBuilder.create(PlacerTile::new, BLOCK_PLACER).build(DSL.emptyPartType());
-        public static final MenuType<PlacerContainer> PLACER_MENU_TYPE = ScreenHandlerRegistry.registerExtended(new ResourceLocation(PlacerContainer.GUI_ID),
+        public static final ExtendedScreenHandlerType<PlacerContainer> PLACER_MENU_TYPE = new ExtendedScreenHandlerType<>(
             (syncId, inventory, buf) -> new PlacerContainer(syncId, inventory.player, buf.readBlockPos()));
 
         public static final BlockAdvQuarry BLOCK_ADV_QUARRY = new BlockAdvQuarry();
         public static final BlockEntityType<TileAdvQuarry> ADV_QUARRY_TYPE = FabricBlockEntityTypeBuilder.create(TileAdvQuarry::new, BLOCK_ADV_QUARRY).build(DSL.emptyPartType());
-        public static final MenuType<AdvQuarryMenu> ADV_QUARRY_MENU_TYPE = ScreenHandlerRegistry.registerExtended(new ResourceLocation(AdvQuarryMenu.GUI_ID),
+        public static final ExtendedScreenHandlerType<AdvQuarryMenu> ADV_QUARRY_MENU_TYPE = new ExtendedScreenHandlerType<>(
             (syncId, inventory, buf) -> new AdvQuarryMenu(syncId, inventory.player, buf.readBlockPos()));
 
         public static final FillerBlock BLOCK_FILLER = new FillerBlock();
         public static final BlockEntityType<FillerEntity> FILLER_TYPE = FabricBlockEntityTypeBuilder.create(FillerEntity::new, BLOCK_FILLER).build(DSL.emptyPartType());
-        public static final MenuType<FillerMenu> FILLER_MENU_TYPE = ScreenHandlerRegistry.registerExtended(new ResourceLocation(FillerMenu.GUI_ID),
+        public static final ExtendedScreenHandlerType<FillerMenu> FILLER_MENU_TYPE = new ExtendedScreenHandlerType<>(
             (syncId, inventory, buf) -> new FillerMenu(syncId, inventory.player, buf.readBlockPos()));
 
         public static final LootItemFunctionType ENCHANTED_LOOT_TYPE = new LootItemFunctionType(EnchantedLootFunction.SERIALIZER);
@@ -149,9 +155,9 @@ public class QuarryPlus implements ModInitializer {
         public static final BlockExMarker.Block16Marker BLOCK_16_MARKER = new BlockExMarker.Block16Marker();
         public static final BlockEntityType<TileFlexMarker> FLEX_MARKER_TYPE = FabricBlockEntityTypeBuilder.create(TileFlexMarker::new, BLOCK_FLEX_MARKER).build(DSL.emptyPartType());
         public static final BlockEntityType<Tile16Marker> MARKER_16_TYPE = FabricBlockEntityTypeBuilder.create(Tile16Marker::new, BLOCK_16_MARKER).build(DSL.emptyPartType());
-        public static final MenuType<ContainerMarker> FLEX_MARKER_HANDLER_TYPE = ScreenHandlerRegistry.registerExtended(new ResourceLocation(BlockExMarker.GUI_FLEX_ID),
+        public static final ExtendedScreenHandlerType<ContainerMarker> FLEX_MARKER_HANDLER_TYPE = new ExtendedScreenHandlerType<>(
             (syncId, inventory, buf) -> new ContainerMarker(syncId, inventory.player, buf.readBlockPos(), ModObjects.FLEX_MARKER_HANDLER_TYPE));
-        public static final MenuType<ContainerMarker> MARKER_16_HANDLER_TYPE = ScreenHandlerRegistry.registerExtended(new ResourceLocation(BlockExMarker.GUI_16_ID),
+        public static final ExtendedScreenHandlerType<ContainerMarker> MARKER_16_HANDLER_TYPE = new ExtendedScreenHandlerType<>(
             (syncId, inventory, buf) -> new ContainerMarker(syncId, inventory.player, buf.readBlockPos(), ModObjects.MARKER_16_HANDLER_TYPE));
 
         public static final CreativeGeneratorBlock BLOCK_CREATIVE_GENERATOR = new CreativeGeneratorBlock();
