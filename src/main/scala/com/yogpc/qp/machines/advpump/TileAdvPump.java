@@ -6,10 +6,10 @@ import java.util.function.Function;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.BreakResult;
 import com.yogpc.qp.machines.CheckerLog;
-import com.yogpc.qp.packet.ClientSync;
 import com.yogpc.qp.machines.EnchantmentLevel;
 import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.PowerTile;
+import com.yogpc.qp.packet.ClientSync;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -22,7 +22,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BucketPickup;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
 
 public class TileAdvPump extends PowerTile
     implements MachineStorage.HasStorage, EnchantmentLevel.HasEnchantments,
@@ -113,13 +113,13 @@ public class TileAdvPump extends PowerTile
         return world.getFluidState(nextPos).isEmpty() && !blockCondition;
     }
 
-    private BreakResult pumpFluid(Level world, BlockPos target, Function<Fluid, BlockState> replaceBlockGetter, boolean useEnergy) {
+    private BreakResult pumpFluid(Level world, BlockPos target, Function<FluidState, BlockState> replaceBlockGetter, boolean useEnergy) {
         var fluidState = world.getFluidState(target);
         if (fluidState.isEmpty()) {
             return BreakResult.SKIPPED;
         } else if (!fluidState.isSource()) {
             // Just remove with no cost.
-            world.setBlock(target, replaceBlockGetter.apply(fluidState.getType()), Block.UPDATE_ALL);
+            world.setBlock(target, replaceBlockGetter.apply(fluidState), Block.UPDATE_ALL);
             return BreakResult.SUCCESS;
         } else {
             if (useEnergy && !useEnergy(this.enchantmentEfficiency.baseEnergy, Reason.ADV_PUMP_FLUID, false)) {
@@ -131,7 +131,7 @@ public class TileAdvPump extends PowerTile
                 this.storage.addFluid(drained);
             } else {
                 this.storage.addFluid(fluidState.getType(), MachineStorage.ONE_BUCKET);
-                world.setBlock(target, replaceBlockGetter.apply(fluidState.getType()), Block.UPDATE_ALL);
+                world.setBlock(target, replaceBlockGetter.apply(fluidState), Block.UPDATE_ALL);
             }
             return BreakResult.SUCCESS;
         }
