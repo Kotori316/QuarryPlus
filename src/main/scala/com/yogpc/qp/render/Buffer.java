@@ -15,7 +15,7 @@ final class Buffer {
         matrix = matrixStack;
     }
 
-    final Buffer pos(double x, double y, double z) {
+    Buffer pos(double x, double y, double z) {
         Matrix4f matrix4f = matrix.last().pose();
 
         vector4f.set((float) x, (float) y, (float) z, 1.0F);
@@ -29,16 +29,16 @@ final class Buffer {
      *
      * @return this
      */
-    final Buffer colored() {
+    Buffer colored() {
         return this.color(255, 255, 255, 255);
     }
 
-    final Buffer color(int red, int green, int blue, int alpha) {
+    Buffer color(int red, int green, int blue, int alpha) {
         bufferBuilder.color(red, green, blue, alpha);
         return this;
     }
 
-    final Buffer tex(float u, float v) {
+    Buffer tex(float u, float v) {
         bufferBuilder.uv(u, v);
         return this;
     }
@@ -46,11 +46,11 @@ final class Buffer {
     /**
      * {@code buffer.lightmap(240, 0).endVertex()}
      */
-    final void lightedAndEnd() {
+    void lightedAndEnd() {
         bufferBuilder.overlayCoords(10, 10).uv2(240, 0).normal(0, 1, 0).endVertex();
     }
 
-    final boolean bufferEq(VertexConsumer builder) {
+    boolean bufferEq(VertexConsumer builder) {
         return bufferBuilder == builder;
     }
 }

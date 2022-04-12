@@ -23,7 +23,7 @@ public abstract class TargetIterator extends PickIterator<TargetIterator.XZPair>
             area.minZ() < current.z() && current.z() < area.maxZ();
     }
 
-    public final record XZPair(int x, int z) {
+    public record XZPair(int x, int z) {
     }
 
     private static final class North extends TargetIterator {

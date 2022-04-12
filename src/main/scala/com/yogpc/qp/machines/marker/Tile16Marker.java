@@ -3,6 +3,7 @@ package com.yogpc.qp.machines.marker;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
@@ -112,11 +113,11 @@ public class Tile16Marker extends BlockEntity implements QuarryMarker, CheckerLo
 
     @Override
     public List<? extends Component> getDebugLogs() {
-        return List.of(
+        return Stream.of(
             "Size: " + size,
             "Min: " + min(),
             "Max: " + max()
-        ).stream().map(TextComponent::new).toList();
+        ).map(TextComponent::new).toList();
     }
 
     @Override
