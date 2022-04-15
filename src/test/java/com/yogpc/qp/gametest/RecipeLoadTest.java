@@ -37,11 +37,12 @@ public final class RecipeLoadTest {
     @GameTest(template = GameTestUtil.EMPTY_STRUCTURE)
     public void accessTag(GameTestHelper helper) {
         assertAll(
-            () -> new ItemStack(Items.STONE).is(Tags.Items.STONE),
-            () -> new ItemStack(Items.ANDESITE).is(Tags.Items.STONE),
-            () -> new ItemStack(Items.IRON_INGOT).is(ItemTags.BEACON_PAYMENT_ITEMS),
-            () -> new ItemStack(Items.COAL).is(ItemTags.COALS),
-            () -> new ItemStack(Items.CHARCOAL).is(ItemTags.COALS)
+            () -> assertTrue(new ItemStack(Items.STONE).is(Tags.Items.STONE), "Tag STONE"),
+            () -> assertTrue(new ItemStack(Items.DIRT).is(ItemTags.DIRT), "Tag DIRT"),
+            () -> assertTrue(new ItemStack(Items.ANDESITE).is(Tags.Items.STONE), "Tag STONE"),
+            () -> assertTrue(new ItemStack(Items.IRON_INGOT).is(ItemTags.BEACON_PAYMENT_ITEMS), "Tag BEACON_PAYMENT_ITEMS"),
+            () -> assertTrue(new ItemStack(Items.COAL).is(ItemTags.COALS), "Tag COALS"),
+            () -> assertTrue(new ItemStack(Items.CHARCOAL).is(ItemTags.COALS), "Tag COALS")
         );
         helper.succeed();
     }

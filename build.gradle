@@ -204,11 +204,12 @@ repositories {
         url = uri("https://pkgs.dev.azure.com/Kotori316/minecraft/_packaging/mods/maven/v1")
         content {
             it.includeVersion("com.kotori316", "ScalableCatsForce".toLowerCase(), project.slpVersion as String)
-            it.includeVersion("com.kotori316", "test_utility", "18.2.1")
+            it.includeVersion("com.kotori316", "test_utility", project.testUtilVersion as String)
             it.includeVersion("org.typelevel", "cats-core_2.13", project.catsVersion as String)
             it.includeVersion("org.typelevel", "cats-kernel_2.13", project.catsVersion as String)
         }
     }
+    mavenLocal()
 }
 
 configurations {
@@ -217,8 +218,8 @@ configurations {
 
 dependencies {
     String forgeVersion = System.getenv("CI_FORGE") ?: project.forgeVersion
-    minecraft('net.minecraftforge:forge:' + forgeVersion)
-    System.out.println(('Selected version: ' + 'net.minecraftforge:forge:' + forgeVersion) as String)
+    minecraft("net.minecraftforge:forge:" + forgeVersion)
+    System.out.println(("Selected version: " + "net.minecraftforge:forge:" + forgeVersion) as String)
     compileOnly(group: 'org.scala-lang', name: 'scala-library', version: project.scalaVersion)
     compileOnly(group: 'org.typelevel', name: "cats-core_2.13", version: project.catsVersion)
     testCompileOnly(group: 'org.scala-lang', name: 'scala-library', version: project.scalaVersion)
@@ -236,7 +237,7 @@ dependencies {
     testRuntimeOnly(group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: JUPITER_VERSION)
     // https://mvnrepository.com/artifact/org.junit.platform/junit-platform-launcher
     testImplementation(group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.8.2')
-    testImplementation(fg.deobf(group: "com.kotori316", name: "test_utility", version: "18.2.1"))
+    testImplementation(fg.deobf(group: "com.kotori316", name: "test_utility", version: project.testUtilVersion))
 
     game_test(group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: JUPITER_VERSION)
     game_test(group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: JUPITER_VERSION)
