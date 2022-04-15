@@ -204,7 +204,7 @@ repositories {
         url = uri("https://pkgs.dev.azure.com/Kotori316/minecraft/_packaging/mods/maven/v1")
         content {
             it.includeVersion("com.kotori316", "ScalableCatsForce".toLowerCase(), project.slpVersion as String)
-            it.includeVersion("com.kotori316", "test_utility", "18.2-SNAPSHOT")
+            it.includeVersion("com.kotori316", "test_utility", "18.2.1")
             it.includeVersion("org.typelevel", "cats-core_2.13", project.catsVersion as String)
             it.includeVersion("org.typelevel", "cats-kernel_2.13", project.catsVersion as String)
         }
@@ -236,7 +236,7 @@ dependencies {
     testRuntimeOnly(group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: JUPITER_VERSION)
     // https://mvnrepository.com/artifact/org.junit.platform/junit-platform-launcher
     testImplementation(group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.8.2')
-    testImplementation(fg.deobf(group: "com.kotori316", name: "test_utility", version: "18.2-SNAPSHOT"))
+    testImplementation(fg.deobf(group: "com.kotori316", name: "test_utility", version: "18.2.1"))
 
     game_test(group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: JUPITER_VERSION)
     game_test(group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: JUPITER_VERSION)

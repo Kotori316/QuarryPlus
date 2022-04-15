@@ -81,6 +81,23 @@ public final class SlotMoverTest {
         helper.succeed();
     }
 
+    @GameTest(template = GameTestUtil.EMPTY_STRUCTURE)
+    public void canPlaceBowWithEnchantment(GameTestHelper helper) {
+        var slot = createMoverSlot(new SimpleContainer(1), 0, 0, 0);
+        var stack = new ItemStack(Items.BOW);
+        stack.enchant(Enchantments.UNBREAKING, 3);
+        assertTrue(slot.mayPlace(stack), "Bow(%s) with enchantments should be placed in slot.".formatted(stack));
+        helper.succeed();
+    }
+
+    @GameTest(template = GameTestUtil.EMPTY_STRUCTURE)
+    public void cantPlaceBowWithoutEnchantment(GameTestHelper helper) {
+        var slot = createMoverSlot(new SimpleContainer(1), 0, 0, 0);
+        var stack = new ItemStack(Items.BOW);
+        assertFalse(slot.mayPlace(stack), "Bow(%s) without enchantments should not be placed in slot.".formatted(stack));
+        helper.succeed();
+    }
+
     public static Slot createMoverSlot(Container container, int index, int x, int y) {
         return new SlotMover(container, index, x, y);
     }
