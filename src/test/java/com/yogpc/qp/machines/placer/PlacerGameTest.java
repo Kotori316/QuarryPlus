@@ -98,4 +98,18 @@ public final class PlacerGameTest {
             .thenExecuteAfter(1, () -> helper.assertBlockPresent(Blocks.STONE, placerPos.relative(Direction.NORTH)))
             .thenSucceed();
     }
+
+    @GameTest(template = GameTestUtil.EMPTY_STRUCTURE, batch = BATCH)
+    public void sendRSSignal(GameTestHelper helper) {
+        var placerPos = GameTestUtil.getBasePos(helper).above();
+        var stonePos = placerPos.relative(Direction.NORTH);
+        helper.setBlock(placerPos, Holder.BLOCK_PLACER.defaultBlockState().setValue(BlockStateProperties.FACING, Direction.NORTH));
+        var tile = Objects.requireNonNull((PlacerTile) helper.getBlockEntity(placerPos));
+        helper.startSequence()
+            .thenExecuteAfter(1, () -> tile.setItem(0, new ItemStack(Blocks.STONE)))
+            .thenExecuteAfter(1, () -> helper.setBlock(stonePos, Blocks.STONE))
+            .thenExecuteAfter(1, () -> helper.setBlock(placerPos.relative(Direction.EAST), Blocks.REDSTONE_BLOCK))
+            .thenExecuteAfter(1, () -> helper.assertBlockPresent(Blocks.STONE, stonePos))
+            .thenSucceed();
+    }
 }
