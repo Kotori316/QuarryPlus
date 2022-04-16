@@ -83,7 +83,7 @@ final class ConfigTest {
         @MethodSource("getDefaultOff")
         void offConfig(ResourceLocation location) {
             // In test environment, all items are enabled.
-            assertTrue(QuarryPlus.config.enableMap.enabled(location));
+            assertTrue(QuarryPlus.config.enableMap.enabled(location), location.toString());
         }
 
         @ParameterizedTest

@@ -38,6 +38,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -79,6 +80,10 @@ public class PlacerTile extends BlockEntity implements
 
     public PlacerTile(BlockPos pos, BlockState state) {
         super(Holder.PLACER_TYPE, pos, state);
+    }
+
+    protected PlacerTile(BlockEntityType<?> entityType, BlockPos pos, BlockState state) {
+        super(entityType, pos, state);
     }
 
     // -------------------- Place --------------------

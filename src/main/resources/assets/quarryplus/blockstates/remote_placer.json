@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "": {
+      "model": "quarryplus:block/placer_plus",
+      "x": 270
+    }
+  }
+}
