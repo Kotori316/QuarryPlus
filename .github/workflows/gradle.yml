@@ -75,6 +75,7 @@ jobs:
       matrix:
         forge: [ 1.18, default ]
     steps:
+      - uses: actions/checkout@v2
       - name: Get latest version
         if: ${{ matrix.forge != 'default' }}
         run: |
@@ -82,7 +83,6 @@ jobs:
           echo "CI_FORGE=${version}" >> $GITHUB_ENV
           grep ${version} gradle.properties > /dev/null && echo "SAME_DEFAULT=true" >> $GITHUB_ENV || echo "SAME_DEFAULT=false" >> $GITHUB_ENV
           echo ${version}
-      - uses: actions/checkout@v2
       - name: Test with JUnit
         if: ${{ env.SAME_DEFAULT != 'true' }}
         run: chmod +x ./gradlew && ./gradlew --no-daemon test
