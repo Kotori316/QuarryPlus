@@ -2,7 +2,6 @@ package com.yogpc.qp.machines.placer;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 import java.util.function.Predicate;
 
@@ -115,14 +114,14 @@ public class PlacerBlock extends QPBlock implements EntityBlock {
     @SuppressWarnings("deprecation")
     public void tick(BlockState state, ServerLevel worldIn, BlockPos pos, Random rand) {
         super.tick(state, worldIn, pos, rand);
-        Direction facing = state.getValue(FACING);
         boolean isPowered = state.getValue(TRIGGERED);
-        Optional<PlacerTile> tile = worldIn.getBlockEntity(pos, Holder.PLACER_TYPE);
-        if (worldIn.getBlockState(pos.relative(facing)).isAir() && isPowered) {
-            tile.ifPresent(PlacerTile::placeBlock);
-        } else if (!isPowered) {
-            tile.ifPresent(PlacerTile::breakBlock);
-        }
+        worldIn.getBlockEntity(pos, Holder.PLACER_TYPE).ifPresent(tile -> {
+            if (worldIn.getBlockState(tile.getTargetPos()).isAir() && isPowered) {
+                tile.placeBlock();
+            } else if (!isPowered) {
+                tile.breakBlock();
+            }
+        });
     }
 
     @Nullable
@@ -156,7 +155,7 @@ public class PlacerBlock extends QPBlock implements EntityBlock {
 
     private static final Direction[] DIRECTIONS = Direction.values().clone();
 
-    public static boolean isPoweredToWork(Level worldIn, BlockPos pos, Direction currentFacing) {
+    public static boolean isPoweredToWork(Level worldIn, BlockPos pos, @Nullable Direction currentFacing) {
         return Arrays.stream(DIRECTIONS).filter(Predicate.isEqual(currentFacing).negate())
             .anyMatch(f -> worldIn.hasSignal(pos.relative(f), f)) || worldIn.hasNeighborSignal(pos.above());
     }
