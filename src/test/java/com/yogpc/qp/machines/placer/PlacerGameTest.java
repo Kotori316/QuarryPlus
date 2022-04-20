@@ -23,7 +23,7 @@ import com.kotori316.testutil.GameTestUtil;
 @GameTestHolder(QuarryPlus.modID)
 @PrefixGameTestTemplate(value = false)
 public final class PlacerGameTest {
-    private static final String BATCH = "PlacerGameTest";
+    static final String BATCH = "PlacerGameTest";
 
     @GameTest(template = GameTestUtil.EMPTY_STRUCTURE, batch = BATCH)
     public void placePlacerBlock(GameTestHelper helper) {
