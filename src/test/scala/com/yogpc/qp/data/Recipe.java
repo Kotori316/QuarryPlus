@@ -26,6 +26,7 @@ import com.yogpc.qp.machines.module.ReplacerBlock;
 import com.yogpc.qp.machines.module.ReplacerModuleItem;
 import com.yogpc.qp.machines.mover.BlockMover;
 import com.yogpc.qp.machines.placer.PlacerBlock;
+import com.yogpc.qp.machines.placer.RemotePlacerBlock;
 import com.yogpc.qp.machines.quarry.QuarryBlock;
 import com.yogpc.qp.machines.quarry.SFQuarryBlock;
 import com.yogpc.qp.machines.workbench.BlockWorkbench;
@@ -343,6 +344,16 @@ class Recipe extends QuarryDataProvider {
                     .requires(Holder.BLOCK_FILLER)
                     .group(MODULE_RECIPE_GROUP), null
             ).addCondition(new EnableCondition(FillerModuleItem.NAME)));
+        list.add(
+            // Remote Placer
+            RecipeSerializeHelper.by(ShapedRecipeBuilder.shaped(Holder.BLOCK_REMOTE_PLACER)
+                .pattern("eie")
+                .pattern("dpd")
+                .define('e', Tags.Items.ENDER_PEARLS)
+                .define('i', Tags.Items.INGOTS_IRON)
+                .define('d', Tags.Items.GEMS_DIAMOND)
+                .define('p', Holder.BLOCK_PLACER), null
+            ).addCondition(new EnableCondition(RemotePlacerBlock.NAME)));
         return list;
     }
 

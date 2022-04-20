@@ -14,6 +14,7 @@
   "pump_module": "CONFIG_ON",
   "pump_plus": "CONFIG_ON",
   "quarry": "CONFIG_ON",
+  "remote_placer": "CONFIG_OFF",
   "remove_bedrock_module": "CONFIG_OFF",
   "replacer": "CONFIG_OFF",
   "replacer_module": "CONFIG_OFF",

@@ -35,6 +35,7 @@ class BlockDrop extends QuarryDataProvider {
             Holder.BLOCK_MOVER,
             Holder.BLOCK_EXP_PUMP,
             Holder.BLOCK_PLACER,
+            Holder.BLOCK_REMOTE_PLACER,
             Holder.BLOCK_REPLACER,
             Holder.BLOCK_BOOK_MOVER,
             Holder.BLOCK_SOLID_FUEL_QUARRY,

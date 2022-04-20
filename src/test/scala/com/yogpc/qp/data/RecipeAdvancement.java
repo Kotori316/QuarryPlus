@@ -9,6 +9,7 @@ import com.yogpc.qp.machines.module.FillerModuleItem;
 import com.yogpc.qp.machines.module.PumpModuleItem;
 import com.yogpc.qp.machines.module.ReplacerModuleItem;
 import com.yogpc.qp.machines.placer.PlacerBlock;
+import com.yogpc.qp.machines.placer.RemotePlacerBlock;
 import com.yogpc.qp.machines.quarry.SFQuarryBlock;
 import com.yogpc.qp.machines.workbench.BlockWorkbench;
 import com.yogpc.qp.machines.workbench.EnableCondition;
@@ -70,7 +71,11 @@ final class RecipeAdvancement extends QuarryDataProvider {
             // Filler Module
             AdvancementSerializeHelper.apply(Holder.ITEM_FILLER_MODULE.getRegistryName())
                 .addItemCriterion(Holder.BLOCK_FILLER)
-                .addCondition(new EnableCondition(FillerModuleItem.NAME))
+                .addCondition(new EnableCondition(FillerModuleItem.NAME)),
+            // Remote Placer
+            AdvancementSerializeHelper.apply(Holder.BLOCK_REMOTE_PLACER.getRegistryName())
+                .addItemCriterion(Holder.BLOCK_PLACER)
+                .addCondition(new EnableCondition(RemotePlacerBlock.NAME))
         );
     }
 

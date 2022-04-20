@@ -57,6 +57,8 @@ import com.yogpc.qp.machines.mover.ContainerMover;
 import com.yogpc.qp.machines.placer.PlacerBlock;
 import com.yogpc.qp.machines.placer.PlacerContainer;
 import com.yogpc.qp.machines.placer.PlacerTile;
+import com.yogpc.qp.machines.placer.RemotePlacerBlock;
+import com.yogpc.qp.machines.placer.RemotePlacerTile;
 import com.yogpc.qp.machines.quarry.FrameBlock;
 import com.yogpc.qp.machines.quarry.QuarryBlock;
 import com.yogpc.qp.machines.quarry.QuarryLootFunction;
@@ -161,6 +163,7 @@ public class Holder {
     public static final BlockExMarker.BlockFlexMarker BLOCK_FLEX_MARKER = registerBlock(new BlockExMarker.BlockFlexMarker());
     public static final BlockExMarker.Block16Marker BLOCK_16_MARKER = registerBlock(new BlockExMarker.Block16Marker());
     public static final PlacerBlock BLOCK_PLACER = registerBlock(new PlacerBlock());
+    public static final RemotePlacerBlock BLOCK_REMOTE_PLACER = registerBlock(new RemotePlacerBlock());
     public static final BlockController BLOCK_CONTROLLER = registerBlock(new BlockController(), EnableOrNot.CONFIG_OFF);
     public static final FrameBlock BLOCK_FRAME = registerBlock(new FrameBlock(), EnableOrNot.ALWAYS_ON);
     public static final BlockDummy BLOCK_DUMMY = new BlockDummy();
@@ -188,6 +191,7 @@ public class Holder {
     public static final BlockEntityType<MiningWellTile> MINING_WELL_TYPE = registerEntityType(MiningWellTile::new, BLOCK_MINING_WELL, EnableOrNot.CONFIG_ON);
     public static final BlockEntityType<ExpPumpTile> EXP_PUMP_TYPE = registerEntityType(ExpPumpTile::new, BLOCK_EXP_PUMP, EnableOrNot.CONFIG_ON);
     public static final BlockEntityType<PlacerTile> PLACER_TYPE = registerEntityType(PlacerTile::new, BLOCK_PLACER, EnableOrNot.CONFIG_ON);
+    public static final BlockEntityType<RemotePlacerTile> REMOTE_PLACER_TYPE = registerEntityType(RemotePlacerTile::new, BLOCK_REMOTE_PLACER, EnableOrNot.CONFIG_OFF);
     public static final BlockEntityType<BookMoverEntity> BOOK_MOVER_TYPE = registerEntityType(BookMoverEntity::new, BLOCK_BOOK_MOVER, EnableOrNot.CONFIG_OFF);
     public static final BlockEntityType<MiniQuarryTile> MINI_QUARRY_TYPE = registerEntityType(MiniQuarryTile::new, BLOCK_MINI_QUARRY, EnableOrNot.CONFIG_ON);
     public static final BlockEntityType<FillerEntity> FILLER_TYPE = registerEntityType(FillerEntity::new, BLOCK_FILLER, EnableOrNot.CONFIG_ON);
@@ -205,7 +209,9 @@ public class Holder {
     public static final MenuType<ContainerQuarryModule> MODULE_MENU_TYPE = registerMenuType((windowId, inv, data) ->
         new ContainerQuarryModule(windowId, inv.player, data.readBlockPos()), ContainerQuarryModule.GUI_ID);
     public static final MenuType<PlacerContainer> PLACER_MENU_TYPE = registerMenuType((windowId, inv, data) ->
-        new PlacerContainer(windowId, inv.player, data.readBlockPos()), PlacerContainer.GUI_ID);
+        new PlacerContainer(windowId, inv.player, data.readBlockPos(), PlacerTile.class), PlacerContainer.PLACER_GUI_ID);
+    public static final MenuType<PlacerContainer> REMOTE_PLACER_MENU_TYPE = registerMenuType((windowId, inv, data) ->
+        new PlacerContainer(windowId, inv.player, data.readBlockPos(), RemotePlacerTile.class), PlacerContainer.REMOTE_PLACER_GUI_ID);
     public static final MenuType<BookMoverMenu> BOOK_MOVER_MENU_TYPE = registerMenuType((windowId, inv, data) ->
         new BookMoverMenu(windowId, inv.player, data.readBlockPos()), BookMoverBlock.GUI_ID);
     public static final MenuType<CreativeGeneratorMenu> CREATIVE_GENERATOR_MENU_TYPE = registerMenuType((windowId, inv, data) ->
