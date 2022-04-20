@@ -246,7 +246,8 @@ public class PlacerTile extends BlockEntity implements
         return Stream.of(
             "RS Mode: " + redstoneMode.toString(),
             "Last Placed: " + getLastPlacedIndex(),
-            "Inv: " + inventory.stream().filter(s -> !s.isEmpty()).count()
+            "Target: " + getTargetPos(),
+            "Inv: " + inventory.stream().filter(Predicate.not(ItemStack::isEmpty)).count()
         ).map(TextComponent::new).collect(Collectors.toList());
     }
 
