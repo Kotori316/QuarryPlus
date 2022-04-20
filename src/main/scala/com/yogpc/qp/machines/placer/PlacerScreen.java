@@ -19,6 +19,10 @@ public class PlacerScreen extends AbstractContainerScreen<PlacerContainer> {
         super(c, inventory, component);
     }
 
+    protected ResourceLocation textureLocation() {
+        return LOCATION;
+    }
+
     @Override
     public void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
@@ -30,12 +34,12 @@ public class PlacerScreen extends AbstractContainerScreen<PlacerContainer> {
     protected void renderBg(PoseStack matrices, float delta, int mouseX, int mouseY) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, LOCATION);
+        RenderSystem.setShaderTexture(0, textureLocation());
         this.blit(matrices, getGuiLeft(), getGuiTop(), 0, 0, imageWidth, imageHeight);
         {
             // red = 176, 0;  start = 61, 16;
             int oneBox = 18;
-            int x = 61 + (getMenu().tile.getLastPlacedIndex() % 3) * oneBox;
+            int x = getMenu().startX - 1 + (getMenu().tile.getLastPlacedIndex() % 3) * oneBox;
             int y = 16 + (getMenu().tile.getLastPlacedIndex() / 3) * oneBox;
             this.blit(matrices, getGuiLeft() + x, getGuiTop() + y, 176, 0, oneBox, oneBox);
         }

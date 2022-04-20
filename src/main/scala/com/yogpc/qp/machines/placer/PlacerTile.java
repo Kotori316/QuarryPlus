@@ -308,7 +308,7 @@ public class PlacerTile extends BlockEntity implements
 
     @Override
     public PlacerContainer createMenu(int id, Inventory p, Player player) {
-        return new PlacerContainer(id, player, getBlockPos());
+        return new PlacerContainer(id, player, getBlockPos(), getClass());
     }
 
     // -------------------- RedstoneMode --------------------

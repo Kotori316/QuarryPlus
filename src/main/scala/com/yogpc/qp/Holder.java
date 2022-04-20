@@ -209,7 +209,9 @@ public class Holder {
     public static final MenuType<ContainerQuarryModule> MODULE_MENU_TYPE = registerMenuType((windowId, inv, data) ->
         new ContainerQuarryModule(windowId, inv.player, data.readBlockPos()), ContainerQuarryModule.GUI_ID);
     public static final MenuType<PlacerContainer> PLACER_MENU_TYPE = registerMenuType((windowId, inv, data) ->
-        new PlacerContainer(windowId, inv.player, data.readBlockPos()), PlacerContainer.GUI_ID);
+        new PlacerContainer(windowId, inv.player, data.readBlockPos(), PlacerTile.class), PlacerContainer.PLACER_GUI_ID);
+    public static final MenuType<PlacerContainer> REMOTE_PLACER_MENU_TYPE = registerMenuType((windowId, inv, data) ->
+        new PlacerContainer(windowId, inv.player, data.readBlockPos(), RemotePlacerTile.class), PlacerContainer.REMOTE_PLACER_GUI_ID);
     public static final MenuType<BookMoverMenu> BOOK_MOVER_MENU_TYPE = registerMenuType((windowId, inv, data) ->
         new BookMoverMenu(windowId, inv.player, data.readBlockPos()), BookMoverBlock.GUI_ID);
     public static final MenuType<CreativeGeneratorMenu> CREATIVE_GENERATOR_MENU_TYPE = registerMenuType((windowId, inv, data) ->
