@@ -48,22 +48,24 @@ public class PlacerScreen extends AbstractContainerScreen<PlacerContainer> {
     @Override
     protected void renderLabels(PoseStack matrices, int mouseX, int mouseY) {
         super.renderLabels(matrices, mouseX, mouseY);
-        {
-            // Mode
-            PlacerTile.RedstoneMode mode = this.getMenu().tile.redstoneMode;
-            String pA = mode.isAlways() ? "Always" : "Pulse";
-            int x = 116;
-            this.font.draw(matrices, pA, x, 6, 0x404040);
-            String rs;
-            if (mode.isRsOn()) rs = "RS On";
-            else if (mode.isRsOff()) rs = "RS Off";
-            else rs = "";
-            this.font.draw(matrices, rs, x, 18, 0x404040);
-            String only;
-            if (mode.canBreak() && !mode.canPlace()) only = "Break Only";
-            else if (mode.canPlace() && !mode.canBreak()) only = "Place Only";
-            else only = "";
-            this.font.draw(matrices, only, x, 30, 0x404040);
-        }
+        renderModeLabel(matrices);
+    }
+
+    protected void renderModeLabel(PoseStack matrices) {
+        // Mode
+        PlacerTile.RedstoneMode mode = this.getMenu().tile.redstoneMode;
+        String pA = mode.isAlways() ? "Always" : "Pulse";
+        int x = 116;
+        this.font.draw(matrices, pA, x, 6, 0x404040);
+        String rs;
+        if (mode.isRsOn()) rs = "RS On";
+        else if (mode.isRsOff()) rs = "RS Off";
+        else rs = "";
+        this.font.draw(matrices, rs, x, 18, 0x404040);
+        String only;
+        if (mode.canBreak() && !mode.canPlace()) only = "Break Only";
+        else if (mode.canPlace() && !mode.canBreak()) only = "Place Only";
+        else only = "";
+        this.font.draw(matrices, only, x, 30, 0x404040);
     }
 }
