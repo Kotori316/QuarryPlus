@@ -15,6 +15,8 @@ import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraftforge.gametest.GameTestHolder;
+import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
 import com.kotori316.testutil.GameTestUtil;
 
@@ -23,6 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@GameTestHolder(QuarryPlus.modID)
+@PrefixGameTestTemplate(value = false)
 public final class RemotePlacerGameTest {
     @GameTest(template = GameTestUtil.EMPTY_STRUCTURE, batch = BATCH)
     public void placeRemotePlacerBlock(GameTestHelper helper) {
