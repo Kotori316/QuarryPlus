@@ -5,6 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.misc.IndexedButton;
+import com.yogpc.qp.packet.PacketHandler;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
@@ -72,20 +73,21 @@ public final class RemotePlacerScreen extends PlacerScreen implements Button.OnP
 
     @Override
     public void onPress(Button pButton) {
-        if (pButton instanceof IndexedButton indexedButton) {
+        if (pButton instanceof IndexedButton indexedButton && getMenu().tile instanceof RemotePlacerTile remotePlacerTile) {
             int amount = switch (indexedButton.getIndex() % 2) {
                 case 0 -> -1;
                 case 1 -> +1;
                 default -> throw new AssertionError("X % 2 must in 0-1.");
             } * (Screen.hasShiftDown() ? 16 : Screen.hasControlDown() ? 4 : 1);
-            Direction.Axis axis = switch (indexedButton.getIndex() / 4) {
+            Direction.Axis axis = switch (indexedButton.getIndex() / 2) {
                 case 0 -> Direction.Axis.X;
                 case 1 -> Direction.Axis.Y;
                 case 2 -> Direction.Axis.Z;
                 default -> throw new IllegalArgumentException("Bad index " + indexedButton.getIndex());
             };
-            BlockPos newPos = getMenu().tile.getTargetPos().relative(axis, amount);
-            QuarryPlus.LOGGER.info("RemotePlacerScreen Pos {}", newPos);
+            BlockPos newPos = remotePlacerTile.getTargetPos().relative(axis, amount);
+            remotePlacerTile.targetPos = newPos;
+            PacketHandler.sendToServer(new RemotePlacerMessage(remotePlacerTile, newPos));
         }
     }
 }
