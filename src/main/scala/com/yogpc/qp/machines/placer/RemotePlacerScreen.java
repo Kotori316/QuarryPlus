@@ -45,11 +45,12 @@ public final class RemotePlacerScreen extends PlacerScreen implements Button.OnP
     protected void renderLabels(PoseStack matrices, int mouseX, int mouseY) {
         super.renderLabels(matrices, mouseX, mouseY);
         var targetPos = getMenu().tile.getTargetPos();
+        var color = targetPos.equals(getMenu().tile.getBlockPos()) ? 0xFF4040 : 0x404040;
         var x = 116;
         // 118, 22
-        this.font.draw(matrices, "X: " + targetPos.getX(), x, 22, 0x404040);
-        this.font.draw(matrices, "Y: " + targetPos.getY(), x, 40, 0x404040);
-        this.font.draw(matrices, "Z: " + targetPos.getZ(), x, 58, 0x404040);
+        this.font.draw(matrices, "X: " + targetPos.getX(), x, 22, color);
+        this.font.draw(matrices, "Y: " + targetPos.getY(), x, 40, color);
+        this.font.draw(matrices, "Z: " + targetPos.getZ(), x, 58, color);
     }
 
     @Override
