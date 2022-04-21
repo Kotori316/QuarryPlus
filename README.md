@@ -35,6 +35,7 @@ Requires [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/sca
 * Some modules
 * Exp Pump
 * Placer Plus
+* Remote Placer
 * Replacer
 * Book Enchantment Mover
 * Chunk Destroyer

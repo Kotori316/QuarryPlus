@@ -1,3 +1,11 @@
+## Version 18.9
+
+* Fixed wrong parameter name in EnchantmentIngredient in json decoding.
+* Fixed a bug that enchantment mover could move enchantment from iron pickaxe. Now it can move enchantments from armors.
+* Added Remote Placer. [#179](https://github.com/Kotori316/QuarryPlus/issues/179)
+* Create ko_kr.json.
+* Update to recommend version of Forge.
+
 ## Version 18.8
 
 * Update for 1.18.2
