@@ -24,6 +24,9 @@
     ],
     "modmenu": [
       "com.yogpc.qp.integration.QuarryModMenuIntegration"
+    ],
+    "fabric-datagen": [
+      "com.yogpc.qp.data.QuarryDataGenerator"
     ]
   },
   "mixins": [

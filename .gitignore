@@ -23,6 +23,7 @@ eclipse
 FILES
 /Minecraft
 run-server
+.cache
 
 # fabric
 run/
