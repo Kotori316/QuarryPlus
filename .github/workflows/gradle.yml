@@ -11,6 +11,9 @@ on:
       - "src/**"
       - ".github/workflows/gradle.yml"
       - "build.gradle"
+  pull_request:
+    branches:
+      - "1.18-fabric"
 
 jobs:
   commit-info:
@@ -44,17 +47,17 @@ jobs:
       - name: Check Warning
         run: chmod +x ./gradlew && ./gradlew javaToolchains CheckCompileOption --no-daemon --warning-mode all
       - name: Test Only
-        if: ${{ contains(github.event.head_commit.message, '[skip release]') }}
+        if: ${{ contains(github.event.head_commit.message, '[skip release]') || github.event_name == 'pull_request'}}
         run: chmod +x ./gradlew && ./gradlew build --no-daemon
       - name: Test and Publish
-        if: ${{ !contains(github.event.head_commit.message, '[skip release]') }}
+        if: ${{ !contains(github.event.head_commit.message, '[skip release]') && github.event_name != 'pull_request'}}
         run: chmod +x ./gradlew && ./gradlew build curseforge publish --no-daemon
         env:
           CURSEFORGE_KEY: ${{ secrets.CURSEFORGE_KEY }}
           AZURE_USER_NAME: 'Kotori316'
           AZURE_TOKEN: ${{ secrets.AZURE_TOKEN }}
       - name: Upload Artifacts
-        if: ${{ !contains(github.event.head_commit.message, '[skip release]') }}
+        if: ${{ !contains(github.event.head_commit.message, '[skip release]') && github.event_name != 'pull_request'}}
         uses: actions/upload-artifact@v2
         with:
           path: build/libs/*
