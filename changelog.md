@@ -2,6 +2,7 @@
 
 ### Addition
 
+* Added - Remote Placer
 * Added - Filler
 * Added - config option to disable removing common material in ChunkDestroyer.
 * Added recipe of Status Checker.
@@ -26,6 +27,7 @@
 
 ### Misc
 
+* Use conventional tags in recipe.
 * Update for 1.18.2
 * Changed - The amount of Y if Shift or Ctrl is pressed.
 * Changed - Reduced work energy of Chunk Destroyer. (Changed coefficient of Efficiency)
