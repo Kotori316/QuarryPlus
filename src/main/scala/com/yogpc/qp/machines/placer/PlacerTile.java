@@ -41,6 +41,7 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
@@ -75,13 +76,16 @@ public class PlacerTile extends BlockEntity implements
         super(QuarryPlus.ModObjects.PLACER_TYPE, pos, state);
     }
 
+    protected PlacerTile(BlockEntityType<?> entityType, BlockPos pos, BlockState state) {
+        super(entityType, pos, state);
+    }
+
     // -------------------- Place --------------------
 
     public void tick() {
         if (level != null && !level.isClientSide && redstoneMode.isAlways()) {
-            Direction facing = getBlockState().getValue(FACING);
-            if (redstoneMode.shouldWork(() -> PlacerBlock.isPoweredToWork(level, getBlockPos(), facing))) {
-                if (level.getBlockState(getBlockPos().relative(facing)).isAir()) {
+            if (redstoneMode.shouldWork(this::isPowered)) {
+                if (level.getBlockState(getTargetPos()).isAir()) {
                     placeBlock();
                 } else {
                     breakBlock();
@@ -90,10 +94,21 @@ public class PlacerTile extends BlockEntity implements
         }
     }
 
+    protected BlockPos getTargetPos() {
+        return getBlockPos().relative(getMachineFacing());
+    }
+
+    protected Direction getMachineFacing() {
+        return getBlockState().getValue(FACING);
+    }
+
+    protected boolean isPowered() {
+        return PlacerBlock.isPoweredToWork(level, getBlockPos(), getMachineFacing());
+    }
+
     public void breakBlock() {
         if (level == null || !redstoneMode.canBreak()) return;
-        Direction facing = getBlockState().getValue(FACING);
-        BlockPos pos = getBlockPos().relative(facing);
+        BlockPos pos = getTargetPos();
         BlockState state = level.getBlockState(pos);
         if (state.getDestroySpeed(level, pos) < 0) return; // Unbreakable.
         List<ItemStack> drops = Block.getDrops(state, ((ServerLevel) level), pos, level.getBlockEntity(pos), null, getSilkPickaxe());
@@ -104,8 +119,8 @@ public class PlacerTile extends BlockEntity implements
 
     public void placeBlock() {
         if (isEmpty() || !redstoneMode.canPlace()) return;
-        Direction facing = getBlockState().getValue(FACING);
-        BlockPos pos = getBlockPos().relative(facing);
+        Direction facing = getMachineFacing();
+        BlockPos pos = getTargetPos();
 
         findEntry(inventory,
             i -> isItemPlaceable(i, getLevel(), pos, facing),
@@ -222,6 +237,7 @@ public class PlacerTile extends BlockEntity implements
         return Stream.of(
             "RS Mode: " + redstoneMode.toString(),
             "Last Placed: " + getLastPlacedIndex(),
+            "Target: " + getTargetPos(),
             "Inv: " + inventory.stream().filter(s -> !s.isEmpty()).count()
         ).map(TextComponent::new).collect(Collectors.toList());
     }
@@ -284,7 +300,7 @@ public class PlacerTile extends BlockEntity implements
 
     @Override
     public PlacerContainer createMenu(int id, Inventory p, Player player) {
-        return new PlacerContainer(id, player, getBlockPos());
+        return new PlacerContainer(id, player, getBlockPos(), getClass());
     }
 
     @Override

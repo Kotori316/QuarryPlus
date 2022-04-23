@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "eie",
+    "dpd"
+  ],
+  "key": {
+    "e": {
+      "item": "minecraft:ender_pearl"
+    },
+    "i": {
+      "tag": "c:iron_ingots"
+    },
+    "d": {
+      "tag": "c:diamonds"
+    },
+    "p": {
+      "item": "quarryplus:placer_plus"
+    }
+  },
+  "result": {
+    "item": "quarryplus:remote_placer"
+  }
+}

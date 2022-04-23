@@ -87,6 +87,15 @@ final class RecipeGenerator extends FabricRecipeProvider {
             .define('G', ConventionalItemTags.GOLD_INGOTS)
             .unlockedBy("has_dispenser", has(Items.DISPENSER))
         );
+        builders.add(ShapedRecipeBuilder.shaped(QuarryPlus.ModObjects.BLOCK_REMOTE_PLACER)
+            .pattern("eie")
+            .pattern("dpd")
+            .define('e', Items.ENDER_PEARL)
+            .define('i', ConventionalItemTags.IRON_INGOTS)
+            .define('d', ConventionalItemTags.DIAMONDS)
+            .define('p', QuarryPlus.ModObjects.BLOCK_PLACER)
+            .unlockedBy("has_placer", has(QuarryPlus.ModObjects.BLOCK_PLACER))
+        );
         builders.add(ShapedRecipeBuilder.shaped(QuarryPlus.ModObjects.BLOCK_FILLER)
             .pattern("iii")
             .pattern("ala")
