@@ -7,10 +7,10 @@
   ],
   "key": {
     "g": {
-      "item": "minecraft:green_dye"
+      "tag": "c:green_dyes"
     },
     "e": {
-      "item": "minecraft:emerald"
+      "tag": "c:emeralds"
     },
     "q": {
       "item": "quarryplus:quarry"

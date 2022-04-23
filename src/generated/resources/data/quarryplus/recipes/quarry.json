@@ -13,7 +13,7 @@
       "item": "minecraft:dropper"
     },
     "i": {
-      "item": "minecraft:iron_ingot"
+      "tag": "c:iron_ingots"
     },
     "g": {
       "item": "minecraft:golden_pickaxe"

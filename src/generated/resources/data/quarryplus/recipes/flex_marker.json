@@ -10,7 +10,7 @@
       "item": "quarryplus:marker"
     },
     "l": {
-      "item": "minecraft:lapis_lazuli"
+      "tag": "c:lapis"
     }
   },
   "result": {

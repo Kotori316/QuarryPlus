@@ -7,13 +7,13 @@
   ],
   "key": {
     "b": {
-      "item": "minecraft:bucket"
+      "tag": "c:empty_buckets"
     },
     "d": {
-      "item": "minecraft:diamond"
+      "tag": "c:diamonds"
     },
     "g": {
-      "item": "minecraft:green_dye"
+      "tag": "c:green_dyes"
     },
     "q": {
       "item": "quarryplus:quarry"

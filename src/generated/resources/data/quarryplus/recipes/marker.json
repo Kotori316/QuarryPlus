@@ -12,7 +12,7 @@
       "item": "minecraft:glowstone_dust"
     },
     "l": {
-      "item": "minecraft:lapis_lazuli"
+      "tag": "c:lapis"
     }
   },
   "result": {

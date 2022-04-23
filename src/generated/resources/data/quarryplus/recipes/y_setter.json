@@ -9,10 +9,10 @@
       "item": "quarryplus:marker"
     },
     "g": {
-      "item": "minecraft:glass"
+      "tag": "c:glass_blocks"
     },
     "l": {
-      "item": "minecraft:lapis_lazuli"
+      "tag": "c:lapis"
     }
   },
   "result": {

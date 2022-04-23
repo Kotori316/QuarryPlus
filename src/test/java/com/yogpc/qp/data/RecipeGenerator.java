@@ -7,6 +7,7 @@ import java.util.function.Consumer;
 import com.yogpc.qp.QuarryPlus;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
+import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
@@ -27,7 +28,7 @@ final class RecipeGenerator extends FabricRecipeProvider {
             .pattern("iRi")
             .define('R', Items.REDSTONE_BLOCK)
             .define('D', Items.DROPPER)
-            .define('i', Items.IRON_INGOT)
+            .define('i', ConventionalItemTags.IRON_INGOTS)
             .define('g', Items.GOLDEN_PICKAXE)
             .define('o', Items.OBSIDIAN)
             .unlockedBy("has_obsidian", has(Items.OBSIDIAN))
@@ -37,7 +38,7 @@ final class RecipeGenerator extends FabricRecipeProvider {
             .pattern(" r ")
             .define('r', Items.REDSTONE_TORCH)
             .define('g', Items.GLOWSTONE_DUST)
-            .define('l', Items.LAPIS_LAZULI)
+            .define('l', ConventionalItemTags.LAPIS)
             .unlockedBy("has_redstone_torch", has(Items.REDSTONE_TORCH))
         );
         builders.add(ShapedRecipeBuilder.shaped(QuarryPlus.ModObjects.BLOCK_16_MARKER)
@@ -51,16 +52,16 @@ final class RecipeGenerator extends FabricRecipeProvider {
             .pattern("mlm")
             .pattern(" m ")
             .define('m', QuarryPlus.ModObjects.BLOCK_MARKER)
-            .define('l', Items.LAPIS_LAZULI)
+            .define('l', ConventionalItemTags.LAPIS)
             .unlockedBy("has_marker", has(QuarryPlus.ModObjects.BLOCK_MARKER))
         );
         builders.add(ShapedRecipeBuilder.shaped(QuarryPlus.ModObjects.BLOCK_ADV_PUMP)
             .pattern("bdb")
             .pattern("mqm")
             .pattern("gdg")
-            .define('b', Items.BUCKET)
-            .define('d', Items.DIAMOND)
-            .define('g', Items.GREEN_DYE)
+            .define('b', ConventionalItemTags.EMPTY_BUCKETS)
+            .define('d', ConventionalItemTags.DIAMONDS)
+            .define('g', ConventionalItemTags.GREEN_DYES)
             .define('q', QuarryPlus.ModObjects.BLOCK_QUARRY)
             .define('m', QuarryPlus.ModObjects.BLOCK_MARKER)
             .unlockedBy("has_quarry", has(QuarryPlus.ModObjects.BLOCK_QUARRY))
@@ -69,8 +70,8 @@ final class RecipeGenerator extends FabricRecipeProvider {
             .pattern("mem")
             .pattern("gqg")
             .pattern("mem")
-            .define('g', Items.GREEN_DYE)
-            .define('e', Items.EMERALD)
+            .define('g', ConventionalItemTags.GREEN_DYES)
+            .define('e', ConventionalItemTags.EMERALDS)
             .define('q', QuarryPlus.ModObjects.BLOCK_QUARRY)
             .define('m', QuarryPlus.ModObjects.BLOCK_16_MARKER)
             .unlockedBy("has_quarry", has(QuarryPlus.ModObjects.BLOCK_QUARRY))
@@ -81,19 +82,19 @@ final class RecipeGenerator extends FabricRecipeProvider {
             .pattern("MIM")
             .define('D', Items.DISPENSER)
             .define('R', Items.REDSTONE)
-            .define('I', Items.IRON_INGOT)
+            .define('I', ConventionalItemTags.IRON_INGOTS)
             .define('M', Items.MOSSY_COBBLESTONE)
-            .define('G', Items.GOLD_INGOT)
+            .define('G', ConventionalItemTags.GOLD_INGOTS)
             .unlockedBy("has_dispenser", has(Items.DISPENSER))
         );
         builders.add(ShapedRecipeBuilder.shaped(QuarryPlus.ModObjects.BLOCK_FILLER)
             .pattern("iii")
             .pattern("ala")
             .pattern("iii")
-            .define('i', Items.IRON_INGOT)
+            .define('i', ConventionalItemTags.IRON_INGOTS)
             .define('a', Items.IRON_AXE)
             .define('l', Items.LADDER)
-            .unlockedBy("has_iron_ingot", has(Items.IRON_INGOT))
+            .unlockedBy("has_iron_ingot", has(ConventionalItemTags.IRON_INGOTS))
         );
         builders.add(ShapedRecipeBuilder.shaped(QuarryPlus.ModObjects.ITEM_BEDROCK_MODULE)
             .pattern("ooo")
@@ -107,16 +108,16 @@ final class RecipeGenerator extends FabricRecipeProvider {
             .pattern("ggg")
             .pattern("lrl")
             .define('r', QuarryPlus.ModObjects.BLOCK_MARKER)
-            .define('g', Items.GLASS)
-            .define('l', Items.IRON_INGOT)
+            .define('g', ConventionalItemTags.GLASS_BLOCKS)
+            .define('l', ConventionalItemTags.IRON_INGOTS)
             .unlockedBy("has_marker", has(QuarryPlus.ModObjects.BLOCK_MARKER))
         );
         builders.add(ShapedRecipeBuilder.shaped(QuarryPlus.ModObjects.ITEM_Y_SETTER)
             .pattern("ggg")
             .pattern("lrl")
             .define('r', QuarryPlus.ModObjects.BLOCK_MARKER)
-            .define('g', Items.GLASS)
-            .define('l', Items.LAPIS_LAZULI)
+            .define('g', ConventionalItemTags.GLASS_BLOCKS)
+            .define('l', ConventionalItemTags.LAPIS)
             .unlockedBy("has_marker", has(QuarryPlus.ModObjects.BLOCK_MARKER))
         );
 

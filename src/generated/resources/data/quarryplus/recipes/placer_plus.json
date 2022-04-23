@@ -13,13 +13,13 @@
       "item": "minecraft:redstone"
     },
     "I": {
-      "item": "minecraft:iron_ingot"
+      "tag": "c:iron_ingots"
     },
     "M": {
       "item": "minecraft:mossy_cobblestone"
     },
     "G": {
-      "item": "minecraft:gold_ingot"
+      "tag": "c:gold_ingots"
     }
   },
   "result": {
