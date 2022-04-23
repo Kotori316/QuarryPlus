@@ -6,20 +6,20 @@
     "MIM"
   ],
   "key": {
-    "R": {
-      "item": "minecraft:redstone"
-    },
     "D": {
       "item": "minecraft:dispenser"
+    },
+    "R": {
+      "item": "minecraft:redstone"
     },
     "I": {
       "item": "minecraft:iron_ingot"
     },
-    "G": {
-      "item": "minecraft:gold_ingot"
-    },
     "M": {
       "item": "minecraft:mossy_cobblestone"
+    },
+    "G": {
+      "item": "minecraft:gold_ingot"
     }
   },
   "result": {

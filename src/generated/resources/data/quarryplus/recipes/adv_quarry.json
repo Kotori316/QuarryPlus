@@ -6,11 +6,11 @@
     "mem"
   ],
   "key": {
-    "e": {
-      "item": "minecraft:emerald"
-    },
     "g": {
       "item": "minecraft:green_dye"
+    },
+    "e": {
+      "item": "minecraft:emerald"
     },
     "q": {
       "item": "quarryplus:quarry"
