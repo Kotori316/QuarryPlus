@@ -44,6 +44,29 @@ loom {
             configName = "Server"
             runDir = "run-server"
         }
+        data {
+            client()
+            configName = "Data"
+            runDir = "run-server"
+            //noinspection SpellCheckingInspection
+            vmArg "-Dfabric-api.datagen"
+            //noinspection SpellCheckingInspection
+            vmArg "-Dfabric-api.datagen.output-dir=${file("src/generated/resources")}"
+            //noinspection SpellCheckingInspection
+            vmArg "-Dfabric-api.datagen.strict-validation"
+
+            ideConfigGenerated = true
+            source sourceSets.test
+        }
+    }
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDir 'src/main/resources'
+            srcDir 'src/generated/resources'
+        }
     }
 }
 
@@ -155,6 +178,7 @@ dependencies {
 }
 
 processResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     inputs.property "version", project.version
 
     filesMatching("fabric.mod.json") {
@@ -210,6 +234,11 @@ jar {
                 "Commit"                  : getCommit(BRANCH())
         ])
     }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+sourcesJar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 // PUBLISH

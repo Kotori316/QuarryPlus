@@ -1,0 +1,34 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "quarryplus:quarry"
+    ]
+  },
+  "criteria": {
+    "has_module": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "quarryplus:remove_bedrock_module"
+            ]
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "quarryplus:quarry"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_module",
+      "has_the_recipe"
+    ]
+  ]
+}

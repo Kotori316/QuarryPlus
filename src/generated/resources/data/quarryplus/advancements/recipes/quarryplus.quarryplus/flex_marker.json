@@ -6,27 +6,29 @@
     ]
   },
   "criteria": {
-    "has_the_recipe": {
-      "trigger": "minecraft:recipe_unlocked",
-      "conditions": {
-        "recipe": "quarryplus:flex_marker"
-      }
-    },
     "has_marker": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "quarryplus:marker"
+            "items": [
+              "quarryplus:marker"
+            ]
           }
         ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "quarryplus:flex_marker"
       }
     }
   },
   "requirements": [
     [
-      "has_the_recipe",
-      "has_marker"
+      "has_marker",
+      "has_the_recipe"
     ]
   ]
 }

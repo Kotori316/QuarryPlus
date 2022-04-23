@@ -1,0 +1,34 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "quarryplus:status_checker"
+    ]
+  },
+  "criteria": {
+    "has_marker": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "quarryplus:marker"
+            ]
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "quarryplus:status_checker"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_marker",
+      "has_the_recipe"
+    ]
+  ]
+}

@@ -6,27 +6,29 @@
     ]
   },
   "criteria": {
+    "has_dispenser": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:dispenser"
+            ]
+          }
+        ]
+      }
+    },
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
         "recipe": "quarryplus:placer_plus"
       }
-    },
-    "has_block": {
-      "trigger": "minecraft:inventory_changed",
-      "conditions": {
-        "items": [
-          {
-            "item": "minecraft:dispenser"
-          }
-        ]
-      }
     }
   },
   "requirements": [
     [
-      "has_the_recipe",
-      "has_block"
+      "has_dispenser",
+      "has_the_recipe"
     ]
   ]
 }

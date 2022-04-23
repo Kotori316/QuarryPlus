@@ -6,27 +6,29 @@
     ]
   },
   "criteria": {
+    "has_module": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "quarryplus:remove_bedrock_module"
+            ]
+          }
+        ]
+      }
+    },
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
         "recipe": "quarryplus:adv_quarry"
       }
-    },
-    "has_quarry": {
-      "trigger": "minecraft:inventory_changed",
-      "conditions": {
-        "items": [
-          {
-            "item": "quarryplus:quarry"
-          }
-        ]
-      }
     }
   },
   "requirements": [
     [
-      "has_the_recipe",
-      "has_quarry"
+      "has_module",
+      "has_the_recipe"
     ]
   ]
 }
