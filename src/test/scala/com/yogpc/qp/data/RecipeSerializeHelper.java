@@ -9,8 +9,7 @@ import com.google.gson.JsonElement;
 import com.yogpc.qp.utils.MapMulti;
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
 import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.data.recipes.ShapedRecipeBuilder;
-import net.minecraft.data.recipes.ShapelessRecipeBuilder;
+import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.conditions.ICondition;
@@ -41,11 +40,7 @@ record RecipeSerializeHelper(
         return new RecipeSerializeHelper(recipe, copy, saveName);
     }
 
-    static RecipeSerializeHelper by(ShapedRecipeBuilder c, ResourceLocation saveName) {
-        return new RecipeSerializeHelper(getConsumeValue(c), Collections.emptyList(), saveName);
-    }
-
-    static RecipeSerializeHelper by(ShapelessRecipeBuilder c, ResourceLocation saveName) {
+    static RecipeSerializeHelper by(RecipeBuilder c, ResourceLocation saveName) {
         return new RecipeSerializeHelper(getConsumeValue(c), Collections.emptyList(), saveName);
     }
 
@@ -53,14 +48,7 @@ record RecipeSerializeHelper(
         return new RecipeSerializeHelper(recipe, Collections.emptyList(), null);
     }
 
-    static FinishedRecipe getConsumeValue(ShapedRecipeBuilder c) {
-        c.unlockedBy("dummy", RecipeUnlockedTrigger.unlocked(QuarryPlusDataProvider.location("dummy")));
-        AtomicReference<FinishedRecipe> reference = new AtomicReference<>();
-        c.save(reference::set);
-        return reference.get();
-    }
-
-    static FinishedRecipe getConsumeValue(ShapelessRecipeBuilder c) {
+    static FinishedRecipe getConsumeValue(RecipeBuilder c) {
         c.unlockedBy("dummy", RecipeUnlockedTrigger.unlocked(QuarryPlusDataProvider.location("dummy")));
         AtomicReference<FinishedRecipe> reference = new AtomicReference<>();
         c.save(reference::set);
