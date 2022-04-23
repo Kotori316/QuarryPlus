@@ -234,6 +234,11 @@ jar {
                 "Commit"                  : getCommit(BRANCH())
         ])
     }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+sourcesJar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 // PUBLISH
