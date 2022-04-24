@@ -1,5 +1,8 @@
 {
   "_comment": "Chinese lang file.",
+  "block.quarryplus.waterlogged_marker": "Waterlogged Marker Plus",
+  "block.quarryplus.waterlogged_flex_marker": "Waterlogged Flexible Marker",
+  "block.quarryplus.waterlogged_marker16": "Waterlogged Chunk Marker",
   "block.quarryplus.InfMJSrc": "无限MJ能量源",
   "block.quarryplus.breakerplus": "增强型破坏器",
   "block.quarryplus.adv_quarry": "区块破坏器",

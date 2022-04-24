@@ -1,5 +1,8 @@
 {
   "_comment": "English lang file.",
+  "block.quarryplus.waterlogged_marker": "Waterlogged Marker Plus",
+  "block.quarryplus.waterlogged_flex_marker": "Waterlogged Flexible Marker",
+  "block.quarryplus.waterlogged_marker16": "Waterlogged Chunk Marker",
   "block.quarryplus.InfMJSrc": "InfinityMJSource",
   "block.quarryplus.breakerplus": "Breaker Plus",
   "block.quarryplus.adv_quarry": "Chunk Destroyer",

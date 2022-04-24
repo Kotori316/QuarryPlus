@@ -44,6 +44,15 @@ final class RecipeAdvancement extends QuarryDataProvider {
             // Chunk Marker
             AdvancementSerializeHelper.apply(id("chunk_marker"), Holder.BLOCK_16_MARKER.getRegistryName())
                 .addItemCriterion(Holder.BLOCK_MARKER),
+            // Waterlogged Marker Plus
+            AdvancementSerializeHelper.apply(Holder.BLOCK_WATERLOGGED_MARKER.getRegistryName())
+                .addItemCriterion(Holder.BLOCK_MARKER),
+            // Waterlogged Flexible Marker
+            AdvancementSerializeHelper.apply(Holder.BLOCK_WATERLOGGED_FLEX_MARKER.getRegistryName())
+                .addItemCriterion(Holder.BLOCK_FLEX_MARKER),
+            // Waterlogged Chunk Marker
+            AdvancementSerializeHelper.apply(id("waterlogged_chunk_marker"), Holder.BLOCK_WATERLOGGED_16_MARKER.getRegistryName())
+                .addItemCriterion(Holder.BLOCK_16_MARKER),
             // Pump Module
             AdvancementSerializeHelper.apply(Holder.ITEM_PUMP_MODULE.getRegistryName())
                 .addItemCriterion(Holder.BLOCK_PUMP)

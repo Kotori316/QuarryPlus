@@ -25,10 +25,12 @@ class BlockDrop extends QuarryDataProvider {
     List<? extends DataBuilder> data() {
         var notMachines = Stream.of(
             Holder.BLOCK_CREATIVE_GENERATOR,
-            Holder.BLOCK_16_MARKER,
             Holder.BLOCK_MARKER,
             Holder.BLOCK_16_MARKER,
             Holder.BLOCK_FLEX_MARKER,
+            Holder.BLOCK_WATERLOGGED_MARKER,
+            Holder.BLOCK_WATERLOGGED_FLEX_MARKER,
+            Holder.BLOCK_WATERLOGGED_16_MARKER,
             Holder.BLOCK_MINING_WELL,
             Holder.BLOCK_PUMP,
             Holder.BLOCK_WORKBENCH,

@@ -1,5 +1,8 @@
 {
   "_comment": "Japanese lang file.",
+  "block.quarryplus.waterlogged_marker": "水中用のマーカー",
+  "block.quarryplus.waterlogged_flex_marker": "水中用のFlexibleなマーカー",
+  "block.quarryplus.waterlogged_marker16": "水中用のChunkっぽいマーカー",
   "block.quarryplus.InfMJSrc": "無限電源",
   "block.quarryplus.breakerplus": "改良型破壊装置",
   "block.quarryplus.adv_quarry": "Chunk Destroyer",
