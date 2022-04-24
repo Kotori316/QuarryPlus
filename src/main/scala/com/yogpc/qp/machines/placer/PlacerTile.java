@@ -5,6 +5,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalInt;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -91,11 +92,9 @@ public class PlacerTile extends BlockEntity implements
     public void tick() {
         if (level != null && !level.isClientSide && redstoneMode.isAlways()) {
             if (redstoneMode.shouldWork(this::isPowered)) {
-                if (level.getBlockState(getTargetPos()).isAir()) {
-                    placeBlock();
-                } else {
+                var placed = placeBlock();
+                if (!placed)
                     breakBlock();
-                }
             }
         }
     }
@@ -125,14 +124,18 @@ public class PlacerTile extends BlockEntity implements
             .filter(Predicate.not(ItemStack::isEmpty)).forEach(s -> Block.popResource(level, getBlockPos(), s));
     }
 
-    void placeBlock() {
-        if (isEmpty() || !redstoneMode.canPlace()) return;
+    /**
+     * @return Whether the placement succeeded.
+     */
+    boolean placeBlock() {
+        if (isEmpty() || !redstoneMode.canPlace()) return false;
         Direction facing = getMachineFacing();
         BlockPos pos = getTargetPos();
         Vec3 hitPos = DIRECTION_VEC3D_MAP.get(facing.getOpposite()).add(pos.getX(), pos.getY(), pos.getZ());
         BlockHitResult rayTrace = new BlockHitResult(hitPos, facing.getOpposite(), pos, false);
         Player fake = QuarryFakePlayer.get(((ServerLevel) level));
 
+        AtomicBoolean result = new AtomicBoolean(false);
         findEntry(inventory,
             i -> tryPlaceItem(i, fake, rayTrace),
             lastPlacedIndex).ifPresent(i -> {
@@ -142,8 +145,10 @@ public class PlacerTile extends BlockEntity implements
                 this.lastPlacedIndex = findEntry(inventory, s -> !s.isEmpty() && s.getItem() instanceof BlockItem, i).orElse(0);
             setChanged();
             sendPacket();
+            result.set(true);
         });
         fake.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+        return result.get();
     }
 
     // -------------------- Utility --------------------

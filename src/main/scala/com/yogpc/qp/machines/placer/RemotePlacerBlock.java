@@ -110,9 +110,9 @@ public final class RemotePlacerBlock extends QPBlock implements EntityBlock {
         super.tick(state, worldIn, pos, rand);
         boolean isPowered = state.getValue(TRIGGERED);
         worldIn.getBlockEntity(pos, Holder.REMOTE_PLACER_TYPE).ifPresent(tile -> {
-            if (worldIn.getBlockState(tile.getTargetPos()).isAir() && isPowered) {
+            if (isPowered) {
                 tile.placeBlock();
-            } else if (!isPowered) {
+            } else {
                 tile.breakBlock();
             }
         });

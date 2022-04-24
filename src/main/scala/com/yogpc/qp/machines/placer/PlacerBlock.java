@@ -116,9 +116,9 @@ public class PlacerBlock extends QPBlock implements EntityBlock {
         super.tick(state, worldIn, pos, rand);
         boolean isPowered = state.getValue(TRIGGERED);
         worldIn.getBlockEntity(pos, Holder.PLACER_TYPE).ifPresent(tile -> {
-            if (worldIn.getBlockState(tile.getTargetPos()).isAir() && isPowered) {
+            if (isPowered) {
                 tile.placeBlock();
-            } else if (!isPowered) {
+            } else {
                 tile.breakBlock();
             }
         });

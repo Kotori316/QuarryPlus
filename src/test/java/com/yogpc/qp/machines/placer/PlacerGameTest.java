@@ -17,6 +17,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
+import org.junit.jupiter.api.Assertions;
 
 import com.kotori316.testutil.GameTestUtil;
 
@@ -110,6 +111,36 @@ public final class PlacerGameTest {
             .thenExecuteAfter(1, () -> helper.setBlock(stonePos, Blocks.STONE))
             .thenExecuteAfter(1, () -> helper.setBlock(placerPos.relative(Direction.EAST), Blocks.REDSTONE_BLOCK))
             .thenExecuteAfter(1, () -> helper.assertBlockPresent(Blocks.STONE, stonePos))
+            .thenSucceed();
+    }
+
+    @GameTest(template = GameTestUtil.EMPTY_STRUCTURE, batch = BATCH)
+    public void placeInWater(GameTestHelper helper) {
+        var placerPos = GameTestUtil.getBasePos(helper).above();
+        var waterPos = placerPos.above();
+        helper.setBlock(placerPos, Holder.BLOCK_PLACER.defaultBlockState().setValue(BlockStateProperties.FACING, Direction.UP));
+        helper.setBlock(waterPos, Blocks.WATER);
+        var tile = Objects.requireNonNull((PlacerTile) helper.getBlockEntity(placerPos));
+        helper.startSequence()
+            .thenExecuteAfter(1, () -> tile.setItem(0, new ItemStack(Blocks.STONE)))
+            .thenExecuteAfter(1, tile::placeBlock)
+            .thenExecuteAfter(1, () -> helper.assertBlockPresent(Blocks.STONE, placerPos.relative(Direction.UP)))
+            .thenExecute(() -> Assertions.assertTrue(tile.getItem(0).isEmpty()))
+            .thenSucceed();
+    }
+
+    @GameTest(template = GameTestUtil.EMPTY_STRUCTURE, batch = BATCH)
+    public void cantPlaceInSolidBlock(GameTestHelper helper) {
+        var placerPos = GameTestUtil.getBasePos(helper).above();
+        var blockPos = placerPos.above();
+        helper.setBlock(placerPos, Holder.BLOCK_PLACER.defaultBlockState().setValue(BlockStateProperties.FACING, Direction.UP));
+        helper.setBlock(blockPos, Blocks.DIAMOND_BLOCK);
+        var tile = Objects.requireNonNull((PlacerTile) helper.getBlockEntity(placerPos));
+        helper.startSequence()
+            .thenExecuteAfter(1, () -> tile.setItem(0, new ItemStack(Blocks.STONE)))
+            .thenExecuteAfter(1, tile::placeBlock)
+            .thenExecuteAfter(1, () -> helper.assertBlockPresent(Blocks.DIAMOND_BLOCK, placerPos.relative(Direction.UP)))
+            .thenExecute(() -> Assertions.assertEquals(Blocks.STONE.asItem(), tile.getItem(0).getItem()))
             .thenSucceed();
     }
 }
