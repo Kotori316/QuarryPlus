@@ -8,6 +8,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
@@ -20,14 +21,18 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
 
 public final class BlockWaterloggedMarker extends QPBlock implements EntityBlock, SimpleWaterloggedBlock {
     public static final String NAME = "waterlogged_marker";
+    private static final VoxelShape SHAPE = Shapes.box(3d / 16, 3d / 16, 3d / 16, 13d / 16, 13d / 16, 13d / 16);
 
     public BlockWaterloggedMarker() {
-        super(Properties.of(Material.DECORATION).noCollission(), NAME);
+        super(Properties.of(Material.DECORATION), NAME);
         this.registerDefaultState(defaultBlockState().setValue(WATERLOGGED, false));
     }
 
@@ -53,6 +58,12 @@ public final class BlockWaterloggedMarker extends QPBlock implements EntityBlock
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         // delegated by original marker.
         return Holder.BLOCK_MARKER.use(pState, pLevel, pPos, pPlayer, pHand, pHit);
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
+        return SHAPE;
     }
 
     // Waterlogged
