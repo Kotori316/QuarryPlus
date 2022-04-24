@@ -24,6 +24,7 @@ import com.yogpc.qp.machines.filler.FillerEntity;
 import com.yogpc.qp.machines.filler.FillerMenu;
 import com.yogpc.qp.machines.marker.BlockExMarker;
 import com.yogpc.qp.machines.marker.BlockMarker;
+import com.yogpc.qp.machines.marker.BlockWaterloggedMarker;
 import com.yogpc.qp.machines.marker.ContainerMarker;
 import com.yogpc.qp.machines.marker.Tile16Marker;
 import com.yogpc.qp.machines.marker.TileFlexMarker;
@@ -169,6 +170,7 @@ public class Holder {
     public static final BlockMarker BLOCK_MARKER = registerBlock(new BlockMarker());
     public static final BlockExMarker.BlockFlexMarker BLOCK_FLEX_MARKER = registerBlock(new BlockExMarker.BlockFlexMarker());
     public static final BlockExMarker.Block16Marker BLOCK_16_MARKER = registerBlock(new BlockExMarker.Block16Marker());
+    public static final BlockWaterloggedMarker BLOCK_WATERLOGGED_MARKER = registerBlock(new BlockWaterloggedMarker());
     public static final PlacerBlock BLOCK_PLACER = registerBlock(new PlacerBlock());
     public static final RemotePlacerBlock BLOCK_REMOTE_PLACER = registerBlock(new RemotePlacerBlock());
     public static final BlockController BLOCK_CONTROLLER = registerBlock(new BlockController(), EnableOrNot.CONFIG_OFF);
@@ -188,7 +190,7 @@ public class Holder {
 
     public static final BlockEntityType<TileQuarry> QUARRY_TYPE = registerEntityType(TileQuarry::new, BLOCK_QUARRY, EnableOrNot.CONFIG_ON);
     public static final BlockEntityType<SFQuarryEntity> SOLID_FUEL_QUARRY_TYPE = registerEntityType(SFQuarryEntity::new, BLOCK_SOLID_FUEL_QUARRY, EnableOrNot.CONFIG_ON);
-    public static final BlockEntityType<TileMarker> MARKER_TYPE = registerEntityType(TileMarker::new, BLOCK_MARKER, EnableOrNot.ALWAYS_ON);
+    public static final BlockEntityType<TileMarker> MARKER_TYPE = registerEntityType(TileMarker::new, List.of(BLOCK_MARKER, BLOCK_WATERLOGGED_MARKER), EnableOrNot.ALWAYS_ON);
     public static final BlockEntityType<TileFlexMarker> FLEX_MARKER_TYPE = registerEntityType(TileFlexMarker::new, BLOCK_FLEX_MARKER, EnableOrNot.ALWAYS_ON);
     public static final BlockEntityType<Tile16Marker> MARKER_16_TYPE = registerEntityType(Tile16Marker::new, BLOCK_16_MARKER, EnableOrNot.ALWAYS_ON);
     public static final BlockEntityType<CreativeGeneratorTile> CREATIVE_GENERATOR_TYPE = registerEntityType(CreativeGeneratorTile::new, BLOCK_CREATIVE_GENERATOR, EnableOrNot.ALWAYS_ON);
