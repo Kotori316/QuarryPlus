@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "G",
+    "M"
+  ],
+  "key": {
+    "G": {
+      "tag": "forge:dyes/green"
+    },
+    "M": {
+      "item": "quarryplus:marker16"
+    }
+  },
+  "result": {
+    "item": "quarryplus:waterlogged_marker16"
+  }
+}

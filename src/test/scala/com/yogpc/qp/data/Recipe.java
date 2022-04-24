@@ -288,6 +288,39 @@ class Recipe extends QuarryDataProvider {
             )
         );
         list.add(
+            // Waterlogged Marker Plus
+            RecipeSerializeHelper.by(
+                ShapedRecipeBuilder.shaped(Holder.BLOCK_WATERLOGGED_MARKER)
+                    .pattern("G")
+                    .pattern("M")
+                    .define('G', Tags.Items.DYES_GREEN)
+                    .define('M', Holder.BLOCK_MARKER),
+                null
+            )
+        );
+        list.add(
+            // Waterlogged Flexible Marker
+            RecipeSerializeHelper.by(
+                ShapedRecipeBuilder.shaped(Holder.BLOCK_WATERLOGGED_FLEX_MARKER)
+                    .pattern("G")
+                    .pattern("M")
+                    .define('G', Tags.Items.DYES_GREEN)
+                    .define('M', Holder.BLOCK_FLEX_MARKER),
+                null
+            )
+        );
+        list.add(
+            // Waterlogged Chunk Marker
+            RecipeSerializeHelper.by(
+                ShapedRecipeBuilder.shaped(Holder.BLOCK_WATERLOGGED_16_MARKER)
+                    .pattern("G")
+                    .pattern("M")
+                    .define('G', Tags.Items.DYES_GREEN)
+                    .define('M', Holder.BLOCK_16_MARKER),
+                null
+            )
+        );
+        list.add(
             // Pump Module
             RecipeSerializeHelper.by(
                 ShapelessRecipeBuilder.shapeless(Holder.ITEM_PUMP_MODULE)
