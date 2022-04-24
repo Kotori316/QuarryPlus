@@ -112,10 +112,17 @@ public class Holder {
     }
 
     private static <T extends BlockEntity> BlockEntityType<T> registerEntityType(BlockEntityType.BlockEntitySupplier<T> supplier, Block block, EnableOrNot condition) {
-        var type = BlockEntityType.Builder.of(supplier, block).build(DSL.emptyPartType());
-        type.setRegistryName(Objects.requireNonNull(block.getRegistryName()));
+        return registerEntityType(supplier, List.of(block), condition);
+    }
+
+    private static <T extends BlockEntity> BlockEntityType<T> registerEntityType(BlockEntityType.BlockEntitySupplier<T> supplier, List<Block> block, EnableOrNot condition) {
+        if (block.isEmpty()) {
+            throw new IllegalArgumentException("Blocks must not be empty.");
+        }
+        var type = BlockEntityType.Builder.of(supplier, block.toArray(Block[]::new)).build(DSL.emptyPartType());
+        type.setRegistryName(Objects.requireNonNull(block.get(0).getRegistryName()));
         ENTITY_TYPES.add(type);
-        CONDITION_HOLDERS.add(new EntryConditionHolder(block.getRegistryName(), condition));
+        CONDITION_HOLDERS.add(new EntryConditionHolder(block.get(0).getRegistryName(), condition));
         return type;
     }
 
