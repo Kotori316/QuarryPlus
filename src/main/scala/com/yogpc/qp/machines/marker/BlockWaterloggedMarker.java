@@ -29,7 +29,7 @@ import static net.minecraft.world.level.block.state.properties.BlockStatePropert
 
 public final class BlockWaterloggedMarker extends QPBlock implements EntityBlock, SimpleWaterloggedBlock {
     public static final String NAME = "waterlogged_marker";
-    private static final VoxelShape SHAPE = Shapes.box(3d / 16, 3d / 16, 3d / 16, 13d / 16, 13d / 16, 13d / 16);
+    public static final VoxelShape SHAPE = Shapes.box(3d / 16, 3d / 16, 3d / 16, 13d / 16, 13d / 16, 13d / 16);
 
     public BlockWaterloggedMarker() {
         super(Properties.of(Material.DECORATION), NAME);

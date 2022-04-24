@@ -1,6 +1,8 @@
 {
   "_comment": "Korean lang file.",
   "block.quarryplus.waterlogged_marker": "Waterlogged Marker Plus",
+  "block.quarryplus.waterlogged_flex_marker": "Waterlogged Flexible Marker",
+  "block.quarryplus.waterlogged_marker16": "Waterlogged Chunk Marker",
   "block.quarryplus.InfMJSrc": "무한MJ전원",
   "block.quarryplus.breakerplus": "파쇄기 플러스",
   "block.quarryplus.adv_quarry": "청크 파괴자",
