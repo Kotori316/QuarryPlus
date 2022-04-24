@@ -146,4 +146,28 @@ public final class MarkerGameTest {
         assertTrue(centerTile.getArea().isEmpty());
         helper.succeed();
     }
+
+    @GameTest(template = EMPTY_STRUCTURE, batch = BATCH)
+    public void setY(GameTestHelper helper) {
+        var pos1 = GameTestUtil.getBasePos(helper).above(COUNT.getAndIncrement());
+        var pos2 = pos1.offset(2, 0, 0);
+        var pos3 = pos1.offset(0, 0, 4);
+        var pos4 = pos1.offset(0, 2, 0);
+        helper.setBlock(pos1, Holder.BLOCK_MARKER.defaultBlockState());
+        helper.setBlock(pos2, Holder.BLOCK_MARKER.defaultBlockState());
+        helper.setBlock(pos3, Holder.BLOCK_MARKER.defaultBlockState());
+        helper.setBlock(pos4, Holder.BLOCK_MARKER.defaultBlockState());
+
+        var centerTile = (TileMarker) helper.getBlockEntity(pos1);
+        assertNotNull(centerTile);
+        assertTrue(centerTile.getArea().isEmpty());
+
+        centerTile.tryConnect(true);
+        var area = new Area(helper.absolutePos(pos1), helper.absolutePos(pos1).offset(2, 2, 4), Direction.UP);
+        assertEquals(Optional.of(area), centerTile.getArea());
+        assertEquals(Optional.of(area), ((TileMarker) Objects.requireNonNull(helper.getBlockEntity(pos2))).getArea());
+        assertEquals(Optional.of(area), ((TileMarker) Objects.requireNonNull(helper.getBlockEntity(pos3))).getArea());
+        assertEquals(Optional.of(area), ((TileMarker) Objects.requireNonNull(helper.getBlockEntity(pos4))).getArea());
+        helper.succeed();
+    }
 }
