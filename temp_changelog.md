@@ -1,3 +1,8 @@
+## Version 18.10
+
+* Add Waterlogged Markers
+* Changed placer behavior, to replace replaceable blocks.
+
 ## Version 18.9
 
 * Fixed wrong parameter name in EnchantmentIngredient in json decoding.

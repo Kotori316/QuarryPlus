@@ -20,6 +20,8 @@ Requires [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/sca
 * Marker
   * Renderer
   * MarkerPlus, Flexible Marker, Chunk Marker
+* Waterlogged Marker
+  * Marker Plus, Flexible Marker, Chunk Marker
 * Workbench
   * JEI support
 * Enchantment Mover
