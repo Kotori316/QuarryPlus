@@ -18,6 +18,7 @@ import com.yogpc.qp.machines.filler.FillerEntity;
 import com.yogpc.qp.machines.filler.FillerMenu;
 import com.yogpc.qp.machines.marker.BlockExMarker;
 import com.yogpc.qp.machines.marker.BlockMarker;
+import com.yogpc.qp.machines.marker.BlockWaterloggedMarker;
 import com.yogpc.qp.machines.marker.ContainerMarker;
 import com.yogpc.qp.machines.marker.Tile16Marker;
 import com.yogpc.qp.machines.marker.TileFlexMarker;
@@ -74,6 +75,9 @@ public class QuarryPlus implements ModInitializer {
         register(ModObjects.BLOCK_MARKER, ModObjects.MARKER_TYPE);
         register(ModObjects.BLOCK_FLEX_MARKER, ModObjects.FLEX_MARKER_TYPE);
         register(ModObjects.BLOCK_16_MARKER, ModObjects.MARKER_16_TYPE);
+        register(ModObjects.BLOCK_WATERLOGGED_MARKER, null);
+        register(ModObjects.BLOCK_WATERLOGGED_FLEX_MARKER, null);
+        register(ModObjects.BLOCK_WATERLOGGED_16_MARKER, null);
         register(ModObjects.BLOCK_CREATIVE_GENERATOR, ModObjects.CREATIVE_GENERATOR_TYPE);
         register(ModObjects.BLOCK_ADV_PUMP, ModObjects.ADV_PUMP_TYPE);
         register(ModObjects.BLOCK_PLACER, ModObjects.PLACER_TYPE);
@@ -129,7 +133,8 @@ public class QuarryPlus implements ModInitializer {
         public static final ItemChecker ITEM_CHECKER = new ItemChecker();
 
         public static final BlockMarker BLOCK_MARKER = new BlockMarker();
-        public static final BlockEntityType<TileMarker> MARKER_TYPE = FabricBlockEntityTypeBuilder.create(TileMarker::new, BLOCK_MARKER).build(DSL.emptyPartType());
+        public static final BlockWaterloggedMarker BLOCK_WATERLOGGED_MARKER = new BlockWaterloggedMarker();
+        public static final BlockEntityType<TileMarker> MARKER_TYPE = FabricBlockEntityTypeBuilder.create(TileMarker::new, BLOCK_MARKER, BLOCK_WATERLOGGED_MARKER).build(DSL.emptyPartType());
 
         public static final YSetterItem ITEM_Y_SETTER = new YSetterItem();
         public static final ExtendedScreenHandlerType<YSetterContainer> Y_SETTER_HANDLER_TYPE = new ExtendedScreenHandlerType<>(
@@ -161,8 +166,10 @@ public class QuarryPlus implements ModInitializer {
 
         public static final BlockExMarker.BlockFlexMarker BLOCK_FLEX_MARKER = new BlockExMarker.BlockFlexMarker();
         public static final BlockExMarker.Block16Marker BLOCK_16_MARKER = new BlockExMarker.Block16Marker();
-        public static final BlockEntityType<TileFlexMarker> FLEX_MARKER_TYPE = FabricBlockEntityTypeBuilder.create(TileFlexMarker::new, BLOCK_FLEX_MARKER).build(DSL.emptyPartType());
-        public static final BlockEntityType<Tile16Marker> MARKER_16_TYPE = FabricBlockEntityTypeBuilder.create(Tile16Marker::new, BLOCK_16_MARKER).build(DSL.emptyPartType());
+        public static final BlockExMarker.BlockWaterloggedFlexMarker BLOCK_WATERLOGGED_FLEX_MARKER = new BlockExMarker.BlockWaterloggedFlexMarker();
+        public static final BlockExMarker.BlockWaterlogged16Marker BLOCK_WATERLOGGED_16_MARKER = new BlockExMarker.BlockWaterlogged16Marker();
+        public static final BlockEntityType<TileFlexMarker> FLEX_MARKER_TYPE = FabricBlockEntityTypeBuilder.create(TileFlexMarker::new, BLOCK_FLEX_MARKER, BLOCK_WATERLOGGED_FLEX_MARKER).build(DSL.emptyPartType());
+        public static final BlockEntityType<Tile16Marker> MARKER_16_TYPE = FabricBlockEntityTypeBuilder.create(Tile16Marker::new, BLOCK_16_MARKER, BLOCK_WATERLOGGED_16_MARKER).build(DSL.emptyPartType());
         public static final ExtendedScreenHandlerType<ContainerMarker> FLEX_MARKER_HANDLER_TYPE = new ExtendedScreenHandlerType<>(
             (syncId, inventory, buf) -> new ContainerMarker(syncId, inventory.player, buf.readBlockPos(), ModObjects.FLEX_MARKER_HANDLER_TYPE));
         public static final ExtendedScreenHandlerType<ContainerMarker> MARKER_16_HANDLER_TYPE = new ExtendedScreenHandlerType<>(

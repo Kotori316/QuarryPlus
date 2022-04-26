@@ -17,16 +17,22 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.WallTorchBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -34,11 +40,13 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
+
 public abstract class BlockExMarker extends QPBlock implements EntityBlock {
     private static final VoxelShape STANDING_Shape = Shapes.box(.35, 0, .35, .65, .65, .65);
 
-    public BlockExMarker(String name) {
-        super(Properties.of(Material.DECORATION).lightLevel(value -> 7).noCollission(), name);
+    protected BlockExMarker(Properties properties, String name) {
+        super(properties, name);
     }
 
     protected abstract void openGUI(Level worldIn, BlockPos pos, Player playerIn);
@@ -106,11 +114,71 @@ public abstract class BlockExMarker extends QPBlock implements EntityBlock {
     @Override
     public abstract BlockEntity newBlockEntity(BlockPos pos, BlockState state);
 
+    protected static abstract class WaterloggedMarker extends BlockExMarker implements SimpleWaterloggedBlock {
+        protected WaterloggedMarker(Properties properties, String name) {
+            super(properties, name);
+            this.registerDefaultState(defaultBlockState().setValue(WATERLOGGED, false));
+        }
+
+        @Override
+        protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+            super.createBlockStateDefinition(builder);
+            builder.add(WATERLOGGED);
+        }
+
+        @Override
+        public BlockState getStateForPlacement(BlockPlaceContext ctx) {
+            var fluid = ctx.getLevel().getFluidState(ctx.getClickedPos());
+            return defaultBlockState().setValue(WATERLOGGED, fluid.is(Fluids.WATER));
+        }
+
+        protected abstract BlockExMarker getBaseBlock();
+
+        @Override
+        public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
+            return BlockWaterloggedMarker.SHAPE;
+        }
+
+        @Override
+        protected void openGUI(Level worldIn, BlockPos pos, Player playerIn) {
+            getBaseBlock().openGUI(worldIn, pos, playerIn);
+        }
+
+        @Override
+        public boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
+            return true;
+        }
+
+        @Override
+        public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+            getBaseBlock().setPlacedBy(level, pos, state, placer, stack);
+        }
+
+        @Override
+        public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+            return getBaseBlock().newBlockEntity(pos, state);
+        }
+
+        @Override
+        public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pCurrentPos, BlockPos pNeighborPos) {
+            if (state.getValue(WATERLOGGED)) {
+                level.scheduleTick(pCurrentPos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
+            }
+            return super.updateShape(state, direction, neighborState, level, pCurrentPos, pNeighborPos);
+        }
+
+        @Override
+        @SuppressWarnings("deprecation")
+        public FluidState getFluidState(BlockState state) {
+            return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
+        }
+    }
+
     public static class BlockFlexMarker extends BlockExMarker {
         public static final String NAME = "flex_marker";
 
         public BlockFlexMarker() {
-            super(NAME);
+            super(Properties.of(Material.DECORATION).lightLevel(value -> 7).noCollission(), NAME);
         }
 
         @Override
@@ -132,12 +200,25 @@ public abstract class BlockExMarker extends QPBlock implements EntityBlock {
 
     }
 
+    public static class BlockWaterloggedFlexMarker extends WaterloggedMarker {
+        public static final String NAME = "waterlogged_flex_marker";
+
+        public BlockWaterloggedFlexMarker() {
+            super(Properties.of(Material.DECORATION), NAME);
+        }
+
+        @Override
+        protected BlockExMarker getBaseBlock() {
+            return QuarryPlus.ModObjects.BLOCK_FLEX_MARKER;
+        }
+    }
+
     public static class Block16Marker extends BlockExMarker {
         private static final Range RANGE = new Range(0, 360);
         public static final String NAME = "marker16";
 
         public Block16Marker() {
-            super(NAME);
+            super(Properties.of(Material.DECORATION).lightLevel(value -> 7).noCollission(), NAME);
         }
 
         @Override
@@ -158,6 +239,19 @@ public abstract class BlockExMarker extends QPBlock implements EntityBlock {
             return QuarryPlus.ModObjects.MARKER_16_TYPE.create(pos, state);
         }
 
+    }
+
+    public static class BlockWaterlogged16Marker extends WaterloggedMarker {
+        public static final String NAME = "waterlogged_marker16";
+
+        public BlockWaterlogged16Marker() {
+            super(Properties.of(Material.DECORATION), NAME);
+        }
+
+        @Override
+        protected BlockExMarker getBaseBlock() {
+            return QuarryPlus.ModObjects.BLOCK_16_MARKER;
+        }
     }
 
     public static final String GUI_FLEX_ID = QuarryPlus.modID + ":gui_" + "flex_marker";

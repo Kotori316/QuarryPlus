@@ -1,0 +1,34 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "quarryplus:waterlogged_flex_marker"
+    ]
+  },
+  "criteria": {
+    "has_marker": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "quarryplus:flex_marker"
+            ]
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "quarryplus:waterlogged_flex_marker"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_marker",
+      "has_the_recipe"
+    ]
+  ]
+}

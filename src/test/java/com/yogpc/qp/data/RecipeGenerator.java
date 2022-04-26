@@ -129,6 +129,27 @@ final class RecipeGenerator extends FabricRecipeProvider {
             .define('l', ConventionalItemTags.LAPIS)
             .unlockedBy("has_marker", has(QuarryPlus.ModObjects.BLOCK_MARKER))
         );
+        builders.add(ShapedRecipeBuilder.shaped(QuarryPlus.ModObjects.BLOCK_WATERLOGGED_MARKER)
+            .pattern("G")
+            .pattern("M")
+            .define('G', ConventionalItemTags.GREEN_DYES)
+            .define('M', QuarryPlus.ModObjects.BLOCK_MARKER)
+            .unlockedBy("has_marker", has(QuarryPlus.ModObjects.BLOCK_MARKER))
+        );
+        builders.add(ShapedRecipeBuilder.shaped(QuarryPlus.ModObjects.BLOCK_WATERLOGGED_FLEX_MARKER)
+            .pattern("G")
+            .pattern("M")
+            .define('G', ConventionalItemTags.GREEN_DYES)
+            .define('M', QuarryPlus.ModObjects.BLOCK_FLEX_MARKER)
+            .unlockedBy("has_marker", has(QuarryPlus.ModObjects.BLOCK_FLEX_MARKER))
+        );
+        builders.add(ShapedRecipeBuilder.shaped(QuarryPlus.ModObjects.BLOCK_WATERLOGGED_16_MARKER)
+            .pattern("G")
+            .pattern("M")
+            .define('G', ConventionalItemTags.GREEN_DYES)
+            .define('M', QuarryPlus.ModObjects.BLOCK_16_MARKER)
+            .unlockedBy("has_marker", has(QuarryPlus.ModObjects.BLOCK_16_MARKER))
+        );
 
         builders.add(BedrockModuleRecipeBuilder.of(QuarryPlus.ModObjects.BLOCK_QUARRY)
             .saveName(new ResourceLocation(QuarryPlus.modID, "install_bedrock_module_quarry"))
