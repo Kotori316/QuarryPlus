@@ -2,6 +2,7 @@
 
 ### Addition
 
+* Added - Waterlogged Markers
 * Added - Remote Placer
 * Added - Filler
 * Added - config option to disable removing common material in ChunkDestroyer.
