@@ -135,7 +135,7 @@ public class TileFlexMarker extends BlockEntity implements QuarryMarker, Checker
     public List<ItemStack> removeAndGetItems() {
         assert level != null;
         level.removeBlock(getBlockPos(), false);
-        return List.of(new ItemStack(Holder.BLOCK_FLEX_MARKER));
+        return List.of(new ItemStack(getBlockState().getBlock()));
     }
 
     public enum Movable {

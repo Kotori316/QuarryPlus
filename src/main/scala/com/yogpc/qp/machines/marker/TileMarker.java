@@ -93,9 +93,9 @@ public class TileMarker extends BlockEntity implements QuarryMarker, CheckerLog,
     @Override
     public List<ItemStack> removeAndGetItems() {
         assert getLevel() != null;
-        var count = markerConnection.markerPlaces().size();
+        var drops = markerConnection.markerPlaces().stream().map(getLevel()::getBlockState).map(BlockState::getBlock).map(ItemStack::new).toList();
         markerConnection.markerPlaces().forEach(p -> getLevel().removeBlock(p, false));
-        return List.of(new ItemStack(Holder.BLOCK_MARKER, count));
+        return drops;
     }
 
     @Override

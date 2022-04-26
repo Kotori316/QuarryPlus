@@ -117,6 +117,6 @@ public class Tile16Marker extends BlockEntity implements QuarryMarker, CheckerLo
     public List<ItemStack> removeAndGetItems() {
         assert level != null;
         level.removeBlock(getBlockPos(), false);
-        return List.of(new ItemStack(Holder.BLOCK_16_MARKER));
+        return List.of(new ItemStack(getBlockState().getBlock()));
     }
 }
