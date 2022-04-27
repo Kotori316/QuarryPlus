@@ -14,7 +14,7 @@ build
 
 FILES
 libs
-Minecraft
+/Minecraft
 run-server
 test_run
 logs
