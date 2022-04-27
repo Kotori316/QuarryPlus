@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
@@ -46,7 +47,15 @@ public class TileMarker extends BlockEntity implements QuarryMarker, CheckerLog,
             .mapToObj(i -> getBlockPos().relative(Direction.EAST, i))
             .flatMap(p -> getLevel().getBlockEntity(p, QuarryPlus.ModObjects.MARKER_TYPE).stream())
             .findFirst();
-        MarkerConnection.set(this, xMarker.orElse(null), zMarker.orElse(null));
+        Optional<TileMarker> yMarker = IntStream.range(1, MAX_SEARCH)
+            .flatMap(i -> IntStream.of(i, -i))
+            .filter(y -> !getLevel().isOutsideBuildHeight(y))
+            .boxed()
+            .flatMap(y -> Stream.concat(Stream.of(this.getBlockPos()), Stream.concat(xMarker.stream(), zMarker.stream()).map(TileMarker::getBlockPos))
+                .map(p -> p.relative(Direction.Axis.Y, y))
+                .flatMap(p -> getLevel().getBlockEntity(p, QuarryPlus.ModObjects.MARKER_TYPE).stream()))
+            .findFirst();
+        MarkerConnection.set(this, xMarker.orElse(null), zMarker.orElse(null), yMarker.orElse(null));
         if (first && this.markerConnection == MarkerConnection.EMPTY) {
             xMarker.ifPresent(marker -> marker.tryConnect(false));
         }
@@ -111,11 +120,15 @@ public class TileMarker extends BlockEntity implements QuarryMarker, CheckerLog,
     record MarkerConnection(@Nullable Area area, @NotNull Set<BlockPos> markerPlaces, boolean render) {
         static final MarkerConnection EMPTY = new MarkerConnection(null, Collections.emptySet(), false);
 
-        static void set(TileMarker thisMarker, @Nullable TileMarker xMarker, @Nullable TileMarker zMarker) {
+        static void set(TileMarker thisMarker, @Nullable TileMarker xMarker, @Nullable TileMarker zMarker, @Nullable TileMarker yMarker) {
             if (xMarker != null && zMarker != null) {
-                var connectionParent = new MarkerConnection(new Area(xMarker.getBlockPos(), zMarker.getBlockPos().above(4), Direction.UP),
+                var area = new Area(
+                    xMarker.getBlockPos(),
+                    yMarker != null ? zMarker.getBlockPos().atY(yMarker.getBlockPos().getY()) : zMarker.getBlockPos().above(4),
+                    Direction.UP);
+                var connectionParent = new MarkerConnection(area,
                     Set.of(thisMarker.getBlockPos(), xMarker.getBlockPos(), zMarker.getBlockPos()), true);
-                var connectionChild = new MarkerConnection(new Area(xMarker.getBlockPos(), zMarker.getBlockPos().above(4), Direction.UP),
+                var connectionChild = new MarkerConnection(area,
                     Set.of(thisMarker.getBlockPos(), xMarker.getBlockPos(), zMarker.getBlockPos()), false);
 
                 thisMarker.markerConnection = connectionParent;
@@ -125,6 +138,10 @@ public class TileMarker extends BlockEntity implements QuarryMarker, CheckerLog,
                 thisMarker.sync();
                 xMarker.sync();
                 zMarker.sync();
+                if (yMarker != null) {
+                    yMarker.markerConnection = connectionChild;
+                    yMarker.sync();
+                }
             }
         }
 
