@@ -14,6 +14,7 @@
 
 ### Fixed
 
+* Fixed - Pickaxe mineable blocks didn't drop anything. Close #184
 * Fixed - Filler didn't accept items from Hopper. Close #175
 * Fixed - AdvQuarry ignores nether portal.
 * Fixed - Flexible Marker can't be used under 0.

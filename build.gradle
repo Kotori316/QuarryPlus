@@ -338,7 +338,7 @@ test {
 task removeTestWorld(type: Delete) {
     delete("${project.buildDir}/game_test/world")
     onlyIf {
-        file("${project.buildDir}/game_test/world").exists()
+        file("${project.buildDir}/game_test/world").exists() || !file("${project.buildDir}/test-results/test").exists()
     }
     doLast {
         mkdir("${project.buildDir}/test-results/test")
