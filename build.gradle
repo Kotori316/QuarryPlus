@@ -58,6 +58,17 @@ loom {
             ideConfigGenerated = true
             source sourceSets.test
         }
+        gameTest {
+            name "GameTest"
+            server()
+            vmArg "-ea"
+            //noinspection SpellCheckingInspection
+            vmArg "-Dfabric-api.gametest"
+            //noinspection SpellCheckingInspection
+            vmArg "-Dfabric-api.gametest.report-file=${project.buildDir}/test-results/test/game_test.xml"
+            runDir = "build/game_test"
+            source sourceSets.test
+        }
     }
 }
 
@@ -165,7 +176,7 @@ dependencies {
     }
 
     // Runtime Checks
-    modRuntimeOnly("alexiil.mc.mod:simplepipes-all:${project.simple_pipe_version}")
+    if (!System.getenv("RUN_GAME_TEST")) modRuntimeOnly("alexiil.mc.mod:simplepipes-all:${project.simple_pipe_version}")
     // modRuntimeOnly("curse.maven:mining-dimensions-fabric-442921:3566587")
     //noinspection SpellCheckingInspection
     // modRuntimeOnly("net.kyrptonaught:customportalapi:0.0.1-beta47-1.18")
@@ -323,6 +334,17 @@ githubRelease {
 test {
     useJUnitPlatform()
 }
+
+task removeTestWorld(type: Delete) {
+    delete("${project.buildDir}/game_test/world")
+    onlyIf {
+        file("${project.buildDir}/game_test/world").exists()
+    }
+    doLast {
+        mkdir("${project.buildDir}/test-results/test")
+    }
+}
+runGameTest.dependsOn(removeTestWorld)
 
 static String getCommit(String branch) {
     try {

@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "quarryplus-test",
+  "name": "QuarryPlus GameTest",
+  "version": "1.0.0",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-gametest": [
+      "com.yogpc.qp.gametest.MineableTest"
+    ]
+  }
+}
