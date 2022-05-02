@@ -14,7 +14,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.+', changing: true
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
         classpath "gradle.plugin.com.matthewprenger:CurseGradle:1.4.0"
     }
 }
@@ -43,22 +43,13 @@ if (isInCI()) {
 group = 'com.kotori316' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'AdditionalEnchantedMiner-1.16.5'
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
-compileScala.sourceCompatibility = compileScala.targetCompatibility = '1.8'
-compileScala.options.compilerArgs.add("-Xlint:all")
-compileScala.scalaCompileOptions.additionalParameters = ["-feature"]
-
-static String mappingVersion() { return '20201028-1.16.3' }
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 
 String forgeVersion() {
     if (isInCI() && System.getenv("CI_FORGE") != null && "default" != System.getenv("CI_FORGE")) {
         return "net.minecraftforge:forge:" + System.getenv("CI_FORGE")
     } else {
-        // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
-        // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
-        // The user-dev artifact is a special name and will get all sorts of transformations applied to it.
-        def forge_prop = loadProperties("forge_version.properties")
-        return forge_prop.get("forge_version")
+        return "net.minecraftforge:forge:" + project.forgeVersion
     }
 }
 
@@ -71,7 +62,7 @@ minecraft {
     // stable_#            Stables are built at the discretion of the MCP team.
     // Use non-default mappings at your own risk. they may not always work.
     // Simply re-run your setup task after changing the mappings to update your workspace.
-    mappings channel: 'snapshot', version: mappingVersion()
+    mappings channel: 'snapshot', version: project.mappingVersion
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 
     // accessTransformer = file('build/resources/main/META-INF/accesstransformer.cfg')
@@ -83,10 +74,11 @@ minecraft {
             workingDirectory project.file('Minecraft')
 
             // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'REGISTRIES'
-            property 'mixin.env.disableRefMap', 'true'
-            property "mixin.debug.export", "true"
-            property 'forge.logging.console.level', 'debug'
+            property('forge.logging.markers', 'REGISTRIES')
+            property('mixin.env.remapRefMap', 'true')
+            property('mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg")
+            property("mixin.debug.export", "true")
+            property('forge.logging.console.level', 'debug')
 
             mods {
                 quarryplus {
@@ -99,8 +91,9 @@ minecraft {
 
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-            property 'mixin.env.disableRefMap', 'true'
-            property "mixin.debug.export", "true"
+            property('mixin.env.remapRefMap', 'true')
+            property('mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg")
+            property("mixin.debug.export", "true")
             property 'forge.logging.console.level', 'info'
 
             mods {
@@ -112,8 +105,9 @@ minecraft {
         data {
             workingDirectory project.file('run-server')
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-            property 'mixin.env.disableRefMap', 'true'
-            property "mixin.debug.export", "true"
+            property('mixin.env.remapRefMap', 'true')
+            property('mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg")
+            property("mixin.debug.export", "true")
             property 'forge.logging.console.level', 'info'
             forceExit false
 
@@ -278,7 +272,7 @@ artifacts {
 }
 
 def curseForgeLog() {
-    def header = "Build with ${loadProperties("forge_version.properties").getProperty("forge_version")}, Mapping: ${mappingVersion()}" +
+    def header = "Build with ${forgeVersion()}, Mapping: ${project.mappingVersion}" +
             System.lineSeparator() * 2
     def file = new File("temp_changelog.md")
     def fileText = file.exists() ? file.text : "No changelog provided."
@@ -315,7 +309,7 @@ githubRelease {
     prerelease.set(project.version.toString().contains("SNAPSHOT"))
     body.set(getChangeLog() +
             System.lineSeparator() * 2 +
-            "Build with ${loadProperties("forge_version.properties").getProperty("forge_version")}, Mapping: ${mappingVersion()}")
+            "Build with ${forgeVersion()}, Mapping: ${project.mappingVersion}")
     releaseAssets = files(
             jar.getArchiveFile().get(),
             deobfJar.getArchiveFile().get(),
@@ -346,7 +340,7 @@ task signJar2() {
     }
 }
 
-task signJar(type: net.minecraftforge.gradle.common.task.SignJar) {
+/*task signJar(type: net.minecraftforge.gradle.common.task.SignJar) {
     alias = project.hasProperty('keyStoreAlias') ? project.getProperty('keyStoreAlias') : ""
     keyStore = project.hasProperty('keyStore') ? project.getProperty("keyStore") : ""
     storePass = project.hasProperty('keyStorePass') ? project.getProperty('keyStorePass') : ""
@@ -360,12 +354,12 @@ task signJar(type: net.minecraftforge.gradle.common.task.SignJar) {
                 project.hasProperty('keyStore') &&
                 project.hasProperty('keyStorePass')
     }
-}
+}*/
 
 if (!isInCI()) {
     // Runs this task automatically when build is ran.
-    assemble.dependsOn(signJar)
-//    assemble.dependsOn(signJar2)
+//    assemble.dependsOn(signJar)
+    assemble.dependsOn(signJar2)
 }
 
 static String getCommit(String branch) {
