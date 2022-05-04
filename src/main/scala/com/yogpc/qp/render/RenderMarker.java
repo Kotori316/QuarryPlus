@@ -46,23 +46,13 @@ public class RenderMarker implements BlockEntityRenderer<TileMarker> {
             var zMin = Math.max(playerZ - visibleRange, markerPos.getZ() - TileMarker.MAX_SEARCH);
             var zMax = Math.min(playerZ + visibleRange, markerPos.getZ() + TileMarker.MAX_SEARCH);
             renderBoxes = Stream.of(
-                    // X-, force complicated rendering box to avoid strange movement of line.
-                    xMin < markerPos.getX() ? new Box(Math.min(playerX + visibleRange, markerPos.getX()) + c, markerPos.getY() + a, markerPos.getZ() + a,
-                        xMin + b, markerPos.getY() + a, markerPos.getZ() + a,
-                        1d / 8d + 0.001d, 1d / 8d + 0.001d, 1d / 8d + 0.001d, false, false) : null,
-                    // X+
-                    xMax > markerPos.getX() ? Box.apply(Math.max(playerX - visibleRange, markerPos.getX()) + b, markerPos.getY() + a, markerPos.getZ() + a,
+                    Box.apply(xMin + b, markerPos.getY() + a, markerPos.getZ() + a,
                         xMax + c, markerPos.getY() + a, markerPos.getZ() + a,
-                        1d / 8d + 0.001d, 1d / 8d + 0.001d, 1d / 8d + 0.001d, false, false) : null,
-                    // Z-, force complicated rendering box to avoid strange movement of line.
-                    zMin < markerPos.getZ() ? new Box(markerPos.getX() + a, markerPos.getY() + a, Math.min(playerZ + visibleRange, markerPos.getZ()) + c,
-                        markerPos.getX() + a, markerPos.getY() + a, zMin + b,
-                        1d / 8d + 0.001d, 1d / 8d + 0.001d, 1d / 8d + 0.001d, false, false) : null,
-                    // Z+
-                    zMax > markerPos.getZ() ? Box.apply(markerPos.getX() + a, markerPos.getY() + a, Math.max(playerZ - visibleRange, markerPos.getZ()) + b,
+                        xMax - xMin - 0.25d, 1d / 8d + 0.001d, 1d / 8d + 0.001d, false, false),
+                    Box.apply(markerPos.getX() + a, markerPos.getY() + a, zMin + b,
                         markerPos.getX() + a, markerPos.getY() + a, zMax + c,
-                        1d / 8d + 0.001d, 1d / 8d + 0.001d, 1d / 8d + 0.001d, false, false) : null
-                ).filter(Objects::nonNull)
+                        1d / 8d + 0.001d, 1d / 8d + 0.001d, zMax - zMin - 0.25d, false, false)
+                )
                 .toArray(Box[]::new);
             sprite = Sprites.INSTANCE.getWhite();
             color = ColorBox.markerRedColor;
