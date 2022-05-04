@@ -62,6 +62,12 @@ public final class BlockWaterloggedMarker extends QPBlock implements EntityBlock
 
     @Override
     @SuppressWarnings("deprecation")
+    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
+        Holder.BLOCK_MARKER.neighborChanged(state, level, pos, block, fromPos, notify);
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
         return SHAPE;
     }
