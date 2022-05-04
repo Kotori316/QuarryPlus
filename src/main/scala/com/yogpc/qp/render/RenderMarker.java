@@ -29,12 +29,13 @@ public class RenderMarker implements BlockEntityRenderer<TileMarker> {
     public void render(TileMarker entity, float tickDelta, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay) {
         Box[] renderBoxes;
         TextureAtlasSprite sprite;
-        var areaOptional = entity.renderArea();
+        ColorBox color;
+        var optionalBoxes = entity.renderArea();
         var markerPos = entity.getBlockPos();
-        if (areaOptional.isPresent()) {
-            var area = areaOptional.get();
-            renderBoxes = getRenderBox(area);
-            sprite = Sprites.INSTANCE.getBoxBlueStripe();
+        if (optionalBoxes.isPresent()) {
+            renderBoxes = optionalBoxes.get();
+            sprite = Sprites.INSTANCE.getWhite();
+            color = ColorBox.markerBlueColor;
         } else if (entity.rsReceiving && entity.getArea().isEmpty()) {
             var player = Minecraft.getInstance().player;
             var playerX = player == null ? markerPos.getX() : player.getX();
@@ -63,7 +64,8 @@ public class RenderMarker implements BlockEntityRenderer<TileMarker> {
                         1d / 8d + 0.001d, 1d / 8d + 0.001d, 1d / 8d + 0.001d, false, false) : null
                 ).filter(Objects::nonNull)
                 .toArray(Box[]::new);
-            sprite = Sprites.INSTANCE.getBoxRedStripe();
+            sprite = Sprites.INSTANCE.getWhite();
+            color = ColorBox.markerRedColor;
         } else {
             return;
         }
@@ -73,7 +75,7 @@ public class RenderMarker implements BlockEntityRenderer<TileMarker> {
         matrices.pushPose();
         matrices.translate(-markerPos.getX(), -markerPos.getY(), -markerPos.getZ());
         for (Box box : renderBoxes) {
-            box.render(buffer, matrices, sprite, ColorBox.white);
+            box.render(buffer, matrices, sprite, color);
         }
         matrices.popPose();
 
