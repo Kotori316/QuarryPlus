@@ -124,7 +124,11 @@ public class RenderMarker implements BlockEntityRenderer<TileMarker> {
         }
 
         return Arrays.stream(lineBoxes).filter(Objects::nonNull)
-            .map(range -> Box.apply(range, 1d / 8d + 0.001d, 1d / 8d + 0.001d, 1d / 8d + 0.001d, true, true))
+            .map(range -> Box.apply(range,
+                Math.max(range.getXsize(), 1d / 8d + 0.001d),
+                Math.max(range.getYsize(), 1d / 8d + 0.001d),
+                Math.max(range.getZsize(), 1d / 8d + 0.001d),
+                false, false))
             .toArray(Box[]::new);
     }
 
