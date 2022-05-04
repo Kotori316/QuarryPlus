@@ -14,6 +14,7 @@
 
 ### Fixed
 
+* Fixed - performance issue of frame block and marker.
 * Fixed - Pickaxe mineable blocks didn't drop anything. Close #184
 * Fixed - Filler didn't accept items from Hopper. Close #175
 * Fixed - AdvQuarry ignores nether portal.
