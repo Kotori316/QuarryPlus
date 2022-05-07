@@ -3,7 +3,6 @@ package com.yogpc.qp.machines.quarry;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.stream.Stream;
@@ -36,22 +35,7 @@ import static net.minecraft.world.level.block.state.properties.BlockStatePropert
 public class FrameBlock extends QPBlock {
     public static final String NAME = "frame";
     public static final BooleanProperty DAMMING = BooleanProperty.create("damming");
-    public static final VoxelShape BOX_AABB = Shapes.box(0.25, 0.25, 0.25, 0.75, 0.75, 0.75);
-    public static final VoxelShape North_AABB = Shapes.box(0.25, 0.25, 0, 0.75, 0.75, 0.25);
-    public static final VoxelShape South_AABB = Shapes.box(0.25, 0.25, .75, 0.75, 0.75, 1);
-    public static final VoxelShape West_AABB = Shapes.box(0, 0.25, 0.25, .25, 0.75, 0.75);
-    public static final VoxelShape East_AABB = Shapes.box(.75, 0.25, 0.25, 1, 0.75, 0.75);
-    public static final VoxelShape UP_AABB = Shapes.box(0.25, .75, 0.25, 0.75, 1, 0.75);
-    public static final VoxelShape Down_AABB = Shapes.box(0.25, 0, 0.25, 0.75, .25, 0.75);
-    private static final Map<BooleanProperty, VoxelShape> SHAPE_MAP = Map.of(
-        NORTH, North_AABB,
-        SOUTH, South_AABB,
-        WEST, West_AABB,
-        EAST, East_AABB,
-        UP, UP_AABB,
-        DOWN, Down_AABB
-    );
-
+    public static final VoxelShape BOX_AABB = Shapes.box(0.125, 0.125, 0.125, 0.875, 0.875, 0.875);
     private static final BiPredicate<Level, BlockPos> HAS_NEIGHBOUR_LIQUID = (world, pos) ->
         Stream.of(Direction.values()).map(pos::relative)
             .anyMatch(p -> !world.getFluidState(p).isEmpty());
@@ -132,7 +116,7 @@ public class FrameBlock extends QPBlock {
     }
 
     private boolean canConnectTo(BlockGetter worldIn, BlockPos pos) {
-        return worldIn.getBlockState(pos).getBlock() == this;
+        return worldIn.getBlockState(pos).is(this);
     }
 
     @Override
@@ -148,10 +132,7 @@ public class FrameBlock extends QPBlock {
     @Override
     @SuppressWarnings("deprecation")
     public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
-        return SHAPE_MAP.entrySet().stream()
-            .filter(e -> state.getValue(e.getKey()))
-            .map(Map.Entry::getValue)
-            .reduce(BOX_AABB, Shapes::or);
+        return BOX_AABB;
     }
 
     @Override
