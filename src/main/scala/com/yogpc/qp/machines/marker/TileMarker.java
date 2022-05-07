@@ -14,6 +14,8 @@ import com.yogpc.qp.machines.QuarryMarker;
 import com.yogpc.qp.packet.ClientSync;
 import com.yogpc.qp.packet.ClientSyncMessage;
 import com.yogpc.qp.packet.PacketHandler;
+import com.yogpc.qp.render.Box;
+import com.yogpc.qp.render.RenderMarker;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -31,6 +33,8 @@ import org.jetbrains.annotations.Nullable;
 public class TileMarker extends BlockEntity implements QuarryMarker, CheckerLog, ClientSync {
     public static final int MAX_SEARCH = 256;
     private MarkerConnection markerConnection = MarkerConnection.EMPTY;
+    @Nullable
+    private RenderBox renderBox;
     public boolean rsReceiving;
 
     public TileMarker(BlockPos pos, BlockState state) {
@@ -85,9 +89,21 @@ public class TileMarker extends BlockEntity implements QuarryMarker, CheckerLog,
     }
 
     @OnlyIn(Dist.CLIENT)
-    public Optional<Area> renderArea() {
-        if (markerConnection.render()) return getArea();
-        else return Optional.empty();
+    public Optional<Box[]> renderArea() {
+        if (markerConnection.render()) {
+            if (this.renderBox == null || this.renderBox.parent != this.markerConnection) {
+                if (markerConnection.area != null) {
+                    this.renderBox = new RenderBox(markerConnection, RenderMarker.getRenderBox(markerConnection.area));
+                    return Optional.of(renderBox.boxes);
+                } else {
+                    return Optional.empty();
+                }
+            } else {
+                return Optional.of(renderBox.boxes);
+            }
+        } else {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -170,4 +186,6 @@ public class TileMarker extends BlockEntity implements QuarryMarker, CheckerLog,
         }
     }
 
+    record RenderBox(MarkerConnection parent, Box[] boxes) {
+    }
 }
