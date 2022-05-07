@@ -13,6 +13,7 @@ import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QPBlock;
 import com.yogpc.qp.machines.QuarryMarker;
 import com.yogpc.qp.utils.CombinedBlockEntityTicker;
+import com.yogpc.qp.utils.MapMulti;
 import com.yogpc.qp.utils.QuarryChunkLoadUtil;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.core.BlockPos;
@@ -137,10 +138,8 @@ public class BlockQuarry extends QPBlock implements EntityBlock {
     static Area findArea(Level world, BlockPos pos, Direction quarryBehind, Consumer<ItemStack> itemCollector) {
         return Stream.of(quarryBehind, quarryBehind.getCounterClockWise(), quarryBehind.getClockWise())
             .map(pos::relative)
-            .flatMap(p -> {
-                if (world.getBlockEntity(p) instanceof QuarryMarker marker) return Stream.of(marker);
-                else return Stream.empty();
-            })
+            .map(world::getBlockEntity)
+            .mapMulti(MapMulti.cast(QuarryMarker.class))
             .flatMap(m -> m.getArea().stream().peek(a -> m.removeAndGetItems().forEach(itemCollector)))
             .findFirst()
             .map(a -> a.assureY(4))
