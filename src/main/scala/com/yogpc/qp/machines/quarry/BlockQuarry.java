@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.integration.wrench.WrenchItems;
 import com.yogpc.qp.machines.Area;
+import com.yogpc.qp.machines.Direction8;
 import com.yogpc.qp.machines.EnchantedLootFunction;
 import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.PowerTile;
@@ -89,6 +90,21 @@ public class BlockQuarry extends QPBlock implements EntityBlock {
                 quarry.setChunkPreLoaded(preForced);
             }
         }
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moved) {
+        if (!state.is(newState.getBlock()) && QuarryPlus.config.common.removeFrameAfterQuarryIsRemoved) {
+            for (Direction8 dir : Direction8.DIRECTIONS) {
+                var offset = pos.offset(dir.vec());
+                var maybeFrame = level.getBlockState(offset);
+                if (maybeFrame.is(QuarryPlus.ModObjects.BLOCK_FRAME) && !maybeFrame.getValue(BlockFrame.DAMMING)) {
+                    level.removeBlock(offset, false);
+                }
+            }
+        }
+        super.onRemove(state, level, pos, newState, moved);
     }
 
     @Override

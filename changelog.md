@@ -2,6 +2,7 @@
 
 ### Addition
 
+* Added option to remove frames after Quarry is removed.
 * Added - Waterlogged Markers
 * Added - Remote Placer
 * Added - Filler

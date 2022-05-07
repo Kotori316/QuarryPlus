@@ -42,6 +42,8 @@ public class QuarryConfig implements ConfigData {
         @ConfigEntry.Category(Constant.COMMON_CATEGORY)
         @ConfigEntry.Gui.RequiresRestart
         public boolean removesCommonMaterialAdvQuarry = true;
+        @ConfigEntry.Category(Constant.COMMON_CATEGORY)
+        public boolean removeFrameAfterQuarryIsRemoved = false;
 
         public Common() {
             try {
