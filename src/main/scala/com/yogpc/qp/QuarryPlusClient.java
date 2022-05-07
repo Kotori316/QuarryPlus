@@ -44,7 +44,7 @@ public class QuarryPlusClient {
         ItemBlockRenderTypes.setRenderLayer(Holder.BLOCK_DUMMY_REPLACER, RenderType.translucent());
 
         BlockEntityRenderers.register(Holder.QUARRY_TYPE, RenderQuarry::new);
-        BlockEntityRenderers.register(Holder.MARKER_TYPE, RenderMarker::new);
+        BlockEntityRenderers.register(Holder.MARKER_TYPE, RenderMarker.constructor(QuarryPlus.config.common.reduceMarkerGuideLineIfPlayerIsFar.get()));
         BlockEntityRenderers.register(Holder.FLEX_MARKER_TYPE, RenderFlexMarker::new);
         BlockEntityRenderers.register(Holder.MARKER_16_TYPE, Render16Marker::new);
         BlockEntityRenderers.register(Holder.ADV_QUARRY_TYPE, RenderAdvQuarry::new);

@@ -2,7 +2,6 @@ package com.yogpc.qp.render;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -21,12 +20,17 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class RenderMarker implements BlockEntityRenderer<TileMarker> {
+    public static BlockEntityRendererProvider<TileMarker> constructor(boolean reduceLineIfPlayerIsFar) {
+        return c -> new RenderMarker(c, reduceLineIfPlayerIsFar);
+    }
+
     @SuppressWarnings("unused")
-    public RenderMarker(BlockEntityRendererProvider.Context context) {
+    public RenderMarker(BlockEntityRendererProvider.Context context, boolean reduceLineIfPlayerIsFar) {
+        this.reduceLineIfPlayerIsFar = reduceLineIfPlayerIsFar;
     }
 
     private static final double a = 0.5d, b = 10d / 16d, c = 6d / 16d;
-    boolean reduceLineIfPlayerIsFar = false;
+    final boolean reduceLineIfPlayerIsFar;
 
     @Override
     public void render(TileMarker entity, float tickDelta, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay) {
