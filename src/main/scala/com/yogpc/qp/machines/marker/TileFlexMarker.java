@@ -25,6 +25,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 public class TileFlexMarker extends BlockEntity implements QuarryMarker, CheckerLog, ClientSync {
+    private static final int maxRange = TileMarker.MAX_SEARCH;
 
     private BlockPos min;
     private BlockPos max;
@@ -58,16 +59,16 @@ public class TileFlexMarker extends BlockEntity implements QuarryMarker, Checker
         if (facing.getAxisDirection() == Direction.AxisDirection.POSITIVE) {
             max = max.relative(facing, amount);
             int d = getDistance(max, offset, facing.getAxis());
-            if (d > 64) {
-                max = getLimited(max, offset, facing, 64);
+            if (d > maxRange) {
+                max = getLimited(max, offset, facing, maxRange);
             } else if (d < 1) {
                 max = getLimited(max, offset, facing, 1);
             }
         } else {
             min = min.relative(facing, amount);
             int d = getDistance(offset, min, facing.getAxis());
-            if (d > 64) {
-                min = getLimited(min, offset, facing, 64);
+            if (d > maxRange) {
+                min = getLimited(min, offset, facing, maxRange);
             } else if (d < 1) {
                 min = getLimited(min, offset, facing, 1);
             }
