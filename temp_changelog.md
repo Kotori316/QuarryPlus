@@ -1,3 +1,13 @@
+## Version 18.11
+
+* Fixed - the drop item of Waterlogged Marker was wrong.
+* Fixed - Waterlogged Marker didn't show line when RS-powered.
+* Simplified the shape of frame.
+* Changed rendering of guide line of marker.
+* Add config to hide far guide-line
+* Remove frames after quarry is removed.
+* Changed range of Flexible Marker
+
 ## Version 18.10
 
 * Add Waterlogged Markers
