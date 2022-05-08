@@ -2,6 +2,7 @@ package com.yogpc.qp.machines.marker;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.IntStream;
@@ -116,6 +117,10 @@ public class TileMarker extends BlockEntity implements QuarryMarker, CheckerLog,
     public List<? extends Component> getDebugLogs() {
         return List.of(
             new TextComponent("%sMarker Area%s: %s".formatted(ChatFormatting.AQUA, ChatFormatting.RESET, markerConnection.getArea())),
+            this.renderBox != null ?
+                new TextComponent("%sRender%s: IsParent %b, Box %d".formatted(ChatFormatting.AQUA, ChatFormatting.RESET,
+                    renderBox.parent == this.markerConnection, Stream.of(renderBox.boxes).filter(Objects::nonNull).count())) :
+                new TextComponent("%sRender%s: null".formatted(ChatFormatting.AQUA, ChatFormatting.RESET)),
             new TextComponent("%sMarker Poses%s: %s".formatted(ChatFormatting.AQUA, ChatFormatting.RESET, markerConnection.markerPlaces()))
         );
     }
