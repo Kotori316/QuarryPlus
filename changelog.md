@@ -31,6 +31,7 @@
 
 ### Misc
 
+* Changed - Flexible Marker can now select up to 256 blocks.
 * Use conventional tags in recipe.
 * Update for 1.18.2
 * Changed - The amount of Y if Shift or Ctrl is pressed.
