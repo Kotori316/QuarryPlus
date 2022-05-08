@@ -177,6 +177,7 @@ dependencies {
 
     // Runtime Checks
     if (!System.getenv("RUN_GAME_TEST")) modRuntimeOnly("alexiil.mc.mod:simplepipes-all:${project.simple_pipe_version}")
+    modRuntimeOnly("curse.maven:carpet-349239:3725895")
     // modRuntimeOnly("curse.maven:mining-dimensions-fabric-442921:3566587")
     //noinspection SpellCheckingInspection
     // modRuntimeOnly("net.kyrptonaught:customportalapi:0.0.1-beta47-1.18")
