@@ -7,6 +7,7 @@ import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.integration.wrench.WrenchItems;
 import com.yogpc.qp.machines.Area;
+import com.yogpc.qp.machines.Direction8;
 import com.yogpc.qp.machines.EnchantedLootFunction;
 import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.PowerTile;
@@ -18,6 +19,7 @@ import com.yogpc.qp.machines.module.ModuleLootFunction;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.TileMessage;
 import com.yogpc.qp.utils.CombinedBlockEntityTicker;
+import com.yogpc.qp.utils.MapMulti;
 import com.yogpc.qp.utils.QuarryChunkLoadUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -100,6 +102,21 @@ public class QuarryBlock extends QPBlock implements EntityBlock {
 
     @Override
     @SuppressWarnings("deprecation")
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moved) {
+        if (!state.is(newState.getBlock()) && QuarryPlus.config.common.removeFrameAfterQuarryIsRemoved.get()) {
+            for (Direction8 dir : Direction8.DIRECTIONS) {
+                var offset = pos.offset(dir.vec());
+                var maybeFrame = level.getBlockState(offset);
+                if (maybeFrame.is(Holder.BLOCK_FRAME) && !maybeFrame.getValue(FrameBlock.DAMMING)) {
+                    level.removeBlock(offset, false);
+                }
+            }
+        }
+        super.onRemove(state, level, pos, newState, moved);
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!QuarryPlus.config.enableMap.enabled(NAME)) {
             if (!world.isClientSide)
@@ -169,10 +186,8 @@ public class QuarryBlock extends QPBlock implements EntityBlock {
     static Area findArea(Level world, BlockPos pos, Direction quarryBehind, Consumer<ItemStack> itemCollector) {
         return Stream.of(quarryBehind, quarryBehind.getCounterClockWise(), quarryBehind.getClockWise())
             .map(pos::relative)
-            .flatMap(p -> {
-                if (world.getBlockEntity(p) instanceof QuarryMarker marker) return Stream.of(marker);
-                else return Stream.empty();
-            })
+            .map(world::getBlockEntity)
+            .mapMulti(MapMulti.cast(QuarryMarker.class))
             .flatMap(m -> m.getArea().stream().peek(a -> m.removeAndGetItems().forEach(itemCollector)))
             .findFirst()
             .map(a -> a.assureY(4))

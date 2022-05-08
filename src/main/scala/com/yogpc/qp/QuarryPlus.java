@@ -1,5 +1,6 @@
 package com.yogpc.qp;
 
+import com.electronwill.nightconfig.core.CommentedConfig;
 import com.yogpc.qp.machines.workbench.EnableCondition;
 import com.yogpc.qp.machines.workbench.EnchantmentIngredient;
 import com.yogpc.qp.machines.workbench.QuarryDebugCondition;
@@ -24,6 +25,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.gametest.ForgeGameTestHooks;
 import org.apache.logging.log4j.Logger;
 
 @Mod(QuarryPlus.modID)
@@ -34,12 +36,24 @@ public class QuarryPlus {
     public static Config config;
 
     public QuarryPlus() {
-        ForgeConfigSpec.Builder common = new ForgeConfigSpec.Builder();
-        config = new Config(common);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, common.build());
+        registerConfig();
         FMLJavaModLoadingContext.get().getModEventBus().register(Register.class);
         DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> QuarryPlusClient::registerClientBus);
         MinecraftForge.EVENT_BUS.register(ConfigCommand.class);
+    }
+
+    private void registerConfig() {
+        ForgeConfigSpec.Builder common = new ForgeConfigSpec.Builder();
+        config = new Config(common);
+        ForgeConfigSpec build = common.build();
+        if (!ForgeGameTestHooks.isGametestServer()) {
+            ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, build);
+        } else {
+            // In game test. Use in-memory config.
+            final CommentedConfig commentedConfig = CommentedConfig.inMemory();
+            build.correct(commentedConfig);
+            build.acceptConfig(commentedConfig);
+        }
     }
 
     // @Mod.EventBusSubscriber(modid = modID, bus = Mod.EventBusSubscriber.Bus.MOD)
