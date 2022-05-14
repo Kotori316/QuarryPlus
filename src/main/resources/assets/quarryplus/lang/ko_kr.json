@@ -149,6 +149,8 @@
   "text.autoconfig.quarryplus.option.common.debug": "디버그",
   "text.autoconfig.quarryplus.option.common.netherTop": "네더 천장",
   "text.autoconfig.quarryplus.option.common.noEnergy": "에너지 없음",
+  "text.autoconfig.quarryplus.option.common.removeFrameAfterQuarryIsRemoved": "Remove Frame after Quarry removed",
+  "text.autoconfig.quarryplus.option.common.removesCommonMaterialAdvQuarry": "Remove common material in ChunkDestroyer",
   "text.autoconfig.quarryplus.option.power": "전력",
   "text.autoconfig.quarryplus.option.power.creativeGeneratorGeneration": "Creative Generator Generation",
   "text.autoconfig.quarryplus.option.power.fastTransferEnergyConversionCoefficient": "FastTransferLib",
