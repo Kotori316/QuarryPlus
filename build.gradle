@@ -110,6 +110,7 @@ repositories {
         content {
             it.includeVersion("mcp.mobius.waila", "wthit-api", "fabric-${project.wthit_version}")
             it.includeVersion("mcp.mobius.waila", "wthit", "fabric-${project.wthit_version}")
+            it.includeVersion("lol.bai", "badpackets", "fabric-${project.badpackets_version}")
         }
     }
     maven {
@@ -150,7 +151,7 @@ dependencies {
     // library
     // implementation "org.scala-lang:scala-library:2.13.4"
     implementation "com.google.code.findbugs:jsr305:3.0.1"
-    modImplementation "alexiil.mc.lib:libblockattributes-all:${project.bc_attribute_version}"
+    modCompileOnly "alexiil.mc.lib:libblockattributes-all:${project.bc_attribute_version}"
 
     if (Boolean.parseBoolean(System.getenv("FABRIC_SERVER"))) {
         modCompileOnly("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}")
@@ -158,14 +159,15 @@ dependencies {
         modRuntimeOnly("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}")
     }
     modImplementation("teamreborn:energy:${project.tech_energy_version}")
-    modImplementation("RebornCore:RebornCore-1.18:${project.RebornCore_version}") {
+    modCompileOnly("RebornCore:RebornCore-1.18:${project.RebornCore_version}") {
         transitive = false
     }
-    modImplementation("TechReborn:TechReborn-1.18:${project.TechReborn_version}") {
+    modCompileOnly("TechReborn:TechReborn-1.18:${project.TechReborn_version}") {
         transitive = false
     }
     modCompileOnly("mcp.mobius.waila:wthit-api:fabric-${project.wthit_version}")
     modRuntimeOnly("mcp.mobius.waila:wthit:fabric-${project.wthit_version}")
+    modRuntimeOnly(group: "lol.bai", name: "badpackets", version: "fabric-${project.badpackets_version}")
 
     modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_version}") {
         //noinspection SpellCheckingInspection
@@ -176,8 +178,8 @@ dependencies {
     }
 
     // Runtime Checks
-    if (!System.getenv("RUN_GAME_TEST")) modRuntimeOnly("alexiil.mc.mod:simplepipes-all:${project.simple_pipe_version}")
-    modRuntimeOnly("curse.maven:carpet-349239:3725895")
+    // if (!System.getenv("RUN_GAME_TEST")) modRuntimeOnly("alexiil.mc.mod:simplepipes-all:${project.simple_pipe_version}")
+    // modRuntimeOnly("curse.maven:carpet-349239:3725895")
     // modRuntimeOnly("curse.maven:mining-dimensions-fabric-442921:3566587")
     //noinspection SpellCheckingInspection
     // modRuntimeOnly("net.kyrptonaught:customportalapi:0.0.1-beta47-1.18")
