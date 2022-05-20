@@ -3,7 +3,6 @@ package com.yogpc.qp.machines.advpump;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Random;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -13,6 +12,7 @@ import com.yogpc.qp.machines.PowerTile;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.enchantment.Enchantments;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -44,7 +44,7 @@ class EnchantmentEfficiencyTest extends QuarryPlusTest {
         assertEquals(List.of(), deserialized.getEnchantments());
     }
 
-    @ParameterizedTest(name = "[" + ParameterizedTest.INDEX_PLACEHOLDER + "]")
+    @ParameterizedTest
     @MethodSource("randomEnchantments")
     @EmptySource
     void serialize(List<EnchantmentLevel> list) {
@@ -124,7 +124,7 @@ class EnchantmentEfficiencyTest extends QuarryPlusTest {
     }
 
     static Stream<List<EnchantmentLevel>> randomEnchantments() {
-        Random random = new Random(864);
+        RandomSource random = RandomSource.create(864);
 
         return IntStream.range(0, 50).mapToObj(i ->
             IntStream.range(0, random.nextInt(10) + 1)
