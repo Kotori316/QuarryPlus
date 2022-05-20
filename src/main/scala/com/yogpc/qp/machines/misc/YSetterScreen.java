@@ -11,7 +11,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
@@ -52,8 +51,8 @@ public class YSetterScreen extends AbstractContainerScreen<YSetterContainer> {
     protected void init() {
         super.init();
         final int width = 40;
-        addRenderableWidget(new Button(this.leftPos + this.imageWidth / 2 - width / 2, this.topPos + tp, width, 20, new TextComponent("+"), b -> changeDigY(true)));
-        addRenderableWidget(new Button(this.leftPos + this.imageWidth / 2 - width / 2, this.topPos + tp + 33, width, 20, new TextComponent("-"), b -> changeDigY(false)));
+        addRenderableWidget(new Button(this.leftPos + this.imageWidth / 2 - width / 2, this.topPos + tp, width, 20, Component.literal("+"), b -> changeDigY(true)));
+        addRenderableWidget(new Button(this.leftPos + this.imageWidth / 2 - width / 2, this.topPos + tp + 33, width, 20, Component.literal("-"), b -> changeDigY(false)));
     }
 
     private void changeDigY(boolean plus) {

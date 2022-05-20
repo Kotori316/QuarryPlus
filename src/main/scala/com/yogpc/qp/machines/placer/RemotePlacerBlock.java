@@ -5,8 +5,9 @@ import java.util.Random;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPBlock;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -46,7 +47,7 @@ public final class RemotePlacerBlock extends QPBlock implements EntityBlock {
                 if (stack.getItem() == Items.REDSTONE_TORCH) {
                     world.getBlockEntity(pos, QuarryPlus.ModObjects.REMOTE_PLACER_TYPE).ifPresent(t -> {
                         t.cycleRedstoneMode();
-                        player.displayClientMessage(new TranslatableComponent("quarryplus.chat.placer_rs", t.redstoneMode), false);
+                        player.displayClientMessage(Component.translatable("quarryplus.chat.placer_rs", t.redstoneMode), false);
                     });
                 } else {
                     world.getBlockEntity(pos, QuarryPlus.ModObjects.REMOTE_PLACER_TYPE).ifPresent(player::openMenu);
@@ -97,7 +98,7 @@ public final class RemotePlacerBlock extends QPBlock implements EntityBlock {
 
     @Override
     @SuppressWarnings("deprecation")
-    public void tick(BlockState state, ServerLevel worldIn, BlockPos pos, Random rand) {
+    public void tick(BlockState state, ServerLevel worldIn, BlockPos pos, RandomSource rand) {
         super.tick(state, worldIn, pos, rand);
         boolean isPowered = state.getValue(TRIGGERED);
         worldIn.getBlockEntity(pos, QuarryPlus.ModObjects.REMOTE_PLACER_TYPE).ifPresent(tile -> {

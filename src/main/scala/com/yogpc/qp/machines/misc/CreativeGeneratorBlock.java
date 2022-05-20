@@ -8,7 +8,6 @@ import com.yogpc.qp.machines.QPBlock;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -49,7 +48,7 @@ public class CreativeGeneratorBlock extends QPBlock implements EntityBlock {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter world, List<Component> tooltip, TooltipFlag options) {
         super.appendHoverText(stack, world, tooltip, options);
-        tooltip.add(new TextComponent("Works only for Quarry"));
+        tooltip.add(Component.literal("Works only for Quarry"));
     }
 
     @Override
@@ -61,7 +60,7 @@ public class CreativeGeneratorBlock extends QPBlock implements EntityBlock {
                     .ifPresent(t -> {
                         t.cycleMagnification();
                         String message = "Creative Generator: %d".formatted(t.getSendEnergy() / PowerTile.ONE_FE);
-                        player.displayClientMessage(new TextComponent(message), false);
+                        player.displayClientMessage(Component.literal(message), false);
                     });
             }
             return InteractionResult.sidedSuccess(level.isClientSide);

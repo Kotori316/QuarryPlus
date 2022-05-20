@@ -10,7 +10,7 @@ import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.ITooltip;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 
 final class PowerTileDataProvider implements IServerDataProvider<PowerTile>, IBlockComponentProvider {
     /**
@@ -35,7 +35,7 @@ final class PowerTileDataProvider implements IServerDataProvider<PowerTile>, IBl
         long maxEnergy = tag.contains("maxEnergy", Tag.TAG_LONG) ? tag.getLong("maxEnergy") : 0;
         String percent = String.format("Energy: %.1f%%", 100d * currentEnergy / maxEnergy);
         String energy = String.format("%d / %d FE", currentEnergy / PowerTile.ONE_FE, maxEnergy / PowerTile.ONE_FE);
-        tooltip.addLine(new TextComponent(percent));
-        tooltip.addLine(new TextComponent(energy));
+        tooltip.addLine(Component.literal(percent));
+        tooltip.addLine(Component.literal(energy));
     }
 }

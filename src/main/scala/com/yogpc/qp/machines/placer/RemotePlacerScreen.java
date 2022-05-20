@@ -13,7 +13,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
@@ -36,8 +35,8 @@ public final class RemotePlacerScreen extends PlacerScreen implements Button.OnP
         var counter = new AtomicInteger(0);
         for (int i = 0; i < 3; i++) {
             var yPos = getGuiTop() + 21 + i * 18;
-            this.addRenderableWidget(new IndexedButton(counter.getAndIncrement(), getGuiLeft() + 97, yPos, 18, 9, new TextComponent("-"), this));
-            this.addRenderableWidget(new IndexedButton(counter.getAndIncrement(), getGuiLeft() + 151, yPos, 18, 9, new TextComponent("+"), this));
+            this.addRenderableWidget(new IndexedButton(counter.getAndIncrement(), getGuiLeft() + 97, yPos, 18, 9, Component.literal("-"), this));
+            this.addRenderableWidget(new IndexedButton(counter.getAndIncrement(), getGuiLeft() + 151, yPos, 18, 9, Component.literal("+"), this));
         }
     }
 

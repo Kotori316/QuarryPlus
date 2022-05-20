@@ -18,7 +18,7 @@ import com.yogpc.qp.utils.QuarryChunkLoadUtil;
 import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -85,7 +85,7 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
         if (WrenchItems.isWrenchItem(stack)) {
             if (!level.isClientSide && level.getBlockEntity(pos) instanceof TileAdvQuarry quarry) {
                 quarry.setAction(AdvQuarryAction.Waiting.WAITING);
-                player.displayClientMessage(new TranslatableComponent("quarryplus.chat.quarry.restart"), false);
+                player.displayClientMessage(Component.translatable("quarryplus.chat.quarry.restart"), false);
             }
             return InteractionResult.SUCCESS;
         }

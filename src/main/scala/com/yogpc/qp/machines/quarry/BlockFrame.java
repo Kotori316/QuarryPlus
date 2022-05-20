@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 
 import com.yogpc.qp.machines.Direction8;
 import com.yogpc.qp.machines.QPBlock;
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -21,6 +22,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -42,7 +44,7 @@ public class BlockFrame extends QPBlock {
             .anyMatch(p -> !world.getFluidState(p).isEmpty());
 
     public BlockFrame() {
-        super(Properties.of(Material.GLASS).strength(0.5f).noDrops(), NAME);
+        super(FabricBlockSettings.of(Material.GLASS).strength(0.5f).drops(BuiltInLootTables.EMPTY), NAME);
         this.registerDefaultState(this.getStateDefinition().any()
             .setValue(NORTH, false).setValue(EAST, false).setValue(SOUTH, false)
             .setValue(WEST, false).setValue(UP, false).setValue(DOWN, false)

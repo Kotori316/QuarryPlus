@@ -14,6 +14,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.AbstractGlassBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 
 public class BlockDummy extends AbstractGlassBlock {
     public static final String NAME = "dummy";
@@ -22,7 +23,7 @@ public class BlockDummy extends AbstractGlassBlock {
     public BlockDummy() {
         super(FabricBlockSettings.of(Material.GLASS)
             .nonOpaque()
-            .dropsNothing()
+            .drops(BuiltInLootTables.EMPTY)
             .allowsSpawning((state, world, pos, type) -> false)
             .solidBlock((state, world, pos) -> false)
             .suffocates((state, world, pos) -> false)

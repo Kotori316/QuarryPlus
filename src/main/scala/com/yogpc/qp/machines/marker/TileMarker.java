@@ -22,7 +22,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -116,12 +115,12 @@ public class TileMarker extends BlockEntity implements QuarryMarker, CheckerLog,
     @Override
     public List<? extends Component> getDebugLogs() {
         return List.of(
-            new TextComponent("%sMarker Area%s: %s".formatted(ChatFormatting.AQUA, ChatFormatting.RESET, markerConnection.getArea())),
+            Component.literal("%sMarker Area%s: %s".formatted(ChatFormatting.AQUA, ChatFormatting.RESET, markerConnection.getArea())),
             this.renderBox != null ?
-                new TextComponent("%sRender%s: IsParent %b, Box %d".formatted(ChatFormatting.AQUA, ChatFormatting.RESET,
+                Component.literal("%sRender%s: IsParent %b, Box %d".formatted(ChatFormatting.AQUA, ChatFormatting.RESET,
                     renderBox.parent == this.markerConnection, Stream.of(renderBox.boxes).filter(Objects::nonNull).count())) :
-                new TextComponent("%sRender%s: null".formatted(ChatFormatting.AQUA, ChatFormatting.RESET)),
-            new TextComponent("%sMarker Poses%s: %s".formatted(ChatFormatting.AQUA, ChatFormatting.RESET, markerConnection.markerPlaces()))
+                Component.literal("%sRender%s: null".formatted(ChatFormatting.AQUA, ChatFormatting.RESET)),
+            Component.literal("%sMarker Poses%s: %s".formatted(ChatFormatting.AQUA, ChatFormatting.RESET, markerConnection.markerPlaces()))
         );
     }
 

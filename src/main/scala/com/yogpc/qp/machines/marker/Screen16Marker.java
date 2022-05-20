@@ -13,7 +13,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
@@ -65,12 +64,12 @@ public class Screen16Marker extends AbstractContainerScreen<ContainerMarker> imp
         final int tp = 15;
         final int middle = leftPos + this.imageWidth / 2;
         var id = new AtomicInteger();
-        this.addRenderableWidget(new IndexedButton(id.getAndIncrement(), middle - BUTTON_WIDTH / 2, topPos + tp, BUTTON_WIDTH, 20, new TextComponent("+"), this));
-        this.addRenderableWidget(new IndexedButton(id.getAndIncrement(), middle - BUTTON_WIDTH / 2, topPos + tp + 33, BUTTON_WIDTH, 20, new TextComponent("-"), this));
-        this.addRenderableWidget(new IndexedButton(id.getAndIncrement(), middle + BUTTON_WIDTH / 2 + 10, topPos + tp, BUTTON_WIDTH, 20, new TextComponent("Top+"), this));
-        this.addRenderableWidget(new IndexedButton(id.getAndIncrement(), middle + BUTTON_WIDTH / 2 + 10, topPos + tp + 33, BUTTON_WIDTH, 20, new TextComponent("Top-"), this));
-        this.addRenderableWidget(new IndexedButton(id.getAndIncrement(), middle - BUTTON_WIDTH / 2 - 10 - BUTTON_WIDTH, topPos + tp, BUTTON_WIDTH, 20, new TextComponent("Bottom+"), this));
-        this.addRenderableWidget(new IndexedButton(id.getAndIncrement(), middle - BUTTON_WIDTH / 2 - 10 - BUTTON_WIDTH, topPos + tp + 33, BUTTON_WIDTH, 20, new TextComponent("Bottom-"), this));
+        this.addRenderableWidget(new IndexedButton(id.getAndIncrement(), middle - BUTTON_WIDTH / 2, topPos + tp, BUTTON_WIDTH, 20, Component.literal("+"), this));
+        this.addRenderableWidget(new IndexedButton(id.getAndIncrement(), middle - BUTTON_WIDTH / 2, topPos + tp + 33, BUTTON_WIDTH, 20, Component.literal("-"), this));
+        this.addRenderableWidget(new IndexedButton(id.getAndIncrement(), middle + BUTTON_WIDTH / 2 + 10, topPos + tp, BUTTON_WIDTH, 20, Component.literal("Top+"), this));
+        this.addRenderableWidget(new IndexedButton(id.getAndIncrement(), middle + BUTTON_WIDTH / 2 + 10, topPos + tp + 33, BUTTON_WIDTH, 20, Component.literal("Top-"), this));
+        this.addRenderableWidget(new IndexedButton(id.getAndIncrement(), middle - BUTTON_WIDTH / 2 - 10 - BUTTON_WIDTH, topPos + tp, BUTTON_WIDTH, 20, Component.literal("Bottom+"), this));
+        this.addRenderableWidget(new IndexedButton(id.getAndIncrement(), middle - BUTTON_WIDTH / 2 - 10 - BUTTON_WIDTH, topPos + tp + 33, BUTTON_WIDTH, 20, Component.literal("Bottom-"), this));
     }
 
     @Override

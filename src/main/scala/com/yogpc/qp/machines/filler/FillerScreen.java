@@ -11,7 +11,6 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
@@ -30,11 +29,11 @@ public final class FillerScreen extends AbstractContainerScreen<FillerMenu> impl
         super.init();
         var id = new AtomicInteger(0);
         this.addRenderableWidget(new IndexedButton(id.getAndIncrement(), this.getGuiLeft() + imageWidth - 60 - 8, this.getGuiTop() + 7,
-            60, 20, new TextComponent("FillAll"), this));
+            60, 20, Component.literal("FillAll"), this));
         this.addRenderableWidget(new IndexedButton(id.getAndIncrement(), this.getGuiLeft() + imageWidth - 60 - 8, this.getGuiTop() + 7 + 20,
-            60, 20, new TextComponent("FillBox"), this));
+            60, 20, Component.literal("FillBox"), this));
         // this.addRenderableWidget(new IndexedButton(id.getAndIncrement(), this.getGuiLeft() + 110, this.getGuiTop() + this.getYSize() - 97,
-        //     60, 14, new TextComponent("Modules"), this));
+        //     60, 14, Component.literal("Modules"), this));
     }
 
     @Override

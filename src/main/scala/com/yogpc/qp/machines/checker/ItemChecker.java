@@ -5,7 +5,7 @@ import com.yogpc.qp.machines.CheckerLog;
 import com.yogpc.qp.machines.QPItem;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -24,7 +24,7 @@ public class ItemChecker extends QPItem implements UseBlockCallback {
     public InteractionResult interact(Player player, Level world, InteractionHand hand, BlockHitResult hitResult) {
         if (player.isSpectator() || player.getItemInHand(hand).getItem() != this) return InteractionResult.PASS;
         if (world.getBlockEntity(hitResult.getBlockPos()) instanceof CheckerLog debug) {
-            player.displayClientMessage(new TextComponent(ChatFormatting.YELLOW + (world.isClientSide ? "Client" : "Server") + ChatFormatting.RESET), false);
+            player.displayClientMessage(Component.literal(ChatFormatting.YELLOW + (world.isClientSide ? "Client" : "Server") + ChatFormatting.RESET), false);
             debug.getDebugLogs().forEach(t -> player.displayClientMessage(t, false));
             return InteractionResult.SUCCESS;
         } else {

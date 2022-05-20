@@ -18,7 +18,7 @@ plugins {
     id "com.matthewprenger.cursegradle" version "1.4.0"
 }
 
-archivesBaseName = "AdditionalEnchantedMiner-1.18-fabric"
+archivesBaseName = "AdditionalEnchantedMiner-1.19-fabric"
 version = project.mod_version
 if (isInCI()) {
     String postFix = System.getenv("GITHUB_RUN_NUMBER") ?: "SNAPSHOT"
@@ -229,7 +229,7 @@ java {
     }
 }
 
-static def BRANCH() { return "1.18-fabric" }
+static def BRANCH() { return "1.19-fabric" }
 
 jar {
     from "LICENSE"

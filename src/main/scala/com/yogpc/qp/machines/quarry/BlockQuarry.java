@@ -18,7 +18,7 @@ import com.yogpc.qp.utils.QuarryChunkLoadUtil;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -85,7 +85,7 @@ public class BlockQuarry extends QPBlock implements EntityBlock {
                     quarry.sync();
                 } else {
                     if (entity instanceof Player player)
-                        player.displayClientMessage(new TranslatableComponent("quarryplus.chat.warn_area"), false);
+                        player.displayClientMessage(Component.translatable("quarryplus.chat.warn_area"), false);
                 }
                 var preForced = QuarryChunkLoadUtil.makeChunkLoaded(level, pos);
                 quarry.setChunkPreLoaded(preForced);

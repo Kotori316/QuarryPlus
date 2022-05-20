@@ -258,9 +258,9 @@ public class MachineStorage {
         }
 
         @Override
-        public Iterator<StorageView<ItemVariant>> iterator(TransactionContext transaction) {
+        public Iterator<StorageView<ItemVariant>> iterator() {
             var combinedStorage = new CombinedStorage<>(itemMap.keySet().stream().map(Element::new).toList());
-            return combinedStorage.iterator(transaction);
+            return combinedStorage.iterator();
         }
 
         private final class Element implements ExtractionOnlyStorage<ItemVariant>, SingleSlotStorage<ItemVariant> {
@@ -298,8 +298,8 @@ public class MachineStorage {
             @Override
             public String toString() {
                 return "ItemElement[" +
-                    "itemKey=" + itemKey + ", " +
-                    "amount=" + getAmount() + ']';
+                       "itemKey=" + itemKey + ", " +
+                       "amount=" + getAmount() + ']';
             }
         }
     }
@@ -332,9 +332,9 @@ public class MachineStorage {
         }
 
         @Override
-        public Iterator<StorageView<FluidVariant>> iterator(TransactionContext transaction) {
+        public Iterator<StorageView<FluidVariant>> iterator() {
             var combinedStorage = new CombinedStorage<>(fluidMap.keySet().stream().map(Element::new).toList());
-            return combinedStorage.iterator(transaction);
+            return combinedStorage.iterator();
         }
 
         private final class Element implements ExtractionOnlyStorage<FluidVariant>, SingleSlotStorage<FluidVariant> {
@@ -372,8 +372,8 @@ public class MachineStorage {
             @Override
             public String toString() {
                 return "FluidElement{" +
-                    "fluidKey=" + fluidKey + ", " +
-                    "amount=" + getAmount() + ']';
+                       "fluidKey=" + fluidKey + ", " +
+                       "amount=" + getAmount() + ']';
             }
         }
     }

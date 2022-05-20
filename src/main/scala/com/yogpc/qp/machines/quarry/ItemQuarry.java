@@ -11,7 +11,6 @@ import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -30,17 +29,17 @@ class ItemQuarry extends QPBlock.QPBlockItem implements EnchantableItem {
         super.appendHoverText(stack, world, tooltip, context);
         CompoundTag tag = Optional.ofNullable(getBlockEntityData(stack)).orElse(new CompoundTag());
         if (tag.getBoolean("bedrockRemove")) {
-            tooltip.add(new TextComponent("BedrockRemove on"));
+            tooltip.add(Component.literal("BedrockRemove on"));
         }
         if (tag.contains("digMinY")) {
-            tooltip.add(new TextComponent("DigMinY " + tag.getInt("digMinY")));
+            tooltip.add(Component.literal("DigMinY " + tag.getInt("digMinY")));
         }
     }
 
     @Override
     public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> stacks) {
         super.fillItemCategory(group, stacks);
-        if (this.allowdedIn(group)) {
+        if (this.allowedIn(group)) {
             ItemStack stack = new ItemStack(this);
             {
                 ItemStack copy = stack.copy();

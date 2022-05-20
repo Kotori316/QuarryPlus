@@ -9,7 +9,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
@@ -56,7 +56,7 @@ public final class FillerButtonMessage implements IMessage<FillerButtonMessage> 
                     f.start(message.action);
                     if (f.fillerAction.isFinished()) {
                         // Filler work is not started.
-                        player.displayClientMessage(new TextComponent("Filler work isn't started. You must place a marker near Filler."), false);
+                        player.displayClientMessage(Component.literal("Filler work isn't started. You must place a marker near Filler."), false);
                     }
                 }));
     };

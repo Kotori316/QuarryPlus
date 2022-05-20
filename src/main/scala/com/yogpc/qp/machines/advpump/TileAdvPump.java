@@ -14,7 +14,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -164,10 +163,10 @@ public class TileAdvPump extends PowerTile
     public List<? extends Component> getDebugLogs() {
         var fluidSummery = this.storage.getFluidMap().entrySet().stream()
             .map(e -> "%s: %d mB".formatted(e.getKey().getId(), e.getValue()))
-            .map(TextComponent::new)
+            .map(Component::literal)
             .toList();
         if (fluidSummery.isEmpty()) {
-            return List.of(new TextComponent("No Fluid."));
+            return List.of(Component.literal("No Fluid."));
         } else {
             return fluidSummery;
         }

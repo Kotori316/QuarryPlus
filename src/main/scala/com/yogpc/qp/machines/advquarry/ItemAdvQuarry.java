@@ -9,7 +9,6 @@ import com.yogpc.qp.machines.QPBlock;
 import javax.annotation.Nullable;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -27,7 +26,7 @@ class ItemAdvQuarry extends QPBlock.QPBlockItem implements EnchantableItem {
     @Override
     public void fillItemCategory(CreativeModeTab tab, NonNullList<ItemStack> stacks) {
         super.fillItemCategory(tab, stacks);
-        if (this.allowdedIn(tab)) {
+        if (this.allowedIn(tab)) {
             var stack = new ItemStack(this);
             {
                 var copy = stack.copy();
@@ -52,7 +51,7 @@ class ItemAdvQuarry extends QPBlock.QPBlockItem implements EnchantableItem {
         var entityTag = BlockItem.getBlockEntityData(stack);
         if (entityTag != null) {
             if (entityTag.getBoolean("bedrockRemove")) {
-                list.add(new TextComponent("BedrockRemove on"));
+                list.add(Component.literal("BedrockRemove on"));
             }
         }
     }
