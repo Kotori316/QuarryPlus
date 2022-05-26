@@ -1,14 +1,14 @@
 {
   "type": "minecraft:crafting_shaped",
+  "key": {
+    "m": {
+      "item": "quarryplus:flex_marker"
+    }
+  },
   "pattern": [
     "m ",
     "mm"
   ],
-  "key": {
-    "m": {
-      "item": "quarryplus:marker"
-    }
-  },
   "result": {
     "item": "quarryplus:marker16"
   }

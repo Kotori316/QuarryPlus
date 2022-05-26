@@ -1,18 +1,21 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    " m ",
-    "mlm",
-    " m "
-  ],
   "key": {
-    "m": {
-      "item": "quarryplus:marker"
+    "g": {
+      "item": "minecraft:glowstone_dust"
     },
     "l": {
       "tag": "c:lapis"
+    },
+    "r": {
+      "item": "minecraft:redstone_torch"
     }
   },
+  "pattern": [
+    "glg",
+    "lrl",
+    "gl "
+  ],
   "result": {
     "item": "quarryplus:flex_marker"
   }
