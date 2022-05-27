@@ -181,21 +181,21 @@ repositories {
             includeModule("com.blamejared.crafttweaker", "CraftTweaker-1.16.4")
         }
     }
-    maven {
-        name = "FTB OLD"
-        url = "https://maven.latmod.com/"
-        content {
-            includeModule("com.feed_the_beast.mods", "ftb-chunks")
-            includeModule("com.feed_the_beast.mods", "ftb-gui-library")
-        }
-    }
 
     maven {
         name = "FTB NEW"
         url = "https://maven.saps.dev/minecraft/"
         content {
-            includeModule("dev.ftb.mods", "ftb-chunks-forge")
-            includeModule("dev.ftb.mods", "ftb-library-forge")
+            includeGroup("dev.ftb.mods")
+            includeGroup("dev.latvian.mods")
+        }
+    }
+
+    maven {
+        name = "architectury"
+        url = uri("https://maven.architectury.dev/")
+        content {
+            it.includeGroup("dev.architectury")
         }
     }
 
@@ -229,6 +229,13 @@ dependencies {
     runtimeOnly(group: "com.kotori316", name: "ScalableCatsForce".toLowerCase(), version: project.slpVersion, classifier: "with-library") {
         transitive(false)
     }
+
+    // FTB Chunks stuff
+    implementation(fg.deobf(group: "dev.ftb.mods", name: "ftb-chunks-forge", version: project.ftbChunksVersion))
+    implementation(fg.deobf(group: "dev.ftb.mods", name: "ftb-library-forge", version: project.ftbLibraryVersion))
+    runtimeOnly(fg.deobf(group: "dev.ftb.mods", name: "ftb-teams-forge", version: project.ftbTeamsVersion))
+    runtimeOnly(fg.deobf(group: "dev.ftb.mods", name: "ftb-teams-forge", version: project.ftbTeamsVersion))
+    runtimeOnly(fg.deobf(group: "dev.architectury", name: "architectury-forge", version: project.architecturyVersion))
 
     // Test Dependencies.
     final def JUPITER_VERSION = '5.8.2'
