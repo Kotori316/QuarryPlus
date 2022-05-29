@@ -1,5 +1,6 @@
 {
   "FD.UNKNOWN": "UNKNOWN Direction",
+  "quarryplus.chat.warn_protected_area": "Area contains protected chunks. Quarry has stopped.",
   "FD.down": "DOWN",
   "FD.east": "EAST",
   "FD.north": "NORTH",

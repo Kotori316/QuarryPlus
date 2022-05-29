@@ -2,6 +2,7 @@ package com.yogpc.qp.machines.quarry;
 
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.integration.ftbchunks.FTBChunksProtectionCheck;
 import com.yogpc.qp.integration.wrench.WrenchItems;
 import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.PowerTile;
@@ -70,7 +71,10 @@ public final class SFQuarryBlock extends QPBlock implements EntityBlock {
             if (level.getBlockEntity(pos) instanceof SFQuarryEntity quarry) {
                 quarry.setTileDataFromItem(null);
                 var area = QuarryBlock.findArea(level, pos, facing.getOpposite(), quarry.storage::addItem);
-                if (area.maxX() - area.minX() > 1 && area.maxZ() - area.minZ() > 1) {
+                if (FTBChunksProtectionCheck.isAreaProtected(area, level.dimension())) {
+                    if (entity instanceof Player player)
+                        player.displayClientMessage(new TranslatableComponent("quarryplus.chat.warn_protected_area"), false);
+                } else if (area.maxX() - area.minX() > 1 && area.maxZ() - area.minZ() > 1) {
                     quarry.setState(QuarryState.WAITING, state.setValue(BlockStateProperties.FACING, facing));
                     quarry.setArea(area);
                 } else {
