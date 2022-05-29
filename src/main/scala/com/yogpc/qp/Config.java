@@ -50,6 +50,7 @@ public class Config {
         public final ForgeConfigSpec.BooleanValue removeCommonMaterialsByCD;
         public final ForgeConfigSpec.BooleanValue reduceMarkerGuideLineIfPlayerIsFar;
         public final ForgeConfigSpec.BooleanValue removeFrameAfterQuarryIsRemoved;
+        public final ForgeConfigSpec.BooleanValue allowWorkInClaimedChunkByFBTChunks;
         public final ForgeConfigSpec.ConfigValue<List<? extends String>> spawnerBlackList;
 
         public Common(ForgeConfigSpec.Builder builder) {
@@ -66,6 +67,7 @@ public class Config {
             removeCommonMaterialsByCD = builder.comment("Remove common materials(Stone, Dirt, Grass, Sand) obtained by Chunk Destroyer").define("removeCommonMaterialsByCD", true);
             reduceMarkerGuideLineIfPlayerIsFar = builder.comment("Remove MarkerPlus guide line if player is too far from the marker.").define("reduceMarkerGuideLineIfPlayerIsFar", false);
             removeFrameAfterQuarryIsRemoved = builder.comment("Remove adjacent frames when quarry is removed.").define("removeFrameAfterQuarryIsRemoved", false);
+            allowWorkInClaimedChunkByFBTChunks = builder.comment("Allow quarries to work in claimed chunk(FTB Chunks).").define("allowWorkInClaimedChunkByFBTChunks", false);
             builder.pop();
         }
     }
