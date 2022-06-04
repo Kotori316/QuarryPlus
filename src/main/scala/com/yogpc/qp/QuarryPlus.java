@@ -171,9 +171,9 @@ public class QuarryPlus implements ModInitializer {
         public static final BlockEntityType<TileFlexMarker> FLEX_MARKER_TYPE = FabricBlockEntityTypeBuilder.create(TileFlexMarker::new, BLOCK_FLEX_MARKER, BLOCK_WATERLOGGED_FLEX_MARKER).build(DSL.emptyPartType());
         public static final BlockEntityType<Tile16Marker> MARKER_16_TYPE = FabricBlockEntityTypeBuilder.create(Tile16Marker::new, BLOCK_16_MARKER, BLOCK_WATERLOGGED_16_MARKER).build(DSL.emptyPartType());
         public static final ExtendedScreenHandlerType<ContainerMarker> FLEX_MARKER_HANDLER_TYPE = new ExtendedScreenHandlerType<>(
-            (syncId, inventory, buf) -> new ContainerMarker(syncId, inventory.player, buf.readBlockPos(), ModObjects.FLEX_MARKER_HANDLER_TYPE));
+            (syncId, inventory, buf) -> new ContainerMarker(syncId, inventory.player, buf.readBlockPos(), ModObjects.FLEX_MARKER_HANDLER_TYPE, 29, 107));
         public static final ExtendedScreenHandlerType<ContainerMarker> MARKER_16_HANDLER_TYPE = new ExtendedScreenHandlerType<>(
-            (syncId, inventory, buf) -> new ContainerMarker(syncId, inventory.player, buf.readBlockPos(), ModObjects.MARKER_16_HANDLER_TYPE));
+            (syncId, inventory, buf) -> new ContainerMarker(syncId, inventory.player, buf.readBlockPos(), ModObjects.MARKER_16_HANDLER_TYPE, 29, 107));
 
         public static final CreativeGeneratorBlock BLOCK_CREATIVE_GENERATOR = new CreativeGeneratorBlock();
         public static final BlockEntityType<CreativeGeneratorTile> CREATIVE_GENERATOR_TYPE = FabricBlockEntityTypeBuilder.create(CreativeGeneratorTile::new, BLOCK_CREATIVE_GENERATOR).build(DSL.emptyPartType());

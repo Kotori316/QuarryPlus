@@ -188,7 +188,7 @@ public abstract class BlockExMarker extends QPBlock implements EntityBlock {
 
         @Override
         protected void openGUI(Level worldIn, BlockPos pos, Player playerIn) {
-            playerIn.openMenu(new InteractionObject(pos, QuarryPlus.ModObjects.FLEX_MARKER_HANDLER_TYPE, getDescriptionId()));
+            playerIn.openMenu(new InteractionObject(pos, QuarryPlus.ModObjects.FLEX_MARKER_HANDLER_TYPE, getDescriptionId(), 29, 107));
         }
 
         @Override
@@ -223,7 +223,7 @@ public abstract class BlockExMarker extends QPBlock implements EntityBlock {
 
         @Override
         protected void openGUI(Level worldIn, BlockPos pos, Player playerIn) {
-            playerIn.openMenu(new InteractionObject(pos, QuarryPlus.ModObjects.MARKER_16_HANDLER_TYPE, getDescriptionId()));
+            playerIn.openMenu(new InteractionObject(pos, QuarryPlus.ModObjects.MARKER_16_HANDLER_TYPE, getDescriptionId(), 29, 107));
         }
 
         @Override
@@ -257,8 +257,8 @@ public abstract class BlockExMarker extends QPBlock implements EntityBlock {
     public static final String GUI_FLEX_ID = QuarryPlus.modID + ":gui_" + "flex_marker";
     public static final String GUI_16_ID = QuarryPlus.modID + ":gui_" + "marker16";
 
-    private record InteractionObject(BlockPos pos, MenuType<?> type,
-                                     String name) implements ExtendedScreenHandlerFactory {
+    private record InteractionObject(BlockPos pos, MenuType<?> type, String name,
+                                     int inventoryX, int inventoryY) implements ExtendedScreenHandlerFactory {
 
         @Override
         public Component getDisplayName() {
@@ -267,7 +267,7 @@ public abstract class BlockExMarker extends QPBlock implements EntityBlock {
 
         @Override
         public AbstractContainerMenu createMenu(int syncId, Inventory inv, Player player) {
-            return new ContainerMarker(syncId, player, this.pos, type);
+            return new ContainerMarker(syncId, player, this.pos, type, inventoryX, inventoryY);
         }
 
         @Override
