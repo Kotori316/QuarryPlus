@@ -5,6 +5,7 @@ import java.util.stream.Stream;
 
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.integration.ftbchunks.FTBChunksProtectionCheck;
 import com.yogpc.qp.integration.wrench.WrenchItems;
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.EnchantedLootFunction;
@@ -21,6 +22,7 @@ import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.CombinedBlockEntityTicker;
 import com.yogpc.qp.utils.MapMulti;
 import com.yogpc.qp.utils.QuarryChunkLoadUtil;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -128,6 +130,8 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
                 enchantment.sort(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR);
                 quarry.initialSetting(enchantment);
                 quarry.area = findArea(level, pos, facing.getOpposite(), quarry.getStorage()::addItem);
+                if (entity != null && FTBChunksProtectionCheck.isAreaProtected(quarry.area.shrink(1, 0, 1), quarry.getTargetWorld().dimension()))
+                    entity.sendMessage(new TranslatableComponent("quarryplus.chat.warn_protected_area"), Util.NIL_UUID);
                 var preForced = QuarryChunkLoadUtil.makeChunkLoaded(level, pos, quarry.enabled);
                 quarry.setChunkPreLoaded(preForced);
                 PacketHandler.sendToClient(new ClientSyncMessage(quarry), level);

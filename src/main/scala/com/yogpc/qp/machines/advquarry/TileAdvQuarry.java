@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.integration.ftbchunks.FTBChunksProtectionCheck;
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.BreakResult;
 import com.yogpc.qp.machines.CheckerLog;
@@ -209,6 +210,10 @@ public class TileAdvQuarry extends PowerTile implements
     @Override
     public List<EnchantmentLevel> getEnchantments() {
         return this.enchantments;
+    }
+
+    public boolean canStartWork() {
+        return area != null && !FTBChunksProtectionCheck.isAreaProtected(area.shrink(1, 0, 1), getTargetWorld().dimension());
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
