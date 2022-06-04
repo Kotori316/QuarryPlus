@@ -47,7 +47,7 @@ jobs:
       - name: Check Warning
         run: chmod +x ./gradlew && ./gradlew javaToolchains CheckCompileOption --no-daemon --warning-mode all
       - name: Test Only
-        if: ${{ contains(github.event.head_commit.message, '[skip release]') || github.event_name == 'pull_request' || true}}
+        if: ${{ contains(github.event.head_commit.message, '[skip release]') || github.event_name == 'pull_request'}}
         run: chmod +x ./gradlew && ./gradlew build --no-daemon
       - name: RunData
         run: ./gradlew runData
@@ -56,7 +56,7 @@ jobs:
         env:
           RUN_GAME_TEST: true
       - name: Test and Publish
-        if: ${{ !contains(github.event.head_commit.message, '[skip release]') && github.event_name != 'pull_request' && false}}
+        if: ${{ !contains(github.event.head_commit.message, '[skip release]') && github.event_name != 'pull_request'}}
         run: chmod +x ./gradlew && ./gradlew build curseforge publish --no-daemon
         env:
           CURSEFORGE_KEY: ${{ secrets.CURSEFORGE_KEY }}
