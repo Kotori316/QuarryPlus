@@ -14,6 +14,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -86,6 +87,7 @@ public class ScreenFlexMarker extends AbstractContainerScreen<ContainerMarker> i
 
     @Override
     protected void renderLabels(PoseStack matrices, int mouseX, int mouseY) {
+        super.renderLabels(matrices, mouseX, mouseY);
         TranslatableComponent s = new TranslatableComponent(TileFlexMarker.Movable.UP.transName);
         this.font.draw(matrices, s, ((float) this.imageWidth - font.width(s)) / 2, 6, 0x404040);
         s = new TranslatableComponent(TileFlexMarker.Movable.FORWARD.transName);
@@ -103,6 +105,19 @@ public class ScreenFlexMarker extends AbstractContainerScreen<ContainerMarker> i
             var x = (float) this.imageWidth - Math.max(font.width(start), font.width(end)) - 10;
             font.draw(matrices, start, x, 6 + yOffsetBottom + 5, 0x404040);
             font.draw(matrices, end, x, 6 + yOffsetBottom + 15, 0x404040);
+
+            var minPos = new BlockPos(area.minX(), area.minY(), area.minZ());
+            var maxPos = new BlockPos(area.maxX(), area.maxY(), area.maxZ());
+            String distanceUp = String.valueOf(TileFlexMarker.Movable.UP.distanceFromOrigin(marker.getBlockPos(), minPos, maxPos, marker.direction));
+            String distanceLeft = String.valueOf(TileFlexMarker.Movable.LEFT.distanceFromOrigin(marker.getBlockPos(), minPos, maxPos, marker.direction));
+            String distanceForward = String.valueOf(TileFlexMarker.Movable.FORWARD.distanceFromOrigin(marker.getBlockPos(), minPos, maxPos, marker.direction));
+            String distanceRight = String.valueOf(TileFlexMarker.Movable.RIGHT.distanceFromOrigin(marker.getBlockPos(), minPos, maxPos, marker.direction));
+            String distanceDown = String.valueOf(TileFlexMarker.Movable.DOWN.distanceFromOrigin(marker.getBlockPos(), minPos, maxPos, marker.direction));
+            font.draw(matrices, distanceUp, ((float) this.imageWidth - font.width(distanceUp)) / 2, 6 + 32, 0x404040);
+            font.draw(matrices, distanceLeft, ((float) this.imageWidth - font.width(distanceLeft)) / 2 - 40, 6 + 32 + yOffsetCenter, 0x404040);
+            font.draw(matrices, distanceForward, ((float) this.imageWidth - font.width(distanceForward)) / 2, 6 + 32 + yOffsetCenter, 0x404040);
+            font.draw(matrices, distanceRight, ((float) this.imageWidth - font.width(distanceRight)) / 2 + 40, 6 + 32 + yOffsetCenter, 0x404040);
+            font.draw(matrices, distanceDown, ((float) this.imageWidth - font.width(distanceDown)) / 2, 6 + 32 + yOffsetBottom, 0x404040);
         });
     }
 

@@ -129,7 +129,11 @@ public class TileFlexMarker extends BlockEntity implements QuarryMarker, Checker
 
     @Override
     public Optional<Area> getArea() {
-        return Optional.of(new Area(min, max, direction));
+        if (this.direction == null) {
+            return Optional.empty();
+        } else {
+            return Optional.of(new Area(min, max, direction));
+        }
     }
 
     @Override
@@ -172,6 +176,12 @@ public class TileFlexMarker extends BlockEntity implements QuarryMarker, Checker
 
         public static Movable valueOf(int i) {
             return v[i];
+        }
+
+        public int distanceFromOrigin(BlockPos origin, BlockPos areaMin, BlockPos areaMax, Direction facing) {
+            Direction actualFacing = getActualFacing(facing);
+            BlockPos relative = actualFacing.getAxisDirection() == Direction.AxisDirection.POSITIVE ? areaMax : areaMin;
+            return Math.abs(getDistance(origin, relative, actualFacing.getAxis()));
         }
 
         static {
