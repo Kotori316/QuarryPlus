@@ -45,7 +45,7 @@ public class ScreenFlexMarker extends AbstractContainerScreen<ContainerMarker> i
     public void init() {
         super.init();
         TextComponent[] mp = Stream.of("--", "-", "+", "++").map(TextComponent::new).toArray(TextComponent[]::new);
-        int w = 10;
+        int w = Stream.of(mp).mapToInt(font::width).max().orElseThrow();
         int h = 20;
         int top = 16;
         AtomicInteger counter = new AtomicInteger();
