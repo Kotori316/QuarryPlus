@@ -24,10 +24,23 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AreaTest {
     Area area = new Area(3, 4, 5, 9, 8, 7, Direction.UP);
+
+    @Test
+    void badArguments() {
+        assertAll(
+            () -> assertThrows(IllegalArgumentException.class, () ->
+                new Area(0, 0, 0, -1, 0, 0, Direction.UP)),
+            () -> assertThrows(IllegalArgumentException.class, () ->
+                new Area(0, 0, 0, 0, -1, 0, Direction.UP)),
+            () -> assertThrows(IllegalArgumentException.class, () ->
+                new Area(0, 0, 0, 0, 0, -1, Direction.UP))
+        );
+    }
 
     @ParameterizedTest
     @ValueSource(ints = {0, 1, 2, 3, 4})
@@ -165,6 +178,45 @@ class AreaTest {
         void intStreamTo5() {
             var array = Area.to(4, 4).toArray();
             assertArrayEquals(new int[]{4}, array);
+        }
+    }
+
+    @Nested
+    class ShrinkTest {
+        @Test
+        void shrinkX1() {
+            var shrunk = area.shrink(1, 0, 0);
+            assertEquals(new Area(4, 4, 5, 8, 8, 7, Direction.UP), shrunk);
+        }
+
+        @Test
+        void shrinkX3() {
+            var shrunk = area.shrink(3, 0, 0);
+            assertEquals(new Area(6, 4, 5, 6, 8, 7, Direction.UP), shrunk);
+        }
+
+        @Test
+        void shrinkX4() {
+            var shrunk = area.shrink(4, 0, 0);
+            assertEquals(new Area(5, 4, 5, 7, 8, 7, Direction.UP), shrunk);
+        }
+
+        @Test
+        void shrinkY1() {
+            var shrunk = area.shrink(0, 1, 0);
+            assertEquals(new Area(3, 5, 5, 9, 7, 7, Direction.UP), shrunk);
+        }
+
+        @Test
+        void shrinkY2() {
+            var shrunk = area.shrink(0, 2, 0);
+            assertEquals(new Area(3, 6, 5, 9, 6, 7, Direction.UP), shrunk);
+        }
+
+        @Test
+        void shrinkZ1() {
+            var shrunk = area.shrink(0, 0, 1);
+            assertEquals(new Area(3, 4, 6, 9, 8, 6, Direction.UP), shrunk);
         }
     }
 
