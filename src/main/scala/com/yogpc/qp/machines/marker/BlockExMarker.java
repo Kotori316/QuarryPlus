@@ -176,7 +176,7 @@ public abstract class BlockExMarker extends QPBlock implements EntityBlock {
 
         @Override
         protected void openGUI(Level worldIn, BlockPos pos, Player playerIn) {
-            NetworkHooks.openGui(((ServerPlayer) playerIn), new InteractionObject(pos, Holder.FLEX_MARKER_MENU_TYPE, getDescriptionId(), 29, 107), pos);
+            NetworkHooks.openGui(((ServerPlayer) playerIn), new InteractionObject(pos, Holder.FLEX_MARKER_MENU_TYPE, getDescriptionId(), 29, 139), pos);
         }
 
         @Override
