@@ -41,6 +41,7 @@
 
 ### Misc
 
+* Improved - The screen pf Flexible Marker now shows relative position.
 * Changed - Flexible Marker can now select up to 256 blocks.
 * Use conventional tags in recipe.
 * Update for 1.18.2
