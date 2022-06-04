@@ -153,11 +153,7 @@ dependencies {
     implementation "com.google.code.findbugs:jsr305:3.0.1"
     modCompileOnly "alexiil.mc.lib:libblockattributes-all:${project.bc_attribute_version}"
 
-    if (Boolean.parseBoolean(System.getenv("FABRIC_SERVER"))) {
-        modCompileOnly("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}")
-    } else {
-        modRuntimeOnly("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}")
-    }
+    modCompileOnly("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}")
     modImplementation("teamreborn:energy:${project.tech_energy_version}")
     modCompileOnly("RebornCore:RebornCore-1.18:${project.RebornCore_version}") {
         transitive = false
