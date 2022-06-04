@@ -3,6 +3,7 @@ package com.yogpc.qp.integration.ftbchunks;
 import java.util.Locale;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
@@ -26,11 +27,14 @@ public final class FTBChunksProtectionCheck {
     }
 
     static boolean doesAreaHasProtectedChunk(Area area, Predicate<ChunkPos> predicate) {
+        return getChunkPosStream(area).anyMatch(predicate);
+    }
+
+    static Stream<ChunkPos> getChunkPosStream(Area area) {
         return IntStream.rangeClosed(area.minX() / 16, area.maxX() / 16).boxed()
             .flatMap(x -> IntStream.rangeClosed(area.minZ() / 16, area.maxZ() / 16).boxed()
                 .map(z -> new ChunkPos(x, z)))
-            .distinct()
-            .anyMatch(predicate);
+            .distinct();
     }
 
     private static final class Accessor {
