@@ -109,6 +109,7 @@
   "quarryplus.chat.quarry.restart": "クァーリーが再開しました。",
   "quarryplus.chat.quarry_mode": "クァーリーモード",
   "quarryplus.chat.warn_area": "[QuarryPlus] 採掘エリアが狭すぎます。",
+  "quarryplus.chat.warn_protected_area": "保護されたチャンクが採掘範囲に含まれているため動作を中止します",
   "quarryplus.chat.y_level": "この機械はy=%sまで採掘します。",
   "quarryplus.client.tooltip": "クライアントの設定",
   "quarryplus.gui.advpump.delete_false": "Delete Off",
