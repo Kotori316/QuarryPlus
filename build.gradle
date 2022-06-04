@@ -275,9 +275,9 @@ String joinedLog() {
             "* Mapping Official",
             "* Fabric API ${project.fabric_version}",
             "* Fabric Loader ${project.loader_version}",
-            "* Lib Block Attributes ${project.bc_attribute_version}",
-            "* TechReborn Energy ${project.tech_energy_version}",
-            "* TechReborn ${project.TechReborn_version}",
+            // "* Lib Block Attributes ${project.bc_attribute_version}",
+            // "* TechReborn Energy ${project.tech_energy_version}",
+            // "* TechReborn ${project.TechReborn_version}",
             "* Cloth ${project.cloth_version}",
             "* Mod Menu ${project.mod_menu_version}",
             "* WTHIT ${project.wthit_version}",
@@ -299,7 +299,7 @@ curseforge {
         id = '282837'
         changelogType = 'markdown'
         addGameVersion 'Fabric'
-        addGameVersion project.minecraft_version
+        addGameVersion '1.19-Snapshot' // project.minecraft_version
         changelog = curseChangelog()
         releaseType = isInCI() ? 'alpha' : 'beta'
         mainArtifact(remapJar) {

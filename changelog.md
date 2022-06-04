@@ -1,3 +1,13 @@
+## 1.19
+
+### Changes
+
+* Removed - Marker Plus. Use Flexible Marker instead.
+
+### Misc
+
+* Update for 1.19-rc2
+
 ## 1.18
 
 ### Addition
