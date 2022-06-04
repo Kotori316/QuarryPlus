@@ -72,7 +72,9 @@ public final class AdvActionMessage implements IMessage {
                         case MODULE_INV -> PacketHandler.getPlayer(supplier.get())
                             .flatMap(MapMulti.optCast(ServerPlayer.class))
                             .ifPresent(quarry::openModuleGui);
-                        case QUICK_START -> quarry.setAction(new AdvQuarryAction.BreakBlock(quarry));
+                        case QUICK_START -> {
+                            if (quarry.canStartWork()) quarry.setAction(new AdvQuarryAction.BreakBlock(quarry));
+                        }
                     }
                 }));
     }
