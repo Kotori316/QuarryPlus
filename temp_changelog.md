@@ -1,3 +1,9 @@
+## Version 18.12
+
+* Changed the content of Flexible Marker GUI.
+  * Relative positions are added.
+* Quarry now stops working in protected area by FTB Chunks.
+
 ## Version 18.11
 
 * Fixed - the drop item of Waterlogged Marker was wrong.
