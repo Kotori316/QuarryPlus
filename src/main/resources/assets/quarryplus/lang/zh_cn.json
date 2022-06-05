@@ -109,6 +109,7 @@
   "quarryplus.chat.quarry.restart": "采石场已重启",
   "quarryplus.chat.quarry_mode": "采石场模式",
   "quarryplus.chat.warn_area": "[QuarryPlus] Area is too small.",
+  "quarryplus.chat.warn_protected_area": "Area contains protected chunks. Quarry has stopped.",
   "quarryplus.chat.y_level": "采石场挖掘到 %s。",
   "quarryplus.client.tooltip": "客户端",
   "quarryplus.gui.advpump.delete_false": "删除关闭",

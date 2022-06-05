@@ -19,6 +19,15 @@ public record Area(int minX, int minY, int minZ, int maxX, int maxY, int maxZ,
     @Serial
     private static final long serialVersionUID = 1L;
 
+    public Area {
+        if (minX > maxX)
+            throw new IllegalArgumentException("MinX(%d) must be less than or equal to MaxX(%d)".formatted(minX, maxX));
+        if (minY > maxY)
+            throw new IllegalArgumentException("MinY(%d) must be less than or equal to MaxY(%d)".formatted(minY, maxY));
+        if (minZ > maxZ)
+            throw new IllegalArgumentException("MinZ(%d) must be less than or equal to MaxZ(%d)".formatted(minZ, maxZ));
+    }
+
     public Area(Vec3i pos1, Vec3i pos2, Direction direction) {
         this(Math.min(pos1.getX(), pos2.getX()), Math.min(pos1.getY(), pos2.getY()), Math.min(pos1.getZ(), pos2.getZ()),
             Math.max(pos1.getX(), pos2.getX()), Math.max(pos1.getY(), pos2.getY()), Math.max(pos1.getZ(), pos2.getZ()), direction);
@@ -38,6 +47,19 @@ public record Area(int minX, int minY, int minZ, int maxX, int maxY, int maxZ,
         } else {
             return this;
         }
+    }
+
+    public Area shrink(int x, int y, int z) {
+        int x1 = minX + x;
+        int x2 = maxX - x;
+        int y1 = minY + y;
+        int y2 = maxY - y;
+        int z1 = minZ + z;
+        int z2 = maxZ - z;
+        return new Area(
+            Math.min(x1, x2), Math.min(y1, y2), Math.min(z1, z2),
+            Math.max(x1, x2), Math.max(y1, y2), Math.max(z1, z2),
+            direction);
     }
 
     public boolean isInAreaIgnoreY(Vec3i vec3i) {

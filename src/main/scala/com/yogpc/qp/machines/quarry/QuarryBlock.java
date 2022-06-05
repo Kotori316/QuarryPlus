@@ -5,6 +5,7 @@ import java.util.stream.Stream;
 
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.integration.ftbchunks.FTBChunksProtectionCheck;
 import com.yogpc.qp.integration.wrench.WrenchItems;
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.Direction8;
@@ -85,7 +86,10 @@ public class QuarryBlock extends QPBlock implements EntityBlock {
                 quarry.setEnchantments(EnchantmentHelper.getEnchantments(stack));
                 quarry.setTileDataFromItem(BlockItem.getBlockEntityData(stack));
                 var area = findArea(level, pos, facing.getOpposite(), quarry.storage::addItem);
-                if (area.maxX() - area.minX() > 1 && area.maxZ() - area.minZ() > 1) {
+                if (FTBChunksProtectionCheck.isAreaProtected(area, level.dimension())) {
+                    if (entity instanceof Player player)
+                        player.displayClientMessage(new TranslatableComponent("quarryplus.chat.warn_protected_area"), false);
+                } else if (area.maxX() - area.minX() > 1 && area.maxZ() - area.minZ() > 1) {
                     quarry.setState(QuarryState.WAITING, state.setValue(BlockStateProperties.FACING, facing));
                     quarry.setArea(area);
                 } else {

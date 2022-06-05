@@ -105,7 +105,7 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
 
         @Override
         public void tick(Level level, BlockPos pos, BlockState state, TileAdvQuarry quarry) {
-            if (quarry.getEnergy() > quarry.getMaxEnergy() / 4) {
+            if (quarry.getEnergy() > quarry.getMaxEnergy() / 4 && quarry.canStartWork()) {
                 quarry.setAction(new MakeFrame(quarry.getArea()));
             }
         }
@@ -190,8 +190,8 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
             return pos -> {
                 var state = world.getBlockState(pos);
                 return state.is(Holder.BLOCK_FRAME) // Frame
-                    || !quarry.canBreak(world, pos, state) // Unbreakable
-                    || pos.equals(quarry.getBlockPos()) // This machine
+                       || !quarry.canBreak(world, pos, state) // Unbreakable
+                       || pos.equals(quarry.getBlockPos()) // This machine
                     ;
             };
         }
