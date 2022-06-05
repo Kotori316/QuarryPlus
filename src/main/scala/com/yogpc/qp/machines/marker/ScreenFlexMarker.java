@@ -9,6 +9,7 @@ import com.yogpc.qp.packet.PacketHandler;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -19,18 +20,20 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class ScreenFlexMarker extends AbstractContainerScreen<ContainerMarker> {
-    private static final ResourceLocation LOCATION = new ResourceLocation(QuarryPlus.modID, "textures/gui/marker.png");
+    private static final ResourceLocation LOCATION = new ResourceLocation(QuarryPlus.modID, "textures/gui/flex_marker.png");
     private static final int upSide = 1;
     private static final int center = 3;
     private static final int downSide = 1;
     private static final int[] amounts = {-16, -1, 1, 16};
     private final TileFlexMarker marker;
+    private static final int yOffsetCenter = 45;
+    private static final int yOffsetBottom = 90;
 
     public ScreenFlexMarker(ContainerMarker containerMarker, Inventory inventory, Component component) {
         super(containerMarker, inventory, component);
         //217, 188
         this.imageWidth = 217;
-        this.imageHeight = 188;
+        this.imageHeight = 220;
         this.inventoryLabelY = this.imageHeight - 96 + 2; // y position of text, inventory
         marker = (TileFlexMarker) containerMarker.player.getLevel().getBlockEntity(containerMarker.pos);
     }
@@ -39,7 +42,7 @@ public class ScreenFlexMarker extends AbstractContainerScreen<ContainerMarker> {
     public void init() {
         super.init();
         TextComponent[] mp = Stream.of("--", "-", "+", "++").map(TextComponent::new).toArray(TextComponent[]::new);
-        int w = 10;
+        int w = Stream.of(mp).mapToInt(font::width).max().orElseThrow();
         int h = 20;
         int top = 16;
 
@@ -50,12 +53,12 @@ public class ScreenFlexMarker extends AbstractContainerScreen<ContainerMarker> {
         }
         for (int i = 0; i < center; i++) {
             for (int j = 0; j < mp.length; j++) {
-                addRenderableWidget(new Button(this.getGuiLeft() + imageWidth / 2 - 4 * w * center / 2 + i * w * mp.length + w * j, this.getGuiTop() + top + 35, w, h, mp[j], this::actionPerformed));
+                addRenderableWidget(new Button(this.getGuiLeft() + imageWidth / 2 - 4 * w * center / 2 + i * w * mp.length + w * j, this.getGuiTop() + top + yOffsetCenter, w, h, mp[j], this::actionPerformed));
             }
         }
         for (int i = 0; i < downSide; i++) {
             for (int j = 0; j < mp.length; j++) {
-                addRenderableWidget(new Button(this.getGuiLeft() + imageWidth / 2 - 4 * w * downSide / 2 + w * j, this.getGuiTop() + top + 70, w, h, mp[j], this::actionPerformed));
+                addRenderableWidget(new Button(this.getGuiLeft() + imageWidth / 2 - 4 * w * downSide / 2 + w * j, this.getGuiTop() + top + yOffsetBottom, w, h, mp[j], this::actionPerformed));
             }
         }
     }
@@ -81,20 +84,33 @@ public class ScreenFlexMarker extends AbstractContainerScreen<ContainerMarker> {
         var s = new TranslatableComponent(TileFlexMarker.Movable.UP.transName);
         this.font.draw(matrices, s, ((float) this.imageWidth - font.width(s)) / 2, 6, 0x404040);
         s = new TranslatableComponent(TileFlexMarker.Movable.FORWARD.transName);
-        this.font.draw(matrices, s, ((float) this.imageWidth - font.width(s)) / 2, 6 + 35, 0x404040);
+        this.font.draw(matrices, s, ((float) this.imageWidth - font.width(s)) / 2, 6 + yOffsetCenter, 0x404040);
         s = new TranslatableComponent(TileFlexMarker.Movable.LEFT.transName);
-        this.font.draw(matrices, s, ((float) this.imageWidth - font.width(s)) / 2 - 40, 6 + 35, 0x404040);
+        this.font.draw(matrices, s, ((float) this.imageWidth - font.width(s)) / 2 - 40, 6 + yOffsetCenter, 0x404040);
         s = new TranslatableComponent(TileFlexMarker.Movable.RIGHT.transName);
-        this.font.draw(matrices, s, ((float) this.imageWidth - font.width(s)) / 2 + 40, 6 + 35, 0x404040);
+        this.font.draw(matrices, s, ((float) this.imageWidth - font.width(s)) / 2 + 40, 6 + yOffsetCenter, 0x404040);
         s = new TranslatableComponent(TileFlexMarker.Movable.DOWN.transName);
-        this.font.draw(matrices, s, ((float) this.imageWidth - font.width(s)) / 2, 6 + 70, 0x404040);
+        this.font.draw(matrices, s, ((float) this.imageWidth - font.width(s)) / 2, 6 + yOffsetBottom, 0x404040);
 
         marker.getArea().ifPresent(area -> {
             var start = "(%d, %d, %d)".formatted(area.minX(), area.minY(), area.minZ());
             var end = "(%d, %d, %d)".formatted(area.maxX(), area.maxY(), area.maxZ());
             var x = (float) this.imageWidth - Math.max(font.width(start), font.width(end)) - 10;
-            font.draw(matrices, start, x, 6 + 75, 0x404040);
-            font.draw(matrices, end, x, 6 + 85, 0x404040);
+            font.draw(matrices, start, x, 6 + yOffsetBottom + 5, 0x404040);
+            font.draw(matrices, end, x, 6 + yOffsetBottom + 15, 0x404040);
+
+            var minPos = new BlockPos(area.minX(), area.minY(), area.minZ());
+            var maxPos = new BlockPos(area.maxX(), area.maxY(), area.maxZ());
+            String distanceUp = String.valueOf(TileFlexMarker.Movable.UP.distanceFromOrigin(marker.getBlockPos(), minPos, maxPos, marker.direction));
+            String distanceLeft = String.valueOf(TileFlexMarker.Movable.LEFT.distanceFromOrigin(marker.getBlockPos(), minPos, maxPos, marker.direction));
+            String distanceForward = String.valueOf(TileFlexMarker.Movable.FORWARD.distanceFromOrigin(marker.getBlockPos(), minPos, maxPos, marker.direction));
+            String distanceRight = String.valueOf(TileFlexMarker.Movable.RIGHT.distanceFromOrigin(marker.getBlockPos(), minPos, maxPos, marker.direction));
+            String distanceDown = String.valueOf(TileFlexMarker.Movable.DOWN.distanceFromOrigin(marker.getBlockPos(), minPos, maxPos, marker.direction));
+            font.draw(matrices, distanceUp, ((float) this.imageWidth - font.width(distanceUp)) / 2, 6 + 32, 0x404040);
+            font.draw(matrices, distanceLeft, ((float) this.imageWidth - font.width(distanceLeft)) / 2 - 40, 6 + 32 + yOffsetCenter, 0x404040);
+            font.draw(matrices, distanceForward, ((float) this.imageWidth - font.width(distanceForward)) / 2, 6 + 32 + yOffsetCenter, 0x404040);
+            font.draw(matrices, distanceRight, ((float) this.imageWidth - font.width(distanceRight)) / 2 + 40, 6 + 32 + yOffsetCenter, 0x404040);
+            font.draw(matrices, distanceDown, ((float) this.imageWidth - font.width(distanceDown)) / 2, 6 + 32 + yOffsetBottom, 0x404040);
         });
     }
 
