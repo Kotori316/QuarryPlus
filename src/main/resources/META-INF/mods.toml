@@ -15,12 +15,12 @@ Adds some machines to make a big hole in your world.'''
 [[dependencies.quarryplus]]
     modId="forge"
     mandatory=true
-    versionRange = "[38,)"
+    versionRange = "[41,)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.quarryplus]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.18, )"
+    versionRange="[1.19, )"
     ordering="NONE"
     side="BOTH"

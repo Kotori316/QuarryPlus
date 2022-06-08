@@ -2,6 +2,8 @@
   "pack": {
     "description": "QuarryPlus",
     "pack_format": 9,
+    "forge:resource_pack_format": 9,
+    "forge:data_pack_format": 10,
     "_comment": "V9"
   }
 }
