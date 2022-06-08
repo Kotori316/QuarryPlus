@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - "1.18"
+      - "1.19"
     tags:
       - "!*"
     paths:
@@ -14,14 +14,14 @@ on:
       - ".github/workflows/gradle.yml"
   pull_request:
     branches:
-      - "1.18"
+      - "1.19"
 
 jobs:
   assemble:
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request'
     container:
-      image: ghcr.io/kotori316/fictional-meme/fictional-meme:1.18.2
+      image: ghcr.io/kotori316/fictional-meme/fictional-meme:1.19
       credentials:
         username: kotori316
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -42,14 +42,14 @@ jobs:
   cross-check-runData:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/kotori316/fictional-meme/fictional-meme:1.18.2
+      image: ghcr.io/kotori316/fictional-meme/fictional-meme:1.19
       credentials:
         username: kotori316
         password: ${{ secrets.GITHUB_TOKEN }}
     strategy:
       fail-fast: false
       matrix:
-        forge: [ 1.18, default ]
+        forge: [ 1.19, default ]
     steps:
       - name: Checkout QuarryPlus repo
         uses: actions/checkout@v2
@@ -67,14 +67,14 @@ jobs:
   cross-check-JUnit:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/kotori316/fictional-meme/fictional-meme:1.18.2
+      image: ghcr.io/kotori316/fictional-meme/fictional-meme:1.19
       credentials:
         username: kotori316
         password: ${{ secrets.GITHUB_TOKEN }}
     strategy:
       fail-fast: false
       matrix:
-        forge: [ 1.18, default ]
+        forge: [ 1.19, default ]
     steps:
       - uses: actions/checkout@v2
       - name: Get latest version
@@ -99,7 +99,7 @@ jobs:
   check-game-test:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/kotori316/fictional-meme/fictional-meme:1.18.2
+      image: ghcr.io/kotori316/fictional-meme/fictional-meme:1.19
       credentials:
         username: kotori316
         password: ${{ secrets.GITHUB_TOKEN }}
