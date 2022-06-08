@@ -1,38 +1,50 @@
 package com.yogpc.qp.machines.module;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.stream.IntStream;
 
 import com.yogpc.qp.Holder;
-import com.yogpc.qp.QuarryPlusTest;
+import com.yogpc.qp.QuarryPlus;
+import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.gametest.framework.GameTestGenerator;
+import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.world.item.ItemStack;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
+import net.minecraftforge.gametest.GameTestHolder;
+import net.minecraftforge.gametest.PrefixGameTestTemplate;
+
+import com.kotori316.testutil.GameTestUtil;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@ExtendWith(QuarryPlusTest.class)
+@GameTestHolder(QuarryPlus.modID)
+@PrefixGameTestTemplate(value = false)
 class ExpModuleItemTest {
-    @Test
+    static final String BATCH = "ExpModuleItem";
+
+    @GameTest(template = GameTestUtil.EMPTY_STRUCTURE, batch = BATCH)
     void dummy() {
         assertTrue(expValue().findAny().isPresent());
     }
 
-    @Test
+    @GameTest(template = GameTestUtil.EMPTY_STRUCTURE, batch = BATCH)
     void instance() {
         var stack = new ItemStack(Holder.ITEM_EXP_MODULE);
         var module = Holder.ITEM_EXP_MODULE.getModule(stack);
         assertTrue(module instanceof ExpModuleItem.ExpItemModule);
     }
 
-    @ParameterizedTest
-    @MethodSource("expValue")
+    @GameTestGenerator
+    List<TestFunction> add() {
+        return expValue().mapToObj(
+            i -> GameTestUtil.create(QuarryPlus.modID, BATCH, "add(%d)".formatted(i), () -> add(i))
+        ).toList();
+    }
+
     void add(int value) {
         var stack = new ItemStack(Holder.ITEM_EXP_MODULE);
         var module = new ExpModuleItem.ExpItemModule(stack);
@@ -44,7 +56,7 @@ class ExpModuleItemTest {
         );
     }
 
-    @Test
+    @GameTest(template = GameTestUtil.EMPTY_STRUCTURE, batch = BATCH)
     void add0() {
         var stack = new ItemStack(Holder.ITEM_EXP_MODULE);
         var module = new ExpModuleItem.ExpItemModule(stack);
@@ -53,8 +65,13 @@ class ExpModuleItemTest {
         assertEquals(0, module.getExp());
     }
 
-    @ParameterizedTest
-    @MethodSource("expValue")
+    @GameTestGenerator
+    List<TestFunction> addTwice() {
+        return expValue().mapToObj(
+            i -> GameTestUtil.create(QuarryPlus.modID, BATCH, "addTwice(%d)".formatted(i), () -> addTwice(i))
+        ).toList();
+    }
+
     void addTwice(int value) {
         var stack = new ItemStack(Holder.ITEM_EXP_MODULE);
         var module = new ExpModuleItem.ExpItemModule(stack);

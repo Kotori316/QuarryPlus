@@ -14,6 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class EnergyModuleItem extends QPItem implements QuarryModuleProvider.Item {
@@ -28,9 +29,14 @@ public class EnergyModuleItem extends QPItem implements QuarryModuleProvider.Ite
     @Override
     // Overload for test.
     public EnergyModule getModule(ItemStack stack) {
-        if (this.energy > 0) {
+        return getEnergyModule(this.energy, stack.getCount());
+    }
+
+    @NotNull
+    static EnergyModule getEnergyModule(int itemEnergy, int stackCount) {
+        if (itemEnergy > 0) {
             try {
-                var energy = Math.multiplyExact(this.energy, stack.getCount());
+                var energy = Math.multiplyExact(itemEnergy, stackCount);
                 return new EnergyModule(energy);
             } catch (ArithmeticException ignore) {
                 return new EnergyModule(Integer.MAX_VALUE);

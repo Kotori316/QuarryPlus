@@ -1,19 +1,28 @@
 package com.yogpc.qp.machines.module;
 
+import java.util.List;
+import java.util.stream.IntStream;
+
 import com.yogpc.qp.Holder;
-import com.yogpc.qp.QuarryPlusTest;
+import com.yogpc.qp.QuarryPlus;
+import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.gametest.framework.GameTestGenerator;
+import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.world.item.ItemStack;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import net.minecraftforge.gametest.GameTestHolder;
+import net.minecraftforge.gametest.PrefixGameTestTemplate;
+
+import com.kotori316.testutil.GameTestUtil;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@ExtendWith(QuarryPlusTest.class)
+@GameTestHolder(QuarryPlus.modID)
+@PrefixGameTestTemplate(value = false)
 class EnergyModuleItemTest {
-    @Test
+    static final String BATCH = "EnergyModuleItem";
+
+    @GameTest(template = GameTestUtil.EMPTY_STRUCTURE, batch = BATCH)
     void noOverflow() {
         var stack = new ItemStack(Holder.ITEM_FUEL_MODULE_NORMAL, 5);
         // The energy of this module is in 0-100 FE/t, so I don't care overflow.
@@ -21,37 +30,44 @@ class EnergyModuleItemTest {
         assertTrue(0 < module.energy() && module.energy() < Integer.MAX_VALUE);
     }
 
-    @Test
+    @GameTest(template = GameTestUtil.EMPTY_STRUCTURE, batch = BATCH)
     void overflow1() {
         var stack = new ItemStack(Holder.ITEM_FUEL_MODULE_NORMAL, Integer.MAX_VALUE);
         var module = Holder.ITEM_FUEL_MODULE_NORMAL.getModule(stack);
         assertEquals(Integer.MAX_VALUE, module.energy());
     }
 
-    @Test
+    @GameTest(template = GameTestUtil.EMPTY_STRUCTURE, batch = BATCH)
     void minusTo0() {
-        var minusItem = new EnergyModuleItem(-100, "minus_module");
-        var module = minusItem.getModule(new ItemStack(minusItem));
+        var module = EnergyModuleItem.getEnergyModule(-100, 1);
         assertEquals(0, module.energy());
     }
 
-    @Test
+    @GameTest(template = GameTestUtil.EMPTY_STRUCTURE, batch = BATCH)
     void creativeOverflow1() {
-        var creativeModuleItem = new EnergyModuleItem(Integer.MAX_VALUE, "creative_fuel_module");
-        var module = creativeModuleItem.getModule(new ItemStack(creativeModuleItem));
+        var module = EnergyModuleItem.getEnergyModule(Integer.MAX_VALUE, 1);
         assertEquals(Integer.MAX_VALUE, module.energy());
     }
 
-    @ParameterizedTest
-    @ValueSource(ints = {2, 5, 10, 16, 22, 64})
+    @GameTestGenerator
+    List<TestFunction> creativeOverflow2() {
+        return IntStream.of(2, 5, 10, 16, 22, 64).mapToObj(
+            i -> GameTestUtil.create(QuarryPlus.modID, BATCH, "creativeOverflow2(%d)".formatted(i), () -> creativeOverflow2(i))
+        ).toList();
+    }
+
     void creativeOverflow2(int stackSize) {
-        var creativeModuleItem = new EnergyModuleItem(Integer.MAX_VALUE, "creative_fuel_module");
-        var module = creativeModuleItem.getModule(new ItemStack(creativeModuleItem, stackSize));
+        var module = EnergyModuleItem.getEnergyModule(Integer.MAX_VALUE, stackSize);
         assertEquals(Integer.MAX_VALUE, module.energy());
     }
 
-    @ParameterizedTest
-    @ValueSource(ints = {-1, -4, -5, -10, -16, -43, -64})
+    @GameTestGenerator
+    List<TestFunction> minusStackSize() {
+        return IntStream.of(-1, -4, -5, -10, -16, -43, -64).mapToObj(
+            i -> GameTestUtil.create(QuarryPlus.modID, BATCH, "minusStackSize(%d)".formatted(i), () -> minusStackSize(i))
+        ).toList();
+    }
+
     void minusStackSize(int stackSize) {
         var stack = new ItemStack(Holder.ITEM_FUEL_MODULE_NORMAL, stackSize);
         var module = Holder.ITEM_FUEL_MODULE_NORMAL.getModule(stack);

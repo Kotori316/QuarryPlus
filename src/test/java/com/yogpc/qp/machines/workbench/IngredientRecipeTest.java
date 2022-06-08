@@ -12,18 +12,21 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.yogpc.qp.Holder;
-import com.yogpc.qp.QuarryPlusTest;
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.advpump.BlockAdvPump;
+import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.gametest.framework.GameTestGenerator;
+import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.crafting.conditions.ICondition;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
+import net.minecraftforge.gametest.GameTestHolder;
+import net.minecraftforge.gametest.PrefixGameTestTemplate;
+
+import com.kotori316.testutil.GameTestUtil;
 
 import static com.yogpc.qp.QuarryPlusTest.id;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -31,18 +34,20 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@ExtendWith(QuarryPlusTest.class)
+@GameTestHolder(QuarryPlus.modID)
+@PrefixGameTestTemplate(value = false)
 class IngredientRecipeTest {
+    static final String BATCH = "IngredientRecipe";
     static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
     static final IngredientRecipeSerialize SERIALIZE = new IngredientRecipeSerialize();
 
-    @Test
+    @GameTest(template = GameTestUtil.EMPTY_STRUCTURE, batch = BATCH)
     void dummy() {
-        assertTrue(advPumpRecipe().findAny().isPresent());
-        assertTrue(notAdvPumpRecipe().findAny().isPresent());
+        assertTrue(advPumpRecipeParam().findAny().isPresent());
+        assertTrue(notAdvPumpRecipeParam().findAny().isPresent());
     }
 
-    @Test
+    @GameTest(template = GameTestUtil.EMPTY_STRUCTURE, batch = BATCH)
     void dummyBlock() throws IOException {
         JsonObject jsonObject;
         try (InputStream stream = getClass().getResourceAsStream("/data/quarryplus/recipes/dummy_block.json");
@@ -56,8 +61,13 @@ class IngredientRecipeTest {
         assertEquals(Items.EMERALD_BLOCK, recipe.getResultItem().getItem());
     }
 
-    @ParameterizedTest
-    @MethodSource
+    @GameTestGenerator
+    List<TestFunction> advPumpRecipe() {
+        return advPumpRecipeParam().map(
+            i -> GameTestUtil.create(QuarryPlus.modID, BATCH, "advPumpRecipe(%s)".formatted(i), () -> advPumpRecipe(i))
+        ).toList();
+    }
+
     void advPumpRecipe(List<ItemStack> inventory) {
         var recipe = new IngredientRecipe(
             id(BlockAdvPump.NAME), new ItemStack(Holder.BLOCK_ADV_PUMP), 3200000 * PowerTile.ONE_FE, true, List.of(
@@ -70,7 +80,7 @@ class IngredientRecipeTest {
         assertTrue(recipe.hasAllRequiredItems(inventory), "Has All Items: " + inventory);
     }
 
-    static Stream<List<ItemStack>> advPumpRecipe() {
+    static Stream<List<ItemStack>> advPumpRecipeParam() {
         return Stream.of(
             List.of(new ItemStack(Holder.BLOCK_PUMP, 2), new ItemStack(Holder.BLOCK_MINING_WELL, 2), new ItemStack(Holder.BLOCK_MARKER, 3)),
             List.of(new ItemStack(Holder.ITEM_PUMP_MODULE, 2), new ItemStack(Holder.BLOCK_MINING_WELL, 2), new ItemStack(Holder.BLOCK_MARKER, 3)),
@@ -81,14 +91,19 @@ class IngredientRecipeTest {
             List.of(new ItemStack(Holder.BLOCK_PUMP, 2), new ItemStack(Holder.ITEM_PUMP_MODULE, 1),
                 new ItemStack(Holder.BLOCK_MINING_WELL, 2), new ItemStack(Holder.BLOCK_MARKER, 3)),
             Stream.<ItemLike>of(Holder.BLOCK_PUMP, Holder.BLOCK_MINING_WELL, Holder.BLOCK_MARKER).map(i -> new ItemStack(i, 3)).toList(),
-            Stream.<ItemLike>of(Holder.ITEM_PUMP_MODULE, Holder.BLOCK_MINING_WELL, Holder.BLOCK_MARKER).map(i -> new ItemStack(i, 3)).toList(),
+            Stream.of(Holder.ITEM_PUMP_MODULE, Holder.BLOCK_MINING_WELL, Holder.BLOCK_MARKER).map(i -> new ItemStack(i, 3)).toList(),
             Stream.<ItemLike>of(Holder.BLOCK_PUMP, Holder.BLOCK_MINING_WELL, Holder.BLOCK_MARKER).map(i -> new ItemStack(i, 10)).toList(),
-            Stream.<ItemLike>of(Holder.ITEM_PUMP_MODULE, Holder.BLOCK_MINING_WELL, Holder.BLOCK_MARKER).map(i -> new ItemStack(i, 10)).toList()
+            Stream.of(Holder.ITEM_PUMP_MODULE, Holder.BLOCK_MINING_WELL, Holder.BLOCK_MARKER).map(i -> new ItemStack(i, 10)).toList()
         );
     }
 
-    @ParameterizedTest
-    @MethodSource
+    @GameTestGenerator
+    List<TestFunction> notAdvPumpRecipe() {
+        return notAdvPumpRecipeParam().map(
+            i -> GameTestUtil.create(QuarryPlus.modID, BATCH, "notAdvPumpRecipe(%s)".formatted(i), () -> notAdvPumpRecipe(i))
+        ).toList();
+    }
+
     void notAdvPumpRecipe(List<ItemStack> inventory) {
         var recipe = new IngredientRecipe(
             id(BlockAdvPump.NAME), new ItemStack(Holder.BLOCK_ADV_PUMP), 3200000 * PowerTile.ONE_FE, true, List.of(
@@ -100,7 +115,7 @@ class IngredientRecipeTest {
         assertFalse(recipe.hasAllRequiredItems(inventory), "Doesn't have All Items: " + inventory);
     }
 
-    static Stream<List<ItemStack>> notAdvPumpRecipe() {
+    static Stream<List<ItemStack>> notAdvPumpRecipeParam() {
         return Stream.of(
             List.of(new ItemStack(Holder.BLOCK_PUMP, 1), new ItemStack(Holder.BLOCK_MINING_WELL, 2), new ItemStack(Holder.BLOCK_MARKER, 3)),
             List.of(new ItemStack(Holder.ITEM_PUMP_MODULE, 1), new ItemStack(Holder.BLOCK_MINING_WELL, 2), new ItemStack(Holder.BLOCK_MARKER, 3)),
@@ -108,9 +123,9 @@ class IngredientRecipeTest {
             List.of(new ItemStack(Holder.BLOCK_PUMP, 1), new ItemStack(Holder.ITEM_PUMP_MODULE, 1),
                 new ItemStack(Holder.BLOCK_MINING_WELL, 2), new ItemStack(Holder.BLOCK_MARKER, 3)),
             Stream.<ItemLike>of(Holder.BLOCK_PUMP, Holder.BLOCK_MINING_WELL, Holder.BLOCK_MARKER).map(i -> new ItemStack(i, 2)).toList(),
-            Stream.<ItemLike>of(Holder.ITEM_PUMP_MODULE, Holder.BLOCK_MINING_WELL, Holder.BLOCK_MARKER).map(i -> new ItemStack(i, 2)).toList(),
+            Stream.of(Holder.ITEM_PUMP_MODULE, Holder.BLOCK_MINING_WELL, Holder.BLOCK_MARKER).map(i -> new ItemStack(i, 2)).toList(),
             Stream.<ItemLike>of(Holder.BLOCK_PUMP, Holder.BLOCK_MINING_WELL, Holder.BLOCK_MARKER).map(i -> new ItemStack(i, 1)).toList(),
-            Stream.<ItemLike>of(Holder.ITEM_PUMP_MODULE, Holder.BLOCK_MINING_WELL, Holder.BLOCK_MARKER).map(i -> new ItemStack(i, 1)).toList(),
+            Stream.of(Holder.ITEM_PUMP_MODULE, Holder.BLOCK_MINING_WELL, Holder.BLOCK_MARKER).map(i -> new ItemStack(i, 1)).toList(),
             List.of()
         );
     }
