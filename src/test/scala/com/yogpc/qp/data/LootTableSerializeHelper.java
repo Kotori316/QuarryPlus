@@ -17,6 +17,7 @@ import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
+import net.minecraftforge.registries.ForgeRegistries;
 
 class LootTableSerializeHelper extends BlockLoot implements DataBuilder {
     private final Block block;
@@ -29,7 +30,7 @@ class LootTableSerializeHelper extends BlockLoot implements DataBuilder {
 
     @Override
     public ResourceLocation location() {
-        return block.getRegistryName();
+        return ForgeRegistries.BLOCKS.getKey(block);
     }
 
     @Override
@@ -51,9 +52,9 @@ class LootTableSerializeHelper extends BlockLoot implements DataBuilder {
     @Override
     public String toString() {
         return "LootTableSerializeHelper{" +
-            "block=" + block +
-            ", functions=" + functions +
-            '}';
+               "block=" + block +
+               ", functions=" + functions +
+               '}';
     }
 
     static LootTableSerializeHelper withDrop(Block block) {

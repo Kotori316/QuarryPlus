@@ -11,13 +11,11 @@ object QuarryPlusDataProvider {
 
   @SubscribeEvent
   def gatherData(event: GatherDataEvent): Unit = {
-    if (event.includeServer) {
-      event.getGenerator.addProvider(new BlockDrop(event.getGenerator))
-      event.getGenerator.addProvider(new Recipe(event.getGenerator))
-      event.getGenerator.addProvider(new RecipeAdvancement(event.getGenerator))
-      event.getGenerator.addProvider(new DefaultMachineConfig(event.getGenerator))
-      event.getGenerator.addProvider(new MineableTag(event.getGenerator, event.getExistingFileHelper))
-    }
+    event.getGenerator.addProvider(event.includeServer, new BlockDrop(event.getGenerator))
+    event.getGenerator.addProvider(event.includeServer, new Recipe(event.getGenerator))
+    event.getGenerator.addProvider(event.includeServer, new RecipeAdvancement(event.getGenerator))
+    event.getGenerator.addProvider(event.includeServer, new DefaultMachineConfig(event.getGenerator))
+    event.getGenerator.addProvider(event.includeServer, new MineableTag(event.getGenerator, event.getExistingFileHelper))
   }
 
   def location(path: String) = new ResourceLocation(QuarryPlus.modID, path)

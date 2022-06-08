@@ -13,9 +13,6 @@ import com.yogpc.qp.machines.quarry.TileQuarry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.Items;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -102,8 +99,9 @@ final class ConfigTest {
         }
 
         static Stream<ResourceLocation> notQuarryItems() {
-            return Stream.of(Items.DIRT, Items.AIR, EntityType.BAT, EntityType.ZOMBIE)
-                .map(ForgeRegistryEntry::getRegistryName);
+            return Stream.of(
+                "dirt", "air", "bat", "zombie"
+            ).map(ResourceLocation::new);
         }
 
         @Test

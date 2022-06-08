@@ -36,7 +36,7 @@ class EnchantmentLevelTest {
     @ParameterizedTest
     @MethodSource("enchantments")
     void fromId(Enchantment enchantment) {
-        var id = enchantment.getRegistryName();
+        var id = ForgeRegistries.ENCHANTMENTS.getKey(enchantment);
         var ans = new EnchantmentLevel(enchantment, 1);
         var fromName = new EnchantmentLevel(id, 1);
         assertEquals(ans, fromName);

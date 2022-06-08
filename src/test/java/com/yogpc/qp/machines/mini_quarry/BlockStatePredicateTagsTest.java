@@ -19,6 +19,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.kotori316.testutil.GameTestUtil;
@@ -53,7 +54,7 @@ public final class BlockStatePredicateTagsTest {
 
     @GameTestGenerator
     public List<TestFunction> cycleName() {
-        var names = Stream.of(Blocks.STONE, Blocks.DIAMOND_ORE).map(Block::getRegistryName);
+        var names = Stream.of(Blocks.STONE, Blocks.DIAMOND_ORE).map(ForgeRegistries.BLOCKS::getKey);
         var abnormalNames = Stream.of("as", "a:t", "", "fe:").map(ResourceLocation::new);
         return Stream.concat(names, abnormalNames)
             .map(BlockStatePredicate::name)
@@ -180,7 +181,6 @@ public final class BlockStatePredicateTagsTest {
                     Blocks.AIR.defaultBlockState())
                 .map(s -> () -> assertFalse(p.test(s, helper.getLevel(), BlockPos.ZERO)))
         );
-        assertTrue(p.toString().contains("valid=false"));
         helper.succeed();
     }
 }

@@ -19,6 +19,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
+import net.minecraftforge.gametest.ForgeGameTestHooks;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.Logger;
 
@@ -223,7 +224,8 @@ interface BlockStatePredicate {
                         .parse(new StringReader(blockPredicate));
                     return argument.test(new BlockInWorld(level, pos, true));
                 } catch (CommandSyntaxException e) {
-                    LOGGER.warn("Caught error in creating predicate.", e);
+                    if (!ForgeGameTestHooks.isGametestServer()) // Suppress warning in game test.
+                        LOGGER.warn("Caught error in creating predicate.", e);
                     return false;
                 }
             } else {

@@ -1,7 +1,6 @@
 package com.yogpc.qp.machines;
 
 import java.util.Optional;
-import java.util.Random;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -11,6 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.RandomSource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Nested;
@@ -132,7 +132,7 @@ class AreaTest {
     }
 
     static Stream<Area> randomArea() {
-        Random random = new Random(564);
+        var random = RandomSource.create(564);
         return Stream.concat(Stream.generate(() ->
                     new Area(new Vec3i(random.nextInt(), random.nextInt(), random.nextInt()),
                         new Vec3i(random.nextInt(), random.nextInt(), random.nextInt()), Direction.getRandom(random)))

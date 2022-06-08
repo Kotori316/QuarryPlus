@@ -1,7 +1,6 @@
 package com.yogpc.qp.machines.placer;
 
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -10,6 +9,7 @@ import io.netty.buffer.ByteBufAllocator;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +28,7 @@ class RemotePlacerMessageTest {
     }
 
     static Stream<Arguments> testArguments() {
-        var rand = new Random();
+        var rand = RandomSource.create();
         var poses1 = BlockPos.randomBetweenClosed(rand, 4, -3, -2, -1, 1, 2, 3);
         var poses2 = BlockPos.randomBetweenClosed(rand, 4, -3, -2, -1, 1, 2, 3);
         var dims = List.of(Level.OVERWORLD, Level.NETHER, Level.END);

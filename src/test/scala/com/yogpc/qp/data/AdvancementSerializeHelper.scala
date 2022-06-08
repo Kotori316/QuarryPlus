@@ -9,6 +9,7 @@ import net.minecraft.world.item.Item
 import net.minecraft.world.level.ItemLike
 import net.minecraftforge.common.crafting.CraftingHelper
 import net.minecraftforge.common.crafting.conditions.{ICondition, NotCondition, TagEmptyCondition}
+import net.minecraftforge.registries.ForgeRegistries
 
 case class AdvancementSerializeHelper private(location: ResourceLocation,
                                               builder: Advancement.Builder,
@@ -27,7 +28,7 @@ case class AdvancementSerializeHelper private(location: ResourceLocation,
   }
 
   def addItemCriterion(item: ItemLike): AdvancementSerializeHelper = {
-    val name: String = item.asItem().getRegistryName.getPath
+    val name: String = ForgeRegistries.ITEMS.getKey(item.asItem()).getPath
     this.copy(builder = builder.addCriterion(s"has_$name", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item.of(item).build)))
   }
 

@@ -1,8 +1,10 @@
 package com.yogpc.qp.machines;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.LongSupplier;
 
+import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.utils.QuarryChunkLoadUtil;
 import net.minecraft.ChatFormatting;
@@ -40,7 +42,9 @@ public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
 
     public PowerTile(BlockEntityType<?> type, @NotNull BlockPos pos, BlockState state) {
         super(type, pos, state);
-        ResourceLocation typeName = Objects.requireNonNull(ForgeRegistries.BLOCK_ENTITIES.getKey(type));
+        ResourceLocation typeName = Optional.ofNullable(ForgeRegistries.BLOCK_ENTITIES.getKey(type)).or(
+            () -> Holder.entityTypes().stream().filter(e -> e.t() == type).map(Holder.NamedEntry::name).findFirst()
+        ).orElseThrow(() -> new IllegalArgumentException("No location name found for " + type));
         this.enabled = QuarryPlus.config.enableMap.enabled(typeName);
         this.energyCounter = EnergyCounter.createInstance(QuarryPlus.config.debug() && enabled,
             "%s(%d, %d, %d)".formatted(getClass().getSimpleName(), pos.getX(), pos.getY(), pos.getZ()));

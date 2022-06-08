@@ -2,7 +2,6 @@ package com.yogpc.qp.machines.placer;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 import java.util.stream.StreamSupport;
 
 import com.yogpc.qp.Holder;
@@ -12,6 +11,7 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestGenerator;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.TestFunction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
@@ -41,7 +41,7 @@ public final class RemotePlacerGameTest {
 
     @GameTestGenerator
     public List<TestFunction> breakBlock() {
-        return StreamSupport.stream(BlockPos.randomBetweenClosed(new Random(), 4, 1, 2, 3, 4, 5, 6).spliterator(), false)
+        return StreamSupport.stream(BlockPos.randomBetweenClosed(RandomSource.create(), 4, 1, 2, 3, 4, 5, 6).spliterator(), false)
             .map(p -> GameTestUtil.create(QuarryPlus.modID, BATCH, "RemoteBreak(%s)".formatted(p), g -> breakBlock(g, p)))
             .toList();
     }
@@ -62,7 +62,7 @@ public final class RemotePlacerGameTest {
 
     @GameTestGenerator
     public List<TestFunction> placeBlock() {
-        return StreamSupport.stream(BlockPos.randomBetweenClosed(new Random(), 4, 1, 2, 3, 4, 5, 6).spliterator(), false)
+        return StreamSupport.stream(BlockPos.randomBetweenClosed(RandomSource.create(), 4, 1, 2, 3, 4, 5, 6).spliterator(), false)
             .map(p -> GameTestUtil.create(QuarryPlus.modID, BATCH, "PlaceBlock(%s)".formatted(p), g -> placeBlock(g, p)))
             .toList();
     }

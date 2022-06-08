@@ -1,13 +1,11 @@
 package com.yogpc.qp.data;
 
-import java.io.IOException;
 import java.util.List;
 
-import com.google.gson.GsonBuilder;
 import com.yogpc.qp.QuarryPlus;
+import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
-import net.minecraft.data.HashCache;
 import org.apache.logging.log4j.Logger;
 
 abstract class QuarryDataProvider implements DataProvider {
@@ -19,9 +17,8 @@ abstract class QuarryDataProvider implements DataProvider {
     }
 
     @Override
-    public void run(HashCache cache) throws IOException {
+    public void run(CachedOutput cache) {
         var path = generatorIn.getOutputFolder();
-        var gson = new GsonBuilder().setPrettyPrinting().create();
         for (DataBuilder builder : data()) {
             var out = path.resolve("data/%s/%s/%s.json".formatted(builder.location().getNamespace(), directory(), builder.location().getPath()))
                 .normalize()
@@ -29,7 +26,7 @@ abstract class QuarryDataProvider implements DataProvider {
             try {
                 LOGGER.info("Generating {}", out);
                 var json = builder.build();
-                DataProvider.save(gson, cache, json, out);
+                DataProvider.saveStable(cache, json, out);
             } catch (Exception e) {
                 LOGGER.error("Failed to generate json for {}", builder);
             }
