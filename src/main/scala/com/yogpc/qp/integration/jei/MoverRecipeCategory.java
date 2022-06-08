@@ -18,7 +18,6 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -87,7 +86,7 @@ class MoverRecipeCategory implements IRecipeCategory<MoverRecipeCategory.MoverRe
         var enchantments = recipe.item.acceptEnchantments().stream().map(e -> new EnchantmentLevel(e, 1))
             .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR).map(EnchantmentLevel::enchantment).toList();
         for (int i = 0; i < enchantments.size(); i++) {
-            var text = new TranslatableComponent(enchantments.get(i).getDescriptionId());
+            var text = Component.translatable(enchantments.get(i).getDescriptionId());
             Minecraft.getInstance().font.draw(stack, text, 36 - xOff, 6 - yOff + 10 * i, 0x404040);
         }
     }

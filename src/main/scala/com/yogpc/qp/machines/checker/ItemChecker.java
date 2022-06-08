@@ -8,7 +8,7 @@ import com.yogpc.qp.machines.CheckerLog;
 import com.yogpc.qp.machines.QPItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -18,8 +18,7 @@ public class ItemChecker extends QPItem {
     public static final String NAME = "status_checker";
 
     public ItemChecker() {
-        super(new Item.Properties().tab(Holder.TAB));
-        setRegistryName(QuarryPlus.modID, NAME);
+        super(new ResourceLocation(QuarryPlus.modID, NAME), new Item.Properties().tab(Holder.TAB));
     }
 
     @Override
@@ -29,7 +28,7 @@ public class ItemChecker extends QPItem {
         if (player != null && level.getBlockEntity(context.getClickedPos()) instanceof CheckerLog debug) {
             List<? extends Component> logs = debug.getDebugLogs();
             if (logs != null) {
-                player.displayClientMessage(new TextComponent(ChatFormatting.YELLOW + (level.isClientSide ? "Client" : "Server") + ChatFormatting.RESET), false);
+                player.displayClientMessage(Component.literal(ChatFormatting.YELLOW + (level.isClientSide ? "Client" : "Server") + ChatFormatting.RESET), false);
                 logs.forEach(t -> player.displayClientMessage(t, false));
             } else {
                 QuarryPlus.LOGGER.warn("CheckerLog implementation was insufficient. " + debug.getClass());

@@ -17,7 +17,6 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.MenuProvider;
@@ -65,8 +64,8 @@ public class BookMoverEntity extends PowerTile implements Container, MenuProvide
             enchantments.entrySet().stream()
                 .filter(e ->
                     VALID_ENCHANTMENTS.contains(e.getKey()) &&
-                        EnchantmentHelper.getEnchantments(inventory.get(0)).keySet().stream().allMatch(e2 -> e2 == e.getKey() || e2.isCompatibleWith(e.getKey())) &&
-                        EnchantmentHelper.getItemEnchantmentLevel(e.getKey(), inventory.get(0)) < e.getValue())
+                    EnchantmentHelper.getEnchantments(inventory.get(0)).keySet().stream().allMatch(e2 -> e2 == e.getKey() || e2.isCompatibleWith(e.getKey())) &&
+                    EnchantmentHelper.getItemEnchantmentLevel(e.getKey(), inventory.get(0)) < e.getValue())
                 .findFirst()
                 .ifPresent(e -> {
                     var copy = inventory.get(0).copy();
@@ -158,7 +157,7 @@ public class BookMoverEntity extends PowerTile implements Container, MenuProvide
     public List<? extends Component> getDebugLogs() {
         return Stream.of(
             energyString()
-        ).map(TextComponent::new).toList();
+        ).map(Component::literal).toList();
     }
 
     @Override
@@ -184,7 +183,7 @@ public class BookMoverEntity extends PowerTile implements Container, MenuProvide
         stack.removeTagKey(tagName);
         var newList = list.stream()
             .mapMulti(MapMulti.cast(CompoundTag.class))
-            .filter(t -> !Objects.equals(EnchantmentHelper.getEnchantmentId(t), enchantment.getRegistryName()))
+            .filter(t -> !Objects.equals(EnchantmentHelper.getEnchantmentId(t), ForgeRegistries.ENCHANTMENTS.getKey(enchantment)))
             .collect(Collectors.toCollection(ListTag::new));
 
         stack.addTagElement(tagName, newList);

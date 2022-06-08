@@ -11,7 +11,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class MapMulti {
@@ -28,7 +27,7 @@ public class MapMulti {
         return from -> toClass.isInstance(from) ? Optional.of(toClass.cast(from)) : Optional.empty();
     }
 
-    public static <TO extends IForgeRegistryEntry<TO>, OTHER> BiConsumer<String, Consumer<Pair<TO, OTHER>>>
+    public static <TO, OTHER> BiConsumer<String, Consumer<Pair<TO, OTHER>>>
     getEntry(IForgeRegistry<TO> registry, Function<String, OTHER> keyToOther) {
         return (s, toConsumer) -> {
             ResourceLocation key = new ResourceLocation(s);

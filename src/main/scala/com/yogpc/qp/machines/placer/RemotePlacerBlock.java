@@ -1,14 +1,13 @@
 package com.yogpc.qp.machines.placer;
 
-import java.util.Random;
-
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPBlock;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -45,7 +44,7 @@ public final class RemotePlacerBlock extends QPBlock implements EntityBlock {
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!QuarryPlus.config.enableMap.enabled(NAME)) {
             if (!world.isClientSide)
-                player.displayClientMessage(new TranslatableComponent("quarryplus.chat.disable_message", getName()), true);
+                player.displayClientMessage(Component.translatable("quarryplus.chat.disable_message", getName()), true);
             return InteractionResult.sidedSuccess(world.isClientSide);
         }
         if (!player.isCrouching()) {
@@ -54,7 +53,7 @@ public final class RemotePlacerBlock extends QPBlock implements EntityBlock {
                 if (stack.getItem() == Items.REDSTONE_TORCH) {
                     world.getBlockEntity(pos, Holder.REMOTE_PLACER_TYPE).ifPresent(t -> {
                         t.cycleRedstoneMode();
-                        player.displayClientMessage(new TranslatableComponent("quarryplus.chat.placer_rs", t.redstoneMode), false);
+                        player.displayClientMessage(Component.translatable("quarryplus.chat.placer_rs", t.redstoneMode), false);
                     });
                 } else {
                     world.getBlockEntity(pos, Holder.REMOTE_PLACER_TYPE).ifPresent(o ->
@@ -106,7 +105,7 @@ public final class RemotePlacerBlock extends QPBlock implements EntityBlock {
 
     @Override
     @SuppressWarnings("deprecation")
-    public void tick(BlockState state, ServerLevel worldIn, BlockPos pos, Random rand) {
+    public void tick(BlockState state, ServerLevel worldIn, BlockPos pos, RandomSource rand) {
         super.tick(state, worldIn, pos, rand);
         boolean isPowered = state.getValue(TRIGGERED);
         worldIn.getBlockEntity(pos, Holder.REMOTE_PLACER_TYPE).ifPresent(tile -> {

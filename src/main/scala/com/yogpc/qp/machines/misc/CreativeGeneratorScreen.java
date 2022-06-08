@@ -11,7 +11,6 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.api.distmarker.Dist;
@@ -51,7 +50,7 @@ public class CreativeGeneratorScreen extends AbstractContainerScreen<CreativeGen
     @Override
     protected void init() {
         super.init();
-        textFieldWidget = new EditBox(this.font, getGuiLeft() + 8, getGuiTop() + 40, 130, 18, new TextComponent("EnergyField"));
+        textFieldWidget = new EditBox(this.font, getGuiLeft() + 8, getGuiTop() + 40, 130, 18, Component.literal("EnergyField"));
         textFieldWidget.setResponder(this::changeEnergy);
         textFieldWidget.setFilter(CreativeGeneratorScreen::canConvert);
         textFieldWidget.setCanLoseFocus(true);

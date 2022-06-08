@@ -13,8 +13,7 @@ import com.yogpc.qp.utils.MapMulti;
 import cpw.mods.modlauncher.Launcher;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -36,7 +35,6 @@ import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Logger;
 
@@ -70,7 +68,7 @@ public class BlockController extends QPBlock {
                                  Player player, InteractionHand hand, BlockHitResult hit) {
         if (!QuarryPlus.config.enableMap.enabled(NAME)) {
             if (!level.isClientSide)
-                player.displayClientMessage(new TranslatableComponent("quarryplus.chat.disable_message", getName()), true);
+                player.displayClientMessage(Component.translatable("quarryplus.chat.disable_message", getName()), true);
             return InteractionResult.sidedSuccess(level.isClientSide);
         }
         if (!player.isShiftKeyDown()) {
@@ -82,13 +80,13 @@ public class BlockController extends QPBlock {
                         .flatMap(BlockController::getEntityId)
                         .map(ResourceLocation::toString)
                         .map(s -> "Spawner Mob: " + s)
-                        .map(TextComponent::new)
+                        .map(Component::literal)
                         .ifPresent(s -> player.displayClientMessage(s, false));
                 } else {
                     // Open GUI
                     var entries = ForgeRegistries.ENTITIES.getValues().stream()
                         .filter(BlockController::canSpawnFromSpawner)
-                        .map(ForgeRegistryEntry::getRegistryName)
+                        .map(ForgeRegistries.ENTITIES::getKey)
                         .collect(Collectors.toList());
                     PacketHandler.sendToClientPlayer(new ControllerOpenMessage(pos, level.dimension(), entries), (ServerPlayer) player);
                 }
@@ -104,7 +102,7 @@ public class BlockController extends QPBlock {
                 .flatMap(MapMulti.optCast(SpawnData.class))
                 .map(SpawnData::getEntityToSpawn)
                 .flatMap(EntityType::by)
-                .map(ForgeRegistryEntry::getRegistryName);
+                .map(ForgeRegistries.ENTITIES::getKey);
         } catch (ReflectiveOperationException e) {
             LOGGER.error("Exception occurred in getting entity id.", e);
             return Optional.empty();
@@ -114,7 +112,7 @@ public class BlockController extends QPBlock {
     private static boolean canSpawnFromSpawner(EntityType<?> entityType) {
         if (QuarryPlus.config == null) return true;
         else if (!entityType.canSummon()) return false;
-        return !QuarryPlus.config.common.spawnerBlackList.get().contains(String.valueOf(entityType.getRegistryName()));
+        return !QuarryPlus.config.common.spawnerBlackList.get().contains(String.valueOf(ForgeRegistries.ENTITIES.getKey(entityType)));
     }
 
     public static void setSpawnerEntity(Level world, BlockPos pos, ResourceLocation name) {

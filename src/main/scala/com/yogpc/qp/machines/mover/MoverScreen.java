@@ -10,8 +10,6 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -38,10 +36,10 @@ public class MoverScreen extends AbstractContainerScreen<ContainerMover> impleme
     public void init() {
         super.init();
         var width = 120;
-        this.addRenderableWidget(new IndexedButton(0, getGuiLeft() + (imageWidth - width) / 2, getGuiTop() + 20, width, 20, new TranslatableComponent("FD.up"), this));
-        enchantmentMoveButton = new IndexedButton(1, getGuiLeft() + (imageWidth - width) / 2, getGuiTop() + 40, width, 20, new TextComponent(""), this);
+        this.addRenderableWidget(new IndexedButton(0, getGuiLeft() + (imageWidth - width) / 2, getGuiTop() + 20, width, 20, Component.translatable("FD.up"), this));
+        enchantmentMoveButton = new IndexedButton(1, getGuiLeft() + (imageWidth - width) / 2, getGuiTop() + 40, width, 20, Component.literal(""), this);
         this.addRenderableWidget(enchantmentMoveButton);
-        this.addRenderableWidget(new IndexedButton(2, getGuiLeft() + (imageWidth - width) / 2, getGuiTop() + 60, width, 20, new TranslatableComponent("FD.down"), this));
+        this.addRenderableWidget(new IndexedButton(2, getGuiLeft() + (imageWidth - width) / 2, getGuiTop() + 60, width, 20, Component.translatable("FD.down"), this));
     }
 
     @Override
@@ -63,7 +61,7 @@ public class MoverScreen extends AbstractContainerScreen<ContainerMover> impleme
     protected void containerTick() {
         super.containerTick();
         var enchantment = this.getMenu().getEnchantment();
-        var name = enchantment.map(Enchantment::getDescriptionId).<Component>map(TranslatableComponent::new).orElse(new TextComponent(""));
+        var name = enchantment.map(Enchantment::getDescriptionId).<Component>map(Component::translatable).orElse(Component.literal(""));
         enchantmentMoveButton.setMessage(name);
     }
 

@@ -7,17 +7,18 @@ import com.yogpc.qp.machines.workbench.QuarryDebugCondition;
 import com.yogpc.qp.machines.workbench.WorkbenchRecipe;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.ConfigCommand;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -26,6 +27,7 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.gametest.ForgeGameTestHooks;
+import net.minecraftforge.registries.RegisterEvent;
 import org.apache.logging.log4j.Logger;
 
 @Mod(QuarryPlus.modID)
@@ -60,35 +62,44 @@ public class QuarryPlus {
     public static class Register {
 
         @SubscribeEvent
-        public static void registerBlocks(RegistryEvent.Register<Block> event) {
-            Holder.blocks().forEach(event.getRegistry()::register);
-            event.getRegistry().register(Holder.BLOCK_DUMMY);
-            event.getRegistry().register(Holder.BLOCK_DUMMY_REPLACER);
+        public static void registerAll(RegisterEvent event) {
+            event.register(Registry.BLOCK_REGISTRY, Register::registerBlocks);
+            event.register(Registry.ITEM_REGISTRY, Register::registerItems);
+            event.register(Registry.BLOCK_ENTITY_TYPE_REGISTRY, Register::registerTiles);
+            event.register(Registry.MENU_REGISTRY, Register::registerContainers);
+            event.register(Registry.RECIPE_SERIALIZER_REGISTRY, Register::registerRecipe);
+            event.register(Registry.RECIPE_TYPE_REGISTRY, Register::registerRecipeType);
         }
 
-        @SubscribeEvent
-        public static void registerItems(RegistryEvent.Register<Item> event) {
-            Holder.items().forEach(event.getRegistry()::register);
-            event.getRegistry().register(Holder.BLOCK_DUMMY.blockItem);
-            event.getRegistry().register(Holder.BLOCK_DUMMY_REPLACER.blockItem);
+        public static void registerBlocks(RegisterEvent.RegisterHelper<Block> blockRegisterHelper) {
+            Holder.blocks().forEach(Holder.NamedEntry.register(blockRegisterHelper));
+            blockRegisterHelper.register(Holder.BLOCK_DUMMY.location, Holder.BLOCK_DUMMY);
+            blockRegisterHelper.register(Holder.BLOCK_DUMMY_REPLACER.location, Holder.BLOCK_DUMMY_REPLACER);
         }
 
-        @SubscribeEvent
-        public static void registerTiles(RegistryEvent.Register<BlockEntityType<?>> event) {
-            Holder.entityTypes().forEach(event.getRegistry()::register);
+        public static void registerItems(RegisterEvent.RegisterHelper<Item> helper) {
+            Holder.items().forEach(Holder.NamedEntry.register(helper));
+            helper.register(Holder.BLOCK_DUMMY.location, Holder.BLOCK_DUMMY.blockItem);
+            helper.register(Holder.BLOCK_DUMMY_REPLACER.location, Holder.BLOCK_DUMMY_REPLACER.blockItem);
         }
 
-        @SubscribeEvent
-        public static void registerContainers(RegistryEvent.Register<MenuType<?>> event) {
-            Holder.menuTypes().forEach(event.getRegistry()::register);
+        public static void registerTiles(RegisterEvent.RegisterHelper<BlockEntityType<?>> helper) {
+            Holder.entityTypes().forEach(Holder.NamedEntry.register(helper));
         }
 
-        @SubscribeEvent
-        public static void registerRecipe(RegistryEvent.Register<RecipeSerializer<?>> event) {
-            event.getRegistry().register(WorkbenchRecipe.SERIALIZER);
+        public static void registerContainers(RegisterEvent.RegisterHelper<MenuType<?>> helper) {
+            Holder.menuTypes().forEach(Holder.NamedEntry.register(helper));
+        }
+
+        public static void registerRecipe(RegisterEvent.RegisterHelper<RecipeSerializer<?>> helper) {
+            helper.register(WorkbenchRecipe.recipeLocation, WorkbenchRecipe.SERIALIZER);
             CraftingHelper.register(new ResourceLocation(modID, EnchantmentIngredient.NAME), EnchantmentIngredient.Serializer.INSTANCE);
             CraftingHelper.register(new EnableCondition.Serializer());
             CraftingHelper.register(new QuarryDebugCondition.Serializer());
+        }
+
+        public static void registerRecipeType(RegisterEvent.RegisterHelper<RecipeType<?>> helper) {
+            helper.register(WorkbenchRecipe.recipeLocation, WorkbenchRecipe.RECIPE_TYPE);
         }
 
         @SubscribeEvent

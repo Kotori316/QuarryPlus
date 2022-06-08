@@ -7,12 +7,10 @@ import java.util.function.Predicate;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPItem;
-import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -27,8 +25,7 @@ public class ReplacerModuleItem extends QPItem implements QuarryModuleProvider.I
     public static final String KEY_STATE = "state";
 
     public ReplacerModuleItem() {
-        super(new Properties().tab(Holder.TAB));
-        setRegistryName(QuarryPlus.modID, NAME);
+        super(new ResourceLocation(QuarryPlus.modID, NAME), new Properties().tab(Holder.TAB));
     }
 
     @Override
@@ -45,7 +42,7 @@ public class ReplacerModuleItem extends QPItem implements QuarryModuleProvider.I
             if (context.getPlayer() != null && context.getPlayer().isShiftKeyDown()) {
                 // Remove setting
                 stack.removeTagKey(KEY_STATE);
-                context.getPlayer().sendMessage(new TextComponent("Replacer Module: Setting removed."), Util.NIL_UUID);
+                context.getPlayer().displayClientMessage(Component.literal("Replacer Module: Setting removed."), false);
             } else {
                 if (context.getLevel().getBlockEntity(context.getClickedPos()) instanceof ModuleInventory.HasModuleInventory)
                     // Maybe trying to open the machine.
@@ -60,7 +57,7 @@ public class ReplacerModuleItem extends QPItem implements QuarryModuleProvider.I
                     QuarryPlus.LOGGER.warn("Error in encoding state to NBT. {}, {}", state, s);
                 }).ifPresent(stateTag -> stack.addTagElement(KEY_STATE, stateTag));
                 if (context.getPlayer() != null)
-                    context.getPlayer().sendMessage(new TranslatableComponent("Replacer Module: %s.", state.getBlock().getName()), Util.NIL_UUID);
+                    context.getPlayer().displayClientMessage(Component.translatable("Replacer Module: %s.", state.getBlock().getName()), false);
             }
         }
         return InteractionResult.SUCCESS;
@@ -73,7 +70,7 @@ public class ReplacerModuleItem extends QPItem implements QuarryModuleProvider.I
             .flatMap(tag -> BlockState.CODEC.parse(NbtOps.INSTANCE, tag).result())
             .ifPresent(state -> {
                 list.add(state.getBlock().getName());
-                state.getValues().forEach((k, v) -> list.add(new TextComponent(String.format("  %s: %s", k.getName(), v))));
+                state.getValues().forEach((k, v) -> list.add(Component.literal(String.format("  %s: %s", k.getName(), v))));
             });
     }
 

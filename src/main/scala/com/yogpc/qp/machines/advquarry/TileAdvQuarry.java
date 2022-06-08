@@ -38,7 +38,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -94,7 +93,7 @@ public class TileAdvQuarry extends PowerTile implements
             "%sDigMinY:%s %d".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, digMinY),
             "%sModules:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, modules),
             energyString()
-        ).map(TextComponent::new).toList();
+        ).map(Component::literal).toList();
     }
 
     public static void tick(Level world, BlockPos pos, BlockState state, TileAdvQuarry quarry) {

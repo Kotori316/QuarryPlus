@@ -4,7 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -51,7 +50,7 @@ final class GuiSlotEntities extends ObjectSelectionList<GuiSlotEntities.Entry> {
 
         @Override
         public Component getNarration() {
-            return new TranslatableComponent("narrator.select", location);
+            return Component.translatable("narrator.select", location);
         }
     }
 }

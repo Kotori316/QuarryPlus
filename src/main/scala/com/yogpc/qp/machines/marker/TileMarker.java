@@ -21,7 +21,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -117,8 +116,8 @@ public class TileMarker extends BlockEntity implements QuarryMarker, CheckerLog,
     @Override
     public List<? extends Component> getDebugLogs() {
         return List.of(
-            new TextComponent("%sMarker Area%s: %s".formatted(ChatFormatting.AQUA, ChatFormatting.RESET, markerConnection.getArea())),
-            new TextComponent("%sMarker Poses%s: %s".formatted(ChatFormatting.AQUA, ChatFormatting.RESET, markerConnection.markerPlaces()))
+            Component.literal("%sMarker Area%s: %s".formatted(ChatFormatting.AQUA, ChatFormatting.RESET, markerConnection.getArea())),
+            Component.literal("%sMarker Poses%s: %s".formatted(ChatFormatting.AQUA, ChatFormatting.RESET, markerConnection.markerPlaces()))
         );
     }
 

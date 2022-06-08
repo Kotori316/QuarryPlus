@@ -1,10 +1,10 @@
 package com.yogpc.qp.machines;
 
-import java.util.Objects;
 import java.util.function.Function;
 
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -16,17 +16,21 @@ import org.jetbrains.annotations.Nullable;
 
 public class QPBlock extends Block {
     public static final BooleanProperty WORKING = BooleanProperty.create("working");
+    private final ResourceLocation registryName;
     public final BlockItem blockItem;
 
     public QPBlock(Properties properties, String name, Function<QPBlock, QPBlockItem> itemFunction) {
         super(properties);
-        setRegistryName(QuarryPlus.modID, name);
+        registryName = new ResourceLocation(QuarryPlus.modID, name);
         blockItem = itemFunction.apply(this);
-        blockItem.setRegistryName(QuarryPlus.modID, name);
     }
 
     public QPBlock(Properties properties, String name) {
         this(properties, name, b -> new QPBlockItem(b, new Item.Properties().tab(Holder.TAB)));
+    }
+
+    public ResourceLocation getRegistryName() {
+        return registryName;
     }
 
     /**
@@ -60,7 +64,7 @@ public class QPBlock extends Block {
          */
         @Override
         public String toString() {
-            return Objects.requireNonNull(getRegistryName()).getPath();
+            return ((QPBlock) getBlock()).getRegistryName().getPath();
         }
     }
 }

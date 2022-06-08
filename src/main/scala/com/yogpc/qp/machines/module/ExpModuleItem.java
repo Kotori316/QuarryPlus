@@ -7,8 +7,7 @@ import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPItem;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
@@ -23,8 +22,7 @@ public class ExpModuleItem extends QPItem implements QuarryModuleProvider.Item {
     public static final String KEY_AMOUNT = "amount";
 
     public ExpModuleItem() {
-        super(new Properties().tab(Holder.TAB).stacksTo(1));
-        setRegistryName(QuarryPlus.modID, NAME);
+        super(new ResourceLocation(QuarryPlus.modID, NAME), new Properties().tab(Holder.TAB).stacksTo(1));
     }
 
     @Override
@@ -39,7 +37,7 @@ public class ExpModuleItem extends QPItem implements QuarryModuleProvider.Item {
             .mapToInt(t -> t.getInt(KEY_AMOUNT))
             .filter(i -> i >= 0)
             .mapToObj(i -> "Exp: " + i)
-            .map(TextComponent::new)
+            .map(Component::literal)
             .forEach(list::add);
     }
 
@@ -49,7 +47,7 @@ public class ExpModuleItem extends QPItem implements QuarryModuleProvider.Item {
         if (stack.getTag() != null) {
             int exp = stack.getTag().getInt(KEY_AMOUNT);
             if (!level.isClientSide) {
-                player.displayClientMessage(new TranslatableComponent("quarryplus.chat.give_exp", exp), false);
+                player.displayClientMessage(Component.translatable("quarryplus.chat.give_exp", exp), false);
                 player.giveExperiencePoints(exp);
             }
             stack.removeTagKey(KEY_AMOUNT);

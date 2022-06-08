@@ -21,12 +21,6 @@ public final class EnableCondition implements ICondition {
     }
 
     @Override
-    @SuppressWarnings("removal")
-    public boolean test() {
-        return this.test(IContext.EMPTY);
-    }
-
-    @Override
     public boolean test(IContext context) {
         if (QuarryPlus.config == null) {
             return true; // Ignore in tests.

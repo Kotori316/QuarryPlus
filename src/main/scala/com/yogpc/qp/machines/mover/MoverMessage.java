@@ -23,7 +23,7 @@ public final class MoverMessage implements IMessage {
     public MoverMessage(BlockPos pos, int windowId, Enchantment enchantment) {
         this.pos = pos;
         this.windowId = windowId;
-        this.enchantment = enchantment.getRegistryName();
+        this.enchantment = ForgeRegistries.ENCHANTMENTS.getKey(enchantment);
     }
 
     public MoverMessage(FriendlyByteBuf buf) {

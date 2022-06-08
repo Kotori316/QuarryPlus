@@ -3,12 +3,13 @@ package com.yogpc.qp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import com.mojang.datafixers.DSL;
 import com.yogpc.qp.machines.EnchantedLootFunction;
 import com.yogpc.qp.machines.QPBlock;
+import com.yogpc.qp.machines.QPItem;
 import com.yogpc.qp.machines.advpump.BlockAdvPump;
 import com.yogpc.qp.machines.advpump.TileAdvPump;
 import com.yogpc.qp.machines.advquarry.AdvQuarryMenu;
@@ -83,13 +84,14 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.network.IContainerFactory;
+import net.minecraftforge.registries.RegisterEvent;
 
 public class Holder {
     public static final CreativeModeTab TAB = new QuarryCreativeTab();
     private static final List<QPBlock> BLOCKS = new ArrayList<>();
-    private static final List<Item> ITEMS = new ArrayList<>();
-    private static final List<BlockEntityType<?>> ENTITY_TYPES = new ArrayList<>();
-    private static final List<MenuType<?>> MENU_TYPES = new ArrayList<>();
+    private static final List<QPItem> ITEMS = new ArrayList<>();
+    private static final List<NamedEntry<BlockEntityType<?>>> ENTITY_TYPES = new ArrayList<>();
+    private static final List<NamedEntry<MenuType<?>>> MENU_TYPES = new ArrayList<>();
     private static final List<EntryConditionHolder> CONDITION_HOLDERS = new ArrayList<>();
 
     private static <T extends QPBlock> T registerBlock(T block, EnableOrNot condition) {
@@ -105,44 +107,45 @@ public class Holder {
         return block;
     }
 
-    private static <T extends Item> T registerItem(T item, EnableOrNot condition) {
+    private static <T extends QPItem> T registerItem(T item, EnableOrNot condition) {
         ITEMS.add(item);
         CONDITION_HOLDERS.add(new EntryConditionHolder(item.getRegistryName(), condition));
         ((QuarryCreativeTab) TAB).addItem(item);
         return item;
     }
 
-    private static <T extends BlockEntity> BlockEntityType<T> registerEntityType(BlockEntityType.BlockEntitySupplier<T> supplier, Block block, EnableOrNot condition) {
+    private static <T extends BlockEntity> BlockEntityType<T> registerEntityType(BlockEntityType.BlockEntitySupplier<T> supplier, QPBlock block, EnableOrNot condition) {
         return registerEntityType(supplier, List.of(block), condition);
     }
 
-    private static <T extends BlockEntity> BlockEntityType<T> registerEntityType(BlockEntityType.BlockEntitySupplier<T> supplier, List<Block> block, EnableOrNot condition) {
+    private static <T extends BlockEntity> BlockEntityType<T> registerEntityType(BlockEntityType.BlockEntitySupplier<T> supplier, List<QPBlock> block, EnableOrNot condition) {
         if (block.isEmpty()) {
             throw new IllegalArgumentException("Blocks must not be empty.");
         }
         var type = BlockEntityType.Builder.of(supplier, block.toArray(Block[]::new)).build(DSL.emptyPartType());
-        type.setRegistryName(Objects.requireNonNull(block.get(0).getRegistryName()));
-        ENTITY_TYPES.add(type);
+        ENTITY_TYPES.add(new NamedEntry<>(block.get(0).getRegistryName(), type));
         CONDITION_HOLDERS.add(new EntryConditionHolder(block.get(0).getRegistryName(), condition));
         return type;
     }
 
     private static <T extends AbstractContainerMenu> MenuType<T> registerMenuType(IContainerFactory<T> factory, String guiId) {
         MenuType<T> type = IForgeMenuType.create(factory);
-        type.setRegistryName(guiId);
-        MENU_TYPES.add(type);
+        MENU_TYPES.add(new NamedEntry<>(new ResourceLocation(guiId), type));
         return type;
     }
 
-    public static List<Block> blocks() {
-        return Collections.unmodifiableList(BLOCKS);
+    public static List<NamedEntry<QPBlock>> blocks() {
+        return BLOCKS.stream().map(q -> new NamedEntry<>(q.getRegistryName(), q)).toList();
     }
 
-    public static List<Item> items() {
-        return Stream.concat(BLOCKS.stream().map(q -> q.blockItem), ITEMS.stream()).toList();
+    public static List<NamedEntry<? extends Item>> items() {
+        return Stream.concat(
+            BLOCKS.stream().map(q -> new NamedEntry<>(q.getRegistryName(), q.blockItem)),
+            ITEMS.stream().map(i -> new NamedEntry<>(i.getRegistryName(), i))
+        ).toList();
     }
 
-    public static List<BlockEntityType<?>> entityTypes() {
+    public static List<NamedEntry<BlockEntityType<?>>> entityTypes() {
         return Collections.unmodifiableList(ENTITY_TYPES);
     }
 
@@ -150,7 +153,7 @@ public class Holder {
         return Collections.unmodifiableList(CONDITION_HOLDERS);
     }
 
-    public static List<MenuType<?>> menuTypes() {
+    public static List<NamedEntry<MenuType<?>>> menuTypes() {
         return Collections.unmodifiableList(MENU_TYPES);
     }
 
@@ -262,6 +265,12 @@ public class Holder {
 
         public boolean on() {
             return this == CONFIG_ON || this == ALWAYS_ON;
+        }
+    }
+
+    public record NamedEntry<T>(ResourceLocation name, T t) {
+        public static <T> Consumer<? super NamedEntry<? extends T>> register(RegisterEvent.RegisterHelper<T> helper) {
+            return e -> helper.register(e.name(), e.t());
         }
     }
 }

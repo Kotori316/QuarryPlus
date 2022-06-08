@@ -9,7 +9,6 @@ import com.yogpc.qp.machines.QPBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -41,7 +40,7 @@ public class ExpPumpTile extends BlockEntity implements CheckerLog {
     public List<? extends Component> getDebugLogs() {
         return Stream.of(
             "Exp: " + module.getExp()
-        ).map(TextComponent::new).toList();
+        ).map(Component::literal).toList();
     }
 
     static class ExpBlockModule extends ExpModule {

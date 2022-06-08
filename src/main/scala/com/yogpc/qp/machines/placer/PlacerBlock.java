@@ -2,7 +2,6 @@ package com.yogpc.qp.machines.placer;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 import java.util.function.Predicate;
 
 import com.yogpc.qp.Holder;
@@ -12,9 +11,9 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -53,7 +52,7 @@ public class PlacerBlock extends QPBlock implements EntityBlock {
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!QuarryPlus.config.enableMap.enabled(NAME)) {
             if (!world.isClientSide)
-                player.displayClientMessage(new TranslatableComponent("quarryplus.chat.disable_message", getName()), true);
+                player.displayClientMessage(Component.translatable("quarryplus.chat.disable_message", getName()), true);
             return InteractionResult.sidedSuccess(world.isClientSide);
         }
         if (!player.isCrouching()) {
@@ -62,7 +61,7 @@ public class PlacerBlock extends QPBlock implements EntityBlock {
                 if (stack.getItem() == Items.REDSTONE_TORCH) {
                     world.getBlockEntity(pos, Holder.PLACER_TYPE).ifPresent(t -> {
                         t.cycleRedstoneMode();
-                        player.displayClientMessage(new TranslatableComponent("quarryplus.chat.placer_rs", t.redstoneMode), false);
+                        player.displayClientMessage(Component.translatable("quarryplus.chat.placer_rs", t.redstoneMode), false);
                     });
                 } else {
                     world.getBlockEntity(pos, Holder.PLACER_TYPE).ifPresent(o ->
@@ -104,7 +103,7 @@ public class PlacerBlock extends QPBlock implements EntityBlock {
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter worldIn, List<Component> tooltip, TooltipFlag flagIn) {
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
         if (Screen.hasShiftDown()) {
-            tooltip.add(new TranslatableComponent("quarryplus.tooltip.placer_plus"));
+            tooltip.add(Component.translatable("quarryplus.tooltip.placer_plus"));
         }
     }
 
@@ -112,7 +111,7 @@ public class PlacerBlock extends QPBlock implements EntityBlock {
 
     @Override
     @SuppressWarnings("deprecation")
-    public void tick(BlockState state, ServerLevel worldIn, BlockPos pos, Random rand) {
+    public void tick(BlockState state, ServerLevel worldIn, BlockPos pos, RandomSource rand) {
         super.tick(state, worldIn, pos, rand);
         boolean isPowered = state.getValue(TRIGGERED);
         worldIn.getBlockEntity(pos, Holder.PLACER_TYPE).ifPresent(tile -> {

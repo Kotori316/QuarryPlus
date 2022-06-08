@@ -8,6 +8,7 @@ import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Direction8;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
@@ -17,20 +18,19 @@ import net.minecraft.world.level.material.Material;
 
 public class BlockDummy extends AbstractGlassBlock {
     public static final String NAME = "dummy";
+    public final ResourceLocation location = new ResourceLocation(QuarryPlus.modID, NAME);
     public final BlockItem blockItem;
 
     public BlockDummy() {
         super(Properties.of(Material.GLASS)
             .noOcclusion()
-            .noDrops()
+            .noLootTable()
             .isValidSpawn((state, world, pos, type) -> false)
             .isSuffocating((state, world, pos) -> false)
             .isRedstoneConductor((state, world, pos) -> false)
             .isViewBlocking((state, world, pos) -> false)
         );
-        setRegistryName(QuarryPlus.modID, NAME);
         blockItem = new BlockItem(this, new Item.Properties().tab(Holder.TAB));
-        blockItem.setRegistryName(QuarryPlus.modID, NAME);
     }
 
     private boolean breaking = false;

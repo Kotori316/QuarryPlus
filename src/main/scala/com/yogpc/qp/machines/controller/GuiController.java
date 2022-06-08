@@ -17,8 +17,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
@@ -54,8 +53,8 @@ public class GuiController extends Screen implements Button.OnPress {
         this.slot = new GuiSlotEntities(this.getMinecraft(), width, height, 30, height - 60, 18, this);
         this.addRenderableWidget(slot);
         setInitialFocus(slot);
-        addRenderableWidget(new IndexedButton(-1, width / 2 - 125, height - 26, 250, 20, new TranslatableComponent("gui.done"), this));
-        this.search = new EditBox(font, width / 2 - 125, height - 56, 250, 20, new TextComponent("edit box"));
+        addRenderableWidget(new IndexedButton(-1, width / 2 - 125, height - 26, 250, 20, Component.translatable("gui.done"), this));
+        this.search = new EditBox(font, width / 2 - 125, height - 56, 250, 20, Component.literal("edit box"));
         this.addRenderableWidget(search);
         search.setCanLoseFocus(true);
         search.setResponder(this::searchEntities);
@@ -68,7 +67,7 @@ public class GuiController extends Screen implements Button.OnPress {
             this.search.render(matrixStack, mouseX, mouseY, partialTicks);
         }
         super.render(matrixStack, mouseX, mouseY, partialTicks);
-        drawCenteredString(matrixStack, this.font, new TranslatableComponent("yog.spawner.setting"), this.width / 2, 8, 0xFFFFFF);
+        drawCenteredString(matrixStack, this.font, Component.translatable("yog.spawner.setting"), this.width / 2, 8, 0xFFFFFF);
     }
 
     @Override

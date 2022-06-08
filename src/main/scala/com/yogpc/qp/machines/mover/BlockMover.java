@@ -18,7 +18,6 @@ import com.yogpc.qp.machines.QPBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -50,7 +49,7 @@ public class BlockMover extends QPBlock {
                                  Player player, InteractionHand hand, BlockHitResult hit) {
         if (!QuarryPlus.config.enableMap.enabled(NAME)) {
             if (!level.isClientSide)
-                player.displayClientMessage(new TranslatableComponent("quarryplus.chat.disable_message", getName()), true);
+                player.displayClientMessage(Component.translatable("quarryplus.chat.disable_message", getName()), true);
             return InteractionResult.sidedSuccess(level.isClientSide);
         }
         if (!player.isShiftKeyDown()) {

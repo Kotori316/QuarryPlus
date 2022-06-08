@@ -22,7 +22,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
@@ -253,7 +252,7 @@ public class PlacerTile extends BlockEntity implements
             "Last Placed: " + getLastPlacedIndex(),
             "Target: " + getTargetPos(),
             "Inv: " + inventory.stream().filter(Predicate.not(ItemStack::isEmpty)).count()
-        ).map(TextComponent::new).collect(Collectors.toList());
+        ).map(Component::literal).collect(Collectors.toList());
     }
 
     @Override

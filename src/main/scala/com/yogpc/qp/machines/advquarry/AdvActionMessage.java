@@ -10,7 +10,7 @@ import com.yogpc.qp.utils.MapMulti;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
@@ -66,7 +66,7 @@ public final class AdvActionMessage implements IMessage {
                             quarry.area = message.area;
                             if (FTBChunksProtectionCheck.isAreaProtected(message.area.shrink(1, 0, 1), quarry.getTargetWorld().dimension())) {
                                 PacketHandler.getPlayer(supplier.get())
-                                    .ifPresent(p -> p.displayClientMessage(new TranslatableComponent("quarryplus.chat.warn_protected_area"), false));
+                                    .ifPresent(p -> p.displayClientMessage(Component.translatable("quarryplus.chat.warn_protected_area"), false));
                             }
                         }
                         case MODULE_INV -> PacketHandler.getPlayer(supplier.get())

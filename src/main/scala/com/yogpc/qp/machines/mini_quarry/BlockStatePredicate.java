@@ -6,6 +6,7 @@ import java.util.Optional;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.yogpc.qp.QuarryPlus;
+import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.arguments.blocks.BlockPredicateArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
@@ -18,9 +19,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
-import net.minecraftforge.gametest.ForgeGameTestHooks;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.Nullable;
 
 interface BlockStatePredicate {
     boolean test(BlockState state, BlockGetter level, BlockPos pos);
@@ -144,7 +144,7 @@ interface BlockStatePredicate {
 
         @Override
         public boolean test(BlockState state, BlockGetter level, BlockPos pos) {
-            return location.equals(state.getBlock().getRegistryName());
+            return location.equals(ForgeRegistries.BLOCKS.getKey(state.getBlock()));
         }
 
         @Override
@@ -158,8 +158,8 @@ interface BlockStatePredicate {
         @Override
         public String toString() {
             return "Name{" +
-                "location=" + location +
-                '}';
+                   "location=" + location +
+                   '}';
         }
     }
 
@@ -209,27 +209,19 @@ interface BlockStatePredicate {
     final class VanillaBlockPredicate implements BlockStatePredicate {
         private static final Logger LOGGER = QuarryPlus.getLogger(VanillaBlockPredicate.class);
         private final String blockPredicate;
-        @Nullable
-        private BlockPredicateArgument.Result argument;
 
         public VanillaBlockPredicate(String blockPredicate) {
             this.blockPredicate = blockPredicate;
-            try {
-                argument = BlockPredicateArgument.blockPredicate().parse(new StringReader(blockPredicate));
-            } catch (CommandSyntaxException e) {
-                if (!ForgeGameTestHooks.isGametestServer()) // Suppress warning in game test.
-                    LOGGER.warn("Caught invalid BlockState predicate.", e);
-                argument = null;
-            }
         }
 
         @Override
         public boolean test(BlockState state, BlockGetter blockGetter, BlockPos pos) {
-            if (argument != null && (blockGetter instanceof Level level)) {
+            if (blockGetter instanceof Level level) {
                 try {
-                    return argument.create(Optional.ofNullable(level.getServer()).map(MinecraftServer::registryAccess)
-                            .flatMap(a -> a.<Block>registry(Registry.BLOCK_REGISTRY)).orElseThrow())
-                        .test(new BlockInWorld(level, pos, true));
+                    BlockPredicateArgument.Result argument = BlockPredicateArgument.blockPredicate(new CommandBuildContext(
+                            Optional.ofNullable(level.getServer()).map(MinecraftServer::registryAccess).orElseThrow()))
+                        .parse(new StringReader(blockPredicate));
+                    return argument.test(new BlockInWorld(level, pos, true));
                 } catch (CommandSyntaxException e) {
                     LOGGER.warn("Caught error in creating predicate.", e);
                     return false;
@@ -250,9 +242,8 @@ interface BlockStatePredicate {
         @Override
         public String toString() {
             return "VanillaBlockPredicate{" +
-                "blockPredicate='" + blockPredicate + '\'' +
-                "valid=" + (argument != null) +
-                '}';
+                   "blockPredicate='" + blockPredicate + '\'' +
+                   '}';
         }
 
         @Override

@@ -18,12 +18,6 @@ public final class QuarryDebugCondition implements ICondition {
     }
 
     @Override
-    @SuppressWarnings("removal")
-    public boolean test() {
-        return this.test(IContext.EMPTY);
-    }
-
-    @Override
     public boolean test(IContext context) {
         return !FMLEnvironment.production;
     }

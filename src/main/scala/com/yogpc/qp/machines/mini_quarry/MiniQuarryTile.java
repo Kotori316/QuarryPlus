@@ -25,7 +25,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
@@ -223,7 +222,7 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
             "%sArea:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, area),
             "%sTarget:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, Optional.ofNullable(targetIterator).map(MiniTarget::peek).orElse(null)),
             energyString()
-        ).map(TextComponent::new).toList();
+        ).map(Component::literal).toList();
     }
 
     public void setEnchantments(List<EnchantmentLevel> enchantments) {

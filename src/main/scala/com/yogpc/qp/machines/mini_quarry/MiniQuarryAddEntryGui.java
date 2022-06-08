@@ -20,8 +20,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -44,10 +42,10 @@ public class MiniQuarryAddEntryGui extends Screen implements Button.OnPress {
         int buttonWidth = 80;
         int width = this.width;
         int height = this.height;
-        textField = new EditBox(font, width / 2 - 125, height - 56, 250, 20, new TextComponent(""));
+        textField = new EditBox(font, width / 2 - 125, height - 56, 250, 20, Component.literal(""));
         textField.setMaxLength(512);
         list = new EntryList(this.getMinecraft(), width, height, 30, height - 70, 18, this, this::getEntries);
-        IndexedButton button = new IndexedButton(1, width / 2 - buttonWidth / 2, height - 35, buttonWidth, 20, new TranslatableComponent("tof.add_new_ore"), this);
+        IndexedButton button = new IndexedButton(1, width / 2 - buttonWidth / 2, height - 35, buttonWidth, 20, Component.translatable("tof.add_new_ore"), this);
 
         this.addRenderableWidget(list);
         this.addRenderableWidget(textField);
@@ -66,7 +64,7 @@ public class MiniQuarryAddEntryGui extends Screen implements Button.OnPress {
         list.render(matrixStack, mouseX, mouseY, partialTicks);
         //textField.renderButton(matrixStack, mouseX, mouseY, partialTicks);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
-        drawCenteredString(matrixStack, this.font, new TranslatableComponent("quarryplus.gui.new_entry"), this.width / 2, 8, 0xFFFFFF);
+        drawCenteredString(matrixStack, this.font, Component.translatable("quarryplus.gui.new_entry"), this.width / 2, 8, 0xFFFFFF);
     }
 
     @SuppressWarnings("deprecation")
@@ -85,6 +83,7 @@ public class MiniQuarryAddEntryGui extends Screen implements Button.OnPress {
         }
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void onPress(Button button) {
         if (button instanceof IndexedButton indexedButton) {
@@ -102,7 +101,7 @@ public class MiniQuarryAddEntryGui extends Screen implements Button.OnPress {
                     String maybePredicate = textField.getValue();
                     if (!maybePredicate.isEmpty()) {
                         try {
-                            (new BlockStateParser(new StringReader(maybePredicate), true)).parse(true);
+                            BlockStateParser.parseForTesting(Registry.BLOCK, new StringReader(maybePredicate), true);
                             callback.accept(BlockStatePredicate.predicateString(maybePredicate));
                         } catch (CommandSyntaxException e) {
                             QuarryPlus.LOGGER.debug("Invalid predicate {} was parsed but not added. Got {}.", maybePredicate, e);
@@ -188,7 +187,7 @@ public class MiniQuarryAddEntryGui extends Screen implements Button.OnPress {
 
         @Override
         public Component getNarration() {
-            return new TranslatableComponent("narrator.select", data);
+            return Component.translatable("narrator.select", data);
         }
     }
 

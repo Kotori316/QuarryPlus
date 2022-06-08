@@ -7,6 +7,7 @@ import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.TileMessage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
@@ -23,8 +24,7 @@ public class YSetterItem extends QPItem {
     public static final String NAME = "y_setter";
 
     public YSetterItem() {
-        super(new Item.Properties().tab(Holder.TAB));
-        setRegistryName(QuarryPlus.modID, NAME);
+        super(new ResourceLocation(QuarryPlus.modID, NAME), new Item.Properties().tab(Holder.TAB));
     }
 
     @Override

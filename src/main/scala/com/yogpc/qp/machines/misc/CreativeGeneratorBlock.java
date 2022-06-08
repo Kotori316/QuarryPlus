@@ -6,7 +6,6 @@ import com.yogpc.qp.Holder;
 import com.yogpc.qp.machines.QPBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -62,7 +61,7 @@ public class CreativeGeneratorBlock extends QPBlock implements EntityBlock {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter world, List<Component> tooltip, TooltipFlag options) {
         super.appendHoverText(stack, world, tooltip, options);
-        tooltip.add(new TextComponent("Works only for Quarry"));
+        tooltip.add(Component.literal("Works only for Quarry"));
     }
 
 }

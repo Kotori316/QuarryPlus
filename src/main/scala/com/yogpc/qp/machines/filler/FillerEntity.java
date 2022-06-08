@@ -18,7 +18,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -68,7 +67,7 @@ public final class FillerEntity extends PowerTile implements CheckerLog, PowerCo
         return Stream.of(
             "Iterator: %s".formatted(this.fillerAction.iterator),
             energyString()
-        ).map(TextComponent::new).toList();
+        ).map(Component::literal).toList();
     }
 
     void tick() {

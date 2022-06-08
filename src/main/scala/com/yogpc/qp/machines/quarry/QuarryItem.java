@@ -9,7 +9,6 @@ import com.yogpc.qp.machines.QPBlock;
 import com.yogpc.qp.machines.module.ModuleInventory;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -29,7 +28,7 @@ class QuarryItem extends QPBlock.QPBlockItem implements EnchantableItem {
     @Override
     public void fillItemCategory(CreativeModeTab tab, NonNullList<ItemStack> stacks) {
         super.fillItemCategory(tab, stacks);
-        if (this.allowdedIn(tab)) {
+        if (this.allowedIn(tab)) {
             var stack = new ItemStack(this);
             {
                 var copy = stack.copy();
@@ -54,7 +53,7 @@ class QuarryItem extends QPBlock.QPBlockItem implements EnchantableItem {
         var entityTag = BlockItem.getBlockEntityData(stack);
         if (entityTag != null) {
             var modules = ModuleInventory.loadModulesFromTag(entityTag.getCompound("moduleInventory"));
-            modules.stream().map(Object::toString).map(TextComponent::new).forEach(list::add);
+            modules.stream().map(Object::toString).map(Component::literal).forEach(list::add);
         }
     }
 

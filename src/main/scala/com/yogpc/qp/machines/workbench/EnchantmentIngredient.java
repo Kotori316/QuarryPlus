@@ -139,7 +139,7 @@ public class EnchantmentIngredient extends AbstractIngredient {
             buffer.writeItemStack(ingredient.stack, false);
             buffer.writeVarInt(ingredient.enchantments.size());
             for (EnchantmentInstance data : ingredient.enchantments) {
-                buffer.writeResourceLocation(Objects.requireNonNull(data.enchantment.getRegistryName()));
+                buffer.writeResourceLocation(Objects.requireNonNull(ForgeRegistries.ENCHANTMENTS.getKey(data.enchantment)));
                 buffer.writeInt(data.level);
             }
             buffer.writeBoolean(ingredient.checkDamage);
@@ -148,7 +148,7 @@ public class EnchantmentIngredient extends AbstractIngredient {
         @SuppressWarnings("ConstantConditions")
         public void write(JsonObject json, EnchantmentIngredient ingredient) {
             json.addProperty("type", CraftingHelper.getID(Serializer.INSTANCE).toString());
-            json.addProperty("item", ingredient.stack.getItem().getRegistryName().toString());
+            json.addProperty("item", Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(ingredient.stack.getItem())).toString());
             json.addProperty("count", ingredient.stack.getCount());
             json.addProperty("checkDamage", ingredient.checkDamage);
             if (ingredient.withoutEnchantment != null) {
@@ -157,7 +157,7 @@ public class EnchantmentIngredient extends AbstractIngredient {
             }
             JsonArray enchantmentArray = ingredient.enchantments.stream().reduce(new JsonArray(), (jsonElements, enchantmentData) -> {
                 JsonObject object = new JsonObject();
-                object.addProperty("id", enchantmentData.enchantment.getRegistryName().toString());
+                object.addProperty("id", Objects.requireNonNull(ForgeRegistries.ENCHANTMENTS.getKey(enchantmentData.enchantment)).toString());
                 object.addProperty("level", enchantmentData.level);
                 jsonElements.add(object);
                 return jsonElements;

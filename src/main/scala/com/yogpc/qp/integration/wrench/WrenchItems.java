@@ -8,15 +8,15 @@ public final class WrenchItems {
     public static boolean isWrenchItem(ItemStack stack) {
         var item = stack.getItem();
         return item == Holder.STICK ||
-            item == Holder.PIPEZ_WRENCH
+               item == Holder.PIPEZ_WRENCH
             ;
     }
 
     @SuppressWarnings("SpellCheckingInspection")
     private static class Holder {
-        @ObjectHolder("minecraft:stick")
+        @ObjectHolder(registryName = "minecraft:item", value = "minecraft:stick")
         public static Item STICK = null;
-        @ObjectHolder("pipez:wrench")
+        @ObjectHolder(registryName = "minecraft:item", value = "pipez:wrench")
         public static Item PIPEZ_WRENCH = null;
     }
 }

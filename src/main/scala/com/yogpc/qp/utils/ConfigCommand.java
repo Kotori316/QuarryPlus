@@ -11,7 +11,7 @@ import com.yogpc.qp.QuarryPlus;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -32,17 +32,17 @@ public final class ConfigCommand {
     private static int changeMachineSetting(String name, boolean enabled, CommandContext<CommandSourceStack> commandContext) throws CommandSyntaxException {
         if (QuarryPlus.config != null) {
             QuarryPlus.config.enableMap.set(name, enabled);
-            commandContext.getSource().sendSuccess(new TextComponent("%s changed to %B".formatted(name, enabled)), true);
+            commandContext.getSource().sendSuccess(Component.literal("%s changed to %B".formatted(name, enabled)), true);
             return Command.SINGLE_SUCCESS;
         } else {
-            var supplier = new SimpleCommandExceptionType(new TextComponent("QuarryPlus.config is NULL."));
+            var supplier = new SimpleCommandExceptionType(Component.literal("QuarryPlus.config is NULL."));
             throw supplier.create();
         }
     }
 
     private static int getConfigValues(CommandContext<CommandSourceStack> commandContext) throws CommandSyntaxException {
         if (QuarryPlus.config != null) {
-            commandContext.getSource().sendSuccess(new TextComponent(
+            commandContext.getSource().sendSuccess(Component.literal(
                 String.format("%sQuarryPlus Machine List%s", ChatFormatting.UNDERLINE, ChatFormatting.RESET)
             ), false);
             Holder.conditionHolders().stream()
@@ -50,11 +50,11 @@ public final class ConfigCommand {
                 .map(ResourceLocation::getPath)
                 .sorted()
                 .map(l -> String.format("%s%s%s: %B", ChatFormatting.DARK_AQUA, l, ChatFormatting.RESET, QuarryPlus.config.enableMap.enabled(l)))
-                .map(TextComponent::new)
+                .map(Component::literal)
                 .forEach(c -> commandContext.getSource().sendSuccess(c, false));
             return Command.SINGLE_SUCCESS;
         } else {
-            var supplier = new SimpleCommandExceptionType(new TextComponent("QuarryPlus.config is NULL."));
+            var supplier = new SimpleCommandExceptionType(Component.literal("QuarryPlus.config is NULL."));
             throw supplier.create();
         }
     }

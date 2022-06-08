@@ -11,8 +11,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.api.distmarker.Dist;
@@ -41,7 +40,7 @@ public class ScreenFlexMarker extends AbstractContainerScreen<ContainerMarker> {
     @Override
     public void init() {
         super.init();
-        TextComponent[] mp = Stream.of("--", "-", "+", "++").map(TextComponent::new).toArray(TextComponent[]::new);
+        MutableComponent[] mp = Stream.of("--", "-", "+", "++").map(Component::literal).toArray(MutableComponent[]::new);
         int w = Stream.of(mp).mapToInt(font::width).max().orElseThrow();
         int h = 20;
         int top = 16;
@@ -81,15 +80,15 @@ public class ScreenFlexMarker extends AbstractContainerScreen<ContainerMarker> {
     @Override
     protected void renderLabels(PoseStack matrices, int mouseX, int mouseY) {
         super.renderLabels(matrices, mouseX, mouseY);
-        var s = new TranslatableComponent(TileFlexMarker.Movable.UP.transName);
+        var s = Component.translatable(TileFlexMarker.Movable.UP.transName);
         this.font.draw(matrices, s, ((float) this.imageWidth - font.width(s)) / 2, 6, 0x404040);
-        s = new TranslatableComponent(TileFlexMarker.Movable.FORWARD.transName);
+        s = Component.translatable(TileFlexMarker.Movable.FORWARD.transName);
         this.font.draw(matrices, s, ((float) this.imageWidth - font.width(s)) / 2, 6 + yOffsetCenter, 0x404040);
-        s = new TranslatableComponent(TileFlexMarker.Movable.LEFT.transName);
+        s = Component.translatable(TileFlexMarker.Movable.LEFT.transName);
         this.font.draw(matrices, s, ((float) this.imageWidth - font.width(s)) / 2 - 40, 6 + yOffsetCenter, 0x404040);
-        s = new TranslatableComponent(TileFlexMarker.Movable.RIGHT.transName);
+        s = Component.translatable(TileFlexMarker.Movable.RIGHT.transName);
         this.font.draw(matrices, s, ((float) this.imageWidth - font.width(s)) / 2 + 40, 6 + yOffsetCenter, 0x404040);
-        s = new TranslatableComponent(TileFlexMarker.Movable.DOWN.transName);
+        s = Component.translatable(TileFlexMarker.Movable.DOWN.transName);
         this.font.draw(matrices, s, ((float) this.imageWidth - font.width(s)) / 2, 6 + yOffsetBottom, 0x404040);
 
         marker.getArea().ifPresent(area -> {

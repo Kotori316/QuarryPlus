@@ -9,7 +9,6 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
@@ -43,7 +42,7 @@ public final class MiniQuarryScreen extends AbstractContainerScreen<MiniQuarryMe
     @Override
     protected void init() {
         super.init();
-        addRenderableWidget(new IndexedButton(1, getGuiLeft() + 70, getGuiTop() + 50, 60, 20, new TextComponent("List"), this));
+        addRenderableWidget(new IndexedButton(1, getGuiLeft() + 70, getGuiTop() + 50, 60, 20, Component.literal("List"), this));
     }
 
     @Override

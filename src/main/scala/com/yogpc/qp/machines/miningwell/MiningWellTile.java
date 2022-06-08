@@ -15,7 +15,6 @@ import com.yogpc.qp.machines.QuarryFakePlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -120,7 +119,7 @@ public class MiningWellTile extends PowerTile implements CheckerLog, MachineStor
             "Interval: " + interval,
             "Finished: " + finished,
             energyString()
-        ).map(TextComponent::new).toList();
+        ).map(Component::literal).toList();
     }
 
     @Override

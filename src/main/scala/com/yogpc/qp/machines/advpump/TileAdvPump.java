@@ -29,7 +29,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -220,15 +219,15 @@ public class TileAdvPump extends PowerTile
     public List<? extends Component> getDebugLogs() {
         var fluidSummery = this.storage.getFluidMap().entrySet().stream()
             .map(e -> "%s: %d mB".formatted(e.getKey().getId(), e.getValue()))
-            .map(TextComponent::new)
+            .map(Component::literal)
             .toList();
-        var fluidMessage = fluidSummery.isEmpty() ? List.of(new TextComponent("No Fluid.")) : fluidSummery;
+        var fluidMessage = fluidSummery.isEmpty() ? List.of(Component.literal("No Fluid.")) : fluidSummery;
         return Stream.concat(fluidMessage.stream(), Stream.of(
             "%sModules:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, modules),
             "%sRemove:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, deleteFluid),
             "%sFrame:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, placeFrame),
             energyString()
-        ).map(TextComponent::new)).toList();
+        ).map(Component::literal)).toList();
     }
 
     @Override

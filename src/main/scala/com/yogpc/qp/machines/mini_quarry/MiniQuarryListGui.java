@@ -17,7 +17,6 @@ import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 
@@ -45,10 +44,10 @@ public class MiniQuarryListGui extends Screen implements Button.OnPress {
         int height = this.height;
         list = new EntryList(this.getMinecraft(), width, height, 30, height - 70, 18, this, this::getEntries);
         addRenderableWidget(list); // Add?
-        addRenderableWidget(new IndexedButton(0, width / 3 - buttonWidth / 2, height - 35, buttonWidth, 20, new TranslatableComponent("quarryplus.gui.blacklist"), this));
-        addRenderableWidget(new IndexedButton(1, width / 3 * 2 - buttonWidth / 2, height - 35, buttonWidth, 20, new TranslatableComponent("gui.done"), this));
-        addRenderableWidget(new IndexedButton(2, width / 2 - buttonWidth, height - 60, buttonWidth, 20, new TranslatableComponent("quarryplus.gui.new_entry"), this));
-        addRenderableWidget(new IndexedButton(3, width / 2, height - 60, buttonWidth, 20, new TranslatableComponent("selectWorld.delete"), this));
+        addRenderableWidget(new IndexedButton(0, width / 3 - buttonWidth / 2, height - 35, buttonWidth, 20, Component.translatable("quarryplus.gui.blacklist"), this));
+        addRenderableWidget(new IndexedButton(1, width / 3 * 2 - buttonWidth / 2, height - 35, buttonWidth, 20, Component.translatable("gui.done"), this));
+        addRenderableWidget(new IndexedButton(2, width / 2 - buttonWidth, height - 60, buttonWidth, 20, Component.translatable("quarryplus.gui.new_entry"), this));
+        addRenderableWidget(new IndexedButton(3, width / 2, height - 60, buttonWidth, 20, Component.translatable("selectWorld.delete"), this));
         this.setInitialFocus(list); // setFocus
     }
 
@@ -56,8 +55,8 @@ public class MiniQuarryListGui extends Screen implements Button.OnPress {
     public void render(PoseStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
         list.render(matrixStack, mouseX, mouseY, partialTicks);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
-        TranslatableComponent listName = new TranslatableComponent(whiteListFlag ? "quarryplus.gui.whitelist" : "quarryplus.gui.blacklist");
-        TranslatableComponent title = new TranslatableComponent("quarryplus.gui.of", listName, super.getTitle().getString());
+        var listName = Component.translatable(whiteListFlag ? "quarryplus.gui.whitelist" : "quarryplus.gui.blacklist");
+        var title = Component.translatable("quarryplus.gui.of", listName, super.getTitle().getString());
         drawCenteredString(matrixStack, this.font, title, this.width / 2, 8, 0xFFFFFF);
     }
 
@@ -89,7 +88,7 @@ public class MiniQuarryListGui extends Screen implements Button.OnPress {
             switch (indexedButton.id()) {
                 case 0 -> { // Change list
                     setWhiteListFlag(!whiteListFlag);
-                    button.setMessage(new TranslatableComponent(whiteListFlag ? "quarryplus.gui.whitelist" : "quarryplus.gui.blacklist"));
+                    button.setMessage(Component.translatable(whiteListFlag ? "quarryplus.gui.whitelist" : "quarryplus.gui.blacklist"));
                 }
                 case 1 -> onClose();
                 case 2 -> getMinecraft().pushGuiLayer(new MiniQuarryAddEntryGui(this, // New Entry
@@ -168,7 +167,7 @@ public class MiniQuarryListGui extends Screen implements Button.OnPress {
 
         @Override
         public Component getNarration() {
-            return new TranslatableComponent("narrator.select", data);
+            return Component.translatable("narrator.select", data);
         }
     }
 }

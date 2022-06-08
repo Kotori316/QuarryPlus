@@ -17,7 +17,7 @@ import org.jetbrains.annotations.VisibleForTesting;
 public abstract class WorkbenchRecipe implements Recipe<TileWorkbench> {
     public static final ResourceLocation recipeLocation = new ResourceLocation(QuarryPlus.modID, "workbench_recipe");
     public static final WorkbenchRecipeSerializer SERIALIZER = new WorkbenchRecipeSerializer();
-    public static final RecipeType<WorkbenchRecipe> RECIPE_TYPE = RecipeType.register(recipeLocation.toString());
+    public static final RecipeType<WorkbenchRecipe> RECIPE_TYPE = new WorkbenchRecipeType();
     @VisibleForTesting
     static RecipeFinder recipeFinder = new DefaultFinder();
     public static final Comparator<WorkbenchRecipe> COMPARATOR =
@@ -137,6 +137,13 @@ public abstract class WorkbenchRecipe implements Recipe<TileWorkbench> {
             for (ItemStack stack : inventory) {
                 if (input.shrink(stack)) break;
             }
+        }
+    }
+
+    private static final class WorkbenchRecipeType implements RecipeType<WorkbenchRecipe> {
+        @Override
+        public String toString() {
+            return recipeLocation.toString();
         }
     }
 }

@@ -20,7 +20,7 @@ class ItemAdvPump extends QPBlock.QPBlockItem implements EnchantableItem {
     @Override
     public void fillItemCategory(CreativeModeTab tab, NonNullList<ItemStack> stacks) {
         super.fillItemCategory(tab, stacks);
-        if (this.allowdedIn(tab)) {
+        if (this.allowedIn(tab)) {
             var stack = new ItemStack(this);
             stack.enchant(Enchantments.BLOCK_EFFICIENCY, 5);
             stack.enchant(Enchantments.UNBREAKING, 3);

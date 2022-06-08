@@ -3,6 +3,7 @@ package com.yogpc.qp.machines.module;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.BlockGetter;
@@ -13,12 +14,13 @@ import net.minecraft.world.level.material.Material;
 
 public class ReplacerDummyBlock extends AbstractGlassBlock {
     public static final String NAME = "dummy_replacer";
+    public final ResourceLocation location = new ResourceLocation(QuarryPlus.modID, NAME);
     public final BlockItem blockItem;
 
     public ReplacerDummyBlock() {
         super(Properties.of(Material.GLASS)
             .noOcclusion()
-            .noDrops()
+            .noLootTable()
             .isValidSpawn((state, world, pos, type) -> false)
             .isSuffocating((state, world, pos) -> false)
             .isRedstoneConductor((state, world, pos) -> false)
@@ -26,9 +28,7 @@ public class ReplacerDummyBlock extends AbstractGlassBlock {
             .lightLevel(value -> 15)
             .strength(1.0f)
         );
-        setRegistryName(QuarryPlus.modID, NAME);
         blockItem = new BlockItem(this, new Item.Properties().tab(Holder.TAB));
-        blockItem.setRegistryName(QuarryPlus.modID, NAME);
     }
 
     @Override

@@ -12,7 +12,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.api.distmarker.Dist;
@@ -68,17 +67,17 @@ public class Screen16Marker extends AbstractContainerScreen<ContainerMarker> imp
         final int middle = getGuiLeft() + this.imageWidth / 2;
         var id = new AtomicInteger(0);
         this.addRenderableWidget(new IndexedButton(id.getAndIncrement(), middle - BUTTON_WIDTH / 2, getGuiTop() + tp,
-            BUTTON_WIDTH, 20, new TextComponent("+"), this));
+            BUTTON_WIDTH, 20, Component.literal("+"), this));
         this.addRenderableWidget(new IndexedButton(id.getAndIncrement(), middle - BUTTON_WIDTH / 2, getGuiTop() + tp + 33,
-            BUTTON_WIDTH, 20, new TextComponent("-"), this));
+            BUTTON_WIDTH, 20, Component.literal("-"), this));
         this.addRenderableWidget(new IndexedButton(id.getAndIncrement(), middle + BUTTON_WIDTH / 2 + 10, getGuiTop() + tp,
-            BUTTON_WIDTH, 20, new TextComponent("Top+"), this));
+            BUTTON_WIDTH, 20, Component.literal("Top+"), this));
         this.addRenderableWidget(new IndexedButton(id.getAndIncrement(), middle + BUTTON_WIDTH / 2 + 10, getGuiTop() + tp + 33,
-            BUTTON_WIDTH, 20, new TextComponent("Top-"), this));
+            BUTTON_WIDTH, 20, Component.literal("Top-"), this));
         this.addRenderableWidget(new IndexedButton(id.getAndIncrement(), middle - BUTTON_WIDTH / 2 - 10 - BUTTON_WIDTH, getGuiTop() + tp,
-            BUTTON_WIDTH, 20, new TextComponent("Bottom+"), this));
+            BUTTON_WIDTH, 20, Component.literal("Bottom+"), this));
         this.addRenderableWidget(new IndexedButton(id.getAndIncrement(), middle - BUTTON_WIDTH / 2 - 10 - BUTTON_WIDTH, getGuiTop() + tp + 33,
-            BUTTON_WIDTH, 20, new TextComponent("Bottom-"), this));
+            BUTTON_WIDTH, 20, Component.literal("Bottom-"), this));
     }
 
     @Override

@@ -10,13 +10,12 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.common.crafting.conditions.ICondition;
-import net.minecraftforge.registries.ForgeRegistryEntry;
+import net.minecraftforge.registries.ForgeRegistries;
 
-public class WorkbenchRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<WorkbenchRecipe> {
+public class WorkbenchRecipeSerializer implements RecipeSerializer<WorkbenchRecipe> {
     private final Map<String, PacketSerialize<? extends WorkbenchRecipe>> serializeMap;
 
     WorkbenchRecipeSerializer() {
-        setRegistryName(WorkbenchRecipe.recipeLocation);
         serializeMap = Map.of(
             "default", new IngredientRecipeSerialize()
         );
@@ -72,7 +71,7 @@ public class WorkbenchRecipeSerializer extends ForgeRegistryEntry<RecipeSerializ
 
         static JsonObject toJson(ItemStack stack) {
             var o = new JsonObject();
-            o.addProperty("item", Objects.requireNonNull(stack.getItem().getRegistryName()).toString());
+            o.addProperty("item", Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(stack.getItem())).toString());
             o.addProperty("count", stack.getCount());
             if (stack.getTag() != null)
                 o.addProperty("nbt", stack.getTag().toString());

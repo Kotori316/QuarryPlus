@@ -9,6 +9,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -20,6 +21,7 @@ import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -38,10 +40,11 @@ public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
 
     public PowerTile(BlockEntityType<?> type, @NotNull BlockPos pos, BlockState state) {
         super(type, pos, state);
-        this.enabled = QuarryPlus.config.enableMap.enabled(Objects.requireNonNull(type.getRegistryName()));
+        ResourceLocation typeName = Objects.requireNonNull(ForgeRegistries.BLOCK_ENTITIES.getKey(type));
+        this.enabled = QuarryPlus.config.enableMap.enabled(typeName);
         this.energyCounter = EnergyCounter.createInstance(QuarryPlus.config.debug() && enabled,
             "%s(%d, %d, %d)".formatted(getClass().getSimpleName(), pos.getX(), pos.getY(), pos.getZ()));
-        this.powerConfig = PowerConfig.getMachineConfig(Objects.requireNonNull(type.getRegistryName()).getPath());
+        this.powerConfig = PowerConfig.getMachineConfig(typeName.getPath());
         this.maxEnergy = this.powerConfig.maxEnergy();
         setTimeProvider(() -> Objects.requireNonNull(this.level, "Level in block entity is null. Are you in test?").getGameTime());
     }

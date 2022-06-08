@@ -41,7 +41,7 @@ public class FrameBlock extends QPBlock {
             .anyMatch(p -> !world.getFluidState(p).isEmpty());
 
     public FrameBlock() {
-        super(Properties.of(Material.GLASS).strength(0.5f).noDrops(), NAME);
+        super(Properties.of(Material.GLASS).strength(0.5f).noLootTable(), NAME);
         this.registerDefaultState(getStateDefinition().any()
             .setValue(NORTH, false).setValue(EAST, false).setValue(SOUTH, false)
             .setValue(WEST, false).setValue(UP, false).setValue(DOWN, false)

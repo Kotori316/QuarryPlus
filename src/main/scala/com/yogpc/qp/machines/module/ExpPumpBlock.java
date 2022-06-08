@@ -4,7 +4,7 @@ import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPBlock;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -52,13 +52,13 @@ public class ExpPumpBlock extends QPBlock implements EntityBlock, QuarryModulePr
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!QuarryPlus.config.enableMap.enabled(NAME)) {
             if (!level.isClientSide)
-                player.displayClientMessage(new TranslatableComponent("quarryplus.chat.disable_message", getName()), true);
+                player.displayClientMessage(Component.translatable("quarryplus.chat.disable_message", getName()), true);
             return InteractionResult.SUCCESS;
         }
         if (!level.isClientSide) {
             if (level.getBlockEntity(pos) instanceof ExpPumpTile expPump && expPump.getModule().getExp() > 0) {
                 player.giveExperiencePoints(expPump.getModule().getExp());
-                player.displayClientMessage(new TranslatableComponent("quarryplus.chat.give_exp", expPump.getModule().getExp()), false);
+                player.displayClientMessage(Component.translatable("quarryplus.chat.give_exp", expPump.getModule().getExp()), false);
                 expPump.getModule().setExp(0, false);
             }
         }

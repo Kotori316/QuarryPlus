@@ -5,7 +5,7 @@ import com.yogpc.qp.machines.QPBlock;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -66,7 +66,7 @@ public class BlockMarker extends QPBlock implements EntityBlock {
             if (world.getBlockEntity(pos) instanceof TileMarker marker) {
                 marker.tryConnect(true);
                 marker.getArea().ifPresent(area ->
-                    player.displayClientMessage(new TextComponent("%sMarker Area%s: %s".formatted(ChatFormatting.AQUA, ChatFormatting.RESET, area)), false));
+                    player.displayClientMessage(Component.literal("%sMarker Area%s: %s".formatted(ChatFormatting.AQUA, ChatFormatting.RESET, area)), false));
             }
         }
         return InteractionResult.SUCCESS;

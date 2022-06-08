@@ -12,7 +12,6 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.level.ChunkPos;
@@ -59,8 +58,8 @@ public class AdvQuarryScreen extends AbstractContainerScreen<AdvQuarryMenu> impl
     @Override
     protected void init() {
         super.init();
-        var plus = new TextComponent("+");
-        var minus = new TextComponent("-");
+        var plus = Component.literal("+");
+        var minus = Component.literal("-");
         this.addRenderableWidget(new IndexedButton(0, getGuiLeft() + 98, getGuiTop() + 16, 10, 8, plus, this));
         this.addRenderableWidget(new IndexedButton(1, getGuiLeft() + 68, getGuiTop() + 16, 10, 8, minus, this));
         this.addRenderableWidget(new IndexedButton(2, getGuiLeft() + 98, getGuiTop() + 62, 10, 8, plus, this));
@@ -70,8 +69,8 @@ public class AdvQuarryScreen extends AbstractContainerScreen<AdvQuarryMenu> impl
         this.addRenderableWidget(new IndexedButton(6, getGuiLeft() + 158, getGuiTop() + 39, 10, 8, plus, this));
         this.addRenderableWidget(new IndexedButton(7, getGuiLeft() + 128, getGuiTop() + 39, 10, 8, minus, this));
 
-        this.addRenderableWidget(new IndexedButton(8, getGuiLeft() + 108, getGuiTop() + 58, 60, 12, new TextComponent("No Frame"), this));
-        this.addRenderableWidget(new IndexedButton(9, getGuiLeft() + 8, getGuiTop() + 58, 60, 12, new TextComponent("Modules"), this));
+        this.addRenderableWidget(new IndexedButton(8, getGuiLeft() + 108, getGuiTop() + 58, 60, 12, Component.literal("No Frame"), this));
+        this.addRenderableWidget(new IndexedButton(9, getGuiLeft() + 8, getGuiTop() + 58, 60, 12, Component.literal("Modules"), this));
     }
 
     @Override
