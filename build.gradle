@@ -9,23 +9,20 @@ import java.util.stream.Stream
 
 buildscript {
     repositories {
-        // These repositories are only for Gradle plugins, put any other repositories in the repository block further below
-        maven { url = 'https://maven.minecraftforge.net' }
         maven { url = 'https://maven.parchmentmc.org' }
         mavenCentral()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
         classpath 'org.parchmentmc:librarian:1.+'
     }
 }
 plugins {
     id("maven-publish")
     id("scala")
+    id 'net.minecraftforge.gradle' version '5.+'
     id "com.github.breadmoirai.github-release" version "2.2.12"
     id "com.matthewprenger.cursegradle" version "1.4.0"
 }
-apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
@@ -225,17 +222,17 @@ dependencies {
     testCompileOnly(group: 'org.scala-lang', name: 'scala-library', version: project.scalaVersion)
     testCompileOnly(group: 'org.typelevel', name: "cats-core_2.13", version: project.catsVersion)
 
-    implementation fg.deobf("mezz.jei:jei-1.18.2:" + project.jeiVersion)
+    compileOnly fg.deobf("mezz.jei:jei-1.18.2:" + project.jeiVersion)
     runtimeOnly(group: "com.kotori316", name: "ScalableCatsForce".toLowerCase(), version: project.slpVersion, classifier: "with-library") {
         transitive(false)
     }
 
     // FTB Chunks stuff
-    implementation(fg.deobf(group: "dev.ftb.mods", name: "ftb-chunks-forge", version: project.ftbChunksVersion))
-    implementation(fg.deobf(group: "dev.ftb.mods", name: "ftb-library-forge", version: project.ftbLibraryVersion))
-    runtimeOnly(fg.deobf(group: "dev.ftb.mods", name: "ftb-teams-forge", version: project.ftbTeamsVersion))
-    runtimeOnly(fg.deobf(group: "dev.ftb.mods", name: "ftb-teams-forge", version: project.ftbTeamsVersion))
-    runtimeOnly(fg.deobf(group: "dev.architectury", name: "architectury-forge", version: project.architecturyVersion))
+    compileOnly(fg.deobf(group: "dev.ftb.mods", name: "ftb-chunks-forge", version: project.ftbChunksVersion))
+    compileOnly(fg.deobf(group: "dev.ftb.mods", name: "ftb-library-forge", version: project.ftbLibraryVersion))
+    compileOnly(fg.deobf(group: "dev.ftb.mods", name: "ftb-teams-forge", version: project.ftbTeamsVersion))
+    compileOnly(fg.deobf(group: "dev.ftb.mods", name: "ftb-teams-forge", version: project.ftbTeamsVersion))
+    compileOnly(fg.deobf(group: "dev.architectury", name: "architectury-forge", version: project.architecturyVersion))
 
     // Test Dependencies.
     final def JUPITER_VERSION = '5.8.2'
@@ -250,13 +247,6 @@ dependencies {
     game_test(group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: JUPITER_VERSION)
     game_test(group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: JUPITER_VERSION)
     game_test(group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.8.2')
-}
-
-configurations.all {
-    resolutionStrategy {
-        force(group: "org.apache.logging.log4j", name: "log4j-api", version: "2.17.+")
-        force(group: "org.apache.logging.log4j", name: "log4j-core", version: "2.17.+")
-    }
 }
 
 // Example for how to get properties into the manifest for reading at runtime.
