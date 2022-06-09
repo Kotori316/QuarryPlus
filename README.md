@@ -1,4 +1,4 @@
-# QuarryPlus for 1.18
+# QuarryPlus for 1.19
 
 This program is licensed under GNU LESSER GENERAL PUBLIC LICENSE.
 
@@ -19,9 +19,9 @@ Requires [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/sca
 
 * Marker
   * Renderer
-  * MarkerPlus, Flexible Marker, Chunk Marker
+  * ~Marker Plus~, Flexible Marker, Chunk Marker
 * Waterlogged Marker
-  * Marker Plus, Flexible Marker, Chunk Marker
+  * ~Marker Plus~, Flexible Marker, Chunk Marker
 * Workbench
   * JEI support
 * Enchantment Mover
@@ -59,7 +59,7 @@ repositories {
     }
 }
 dependencies {
-    // https://dev.azure.com/Kotori316/minecraft/_packaging?_a=package&feed=mods%40Local&package=com.kotori316%3Aadditionalenchantedminer&protocolType=maven&view=versions
+    // https://dev.azure.com/Kotori316/minecraft/_artifacts/feed/mods/maven/com.kotori316%2Fadditionalenchantedminer/versions
     implementation(fg.deobf("com.kotori316:AdditionalEnchantedMiner:VERSION".toLowerCase(Locale.ROOT)))
 }
 ```
