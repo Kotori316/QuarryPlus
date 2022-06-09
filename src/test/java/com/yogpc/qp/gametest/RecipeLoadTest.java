@@ -50,15 +50,15 @@ public final class RecipeLoadTest {
     @GameTest(template = GameTestUtil.EMPTY_STRUCTURE)
     public void loadMarker(GameTestHelper helper) throws IOException {
         JsonObject jsonObject;
-        try (var stream = getClass().getResourceAsStream("/data/quarryplus/recipes/marker.json");
+        try (var stream = getClass().getResourceAsStream("/data/quarryplus/recipes/flex_marker_workbench.json");
              var reader = new InputStreamReader(Objects.requireNonNull(stream))) {
             jsonObject = GsonHelper.parse(reader);
         }
         var context = GameTestUtil.getContext(helper);
-        var recipe = assertDoesNotThrow(() -> RecipeManager.fromJson(new ResourceLocation(QuarryPlus.modID, "marker"), jsonObject, context));
+        var recipe = assertDoesNotThrow(() -> RecipeManager.fromJson(new ResourceLocation(QuarryPlus.modID, "flex_marker_workbench"), jsonObject, context));
         assertAll(
             () -> assertTrue(recipe instanceof WorkbenchRecipe),
-            () -> assertTrue(ItemStack.isSame(recipe.getResultItem(), new ItemStack(Holder.BLOCK_MARKER)))
+            () -> assertTrue(ItemStack.isSame(recipe.getResultItem(), new ItemStack(Holder.BLOCK_FLEX_MARKER)))
         );
         var inputs = ((WorkbenchRecipe) recipe).inputs().stream().flatMap(i -> i.stackList().stream()).toList();
         assertAll(
@@ -67,7 +67,8 @@ public final class RecipeLoadTest {
             () -> match(inputs, Tags.Items.DUSTS_GLOWSTONE, 4),
             () -> match(inputs, Tags.Items.DUSTS_REDSTONE, 12),
             () -> match(inputs, Items.LAPIS_LAZULI, 12),
-            () -> assertEquals(5, inputs.size())
+            () -> match(inputs, Items.REDSTONE_TORCH, 4),
+            () -> assertEquals(6, inputs.size())
         );
         helper.succeed();
     }
