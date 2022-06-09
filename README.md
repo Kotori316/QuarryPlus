@@ -1,10 +1,10 @@
-# QuarryPlus for 1.18-fabric
+# QuarryPlus for 1.19-fabric
 ===========
 
 [![](https://github.com/Kotori316/QuarryPlus/workflows/Build%20Check%20and%20Publish/badge.svg)](https://github.com/Kotori316/QuarryPlus/actions)
 
-[![](http://cf.way2muchnoise.eu/versions/additional-enchanted-miner.svg)](https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner)
-[![](http://cf.way2muchnoise.eu/full_additional-enchanted-miner_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner)
+[![](http://cf.way2muchnoise.eu/versions/282837.svg)](https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner)
+[![](http://cf.way2muchnoise.eu/full_282837_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner)
 
 CurseForge - https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner
 
@@ -19,11 +19,13 @@ unexpected crashes.
 
 ## Finished work
 
-* Marker
+* ~Marker Plus~
   * Render
   * Guideline with RS signal
 * Flexible Marker
+  * GUI
 * Chunk Marker
+  * GUI
 * QuarryPlus
   * Render of drill
   * Enchantment
