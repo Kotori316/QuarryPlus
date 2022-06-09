@@ -3,35 +3,39 @@
   "conditions": [
     {
       "type": "quarryplus:machine_enabled",
-      "value": "quarry"
+      "value": "flex_marker"
     }
   ],
-  "energy": 320000.0,
+  "energy": 20000.0,
   "ingredients": [
     {
-      "count": 32,
-      "tag": "forge:gems/diamond"
-    },
-    {
-      "count": 32,
+      "count": 7,
       "tag": "forge:ingots/gold"
     },
     {
-      "count": 64,
+      "count": 8,
       "tag": "forge:ingots/iron"
     },
     {
-      "count": 16,
+      "count": 12,
       "tag": "forge:dusts/redstone"
     },
     {
       "count": 4,
-      "tag": "forge:ender_pearls"
+      "tag": "forge:dusts/glowstone"
+    },
+    {
+      "count": 4,
+      "item": "minecraft:redstone_torch"
+    },
+    {
+      "count": 12,
+      "item": "minecraft:lapis_lazuli"
     }
   ],
   "result": {
     "count": 1,
-    "item": "quarryplus:quarry"
+    "item": "quarryplus:flex_marker"
   },
   "showInJEI": true,
   "subType": "default"

@@ -1,5 +1,11 @@
 {
   "type": "minecraft:crafting_shapeless",
+  "conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "pump_module"
+    }
+  ],
   "group": "quarryplus:group_module",
   "ingredients": [
     {
@@ -8,11 +14,5 @@
   ],
   "result": {
     "item": "quarryplus:pump_module"
-  },
-  "conditions": [
-    {
-      "value": "pump_module",
-      "type": "quarryplus:machine_enabled"
-    }
-  ]
+  }
 }

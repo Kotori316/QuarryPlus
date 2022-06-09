@@ -1,19 +1,27 @@
 {
   "parent": "minecraft:recipes/root",
-  "rewards": {
-    "recipes": [
-      "quarryplus:placer_plus_crafting"
-    ]
-  },
-  "criteria": {
-    "has_the_recipe": {
-      "trigger": "minecraft:recipe_unlocked",
-      "conditions": {
-        "recipe": "quarryplus:placer_plus_crafting"
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "quarryplus:machine_enabled",
+        "value": "workbench"
       }
     },
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "placer_plus"
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/gold"
+      }
+    }
+  ],
+  "criteria": {
     "has_dispenser": {
-      "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
@@ -22,10 +30,20 @@
             ]
           }
         ]
-      }
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_ingots/gold": {
+      "conditions": {
+        "items": [
+          {
+            "tag": "forge:ingots/gold"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
     },
     "has_mossy_cobblestone": {
-      "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
@@ -34,17 +52,14 @@
             ]
           }
         ]
-      }
+      },
+      "trigger": "minecraft:inventory_changed"
     },
-    "has_ingots/gold": {
-      "trigger": "minecraft:inventory_changed",
+    "has_the_recipe": {
       "conditions": {
-        "items": [
-          {
-            "tag": "forge:ingots/gold"
-          }
-        ]
-      }
+        "recipe": "quarryplus:placer_plus_crafting"
+      },
+      "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
@@ -55,24 +70,9 @@
       "has_ingots/gold"
     ]
   ],
-  "conditions": [
-    {
-      "value": {
-        "value": "workbench",
-        "type": "quarryplus:machine_enabled"
-      },
-      "type": "forge:not"
-    },
-    {
-      "value": "placer_plus",
-      "type": "quarryplus:machine_enabled"
-    },
-    {
-      "value": {
-        "tag": "forge:ingots/gold",
-        "type": "forge:tag_empty"
-      },
-      "type": "forge:not"
-    }
-  ]
+  "rewards": {
+    "recipes": [
+      "quarryplus:placer_plus_crafting"
+    ]
+  }
 }

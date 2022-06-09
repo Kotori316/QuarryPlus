@@ -1,16 +1,24 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "GDG",
-    "MRM",
-    "MIM"
+  "conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "placer_plus"
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "quarryplus:machine_enabled",
+        "value": "workbench"
+      }
+    }
   ],
   "key": {
     "D": {
       "item": "minecraft:dispenser"
     },
-    "R": {
-      "tag": "forge:dusts/redstone"
+    "G": {
+      "tag": "forge:ingots/gold"
     },
     "I": {
       "tag": "forge:ingots/iron"
@@ -18,24 +26,16 @@
     "M": {
       "item": "minecraft:mossy_cobblestone"
     },
-    "G": {
-      "tag": "forge:ingots/gold"
+    "R": {
+      "tag": "forge:dusts/redstone"
     }
   },
+  "pattern": [
+    "GDG",
+    "MRM",
+    "MIM"
+  ],
   "result": {
     "item": "quarryplus:placer_plus"
-  },
-  "conditions": [
-    {
-      "value": "placer_plus",
-      "type": "quarryplus:machine_enabled"
-    },
-    {
-      "value": {
-        "value": "workbench",
-        "type": "quarryplus:machine_enabled"
-      },
-      "type": "forge:not"
-    }
-  ]
+  }
 }

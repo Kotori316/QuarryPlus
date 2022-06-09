@@ -1,39 +1,27 @@
 {
   "parent": "minecraft:recipes/root",
-  "rewards": {
-    "recipes": [
-      "quarryplus:workbench"
-    ]
-  },
+  "conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "workbench"
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:storage_blocks/gold"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:storage_blocks/iron"
+      }
+    }
+  ],
   "criteria": {
-    "has_the_recipe": {
-      "trigger": "minecraft:recipe_unlocked",
-      "conditions": {
-        "recipe": "quarryplus:workbench"
-      }
-    },
-    "has_storage_blocks/iron": {
-      "trigger": "minecraft:inventory_changed",
-      "conditions": {
-        "items": [
-          {
-            "tag": "forge:storage_blocks/iron"
-          }
-        ]
-      }
-    },
-    "has_storage_blocks/gold": {
-      "trigger": "minecraft:inventory_changed",
-      "conditions": {
-        "items": [
-          {
-            "tag": "forge:storage_blocks/gold"
-          }
-        ]
-      }
-    },
     "has_redstone": {
-      "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
@@ -42,7 +30,34 @@
             ]
           }
         ]
-      }
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_storage_blocks/gold": {
+      "conditions": {
+        "items": [
+          {
+            "tag": "forge:storage_blocks/gold"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_storage_blocks/iron": {
+      "conditions": {
+        "items": [
+          {
+            "tag": "forge:storage_blocks/iron"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "quarryplus:workbench"
+      },
+      "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
@@ -53,24 +68,9 @@
       "has_redstone"
     ]
   ],
-  "conditions": [
-    {
-      "value": "workbench",
-      "type": "quarryplus:machine_enabled"
-    },
-    {
-      "value": {
-        "tag": "forge:storage_blocks/gold",
-        "type": "forge:tag_empty"
-      },
-      "type": "forge:not"
-    },
-    {
-      "value": {
-        "tag": "forge:storage_blocks/iron",
-        "type": "forge:tag_empty"
-      },
-      "type": "forge:not"
-    }
-  ]
+  "rewards": {
+    "recipes": [
+      "quarryplus:workbench"
+    ]
+  }
 }

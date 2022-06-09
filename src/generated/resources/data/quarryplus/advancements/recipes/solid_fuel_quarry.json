@@ -1,19 +1,20 @@
 {
   "parent": "minecraft:recipes/root",
-  "rewards": {
-    "recipes": [
-      "quarryplus:solid_fuel_quarry"
-    ]
-  },
-  "criteria": {
-    "has_the_recipe": {
-      "trigger": "minecraft:recipe_unlocked",
-      "conditions": {
-        "recipe": "quarryplus:solid_fuel_quarry"
-      }
+  "conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "solid_fuel_quarry"
     },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:storage_blocks/gold"
+      }
+    }
+  ],
+  "criteria": {
     "has_diamond_pickaxe": {
-      "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
@@ -22,17 +23,24 @@
             ]
           }
         ]
-      }
+      },
+      "trigger": "minecraft:inventory_changed"
     },
     "has_storage_blocks/gold": {
-      "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
             "tag": "forge:storage_blocks/gold"
           }
         ]
-      }
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "quarryplus:solid_fuel_quarry"
+      },
+      "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
@@ -42,17 +50,9 @@
       "has_storage_blocks/gold"
     ]
   ],
-  "conditions": [
-    {
-      "value": "solid_fuel_quarry",
-      "type": "quarryplus:machine_enabled"
-    },
-    {
-      "value": {
-        "tag": "forge:storage_blocks/gold",
-        "type": "forge:tag_empty"
-      },
-      "type": "forge:not"
-    }
-  ]
+  "rewards": {
+    "recipes": [
+      "quarryplus:solid_fuel_quarry"
+    ]
+  }
 }

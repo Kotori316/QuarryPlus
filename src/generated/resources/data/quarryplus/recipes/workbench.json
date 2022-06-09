@@ -1,31 +1,31 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "III",
-    "GDG",
-    "RRR"
+  "conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "workbench"
+    }
   ],
   "key": {
     "D": {
       "tag": "forge:storage_blocks/diamond"
     },
-    "R": {
-      "item": "minecraft:redstone"
+    "G": {
+      "tag": "forge:storage_blocks/gold"
     },
     "I": {
       "tag": "forge:storage_blocks/iron"
     },
-    "G": {
-      "tag": "forge:storage_blocks/gold"
+    "R": {
+      "item": "minecraft:redstone"
     }
   },
+  "pattern": [
+    "III",
+    "GDG",
+    "RRR"
+  ],
   "result": {
     "item": "quarryplus:workbench"
-  },
-  "conditions": [
-    {
-      "value": "workbench",
-      "type": "quarryplus:machine_enabled"
-    }
-  ]
+  }
 }

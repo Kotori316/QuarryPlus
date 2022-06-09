@@ -1,19 +1,13 @@
 {
   "parent": "minecraft:recipes/root",
-  "rewards": {
-    "recipes": [
-      "quarryplus:exp_module"
-    ]
-  },
+  "conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "exp_module"
+    }
+  ],
   "criteria": {
-    "has_the_recipe": {
-      "trigger": "minecraft:recipe_unlocked",
-      "conditions": {
-        "recipe": "quarryplus:exp_module"
-      }
-    },
     "has_exp_pump": {
-      "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
@@ -22,7 +16,14 @@
             ]
           }
         ]
-      }
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "quarryplus:exp_module"
+      },
+      "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
@@ -31,10 +32,9 @@
       "has_exp_pump"
     ]
   ],
-  "conditions": [
-    {
-      "value": "exp_module",
-      "type": "quarryplus:machine_enabled"
-    }
-  ]
+  "rewards": {
+    "recipes": [
+      "quarryplus:exp_module"
+    ]
+  }
 }
