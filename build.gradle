@@ -299,7 +299,7 @@ curseforge {
         id = '282837'
         changelogType = 'markdown'
         addGameVersion 'Fabric'
-        addGameVersion '1.19-Snapshot' // project.minecraft_version
+        addGameVersion project.minecraft_version
         changelog = curseChangelog()
         releaseType = isInCI() ? 'alpha' : 'beta'
         mainArtifact(remapJar) {
