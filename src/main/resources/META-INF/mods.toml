@@ -5,9 +5,9 @@ license="GNU Lesser General Public License v3.0"
 [[mods]]
 modId="quarryplus"
 version="${file.jarVersion}"
-displayName="QuarryPlus"
-updateJSONURL="https://raw.githubusercontent.com/Kotori316/QuarryPlus/1.18/update.json"
-displayURL="https://github.com/Kotori316/QuarryPlus"
+displayName = "QuarryPlus"
+updateJSONURL = "https://raw.githubusercontent.com/Kotori316/QuarryPlus/1.19/update.json"
+displayURL = "https://github.com/Kotori316/QuarryPlus"
 credits="Kotori316"
 authors="Kotori316"
 description='''

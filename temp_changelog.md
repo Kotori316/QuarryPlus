@@ -1,3 +1,9 @@
+## Version 19.0
+
+* Update for 1.19
+* **Sorry, but this version is not manually tested. If you find bugs, please report.**
+* Removed recipe for Marker Plus.
+
 ## Version 18.12
 
 * Changed the content of Flexible Marker GUI.
