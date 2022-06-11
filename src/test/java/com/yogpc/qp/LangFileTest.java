@@ -20,16 +20,17 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 final class LangFileTest {
     static final Gson GSON = new Gson();
+    public static final String PATH_ENGLISH_LANG = "/assets/quarryplus/lang/en_us.json";
 
     @Test
     void findEN_USFile() {
-        assertNotNull(getClass().getResource("/assets/quarryplus/lang/en_us.json"));
+        assertNotNull(getClass().getResource(PATH_ENGLISH_LANG));
     }
 
     @TestFactory
     @SuppressWarnings("ConstantConditions")
     Stream<DynamicTest> containsAll() throws URISyntaxException, IOException {
-        var langDir = Path.of(getClass().getResource("/assets/quarryplus/lang/en_us.json").toURI()).getParent();
+        var langDir = Path.of(getClass().getResource(PATH_ENGLISH_LANG).toURI()).getParent();
         return DynamicTest.stream(Files.find(langDir, 1, (path, a) ->
                 path.getFileName().toString().endsWith("json") && !path.getFileName().toString().startsWith("en_us")),
             path -> path.getFileName().toString(), this::containsAll
@@ -44,14 +45,14 @@ final class LangFileTest {
 
     @SuppressWarnings("ConstantConditions")
     List<String> en_usKeys() {
-        return GSON.fromJson(new InputStreamReader(getClass().getResourceAsStream("/assets/quarryplus/lang/en_us.json")), JsonObject.class)
+        return GSON.fromJson(new InputStreamReader(getClass().getResourceAsStream(PATH_ENGLISH_LANG)), JsonObject.class)
             .keySet().stream().sorted().toList();
     }
 
     @TestFactory
     @SuppressWarnings("ConstantConditions")
     Stream<DynamicTest> noDuplication() throws URISyntaxException, IOException {
-        var langDir = Path.of(getClass().getResource("/assets/fluidtank/lang/en_us.json").toURI()).getParent();
+        var langDir = Path.of(getClass().getResource(PATH_ENGLISH_LANG).toURI()).getParent();
         return DynamicTest.stream(Files.find(langDir, 1, (path, a) ->
                 path.getFileName().toString().endsWith("json")),
             path -> path.getFileName().toString(), this::noDuplication
