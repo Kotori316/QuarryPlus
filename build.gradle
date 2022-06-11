@@ -228,11 +228,10 @@ dependencies {
     }
 
     // FTB Chunks stuff
-    compileOnly(fg.deobf(group: "dev.ftb.mods", name: "ftb-chunks-forge", version: project.ftbChunksVersion))
-    compileOnly(fg.deobf(group: "dev.ftb.mods", name: "ftb-library-forge", version: project.ftbLibraryVersion))
-    compileOnly(fg.deobf(group: "dev.ftb.mods", name: "ftb-teams-forge", version: project.ftbTeamsVersion))
-    compileOnly(fg.deobf(group: "dev.ftb.mods", name: "ftb-teams-forge", version: project.ftbTeamsVersion))
-    compileOnly(fg.deobf(group: "dev.architectury", name: "architectury-forge", version: project.architecturyVersion))
+    implementation(fg.deobf(group: "dev.ftb.mods", name: "ftb-chunks-forge", version: project.ftbChunksVersion))
+    implementation(fg.deobf(group: "dev.ftb.mods", name: "ftb-library-forge", version: project.ftbLibraryVersion))
+    runtimeOnly(fg.deobf(group: "dev.ftb.mods", name: "ftb-teams-forge", version: project.ftbTeamsVersion))
+    runtimeOnly(fg.deobf(group: "dev.architectury", name: "architectury-forge", version: project.architecturyVersion))
 
     // Test Dependencies.
     final def JUPITER_VERSION = '5.8.2'
