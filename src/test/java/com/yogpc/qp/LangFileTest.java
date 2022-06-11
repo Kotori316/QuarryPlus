@@ -14,6 +14,7 @@ import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -45,5 +46,21 @@ final class LangFileTest {
     List<String> en_usKeys() {
         return GSON.fromJson(new InputStreamReader(getClass().getResourceAsStream("/assets/quarryplus/lang/en_us.json")), JsonObject.class)
             .keySet().stream().sorted().toList();
+    }
+
+    @TestFactory
+    @SuppressWarnings("ConstantConditions")
+    Stream<DynamicTest> noDuplication() throws URISyntaxException, IOException {
+        var langDir = Path.of(getClass().getResource("/assets/fluidtank/lang/en_us.json").toURI()).getParent();
+        return DynamicTest.stream(Files.find(langDir, 1, (path, a) ->
+                path.getFileName().toString().endsWith("json")),
+            path -> path.getFileName().toString(), this::noDuplication
+        );
+    }
+
+    void noDuplication(Path path) throws IOException {
+        var lineCount = Files.readAllLines(path).size() - 2; // Remove first and last line.
+        var elementCount = GSON.fromJson(Files.newBufferedReader(path), JsonObject.class).size();
+        assertEquals(elementCount, lineCount, "%s contains duplicated elements.".formatted(path.getFileName()));
     }
 }
