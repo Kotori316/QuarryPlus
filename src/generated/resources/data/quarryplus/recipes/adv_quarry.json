@@ -22,20 +22,10 @@
         "item": "quarryplus:pump_module"
       }
     ],
-    [
-      {
-        "count": 3,
-        "item": "quarryplus:marker"
-      },
-      {
-        "count": 3,
-        "item": "quarryplus:flex_marker"
-      },
-      {
-        "count": 3,
-        "item": "quarryplus:marker16"
-      }
-    ],
+    {
+      "count": 3,
+      "tag": "quarryplus:markers"
+    },
     {
       "count": 8,
       "tag": "forge:storage_blocks/diamond"

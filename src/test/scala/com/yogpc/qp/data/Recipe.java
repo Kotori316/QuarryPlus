@@ -78,7 +78,6 @@ class Recipe extends QuarryDataProvider {
 
     private List<RecipeSerializeHelper> workbenchRecipes() {
         List<RecipeSerializeHelper> list = new ArrayList<>();
-        Ingredient markers = Ingredient.of(Holder.BLOCK_MARKER, Holder.BLOCK_FLEX_MARKER, Holder.BLOCK_16_MARKER);
         // Quarry Plus
         list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(
             location(QuarryBlock.NAME), new ItemStack(Holder.BLOCK_QUARRY), 320000 * PowerTile.ONE_FE, true, List.of(
@@ -102,7 +101,7 @@ class Recipe extends QuarryDataProvider {
             location(BlockAdvPump.NAME), new ItemStack(Holder.BLOCK_ADV_PUMP), 3200000 * PowerTile.ONE_FE, true, List.of(
             as(Pair.of(Ingredient.of(Holder.BLOCK_PUMP), 2), Pair.of(Ingredient.of(Holder.ITEM_PUMP_MODULE), 2)),
             makeList(Holder.BLOCK_MINING_WELL, 2),
-            new IngredientList(new IngredientWithCount(markers, 3))
+            makeList(Holder.TAG_MARKERS, 3)
         )))).addCondition(new EnableCondition(BlockAdvPump.NAME)));
         // Marker Plus
         /*list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(
@@ -222,7 +221,7 @@ class Recipe extends QuarryDataProvider {
             location(BlockAdvQuarry.NAME), new ItemStack(Holder.BLOCK_ADV_QUARRY), 3200000 * PowerTile.ONE_FE, true, List.of(
             makeList(Holder.BLOCK_QUARRY, 3),
             as(Pair.of(Ingredient.of(Holder.BLOCK_PUMP), 2), Pair.of(Ingredient.of(Holder.ITEM_PUMP_MODULE), 2)),
-            new IngredientList(new IngredientWithCount(markers, 3)),
+            makeList(Holder.TAG_MARKERS, 3),
             makeList(Tags.Items.STORAGE_BLOCKS_DIAMOND, 8),
             makeList(Tags.Items.STORAGE_BLOCKS_EMERALD, 8),
             makeList(Items.ENDER_EYE, 64),
@@ -294,7 +293,10 @@ class Recipe extends QuarryDataProvider {
                     .pattern("R")
                     .pattern("T")
                     .define('R', Tags.Items.DUSTS_REDSTONE)
-                    .define('T', Ingredient.of(Holder.BLOCK_MARKER, Holder.BLOCK_FLEX_MARKER)),
+                    .define('T', Ingredient.of(
+                        Holder.BLOCK_MARKER, Holder.BLOCK_WATERLOGGED_MARKER,
+                        Holder.BLOCK_FLEX_MARKER, Holder.BLOCK_WATERLOGGED_FLEX_MARKER
+                    )),
                 null
             )
         );

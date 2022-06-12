@@ -73,6 +73,7 @@ import com.yogpc.qp.machines.workbench.ContainerWorkbench;
 import com.yogpc.qp.machines.workbench.TileWorkbench;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
@@ -245,6 +246,8 @@ public class Holder {
         new ResourceLocation(QuarryPlus.modID, QuarryLootFunction.NAME), new LootItemFunctionType(QuarryLootFunction.SERIALIZER));
     public static final LootItemFunctionType MODULE_LOOT_TYPE = Registry.register(Registry.LOOT_FUNCTION_TYPE,
         new ResourceLocation(QuarryPlus.modID, ModuleLootFunction.NAME), new LootItemFunctionType(ModuleLootFunction.SERIALIZER));
+
+    public static final TagKey<Item> TAG_MARKERS = TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation(QuarryPlus.modID, "markers"));
 
     public record EntryConditionHolder(ResourceLocation location, EnableOrNot condition) {
         public boolean configurable() {

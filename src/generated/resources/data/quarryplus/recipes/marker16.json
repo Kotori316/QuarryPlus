@@ -9,7 +9,13 @@
         "item": "quarryplus:marker"
       },
       {
+        "item": "quarryplus:waterlogged_marker"
+      },
+      {
         "item": "quarryplus:flex_marker"
+      },
+      {
+        "item": "quarryplus:waterlogged_flex_marker"
       }
     ]
   },
