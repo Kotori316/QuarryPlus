@@ -3,10 +3,16 @@
 ### Changes
 
 * Removed - Marker Plus. Use Flexible Marker instead.
+* Added - Plugin for Jade. WTHIT is already supported.
+* Added - A tag of markers.
+
+### Fixed
+
+* Fixed - Recipes of some machines were wrong. Close #194
 
 ### Misc
 
-* Update for 1.19-rc2
+* Update for 1.19
 
 ## 1.18
 
