@@ -1,6 +1,5 @@
 {
   "FD.UNKNOWN": "UNKNOWN Direction",
-  "config.jade.plugin_quarryplus.jade_plugin": "QuarryPlus Plugin",
   "FD.down": "DOWN",
   "FD.east": "EAST",
   "FD.north": "NORTH",
@@ -43,6 +42,7 @@
   "chat.flexiblemarker.area": "Set new area.",
   "chat.flexiblemarker.pos": "Set new machine pos. %s",
   "chat.flexiblemarker.reset": "Reset controller configuration.",
+  "config.jade.plugin_quarryplus.jade_plugin": "QuarryPlus Plugin",
   "container.yog.basic": "Machine Buffer",
   "gui.apply": "Apply",
   "gui.buildAdvFrame": "BuildAdvFrame",
@@ -111,6 +111,7 @@
   "quarryplus.chat.quarry.restart": "Quarry Restarted",
   "quarryplus.chat.quarry_mode": "Quarry Mode",
   "quarryplus.chat.warn_area": "[QuarryPlus] Area is too small.",
+  "quarryplus.chat.warn_protected_area": "Area contains protected chunks. Quarry has stopped.",
   "quarryplus.chat.y_level": "Quarry digs to %s.",
   "quarryplus.client.tooltip": "Client",
   "quarryplus.gui.advpump.delete_false": "Delete Off",
