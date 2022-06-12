@@ -1,10 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "bdb",
-    "mqm",
-    "gdg"
-  ],
   "key": {
     "b": {
       "tag": "c:empty_buckets"
@@ -15,13 +10,18 @@
     "g": {
       "tag": "c:green_dyes"
     },
+    "m": {
+      "tag": "quarryplus:markers"
+    },
     "q": {
       "item": "quarryplus:quarry"
-    },
-    "m": {
-      "item": "quarryplus:marker"
     }
   },
+  "pattern": [
+    "bdb",
+    "mqm",
+    "gdg"
+  ],
   "result": {
     "item": "quarryplus:adv_pump"
   }

@@ -11,5 +11,6 @@ public final class Generator implements DataGeneratorEntrypoint {
     @Override
     public void onInitializeDataGenerator(FabricDataGenerator fabricDataGenerator) {
         fabricDataGenerator.addProvider(RecipeGenerator::new);
+        fabricDataGenerator.addProvider(TagGenerator::new);
     }
 }
