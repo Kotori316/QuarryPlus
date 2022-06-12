@@ -1,5 +1,6 @@
 {
   "FD.UNKNOWN": "UNKNOWN Direction",
+  "config.jade.plugin_quarryplus.jade_plugin": "QuarryPlus Plugin",
   "FD.down": "DOWN",
   "FD.east": "EAST",
   "FD.north": "NORTH",
