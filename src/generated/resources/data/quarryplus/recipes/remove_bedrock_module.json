@@ -1,18 +1,18 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "ooo",
-    " m ",
-    " m "
-  ],
   "key": {
     "m": {
-      "item": "quarryplus:marker"
+      "tag": "quarryplus:markers"
     },
     "o": {
       "item": "minecraft:obsidian"
     }
   },
+  "pattern": [
+    "ooo",
+    " m ",
+    " m "
+  ],
   "result": {
     "item": "quarryplus:remove_bedrock_module"
   }
