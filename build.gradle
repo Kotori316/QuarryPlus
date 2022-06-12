@@ -155,15 +155,16 @@ dependencies {
 
     modCompileOnly("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}")
     modImplementation("teamreborn:energy:${project.tech_energy_version}")
-    modCompileOnly("RebornCore:RebornCore-1.18:${project.RebornCore_version}") {
+    modImplementation("RebornCore:RebornCore-1.19:${project.RebornCore_version}") {
         transitive = false
     }
-    modCompileOnly("TechReborn:TechReborn-1.18:${project.TechReborn_version}") {
+    modImplementation("TechReborn:TechReborn-1.19:${project.TechReborn_version}") {
         transitive = false
     }
     modCompileOnly("mcp.mobius.waila:wthit-api:fabric-${project.wthit_version}")
     modRuntimeOnly("mcp.mobius.waila:wthit:fabric-${project.wthit_version}")
     modRuntimeOnly(group: "lol.bai", name: "badpackets", version: "fabric-${project.badpackets_version}")
+    modImplementation(group: "curse.maven", name: "jade-324717", version: project.jade_id)
 
     modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_version}") {
         //noinspection SpellCheckingInspection
