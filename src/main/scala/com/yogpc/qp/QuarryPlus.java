@@ -47,7 +47,9 @@ import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityT
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
@@ -181,5 +183,7 @@ public class QuarryPlus implements ModInitializer {
         public static final BlockAdvPump BLOCK_ADV_PUMP = new BlockAdvPump();
         public static final BlockEntityType<TileAdvPump> ADV_PUMP_TYPE = FabricBlockEntityTypeBuilder.create(TileAdvPump::new, BLOCK_ADV_PUMP).build(DSL.emptyPartType());
         public static final BlockDummy BLOCK_DUMMY = new BlockDummy();
+
+        public static final TagKey<Item> TAG_MARKERS = TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation(modID, "markers"));
     }
 }
