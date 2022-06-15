@@ -37,7 +37,7 @@ import net.minecraft.world.level.block.BucketPickup;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraftforge.fluids.FluidAttributes;
+import net.minecraftforge.fluids.FluidType;
 import org.jetbrains.annotations.NotNull;
 
 public class TileAdvPump extends PowerTile
@@ -171,7 +171,7 @@ public class TileAdvPump extends PowerTile
                 var drained = drain.pickupBlock(world, target, blockState);
                 if (!deleteFluid) this.storage.addFluid(drained);
             } else {
-                if (!deleteFluid) this.storage.addFluid(fluidState.getType(), FluidAttributes.BUCKET_VOLUME);
+                if (!deleteFluid) this.storage.addFluid(fluidState.getType(), FluidType.BUCKET_VOLUME);
                 world.setBlock(target, replaceBlockGetter.apply(fluidState), Block.UPDATE_ALL);
             }
             return BreakResult.SUCCESS;

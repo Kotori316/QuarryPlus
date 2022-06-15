@@ -8,7 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.fluids.FluidAttributes;
+import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.items.wrapper.EmptyHandler;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -231,7 +231,7 @@ class MachineStorageTest {
     @Nested
     class FluidInsertTest {
         @ParameterizedTest
-        @ValueSource(ints = {1, 100, 500, FluidAttributes.BUCKET_VOLUME, 2000, 10000})
+        @ValueSource(ints = {1, 100, 500, FluidType.BUCKET_VOLUME, 2000, 10000})
         void insertWater(int amount) {
             MachineStorage storage = new MachineStorage();
             storage.addFluid(Fluids.WATER, amount);
@@ -240,7 +240,7 @@ class MachineStorageTest {
         }
 
         @ParameterizedTest
-        @ValueSource(ints = {1, 100, 500, FluidAttributes.BUCKET_VOLUME, 2000, 10000})
+        @ValueSource(ints = {1, 100, 500, FluidType.BUCKET_VOLUME, 2000, 10000})
         void insertWaterTwice(int amount) {
             MachineStorage storage = new MachineStorage();
             storage.addFluid(Fluids.WATER, amount);
@@ -253,18 +253,18 @@ class MachineStorageTest {
         @Test
         void insert2Fluids() {
             MachineStorage storage = new MachineStorage();
-            storage.addFluid(Fluids.WATER, FluidAttributes.BUCKET_VOLUME);
-            storage.addFluid(Fluids.LAVA, FluidAttributes.BUCKET_VOLUME * 3);
+            storage.addFluid(Fluids.WATER, FluidType.BUCKET_VOLUME);
+            storage.addFluid(Fluids.LAVA, FluidType.BUCKET_VOLUME * 3);
 
-            assertEquals(FluidAttributes.BUCKET_VOLUME, storage.fluidMap.get(new FluidKey(Fluids.WATER, null)));
-            assertEquals(FluidAttributes.BUCKET_VOLUME * 3L, storage.fluidMap.get(new FluidKey(Fluids.LAVA, null)));
+            assertEquals(FluidType.BUCKET_VOLUME, storage.fluidMap.get(new FluidKey(Fluids.WATER, null)));
+            assertEquals(FluidType.BUCKET_VOLUME * 3L, storage.fluidMap.get(new FluidKey(Fluids.LAVA, null)));
         }
 
         @Test
         void minusFluid1() {
             MachineStorage storage = new MachineStorage();
-            storage.addFluid(Fluids.LAVA, FluidAttributes.BUCKET_VOLUME * 3);
-            storage.addFluid(Fluids.LAVA, -FluidAttributes.BUCKET_VOLUME * 3);
+            storage.addFluid(Fluids.LAVA, FluidType.BUCKET_VOLUME * 3);
+            storage.addFluid(Fluids.LAVA, -FluidType.BUCKET_VOLUME * 3);
 
             assertNull(storage.fluidMap.get(new FluidKey(Fluids.LAVA, null)));
         }
@@ -272,8 +272,8 @@ class MachineStorageTest {
         @Test
         void minusFluid2() {
             MachineStorage storage = new MachineStorage();
-            storage.addFluid(Fluids.LAVA, FluidAttributes.BUCKET_VOLUME * 3);
-            storage.addFluid(Fluids.LAVA, -FluidAttributes.BUCKET_VOLUME * 4);
+            storage.addFluid(Fluids.LAVA, FluidType.BUCKET_VOLUME * 3);
+            storage.addFluid(Fluids.LAVA, -FluidType.BUCKET_VOLUME * 4);
 
             assertNull(storage.fluidMap.get(new FluidKey(Fluids.LAVA, null)));
         }

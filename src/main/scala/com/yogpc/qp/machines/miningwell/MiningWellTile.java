@@ -28,7 +28,7 @@ import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.BlockEvent;
-import net.minecraftforge.fluids.FluidAttributes;
+import net.minecraftforge.fluids.FluidType;
 
 public class MiningWellTile extends PowerTile implements CheckerLog, MachineStorage.HasStorage {
     private final MachineStorage storage = new MachineStorage();
@@ -72,7 +72,7 @@ public class MiningWellTile extends PowerTile implements CheckerLog, MachineStor
                 if (useEnergy(PowerManager.getBreakBlockFluidEnergy(EnchantmentLevel.NoEnchantments.INSTANCE, PowerConfig.DEFAULT), Reason.REMOVE_FLUID, false)) {
                     if (state.getBlock() instanceof LiquidBlock) {
                         if (!fluid.isEmpty() && fluid.isSource())
-                            storage.addFluid(fluid.getType(), FluidAttributes.BUCKET_VOLUME);
+                            storage.addFluid(fluid.getType(), FluidType.BUCKET_VOLUME);
                         level.setBlock(targetPos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
                     } else if (state.getBlock() instanceof BucketPickup drain) {
                         var bucket = drain.pickupBlock(level, targetPos, state);

@@ -21,7 +21,7 @@ import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.fluids.FluidAttributes;
+import net.minecraftforge.fluids.FluidType;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
@@ -178,7 +178,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
                     if (blockState.getBlock() instanceof LiquidBlock) {
                         var fluidState = targetWorld.getFluidState(fluidPos);
                         if (!fluidState.isEmpty() && fluidState.isSource())
-                            quarry.storage.addFluid(fluidState.getType(), FluidAttributes.BUCKET_VOLUME);
+                            quarry.storage.addFluid(fluidState.getType(), FluidType.BUCKET_VOLUME);
                         targetWorld.setBlock(fluidPos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
                     } else if (blockState.getBlock() instanceof BucketPickup drain) {
                         var bucket = drain.pickupBlock(targetWorld, fluidPos, blockState);
