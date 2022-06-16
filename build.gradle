@@ -222,12 +222,12 @@ dependencies {
     testCompileOnly(group: 'org.scala-lang', name: 'scala-library', version: project.scalaVersion)
     testCompileOnly(group: 'org.typelevel', name: "cats-core_2.13", version: project.catsVersion)
 
-    compileOnly(fg.deobf(group: "mezz.jei", name: "jei-1.19-forge-api", version: project.jeiVersion)) {
+    compileOnly(fg.deobf(group: "mezz.jei", name: "jei-1.19-forge-api", version: project.jeiVersion) {
         transitive(false)
-    }
-    runtimeOnly(fg.deobf(group: "mezz.jei", name: "jei-1.19-forge", version: project.jeiVersion)) {
+    })
+    runtimeOnly(fg.deobf(group: "mezz.jei", name: "jei-1.19-forge", version: project.jeiVersion) {
         transitive(false)
-    }
+    })
     runtimeOnly(group: "com.kotori316", name: "ScalableCatsForce".toLowerCase(), version: project.slpVersion, classifier: "with-library") {
         transitive(false)
     }
