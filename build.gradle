@@ -222,6 +222,9 @@ dependencies {
     testCompileOnly(group: 'org.scala-lang', name: 'scala-library', version: project.scalaVersion)
     testCompileOnly(group: 'org.typelevel', name: "cats-core_2.13", version: project.catsVersion)
 
+    compileOnly(fg.deobf(group: "mezz.jei", name: "jei-1.19-common-api", version: project.jeiVersion) {
+        transitive(false)
+    })
     compileOnly(fg.deobf(group: "mezz.jei", name: "jei-1.19-forge-api", version: project.jeiVersion) {
         transitive(false)
     })
