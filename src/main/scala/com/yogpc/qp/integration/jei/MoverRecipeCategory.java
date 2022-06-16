@@ -44,18 +44,6 @@ class MoverRecipeCategory implements IRecipeCategory<MoverRecipeCategory.MoverRe
     }
 
     @Override
-    @SuppressWarnings("removal")
-    public ResourceLocation getUid() {
-        return RECIPE_TYPE.getUid();
-    }
-
-    @Override
-    @SuppressWarnings("removal")
-    public Class<? extends MoverRecipe> getRecipeClass() {
-        return RECIPE_TYPE.getRecipeClass();
-    }
-
-    @Override
     public Component getTitle() {
         return Holder.BLOCK_MOVER.getName();
     }
@@ -67,7 +55,7 @@ class MoverRecipeCategory implements IRecipeCategory<MoverRecipeCategory.MoverRe
 
     @Override
     public IDrawable getIcon() {
-        return helper.createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(Holder.BLOCK_MOVER));
+        return helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Holder.BLOCK_MOVER));
     }
 
     @Override

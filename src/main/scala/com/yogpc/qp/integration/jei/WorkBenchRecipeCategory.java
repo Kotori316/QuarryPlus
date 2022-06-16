@@ -44,18 +44,6 @@ class WorkBenchRecipeCategory implements IRecipeCategory<WorkbenchRecipe> {
     }
 
     @Override
-    @SuppressWarnings("removal")
-    public ResourceLocation getUid() {
-        return RECIPE_TYPE.getUid();
-    }
-
-    @Override
-    @SuppressWarnings("removal")
-    public Class<? extends WorkbenchRecipe> getRecipeClass() {
-        return RECIPE_TYPE.getRecipeClass();
-    }
-
-    @Override
     public Component getTitle() {
         return Holder.BLOCK_WORKBENCH.getName();
     }
@@ -67,7 +55,7 @@ class WorkBenchRecipeCategory implements IRecipeCategory<WorkbenchRecipe> {
 
     @Override
     public IDrawable getIcon() {
-        return helper.createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(Holder.BLOCK_WORKBENCH));
+        return helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Holder.BLOCK_WORKBENCH));
     }
 
     @Override
