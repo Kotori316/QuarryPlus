@@ -1,3 +1,9 @@
+## Version 19.1
+
+* Update Forge
+* Update code for 1.19 JEI. Close #198
+* Added Tags for Markers.
+
 ## Version 19.0
 
 * Update for 1.19

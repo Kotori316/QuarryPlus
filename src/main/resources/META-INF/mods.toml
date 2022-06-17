@@ -14,9 +14,9 @@ description='''
 Adds some machines to make a big hole in your world.'''
 [[dependencies.quarryplus]]
     modId="forge"
-    mandatory=true
-    versionRange = "[41,)"
-    ordering="NONE"
+    mandatory = true
+versionRange = "[41.0.30,)"
+ordering = "NONE"
     side="BOTH"
 [[dependencies.quarryplus]]
     modId="minecraft"
