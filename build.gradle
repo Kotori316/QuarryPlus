@@ -144,7 +144,7 @@ repositories {
         url = 'https://maven.blamejared.com'
         content {
             //noinspection SpellCheckingInspection
-            includeModule("com.blamejared.crafttweaker", "CraftTweaker-1.16.4")
+            includeModule("com.blamejared.crafttweaker", "CraftTweaker-1.16.5")
         }
     }
     maven {
@@ -182,12 +182,12 @@ repositories {
 
 dependencies {
     minecraft(forgeVersion())
-    implementation group: 'org.scala-lang', name: 'scala-library', version: '2.13.5'
-    implementation group: 'org.typelevel', name: "cats-core_2.13", version: '2.6.0'
+    implementation group: 'org.scala-lang', name: 'scala-library', version: '2.13.8'
+    implementation group: 'org.typelevel', name: "cats-core_2.13", version: '2.7.0'
 
-    implementation fg.deobf("mezz.jei:jei-1.16.5:7.7.0.99")
+    implementation fg.deobf(group: "mezz.jei", name: "jei-1.16.5", version: project.jeiVersion)
     //noinspection SpellCheckingInspection
-    implementation "com.blamejared.crafttweaker:CraftTweaker-1.16.4:7.1.0.71:deobf"
+    implementation fg.deobf(group: "com.blamejared.crafttweaker", name: "CraftTweaker-1.16.5", version: project.craftTweakerVersion)
     compileOnly(fg.deobf("com.feed_the_beast.mods:ftb-chunks:1604.2.2.54") {
         transitive = false
     })
@@ -211,7 +211,7 @@ dependencies {
     implementation(group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.7.0')
 
     if (isInCI()) {
-        runtimeOnly(group: 'com.kotori316', name: 'ScalableCatsForce'.toLowerCase(Locale.ROOT), version: '2.13.5-build-2', classifier: 'dev')
+        runtimeOnly(group: 'com.kotori316', name: 'ScalableCatsForce'.toLowerCase(Locale.ROOT), version: '2.13.8-build-3', classifier: 'dev')
     }
 }
 
