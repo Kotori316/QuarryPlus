@@ -24,11 +24,9 @@ class WorkBenchRecipeCategory(guiHelper: IGuiHelper) extends IRecipeCategory[Wor
 
     val x0 = 3
     for (i <- 0 until recipeWrapper.recipeSize) {
-      if (i < 9) {
-        guiItemStack.init(i, true, x0 + o * i - xOff, x0 - yOff)
-      } else if (i < 18) {
-        guiItemStack.init(i, true, x0 + o * (i - 9) - xOff, x0 + o - yOff)
-      }
+      val row = i / 9
+      val columns = i % 9
+      guiItemStack.init(columns, true, x0 + o * columns - xOff, x0 + o * row - yOff)
     }
     guiItemStack.init(recipeWrapper.recipeSize, false, x0 - xOff, x0 + 64 - yOff)
     guiItemStack.set(ingredients)
