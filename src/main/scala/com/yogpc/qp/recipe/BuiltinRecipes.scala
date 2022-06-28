@@ -60,5 +60,17 @@ object BuiltinRecipes {
       (ItemDamage(fuelModuleNormal), 3200, Seq(F(FURNACE, 1.5D), F(GOLD_BLOCK, 8)))
     )
     list1.foreach { case (result, e, recipe) => WorkbenchRecipe.addSeqRecipe(result, e, recipe) }
+
+    if (QuarryPlus.instance().inDev) {
+      // Add debug recipe to check JEI work
+      WorkbenchRecipe.addIngredientRecipe(
+        new ResourceLocation(QuarryPlus.modID, "test_1"),
+        new ItemStack(DIAMOND_BLOCK, 64),
+        164253.25,
+        Seq(IRON_INGOT, GOLD_INGOT, QUARTZ, REDSTONE, EMERALD, ENDER_PEARL, WHEAT_SEEDS, EXPERIENCE_BOTTLE, COMPARATOR, COMPASS).map(i => IngredientWithCount.getSeq(new ItemStack(i))) ++
+          Seq(STONE, NETHERRACK, DIRT, WOOL, IRON_BLOCK, GOLD_BLOCK, QUARTZ_BLOCK, REDSTONE_BLOCK, EMERALD_BLOCK, DISPENSER, HAY_BLOCK).map(i => IngredientWithCount.getSeq(new ItemStack(i))),
+        hardCode = true, showInJEI = true
+      )
+    }
   }
 }
