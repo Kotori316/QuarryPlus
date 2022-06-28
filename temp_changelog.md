@@ -1,3 +1,7 @@
+# Version 12.5.7
+
+* Fixed - JEI doesn't show more than 18 items.
+
 # Version 12.5.6
 
 * Fixed - marker laser disappear and remain unavailable even if you get close to marker.
