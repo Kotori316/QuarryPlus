@@ -43,7 +43,11 @@ public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
             "%s(%d, %d, %d)".formatted(getClass().getSimpleName(), pos.getX(), pos.getY(), pos.getZ()));
         this.powerConfig = PowerConfig.getMachineConfig(Objects.requireNonNull(type.getRegistryName()).getPath());
         this.maxEnergy = this.powerConfig.maxEnergy();
-        setTimeProvider(() -> Objects.requireNonNull(this.level, "Level in block entity is null. Are you in test?").getGameTime());
+        setTimeProvider(() -> Objects.requireNonNull(this.level,
+            """
+                Level in block entity is null. Are you in test?
+                Make sure to run `setTimeProvider` to replace the default time provider."""
+        ).getGameTime());
     }
 
     @Override
