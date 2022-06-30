@@ -2,18 +2,24 @@ package com.yogpc.qp.machines;
 
 import java.util.stream.Stream;
 
+import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlusTest;
+import com.yogpc.qp.machines.quarry.SFQuarryEntity;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -124,5 +130,67 @@ public class PowerTileTest {
         double maxEnergy = tile.getMaxEnergy();
         var digit = Math.log10(maxEnergy / PowerTile.ONE_FE);
         assertTrue(digit < 5, "Energy: %f, Default should be less than 10^5.".formatted(maxEnergy));
+    }
+
+    @Nested
+    class UseEnergyTest {
+        @ParameterizedTest
+        @ValueSource(ints = {0, 1, 100, 500, 999, 1000})
+        void useNormal(int energy) {
+            var tile = new SFQuarryEntity(BlockPos.ZERO, Holder.BLOCK_SOLID_FUEL_QUARRY.defaultBlockState());
+            ((PowerTile) tile).setTimeProvider(() -> 1L);
+            assertEquals(1000 * PowerTile.ONE_FE, tile.getMaxEnergy());
+            Assumptions.assumeTrue(energy * PowerTile.ONE_FE <= tile.getMaxEnergy());
+            tile.addEnergy(tile.getMaxEnergy(), false);
+            assertEquals(tile.getMaxEnergy(), tile.getEnergy());
+
+            var result = tile.useEnergy(energy * PowerTile.ONE_FE, PowerTile.Reason.FORCE, false);
+            assertTrue(result, "Energy(%d FE) must be consumed.".formatted(energy));
+            assertEquals(tile.getMaxEnergy() - energy * PowerTile.ONE_FE, tile.getEnergy());
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {1001, 1500, 10000})
+        void useOverWithForce(int energy) {
+            var tile = new SFQuarryEntity(BlockPos.ZERO, Holder.BLOCK_SOLID_FUEL_QUARRY.defaultBlockState());
+            ((PowerTile) tile).setTimeProvider(() -> 1L);
+            assertEquals(1000 * PowerTile.ONE_FE, tile.getMaxEnergy());
+            Assumptions.assumeTrue(energy * PowerTile.ONE_FE > tile.getMaxEnergy());
+            tile.addEnergy(tile.getMaxEnergy(), false);
+            assertEquals(tile.getMaxEnergy(), tile.getEnergy());
+
+            var result = tile.useEnergy(energy * PowerTile.ONE_FE, PowerTile.Reason.FORCE, true);
+            assertTrue(result, "Energy(%d FE) must be consumed.".formatted(energy));
+            assertTrue(tile.getEnergy() < 0);
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {1001, 1500, 10000})
+        void useOverWithoutForce(int energy) {
+            var tile = new SFQuarryEntity(BlockPos.ZERO, Holder.BLOCK_SOLID_FUEL_QUARRY.defaultBlockState());
+            ((PowerTile) tile).setTimeProvider(() -> 1L);
+            assertEquals(1000 * PowerTile.ONE_FE, tile.getMaxEnergy());
+            Assumptions.assumeTrue(energy * PowerTile.ONE_FE > tile.getMaxEnergy());
+            tile.addEnergy(tile.getMaxEnergy(), false);
+            assertEquals(tile.getMaxEnergy(), tile.getEnergy());
+
+            var result = tile.useEnergy(energy * PowerTile.ONE_FE, PowerTile.Reason.FORCE, false);
+            assertFalse(result, "Energy(%d FE) must not be consumed.".formatted(energy));
+            assertEquals(tile.getMaxEnergy(), tile.getEnergy());
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {0, 1, 100, 500, 999, 1000, 1001, 1500, 10000})
+        void useNormal2(int energy) {
+            var tile = new SFQuarryEntity(BlockPos.ZERO, Holder.BLOCK_SOLID_FUEL_QUARRY.defaultBlockState());
+            ((PowerTile) tile).setTimeProvider(() -> 1L);
+            tile.addEnergy(tile.getMaxEnergy(), false);
+            assertEquals(tile.getMaxEnergy(), tile.getEnergy());
+
+            var requiredEnergy = energy * PowerTile.ONE_FE;
+            var result = tile.useEnergy(requiredEnergy, PowerTile.Reason.BREAK_BLOCK, requiredEnergy > tile.getMaxEnergy());
+            assertTrue(result, "Machine must consume %d FE".formatted(energy));
+            assertEquals(tile.getMaxEnergy() - energy * PowerTile.ONE_FE, tile.getEnergy());
+        }
     }
 }
