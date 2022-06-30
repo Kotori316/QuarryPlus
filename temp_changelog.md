@@ -1,3 +1,7 @@
+## Version 18.13
+
+* Improved SFQ work. Close #201
+
 ## Version 18.12
 
 * Changed the content of Flexible Marker GUI.
