@@ -1,3 +1,8 @@
+## Version 19.2
+
+* Update forge
+* Fixed - SFQ didn't mine Obsidian. Close #201
+
 ## Version 19.1
 
 * Update Forge
