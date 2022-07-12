@@ -45,7 +45,7 @@ public class CreativeGeneratorBlock extends QPBlock implements EntityBlock {
         if (!player.isShiftKeyDown()) {
             if (!world.isClientSide) {
                 world.getBlockEntity(pos, Holder.CREATIVE_GENERATOR_TYPE).ifPresent(o ->
-                    NetworkHooks.openGui(((ServerPlayer) player), o, pos));
+                    NetworkHooks.openScreen(((ServerPlayer) player), o, pos));
             }
             return InteractionResult.SUCCESS;
         }

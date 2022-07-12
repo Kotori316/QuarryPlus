@@ -85,7 +85,7 @@ public class BlockAdvPump extends QPBlock implements EntityBlock {
         if (!player.isShiftKeyDown()) {
             if (!world.isClientSide) {
                 if (world.getBlockEntity(pos) instanceof TileAdvPump pump) {
-                    ContainerQuarryModule.InteractionObject.openGUI(pump, (ServerPlayer) player, getName());
+                    ContainerQuarryModule.InteractionObject.openScreen(pump, (ServerPlayer) player, getName());
                 }
             }
             return InteractionResult.SUCCESS;

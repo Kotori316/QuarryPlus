@@ -65,7 +65,7 @@ public class PlacerBlock extends QPBlock implements EntityBlock {
                     });
                 } else {
                     world.getBlockEntity(pos, Holder.PLACER_TYPE).ifPresent(o ->
-                        NetworkHooks.openGui(((ServerPlayer) player), o, pos));
+                        NetworkHooks.openScreen(((ServerPlayer) player), o, pos));
                 }
             }
             return InteractionResult.SUCCESS;

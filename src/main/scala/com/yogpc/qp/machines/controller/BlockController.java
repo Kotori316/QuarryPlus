@@ -84,9 +84,9 @@ public class BlockController extends QPBlock {
                         .ifPresent(s -> player.displayClientMessage(s, false));
                 } else {
                     // Open GUI
-                    var entries = ForgeRegistries.ENTITIES.getValues().stream()
+                    var entries = ForgeRegistries.ENTITY_TYPES.getValues().stream()
                         .filter(BlockController::canSpawnFromSpawner)
-                        .map(ForgeRegistries.ENTITIES::getKey)
+                        .map(ForgeRegistries.ENTITY_TYPES::getKey)
                         .collect(Collectors.toList());
                     PacketHandler.sendToClientPlayer(new ControllerOpenMessage(pos, level.dimension(), entries), (ServerPlayer) player);
                 }
@@ -102,7 +102,7 @@ public class BlockController extends QPBlock {
                 .flatMap(MapMulti.optCast(SpawnData.class))
                 .map(SpawnData::getEntityToSpawn)
                 .flatMap(EntityType::by)
-                .map(ForgeRegistries.ENTITIES::getKey);
+                .map(ForgeRegistries.ENTITY_TYPES::getKey);
         } catch (ReflectiveOperationException e) {
             LOGGER.error("Exception occurred in getting entity id.", e);
             return Optional.empty();
@@ -112,13 +112,13 @@ public class BlockController extends QPBlock {
     private static boolean canSpawnFromSpawner(EntityType<?> entityType) {
         if (QuarryPlus.config == null) return true;
         else if (!entityType.canSummon()) return false;
-        return !QuarryPlus.config.common.spawnerBlackList.get().contains(String.valueOf(ForgeRegistries.ENTITIES.getKey(entityType)));
+        return !QuarryPlus.config.common.spawnerBlackList.get().contains(String.valueOf(ForgeRegistries.ENTITY_TYPES.getKey(entityType)));
     }
 
     public static void setSpawnerEntity(Level world, BlockPos pos, ResourceLocation name) {
         getSpawner(world, pos).ifPresent(logic -> {
             Optional.of(name)
-                .map(ForgeRegistries.ENTITIES::getValue)
+                .map(ForgeRegistries.ENTITY_TYPES::getValue)
                 .filter(BlockController::canSpawnFromSpawner)
                 .ifPresent(logic.getLeft()::setEntityId);
             Optional.ofNullable(logic.getLeft().getSpawnerBlockEntity()).ifPresent(BlockEntity::setChanged);

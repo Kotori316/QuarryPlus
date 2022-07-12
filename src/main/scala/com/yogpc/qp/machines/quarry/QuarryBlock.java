@@ -140,7 +140,7 @@ public class QuarryBlock extends QPBlock implements EntityBlock {
         if (!player.isShiftKeyDown()) {
             if (!world.isClientSide) {
                 if (world.getBlockEntity(pos) instanceof TileQuarry quarry) {
-                    ContainerQuarryModule.InteractionObject.openGUI(quarry, (ServerPlayer) player, getName());
+                    ContainerQuarryModule.InteractionObject.openScreen(quarry, (ServerPlayer) player, getName());
                 }
             }
             return InteractionResult.SUCCESS;

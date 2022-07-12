@@ -11,7 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
-import net.minecraftforge.common.crafting.NBTIngredient;
+import net.minecraftforge.common.crafting.StrictNBTIngredient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -154,7 +154,7 @@ class IngredientWithCountTest {
         @Test
         void nbtJsonItemIngredientInstance() {
             var i = waterBottleFromJson.ingredient();
-            assertTrue(i instanceof NBTIngredient, "Actual Class: " + i.getClass() + " String: " + i);
+            assertTrue(i instanceof StrictNBTIngredient, "Actual Class: " + i.getClass() + " String: " + i);
         }
 
         @Test

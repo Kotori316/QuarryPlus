@@ -88,8 +88,8 @@ public final class SFQuarryEntity extends TileQuarry implements MenuProvider {
             var fuel = quarry.fuelContainer.getItem(0);
             if (FurnaceBlockEntity.isFuel(fuel)) {
                 quarry.fuelCount += (int) (ForgeHooks.getBurnTime(fuel, null) * 4 / energyInFE);
-                if (fuel.hasContainerItem()) {
-                    quarry.fuelContainer.setItem(0, fuel.getContainerItem());
+                if (fuel.hasCraftingRemainingItem()) {
+                    quarry.fuelContainer.setItem(0, fuel.getCraftingRemainingItem());
                 } else {
                     fuel.shrink(1);
                     quarry.fuelContainer.setChanged();

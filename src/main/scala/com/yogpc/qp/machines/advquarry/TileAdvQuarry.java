@@ -56,7 +56,7 @@ import net.minecraft.world.level.block.LiquidBlockContainer;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
@@ -461,7 +461,7 @@ public class TileAdvQuarry extends PowerTile implements
     }
 
     void openModuleGui(ServerPlayer player) {
-        ContainerQuarryModule.InteractionObject.openGUI(this, player, getDisplayName());
+        ContainerQuarryModule.InteractionObject.openScreen(this, player, getDisplayName());
     }
 
     @Override

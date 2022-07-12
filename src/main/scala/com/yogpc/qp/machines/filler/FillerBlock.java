@@ -63,7 +63,7 @@ public final class FillerBlock extends QPBlock implements EntityBlock {
         }
         if (!player.isShiftKeyDown()) {
             if (!level.isClientSide && level.getBlockEntity(pos) instanceof FillerEntity filler) {
-                NetworkHooks.openGui((ServerPlayer) player, filler, pos);
+                NetworkHooks.openScreen((ServerPlayer) player, filler, pos);
             }
             return InteractionResult.sidedSuccess(level.isClientSide);
         }

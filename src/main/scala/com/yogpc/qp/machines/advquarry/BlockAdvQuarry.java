@@ -111,7 +111,7 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
                 if (stack.getItem() instanceof QuarryModuleProvider.Item) {
                     quarry.openModuleGui((ServerPlayer) player);
                 } else {
-                    NetworkHooks.openGui((ServerPlayer) player, quarry, pos);
+                    NetworkHooks.openScreen((ServerPlayer) player, quarry, pos);
                 }
             }
             return InteractionResult.SUCCESS;

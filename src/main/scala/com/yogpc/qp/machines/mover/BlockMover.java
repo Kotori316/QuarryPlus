@@ -54,7 +54,7 @@ public class BlockMover extends QPBlock {
         }
         if (!player.isShiftKeyDown()) {
             if (!level.isClientSide) {
-                NetworkHooks.openGui((ServerPlayer) player, new InteractionObject(pos, this.getName()), pos);
+                NetworkHooks.openScreen((ServerPlayer) player, new InteractionObject(pos, this.getName()), pos);
             }
             return InteractionResult.SUCCESS;
         }

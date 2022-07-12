@@ -105,7 +105,7 @@ public final class SFQuarryBlock extends QPBlock implements EntityBlock {
                         quarry.target = null;
                     } else {
                         // Open Fuel Slot GUI
-                        NetworkHooks.openGui((ServerPlayer) player, quarry, pos);
+                        NetworkHooks.openScreen((ServerPlayer) player, quarry, pos);
                     }
                 }
             }

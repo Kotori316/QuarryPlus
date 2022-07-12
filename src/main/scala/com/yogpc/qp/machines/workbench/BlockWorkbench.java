@@ -45,7 +45,7 @@ public class BlockWorkbench extends QPBlock implements EntityBlock {
         if (!player.isShiftKeyDown()) {
             if (!level.isClientSide) {
                 level.getBlockEntity(pos, Holder.WORKBENCH_TYPE)
-                    .ifPresent(w -> NetworkHooks.openGui(((ServerPlayer) player), w, pos));
+                    .ifPresent(w -> NetworkHooks.openScreen(((ServerPlayer) player), w, pos));
             }
             return InteractionResult.SUCCESS;
         }

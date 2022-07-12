@@ -36,7 +36,7 @@ public class YSetterItem extends QPItem {
             if (!level.isClientSide) {
                 if (player instanceof ServerPlayer p) {
                     PacketHandler.sendToClientPlayer(new TileMessage(tile), p);
-                    NetworkHooks.openGui(p, new YSetterScreenHandler(tile.getBlockPos(), tile.getBlockState().getBlock()), context.getClickedPos());
+                    NetworkHooks.openScreen(p, new YSetterScreenHandler(tile.getBlockPos(), tile.getBlockState().getBlock()), context.getClickedPos());
                 }
 
                 return InteractionResult.CONSUME;

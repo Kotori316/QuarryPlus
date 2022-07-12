@@ -14,7 +14,7 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.common.crafting.NBTIngredient;
+import net.minecraftforge.common.crafting.StrictNBTIngredient;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.VisibleForTesting;
 
@@ -81,14 +81,14 @@ public record IngredientWithCount(Ingredient ingredient, int count) implements P
     }
 
     @VisibleForTesting
-    public static NBTIngredient createNbtIngredient(ItemStack stack) {
+    public static StrictNBTIngredient createNbtIngredient(ItemStack stack) {
         try {
-            var constructor = NBTIngredient.class.getDeclaredConstructor(ItemStack.class);
+            var constructor = StrictNBTIngredient.class.getDeclaredConstructor(ItemStack.class);
             constructor.trySetAccessible();
             return constructor.newInstance(stack);
         } catch (ReflectiveOperationException exception) {
             QuarryPlus.LOGGER
-                .error("Caught error when creating NBTIngredient instance. This should not be called in production.", exception);
+                .error("Caught error when creating StrictNBTIngredient instance. This should not be called in production.", exception);
             return null;
         }
     }

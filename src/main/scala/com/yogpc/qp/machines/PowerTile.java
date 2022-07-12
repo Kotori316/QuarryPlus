@@ -42,7 +42,7 @@ public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
 
     public PowerTile(BlockEntityType<?> type, @NotNull BlockPos pos, BlockState state) {
         super(type, pos, state);
-        ResourceLocation typeName = Optional.ofNullable(ForgeRegistries.BLOCK_ENTITIES.getKey(type)).or(
+        ResourceLocation typeName = Optional.ofNullable(ForgeRegistries.BLOCK_ENTITY_TYPES.getKey(type)).or(
             () -> Holder.entityTypes().stream().filter(e -> e.t() == type).map(Holder.NamedEntry::name).findFirst()
         ).orElseThrow(() -> new IllegalArgumentException("No location name found for " + type));
         this.enabled = QuarryPlus.config.enableMap.enabled(typeName);

@@ -57,7 +57,7 @@ public final class RemotePlacerBlock extends QPBlock implements EntityBlock {
                     });
                 } else {
                     world.getBlockEntity(pos, Holder.REMOTE_PLACER_TYPE).ifPresent(o ->
-                        NetworkHooks.openGui(((ServerPlayer) player), o, pos));
+                        NetworkHooks.openScreen(((ServerPlayer) player), o, pos));
                 }
             }
             return InteractionResult.SUCCESS;

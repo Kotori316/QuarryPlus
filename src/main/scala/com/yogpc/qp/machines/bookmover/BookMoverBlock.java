@@ -41,7 +41,7 @@ public class BookMoverBlock extends QPBlock implements EntityBlock {
         }
         if (!player.isShiftKeyDown()) {
             if (!world.isClientSide && world.getBlockEntity(pos) instanceof BookMoverEntity mover) {
-                NetworkHooks.openGui((ServerPlayer) player, mover, pos);
+                NetworkHooks.openScreen((ServerPlayer) player, mover, pos);
             }
             return InteractionResult.sidedSuccess(world.isClientSide);
         }

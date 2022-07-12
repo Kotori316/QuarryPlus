@@ -48,7 +48,7 @@ public abstract class BlockExMarker extends QPBlock implements EntityBlock {
         super(properties, name);
     }
 
-    protected abstract void openGUI(Level worldIn, BlockPos pos, Player playerIn);
+    protected abstract void openScreen(Level worldIn, BlockPos pos, Player playerIn);
 
     @Override
     @SuppressWarnings("deprecation")
@@ -56,7 +56,7 @@ public abstract class BlockExMarker extends QPBlock implements EntityBlock {
                                  Player player, InteractionHand hand, BlockHitResult hit) {
         if (!player.isShiftKeyDown()) {
             if (!world.isClientSide) {
-                openGUI(world, pos, player);
+                openScreen(world, pos, player);
                 return InteractionResult.CONSUME;
             } else {
                 return InteractionResult.SUCCESS;
@@ -127,8 +127,8 @@ public abstract class BlockExMarker extends QPBlock implements EntityBlock {
         }
 
         @Override
-        protected void openGUI(Level worldIn, BlockPos pos, Player playerIn) {
-            getBaseBlock().openGUI(worldIn, pos, playerIn);
+        protected void openScreen(Level worldIn, BlockPos pos, Player playerIn) {
+            getBaseBlock().openScreen(worldIn, pos, playerIn);
         }
 
         @Override
@@ -174,8 +174,8 @@ public abstract class BlockExMarker extends QPBlock implements EntityBlock {
         }
 
         @Override
-        protected void openGUI(Level worldIn, BlockPos pos, Player playerIn) {
-            NetworkHooks.openGui(((ServerPlayer) playerIn), new InteractionObject(pos, Holder.FLEX_MARKER_MENU_TYPE, getDescriptionId(), 29, 139), pos);
+        protected void openScreen(Level worldIn, BlockPos pos, Player playerIn) {
+            NetworkHooks.openScreen(((ServerPlayer) playerIn), new InteractionObject(pos, Holder.FLEX_MARKER_MENU_TYPE, getDescriptionId(), 29, 139), pos);
         }
 
         @Override
@@ -209,8 +209,8 @@ public abstract class BlockExMarker extends QPBlock implements EntityBlock {
         }
 
         @Override
-        protected void openGUI(Level worldIn, BlockPos pos, Player playerIn) {
-            NetworkHooks.openGui(((ServerPlayer) playerIn), new InteractionObject(pos, Holder.MARKER_16_MENU_TYPE, getDescriptionId(), 29, 107), pos);
+        protected void openScreen(Level worldIn, BlockPos pos, Player playerIn) {
+            NetworkHooks.openScreen(((ServerPlayer) playerIn), new InteractionObject(pos, Holder.MARKER_16_MENU_TYPE, getDescriptionId(), 29, 107), pos);
         }
 
         @Override

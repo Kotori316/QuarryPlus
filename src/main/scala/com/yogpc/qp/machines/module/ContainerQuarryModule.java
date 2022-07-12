@@ -90,9 +90,9 @@ public class ContainerQuarryModule extends AbstractContainerMenu {
             return new ContainerQuarryModule(id, p, pos);
         }
 
-        public static <T extends BlockEntity & ModuleInventory.HasModuleInventory> void openGUI(T tile, ServerPlayer player, Component name) {
+        public static <T extends BlockEntity & ModuleInventory.HasModuleInventory> void openScreen(T tile, ServerPlayer player, Component name) {
             if (tile.getLevel() != null && !tile.getLevel().isClientSide) {
-                NetworkHooks.openGui(player, new InteractionObject(tile.getBlockPos(), name), tile.getBlockPos());
+                NetworkHooks.openScreen(player, new InteractionObject(tile.getBlockPos(), name), tile.getBlockPos());
             }
         }
     }
