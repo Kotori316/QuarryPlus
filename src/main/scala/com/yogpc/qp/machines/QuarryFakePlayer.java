@@ -4,6 +4,7 @@ import java.util.UUID;
 import java.util.WeakHashMap;
 
 import com.mojang.authlib.GameProfile;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -25,6 +26,11 @@ public final class QuarryFakePlayer extends ServerPlayer {
             serverLevel,
             QuarryFakePlayer::new
         );
+    }
+
+    public static void setDirection(QuarryFakePlayer player, Direction direction) {
+        player.setXRot(direction.getNormal().getY() * 90);
+        player.setYRot(direction.toYRot());
     }
 
     @Override
