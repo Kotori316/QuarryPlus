@@ -395,7 +395,7 @@ curseforge {
     }
     options {
         curseGradleOptions.debug = false // defaults to false
-        javaVersionAutoDetect = false
+        curseGradleOptions.javaVersionAutoDetect = false
     }
 }
 
