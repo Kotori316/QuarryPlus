@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.integration.QuarryItemTransfer;
 import com.yogpc.qp.machines.CheckerLog;
+import com.yogpc.qp.machines.QuarryFakePlayer;
 import com.yogpc.qp.packet.ClientSync;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.core.BlockPos;
@@ -29,6 +30,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
@@ -36,13 +38,13 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.item.context.DirectionalPlaceContext;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING;
@@ -160,7 +162,10 @@ public class PlacerTile extends BlockEntity implements
         if (stack.isEmpty()) return false;
         Item item = stack.getItem();
         if (item instanceof BlockItem blockItem) {
-            BlockPlaceContext context = new DirectionalPlaceContext(level, pos, tileDirection, stack, Direction.UP);
+            var player = QuarryFakePlayer.get((ServerLevel) level);
+            QuarryFakePlayer.setDirection(player, tileDirection);
+            var hitResult = new BlockHitResult(Vec3.atBottomCenterOf(pos), tileDirection.getOpposite(), pos, false);
+            BlockPlaceContext context = new BlockPlaceContext(player, InteractionHand.MAIN_HAND, stack, hitResult);
             return blockItem.place(context).consumesAction();
         } else {
             return false;
