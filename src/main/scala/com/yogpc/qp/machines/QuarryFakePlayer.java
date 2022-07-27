@@ -5,8 +5,11 @@ import java.util.WeakHashMap;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.ChatSender;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.PlayerChatMessage;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -18,7 +21,7 @@ public final class QuarryFakePlayer extends ServerPlayer {
     private static final WeakHashMap<ServerLevel, QuarryFakePlayer> CACHE = new WeakHashMap<>();
 
     private QuarryFakePlayer(ServerLevel serverLevel) {
-        super(serverLevel.getServer(), serverLevel, PROFILE);
+        super(serverLevel.getServer(), serverLevel, PROFILE, null);
     }
 
     public static QuarryFakePlayer get(ServerLevel serverLevel) {
@@ -42,6 +45,10 @@ public final class QuarryFakePlayer extends ServerPlayer {
     }
 
     @Override
-    public void sendMessage(Component component, ChatType chatType, UUID uUID) {
+    public void sendChatMessage(PlayerChatMessage playerChatMessage, ChatSender chatSender, ResourceKey<ChatType> resourceKey) {
+    }
+
+    @Override
+    public void sendSystemMessage(Component component, ResourceKey<ChatType> resourceKey) {
     }
 }
