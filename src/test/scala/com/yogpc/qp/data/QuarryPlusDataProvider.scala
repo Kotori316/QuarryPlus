@@ -17,6 +17,7 @@ object QuarryPlusDataProvider {
     event.getGenerator.addProvider(event.includeServer, new DefaultMachineConfig(event.getGenerator))
     event.getGenerator.addProvider(event.includeServer, new MineableTag(event.getGenerator, event.getExistingFileHelper))
     event.getGenerator.addProvider(event.includeServer, new ItemTag(event.getGenerator, event.getExistingFileHelper))
+    event.getGenerator.addProvider(event.includeClient, new StateAndModelProvider(event.getGenerator, event.getExistingFileHelper))
   }
 
   def location(path: String) = new ResourceLocation(QuarryPlus.modID, path)
