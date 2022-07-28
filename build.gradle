@@ -149,22 +149,32 @@ dependencies {
     modRuntimeOnly "net.fabricmc:fabric-language-scala:${project.fabric_scala_version}"
 
     // library
-    // implementation "org.scala-lang:scala-library:2.13.4"
     implementation "com.google.code.findbugs:jsr305:3.0.1"
-    modCompileOnly "alexiil.mc.lib:libblockattributes-all:${project.bc_attribute_version}"
 
     modCompileOnly("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}")
     modImplementation("teamreborn:energy:${project.tech_energy_version}")
-    modImplementation("RebornCore:RebornCore-1.19:${project.RebornCore_version}") {
-        transitive = false
-    }
-    modImplementation("TechReborn:TechReborn-1.19:${project.TechReborn_version}") {
-        transitive = false
-    }
     modCompileOnly("mcp.mobius.waila:wthit-api:fabric-${project.wthit_version}")
-    modRuntimeOnly("mcp.mobius.waila:wthit:fabric-${project.wthit_version}")
-    modRuntimeOnly(group: "lol.bai", name: "badpackets", version: "fabric-${project.badpackets_version}")
-    modImplementation(group: "curse.maven", name: "jade-324717", version: project.jade_id)
+    if (System.getenv("CI")) {
+        // In CI, modCompileOnly
+        modCompileOnly("RebornCore:RebornCore-1.19:${project.RebornCore_version}") {
+            transitive = false
+        }
+        modCompileOnly("TechReborn:TechReborn-1.19:${project.TechReborn_version}") {
+            transitive = false
+        }
+        modCompileOnly(group: "curse.maven", name: "jade-324717", version: project.jade_id)
+    } else {
+        // In development env, modImplementation or modRuntimeOnly
+        modImplementation("RebornCore:RebornCore-1.19:${project.RebornCore_version}") {
+            transitive = false
+        }
+        modImplementation("TechReborn:TechReborn-1.19:${project.TechReborn_version}") {
+            transitive = false
+        }
+        modRuntimeOnly("mcp.mobius.waila:wthit:fabric-${project.wthit_version}")
+        modRuntimeOnly(group: "lol.bai", name: "badpackets", version: "fabric-${project.badpackets_version}")
+        modImplementation(group: "curse.maven", name: "jade-324717", version: project.jade_id)
+    }
 
     modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_version}") {
         //noinspection SpellCheckingInspection

@@ -4,17 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import alexiil.mc.lib.attributes.AttributeSourceType;
-import alexiil.mc.lib.attributes.SearchOptions;
-import alexiil.mc.lib.attributes.Simulation;
-import alexiil.mc.lib.attributes.item.ItemAttributes;
-import alexiil.mc.lib.attributes.item.ItemInsertable;
-import alexiil.mc.lib.attributes.item.impl.EmptyItemExtractable;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.MachineStorage;
-import com.yogpc.qp.machines.advquarry.TileAdvQuarry;
 import com.yogpc.qp.machines.filler.FillerEntity;
-import com.yogpc.qp.machines.quarry.TileQuarry;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
@@ -33,12 +25,7 @@ import org.jetbrains.annotations.Nullable;
 public class QuarryItemTransfer {
     private static final List<ItemTransfer<?>> transfers = new ArrayList<>();
 
-    @SuppressWarnings("SpellCheckingInspection")
     public static void register() {
-        if (FabricLoader.getInstance().isModLoaded("libblockattributes_items")) {
-            transfers.add(BCItemRegister.bcTransfer());
-            BCItemRegister.registerAttributes();
-        }
         if (FabricLoader.getInstance().isModLoaded("fabric-transfer-api-v1")) {
             QuarryPlus.LOGGER.debug("Trying to register fabric item transfer api.");
             FabricItemTransfer.register();
@@ -160,44 +147,6 @@ class FabricItemTransfer implements ItemTransfer<Storage<ItemVariant>> {
             }
             copy.shrink((int) inserted);
             return copy;
-        } else {
-            return send;
-        }
-    }
-}
-
-class BCItemRegister {
-    static void registerAttributes() {
-        ItemAttributes.EXTRACTABLE.setBlockEntityAdder(AttributeSourceType.INSTANCE,
-            QuarryPlus.ModObjects.QUARRY_TYPE, TileQuarry.class, (blockEntity, to) -> to.add(EmptyItemExtractable.SUPPLIER));
-        ItemAttributes.EXTRACTABLE.setBlockEntityAdder(AttributeSourceType.INSTANCE,
-            QuarryPlus.ModObjects.ADV_QUARRY_TYPE, TileAdvQuarry.class, (blockEntity, to) -> to.add(EmptyItemExtractable.SUPPLIER));
-    }
-
-    static ItemTransfer<?> bcTransfer() {
-        return new BCItemTransfer();
-    }
-}
-
-class BCItemTransfer implements ItemTransfer<ItemInsertable> {
-
-    @Override
-    @NotNull
-    public ItemInsertable getDestination(Level world, BlockPos pos, Direction direction) {
-        return ItemAttributes.INSERTABLE.get(world, pos, SearchOptions.inDirection(direction.getOpposite()));
-    }
-
-    @Override
-    public boolean isValidDestination(ItemInsertable itemInsertable) {
-        return itemInsertable != null &&
-            itemInsertable != ItemAttributes.INSERTABLE.defaultValue;
-    }
-
-    @Override
-    public ItemStack transfer(ItemInsertable destination, ItemStack send, Direction direction) {
-        ItemStack simulation = destination.attemptInsertion(send, Simulation.SIMULATE);
-        if (simulation.getCount() < send.getCount()) {
-            return destination.attemptInsertion(send, Simulation.ACTION);
         } else {
             return send;
         }
