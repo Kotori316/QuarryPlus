@@ -5,11 +5,11 @@ import java.util.WeakHashMap;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.ChatSender;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.PlayerChatMessage;
-import net.minecraft.resources.ResourceKey;
+import net.minecraft.network.chat.MessageSignature;
+import net.minecraft.network.chat.OutgoingPlayerChatMessage;
+import net.minecraft.network.chat.SignedMessageHeader;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -45,10 +45,14 @@ public final class QuarryFakePlayer extends ServerPlayer {
     }
 
     @Override
-    public void sendChatMessage(PlayerChatMessage playerChatMessage, ChatSender chatSender, ResourceKey<ChatType> resourceKey) {
+    public void sendChatHeader(SignedMessageHeader signedMessageHeader, MessageSignature messageSignature, byte[] bs) {
     }
 
     @Override
-    public void sendSystemMessage(Component component, ResourceKey<ChatType> resourceKey) {
+    public void sendChatMessage(OutgoingPlayerChatMessage outgoingPlayerChatMessage, boolean bl, ChatType.Bound bound) {
+    }
+
+    @Override
+    public void sendSystemMessage(Component component, boolean b) {
     }
 }
