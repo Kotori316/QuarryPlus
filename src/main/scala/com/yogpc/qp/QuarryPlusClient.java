@@ -22,8 +22,6 @@ import com.yogpc.qp.render.RenderQuarry;
 import com.yogpc.qp.render.RenderSFQuarry;
 import com.yogpc.qp.render.Sprites;
 import net.minecraft.client.gui.screens.MenuScreens;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -39,9 +37,6 @@ public class QuarryPlusClient {
 
     @SubscribeEvent
     public static void clientInit(FMLClientSetupEvent event) {
-        ItemBlockRenderTypes.setRenderLayer(Holder.BLOCK_DUMMY, RenderType.translucent());
-        ItemBlockRenderTypes.setRenderLayer(Holder.BLOCK_DUMMY_REPLACER, RenderType.translucent());
-
         BlockEntityRenderers.register(Holder.QUARRY_TYPE, RenderQuarry::new);
         BlockEntityRenderers.register(Holder.MARKER_TYPE, RenderMarker.constructor(QuarryPlus.config.common.reduceMarkerGuideLineIfPlayerIsFar.get()));
         BlockEntityRenderers.register(Holder.FLEX_MARKER_TYPE, RenderFlexMarker::new);

@@ -22,6 +22,7 @@ final class StateAndModelProvider extends BlockStateProvider {
     @Override
     protected void registerStatesAndModels() {
         frame();
+        dummyBlocks();
     }
 
     void frame() {
@@ -62,5 +63,15 @@ final class StateAndModelProvider extends BlockStateProvider {
             .element().from(4, 0, 4).to(12, 12, 12)
             .allFaces((direction, faceBuilder) -> faceBuilder.uvs(4.0f, 4.0f, 12.0f, direction.getAxis() == Direction.Axis.Y ? 12.0f : 16.0f).texture("#texture"))
         ;
+    }
+
+    void dummyBlocks() {
+        var dummyReplacerModel = models().withExistingParent("block/dummy_replacer", new ResourceLocation("minecraft", "block/glass")).renderType("translucent");
+        itemModels().withExistingParent("item/dummy_replacer", new ResourceLocation("minecraft", "block/glass"));
+        var dummyBlockModel = models().cubeAll("block/dummy_block", blockTexture("dummy_block")).renderType("translucent");
+        itemModels().withExistingParent("item/dummy", new ResourceLocation(QuarryPlus.modID, "block/dummy_block"));
+
+        simpleBlock(Holder.BLOCK_DUMMY, dummyBlockModel);
+        simpleBlock(Holder.BLOCK_DUMMY_REPLACER, dummyReplacerModel);
     }
 }
