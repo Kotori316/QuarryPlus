@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "quarryplus:blocks/adv_pump_bottom",
+    "side": "quarryplus:blocks/adv_pump_side",
+    "top": "quarryplus:blocks/adv_pump_top"
+  }
+}

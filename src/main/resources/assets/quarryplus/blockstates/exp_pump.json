@@ -1,6 +1,0 @@
-{
-  "variants": {
-    "working=true": {"model": "quarryplus:block/exp_pump_working"},
-    "working=false": {"model": "quarryplus:block/exp_pump"}
-  }
-}

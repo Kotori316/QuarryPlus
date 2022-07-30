@@ -1,14 +1,20 @@
 package com.yogpc.qp.data;
 
+import java.util.Objects;
+
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.QPBlock;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.core.Direction;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
+import net.minecraftforge.client.model.generators.ConfiguredModel;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.registries.ForgeRegistries;
 
 final class StateAndModelProvider extends BlockStateProvider {
     StateAndModelProvider(DataGenerator gen, ExistingFileHelper exFileHelper) {
@@ -20,9 +26,20 @@ final class StateAndModelProvider extends BlockStateProvider {
     }
 
     @Override
+    public ResourceLocation blockTexture(Block block) {
+        ResourceLocation name = Objects.requireNonNull(ForgeRegistries.BLOCKS.getKey(block), "Block %s isn't registered.".formatted(block));
+        return new ResourceLocation(name.getNamespace(), "blocks" + "/" + name.getPath());
+    }
+
+    @Override
     protected void registerStatesAndModels() {
         frame();
         dummyBlocks();
+        simpleBlockAndItemCubeAll(Holder.BLOCK_BOOK_MOVER);
+        simpleBlockAndItemCubeAll(Holder.BLOCK_WORKBENCH);
+        simpleBlockAndItemCubeAll(Holder.BLOCK_CONTROLLER);
+        workBlockAndItem(Holder.BLOCK_ADV_PUMP);
+        workBlockAndItem(Holder.BLOCK_EXP_PUMP);
     }
 
     void frame() {
@@ -73,5 +90,29 @@ final class StateAndModelProvider extends BlockStateProvider {
 
         simpleBlock(Holder.BLOCK_DUMMY, dummyBlockModel);
         simpleBlock(Holder.BLOCK_DUMMY_REPLACER, dummyReplacerModel);
+    }
+
+    void simpleBlockAndItemCubeAll(Block block) {
+        var model = cubeAll(block);
+        simpleBlock(block, model);
+        simpleBlockItem(block, model);
+    }
+
+    void workBlockAndItem(QPBlock block) {
+        var basePath = block.getRegistryName().getPath();
+        var normalModel = models().cubeBottomTop("block/" + basePath,
+            blockTexture(basePath + "_side"),
+            blockTexture(basePath + "_bottom"),
+            blockTexture(basePath + "_top")
+        );
+        var workingModel = models().cubeBottomTop("block/" + basePath + "_working",
+            blockTexture(basePath + "_side"),
+            blockTexture(basePath + "_bottom"),
+            blockTexture(basePath + "_top_w")
+        );
+        var builder = getVariantBuilder(block);
+        builder.setModels(builder.partialState().with(QPBlock.WORKING, true), new ConfiguredModel(workingModel));
+        builder.setModels(builder.partialState().with(QPBlock.WORKING, false), new ConfiguredModel(normalModel));
+        simpleBlockItem(block, normalModel);
     }
 }
