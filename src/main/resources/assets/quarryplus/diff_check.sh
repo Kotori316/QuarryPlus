@@ -1,4 +1,4 @@
-set -eux
+set -eu
 
 EXECUTE_DIR=$(pwd)
 

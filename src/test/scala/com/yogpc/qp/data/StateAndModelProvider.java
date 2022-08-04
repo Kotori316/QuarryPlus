@@ -40,6 +40,9 @@ final class StateAndModelProvider extends BlockStateProvider {
         simpleBlockAndItemCubeAll(Holder.BLOCK_CONTROLLER);
         workBlockAndItem(Holder.BLOCK_ADV_PUMP);
         workBlockAndItem(Holder.BLOCK_EXP_PUMP);
+        simpleBlockAndItemCubeBottomTop(Holder.BLOCK_MOVER, blockTexture(Holder.BLOCK_MOVER), blockTexture("mover_top"), blockTexture("mover_bottom"));
+        simpleBlockAndItemCubeBottomTop(Holder.BLOCK_PUMP, blockTexture("pump_side"), blockTexture("pump_top"), blockTexture("pump_bottom"));
+        simpleBlockAndItemCubeBottomTop(Holder.BLOCK_CREATIVE_GENERATOR, blockTexture("replacer_bottom"), blockTexture("pump_bottom"), blockTexture("adv_pump_bottom"));
     }
 
     void frame() {
@@ -94,6 +97,13 @@ final class StateAndModelProvider extends BlockStateProvider {
 
     void simpleBlockAndItemCubeAll(Block block) {
         var model = cubeAll(block);
+        simpleBlock(block, model);
+        simpleBlockItem(block, model);
+    }
+
+    void simpleBlockAndItemCubeBottomTop(QPBlock block, ResourceLocation side, ResourceLocation top, ResourceLocation bottom) {
+        var basePath = block.getRegistryName().getPath();
+        var model = models().cubeBottomTop("block/" + basePath, side, bottom, top);
         simpleBlock(block, model);
         simpleBlockItem(block, model);
     }
