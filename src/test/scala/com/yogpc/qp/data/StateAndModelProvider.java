@@ -5,6 +5,7 @@ import java.util.Objects;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPBlock;
+import com.yogpc.qp.machines.placer.PlacerBlock;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.core.Direction;
 import net.minecraft.data.DataGenerator;
@@ -35,6 +36,7 @@ final class StateAndModelProvider extends BlockStateProvider {
     protected void registerStatesAndModels() {
         frame();
         dummyBlocks();
+        placer();
         simpleBlockAndItemCubeAll(Holder.BLOCK_BOOK_MOVER);
         simpleBlockAndItemCubeAll(Holder.BLOCK_WORKBENCH);
         simpleBlockAndItemCubeAll(Holder.BLOCK_CONTROLLER);
@@ -156,5 +158,24 @@ final class StateAndModelProvider extends BlockStateProvider {
                 .build();
         });
         simpleBlockItem(block, normalModel);
+    }
+
+    void placer() {
+        PlacerBlock block = Holder.BLOCK_PLACER;
+        var basePath = block.getRegistryName().getPath();
+        var model = models().orientableWithBottom("block/" + basePath,
+            blockTexture("plus_stone_side"),
+            blockTexture("placer_front_horizontal"),
+            blockTexture("plus_stone_top"),
+            blockTexture("placer_front_vertical"));
+        getVariantBuilder(block).forAllStatesExcept(blockState -> {
+            var direction = blockState.getValue(BlockStateProperties.FACING);
+            return ConfiguredModel.builder()
+                .modelFile(model)
+                .rotationX(Math.floorMod(direction.getStepY() * -90, 360))
+                .rotationY(direction.getAxis() == Direction.Axis.Y ? 0 : Math.floorMod(((int) direction.toYRot()) + 180, 360))
+                .build();
+        }, BlockStateProperties.TRIGGERED);
+        simpleBlockItem(block, model);
     }
 }

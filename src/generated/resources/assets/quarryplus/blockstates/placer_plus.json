@@ -1,0 +1,27 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "quarryplus:block/placer_plus",
+      "x": 90
+    },
+    "facing=east": {
+      "model": "quarryplus:block/placer_plus",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "quarryplus:block/placer_plus"
+    },
+    "facing=south": {
+      "model": "quarryplus:block/placer_plus",
+      "y": 180
+    },
+    "facing=up": {
+      "model": "quarryplus:block/placer_plus",
+      "x": 270
+    },
+    "facing=west": {
+      "model": "quarryplus:block/placer_plus",
+      "y": 270
+    }
+  }
+}
