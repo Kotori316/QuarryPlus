@@ -43,6 +43,10 @@ final class StateAndModelProvider extends BlockStateProvider {
         simpleBlockAndItemCubeBottomTop(Holder.BLOCK_MOVER, blockTexture(Holder.BLOCK_MOVER), blockTexture("mover_top"), blockTexture("mover_bottom"));
         simpleBlockAndItemCubeBottomTop(Holder.BLOCK_PUMP, blockTexture("pump_side"), blockTexture("pump_top"), blockTexture("pump_bottom"));
         simpleBlockAndItemCubeBottomTop(Holder.BLOCK_CREATIVE_GENERATOR, blockTexture("replacer_bottom"), blockTexture("pump_bottom"), blockTexture("adv_pump_bottom"));
+        workDirectionalBlockAndItem(Holder.BLOCK_QUARRY, "quarryplus");
+        workDirectionalBlockAndItem(Holder.BLOCK_ADV_QUARRY);
+        workDirectionalBlockAndItem(Holder.BLOCK_MINI_QUARRY);
+        workDirectionalBlockAndItem(Holder.BLOCK_SOLID_FUEL_QUARRY);
     }
 
     void frame() {
@@ -123,6 +127,34 @@ final class StateAndModelProvider extends BlockStateProvider {
         var builder = getVariantBuilder(block);
         builder.setModels(builder.partialState().with(QPBlock.WORKING, true), new ConfiguredModel(workingModel));
         builder.setModels(builder.partialState().with(QPBlock.WORKING, false), new ConfiguredModel(normalModel));
+        simpleBlockItem(block, normalModel);
+    }
+
+    void workDirectionalBlockAndItem(QPBlock block) {
+        workDirectionalBlockAndItem(block, block.getRegistryName().getPath());
+    }
+
+    void workDirectionalBlockAndItem(QPBlock block, String modelName) {
+        var basePath = block.getRegistryName().getPath();
+        var normalModel = models().orientable("block/" + modelName,
+            blockTexture(block),
+            blockTexture(basePath + "_front"),
+            blockTexture(basePath + "_top")
+        );
+        var workingModel = models().orientable("block/" + modelName + "_working",
+            blockTexture(block),
+            blockTexture(basePath + "_front"),
+            blockTexture(basePath + "_top_bb")
+        );
+        getVariantBuilder(block).forAllStates(blockState -> {
+            var model = blockState.getValue(QPBlock.WORKING) ? workingModel : normalModel;
+            var direction = blockState.getValue(BlockStateProperties.FACING);
+            return ConfiguredModel.builder()
+                .modelFile(model)
+                .rotationX(Math.floorMod(direction.getStepY() * -90, 360))
+                .rotationY(direction.getAxis() == Direction.Axis.Y ? 0 : Math.floorMod(((int) direction.toYRot()) + 180, 360))
+                .build();
+        });
         simpleBlockItem(block, normalModel);
     }
 }
