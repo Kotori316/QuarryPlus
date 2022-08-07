@@ -48,7 +48,7 @@ Requires [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/sca
 
 ## Maven repo
 
-See [here](https://dev.azure.com/Kotori316/minecraft/_packaging?_a=package&feed=mods%40Local&package=com.kotori316%3Aadditionalenchantedminer&protocolType=maven&view=versions)
+See [here](https://dev.azure.com/Kotori316/minecraft/_artifacts/feed/mods/maven/com.kotori316%2Fadditionalenchantedminer/versions)
 to get other versions.
 
 ```groovy

@@ -1,3 +1,7 @@
+## Version 19.5
+
+* Update to 1.19.2
+
 ## Version 19.4
 
 * Update to 1.19.1
