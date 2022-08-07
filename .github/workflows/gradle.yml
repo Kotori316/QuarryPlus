@@ -63,7 +63,7 @@ jobs:
           echo ${version}
       - name: Test with runData
         if: ${{ env.SAME_DEFAULT != 'true' }}
-        run: chmod +x ./gradlew && ./gradlew --no-daemon runData --stacktrace
+        run: chmod +x ./gradlew && ./gradlew --no-daemon runData
 
   cross-check-JUnit:
     runs-on: ubuntu-latest
@@ -110,7 +110,7 @@ jobs:
       - name: Set forge version
         run: echo "CI_FORGE=$(cat /forge.txt)" >> $GITHUB_ENV
       - name: GameTest
-        run: chmod +x ./gradlew && ./gradlew --no-daemon copyGameTestTemplate runGameTestServer --stacktrace
+        run: chmod +x ./gradlew && ./gradlew --no-daemon copyGameTestTemplate runGameTestServer
       - name: Check report
         run: |
           ! test -d "build/game_test/crash-reports"
