@@ -203,11 +203,12 @@ public class Config {
         public AcceptableEnchantmentsMap(ForgeConfigSpec.Builder builder) {
             builder.comment("Enchantments. Defines enchantments machines can accept.").push("enchantments");
             var vanillaAllEnchantments = List.of("minecraft:efficiency", "minecraft:unbreaking", "minecraft:fortune", "minecraft:silk_touch");
+            var miniQuarryEnchantments = List.of("minecraft:efficiency", "minecraft:unbreaking");
             var pumpEnchantments = List.of("minecraft:efficiency", "minecraft:unbreaking", "minecraft:fortune");
             var targets = List.of(
                 Map.entry(new ResourceLocation(QuarryPlus.modID, QuarryBlock.NAME), vanillaAllEnchantments),
                 Map.entry(new ResourceLocation(QuarryPlus.modID, BlockAdvQuarry.NAME), vanillaAllEnchantments),
-                Map.entry(new ResourceLocation(QuarryPlus.modID, MiniQuarryBlock.NAME), vanillaAllEnchantments),
+                Map.entry(new ResourceLocation(QuarryPlus.modID, MiniQuarryBlock.NAME), miniQuarryEnchantments),
                 Map.entry(new ResourceLocation(QuarryPlus.modID, BlockAdvPump.NAME), pumpEnchantments)
             );
 
@@ -217,6 +218,7 @@ public class Config {
         }
 
         public Set<Enchantment> getAllowedEnchantments(ResourceLocation machineName) {
+            if (machineName == null) return Set.of();
             return Optional.ofNullable(this.enchantmentsMap.get(machineName.getPath()))
                 .map(ForgeConfigSpec.ConfigValue::get)
                 .orElseGet(List::of)
