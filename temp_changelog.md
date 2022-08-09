@@ -1,3 +1,8 @@
+## Version 18.14
+
+* Limit enchantment of machines by config.
+* Enchantments whose level is over default limitation can be used now.
+
 ## Version 18.13
 
 * Improved SFQ work. Close #201
