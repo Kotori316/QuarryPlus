@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.yogpc.qp.Holder;
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.EnchantableItem;
 import com.yogpc.qp.machines.QPBlock;
 import com.yogpc.qp.machines.module.ModuleInventory;
@@ -59,6 +60,7 @@ class ItemAdvQuarry extends QPBlock.QPBlockItem implements EnchantableItem {
 
     @Override
     public Set<Enchantment> acceptEnchantments() {
-        return Set.of(Enchantments.BLOCK_EFFICIENCY, Enchantments.UNBREAKING, Enchantments.BLOCK_FORTUNE, Enchantments.SILK_TOUCH);
+        // return Set.of(Enchantments.BLOCK_EFFICIENCY, Enchantments.UNBREAKING, Enchantments.BLOCK_FORTUNE, Enchantments.SILK_TOUCH);
+        return QuarryPlus.config.acceptableEnchantmentsMap.getAllowedEnchantments(getRegistryName());
     }
 }

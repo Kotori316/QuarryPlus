@@ -3,6 +3,7 @@ package com.yogpc.qp.machines.mini_quarry;
 import java.util.Set;
 
 import com.yogpc.qp.Holder;
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.EnchantableItem;
 import com.yogpc.qp.machines.QPBlock;
 import net.minecraft.core.NonNullList;
@@ -29,6 +30,7 @@ public final class MiniQuarryItem extends QPBlock.QPBlockItem implements Enchant
 
     @Override
     public Set<Enchantment> acceptEnchantments() {
-        return Set.of(Enchantments.BLOCK_EFFICIENCY, Enchantments.UNBREAKING);
+        // return Set.of(Enchantments.BLOCK_EFFICIENCY, Enchantments.UNBREAKING);
+        return QuarryPlus.config.acceptableEnchantmentsMap.getAllowedEnchantments(getRegistryName());
     }
 }

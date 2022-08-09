@@ -3,6 +3,7 @@ package com.yogpc.qp.machines.advpump;
 import java.util.Set;
 
 import com.yogpc.qp.Holder;
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.EnchantableItem;
 import com.yogpc.qp.machines.QPBlock;
 import net.minecraft.core.NonNullList;
@@ -31,6 +32,7 @@ class ItemAdvPump extends QPBlock.QPBlockItem implements EnchantableItem {
 
     @Override
     public Set<Enchantment> acceptEnchantments() {
-        return Set.of(Enchantments.BLOCK_EFFICIENCY, Enchantments.UNBREAKING, Enchantments.BLOCK_FORTUNE);
+        // return Set.of(Enchantments.BLOCK_EFFICIENCY, Enchantments.UNBREAKING, Enchantments.BLOCK_FORTUNE);
+        return QuarryPlus.config.acceptableEnchantmentsMap.getAllowedEnchantments(getRegistryName());
     }
 }
