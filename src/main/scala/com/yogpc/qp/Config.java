@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalDouble;
+import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -16,13 +17,17 @@ import java.util.stream.Stream;
 import com.google.gson.JsonObject;
 import com.yogpc.qp.machines.PowerConfig;
 import com.yogpc.qp.machines.PowerTile;
+import com.yogpc.qp.machines.advpump.BlockAdvPump;
 import com.yogpc.qp.machines.advquarry.BlockAdvQuarry;
+import com.yogpc.qp.machines.mini_quarry.MiniQuarryBlock;
 import com.yogpc.qp.machines.quarry.QuarryBlock;
 import com.yogpc.qp.machines.quarry.SFQuarryBlock;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
@@ -30,11 +35,13 @@ public class Config {
     public final Common common;
     public final EnableMap enableMap;
     public final PowerMap powerMap;
+    public final AcceptableEnchantmentsMap acceptableEnchantmentsMap;
 
     public Config(ForgeConfigSpec.Builder builder) {
         common = new Common(builder);
         enableMap = new EnableMap(builder);
         powerMap = new PowerMap(builder);
+        acceptableEnchantmentsMap = new AcceptableEnchantmentsMap(builder);
     }
 
     public boolean debug() {
@@ -186,6 +193,38 @@ public class Config {
                     object.getAsJsonObject(machineName).entrySet().stream()
                         .map(e -> new KeyPair(new Key(machineName, e.getKey()), e.getValue().getAsDouble())))
                 .toList();
+        }
+    }
+
+    public static class AcceptableEnchantmentsMap {
+        @VisibleForTesting
+        final Map<String, ForgeConfigSpec.ConfigValue<List<? extends String>>> enchantmentsMap;
+
+        public AcceptableEnchantmentsMap(ForgeConfigSpec.Builder builder) {
+            builder.comment("Enchantments. Defines enchantments machines can accept.").push("enchantments");
+            var vanillaAllEnchantments = List.of("minecraft:efficiency", "minecraft:unbreaking", "minecraft:fortune", "minecraft:silk_touch");
+            var pumpEnchantments = List.of("minecraft:efficiency", "minecraft:unbreaking", "minecraft:fortune");
+            var targets = List.of(
+                Map.entry(new ResourceLocation(QuarryPlus.modID, QuarryBlock.NAME), vanillaAllEnchantments),
+                Map.entry(new ResourceLocation(QuarryPlus.modID, BlockAdvQuarry.NAME), vanillaAllEnchantments),
+                Map.entry(new ResourceLocation(QuarryPlus.modID, MiniQuarryBlock.NAME), vanillaAllEnchantments),
+                Map.entry(new ResourceLocation(QuarryPlus.modID, BlockAdvPump.NAME), pumpEnchantments)
+            );
+
+            enchantmentsMap = targets.stream()
+                .map(e -> Map.entry(e.getKey().getPath(), builder.defineListAllowEmpty(List.of(e.getKey().getPath()), e::getValue, o -> o instanceof String s && ResourceLocation.isValidResourceLocation(s))))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        }
+
+        public Set<Enchantment> getAllowedEnchantments(ResourceLocation machineName) {
+            return Optional.ofNullable(this.enchantmentsMap.get(machineName.getPath()))
+                .map(ForgeConfigSpec.ConfigValue::get)
+                .orElseGet(List::of)
+                .stream()
+                .map(ResourceLocation::new)
+                .filter(ForgeRegistries.ENCHANTMENTS::containsKey)
+                .map(ForgeRegistries.ENCHANTMENTS::getValue)
+                .collect(Collectors.toSet());
         }
     }
 }
