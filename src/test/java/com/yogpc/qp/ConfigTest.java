@@ -2,8 +2,10 @@ package com.yogpc.qp;
 
 import java.io.InputStreamReader;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -13,6 +15,7 @@ import com.yogpc.qp.machines.quarry.TileQuarry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -118,6 +121,54 @@ final class ConfigTest {
                 .sorted(Comparator.comparing(Holder.EntryConditionHolder::location))
                 .collect(Collectors.toList());
             assertIterableEquals(expected, loaded);
+        }
+    }
+
+    @Nested
+    class AcceptableEnchantmentsMapTest {
+
+        private final Config.AcceptableEnchantmentsMap config = QuarryPlus.config.acceptableEnchantmentsMap;
+
+        @Test
+        void quarryDefaultEnchantments() {
+            var enchantments = config.getAllowedEnchantments(new ResourceLocation(QuarryPlus.modID, "quarry"));
+            assertEquals(Set.of(Enchantments.BLOCK_EFFICIENCY, Enchantments.UNBREAKING, Enchantments.BLOCK_FORTUNE, Enchantments.SILK_TOUCH), enchantments);
+        }
+
+        @Test
+        void advPumpDefaultEnchantments() {
+            var enchantments = config.getAllowedEnchantments(new ResourceLocation(QuarryPlus.modID, "adv_pump"));
+            assertEquals(Set.of(Enchantments.BLOCK_EFFICIENCY, Enchantments.UNBREAKING, Enchantments.BLOCK_FORTUNE), enchantments);
+        }
+
+        @Test
+        void nonExist() {
+            var enchantments = config.getAllowedEnchantments(new ResourceLocation(QuarryPlus.modID, "not_exist"));
+            assertTrue(enchantments.isEmpty(), "Must be empty, %s".formatted(enchantments));
+        }
+
+        @Test
+        void modifyQuarryEnchantments1() {
+            var before = config.enchantmentsMap.get("quarry").get();
+            try {
+                config.enchantmentsMap.get("quarry").set(List.of("efficiency"));
+                var enchantments = config.getAllowedEnchantments(new ResourceLocation(QuarryPlus.modID, "quarry"));
+                assertEquals(Set.of(Enchantments.BLOCK_EFFICIENCY), enchantments);
+            } finally {
+                config.enchantmentsMap.get("quarry").set(before);
+            }
+        }
+
+        @Test
+        void modifyQuarryEnchantments2() {
+            var before = config.enchantmentsMap.get("quarry").get();
+            try {
+                config.enchantmentsMap.get("quarry").set(List.of());
+                var enchantments = config.getAllowedEnchantments(new ResourceLocation(QuarryPlus.modID, "quarry"));
+                assertTrue(enchantments.isEmpty());
+            } finally {
+                config.enchantmentsMap.get("quarry").set(before);
+            }
         }
     }
 }
