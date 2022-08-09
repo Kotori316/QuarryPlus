@@ -64,7 +64,11 @@ public class QPBlock extends Block {
          */
         @Override
         public String toString() {
-            return ((QPBlock) getBlock()).getRegistryName().getPath();
+            return this.getRegistryName().getPath();
+        }
+
+        public ResourceLocation getRegistryName() {
+            return ((QPBlock) getBlock()).getRegistryName();
         }
     }
 }
