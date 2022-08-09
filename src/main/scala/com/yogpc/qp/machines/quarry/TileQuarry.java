@@ -46,7 +46,6 @@ import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -67,12 +66,6 @@ import org.jetbrains.annotations.VisibleForTesting;
 public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.HasStorage,
     EnchantmentLevel.HasEnchantments, ClientSync, ModuleInventory.HasModuleInventory, PowerConfig.Provider {
     private static final Marker MARKER = MarkerManager.getMarker("TileQuarry");
-    private static final EnchantmentRestriction RESTRICTION = EnchantmentRestriction.builder()
-        .add(Enchantments.BLOCK_EFFICIENCY)
-        .add(Enchantments.UNBREAKING)
-        .add(Enchantments.BLOCK_FORTUNE)
-        .add(Enchantments.SILK_TOUCH)
-        .build();
     @Nullable
     public Target target;
     public QuarryState state = QuarryState.FINISHED;
@@ -344,7 +337,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
     }
 
     public void setEnchantments(Map<Enchantment, Integer> enchantments) {
-        setEnchantments(RESTRICTION.filterMap(enchantments).entrySet().stream()
+        setEnchantments(enchantments.entrySet().stream()
             .map(EnchantmentLevel::new)
             .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR)
             .toList());
