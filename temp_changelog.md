@@ -1,3 +1,8 @@
+## Version 19.6
+
+* Limit enchantment of machines by config. #209
+* Enchantments whose level is over default limitation can be used now.
+
 ## Version 19.5
 
 * Update to 1.19.2
