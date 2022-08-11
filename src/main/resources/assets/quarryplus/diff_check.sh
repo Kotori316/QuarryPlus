@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 set -eu
 
 EXECUTE_DIR=$(pwd)
@@ -10,7 +11,8 @@ fi
 cd $(dirname $0)
 
 cd ../../../../..
-files=($(find . -regex ".*/$1" -not -path "./build/*"))
+search_name=${1#./}
+files=($(find . -regex ".*/$search_name" -not -path "./build/*"))
 if [ ${#files[@]} -gt 1 ]; then
   diff <(jq --sort-keys . ${files[0]}) <(jq --sort-keys . ${files[1]})
 
