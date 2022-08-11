@@ -40,10 +40,13 @@ final class StateAndModelProvider extends BlockStateProvider {
         simpleBlockAndItemCubeAll(Holder.BLOCK_BOOK_MOVER);
         simpleBlockAndItemCubeAll(Holder.BLOCK_WORKBENCH);
         simpleBlockAndItemCubeAll(Holder.BLOCK_CONTROLLER);
+        simpleBlockAndItemCubeAll(Holder.BLOCK_REMOTE_PLACER);
         workBlockAndItem(Holder.BLOCK_ADV_PUMP);
         workBlockAndItem(Holder.BLOCK_EXP_PUMP);
         simpleBlockAndItemCubeBottomTop(Holder.BLOCK_MOVER, blockTexture(Holder.BLOCK_MOVER), blockTexture("mover_top"), blockTexture("mover_bottom"));
         simpleBlockAndItemCubeBottomTop(Holder.BLOCK_PUMP, blockTexture("pump_side"), blockTexture("pump_top"), blockTexture("pump_bottom"));
+        simpleBlockAndItemCubeBottomTop(Holder.BLOCK_REPLACER, blockTexture("replacer_side"), blockTexture("replacer_top"), blockTexture("replacer_bottom"));
+        simpleBlockAndItemCubeBottomTop(Holder.BLOCK_FILLER, blockTexture("filler_side"), blockTexture("filler_top"), blockTexture("filler_top"));
         simpleBlockAndItemCubeBottomTop(Holder.BLOCK_CREATIVE_GENERATOR, blockTexture("replacer_bottom"), blockTexture("pump_bottom"), blockTexture("adv_pump_bottom"));
         workDirectionalBlockAndItem(Holder.BLOCK_QUARRY, "quarryplus");
         workDirectionalBlockAndItem(Holder.BLOCK_ADV_QUARRY);

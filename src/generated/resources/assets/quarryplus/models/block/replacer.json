@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "quarryplus:blocks/replacer_bottom",
+    "side": "quarryplus:blocks/replacer_side",
+    "top": "quarryplus:blocks/replacer_top"
+  }
+}
