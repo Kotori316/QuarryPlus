@@ -1,12 +1,12 @@
 {
-  "parent": "block/cube",
+  "parent": "minecraft:block/cube",
   "textures": {
-    "particle": "quarryplus:blocks/mining_well",
     "down": "quarryplus:blocks/mining_well",
-    "up": "quarryplus:blocks/mining_well_top",
-    "north": "quarryplus:blocks/mining_well_front",
     "east": "quarryplus:blocks/mining_well",
+    "north": "quarryplus:blocks/mining_well_front",
+    "particle": "quarryplus:blocks/mining_well",
     "south": "quarryplus:blocks/mining_well_back",
+    "up": "quarryplus:blocks/mining_well_top",
     "west": "quarryplus:blocks/mining_well"
   }
 }

@@ -37,6 +37,7 @@ final class StateAndModelProvider extends BlockStateProvider {
         frame();
         dummyBlocks();
         placer();
+        mining_well();
         simpleBlockAndItemCubeAll(Holder.BLOCK_BOOK_MOVER);
         simpleBlockAndItemCubeAll(Holder.BLOCK_WORKBENCH);
         simpleBlockAndItemCubeAll(Holder.BLOCK_CONTROLLER);
@@ -180,5 +181,36 @@ final class StateAndModelProvider extends BlockStateProvider {
                 .build();
         }, BlockStateProperties.TRIGGERED);
         simpleBlockItem(block, model);
+    }
+
+    void mining_well() {
+        var block = Holder.BLOCK_MINING_WELL;
+        var basePath = block.getRegistryName().getPath();
+        var normalModel = models().cube("block/" + basePath,
+            blockTexture(block), // Down
+            blockTexture(basePath + "_top"), // Up
+            blockTexture(basePath + "_front"), // North
+            blockTexture(basePath + "_back"), // South
+            blockTexture(block), // East
+            blockTexture(block) // West
+        ).texture("particle", blockTexture(block));
+        var workingModel = models().cube("block/" + basePath + "_working",
+            blockTexture(block), // Down
+            blockTexture(basePath + "_top_w"), // Up
+            blockTexture(basePath + "_front"), // North
+            blockTexture(basePath + "_back"), // South
+            blockTexture(block), // East
+            blockTexture(block) // West
+        ).texture("particle", blockTexture(block));
+        getVariantBuilder(block).forAllStates(blockState -> {
+            var model = blockState.getValue(QPBlock.WORKING) ? workingModel : normalModel;
+            var direction = blockState.getValue(BlockStateProperties.FACING);
+            return ConfiguredModel.builder()
+                .modelFile(model)
+                .rotationX(Math.floorMod(direction.getStepY() * -90, 360))
+                .rotationY(direction.getAxis() == Direction.Axis.Y ? 0 : Math.floorMod(((int) direction.toYRot()) + 180, 360))
+                .build();
+        });
+        simpleBlockItem(block, normalModel);
     }
 }
