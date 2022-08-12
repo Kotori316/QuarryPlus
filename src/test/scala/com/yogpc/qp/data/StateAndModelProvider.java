@@ -41,6 +41,7 @@ final class StateAndModelProvider extends BlockStateProvider {
         placer();
         mining_well();
         markers();
+        waterloggedMarkers();
         simpleBlockAndItemCubeAll(Holder.BLOCK_BOOK_MOVER);
         simpleBlockAndItemCubeAll(Holder.BLOCK_WORKBENCH);
         simpleBlockAndItemCubeAll(Holder.BLOCK_CONTROLLER);
@@ -294,6 +295,77 @@ final class StateAndModelProvider extends BlockStateProvider {
             itemModels().getBuilder(baseName)
                 .parent(new ModelFile.UncheckedModelFile("item/generated"))
                 .texture("layer0", new ResourceLocation(QuarryPlus.modID, "items/" + baseName + "_item"));
+        }
+    }
+
+    void waterloggedMarkers() {
+        var commonModel = models().withExistingParent("block/waterlogged_marker_common", "block/block")
+            // Center
+            .element()
+            .from(6, 4, 6).to(10, 12, 10)
+            .allFaces((direction, faceBuilder) -> {
+                switch (direction) {
+                    case UP, DOWN -> faceBuilder.texture("#texture").uvs(7, 6, 8, 7);
+                    default -> faceBuilder.texture("#texture").uvs(7, 7, 9, 9);
+                }
+            })
+            .end()
+            // North
+            .element()
+            .from(6, 6, 4).to(10, 10, 6)
+            .rotation().angle(0).axis(Direction.Axis.Y).origin(8, 8, 8).end()
+            .allFaces((direction, faceBuilder) -> {
+                if (direction == Direction.NORTH) {
+                    faceBuilder.texture("#texture").uvs(7, 6, 8, 7);
+                } else {
+                    faceBuilder.texture("#texture").uvs(7, 7, 9, 9);
+                }
+            })
+            .end()
+            // South
+            .element()
+            .from(6, 6, 10).to(10, 10, 12)
+            .rotation().angle(0).axis(Direction.Axis.Y).origin(8, 8, 8).end()
+            .allFaces((direction, faceBuilder) -> {
+                if (direction == Direction.SOUTH) {
+                    faceBuilder.texture("#texture").uvs(7, 6, 8, 7);
+                } else {
+                    faceBuilder.texture("#texture").uvs(7, 7, 9, 9);
+                }
+            })
+            .end()
+            // West
+            .element()
+            .from(4, 6, 6).to(6, 10, 10)
+            .rotation().angle(0).axis(Direction.Axis.Y).origin(8, 8, 8).end()
+            .allFaces((direction, faceBuilder) -> {
+                if (direction == Direction.WEST) {
+                    faceBuilder.texture("#texture").uvs(7, 6, 8, 7);
+                } else {
+                    faceBuilder.texture("#texture").uvs(7, 7, 9, 9);
+                }
+            })
+            .end()
+            // East
+            .element()
+            .from(10, 6, 6).to(12, 10, 10)
+            .rotation().angle(0).axis(Direction.Axis.Y).origin(8, 8, 8).end()
+            .allFaces((direction, faceBuilder) -> {
+                if (direction == Direction.EAST) {
+                    faceBuilder.texture("#texture").uvs(7, 6, 8, 7);
+                } else {
+                    faceBuilder.texture("#texture").uvs(7, 7, 9, 9);
+                }
+            })
+            .end();
+        for (var marker : List.of(Holder.BLOCK_WATERLOGGED_MARKER, Holder.BLOCK_WATERLOGGED_FLEX_MARKER, Holder.BLOCK_WATERLOGGED_16_MARKER)) {
+            var baseName = marker.getRegistryName().getPath();
+            var m = models().withExistingParent("block/" + baseName,
+                    new ResourceLocation(QuarryPlus.modID, "block/waterlogged_marker_common"))
+                .texture("texture", blockTexture(baseName.replace("waterlogged_", "")))
+                .texture("particle", blockTexture(baseName.replace("waterlogged_", "")));
+            simpleBlock(marker, m);
+            simpleBlockItem(marker, m);
         }
     }
 }
