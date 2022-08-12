@@ -11,7 +11,7 @@ plugins {
     id("idea")
     id("maven-publish")
     // https://maven.fabricmc.net/net/fabricmc/fabric-loom/
-    id 'fabric-loom' version "0.12-SNAPSHOT"
+    id 'fabric-loom' version "0.13-SNAPSHOT"
     //noinspection SpellCheckingInspection
     id "com.github.breadmoirai.github-release" version "2.2.12"
     //noinspection SpellCheckingInspection
