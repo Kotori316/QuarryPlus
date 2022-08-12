@@ -23,7 +23,6 @@ public class ScreenFlexMarker extends AbstractContainerScreen<ContainerMarker> {
     private static final int upSide = 1;
     private static final int center = 3;
     private static final int downSide = 1;
-    private static final int[] amounts = {-16, -1, 1, 16};
     private final TileFlexMarker marker;
     private static final int yOffsetCenter = 45;
     private static final int yOffsetBottom = 90;
@@ -116,6 +115,7 @@ public class ScreenFlexMarker extends AbstractContainerScreen<ContainerMarker> {
     public void actionPerformed(Button button) {
         int id = super.children().indexOf(button);
         if (id >= 0) {
+            final int[] amounts = {-16, -1, 1, 16};
             TileFlexMarker.Movable movable = TileFlexMarker.Movable.valueOf(id / 4);
             FlexMarkerMessage message = new FlexMarkerMessage(getMenu().player.level, getMenu().pos, movable, amounts[id % 4]);
             PacketHandler.sendToServer(message);

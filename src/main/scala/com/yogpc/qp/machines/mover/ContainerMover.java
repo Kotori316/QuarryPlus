@@ -33,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
 public class ContainerMover extends AbstractContainerMenu {
-    public final Container craftMatrix = new SimpleContainer(2) {
+    final Container craftMatrix = new SimpleContainer(2) {
         @Override
         public void setChanged() {
             super.setChanged();
@@ -44,7 +44,7 @@ public class ContainerMover extends AbstractContainerMenu {
     List<Enchantment> movable = Collections.emptyList();
     @Nullable
     Enchantment selected = null;
-    public final BlockPos pos;
+    final BlockPos pos;
 
     public ContainerMover(int id, Player player, BlockPos pos) {
         super(Holder.MOVER_MENU_TYPE, id);
@@ -196,7 +196,7 @@ public class ContainerMover extends AbstractContainerMenu {
 
     @VisibleForTesting
     static void upLevel(Enchantment enchantment, ItemStack stack) {
-        var level = EnchantmentHelper.getItemEnchantmentLevel(enchantment, stack);
+        var level = stack.getEnchantmentLevel(enchantment);
         if (level == 0) {
             stack.enchant(enchantment, 1);
         } else {

@@ -9,8 +9,8 @@ import net.minecraft.world.item.ItemStack;
 
 public class ContainerMarker extends AbstractContainerMenu {
 
-    public final Player player;
-    public final BlockPos pos;
+    final Player player;
+    final BlockPos pos;
 
     public ContainerMarker(int id, Player player, BlockPos pos, MenuType<?> type, int inventoryX, int inventoryY) {
         super(type, id);
