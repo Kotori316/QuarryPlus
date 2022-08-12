@@ -299,7 +299,7 @@ final class StateAndModelProvider extends BlockStateProvider {
     }
 
     void waterloggedMarkers() {
-        var commonModel = models().withExistingParent("block/waterlogged_marker_common", "block/block")
+        models().withExistingParent("block/waterlogged_marker_common", "block/block")
             // Center
             .element()
             .from(6, 4, 6).to(10, 12, 10)
