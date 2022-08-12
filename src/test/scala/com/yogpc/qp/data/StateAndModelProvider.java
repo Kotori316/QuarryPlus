@@ -1,5 +1,6 @@
 package com.yogpc.qp.data;
 
+import java.util.List;
 import java.util.Objects;
 
 import com.yogpc.qp.Holder;
@@ -14,6 +15,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
 import net.minecraftforge.client.model.generators.ConfiguredModel;
+import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -38,6 +40,7 @@ final class StateAndModelProvider extends BlockStateProvider {
         dummyBlocks();
         placer();
         mining_well();
+        markers();
         simpleBlockAndItemCubeAll(Holder.BLOCK_BOOK_MOVER);
         simpleBlockAndItemCubeAll(Holder.BLOCK_WORKBENCH);
         simpleBlockAndItemCubeAll(Holder.BLOCK_CONTROLLER);
@@ -212,5 +215,85 @@ final class StateAndModelProvider extends BlockStateProvider {
                 .build();
         });
         simpleBlockItem(block, normalModel);
+    }
+
+    void markers() {
+        var model = models().getBuilder("block/marker_post")
+            .texture("texture", blockTexture(Holder.BLOCK_MARKER))
+            .texture("particle", blockTexture(Holder.BLOCK_MARKER))
+            .element()
+            // Pole
+            .from(7.0f, 0.0f, 7.0f).to(9.0f, 10.0f, 9.0f)
+            .allFaces((direction, faceBuilder) -> {
+                if (direction == Direction.UP) {
+                    faceBuilder.texture("#texture").uvs(7.0f, 7.0f, 9.0f, 9.0f);
+                } else if (direction == Direction.DOWN) {
+                    faceBuilder.texture("#texture").uvs(0.0f, 0.0f, 2.0f, 2.0f).cullface(Direction.DOWN);
+                } else {
+                    faceBuilder.texture("#texture").uvs(7.0f, 6.0f, 9.0f, 16.0f);
+                }
+            })
+            .end()
+            // North
+            .element()
+            .from(7.0f, 7.0f, 6.0f).to(9.0f, 9.0f, 7.0f)
+            .allFaces((direction, faceBuilder) -> {
+                switch (direction.getAxis()) {
+                    case X -> faceBuilder.texture("#texture").uvs(6.0f, 7.0f, 7.0f, 9.0f);
+                    case Y -> faceBuilder.texture("#texture").uvs(7.0f, 6.0f, 9.0f, 7.0f);
+                    case Z -> faceBuilder.texture("#texture").uvs(7.0f, 7.0f, 9.0f, 9.0f);
+                }
+                if (direction == Direction.SOUTH) faceBuilder.cullface(Direction.SOUTH);
+            })
+            .end()
+            // South
+            .element()
+            .from(7.0f, 7.0f, 9.0f).to(9.0f, 9.0f, 10.0f)
+            .allFaces((direction, faceBuilder) -> {
+                switch (direction.getAxis()) {
+                    case X -> faceBuilder.texture("#texture").uvs(6.0f, 7.0f, 7.0f, 9.0f);
+                    case Y -> faceBuilder.texture("#texture").uvs(7.0f, 6.0f, 9.0f, 7.0f);
+                    case Z -> faceBuilder.texture("#texture").uvs(7.0f, 7.0f, 9.0f, 9.0f);
+                }
+                if (direction == Direction.NORTH) faceBuilder.cullface(Direction.NORTH);
+            })
+            .end()
+            // West
+            .element()
+            .from(6.0f, 7.0f, 7.0f).to(7.0f, 9.0f, 9.0f)
+            .allFaces((direction, faceBuilder) -> {
+                switch (direction.getAxis()) {
+                    case X -> faceBuilder.texture("#texture").uvs(7.0f, 7.0f, 9.0f, 9.0f);
+                    case Y, Z -> faceBuilder.texture("#texture").uvs(6.0f, 7.0f, 7.0f, 9.0f);
+                }
+                if (direction == Direction.EAST) faceBuilder.cullface(Direction.EAST);
+            })
+            .end()
+            // East
+            .element()
+            .from(9.0f, 7.0f, 7.0f).to(10.0f, 9.0f, 9.0f)
+            .allFaces((direction, faceBuilder) -> {
+                switch (direction.getAxis()) {
+                    case X -> faceBuilder.texture("#texture").uvs(7.0f, 7.0f, 9.0f, 9.0f);
+                    case Y, Z -> faceBuilder.texture("#texture").uvs(6.0f, 7.0f, 7.0f, 9.0f);
+                }
+                if (direction == Direction.WEST) faceBuilder.cullface(Direction.WEST);
+            })
+            .end();
+
+        directionalBlock(Holder.BLOCK_MARKER, model);
+        itemModels().getBuilder(Holder.BLOCK_MARKER.getRegistryName().getPath())
+            .parent(new ModelFile.UncheckedModelFile("item/generated"))
+            .texture("layer0", new ResourceLocation(QuarryPlus.modID, "items/" + Holder.BLOCK_MARKER.getRegistryName().getPath() + "_item"));
+        for (var marker : List.of(Holder.BLOCK_FLEX_MARKER, Holder.BLOCK_16_MARKER)) {
+            var baseName = marker.getRegistryName().getPath();
+            var m = models().withExistingParent("block/" + baseName, new ResourceLocation(QuarryPlus.modID, "block/marker_post"))
+                .texture("texture", blockTexture(marker))
+                .texture("particle", blockTexture(marker));
+            simpleBlock(marker, m);
+            itemModels().getBuilder(baseName)
+                .parent(new ModelFile.UncheckedModelFile("item/generated"))
+                .texture("layer0", new ResourceLocation(QuarryPlus.modID, "items/" + baseName + "_item"));
+        }
     }
 }
