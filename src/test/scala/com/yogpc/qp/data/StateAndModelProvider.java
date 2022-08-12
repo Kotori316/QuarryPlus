@@ -6,6 +6,7 @@ import java.util.Objects;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPBlock;
+import com.yogpc.qp.machines.QPItem;
 import com.yogpc.qp.machines.placer.PlacerBlock;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.core.Direction;
@@ -36,6 +37,7 @@ final class StateAndModelProvider extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
+        // Blocks
         frame();
         dummyBlocks();
         placer();
@@ -57,6 +59,16 @@ final class StateAndModelProvider extends BlockStateProvider {
         workDirectionalBlockAndItem(Holder.BLOCK_ADV_QUARRY);
         workDirectionalBlockAndItem(Holder.BLOCK_MINI_QUARRY);
         workDirectionalBlockAndItem(Holder.BLOCK_SOLID_FUEL_QUARRY);
+
+        // Items
+        simpleItem(Holder.ITEM_EXP_MODULE, "blocks/exp_pump_side");
+        simpleItem(Holder.ITEM_FILLER_MODULE);
+        simpleItem(Holder.ITEM_FUEL_MODULE_NORMAL);
+        simpleItem(Holder.ITEM_PUMP_MODULE, "blocks/pump_side");
+        simpleItem(Holder.ITEM_BEDROCK_MODULE, "items/bedrock_module");
+        simpleItem(Holder.ITEM_REPLACER_MODULE, "blocks/replacer_side");
+        simpleItem(Holder.ITEM_CHECKER);
+        simpleItem(Holder.ITEM_Y_SETTER);
     }
 
     void frame() {
@@ -166,6 +178,20 @@ final class StateAndModelProvider extends BlockStateProvider {
                 .build();
         });
         simpleBlockItem(block, normalModel);
+    }
+
+    void simpleItem(QPItem item) {
+        simpleItem(item, "items/" + item.getRegistryName().getPath());
+    }
+
+    void simpleItem(QPItem item, String texture) {
+        simpleItem(item, modLoc(texture));
+    }
+
+    void simpleItem(QPItem item, ResourceLocation texture) {
+        itemModels().getBuilder("item/" + item.getRegistryName().getPath())
+            .parent(new ModelFile.UncheckedModelFile("item/generated"))
+            .texture("layer0", texture);
     }
 
     void placer() {
