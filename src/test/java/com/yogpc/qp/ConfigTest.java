@@ -1,6 +1,8 @@
 package com.yogpc.qp;
 
 import java.io.InputStreamReader;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -16,20 +18,25 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @ExtendWith(QuarryPlusTest.class)
 final class ConfigTest {
@@ -168,6 +175,30 @@ final class ConfigTest {
                 assertTrue(enchantments.isEmpty());
             } finally {
                 config.enchantmentsMap.get("quarry").set(before);
+            }
+        }
+
+        @TestFactory
+        Stream<DynamicTest> validEnchantment() {
+            return Stream.of(Config.AcceptableEnchantmentsMap.class.getDeclaredMethods())
+                .filter(method -> (method.getModifiers() & Modifier.STATIC) != 0)
+                .filter(method -> method.getName().endsWith("Enchantments"))
+                .filter(method -> method.getParameterCount() == 0)
+                .filter(method -> method.getReturnType() == List.class)
+                .map(m -> DynamicTest.dynamicTest(m.getName(), () -> validEnchantment(m)));
+        }
+
+        @SuppressWarnings("unchecked")
+        void validEnchantment(Method method) {
+            try {
+                List<String> enchantmentNames = (List<String>) method.invoke(null);
+                assertAll(
+                    enchantmentNames.stream()
+                        .map(ResourceLocation::new)
+                        .map(n -> () -> assertTrue(ForgeRegistries.ENCHANTMENTS.containsKey(n), "%s must exist.".formatted(n)))
+                );
+            } catch (ReflectiveOperationException e) {
+                fail(e);
             }
         }
     }
