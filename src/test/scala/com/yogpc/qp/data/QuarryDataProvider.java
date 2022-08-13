@@ -24,7 +24,6 @@ abstract class QuarryDataProvider implements DataProvider {
                 .normalize()
                 .toAbsolutePath();
             try {
-                LOGGER.info("Generating {}", out);
                 var json = builder.build();
                 DataProvider.saveStable(cache, json, out);
             } catch (Exception e) {
