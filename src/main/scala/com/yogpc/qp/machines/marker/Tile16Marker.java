@@ -19,6 +19,7 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
@@ -87,6 +88,11 @@ public class Tile16Marker extends BlockEntity implements QuarryMarker, CheckerLo
         compound.putBoolean("z", zDirection == Direction.AxisDirection.POSITIVE);
         compound.putInt("size", size);
         super.saveAdditional(compound);
+    }
+
+    @Override
+    public AABB getRenderBoundingBox() {
+        return new AABB(min, max);
     }
 
     // Interface implementations
