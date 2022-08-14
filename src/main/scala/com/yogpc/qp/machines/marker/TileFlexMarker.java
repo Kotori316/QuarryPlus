@@ -118,6 +118,11 @@ public class TileFlexMarker extends BlockEntity implements QuarryMarker, Checker
     }
 
     @Override
+    public AABB getRenderBoundingBox() {
+        return new AABB(min, max);
+    }
+
+    @Override
     public List<? extends Component> getDebugLogs() {
         return Stream.of(
             "Direction: " + direction,
