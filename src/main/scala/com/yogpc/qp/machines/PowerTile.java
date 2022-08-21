@@ -18,11 +18,9 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -249,12 +247,12 @@ public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
     @NotNull
     @Override
     public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == CapabilityEnergy.ENERGY) {
+        if (cap == ForgeCapabilities.ENERGY) {
             if (this.canReceive() || this.canExtract())
-                return CapabilityEnergy.ENERGY.orEmpty(cap, energyHandler);
-        } else if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && this instanceof MachineStorage.HasStorage storage) {
+                return ForgeCapabilities.ENERGY.orEmpty(cap, energyHandler);
+        } else if (cap == ForgeCapabilities.ITEM_HANDLER && this instanceof MachineStorage.HasStorage storage) {
             return storage.getStorage().itemHandler.cast();
-        } else if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && this instanceof MachineStorage.HasStorage storage) {
+        } else if (cap == ForgeCapabilities.FLUID_HANDLER && this instanceof MachineStorage.HasStorage storage) {
             return storage.getStorage().fluidHandler.cast();
         }
         return super.getCapability(cap, side);

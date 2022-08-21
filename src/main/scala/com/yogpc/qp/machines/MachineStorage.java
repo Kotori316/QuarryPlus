@@ -17,12 +17,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
@@ -114,7 +113,7 @@ public class MachineStorage {
             int count = 0;
             for (var direction : INSERT_ORDER) {
                 var destination = Optional.ofNullable(world.getBlockEntity(pos.relative(direction)));
-                var optional = destination.flatMap(d -> d.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite()).resolve());
+                var optional = destination.flatMap(d -> d.getCapability(ForgeCapabilities.ITEM_HANDLER, direction.getOpposite()).resolve());
                 if (optional.isPresent()) {
                     var handler = optional.get();
                     var itemMap = new ArrayList<>(storage.itemMap.entrySet());
@@ -155,7 +154,7 @@ public class MachineStorage {
             for (Direction direction : INSERT_ORDER) {
                 var destPos = pos.relative(direction);
                 var optional = Optional.ofNullable(world.getBlockEntity(destPos))
-                    .flatMap(d -> d.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, direction.getOpposite()).resolve());
+                    .flatMap(d -> d.getCapability(ForgeCapabilities.FLUID_HANDLER, direction.getOpposite()).resolve());
                 if (optional.isPresent()) {
                     var handler = optional.get();
                     var fluidMap = new ArrayList<>(storage.getFluidMap().entrySet());
