@@ -2,6 +2,7 @@ package com.yogpc.qp.machines.mover;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
@@ -106,10 +107,16 @@ public class ContainerMover extends AbstractContainerMenu {
         var given = EnchantmentHelper.getEnchantments(to);
         return EnchantmentLevel.fromItem(from).stream()
             .map(EnchantmentLevel::enchantment)
-            .filter(predicate)
-            .filter(e -> given.getOrDefault(e, 0) < e.getMaxLevel())
-            .filter(e -> given.keySet().stream().filter(Predicate.isEqual(e).negate()).allMatch(e::isCompatibleWith))
+            .filter(e -> canMoveEnchantment(predicate, given, e))
             .toList();
+    }
+
+    @VisibleForTesting
+    static boolean canMoveEnchantment(@Nullable Predicate<Enchantment> predicate, Map<Enchantment, Integer> given, Enchantment toMove) {
+        return
+            (predicate == null || predicate.test(toMove)) &&
+            given.getOrDefault(toMove, 0) < toMove.getMaxLevel() &&
+            given.keySet().stream().filter(Predicate.isEqual(toMove).negate()).allMatch(toMove::isCompatibleWith);
     }
 
     public Optional<Enchantment> getEnchantment() {
@@ -162,10 +169,14 @@ public class ContainerMover extends AbstractContainerMenu {
         moveEnchantment(enchantment, from, to, this::updateEnchantmentList);
     }
 
-    @VisibleForTesting
     static void moveEnchantment(@Nullable Enchantment enchantment, ItemStack from, ItemStack to, Runnable after) {
+        moveEnchantment(enchantment, from, to, to.getItem() instanceof EnchantableItem item ? item : null, after);
+    }
+
+    @VisibleForTesting
+    static void moveEnchantment(@Nullable Enchantment enchantment, ItemStack from, ItemStack to, @Nullable Predicate<Enchantment> predicate, Runnable after) {
         if (enchantment == null || from.isEmpty() || to.isEmpty()) return;
-        if (!(to.getItem() instanceof EnchantableItem item) || item.test(enchantment)) {
+        if (canMoveEnchantment(predicate, EnchantmentHelper.getEnchantments(to), enchantment)) {
             upLevel(enchantment, to);
             downLevel(enchantment, from);
             after.run();
