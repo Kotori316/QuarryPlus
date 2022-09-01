@@ -7,7 +7,6 @@ import com.yogpc.qp.QuarryPlusTest;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,14 +30,14 @@ class ContainerMoverTest {
         ContainerMover.moveEnchantment(Enchantments.BLOCK_EFFICIENCY, from, to, e -> true, () -> {
         });
         assertAll(
-            () -> assertEquals(4, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, from)),
-            () -> assertEquals(1, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, to))
+            () -> assertEquals(4, from.getEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY)),
+            () -> assertEquals(1, to.getEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY))
         );
         ContainerMover.moveEnchantment(Enchantments.BLOCK_EFFICIENCY, from, to, e -> true, () -> {
         });
         assertAll(
-            () -> assertEquals(3, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, from)),
-            () -> assertEquals(2, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, to))
+            () -> assertEquals(3, from.getEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY)),
+            () -> assertEquals(2, to.getEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY))
         );
     }
 
@@ -51,9 +50,9 @@ class ContainerMoverTest {
         to.enchant(Enchantments.BLOCK_EFFICIENCY, 5);
 
         ContainerMover.moveEnchantment(Enchantments.BLOCK_EFFICIENCY, from, to, e -> true, () -> fail("Should not be reached."));
-        assertEquals(5, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, from));
-        assertEquals(3, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.UNBREAKING, from));
-        assertEquals(5, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, to));
+        assertEquals(5, from.getEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY));
+        assertEquals(3, from.getEnchantmentLevel(Enchantments.UNBREAKING));
+        assertEquals(5, to.getEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY));
     }
 
     @Test
@@ -67,13 +66,13 @@ class ContainerMoverTest {
         to.enchant(Enchantments.SILK_TOUCH, 1);
 
         ContainerMover.moveEnchantment(Enchantments.BLOCK_FORTUNE, from, to, e -> true, () -> fail("Should not be reached."));
-        assertEquals(5, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, from));
-        assertEquals(3, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.UNBREAKING, from));
-        assertEquals(5, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, to));
+        assertEquals(5, from.getEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY));
+        assertEquals(3, from.getEnchantmentLevel(Enchantments.UNBREAKING));
+        assertEquals(5, to.getEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY));
 
-        assertEquals(3, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_FORTUNE, from));
-        assertEquals(0, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_FORTUNE, to));
-        assertEquals(1, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, to));
+        assertEquals(3, from.getEnchantmentLevel(Enchantments.BLOCK_FORTUNE));
+        assertEquals(0, to.getEnchantmentLevel(Enchantments.BLOCK_FORTUNE));
+        assertEquals(1, to.getEnchantmentLevel(Enchantments.SILK_TOUCH));
     }
 
     @Test
@@ -87,13 +86,13 @@ class ContainerMoverTest {
         Predicate<Enchantment> predicate = Predicate.isEqual(Enchantments.BLOCK_EFFICIENCY);
 
         ContainerMover.moveEnchantment(Enchantments.UNBREAKING, from, to, predicate, () -> fail("Should not be reached."));
-        assertEquals(3, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.UNBREAKING, from));
-        assertEquals(0, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.UNBREAKING, to));
+        assertEquals(3, from.getEnchantmentLevel(Enchantments.UNBREAKING));
+        assertEquals(0, to.getEnchantmentLevel(Enchantments.UNBREAKING));
 
         ContainerMover.moveEnchantment(Enchantments.BLOCK_EFFICIENCY, from, to, predicate, () -> {
         });
-        assertEquals(4, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, from));
-        assertEquals(1, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, to));
+        assertEquals(4, from.getEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY));
+        assertEquals(1, to.getEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY));
     }
 
     @Test
@@ -103,8 +102,8 @@ class ContainerMoverTest {
         from.enchant(Enchantments.UNBREAKING, 3);
 
         ContainerMover.downLevel(Enchantments.BLOCK_EFFICIENCY, from);
-        assertEquals(4, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, from));
-        assertEquals(3, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.UNBREAKING, from));
+        assertEquals(4, from.getEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY));
+        assertEquals(3, from.getEnchantmentLevel(Enchantments.UNBREAKING));
     }
 
     @Test
@@ -124,15 +123,15 @@ class ContainerMoverTest {
 
         ContainerMover.downLevel(Enchantments.BLOCK_EFFICIENCY, from);
         assertFalse(from.getEnchantmentTags().isEmpty());
-        assertEquals(0, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, from));
-        assertEquals(3, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.UNBREAKING, from));
+        assertEquals(0, from.getEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY));
+        assertEquals(3, from.getEnchantmentLevel(Enchantments.UNBREAKING));
     }
 
     @Test
     void upLevel1() {
         var from = new ItemStack(Items.DIAMOND_PICKAXE);
         ContainerMover.upLevel(Enchantments.BLOCK_EFFICIENCY, from);
-        assertEquals(1, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, from));
+        assertEquals(1, from.getEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY));
     }
 
     @Test
@@ -140,7 +139,7 @@ class ContainerMoverTest {
         var from = new ItemStack(Items.DIAMOND_PICKAXE);
         from.enchant(Enchantments.BLOCK_EFFICIENCY, 1);
         ContainerMover.upLevel(Enchantments.BLOCK_EFFICIENCY, from);
-        assertEquals(2, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, from));
+        assertEquals(2, from.getEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY));
     }
 
     @Test

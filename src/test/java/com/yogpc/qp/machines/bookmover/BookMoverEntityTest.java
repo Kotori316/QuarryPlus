@@ -26,7 +26,7 @@ class BookMoverEntityTest {
         var stack = new ItemStack(Items.DIAMOND_PICKAXE);
         stack.enchant(Enchantments.BLOCK_EFFICIENCY, 5);
         BookMoverEntity.removeEnchantment(Enchantments.BLOCK_EFFICIENCY, stack);
-        assertEquals(0, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, stack));
+        assertEquals(0, stack.getEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY));
         assertTrue(stack.getEnchantmentTags().isEmpty());
     }
 
@@ -36,7 +36,7 @@ class BookMoverEntityTest {
         var stack = new ItemStack(Items.DIAMOND_PICKAXE);
         stack.enchant(Enchantments.BLOCK_EFFICIENCY, level);
         BookMoverEntity.removeEnchantment(Enchantments.BLOCK_EFFICIENCY, stack);
-        assertEquals(0, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, stack));
+        assertEquals(0, stack.getEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY));
         assertTrue(stack.getEnchantmentTags().isEmpty());
     }
 
@@ -46,8 +46,8 @@ class BookMoverEntityTest {
         stack.enchant(Enchantments.BLOCK_EFFICIENCY, 5);
         stack.enchant(Enchantments.UNBREAKING, 3);
         BookMoverEntity.removeEnchantment(Enchantments.BLOCK_EFFICIENCY, stack);
-        assertEquals(0, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, stack));
-        assertEquals(3, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.UNBREAKING, stack));
+        assertEquals(0, stack.getEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY));
+        assertEquals(3, stack.getEnchantmentLevel(Enchantments.UNBREAKING));
         assertFalse(stack.getEnchantmentTags().isEmpty());
     }
 
