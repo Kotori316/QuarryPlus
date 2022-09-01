@@ -1,3 +1,8 @@
+## Version 19.7
+
+* Improved renderers of Waterlogged Markers.
+* Fixed bugs of Enchantment Mover in dedicated server. [#212](https://github.com/Kotori316/QuarryPlus/issues/212)
+
 ## Version 19.6
 
 * Limit enchantment of machines by config. #209
