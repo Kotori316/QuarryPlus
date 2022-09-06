@@ -202,6 +202,7 @@ repositories {
         content {
             it.includeVersion("com.kotori316", "ScalableCatsForce".toLowerCase(), project.slpVersion as String)
             it.includeVersion("com.kotori316", "test_utility", project.testUtilVersion as String)
+            it.includeVersion("com.kotori316", "test_utility_dependency", "1.0-SNAPSHOT")
             it.includeVersion("org.typelevel", "cats-core_2.13", project.catsVersion as String)
             it.includeVersion("org.typelevel", "cats-kernel_2.13", project.catsVersion as String)
         }
@@ -240,14 +241,12 @@ dependencies {
     // runtimeOnly(fg.deobf(group: "dev.architectury", name: "architectury-forge", version: project.architecturyVersion)) // runtimeOnly
 
     // Test Dependencies.
-    final def JUPITER_VERSION = '5.8.2'
-    testImplementation(group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: JUPITER_VERSION)
-    testImplementation(group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: JUPITER_VERSION)
-    testRuntimeOnly(group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: JUPITER_VERSION)
-    // https://mvnrepository.com/artifact/org.junit.platform/junit-platform-launcher
-    testImplementation(group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.8.2')
+    // Required these libraries to execute the tests.
+    // The library will avoid errors of ForgeRegistry and Capability.
     testImplementation(fg.deobf(group: "com.kotori316", name: "test_utility", version: project.testUtilVersion))
+    testImplementation(group: "com.kotori316", name: "test_utility_dependency", version: "1.0-SNAPSHOT")
 
+    String JUPITER_VERSION = '5.8.2'
     game_test(group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: JUPITER_VERSION)
     game_test(group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: JUPITER_VERSION)
     game_test(group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: JUPITER_VERSION)
