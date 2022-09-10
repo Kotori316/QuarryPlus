@@ -4,18 +4,18 @@ import java.util.Objects;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.misc.SlotContainer;
-import javax.annotation.Nonnull;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 public class PlacerContainer extends AbstractContainerMenu {
     public static final String PLACER_GUI_ID = QuarryPlus.modID + ":gui_" + PlacerBlock.NAME;
     public static final String REMOTE_PLACER_GUI_ID = QuarryPlus.modID + ":gui_" + RemotePlacerBlock.NAME;
-    @Nonnull
+    @NotNull
     /*package-private*/ final PlacerTile tile;
     private final int allSlots;
     /*package-private*/ final int startX;

@@ -6,7 +6,6 @@ import com.yogpc.qp.machines.advquarry.AdvActionMessage;
 import com.yogpc.qp.machines.filler.FillerButtonMessage;
 import com.yogpc.qp.machines.misc.LevelMessage;
 import com.yogpc.qp.machines.placer.RemotePlacerMessage;
-import javax.annotation.Nonnull;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -17,6 +16,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 
 public class PacketHandler {
     public static class Server {
@@ -51,19 +51,19 @@ public class PacketHandler {
     }
 
     @Environment(EnvType.CLIENT)
-    public static void sendToServer(@Nonnull IMessage<?> message) {
+    public static void sendToServer(@NotNull IMessage<?> message) {
         var packet = PacketByteBufs.create();
         message.writeToBuffer(packet);
         ClientPlayNetworking.send(message.getIdentifier(), packet);
     }
 
-    public static void sendToClientPlayer(@Nonnull IMessage<?> message, @Nonnull ServerPlayer player) {
+    public static void sendToClientPlayer(@NotNull IMessage<?> message, @NotNull ServerPlayer player) {
         var packet = PacketByteBufs.create();
         message.writeToBuffer(packet);
         ServerPlayNetworking.send(player, message.getIdentifier(), packet);
     }
 
-    public static void sendToClientWorld(@Nonnull IMessage<?> message, Level level) {
+    public static void sendToClientWorld(@NotNull IMessage<?> message, Level level) {
         var packet = PacketByteBufs.create();
         message.writeToBuffer(packet);
         for (ServerPlayer player : PlayerLookup.world((ServerLevel) level)) {
