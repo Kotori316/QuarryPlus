@@ -48,7 +48,9 @@ import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.network.NetworkHooks;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING;
 
@@ -171,12 +173,29 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
             .flatMap(m -> m.getArea().stream().peek(a -> m.removeAndGetItems().forEach(itemCollector)))
             .map(a -> a.assureY(4))
             .findFirst()
-            .orElseGet(() -> {
-                var chunkPos = new ChunkPos(pos);
-                return new Area(
-                    chunkPos.getMinBlockX() - 1, pos.getY(), chunkPos.getMinBlockZ() - 1,
-                    chunkPos.getMaxBlockX() + 1, pos.getY() + 4, chunkPos.getMaxBlockZ() + 1, quarryBehind
-                );
-            });
+            .filter(area -> area.isRangeInLimit(QuarryPlus.config.common.chunkDestroyerLimit.get(), true))
+            .orElseGet(() -> createDefaultArea(pos, quarryBehind, QuarryPlus.config.common.chunkDestroyerLimit.get()));
+    }
+
+    @NotNull
+    @VisibleForTesting
+    static Area createDefaultArea(BlockPos pos, Direction quarryBehind, int limit) {
+        var chunkPos = new ChunkPos(pos);
+        int minX, minZ, maxX, maxZ;
+        if (0 < limit && limit < 16) {
+            minX = Math.max(chunkPos.getMinBlockX(), pos.getX() - limit / 2);
+            minZ = Math.max(chunkPos.getMinBlockZ(), pos.getZ() - limit / 2);
+            maxX = minX + limit;
+            maxZ = minZ + limit;
+        } else {
+            minX = chunkPos.getMinBlockX();
+            maxX = chunkPos.getMaxBlockX();
+            minZ = chunkPos.getMinBlockZ();
+            maxZ = chunkPos.getMaxBlockZ();
+        }
+        return new Area(
+            minX - 1, pos.getY(), minZ - 1,
+            maxX + 1, pos.getY() + 4, maxZ + 1, quarryBehind
+        );
     }
 }
