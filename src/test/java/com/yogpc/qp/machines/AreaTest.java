@@ -226,11 +226,19 @@ class AreaTest {
         void limit4() {
             var area = new Area(0, 0, 0, 4, 0, 3, Direction.NORTH);
             assertAll(
-                () -> assertTrue(area.isRangeInLimit(3, false)),
-                () -> assertFalse(area.isRangeInLimit(3, true)),
-                () -> assertTrue(area.isRangeInLimit(1, true)),
-                () -> assertFalse(area.isRangeInLimit(4, false))
+                () -> assertFalse(area.isRangeInLimit(3, false)),
+                () -> assertTrue(area.isRangeInLimit(3, true)),
+                () -> assertFalse(area.isRangeInLimit(1, true)),
+                () -> assertTrue(area.isRangeInLimit(4, false))
             );
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {0, -1})
+        void noLimit(int limit) {
+            var area = new Area(0, 0, 0, 4, 0, 3, Direction.NORTH);
+            assertTrue(area.isRangeInLimit(limit, true));
+            assertTrue(area.isRangeInLimit(limit, false));
         }
     }
 

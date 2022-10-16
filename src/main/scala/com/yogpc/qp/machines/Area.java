@@ -67,6 +67,7 @@ public record Area(int minX, int minY, int minZ, int maxX, int maxY, int maxZ,
     }
 
     public boolean isRangeInLimit(int limit, boolean isAdvQuarry) {
+        if (limit <= 0) return true;
         int offset = isAdvQuarry ? 2 : 0;
         return (maxX - minX - offset) <= limit && (maxZ - minZ - offset) <= limit;
     }
