@@ -145,7 +145,6 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
                 }
                 var preForced = QuarryChunkLoadUtil.makeChunkLoaded(level, pos, quarry.enabled);
                 quarry.setChunkPreLoaded(preForced);
-                PacketHandler.sendToClient(new ClientSyncMessage(quarry), level);
             }
         }
     }
