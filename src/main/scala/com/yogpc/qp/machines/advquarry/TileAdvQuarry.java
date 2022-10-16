@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -39,6 +40,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -77,7 +79,7 @@ public class TileAdvQuarry extends PowerTile implements
     private final ItemConverter itemConverter = ItemConverter.defaultConverter().combined(ItemConverter.advQuarryConverter());
     public int digMinY;
     @Nullable
-    Area area = null;
+    private Area area = null;
     private List<EnchantmentLevel> enchantments = List.of();
     private AdvQuarryAction action = AdvQuarryAction.Waiting.WAITING;
 
@@ -183,6 +185,27 @@ public class TileAdvQuarry extends PowerTile implements
     @Nullable
     public Area getArea() {
         return area;
+    }
+
+    /**
+     * Set area of Chunk Destroyer.
+     *
+     * @param newArea          The new area by GUI or marker.
+     * @param showErrorMessage The way to show chat message.
+     * @return True if the area is set. False means the area is invalid(violation of config).
+     */
+    boolean setArea(Area newArea, Consumer<Component> showErrorMessage) {
+        if (newArea.isRangeInLimit(QuarryPlus.config.common.chunkDestroyerLimit.get(), true)) {
+            this.area = newArea;
+            PacketHandler.sendToClient(new ClientSyncMessage(this), Objects.requireNonNull(this.getLevel()));
+        } else {
+            showErrorMessage.accept(new TranslatableComponent("quarryplus.chat.warn_cd_limit"));
+            return false;
+        }
+        if (FTBChunksProtectionCheck.isAreaProtected(newArea.shrink(1, 0, 1), this.getTargetWorld().dimension())) {
+            showErrorMessage.accept(new TranslatableComponent("quarryplus.chat.warn_protected_area"));
+        }
+        return true;
     }
 
     public AdvQuarryAction getAction() {
