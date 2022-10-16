@@ -10,4 +10,5 @@ final class AdvQuarry {
     static final Marker ACTION = MarkerManager.getMarker("AdvQuarryAction");
     static final Marker MESSAGE = MarkerManager.getMarker("AdvActionMessage");
     static final Marker BLOCK = MarkerManager.getMarker("BlockAdvQuarry");
+    static final Marker TILE = MarkerManager.getMarker("TileAdvQuarry");
 }
