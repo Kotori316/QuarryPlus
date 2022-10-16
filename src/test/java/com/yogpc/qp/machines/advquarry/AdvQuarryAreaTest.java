@@ -27,7 +27,7 @@ final class AdvQuarryAreaTest {
         int limit = 4;
         var pos = new BlockPos(34, 5, 2);
         var area = BlockAdvQuarry.createDefaultArea(pos, Direction.NORTH, limit);
-        var expected = new Area(31, 5, -1, 37, 9, 5, Direction.NORTH);
+        var expected = new Area(31, 5, -1, 36, 9, 4, Direction.NORTH);
         assertEquals(expected, area);
     }
 
@@ -36,7 +36,7 @@ final class AdvQuarryAreaTest {
         int limit = 6;
         var pos = new BlockPos(34, 5, 2);
         var area = BlockAdvQuarry.createDefaultArea(pos, Direction.NORTH, limit);
-        var expected = new Area(31, 5, -1, 39, 9, 7, Direction.NORTH);
+        var expected = new Area(31, 5, -1, 38, 9, 6, Direction.NORTH);
         assertEquals(expected, area);
     }
 
@@ -45,7 +45,7 @@ final class AdvQuarryAreaTest {
         int limit = 6;
         var pos = new BlockPos(42, 5, 9);
         var area = BlockAdvQuarry.createDefaultArea(pos, Direction.NORTH, limit);
-        var expected = new Area(38, 5, 5, 46, 9, 13, Direction.NORTH);
+        var expected = new Area(38, 5, 5, 45, 9, 12, Direction.NORTH);
         assertEquals(expected, area);
     }
 
@@ -54,7 +54,7 @@ final class AdvQuarryAreaTest {
         int limit = 9;
         var pos = new BlockPos(42, 5, 9);
         var area = BlockAdvQuarry.createDefaultArea(pos, Direction.NORTH, limit);
-        var expected = new Area(37, 5, 4, 48, 9, 15, Direction.NORTH);
+        var expected = new Area(37, 5, 4, 47, 9, 14, Direction.NORTH);
         assertEquals(expected, area);
     }
 }

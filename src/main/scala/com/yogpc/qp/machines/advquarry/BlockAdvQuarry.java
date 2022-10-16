@@ -185,8 +185,8 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
         if (0 < limit && limit < 16) {
             minX = Math.max(chunkPos.getMinBlockX(), pos.getX() - limit / 2);
             minZ = Math.max(chunkPos.getMinBlockZ(), pos.getZ() - limit / 2);
-            maxX = minX + limit;
-            maxZ = minZ + limit;
+            maxX = minX + limit - 1;
+            maxZ = minZ + limit - 1;
         } else {
             minX = chunkPos.getMinBlockX();
             maxX = chunkPos.getMaxBlockX();
