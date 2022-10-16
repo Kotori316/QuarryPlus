@@ -109,6 +109,7 @@
   "quarryplus.chat.quarry.restart": "쿼리 재시작됨",
   "quarryplus.chat.quarry_mode": "쿼리 모드",
   "quarryplus.chat.warn_area": "[QuarryPlus] 영역이 너무 작습니다.",
+  "quarryplus.chat.warn_cd_limit": "Area is too bigger than limit value in config.",
   "quarryplus.chat.warn_protected_area": "Area contains protected chunks. Quarry has stopped.",
   "quarryplus.chat.y_level": "쿼리가 %s(으)로 팝니다.",
   "quarryplus.client.tooltip": "클라이언트",

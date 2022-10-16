@@ -66,6 +66,12 @@ public record Area(int minX, int minY, int minZ, int maxX, int maxY, int maxZ,
         return minX < vec3i.getX() && vec3i.getX() < maxX && minZ < vec3i.getZ() && vec3i.getZ() < maxZ;
     }
 
+    public boolean isRangeInLimit(int limit, boolean isAdvQuarry) {
+        if (limit <= 0) return true;
+        int offset = isAdvQuarry ? 2 : 0;
+        return (maxX - minX - offset) <= limit && (maxZ - minZ - offset) <= limit;
+    }
+
     public int sizeOfEachY() {
         return (maxX() - minX()) * (maxZ() - minZ());
     }

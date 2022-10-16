@@ -59,6 +59,7 @@ public class Config {
         public final ForgeConfigSpec.BooleanValue removeFrameAfterQuarryIsRemoved;
         public final ForgeConfigSpec.BooleanValue allowWorkInClaimedChunkByFBTChunks;
         public final ForgeConfigSpec.ConfigValue<List<? extends String>> spawnerBlackList;
+        public final ForgeConfigSpec.IntValue chunkDestroyerLimit;
 
         public Common(ForgeConfigSpec.Builder builder) {
             var inDev = !FMLEnvironment.production;
@@ -75,6 +76,8 @@ public class Config {
             reduceMarkerGuideLineIfPlayerIsFar = builder.comment("Remove MarkerPlus guide line if player is too far from the marker.").define("reduceMarkerGuideLineIfPlayerIsFar", false);
             removeFrameAfterQuarryIsRemoved = builder.comment("Remove adjacent frames when quarry is removed.").define("removeFrameAfterQuarryIsRemoved", false);
             allowWorkInClaimedChunkByFBTChunks = builder.comment("Allow quarries to work in claimed chunk(FTB Chunks).").define("allowWorkInClaimedChunkByFBTChunks", false);
+            chunkDestroyerLimit = builder.comment("The range limit(unit: blocks) of ChunkDestroyer. Set -1 or 0 to remove limitation.")
+                .defineInRange("chunkDestroyerLimit", -1, -1, Integer.MAX_VALUE);
             builder.pop();
         }
     }

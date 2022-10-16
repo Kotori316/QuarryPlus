@@ -220,6 +220,28 @@ class AreaTest {
         }
     }
 
+    @Nested
+    class LimitTest {
+        @Test
+        void limit4() {
+            var area = new Area(0, 0, 0, 4, 0, 3, Direction.NORTH);
+            assertAll(
+                () -> assertFalse(area.isRangeInLimit(3, false)),
+                () -> assertTrue(area.isRangeInLimit(3, true)),
+                () -> assertFalse(area.isRangeInLimit(1, true)),
+                () -> assertTrue(area.isRangeInLimit(4, false))
+            );
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {0, -1})
+        void noLimit(int limit) {
+            var area = new Area(0, 0, 0, 4, 0, 3, Direction.NORTH);
+            assertTrue(area.isRangeInLimit(limit, true));
+            assertTrue(area.isRangeInLimit(limit, false));
+        }
+    }
+
     @Test
     void dummy() {
         assertTrue(randomArea().findAny().isPresent());
