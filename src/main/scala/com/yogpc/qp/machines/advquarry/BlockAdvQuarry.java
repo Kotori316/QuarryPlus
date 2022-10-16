@@ -22,7 +22,6 @@ import com.yogpc.qp.utils.QuarryChunkLoadUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -129,7 +128,7 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
                 enchantment.sort(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR);
                 quarry.initialSetting(enchantment);
                 Consumer<Component> showErrorMessage = c -> {
-                    if (entity instanceof Player player) player.displayClientMessage(c, fase);
+                    if (entity instanceof Player player) player.displayClientMessage(c, false);
                 };
                 if (!quarry.setArea(findArea(level, pos, facing.getOpposite(), quarry.getStorage()::addItem),
                     showErrorMessage)) {
