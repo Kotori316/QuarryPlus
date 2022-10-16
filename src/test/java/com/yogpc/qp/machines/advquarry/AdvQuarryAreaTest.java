@@ -10,6 +10,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(QuarryPlusTest.class)
 final class AdvQuarryAreaTest {
@@ -20,6 +21,7 @@ final class AdvQuarryAreaTest {
         var area = BlockAdvQuarry.createDefaultArea(pos, Direction.NORTH, limit);
         var expected = new Area(31, 5, -1, 48, 9, 16, Direction.NORTH);
         assertEquals(expected, area);
+        assertTrue(area.isRangeInLimit(limit, true));
     }
 
     @Test
@@ -29,6 +31,7 @@ final class AdvQuarryAreaTest {
         var area = BlockAdvQuarry.createDefaultArea(pos, Direction.NORTH, limit);
         var expected = new Area(31, 5, -1, 36, 9, 4, Direction.NORTH);
         assertEquals(expected, area);
+        assertTrue(area.isRangeInLimit(limit, true));
     }
 
     @Test
@@ -38,6 +41,7 @@ final class AdvQuarryAreaTest {
         var area = BlockAdvQuarry.createDefaultArea(pos, Direction.NORTH, limit);
         var expected = new Area(31, 5, -1, 38, 9, 6, Direction.NORTH);
         assertEquals(expected, area);
+        assertTrue(area.isRangeInLimit(limit, true));
     }
 
     @Test
@@ -47,6 +51,27 @@ final class AdvQuarryAreaTest {
         var area = BlockAdvQuarry.createDefaultArea(pos, Direction.NORTH, limit);
         var expected = new Area(38, 5, 5, 45, 9, 12, Direction.NORTH);
         assertEquals(expected, area);
+        assertTrue(area.isRangeInLimit(limit, true));
+    }
+
+    @Test
+    void limit6_3() {
+        int limit = 6;
+        var pos = new BlockPos(12, 5, 30);
+        var area = BlockAdvQuarry.createDefaultArea(pos, Direction.NORTH, limit);
+        var expected = new Area(8, 5, 25, 15, 9, 32, Direction.NORTH);
+        assertEquals(expected, area);
+        assertTrue(area.isRangeInLimit(limit, true));
+    }
+
+    @Test
+    void limit10() {
+        int limit = 10;
+        var pos = new BlockPos(12, 5, 30);
+        var area = BlockAdvQuarry.createDefaultArea(pos, Direction.NORTH, limit);
+        var expected = new Area(5, 5, 21, 16, 9, 32, Direction.NORTH);
+        assertEquals(expected, area);
+        assertTrue(area.isRangeInLimit(limit, true));
     }
 
     @Test
@@ -56,5 +81,6 @@ final class AdvQuarryAreaTest {
         var area = BlockAdvQuarry.createDefaultArea(pos, Direction.NORTH, limit);
         var expected = new Area(37, 5, 4, 47, 9, 14, Direction.NORTH);
         assertEquals(expected, area);
+        assertTrue(area.isRangeInLimit(limit, true));
     }
 }

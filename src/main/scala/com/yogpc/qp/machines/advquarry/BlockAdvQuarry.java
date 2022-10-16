@@ -187,12 +187,28 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
     @VisibleForTesting
     static Area createDefaultArea(BlockPos pos, Direction quarryBehind, int limit) {
         var chunkPos = new ChunkPos(pos);
-        int minX, minZ, maxX, maxZ;
+        final int minX, minZ, maxX, maxZ;
         if (0 < limit && limit < 16) {
-            minX = Math.max(chunkPos.getMinBlockX(), pos.getX() - limit / 2);
-            minZ = Math.max(chunkPos.getMinBlockZ(), pos.getZ() - limit / 2);
-            maxX = minX + limit - 1;
-            maxZ = minZ + limit - 1;
+            if (pos.getX() - limit / 2 < chunkPos.getMinBlockX()) {
+                minX = chunkPos.getMinBlockX();
+                maxX = minX + limit - 1;
+            } else if (pos.getX() + limit / 2 > chunkPos.getMaxBlockX()) {
+                maxX = chunkPos.getMaxBlockX();
+                minX = maxX - limit + 1;
+            } else {
+                minX = pos.getX() - limit / 2;
+                maxX = minX + limit - 1;
+            }
+            if (pos.getZ() - limit / 2 < chunkPos.getMinBlockZ()) {
+                minZ = chunkPos.getMinBlockZ();
+                maxZ = minZ + limit - 1;
+            } else if (pos.getZ() + limit / 2 > chunkPos.getMaxBlockZ()) {
+                maxZ = chunkPos.getMaxBlockZ();
+                minZ = maxZ - limit + 1;
+            } else {
+                minZ = pos.getZ() - limit / 2;
+                maxZ = minZ + limit - 1;
+            }
         } else {
             minX = chunkPos.getMinBlockX();
             maxX = chunkPos.getMaxBlockX();
