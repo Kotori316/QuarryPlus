@@ -136,9 +136,8 @@ public class AdvQuarryScreen extends AbstractContainerScreen<AdvQuarryMenu> impl
                                 }
                             }
                         }
-                        default -> tile.area;
+                        default -> tile.getArea();
                     };
-                    tile.area = newRange;
                     PacketHandler.sendToServer(new AdvActionMessage(tile, AdvActionMessage.Actions.CHANGE_RANGE, newRange));
                 }
             }

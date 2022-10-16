@@ -5,7 +5,6 @@ import java.util.stream.Stream;
 
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.integration.ftbchunks.FTBChunksProtectionCheck;
 import com.yogpc.qp.integration.wrench.WrenchItems;
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.EnchantedLootFunction;
@@ -17,13 +16,12 @@ import com.yogpc.qp.machines.QuarryMarker;
 import com.yogpc.qp.machines.module.EnergyModuleItem;
 import com.yogpc.qp.machines.module.ModuleLootFunction;
 import com.yogpc.qp.machines.module.QuarryModuleProvider;
-import com.yogpc.qp.packet.ClientSyncMessage;
-import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.CombinedBlockEntityTicker;
 import com.yogpc.qp.utils.MapMulti;
 import com.yogpc.qp.utils.QuarryChunkLoadUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -47,7 +45,9 @@ import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.network.NetworkHooks;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING;
 
@@ -128,15 +128,21 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
                 var enchantment = EnchantmentLevel.fromItem(stack);
                 enchantment.sort(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR);
                 quarry.initialSetting(enchantment);
-                quarry.area = findArea(level, pos, facing.getOpposite(), quarry.getStorage()::addItem);
-                if (FTBChunksProtectionCheck.isAreaProtected(quarry.area.shrink(1, 0, 1), quarry.getTargetWorld().dimension())) {
-                    QuarryPlus.LOGGER.info("AdvQuarry: Found protected chunks in Area({})", quarry.area);
-                    if (entity instanceof Player player)
-                        player.displayClientMessage(Component.translatable("quarryplus.chat.warn_protected_area"), false);
+                Consumer<Component> showErrorMessage = c -> {
+                    if (entity instanceof Player player) player.displayClientMessage(c, fase);
+                };
+                if (!quarry.setArea(findArea(level, pos, facing.getOpposite(), quarry.getStorage()::addItem),
+                    showErrorMessage)) {
+                    // Area is not set because marker area is invalid. Use default.
+                    var defaultArea = createDefaultArea(pos, facing.getOpposite(), QuarryPlus.config.common.chunkDestroyerLimit.get());
+                    if (!quarry.setArea(defaultArea, showErrorMessage)) {
+                        // Unreachable
+                        AdvQuarry.LOGGER.warn(AdvQuarry.BLOCK, "The default area is invalid. Area={}, Limit={}, Pos={}",
+                            defaultArea, QuarryPlus.config.common.chunkDestroyerLimit.get(), pos);
+                    }
                 }
                 var preForced = QuarryChunkLoadUtil.makeChunkLoaded(level, pos, quarry.enabled);
                 quarry.setChunkPreLoaded(preForced);
-                PacketHandler.sendToClient(new ClientSyncMessage(quarry), level);
             }
         }
     }
@@ -173,12 +179,44 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
             .flatMap(m -> m.getArea().stream().peek(a -> m.removeAndGetItems().forEach(itemCollector)))
             .map(a -> a.assureY(4))
             .findFirst()
-            .orElseGet(() -> {
-                var chunkPos = new ChunkPos(pos);
-                return new Area(
-                    chunkPos.getMinBlockX() - 1, pos.getY(), chunkPos.getMinBlockZ() - 1,
-                    chunkPos.getMaxBlockX() + 1, pos.getY() + 4, chunkPos.getMaxBlockZ() + 1, quarryBehind
-                );
-            });
+            .orElseGet(() -> createDefaultArea(pos, quarryBehind, QuarryPlus.config.common.chunkDestroyerLimit.get()));
+    }
+
+    @NotNull
+    @VisibleForTesting
+    static Area createDefaultArea(BlockPos pos, Direction quarryBehind, int limit) {
+        var chunkPos = new ChunkPos(pos);
+        final int minX, minZ, maxX, maxZ;
+        if (0 < limit && limit < 16) {
+            if (pos.getX() - limit / 2 < chunkPos.getMinBlockX()) {
+                minX = chunkPos.getMinBlockX();
+                maxX = minX + limit - 1;
+            } else if (pos.getX() + limit / 2 > chunkPos.getMaxBlockX()) {
+                maxX = chunkPos.getMaxBlockX();
+                minX = maxX - limit + 1;
+            } else {
+                minX = pos.getX() - limit / 2;
+                maxX = minX + limit - 1;
+            }
+            if (pos.getZ() - limit / 2 < chunkPos.getMinBlockZ()) {
+                minZ = chunkPos.getMinBlockZ();
+                maxZ = minZ + limit - 1;
+            } else if (pos.getZ() + limit / 2 > chunkPos.getMaxBlockZ()) {
+                maxZ = chunkPos.getMaxBlockZ();
+                minZ = maxZ - limit + 1;
+            } else {
+                minZ = pos.getZ() - limit / 2;
+                maxZ = minZ + limit - 1;
+            }
+        } else {
+            minX = chunkPos.getMinBlockX();
+            maxX = chunkPos.getMaxBlockX();
+            minZ = chunkPos.getMinBlockZ();
+            maxZ = chunkPos.getMaxBlockZ();
+        }
+        return new Area(
+            minX - 1, pos.getY(), minZ - 1,
+            maxX + 1, pos.getY() + 4, maxZ + 1, quarryBehind
+        );
     }
 }

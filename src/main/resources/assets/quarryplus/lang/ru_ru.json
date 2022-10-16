@@ -111,6 +111,7 @@
   "quarryplus.chat.quarry.restart": "Quarry Restarted",
   "quarryplus.chat.quarry_mode": "Режим карьера",
   "quarryplus.chat.warn_area": "[QuarryPlus] Area is too small.",
+  "quarryplus.chat.warn_cd_limit": "Area is too bigger than limit value in config.",
   "quarryplus.chat.warn_protected_area": "Area contains protected chunks. Quarry has stopped.",
   "quarryplus.chat.y_level": "Quarry digs to %s.",
   "quarryplus.client.tooltip": "Client",

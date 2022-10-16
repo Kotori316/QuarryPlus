@@ -2,7 +2,6 @@ package com.yogpc.qp.machines.advquarry;
 
 import java.util.function.Supplier;
 
-import com.yogpc.qp.integration.ftbchunks.FTBChunksProtectionCheck;
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.packet.PacketHandler;
@@ -10,7 +9,6 @@ import com.yogpc.qp.utils.MapMulti;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
@@ -31,6 +29,7 @@ public final class AdvActionMessage implements IMessage {
         this.dim = PacketHandler.getDimension(quarry);
         this.area = area;
         this.action = action;
+        AdvQuarry.LOGGER.debug(AdvQuarry.MESSAGE, "Message is created. {} {} {} {}", this.pos, this.dim.location(), this.area, this.action);
     }
 
     AdvActionMessage(TileAdvQuarry quarry, Actions action) {
@@ -61,14 +60,11 @@ public final class AdvActionMessage implements IMessage {
             world.map(w -> w.getBlockEntity(message.pos))
                 .flatMap(MapMulti.optCast(TileAdvQuarry.class))
                 .ifPresent(quarry -> {
+                    AdvQuarry.LOGGER.debug(AdvQuarry.MESSAGE, "onReceive. {}, {}", message.pos, message.action);
                     switch (message.action) {
-                        case CHANGE_RANGE -> {
-                            quarry.area = message.area;
-                            if (FTBChunksProtectionCheck.isAreaProtected(message.area.shrink(1, 0, 1), quarry.getTargetWorld().dimension())) {
-                                PacketHandler.getPlayer(supplier.get())
-                                    .ifPresent(p -> p.displayClientMessage(Component.translatable("quarryplus.chat.warn_protected_area"), false));
-                            }
-                        }
+                        case CHANGE_RANGE ->
+                            quarry.setArea(message.area, c -> PacketHandler.getPlayer(supplier.get()).ifPresent(p ->
+                                p.displayClientMessage(c, false)));
                         case MODULE_INV -> PacketHandler.getPlayer(supplier.get())
                             .flatMap(MapMulti.optCast(ServerPlayer.class))
                             .ifPresent(quarry::openModuleGui);
