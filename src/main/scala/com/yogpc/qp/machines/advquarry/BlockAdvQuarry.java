@@ -24,6 +24,7 @@ import com.yogpc.qp.utils.QuarryChunkLoadUtil;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -130,10 +131,18 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
                 var enchantment = EnchantmentLevel.fromItem(stack);
                 enchantment.sort(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR);
                 quarry.initialSetting(enchantment);
-                quarry.setArea(findArea(level, pos, facing.getOpposite(), quarry.getStorage()::addItem),
-                    c -> {
-                        if (entity != null) entity.sendMessage(c, Util.NIL_UUID);
-                    });
+                Consumer<Component> showErrorMessage = c -> {
+                    if (entity != null) entity.sendMessage(c, Util.NIL_UUID);
+                };
+                if (!quarry.setArea(findArea(level, pos, facing.getOpposite(), quarry.getStorage()::addItem),
+                    showErrorMessage)) {
+                    // Area is not set because marker area is invalid. Use default.
+                    if (!quarry.setArea(createDefaultArea(pos, facing.getOpposite(), QuarryPlus.config.common.chunkDestroyerLimit.get()),
+                        showErrorMessage)) {
+                        // Unreachable
+
+                    }
+                }
                 var preForced = QuarryChunkLoadUtil.makeChunkLoaded(level, pos, quarry.enabled);
                 quarry.setChunkPreLoaded(preForced);
                 PacketHandler.sendToClient(new ClientSyncMessage(quarry), level);
@@ -173,7 +182,6 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
             .flatMap(m -> m.getArea().stream().peek(a -> m.removeAndGetItems().forEach(itemCollector)))
             .map(a -> a.assureY(4))
             .findFirst()
-            .filter(area -> area.isRangeInLimit(QuarryPlus.config.common.chunkDestroyerLimit.get(), true))
             .orElseGet(() -> createDefaultArea(pos, quarryBehind, QuarryPlus.config.common.chunkDestroyerLimit.get()));
     }
 
