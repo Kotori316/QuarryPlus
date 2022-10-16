@@ -29,7 +29,7 @@ public final class AdvActionMessage implements IMessage {
         this.dim = PacketHandler.getDimension(quarry);
         this.area = area;
         this.action = action;
-        AdvQuarry.LOGGER.debug(AdvQuarry.MESSAGE, "Message is created. {} {} {} {}", this.pos, this.dim, this.area, this.action);
+        AdvQuarry.LOGGER.debug(AdvQuarry.MESSAGE, "Message is created. {} {} {} {}", this.pos, this.dim.location(), this.area, this.action);
     }
 
     AdvActionMessage(TileAdvQuarry quarry, Actions action) {

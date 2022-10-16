@@ -200,7 +200,8 @@ public class TileAdvQuarry extends PowerTile implements
             PacketHandler.sendToClient(new ClientSyncMessage(this), Objects.requireNonNull(this.getLevel()));
         } else {
             showErrorMessage.accept(new TranslatableComponent("quarryplus.chat.warn_cd_limit"));
-            AdvQuarry.LOGGER.info(AdvQuarry.TILE, "Area is too bigger than limit value in config.");
+            AdvQuarry.LOGGER.info(AdvQuarry.TILE, "Area is too bigger than limit value in config. Area={}, Limit={}",
+                newArea, QuarryPlus.config.common.chunkDestroyerLimit.get());
             return false;
         }
         if (FTBChunksProtectionCheck.isAreaProtected(newArea.shrink(1, 0, 1), this.getTargetWorld().dimension())) {
