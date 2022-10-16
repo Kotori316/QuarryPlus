@@ -1,14 +1,18 @@
 package com.yogpc.qp.machines.advquarry;
 
+import java.util.stream.IntStream;
+
 import com.yogpc.qp.QuarryPlusTest;
 import com.yogpc.qp.machines.Area;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.level.ChunkPos;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -82,5 +86,18 @@ final class AdvQuarryAreaTest {
         var expected = new Area(37, 5, 4, 47, 9, 14, Direction.NORTH);
         assertEquals(expected, area);
         assertTrue(area.isRangeInLimit(limit, true));
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17})
+    void areaIsInOneChunk(int limit) {
+        var chunkPos = new ChunkPos(new BlockPos(32, 0, 0));
+        assertAll(IntStream.range(32, 48).boxed().flatMap(x ->
+                IntStream.range(0, 16).mapToObj(z -> new BlockPos(x, 5, z)))
+            .map(p -> BlockAdvQuarry.createDefaultArea(p, Direction.NORTH, limit))
+            .map(a -> a.shrink(1, 0, 1))
+            .flatMap(a -> BlockPos.betweenClosedStream(a.minX(), a.minY(), a.minZ(), a.maxX(), a.minY(), a.maxZ()))
+            .map(ChunkPos::new)
+            .map(p -> () -> assertEquals(chunkPos, p)));
     }
 }
