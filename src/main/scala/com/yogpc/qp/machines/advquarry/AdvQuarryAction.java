@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.yogpc.qp.Holder;
-import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.BreakResult;
 import com.yogpc.qp.machines.PowerManager;
@@ -23,11 +22,12 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.state.BlockState;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
+import static com.yogpc.qp.machines.advquarry.AdvQuarry.ACTION;
+import static com.yogpc.qp.machines.advquarry.AdvQuarry.LOGGER;
+
 public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry> {
-    private static final Logger LOGGER = QuarryPlus.getLogger(AdvQuarryAction.class);
     static final Map<String, Serializer> SERIALIZER_MAP;
 
     static {
@@ -53,7 +53,7 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
             .map(s -> s.fromTag(tag, quarry))
             .orElseGet(() -> {
                 if (!tag.isEmpty())
-                    LOGGER.error("Unknown type '{}' found in tag: {}", key, tag);
+                    LOGGER.error(ACTION, "Unknown type '{}' found in tag: {}", key, tag);
                 return Waiting.WAITING;
             });
     }

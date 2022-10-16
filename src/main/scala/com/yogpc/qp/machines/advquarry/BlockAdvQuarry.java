@@ -16,8 +16,6 @@ import com.yogpc.qp.machines.QuarryMarker;
 import com.yogpc.qp.machines.module.EnergyModuleItem;
 import com.yogpc.qp.machines.module.ModuleLootFunction;
 import com.yogpc.qp.machines.module.QuarryModuleProvider;
-import com.yogpc.qp.packet.ClientSyncMessage;
-import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.CombinedBlockEntityTicker;
 import com.yogpc.qp.utils.MapMulti;
 import com.yogpc.qp.utils.QuarryChunkLoadUtil;
@@ -137,10 +135,11 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
                 if (!quarry.setArea(findArea(level, pos, facing.getOpposite(), quarry.getStorage()::addItem),
                     showErrorMessage)) {
                     // Area is not set because marker area is invalid. Use default.
-                    if (!quarry.setArea(createDefaultArea(pos, facing.getOpposite(), QuarryPlus.config.common.chunkDestroyerLimit.get()),
-                        showErrorMessage)) {
+                    var defaultArea = createDefaultArea(pos, facing.getOpposite(), QuarryPlus.config.common.chunkDestroyerLimit.get());
+                    if (!quarry.setArea(defaultArea, showErrorMessage)) {
                         // Unreachable
-
+                        AdvQuarry.LOGGER.warn(AdvQuarry.BLOCK, "The default area is invalid. Area={}, Limit={}, Pos={}",
+                            defaultArea, QuarryPlus.config.common.chunkDestroyerLimit.get(), pos);
                     }
                 }
                 var preForced = QuarryChunkLoadUtil.makeChunkLoaded(level, pos, quarry.enabled);

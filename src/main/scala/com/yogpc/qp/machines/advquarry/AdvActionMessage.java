@@ -29,6 +29,7 @@ public final class AdvActionMessage implements IMessage {
         this.dim = PacketHandler.getDimension(quarry);
         this.area = area;
         this.action = action;
+        AdvQuarry.LOGGER.debug(AdvQuarry.MESSAGE, "Message is created. {} {} {} {}", this.pos, this.dim, this.area, this.action);
     }
 
     AdvActionMessage(TileAdvQuarry quarry, Actions action) {
@@ -59,6 +60,7 @@ public final class AdvActionMessage implements IMessage {
             world.map(w -> w.getBlockEntity(message.pos))
                 .flatMap(MapMulti.optCast(TileAdvQuarry.class))
                 .ifPresent(quarry -> {
+                    AdvQuarry.LOGGER.debug(AdvQuarry.MESSAGE, "onReceive. {}, {}", message.pos, message.action);
                     switch (message.action) {
                         case CHANGE_RANGE ->
                             quarry.setArea(message.area, c -> PacketHandler.getPlayer(supplier.get()).ifPresent(p ->
