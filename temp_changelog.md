@@ -1,3 +1,8 @@
+## Version 19.8
+
+* Added config option to limit the width of area where Chunk Destroyer works.
+  * `chunkDestroyerLimit` in config.
+
 ## Version 19.7
 
 * Improved renderers of Waterlogged Markers.
