@@ -27,7 +27,7 @@ jobs:
         username: kotori316
         password: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Check Warning
         run: chmod +x ./gradlew && ./gradlew javaToolchains --no-daemon --warning-mode all
       - name: Compile
@@ -35,7 +35,7 @@ jobs:
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
       - name: Publish
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           path: build/libs/*
           name: ${{ github.event.repository.name }}-${{ github.run_number }}
@@ -53,7 +53,7 @@ jobs:
         forge: [ 1.19, default ]
     steps:
       - name: Checkout QuarryPlus repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set versions
         if: ${{ matrix.forge != 'default' }}
         run: |
@@ -77,7 +77,7 @@ jobs:
       matrix:
         forge: [ 1.19, default ]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Get latest version
         if: ${{ matrix.forge != 'default' }}
         run: |
@@ -92,7 +92,7 @@ jobs:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload failed test report
         if: failure()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           path: build/reports/tests/*
           name: Test-Report-${{ github.run_number }}-${{ matrix.forge }}
@@ -106,7 +106,7 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout QuarryPlus repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set forge version
         run: echo "CI_FORGE=$(cat /forge.txt)" >> $GITHUB_ENV
       - name: GameTest
