@@ -65,7 +65,7 @@ public class BookMoverEntity extends PowerTile implements Container, MenuProvide
                 .filter(e ->
                     VALID_ENCHANTMENTS.contains(e.getKey()) &&
                     EnchantmentHelper.getEnchantments(inventory.get(0)).keySet().stream().allMatch(e2 -> e2 == e.getKey() || e2.isCompatibleWith(e.getKey())) &&
-                    EnchantmentHelper.getItemEnchantmentLevel(e.getKey(), inventory.get(0)) < e.getValue())
+                    inventory.get(0).getEnchantmentLevel(e.getKey()) < e.getValue())
                 .findFirst()
                 .ifPresent(e -> {
                     var copy = inventory.get(0).copy();
