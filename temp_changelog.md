@@ -1,3 +1,7 @@
+## Version 19.9
+
+* Add REI plugin.
+
 ## Version 19.8
 
 * Added config option to limit the width of area where Chunk Destroyer works.
