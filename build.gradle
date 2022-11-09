@@ -193,6 +193,8 @@ repositories {
         url = uri("https://maven.architectury.dev/")
         content {
             it.includeGroup("dev.architectury")
+            it.includeVersion("me.shedaniel", "RoughlyEnoughItems-forge", project.reiVersion)
+            it.includeModule("me.shedaniel.cloth", "cloth-config-forge")
         }
     }
 
@@ -223,11 +225,21 @@ dependencies {
     testImplementation(group: 'org.scala-lang', name: 'scala-library', version: project.scalaVersion)
     testImplementation(group: 'org.typelevel', name: "cats-core_2.13", version: project.catsVersion)
 
+    boolean useREI = Boolean.parseBoolean(System.getenv("USE_REI"))
     compileOnly(fg.deobf(group: "mezz.jei", name: "jei-1.19.2-common-api", version: project.jeiVersion))
     compileOnly(fg.deobf(group: "mezz.jei", name: "jei-1.19.2-forge-api", version: project.jeiVersion))
-    runtimeOnly(fg.deobf(group: "mezz.jei", name: "jei-1.19.2-forge", version: project.jeiVersion) {
-        transitive(false)
-    })
+    if (useREI) {
+        implementation(fg.deobf(group: "me.shedaniel", name: "RoughlyEnoughItems-forge", version: project.reiVersion))
+        implementation(fg.deobf(group: "me.shedaniel.cloth", name: "cloth-config-forge", version: project.clothVersion))
+        implementation(fg.deobf(group: "dev.architectury", name: "architectury-forge", version: project.architecturyVersion))
+    } else {
+        runtimeOnly(fg.deobf(group: "mezz.jei", name: "jei-1.19.2-forge", version: project.jeiVersion) {
+            transitive(false)
+        })
+        compileOnly(fg.deobf(group: "me.shedaniel", name: "RoughlyEnoughItems-forge", version: project.reiVersion))
+        compileOnly(fg.deobf(group: "me.shedaniel.cloth", name: "cloth-config-forge", version: project.clothVersion))
+        compileOnly(fg.deobf(group: "dev.architectury", name: "architectury-forge", version: project.architecturyVersion))
+    }
     runtimeOnly(group: "com.kotori316", name: "ScalableCatsForce".toLowerCase(), version: project.slpVersion, classifier: "with-library") {
         transitive(false)
     }
@@ -238,7 +250,6 @@ dependencies {
     compileOnly(fg.deobf(group: "dev.ftb.mods", name: "ftb-library-forge", version: project.ftbLibraryVersion))
     // implementation
     // runtimeOnly(fg.deobf(group: "dev.ftb.mods", name: "ftb-teams-forge", version: project.ftbTeamsVersion)) // runtimeOnly
-    // runtimeOnly(fg.deobf(group: "dev.architectury", name: "architectury-forge", version: project.architecturyVersion)) // runtimeOnly
 
     // Test Dependencies.
     // Required these libraries to execute the tests.
