@@ -26,7 +26,7 @@ public class ScreenWorkbench extends AbstractContainerScreen<ContainerWorkbench>
     @Override
     protected void renderLabels(PoseStack matrices, int mouseX, int mouseY) {
         super.renderLabels(matrices, mouseX, mouseY);
-        if (getMenu().tile.getMaxEnergyStored() != 0) {
+        if (getMenu().tile.getMaxEnergyStored() > 5) {
             String current = getMenu().tile.getEnergyStored() + "FE";
             this.font.draw(matrices, String.format("%s/%d", current, getMenu().tile.getMaxEnergyStored()),
                 120 - this.font.width(current), this.inventoryLabelY, 0x404040);
