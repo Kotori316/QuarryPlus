@@ -73,7 +73,7 @@ class TileWorkbenchTest {
         tile.updateRecipeList();
         assertEquals(5L, tile.getMaxEnergy() / PowerTile.ONE_FE); // Not updated yet.
         tile.setCurrentRecipe(new ResourceLocation(QuarryPlus.modID, "test_dirt2"));
-        assertEquals(0L, tile.getMaxEnergy());
+        assertEquals(5L, tile.getMaxEnergy(), "The default energy was changed to 0.");
         assertFalse(tile.getRecipe().hasContent());
     }
 
