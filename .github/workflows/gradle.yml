@@ -110,7 +110,7 @@ jobs:
       - name: Set forge version
         run: echo "CI_FORGE=$(cat /forge.txt)" >> $GITHUB_ENV
       - name: GameTest
-        run: chmod +x ./gradlew && ./gradlew --no-daemon copyGameTestTemplate runGameTestServer
+        run: chmod +x ./gradlew && ./gradlew --no-daemon runGameTestServer
       - name: Check report
         run: |
-          ! test -d "build/game_test/crash-reports"
+          ! test -d "game-test/crash-reports"
