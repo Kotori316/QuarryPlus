@@ -115,13 +115,13 @@ minecraft {
         }
 
         gameTestServer {
+            workingDirectory project.file("game-test")
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
             property('mixin.env.remapRefMap', 'true')
             property('mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg")
             property "mixin.debug.export", "true"
             property 'forge.logging.console.level', 'debug'
             property 'forge.enabledGameTestNamespaces', 'QuarryPlus'.toLowerCase()
-            workingDirectory file("${project.buildDir}/game_test")
             setForceExit(false)
             jvmArgs("-EnableAssertions".toLowerCase())
 
