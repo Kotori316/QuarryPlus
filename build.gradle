@@ -138,19 +138,6 @@ minecraft {
     }
 }
 
-task deleteGateTestWorld(type: Delete) {
-    delete("${project.buildDir}/game_test")
-    onlyIf { file("${project.buildDir}/game_test").exists() }
-}
-
-task copyGameTestTemplate(type: Copy, dependsOn: deleteGateTestWorld) {
-    //noinspection SpellCheckingInspection
-    String structureDir = "src/test/resources/data/quarryplus/gameteststructures/"
-    from(structureDir)
-    into("${project.buildDir}/game_test/gameteststructures/")
-    onlyIf { file(structureDir).exists() }
-}
-
 processResources {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
