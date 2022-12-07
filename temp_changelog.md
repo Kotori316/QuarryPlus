@@ -1,3 +1,7 @@
+### Version 19.10
+
+* Add config option to extract items in Workbench Plus.
+
 ## Version 19.9
 
 * Add REI plugin.
