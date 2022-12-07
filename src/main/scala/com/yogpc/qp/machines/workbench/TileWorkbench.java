@@ -335,7 +335,20 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
 
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            return ItemStack.EMPTY;
+            if (!QuarryPlus.config.common.allowWorkbenchExtraction.get()) return ItemStack.EMPTY;
+
+            var itemInSlot = getStackInSlot(slot);
+            if (itemInSlot.isEmpty()) return ItemStack.EMPTY;
+
+            var extractAmount = Math.min(itemInSlot.getCount(), amount);
+            ItemStack extracted;
+            if (simulate) {
+                extracted = ItemHandlerHelper.copyStackWithSize(itemInSlot, extractAmount);
+            } else {
+                extracted = itemInSlot.split(extractAmount);
+                setChanged();
+            }
+            return extracted;
         }
 
         @Override

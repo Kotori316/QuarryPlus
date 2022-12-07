@@ -10,10 +10,14 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,6 +39,102 @@ class TileWorkbenchTest {
     void initialCapacity() {
         var tile = tile();
         assertEquals(5L, tile.getMaxEnergy() / PowerTile.ONE_FE);
+    }
+
+    @Nested
+    class ExtractionTest {
+        @Test
+        void cantExtractItems() {
+            var defaultValue = QuarryPlus.config.common.allowWorkbenchExtraction.get();
+            try {
+                QuarryPlus.config.common.allowWorkbenchExtraction.set(false);
+                var tile = tile();
+                tile.setItem(0, new ItemStack(Items.APPLE, 64));
+
+                var handler = tile.getCapability(ForgeCapabilities.ITEM_HANDLER).orElseThrow(RuntimeException::new);
+                var extracted = handler.extractItem(0, 1, true);
+                assertTrue(extracted.isEmpty());
+            } finally {
+                QuarryPlus.config.common.allowWorkbenchExtraction.set(defaultValue);
+            }
+        }
+
+        @Test
+        void canExtractItems() {
+            var defaultValue = QuarryPlus.config.common.allowWorkbenchExtraction.get();
+            try {
+                QuarryPlus.config.common.allowWorkbenchExtraction.set(true);
+                var tile = tile();
+                tile.setItem(0, new ItemStack(Items.APPLE, 64));
+
+                var handler = tile.getCapability(ForgeCapabilities.ITEM_HANDLER).orElseThrow(RuntimeException::new);
+                var extracted = handler.extractItem(0, 1, false);
+                assertTrue(ItemStack.matches(extracted, new ItemStack(Items.APPLE, 1)),
+                    "Extracted: %s".formatted(extracted));
+
+                var tileItem = tile.getItem(0);
+                assertTrue(ItemStack.matches(tileItem, new ItemStack(Items.APPLE, 63)),
+                    "Item in the tile: %s".formatted(tileItem));
+            } finally {
+                QuarryPlus.config.common.allowWorkbenchExtraction.set(defaultValue);
+            }
+        }
+
+        @Test
+        void canExtractItemsSimulate() {
+            var defaultValue = QuarryPlus.config.common.allowWorkbenchExtraction.get();
+            try {
+                QuarryPlus.config.common.allowWorkbenchExtraction.set(true);
+                var tile = tile();
+                tile.setItem(0, new ItemStack(Items.APPLE, 64));
+
+                var handler = tile.getCapability(ForgeCapabilities.ITEM_HANDLER).orElseThrow(RuntimeException::new);
+                var extracted = handler.extractItem(0, 1, true);
+                assertTrue(ItemStack.matches(extracted, new ItemStack(Items.APPLE, 1)),
+                    "Extracted: %s".formatted(extracted));
+
+                var tileItem = tile.getItem(0);
+                assertTrue(ItemStack.matches(tileItem, new ItemStack(Items.APPLE, 64)),
+                    "Item in the tile: %s".formatted(tileItem));
+            } finally {
+                QuarryPlus.config.common.allowWorkbenchExtraction.set(defaultValue);
+            }
+        }
+
+        @ParameterizedTest
+        @CsvSource(textBlock = """
+            256,128
+            64,32
+            1,1
+            64,64
+            512,1
+            2000,32
+            """)
+        void canExtractMoreItems(int initial, int extractCount) {
+            var defaultValue = QuarryPlus.config.common.allowWorkbenchExtraction.get();
+            try {
+                QuarryPlus.config.common.allowWorkbenchExtraction.set(true);
+                var tile = tile();
+                tile.setItem(0, new ItemStack(Items.APPLE, initial));
+
+                var handler = tile.getCapability(ForgeCapabilities.ITEM_HANDLER).orElseThrow(RuntimeException::new);
+                var extracted = handler.extractItem(0, extractCount, false);
+                assertTrue(ItemStack.matches(extracted, new ItemStack(Items.APPLE, extractCount)),
+                    "Extracted: %s".formatted(extracted));
+
+                var tileItem = tile.getItem(0);
+                if(initial - extractCount <= 0){
+                    assertTrue(tileItem.isEmpty(),
+                        "Item in the tile: %s".formatted(tileItem));
+                }else{
+                    assertTrue(ItemStack.matches(tileItem, new ItemStack(Items.APPLE, initial - extractCount)),
+                        "Item in the tile: %s".formatted(tileItem));
+                }
+
+            } finally {
+                QuarryPlus.config.common.allowWorkbenchExtraction.set(defaultValue);
+            }
+        }
     }
 
     WorkbenchRecipe r1 = RecipeFinderTest.create("stone", 100L, new ItemStack(Items.STONE, 64), new ItemStack(Items.COBBLESTONE, 64));
