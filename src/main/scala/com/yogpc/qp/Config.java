@@ -61,6 +61,7 @@ public class Config {
         public final ForgeConfigSpec.BooleanValue allowWorkInClaimedChunkByFBTChunks;
         public final ForgeConfigSpec.ConfigValue<List<? extends String>> spawnerBlackList;
         public final ForgeConfigSpec.IntValue chunkDestroyerLimit;
+        public final ForgeConfigSpec.BooleanValue allowWorkbenchExtraction;
 
         public Common(ForgeConfigSpec.Builder builder) {
             var inDev = !FMLEnvironment.production;
@@ -79,6 +80,7 @@ public class Config {
             allowWorkInClaimedChunkByFBTChunks = builder.comment("Allow quarries to work in claimed chunk(FTB Chunks).").define("allowWorkInClaimedChunkByFBTChunks", false);
             chunkDestroyerLimit = builder.comment("The range limit(unit: blocks) of ChunkDestroyer. Set -1 or 0 to remove limitation.")
                 .defineInRange("chunkDestroyerLimit", -1, -1, Integer.MAX_VALUE);
+            allowWorkbenchExtraction = builder.comment("True to allow pipes to extract items in WorkbenchPlus").define("allowWorkbenchExtraction", false);
             builder.pop();
         }
     }
