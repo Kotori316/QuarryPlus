@@ -330,7 +330,7 @@ def changeLogHeader() {
             Released at ${ZonedDateTime.now(ZoneId.of('Asia/Tokyo')).withNano(0).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)}
 
             This mod requires [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force)
-            Build with ${project.forgeVersion}, Mapping: Official ${project.minecraftVersion}
+            Build with ${project.forgeVersion}, Mapping: parchment ${project.parchmentMapping + "-" + project.minecraftVersion}
             """ as String).stripIndent()
 }
 
