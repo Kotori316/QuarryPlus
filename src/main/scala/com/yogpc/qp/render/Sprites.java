@@ -25,14 +25,15 @@ public class Sprites {
     private Sprites() {
     }
 
+    @SuppressWarnings("resource")
     @SubscribeEvent
     public static void registerSprites(TextureStitchEvent.Post event) {
         if (event.getAtlas().location().equals(InventoryMenu.BLOCK_ATLAS)) {
             spriteNames.forEach(s -> {
                 var name = getSpriteLocation(s);
                 var sprite = event.getAtlas().getSprite(name);
-                if (!sprite.atlasLocation().equals(name))
-                    QuarryPlus.LOGGER.error("Failed to load sprite of {}.", name);
+                if (!sprite.contents().name().equals(name))
+                    QuarryPlus.LOGGER.error("Failed to load sprite of {} in {}", name, event.getAtlas().location());
                 INSTANCE.spriteMap.put(s, sprite);
             });
         }

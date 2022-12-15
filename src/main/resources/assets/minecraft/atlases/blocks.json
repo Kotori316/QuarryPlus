@@ -2,7 +2,7 @@
   "sources": [
     {
       "type": "directory",
-      "source": "entity",
+      "source": "entity/quarry",
       "prefix": "entity/"
     }
   ]
