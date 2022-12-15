@@ -56,6 +56,6 @@
     }
   ],
   "textures": {
-    "texture": "quarryplus:blocks/frame"
+    "texture": "quarryplus:block/frame"
   }
 }

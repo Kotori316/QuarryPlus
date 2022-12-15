@@ -1,5 +1,10 @@
 {
   "type": "minecraft:block",
+  "functions": [
+    {
+      "function": "quarryplus:drop_function"
+    }
+  ],
   "pools": [
     {
       "bonus_rolls": 0.0,
@@ -11,11 +16,6 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "functions": [
-            {
-              "function": "quarryplus:drop_function"
-            }
-          ],
           "name": "quarryplus:mini_quarry"
         }
       ],

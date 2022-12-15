@@ -1,6 +1,8 @@
 package com.yogpc.qp.data;
 
+import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.data.CachedOutput;
@@ -17,19 +19,20 @@ abstract class QuarryDataProvider implements DataProvider {
     }
 
     @Override
-    public void run(CachedOutput cache) {
-        var path = generatorIn.getOutputFolder();
-        for (DataBuilder builder : data()) {
-            var out = path.resolve("data/%s/%s/%s.json".formatted(builder.location().getNamespace(), directory(), builder.location().getPath()))
-                .normalize()
-                .toAbsolutePath();
-            try {
-                var json = builder.build();
-                DataProvider.saveStable(cache, json, out);
-            } catch (Exception e) {
-                LOGGER.error("Failed to generate json for {}", builder);
-            }
-        }
+    public CompletableFuture<?> run(CachedOutput cache) {
+        var path = generatorIn.getPackOutput().getOutputFolder();
+        return CompletableFuture.allOf(
+            data().stream().map(b -> outputWork(cache, path, b))
+                .toArray(CompletableFuture[]::new)
+        );
+    }
+
+    private CompletableFuture<?> outputWork(CachedOutput cache, Path path, DataBuilder builder) {
+        Path out = path.resolve("data/%s/%s/%s.json".formatted(builder.location().getNamespace(), directory(), builder.location().getPath()))
+            .normalize()
+            .toAbsolutePath();
+        var json = builder.build();
+        return DataProvider.saveStable(cache, json, out);
     }
 
     @Override

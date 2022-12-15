@@ -1,7 +1,7 @@
 {
   "parent": "quarryplus:block/marker_post",
   "textures": {
-    "particle": "quarryplus:blocks/marker16",
-    "texture": "quarryplus:blocks/marker16"
+    "particle": "quarryplus:block/marker16",
+    "texture": "quarryplus:block/marker16"
   }
 }

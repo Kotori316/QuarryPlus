@@ -1,7 +1,10 @@
 package com.yogpc.qp.data;
 
+import java.util.concurrent.CompletableFuture;
+
 import com.yogpc.qp.QuarryPlus;
-import net.minecraft.core.Registry;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.world.level.block.Block;
@@ -9,13 +12,12 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.Nullable;
 
 final class MineableTag extends TagsProvider<Block> {
-    @SuppressWarnings("deprecation")
-    MineableTag(DataGenerator pGenerator, @Nullable ExistingFileHelper existingFileHelper) {
-        super(pGenerator, Registry.BLOCK, QuarryPlus.modID, existingFileHelper);
+    MineableTag(DataGenerator pGenerator, CompletableFuture<HolderLookup.Provider> provider, @Nullable ExistingFileHelper existingFileHelper) {
+        super(pGenerator.getPackOutput(), Registries.BLOCK, provider, QuarryPlus.modID, existingFileHelper);
     }
 
     @Override
-    protected void addTags() {
+    protected void addTags(HolderLookup.Provider provider) {
         /*this.tag(BlockTags.MINEABLE_WITH_PICKAXE).add(
             Holder.BLOCK_QUARRY,
             Holder.BLOCK_ADV_QUARRY,

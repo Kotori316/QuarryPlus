@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "quarryplus:items/marker_item"
+    "layer0": "quarryplus:item/marker_item"
   }
 }

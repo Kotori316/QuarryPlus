@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "quarryplus:items/bedrock_module"
+    "layer0": "quarryplus:item/bedrock_module"
   }
 }

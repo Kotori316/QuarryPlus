@@ -1,8 +1,8 @@
 {
   "parent": "minecraft:block/cube_bottom_top",
   "textures": {
-    "bottom": "quarryplus:blocks/mover_bottom",
-    "side": "quarryplus:blocks/mover",
-    "top": "quarryplus:blocks/mover_top"
+    "bottom": "quarryplus:block/mover_bottom",
+    "side": "quarryplus:block/mover",
+    "top": "quarryplus:block/mover_top"
   }
 }

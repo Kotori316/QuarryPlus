@@ -221,7 +221,7 @@
     }
   ],
   "textures": {
-    "particle": "quarryplus:blocks/marker",
-    "texture": "quarryplus:blocks/marker"
+    "particle": "quarryplus:block/marker",
+    "texture": "quarryplus:block/marker"
   }
 }

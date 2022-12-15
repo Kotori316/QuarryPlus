@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "quarryplus:blocks/remote_placer"
+    "all": "quarryplus:block/remote_placer"
   }
 }

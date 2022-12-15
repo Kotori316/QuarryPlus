@@ -39,6 +39,7 @@ import com.yogpc.qp.machines.workbench.QuarryDebugCondition;
 import com.yogpc.qp.machines.workbench.WorkbenchRecipe;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
@@ -265,7 +266,7 @@ class Recipe extends QuarryDataProvider {
         list.add(
             // WORKBENCH
             RecipeSerializeHelper.by(
-                ShapedRecipeBuilder.shaped(Holder.BLOCK_WORKBENCH)
+                ShapedRecipeBuilder.shaped(RecipeCategory.MISC, Holder.BLOCK_WORKBENCH)
                     .pattern("III")
                     .pattern("GDG")
                     .pattern("RRR")
@@ -278,7 +279,7 @@ class Recipe extends QuarryDataProvider {
         list.add(
             // Flexible Marker
             RecipeSerializeHelper.by(
-                ShapedRecipeBuilder.shaped(Holder.BLOCK_FLEX_MARKER)
+                ShapedRecipeBuilder.shaped(RecipeCategory.MISC, Holder.BLOCK_FLEX_MARKER)
                     .pattern("E")
                     .pattern("T")
                     .define('E', Tags.Items.GEMS_EMERALD)
@@ -289,7 +290,7 @@ class Recipe extends QuarryDataProvider {
         list.add(
             // Chunk Marker
             RecipeSerializeHelper.by(
-                ShapedRecipeBuilder.shaped(Holder.BLOCK_16_MARKER)
+                ShapedRecipeBuilder.shaped(RecipeCategory.MISC, Holder.BLOCK_16_MARKER)
                     .pattern("R")
                     .pattern("T")
                     .define('R', Tags.Items.DUSTS_REDSTONE)
@@ -303,7 +304,7 @@ class Recipe extends QuarryDataProvider {
         list.add(
             // Waterlogged Marker Plus
             RecipeSerializeHelper.by(
-                ShapedRecipeBuilder.shaped(Holder.BLOCK_WATERLOGGED_MARKER)
+                ShapedRecipeBuilder.shaped(RecipeCategory.MISC, Holder.BLOCK_WATERLOGGED_MARKER)
                     .pattern("G")
                     .pattern("M")
                     .define('G', Tags.Items.DYES_GREEN)
@@ -314,7 +315,7 @@ class Recipe extends QuarryDataProvider {
         list.add(
             // Waterlogged Flexible Marker
             RecipeSerializeHelper.by(
-                ShapedRecipeBuilder.shaped(Holder.BLOCK_WATERLOGGED_FLEX_MARKER)
+                ShapedRecipeBuilder.shaped(RecipeCategory.MISC, Holder.BLOCK_WATERLOGGED_FLEX_MARKER)
                     .pattern("G")
                     .pattern("M")
                     .define('G', Tags.Items.DYES_GREEN)
@@ -325,7 +326,7 @@ class Recipe extends QuarryDataProvider {
         list.add(
             // Waterlogged Chunk Marker
             RecipeSerializeHelper.by(
-                ShapedRecipeBuilder.shaped(Holder.BLOCK_WATERLOGGED_16_MARKER)
+                ShapedRecipeBuilder.shaped(RecipeCategory.MISC, Holder.BLOCK_WATERLOGGED_16_MARKER)
                     .pattern("G")
                     .pattern("M")
                     .define('G', Tags.Items.DYES_GREEN)
@@ -336,7 +337,7 @@ class Recipe extends QuarryDataProvider {
         list.add(
             // Pump Module
             RecipeSerializeHelper.by(
-                ShapelessRecipeBuilder.shapeless(Holder.ITEM_PUMP_MODULE)
+                ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Holder.ITEM_PUMP_MODULE)
                     .requires(Holder.BLOCK_PUMP)
                     .group(MODULE_RECIPE_GROUP), null
             ).addCondition(new EnableCondition(PumpModuleItem.NAME))
@@ -344,7 +345,7 @@ class Recipe extends QuarryDataProvider {
         list.add(
             // Exp Module
             RecipeSerializeHelper.by(
-                ShapelessRecipeBuilder.shapeless(Holder.ITEM_EXP_MODULE)
+                ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Holder.ITEM_EXP_MODULE)
                     .requires(Holder.BLOCK_EXP_PUMP)
                     .group(MODULE_RECIPE_GROUP), null
             ).addCondition(new EnableCondition(ExpModuleItem.NAME))
@@ -352,7 +353,7 @@ class Recipe extends QuarryDataProvider {
         list.add(
             // Replacer Module
             RecipeSerializeHelper.by(
-                ShapelessRecipeBuilder.shapeless(Holder.ITEM_REPLACER_MODULE)
+                ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Holder.ITEM_REPLACER_MODULE)
                     .requires(Holder.BLOCK_REPLACER)
                     .group(MODULE_RECIPE_GROUP), null
             ).addCondition(new EnableCondition(ReplacerModuleItem.NAME))
@@ -360,7 +361,7 @@ class Recipe extends QuarryDataProvider {
         list.add(
             // Placer
             RecipeSerializeHelper.by(
-                ShapedRecipeBuilder.shaped(Holder.BLOCK_PLACER)
+                ShapedRecipeBuilder.shaped(RecipeCategory.MISC, Holder.BLOCK_PLACER)
                     .pattern("GDG")
                     .pattern("MRM")
                     .pattern("MIM")
@@ -374,7 +375,7 @@ class Recipe extends QuarryDataProvider {
         list.add(
             // Solid Fuel Quarry
             RecipeSerializeHelper.by(
-                ShapedRecipeBuilder.shaped(Holder.BLOCK_SOLID_FUEL_QUARRY)
+                ShapedRecipeBuilder.shaped(RecipeCategory.MISC, Holder.BLOCK_SOLID_FUEL_QUARRY)
                     .pattern("III")
                     .pattern("GDG")
                     .pattern("RRR")
@@ -386,13 +387,13 @@ class Recipe extends QuarryDataProvider {
         list.add(
             // Filler Module
             RecipeSerializeHelper.by(
-                ShapelessRecipeBuilder.shapeless(Holder.ITEM_FILLER_MODULE)
+                ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Holder.ITEM_FILLER_MODULE)
                     .requires(Holder.BLOCK_FILLER)
                     .group(MODULE_RECIPE_GROUP), null
             ).addCondition(new EnableCondition(FillerModuleItem.NAME)));
         list.add(
             // Remote Placer
-            RecipeSerializeHelper.by(ShapedRecipeBuilder.shaped(Holder.BLOCK_REMOTE_PLACER)
+            RecipeSerializeHelper.by(ShapedRecipeBuilder.shaped(RecipeCategory.MISC, Holder.BLOCK_REMOTE_PLACER)
                 .pattern("eie")
                 .pattern("dpd")
                 .define('e', Tags.Items.ENDER_PEARLS)
@@ -413,7 +414,7 @@ class Recipe extends QuarryDataProvider {
                 testLocation("diamond2"), new ItemStack(Items.DIAMOND, 2), 640 * PowerTile.ONE_FE, true, List.of(
                 as(Pair.of(Ingredient.of(Items.IRON_INGOT), 8), Pair.of(Ingredient.of(Tags.Items.INGOTS_GOLD), 4))
             )))),
-            RecipeSerializeHelper.by(ShapelessRecipeBuilder.shapeless(Items.LAVA_BUCKET)
+            RecipeSerializeHelper.by(ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Items.LAVA_BUCKET)
                 .requires(Items.WATER_BUCKET)
                 .requires(Items.MAGMA_BLOCK), testLocation("bucket_dupe")
             )

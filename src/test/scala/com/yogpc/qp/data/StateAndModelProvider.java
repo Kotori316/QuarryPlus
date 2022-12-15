@@ -22,17 +22,17 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 final class StateAndModelProvider extends BlockStateProvider {
     StateAndModelProvider(DataGenerator gen, ExistingFileHelper exFileHelper) {
-        super(gen, QuarryPlus.modID, exFileHelper);
+        super(gen.getPackOutput(), QuarryPlus.modID, exFileHelper);
     }
 
     private ResourceLocation blockTexture(String name) {
-        return modLoc("blocks/" + name);
+        return modLoc("block/" + name);
     }
 
     @Override
     public ResourceLocation blockTexture(Block block) {
         ResourceLocation name = Objects.requireNonNull(ForgeRegistries.BLOCKS.getKey(block), "Block %s isn't registered.".formatted(block));
-        return new ResourceLocation(name.getNamespace(), "blocks" + "/" + name.getPath());
+        return new ResourceLocation(name.getNamespace(), "block" + "/" + name.getPath());
     }
 
     @Override
@@ -61,12 +61,12 @@ final class StateAndModelProvider extends BlockStateProvider {
         workDirectionalBlockAndItem(Holder.BLOCK_SOLID_FUEL_QUARRY);
 
         // Items
-        simpleItem(Holder.ITEM_EXP_MODULE, "blocks/exp_pump_side");
+        simpleItem(Holder.ITEM_EXP_MODULE, "block/exp_pump_side");
         simpleItem(Holder.ITEM_FILLER_MODULE);
         simpleItem(Holder.ITEM_FUEL_MODULE_NORMAL);
-        simpleItem(Holder.ITEM_PUMP_MODULE, "blocks/pump_side");
-        simpleItem(Holder.ITEM_BEDROCK_MODULE, "items/bedrock_module");
-        simpleItem(Holder.ITEM_REPLACER_MODULE, "blocks/replacer_side");
+        simpleItem(Holder.ITEM_PUMP_MODULE, "block/pump_side");
+        simpleItem(Holder.ITEM_BEDROCK_MODULE, "item/bedrock_module");
+        simpleItem(Holder.ITEM_REPLACER_MODULE, "block/replacer_side");
         simpleItem(Holder.ITEM_CHECKER);
         simpleItem(Holder.ITEM_Y_SETTER);
     }
@@ -181,7 +181,7 @@ final class StateAndModelProvider extends BlockStateProvider {
     }
 
     void simpleItem(QPItem item) {
-        simpleItem(item, "items/" + item.getRegistryName().getPath());
+        itemModels().basicItem(item.getRegistryName());
     }
 
     void simpleItem(QPItem item, String texture) {
@@ -311,7 +311,7 @@ final class StateAndModelProvider extends BlockStateProvider {
         directionalBlock(Holder.BLOCK_MARKER, model);
         itemModels().getBuilder(Holder.BLOCK_MARKER.getRegistryName().getPath())
             .parent(new ModelFile.UncheckedModelFile("item/generated"))
-            .texture("layer0", new ResourceLocation(QuarryPlus.modID, "items/" + Holder.BLOCK_MARKER.getRegistryName().getPath() + "_item"));
+            .texture("layer0", new ResourceLocation(QuarryPlus.modID, "item/" + Holder.BLOCK_MARKER.getRegistryName().getPath() + "_item"));
         for (var marker : List.of(Holder.BLOCK_FLEX_MARKER, Holder.BLOCK_16_MARKER)) {
             var baseName = marker.getRegistryName().getPath();
             var m = models().withExistingParent("block/" + baseName, new ResourceLocation(QuarryPlus.modID, "block/marker_post"))
@@ -320,7 +320,7 @@ final class StateAndModelProvider extends BlockStateProvider {
             simpleBlock(marker, m);
             itemModels().getBuilder(baseName)
                 .parent(new ModelFile.UncheckedModelFile("item/generated"))
-                .texture("layer0", new ResourceLocation(QuarryPlus.modID, "items/" + baseName + "_item"));
+                .texture("layer0", new ResourceLocation(QuarryPlus.modID, "item/" + baseName + "_item"));
         }
     }
 
