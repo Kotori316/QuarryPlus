@@ -7,7 +7,7 @@ import com.yogpc.qp.machines.workbench.QuarryDebugCondition;
 import com.yogpc.qp.machines.workbench.WorkbenchRecipe;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.ConfigCommand;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
@@ -19,6 +19,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -63,12 +64,12 @@ public class QuarryPlus {
 
         @SubscribeEvent
         public static void registerAll(RegisterEvent event) {
-            event.register(Registry.BLOCK_REGISTRY, Register::registerBlocks);
-            event.register(Registry.ITEM_REGISTRY, Register::registerItems);
-            event.register(Registry.BLOCK_ENTITY_TYPE_REGISTRY, Register::registerTiles);
-            event.register(Registry.MENU_REGISTRY, Register::registerContainers);
-            event.register(Registry.RECIPE_SERIALIZER_REGISTRY, Register::registerRecipe);
-            event.register(Registry.RECIPE_TYPE_REGISTRY, Register::registerRecipeType);
+            event.register(Registries.BLOCK, Register::registerBlocks);
+            event.register(Registries.ITEM, Register::registerItems);
+            event.register(Registries.BLOCK_ENTITY_TYPE, Register::registerTiles);
+            event.register(Registries.MENU, Register::registerContainers);
+            event.register(Registries.RECIPE_SERIALIZER, Register::registerRecipe);
+            event.register(Registries.RECIPE_TYPE, Register::registerRecipeType);
         }
 
         public static void registerBlocks(RegisterEvent.RegisterHelper<Block> blockRegisterHelper) {
@@ -107,6 +108,10 @@ public class QuarryPlus {
             PacketHandler.init();
         }
 
+        @SubscribeEvent
+        public static void registerCreativeTab(CreativeModeTabEvent.Register event) {
+            event.registerCreativeModeTab(new ResourceLocation(QuarryPlus.modID, "tab"), Holder::createTab);
+        }
     }
 
     public static Logger getLogger(Class<?> clazz) {

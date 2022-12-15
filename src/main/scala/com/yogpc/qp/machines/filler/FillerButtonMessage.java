@@ -6,7 +6,7 @@ import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.MapMulti;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -29,7 +29,7 @@ public final class FillerButtonMessage implements IMessage {
 
     public FillerButtonMessage(FriendlyByteBuf buf) {
         this.pos = buf.readBlockPos();
-        this.dim = ResourceKey.create(Registry.DIMENSION_REGISTRY, buf.readResourceLocation());
+        this.dim = ResourceKey.create(Registries.DIMENSION, buf.readResourceLocation());
         this.action = buf.readEnum(FillerEntity.Action.class);
     }
 

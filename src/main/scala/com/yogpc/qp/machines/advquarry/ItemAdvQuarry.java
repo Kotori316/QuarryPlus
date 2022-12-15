@@ -1,17 +1,15 @@
 package com.yogpc.qp.machines.advquarry;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.EnchantableItem;
 import com.yogpc.qp.machines.QPBlock;
 import com.yogpc.qp.machines.module.ModuleInventory;
-import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -22,29 +20,29 @@ import org.jetbrains.annotations.Nullable;
 @SuppressWarnings("DuplicatedCode")
 class ItemAdvQuarry extends QPBlock.QPBlockItem implements EnchantableItem {
     ItemAdvQuarry(QPBlock block) {
-        super(block, new Properties().tab(Holder.TAB).fireResistant());
+        super(block, new Properties().fireResistant());
     }
 
     @Override
-    public void fillItemCategory(CreativeModeTab tab, NonNullList<ItemStack> stacks) {
-        super.fillItemCategory(tab, stacks);
-        if (this.allowedIn(tab)) {
-            var stack = new ItemStack(this);
-            {
-                var copy = stack.copy();
-                copy.enchant(Enchantments.BLOCK_EFFICIENCY, 5);
-                copy.enchant(Enchantments.UNBREAKING, 3);
-                copy.enchant(Enchantments.BLOCK_FORTUNE, 3);
-                stacks.add(copy);
-            }
-            {
-                var copy = stack.copy();
-                copy.enchant(Enchantments.BLOCK_EFFICIENCY, 5);
-                copy.enchant(Enchantments.UNBREAKING, 3);
-                copy.enchant(Enchantments.SILK_TOUCH, 1);
-                stacks.add(copy);
-            }
+    public List<ItemStack> creativeTabItem() {
+        List<ItemStack> stacks = new ArrayList<>();
+        var stack = new ItemStack(this);
+        stacks.add(stack);
+        {
+            var copy = stack.copy();
+            copy.enchant(Enchantments.BLOCK_EFFICIENCY, 5);
+            copy.enchant(Enchantments.UNBREAKING, 3);
+            copy.enchant(Enchantments.BLOCK_FORTUNE, 3);
+            stacks.add(copy);
         }
+        {
+            var copy = stack.copy();
+            copy.enchant(Enchantments.BLOCK_EFFICIENCY, 5);
+            copy.enchant(Enchantments.UNBREAKING, 3);
+            copy.enchant(Enchantments.SILK_TOUCH, 1);
+            stacks.add(copy);
+        }
+        return stacks;
     }
 
     @Override

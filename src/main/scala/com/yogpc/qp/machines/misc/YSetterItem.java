@@ -1,6 +1,5 @@
 package com.yogpc.qp.machines.misc;
 
-import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPItem;
 import com.yogpc.qp.packet.PacketHandler;
@@ -24,7 +23,7 @@ public class YSetterItem extends QPItem {
     public static final String NAME = "y_setter";
 
     public YSetterItem() {
-        super(new ResourceLocation(QuarryPlus.modID, NAME), new Item.Properties().tab(Holder.TAB));
+        super(new ResourceLocation(QuarryPlus.modID, NAME), new Item.Properties());
     }
 
     @Override

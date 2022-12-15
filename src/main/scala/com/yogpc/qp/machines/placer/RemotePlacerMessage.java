@@ -6,7 +6,7 @@ import com.yogpc.qp.Holder;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.packet.PacketHandler;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
@@ -19,7 +19,7 @@ public record RemotePlacerMessage(BlockPos pos, ResourceKey<Level> dim, BlockPos
     public RemotePlacerMessage(FriendlyByteBuf buf) {
         this(
             buf.readBlockPos(),
-            ResourceKey.create(Registry.DIMENSION_REGISTRY, buf.readResourceLocation()),
+            ResourceKey.create(Registries.DIMENSION, buf.readResourceLocation()),
             buf.readBlockPos()
         );
     }

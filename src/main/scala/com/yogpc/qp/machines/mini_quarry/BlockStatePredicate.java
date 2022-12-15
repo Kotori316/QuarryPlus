@@ -9,11 +9,12 @@ import com.yogpc.qp.QuarryPlus;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.arguments.blocks.BlockPredicateArgument;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -170,7 +171,7 @@ interface BlockStatePredicate {
 
         private Tag(ResourceLocation tagName) {
             this.location = tagName;
-            this.tag = TagKey.create(Registry.BLOCK_REGISTRY, tagName);
+            this.tag = TagKey.create(Registries.BLOCK, tagName);
         }
 
         @Override
@@ -219,8 +220,10 @@ interface BlockStatePredicate {
         public boolean test(BlockState state, BlockGetter blockGetter, BlockPos pos) {
             if (blockGetter instanceof Level level) {
                 try {
-                    BlockPredicateArgument.Result argument = BlockPredicateArgument.blockPredicate(new CommandBuildContext(
-                            Optional.ofNullable(level.getServer()).map(MinecraftServer::registryAccess).orElseThrow()))
+                    BlockPredicateArgument.Result argument = BlockPredicateArgument.blockPredicate(CommandBuildContext.simple(
+                            Optional.ofNullable(level.getServer()).map(MinecraftServer::registryAccess).orElseThrow(),
+                            FeatureFlags.DEFAULT_FLAGS
+                        ))
                         .parse(new StringReader(blockPredicate));
                     return argument.test(new BlockInWorld(level, pos, true));
                 } catch (CommandSyntaxException e) {

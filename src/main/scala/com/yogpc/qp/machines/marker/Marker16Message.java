@@ -8,7 +8,7 @@ import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.TileMessage;
 import com.yogpc.qp.utils.MapMulti;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
@@ -35,7 +35,7 @@ public final class Marker16Message implements IMessage {
 
     public Marker16Message(FriendlyByteBuf buffer) {
         pos = buffer.readBlockPos();
-        dim = ResourceKey.create(Registry.DIMENSION_REGISTRY, buffer.readResourceLocation());
+        dim = ResourceKey.create(Registries.DIMENSION, buffer.readResourceLocation());
         amount = buffer.readVarInt();
         yMax = buffer.readVarInt();
         yMin = buffer.readVarInt();

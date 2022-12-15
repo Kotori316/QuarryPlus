@@ -3,7 +3,6 @@ package com.yogpc.qp.machines.module;
 import java.util.Comparator;
 import java.util.List;
 
-import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QPItem;
@@ -22,7 +21,7 @@ public class EnergyModuleItem extends QPItem implements QuarryModuleProvider.Ite
     private final int energy;
 
     public EnergyModuleItem(int energy, String path) {
-        super(new ResourceLocation(QuarryPlus.modID, path), new Properties().tab(Holder.TAB));
+        super(new ResourceLocation(QuarryPlus.modID, path), new Properties());
         this.energy = energy;
     }
 

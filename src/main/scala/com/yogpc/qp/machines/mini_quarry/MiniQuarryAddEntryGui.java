@@ -18,7 +18,7 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -72,7 +72,7 @@ public class MiniQuarryAddEntryGui extends Screen implements Button.OnPress {
         String filterText = textField == null ? "" : textField.getValue();
         if (filterText.startsWith("#")) {
             String f = filterText.substring(1); // Remove first #
-            return List.of(Pair.of(Kind.TAG, Registry.BLOCK.getTagNames()
+            return List.of(Pair.of(Kind.TAG, BuiltInRegistries.BLOCK.getTagNames()
                 .map(TagKey::location).map(ResourceLocation::toString).filter(r -> r.contains(f)).sorted().collect(Collectors.toList())));
         } else {
             return List.of(
@@ -101,7 +101,7 @@ public class MiniQuarryAddEntryGui extends Screen implements Button.OnPress {
                     String maybePredicate = textField.getValue();
                     if (!maybePredicate.isEmpty()) {
                         try {
-                            BlockStateParser.parseForTesting(Registry.BLOCK, new StringReader(maybePredicate), true);
+                            BlockStateParser.parseForTesting(BuiltInRegistries.BLOCK.asLookup(), new StringReader(maybePredicate), true);
                             callback.accept(BlockStatePredicate.predicateString(maybePredicate));
                         } catch (CommandSyntaxException e) {
                             QuarryPlus.LOGGER.debug("Invalid predicate {} was parsed but not added. Got {}.", maybePredicate, e);

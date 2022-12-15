@@ -2,7 +2,6 @@ package com.yogpc.qp.machines.checker;
 
 import java.util.List;
 
-import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.CheckerLog;
 import com.yogpc.qp.machines.QPItem;
@@ -18,7 +17,7 @@ public class ItemChecker extends QPItem {
     public static final String NAME = "status_checker";
 
     public ItemChecker() {
-        super(new ResourceLocation(QuarryPlus.modID, NAME), new Item.Properties().tab(Holder.TAB));
+        super(new ResourceLocation(QuarryPlus.modID, NAME), new Item.Properties());
     }
 
     @Override

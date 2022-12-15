@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Direction8;
 import net.minecraft.core.BlockPos;
@@ -30,7 +29,7 @@ public class BlockDummy extends AbstractGlassBlock {
             .isRedstoneConductor((state, world, pos) -> false)
             .isViewBlocking((state, world, pos) -> false)
         );
-        blockItem = new BlockItem(this, new Item.Properties().tab(Holder.TAB));
+        blockItem = new BlockItem(this, new Item.Properties());
     }
 
     private boolean breaking = false;

@@ -3,7 +3,6 @@ package com.yogpc.qp.machines.module;
 import java.util.List;
 import java.util.stream.Stream;
 
-import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPItem;
 import net.minecraft.network.chat.Component;
@@ -22,7 +21,7 @@ public class ExpModuleItem extends QPItem implements QuarryModuleProvider.Item {
     public static final String KEY_AMOUNT = "amount";
 
     public ExpModuleItem() {
-        super(new ResourceLocation(QuarryPlus.modID, NAME), new Properties().tab(Holder.TAB).stacksTo(1));
+        super(new ResourceLocation(QuarryPlus.modID, NAME), new Properties().stacksTo(1));
     }
 
     @Override

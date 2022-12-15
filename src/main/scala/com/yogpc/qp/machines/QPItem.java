@@ -41,4 +41,8 @@ public class QPItem extends Item {
             tooltips.add(Component.translatable("quarryplus.tooltip.item_disable_message"));
         }
     }
+
+    public List<ItemStack> creativeTabItem() {
+        return List.of(new ItemStack(this));
+    }
 }

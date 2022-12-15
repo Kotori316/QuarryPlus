@@ -1,17 +1,15 @@
 package com.yogpc.qp.machines.quarry;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.EnchantableItem;
 import com.yogpc.qp.machines.QPBlock;
 import com.yogpc.qp.machines.module.ModuleInventory;
-import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -23,13 +21,14 @@ import org.jetbrains.annotations.Nullable;
 @SuppressWarnings("DuplicatedCode")
 class QuarryItem extends QPBlock.QPBlockItem implements EnchantableItem {
     QuarryItem(QPBlock block) {
-        super(block, new Item.Properties().fireResistant().tab(Holder.TAB));
+        super(block, new Item.Properties().fireResistant());
     }
 
     @Override
-    public void fillItemCategory(CreativeModeTab tab, NonNullList<ItemStack> stacks) {
-        super.fillItemCategory(tab, stacks);
-        if (this.allowedIn(tab)) {
+    public List<ItemStack> creativeTabItem() {
+        List<ItemStack> stacks = new ArrayList<>();
+        stacks.add(new ItemStack(this));
+        {
             var stack = new ItemStack(this);
             {
                 var copy = stack.copy();
@@ -46,6 +45,7 @@ class QuarryItem extends QPBlock.QPBlockItem implements EnchantableItem {
                 stacks.add(copy);
             }
         }
+        return stacks;
     }
 
     @Override

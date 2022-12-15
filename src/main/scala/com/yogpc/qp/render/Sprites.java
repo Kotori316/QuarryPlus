@@ -26,18 +26,13 @@ public class Sprites {
     }
 
     @SubscribeEvent
-    public static void register(TextureStitchEvent.Pre event) {
-        if (event.getAtlas().location().equals(InventoryMenu.BLOCK_ATLAS)) {
-            spriteNames.stream().map(Sprites::getSpriteLocation).forEach(event::addSprite);
-        }
-    }
-
-    @SubscribeEvent
     public static void registerSprites(TextureStitchEvent.Post event) {
         if (event.getAtlas().location().equals(InventoryMenu.BLOCK_ATLAS)) {
             spriteNames.forEach(s -> {
                 var name = getSpriteLocation(s);
                 var sprite = event.getAtlas().getSprite(name);
+                if (!sprite.atlasLocation().equals(name))
+                    QuarryPlus.LOGGER.error("Failed to load sprite of {}.", name);
                 INSTANCE.spriteMap.put(s, sprite);
             });
         }
@@ -50,7 +45,7 @@ public class Sprites {
 
     @NotNull
     private static ResourceLocation getSpriteLocation(String s) {
-        return new ResourceLocation(QuarryPlus.modID, "entities/" + s);
+        return new ResourceLocation(QuarryPlus.modID, "entity/" + s);
     }
 
     public TextureAtlasSprite getMarkerBlue() {

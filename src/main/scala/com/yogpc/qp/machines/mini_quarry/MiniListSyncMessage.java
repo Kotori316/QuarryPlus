@@ -10,7 +10,7 @@ import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.packet.PacketHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
@@ -40,7 +40,7 @@ public final class MiniListSyncMessage implements IMessage {
 
     public MiniListSyncMessage(FriendlyByteBuf buf) {
         this.pos = buf.readBlockPos();
-        this.dim = ResourceKey.create(Registry.DIMENSION_REGISTRY, buf.readResourceLocation());
+        this.dim = ResourceKey.create(Registries.DIMENSION, buf.readResourceLocation());
         int allowListSize = buf.readInt();
         this.allowList = Stream.generate(buf::readNbt)
             .limit(allowListSize)

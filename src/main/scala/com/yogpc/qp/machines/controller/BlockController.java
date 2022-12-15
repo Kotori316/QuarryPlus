@@ -120,7 +120,7 @@ public class BlockController extends QPBlock {
             Optional.of(name)
                 .map(ForgeRegistries.ENTITY_TYPES::getValue)
                 .filter(BlockController::canSpawnFromSpawner)
-                .ifPresent(logic.getLeft()::setEntityId);
+                .ifPresent(entityType -> logic.getLeft().setEntityId(entityType, world, world.getRandom(), pos));
             Optional.ofNullable(logic.getLeft().getSpawnerBlockEntity()).ifPresent(BlockEntity::setChanged);
             BlockState state = world.getBlockState(logic.getRight());
             world.sendBlockUpdated(logic.getRight(), state, state, Block.UPDATE_INVISIBLE);

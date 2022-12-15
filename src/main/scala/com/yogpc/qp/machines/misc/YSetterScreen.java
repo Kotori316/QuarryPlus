@@ -51,8 +51,14 @@ public class YSetterScreen extends AbstractContainerScreen<YSetterContainer> {
     protected void init() {
         super.init();
         final int width = 40;
-        addRenderableWidget(new Button(this.getGuiLeft() + this.imageWidth / 2 - width / 2, this.getGuiTop() + tp, width, 20, Component.literal("+"), b -> changeDigY(true)));
-        addRenderableWidget(new Button(this.getGuiLeft() + this.imageWidth / 2 - width / 2, this.getGuiTop() + tp + 33, width, 20, Component.literal("-"), b -> changeDigY(false)));
+        addRenderableWidget(Button.builder(Component.literal("+"), b -> changeDigY(true))
+            .pos(this.getGuiLeft() + this.imageWidth / 2 - width / 2, this.getGuiTop() + tp)
+            .size(width, 20)
+            .build());
+        addRenderableWidget(Button.builder(Component.literal("-"), b -> changeDigY(false))
+            .pos(this.getGuiLeft() + this.imageWidth / 2 - width / 2, this.getGuiTop() + tp + 33)
+            .size(width, 20)
+            .build());
     }
 
     private void changeDigY(boolean plus) {

@@ -1,12 +1,13 @@
 package com.yogpc.qp.machines;
 
+import java.util.List;
 import java.util.function.Function;
 
-import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -17,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 public class QPBlock extends Block {
     public static final BooleanProperty WORKING = BooleanProperty.create("working");
     private final ResourceLocation registryName;
-    public final BlockItem blockItem;
+    public final QPBlockItem blockItem;
 
     public QPBlock(Properties properties, String name, Function<QPBlock, QPBlockItem> itemFunction) {
         super(properties);
@@ -26,7 +27,7 @@ public class QPBlock extends Block {
     }
 
     public QPBlock(Properties properties, String name) {
-        this(properties, name, b -> new QPBlockItem(b, new Item.Properties().tab(Holder.TAB)));
+        this(properties, name, b -> new QPBlockItem(b, new Item.Properties()));
     }
 
     public ResourceLocation getRegistryName() {
@@ -69,6 +70,10 @@ public class QPBlock extends Block {
 
         public ResourceLocation getRegistryName() {
             return ((QPBlock) getBlock()).getRegistryName();
+        }
+
+        public List<ItemStack> creativeTabItem() {
+            return List.of(new ItemStack(this));
         }
     }
 }

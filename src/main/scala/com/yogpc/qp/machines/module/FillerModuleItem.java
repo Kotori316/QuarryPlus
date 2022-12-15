@@ -1,6 +1,5 @@
 package com.yogpc.qp.machines.module;
 
-import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPItem;
 import net.minecraft.resources.ResourceLocation;
@@ -11,7 +10,7 @@ public final class FillerModuleItem extends QPItem implements QuarryModuleProvid
     public static final String NAME = "filler_module";
 
     public FillerModuleItem() {
-        super(new ResourceLocation(QuarryPlus.modID, NAME), new Properties().tab(Holder.TAB));
+        super(new ResourceLocation(QuarryPlus.modID, NAME), new Properties());
     }
 
     @Override

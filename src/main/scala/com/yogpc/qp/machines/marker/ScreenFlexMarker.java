@@ -11,7 +11,6 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.api.distmarker.Dist;
@@ -39,24 +38,33 @@ public class ScreenFlexMarker extends AbstractContainerScreen<ContainerMarker> {
     @Override
     public void init() {
         super.init();
-        MutableComponent[] mp = Stream.of("--", "-", "+", "++").map(Component::literal).toArray(MutableComponent[]::new);
+        Component[] mp = Stream.of("--", "-", "+", "++").map(Component::literal).toArray(Component[]::new);
         int w = Stream.of(mp).mapToInt(font::width).max().orElseThrow();
         int h = 20;
         int top = 16;
 
         for (int i = 0; i < upSide; i++) {
             for (int j = 0; j < mp.length; j++) {
-                addRenderableWidget(new Button(this.getGuiLeft() + imageWidth / 2 - 4 * w * upSide / 2 + w * j, this.getGuiTop() + top, w, h, mp[j], this::actionPerformed));
+                addRenderableWidget(Button.builder(mp[j], this::actionPerformed)
+                    .pos(this.getGuiLeft() + imageWidth / 2 - 4 * w * upSide / 2 + w * j, this.getGuiTop() + top)
+                    .size(w, h)
+                    .build());
             }
         }
         for (int i = 0; i < center; i++) {
             for (int j = 0; j < mp.length; j++) {
-                addRenderableWidget(new Button(this.getGuiLeft() + imageWidth / 2 - 4 * w * center / 2 + i * w * mp.length + w * j, this.getGuiTop() + top + yOffsetCenter, w, h, mp[j], this::actionPerformed));
+                addRenderableWidget(Button.builder(mp[j], this::actionPerformed)
+                    .pos(this.getGuiLeft() + imageWidth / 2 - 4 * w * center / 2 + i * w * mp.length + w * j, this.getGuiTop() + top + yOffsetCenter)
+                    .size(w, h)
+                    .build());
             }
         }
         for (int i = 0; i < downSide; i++) {
             for (int j = 0; j < mp.length; j++) {
-                addRenderableWidget(new Button(this.getGuiLeft() + imageWidth / 2 - 4 * w * downSide / 2 + w * j, this.getGuiTop() + top + yOffsetBottom, w, h, mp[j], this::actionPerformed));
+                addRenderableWidget(Button.builder(mp[j], this::actionPerformed)
+                    .pos(this.getGuiLeft() + imageWidth / 2 - 4 * w * downSide / 2 + w * j, this.getGuiTop() + top + yOffsetBottom)
+                    .size(w, h)
+                    .build());
             }
         }
     }

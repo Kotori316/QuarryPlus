@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import com.mojang.datafixers.DSL;
@@ -72,12 +73,16 @@ import com.yogpc.qp.machines.workbench.BlockWorkbench;
 import com.yogpc.qp.machines.workbench.ContainerWorkbench;
 import com.yogpc.qp.machines.workbench.TileWorkbench;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -88,7 +93,7 @@ import net.minecraftforge.network.IContainerFactory;
 import net.minecraftforge.registries.RegisterEvent;
 
 public class Holder {
-    public static final CreativeModeTab TAB = new QuarryCreativeTab();
+    private static final List<Supplier<List<ItemStack>>> TAB_ITEM = new ArrayList<>();
     private static final List<QPBlock> BLOCKS = new ArrayList<>();
     private static final List<QPItem> ITEMS = new ArrayList<>();
     private static final List<NamedEntry<BlockEntityType<?>>> ENTITY_TYPES = new ArrayList<>();
@@ -98,20 +103,20 @@ public class Holder {
     private static <T extends QPBlock> T registerBlock(T block, EnableOrNot condition) {
         BLOCKS.add(block);
         CONDITION_HOLDERS.add(new EntryConditionHolder(block.getRegistryName(), condition));
-        ((QuarryCreativeTab) TAB).addItem(block);
+        TAB_ITEM.add(block.blockItem::creativeTabItem);
         return block;
     }
 
     private static <T extends QPBlock & EntityBlock> T registerBlock(T block) {
         BLOCKS.add(block);
-        ((QuarryCreativeTab) TAB).addItem(block);
+        TAB_ITEM.add(block.blockItem::creativeTabItem);
         return block;
     }
 
     private static <T extends QPItem> T registerItem(T item, EnableOrNot condition) {
         ITEMS.add(item);
         CONDITION_HOLDERS.add(new EntryConditionHolder(item.getRegistryName(), condition));
-        ((QuarryCreativeTab) TAB).addItem(item);
+        TAB_ITEM.add(item::creativeTabItem);
         return item;
     }
 
@@ -156,6 +161,12 @@ public class Holder {
 
     public static List<NamedEntry<MenuType<?>>> menuTypes() {
         return Collections.unmodifiableList(MENU_TYPES);
+    }
+
+    public static void createTab(CreativeModeTab.Builder builder) {
+        builder.icon(() -> new ItemStack(Holder.BLOCK_QUARRY));
+        builder.title(Component.translatable("itemGroup.%s".formatted(QuarryPlus.modID)));
+        builder.displayItems((flag, output, permission) -> TAB_ITEM.stream().map(Supplier::get).forEach(output::acceptAll));
     }
 
     public static final QuarryBlock BLOCK_QUARRY = registerBlock(new QuarryBlock());
@@ -240,14 +251,14 @@ public class Holder {
     public static final MenuType<FillerMenu> FILLER_MENU_TYPE = registerMenuType((windowId, inv, data) ->
         new FillerMenu(windowId, inv.player, data.readBlockPos()), FillerMenu.GUI_ID);
 
-    public static final LootItemFunctionType ENCHANTED_LOOT_TYPE = Registry.register(Registry.LOOT_FUNCTION_TYPE,
+    public static final LootItemFunctionType ENCHANTED_LOOT_TYPE = Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE,
         new ResourceLocation(QuarryPlus.modID, EnchantedLootFunction.NAME), new LootItemFunctionType(EnchantedLootFunction.SERIALIZER));
-    public static final LootItemFunctionType QUARRY_LOOT_TYPE = Registry.register(Registry.LOOT_FUNCTION_TYPE,
+    public static final LootItemFunctionType QUARRY_LOOT_TYPE = Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE,
         new ResourceLocation(QuarryPlus.modID, QuarryLootFunction.NAME), new LootItemFunctionType(QuarryLootFunction.SERIALIZER));
-    public static final LootItemFunctionType MODULE_LOOT_TYPE = Registry.register(Registry.LOOT_FUNCTION_TYPE,
+    public static final LootItemFunctionType MODULE_LOOT_TYPE = Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE,
         new ResourceLocation(QuarryPlus.modID, ModuleLootFunction.NAME), new LootItemFunctionType(ModuleLootFunction.SERIALIZER));
 
-    public static final TagKey<Item> TAG_MARKERS = TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation(QuarryPlus.modID, "markers"));
+    public static final TagKey<Item> TAG_MARKERS = TagKey.create(Registries.ITEM, new ResourceLocation(QuarryPlus.modID, "markers"));
 
     public record EntryConditionHolder(ResourceLocation location, EnableOrNot condition) {
         public boolean configurable() {

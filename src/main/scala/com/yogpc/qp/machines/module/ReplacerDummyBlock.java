@@ -1,6 +1,5 @@
 package com.yogpc.qp.machines.module;
 
-import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -28,7 +27,7 @@ public class ReplacerDummyBlock extends AbstractGlassBlock {
             .lightLevel(value -> 15)
             .strength(1.0f)
         );
-        blockItem = new BlockItem(this, new Item.Properties().tab(Holder.TAB));
+        blockItem = new BlockItem(this, new Item.Properties());
     }
 
     @Override

@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.packet.PacketHandler;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -28,7 +28,7 @@ public final class SetSpawnerEntityMessage implements IMessage {
 
     public SetSpawnerEntityMessage(FriendlyByteBuf buf) {
         this.pos = buf.readBlockPos();
-        this.dim = ResourceKey.create(Registry.DIMENSION_REGISTRY, buf.readResourceLocation());
+        this.dim = ResourceKey.create(Registries.DIMENSION, buf.readResourceLocation());
         this.entity = buf.readResourceLocation();
     }
 

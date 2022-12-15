@@ -2,7 +2,6 @@ package com.yogpc.qp.machines.module;
 
 import java.util.List;
 
-import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPItem;
 import net.minecraft.network.chat.Component;
@@ -16,7 +15,7 @@ public class BedrockModuleItem extends QPItem implements QuarryModuleProvider.It
     public static final String NAME = "remove_bedrock_module";
 
     public BedrockModuleItem() {
-        super(new ResourceLocation(QuarryPlus.modID, NAME), new Properties().tab(Holder.TAB).fireResistant());
+        super(new ResourceLocation(QuarryPlus.modID, NAME), new Properties().fireResistant());
     }
 
     @Override

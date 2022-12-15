@@ -13,10 +13,12 @@
 
 package com.yogpc.qp.machines.mover;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPBlock;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -25,7 +27,7 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -40,7 +42,7 @@ public class BlockMover extends QPBlock {
     public static final String GUI_ID = QuarryPlus.modID + ":gui_" + NAME;
 
     public BlockMover() {
-        super(Properties.of(Material.METAL).strength(1.2f), NAME);
+        super(Properties.of(Material.METAL).strength(1.2f), NAME, BlockMoverItem::new);
     }
 
     @Override
@@ -61,25 +63,6 @@ public class BlockMover extends QPBlock {
         return super.use(state, level, pos, player, hand, hit);
     }
 
-    @Override
-    public void fillItemCategory(CreativeModeTab tab, NonNullList<ItemStack> stacks) {
-        super.fillItemCategory(tab, stacks);
-        {
-            var stack = new ItemStack(Items.DIAMOND_PICKAXE);
-            stack.enchant(Enchantments.BLOCK_EFFICIENCY, 5);
-            stack.enchant(Enchantments.UNBREAKING, 3);
-            stack.enchant(Enchantments.BLOCK_FORTUNE, 3);
-            stacks.add(stack);
-        }
-        {
-            var stack = new ItemStack(Items.DIAMOND_PICKAXE);
-            stack.enchant(Enchantments.BLOCK_EFFICIENCY, 5);
-            stack.enchant(Enchantments.UNBREAKING, 3);
-            stack.enchant(Enchantments.SILK_TOUCH, 1);
-            stacks.add(stack);
-        }
-    }
-
     private record InteractionObject(BlockPos pos, Component name) implements MenuProvider {
 
         @Override
@@ -90,6 +73,34 @@ public class BlockMover extends QPBlock {
         @Override
         public AbstractContainerMenu createMenu(int id, Inventory inventory, Player player) {
             return new ContainerMover(id, player, pos);
+        }
+    }
+
+    private static final class BlockMoverItem extends QPBlock.QPBlockItem {
+
+        public BlockMoverItem(QPBlock block) {
+            super(block, new Item.Properties());
+        }
+
+        @Override
+        public List<ItemStack> creativeTabItem() {
+            List<ItemStack> stacks = new ArrayList<>();
+            stacks.add(new ItemStack(this));
+            {
+                var stack = new ItemStack(Items.DIAMOND_PICKAXE);
+                stack.enchant(Enchantments.BLOCK_EFFICIENCY, 5);
+                stack.enchant(Enchantments.UNBREAKING, 3);
+                stack.enchant(Enchantments.BLOCK_FORTUNE, 3);
+                stacks.add(stack);
+            }
+            {
+                var stack = new ItemStack(Items.DIAMOND_PICKAXE);
+                stack.enchant(Enchantments.BLOCK_EFFICIENCY, 5);
+                stack.enchant(Enchantments.UNBREAKING, 3);
+                stack.enchant(Enchantments.SILK_TOUCH, 1);
+                stacks.add(stack);
+            }
+            return stacks;
         }
     }
 }

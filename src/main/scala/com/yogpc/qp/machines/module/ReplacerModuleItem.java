@@ -25,7 +25,7 @@ public class ReplacerModuleItem extends QPItem implements QuarryModuleProvider.I
     public static final String KEY_STATE = "state";
 
     public ReplacerModuleItem() {
-        super(new ResourceLocation(QuarryPlus.modID, NAME), new Properties().tab(Holder.TAB));
+        super(new ResourceLocation(QuarryPlus.modID, NAME), new Properties());
     }
 
     @Override

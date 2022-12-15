@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 import com.yogpc.qp.packet.IMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -32,7 +32,7 @@ public final class ControllerOpenMessage implements IMessage {
 
     public ControllerOpenMessage(FriendlyByteBuf buf) {
         this.pos = buf.readBlockPos();
-        this.dim = ResourceKey.create(Registry.DIMENSION_REGISTRY, buf.readResourceLocation());
+        this.dim = ResourceKey.create(Registries.DIMENSION, buf.readResourceLocation());
         int size = buf.readInt();
         this.allEntities = Stream.generate(buf::readResourceLocation).limit(size).toList();
     }
