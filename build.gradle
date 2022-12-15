@@ -212,7 +212,7 @@ dependencies {
     testImplementation(group: 'org.scala-lang', name: 'scala-library', version: project.scalaVersion)
     testImplementation(group: 'org.typelevel', name: "cats-core_2.13", version: project.catsVersion)
 
-    boolean useREI = Boolean.parseBoolean(System.getenv("USE_REI"))
+    boolean useREI = true // Boolean.parseBoolean(System.getenv("USE_REI"))
     compileOnly(fg.deobf(group: "mezz.jei", name: "jei-1.19.2-common-api", version: project.jeiVersion))
     compileOnly(fg.deobf(group: "mezz.jei", name: "jei-1.19.2-forge-api", version: project.jeiVersion))
     if (useREI) {
