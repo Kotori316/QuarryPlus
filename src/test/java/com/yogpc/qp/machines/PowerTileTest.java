@@ -96,7 +96,7 @@ public class PowerTileTest {
         @MethodSource("com.yogpc.qp.machines.PowerTileTest#fluidBlocks")
         @DisplayName("Full fluid block always has non-empty FluidState.")
         void fluidBlock(Block fluidBlock) {
-            var fluidState = fluidBlock.defaultBlockState().getFluidState();
+            var fluidState = QuarryPlusTest.getFluidState(fluidBlock.defaultBlockState());
             assertFalse(fluidState.isEmpty());
             assertTrue(fluidState.isSource());
         }
@@ -105,7 +105,7 @@ public class PowerTileTest {
         @MethodSource("com.yogpc.qp.machines.PowerTileTest#solidBlocks")
         @DisplayName("Solid block always has empty FluidState")
         void solidBlock(Block block) {
-            var fluidState = block.defaultBlockState().getFluidState();
+            var fluidState = QuarryPlusTest.getFluidState(block.defaultBlockState());
             assertTrue(fluidState.isEmpty());
         }
 
@@ -114,9 +114,9 @@ public class PowerTileTest {
         void waterloggedBlock(Block block) {
             var state = block.defaultBlockState();
             var noWater = state.setValue(BlockStateProperties.WATERLOGGED, false);
-            var noWaterFluidState = noWater.getFluidState();
+            var noWaterFluidState = QuarryPlusTest.getFluidState(noWater);
             var withWater = state.setValue(BlockStateProperties.WATERLOGGED, true);
-            var withWaterFluidState = withWater.getFluidState();
+            var withWaterFluidState = QuarryPlusTest.getFluidState(withWater);
 
             assertAll(
                 () -> assertTrue(noWaterFluidState.isEmpty()),
