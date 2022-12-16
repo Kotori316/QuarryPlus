@@ -49,12 +49,12 @@ class BlockDropProvider extends BlockLootSubProvider {
         Stream.of(
             Holder.BLOCK_QUARRY
         ).forEach(b ->
-            add(b, createSingleItemTable(b).apply(QuarryLootFunction.builder()).apply(ModuleLootFunction.builder()))
+            add(b, createSingleItemTable(b).apply(EnchantedLootFunction.builder()).apply(QuarryLootFunction.builder()).apply(ModuleLootFunction.builder()))
         );
         Stream.of(
             Holder.BLOCK_ADV_QUARRY
         ).forEach(b ->
-            add(b, createSingleItemTable(b).apply(ModuleLootFunction.builder()))
+            add(b, createSingleItemTable(b).apply(EnchantedLootFunction.builder()).apply(ModuleLootFunction.builder()))
         );
     }
 

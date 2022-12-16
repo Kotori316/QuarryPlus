@@ -2,6 +2,9 @@
   "type": "minecraft:block",
   "functions": [
     {
+      "function": "quarryplus:drop_function"
+    },
+    {
       "function": "quarryplus:drop_function_module"
     }
   ],
