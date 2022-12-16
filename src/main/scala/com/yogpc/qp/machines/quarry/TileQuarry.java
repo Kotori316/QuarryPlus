@@ -350,10 +350,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
     }
 
     public void setEnchantments(Map<Enchantment, Integer> enchantments) {
-        setEnchantments(enchantments.entrySet().stream()
-            .map(EnchantmentLevel::new)
-            .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR)
-            .toList());
+        setEnchantments(EnchantmentLevel.fromMap(enchantments));
     }
 
     public void setEnchantments(List<EnchantmentLevel> enchantments) {

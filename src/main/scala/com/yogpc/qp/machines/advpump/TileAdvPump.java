@@ -178,7 +178,7 @@ public class TileAdvPump extends PowerTile
         }
     }
 
-    public void setEnchantment(EnchantmentEfficiency enchantmentEfficiency) {
+    void setEnchantment(EnchantmentEfficiency enchantmentEfficiency) {
         this.enchantmentEfficiency = enchantmentEfficiency;
         this.setMaxEnergy(enchantmentEfficiency.energyCapacity);
         if (level != null && !level.isClientSide)

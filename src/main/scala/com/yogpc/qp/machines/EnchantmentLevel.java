@@ -85,6 +85,13 @@ public record EnchantmentLevel(Enchantment enchantment, int level) {
         return list;
     }
 
+    public static List<EnchantmentLevel> fromMap(Map<Enchantment, Integer> enchantmentMap) {
+        return enchantmentMap.entrySet().stream()
+            .map(EnchantmentLevel::new)
+            .sorted(QUARRY_ENCHANTMENT_COMPARATOR)
+            .toList();
+    }
+
     public static final Comparator<EnchantmentLevel> COMPARATOR =
         Comparator.comparing(EnchantmentLevel::enchantmentID)
             .thenComparingInt(EnchantmentLevel::level);
