@@ -74,10 +74,7 @@ class EnchantmentEfficiency {
     }
 
     static EnchantmentEfficiency fromMap(Map<Enchantment, Integer> enchantmentMap) {
-        return new EnchantmentEfficiency(enchantmentMap.entrySet().stream()
-            .map(EnchantmentLevel::new)
-            .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR)
-            .toList());
+        return new EnchantmentEfficiency(EnchantmentLevel.fromMap(enchantmentMap));
     }
 
 }
