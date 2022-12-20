@@ -202,7 +202,8 @@ public class TileAdvQuarry extends PowerTile implements
                 newArea, QuarryPlus.config.common.chunkDestroyerLimit.get());
             return false;
         }
-        if (FTBChunksProtectionCheck.isAreaProtected(newArea.shrink(1, 0, 1), this.getTargetWorld().dimension())) {
+        this.cache.isProtectedByFTB.expire();
+        if (this.cache.isProtectedByFTB.getValue(getLevel())) {
             showErrorMessage.accept(Component.translatable("quarryplus.chat.warn_protected_area"));
             AdvQuarry.LOGGER.info(AdvQuarry.TILE, "Area contains protected chunks. Quarry has stopped.");
         }
@@ -237,7 +238,7 @@ public class TileAdvQuarry extends PowerTile implements
     }
 
     public boolean canStartWork() {
-        return area != null && !FTBChunksProtectionCheck.isAreaProtected(area.shrink(1, 0, 1), getTargetWorld().dimension());
+        return area != null && !this.cache.isProtectedByFTB.getValue(getLevel());
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
@@ -513,6 +514,7 @@ public class TileAdvQuarry extends PowerTile implements
         final CacheEntry<BlockState> replaceState;
         final CacheEntry<Integer> netherTop;
         final CacheEntry<EnchantmentHolder> enchantments;
+        final CacheEntry<Boolean> isProtectedByFTB;
 
         public QuarryCache() {
             replaceState = CacheEntry.supplierCache(5,
@@ -520,6 +522,8 @@ public class TileAdvQuarry extends PowerTile implements
             netherTop = CacheEntry.supplierCache(100,
                 QuarryPlus.config.common.netherTop::get);
             enchantments = CacheEntry.supplierCache(1000, () -> EnchantmentHolder.makeHolder(TileAdvQuarry.this));
+            isProtectedByFTB = CacheEntry.supplierCache(300 * 20, () ->
+                area != null && FTBChunksProtectionCheck.isAreaProtected(area.shrink(1, 0, 1), getTargetWorld().dimension()));
         }
     }
 
