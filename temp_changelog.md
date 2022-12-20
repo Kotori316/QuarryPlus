@@ -1,3 +1,8 @@
+## Version 19.10.1
+
+* Not to check protection chunks too much.
+* Fixed a bug that QuarryPlus removes blocks in protected chunks when it tries to place frame.
+
 ## Version 19.10
 
 * Add config option to extract items in Workbench Plus.
