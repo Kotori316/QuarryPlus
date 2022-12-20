@@ -70,6 +70,13 @@ class FTBChunksProtectionCheckTest {
             assertEquals(Set.of(new ChunkPos(0, 0), new ChunkPos(0, 1), new ChunkPos(1, 0), new ChunkPos(1, 1)), chunkPoses);
         }
 
+        @Test
+        void minus1() {
+            Area area = new Area(-5, 0, 70, 4, 0, 71, Direction.NORTH);
+            var chunkPoses = FTBChunksProtectionCheck.getChunkPosStream(area).collect(Collectors.toSet());
+            assertEquals(Set.of(new ChunkPos(0, 4), new ChunkPos(-1, 4)), chunkPoses);
+        }
+
         @ParameterizedTest
         @MethodSource("chunk2To4Values")
         void chunk2To4(int xMin, int xMax, int zMin, int zMax) {
