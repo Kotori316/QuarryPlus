@@ -9,6 +9,7 @@ import java.util.function.Predicate;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
+import com.yogpc.qp.machines.BreakResult;
 import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.PowerTile;
 import net.minecraft.core.BlockPos;
@@ -80,8 +81,14 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
             if (targetPos == null) {
                 quarry.setState(MOVE_HEAD, state);
             } else {
-                var breakResult = quarry.breakBlock(targetPos);
-                if (breakResult.isSuccess()) {
+                var targetState = quarry.getTargetWorld().getBlockState(targetPos);
+                BreakResult breakResult;
+                if (targetState.isAir()) {
+                    breakResult = BreakResult.SUCCESS;
+                } else {
+                    breakResult = quarry.breakBlock(targetPos);
+                }
+                if (breakResult == BreakResult.SUCCESS) {
                     if (quarry.useEnergy(PowerManager.getMakeFrameEnergy(quarry), PowerTile.Reason.MAKE_FRAME, false)) {
                         quarry.getTargetWorld().setBlockAndUpdate(targetPos, Holder.BLOCK_FRAME.defaultBlockState());
                     }
@@ -276,7 +283,7 @@ class StateConditions {
         return pos -> {
             var state = world.getBlockState(pos);
             return state.is(Holder.BLOCK_FRAME) // Frame
-                || !quarry.canBreak(world, pos, state) // Unbreakable
+                   || !quarry.canBreak(world, pos, state) // Unbreakable
                 ;
         };
     }
@@ -287,7 +294,7 @@ class StateConditions {
         return pos -> {
             var state = world.getBlockState(pos);
             return state.isAir() // Air
-                || !quarry.canBreak(world, pos, state) // Unbreakable
+                   || !quarry.canBreak(world, pos, state) // Unbreakable
                 ;
         };
     }
