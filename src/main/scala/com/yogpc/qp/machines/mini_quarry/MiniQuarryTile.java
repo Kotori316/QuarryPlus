@@ -126,7 +126,7 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
             return true;
         }
         return state.getDestroySpeed(level, pos) >= 0 &&
-            denyList.stream().noneMatch(t -> t.test(state, level, pos));
+               denyList.stream().noneMatch(t -> t.test(state, level, pos));
     }
 
     ServerLevel getTargetWorld() {

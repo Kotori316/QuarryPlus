@@ -48,7 +48,7 @@ public final class BlockStatePredicateTagsTest {
     @GameTestGenerator
     public List<TestFunction> cycleConstant() {
         return Stream.of(BlockStatePredicate.air(), BlockStatePredicate.all(), BlockStatePredicate.fluid())
-            .map(p -> GameTestUtil.create(QuarryPlus.modID, BATCH, p.toString(), g -> cycle(p)))
+            .map(p -> GameTestUtil.create(QuarryPlus.modID, BATCH, p.toString(), () -> cycle(p)))
             .toList();
     }
 
@@ -58,7 +58,7 @@ public final class BlockStatePredicateTagsTest {
         var abnormalNames = Stream.of("as", "a:t", "", "fe:").map(ResourceLocation::new);
         return Stream.concat(names, abnormalNames)
             .map(BlockStatePredicate::name)
-            .map(p -> GameTestUtil.create(QuarryPlus.modID, BATCH, p.toString(), g -> cycle(p)))
+            .map(p -> GameTestUtil.create(QuarryPlus.modID, BATCH, p.toString(), () -> cycle(p)))
             .toList();
     }
 
@@ -67,7 +67,7 @@ public final class BlockStatePredicateTagsTest {
         var names = Stream.of(Tags.Blocks.STONE, Tags.Blocks.COBBLESTONE, BlockTags.ACACIA_LOGS, BlockTags.BEACON_BASE_BLOCKS)
             .map(TagKey::location);
         return names.map(BlockStatePredicate::tag)
-            .map(p -> GameTestUtil.create(QuarryPlus.modID, BATCH, p.toString(), g -> cycle(p)))
+            .map(p -> GameTestUtil.create(QuarryPlus.modID, BATCH, p.toString(), () -> cycle(p)))
             .toList();
     }
 
@@ -76,6 +76,7 @@ public final class BlockStatePredicateTagsTest {
         var p = BlockStatePredicate.tag(tag.location());
         helper.setBlock(pos, state);
         assertTrue(p.test(state, helper.getLevel(), helper.absolutePos(pos)), "Tag: %s, State: %s".formatted(tag, state));
+        helper.succeed();
     }
 
     @GameTestGenerator
@@ -113,7 +114,7 @@ public final class BlockStatePredicateTagsTest {
             "#minecraft:dirt"
         );
         return names.map(BlockStatePredicate::predicateString)
-            .map(p -> GameTestUtil.create(QuarryPlus.modID, BATCH, p.toString(), g -> cycle(p)))
+            .map(p -> GameTestUtil.create(QuarryPlus.modID, BATCH, p.toString(), () -> cycle(p)))
             .toList();
     }
 
@@ -130,6 +131,7 @@ public final class BlockStatePredicateTagsTest {
         } else {
             assertFalse(result, message);
         }
+        helper.succeed();
     }
 
     @GameTestGenerator

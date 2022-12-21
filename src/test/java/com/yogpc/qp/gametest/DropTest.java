@@ -33,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -84,6 +85,7 @@ public final class DropTest {
     }
 
     private static String getPostFix(Map<Enchantment, Integer> map) {
+        if (map.isEmpty()) return "none";
         return map.entrySet().stream().map(e -> "%s%d".formatted(
                 Objects.requireNonNull(ForgeRegistries.ENCHANTMENTS.getKey(e.getKey())).getPath().charAt(0),
                 e.getValue()
@@ -151,7 +153,10 @@ public final class DropTest {
                 assertAll(
                     () -> assertEquals(block.blockItem, stack.getItem()),
                     () -> assertEquals(1, stack.getCount()),
-                    () -> assertNotNull(tag, "Stack: %s, %s".formatted(stack, stack.getTag())),
+                    () -> {
+                        if (enchantments.isEmpty()) assertNull(tag, "Stack: %s, %s".formatted(stack, stack.getTag()));
+                        else assertNotNull(tag, "Stack: %s, %s".formatted(stack, enchantments));
+                    },
                     () -> assertEquals(enchantments, EnchantmentHelper.getEnchantments(stack))
                 );
             })
