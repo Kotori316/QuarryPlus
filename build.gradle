@@ -225,20 +225,22 @@ dependencies {
         })
         compileOnly(fg.deobf(group: "me.shedaniel", name: "RoughlyEnoughItems-forge", version: project.reiVersion))
         compileOnly(fg.deobf(group: "me.shedaniel.cloth", name: "cloth-config-forge", version: project.clothVersion))
-        implementation(fg.deobf(group: "dev.architectury", name: "architectury-forge", version: project.architecturyVersion))
+        compileOnly(fg.deobf(group: "dev.architectury", name: "architectury-forge", version: project.architecturyVersion))
     }
     runtimeOnly(group: "com.kotori316", name: "ScalableCatsForce".toLowerCase(), version: project.slpVersion, classifier: "with-library") {
         transitive(false)
     }
 
-    // FTB Chunks stuff
-    implementation(fg.deobf(group: "dev.ftb.mods", name: "ftb-chunks-forge", version: project.ftbChunksVersion))
-    // implementation
-    implementation(fg.deobf(group: "dev.ftb.mods", name: "ftb-library-forge", version: project.ftbLibraryVersion))
-    // implementation
-    runtimeOnly(fg.deobf(group: "dev.ftb.mods", name: "ftb-teams-forge", version: project.ftbTeamsVersion))
-    // runtimeOnly
-
+    boolean enableFTB = false // Boolean.parseBoolean(System.getenv("USE_FTB"))
+    if (enableFTB) { // FTB Chunks stuff
+        implementation(fg.deobf(group: "dev.ftb.mods", name: "ftb-chunks-forge", version: project.ftbChunksVersion))
+        implementation(fg.deobf(group: "dev.ftb.mods", name: "ftb-library-forge", version: project.ftbLibraryVersion))
+        runtimeOnly(fg.deobf(group: "dev.ftb.mods", name: "ftb-teams-forge", version: project.ftbTeamsVersion))
+        implementation(fg.deobf(group: "dev.architectury", name: "architectury-forge", version: project.architecturyVersion))
+    } else {
+        compileOnly(fg.deobf(group: "dev.ftb.mods", name: "ftb-chunks-forge", version: project.ftbChunksVersion))
+        compileOnly(fg.deobf(group: "dev.ftb.mods", name: "ftb-library-forge", version: project.ftbLibraryVersion))
+    }
     // Test Dependencies.
     // Required these libraries to execute the tests.
     // The library will avoid errors of ForgeRegistry and Capability.
