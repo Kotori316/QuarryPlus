@@ -57,6 +57,7 @@ minecraft {
             property('mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg")
             property "mixin.debug.export", "true"
             property 'forge.logging.console.level', 'debug'
+            property 'forge.enabledGameTestNamespaces', 'QuarryPlus'.toLowerCase()
             // From https://github.com/SlimeKnights/TinkersConstruct/blob/1.18/build.gradle
             if (project.hasProperty('mc_uuid')) {
                 // Your uuid without any dashes in the middle
@@ -74,7 +75,11 @@ minecraft {
             mods {
                 quarryplus {
                     source sourceSets.main
+                    source sourceSets.test
                 }
+            }
+            lazyToken("minecraft_classpath") {
+                configurations.game_test.collect { it.absolutePath }.join(File.pathSeparator)
             }
         }
 
@@ -244,8 +249,8 @@ dependencies {
     // Test Dependencies.
     // Required these libraries to execute the tests.
     // The library will avoid errors of ForgeRegistry and Capability.
-    testImplementation(fg.deobf(group: "com.kotori316", name: "test_utility", version: project.testUtilVersion))
-    testImplementation(group: "com.kotori316", name: "test_utility_dependency", version: "1.0-SNAPSHOT")
+    implementation(fg.deobf(group: "com.kotori316", name: "test_utility", version: project.testUtilVersion))
+    implementation(group: "com.kotori316", name: "test_utility_dependency", version: "1.0-SNAPSHOT")
 
     game_test(group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: project.jupiterVersion)
     game_test(group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: project.jupiterVersion)
