@@ -52,7 +52,7 @@ class EnergyModuleItemTest {
     @GameTestGenerator
     List<TestFunction> creativeOverflow2() {
         return IntStream.of(2, 5, 10, 16, 22, 64, 128, Integer.MAX_VALUE).mapToObj(
-            i -> GameTestUtil.create(QuarryPlus.modID, BATCH, "creativeOverflow2(%d)".formatted(i), () -> creativeOverflow2(i))
+            i -> GameTestUtil.create(QuarryPlus.modID, BATCH, "creativeOverflow2_%d".formatted(i), () -> creativeOverflow2(i))
         ).toList();
     }
 
@@ -64,7 +64,7 @@ class EnergyModuleItemTest {
     @GameTestGenerator
     List<TestFunction> minusStackSize() {
         return IntStream.of(-1, -4, -5, -10, -16, -43, -64, Integer.MIN_VALUE / 5, Integer.MIN_VALUE).mapToObj(
-            i -> GameTestUtil.create(QuarryPlus.modID, BATCH, "minusStackSize(%d)".formatted(i), () -> minusStackSize(i))
+            i -> GameTestUtil.create(QuarryPlus.modID, BATCH, "minusStackSize_%d".formatted(i), () -> minusStackSize(i))
         ).toList();
     }
 

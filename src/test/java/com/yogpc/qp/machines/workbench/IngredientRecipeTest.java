@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.google.gson.Gson;
@@ -25,6 +26,7 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import com.kotori316.testutil.GameTestUtil;
 
@@ -40,6 +42,12 @@ class IngredientRecipeTest {
     static final String BATCH = "IngredientRecipe";
     static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
     static final IngredientRecipeSerialize SERIALIZE = new IngredientRecipeSerialize();
+
+    static String itemNames(List<ItemStack> stacks) {
+        if (stacks.isEmpty()) return "none";
+        return stacks.stream().map(i -> "%d%s".formatted(i.getCount(), Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(i.getItem())).getPath()))
+            .collect(Collectors.joining("_"));
+    }
 
     @GameTest(template = GameTestUtil.EMPTY_STRUCTURE, batch = BATCH)
     void dummy() {
@@ -64,7 +72,7 @@ class IngredientRecipeTest {
     @GameTestGenerator
     List<TestFunction> advPumpRecipe() {
         return advPumpRecipeParam().map(
-            i -> GameTestUtil.create(QuarryPlus.modID, BATCH, "advPumpRecipe(%s)".formatted(i), () -> advPumpRecipe(i))
+            i -> GameTestUtil.create(QuarryPlus.modID, BATCH, "adv_pump_recipe_%s".formatted(itemNames(i)), () -> advPumpRecipe(i))
         ).toList();
     }
 
@@ -100,7 +108,7 @@ class IngredientRecipeTest {
     @GameTestGenerator
     List<TestFunction> notAdvPumpRecipe() {
         return notAdvPumpRecipeParam().map(
-            i -> GameTestUtil.create(QuarryPlus.modID, BATCH, "notAdvPumpRecipe(%s)".formatted(i), () -> notAdvPumpRecipe(i))
+            i -> GameTestUtil.create(QuarryPlus.modID, BATCH, "notAdvPumpRecipe_%s".formatted(itemNames(i)), () -> notAdvPumpRecipe(i))
         ).toList();
     }
 

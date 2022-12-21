@@ -69,11 +69,11 @@ class ModuleInventoryTest {
         List<TestFunction> empty() {
             var inv = new InventoryHolder();
             return Stream.of(
-                GameTestUtil.create(QuarryPlus.modID, BATCH, "Pump Module", () -> assertFalse(inv.hasPumpModule())),
-                GameTestUtil.create(QuarryPlus.modID, BATCH, "Bedrock Module", () -> assertFalse(inv.hasBedrockModule())),
-                GameTestUtil.create(QuarryPlus.modID, BATCH, "Filler Module", () -> assertFalse(inv.hasFillerModule())),
-                GameTestUtil.create(QuarryPlus.modID, BATCH, "Exp Module", () -> assertTrue(inv.getExpModule().isEmpty())),
-                GameTestUtil.create(QuarryPlus.modID, BATCH, "Replacer Module", () -> assertTrue(inv.getReplacerModule().isEmpty()))
+                GameTestUtil.create(QuarryPlus.modID, BATCH, "module_inventory_pump_module", () -> assertFalse(inv.hasPumpModule())),
+                GameTestUtil.create(QuarryPlus.modID, BATCH, "module_inventory_bedrock_module", () -> assertFalse(inv.hasBedrockModule())),
+                GameTestUtil.create(QuarryPlus.modID, BATCH, "module_inventory_filler_module", () -> assertFalse(inv.hasFillerModule())),
+                GameTestUtil.create(QuarryPlus.modID, BATCH, "module_inventory_exp_module", () -> assertTrue(inv.getExpModule().isEmpty())),
+                GameTestUtil.create(QuarryPlus.modID, BATCH, "module_inventory_replacer_module", () -> assertTrue(inv.getReplacerModule().isEmpty()))
             ).toList();
         }
 
@@ -81,10 +81,10 @@ class ModuleInventoryTest {
         List<TestFunction> has() {
             return IntStream.of(0, 1, 2, 3, 4).boxed()
                 .flatMap(i -> Stream.of(
-                    GameTestUtil.create(QuarryPlus.modID, BATCH, "hasPump(%d)".formatted(i), () -> hasPump(i)),
-                    GameTestUtil.create(QuarryPlus.modID, BATCH, "hasBedrock(%d)".formatted(i), () -> hasBedrock(i)),
-                    GameTestUtil.create(QuarryPlus.modID, BATCH, "hasFiller(%d)".formatted(i), () -> hasFiller(i)),
-                    GameTestUtil.create(QuarryPlus.modID, BATCH, "hasExp(%d)".formatted(i), () -> hasExp(i))
+                    GameTestUtil.create(QuarryPlus.modID, BATCH, "hasPump_%d".formatted(i), () -> hasPump(i)),
+                    GameTestUtil.create(QuarryPlus.modID, BATCH, "hasBedrock_%d".formatted(i), () -> hasBedrock(i)),
+                    GameTestUtil.create(QuarryPlus.modID, BATCH, "hasFiller_%d".formatted(i), () -> hasFiller(i)),
+                    GameTestUtil.create(QuarryPlus.modID, BATCH, "hasExp_%d".formatted(i), () -> hasExp(i))
                 )).toList();
         }
 
@@ -120,10 +120,10 @@ class ModuleInventoryTest {
             inv.inventory.setItem(2, new ItemStack(Holder.ITEM_FILLER_MODULE));
             inv.inventory.setItem(3, new ItemStack(Holder.ITEM_EXP_MODULE));
             return Stream.of(
-                GameTestUtil.create(QuarryPlus.modID, BATCH, "Filler Module", () -> assertTrue(inv.hasFillerModule())),
-                GameTestUtil.create(QuarryPlus.modID, BATCH, "Bedrock Module", () -> assertTrue(inv.hasBedrockModule())),
-                GameTestUtil.create(QuarryPlus.modID, BATCH, "Pump Module", () -> assertTrue(inv.hasPumpModule())),
-                GameTestUtil.create(QuarryPlus.modID, BATCH, "Exp Module", () -> assertTrue(inv.getExpModule().isPresent()))
+                GameTestUtil.create(QuarryPlus.modID, BATCH, "has_multi_filler_module", () -> assertTrue(inv.hasFillerModule())),
+                GameTestUtil.create(QuarryPlus.modID, BATCH, "has_multi_bedrock_module", () -> assertTrue(inv.hasBedrockModule())),
+                GameTestUtil.create(QuarryPlus.modID, BATCH, "has_multi_pump_module", () -> assertTrue(inv.hasPumpModule())),
+                GameTestUtil.create(QuarryPlus.modID, BATCH, "has_multi_exp_module", () -> assertTrue(inv.getExpModule().isPresent()))
             ).toList();
         }
     }

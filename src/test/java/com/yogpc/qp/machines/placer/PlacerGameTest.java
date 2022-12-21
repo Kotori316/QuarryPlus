@@ -37,12 +37,12 @@ public final class PlacerGameTest {
     @GameTestGenerator
     public List<TestFunction> removeBlock() {
         return Arrays.stream(Direction.values()).map(f ->
-                GameTestUtil.create(QuarryPlus.modID, BATCH, f.getName(), g -> removeBlock(g, f)))
+                GameTestUtil.create(QuarryPlus.modID, BATCH, "PlacerGameTest_removeBlock_%s".formatted(f.getName()), g -> removeBlock(g, f)))
             .toList();
     }
 
     void removeBlock(GameTestHelper helper, Direction direction) {
-        var placerPos = GameTestUtil.getBasePos(helper).above();
+        var placerPos = GameTestUtil.getBasePos(helper).offset(2, 2, 2);
         var stonePos = placerPos.relative(direction);
         helper.startSequence()
             .thenExecuteAfter(1, () -> helper.setBlock(placerPos, Holder.BLOCK_PLACER.defaultBlockState().setValue(BlockStateProperties.FACING, direction)))
@@ -57,12 +57,12 @@ public final class PlacerGameTest {
     @GameTestGenerator
     public List<TestFunction> placeBlockTest1() {
         return Arrays.stream(Direction.values()).map(f ->
-                GameTestUtil.create(QuarryPlus.modID, BATCH, f.getName(), g -> placeBlockTest1(g, f)))
+                GameTestUtil.create(QuarryPlus.modID, BATCH, "PlacerGameTest_placeBlock_%s".formatted(f.getName()), g -> placeBlockTest1(g, f)))
             .toList();
     }
 
     void placeBlockTest1(GameTestHelper helper, Direction pDirection) {
-        var placerPos = GameTestUtil.getBasePos(helper).above();
+        var placerPos = GameTestUtil.getBasePos(helper).offset(2, 2, 2);
         var stonePos = placerPos.relative(pDirection);
         helper.startSequence()
             .thenExecuteAfter(1, () -> helper.setBlock(placerPos, Holder.BLOCK_PLACER.defaultBlockState().setValue(BlockStateProperties.FACING, pDirection)))
@@ -76,7 +76,7 @@ public final class PlacerGameTest {
 
     @GameTest(template = GameTestUtil.EMPTY_STRUCTURE, batch = BATCH)
     public void notPlaceMode(GameTestHelper helper) {
-        var placerPos = GameTestUtil.getBasePos(helper).above();
+        var placerPos = GameTestUtil.getBasePos(helper).offset(2, 2, 2);
         helper.setBlock(placerPos, Holder.BLOCK_PLACER.defaultBlockState().setValue(BlockStateProperties.FACING, Direction.NORTH));
         var tile = Objects.requireNonNull((PlacerTile) helper.getBlockEntity(placerPos));
         tile.redstoneMode = PlacerTile.RedstoneMode.PULSE_BREAK_ONLY;
@@ -89,7 +89,7 @@ public final class PlacerGameTest {
 
     @GameTest(template = GameTestUtil.EMPTY_STRUCTURE, batch = BATCH)
     public void notBreakMode(GameTestHelper helper) {
-        var placerPos = GameTestUtil.getBasePos(helper).above();
+        var placerPos = GameTestUtil.getBasePos(helper).offset(2, 2, 2);
         helper.setBlock(placerPos, Holder.BLOCK_PLACER.defaultBlockState().setValue(BlockStateProperties.FACING, Direction.NORTH));
         helper.setBlock(placerPos.relative(Direction.NORTH), Blocks.STONE);
         var tile = Objects.requireNonNull((PlacerTile) helper.getBlockEntity(placerPos));
@@ -102,7 +102,7 @@ public final class PlacerGameTest {
 
     @GameTest(template = GameTestUtil.EMPTY_STRUCTURE, batch = BATCH)
     public void sendRSSignal(GameTestHelper helper) {
-        var placerPos = GameTestUtil.getBasePos(helper).above();
+        var placerPos = GameTestUtil.getBasePos(helper).offset(2, 2, 2);
         var stonePos = placerPos.relative(Direction.NORTH);
         helper.setBlock(placerPos, Holder.BLOCK_PLACER.defaultBlockState().setValue(BlockStateProperties.FACING, Direction.NORTH));
         var tile = Objects.requireNonNull((PlacerTile) helper.getBlockEntity(placerPos));
@@ -116,7 +116,7 @@ public final class PlacerGameTest {
 
     @GameTest(template = GameTestUtil.EMPTY_STRUCTURE, batch = BATCH)
     public void placeInWater(GameTestHelper helper) {
-        var placerPos = GameTestUtil.getBasePos(helper).above();
+        var placerPos = GameTestUtil.getBasePos(helper).offset(2, 2, 2);
         var waterPos = placerPos.above();
         helper.setBlock(placerPos, Holder.BLOCK_PLACER.defaultBlockState().setValue(BlockStateProperties.FACING, Direction.UP));
         helper.setBlock(waterPos, Blocks.WATER);
@@ -131,7 +131,7 @@ public final class PlacerGameTest {
 
     @GameTest(template = GameTestUtil.EMPTY_STRUCTURE, batch = BATCH)
     public void cantPlaceInSolidBlock(GameTestHelper helper) {
-        var placerPos = GameTestUtil.getBasePos(helper).above();
+        var placerPos = GameTestUtil.getBasePos(helper).offset(2, 2, 2);
         var blockPos = placerPos.above();
         helper.setBlock(placerPos, Holder.BLOCK_PLACER.defaultBlockState().setValue(BlockStateProperties.FACING, Direction.UP));
         helper.setBlock(blockPos, Blocks.DIAMOND_BLOCK);
