@@ -281,13 +281,13 @@ sourceSets {
     }
 }
 
-task srcJar(type: Jar) {
+tasks.register('srcJar', Jar) {
     from sourceSets.main.allSource
     archiveClassifier.set("sources")
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
-task deobfJar(type: Jar) {
+tasks.register('deobfJar', Jar) {
     from sourceSets.main.output
     archiveClassifier.set("deobf")
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
@@ -307,7 +307,8 @@ jar.finalizedBy('reobfJar')
 
 jar.finalizedBy('signJar')
 
-task signJar(dependsOn: 'reobfJar') {
+tasks.register('signJar') {
+    dependsOn('reobfJar')
     boolean executeCondition = project.hasProperty('keyStoreAlias') &&
             project.hasProperty('keyStore') &&
             project.hasProperty('keyStorePass')
@@ -415,7 +416,7 @@ test {
     useJUnitPlatform()
 }
 
-task CheckCompileOption() {
+tasks.register('checkCompileOption') {
     setDescription("Verify the compile option.")
     doLast {
         System.out.println("Changelog for GitHub")
@@ -428,7 +429,8 @@ task CheckCompileOption() {
     }
 }
 
-task copyToDrive(type: Copy, dependsOn: "build") {
+tasks.register('copyToDrive', Copy) {
+    dependsOn("build")
     description = "Copy jar files to directory specified in environmental value of `drive_path`"
     def PATH_NAME = "drive_path"
     from(jar.getArchiveFile(), deobfJar.getArchiveFile(), srcJar.getArchiveFile())
