@@ -76,9 +76,9 @@ public final class RemotePlacerGameTest {
             .thenExecuteAfter(1, () -> tile.targetPos = targetPos)
             .thenExecuteAfter(1, () -> tile.setItem(0, new ItemStack(Blocks.STONE)))
             .thenExecute(() -> assertEquals(1, tile.countItem(Items.STONE)))
-            .thenExecuteAfter(1, tile::placeBlock)
+            .thenExecuteAfter(1, () -> assertTrue(tile.placeBlock()))
             .thenExecuteAfter(1, () -> helper.assertBlockPresent(Blocks.STONE, targetPos))
-            .thenExecute(() -> assertEquals(0, tile.countItem(Items.STONE)))
+            .thenExecute(() -> assertEquals(0, tile.countItem(Items.STONE), "Tile contains: %s".formatted(tile.getItem(0))))
             .thenSucceed();
     }
 }
