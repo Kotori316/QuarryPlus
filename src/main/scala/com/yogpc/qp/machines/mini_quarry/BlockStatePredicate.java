@@ -69,6 +69,8 @@ interface BlockStatePredicate {
 
     CompoundTag toTag();
 
+    String gameTestName();
+
     final class All implements BlockStatePredicate {
         private static final All INSTANCE = new All();
 
@@ -85,6 +87,11 @@ interface BlockStatePredicate {
             var tag = new CompoundTag();
             tag.putString("type", toString().toLowerCase(Locale.ROOT));
             return tag;
+        }
+
+        @Override
+        public String gameTestName() {
+            return "block_state_predicate_all";
         }
 
         @Override
@@ -112,6 +119,11 @@ interface BlockStatePredicate {
         }
 
         @Override
+        public String gameTestName() {
+            return "block_state_predicate_air";
+        }
+
+        @Override
         public String toString() {
             return "Air";
         }
@@ -136,6 +148,11 @@ interface BlockStatePredicate {
         }
 
         @Override
+        public String gameTestName() {
+            return "block_state_predicate_fluid";
+        }
+
+        @Override
         public String toString() {
             return "Fluid";
         }
@@ -154,6 +171,11 @@ interface BlockStatePredicate {
             tag.putString("type", "name");
             tag.putString("location", location.toString());
             return tag;
+        }
+
+        @Override
+        public String gameTestName() {
+            return "name_%s_%s".formatted(location.getNamespace(), location.getPath());
         }
 
         @Override
@@ -184,6 +206,11 @@ interface BlockStatePredicate {
             tag.putString("type", "tag");
             tag.putString("location", location.toString());
             return tag;
+        }
+
+        @Override
+        public String gameTestName() {
+            return "tag_%s_%s".formatted(location.getNamespace(), location.getPath());
         }
 
         @Override
@@ -239,6 +266,18 @@ interface BlockStatePredicate {
             tag.putString("type", "vanilla");
             tag.putString("predicate", blockPredicate);
             return tag;
+        }
+
+        @Override
+        public String gameTestName() {
+            // Same as BlockStatePredicateTagsTest#convertKey(String)
+            return this.blockPredicate
+                .replace("#", "tag_")
+                .replace(":", "_")
+                .replace("[", "_")
+                .replace("]", "_")
+                .replace("=", "_")
+                ;
         }
 
         @Override

@@ -39,21 +39,21 @@ public final class SlotMoverTest {
     @GameTestGenerator
     public List<TestFunction> canPlaceDiamond() {
         return diamondTools().map(d ->
-            GameTestUtil.create(QuarryPlus.modID, BATCH, "canPlaceDiamond:" + d, g -> canPlaceDiamond(d, g))
+            GameTestUtil.create(QuarryPlus.modID, BATCH, "canPlaceDiamond_" + d, g -> canPlaceDiamond(d, g))
         ).toList();
     }
 
     @GameTestGenerator
     public List<TestFunction> canPlaceNetherite() {
         return netheriteTools().map(d ->
-            GameTestUtil.create(QuarryPlus.modID, BATCH, "canPlaceNetherite:" + d, g -> canPlaceNetherite(d, g))
+            GameTestUtil.create(QuarryPlus.modID, BATCH, "canPlaceNetherite_" + d, g -> canPlaceNetherite(d, g))
         ).toList();
     }
 
     @GameTestGenerator
     public List<TestFunction> canPlaceIron() {
         return ironTools().map(d ->
-            GameTestUtil.create(QuarryPlus.modID, BATCH, "canPlaceIron:" + d, g -> canPlaceIron(d, g))
+            GameTestUtil.create(QuarryPlus.modID, BATCH, "canPlaceIron_" + d, g -> canPlaceIron(d, g))
         ).toList();
     }
 

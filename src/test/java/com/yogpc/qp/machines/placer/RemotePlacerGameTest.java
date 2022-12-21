@@ -42,7 +42,7 @@ public final class RemotePlacerGameTest {
     @GameTestGenerator
     public List<TestFunction> breakBlock() {
         return StreamSupport.stream(BlockPos.randomBetweenClosed(RandomSource.create(), 4, 1, 2, 3, 4, 5, 6).spliterator(), false)
-            .map(p -> GameTestUtil.create(QuarryPlus.modID, BATCH, "RemoteBreak(%s)".formatted(p), g -> breakBlock(g, p)))
+            .map(p -> GameTestUtil.create(QuarryPlus.modID, BATCH, "RemoteBreak_%d_%d_%d".formatted(p.getX(), p.getY(), p.getZ()), g -> breakBlock(g, p)))
             .toList();
     }
 
@@ -53,7 +53,7 @@ public final class RemotePlacerGameTest {
         var tile = Objects.requireNonNull((RemotePlacerTile) helper.getBlockEntity(placerPos));
         helper.startSequence()
             .thenExecuteAfter(1, () -> helper.setBlock(targetPos, Blocks.STONE))
-            .thenExecuteAfter(1, () -> tile.targetPos = targetPos)
+            .thenExecuteAfter(1, () -> tile.targetPos = helper.absolutePos(targetPos))
             .thenExecuteAfter(1, tile::breakBlock)
             .thenExecuteAfter(1, () -> helper.assertBlockNotPresent(Blocks.STONE, targetPos))
             .thenExecute(() -> assertTrue(tile.countItem(Items.STONE) > 0))
@@ -63,7 +63,7 @@ public final class RemotePlacerGameTest {
     @GameTestGenerator
     public List<TestFunction> placeBlock() {
         return StreamSupport.stream(BlockPos.randomBetweenClosed(RandomSource.create(), 4, 1, 2, 3, 4, 5, 6).spliterator(), false)
-            .map(p -> GameTestUtil.create(QuarryPlus.modID, BATCH, "PlaceBlock(%s)".formatted(p), g -> placeBlock(g, p)))
+            .map(p -> GameTestUtil.create(QuarryPlus.modID, BATCH, "PlaceBlock_%d_%d_%d".formatted(p.getX(), p.getY(), p.getZ()), g -> placeBlock(g, p)))
             .toList();
     }
 
@@ -73,7 +73,7 @@ public final class RemotePlacerGameTest {
         helper.setBlock(placerPos, Holder.BLOCK_REMOTE_PLACER);
         var tile = Objects.requireNonNull((RemotePlacerTile) helper.getBlockEntity(placerPos));
         helper.startSequence()
-            .thenExecuteAfter(1, () -> tile.targetPos = targetPos)
+            .thenExecuteAfter(1, () -> tile.targetPos = helper.absolutePos(targetPos))
             .thenExecuteAfter(1, () -> tile.setItem(0, new ItemStack(Blocks.STONE)))
             .thenExecute(() -> assertEquals(1, tile.countItem(Items.STONE)))
             .thenExecuteAfter(1, () -> assertTrue(tile.placeBlock()))

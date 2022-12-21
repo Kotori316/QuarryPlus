@@ -41,7 +41,7 @@ class ExpModuleItemTest {
     @GameTestGenerator
     List<TestFunction> add() {
         return expValue().mapToObj(
-            i -> GameTestUtil.create(QuarryPlus.modID, BATCH, "add(%d)".formatted(i), () -> add(i))
+            i -> GameTestUtil.create(QuarryPlus.modID, BATCH, "add_%d".formatted(i), () -> add(i))
         ).toList();
     }
 
@@ -68,7 +68,7 @@ class ExpModuleItemTest {
     @GameTestGenerator
     List<TestFunction> addTwice() {
         return expValue().mapToObj(
-            i -> GameTestUtil.create(QuarryPlus.modID, BATCH, "addTwice(%d)".formatted(i), () -> addTwice(i))
+            i -> GameTestUtil.create(QuarryPlus.modID, BATCH, "add_twice_%d".formatted(i), () -> addTwice(i))
         ).toList();
     }
 
