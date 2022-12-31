@@ -1,12 +1,12 @@
 {
   "parent": "block/cube",
   "textures": {
-    "particle": "quarryplus:blocks/chunkdestroyer",
-    "down": "quarryplus:blocks/chunkdestroyer",
-    "up": "quarryplus:blocks/chunkdestroyer_top",
-    "north": "quarryplus:blocks/chunkdestroyer_front",
-    "east": "quarryplus:blocks/chunkdestroyer",
-    "south": "quarryplus:blocks/chunkdestroyer",
-    "west": "quarryplus:blocks/chunkdestroyer"
+    "particle": "quarryplus:block/chunkdestroyer",
+    "down": "quarryplus:block/chunkdestroyer",
+    "up": "quarryplus:block/chunkdestroyer_top",
+    "north": "quarryplus:block/chunkdestroyer_front",
+    "east": "quarryplus:block/chunkdestroyer",
+    "south": "quarryplus:block/chunkdestroyer",
+    "west": "quarryplus:block/chunkdestroyer"
   }
 }

@@ -1,10 +1,10 @@
 {
   "__comment": "Model generated using MrCrayfish's Model Creator (http://mrcrayfish.com/modelcreator/)",
   "textures": {
-    "particle": "quarryplus:blocks/laser_top",
-    "0": "quarryplus:blocks/laser_top",
-    "1": "quarryplus:blocks/laser_side",
-    "2": "quarryplus:blocks/laser_bottom"
+    "particle": "quarryplus:block/laser_top",
+    "0": "quarryplus:block/laser_top",
+    "1": "quarryplus:block/laser_side",
+    "2": "quarryplus:block/laser_bottom"
   },
   "elements": [
     {

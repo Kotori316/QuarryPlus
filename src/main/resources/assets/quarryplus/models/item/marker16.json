@@ -1,7 +1,7 @@
 {
   "parent": "builtin/generated",
   "textures": {
-    "layer0": "quarryplus:items/marker16_item"
+    "layer0": "quarryplus:item/marker16_item"
   },
   "display": {
     "thirdperson": {

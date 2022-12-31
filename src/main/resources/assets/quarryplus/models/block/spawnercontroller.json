@@ -1,12 +1,12 @@
 {
   "parent": "block/cube",
   "textures": {
-    "particle": "quarryplus:blocks/spawnctl",
-    "down": "quarryplus:blocks/spawnctl",
-    "up": "quarryplus:blocks/spawnctl",
-    "north": "quarryplus:blocks/spawnctl",
-    "east": "quarryplus:blocks/spawnctl",
-    "south": "quarryplus:blocks/spawnctl",
-    "west": "quarryplus:blocks/spawnctl"
+    "particle": "quarryplus:block/spawnctl",
+    "down": "quarryplus:block/spawnctl",
+    "up": "quarryplus:block/spawnctl",
+    "north": "quarryplus:block/spawnctl",
+    "east": "quarryplus:block/spawnctl",
+    "south": "quarryplus:block/spawnctl",
+    "west": "quarryplus:block/spawnctl"
   }
 }

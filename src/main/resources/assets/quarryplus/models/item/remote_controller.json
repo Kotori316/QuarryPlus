@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "quarryplus:items/controller"
+    "layer0": "quarryplus:item/controller"
   }
 }

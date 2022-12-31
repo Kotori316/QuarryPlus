@@ -23,7 +23,7 @@ public class Sprites {
 
     private TextureAtlasSprite getSprite(String name) {
         return spriteMap.computeIfAbsent(name, s ->
-            Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(new ResourceLocation(QuarryPlus.modID, "entities/" + s)));
+            Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(new ResourceLocation(QuarryPlus.modID, "entity/" + s)));
     }
 
     public TextureAtlasSprite getMarkerBlue() {

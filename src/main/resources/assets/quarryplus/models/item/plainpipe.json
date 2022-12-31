@@ -14,7 +14,7 @@
   "ambientocclusion": false,
   "__comment": "Model generated using MrCrayfish's Model Creator (http://mrcrayfish.com/modelcreator/) Thanks!",
   "textures": {
-    "texture": "quarryplus:blocks/plainpipe"
+    "texture": "quarryplus:block/plainpipe"
   },
   "elements": [
     {

@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "quarryplus:blocks/dummy_block"
+    "all": "quarryplus:block/dummy_block"
   }
 }

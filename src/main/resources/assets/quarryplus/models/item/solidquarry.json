@@ -1,12 +1,12 @@
 {
   "parent": "block/cube",
   "textures": {
-    "particle": "quarryplus:blocks/solidquarry",
-    "down": "quarryplus:blocks/solidquarry",
-    "up": "quarryplus:blocks/solidquarry_top",
-    "north": "quarryplus:blocks/solidquarry_front",
-    "east": "quarryplus:blocks/solidquarry",
-    "south": "quarryplus:blocks/solidquarry",
-    "west": "quarryplus:blocks/solidquarry"
+    "particle": "quarryplus:block/solidquarry",
+    "down": "quarryplus:block/solidquarry",
+    "up": "quarryplus:block/solidquarry_top",
+    "north": "quarryplus:block/solidquarry_front",
+    "east": "quarryplus:block/solidquarry",
+    "south": "quarryplus:block/solidquarry",
+    "west": "quarryplus:block/solidquarry"
   }
 }

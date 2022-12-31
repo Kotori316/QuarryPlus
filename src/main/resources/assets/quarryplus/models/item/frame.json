@@ -14,7 +14,7 @@
   "ambientocclusion": false,
   "__comment": "Model generated using MrCrayfish's Model Creator (http://mrcrayfish.com/modelcreator/) Thanks!",
   "textures": {
-    "texture": "quarryplus:blocks/frame"
+    "texture": "quarryplus:block/frame"
   },
   "elements": [
     {

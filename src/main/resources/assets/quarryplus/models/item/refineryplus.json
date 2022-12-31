@@ -3,7 +3,7 @@
   "ambientocclusion": false,
   "__comment": "Model generated using MrCrayfish's Model Creator (http://mrcrayfish.com/modelcreator/)",
   "textures": {
-    "0": "quarryplus:blocks/refine"
+    "0": "quarryplus:block/refine"
   },
   "elements": [
     {

@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "quarryplus:blocks/replacer_side"
+    "layer0": "quarryplus:block/replacer_side"
   }
 }

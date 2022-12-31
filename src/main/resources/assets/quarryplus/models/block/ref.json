@@ -1,8 +1,8 @@
 {
   "__comment": "Model generated using MrCrayfish's Model Creator (http://mrcrayfish.com/modelcreator/)",
   "textures": {
-    "texture": "quarryplus:blocks/refine",
-    "particle": "quarryplus:blocks/refine"
+    "texture": "quarryplus:block/refine",
+    "particle": "quarryplus:block/refine"
   },
   "elements": [
     {

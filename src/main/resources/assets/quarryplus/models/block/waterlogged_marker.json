@@ -2,8 +2,8 @@
   "credit": "Made with Blockbench",
   "parent": "block/block",
   "textures": {
-    "0": "quarryplus:blocks/marker",
-    "particle": "quarryplus:blocks/marker"
+    "0": "quarryplus:block/marker",
+    "particle": "quarryplus:block/marker"
   },
   "elements": [
     {

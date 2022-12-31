@@ -1,6 +1,6 @@
 {
   "parent": "block/cube_all",
   "textures": {
-    "all": "quarryplus:blocks/spawnctl"
+    "all": "quarryplus:block/spawnctl"
   }
 }

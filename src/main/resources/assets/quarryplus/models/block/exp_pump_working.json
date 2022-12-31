@@ -1,12 +1,12 @@
 {
   "parent": "block/cube",
   "textures": {
-    "particle": "quarryplus:blocks/exp_pump_top",
-    "down": "quarryplus:blocks/exp_pump_bottom",
-    "up": "quarryplus:blocks/exp_pump_top_c",
-    "north": "quarryplus:blocks/exp_pump_side",
-    "east": "quarryplus:blocks/exp_pump_side",
-    "south": "quarryplus:blocks/exp_pump_side",
-    "west": "quarryplus:blocks/exp_pump_side"
+    "particle": "quarryplus:block/exp_pump_top",
+    "down": "quarryplus:block/exp_pump_bottom",
+    "up": "quarryplus:block/exp_pump_top_c",
+    "north": "quarryplus:block/exp_pump_side",
+    "east": "quarryplus:block/exp_pump_side",
+    "south": "quarryplus:block/exp_pump_side",
+    "west": "quarryplus:block/exp_pump_side"
   }
 }

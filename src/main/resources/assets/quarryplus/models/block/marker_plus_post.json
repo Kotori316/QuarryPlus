@@ -1,7 +1,7 @@
 {
   "textures": {
-    "texture": "quarryplus:blocks/marker",
-    "particle": "quarryplus:blocks/marker"
+    "texture": "quarryplus:block/marker",
+    "particle": "quarryplus:block/marker"
   },
   "__comment": "Model generated using MrCrayfish's Model Creator (http://mrcrayfish.com/modelcreator/). It was too difficult for me to create this model...",
   "elements": [
