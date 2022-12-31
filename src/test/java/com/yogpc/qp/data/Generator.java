@@ -10,7 +10,8 @@ import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 public final class Generator implements DataGeneratorEntrypoint {
     @Override
     public void onInitializeDataGenerator(FabricDataGenerator fabricDataGenerator) {
-        fabricDataGenerator.addProvider(RecipeGenerator::new);
-        fabricDataGenerator.addProvider(TagGenerator::new);
+        var pack = fabricDataGenerator.createPack();
+        pack.addProvider(RecipeGenerator::new);
+        pack.addProvider(TagGenerator::new);
     }
 }

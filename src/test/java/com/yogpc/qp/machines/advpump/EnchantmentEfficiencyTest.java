@@ -10,7 +10,7 @@ import com.yogpc.qp.QuarryPlusTest;
 import com.yogpc.qp.machines.EnchantmentLevel;
 import com.yogpc.qp.machines.PowerTile;
 import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -128,7 +128,7 @@ class EnchantmentEfficiencyTest extends QuarryPlusTest {
 
         return IntStream.range(0, 50).mapToObj(i ->
             IntStream.range(0, random.nextInt(10) + 1)
-                .mapToObj(ii -> Registry.ENCHANTMENT.getRandom(random))
+                .mapToObj(ii -> BuiltInRegistries.ENCHANTMENT.getRandom(random))
                 .flatMap(Optional::stream)
                 .map(Holder::value)
                 .filter(Objects::nonNull)

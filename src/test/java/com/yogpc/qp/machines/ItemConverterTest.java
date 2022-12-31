@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusTest;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -91,7 +91,7 @@ class ItemConverterTest extends QuarryPlusTest {
         Function<ItemKey, ItemKey> convertFunction = i -> {
             var name = i.getId();
             var pickaxeName = name.getPath().replace("_ingot", "").replace("gold", "golden") + "_pickaxe";
-            var pickaxeItem = Registry.ITEM.get(new ResourceLocation(name.getNamespace(), pickaxeName));
+            var pickaxeItem = BuiltInRegistries.ITEM.get(new ResourceLocation(name.getNamespace(), pickaxeName));
             return new ItemKey(pickaxeItem, i.nbt());
         };
         var converter = new ItemConverter(List.of(Pair.of(keys::contains, convertFunction)));

@@ -8,7 +8,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import com.yogpc.qp.QuarryPlusTest;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import org.junit.jupiter.api.Test;
@@ -34,7 +34,7 @@ class EnchantmentLevelTest extends QuarryPlusTest {
     @ParameterizedTest
     @MethodSource("enchantments")
     void fromId(Enchantment enchantment) {
-        var id = Registry.ENCHANTMENT.getKey(enchantment);
+        var id = BuiltInRegistries.ENCHANTMENT.getKey(enchantment);
         var ans = new EnchantmentLevel(enchantment, 1);
         var fromName = new EnchantmentLevel(id, 1);
         assertEquals(ans, fromName);
@@ -86,7 +86,7 @@ class EnchantmentLevelTest extends QuarryPlusTest {
     }
 
     static Stream<Enchantment> enchantments() {
-        return Registry.ENCHANTMENT.stream();
+        return BuiltInRegistries.ENCHANTMENT.stream();
     }
 
     @Test

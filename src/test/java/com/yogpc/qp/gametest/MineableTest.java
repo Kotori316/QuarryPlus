@@ -5,7 +5,7 @@ import java.io.InputStreamReader;
 
 import com.google.gson.JsonElement;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -23,7 +23,7 @@ public final class MineableTest implements FabricGameTest {
             var items = GsonHelper.getAsJsonArray(json, "values");
             for (JsonElement item : items) {
                 var location = new ResourceLocation(item.getAsString());
-                Utils.assertTrue(Registry.BLOCK.containsKey(location), "%s must exist in registry.".formatted(location));
+                Utils.assertTrue(BuiltInRegistries.BLOCK.containsKey(location), "%s must exist in registry.".formatted(location));
             }
         } catch (IOException e) {
             throw new GameTestAssertException(e.getMessage());

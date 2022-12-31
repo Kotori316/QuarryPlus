@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.yogpc.qp.QuarryPlusTest;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import org.junit.jupiter.api.Test;
@@ -37,7 +37,7 @@ class EnchantmentRestrictionTest extends QuarryPlusTest {
     @Test
     void ignoreAll() {
         var restriction = new EnchantmentRestriction(Map.of());
-        var map = Registry.ENCHANTMENT.stream().map(e -> Map.entry(e, e.getMaxLevel()))
+        var map = BuiltInRegistries.ENCHANTMENT.stream().map(e -> Map.entry(e, e.getMaxLevel()))
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         var result = restriction.filterMap(map);
         assertTrue(result.isEmpty());
@@ -65,7 +65,7 @@ class EnchantmentRestrictionTest extends QuarryPlusTest {
             .add(Enchantments.SHARPNESS)
             .add(Enchantments.UNBREAKING)
             .build();
-        var map = Registry.ENCHANTMENT.stream().map(e -> Map.entry(e, e.getMaxLevel()))
+        var map = BuiltInRegistries.ENCHANTMENT.stream().map(e -> Map.entry(e, e.getMaxLevel()))
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         var result = fromBuilder.filterMap(map);
         assertEquals(Map.of(Enchantments.BLOCK_EFFICIENCY, 5, Enchantments.UNBREAKING, 3, Enchantments.SHARPNESS, Enchantments.SHARPNESS.getMaxLevel()),
@@ -79,7 +79,7 @@ class EnchantmentRestrictionTest extends QuarryPlusTest {
             .add(Enchantments.SHARPNESS)
             .add(Enchantments.UNBREAKING, 1)
             .build();
-        var map = Registry.ENCHANTMENT.stream().map(e -> Map.entry(e, 1))
+        var map = BuiltInRegistries.ENCHANTMENT.stream().map(e -> Map.entry(e, 1))
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         var result = fromBuilder.filterMap(map);
         assertEquals(Map.of(Enchantments.BLOCK_EFFICIENCY, 1, Enchantments.UNBREAKING, 1, Enchantments.SHARPNESS, 1),

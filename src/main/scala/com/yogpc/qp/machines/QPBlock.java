@@ -96,6 +96,11 @@ public class QPBlock extends Block {
             return internalName.getPath();
         }
 
+        @NotNull
+        public ResourceLocation getRegistryName() {
+            return internalName;
+        }
+
         public void setRegistryName(String modId, String name) {
             internalName = new ResourceLocation(modId, name);
         }
