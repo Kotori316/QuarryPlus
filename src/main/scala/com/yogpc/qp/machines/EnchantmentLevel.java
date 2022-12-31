@@ -9,6 +9,7 @@ import java.util.Map;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.utils.ManualOrder;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -23,12 +24,12 @@ public record EnchantmentLevel(Enchantment enchantment, int level) {
     }
 
     public EnchantmentLevel(ResourceLocation enchantmentID, int level) {
-        this(Registry.ENCHANTMENT.get(enchantmentID), level);
+        this(BuiltInRegistries.ENCHANTMENT.get(enchantmentID), level);
     }
 
     @Nullable
     public ResourceLocation enchantmentID() {
-        return Registry.ENCHANTMENT.getKey(enchantment());
+        return BuiltInRegistries.ENCHANTMENT.getKey(enchantment());
     }
 
     public interface HasEnchantments {
@@ -75,7 +76,7 @@ public record EnchantmentLevel(Enchantment enchantment, int level) {
             var tag = enchantmentList.getCompound(i);
             var name = EnchantmentHelper.getEnchantmentId(tag);
             var level = EnchantmentHelper.getEnchantmentLevel(tag);
-            if (name != null && Registry.ENCHANTMENT.containsKey(name)) {
+            if (name != null && BuiltInRegistries.ENCHANTMENT.containsKey(name)) {
                 list.add(new EnchantmentLevel(name, level));
             }
         }
@@ -83,11 +84,11 @@ public record EnchantmentLevel(Enchantment enchantment, int level) {
     }
 
     public static final Comparator<EnchantmentLevel> COMPARATOR =
-        Comparator.comparingInt((EnchantmentLevel e) -> Registry.ENCHANTMENT.getId(e.enchantment()))
+        Comparator.comparingInt((EnchantmentLevel e) -> BuiltInRegistries.ENCHANTMENT.getId(e.enchantment()))
             .thenComparingInt(EnchantmentLevel::level);
     public static final Comparator<EnchantmentLevel> QUARRY_ENCHANTMENT_COMPARATOR =
         Comparator.comparing(EnchantmentLevel::enchantment,
-            ManualOrder.builder(Comparator.comparingInt(Registry.ENCHANTMENT::getId))
+            ManualOrder.builder(Comparator.comparingInt(BuiltInRegistries.ENCHANTMENT::getId))
                 .add(Enchantments.BLOCK_EFFICIENCY)
                 .add(Enchantments.UNBREAKING)
                 .add(Enchantments.BLOCK_FORTUNE)

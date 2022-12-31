@@ -13,6 +13,7 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
@@ -43,7 +44,7 @@ public class QuarryPlacedMessage implements IMessage<QuarryPlacedMessage> {
 
     public QuarryPlacedMessage(FriendlyByteBuf buffer) {
         this.pos = buffer.readBlockPos();
-        this.dim = ResourceKey.create(Registry.DIMENSION_REGISTRY, buffer.readResourceLocation());
+        this.dim = ResourceKey.create(Registries.DIMENSION, buffer.readResourceLocation());
         this.levels = IntStream.range(0, buffer.readInt())
             .mapToObj(i -> new EnchantmentLevel(buffer.readResourceLocation(), buffer.readInt()))
             .toList();

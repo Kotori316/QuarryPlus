@@ -5,14 +5,12 @@ import java.util.List;
 import java.util.Map;
 
 import com.yogpc.qp.QuarryPlus;
-import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 
-public class Sprites implements ClientSpriteRegistryCallback {
+public class Sprites {
     public static final Sprites INSTANCE = new Sprites();
     private static final List<String> spriteNames = List.of("laser_1", "laser_2", "laser_3", "laser_4", "white", "stripes_h", "stripes_v", "stripes_blue", "stripes_red", "drill", "drill_head");
     private final Map<String, TextureAtlasSprite> spriteMap = new HashMap<>();
@@ -21,12 +19,6 @@ public class Sprites implements ClientSpriteRegistryCallback {
     }
 
     public static void register() {
-        ClientSpriteRegistryCallback.event(InventoryMenu.BLOCK_ATLAS).register(Sprites.INSTANCE);
-    }
-
-    @Override
-    public void registerSprites(TextureAtlas atlasTexture, ClientSpriteRegistryCallback.Registry registry) {
-        spriteNames.stream().map(s -> new ResourceLocation(QuarryPlus.modID, "entities/" + s)).forEach(registry::register);
     }
 
     private TextureAtlasSprite getSprite(String name) {

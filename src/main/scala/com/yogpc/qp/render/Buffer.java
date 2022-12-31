@@ -2,8 +2,8 @@ package com.yogpc.qp.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector4f;
+import org.joml.Matrix4f;
+import org.joml.Vector4f;
 
 final class Buffer {
     private final VertexConsumer bufferBuilder;
@@ -19,7 +19,7 @@ final class Buffer {
         Matrix4f matrix4f = matrix.last().pose();
 
         vector4f.set((float) x, (float) y, (float) z, 1.0F);
-        vector4f.transform(matrix4f);
+        vector4f.mul(matrix4f);
         bufferBuilder.vertex(vector4f.x(), vector4f.y(), vector4f.z());
         return this;
     }

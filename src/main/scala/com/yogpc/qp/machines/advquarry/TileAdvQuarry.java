@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -140,7 +140,7 @@ public class TileAdvQuarry extends PowerTile implements
         area = Area.fromNBT(nbt.getCompound("area")).orElse(null);
         var enchantments = nbt.getCompound("enchantments");
         setEnchantments(enchantments.getAllKeys().stream()
-            .mapMulti(MapMulti.getEntry(Registry.ENCHANTMENT, enchantments::getInt))
+            .mapMulti(MapMulti.getEntry(BuiltInRegistries.ENCHANTMENT, enchantments::getInt))
             .map(EnchantmentLevel::new)
             .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR)
             .toList());

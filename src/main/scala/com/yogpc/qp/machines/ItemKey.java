@@ -1,6 +1,7 @@
 package com.yogpc.qp.machines;
 
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -22,7 +23,7 @@ public record ItemKey(Item item, @Nullable CompoundTag nbt) {
     }
 
     static ItemKey fromNbt(CompoundTag tag) {
-        var item = Registry.ITEM.get(new ResourceLocation(tag.getString("item")));
+        var item = BuiltInRegistries.ITEM.get(new ResourceLocation(tag.getString("item")));
         var nbt = tag.contains("tag") ? tag.getCompound("tag") : null;
         return new ItemKey(item, nbt);
     }
@@ -34,6 +35,6 @@ public record ItemKey(Item item, @Nullable CompoundTag nbt) {
     }
 
     public ResourceLocation getId() {
-        return Registry.ITEM.getKey(item);
+        return BuiltInRegistries.ITEM.getKey(item);
     }
 }

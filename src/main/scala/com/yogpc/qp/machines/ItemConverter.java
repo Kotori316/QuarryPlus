@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
@@ -64,8 +65,8 @@ public record ItemConverter(
         Function<ItemKey, ItemKey> function = i -> {
             var newPath = i.getId().getPath().replace("deepslate_", "").replace("_deepslate", "");
             var id = new ResourceLocation(i.getId().getNamespace(), newPath);
-            if (Registry.ITEM.containsKey(id)) {
-                return new ItemKey(Registry.ITEM.get(id), i.nbt());
+            if (BuiltInRegistries.ITEM.containsKey(id)) {
+                return new ItemKey(BuiltInRegistries.ITEM.get(id), i.nbt());
             } else {
                 return null;
             }

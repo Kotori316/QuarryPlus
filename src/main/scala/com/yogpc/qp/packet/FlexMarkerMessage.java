@@ -5,6 +5,7 @@ import com.yogpc.qp.machines.marker.TileFlexMarker;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -29,7 +30,7 @@ public class FlexMarkerMessage implements IMessage<FlexMarkerMessage> {
 
     public FlexMarkerMessage(FriendlyByteBuf buffer) {
         pos = buffer.readBlockPos();
-        dim = ResourceKey.create(Registry.DIMENSION_REGISTRY, buffer.readResourceLocation());
+        dim = ResourceKey.create(Registries.DIMENSION, buffer.readResourceLocation());
         movable = buffer.readEnum(TileFlexMarker.Movable.class);
         amount = buffer.readVarInt();
     }

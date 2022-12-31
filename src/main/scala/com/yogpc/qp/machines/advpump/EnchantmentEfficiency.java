@@ -10,6 +10,7 @@ import com.yogpc.qp.machines.EnchantmentLevel;
 import com.yogpc.qp.machines.PowerTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -64,7 +65,7 @@ class EnchantmentEfficiency {
     static EnchantmentEfficiency fromNbt(CompoundTag tag) {
         var enchantmentLevels = tag.getAllKeys().stream()
             .flatMap(k ->
-                Registry.ENCHANTMENT.getOptional(new ResourceLocation(k))
+                BuiltInRegistries.ENCHANTMENT.getOptional(new ResourceLocation(k))
                     .map(e -> Map.entry(e, tag.getInt(k)))
                     .stream())
             .map(EnchantmentLevel::new)

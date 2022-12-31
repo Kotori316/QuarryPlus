@@ -6,6 +6,7 @@ import java.util.stream.IntStream;
 
 import com.yogpc.qp.machines.EnchantableItem;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -21,7 +22,7 @@ public class MixinEnchantmentHelper {
     @Inject(method = "getAvailableEnchantmentResults", at = @At("HEAD"), cancellable = true)
     private static void getPossibleEntries(int power, ItemStack stack, boolean treasureAllowed, CallbackInfoReturnable<List<EnchantmentInstance>> cir) {
         if (stack.getItem() instanceof EnchantableItem enchantableItem) {
-            List<EnchantmentInstance> entries = Registry.ENCHANTMENT.stream()
+            List<EnchantmentInstance> entries = BuiltInRegistries.ENCHANTMENT.stream()
                 .filter(e -> !e.isTreasureOnly() || treasureAllowed)
                 .filter(Enchantment::isDiscoverable)
                 .filter(enchantableItem)

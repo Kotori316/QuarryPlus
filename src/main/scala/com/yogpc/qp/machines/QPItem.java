@@ -5,7 +5,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.NotNull;
 
-public class QPItem extends Item {
+public class QPItem extends Item implements InCreativeTabs {
     private final ResourceLocation internalName;
 
     public QPItem(Item.Properties properties, String path) {

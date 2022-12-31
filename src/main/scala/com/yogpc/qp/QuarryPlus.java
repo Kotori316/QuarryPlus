@@ -1,10 +1,14 @@
 package com.yogpc.qp;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.mojang.datafixers.DSL;
 import com.yogpc.qp.integration.EnergyIntegration;
 import com.yogpc.qp.integration.QuarryFluidTransfer;
 import com.yogpc.qp.integration.QuarryItemTransfer;
 import com.yogpc.qp.machines.EnchantedLootFunction;
+import com.yogpc.qp.machines.InCreativeTabs;
 import com.yogpc.qp.machines.QPBlock;
 import com.yogpc.qp.machines.QPItem;
 import com.yogpc.qp.machines.advpump.BlockAdvPump;
@@ -42,15 +46,19 @@ import com.yogpc.qp.recipe.QuarryBedrockModuleRecipe;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.Toml4jConfigSerializer;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
+import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import org.apache.logging.log4j.LogManager;
@@ -71,9 +79,9 @@ public class QuarryPlus implements ModInitializer {
 
         register(ModObjects.BLOCK_QUARRY, ModObjects.QUARRY_TYPE);
         register(ModObjects.BLOCK_FRAME, null);
-        Registry.register(Registry.ITEM, ModObjects.ITEM_CHECKER.getRegistryName(), ModObjects.ITEM_CHECKER);
-        Registry.register(Registry.ITEM, ModObjects.ITEM_Y_SETTER.getRegistryName(), ModObjects.ITEM_Y_SETTER);
-        Registry.register(Registry.ITEM, ModObjects.ITEM_BEDROCK_MODULE.getRegistryName(), ModObjects.ITEM_BEDROCK_MODULE);
+        register(null, ModObjects.ITEM_CHECKER, ModObjects.ITEM_CHECKER.getRegistryName(), null);
+        register(null, ModObjects.ITEM_Y_SETTER, ModObjects.ITEM_Y_SETTER.getRegistryName(), null);
+        register(null, ModObjects.ITEM_BEDROCK_MODULE, ModObjects.ITEM_BEDROCK_MODULE.getRegistryName(), null);
         register(ModObjects.BLOCK_MARKER, ModObjects.MARKER_TYPE);
         register(ModObjects.BLOCK_FLEX_MARKER, ModObjects.FLEX_MARKER_TYPE);
         register(ModObjects.BLOCK_16_MARKER, ModObjects.MARKER_16_TYPE);
@@ -86,21 +94,20 @@ public class QuarryPlus implements ModInitializer {
         register(ModObjects.BLOCK_REMOTE_PLACER, ModObjects.REMOTE_PLACER_TYPE);
         register(ModObjects.BLOCK_ADV_QUARRY, ModObjects.ADV_QUARRY_TYPE);
         register(ModObjects.BLOCK_FILLER, ModObjects.FILLER_TYPE);
-        Registry.register(Registry.BLOCK, new ResourceLocation(modID, BlockDummy.NAME), ModObjects.BLOCK_DUMMY);
-        Registry.register(Registry.ITEM, new ResourceLocation(modID, BlockDummy.NAME), ModObjects.BLOCK_DUMMY.blockItem);
+        register(ModObjects.BLOCK_DUMMY, ModObjects.BLOCK_DUMMY.blockItem, new ResourceLocation(modID, BlockDummy.NAME), null);
 
-        Registry.register(Registry.LOOT_FUNCTION_TYPE, new ResourceLocation(modID, "drop_function"), ModObjects.ENCHANTED_LOOT_TYPE);
-        Registry.register(Registry.LOOT_FUNCTION_TYPE, new ResourceLocation(modID, "drop_function_quarry"), ModObjects.QUARRY_LOOT_TYPE);
+        Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE, new ResourceLocation(modID, "drop_function"), ModObjects.ENCHANTED_LOOT_TYPE);
+        Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE, new ResourceLocation(modID, "drop_function_quarry"), ModObjects.QUARRY_LOOT_TYPE);
 
-        Registry.register(Registry.RECIPE_SERIALIZER, QuarryBedrockModuleRecipe.NAME, QuarryBedrockModuleRecipe.SERIALIZER);
+        Registry.register(BuiltInRegistries.RECIPE_SERIALIZER, QuarryBedrockModuleRecipe.NAME, QuarryBedrockModuleRecipe.SERIALIZER);
 
-        Registry.register(Registry.MENU, YSetterContainer.GUI_ID, ModObjects.Y_SETTER_HANDLER_TYPE);
-        Registry.register(Registry.MENU, PlacerContainer.PLACER_GUI_ID, ModObjects.PLACER_MENU_TYPE);
-        Registry.register(Registry.MENU, PlacerContainer.REMOTE_PLACER_GUI_ID, ModObjects.REMOTE_PLACER_MENU_TYPE);
-        Registry.register(Registry.MENU, AdvQuarryMenu.GUI_ID, ModObjects.ADV_QUARRY_MENU_TYPE);
-        Registry.register(Registry.MENU, FillerMenu.GUI_ID, ModObjects.FILLER_MENU_TYPE);
-        Registry.register(Registry.MENU, BlockExMarker.GUI_FLEX_ID, ModObjects.FLEX_MARKER_HANDLER_TYPE);
-        Registry.register(Registry.MENU, BlockExMarker.GUI_16_ID, ModObjects.MARKER_16_HANDLER_TYPE);
+        Registry.register(BuiltInRegistries.MENU, YSetterContainer.GUI_ID, ModObjects.Y_SETTER_HANDLER_TYPE);
+        Registry.register(BuiltInRegistries.MENU, PlacerContainer.PLACER_GUI_ID, ModObjects.PLACER_MENU_TYPE);
+        Registry.register(BuiltInRegistries.MENU, PlacerContainer.REMOTE_PLACER_GUI_ID, ModObjects.REMOTE_PLACER_MENU_TYPE);
+        Registry.register(BuiltInRegistries.MENU, AdvQuarryMenu.GUI_ID, ModObjects.ADV_QUARRY_MENU_TYPE);
+        Registry.register(BuiltInRegistries.MENU, FillerMenu.GUI_ID, ModObjects.FILLER_MENU_TYPE);
+        Registry.register(BuiltInRegistries.MENU, BlockExMarker.GUI_FLEX_ID, ModObjects.FLEX_MARKER_HANDLER_TYPE);
+        Registry.register(BuiltInRegistries.MENU, BlockExMarker.GUI_16_ID, ModObjects.MARKER_16_HANDLER_TYPE);
 
         PacketHandler.Server.initServer();
         EnergyIntegration.register();
@@ -109,11 +116,22 @@ public class QuarryPlus implements ModInitializer {
     }
 
     private static void register(QPBlock block, @Nullable BlockEntityType<?> entityType) {
-        Registry.register(Registry.BLOCK, block.getRegistryName(), block);
-        Registry.register(Registry.ITEM, block.getRegistryName(), block.blockItem);
-        if (entityType != null) {
+        register(block, block.blockItem, block.getRegistryName(), entityType);
+    }
+
+    private static void register(@Nullable Block block, Item item, ResourceLocation location, @Nullable BlockEntityType<?> entityType) {
+        if (block != null) {
+            Registry.register(BuiltInRegistries.BLOCK, location, block);
+        }
+        Registry.register(BuiltInRegistries.ITEM, location, item);
+        if (item instanceof InCreativeTabs t) {
+            ModObjects.ALL_ITEMS.add(t);
+        } else {
+            LOGGER.warn("{} is not an instance of InCreativeTabs.", item.getClass().getName());
+        }
+        if (entityType != null && block != null) {
             if (entityType.isValid(block.defaultBlockState())) {
-                Registry.register(Registry.BLOCK_ENTITY_TYPE, block.getRegistryName(), entityType);
+                Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, location, entityType);
             } else {
                 throw new IllegalArgumentException("Invalid block entity(%s) for %s".formatted(entityType, block));
             }
@@ -125,9 +143,15 @@ public class QuarryPlus implements ModInitializer {
     }
 
     public static class ModObjects {
-        public static final CreativeModeTab CREATIVE_TAB = FabricItemGroupBuilder.build(
-            new ResourceLocation(modID, modID), () -> new ItemStack(ModObjects.BLOCK_QUARRY)
-        );
+        static final List<InCreativeTabs> ALL_ITEMS = new ArrayList<>();
+        public static final CreativeModeTab CREATIVE_TAB = FabricItemGroup.builder(new ResourceLocation(modID, modID))
+            .icon(() -> new ItemStack(ModObjects.BLOCK_QUARRY))
+            .title(Component.translatable("itemGroup.quarryplus"))
+            .displayItems((featureFlagSet, output, op) ->
+                ALL_ITEMS.stream()
+                    .map(InCreativeTabs::creativeTabItem)
+                    .forEach(output::acceptAll))
+            .build();
         public static final BlockQuarry BLOCK_QUARRY = new BlockQuarry();
         public static final BlockEntityType<TileQuarry> QUARRY_TYPE = FabricBlockEntityTypeBuilder.create(TileQuarry::new, BLOCK_QUARRY).build(DSL.emptyPartType());
 
@@ -142,7 +166,7 @@ public class QuarryPlus implements ModInitializer {
         public static final ExtendedScreenHandlerType<YSetterContainer> Y_SETTER_HANDLER_TYPE = new ExtendedScreenHandlerType<>(
             (syncId, inventory, buf) -> new YSetterContainer(syncId, inventory.player, buf.readBlockPos()));
 
-        public static final QPItem ITEM_BEDROCK_MODULE = new QPItem(new QPItem.Properties().tab(CREATIVE_TAB), "remove_bedrock_module");
+        public static final QPItem ITEM_BEDROCK_MODULE = new QPItem(new QPItem.Properties(), "remove_bedrock_module");
 
         public static final PlacerBlock BLOCK_PLACER = new PlacerBlock();
         public static final RemotePlacerBlock BLOCK_REMOTE_PLACER = new RemotePlacerBlock();
@@ -184,6 +208,6 @@ public class QuarryPlus implements ModInitializer {
         public static final BlockEntityType<TileAdvPump> ADV_PUMP_TYPE = FabricBlockEntityTypeBuilder.create(TileAdvPump::new, BLOCK_ADV_PUMP).build(DSL.emptyPartType());
         public static final BlockDummy BLOCK_DUMMY = new BlockDummy();
 
-        public static final TagKey<Item> TAG_MARKERS = TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation(modID, "markers"));
+        public static final TagKey<Item> TAG_MARKERS = TagKey.create(Registries.ITEM, new ResourceLocation(modID, "markers"));
     }
 }

@@ -22,6 +22,7 @@ import com.yogpc.qp.packet.ClientSync;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
@@ -103,7 +104,7 @@ public class TileQuarry extends PowerTile implements ClientSync, CheckerLog, Mac
         {
             var enchantments = nbt.getCompound("enchantments");
             this.enchantments = enchantments.getAllKeys().stream()
-                .map(k -> Pair.of(Registry.ENCHANTMENT.get(new ResourceLocation(k)), enchantments.getInt(k)))
+                .map(k -> Pair.of(BuiltInRegistries.ENCHANTMENT.get(new ResourceLocation(k)), enchantments.getInt(k)))
                 .filter(p -> p.getKey() != null)
                 .map(EnchantmentLevel::new)
                 .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR)

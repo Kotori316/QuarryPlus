@@ -7,13 +7,14 @@ import com.google.gson.JsonObject;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPBlock;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
@@ -26,7 +27,7 @@ public class QuarryBedrockModuleRecipe extends ShapelessRecipe {
     private final QPBlock targetBlock;
 
     public QuarryBedrockModuleRecipe(ResourceLocation id, QPBlock targetBlock) {
-        super(id, QuarryPlus.modID + ":bedrock_module_recipe", makeOutputStack(targetBlock),
+        super(id, QuarryPlus.modID + ":bedrock_module_recipe", CraftingBookCategory.MISC, makeOutputStack(targetBlock),
             NonNullList.of(Ingredient.of(), Ingredient.of(targetBlock), Ingredient.of(QuarryPlus.ModObjects.ITEM_BEDROCK_MODULE)));
         this.targetBlock = targetBlock;
     }
@@ -73,7 +74,7 @@ public class QuarryBedrockModuleRecipe extends ShapelessRecipe {
         @Override
         public QuarryBedrockModuleRecipe fromJson(ResourceLocation resourceLocation, JsonObject jsonObject) {
             var name = GsonHelper.getAsString(jsonObject, "target");
-            Block block = Registry.BLOCK.get(new ResourceLocation(name));
+            Block block = BuiltInRegistries.BLOCK.get(new ResourceLocation(name));
             if (block instanceof QPBlock qpBlock) {
                 return new QuarryBedrockModuleRecipe(resourceLocation, qpBlock);
             }
@@ -83,7 +84,7 @@ public class QuarryBedrockModuleRecipe extends ShapelessRecipe {
         @Override
         public QuarryBedrockModuleRecipe fromNetwork(ResourceLocation resourceLocation, FriendlyByteBuf buf) {
             var name = buf.readResourceLocation();
-            Block block = Registry.BLOCK.get(name);
+            Block block = BuiltInRegistries.BLOCK.get(name);
             if (block instanceof QPBlock qpBlock) {
                 return new QuarryBedrockModuleRecipe(resourceLocation, qpBlock);
             }

@@ -6,6 +6,7 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
@@ -28,7 +29,7 @@ public final class ClientSyncMessage implements IMessage<ClientSyncMessage> {
     }
 
     public ClientSyncMessage(FriendlyByteBuf buf) {
-        this(buf.readBlockPos(), ResourceKey.create(Registry.DIMENSION_REGISTRY, buf.readResourceLocation()), buf.readNbt());
+        this(buf.readBlockPos(), ResourceKey.create(Registries.DIMENSION, buf.readResourceLocation()), buf.readNbt());
     }
 
     @Override
