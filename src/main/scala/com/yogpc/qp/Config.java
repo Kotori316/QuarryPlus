@@ -63,6 +63,7 @@ public class Config {
         public final ForgeConfigSpec.IntValue chunkDestroyerLimit;
         public final ForgeConfigSpec.BooleanValue allowWorkbenchExtraction;
         public final ForgeConfigSpec.BooleanValue enableChunkLoader;
+        public final ForgeConfigSpec.BooleanValue logAllQuarryWork;
 
         public Common(ForgeConfigSpec.Builder builder) {
             var inDev = !FMLEnvironment.production;
@@ -84,6 +85,7 @@ public class Config {
             allowWorkbenchExtraction = builder.comment("True to allow pipes to extract items in WorkbenchPlus").define("allowWorkbenchExtraction", false);
             enableChunkLoader = builder.comment("Use simple chunk load function.", "If you have other chunk load system, please disable this and use other mods.")
                 .define("enableChunkLoader", true);
+            logAllQuarryWork = builder.comment("Trace quarry work").define("logAllQuarryWork", inDev);
             builder.pop();
         }
     }
