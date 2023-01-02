@@ -14,6 +14,7 @@ import com.yogpc.qp.machines.BreakResult;
 import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.TargetIterator;
+import com.yogpc.qp.machines.TraceQuarryWork;
 import com.yogpc.qp.machines.filler.FillerAction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -107,6 +108,7 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
         public void tick(Level level, BlockPos pos, BlockState state, TileAdvQuarry quarry) {
             if (quarry.getEnergy() > quarry.getMaxEnergy() / 4 && quarry.canStartWork()) {
                 quarry.setAction(new MakeFrame(quarry.getArea()));
+                TraceQuarryWork.startWork(quarry, pos, quarry.getEnergyStored());
             }
         }
     }

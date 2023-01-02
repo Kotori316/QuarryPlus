@@ -25,6 +25,7 @@ import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QPBlock;
 import com.yogpc.qp.machines.QuarryFakePlayer;
+import com.yogpc.qp.machines.TraceQuarryWork;
 import com.yogpc.qp.machines.module.ModuleInventory;
 import com.yogpc.qp.machines.module.QuarryModule;
 import com.yogpc.qp.machines.module.QuarryModuleProvider;
@@ -196,6 +197,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
                 level.setBlock(getBlockPos(), blockState.setValue(QPBlock.WORKING, quarryState.isWorking), Block.UPDATE_ALL);
                 if (!level.isClientSide && !quarryState.isWorking) {
                     logUsage();
+                    TraceQuarryWork.finishWork(this, getBlockPos(), this.getEnergyStored());
                 }
             }
             if ((pre != QuarryState.MOVE_HEAD && pre != QuarryState.BREAK_BLOCK && pre != QuarryState.REMOVE_FLUID) || quarryState == QuarryState.FILLER)

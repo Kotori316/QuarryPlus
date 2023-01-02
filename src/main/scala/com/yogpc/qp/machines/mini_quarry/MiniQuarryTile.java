@@ -18,6 +18,7 @@ import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QPBlock;
 import com.yogpc.qp.machines.QuarryFakePlayer;
 import com.yogpc.qp.machines.QuarryMarker;
+import com.yogpc.qp.machines.TraceQuarryWork;
 import com.yogpc.qp.utils.MapMulti;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -162,14 +163,17 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
             area = this.area;
         }
         setArea(area);
-        if (this.area != null)
+        if (this.area != null) {
             level.setBlock(getBlockPos(), getBlockState().setValue(QPBlock.WORKING, true), Block.UPDATE_ALL);
+            TraceQuarryWork.startWork(this, getBlockPos(), getEnergyStored());
+        }
     }
 
     void finishWork() {
         assert level != null;
         this.targetIterator = null;
         level.setBlock(getBlockPos(), getBlockState().setValue(QPBlock.WORKING, false), Block.UPDATE_ALL);
+        TraceQuarryWork.finishWork(this, getBlockPos(), this.getEnergyStored());
         logUsage();
     }
 

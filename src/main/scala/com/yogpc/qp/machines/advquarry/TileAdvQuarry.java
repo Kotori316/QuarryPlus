@@ -25,6 +25,7 @@ import com.yogpc.qp.machines.PowerConfig;
 import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QuarryFakePlayer;
+import com.yogpc.qp.machines.TraceQuarryWork;
 import com.yogpc.qp.machines.module.ContainerQuarryModule;
 import com.yogpc.qp.machines.module.ModuleInventory;
 import com.yogpc.qp.machines.module.QuarryModule;
@@ -225,6 +226,7 @@ public class TileAdvQuarry extends PowerTile implements
             if (level != null) {
                 level.setBlock(getBlockPos(), getBlockState().setValue(BlockAdvQuarry.WORKING, false), Block.UPDATE_ALL);
                 logUsage();
+                TraceQuarryWork.finishWork(this, getBlockPos(), this.getEnergyStored());
             }
         if (level != null && !level.isClientSide) {
             PacketHandler.sendToClient(new ClientSyncMessage(this), level);

@@ -12,6 +12,7 @@ import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.BreakResult;
 import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.PowerTile;
+import com.yogpc.qp.machines.TraceQuarryWork;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
@@ -40,6 +41,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
         public void tick(Level world, BlockPos quarryPos, BlockState state, TileQuarry quarry) {
             if (quarry.getArea() != null && quarry.getEnergy() > quarry.getMaxEnergy() / 200) {
                 quarry.setState(BREAK_INSIDE_FRAME, state);
+                TraceQuarryWork.startWork(quarry, quarryPos, quarry.getEnergyStored());
             }
         }
     },
