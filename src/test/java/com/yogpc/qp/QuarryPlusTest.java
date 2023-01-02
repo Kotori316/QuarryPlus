@@ -1,9 +1,9 @@
 package com.yogpc.qp;
 
-import com.electronwill.nightconfig.core.CommentedConfig;
 import com.yogpc.qp.machines.workbench.EnchantmentIngredient;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -27,16 +27,15 @@ public final class QuarryPlusTest implements BeforeAllCallback {
     }
 
     private static void setConfig() {
-        ForgeConfigSpec.Builder common = new ForgeConfigSpec.Builder();
-        QuarryPlus.config = new Config(common);
-        var config = common.build();
-        final CommentedConfig commentedConfig = CommentedConfig.inMemory();
-        config.correct(commentedConfig);
-        config.acceptConfig(commentedConfig);
+        QuarryPlus.registerConfig(true);
     }
 
     public static ResourceLocation id(String location) {
         return new ResourceLocation(QuarryPlus.modID, location);
     }
 
+    public static FluidState getFluidState(BlockState blockState) {
+        blockState.initCache();
+        return blockState.getFluidState();
+    }
 }
