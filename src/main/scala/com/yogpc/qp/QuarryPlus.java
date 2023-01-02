@@ -30,6 +30,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.gametest.ForgeGameTestHooks;
 import net.minecraftforge.registries.RegisterEvent;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.VisibleForTesting;
 
 @Mod(QuarryPlus.modID)
 public class QuarryPlus {
@@ -39,23 +40,25 @@ public class QuarryPlus {
     public static Config config;
 
     public QuarryPlus() {
-        registerConfig();
+        registerConfig(false);
         FMLJavaModLoadingContext.get().getModEventBus().register(Register.class);
         DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> QuarryPlusClient::registerClientBus);
         MinecraftForge.EVENT_BUS.register(ConfigCommand.class);
     }
 
-    private void registerConfig() {
+    @VisibleForTesting
+    static void registerConfig(boolean inJUnitTest) {
         ForgeConfigSpec.Builder common = new ForgeConfigSpec.Builder();
         config = new Config(common);
         ForgeConfigSpec build = common.build();
-        if (!ForgeGameTestHooks.isGametestServer()) {
-            ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, build);
-        } else {
+        if (inJUnitTest || ForgeGameTestHooks.isGametestServer()) {
             // In game test. Use in-memory config.
             final CommentedConfig commentedConfig = CommentedConfig.inMemory();
             build.correct(commentedConfig);
             build.acceptConfig(commentedConfig);
+            config.common.enableChunkLoader.set(false);
+        } else {
+            ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, build);
         }
     }
 

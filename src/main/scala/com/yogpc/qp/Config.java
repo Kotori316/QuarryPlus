@@ -62,6 +62,7 @@ public class Config {
         public final ForgeConfigSpec.ConfigValue<List<? extends String>> spawnerBlackList;
         public final ForgeConfigSpec.IntValue chunkDestroyerLimit;
         public final ForgeConfigSpec.BooleanValue allowWorkbenchExtraction;
+        public final ForgeConfigSpec.BooleanValue enableChunkLoader;
 
         public Common(ForgeConfigSpec.Builder builder) {
             var inDev = !FMLEnvironment.production;
@@ -81,6 +82,8 @@ public class Config {
             chunkDestroyerLimit = builder.comment("The range limit(unit: blocks) of ChunkDestroyer. Set -1 or 0 to remove limitation.")
                 .defineInRange("chunkDestroyerLimit", -1, -1, Integer.MAX_VALUE);
             allowWorkbenchExtraction = builder.comment("True to allow pipes to extract items in WorkbenchPlus").define("allowWorkbenchExtraction", false);
+            enableChunkLoader = builder.comment("Use simple chunk load function.", "If you have other chunk load system, please disable this and use other mods.")
+                .define("enableChunkLoader", true);
             builder.pop();
         }
     }
