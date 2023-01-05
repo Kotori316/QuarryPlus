@@ -249,10 +249,12 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         var breakEvent = new BlockEvent.BreakEvent(targetWorld, targetPos, state, fakePlayer);
         MinecraftForge.EVENT_BUS.post(breakEvent);
         if (breakEvent.isCanceled()) {
+            TraceQuarryWork.blockRemoveFailed(this, getBlockPos(), targetPos, state, BreakResult.FAIL_EVENT);
             if (target != null) target.addSkipped(targetPos);
             return BreakResult.FAIL_EVENT;
         }
         if (state.isAir() || !canBreak(targetWorld, targetPos, state)) {
+            TraceQuarryWork.blockRemoveFailed(this, getBlockPos(), targetPos, state, BreakResult.SKIPPED);
             return BreakResult.SKIPPED;
         }
         if (hasPumpModule()) removeEdgeFluid(targetPos, targetWorld, this);
@@ -265,6 +267,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         }
         // Get drops
         var drops = Block.getDrops(state, targetWorld, targetPos, targetWorld.getBlockEntity(targetPos), fakePlayer, pickaxe);
+        TraceQuarryWork.blockRemoveSucceed(this, getBlockPos(), targetPos, state, drops, breakEvent.getExpToDrop());
         drops.stream().map(itemConverter::map).forEach(this.storage::addItem);
         targetWorld.setBlock(targetPos, getReplacementState(), Block.UPDATE_ALL);
         // Get experiments
@@ -403,10 +406,17 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean canBreak(Level targetWorld, BlockPos targetPos, BlockState state) {
-        if (target != null && target.alreadySkipped(targetPos)) return false;
-        if (state.isAir()) return true;
+        if (target != null && target.alreadySkipped(targetPos)) {
+            TraceQuarryWork.canBreakCheck(this, getBlockPos(), targetPos, state, "already skipped");
+            return false;
+        }
+        if (state.isAir()) {
+            TraceQuarryWork.canBreakCheck(this, getBlockPos(), targetPos, state, "air");
+            return true;
+        }
         var unbreakable = state.getDestroySpeed(targetWorld, targetPos) < 0;
         if (unbreakable) {
+            TraceQuarryWork.canBreakCheck(this, getBlockPos(), targetPos, state, "unbreakable");
             if (hasBedrockModule() && state.getBlock() == Blocks.BEDROCK) {
                 var worldBottom = targetWorld.getMinBuildHeight();
                 if (targetWorld.dimension().equals(Level.NETHER)) {
@@ -418,9 +428,13 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
                 return false;
             }
         } else if (isFullFluidBlock(state)) {
+            TraceQuarryWork.canBreakCheck(this, getBlockPos(), targetPos, state, "fluid");
             return hasPumpModule();
         } else {
-            return getReplacementState() != state;
+            var result = getReplacementState() != state;
+            if (!result)
+                TraceQuarryWork.canBreakCheck(this, getBlockPos(), targetPos, state, "replacement state");
+            return result;
         }
     }
 
