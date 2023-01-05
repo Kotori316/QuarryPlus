@@ -1,3 +1,9 @@
+## Version 19.10.2
+
+* Add config option to disable chunk loading of quarry.
+  * You can use chunk loaders from other mods without conflicts.
+* Add a logger to trace almost all work of quarry.
+
 ## Version 19.10.1
 
 * Not to check protection chunks too much.
