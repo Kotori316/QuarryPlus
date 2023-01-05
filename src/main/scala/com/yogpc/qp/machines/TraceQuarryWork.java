@@ -28,7 +28,7 @@ public final class TraceQuarryWork {
             CONTEXT = Configurator.initialize("quarryplus-config", null,
                 URI.create(Objects.requireNonNull(TraceQuarryWork.class.getResource("/quarry-log4j2.xml")).toString())
             );
-            LOGGER = CONTEXT.getLogger("TraceQuarryWork");
+            LOGGER = CONTEXT.getLogger("TQW");
             MARKER = MarkerManager.getMarker("QUARRY_TRACE");
         } else {
             CONTEXT = null;

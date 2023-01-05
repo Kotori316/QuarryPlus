@@ -6,7 +6,7 @@
     <Appenders>
         <RollingRandomAccessFile name="DebugFile" fileName="quarry-logs/quarry-debug.log"
                                  filePattern="quarry-logs/quarry-debug-%d{yyyy-MM-dd}-%i.log.gz">
-            <PatternLayout pattern="[%d{ISO8601}] [%-5level] [%logger/%markerSimpleName]: %m%n%xEx"/>
+            <PatternLayout pattern="[%d{ISO8601}][%level{length=1}] [%logger/%markerSimpleName]: %m%n%xEx"/>
             <Policies>
                 <TimeBasedTriggeringPolicy/>
                 <OnStartupTriggeringPolicy/>
