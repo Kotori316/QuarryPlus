@@ -423,7 +423,7 @@ public class TileAdvQuarry extends PowerTile implements
                 Block.getDrops(p.getRight(), targetWorld, p.getLeft(), targetWorld.getBlockEntity(p.getLeft()), fakePlayer, pickaxe).stream())
             .map(itemConverter::map).filter(Predicate.not(ItemStack::isEmpty)).toList();
         {
-            var headPos = toBreak.stream().map(Pair::getKey).findFirst().orElse(null);
+            var headPos = toBreak.stream().map(Pair::getKey).findFirst().orElse(BlockPos.ZERO);
             var headState = toBreak.stream().map(Pair::getValue).findFirst().orElse(null);
             TraceQuarryWork.blockRemoveSucceed(this, getBlockPos(), headPos, headState, drops, exp.get());
         }
