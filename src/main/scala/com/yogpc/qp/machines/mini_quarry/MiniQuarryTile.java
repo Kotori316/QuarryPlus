@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.machines.Area;
+import com.yogpc.qp.machines.BreakResult;
 import com.yogpc.qp.machines.CheckerLog;
 import com.yogpc.qp.machines.EnchantmentLevel;
 import com.yogpc.qp.machines.InvUtils;
@@ -76,11 +77,17 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
             var level = getTargetWorld();
             var pos = targetIterator.next();
             var state = level.getBlockState(pos);
-            if (!canBreak(level, pos, state)) continue; // The block is in deny list or unbreakable.
+            if (!canBreak(level, pos, state)) {
+                TraceQuarryWork.canBreakCheck(this, getBlockPos(), pos, state, "in deny or unbreakable");
+                continue; // The block is in deny list or unbreakable.
+            }
 
             var fakePlayer = QuarryFakePlayer.get(level);
             var event = new BlockEvent.BreakEvent(level, pos, state, fakePlayer);
-            if (MinecraftForge.EVENT_BUS.post(event)) break; // Denied to break block.
+            if (MinecraftForge.EVENT_BUS.post(event)) {
+                TraceQuarryWork.blockRemoveFailed(this, getBlockPos(), pos, state, BreakResult.FAIL_EVENT);
+                break; // Denied to break block.
+            }
 
             if (state.getDestroySpeed(level, pos) < 0) {
                 // Consume additional energy if quarry tries to remove bedrock.
@@ -96,6 +103,7 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
             tool.ifPresent(t -> {
                 fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, t);
                 var drops = Block.getDrops(state, level, pos, level.getBlockEntity(pos), fakePlayer, t);
+                TraceQuarryWork.blockRemoveSucceed(this, getBlockPos(), pos, state, drops, 0);
                 drops.forEach(this::insertOrDropItem);
                 var damage = t.isCorrectToolForDrops(state) ? 1 : 4;
                 for (int i = 0; i < damage; i++) {

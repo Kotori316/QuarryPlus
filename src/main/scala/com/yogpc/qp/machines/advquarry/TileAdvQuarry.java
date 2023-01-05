@@ -49,6 +49,7 @@ import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -314,19 +315,23 @@ public class TileAdvQuarry extends PowerTile implements
         var breakEvent = new BlockEvent.BreakEvent(targetWorld, targetPos, state, fakePlayer);
         MinecraftForge.EVENT_BUS.post(breakEvent);
         if (breakEvent.isCanceled()) {
+            TraceQuarryWork.blockRemoveFailed(this, getBlockPos(), targetPos, state, BreakResult.FAIL_EVENT);
             return BreakResult.FAIL_EVENT;
         }
         if (state.isAir() || !canBreak(targetWorld, targetPos, state)) {
+            TraceQuarryWork.blockRemoveFailed(this, getBlockPos(), targetPos, state, BreakResult.SKIPPED);
             return BreakResult.SKIPPED;
         }
 
         // Break block
         var hardness = state.getDestroySpeed(targetWorld, targetPos);
         if (requireEnergy && !useEnergy(PowerManager.getBreakEnergy(hardness, this), Reason.BREAK_BLOCK, false)) {
+            TraceQuarryWork.blockRemoveFailed(this, getBlockPos(), targetPos, state, BreakResult.NOT_ENOUGH_ENERGY);
             return BreakResult.NOT_ENOUGH_ENERGY;
         }
         // Get drops
         var drops = Block.getDrops(state, targetWorld, targetPos, targetWorld.getBlockEntity(targetPos), fakePlayer, pickaxe);
+        TraceQuarryWork.blockRemoveSucceed(this, getBlockPos(), targetPos, state, drops, breakEvent.getExpToDrop());
         drops.stream().map(itemConverter::map).forEach(this.storage::addItem);
         targetWorld.setBlock(targetPos, getReplacementState(), Block.UPDATE_ALL);
         // Get experiments
@@ -380,6 +385,7 @@ public class TileAdvQuarry extends PowerTile implements
                 var breakEvent = new BlockEvent.BreakEvent(targetWorld, mutableBlockPos, state, fakePlayer);
                 MinecraftForge.EVENT_BUS.post(breakEvent);
                 if (breakEvent.isCanceled()) {
+                    TraceQuarryWork.blockRemoveFailed(this, getBlockPos(), mutableBlockPos, state, BreakResult.FAIL_EVENT);
                     continue; // Not breakable. Ignore.
                 }
                 exp.getAndAdd(breakEvent.getExpToDrop());
@@ -398,6 +404,9 @@ public class TileAdvQuarry extends PowerTile implements
         useEnergy(requiredEnergy, Reason.BREAK_BLOCK, true);
 
         // Drain fluids
+        if (!toDrain.isEmpty()) {
+            TraceQuarryWork.progress(this, getBlockPos(), toDrain.get(0).getKey(), "Remove %d fluids".formatted(toDrain.size()));
+        }
         for (Pair<BlockPos, BlockState> pair : toDrain) {
             if (pair.getRight().getBlock() instanceof BucketPickup fluidBlock) {
                 var bucketItem = fluidBlock.pickupBlock(targetWorld, pair.getLeft(), pair.getRight());
@@ -410,9 +419,15 @@ public class TileAdvQuarry extends PowerTile implements
             targetWorld.setBlock(pair.getLeft(), Holder.BLOCK_DUMMY.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
         }
         // Get drops
-        toBreak.stream().flatMap(p ->
+        var drops = toBreak.stream().flatMap(p ->
                 Block.getDrops(p.getRight(), targetWorld, p.getLeft(), targetWorld.getBlockEntity(p.getLeft()), fakePlayer, pickaxe).stream())
-            .map(itemConverter::map).forEach(this.storage::addItem);
+            .map(itemConverter::map).filter(Predicate.not(ItemStack::isEmpty)).toList();
+        {
+            var headPos = toBreak.stream().map(Pair::getKey).findFirst().orElse(null);
+            var headState = toBreak.stream().map(Pair::getValue).findFirst().orElse(null);
+            TraceQuarryWork.blockRemoveSucceed(this, getBlockPos(), headPos, headState, drops, exp.get());
+        }
+        drops.forEach(this.storage::addItem);
         // Remove blocks
         toBreak.stream().map(Pair::getLeft)
             .forEach(p -> targetWorld.setBlock(p, getReplacementState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE));
