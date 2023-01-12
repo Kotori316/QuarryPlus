@@ -80,6 +80,11 @@ public final class TraceQuarryWork {
             LOGGER.info(MARKER, "{} Finished work with {} FE", header(tile, pos), energyInMachine);
     }
 
+    public static void convertItem(ItemKey before, ItemKey after) {
+        if (enabled)
+            LOGGER.debug(MARKER, "Convert {} to {}", before, after);
+    }
+
     private static String header(PowerTile tile, BlockPos pos) {
         return "[%s(%d,%d,%d)]".formatted(tile.getClass().getSimpleName(), pos.getX(), pos.getY(), pos.getZ());
     }

@@ -39,10 +39,17 @@ public record ItemConverter(
             .filter(e -> e.getKey().test(key))
             .findFirst()
             .map(Map.Entry::getValue)
-            .map(f -> f.apply(key))
+            .map(f -> convert(f, key))
             // Null check is done in this context.
             .map(k -> k.toStack(before.getCount()))
             .orElse(before);
+    }
+
+    private static ItemKey convert(Function<ItemKey, ItemKey> func, ItemKey key) {
+        var converted = func.apply(key);
+        if (!(func instanceof NoLogFunction))
+            TraceQuarryWork.convertItem(key, converted);
+        return converted;
     }
 
     public ItemConverter combined(ItemConverter other) {
@@ -94,7 +101,7 @@ public record ItemConverter(
     @SuppressWarnings("SpellCheckingInspection") // For javadoc
     public static ItemConverter advQuarryConverter() {
         if (!QuarryPlus.config.common.removeCommonMaterialsByCD.get()) return new ItemConverter(List.of());
-        Function<ItemKey, ItemKey> function = itemKey -> new ItemKey(ItemStack.EMPTY);
+        Function<ItemKey, ItemKey> function = new NoLogFunction(itemKey -> new ItemKey(ItemStack.EMPTY));
         return new ItemConverter(Stream.of(
                 tagPredicate(Tags.Items.STONE),
                 tagPredicate(Tags.Items.COBBLESTONE),
@@ -114,10 +121,18 @@ public record ItemConverter(
     static Predicate<ItemKey> blockTagPredicate(TagKey<Block> tag) {
         return itemKey ->
             (itemKey.item() instanceof BlockItem blockItem)
-                && blockItem.getBlock().defaultBlockState().is(tag);
+            && blockItem.getBlock().defaultBlockState().is(tag);
     }
 
     static Predicate<ItemKey> itemPredicate(Item item) {
         return itemKey -> itemKey.item() == item;
+    }
+
+    private record NoLogFunction(Function<ItemKey, ItemKey> function) implements Function<ItemKey, ItemKey> {
+
+        @Override
+        public ItemKey apply(ItemKey key) {
+            return this.function.apply(key);
+        }
     }
 }
