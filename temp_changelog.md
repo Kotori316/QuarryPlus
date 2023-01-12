@@ -1,3 +1,8 @@
+## Version 19.10.3
+
+* Log item conversion.
+* Removed unused files.
+
 ## Version 19.10.2
 
 * Add config option to disable chunk loading of quarry.
