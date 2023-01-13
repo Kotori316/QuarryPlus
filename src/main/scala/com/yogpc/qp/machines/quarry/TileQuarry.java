@@ -18,6 +18,7 @@ import com.yogpc.qp.machines.BreakResult;
 import com.yogpc.qp.machines.CheckerLog;
 import com.yogpc.qp.machines.EnchantmentHolder;
 import com.yogpc.qp.machines.EnchantmentLevel;
+import com.yogpc.qp.machines.InvUtils;
 import com.yogpc.qp.machines.ItemConverter;
 import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.PowerConfig;
@@ -267,7 +268,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
             return BreakResult.NOT_ENOUGH_ENERGY;
         }
         // Get drops
-        var drops = Block.getDrops(state, targetWorld, targetPos, targetWorld.getBlockEntity(targetPos), fakePlayer, pickaxe);
+        var drops = InvUtils.getBlockDrops(state, targetWorld, targetPos, targetWorld.getBlockEntity(targetPos), fakePlayer, pickaxe);
         TraceQuarryWork.blockRemoveSucceed(this, getBlockPos(), targetPos, state, drops, breakEvent.getExpToDrop());
         drops.stream().map(itemConverter::map).forEach(this.storage::addItem);
         targetWorld.setBlock(targetPos, getReplacementState(), Block.UPDATE_ALL);
@@ -334,7 +335,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
             } else if (state.getBlock() instanceof LiquidBlockContainer) {
                 float hardness = state.getDestroySpeed(world, pos);
                 quarry.useEnergy(PowerManager.getBreakEnergy(hardness, quarry), Reason.REMOVE_FLUID, true);
-                var drops = Block.getDrops(state, world, pos, world.getBlockEntity(pos), null, quarry.getPickaxe());
+                var drops = InvUtils.getBlockDrops(state, world, pos, world.getBlockEntity(pos), null, quarry.getPickaxe());
                 drops.forEach(quarry.storage::addItem);
                 world.setBlock(pos, Holder.BLOCK_FRAME.getDammingState(), Block.UPDATE_ALL);
             }

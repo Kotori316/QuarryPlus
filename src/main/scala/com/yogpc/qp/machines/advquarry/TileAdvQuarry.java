@@ -3,6 +3,7 @@ package com.yogpc.qp.machines.advquarry;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,6 +20,7 @@ import com.yogpc.qp.machines.BreakResult;
 import com.yogpc.qp.machines.CheckerLog;
 import com.yogpc.qp.machines.EnchantmentHolder;
 import com.yogpc.qp.machines.EnchantmentLevel;
+import com.yogpc.qp.machines.InvUtils;
 import com.yogpc.qp.machines.ItemConverter;
 import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.PowerConfig;
@@ -49,7 +51,6 @@ import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -330,7 +331,7 @@ public class TileAdvQuarry extends PowerTile implements
             return BreakResult.NOT_ENOUGH_ENERGY;
         }
         // Get drops
-        var drops = Block.getDrops(state, targetWorld, targetPos, targetWorld.getBlockEntity(targetPos), fakePlayer, pickaxe);
+        var drops = InvUtils.getBlockDrops(state, targetWorld, targetPos, targetWorld.getBlockEntity(targetPos), fakePlayer, pickaxe);
         TraceQuarryWork.blockRemoveSucceed(this, getBlockPos(), targetPos, state, drops, breakEvent.getExpToDrop());
         drops.stream().map(itemConverter::map).forEach(this.storage::addItem);
         targetWorld.setBlock(targetPos, getReplacementState(), Block.UPDATE_ALL);
@@ -420,14 +421,15 @@ public class TileAdvQuarry extends PowerTile implements
         }
         // Get drops
         var drops = toBreak.stream().flatMap(p ->
-                Block.getDrops(p.getRight(), targetWorld, p.getLeft(), targetWorld.getBlockEntity(p.getLeft()), fakePlayer, pickaxe).stream())
-            .map(itemConverter::map).filter(Predicate.not(ItemStack::isEmpty)).toList();
+                InvUtils.getBlockDrops(p.getRight(), targetWorld, p.getLeft(), targetWorld.getBlockEntity(p.getLeft()), fakePlayer, pickaxe).stream())
+            .map(itemConverter::mapToKey)
+            .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.summingLong(Map.Entry::getValue)));
         {
             var headPos = toBreak.stream().map(Pair::getKey).findFirst().orElse(BlockPos.ZERO);
             var headState = toBreak.stream().map(Pair::getValue).findFirst().orElse(null);
             TraceQuarryWork.blockRemoveSucceed(this, getBlockPos(), headPos, headState, drops, exp.get());
         }
-        drops.forEach(this.storage::addItem);
+        this.storage.addAllItems(drops);
         // Remove blocks
         toBreak.stream().map(Pair::getLeft)
             .forEach(p -> targetWorld.setBlock(p, getReplacementState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE));
@@ -490,7 +492,7 @@ public class TileAdvQuarry extends PowerTile implements
                 } else if (state.getBlock() instanceof LiquidBlockContainer) {
                     float hardness = state.getDestroySpeed(world, pos);
                     useEnergy(PowerManager.getBreakEnergy(hardness, this), Reason.REMOVE_FLUID, true);
-                    var drops = Block.getDrops(state, world, pos, world.getBlockEntity(pos), null, this.getPickaxe());
+                    var drops = InvUtils.getBlockDrops(state, world, pos, world.getBlockEntity(pos), null, this.getPickaxe());
                     drops.forEach(this.storage::addItem);
                     world.setBlock(pos, Holder.BLOCK_FRAME.getDammingState(), Block.UPDATE_ALL);
                 }

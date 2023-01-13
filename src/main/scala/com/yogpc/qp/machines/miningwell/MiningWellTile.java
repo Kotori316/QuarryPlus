@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.machines.CheckerLog;
 import com.yogpc.qp.machines.EnchantmentLevel;
+import com.yogpc.qp.machines.InvUtils;
 import com.yogpc.qp.machines.ItemConverter;
 import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.PowerConfig;
@@ -135,7 +136,7 @@ public class MiningWellTile extends PowerTile implements CheckerLog, MachineStor
     private void breakBlock(Level level, BlockPos pos, BlockState state) {
         var hardness = state.getDestroySpeed(level, pos);
         if (useEnergy(PowerManager.getBreakEnergy(hardness, EnchantmentLevel.NoEnchantments.INSTANCE, PowerConfig.DEFAULT), Reason.BREAK_BLOCK, false)) {
-            var drops = Block.getDrops(state, (ServerLevel) level, pos, level.getBlockEntity(pos), null, new ItemStack(Items.NETHERITE_PICKAXE));
+            var drops = InvUtils.getBlockDrops(state, (ServerLevel) level, pos, level.getBlockEntity(pos), null, new ItemStack(Items.NETHERITE_PICKAXE));
             drops.stream().map(itemConverter::map).forEach(this.storage::addItem);
             level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
             var sound = state.getSoundType();

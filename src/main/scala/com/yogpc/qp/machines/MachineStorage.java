@@ -48,6 +48,10 @@ public class MachineStorage {
         itemMap.merge(key, (long) stack.getCount(), Long::sum);
     }
 
+    public void addAllItems(Map<ItemKey, Long> drops) {
+        drops.forEach((itemKey, count) -> this.itemMap.merge(itemKey, count, Long::sum));
+    }
+
     public void addFluid(ItemStack bucketItem) {
         FluidUtil.getFluidContained(bucketItem).ifPresent(f -> {
             var key = new FluidKey(f);

@@ -102,7 +102,7 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
             }).findFirst());
             tool.ifPresent(t -> {
                 fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, t);
-                var drops = Block.getDrops(state, level, pos, level.getBlockEntity(pos), fakePlayer, t);
+                var drops = InvUtils.getBlockDrops(state, level, pos, level.getBlockEntity(pos), fakePlayer, t);
                 TraceQuarryWork.blockRemoveSucceed(this, getBlockPos(), pos, state, drops, 0);
                 drops.forEach(this::insertOrDropItem);
                 var damage = t.isCorrectToolForDrops(state) ? 1 : 4;

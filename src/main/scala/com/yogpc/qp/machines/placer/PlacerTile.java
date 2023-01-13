@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.CheckerLog;
+import com.yogpc.qp.machines.InvUtils;
 import com.yogpc.qp.machines.QuarryFakePlayer;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.TileMessage;
@@ -117,7 +118,7 @@ public class PlacerTile extends BlockEntity implements
         if (state.getDestroySpeed(level, pos) < 0) return; // Unbreakable.
         Player fake = QuarryFakePlayer.get(((ServerLevel) level));
         fake.setItemInHand(InteractionHand.MAIN_HAND, getSilkPickaxe());
-        List<ItemStack> drops = Block.getDrops(state, ((ServerLevel) level), pos, level.getBlockEntity(pos), fake, fake.getMainHandItem());
+        List<ItemStack> drops = InvUtils.getBlockDrops(state, ((ServerLevel) level), pos, level.getBlockEntity(pos), fake, fake.getMainHandItem());
         level.removeBlock(pos, false);
         drops.stream().map(s -> ItemHandlerHelper.insertItem(this.itemHandler, s, false)) // Return not-inserted items.
             .filter(Predicate.not(ItemStack::isEmpty)).forEach(s -> Block.popResource(level, getBlockPos(), s));

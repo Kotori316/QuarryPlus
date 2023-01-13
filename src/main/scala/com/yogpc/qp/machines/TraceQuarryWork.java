@@ -2,6 +2,7 @@ package com.yogpc.qp.machines;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -20,7 +21,7 @@ import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configurator;
 
 public final class TraceQuarryWork {
-    private static final boolean enabled;
+    public static final boolean enabled;
     private static final LoggerContext CONTEXT;
     private static final Logger LOGGER;
     private static final Marker MARKER;
@@ -73,6 +74,13 @@ public final class TraceQuarryWork {
         }
     }
 
+    public static void blockRemoveSucceed(PowerTile tile, BlockPos pos, BlockPos targetPos, BlockState state, Map<ItemKey, Long> drops, int exp) {
+        if (enabled) {
+            LOGGER.debug(MARKER, "{} ({},{},{}) SUCCESS {} EXP={} ({})", header(tile, pos), targetPos.getX(), targetPos.getY(), targetPos.getZ(), state, exp,
+                drops.entrySet().stream().map(s -> "%dx %s".formatted(s.getValue(), s.getKey().getId())).collect(Collectors.joining(",")));
+        }
+    }
+
     public static void unexpected(PowerTile tile, BlockPos pos, String reason) {
         if (enabled)
             LOGGER.warn(MARKER, "{} {}", header(tile, pos), reason);
@@ -96,6 +104,12 @@ public final class TraceQuarryWork {
     public static void transferFluid(BlockEntity from, IFluidHandler dest, FluidKey fluidKey, int amount) {
         if (enabled)
             LOGGER.debug(MARKER, "{} Transfer {}mB of {} to {}", header(from, from.getBlockPos()), amount, fluidKey, dest);
+    }
+
+    public static void noDrops(BlockState state, BlockPos pos, ItemStack tool) {
+        if (enabled) {
+            LOGGER.debug("{} at ({},{},{}) has no drops with {}", state, pos.getX(), pos.getY(), pos.getZ(), tool);
+        }
     }
 
     private static String header(BlockEntity tile, BlockPos pos) {

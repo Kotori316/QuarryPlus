@@ -34,15 +34,22 @@ public record ItemConverter(
     public ItemStack map(ItemStack before) {
         if (conversionMap().isEmpty()) return before;
         var key = new ItemKey(before);
-        return conversionMap()
-            .stream()
-            .filter(e -> e.getKey().test(key))
+        var pair = mapToKey(key, before.getCount());
+        return pair.getKey().toStack(pair.getValue());
+    }
+
+    public Map.Entry<ItemKey, Integer> mapToKey(ItemStack before) {
+        return mapToKey(new ItemKey(before), before.getCount());
+    }
+
+    public Map.Entry<ItemKey, Integer> mapToKey(ItemKey before, int count) {
+        var key = conversionMap().stream()
+            .filter(e -> e.getKey().test(before))
             .findFirst()
             .map(Map.Entry::getValue)
-            .map(f -> convert(f, key))
-            // Null check is done in this context.
-            .map(k -> k.toStack(before.getCount()))
+            .map(f -> convert(f, before))
             .orElse(before);
+        return Map.entry(key, count);
     }
 
     private static ItemKey convert(Function<ItemKey, ItemKey> func, ItemKey key) {
