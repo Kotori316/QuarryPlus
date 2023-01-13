@@ -28,6 +28,7 @@ public final class QuarryPlusTest implements BeforeAllCallback {
 
     private static void setConfig() {
         QuarryPlus.registerConfig(true);
+        QuarryPlus.config.common.logAllQuarryWork.set(false);
     }
 
     public static ResourceLocation id(String location) {

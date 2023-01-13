@@ -50,7 +50,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        forge: [ 1.19, default ]
+        forge: [ 1.19.2, default ]
     steps:
       - name: Checkout QuarryPlus repo
         uses: actions/checkout@v3
@@ -75,7 +75,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        forge: [ 1.19, default ]
+        forge: [ 1.19.2, default ]
     steps:
       - uses: actions/checkout@v3
       - name: Get latest version
