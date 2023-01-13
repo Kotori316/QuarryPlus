@@ -1,3 +1,8 @@
+## Version 19.10.4
+
+* Log item transfer.
+* Log if block has no drops.
+
 ## Version 19.10.3
 
 * Log item conversion.
