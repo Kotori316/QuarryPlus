@@ -121,18 +121,21 @@ public class MachineStorage {
                         long beforeCount = entry.getValue();
                         boolean flag = true;
                         while (beforeCount > 0 && flag) {
-                            int itemCount = (int) Math.min(entry.getKey().toStack(1).getMaxStackSize(), beforeCount);
-                            var rest = ItemHandlerHelper.insertItem(handler, entry.getKey().toStack(itemCount), false);
+                            var key = entry.getKey();
+                            int itemCount = (int) Math.min(key.toStack(1).getMaxStackSize(), beforeCount);
+                            var rest = ItemHandlerHelper.insertItem(handler, key.toStack(itemCount), false);
                             if (itemCount != rest.getCount()) {
                                 // Item transferred.
-                                long remain = beforeCount - (itemCount - rest.getCount());
+                                int transferred = itemCount - rest.getCount();
+                                TraceQuarryWork.transferItem(blockEntity, handler, key, transferred);
+                                long remain = beforeCount - transferred;
                                 beforeCount = remain;
                                 if (remain > 0) {
                                     // the item still exists.
-                                    storage.itemMap.put(entry.getKey(), remain);
+                                    storage.itemMap.put(key, remain);
                                 } else {
                                     // the items all have been transferred.
-                                    storage.itemMap.remove(entry.getKey());
+                                    storage.itemMap.remove(key);
                                 }
 
                                 count += 1;
@@ -161,6 +164,7 @@ public class MachineStorage {
                     for (Map.Entry<FluidKey, Long> entry : fluidMap) {
                         var filled = handler.fill(entry.getKey().toStack((int) Math.min(entry.getValue(), Integer.MAX_VALUE)), IFluidHandler.FluidAction.EXECUTE);
                         if (filled > 0) { // Fluid is transferred.
+                            TraceQuarryWork.transferFluid(blockEntity, handler, entry.getKey(), filled);
                             storage.putFluid(entry.getKey(), entry.getValue() - filled);
                             count += 1;
                             if (count > MAX_TRANSFER) return;

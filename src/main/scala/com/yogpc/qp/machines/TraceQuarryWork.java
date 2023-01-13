@@ -8,7 +8,10 @@ import java.util.stream.Collectors;
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -85,7 +88,17 @@ public final class TraceQuarryWork {
             LOGGER.debug(MARKER, "Convert {} to {}", before, after);
     }
 
-    private static String header(PowerTile tile, BlockPos pos) {
+    public static void transferItem(BlockEntity from, IItemHandler dest, ItemKey itemKey, int count) {
+        if (enabled)
+            LOGGER.debug(MARKER, "{} Transfer {}x {} to {}", header(from, from.getBlockPos()), count, itemKey, dest);
+    }
+
+    public static void transferFluid(BlockEntity from, IFluidHandler dest, FluidKey fluidKey, int amount) {
+        if (enabled)
+            LOGGER.debug(MARKER, "{} Transfer {}mB of {} to {}", header(from, from.getBlockPos()), amount, fluidKey, dest);
+    }
+
+    private static String header(BlockEntity tile, BlockPos pos) {
         return "[%s(%d,%d,%d)]".formatted(tile.getClass().getSimpleName(), pos.getX(), pos.getY(), pos.getZ());
     }
 
