@@ -43,172 +43,186 @@ class ItemConverterTest {
         assertNotNull(converter);
     }
 
-    @Test
-    void conversion1() {
-        var converter = new ItemConverter(Map.of(
-            toKey(Items.COBBLESTONE), toKey(Items.STONE)
-        ));
-        var converted = converter.map(new ItemStack(Items.COBBLESTONE));
-        assertEquals(Items.STONE, converted.getItem());
-    }
-
-    @ParameterizedTest
-    @ValueSource(ints = {1, 2, 5, 16, 64})
-    void conversion2(int count) {
-        var converter = new ItemConverter(Map.of(
-            toKey(Items.COBBLESTONE), toKey(Items.APPLE)
-        ));
-        var converted = converter.map(new ItemStack(Items.COBBLESTONE, count));
-        assertEquals(Items.APPLE, converted.getItem());
-        assertEquals(count, converted.getCount());
-    }
-
-    @Test
-    void conversion3() {
-        var converter = new ItemConverter(Map.of(
-            toKey(Items.COBBLESTONE), toKey(Items.STONE),
-            toKey(Items.APPLE), toKey(Items.ENCHANTED_GOLDEN_APPLE)
-        ));
-        {
+    @Nested
+    class SimpleConversionTest {
+        @Test
+        void conversion1() {
+            var converter = new ItemConverter(Map.of(
+                toKey(Items.COBBLESTONE), toKey(Items.STONE)
+            ));
             var converted = converter.map(new ItemStack(Items.COBBLESTONE));
             assertEquals(Items.STONE, converted.getItem());
         }
-        {
-            var converted = converter.map(new ItemStack(Items.APPLE));
-            assertEquals(Items.ENCHANTED_GOLDEN_APPLE, converted.getItem());
+
+        @ParameterizedTest
+        @ValueSource(ints = {1, 2, 5, 16, 64})
+        void conversion2(int count) {
+            var converter = new ItemConverter(Map.of(
+                toKey(Items.COBBLESTONE), toKey(Items.APPLE)
+            ));
+            var converted = converter.map(new ItemStack(Items.COBBLESTONE, count));
+            assertEquals(Items.APPLE, converted.getItem());
+            assertEquals(count, converted.getCount());
+        }
+
+        @Test
+        void conversion3() {
+            var converter = new ItemConverter(Map.of(
+                toKey(Items.COBBLESTONE), toKey(Items.STONE),
+                toKey(Items.APPLE), toKey(Items.ENCHANTED_GOLDEN_APPLE)
+            ));
+            {
+                var converted = converter.map(new ItemStack(Items.COBBLESTONE));
+                assertEquals(Items.STONE, converted.getItem());
+            }
+            {
+                var converted = converter.map(new ItemStack(Items.APPLE));
+                assertEquals(Items.ENCHANTED_GOLDEN_APPLE, converted.getItem());
+            }
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {1, 2, 5, 16, 64})
+        void noConversion(int count) {
+            var converter = new ItemConverter(Map.of(
+                toKey(Items.COBBLESTONE), toKey(Items.APPLE)
+            ));
+            var before = new ItemStack(Items.STONE, count);
+            var converted = converter.map(before);
+            assertTrue(ItemStack.matches(before, converted), "Comparing of %s, %s".formatted(before, converted));
         }
     }
 
-    @ParameterizedTest
-    @ValueSource(ints = {1, 2, 5, 16, 64})
-    void noConversion(int count) {
-        var converter = new ItemConverter(Map.of(
-            toKey(Items.COBBLESTONE), toKey(Items.APPLE)
-        ));
-        var before = new ItemStack(Items.STONE, count);
-        var converted = converter.map(before);
-        assertTrue(ItemStack.isSame(before, converted), "Comparing of %s, %s".formatted(before, converted));
+    @Nested
+    class SpecialConversionTest {
+        @Test
+        void nullConversion() {
+            Predicate<ItemKey> predicate = i -> i.item() == Items.DIAMOND;
+            Function<ItemKey, ItemKey> function = i -> null;
+            var conversion = new ItemConverter(List.of(Map.entry(predicate, function)));
+            assertAll(
+                () -> assertEquals(Items.COBBLESTONE, conversion.map(new ItemStack(Items.COBBLESTONE)).getItem()),
+                () -> assertEquals(Items.DIAMOND, conversion.map(new ItemStack(Items.DIAMOND)).getItem())
+            );
+        }
+
+        @Test
+        void emptyConversion() {
+            Predicate<ItemKey> predicate = i -> i.item() == Items.DIAMOND;
+            Function<ItemKey, ItemKey> function = i -> ItemKey.EMPTY_KEY;
+
+            var conversion = new ItemConverter(List.of(Map.entry(predicate, function)));
+            assertAll(
+                () -> assertEquals(Items.COBBLESTONE, conversion.map(new ItemStack(Items.COBBLESTONE)).getItem()),
+                () -> assertTrue(conversion.map(new ItemStack(Items.DIAMOND)).isEmpty())
+            );
+        }
     }
 
-    @Test
-    void nullConversion() {
-        Predicate<ItemKey> predicate = i -> i.item() == Items.DIAMOND;
-        Function<ItemKey, ItemKey> function = i -> null;
-        var conversion = new ItemConverter(List.of(Map.entry(predicate, function)));
-        assertAll(
-            () -> assertEquals(Items.COBBLESTONE, conversion.map(new ItemStack(Items.COBBLESTONE)).getItem()),
-            () -> assertEquals(Items.DIAMOND, conversion.map(new ItemStack(Items.DIAMOND)).getItem())
-        );
-    }
+    @Nested
+    class DynamicConversionTest {
+        @ParameterizedTest
+        @MethodSource("pickaxeConvert")
+        void dynamicConversion1(Item material, Item pickaxe) {
+            var keys = Set.of(toKey(Items.IRON_INGOT), toKey(Items.GOLD_INGOT), toKey(Items.DIAMOND), toKey(Items.STONE));
+            Function<ItemKey, ItemKey> convertFunction = i -> {
+                var name = i.getId();
+                var pickaxeName = name.getPath().replace("_ingot", "").replace("gold", "golden") + "_pickaxe";
+                var pickaxeItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(name.getNamespace(), pickaxeName));
+                return new ItemKey(pickaxeItem, i.nbt());
+            };
+            var converter = new ItemConverter(List.of(Pair.of(keys::contains, convertFunction)));
 
-    @Test
-    void emptyConversion() {
-        Predicate<ItemKey> predicate = i -> i.item() == Items.DIAMOND;
-        Function<ItemKey, ItemKey> function = i -> ItemKey.EMPTY_KEY;
+            var converted = converter.map(new ItemStack(material));
+            assertEquals(pickaxe, converted.getItem());
+        }
 
-        var conversion = new ItemConverter(List.of(Map.entry(predicate, function)));
-        assertAll(
-            () -> assertEquals(Items.COBBLESTONE, conversion.map(new ItemStack(Items.COBBLESTONE)).getItem()),
-            () -> assertTrue(conversion.map(new ItemStack(Items.DIAMOND)).isEmpty())
-        );
-    }
+        @ParameterizedTest
+        @MethodSource("deepOres")
+        void dynamicDeepSlate(Item expected, Item original) {
+            var converter = ItemConverter.deepslateConverter();
+            var converted = converter.map(new ItemStack(original));
+            assertEquals(expected, converted.getItem());
+        }
 
-    @ParameterizedTest
-    @MethodSource("pickaxeConvert")
-    void dynamicConversion1(Item material, Item pickaxe) {
-        var keys = Set.of(toKey(Items.IRON_INGOT), toKey(Items.GOLD_INGOT), toKey(Items.DIAMOND), toKey(Items.STONE));
-        Function<ItemKey, ItemKey> convertFunction = i -> {
-            var name = i.getId();
-            var pickaxeName = name.getPath().replace("_ingot", "").replace("gold", "golden") + "_pickaxe";
-            var pickaxeItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(name.getNamespace(), pickaxeName));
-            return new ItemKey(pickaxeItem, i.nbt());
-        };
-        var converter = new ItemConverter(List.of(Pair.of(keys::contains, convertFunction)));
+        static Stream<Object[]> pickaxeConvert() {
+            return Stream.of(
+                Pair.of(Items.LAPIS_LAZULI, Items.LAPIS_LAZULI),
+                Pair.of(Items.GOLDEN_APPLE, Items.GOLDEN_APPLE),
+                Pair.of(Items.STONE, Items.STONE_PICKAXE),
+                Pair.of(Items.IRON_INGOT, Items.IRON_PICKAXE),
+                Pair.of(Items.GOLD_INGOT, Items.GOLDEN_PICKAXE),
+                Pair.of(Items.DIAMOND, Items.DIAMOND_PICKAXE)
+            ).map(p -> new Object[]{p.getKey(), p.getValue()});
+        }
 
-        var converted = converter.map(new ItemStack(material));
-        assertEquals(pickaxe, converted.getItem());
-    }
-
-    @ParameterizedTest
-    @MethodSource("deepOres")
-    void dynamicDeepSlate(Item expected, Item original) {
-        var converter = ItemConverter.deepslateConverter();
-        var converted = converter.map(new ItemStack(original));
-        assertEquals(expected, converted.getItem());
-    }
-
-    static Stream<Object[]> pickaxeConvert() {
-        return Stream.of(
-            Pair.of(Items.LAPIS_LAZULI, Items.LAPIS_LAZULI),
-            Pair.of(Items.GOLDEN_APPLE, Items.GOLDEN_APPLE),
-            Pair.of(Items.STONE, Items.STONE_PICKAXE),
-            Pair.of(Items.IRON_INGOT, Items.IRON_PICKAXE),
-            Pair.of(Items.GOLD_INGOT, Items.GOLDEN_PICKAXE),
-            Pair.of(Items.DIAMOND, Items.DIAMOND_PICKAXE)
-        ).map(p -> new Object[]{p.getKey(), p.getValue()});
-    }
-
-    static Stream<Object[]> deepOres() {
-        return Stream.of(
-            // Excepted, Original
-            Pair.of(Items.LAPIS_LAZULI, Items.LAPIS_LAZULI),
-            Pair.of(Items.GOLDEN_APPLE, Items.GOLDEN_APPLE),
-            Pair.of(Items.DEEPSLATE, Items.DEEPSLATE),
-            Pair.of(Items.DEEPSLATE_TILE_WALL, Items.DEEPSLATE_TILE_WALL),
-            Pair.of(Items.DEEPSLATE_BRICKS, Items.DEEPSLATE_BRICKS),
-            Pair.of(Items.COAL_ORE, Items.DEEPSLATE_COAL_ORE),
-            Pair.of(Items.IRON_ORE, Items.DEEPSLATE_IRON_ORE),
-            Pair.of(Items.GOLD_ORE, Items.DEEPSLATE_GOLD_ORE),
-            Pair.of(Items.DIAMOND_ORE, Items.DEEPSLATE_DIAMOND_ORE),
-            Pair.of(Items.REDSTONE_ORE, Items.DEEPSLATE_REDSTONE_ORE),
-            Pair.of(Items.LAPIS_ORE, Items.DEEPSLATE_LAPIS_ORE)
-        ).map(p -> new Object[]{p.getKey(), p.getValue()});
+        static Stream<Object[]> deepOres() {
+            return Stream.of(
+                // Excepted, Original
+                Pair.of(Items.LAPIS_LAZULI, Items.LAPIS_LAZULI),
+                Pair.of(Items.GOLDEN_APPLE, Items.GOLDEN_APPLE),
+                Pair.of(Items.DEEPSLATE, Items.DEEPSLATE),
+                Pair.of(Items.DEEPSLATE_TILE_WALL, Items.DEEPSLATE_TILE_WALL),
+                Pair.of(Items.DEEPSLATE_BRICKS, Items.DEEPSLATE_BRICKS),
+                Pair.of(Items.COAL_ORE, Items.DEEPSLATE_COAL_ORE),
+                Pair.of(Items.IRON_ORE, Items.DEEPSLATE_IRON_ORE),
+                Pair.of(Items.GOLD_ORE, Items.DEEPSLATE_GOLD_ORE),
+                Pair.of(Items.DIAMOND_ORE, Items.DEEPSLATE_DIAMOND_ORE),
+                Pair.of(Items.REDSTONE_ORE, Items.DEEPSLATE_REDSTONE_ORE),
+                Pair.of(Items.LAPIS_ORE, Items.DEEPSLATE_LAPIS_ORE)
+            ).map(p -> new Object[]{p.getKey(), p.getValue()});
+        }
     }
 
     @Test
     void dummy() {
-        assertTrue(pickaxeConvert().findAny().isPresent());
-        assertTrue(deepOres().findAny().isPresent());
+        assertTrue(DynamicConversionTest.pickaxeConvert().findAny().isPresent());
+        assertTrue(DynamicConversionTest.deepOres().findAny().isPresent());
+        assertTrue(AdvQuarryConverterTest.shouldBeRemovedAdvQuarry().findAny().isPresent());
+        assertTrue(AdvQuarryConverterTest.shouldNotBeRemovedAdvQuarry().findAny().isPresent());
     }
 
-    @Disabled("SKIP: Should not access the tags.")
-    @ParameterizedTest
-    @MethodSource("com.yogpc.qp.machines.ItemConverterTest#shouldBeRemovedAdvQuarry")
-    void advQuarryConverterRemove1(Item item) {
-        var converter = ItemConverter.advQuarryConverter();
-        assertTrue(converter.map(new ItemStack(item)).isEmpty());
-    }
+    @Nested
+    class AdvQuarryConverterTest {
+        @Disabled("SKIP: Should not access the tags.")
+        @ParameterizedTest
+        @MethodSource("com.yogpc.qp.machines.ItemConverterTest#shouldBeRemovedAdvQuarry")
+        void advQuarryConverterRemove1(Item item) {
+            var converter = ItemConverter.advQuarryConverter();
+            assertTrue(converter.map(new ItemStack(item)).isEmpty());
+        }
 
-    @ParameterizedTest
-    @MethodSource("com.yogpc.qp.machines.ItemConverterTest#shouldNotBeRemovedAdvQuarry")
-    void advQuarryConverterRemove2(Item item) {
-        var converter = ItemConverter.advQuarryConverter();
-        assertFalse(converter.map(new ItemStack(item)).isEmpty());
-    }
+        @ParameterizedTest
+        @MethodSource("com.yogpc.qp.machines.ItemConverterTest#shouldNotBeRemovedAdvQuarry")
+        void advQuarryConverterRemove2(Item item) {
+            var converter = ItemConverter.advQuarryConverter();
+            assertFalse(converter.map(new ItemStack(item)).isEmpty());
+        }
 
-    static Stream<Item> shouldBeRemovedAdvQuarry() {
-        return Stream.of(
-            Items.STONE,
-            Items.ANDESITE,
-            Items.POLISHED_GRANITE,
-            Items.COBBLESTONE,
-            Items.DIRT,
-            Items.DEEPSLATE,
-            Items.COBBLED_DEEPSLATE,
-            Items.SANDSTONE,
-            Items.RED_SANDSTONE,
-            Items.GRASS_BLOCK,
-            Items.NETHERRACK
-        );
-    }
+        static Stream<Item> shouldBeRemovedAdvQuarry() {
+            return Stream.of(
+                Items.STONE,
+                Items.ANDESITE,
+                Items.POLISHED_GRANITE,
+                Items.COBBLESTONE,
+                Items.DIRT,
+                Items.DEEPSLATE,
+                Items.COBBLED_DEEPSLATE,
+                Items.SANDSTONE,
+                Items.RED_SANDSTONE,
+                Items.GRASS_BLOCK,
+                Items.NETHERRACK
+            );
+        }
 
-    static Stream<Item> shouldNotBeRemovedAdvQuarry() {
-        return Stream.of(
-            Items.END_STONE,
-            Items.FLINT,
-            Items.DIAMOND_ORE,
-            Items.BEDROCK
-        );
+        static Stream<Item> shouldNotBeRemovedAdvQuarry() {
+            return Stream.of(
+                Items.END_STONE,
+                Items.FLINT,
+                Items.DIAMOND_ORE,
+                Items.BEDROCK
+            );
+        }
     }
 
     @Nested
