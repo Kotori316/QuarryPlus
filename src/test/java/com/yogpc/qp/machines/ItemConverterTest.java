@@ -291,4 +291,22 @@ class ItemConverterTest {
             }
         }
     }
+
+    @Nested
+    class CombineTest {
+        @Test
+        void combine1() {
+            var c1 = new ItemConverter(List.of());
+            var c2 = new ItemConverter(List.of());
+            var c3 = c1.combined(c2);
+            assertTrue(c3.conversionMap().isEmpty());
+        }
+
+        @Test
+        void combineNull() {
+            ItemConverter c1 = new ItemConverter(List.of());
+            var c3 = c1.combined(null);
+            assertTrue(c3.conversionMap().isEmpty());
+        }
+    }
 }

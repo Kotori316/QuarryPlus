@@ -19,6 +19,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 
 public record ItemConverter(
     List<Map.Entry<Predicate<ItemKey>, Function<ItemKey, ItemKey>>> conversionMap) {
@@ -59,7 +60,9 @@ public record ItemConverter(
         return converted;
     }
 
-    public ItemConverter combined(ItemConverter other) {
+    public ItemConverter combined(@Nullable ItemConverter other) {
+        if (other == null || other.conversionMap.isEmpty()) return this;
+        if (this.conversionMap.isEmpty()) return other;
         var newList = new ArrayList<>(this.conversionMap());
         newList.addAll(other.conversionMap());
         return new ItemConverter(newList);
