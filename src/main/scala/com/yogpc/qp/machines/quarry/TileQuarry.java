@@ -524,8 +524,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         public QuarryCache() {
             replaceState = CacheEntry.supplierCache(5,
                 () -> TileQuarry.this.getReplacerModule().map(ReplacerModule::getState).orElse(Blocks.AIR.defaultBlockState()));
-            netherTop = CacheEntry.supplierCache(100,
-                QuarryPlus.config.common.netherTop::get);
+            netherTop = CacheEntry.supplierCache(100, QuarryPlus.config.common.netherTop);
             enchantments = CacheEntry.supplierCache(1000, () -> EnchantmentHolder.makeHolder(TileQuarry.this));
         }
     }

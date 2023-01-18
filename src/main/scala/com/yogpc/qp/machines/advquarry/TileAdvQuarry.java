@@ -546,8 +546,7 @@ public class TileAdvQuarry extends PowerTile implements
         public QuarryCache() {
             replaceState = CacheEntry.supplierCache(5,
                 () -> TileAdvQuarry.this.getReplacerModule().map(ReplacerModule::getState).orElse(Blocks.AIR.defaultBlockState()));
-            netherTop = CacheEntry.supplierCache(100,
-                QuarryPlus.config.common.netherTop::get);
+            netherTop = CacheEntry.supplierCache(100, QuarryPlus.config.common.netherTop);
             enchantments = CacheEntry.supplierCache(1000, () -> EnchantmentHolder.makeHolder(TileAdvQuarry.this));
             isProtectedByFTB = CacheEntry.supplierCache(300 * 20, () ->
                 area != null && FTBChunksProtectionCheck.isAreaProtected(area.shrink(1, 0, 1), getTargetWorld().dimension()));
