@@ -27,6 +27,7 @@ import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QPBlock;
 import com.yogpc.qp.machines.QuarryFakePlayer;
 import com.yogpc.qp.machines.TraceQuarryWork;
+import com.yogpc.qp.machines.module.FilterModule;
 import com.yogpc.qp.machines.module.ModuleInventory;
 import com.yogpc.qp.machines.module.QuarryModule;
 import com.yogpc.qp.machines.module.QuarryModuleProvider;
@@ -78,7 +79,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
     public double headX, headY, headZ;
     private boolean init = false;
     public int digMinY = 0;
-    private final ItemConverter itemConverter = ItemConverter.defaultConverter();
+    private ItemConverter itemConverter = createConverter();
     private Set<QuarryModule> modules = new HashSet<>(); // May be immutable.
     private final ModuleInventory moduleInventory;
     private final QuarryCache cache = new QuarryCache();
@@ -400,6 +401,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         // Module Inventory
         Set<QuarryModule> itemModules = Set.copyOf(moduleInventory.getModules());
         this.modules = Sets.union(blockModules, itemModules);
+        this.itemConverter = createConverter();
     }
 
     BlockState getReplacementState() {
@@ -487,6 +489,11 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
     @Override
     public Set<QuarryModule> getLoadedModules() {
         return modules;
+    }
+
+    ItemConverter createConverter() {
+        return ItemConverter.defaultConverter()
+            .combined(this.getFilterModule().map(FilterModule::createConverter).orElse(null));
     }
 
     @Override

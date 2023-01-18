@@ -29,6 +29,7 @@ import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QuarryFakePlayer;
 import com.yogpc.qp.machines.TraceQuarryWork;
 import com.yogpc.qp.machines.module.ContainerQuarryModule;
+import com.yogpc.qp.machines.module.FilterModule;
 import com.yogpc.qp.machines.module.ModuleInventory;
 import com.yogpc.qp.machines.module.QuarryModule;
 import com.yogpc.qp.machines.module.QuarryModuleProvider;
@@ -77,7 +78,7 @@ public class TileAdvQuarry extends PowerTile implements
 
     // Work
     private final QuarryCache cache = new QuarryCache();
-    private final ItemConverter itemConverter = ItemConverter.defaultConverter().combined(ItemConverter.advQuarryConverter());
+    private ItemConverter itemConverter = createConverter();
     public int digMinY;
     @Nullable
     private Area area = null;
@@ -280,6 +281,7 @@ public class TileAdvQuarry extends PowerTile implements
         // Module Inventory
         var itemModules = moduleInventory.getModules();
         this.modules = Stream.concat(blockModules.stream(), itemModules.stream()).collect(Collectors.toSet());
+        this.itemConverter = createConverter();
     }
 
     static boolean moduleFilter(QuarryModule module) {
@@ -289,6 +291,12 @@ public class TileAdvQuarry extends PowerTile implements
     @Override
     public Set<QuarryModule> getLoadedModules() {
         return modules;
+    }
+
+    ItemConverter createConverter() {
+        return ItemConverter.defaultConverter()
+            .combined(ItemConverter.advQuarryConverter())
+            .combined(this.getFilterModule().map(FilterModule::createConverter).orElse(null));
     }
 
     @Override
