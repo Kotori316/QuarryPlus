@@ -8,6 +8,8 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
 public record ItemKey(Item item, @Nullable CompoundTag nbt) {
+    public static final ItemKey EMPTY_KEY = new ItemKey(ItemStack.EMPTY);
+
     public ItemKey(ItemStack stack) {
         this(stack.getItem(), stack.getTag());
     }

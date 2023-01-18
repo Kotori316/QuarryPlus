@@ -104,7 +104,7 @@ class ItemConverterTest {
     @Test
     void emptyConversion() {
         Predicate<ItemKey> predicate = i -> i.item() == Items.DIAMOND;
-        Function<ItemKey, ItemKey> function = i -> new ItemKey(ItemStack.EMPTY);
+        Function<ItemKey, ItemKey> function = i -> ItemKey.EMPTY_KEY;
 
         var conversion = new ItemConverter(List.of(Map.entry(predicate, function)));
         assertAll(

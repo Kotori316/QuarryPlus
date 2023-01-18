@@ -108,7 +108,7 @@ public record ItemConverter(
     @SuppressWarnings("SpellCheckingInspection") // For javadoc
     public static ItemConverter advQuarryConverter() {
         if (!QuarryPlus.config.common.removeCommonMaterialsByCD.get()) return new ItemConverter(List.of());
-        Function<ItemKey, ItemKey> function = new NoLogFunction(itemKey -> new ItemKey(ItemStack.EMPTY));
+        Function<ItemKey, ItemKey> function = new NoLogFunction(itemKey -> ItemKey.EMPTY_KEY);
         return new ItemConverter(Stream.of(
                 tagPredicate(Tags.Items.STONE),
                 tagPredicate(Tags.Items.COBBLESTONE),

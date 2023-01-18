@@ -98,7 +98,7 @@ class ItemKeyTest {
     @DisplayName("Key from empty stacks.")
     void fromEmpty() {
         var key = new ItemKey(Items.AIR, null);
-        assertEquals(key, new ItemKey(ItemStack.EMPTY));
+        assertEquals(key, ItemKey.EMPTY_KEY);
         assertEquals(key, new ItemKey(new ItemStack(Items.APPLE, 0)));
     }
 
