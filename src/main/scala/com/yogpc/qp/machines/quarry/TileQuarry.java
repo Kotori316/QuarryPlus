@@ -79,7 +79,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
     public double headX, headY, headZ;
     private boolean init = false;
     public int digMinY = 0;
-    private ItemConverter itemConverter = createConverter();
+    private ItemConverter itemConverter;
     private Set<QuarryModule> modules = new HashSet<>(); // May be immutable.
     private final ModuleInventory moduleInventory;
     private final QuarryCache cache = new QuarryCache();
@@ -87,6 +87,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
     public TileQuarry(BlockPos pos, BlockState state) {
         super(Holder.QUARRY_TYPE, pos, state);
         this.moduleInventory = new ModuleInventory(5, this::updateModules, m -> true, this);
+        this.itemConverter = createConverter();
     }
 
     TileQuarry(BlockEntityType<?> entityType, BlockPos pos, BlockState state) {

@@ -78,7 +78,7 @@ public class TileAdvQuarry extends PowerTile implements
 
     // Work
     private final QuarryCache cache = new QuarryCache();
-    private ItemConverter itemConverter = createConverter();
+    private ItemConverter itemConverter;
     public int digMinY;
     @Nullable
     private Area area = null;
@@ -87,6 +87,7 @@ public class TileAdvQuarry extends PowerTile implements
 
     public TileAdvQuarry(BlockPos pos, BlockState state) {
         super(Holder.ADV_QUARRY_TYPE, pos, state);
+        itemConverter = createConverter();
     }
 
     @Override

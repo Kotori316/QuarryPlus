@@ -24,11 +24,12 @@ public final class FilterModule implements QuarryModule {
         this(getFromTag(tag));
     }
 
-    private static List<ItemKey> getFromTag(@Nullable ListTag tag) {
+    public static List<ItemKey> getFromTag(@Nullable ListTag tag) {
         if (tag == null || tag.isEmpty()) return List.of();
         return tag.stream()
             .mapMulti(MapMulti.cast(CompoundTag.class))
             .map(ItemKey::fromNbt)
+            .distinct()
             .toList();
     }
 
