@@ -10,9 +10,12 @@ import java.util.stream.Stream;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusTest;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.EnchantmentInstance;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Disabled;
@@ -90,6 +93,33 @@ class ItemConverterTest {
             var before = new ItemStack(Items.STONE, count);
             var converted = converter.map(before);
             assertTrue(ItemStack.matches(before, converted), "Comparing of %s, %s".formatted(before, converted));
+        }
+
+        @Test
+        void voidConverter1() {
+            var converter = ItemConverter.voidConverter(List.of(
+                toKey(Items.COBBLESTONE), toKey(Items.APPLE)
+            ));
+            assertAll(
+                () -> assertTrue(converter.map(new ItemStack(Items.COBBLESTONE)).isEmpty()),
+                () -> assertTrue(converter.map(new ItemStack(Items.APPLE)).isEmpty()),
+                () -> assertFalse(converter.map(new ItemStack(Items.BEDROCK)).isEmpty())
+            );
+        }
+
+        @Test
+        void voidConverter2() {
+            var converter = ItemConverter.voidConverter(List.of(
+                toKey(Items.ENCHANTED_BOOK)
+            ));
+            assertAll(
+                () -> assertFalse(converter.map(new ItemStack(Items.COBBLESTONE)).isEmpty()),
+                () -> assertFalse(converter.map(new ItemStack(Items.APPLE)).isEmpty()),
+                () -> assertFalse(converter.map(new ItemStack(Items.BEDROCK)).isEmpty()),
+                () -> assertFalse(converter.map(EnchantedBookItem.createForEnchantment(new EnchantmentInstance(Enchantments.AQUA_AFFINITY, 1))).isEmpty()),
+                () -> assertFalse(converter.map(EnchantedBookItem.createForEnchantment(new EnchantmentInstance(Enchantments.BLOCK_FORTUNE, 3))).isEmpty()),
+                () -> assertTrue(converter.map(new ItemStack(Items.ENCHANTED_BOOK)).isEmpty())
+            );
         }
     }
 
@@ -186,14 +216,14 @@ class ItemConverterTest {
     class AdvQuarryConverterTest {
         @Disabled("SKIP: Should not access the tags.")
         @ParameterizedTest
-        @MethodSource("com.yogpc.qp.machines.ItemConverterTest#shouldBeRemovedAdvQuarry")
+        @MethodSource("com.yogpc.qp.machines.ItemConverterTest$AdvQuarryConverterTest#shouldBeRemovedAdvQuarry")
         void advQuarryConverterRemove1(Item item) {
             var converter = ItemConverter.advQuarryConverter();
             assertTrue(converter.map(new ItemStack(item)).isEmpty());
         }
 
         @ParameterizedTest
-        @MethodSource("com.yogpc.qp.machines.ItemConverterTest#shouldNotBeRemovedAdvQuarry")
+        @MethodSource("com.yogpc.qp.machines.ItemConverterTest$AdvQuarryConverterTest#shouldNotBeRemovedAdvQuarry")
         void advQuarryConverterRemove2(Item item) {
             var converter = ItemConverter.advQuarryConverter();
             assertFalse(converter.map(new ItemStack(item)).isEmpty());

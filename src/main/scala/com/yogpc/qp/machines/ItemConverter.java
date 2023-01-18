@@ -121,6 +121,11 @@ public record ItemConverter(
             .toList());
     }
 
+    public static ItemConverter voidConverter(List<ItemKey> voidedItems) {
+        Function<ItemKey, ItemKey> toEmpty = key -> ItemKey.EMPTY_KEY;
+        return new ItemConverter(voidedItems.stream().map(k -> Map.entry(Predicate.<ItemKey>isEqual(k), toEmpty)).toList());
+    }
+
     static Predicate<ItemKey> tagPredicate(TagKey<Item> tag) {
         return itemKey -> itemKey.toStack(1).is(tag);
     }
