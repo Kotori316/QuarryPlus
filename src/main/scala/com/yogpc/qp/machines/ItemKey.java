@@ -23,7 +23,7 @@ public record ItemKey(Item item, @Nullable CompoundTag nbt) {
         return tag;
     }
 
-    static ItemKey fromNbt(CompoundTag tag) {
+    public static ItemKey fromNbt(CompoundTag tag) {
         var item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(tag.getString("item")));
         var nbt = tag.contains("tag") ? tag.getCompound("tag") : null;
         return new ItemKey(item, nbt);

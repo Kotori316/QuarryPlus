@@ -6,6 +6,7 @@
   "exp_pump": "CONFIG_ON",
   "filler": "CONFIG_ON",
   "filler_module": "CONFIG_ON",
+  "filter_module": "CONFIG_ON",
   "fuel_module_normal": "CONFIG_ON",
   "mini_quarry": "CONFIG_ON",
   "mining_well": "CONFIG_ON",
