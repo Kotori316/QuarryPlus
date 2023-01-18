@@ -308,5 +308,24 @@ class ItemConverterTest {
             var c3 = c1.combined(null);
             assertTrue(c3.conversionMap().isEmpty());
         }
+
+        @Test
+        void combine2() {
+            var c1 = new ItemConverter(Map.of(toKey(Items.COBBLESTONE), toKey(Items.STONE)));
+            var c2 = new ItemConverter(Map.of(toKey(Items.COBBLED_DEEPSLATE), toKey(Items.DEEPSLATE)));
+            var c3 = c1.combined(c2);
+            {
+                assertEquals(toKey(Items.STONE), c1.mapToKey(toKey(Items.COBBLESTONE), 1).getKey());
+                assertEquals(toKey(Items.COBBLED_DEEPSLATE), c1.mapToKey(toKey(Items.COBBLED_DEEPSLATE), 1).getKey());
+            }
+            {
+                assertEquals(toKey(Items.COBBLESTONE), c2.mapToKey(toKey(Items.COBBLESTONE), 1).getKey());
+                assertEquals(toKey(Items.DEEPSLATE), c2.mapToKey(toKey(Items.COBBLED_DEEPSLATE), 1).getKey());
+            }
+            {
+                assertEquals(toKey(Items.STONE), c3.mapToKey(toKey(Items.COBBLESTONE), 1).getKey());
+                assertEquals(toKey(Items.DEEPSLATE), c3.mapToKey(toKey(Items.COBBLED_DEEPSLATE), 1).getKey());
+            }
+        }
     }
 }
