@@ -1,26 +1,26 @@
-modLoader="kotori_scala"
-loaderVersion="[2.13.6-build-3, ),[37,)"
-issueTrackerURL="https://github.com/Kotori316/QuarryPlus/issues"
-license="GNU Lesser General Public License v3.0"
+modLoader = "kotori_scala"
+loaderVersion = "[2.13.6-build-3, ),[37,)"
+issueTrackerURL = "https://github.com/Kotori316/QuarryPlus/issues"
+license = "GNU Lesser General Public License v3.0"
 [[mods]]
-modId="quarryplus"
-version="${file.jarVersion}"
+modId = "quarryplus"
+version = "${file.jarVersion}"
 displayName = "QuarryPlus"
 updateJSONURL = "https://raw.githubusercontent.com/Kotori316/QuarryPlus/1.19/update.json"
 displayURL = "https://github.com/Kotori316/QuarryPlus"
-credits="Kotori316"
-authors="Kotori316"
-description='''
+credits = "Kotori316"
+authors = "Kotori316"
+description = '''
 Adds some machines to make a big hole in your world.'''
 [[dependencies.quarryplus]]
-    modId="forge"
-    mandatory = true
+modId = "forge"
+mandatory = true
 versionRange = "[41.0.94,)"
 ordering = "NONE"
-    side="BOTH"
+side = "BOTH"
 [[dependencies.quarryplus]]
-    modId="minecraft"
-    mandatory=true
-    versionRange="[1.19, )"
-    ordering="NONE"
-    side="BOTH"
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.19, )"
+ordering = "NONE"
+side = "BOTH"

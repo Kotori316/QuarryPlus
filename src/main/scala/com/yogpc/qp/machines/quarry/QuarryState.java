@@ -12,6 +12,7 @@ import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.BreakResult;
 import com.yogpc.qp.machines.PowerManager;
 import com.yogpc.qp.machines.PowerTile;
+import com.yogpc.qp.machines.TraceQuarryWork;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
@@ -40,6 +41,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
         public void tick(Level world, BlockPos quarryPos, BlockState state, TileQuarry quarry) {
             if (quarry.getArea() != null && quarry.getEnergy() > quarry.getMaxEnergy() / 200) {
                 quarry.setState(BREAK_INSIDE_FRAME, state);
+                TraceQuarryWork.startWork(quarry, quarryPos, quarry.getEnergyStored());
             }
         }
     },
@@ -51,7 +53,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
             if (quarry.target == null) {
                 // Initial
                 quarry.target = Target.newFrameInside(quarry.getArea(), quarry.getArea().minY(), quarry.getArea().maxY());
-                LOGGER.debug(MARKER, "{}({}) Target changed to {} in {}.", quarry.getClass().getSimpleName(), quarryPos, quarry.target, name());
+                logTargetChange(quarryPos, quarry);
             }
             var targetPos = QuarryState.dropUntilPos(quarry.target, StateConditions.skipNoBreak(quarry));
             if (targetPos == null) {
@@ -60,10 +62,13 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
                 return;
             }
             if (TileQuarry.isFullFluidBlock(quarry.getTargetWorld().getBlockState(targetPos))) {
-                if (quarry.hasPumpModule())
+                if (quarry.hasPumpModule()) {
                     quarry.setState(REMOVE_FLUID, state);
-                else
+                    TraceQuarryWork.progress(quarry, quarryPos, targetPos, "Move on REMOVE_FLUID");
+                } else {
                     quarry.target.get(true); // Set next pos. Ignore the fluid block.
+                    TraceQuarryWork.progress(quarry, quarryPos, targetPos, "Fluid but no pump module");
+                }
             } else if (quarry.breakBlock(targetPos).isSuccess()) {
                 quarry.target.get(true); // Set next pos.
             }
@@ -179,6 +184,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
             var original = Objects.requireNonNull(quarry.target.get(false));
             var targetWorld = quarry.getTargetWorld();
             Set<BlockPos> fluidPoses = countFluid(targetWorld, original, quarry.getArea());
+            TraceQuarryWork.progress(quarry, quarryPos, original, "Remove %d fluids".formatted(fluidPoses.size()));
             if (quarry.useEnergy(PowerManager.getBreakBlockFluidEnergy(quarry) * fluidPoses.size(), PowerTile.Reason.REMOVE_FLUID, true)) {
                 for (BlockPos fluidPos : fluidPoses) {
                     var blockState = targetWorld.getBlockState(fluidPos);
@@ -193,6 +199,8 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
                     } else {
                         // What ?
                         targetWorld.setBlock(fluidPos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
+                        TraceQuarryWork.unexpected(quarry, quarryPos, "Invalid fluid(%s, %s) at (%d,%d,%d)"
+                            .formatted(blockState, targetWorld.getFluidState(fluidPos), fluidPos.getX(), fluidPos.getY(), fluidPos.getZ()));
                     }
                     TileQuarry.removeEdgeFluid(fluidPos, targetWorld, quarry);
                 }
@@ -273,6 +281,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
 
     void logTargetChange(BlockPos quarryPos, TileQuarry quarry) {
         LOGGER.debug(MARKER, "{}({}) Target changed to {} in {}.", quarry.getClass().getSimpleName(), quarryPos, quarry.target, name());
+        TraceQuarryWork.changeTarget(quarry, quarryPos, name());
     }
 }
 

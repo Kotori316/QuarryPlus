@@ -1,11 +1,18 @@
 package com.yogpc.qp.machines;
 
+import java.util.List;
 import java.util.Optional;
 
+import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.ItemHandlerHelper;
 
@@ -37,5 +44,18 @@ public class InvUtils {
             if (remain.isEmpty()) return ItemStack.EMPTY;
         }
         return remain;
+    }
+
+    public static List<ItemStack> getBlockDrops(BlockState state, ServerLevel level, BlockPos pos, @Nullable BlockEntity blockEntity, @Nullable Entity entity, ItemStack tool) {
+        var result = Block.getDrops(state, level, pos, blockEntity, entity, tool);
+        if (TraceQuarryWork.enabled && result.isEmpty()) {
+            // Log if block has no drops.
+            // If the block is known, such as fluid, ignore.
+            // If block is unbreakable or needs just one click, such as Bedrock and Grass, ignore.
+            if (state.getFluidState().isEmpty() && state.getDestroySpeed(level, pos) > 0) {
+                TraceQuarryWork.noDrops(state, pos, tool);
+            }
+        }
+        return result;
     }
 }

@@ -2,6 +2,27 @@
 
 * Update for 1.19.3
 
+## Version 19.10.4
+
+* Log item transfer.
+* Log if block has no drops.
+
+## Version 19.10.3
+
+* Log item conversion.
+* Removed unused files.
+
+## Version 19.10.2
+
+* Add config option to disable chunk loading of quarry.
+  * You can use chunk loaders from other mods without conflicts.
+* Add a logger to trace almost all work of quarry.
+
+## Version 19.10.1
+
+* Not to check protection chunks too much.
+* Fixed a bug that QuarryPlus removes blocks in protected chunks when it tries to place frame.
+
 ## Version 19.10
 
 * Add config option to extract items in Workbench Plus.
