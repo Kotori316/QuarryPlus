@@ -10,11 +10,17 @@ import com.yogpc.qp.machines.QPItem;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,7 +29,7 @@ public final class FilterModuleItem extends QPItem implements QuarryModuleProvid
     public static final String KEY_ITEMS = "filter_items";
 
     public FilterModuleItem() {
-        super(new ResourceLocation(QuarryPlus.modID, NAME), new Properties().tab(Holder.TAB));
+        super(new ResourceLocation(QuarryPlus.modID, NAME), new Properties().tab(Holder.TAB).stacksTo(1));
     }
 
     @Override
@@ -40,9 +46,9 @@ public final class FilterModuleItem extends QPItem implements QuarryModuleProvid
             // Trying to open machine GUI
             return InteractionResult.PASS;
         }
-        var targetBlock = context.getLevel().getBlockState(context.getClickedPos());
-        var key = new ItemKey(targetBlock.getBlock().asItem(), null);
-        this.addKey(stack, key);
+        if (!context.getLevel().isClientSide && context.getPlayer() instanceof ServerPlayer) {
+            NetworkHooks.openScreen((ServerPlayer) context.getPlayer(), new InteractionObject(context.getItemInHand()));
+        }
         return InteractionResult.SUCCESS;
     }
 
@@ -66,5 +72,17 @@ public final class FilterModuleItem extends QPItem implements QuarryModuleProvid
         var list = tag.getList(KEY_ITEMS, Tag.TAG_COMPOUND);
         list.add(keyToAdd.createNbt());
         tag.put(KEY_ITEMS, list);
+    }
+
+    private record InteractionObject(ItemStack stack) implements MenuProvider {
+        @Override
+        public Component getDisplayName() {
+            return stack.getHoverName();
+        }
+
+        @Override
+        public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
+            return new FilterModuleMenu(pContainerId, pPlayer, stack);
+        }
     }
 }
