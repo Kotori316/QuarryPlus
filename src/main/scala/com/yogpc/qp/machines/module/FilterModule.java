@@ -2,6 +2,7 @@ package com.yogpc.qp.machines.module;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.machines.ItemConverter;
@@ -15,15 +16,16 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
 public final class FilterModule implements QuarryModule {
-    @VisibleForTesting
-    final List<ItemKey> itemKeys;
+
+    @Nullable
+    private final ListTag listTag;
 
     public FilterModule(List<ItemKey> itemKeys) {
-        this.itemKeys = itemKeys;
+        this(getFromItemKeys(itemKeys.stream()));
     }
 
     public FilterModule(@Nullable ListTag tag) {
-        this(getFromTag(tag));
+        this.listTag = tag;
     }
 
     public static List<ItemKey> getFromTag(@Nullable ListTag tag) {
@@ -36,7 +38,11 @@ public final class FilterModule implements QuarryModule {
     }
 
     public static ListTag getFromItems(List<ItemStack> stacks) {
-        return stacks.stream().map(ItemKey::new).map(ItemKey::createNbt).collect(Collectors.toCollection(ListTag::new));
+        return getFromItemKeys(stacks.stream().map(ItemKey::new));
+    }
+
+    static ListTag getFromItemKeys(Stream<ItemKey> keyStream) {
+        return keyStream.map(ItemKey::createNbt).collect(Collectors.toCollection(ListTag::new));
     }
 
     @Override
@@ -45,6 +51,17 @@ public final class FilterModule implements QuarryModule {
     }
 
     public ItemConverter createConverter() {
-        return ItemConverter.voidConverter(this.itemKeys);
+        return ItemConverter.voidConverter(this.getItemKeys());
+    }
+
+    @VisibleForTesting
+    List<ItemKey> getItemKeys() {
+        return getFromTag(this.listTag);
+    }
+
+    @Override
+    public String toString() {
+        int size = this.listTag == null ? 0 : this.listTag.size();
+        return "FilterModule{size=" + size + "}";
     }
 }

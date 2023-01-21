@@ -19,13 +19,13 @@ class FilterModuleTest {
     @Test
     void emptyInstance() {
         var module = new FilterModule(List.of());
-        assertTrue(module.itemKeys.isEmpty());
+        assertTrue(module.getItemKeys().isEmpty());
     }
 
     @Test
     void instance() {
         var module = new FilterModule(List.of(new ItemKey(Items.BEDROCK, null)));
-        assertEquals(List.of(new ItemKey(Items.BEDROCK, null)), module.itemKeys);
+        assertEquals(List.of(new ItemKey(Items.BEDROCK, null)), module.getItemKeys());
     }
 
     @Nested
