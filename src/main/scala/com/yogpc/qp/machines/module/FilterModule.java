@@ -1,6 +1,7 @@
 package com.yogpc.qp.machines.module;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.machines.ItemConverter;
@@ -9,6 +10,7 @@ import com.yogpc.qp.utils.MapMulti;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
@@ -31,6 +33,10 @@ public final class FilterModule implements QuarryModule {
             .map(ItemKey::fromNbt)
             .distinct()
             .toList();
+    }
+
+    public static ListTag getFromItems(List<ItemStack> stacks) {
+        return stacks.stream().map(ItemKey::new).map(ItemKey::createNbt).collect(Collectors.toCollection(ListTag::new));
     }
 
     @Override

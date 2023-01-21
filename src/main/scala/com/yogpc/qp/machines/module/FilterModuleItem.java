@@ -64,7 +64,7 @@ public final class FilterModuleItem extends QPItem implements QuarryModuleProvid
     private void addKey(ItemStack filterItem, ItemKey keyToAdd) {
         var tag = filterItem.getOrCreateTag();
         var list = tag.getList(KEY_ITEMS, Tag.TAG_COMPOUND);
-        list.add(keyToAdd.createNbt(1));
+        list.add(keyToAdd.createNbt());
         tag.put(KEY_ITEMS, list);
     }
 }
