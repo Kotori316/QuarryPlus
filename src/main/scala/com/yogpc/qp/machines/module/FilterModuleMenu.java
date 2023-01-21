@@ -5,6 +5,7 @@ import java.util.Optional;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.nbt.Tag;
+import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -36,7 +37,7 @@ public final class FilterModuleMenu extends AbstractContainerMenu {
             }
         }
         for (int i1 = 0; i1 < 9; ++i1) {
-            this.addSlot(new Slot(player.getInventory(), i1, 8 + i1 * oneBox, 161 + i));
+            this.addSlot(new NotPickUpSlot(player.getInventory(), i1, 8 + i1 * oneBox, 161 + i));
         }
 
     }
@@ -83,6 +84,18 @@ public final class FilterModuleMenu extends AbstractContainerMenu {
             } else {
                 filterModuleItem.addTagElement(FilterModuleItem.KEY_ITEMS, FilterModule.getFromItems(this.removeAllItems()));
             }
+        }
+    }
+
+    private static class NotPickUpSlot extends Slot {
+
+        public NotPickUpSlot(Container pContainer, int pSlot, int pX, int pY) {
+            super(pContainer, pSlot, pX, pY);
+        }
+
+        @Override
+        public boolean mayPickup(Player pPlayer) {
+            return this.getSlotIndex() != pPlayer.getInventory().selected;
         }
     }
 }
