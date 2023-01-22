@@ -12,6 +12,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
@@ -20,7 +21,7 @@ public final class FilterModule implements QuarryModule {
     @Nullable
     private final ListTag listTag;
 
-    public FilterModule(List<ItemKey> itemKeys) {
+    public FilterModule(@NotNull List<ItemKey> itemKeys) {
         this(getFromItemKeys(itemKeys.stream()));
     }
 
