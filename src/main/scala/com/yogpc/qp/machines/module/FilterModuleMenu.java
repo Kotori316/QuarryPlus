@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.misc.SlotContainer;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -15,18 +16,20 @@ import net.minecraft.world.item.ItemStack;
 public final class FilterModuleMenu extends AbstractContainerMenu {
     public static final String GUI_ID = QuarryPlus.modID + ":gui_" + FilterModuleItem.NAME;
     private final ModuleContainer container;
+    private final int allSlots;
 
     public FilterModuleMenu(int pContainerId, Player player, ItemStack filterModuleItem) {
         super(Holder.FILTER_MODULE_MENU_TYPE, pContainerId);
         this.container = new ModuleContainer(filterModuleItem);
         final int rows = 2;
+        this.allSlots = rows * 9;
         int i = (rows - 4) * 18;
 
         final int oneBox = 18;
         // Filter item inventory
         for (int j = 0; j < rows; ++j) {
             for (int k = 0; k < 9; ++k) {
-                this.addSlot(new Slot(container, k + j * 9, 8 + k * oneBox, 18 + j * oneBox));
+                this.addSlot(new SlotContainer(container, k + j * 9, 8 + k * oneBox, 18 + j * oneBox));
             }
         }
 
@@ -44,7 +47,27 @@ public final class FilterModuleMenu extends AbstractContainerMenu {
 
     @Override
     public ItemStack quickMoveStack(Player pPlayer, int pIndex) {
-        return ItemStack.EMPTY;
+        Slot slot = this.slots.get(pIndex);
+        if (slot.hasItem()) {
+            ItemStack slotItem = slot.getItem();
+            ItemStack copy = slotItem.copy();
+            if (pIndex < this.allSlots) {
+                if (!this.moveItemStackTo(slotItem, this.allSlots, this.slots.size(), true)) {
+                    return ItemStack.EMPTY;
+                }
+            } else if (!this.moveItemStackTo(slotItem, 0, this.allSlots, false)) {
+                return ItemStack.EMPTY;
+            }
+
+            if (slotItem.isEmpty()) {
+                slot.set(ItemStack.EMPTY);
+            } else {
+                slot.setChanged();
+            }
+            return copy;
+        } else {
+            return ItemStack.EMPTY;
+        }
     }
 
     @Override
@@ -84,6 +107,11 @@ public final class FilterModuleMenu extends AbstractContainerMenu {
             } else {
                 filterModuleItem.addTagElement(FilterModuleItem.KEY_ITEMS, FilterModule.getFromItems(this.removeAllItems()));
             }
+        }
+
+        @Override
+        public boolean canPlaceItem(int pIndex, ItemStack pStack) {
+            return this.countItem(pStack.getItem()) == 0;
         }
     }
 
