@@ -56,7 +56,6 @@ public final class FilterModuleItem extends QPItem implements QuarryModuleProvid
     public void appendHoverText(ItemStack stack, @Nullable Level pLevel, List<Component> tooltips, TooltipFlag pIsAdvanced) {
         super.appendHoverText(stack, pLevel, tooltips, pIsAdvanced);
         tooltips.add(Component.translatable("quarryplus.tooltip.filter_module_1"));
-        tooltips.add(Component.translatable("quarryplus.tooltip.filter_module_2"));
         var keys = FilterModule.getFromTag(Optional.ofNullable(stack.getTag())
                 .map(t -> t.getList(KEY_ITEMS, Tag.TAG_COMPOUND)).orElse(null))
             .stream()
@@ -65,13 +64,6 @@ public final class FilterModuleItem extends QPItem implements QuarryModuleProvid
         keys.map(s -> "  " + s)
             .map(Component::literal)
             .forEach(tooltips::add);
-    }
-
-    private void addKey(ItemStack filterItem, ItemKey keyToAdd) {
-        var tag = filterItem.getOrCreateTag();
-        var list = tag.getList(KEY_ITEMS, Tag.TAG_COMPOUND);
-        list.add(keyToAdd.createNbt());
-        tag.put(KEY_ITEMS, list);
     }
 
     private record InteractionObject(ItemStack stack) implements MenuProvider {
