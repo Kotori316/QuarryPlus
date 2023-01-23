@@ -137,7 +137,7 @@
   "quarryplus.tooltip.blockpump": "Ce bloc est un complément pour %1$s.%2$sPlacez le près de %1$s.",
   "quarryplus.tooltip.exp_pump": "Ce bloc est un complément pour %1$s et %2$s.%3$sPlacez le près des machines.",
   "quarryplus.tooltip.filter_module_1": "Right click to register",
-  "quarryplus.tooltip.filter_module_2": "Craft to reset",
+  "quarryplus.tooltip.filter_module_2": "Remove items mined by quarry",
   "quarryplus.tooltip.item_disable_message": "DISABLED. Please enable it in config.",
   "quarryplus.tooltip.placer_plus": "Cliquez-droit avec une torche de Redstone pour changer de mode.",
   "quarryplus.tooltip.replacer": "Ce bloc est un complément pour %1$s et %2$s.%3$sPlacez le près des machines.",

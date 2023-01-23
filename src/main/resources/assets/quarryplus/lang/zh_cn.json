@@ -137,7 +137,7 @@
   "quarryplus.tooltip.blockpump": "这个方块是%1$s的附件。%2$s把这个放在%1$s旁边。",
   "quarryplus.tooltip.exp_pump": "这个是%1$s和%2$s的附件。%3$s请将这个方块放在机器旁边。",
   "quarryplus.tooltip.filter_module_1": "Right click to register",
-  "quarryplus.tooltip.filter_module_2": "Craft to reset",
+  "quarryplus.tooltip.filter_module_2": "Remove items mined by quarry",
   "quarryplus.tooltip.item_disable_message": "DISABLED. Please enable it in config.",
   "quarryplus.tooltip.placer_plus": "用红石火把右键单击以更改模式。",
   "quarryplus.tooltip.replacer": "这个是%1$s和%2$s的附件。%3$s请将这个方块放在机器旁边。",
