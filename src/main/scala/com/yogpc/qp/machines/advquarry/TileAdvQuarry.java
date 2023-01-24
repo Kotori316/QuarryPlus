@@ -295,9 +295,9 @@ public class TileAdvQuarry extends PowerTile implements
     }
 
     ItemConverter createConverter() {
-        return ItemConverter.defaultConverter()
-            .combined(ItemConverter.advQuarryConverter())
-            .combined(this.getFilterModule().map(FilterModule::createConverter).orElse(null));
+        var defaultConverter = ItemConverter.defaultConverter()
+            .combined(ItemConverter.advQuarryConverter());
+        return this.getFilterModules().map(FilterModule::createConverter).reduce(defaultConverter, ItemConverter::combined);
     }
 
     @Override

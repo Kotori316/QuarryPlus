@@ -493,8 +493,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
     }
 
     ItemConverter createConverter() {
-        return ItemConverter.defaultConverter()
-            .combined(this.getFilterModule().map(FilterModule::createConverter).orElse(null));
+        return this.getFilterModules().map(FilterModule::createConverter).reduce(ItemConverter.defaultConverter(), ItemConverter::combined);
     }
 
     @Override
