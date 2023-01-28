@@ -164,7 +164,7 @@ class Recipe extends QuarryDataProvider {
             location(BedrockModuleItem.NAME), new ItemStack(Holder.ITEM_BEDROCK_MODULE), 640000 * PowerTile.ONE_FE, true, List.of(
             makeList(Tags.Items.OBSIDIAN, 32),
             makeList(Tags.Items.STORAGE_BLOCKS_DIAMOND, 16),
-            new IngredientList(new IngredientWithCount(new EnchantmentIngredient(diamond_pickaxe, List.of(new EnchantmentInstance(Enchantments.SILK_TOUCH, 1)), false), 1))
+            new IngredientList(new IngredientWithCount(new EnchantmentIngredient(diamond_pickaxe, List.of(new EnchantmentInstance(Enchantments.SILK_TOUCH, 1)), false, false), 1))
         )))).addCondition(new EnableCondition(BedrockModuleItem.NAME)));
         // Fuel Module
         list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(

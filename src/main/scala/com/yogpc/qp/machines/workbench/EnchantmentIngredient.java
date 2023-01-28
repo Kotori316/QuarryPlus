@@ -39,13 +39,15 @@ public class EnchantmentIngredient extends AbstractIngredient {
     private final List<EnchantmentInstance> enchantments;
     private final CompoundTag withoutEnchantment;
     private final boolean checkDamage;
+    private final boolean checkOtherTags;
 
-    public EnchantmentIngredient(ItemStack stack, List<EnchantmentInstance> enchantments, boolean checkDamage) {
+    public EnchantmentIngredient(ItemStack stack, List<EnchantmentInstance> enchantments, boolean checkDamage, boolean checkOtherTags) {
         super(Stream.of(new Ingredient.ItemValue(addEnchantments(stack, enchantments))));
         this.stack = stack;
         this.enchantments = enchantments;
         this.withoutEnchantment = getTagWithoutEnchantment(stack, checkDamage);
         this.checkDamage = checkDamage;
+        this.checkOtherTags = checkOtherTags;
     }
 
     @Override
@@ -72,8 +74,17 @@ public class EnchantmentIngredient extends AbstractIngredient {
         if (!this.enchantments.stream().allMatch(d -> enchantments.getOrDefault(d.enchantment, 0) >= d.level)) {
             return false;
         }
-        CompoundTag nbt = getTagWithoutEnchantment(stack, checkDamage);
-        return Objects.equals(this.withoutEnchantment, nbt);
+        if (this.checkDamage) {
+            int expectedDamage = this.stack.getDamageValue();
+            int actualDamage = stack.getDamageValue();
+            if (expectedDamage != actualDamage) return false;
+        }
+        if (this.checkOtherTags) {
+            CompoundTag nbt = getTagWithoutEnchantment(stack, checkDamage);
+            return Objects.equals(this.withoutEnchantment, nbt);
+        } else {
+            return true;
+        }
     }
 
     private static ItemStack addEnchantments(ItemStack stack, List<EnchantmentInstance> enchantments) {
@@ -111,13 +122,15 @@ public class EnchantmentIngredient extends AbstractIngredient {
                     return new EnchantmentInstance(Objects.requireNonNull(enchantment), level);
                 }).collect(Collectors.toList());
             boolean checkDamage = buffer.readBoolean();
-            return new EnchantmentIngredient(stack, data, checkDamage);
+            boolean checkOtherTags = buffer.readBoolean();
+            return new EnchantmentIngredient(stack, data, checkDamage, checkOtherTags);
         }
 
         @Override
         public EnchantmentIngredient parse(JsonObject json) {
             ItemStack stack = CraftingHelper.getItemStack(json, true);
             boolean checkDamage = GsonHelper.getAsBoolean(json, "checkDamage", false);
+            boolean checkOtherTags = GsonHelper.getAsBoolean(json, "checkOtherTags", false);
             List<EnchantmentInstance> data;
             if (json.has("enchantments")) {
                 JsonArray enchantmentArray = json.getAsJsonArray("enchantments");
@@ -131,7 +144,7 @@ public class EnchantmentIngredient extends AbstractIngredient {
             } else {
                 data = Collections.emptyList();
             }
-            return new EnchantmentIngredient(stack, data, checkDamage);
+            return new EnchantmentIngredient(stack, data, checkDamage, checkOtherTags);
         }
 
         @Override
@@ -143,6 +156,7 @@ public class EnchantmentIngredient extends AbstractIngredient {
                 buffer.writeInt(data.level);
             }
             buffer.writeBoolean(ingredient.checkDamage);
+            buffer.writeBoolean(ingredient.checkOtherTags);
         }
 
         @SuppressWarnings("ConstantConditions")
@@ -151,6 +165,7 @@ public class EnchantmentIngredient extends AbstractIngredient {
             json.addProperty("item", Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(ingredient.stack.getItem())).toString());
             json.addProperty("count", ingredient.stack.getCount());
             json.addProperty("checkDamage", ingredient.checkDamage);
+            json.addProperty("checkOtherTags", ingredient.checkOtherTags);
             if (ingredient.withoutEnchantment != null) {
                 JsonElement element = Dynamic.convert(NbtOps.INSTANCE, JsonOps.INSTANCE, ingredient.withoutEnchantment);
                 json.add("nbt", element);
