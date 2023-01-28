@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 @GameTestHolder(QuarryPlus.modID)
 @PrefixGameTestTemplate(value = false)
-public final class QuarryPlaceTest {
+public final class PlaceQuarryTest {
     @GameTest(template = GameTestUtil.EMPTY_STRUCTURE)
     public void chainBreakEnabled(GameTestHelper helper) {
         var before = QuarryPlus.config.common.removeFrameAfterQuarryIsRemoved.get();

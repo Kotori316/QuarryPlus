@@ -57,6 +57,7 @@ minecraft {
             property('mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg")
             property "mixin.debug.export", "true"
             property 'forge.logging.console.level', 'debug'
+            property 'forge.enabledGameTestNamespaces', 'QuarryPlus'.toLowerCase()
             // From https://github.com/SlimeKnights/TinkersConstruct/blob/1.18/build.gradle
             if (project.hasProperty('mc_uuid')) {
                 // Your uuid without any dashes in the middle
@@ -70,11 +71,16 @@ minecraft {
             // Your access token, you can find it in your '.minecraft/launcher_profiles.json' file
             // If not set, use "0" to prevent authentication exception.
             args '--accessToken', project.findProperty('mc_token') ?: "0"
+            jvmArgs("-EnableAssertions".toLowerCase())
 
             mods {
                 quarryplus {
                     source sourceSets.main
+                    source sourceSets.test
                 }
+            }
+            lazyToken("minecraft_classpath") {
+                configurations.game_test.collect { it.absolutePath }.join(File.pathSeparator)
             }
         }
 
