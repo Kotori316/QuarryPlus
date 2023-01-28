@@ -1,3 +1,8 @@
+## Version 19.10.5
+
+* Fixed a bug where Bedrock Module can't be crafted in some situation. (#235)
+* Fixed typo of Exp Module in English. (#232)
+
 ## Version 19.10.4
 
 * Log item transfer.
