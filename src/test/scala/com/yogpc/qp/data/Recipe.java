@@ -55,6 +55,7 @@ import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.Tags;
+import net.minecraftforge.common.crafting.StrictNBTIngredient;
 import net.minecraftforge.common.crafting.conditions.NotCondition;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -188,7 +189,7 @@ class Recipe extends QuarryDataProvider {
             makeList(Tags.Items.INGOTS_GOLD, 16),
             makeList(Tags.Items.INGOTS_IRON, 40),
             makeList(Tags.Items.DUSTS_REDSTONE, 64),
-            as(Pair.of(IngredientWithCount.createNbtIngredient(waterBottle), 128), Pair.of(Ingredient.of(Items.EXPERIENCE_BOTTLE), 1)),
+            as(Pair.of(StrictNBTIngredient.of(waterBottle), 128), Pair.of(Ingredient.of(Items.EXPERIENCE_BOTTLE), 1)),
             makeList(Items.HAY_BLOCK, 32),
             makeList(Tags.Items.ENDER_PEARLS, 2)
         )))).addCondition(new EnableCondition(ExpPumpBlock.NAME)));

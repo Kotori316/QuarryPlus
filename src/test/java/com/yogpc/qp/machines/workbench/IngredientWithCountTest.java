@@ -108,7 +108,7 @@ class IngredientWithCountTest {
         @BeforeEach
         void setup() {
             waterBottleIngredient = new IngredientWithCount(
-                IngredientWithCount.createNbtIngredient(PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER)), 1);
+                StrictNBTIngredient.of(PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER)), 1);
             // language=json
             var json = GSON.fromJson("""
                 {
