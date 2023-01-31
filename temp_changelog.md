@@ -1,3 +1,8 @@
+## Version 19.10.6
+
+* Added Void Module, which removes items mined by Quarry.
+  * See [wiki](https://github.com/Kotori316/QuarryPlus/wiki/VoidModule) for description.
+
 ## Version 19.10.5
 
 * Fixed a bug where Bedrock Module can't be crafted in some situation. (#235)
