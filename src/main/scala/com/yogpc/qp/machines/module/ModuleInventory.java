@@ -122,5 +122,9 @@ public class ModuleInventory extends SimpleContainer implements INBTSerializable
         default Optional<ReplacerModule> getReplacerModule() {
             return getLoadedModules().stream().mapMulti(MapMulti.cast(ReplacerModule.class)).findFirst();
         }
+
+        default Stream<FilterModule> getFilterModules() {
+            return getLoadedModules().stream().mapMulti(MapMulti.cast(FilterModule.class));
+        }
     }
 }

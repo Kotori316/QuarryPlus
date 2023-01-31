@@ -20,6 +20,7 @@ import com.yogpc.qp.machines.module.BedrockModuleItem;
 import com.yogpc.qp.machines.module.ExpModuleItem;
 import com.yogpc.qp.machines.module.ExpPumpBlock;
 import com.yogpc.qp.machines.module.FillerModuleItem;
+import com.yogpc.qp.machines.module.FilterModuleItem;
 import com.yogpc.qp.machines.module.PumpModuleItem;
 import com.yogpc.qp.machines.module.PumpPlusBlock;
 import com.yogpc.qp.machines.module.ReplacerBlock;
@@ -174,6 +175,12 @@ class Recipe extends QuarryDataProvider {
             makeList(Tags.Items.NETHERRACK, 64),
             makeList(Items.FURNACE, 3)
         )))).addCondition(new EnableCondition("fuel_module_normal")));
+        // Filter Module(Void Module)
+        list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(
+            location(FilterModuleItem.NAME), new ItemStack(Holder.ITEM_FILTER_MODULE), 3200 * PowerTile.ONE_FE, true, List.of(
+            makeList(Items.BOOK, 2),
+            makeList(Tags.Items.ENDER_PEARLS, 1)
+        )))).addCondition(new EnableCondition(FilterModuleItem.NAME)));
         // Exp Pump
         var waterBottle = PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER);
         list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(

@@ -29,6 +29,7 @@ import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QuarryFakePlayer;
 import com.yogpc.qp.machines.TraceQuarryWork;
 import com.yogpc.qp.machines.module.ContainerQuarryModule;
+import com.yogpc.qp.machines.module.FilterModule;
 import com.yogpc.qp.machines.module.ModuleInventory;
 import com.yogpc.qp.machines.module.QuarryModule;
 import com.yogpc.qp.machines.module.QuarryModuleProvider;
@@ -77,7 +78,7 @@ public class TileAdvQuarry extends PowerTile implements
 
     // Work
     private final QuarryCache cache = new QuarryCache();
-    private final ItemConverter itemConverter = ItemConverter.defaultConverter().combined(ItemConverter.advQuarryConverter());
+    private ItemConverter itemConverter;
     public int digMinY;
     @Nullable
     private Area area = null;
@@ -86,6 +87,7 @@ public class TileAdvQuarry extends PowerTile implements
 
     public TileAdvQuarry(BlockPos pos, BlockState state) {
         super(Holder.ADV_QUARRY_TYPE, pos, state);
+        itemConverter = createConverter();
     }
 
     @Override
@@ -280,6 +282,7 @@ public class TileAdvQuarry extends PowerTile implements
         // Module Inventory
         var itemModules = moduleInventory.getModules();
         this.modules = Stream.concat(blockModules.stream(), itemModules.stream()).collect(Collectors.toSet());
+        this.itemConverter = createConverter();
     }
 
     static boolean moduleFilter(QuarryModule module) {
@@ -289,6 +292,12 @@ public class TileAdvQuarry extends PowerTile implements
     @Override
     public Set<QuarryModule> getLoadedModules() {
         return modules;
+    }
+
+    ItemConverter createConverter() {
+        var defaultConverter = ItemConverter.defaultConverter()
+            .combined(ItemConverter.advQuarryConverter());
+        return this.getFilterModules().map(FilterModule::createConverter).reduce(defaultConverter, ItemConverter::combined);
     }
 
     @Override
@@ -538,8 +547,7 @@ public class TileAdvQuarry extends PowerTile implements
         public QuarryCache() {
             replaceState = CacheEntry.supplierCache(5,
                 () -> TileAdvQuarry.this.getReplacerModule().map(ReplacerModule::getState).orElse(Blocks.AIR.defaultBlockState()));
-            netherTop = CacheEntry.supplierCache(100,
-                QuarryPlus.config.common.netherTop::get);
+            netherTop = CacheEntry.supplierCache(100, QuarryPlus.config.common.netherTop);
             enchantments = CacheEntry.supplierCache(1000, () -> EnchantmentHolder.makeHolder(TileAdvQuarry.this));
             isProtectedByFTB = CacheEntry.supplierCache(300 * 20, () ->
                 area != null && FTBChunksProtectionCheck.isAreaProtected(area.shrink(1, 0, 1), getTargetWorld().dimension()));
