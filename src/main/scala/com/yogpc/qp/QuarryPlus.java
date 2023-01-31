@@ -56,6 +56,7 @@ public class QuarryPlus {
             build.correct(commentedConfig);
             build.acceptConfig(commentedConfig);
             config.common.enableChunkLoader.set(false);
+            config.common.logAllQuarryWork.set(false);
         } else {
             ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, build);
         }

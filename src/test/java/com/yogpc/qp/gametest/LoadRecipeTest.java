@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @GameTestHolder(QuarryPlus.modID)
 @PrefixGameTestTemplate(value = false)
-public final class RecipeLoadTest {
+public final class LoadRecipeTest {
     @GameTest(template = GameTestUtil.EMPTY_STRUCTURE)
     public void accessTag(GameTestHelper helper) {
         assertAll(

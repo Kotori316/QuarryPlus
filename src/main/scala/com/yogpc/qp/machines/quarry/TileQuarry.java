@@ -274,7 +274,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         TraceQuarryWork.blockRemoveSucceed(this, getBlockPos(), targetPos, state, drops, breakEvent.getExpToDrop());
         drops.stream().map(itemConverter::map).forEach(this.storage::addItem);
         targetWorld.setBlock(targetPos, getReplacementState(), Block.UPDATE_ALL);
-        // Get experiments
+        // Get experience
         if (breakEvent.getExpToDrop() > 0) {
             getExpModule().ifPresent(e -> {
                 if (requireEnergy)
