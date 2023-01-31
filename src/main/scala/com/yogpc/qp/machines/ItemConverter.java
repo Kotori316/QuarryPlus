@@ -55,7 +55,7 @@ public record ItemConverter(
 
     private static ItemKey convert(Function<ItemKey, ItemKey> func, ItemKey key) {
         var converted = func.apply(key);
-        if (!(func instanceof NoLogFunction))
+        if (!(func instanceof LogFunction l && l.noLog()))
             TraceQuarryWork.convertItem(key, converted);
         return converted;
     }
@@ -125,8 +125,7 @@ public record ItemConverter(
     }
 
     public static ItemConverter voidConverter(List<ItemKey> voidedItems) {
-        Function<ItemKey, ItemKey> toEmpty = key -> ItemKey.EMPTY_KEY;
-        return new ItemConverter(voidedItems.stream().map(k -> Map.entry(Predicate.<ItemKey>isEqual(k), toEmpty)).toList());
+        return new ItemConverter(voidedItems.stream().map(k -> Map.entry(Predicate.<ItemKey>isEqual(k), OneLogFunction.createEmpty())).toList());
     }
 
     static Predicate<ItemKey> tagPredicate(TagKey<Item> tag) {
@@ -143,11 +142,49 @@ public record ItemConverter(
         return itemKey -> itemKey.item() == item;
     }
 
-    private record NoLogFunction(Function<ItemKey, ItemKey> function) implements Function<ItemKey, ItemKey> {
+    private interface LogFunction extends Function<ItemKey, ItemKey> {
+        boolean noLog();
+    }
+
+    private record NoLogFunction(Function<ItemKey, ItemKey> function) implements LogFunction {
 
         @Override
         public ItemKey apply(ItemKey key) {
             return this.function.apply(key);
+        }
+
+        @Override
+        public boolean noLog() {
+            return true;
+        }
+    }
+
+    private static class OneLogFunction implements LogFunction {
+        private final Function<ItemKey, ItemKey> function;
+        private boolean logged = false;
+
+        private OneLogFunction(Function<ItemKey, ItemKey> function) {
+            this.function = function;
+        }
+
+        static Function<ItemKey, ItemKey> create(Function<ItemKey, ItemKey> function) {
+            return new OneLogFunction(function);
+        }
+
+        static Function<ItemKey, ItemKey> createEmpty() {
+            return create(key -> ItemKey.EMPTY_KEY);
+        }
+
+        @Override
+        public boolean noLog() {
+            if (this.logged) return true;
+            this.logged = true;
+            return false;
+        }
+
+        @Override
+        public ItemKey apply(ItemKey itemKey) {
+            return this.function.apply(itemKey);
         }
     }
 }
