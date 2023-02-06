@@ -117,36 +117,33 @@ public class MachineStorage {
             int count = 0;
             for (var direction : INSERT_ORDER) {
                 var destination = Optional.ofNullable(world.getBlockEntity(pos.relative(direction)));
-                var optional = destination.flatMap(d -> d.getCapability(ForgeCapabilities.ITEM_HANDLER, direction.getOpposite()).resolve());
-                if (optional.isPresent()) {
-                    var handler = optional.get();
-                    var itemMap = new ArrayList<>(storage.itemMap.entrySet());
-                    for (Map.Entry<ItemKey, Long> entry : itemMap) {
-                        long beforeCount = entry.getValue();
-                        boolean flag = true;
-                        while (beforeCount > 0 && flag) {
-                            var key = entry.getKey();
-                            int itemCount = (int) Math.min(key.toStack(1).getMaxStackSize(), beforeCount);
-                            var rest = ItemHandlerHelper.insertItem(handler, key.toStack(itemCount), false);
-                            if (itemCount != rest.getCount()) {
-                                // Item transferred.
-                                int transferred = itemCount - rest.getCount();
-                                TraceQuarryWork.transferItem(blockEntity, handler, key, transferred);
-                                long remain = beforeCount - transferred;
-                                beforeCount = remain;
-                                if (remain > 0) {
-                                    // the item still exists.
-                                    storage.itemMap.put(key, remain);
-                                } else {
-                                    // the items all have been transferred.
-                                    storage.itemMap.remove(key);
-                                }
-
-                                count += 1;
-                                if (count >= MAX_TRANSFER) return;
+                var handler = destination.flatMap(d -> d.getCapability(ForgeCapabilities.ITEM_HANDLER, direction.getOpposite()).resolve()).orElse(null);
+                if (handler == null) continue;
+                var itemMap = new ArrayList<>(storage.itemMap.entrySet());
+                for (Map.Entry<ItemKey, Long> entry : itemMap) {
+                    long beforeCount = entry.getValue();
+                    while (beforeCount > 0) {
+                        var key = entry.getKey();
+                        int itemCount = (int) Math.min(key.toStack(1).getMaxStackSize(), beforeCount);
+                        var rest = ItemHandlerHelper.insertItem(handler, key.toStack(itemCount), false);
+                        if (itemCount != rest.getCount()) {
+                            // Item transferred.
+                            int transferred = itemCount - rest.getCount();
+                            TraceQuarryWork.transferItem(blockEntity, handler, key, transferred);
+                            long remain = beforeCount - transferred;
+                            beforeCount = remain;
+                            if (remain > 0) {
+                                // the item still exists.
+                                storage.itemMap.put(key, remain);
                             } else {
-                                flag = false;
+                                // the items all have been transferred.
+                                storage.itemMap.remove(key);
                             }
+
+                            count += 1;
+                            if (count >= MAX_TRANSFER) return;
+                        } else {
+                            break;
                         }
                     }
                 }
@@ -160,19 +157,18 @@ public class MachineStorage {
             int count = 0;
             for (Direction direction : INSERT_ORDER) {
                 var destPos = pos.relative(direction);
-                var optional = Optional.ofNullable(world.getBlockEntity(destPos))
-                    .flatMap(d -> d.getCapability(ForgeCapabilities.FLUID_HANDLER, direction.getOpposite()).resolve());
-                if (optional.isPresent()) {
-                    var handler = optional.get();
-                    var fluidMap = new ArrayList<>(storage.getFluidMap().entrySet());
-                    for (Map.Entry<FluidKey, Long> entry : fluidMap) {
-                        var filled = handler.fill(entry.getKey().toStack((int) Math.min(entry.getValue(), Integer.MAX_VALUE)), IFluidHandler.FluidAction.EXECUTE);
-                        if (filled > 0) { // Fluid is transferred.
-                            TraceQuarryWork.transferFluid(blockEntity, handler, entry.getKey(), filled);
-                            storage.putFluid(entry.getKey(), entry.getValue() - filled);
-                            count += 1;
-                            if (count > MAX_TRANSFER) return;
-                        }
+                var handler = Optional.ofNullable(world.getBlockEntity(destPos))
+                    .flatMap(d -> d.getCapability(ForgeCapabilities.FLUID_HANDLER, direction.getOpposite()).resolve())
+                    .orElse(null);
+                if (handler == null) continue;
+                var fluidMap = new ArrayList<>(storage.getFluidMap().entrySet());
+                for (Map.Entry<FluidKey, Long> entry : fluidMap) {
+                    var filled = handler.fill(entry.getKey().toStack((int) Math.min(entry.getValue(), Integer.MAX_VALUE)), IFluidHandler.FluidAction.EXECUTE);
+                    if (filled > 0) { // Fluid is transferred.
+                        TraceQuarryWork.transferFluid(blockEntity, handler, entry.getKey(), filled);
+                        storage.putFluid(entry.getKey(), entry.getValue() - filled);
+                        count += 1;
+                        if (count > MAX_TRANSFER) return;
                     }
                 }
             }
@@ -211,10 +207,10 @@ public class MachineStorage {
         @NotNull
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            var entry = getByIndex(slot);
-            if (entry.isPresent()) {
-                var key = entry.get().getKey();
-                long storageCount = entry.get().getValue();
+            var entry = getByIndex(slot).orElse(null);
+            if (entry != null) {
+                var key = entry.getKey();
+                long storageCount = entry.getValue();
                 int size = (int) Math.min(amount, storageCount);
                 if (!simulate) {
                     TraceQuarryWork.transferItem(null, null, key, size);
