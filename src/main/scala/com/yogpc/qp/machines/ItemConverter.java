@@ -21,6 +21,8 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
+import static com.yogpc.qp.utils.MapStreamSyntax.byKey;
+
 public record ItemConverter(
     List<Map.Entry<Predicate<ItemKey>, Function<ItemKey, ItemKey>>> conversionMap) {
 
@@ -45,7 +47,7 @@ public record ItemConverter(
 
     public Map.Entry<ItemKey, Integer> mapToKey(ItemKey before, int count) {
         var key = conversionMap().stream()
-            .filter(e -> e.getKey().test(before))
+            .filter(byKey(p -> p.test(before)))
             .findFirst()
             .map(Map.Entry::getValue)
             .map(f -> convert(f, before))

@@ -3,7 +3,6 @@ package com.yogpc.qp.machines.advquarry;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -39,6 +38,7 @@ import com.yogpc.qp.packet.ClientSyncMessage;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.CacheEntry;
 import com.yogpc.qp.utils.MapMulti;
+import com.yogpc.qp.utils.MapStreamSyntax;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -432,7 +432,8 @@ public class TileAdvQuarry extends PowerTile implements
         var drops = toBreak.stream().flatMap(p ->
                 InvUtils.getBlockDrops(p.getRight(), targetWorld, p.getLeft(), targetWorld.getBlockEntity(p.getLeft()), fakePlayer, pickaxe).stream())
             .map(itemConverter::mapToKey)
-            .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.summingLong(Map.Entry::getValue)));
+            .map(MapStreamSyntax.values(Long::valueOf))
+            .collect(MapStreamSyntax.entryToMap(Long::sum));
         {
             var headPos = toBreak.stream().map(Pair::getKey).findFirst().orElse(BlockPos.ZERO);
             var headState = toBreak.stream().map(Pair::getValue).findFirst().orElse(null);
