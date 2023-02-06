@@ -217,6 +217,7 @@ public class MachineStorage {
                 long storageCount = entry.get().getValue();
                 int size = (int) Math.min(amount, storageCount);
                 if (!simulate) {
+                    TraceQuarryWork.transferItem(null, null, key, size);
                     if (storageCount > amount) {
                         itemMap.put(key, storageCount - amount);
                     } else {
@@ -304,6 +305,7 @@ public class MachineStorage {
         private FluidStack drainInternal(Map.Entry<FluidKey, Long> entry, int maxDrain, FluidAction action) {
             var drained = entry.getKey().toStack((int) Math.min(entry.getValue(), maxDrain));
             if (action.execute()) {
+                TraceQuarryWork.transferFluid(null, null, entry.getKey(), drained.getAmount());
                 putFluid(entry.getKey(), entry.getValue() - drained.getAmount());
             }
             return drained;

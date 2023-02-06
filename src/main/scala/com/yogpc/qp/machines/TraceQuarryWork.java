@@ -19,6 +19,7 @@ import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configurator;
+import org.jetbrains.annotations.Nullable;
 
 public final class TraceQuarryWork {
     public static final boolean enabled;
@@ -96,14 +97,18 @@ public final class TraceQuarryWork {
             LOGGER.debug(MARKER, "Convert {} to {}", before, after);
     }
 
-    public static void transferItem(BlockEntity from, IItemHandler dest, ItemKey itemKey, int count) {
-        if (enabled)
-            LOGGER.debug(MARKER, "{} Transfer {}x {} to {}", header(from, from.getBlockPos()), count, itemKey, dest);
+    public static void transferItem(@Nullable BlockEntity from, @Nullable IItemHandler dest, ItemKey itemKey, int count) {
+        if (enabled) {
+            String header = from != null ? header(from, from.getBlockPos()) : "ItemHandler Extraction";
+            LOGGER.debug(MARKER, "{} Transfer {}x {} to {}", header, count, itemKey, dest);
+        }
     }
 
-    public static void transferFluid(BlockEntity from, IFluidHandler dest, FluidKey fluidKey, int amount) {
-        if (enabled)
-            LOGGER.debug(MARKER, "{} Transfer {}mB of {} to {}", header(from, from.getBlockPos()), amount, fluidKey, dest);
+    public static void transferFluid(@Nullable BlockEntity from, @Nullable IFluidHandler dest, FluidKey fluidKey, int amount) {
+        if (enabled) {
+            String header = from != null ? header(from, from.getBlockPos()) : "FluidHandler Extraction";
+            LOGGER.debug(MARKER, "{} Transfer {}mB of {} to {}", header, amount, fluidKey, dest);
+        }
     }
 
     public static void noDrops(BlockState state, BlockPos pos, ItemStack tool) {
