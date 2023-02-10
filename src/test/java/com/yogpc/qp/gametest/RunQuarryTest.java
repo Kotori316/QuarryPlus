@@ -4,7 +4,7 @@ import java.util.Map;
 
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.machines.QuarryMarker;
+import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.quarry.QuarryState;
 import com.yogpc.qp.machines.quarry.TileQuarry;
 import net.minecraft.core.BlockPos;
@@ -26,22 +26,22 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 final class RunQuarryTest {
     private static final String BATCH_NORMAL_RUN = "runQuarryTestNormal";
 
-    @GameTest(template = "quarry_run_pump", batch = BATCH_NORMAL_RUN + "1")
+    private static Area getQuarryArea(GameTestHelper helper) {
+        return new Area(helper.absolutePos(new BlockPos(0, 5, 1)), helper.absolutePos(new BlockPos(6, 6, 6)), Direction.UP);
+    }
+
+    @GameTest(template = "quarry_run_pump", batch = BATCH_NORMAL_RUN)
     void runQuarryWithPumpModule(GameTestHelper helper) {
         var basePos = BlockPos.ZERO.above();
-        var markerPos = basePos.offset(0, 5, 1);
         var quarryPos = basePos.offset(0, 5, 0);
-        helper.useBlock(markerPos);
-        var marker = (QuarryMarker) helper.getBlockEntity(markerPos);
-        assertNotNull(marker, "Marker is not present at %s".formatted(markerPos));
-        assertTrue(marker.getArea().isPresent());
+        var area = getQuarryArea(helper);
 
         helper.setBlock(quarryPos, Holder.BLOCK_QUARRY.defaultBlockState().setValue(BlockStateProperties.FACING, Direction.NORTH));
         var quarry = (TileQuarry) helper.getBlockEntity(quarryPos);
         assertNotNull(quarry);
         quarry.getModuleInventory().addItem(new ItemStack(Holder.ITEM_PUMP_MODULE));
         assertTrue(quarry.hasPumpModule());
-        quarry.setArea(marker.getArea().get());
+        quarry.setArea(area);
         quarry.digMinY = helper.absolutePos(basePos).getY();
         quarry.setEnchantments(Map.of(Enchantments.BLOCK_EFFICIENCY, 5));
         helper.startSequence()
@@ -50,26 +50,21 @@ final class RunQuarryTest {
             .thenExecute(() -> quarry.setState(QuarryState.MOVE_HEAD, helper.getBlockState(quarryPos)))
             .thenIdle(50)
             .thenExecute(() -> helper.forEveryBlockInStructure(p -> helper.assertBlockNotPresent(Blocks.WATER, p)))
-            .thenExecute(marker::removeAndGetItems)
             .thenSucceed();
     }
 
-    @GameTest(template = "quarry_run_pump", batch = BATCH_NORMAL_RUN + "2")
+    @GameTest(template = "quarry_run_pump", batch = BATCH_NORMAL_RUN)
     void runQuarryWithPumpBlock(GameTestHelper helper) {
         var basePos = BlockPos.ZERO.above();
-        var markerPos = basePos.offset(0, 5, 1);
         var quarryPos = basePos.offset(0, 5, 0);
-        helper.useBlock(markerPos);
-        var marker = (QuarryMarker) helper.getBlockEntity(markerPos);
-        assertNotNull(marker, "Marker is not present at %s".formatted(markerPos));
-        assertTrue(marker.getArea().isPresent());
+        var area = getQuarryArea(helper);
 
         helper.setBlock(quarryPos.east(), Holder.BLOCK_PUMP);
         helper.setBlock(quarryPos, Holder.BLOCK_QUARRY.defaultBlockState().setValue(BlockStateProperties.FACING, Direction.NORTH));
         var quarry = (TileQuarry) helper.getBlockEntity(quarryPos);
         assertNotNull(quarry);
         assertTrue(quarry.hasPumpModule());
-        quarry.setArea(marker.getArea().get());
+        quarry.setArea(area);
         quarry.digMinY = helper.absolutePos(basePos).getY();
         quarry.setEnchantments(Map.of(Enchantments.BLOCK_EFFICIENCY, 5));
         helper.startSequence()
@@ -78,7 +73,6 @@ final class RunQuarryTest {
             .thenExecute(() -> quarry.setState(QuarryState.MOVE_HEAD, helper.getBlockState(quarryPos)))
             .thenIdle(50)
             .thenExecute(() -> helper.forEveryBlockInStructure(p -> helper.assertBlockNotPresent(Blocks.WATER, p)))
-            .thenExecute(marker::removeAndGetItems)
             .thenSucceed();
     }
 }

@@ -248,12 +248,12 @@
         {pos: [6, 4, 5], state: "minecraft:polished_andesite"},
         {pos: [6, 4, 6], state: "minecraft:polished_andesite"},
         {pos: [0, 5, 0], state: "minecraft:air"},
-        {pos: [0, 5, 1], state: "quarryplus:marker{facing:up}", nbt: {id: "quarryplus:marker"}},
+        {pos: [0, 5, 1], state: "minecraft:air"},
         {pos: [0, 5, 2], state: "minecraft:air"},
         {pos: [0, 5, 3], state: "minecraft:air"},
         {pos: [0, 5, 4], state: "minecraft:air"},
         {pos: [0, 5, 5], state: "minecraft:air"},
-        {pos: [0, 5, 6], state: "quarryplus:marker{facing:up}", nbt: {id: "quarryplus:marker"}},
+        {pos: [0, 5, 6], state: "minecraft:air"},
         {pos: [1, 5, 0], state: "minecraft:air"},
         {pos: [1, 5, 1], state: "minecraft:air"},
         {pos: [1, 5, 2], state: "minecraft:air"},
@@ -290,7 +290,7 @@
         {pos: [5, 5, 5], state: "minecraft:air"},
         {pos: [5, 5, 6], state: "minecraft:air"},
         {pos: [6, 5, 0], state: "minecraft:air"},
-        {pos: [6, 5, 1], state: "quarryplus:marker{facing:up}", nbt: {id: "quarryplus:marker"}},
+        {pos: [6, 5, 1], state: "minecraft:air"},
         {pos: [6, 5, 2], state: "minecraft:air"},
         {pos: [6, 5, 3], state: "minecraft:air"},
         {pos: [6, 5, 4], state: "minecraft:air"},
@@ -350,7 +350,6 @@
     palette: [
         "minecraft:polished_andesite",
         "minecraft:water{level:0}",
-        "minecraft:air",
-        "quarryplus:marker{facing:up}"
+        "minecraft:air"
     ]
 }
