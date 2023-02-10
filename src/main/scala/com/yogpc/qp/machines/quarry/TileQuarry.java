@@ -178,7 +178,9 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
 
     public void setArea(@Nullable Area area) {
         this.area = area;
-        QuarryPlus.LOGGER.debug(MARKER, "{}({}) Area changed to {}.", getClass().getSimpleName(), getBlockPos(), area);
+        if (shouldLogQuarryWork()) {
+            QuarryPlus.LOGGER.debug(MARKER, "{}({}) Area changed to {}.", getClass().getSimpleName(), getBlockPos(), area);
+        }
         if (area != null) {
             headX = area.maxX();
             headY = area.minY();
@@ -203,8 +205,11 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
                     TraceQuarryWork.finishWork(this, getBlockPos(), this.getEnergyStored());
                 }
             }
-            if ((pre != QuarryState.MOVE_HEAD && pre != QuarryState.BREAK_BLOCK && pre != QuarryState.REMOVE_FLUID) || quarryState == QuarryState.FILLER)
-                QuarryPlus.LOGGER.debug(MARKER, "{}({}) State changed from {} to {}.", getClass().getSimpleName(), getBlockPos(), pre, quarryState);
+            if ((pre != QuarryState.MOVE_HEAD && pre != QuarryState.BREAK_BLOCK && pre != QuarryState.REMOVE_FLUID) || quarryState == QuarryState.FILLER) {
+                if (shouldLogQuarryWork()) {
+                    QuarryPlus.LOGGER.debug(MARKER, "{}({}) State changed from {} to {}.", getClass().getSimpleName(), getBlockPos(), pre, quarryState);
+                }
+            }
         }
     }
 
@@ -514,6 +519,10 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
     @Override
     public int silktouchLevel() {
         return cache.enchantments.getValue(getLevel()).silktouch();
+    }
+
+    static boolean shouldLogQuarryWork() {
+        return TraceQuarryWork.enabled;
     }
 
     private class QuarryCache {
