@@ -142,8 +142,8 @@ public record Area(int minX, int minY, int minZ, int maxX, int maxY, int maxZ,
 
     public List<ChunkPos> getChunkPosList() {
         List<ChunkPos> posList = new ArrayList<>();
-        for (int x = this.minX / 16; x <= this.maxX / 16; x++) {
-            for (int z = this.minZ / 16; z <= this.maxZ / 16; z++) {
+        for (int x = Math.floorDiv(this.minX, 16); x <= Math.floorDiv(this.maxX, 16); x++) {
+            for (int z = Math.floorDiv(this.minZ, 16); z <= Math.floorDiv(this.maxZ, 16); z++) {
                 posList.add(new ChunkPos(x, z));
             }
         }

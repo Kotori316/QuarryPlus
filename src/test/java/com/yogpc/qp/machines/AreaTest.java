@@ -288,6 +288,8 @@ class AreaTest {
                 new Area(0, 0, 0, 31, 0, 0, Direction.NORTH),
                 new Area(0, 0, 0, 32, 0, 0, Direction.NORTH),
                 new Area(0, 0, 0, 32, 0, 20, Direction.NORTH),
+                new Area(-16, 0, 0, 15, 0, 0, Direction.NORTH),
+                new Area(-15, 0, 0, 15, 0, 0, Direction.NORTH),
                 null
             ).filter(Objects::nonNull);
         }
