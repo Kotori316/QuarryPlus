@@ -11,9 +11,12 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertTimeout;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(QuarryPlusTest.class)
 class TargetIteratorTest {
@@ -374,6 +377,49 @@ class TargetIteratorTest {
                 new TargetIterator.XZPair(-10, -31)
             );
             assertIterableEquals(expected, list);
+        }
+
+        @Test
+        @DisplayName("(0, 0) -> (16, 16), end exclusive")
+        void oneChunk1() {
+            // (0, 0) -> (16, 16), end exclusive
+            Area area = new Area(-1, 0, -1, 16, 0, 16, Direction.NORTH);
+            Iterable<TargetIterator.XZPair> iterable = () -> TargetIterator.of(area, true);
+            var list = assertTimeout(Duration.ofSeconds(3), () -> StreamSupport.stream(iterable.spliterator(), false).toList());
+            assertAll(
+                () -> assertEquals(new TargetIterator.XZPair(0, 0), list.get(0)),
+                () -> assertFalse(list.contains(new TargetIterator.XZPair(16, 16))),
+                () -> assertEquals(256, list.size())
+            );
+        }
+
+        @Test
+        @DisplayName("(0, 0) -> (15, 15), end exclusive")
+        void oneChunk2() {
+            // (0, 0) -> (15, 15), end exclusive
+            Area area = new Area(-1, 0, -1, 15, 0, 15, Direction.NORTH);
+            Iterable<TargetIterator.XZPair> iterable = () -> TargetIterator.of(area, true);
+            var list = assertTimeout(Duration.ofSeconds(3), () -> StreamSupport.stream(iterable.spliterator(), false).toList());
+            assertAll(
+                () -> assertEquals(new TargetIterator.XZPair(0, 0), list.get(0)),
+                () -> assertFalse(list.contains(new TargetIterator.XZPair(15, 15))),
+                () -> assertEquals(225, list.size())
+            );
+        }
+
+        @Test
+        @DisplayName("(0, 0) -> (17, 17), end exclusive")
+        void oneChunk3() {
+            // (0, 0) -> (17, 17), end exclusive
+            Area area = new Area(-1, 0, -1, 17, 0, 17, Direction.NORTH);
+            Iterable<TargetIterator.XZPair> iterable = () -> TargetIterator.of(area, true);
+            var list = assertTimeout(Duration.ofSeconds(3), () -> StreamSupport.stream(iterable.spliterator(), false).toList());
+            assertAll(
+                () -> assertEquals(new TargetIterator.XZPair(0, 0), list.get(0)),
+                () -> assertTrue(list.contains(new TargetIterator.XZPair(16, 16))),
+                () -> assertFalse(list.contains(new TargetIterator.XZPair(17, 17))),
+                () -> assertEquals(289, list.size())
+            );
         }
     }
 }
