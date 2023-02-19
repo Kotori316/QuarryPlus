@@ -210,7 +210,7 @@ processResources {
 @SuppressWarnings("SpellCheckingInspection")
 private static boolean isInCI() {
     return Boolean.parseBoolean(System.getenv("GITHUB_ACTIONS")) || Boolean.parseBoolean(System.getenv("CI")) ||
-            (!System.getProperty("os.name").toLowerCase().startsWith("windows") && Files.exists(Paths.get("/", ".dockerenv")))
+            (!System.getProperty("os.name").toLowerCase(Locale.ROOT).startsWith("windows") && Files.exists(Paths.get("/", ".dockerenv")))
 }
 // ensure that the encoding is set to UTF-8, no matter what the system default is
 // this fixes some edge cases with special characters not displaying correctly
@@ -430,7 +430,7 @@ publishing {
     }
     publications {
         mavenJava(MavenPublication) {
-            artifactId = "AdditionalEnchantedMiner-Fabric".toLowerCase()
+            artifactId = "AdditionalEnchantedMiner-Fabric".toLowerCase(Locale.ROOT)
             if (isInCI()) {
                 // Set as SNAPSHOT
                 version = project.snapshot_version + "-SNAPSHOT"
