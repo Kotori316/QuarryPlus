@@ -164,7 +164,7 @@ public class TileFlexMarker extends BlockEntity implements QuarryMarker, Checker
 
         Movable(UnaryOperator<Direction> operator) {
             this.operator = operator;
-            this.transName = "gui." + name().toLowerCase(Locale.US);
+            this.transName = "gui." + name().toLowerCase(Locale.ROOT);
         }
 
         public Direction getActualFacing(Direction facing) {
