@@ -16,6 +16,7 @@ import com.yogpc.qp.machines.QuarryMarker;
 import com.yogpc.qp.machines.module.EnergyModuleItem;
 import com.yogpc.qp.machines.module.ModuleLootFunction;
 import com.yogpc.qp.machines.module.QuarryModuleProvider;
+import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.CombinedBlockEntityTicker;
 import com.yogpc.qp.utils.MapMulti;
 import com.yogpc.qp.utils.QuarryChunkLoadUtil;
@@ -127,9 +128,14 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
                 var enchantment = EnchantmentLevel.fromItem(stack);
                 enchantment.sort(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR);
                 quarry.initialSetting(enchantment);
-                Consumer<Component> showErrorMessage = c -> {
-                    if (entity instanceof Player player) player.displayClientMessage(c, false);
-                };
+                Consumer<Component> showErrorMessage;
+                if (entity instanceof ServerPlayer player) {
+                    PacketHandler.sendToClientPlayer(new AdvQuarryInitialMessage.Ask(pos, level.dimension()), player);
+                    showErrorMessage = c -> player.displayClientMessage(c, false);
+                } else {
+                    showErrorMessage = c -> {
+                    };
+                }
                 if (!quarry.setArea(findArea(level, pos, facing.getOpposite(), quarry.getStorage()::addItem),
                     showErrorMessage)) {
                     // Area is not set because marker area is invalid. Use default.

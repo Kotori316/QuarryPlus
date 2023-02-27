@@ -77,6 +77,8 @@ public class TileAdvQuarry extends PowerTile implements
     private final MachineStorage storage = new MachineStorage();
 
     // Work
+    boolean startImmediately = true;
+    boolean placeAreaFrame = true;
     private final QuarryCache cache = new QuarryCache();
     private ItemConverter itemConverter;
     public int digMinY;
@@ -244,7 +246,7 @@ public class TileAdvQuarry extends PowerTile implements
     }
 
     public boolean canStartWork() {
-        return area != null && !this.cache.isProtectedByFTB.getValue(getLevel());
+        return area != null && !this.cache.isProtectedByFTB.getValue(getLevel()) && this.startImmediately;
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")

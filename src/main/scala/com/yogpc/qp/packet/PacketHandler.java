@@ -7,6 +7,7 @@ import java.util.function.Supplier;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.advquarry.AdvActionMessage;
+import com.yogpc.qp.machines.advquarry.AdvQuarryInitialMessage;
 import com.yogpc.qp.machines.controller.ControllerOpenMessage;
 import com.yogpc.qp.machines.controller.SetSpawnerEntityMessage;
 import com.yogpc.qp.machines.filler.FillerButtonMessage;
@@ -59,6 +60,8 @@ public class PacketHandler {
         INSTANCE.registerMessage(id.getAndIncrement(), MiniRequestListMessage.class, MiniRequestListMessage::write, MiniRequestListMessage::new, setHandled(MiniRequestListMessage::onReceive));
         INSTANCE.registerMessage(id.getAndIncrement(), FillerButtonMessage.class, FillerButtonMessage::write, FillerButtonMessage::new, setHandled(FillerButtonMessage::onReceive));
         INSTANCE.registerMessage(id.getAndIncrement(), RemotePlacerMessage.class, RemotePlacerMessage::write, RemotePlacerMessage::new, setHandled(RemotePlacerMessage::onReceive));
+        INSTANCE.registerMessage(id.getAndIncrement(), AdvQuarryInitialMessage.class, AdvQuarryInitialMessage::write, AdvQuarryInitialMessage::new, setHandled(AdvQuarryInitialMessage::onReceive));
+        INSTANCE.registerMessage(id.getAndIncrement(), AdvQuarryInitialMessage.Ask.class, AdvQuarryInitialMessage.Ask::write, AdvQuarryInitialMessage.Ask::new, setHandled(AdvQuarryInitialMessage.Ask::onReceive));
     }
 
     public static void sendToClient(@NotNull IMessage message, @NotNull Level world) {
