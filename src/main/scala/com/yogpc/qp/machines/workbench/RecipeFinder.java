@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.yogpc.qp.utils.MapStreamSyntax;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.Container;
@@ -50,8 +51,8 @@ class DefaultFinder implements RecipeFinder {
     @Override
     public Map<ResourceLocation, WorkbenchRecipe> recipes() {
         return rawRecipeMap().entrySet().stream()
-            .filter(e -> e.getValue().hasContent())
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            .filter(MapStreamSyntax.byValue(WorkbenchRecipe::hasContent))
+            .collect(MapStreamSyntax.entryToMap());
     }
 
     public Map<ResourceLocation, WorkbenchRecipe> rawRecipeMap() {

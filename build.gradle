@@ -67,6 +67,7 @@ minecraft {
             // Your access token, you can find it in your '.minecraft/launcher_profiles.json' file
             // If not set, use "0" to prevent authentication exception.
             args '--accessToken', project.findProperty('mc_token') ?: "0"
+            jvmArgs("-EnableAssertions".toLowerCase())
 
             mods {
                 quarryplus {

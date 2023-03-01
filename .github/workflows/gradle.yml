@@ -111,6 +111,8 @@ jobs:
         run: echo "CI_FORGE=$(cat /forge.txt)" >> $GITHUB_ENV
       - name: GameTest
         run: chmod +x ./gradlew && ./gradlew --no-daemon runGameTestServer
+        env:
+          TEST_UTILITY_LOG_ALL_TEST: true
       - name: Check report
         run: |
           ! test -d "game-test/crash-reports"

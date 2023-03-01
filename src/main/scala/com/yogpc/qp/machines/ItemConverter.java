@@ -19,6 +19,9 @@ import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
+
+import static com.yogpc.qp.utils.MapStreamSyntax.byKey;
 
 public record ItemConverter(
     List<Map.Entry<Predicate<ItemKey>, Function<ItemKey, ItemKey>>> conversionMap) {
@@ -44,7 +47,7 @@ public record ItemConverter(
 
     public Map.Entry<ItemKey, Integer> mapToKey(ItemKey before, int count) {
         var key = conversionMap().stream()
-            .filter(e -> e.getKey().test(before))
+            .filter(byKey(p -> p.test(before)))
             .findFirst()
             .map(Map.Entry::getValue)
             .map(f -> convert(f, before))
@@ -54,12 +57,14 @@ public record ItemConverter(
 
     private static ItemKey convert(Function<ItemKey, ItemKey> func, ItemKey key) {
         var converted = func.apply(key);
-        if (!(func instanceof NoLogFunction))
+        if (!(func instanceof LogFunction l && l.noLog()))
             TraceQuarryWork.convertItem(key, converted);
         return converted;
     }
 
-    public ItemConverter combined(ItemConverter other) {
+    public ItemConverter combined(@Nullable ItemConverter other) {
+        if (other == null || other.conversionMap.isEmpty()) return this;
+        if (this.conversionMap.isEmpty()) return other;
         var newList = new ArrayList<>(this.conversionMap());
         newList.addAll(other.conversionMap());
         return new ItemConverter(newList);
@@ -108,7 +113,7 @@ public record ItemConverter(
     @SuppressWarnings("SpellCheckingInspection") // For javadoc
     public static ItemConverter advQuarryConverter() {
         if (!QuarryPlus.config.common.removeCommonMaterialsByCD.get()) return new ItemConverter(List.of());
-        Function<ItemKey, ItemKey> function = new NoLogFunction(itemKey -> new ItemKey(ItemStack.EMPTY));
+        Function<ItemKey, ItemKey> function = new NoLogFunction(itemKey -> ItemKey.EMPTY_KEY);
         return new ItemConverter(Stream.of(
                 tagPredicate(Tags.Items.STONE),
                 tagPredicate(Tags.Items.COBBLESTONE),
@@ -119,6 +124,10 @@ public record ItemConverter(
                 tagPredicate(Tags.Items.SANDSTONE)
             ).map(p -> Map.entry(p, function))
             .toList());
+    }
+
+    public static ItemConverter voidConverter(List<ItemKey> voidedItems) {
+        return new ItemConverter(voidedItems.stream().map(k -> Map.entry(Predicate.<ItemKey>isEqual(k), OneLogFunction.createEmpty())).toList());
     }
 
     static Predicate<ItemKey> tagPredicate(TagKey<Item> tag) {
@@ -135,11 +144,49 @@ public record ItemConverter(
         return itemKey -> itemKey.item() == item;
     }
 
-    private record NoLogFunction(Function<ItemKey, ItemKey> function) implements Function<ItemKey, ItemKey> {
+    private interface LogFunction extends Function<ItemKey, ItemKey> {
+        boolean noLog();
+    }
+
+    private record NoLogFunction(Function<ItemKey, ItemKey> function) implements LogFunction {
 
         @Override
         public ItemKey apply(ItemKey key) {
             return this.function.apply(key);
+        }
+
+        @Override
+        public boolean noLog() {
+            return true;
+        }
+    }
+
+    private static class OneLogFunction implements LogFunction {
+        private final Function<ItemKey, ItemKey> function;
+        private boolean logged = false;
+
+        private OneLogFunction(Function<ItemKey, ItemKey> function) {
+            this.function = function;
+        }
+
+        static Function<ItemKey, ItemKey> create(Function<ItemKey, ItemKey> function) {
+            return new OneLogFunction(function);
+        }
+
+        static Function<ItemKey, ItemKey> createEmpty() {
+            return create(key -> ItemKey.EMPTY_KEY);
+        }
+
+        @Override
+        public boolean noLog() {
+            if (this.logged) return true;
+            this.logged = true;
+            return false;
+        }
+
+        @Override
+        public ItemKey apply(ItemKey itemKey) {
+            return this.function.apply(itemKey);
         }
     }
 }

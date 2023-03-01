@@ -63,6 +63,7 @@ final class StateAndModelProvider extends BlockStateProvider {
         // Items
         simpleItem(Holder.ITEM_EXP_MODULE, "block/exp_pump_side");
         simpleItem(Holder.ITEM_FILLER_MODULE);
+        simpleItem(Holder.ITEM_FILTER_MODULE, "item/void_module");
         simpleItem(Holder.ITEM_FUEL_MODULE_NORMAL);
         simpleItem(Holder.ITEM_PUMP_MODULE, "block/pump_side");
         simpleItem(Holder.ITEM_BEDROCK_MODULE, "item/bedrock_module");

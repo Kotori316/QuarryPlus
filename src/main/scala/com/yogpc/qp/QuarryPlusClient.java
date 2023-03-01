@@ -8,6 +8,7 @@ import com.yogpc.qp.machines.marker.ScreenFlexMarker;
 import com.yogpc.qp.machines.mini_quarry.MiniQuarryScreen;
 import com.yogpc.qp.machines.misc.CreativeGeneratorScreen;
 import com.yogpc.qp.machines.misc.YSetterScreen;
+import com.yogpc.qp.machines.module.FilterModuleScreen;
 import com.yogpc.qp.machines.module.ScreenQuarryModule;
 import com.yogpc.qp.machines.mover.MoverScreen;
 import com.yogpc.qp.machines.placer.PlacerScreen;
@@ -58,5 +59,6 @@ public class QuarryPlusClient {
         MenuScreens.register(Holder.MINI_QUARRY_MENU_TYPE, MiniQuarryScreen::new);
         MenuScreens.register(Holder.SOLID_FUEL_QUARRY_MENU_TYPE, SFQuarryScreen::new);
         MenuScreens.register(Holder.FILLER_MENU_TYPE, FillerScreen::new);
+        MenuScreens.register(Holder.FILTER_MODULE_MENU_TYPE, FilterModuleScreen::new);
     }
 }

@@ -1,3 +1,19 @@
+## Version 19.10.7
+
+* Fixed a bug where mining well didn't work under y=0
+* Make mining well enchantable
+  * Efficiency to work faster
+
+## Version 19.10.6
+
+* Added Void Module, which removes items mined by Quarry.
+  * See [wiki](https://github.com/Kotori316/QuarryPlus/wiki/VoidModule) for description.
+
+## Version 19.10.5
+
+* Fixed a bug where Bedrock Module can't be crafted in some situation. (#235)
+* Fixed typo of Exp Module in English. (#232)
+
 ## Version 19.11
 
 * Update for 1.19.3

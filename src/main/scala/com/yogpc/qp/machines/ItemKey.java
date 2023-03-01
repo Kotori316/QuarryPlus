@@ -8,6 +8,8 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
 public record ItemKey(Item item, @Nullable CompoundTag nbt) {
+    public static final ItemKey EMPTY_KEY = new ItemKey(ItemStack.EMPTY);
+
     public ItemKey(ItemStack stack) {
         this(stack.getItem(), stack.getTag());
     }
@@ -21,7 +23,11 @@ public record ItemKey(Item item, @Nullable CompoundTag nbt) {
         return tag;
     }
 
-    static ItemKey fromNbt(CompoundTag tag) {
+    public CompoundTag createNbt() {
+        return createNbt(1);
+    }
+
+    public static ItemKey fromNbt(CompoundTag tag) {
         var item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(tag.getString("item")));
         var nbt = tag.contains("tag") ? tag.getCompound("tag") : null;
         return new ItemKey(item, nbt);

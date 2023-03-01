@@ -22,6 +22,7 @@ import com.yogpc.qp.machines.advquarry.BlockAdvQuarry;
 import com.yogpc.qp.machines.mini_quarry.MiniQuarryBlock;
 import com.yogpc.qp.machines.quarry.QuarryBlock;
 import com.yogpc.qp.machines.quarry.SFQuarryBlock;
+import com.yogpc.qp.utils.MapStreamSyntax;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -31,6 +32,9 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
+
+import static com.yogpc.qp.utils.MapStreamSyntax.toAny;
+import static com.yogpc.qp.utils.MapStreamSyntax.toEntry;
 
 public class Config {
     public final Common common;
@@ -99,12 +103,12 @@ public class Config {
                 Objects.requireNonNull(getClass().getResourceAsStream("/machine_default.json"), "Content in Jar must not be absent.")
             ));
             machinesMap = defaultConfig.entrySet().stream()
-                .map(e -> Map.entry(new ResourceLocation(QuarryPlus.modID, e.getKey()), Holder.EnableOrNot.valueOf(e.getValue().getAsString())))
-                .map(e -> new Holder.EntryConditionHolder(e.getKey(), e.getValue()))
+                .map(toEntry(e -> new ResourceLocation(QuarryPlus.modID, e.getKey()), e -> Holder.EnableOrNot.valueOf(e.getValue().getAsString())))
+                .map(toAny(Holder.EntryConditionHolder::new))
                 .filter(Holder.EntryConditionHolder::configurable)
                 .sorted(Comparator.comparing(Holder.EntryConditionHolder::path))
-                .map(n -> Map.entry(n.path(), builder.define(n.path(), !FMLEnvironment.production || n.condition().on())))
-                .collect(Collectors.toMap(Map.Entry::getKey, e -> () -> e.getValue().get()));
+                .map(toEntry(Holder.EntryConditionHolder::path, n -> builder.define(n.path(), !FMLEnvironment.production || n.condition().on())))
+                .collect(Collectors.toMap(Map.Entry::getKey, MapStreamSyntax.valueToAny(v -> v::get)));
             builder.pop();
         }
 
@@ -202,7 +206,8 @@ public class Config {
             return object.keySet().stream()
                 .flatMap(machineName ->
                     object.getAsJsonObject(machineName).entrySet().stream()
-                        .map(e -> new KeyPair(new Key(machineName, e.getKey()), e.getValue().getAsDouble())))
+                        .map(toAny((configName, power) -> new KeyPair(new Key(machineName, configName), power.getAsDouble())))
+                )
                 .toList();
         }
     }
@@ -216,6 +221,7 @@ public class Config {
             var targets = List.of(
                 Map.entry(new ResourceLocation(QuarryPlus.modID, QuarryBlock.NAME), vanillaAllEnchantments()),
                 Map.entry(new ResourceLocation(QuarryPlus.modID, BlockAdvQuarry.NAME), vanillaAllEnchantments()),
+                // Map.entry(new ResourceLocation(QuarryPlus.modID, MiningWellBlock.NAME), List.of("minecraft:efficiency")), // Not configurable
                 Map.entry(new ResourceLocation(QuarryPlus.modID, MiniQuarryBlock.NAME), miniQuarryEnchantments()),
                 Map.entry(new ResourceLocation(QuarryPlus.modID, BlockAdvPump.NAME), pumpEnchantments())
             );
@@ -223,7 +229,7 @@ public class Config {
             enchantmentsMap = targets.stream()
                 .map(e -> Map.entry(e.getKey().getPath(), builder.defineListAllowEmpty(List.of(e.getKey().getPath()), e::getValue,
                     o -> o instanceof String s && ResourceLocation.isValidResourceLocation(s))))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                .collect(MapStreamSyntax.entryToMap());
         }
 
         @NotNull

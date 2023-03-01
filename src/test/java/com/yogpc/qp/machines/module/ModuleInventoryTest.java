@@ -8,15 +8,18 @@ import java.util.stream.Stream;
 
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.ItemConverter;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestGenerator;
 import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
 import com.kotori316.testutil.GameTestUtil;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -59,6 +62,12 @@ class ModuleInventoryTest {
         void getModules4() {
             var modules = ModuleInventory.getModules(Stream.of(new ItemStack(Holder.ITEM_PUMP_MODULE), new ItemStack(Holder.ITEM_PUMP_MODULE)));
             assertEquals(Set.of(QuarryModule.Constant.PUMP), Set.copyOf(modules));
+        }
+
+        @GameTest(template = GameTestUtil.EMPTY_STRUCTURE, batch = BATCH)
+        void getFilterModules1() {
+            var modules = ModuleInventory.getModules(Stream.of(new ItemStack(Holder.ITEM_FILTER_MODULE), new ItemStack(Holder.ITEM_FILTER_MODULE)));
+            assertEquals(2, modules.size());
         }
     }
 
@@ -125,6 +134,36 @@ class ModuleInventoryTest {
                 GameTestUtil.create(QuarryPlus.modID, BATCH, "has_multi_pump_module", () -> assertTrue(inv.hasPumpModule())),
                 GameTestUtil.create(QuarryPlus.modID, BATCH, "has_multi_exp_module", () -> assertTrue(inv.getExpModule().isPresent()))
             ).toList();
+        }
+
+        @GameTest(template = GameTestUtil.EMPTY_STRUCTURE, batch = BATCH)
+        void getFilterModules2() {
+            var inv = new InventoryHolder();
+            inv.inventory.setItem(0, new ItemStack(Holder.ITEM_FILTER_MODULE));
+            inv.inventory.setItem(1, new ItemStack(Holder.ITEM_FILTER_MODULE));
+
+            var modules = inv.getFilterModules();
+            assertEquals(2, modules.count());
+        }
+
+        @GameTest(template = GameTestUtil.EMPTY_STRUCTURE, batch = BATCH)
+        void getFilterModules3() {
+            var inv = new InventoryHolder();
+            var a = new ItemStack(Holder.ITEM_FILTER_MODULE);
+            a.addTagElement(FilterModuleItem.KEY_ITEMS, FilterModule.getFromItems(List.of(new ItemStack(Blocks.STONE))));
+            var b = new ItemStack(Holder.ITEM_FILTER_MODULE);
+            b.addTagElement(FilterModuleItem.KEY_ITEMS, FilterModule.getFromItems(List.of(new ItemStack(Blocks.COBBLESTONE))));
+
+            inv.inventory.setItem(0, a);
+            inv.inventory.setItem(1, b);
+
+            var converter = inv.getFilterModules().map(FilterModule::createConverter)
+                .reduce(new ItemConverter(List.of()), ItemConverter::combined);
+            assertAll(
+                () -> assertTrue(converter.map(new ItemStack(Blocks.COBBLESTONE)).isEmpty()),
+                () -> assertTrue(converter.map(new ItemStack(Blocks.STONE)).isEmpty()),
+                () -> assertEquals(2, converter.conversionMap().size())
+            );
         }
     }
 

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
@@ -13,6 +14,7 @@ import com.yogpc.qp.machines.advpump.TileAdvPump;
 import com.yogpc.qp.machines.advpump.TileAdvPumpSetter;
 import com.yogpc.qp.machines.advquarry.TileAdvQuarry;
 import com.yogpc.qp.machines.mini_quarry.MiniQuarryTile;
+import com.yogpc.qp.machines.miningwell.MiningWellTile;
 import com.yogpc.qp.machines.quarry.TileQuarry;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestGenerator;
@@ -159,6 +161,26 @@ public final class DropTest {
                     },
                     () -> assertEquals(enchantments, EnchantmentHelper.getEnchantments(stack))
                 );
+            })
+            .thenSucceed();
+    }
+
+    @GameTestGenerator
+    public List<TestFunction> dropOfMiningWell() {
+        return IntStream.range(0, 6).mapToObj(i -> GameTestUtil.create(QuarryPlus.modID, "defaultBatch", "mining_well_drop_" + i,
+            g -> dropOfMiningWell(g, i))).toList();
+    }
+
+    private void dropOfMiningWell(GameTestHelper helper, int efficiency) {
+        var pos = GameTestUtil.getBasePos(helper).above();
+        helper.startSequence()
+            .thenExecute(() -> helper.setBlock(pos, Holder.BLOCK_MINING_WELL))
+            .thenExecuteAfter(1, () -> ((MiningWellTile) Objects.requireNonNull(helper.getBlockEntity(pos))).setEfficiencyLevel(efficiency))
+            .thenExecuteAfter(1, () -> {
+                var drops = Block.getDrops(helper.getBlockState(pos), helper.getLevel(), helper.absolutePos(pos), helper.getBlockEntity(pos));
+                assertEquals(1, drops.size(), "Drop was " + drops);
+                var stack = drops.get(0);
+                assertEquals(efficiency, stack.getEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY));
             })
             .thenSucceed();
     }

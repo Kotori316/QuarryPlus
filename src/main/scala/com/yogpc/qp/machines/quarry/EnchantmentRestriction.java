@@ -3,8 +3,8 @@ package com.yogpc.qp.machines.quarry;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiPredicate;
-import java.util.stream.Collectors;
 
+import com.yogpc.qp.utils.MapStreamSyntax;
 import net.minecraft.world.item.enchantment.Enchantment;
 
 
@@ -22,8 +22,8 @@ record EnchantmentRestriction(Map<Enchantment, Integer> restrictionMap)
 
     Map<Enchantment, Integer> filterMap(Map<Enchantment, Integer> stackEnchantments) {
         return stackEnchantments.entrySet().stream()
-            .filter(e -> test(e.getKey(), e.getValue()))
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            .filter(MapStreamSyntax.byEntry(this))
+            .collect(MapStreamSyntax.entryToMap());
     }
 
     static Builder builder() {

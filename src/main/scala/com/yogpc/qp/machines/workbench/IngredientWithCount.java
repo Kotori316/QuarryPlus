@@ -8,15 +8,12 @@ import java.util.stream.StreamSupport;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.yogpc.qp.QuarryPlus;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.common.crafting.StrictNBTIngredient;
 import net.minecraftforge.items.ItemHandlerHelper;
-import org.jetbrains.annotations.VisibleForTesting;
 
 public record IngredientWithCount(Ingredient ingredient, int count) implements Predicate<ItemStack> {
     public IngredientWithCount(JsonObject jsonObject) {
@@ -78,19 +75,6 @@ public record IngredientWithCount(Ingredient ingredient, int count) implements P
         var ingredient = Ingredient.fromNetwork(buf);
         var count = buf.readInt();
         return new IngredientWithCount(ingredient, count);
-    }
-
-    @VisibleForTesting
-    public static StrictNBTIngredient createNbtIngredient(ItemStack stack) {
-        try {
-            var constructor = StrictNBTIngredient.class.getDeclaredConstructor(ItemStack.class);
-            constructor.trySetAccessible();
-            return constructor.newInstance(stack);
-        } catch (ReflectiveOperationException exception) {
-            QuarryPlus.LOGGER
-                .error("Caught error when creating StrictNBTIngredient instance. This should not be called in production.", exception);
-            return null;
-        }
     }
 
     static JsonObject modifyCount(JsonObject object) {

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.miningwell.MiningWellTile;
 import com.yogpc.qp.machines.quarry.FrameBlock;
 import com.yogpc.qp.machines.quarry.TileQuarry;
 import net.minecraft.core.BlockPos;
@@ -29,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 @GameTestHolder(QuarryPlus.modID)
 @PrefixGameTestTemplate(value = false)
-public final class QuarryPlaceTest {
+public final class PlaceQuarryTest {
     @GameTest(template = GameTestUtil.EMPTY_STRUCTURE)
     public void chainBreakEnabled(GameTestHelper helper) {
         var before = QuarryPlus.config.common.removeFrameAfterQuarryIsRemoved.get();
@@ -187,6 +188,49 @@ public final class QuarryPlaceTest {
                 () -> assertEquals(8, quarry.fortuneLevel()),
                 () -> assertEquals(4, quarry.getLevel(Enchantments.MOB_LOOTING))
             );
+            helper.succeed();
+        } else {
+            fail("Quarry is not present at %s, %s".formatted(pos, tile));
+        }
+    }
+
+    @GameTest(template = GameTestUtil.EMPTY_STRUCTURE)
+    public void placeMiningWell0(GameTestHelper helper) {
+        var stack = new ItemStack(Holder.BLOCK_MINING_WELL);
+        BlockPos pos = GameTestUtil.getBasePos(helper).above();
+        BlockPos absolutePos = helper.absolutePos(pos);
+        BlockHitResult hitResult = new BlockHitResult(Vec3.upFromBottomCenterOf(absolutePos, 1), Direction.UP, absolutePos, false);
+        Player player = helper.makeMockPlayer();
+        player.setItemInHand(InteractionHand.MAIN_HAND, stack);
+        UseOnContext context = new UseOnContext(helper.getLevel(), player, InteractionHand.MAIN_HAND, stack, hitResult);
+        stack.useOn(context);
+
+        helper.assertBlockPresent(Holder.BLOCK_MINING_WELL, pos);
+        var tile = helper.getBlockEntity(pos);
+        if (tile instanceof MiningWellTile tile1) {
+            assertEquals(0, tile1.efficiencyLevel());
+            helper.succeed();
+        } else {
+            fail("Quarry is not present at %s, %s".formatted(pos, tile));
+        }
+    }
+
+    @GameTest(template = GameTestUtil.EMPTY_STRUCTURE)
+    public void placeMiningWell2(GameTestHelper helper) {
+        var stack = new ItemStack(Holder.BLOCK_MINING_WELL);
+        stack.enchant(Enchantments.BLOCK_EFFICIENCY, 2);
+        BlockPos pos = GameTestUtil.getBasePos(helper).above();
+        BlockPos absolutePos = helper.absolutePos(pos);
+        BlockHitResult hitResult = new BlockHitResult(Vec3.upFromBottomCenterOf(absolutePos, 1), Direction.UP, absolutePos, false);
+        Player player = helper.makeMockPlayer();
+        player.setItemInHand(InteractionHand.MAIN_HAND, stack);
+        UseOnContext context = new UseOnContext(helper.getLevel(), player, InteractionHand.MAIN_HAND, stack, hitResult);
+        stack.useOn(context);
+
+        helper.assertBlockPresent(Holder.BLOCK_MINING_WELL, pos);
+        var tile = helper.getBlockEntity(pos);
+        if (tile instanceof MiningWellTile tile1) {
+            assertEquals(2, tile1.efficiencyLevel());
             helper.succeed();
         } else {
             fail("Quarry is not present at %s, %s".formatted(pos, tile));

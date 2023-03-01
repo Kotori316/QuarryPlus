@@ -20,6 +20,7 @@ import com.yogpc.qp.machines.module.BedrockModuleItem;
 import com.yogpc.qp.machines.module.ExpModuleItem;
 import com.yogpc.qp.machines.module.ExpPumpBlock;
 import com.yogpc.qp.machines.module.FillerModuleItem;
+import com.yogpc.qp.machines.module.FilterModuleItem;
 import com.yogpc.qp.machines.module.PumpModuleItem;
 import com.yogpc.qp.machines.module.PumpPlusBlock;
 import com.yogpc.qp.machines.module.ReplacerBlock;
@@ -55,6 +56,7 @@ import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.Tags;
+import net.minecraftforge.common.crafting.StrictNBTIngredient;
 import net.minecraftforge.common.crafting.conditions.NotCondition;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -165,7 +167,7 @@ class Recipe extends QuarryDataProvider {
             location(BedrockModuleItem.NAME), new ItemStack(Holder.ITEM_BEDROCK_MODULE), 640000 * PowerTile.ONE_FE, true, List.of(
             makeList(Tags.Items.OBSIDIAN, 32),
             makeList(Tags.Items.STORAGE_BLOCKS_DIAMOND, 16),
-            new IngredientList(new IngredientWithCount(new EnchantmentIngredient(diamond_pickaxe, List.of(new EnchantmentInstance(Enchantments.SILK_TOUCH, 1)), false), 1))
+            new IngredientList(new IngredientWithCount(new EnchantmentIngredient(diamond_pickaxe, List.of(new EnchantmentInstance(Enchantments.SILK_TOUCH, 1)), false, false), 1))
         )))).addCondition(new EnableCondition(BedrockModuleItem.NAME)));
         // Fuel Module
         list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(
@@ -175,6 +177,12 @@ class Recipe extends QuarryDataProvider {
             makeList(Tags.Items.NETHERRACK, 64),
             makeList(Items.FURNACE, 3)
         )))).addCondition(new EnableCondition("fuel_module_normal")));
+        // Filter Module(Void Module)
+        list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(
+            location(FilterModuleItem.NAME), new ItemStack(Holder.ITEM_FILTER_MODULE), 3200 * PowerTile.ONE_FE, true, List.of(
+            makeList(Items.BOOK, 2),
+            makeList(Tags.Items.ENDER_PEARLS, 1)
+        )))).addCondition(new EnableCondition(FilterModuleItem.NAME)));
         // Exp Pump
         var waterBottle = PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER);
         list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(
@@ -182,7 +190,7 @@ class Recipe extends QuarryDataProvider {
             makeList(Tags.Items.INGOTS_GOLD, 16),
             makeList(Tags.Items.INGOTS_IRON, 40),
             makeList(Tags.Items.DUSTS_REDSTONE, 64),
-            as(Pair.of(IngredientWithCount.createNbtIngredient(waterBottle), 128), Pair.of(Ingredient.of(Items.EXPERIENCE_BOTTLE), 1)),
+            as(Pair.of(StrictNBTIngredient.of(waterBottle), 128), Pair.of(Ingredient.of(Items.EXPERIENCE_BOTTLE), 1)),
             makeList(Items.HAY_BLOCK, 32),
             makeList(Tags.Items.ENDER_PEARLS, 2)
         )))).addCondition(new EnableCondition(ExpPumpBlock.NAME)));

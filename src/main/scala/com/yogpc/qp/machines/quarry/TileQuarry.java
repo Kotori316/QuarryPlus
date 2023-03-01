@@ -27,6 +27,7 @@ import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QPBlock;
 import com.yogpc.qp.machines.QuarryFakePlayer;
 import com.yogpc.qp.machines.TraceQuarryWork;
+import com.yogpc.qp.machines.module.FilterModule;
 import com.yogpc.qp.machines.module.ModuleInventory;
 import com.yogpc.qp.machines.module.QuarryModule;
 import com.yogpc.qp.machines.module.QuarryModuleProvider;
@@ -78,7 +79,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
     public double headX, headY, headZ;
     private boolean init = false;
     public int digMinY = 0;
-    private final ItemConverter itemConverter = ItemConverter.defaultConverter();
+    private ItemConverter itemConverter;
     private Set<QuarryModule> modules = new HashSet<>(); // May be immutable.
     private final ModuleInventory moduleInventory;
     private final QuarryCache cache = new QuarryCache();
@@ -86,6 +87,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
     public TileQuarry(BlockPos pos, BlockState state) {
         super(Holder.QUARRY_TYPE, pos, state);
         this.moduleInventory = new ModuleInventory(5, this::updateModules, m -> true, this);
+        this.itemConverter = createConverter();
     }
 
     TileQuarry(BlockEntityType<?> entityType, BlockPos pos, BlockState state) {
@@ -176,7 +178,9 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
 
     public void setArea(@Nullable Area area) {
         this.area = area;
-        QuarryPlus.LOGGER.debug(MARKER, "{}({}) Area changed to {}.", getClass().getSimpleName(), getBlockPos(), area);
+        if (shouldLogQuarryWork()) {
+            QuarryPlus.LOGGER.debug(MARKER, "{}({}) Area changed to {}.", getClass().getSimpleName(), getBlockPos(), area);
+        }
         if (area != null) {
             headX = area.maxX();
             headY = area.minY();
@@ -201,8 +205,11 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
                     TraceQuarryWork.finishWork(this, getBlockPos(), this.getEnergyStored());
                 }
             }
-            if ((pre != QuarryState.MOVE_HEAD && pre != QuarryState.BREAK_BLOCK && pre != QuarryState.REMOVE_FLUID) || quarryState == QuarryState.FILLER)
-                QuarryPlus.LOGGER.debug(MARKER, "{}({}) State changed from {} to {}.", getClass().getSimpleName(), getBlockPos(), pre, quarryState);
+            if ((pre != QuarryState.MOVE_HEAD && pre != QuarryState.BREAK_BLOCK && pre != QuarryState.REMOVE_FLUID) || quarryState == QuarryState.FILLER) {
+                if (shouldLogQuarryWork()) {
+                    QuarryPlus.LOGGER.debug(MARKER, "{}({}) State changed from {} to {}.", getClass().getSimpleName(), getBlockPos(), pre, quarryState);
+                }
+            }
         }
     }
 
@@ -397,6 +404,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         // Module Inventory
         Set<QuarryModule> itemModules = Set.copyOf(moduleInventory.getModules());
         this.modules = Sets.union(blockModules, itemModules);
+        this.itemConverter = createConverter();
     }
 
     BlockState getReplacementState() {
@@ -486,6 +494,10 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         return modules;
     }
 
+    ItemConverter createConverter() {
+        return this.getFilterModules().map(FilterModule::createConverter).reduce(ItemConverter.defaultConverter(), ItemConverter::combined);
+    }
+
     @Override
     public int efficiencyLevel() {
         return cache.enchantments.getValue(getLevel()).efficiency();
@@ -506,6 +518,10 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         return cache.enchantments.getValue(getLevel()).silktouch();
     }
 
+    static boolean shouldLogQuarryWork() {
+        return TraceQuarryWork.enabled;
+    }
+
     private class QuarryCache {
         final CacheEntry<BlockState> replaceState;
         final CacheEntry<Integer> netherTop;
@@ -514,8 +530,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         public QuarryCache() {
             replaceState = CacheEntry.supplierCache(5,
                 () -> TileQuarry.this.getReplacerModule().map(ReplacerModule::getState).orElse(Blocks.AIR.defaultBlockState()));
-            netherTop = CacheEntry.supplierCache(100,
-                QuarryPlus.config.common.netherTop::get);
+            netherTop = CacheEntry.supplierCache(100, QuarryPlus.config.common.netherTop);
             enchantments = CacheEntry.supplierCache(1000, () -> EnchantmentHolder.makeHolder(TileQuarry.this));
         }
     }
