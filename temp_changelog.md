@@ -1,3 +1,9 @@
+## Version 19.10.7
+
+* Fixed a bug where mining well didn't work under y=0
+* Make mining well enchantable
+  * Efficiency to work faster
+
 ## Version 19.10.6
 
 * Added Void Module, which removes items mined by Quarry.
