@@ -19,6 +19,7 @@
     {
       "type": "quarryplus:enchantment_ingredient",
       "checkDamage": false,
+      "checkOtherTags": false,
       "count": 1,
       "enchantments": [
         {

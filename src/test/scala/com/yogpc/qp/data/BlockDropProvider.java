@@ -28,7 +28,6 @@ class BlockDropProvider extends BlockLootSubProvider {
             Holder.BLOCK_WATERLOGGED_MARKER,
             Holder.BLOCK_WATERLOGGED_FLEX_MARKER,
             Holder.BLOCK_WATERLOGGED_16_MARKER,
-            Holder.BLOCK_MINING_WELL,
             Holder.BLOCK_PUMP,
             Holder.BLOCK_WORKBENCH,
             Holder.BLOCK_MOVER,
@@ -41,6 +40,7 @@ class BlockDropProvider extends BlockLootSubProvider {
             Holder.BLOCK_FILLER
         ).forEach(this::dropSelf);
         Stream.of(
+            Holder.BLOCK_MINING_WELL,
             Holder.BLOCK_MINI_QUARRY,
             Holder.BLOCK_ADV_PUMP
         ).forEach(b ->

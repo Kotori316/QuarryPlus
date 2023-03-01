@@ -3,7 +3,6 @@ package com.yogpc.qp.machines.module;
 import java.util.List;
 import java.util.Optional;
 
-import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.ItemKey;
 import com.yogpc.qp.machines.QPItem;
@@ -29,7 +28,7 @@ public final class FilterModuleItem extends QPItem implements QuarryModuleProvid
     public static final String KEY_ITEMS = "filter_items";
 
     public FilterModuleItem() {
-        super(new ResourceLocation(QuarryPlus.modID, NAME), new Properties().tab(Holder.TAB).stacksTo(1));
+        super(new ResourceLocation(QuarryPlus.modID, NAME), new Properties().stacksTo(1));
     }
 
     @Override
