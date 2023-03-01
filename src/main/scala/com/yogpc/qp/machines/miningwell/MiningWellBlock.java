@@ -58,9 +58,30 @@ public class MiningWellBlock extends QPBlock implements EntityBlock {
         return defaultBlockState().setValue(FACING, facing);
     }
 
+    /**
+     * Called when player placed this block.
+     * In both client and server side.
+     * Required to set config related to player or item.
+     */
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
         super.setPlacedBy(level, pos, state, entity, stack);
+    }
+
+    /**
+     * Called after {@link #setPlacedBy(Level, BlockPos, BlockState, LivingEntity, ItemStack)} is called.
+     * Even the block is placed via command, this method is called while {@link #setPlacedBy(Level, BlockPos, BlockState, LivingEntity, ItemStack)}
+     * is only for player placement.
+     * In server side only.
+     * Required to configure setting related to world.
+     */
+    @Override
+    @SuppressWarnings("deprecation")
+    public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {
+        super.onPlace(state, level, pos, oldState, isMoving);
+        if (!level.isClientSide && level.getBlockEntity(pos) instanceof MiningWellTile miningWellTile) {
+            miningWellTile.digMinY = level.getMinBuildHeight();
+        }
     }
 
     @Override
