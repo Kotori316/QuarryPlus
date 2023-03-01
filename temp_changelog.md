@@ -1,3 +1,7 @@
+## Version 19.12
+
+* Port changes for 1.19.2
+
 ## Version 19.10.7
 
 * Fixed a bug where mining well didn't work under y=0
