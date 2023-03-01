@@ -20,7 +20,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -30,13 +30,15 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.fluids.FluidType;
+import org.jetbrains.annotations.VisibleForTesting;
 
-public class MiningWellTile extends PowerTile implements CheckerLog, MachineStorage.HasStorage {
+public class MiningWellTile extends PowerTile implements CheckerLog, MachineStorage.HasStorage, EnchantmentLevel.HasEnchantments {
     private final MachineStorage storage = new MachineStorage();
     private final ItemConverter itemConverter = ItemConverter.defaultConverter();
     public int digMinY = 0;
     private int interval = 0;
     private boolean finished = false;
+    private int efficiencyLevel = 0;
 
     public MiningWellTile(BlockPos pos, BlockState state) {
         super(Holder.MINING_WELL_TYPE, pos, state);
@@ -49,7 +51,7 @@ public class MiningWellTile extends PowerTile implements CheckerLog, MachineStor
         if (!hasEnoughEnergy() || finished || --interval > 0) {
             return;
         } else {
-            interval = 40; // 2 sec
+            interval = this.getInterval();
             if (!getBlockState().getValue(MiningWellBlock.WORKING)) {
                 level.setBlock(getBlockPos(), getBlockState().setValue(MiningWellBlock.WORKING, true), Block.UPDATE_CLIENTS);
                 setChanged();
@@ -62,7 +64,7 @@ public class MiningWellTile extends PowerTile implements CheckerLog, MachineStor
             var fluid = level.getFluidState(targetPos);
 
             if (state.isAir()) continue;
-            var pickaxe = new ItemStack(Items.NETHERITE_PICKAXE);
+            var pickaxe = EnchantmentLevel.HasEnchantments.super.getPickaxe();
             var fakePlayer = QuarryFakePlayer.get((ServerLevel) level);
             fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, pickaxe);
             var breakEvent = new BlockEvent.BreakEvent(level, targetPos, state, fakePlayer);
@@ -85,7 +87,7 @@ public class MiningWellTile extends PowerTile implements CheckerLog, MachineStor
                 }
                 break;
             } else if (canBreak(level, targetPos, state)) {
-                breakBlock(level, targetPos, state);
+                breakBlock(level, targetPos, state, pickaxe);
                 break;
             }
         }
@@ -102,6 +104,7 @@ public class MiningWellTile extends PowerTile implements CheckerLog, MachineStor
         nbt.putInt("digMinY", digMinY);
         nbt.putInt("waitingTick", interval);
         nbt.putBoolean("finished", finished);
+        nbt.putInt("efficiencyLevel", efficiencyLevel);
     }
 
     @Override
@@ -111,6 +114,7 @@ public class MiningWellTile extends PowerTile implements CheckerLog, MachineStor
         digMinY = nbt.getInt("digMinY");
         interval = nbt.getInt("waitingTick");
         finished = nbt.getBoolean("finished");
+        efficiencyLevel = nbt.getInt("efficiencyLevel");
     }
 
     @Override
@@ -119,6 +123,7 @@ public class MiningWellTile extends PowerTile implements CheckerLog, MachineStor
             "MinY: " + digMinY,
             "Interval: " + interval,
             "Finished: " + finished,
+            "Efficiency: " + efficiencyLevel,
             energyString()
         ).map(Component::literal).toList();
     }
@@ -133,10 +138,10 @@ public class MiningWellTile extends PowerTile implements CheckerLog, MachineStor
         return hardness >= 0;
     }
 
-    private void breakBlock(Level level, BlockPos pos, BlockState state) {
+    private void breakBlock(Level level, BlockPos pos, BlockState state, ItemStack tool) {
         var hardness = state.getDestroySpeed(level, pos);
         if (useEnergy(PowerManager.getBreakEnergy(hardness, EnchantmentLevel.NoEnchantments.INSTANCE, PowerConfig.DEFAULT), Reason.BREAK_BLOCK, false)) {
-            var drops = InvUtils.getBlockDrops(state, (ServerLevel) level, pos, level.getBlockEntity(pos), null, new ItemStack(Items.NETHERITE_PICKAXE));
+            var drops = InvUtils.getBlockDrops(state, (ServerLevel) level, pos, level.getBlockEntity(pos), null, tool);
             drops.stream().map(itemConverter::map).forEach(this.storage::addItem);
             level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
             var sound = state.getSoundType();
@@ -146,6 +151,33 @@ public class MiningWellTile extends PowerTile implements CheckerLog, MachineStor
 
     void reset() {
         finished = false;
-        interval = 40;
+        interval = this.getInterval();
+    }
+
+    int getInterval() {
+        return switch (this.efficiencyLevel()) {
+            case 1 -> 30;
+            case 2 -> 20;
+            case 3 -> 10;
+            case 4 -> 5;
+            case 5 -> 1;
+            default -> 40;
+        };
+    }
+
+    @Override
+    public List<EnchantmentLevel> getEnchantments() {
+        if (this.efficiencyLevel == 0) return List.of();
+        return List.of(new EnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, this.efficiencyLevel));
+    }
+
+    @Override
+    public int efficiencyLevel() {
+        return this.efficiencyLevel;
+    }
+
+    @VisibleForTesting
+    public void setEfficiencyLevel(int efficiencyLevel) {
+        this.efficiencyLevel = efficiencyLevel;
     }
 }

@@ -31,7 +31,6 @@ class BlockDrop extends QuarryDataProvider {
             Holder.BLOCK_WATERLOGGED_MARKER,
             Holder.BLOCK_WATERLOGGED_FLEX_MARKER,
             Holder.BLOCK_WATERLOGGED_16_MARKER,
-            Holder.BLOCK_MINING_WELL,
             Holder.BLOCK_PUMP,
             Holder.BLOCK_WORKBENCH,
             Holder.BLOCK_MOVER,
@@ -49,12 +48,13 @@ class BlockDrop extends QuarryDataProvider {
         ).map(LootTableSerializeHelper::withEnchantedDrop);
         var quarry = LootTableSerializeHelper.withEnchantedDrop(Holder.BLOCK_QUARRY)
             .add(QuarryLootFunction.builder()).add(ModuleLootFunction.builder());
+        var miningWell = LootTableSerializeHelper.withEnchantedDrop(Holder.BLOCK_MINING_WELL);
         var advPump = LootTableSerializeHelper.withEnchantedDrop(Holder.BLOCK_ADV_PUMP);
         var advQuarry = LootTableSerializeHelper.withEnchantedDrop(Holder.BLOCK_ADV_QUARRY)
             .add(ModuleLootFunction.builder());
 
         return Stream.of(notMachines, enchanted,
-                Stream.of(quarry, advPump, advQuarry))
+                Stream.of(quarry, miningWell, advPump, advQuarry))
             .flatMap(Function.identity()).toList();
     }
 }

@@ -221,6 +221,7 @@ public class Config {
             var targets = List.of(
                 Map.entry(new ResourceLocation(QuarryPlus.modID, QuarryBlock.NAME), vanillaAllEnchantments()),
                 Map.entry(new ResourceLocation(QuarryPlus.modID, BlockAdvQuarry.NAME), vanillaAllEnchantments()),
+                // Map.entry(new ResourceLocation(QuarryPlus.modID, MiningWellBlock.NAME), List.of("minecraft:efficiency")), // Not configurable
                 Map.entry(new ResourceLocation(QuarryPlus.modID, MiniQuarryBlock.NAME), miniQuarryEnchantments()),
                 Map.entry(new ResourceLocation(QuarryPlus.modID, BlockAdvPump.NAME), pumpEnchantments())
             );

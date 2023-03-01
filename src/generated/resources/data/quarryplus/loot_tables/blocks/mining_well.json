@@ -11,6 +11,11 @@
       "entries": [
         {
           "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "quarryplus:drop_function"
+            }
+          ],
           "name": "quarryplus:mining_well"
         }
       ],
