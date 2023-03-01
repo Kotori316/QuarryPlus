@@ -16,6 +16,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
@@ -35,7 +37,7 @@ public class MiningWellBlock extends QPBlock implements EntityBlock {
     public static final String NAME = "mining_well";
 
     public MiningWellBlock() {
-        super(Properties.of(Material.METAL).strength(1.5f), NAME);
+        super(Properties.of(Material.METAL).strength(1.5f), NAME, MiningWellItem::new);
         registerDefaultState(getStateDefinition().any()
             .setValue(WORKING, false)
             .setValue(BlockStateProperties.FACING, Direction.NORTH));
@@ -66,6 +68,10 @@ public class MiningWellBlock extends QPBlock implements EntityBlock {
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
         super.setPlacedBy(level, pos, state, entity, stack);
+        if (!level.isClientSide && level.getBlockEntity(pos) instanceof MiningWellTile miningWellTile) {
+            int efficiencyLevel = EnchantmentHelper.getEnchantments(stack).getOrDefault(Enchantments.BLOCK_EFFICIENCY, 0);
+            miningWellTile.setEfficiencyLevel(efficiencyLevel);
+        }
     }
 
     /**
