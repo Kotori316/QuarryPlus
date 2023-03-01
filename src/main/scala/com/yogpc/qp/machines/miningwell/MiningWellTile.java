@@ -31,6 +31,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.fluids.FluidType;
+import org.jetbrains.annotations.VisibleForTesting;
 
 public class MiningWellTile extends PowerTile implements CheckerLog, MachineStorage.HasStorage, EnchantmentLevel.HasEnchantments {
     private final MachineStorage storage = new MachineStorage();
@@ -175,7 +176,8 @@ public class MiningWellTile extends PowerTile implements CheckerLog, MachineStor
         return this.efficiencyLevel;
     }
 
-    void setEfficiencyLevel(int efficiencyLevel) {
+    @VisibleForTesting
+    public void setEfficiencyLevel(int efficiencyLevel) {
         this.efficiencyLevel = efficiencyLevel;
     }
 }

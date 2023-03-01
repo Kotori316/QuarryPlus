@@ -3,6 +3,7 @@ package com.yogpc.qp.machines.miningwell;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.integration.wrench.WrenchItems;
+import com.yogpc.qp.machines.EnchantedLootFunction;
 import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QPBlock;
@@ -16,8 +17,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
@@ -29,6 +30,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import org.jetbrains.annotations.Nullable;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING;
@@ -69,7 +71,7 @@ public class MiningWellBlock extends QPBlock implements EntityBlock {
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
         super.setPlacedBy(level, pos, state, entity, stack);
         if (!level.isClientSide && level.getBlockEntity(pos) instanceof MiningWellTile miningWellTile) {
-            int efficiencyLevel = EnchantmentHelper.getEnchantments(stack).getOrDefault(Enchantments.BLOCK_EFFICIENCY, 0);
+            int efficiencyLevel = stack.getEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY);
             miningWellTile.setEfficiencyLevel(efficiencyLevel);
         }
     }
@@ -107,6 +109,15 @@ public class MiningWellBlock extends QPBlock implements EntityBlock {
             return InteractionResult.SUCCESS;
         }
         return super.use(state, world, pos, player, hand, hit);
+    }
+
+    @Override
+    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter world, BlockPos pos, Player player) {
+        var stack = super.getCloneItemStack(state, target, world, pos, player);
+        if (world.getBlockEntity(pos) instanceof MiningWellTile miningWellTile) {
+            EnchantedLootFunction.process(stack, miningWellTile);
+        }
+        return stack;
     }
 
     @Nullable
