@@ -84,6 +84,7 @@ public class TileAdvQuarry extends PowerTile implements
     private Area area = null;
     private List<EnchantmentLevel> enchantments = List.of();
     private AdvQuarryAction action = AdvQuarryAction.Waiting.WAITING;
+    boolean chunkByChunk = false;
 
     public TileAdvQuarry(BlockPos pos, BlockState state) {
         super(Holder.ADV_QUARRY_TYPE, pos, state);
@@ -97,6 +98,7 @@ public class TileAdvQuarry extends PowerTile implements
             "%sAction:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, action),
             "%sRemoveBedrock:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, hasBedrockModule()),
             "%sDigMinY:%s %d".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, digMinY),
+            "%sChunkByChunk:%s %b".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, chunkByChunk),
             "%sModules:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, modules),
             energyString()
         ).map(Component::literal).toList();
@@ -151,6 +153,7 @@ public class TileAdvQuarry extends PowerTile implements
         nbt.put("enchantments", enchantments);
         nbt.putInt("digMinY", digMinY);
         nbt.put("action", action.toNbt());
+        nbt.putBoolean("chunkByChunk", chunkByChunk);
         return nbt;
     }
 
@@ -165,6 +168,7 @@ public class TileAdvQuarry extends PowerTile implements
             .toList());
         digMinY = nbt.getInt("digMinY");
         action = AdvQuarryAction.fromNbt(nbt.getCompound("action"), this);
+        chunkByChunk = nbt.getBoolean("chunkByChunk");
     }
 
     /**

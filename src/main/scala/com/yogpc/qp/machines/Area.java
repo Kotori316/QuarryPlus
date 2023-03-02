@@ -2,6 +2,8 @@ package com.yogpc.qp.machines;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.IntStream;
@@ -11,6 +13,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.ChunkPos;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -137,4 +140,13 @@ public record Area(int minX, int minY, int minZ, int maxX, int maxY, int maxZ,
                 new BlockPos(area.minX(), y, area.maxZ())));
     }
 
+    public List<ChunkPos> getChunkPosList() {
+        List<ChunkPos> posList = new ArrayList<>();
+        for (int x = Math.floorDiv(this.minX, 16); x <= Math.floorDiv(this.maxX, 16); x++) {
+            for (int z = Math.floorDiv(this.minZ, 16); z <= Math.floorDiv(this.maxZ, 16); z++) {
+                posList.add(new ChunkPos(x, z));
+            }
+        }
+        return posList;
+    }
 }

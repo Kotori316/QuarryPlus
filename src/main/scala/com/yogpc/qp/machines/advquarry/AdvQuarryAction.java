@@ -82,6 +82,10 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
         return null;
     }
 
+    TargetIterator createTargetIterator(Area area, boolean chunkByChunk) {
+        return TargetIterator.of(area, chunkByChunk);
+    }
+
     abstract static class Serializer {
         abstract String key();
 
@@ -219,12 +223,12 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
 
         public BreakBlock(TileAdvQuarry quarry) {
             assert quarry.getArea() != null;
-            this.iterator = TargetIterator.of(quarry.getArea());
+            this.iterator = this.createTargetIterator(quarry.getArea(), quarry.chunkByChunk);
         }
 
         BreakBlock(TileAdvQuarry quarry, int x, int z, boolean searchEnergyConsumed) {
             assert quarry.getArea() != null;
-            this.iterator = TargetIterator.of(quarry.getArea());
+            this.iterator = this.createTargetIterator(quarry.getArea(), quarry.chunkByChunk);
             this.iterator.setCurrent(new TargetIterator.XZPair(x, z));
             this.searchEnergyConsumed = searchEnergyConsumed;
         }
@@ -288,12 +292,12 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
 
         public CheckFluid(TileAdvQuarry quarry) {
             assert quarry.getArea() != null;
-            this.iterator = TargetIterator.of(quarry.getArea());
+            this.iterator = this.createTargetIterator(quarry.getArea(), quarry.chunkByChunk);
         }
 
         CheckFluid(TileAdvQuarry quarry, int x, int z) {
             assert quarry.getArea() != null;
-            this.iterator = TargetIterator.of(quarry.getArea());
+            this.iterator = this.createTargetIterator(quarry.getArea(), quarry.chunkByChunk);
             this.iterator.setCurrent(new TargetIterator.XZPair(x, z));
         }
 
@@ -393,12 +397,12 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
 
         public FillerWork(TileAdvQuarry quarry) {
             assert quarry.getArea() != null;
-            this.iterator = TargetIterator.of(quarry.getArea());
+            this.iterator = this.createTargetIterator(quarry.getArea(), quarry.chunkByChunk);
         }
 
         FillerWork(TileAdvQuarry quarry, int x, int z) {
             assert quarry.getArea() != null;
-            this.iterator = TargetIterator.of(quarry.getArea());
+            this.iterator = this.createTargetIterator(quarry.getArea(), quarry.chunkByChunk);
             this.iterator.setCurrent(new TargetIterator.XZPair(x, z));
         }
 
