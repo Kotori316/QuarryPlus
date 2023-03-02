@@ -120,34 +120,37 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
+    public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {
+        super.onPlace(state, level, pos, oldState, isMoving);
+        if (state.getBlock() != oldState.getBlock() && !level.isClientSide && level.getBlockEntity(pos) instanceof TileAdvQuarry quarry) {
+            quarry.initialSetting();
+            Direction facing = state.getValue(FACING);
+            if (!quarry.setArea(findArea(level, pos, facing.getOpposite(), quarry.getStorage()::addItem))) {
+                // Area is not set because marker area is invalid. Use default.
+                var defaultArea = createDefaultArea(pos, facing.getOpposite(), QuarryPlus.config.common.chunkDestroyerLimit.get());
+                if (!quarry.setArea(defaultArea)) {
+                    // Unreachable
+                    AdvQuarry.LOGGER.warn(AdvQuarry.BLOCK, "The default area is invalid. Area={}, Limit={}, Pos={}",
+                        defaultArea, QuarryPlus.config.common.chunkDestroyerLimit.get(), pos);
+                }
+            }
+            var preForced = QuarryChunkLoadUtil.makeChunkLoaded(level, pos, quarry.enabled);
+            quarry.setChunkPreLoaded(preForced);
+        }
+    }
+
+    @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
         super.setPlacedBy(level, pos, state, entity, stack);
         if (!level.isClientSide) {
             if (level.getBlockEntity(pos) instanceof TileAdvQuarry quarry) {
-                Direction facing = state.getValue(FACING);
                 var enchantment = EnchantmentLevel.fromItem(stack);
                 enchantment.sort(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR);
-                quarry.initialSetting(enchantment);
-                Consumer<Component> showErrorMessage;
+                quarry.setEnchantments(enchantment);
                 if (entity instanceof ServerPlayer player) {
                     PacketHandler.sendToClientPlayer(new AdvQuarryInitialMessage.Ask(pos, level.dimension()), player);
-                    showErrorMessage = c -> player.displayClientMessage(c, false);
-                } else {
-                    showErrorMessage = c -> {
-                    };
                 }
-                if (!quarry.setArea(findArea(level, pos, facing.getOpposite(), quarry.getStorage()::addItem),
-                    showErrorMessage)) {
-                    // Area is not set because marker area is invalid. Use default.
-                    var defaultArea = createDefaultArea(pos, facing.getOpposite(), QuarryPlus.config.common.chunkDestroyerLimit.get());
-                    if (!quarry.setArea(defaultArea, showErrorMessage)) {
-                        // Unreachable
-                        AdvQuarry.LOGGER.warn(AdvQuarry.BLOCK, "The default area is invalid. Area={}, Limit={}, Pos={}",
-                            defaultArea, QuarryPlus.config.common.chunkDestroyerLimit.get(), pos);
-                    }
-                }
-                var preForced = QuarryChunkLoadUtil.makeChunkLoaded(level, pos, quarry.enabled);
-                quarry.setChunkPreLoaded(preForced);
             }
         }
     }
