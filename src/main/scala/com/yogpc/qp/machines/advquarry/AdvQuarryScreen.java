@@ -21,6 +21,9 @@ public class AdvQuarryScreen extends AbstractContainerScreen<AdvQuarryMenu> impl
 
     public AdvQuarryScreen(AdvQuarryMenu c, Inventory inventory, Component component) {
         super(c, inventory, component);
+        this.imageWidth = c.imageWidth;
+        this.imageHeight = c.imageHeight;
+        this.inventoryLabelY = this.imageHeight - 96 + 2; // y position of text, inventory
     }
 
     @Override

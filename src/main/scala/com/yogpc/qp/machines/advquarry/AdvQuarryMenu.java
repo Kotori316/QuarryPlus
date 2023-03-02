@@ -14,19 +14,24 @@ import net.minecraft.world.item.ItemStack;
 public class AdvQuarryMenu extends AbstractContainerMenu {
     public static final String GUI_ID = QuarryPlus.modID + ":gui_" + BlockAdvQuarry.NAME;
     final TileAdvQuarry quarry;
+    final int imageWidth;
+    final int imageHeight;
 
     public AdvQuarryMenu(int id, Player player, BlockPos pos) {
         super(Holder.ADV_QUARRY_MENU_TYPE, id);
         quarry = (TileAdvQuarry) player.level.getBlockEntity(pos);
         assert quarry != null;
+        this.imageWidth = 176;
+        this.imageHeight = 200;
+
         for (int k = 0; k < 3; ++k) {
             for (int i1 = 0; i1 < 9; ++i1) {
-                this.addSlot(new Slot(player.getInventory(), i1 + k * 9 + 9, 8 + i1 * 18, 84 + k * 18));
+                this.addSlot(new Slot(player.getInventory(), i1 + k * 9 + 9, 8 + i1 * 18, this.imageHeight - 82 + k * 18));
             }
         }
 
         for (int l = 0; l < 9; ++l) {
-            this.addSlot(new Slot(player.getInventory(), l, 8 + l * 18, 142));
+            this.addSlot(new Slot(player.getInventory(), l, 8 + l * 18, this.imageHeight - 24));
         }
         if (!player.level.isClientSide) {
             PacketHandler.sendToClientPlayer(new ClientSyncMessage(quarry), (ServerPlayer) player);
