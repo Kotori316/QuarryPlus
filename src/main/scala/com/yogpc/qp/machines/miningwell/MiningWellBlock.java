@@ -87,7 +87,7 @@ public class MiningWellBlock extends QPBlock implements EntityBlock {
     @SuppressWarnings("deprecation")
     public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {
         super.onPlace(state, level, pos, oldState, isMoving);
-        if (!level.isClientSide && level.getBlockEntity(pos) instanceof MiningWellTile miningWellTile) {
+        if (state.getBlock() != oldState.getBlock() && !level.isClientSide && level.getBlockEntity(pos) instanceof MiningWellTile miningWellTile) {
             miningWellTile.digMinY = level.getMinBuildHeight();
         }
     }
