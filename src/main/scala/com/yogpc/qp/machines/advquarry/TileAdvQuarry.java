@@ -100,6 +100,8 @@ public class TileAdvQuarry extends PowerTile implements
             "%sRemoveBedrock:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, hasBedrockModule()),
             "%sDigMinY:%s %d".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, digMinY),
             "%sChunkByChunk:%s %b".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, chunkByChunk),
+            "%sPlaceAreaFrame:%s %b".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, placeAreaFrame),
+            "%sStartImmediately:%s %b".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, startImmediately),
             "%sModules:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, modules),
             energyString()
         ).map(Component::literal).toList();
