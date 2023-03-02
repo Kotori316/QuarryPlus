@@ -55,14 +55,14 @@ jobs:
       - name: Checkout QuarryPlus repo
         uses: actions/checkout@v3
       - name: Set versions
-        if: ${{ matrix.forge != 'default' }}
+        if: ${{ matrix.forge != 'default' && github.event_name != 'pull_request' }}
         run: |
           version=$(java -jar $(find / -maxdepth 1 -name "fictional*.jar") ${{ matrix.forge }})
           echo "CI_FORGE=${version}" >> $GITHUB_ENV
-          grep ${version} gradle.properties > /dev/null && echo "SAME_DEFAULT=true" >> $GITHUB_ENV || echo "SAME_DEFAULT=false" >> $GITHUB_ENV
+          grep -q ${version} gradle.properties && echo "SAME_DEFAULT=true" >> $GITHUB_ENV || echo "SAME_DEFAULT=false" >> $GITHUB_ENV
           echo ${version}
       - name: Test with runData
-        if: ${{ env.SAME_DEFAULT != 'true' }}
+        if: ${{ env.SAME_DEFAULT != 'true' && (matrix.forge == 'default' || github.event_name != 'pull_request') }}
         run: chmod +x ./gradlew && ./gradlew --no-daemon runData
 
   cross-check-JUnit:
@@ -79,14 +79,14 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Get latest version
-        if: ${{ matrix.forge != 'default' }}
+        if: ${{ matrix.forge != 'default' && github.event_name != 'pull_request' }}
         run: |
           version=$(java -jar $(find / -maxdepth 1 -name "fictional*.jar") ${{ matrix.forge }})
           echo "CI_FORGE=${version}" >> $GITHUB_ENV
-          grep ${version} gradle.properties > /dev/null && echo "SAME_DEFAULT=true" >> $GITHUB_ENV || echo "SAME_DEFAULT=false" >> $GITHUB_ENV
+          grep -q ${version} gradle.properties && echo "SAME_DEFAULT=true" >> $GITHUB_ENV || echo "SAME_DEFAULT=false" >> $GITHUB_ENV
           echo ${version}
       - name: Test with JUnit
-        if: ${{ env.SAME_DEFAULT != 'true' }}
+        if: ${{ env.SAME_DEFAULT != 'true' && (matrix.forge == 'default' || github.event_name != 'pull_request') }}
         run: chmod +x ./gradlew && ./gradlew --no-daemon test
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
