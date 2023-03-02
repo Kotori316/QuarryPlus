@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -77,6 +76,8 @@ public class TileAdvQuarry extends PowerTile implements
     private final MachineStorage storage = new MachineStorage();
 
     // Work
+    boolean startImmediately = true;
+    boolean placeAreaFrame = true;
     private final QuarryCache cache = new QuarryCache();
     private ItemConverter itemConverter;
     public int digMinY;
@@ -182,8 +183,7 @@ public class TileAdvQuarry extends PowerTile implements
         this.setMaxEnergy(getPowerConfig().maxEnergy() * (efficiencyLevel() + 1));
     }
 
-    void initialSetting(List<EnchantmentLevel> enchantments) {
-        setEnchantments(enchantments);
+    void initialSetting() {
         if (this.level != null) {
             this.digMinY = level.getMinBuildHeight();
         }
@@ -198,22 +198,19 @@ public class TileAdvQuarry extends PowerTile implements
      * Set area of Chunk Destroyer.
      *
      * @param newArea          The new area by GUI or marker.
-     * @param showErrorMessage The way to show chat message.
      * @return True if the area is set. False means the area is invalid(violation of config).
      */
-    boolean setArea(Area newArea, Consumer<Component> showErrorMessage) {
+    boolean setArea(Area newArea) {
         if (newArea.isRangeInLimit(QuarryPlus.config.common.chunkDestroyerLimit.get(), true)) {
             this.area = newArea;
             PacketHandler.sendToClient(new ClientSyncMessage(this), Objects.requireNonNull(this.getLevel()));
         } else {
-            showErrorMessage.accept(Component.translatable("quarryplus.chat.warn_cd_limit"));
             AdvQuarry.LOGGER.info(AdvQuarry.TILE, "Area is too bigger than limit value in config. Area={}, Limit={}",
                 newArea, QuarryPlus.config.common.chunkDestroyerLimit.get());
             return false;
         }
         this.cache.isProtectedByFTB.expire();
         if (this.cache.isProtectedByFTB.getValue(getLevel())) {
-            showErrorMessage.accept(Component.translatable("quarryplus.chat.warn_protected_area"));
             AdvQuarry.LOGGER.info(AdvQuarry.TILE, "Area contains protected chunks. Quarry has stopped.");
         }
         return true;
@@ -248,7 +245,7 @@ public class TileAdvQuarry extends PowerTile implements
     }
 
     public boolean canStartWork() {
-        return area != null && !this.cache.isProtectedByFTB.getValue(getLevel());
+        return area != null && !this.cache.isProtectedByFTB.getValue(getLevel()) && this.startImmediately;
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")

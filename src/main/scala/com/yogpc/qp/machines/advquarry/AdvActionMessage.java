@@ -63,8 +63,7 @@ public final class AdvActionMessage implements IMessage {
                     AdvQuarry.LOGGER.debug(AdvQuarry.MESSAGE, "onReceive. {}, {}", message.pos, message.action);
                     switch (message.action) {
                         case CHANGE_RANGE ->
-                            quarry.setArea(message.area, c -> PacketHandler.getPlayer(supplier.get()).ifPresent(p ->
-                                p.displayClientMessage(c, false)));
+                            quarry.setArea(message.area);
                         case MODULE_INV -> PacketHandler.getPlayer(supplier.get())
                             .flatMap(MapMulti.optCast(ServerPlayer.class))
                             .ifPresent(quarry::openModuleGui);
