@@ -111,14 +111,18 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
         @Override
         public void tick(Level level, BlockPos pos, BlockState state, TileAdvQuarry quarry) {
             if (quarry.getEnergy() > quarry.getMaxEnergy() / 4 && quarry.canStartWork()) {
-                if (quarry.placeAreaFrame) {
-                    quarry.setAction(new MakeFrame(quarry.getArea()));
-                } else {
-                    quarry.setAction(new BreakBlock(quarry));
-                }
-                TraceQuarryWork.startWork(quarry, pos, quarry.getEnergyStored());
+                startQuarry(quarry);
             }
         }
+    }
+
+    static void startQuarry(TileAdvQuarry quarry) {
+        if (quarry.placeAreaFrame) {
+            quarry.setAction(new MakeFrame(quarry.getArea()));
+        } else {
+            quarry.setAction(new BreakBlock(quarry));
+        }
+        TraceQuarryWork.startWork(quarry, quarry.getBlockPos(), quarry.getEnergyStored());
     }
 
     private static final class WaitingSerializer extends Serializer {
