@@ -80,13 +80,13 @@ public class AdvQuarryScreen extends AbstractContainerScreen<AdvQuarryMenu> impl
         this.addRenderableWidget(new IndexedButton(9, getGuiLeft() + 8, getGuiTop() + 58, 60, 12, Component.literal("Modules"), this));
 
         areaFrameCheckBox = new SmallCheckBox(getGuiLeft() + 8, getGuiTop() + 72, 60, 10, 10, 10,
-            Component.literal("Area Frame"), getMenu().quarry.placeAreaFrame, this);
+            Component.literal("Area Frame"), getMenu().quarry.workConfig.placeAreaFrame(), this);
         this.addRenderableWidget(areaFrameCheckBox);
         chunkByChunkCheckBox = new SmallCheckBox(getGuiLeft() + 8, getGuiTop() + 83, 60, 10, 10, 10,
-            Component.literal("Chunk by Chunk"), getMenu().quarry.chunkByChunk, this);
+            Component.literal("Chunk by Chunk"), getMenu().quarry.workConfig.chunkByChunk(), this);
         this.addRenderableWidget(chunkByChunkCheckBox);
         startCheckBox = new SmallCheckBox(getGuiLeft() + 8, getGuiTop() + 94, 60, 10, 10, 10,
-            Component.literal("Ready to Start"), getMenu().quarry.startImmediately, this);
+            Component.literal("Ready to Start"), getMenu().quarry.workConfig.startImmediately(), this);
         this.addRenderableWidget(startCheckBox);
     }
 
@@ -96,7 +96,8 @@ public class AdvQuarryScreen extends AbstractContainerScreen<AdvQuarryMenu> impl
         if (b instanceof IndexedButton button) {
             if (button.id() == 8) {
                 if (tile.getAction() == AdvQuarryAction.Waiting.WAITING) {
-                    tile.startImmediately = true;
+                    tile.workConfig = tile.workConfig.startSoonConfig();
+                    startCheckBox.setSelected(tile.workConfig.startImmediately());
                     PacketHandler.sendToServer(new AdvActionMessage(tile, AdvActionMessage.Actions.QUICK_START));
                 }
             } else if (button.id() == 9) {
@@ -164,10 +165,9 @@ public class AdvQuarryScreen extends AbstractContainerScreen<AdvQuarryMenu> impl
             boolean placeAreaFrame = areaFrameCheckBox.isSelected();
             boolean chunkByChunk = chunkByChunkCheckBox.isSelected();
             boolean startImmediately = startCheckBox.isSelected();
-            tile.placeAreaFrame = placeAreaFrame;
-            tile.chunkByChunk = chunkByChunk;
-            tile.startImmediately = startImmediately;
-            PacketHandler.sendToServer(new AdvActionMessage(tile, AdvActionMessage.Actions.SYNC, placeAreaFrame, chunkByChunk, startImmediately));
+            WorkConfig workConfig = new WorkConfig(startImmediately, placeAreaFrame, chunkByChunk);
+            tile.workConfig = workConfig;
+            PacketHandler.sendToServer(new AdvActionMessage(tile, AdvActionMessage.Actions.SYNC, workConfig));
         }
     }
 

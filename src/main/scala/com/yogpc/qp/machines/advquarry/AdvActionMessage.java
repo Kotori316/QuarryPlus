@@ -22,31 +22,27 @@ public final class AdvActionMessage implements IMessage {
     private final ResourceKey<Level> dim;
     private final Area area;
     private final Actions action;
-    private final boolean placeAreaFrame;
-    private final boolean chunkByChunk;
-    private final boolean startImmediately;
+    private final WorkConfig workConfig;
 
-    AdvActionMessage(TileAdvQuarry quarry, Actions action, Area area, boolean placeAreaFrame, boolean chunkByChunk, boolean startImmediately) {
+    AdvActionMessage(TileAdvQuarry quarry, Actions action, Area area, WorkConfig workConfig) {
         this.pos = quarry.getBlockPos();
         this.dim = PacketHandler.getDimension(quarry);
         this.area = area;
         this.action = action;
-        this.placeAreaFrame = placeAreaFrame;
-        this.chunkByChunk = chunkByChunk;
-        this.startImmediately = startImmediately;
+        this.workConfig = workConfig;
         AdvQuarry.LOGGER.debug(AdvQuarry.MESSAGE, "Message is created. {} {} {} {}", this.pos, this.dim.location(), this.area, this.action);
     }
 
     AdvActionMessage(TileAdvQuarry quarry, Actions action, Area area) {
-        this(quarry, action, area, quarry.placeAreaFrame, quarry.chunkByChunk, quarry.startImmediately);
+        this(quarry, action, area, quarry.workConfig);
     }
 
     AdvActionMessage(TileAdvQuarry quarry, Actions action) {
-        this(quarry, action, quarry.getArea(), quarry.placeAreaFrame, quarry.chunkByChunk, quarry.startImmediately);
+        this(quarry, action, quarry.getArea(), quarry.workConfig);
     }
 
-    AdvActionMessage(TileAdvQuarry quarry, Actions action, boolean placeAreaFrame, boolean chunkByChunk, boolean startImmediately) {
-        this(quarry, action, quarry.getArea(), placeAreaFrame, chunkByChunk, startImmediately);
+    AdvActionMessage(TileAdvQuarry quarry, Actions action, WorkConfig workConfig) {
+        this(quarry, action, quarry.getArea(), workConfig);
     }
 
     public AdvActionMessage(FriendlyByteBuf buf) {
@@ -54,9 +50,7 @@ public final class AdvActionMessage implements IMessage {
         this.dim = ResourceKey.create(Registry.DIMENSION_REGISTRY, buf.readResourceLocation());
         this.area = Area.fromNBT(buf.readNbt()).orElse(null);
         this.action = buf.readEnum(Actions.class);
-        this.placeAreaFrame = buf.readBoolean();
-        this.chunkByChunk = buf.readBoolean();
-        this.startImmediately = buf.readBoolean();
+        this.workConfig = new WorkConfig(buf);
     }
 
     @Override
@@ -64,7 +58,7 @@ public final class AdvActionMessage implements IMessage {
         buf.writeBlockPos(this.pos).writeResourceLocation(this.dim.location());
         buf.writeNbt(this.area.toNBT());
         buf.writeEnum(this.action);
-        buf.writeBoolean(this.placeAreaFrame).writeBoolean(this.chunkByChunk).writeBoolean(startImmediately);
+        this.workConfig.writePacket(buf);
     }
 
     enum Actions {
@@ -84,16 +78,12 @@ public final class AdvActionMessage implements IMessage {
                             .flatMap(MapMulti.optCast(ServerPlayer.class))
                             .ifPresent(quarry::openModuleGui);
                         case QUICK_START -> {
-                            quarry.startImmediately = true;
+                            quarry.workConfig = quarry.workConfig.startSoonConfig();
                             if (quarry.canStartWork()) {
                                 AdvQuarryAction.startQuarry(quarry);
                             }
                         }
-                        case SYNC -> {
-                            quarry.startImmediately = message.startImmediately;
-                            quarry.placeAreaFrame = message.placeAreaFrame;
-                            quarry.chunkByChunk = message.chunkByChunk;
-                        }
+                        case SYNC -> quarry.workConfig = message.workConfig;
                     }
                 }));
     }

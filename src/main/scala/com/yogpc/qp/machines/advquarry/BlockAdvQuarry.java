@@ -150,7 +150,7 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
                 enchantment.sort(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR);
                 quarry.setEnchantments(enchantment);
                 if (entity instanceof ServerPlayer player && !(entity instanceof FakePlayer)) {
-                    quarry.startImmediately = false; // Prevent machines from starting by being supplied enough energy to start. Wait for client setting.
+                    quarry.workConfig = quarry.workConfig.noAutoStartConfig(); // Prevent machines from starting by being supplied enough energy to start. Wait for client setting.
                     PacketHandler.sendToClientPlayer(new AdvQuarryInitialMessage.Ask(pos, level.dimension()), player);
                 }
             }

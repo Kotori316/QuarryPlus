@@ -76,8 +76,7 @@ public class TileAdvQuarry extends PowerTile implements
     private final MachineStorage storage = new MachineStorage();
 
     // Work
-    boolean startImmediately = true;
-    boolean placeAreaFrame = true;
+    WorkConfig workConfig = new WorkConfig(true, true, false);
     private final QuarryCache cache = new QuarryCache();
     private ItemConverter itemConverter;
     public int digMinY;
@@ -85,7 +84,6 @@ public class TileAdvQuarry extends PowerTile implements
     private Area area = null;
     private List<EnchantmentLevel> enchantments = List.of();
     private AdvQuarryAction action = AdvQuarryAction.Waiting.WAITING;
-    boolean chunkByChunk = false;
 
     public TileAdvQuarry(BlockPos pos, BlockState state) {
         super(Holder.ADV_QUARRY_TYPE, pos, state);
@@ -99,9 +97,7 @@ public class TileAdvQuarry extends PowerTile implements
             "%sAction:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, action),
             "%sRemoveBedrock:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, hasBedrockModule()),
             "%sDigMinY:%s %d".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, digMinY),
-            "%sChunkByChunk:%s %b".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, chunkByChunk),
-            "%sPlaceAreaFrame:%s %b".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, placeAreaFrame),
-            "%sStartImmediately:%s %b".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, startImmediately),
+            workConfig.toString().replace("WorkConfig", ChatFormatting.GREEN + "WorkConfig: " + ChatFormatting.RESET),
             "%sModules:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, modules),
             energyString()
         ).map(Component::literal).toList();
@@ -156,7 +152,7 @@ public class TileAdvQuarry extends PowerTile implements
         nbt.put("enchantments", enchantments);
         nbt.putInt("digMinY", digMinY);
         nbt.put("action", action.toNbt());
-        nbt.putBoolean("chunkByChunk", chunkByChunk);
+        nbt.put("workConfig", workConfig.toNbt());
         return nbt;
     }
 
@@ -171,7 +167,7 @@ public class TileAdvQuarry extends PowerTile implements
             .toList());
         digMinY = nbt.getInt("digMinY");
         action = AdvQuarryAction.fromNbt(nbt.getCompound("action"), this);
-        chunkByChunk = nbt.getBoolean("chunkByChunk");
+        workConfig = new WorkConfig(nbt.getCompound("workConfig"));
     }
 
     /**
@@ -199,7 +195,7 @@ public class TileAdvQuarry extends PowerTile implements
     /**
      * Set area of Chunk Destroyer.
      *
-     * @param newArea          The new area by GUI or marker.
+     * @param newArea The new area by GUI or marker.
      * @return True if the area is set. False means the area is invalid(violation of config).
      */
     boolean setArea(Area newArea) {
@@ -247,7 +243,7 @@ public class TileAdvQuarry extends PowerTile implements
     }
 
     public boolean canStartWork() {
-        return area != null && !this.cache.isProtectedByFTB.getValue(getLevel()) && this.startImmediately;
+        return area != null && !this.cache.isProtectedByFTB.getValue(getLevel()) && this.workConfig.startImmediately();
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")

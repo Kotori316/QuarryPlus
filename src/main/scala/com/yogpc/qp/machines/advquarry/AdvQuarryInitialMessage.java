@@ -20,39 +20,31 @@ public final class AdvQuarryInitialMessage implements IMessage {
     private final BlockPos pos;
     private final ResourceKey<Level> dim;
 
-    private final boolean startImmediately;
-    private final boolean placeAreaFrame;
-    private final boolean chunkByChunk;
+    private final WorkConfig workConfig;
 
-    public AdvQuarryInitialMessage(BlockPos pos, ResourceKey<Level> dim, boolean startImmediately, boolean placeAreaFrame, boolean chunkByChunk) {
+    public AdvQuarryInitialMessage(BlockPos pos, ResourceKey<Level> dim, WorkConfig workConfig) {
         this.pos = pos;
         this.dim = dim;
-        this.startImmediately = startImmediately;
-        this.placeAreaFrame = placeAreaFrame;
-        this.chunkByChunk = chunkByChunk;
+        this.workConfig = workConfig;
     }
 
     public AdvQuarryInitialMessage(FriendlyByteBuf buf) {
         this.pos = buf.readBlockPos();
         this.dim = ResourceKey.create(Registry.DIMENSION_REGISTRY, buf.readResourceLocation());
-        this.startImmediately = buf.readBoolean();
-        this.placeAreaFrame = buf.readBoolean();
-        this.chunkByChunk = buf.readBoolean();
+        this.workConfig = new WorkConfig(buf);
     }
 
     @Override
     public void write(FriendlyByteBuf buf) {
         buf.writeBlockPos(pos).writeResourceLocation(dim.location());
-        buf.writeBoolean(startImmediately).writeBoolean(placeAreaFrame).writeBoolean(chunkByChunk);
+        workConfig.writePacket(buf);
     }
 
     public static void onReceive(AdvQuarryInitialMessage message, Supplier<NetworkEvent.Context> supplier) {
         var world = PacketHandler.getWorld(supplier.get(), message.pos, message.dim);
-        supplier.get().enqueueWork(() -> world.flatMap(w -> w.getBlockEntity(message.pos, Holder.ADV_QUARRY_TYPE)).ifPresent(t -> {
-            t.startImmediately = message.startImmediately;
-            t.placeAreaFrame = message.placeAreaFrame;
-            t.chunkByChunk = message.chunkByChunk;
-        }));
+        supplier.get().enqueueWork(() -> world.flatMap(w -> w.getBlockEntity(message.pos, Holder.ADV_QUARRY_TYPE)).ifPresent(t ->
+            t.workConfig = message.workConfig
+        ));
     }
 
     public static class Ask implements IMessage {
@@ -78,11 +70,11 @@ public final class AdvQuarryInitialMessage implements IMessage {
             PacketHandler.getWorld(supplier.get(), message.pos, message.dim)
                 .flatMap(w -> w.getBlockEntity(message.pos, Holder.ADV_QUARRY_TYPE))
                 .ifPresent(t ->
-                    PacketHandler.sendToServer(new AdvQuarryInitialMessage(message.pos, message.dim,
+                    PacketHandler.sendToServer(new AdvQuarryInitialMessage(message.pos, message.dim, new WorkConfig(
                         QuarryPlus.clientConfig.chunkDestroyerSetting.startImmediately.get(),
                         QuarryPlus.clientConfig.chunkDestroyerSetting.placeAreaFrame.get(),
                         QuarryPlus.clientConfig.chunkDestroyerSetting.chunkByChunk.get()
-                    ))
+                    )))
                 );
         }
     }
