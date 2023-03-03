@@ -3,6 +3,7 @@ package com.yogpc.qp.machines.advquarry;
 import java.util.function.Supplier;
 
 import com.yogpc.qp.Holder;
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.packet.PacketHandler;
 import net.minecraft.core.BlockPos;
@@ -50,6 +51,7 @@ public final class AdvQuarryInitialMessage implements IMessage {
         supplier.get().enqueueWork(() -> world.flatMap(w -> w.getBlockEntity(message.pos, Holder.ADV_QUARRY_TYPE)).ifPresent(t -> {
             t.startImmediately = message.startImmediately;
             t.placeAreaFrame = message.placeAreaFrame;
+            t.chunkByChunk = message.chunkByChunk;
         }));
     }
 
@@ -77,7 +79,10 @@ public final class AdvQuarryInitialMessage implements IMessage {
                 .flatMap(w -> w.getBlockEntity(message.pos, Holder.ADV_QUARRY_TYPE))
                 .ifPresent(t ->
                     PacketHandler.sendToServer(new AdvQuarryInitialMessage(message.pos, message.dim,
-                        true, true, false))
+                        QuarryPlus.clientConfig.chunkDestroyerSetting.startImmediately.get(),
+                        QuarryPlus.clientConfig.chunkDestroyerSetting.placeAreaFrame.get(),
+                        QuarryPlus.clientConfig.chunkDestroyerSetting.chunkByChunk.get()
+                    ))
                 );
         }
     }
