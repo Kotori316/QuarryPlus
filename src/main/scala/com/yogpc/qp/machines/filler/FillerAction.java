@@ -77,7 +77,7 @@ public final class FillerAction {
 
     public void fromNbt(CompoundTag tag) {
         if (tag.contains("iterator")) {
-            this.iterator = SkipIterator.fromNbt(tag);
+            this.iterator = SkipIterator.fromNbt(tag.getCompound("iterator"));
         }
     }
 
