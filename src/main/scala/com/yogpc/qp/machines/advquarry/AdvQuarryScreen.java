@@ -76,7 +76,7 @@ public class AdvQuarryScreen extends AbstractContainerScreen<AdvQuarryMenu> impl
         this.addRenderableWidget(new IndexedButton(6, getGuiLeft() + 158, getGuiTop() + 39, 10, 8, plus, this));
         this.addRenderableWidget(new IndexedButton(7, getGuiLeft() + 128, getGuiTop() + 39, 10, 8, minus, this));
 
-        this.addRenderableWidget(new IndexedButton(8, getGuiLeft() + 108, getGuiTop() + 58, 60, 12, Component.literal("No Frame"), this));
+        this.addRenderableWidget(new IndexedButton(8, getGuiLeft() + 108, getGuiTop() + 58, 60, 12, Component.literal("Start"), this));
         this.addRenderableWidget(new IndexedButton(9, getGuiLeft() + 8, getGuiTop() + 58, 60, 12, Component.literal("Modules"), this));
 
         areaFrameCheckBox = new SmallCheckBox(getGuiLeft() + 8, getGuiTop() + 72, 60, 10, 10, 10,
@@ -86,7 +86,7 @@ public class AdvQuarryScreen extends AbstractContainerScreen<AdvQuarryMenu> impl
             Component.literal("Chunk by Chunk"), getMenu().quarry.chunkByChunk, this);
         this.addRenderableWidget(chunkByChunkCheckBox);
         startCheckBox = new SmallCheckBox(getGuiLeft() + 8, getGuiTop() + 94, 60, 10, 10, 10,
-            Component.literal("Start Immediately"), getMenu().quarry.startImmediately, this);
+            Component.literal("Ready to Start"), getMenu().quarry.startImmediately, this);
         this.addRenderableWidget(startCheckBox);
     }
 
@@ -96,6 +96,7 @@ public class AdvQuarryScreen extends AbstractContainerScreen<AdvQuarryMenu> impl
         if (b instanceof IndexedButton button) {
             if (button.id() == 8) {
                 if (tile.getAction() == AdvQuarryAction.Waiting.WAITING) {
+                    tile.startImmediately = true;
                     PacketHandler.sendToServer(new AdvActionMessage(tile, AdvActionMessage.Actions.QUICK_START));
                 }
             } else if (button.id() == 9) {
