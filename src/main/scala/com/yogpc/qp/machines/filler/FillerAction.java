@@ -90,7 +90,7 @@ public final class FillerAction {
             return pos -> {
                 var player = QuarryFakePlayer.get((ServerLevel) level);
                 QuarryFakePlayer.setDirection(player, Direction.DOWN);
-                var hitResult = new BlockHitResult(Vec3.atBottomCenterOf(pos), Direction.UP, pos, false);
+                var hitResult = new BlockHitResult(Vec3.atBottomCenterOf(pos), Direction.UP, pos.below(), false);
                 var context = new BlockPlaceContext(player, InteractionHand.MAIN_HAND, stack, hitResult);
                 var state = getStateFromItem(blockItem, context);
                 if (!context.canPlace() || state == null) {
