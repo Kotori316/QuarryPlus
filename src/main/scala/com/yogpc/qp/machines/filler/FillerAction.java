@@ -6,21 +6,17 @@ import java.util.function.Supplier;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.PowerTile;
-import com.yogpc.qp.machines.QuarryFakePlayer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.context.DirectionalPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -48,10 +44,7 @@ public final class FillerAction {
                 this.iterator = null;
             } else {
                 if (powerSource.useEnergy(energy, PowerTile.Reason.FILLER, false)) {
-                    var player = QuarryFakePlayer.get((ServerLevel) level);
-                    QuarryFakePlayer.setDirection(player, Direction.DOWN);
-                    var hitResult = new BlockHitResult(Vec3.atBottomCenterOf(targetPos), Direction.UP, targetPos, false);
-                    var context = new BlockPlaceContext(player, InteractionHand.MAIN_HAND, blockStack, hitResult);
+                    var context = new DirectionalPlaceContext(level, targetPos, Direction.DOWN, blockStack, Direction.UP);
                     var state = getStateFromItem((BlockItem) blockStack.getItem(), context);
                     if (state != null) {
                         level.setBlock(targetPos, state, Block.UPDATE_ALL);
@@ -88,10 +81,7 @@ public final class FillerAction {
     private static Predicate<BlockPos> predicate(Level level, ItemStack stack) {
         if (stack.getItem() instanceof BlockItem blockItem) {
             return pos -> {
-                var player = QuarryFakePlayer.get((ServerLevel) level);
-                QuarryFakePlayer.setDirection(player, Direction.DOWN);
-                var hitResult = new BlockHitResult(Vec3.atBottomCenterOf(pos), Direction.UP, pos.below(), false);
-                var context = new BlockPlaceContext(player, InteractionHand.MAIN_HAND, stack, hitResult);
+                var context = new DirectionalPlaceContext(level, pos, Direction.DOWN, stack, Direction.UP);
                 var state = getStateFromItem(blockItem, context);
                 if (!context.canPlace() || state == null) {
                     return false;
