@@ -27,6 +27,10 @@ public final class SmallCheckBox extends Button {
         return selected;
     }
 
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
+
     @Override
     public void onPress() {
         this.selected = !this.selected;
