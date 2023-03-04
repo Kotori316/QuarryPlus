@@ -12,6 +12,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkEvent;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * To Server only.
@@ -70,12 +71,17 @@ public final class AdvQuarryInitialMessage implements IMessage {
             PacketHandler.getWorld(supplier.get(), message.pos, message.dim)
                 .flatMap(w -> w.getBlockEntity(message.pos, Holder.ADV_QUARRY_TYPE))
                 .ifPresent(t ->
-                    PacketHandler.sendToServer(new AdvQuarryInitialMessage(message.pos, message.dim, new WorkConfig(
-                        QuarryPlus.clientConfig.chunkDestroyerSetting.startImmediately.get(),
-                        QuarryPlus.clientConfig.chunkDestroyerSetting.placeAreaFrame.get(),
-                        QuarryPlus.clientConfig.chunkDestroyerSetting.chunkByChunk.get()
-                    )))
+                    PacketHandler.sendToServer(new AdvQuarryInitialMessage(message.pos, message.dim, getWorkConfig()))
                 );
+        }
+
+        @NotNull
+        private static WorkConfig getWorkConfig() {
+            return new WorkConfig(
+                QuarryPlus.clientConfig.chunkDestroyerSetting.startImmediately.get(),
+                QuarryPlus.clientConfig.chunkDestroyerSetting.placeAreaFrame.get(),
+                QuarryPlus.clientConfig.chunkDestroyerSetting.chunkByChunk.get()
+            );
         }
     }
 }
