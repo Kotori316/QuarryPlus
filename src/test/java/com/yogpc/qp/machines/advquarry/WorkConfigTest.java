@@ -3,8 +3,10 @@ package com.yogpc.qp.machines.advquarry;
 import io.netty.buffer.ByteBufAllocator;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -63,5 +65,39 @@ class WorkConfigTest {
         assertEquals(config.chunkByChunk(), startSoon.chunkByChunk());
         assertEquals(config.placeAreaFrame(), startSoon.placeAreaFrame());
         assertTrue(startSoon.startImmediately());
+    }
+
+    @Nested
+    class UtilTest {
+        @Test
+        void useDefault() {
+            CompoundTag tag = new CompoundTag();
+            assertAll(
+                () -> assertTrue(WorkConfig.getBool(tag, "should_be_true", true)),
+                () -> assertFalse(WorkConfig.getBool(tag, "should_be_false", false))
+            );
+        }
+
+        @Test
+        void loadData1() {
+            CompoundTag tag = new CompoundTag();
+            tag.putBoolean("should_be_true", true);
+            tag.putBoolean("should_be_false", false);
+            assertAll(
+                () -> assertTrue(WorkConfig.getBool(tag, "should_be_true", true)),
+                () -> assertFalse(WorkConfig.getBool(tag, "should_be_false", false))
+            );
+        }
+
+        @Test
+        void loadData2() {
+            CompoundTag tag = new CompoundTag();
+            tag.putBoolean("a", true);
+            tag.putBoolean("b", false);
+            assertAll(
+                () -> assertTrue(WorkConfig.getBool(tag, "a", false)),
+                () -> assertFalse(WorkConfig.getBool(tag, "b", true))
+            );
+        }
     }
 }
