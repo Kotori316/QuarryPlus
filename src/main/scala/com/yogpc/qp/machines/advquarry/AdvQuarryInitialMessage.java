@@ -7,7 +7,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.packet.PacketHandler;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
@@ -31,7 +31,7 @@ public final class AdvQuarryInitialMessage implements IMessage {
 
     public AdvQuarryInitialMessage(FriendlyByteBuf buf) {
         this.pos = buf.readBlockPos();
-        this.dim = ResourceKey.create(Registry.DIMENSION_REGISTRY, buf.readResourceLocation());
+        this.dim = ResourceKey.create(Registries.DIMENSION, buf.readResourceLocation());
         this.workConfig = new WorkConfig(buf);
     }
 
@@ -59,7 +59,7 @@ public final class AdvQuarryInitialMessage implements IMessage {
 
         public Ask(FriendlyByteBuf buf) {
             this.pos = buf.readBlockPos();
-            this.dim = ResourceKey.create(Registry.DIMENSION_REGISTRY, buf.readResourceLocation());
+            this.dim = ResourceKey.create(Registries.DIMENSION, buf.readResourceLocation());
         }
 
         @Override

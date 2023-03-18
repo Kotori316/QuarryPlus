@@ -17,7 +17,12 @@ public final class SmallCheckBox extends Button {
     private boolean selected;
 
     public SmallCheckBox(int xPos, int yPos, int totalWidth, int totalHeight, int checkBoxWidth, int checkBoxHeight, Component displayString, boolean selected, Button.OnPress onPress) {
-        super(xPos, yPos, totalWidth, totalHeight, displayString, onPress);
+        this(xPos, yPos, totalWidth, totalHeight, checkBoxWidth, checkBoxHeight, displayString, selected, onPress, DEFAULT_NARRATION);
+    }
+
+    public SmallCheckBox(int xPos, int yPos, int totalWidth, int totalHeight, int checkBoxWidth, int checkBoxHeight,
+                         Component displayString, boolean selected, Button.OnPress onPress, Button.CreateNarration narration) {
+        super(xPos, yPos, totalWidth, totalHeight, displayString, onPress, narration);
         this.checkBoxWidth = checkBoxWidth;
         this.checkBoxHeight = checkBoxHeight;
         this.selected = selected;
@@ -49,12 +54,12 @@ public final class SmallCheckBox extends Button {
         Font font = minecraft.font;
         float uOffset = this.isHoveredOrFocused() ? 20.0F : 0.0F;
         float vOffset = this.isSelected() ? 20.0F : 0.0F;
-        blit(pPoseStack, this.x, this.y + this.height / 2 - this.checkBoxHeight / 2,
+        blit(pPoseStack, this.getX(), this.getY() + this.height / 2 - this.checkBoxHeight / 2,
             this.checkBoxWidth, this.checkBoxHeight, uOffset, vOffset, 20, 20, 64, 64);
         this.renderBg(pPoseStack, minecraft, pMouseX, pMouseY);
         int color = 0x404040;
         int labelOffset = this.checkBoxWidth / 5;
-        font.draw(pPoseStack, this.getMessage(), this.x + this.checkBoxWidth + labelOffset, this.y + ((float) this.height - 7) / 2,
+        font.draw(pPoseStack, this.getMessage(), this.getX() + this.checkBoxWidth + labelOffset, this.getY() + ((float) this.height - 7) / 2,
             color | Mth.ceil(this.alpha * 255.0F) << 24);
     }
 }
