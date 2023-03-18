@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.misc.IndexedButton;
+import com.yogpc.qp.machines.misc.SmallCheckBox;
 import com.yogpc.qp.packet.PacketHandler;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
@@ -18,9 +19,15 @@ import net.minecraft.world.level.ChunkPos;
 
 public class AdvQuarryScreen extends AbstractContainerScreen<AdvQuarryMenu> implements Button.OnPress {
     private static final ResourceLocation LOCATION = new ResourceLocation(QuarryPlus.modID, "textures/gui/adv_quarry.png");
+    private SmallCheckBox areaFrameCheckBox;
+    private SmallCheckBox chunkByChunkCheckBox;
+    private SmallCheckBox startCheckBox;
 
     public AdvQuarryScreen(AdvQuarryMenu c, Inventory inventory, Component component) {
         super(c, inventory, component);
+        this.imageWidth = c.imageWidth;
+        this.imageHeight = c.imageHeight;
+        this.inventoryLabelY = this.imageHeight - 96 + 2; // y position of text, inventory
     }
 
     @Override
@@ -69,16 +76,28 @@ public class AdvQuarryScreen extends AbstractContainerScreen<AdvQuarryMenu> impl
         this.addRenderableWidget(new IndexedButton(6, getGuiLeft() + 158, getGuiTop() + 39, 10, 8, plus, this));
         this.addRenderableWidget(new IndexedButton(7, getGuiLeft() + 128, getGuiTop() + 39, 10, 8, minus, this));
 
-        this.addRenderableWidget(new IndexedButton(8, getGuiLeft() + 108, getGuiTop() + 58, 60, 12, Component.literal("No Frame"), this));
+        this.addRenderableWidget(new IndexedButton(8, getGuiLeft() + 108, getGuiTop() + 58, 60, 12, Component.literal("Start"), this));
         this.addRenderableWidget(new IndexedButton(9, getGuiLeft() + 8, getGuiTop() + 58, 60, 12, Component.literal("Modules"), this));
+
+        areaFrameCheckBox = new SmallCheckBox(getGuiLeft() + 8, getGuiTop() + 72, 60, 10, 10, 10,
+            Component.literal("Area Frame"), getMenu().quarry.workConfig.placeAreaFrame(), this);
+        this.addRenderableWidget(areaFrameCheckBox);
+        chunkByChunkCheckBox = new SmallCheckBox(getGuiLeft() + 8, getGuiTop() + 83, 60, 10, 10, 10,
+            Component.literal("Chunk by Chunk"), getMenu().quarry.workConfig.chunkByChunk(), this);
+        this.addRenderableWidget(chunkByChunkCheckBox);
+        startCheckBox = new SmallCheckBox(getGuiLeft() + 8, getGuiTop() + 94, 60, 10, 10, 10,
+            Component.literal("Ready to Start"), getMenu().quarry.workConfig.startImmediately(), this);
+        this.addRenderableWidget(startCheckBox);
     }
 
     @Override
     public void onPress(Button b) {
+        var tile = getMenu().quarry;
         if (b instanceof IndexedButton button) {
-            var tile = getMenu().quarry;
             if (button.id() == 8) {
                 if (tile.getAction() == AdvQuarryAction.Waiting.WAITING) {
+                    tile.workConfig = tile.workConfig.startSoonConfig();
+                    startCheckBox.setSelected(tile.workConfig.startImmediately());
                     PacketHandler.sendToServer(new AdvActionMessage(tile, AdvActionMessage.Actions.QUICK_START));
                 }
             } else if (button.id() == 9) {
@@ -141,6 +160,14 @@ public class AdvQuarryScreen extends AbstractContainerScreen<AdvQuarryMenu> impl
                     PacketHandler.sendToServer(new AdvActionMessage(tile, AdvActionMessage.Actions.CHANGE_RANGE, newRange));
                 }
             }
+        }
+        if (b instanceof SmallCheckBox) {
+            boolean placeAreaFrame = areaFrameCheckBox.isSelected();
+            boolean chunkByChunk = chunkByChunkCheckBox.isSelected();
+            boolean startImmediately = startCheckBox.isSelected();
+            WorkConfig workConfig = new WorkConfig(startImmediately, placeAreaFrame, chunkByChunk);
+            tile.workConfig = workConfig;
+            PacketHandler.sendToServer(new AdvActionMessage(tile, AdvActionMessage.Actions.SYNC, workConfig));
         }
     }
 

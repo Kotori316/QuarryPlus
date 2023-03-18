@@ -82,6 +82,10 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
         return null;
     }
 
+    TargetIterator createTargetIterator(Area area, boolean chunkByChunk) {
+        return TargetIterator.of(area, chunkByChunk);
+    }
+
     abstract static class Serializer {
         abstract String key();
 
@@ -107,10 +111,18 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
         @Override
         public void tick(Level level, BlockPos pos, BlockState state, TileAdvQuarry quarry) {
             if (quarry.getEnergy() > quarry.getMaxEnergy() / 4 && quarry.canStartWork()) {
-                quarry.setAction(new MakeFrame(quarry.getArea()));
-                TraceQuarryWork.startWork(quarry, pos, quarry.getEnergyStored());
+                startQuarry(quarry);
             }
         }
+    }
+
+    static void startQuarry(TileAdvQuarry quarry) {
+        if (quarry.workConfig.placeAreaFrame()) {
+            quarry.setAction(new MakeFrame(quarry.getArea()));
+        } else {
+            quarry.setAction(new BreakBlock(quarry));
+        }
+        TraceQuarryWork.startWork(quarry, quarry.getBlockPos(), quarry.getEnergyStored());
     }
 
     private static final class WaitingSerializer extends Serializer {
@@ -219,12 +231,12 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
 
         public BreakBlock(TileAdvQuarry quarry) {
             assert quarry.getArea() != null;
-            this.iterator = TargetIterator.of(quarry.getArea());
+            this.iterator = this.createTargetIterator(quarry.getArea(), quarry.workConfig.chunkByChunk());
         }
 
         BreakBlock(TileAdvQuarry quarry, int x, int z, boolean searchEnergyConsumed) {
             assert quarry.getArea() != null;
-            this.iterator = TargetIterator.of(quarry.getArea());
+            this.iterator = this.createTargetIterator(quarry.getArea(), quarry.workConfig.chunkByChunk());
             this.iterator.setCurrent(new TargetIterator.XZPair(x, z));
             this.searchEnergyConsumed = searchEnergyConsumed;
         }
@@ -288,12 +300,12 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
 
         public CheckFluid(TileAdvQuarry quarry) {
             assert quarry.getArea() != null;
-            this.iterator = TargetIterator.of(quarry.getArea());
+            this.iterator = this.createTargetIterator(quarry.getArea(), quarry.workConfig.chunkByChunk());
         }
 
         CheckFluid(TileAdvQuarry quarry, int x, int z) {
             assert quarry.getArea() != null;
-            this.iterator = TargetIterator.of(quarry.getArea());
+            this.iterator = this.createTargetIterator(quarry.getArea(), quarry.workConfig.chunkByChunk());
             this.iterator.setCurrent(new TargetIterator.XZPair(x, z));
         }
 
@@ -393,12 +405,12 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
 
         public FillerWork(TileAdvQuarry quarry) {
             assert quarry.getArea() != null;
-            this.iterator = TargetIterator.of(quarry.getArea());
+            this.iterator = this.createTargetIterator(quarry.getArea(), quarry.workConfig.chunkByChunk());
         }
 
         FillerWork(TileAdvQuarry quarry, int x, int z) {
             assert quarry.getArea() != null;
-            this.iterator = TargetIterator.of(quarry.getArea());
+            this.iterator = this.createTargetIterator(quarry.getArea(), quarry.workConfig.chunkByChunk());
             this.iterator.setCurrent(new TargetIterator.XZPair(x, z));
         }
 

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import com.yogpc.qp.Holder;
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.CheckerLog;
 import com.yogpc.qp.machines.EnchantmentLevel;
 import com.yogpc.qp.machines.InvUtils;
@@ -63,7 +64,7 @@ public class MiningWellTile extends PowerTile implements CheckerLog, MachineStor
             var state = level.getBlockState(targetPos);
             var fluid = level.getFluidState(targetPos);
 
-            if (state.isAir()) continue;
+            if (state.isAir() || state.is(Holder.BLOCK_DUMMY)) continue;
             var pickaxe = EnchantmentLevel.HasEnchantments.super.getPickaxe();
             var fakePlayer = QuarryFakePlayer.get((ServerLevel) level);
             fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, pickaxe);
@@ -76,14 +77,15 @@ public class MiningWellTile extends PowerTile implements CheckerLog, MachineStor
                     if (state.getBlock() instanceof LiquidBlock) {
                         if (!fluid.isEmpty() && fluid.isSource())
                             storage.addFluid(fluid.getType(), FluidType.BUCKET_VOLUME);
-                        level.setBlock(targetPos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
                     } else if (state.getBlock() instanceof BucketPickup drain) {
                         var bucket = drain.pickupBlock(level, targetPos, state);
                         storage.addFluid(bucket);
                     } else {
                         // What ?
-                        level.setBlock(targetPos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
+                        QuarryPlus.LOGGER.warn("Fluid is nether LiquidBlock nor BucketPickup, but {}({})",
+                            state.getBlock(), state.getBlock().getClass());
                     }
+                    level.setBlock(targetPos, Holder.BLOCK_DUMMY.defaultBlockState(), Block.UPDATE_ALL);
                 }
                 break;
             } else if (canBreak(level, targetPos, state)) {

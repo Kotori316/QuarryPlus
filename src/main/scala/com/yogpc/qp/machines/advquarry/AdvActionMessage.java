@@ -22,18 +22,27 @@ public final class AdvActionMessage implements IMessage {
     private final ResourceKey<Level> dim;
     private final Area area;
     private final Actions action;
+    private final WorkConfig workConfig;
 
-
-    AdvActionMessage(TileAdvQuarry quarry, Actions action, Area area) {
+    AdvActionMessage(TileAdvQuarry quarry, Actions action, Area area, WorkConfig workConfig) {
         this.pos = quarry.getBlockPos();
         this.dim = PacketHandler.getDimension(quarry);
         this.area = area;
         this.action = action;
+        this.workConfig = workConfig;
         AdvQuarry.LOGGER.debug(AdvQuarry.MESSAGE, "Message is created. {} {} {} {}", this.pos, this.dim.location(), this.area, this.action);
     }
 
+    AdvActionMessage(TileAdvQuarry quarry, Actions action, Area area) {
+        this(quarry, action, area, quarry.workConfig);
+    }
+
     AdvActionMessage(TileAdvQuarry quarry, Actions action) {
-        this(quarry, action, quarry.getArea());
+        this(quarry, action, quarry.getArea(), quarry.workConfig);
+    }
+
+    AdvActionMessage(TileAdvQuarry quarry, Actions action, WorkConfig workConfig) {
+        this(quarry, action, quarry.getArea(), workConfig);
     }
 
     public AdvActionMessage(FriendlyByteBuf buf) {
@@ -41,6 +50,7 @@ public final class AdvActionMessage implements IMessage {
         this.dim = ResourceKey.create(Registries.DIMENSION, buf.readResourceLocation());
         this.area = Area.fromNBT(buf.readNbt()).orElse(null);
         this.action = buf.readEnum(Actions.class);
+        this.workConfig = new WorkConfig(buf);
     }
 
     @Override
@@ -48,10 +58,11 @@ public final class AdvActionMessage implements IMessage {
         buf.writeBlockPos(this.pos).writeResourceLocation(this.dim.location());
         buf.writeNbt(this.area.toNBT());
         buf.writeEnum(this.action);
+        this.workConfig.writePacket(buf);
     }
 
     enum Actions {
-        QUICK_START, MODULE_INV, CHANGE_RANGE
+        QUICK_START, MODULE_INV, CHANGE_RANGE, SYNC
     }
 
     public static void onReceive(AdvActionMessage message, Supplier<NetworkEvent.Context> supplier) {
@@ -62,15 +73,17 @@ public final class AdvActionMessage implements IMessage {
                 .ifPresent(quarry -> {
                     AdvQuarry.LOGGER.debug(AdvQuarry.MESSAGE, "onReceive. {}, {}", message.pos, message.action);
                     switch (message.action) {
-                        case CHANGE_RANGE ->
-                            quarry.setArea(message.area, c -> PacketHandler.getPlayer(supplier.get()).ifPresent(p ->
-                                p.displayClientMessage(c, false)));
+                        case CHANGE_RANGE -> quarry.setArea(message.area);
                         case MODULE_INV -> PacketHandler.getPlayer(supplier.get())
                             .flatMap(MapMulti.optCast(ServerPlayer.class))
                             .ifPresent(quarry::openModuleGui);
                         case QUICK_START -> {
-                            if (quarry.canStartWork()) quarry.setAction(new AdvQuarryAction.BreakBlock(quarry));
+                            quarry.workConfig = quarry.workConfig.startSoonConfig();
+                            if (quarry.canStartWork()) {
+                                AdvQuarryAction.startQuarry(quarry);
+                            }
                         }
+                        case SYNC -> quarry.workConfig = message.workConfig;
                     }
                 }));
     }

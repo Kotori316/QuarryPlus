@@ -16,6 +16,7 @@ import com.yogpc.qp.machines.QuarryMarker;
 import com.yogpc.qp.machines.module.EnergyModuleItem;
 import com.yogpc.qp.machines.module.ModuleLootFunction;
 import com.yogpc.qp.machines.module.QuarryModuleProvider;
+import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.CombinedBlockEntityTicker;
 import com.yogpc.qp.utils.MapMulti;
 import com.yogpc.qp.utils.QuarryChunkLoadUtil;
@@ -43,6 +44,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -119,29 +121,38 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
+    public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {
+        super.onPlace(state, level, pos, oldState, isMoving);
+        if (state.getBlock() != oldState.getBlock() && !level.isClientSide && level.getBlockEntity(pos) instanceof TileAdvQuarry quarry) {
+            quarry.initialSetting();
+            Direction facing = state.getValue(FACING);
+            if (!quarry.setArea(findArea(level, pos, facing.getOpposite(), quarry.getStorage()::addItem))) {
+                // Area is not set because marker area is invalid. Use default.
+                var defaultArea = createDefaultArea(pos, facing.getOpposite(), QuarryPlus.config.common.chunkDestroyerLimit.get());
+                if (!quarry.setArea(defaultArea)) {
+                    // Unreachable
+                    AdvQuarry.LOGGER.warn(AdvQuarry.BLOCK, "The default area is invalid. Area={}, Limit={}, Pos={}",
+                        defaultArea, QuarryPlus.config.common.chunkDestroyerLimit.get(), pos);
+                }
+            }
+            var preForced = QuarryChunkLoadUtil.makeChunkLoaded(level, pos, quarry.enabled);
+            quarry.setChunkPreLoaded(preForced);
+        }
+    }
+
+    @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
         super.setPlacedBy(level, pos, state, entity, stack);
         if (!level.isClientSide) {
             if (level.getBlockEntity(pos) instanceof TileAdvQuarry quarry) {
-                Direction facing = state.getValue(FACING);
                 var enchantment = EnchantmentLevel.fromItem(stack);
                 enchantment.sort(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR);
-                quarry.initialSetting(enchantment);
-                Consumer<Component> showErrorMessage = c -> {
-                    if (entity instanceof Player player) player.displayClientMessage(c, false);
-                };
-                if (!quarry.setArea(findArea(level, pos, facing.getOpposite(), quarry.getStorage()::addItem),
-                    showErrorMessage)) {
-                    // Area is not set because marker area is invalid. Use default.
-                    var defaultArea = createDefaultArea(pos, facing.getOpposite(), QuarryPlus.config.common.chunkDestroyerLimit.get());
-                    if (!quarry.setArea(defaultArea, showErrorMessage)) {
-                        // Unreachable
-                        AdvQuarry.LOGGER.warn(AdvQuarry.BLOCK, "The default area is invalid. Area={}, Limit={}, Pos={}",
-                            defaultArea, QuarryPlus.config.common.chunkDestroyerLimit.get(), pos);
-                    }
+                quarry.setEnchantments(enchantment);
+                if (entity instanceof ServerPlayer player && !(entity instanceof FakePlayer)) {
+                    quarry.workConfig = quarry.workConfig.noAutoStartConfig(); // Prevent machines from starting by being supplied enough energy to start. Wait for client setting.
+                    PacketHandler.sendToClientPlayer(new AdvQuarryInitialMessage.Ask(pos, level.dimension()), player);
                 }
-                var preForced = QuarryChunkLoadUtil.makeChunkLoaded(level, pos, quarry.enabled);
-                quarry.setChunkPreLoaded(preForced);
             }
         }
     }

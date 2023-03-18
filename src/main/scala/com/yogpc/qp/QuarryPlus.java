@@ -38,6 +38,7 @@ public class QuarryPlus {
     public static final String modID = "quarryplus";
     public static final Logger LOGGER = getLogger(Mod_Name);
     public static Config config;
+    public static ClientConfig clientConfig;
 
     public QuarryPlus() {
         registerConfig(false);
@@ -49,8 +50,11 @@ public class QuarryPlus {
     @VisibleForTesting
     static void registerConfig(boolean inJUnitTest) {
         ForgeConfigSpec.Builder common = new ForgeConfigSpec.Builder();
+        ForgeConfigSpec.Builder client = new ForgeConfigSpec.Builder();
         config = new Config(common);
+        clientConfig = new ClientConfig(client);
         ForgeConfigSpec build = common.build();
+        ForgeConfigSpec clientBuild = client.build();
         if (inJUnitTest || ForgeGameTestHooks.isGametestServer()) {
             // In game test. Use in-memory config.
             final CommentedConfig commentedConfig = CommentedConfig.inMemory();
@@ -58,8 +62,12 @@ public class QuarryPlus {
             build.acceptConfig(commentedConfig);
             config.common.enableChunkLoader.set(false);
             config.common.logAllQuarryWork.set(false);
+            final CommentedConfig clientConfig = CommentedConfig.inMemory();
+            clientBuild.correct(clientConfig);
+            clientBuild.acceptConfig(clientConfig);
         } else {
             ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, build);
+            ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, clientBuild);
         }
     }
 

@@ -1,11 +1,27 @@
+## Version 19.10.9
+
+* Improved GUI of Chunk Destroyer.
+  * Added checkbox to change setting.
+  * The default setting is loaded from client config even in server world.
+  * The checkbox doesn't have correct bounding box, but I'll fix later.
+* Added Chunk-by-Chunk mode to Chunk Destroyer
+  * In this setting, the machine works for a chunk first, then goes to next chunk.
+  * It may reduce server load.
+
+## Version 19.10.8
+
+* Fixed a bug where mining well didn't finish when it tried to remove fluid. #247
+* Fixed a bug where setting of mining well(digMinY) was reverted after it started.
+* Internal changes for Chunk Destroyer.
+
 ## Version 19.12
 
 * Port changes for 1.19.2
 
 ## Version 19.10.7
 
-* Fixed a bug where mining well didn't work under y=0
-* Make mining well enchantable
+* Fixed a bug where mining well didn't work under `y=0`. #243
+* Make mining well enchantable. #242
   * Efficiency to work faster
 
 ## Version 19.10.6

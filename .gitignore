@@ -16,6 +16,7 @@ FILES
 libs
 /Minecraft
 run-server
+run-server-client
 test_run
 logs
 Dockerfile

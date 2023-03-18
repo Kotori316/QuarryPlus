@@ -1,5 +1,9 @@
 package com.yogpc.qp.machines;
 
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -11,6 +15,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Nested;
@@ -134,8 +140,13 @@ class AreaTest {
     static Stream<Area> randomArea() {
         var random = RandomSource.create(564);
         return Stream.concat(Stream.generate(() ->
-                    new Area(new Vec3i(random.nextInt(), random.nextInt(), random.nextInt()),
-                        new Vec3i(random.nextInt(), random.nextInt(), random.nextInt()), Direction.getRandom(random)))
+                    new Area(new Vec3i(random.nextIntBetweenInclusive(-Level.MAX_LEVEL_SIZE, Level.MAX_LEVEL_SIZE),
+                        random.nextIntBetweenInclusive(-64, 256),
+                        random.nextIntBetweenInclusive(-Level.MAX_LEVEL_SIZE, Level.MAX_LEVEL_SIZE)),
+                        new Vec3i(random.nextIntBetweenInclusive(-Level.MAX_LEVEL_SIZE, Level.MAX_LEVEL_SIZE),
+                            random.nextIntBetweenInclusive(-64, 256),
+                            random.nextIntBetweenInclusive(-Level.MAX_LEVEL_SIZE, Level.MAX_LEVEL_SIZE)),
+                        Direction.getRandom(random)))
                 .limit(50),
             Stream.generate(() ->
                     new Area(new Vec3i(random.nextInt(1024) - 512, random.nextInt(1024) - 512, random.nextInt(1024) - 512),
@@ -242,8 +253,51 @@ class AreaTest {
         }
     }
 
+    @Nested
+    class GetChunkPosTest {
+        @Test
+        void test1() {
+            var chunks = area.getChunkPosList();
+            assertEquals(List.of(new ChunkPos(0, 0)), chunks);
+        }
+
+        @Test
+        void test2_1() {
+            var area = new Area(0, 0, 0, 31, 0, 0, Direction.NORTH);
+            assertEquals(List.of(new ChunkPos(0, 0), new ChunkPos(1, 0)), getChunkPosFromALL(area));
+        }
+
+        @ParameterizedTest
+        @MethodSource("areas")
+        void test(Area area) {
+            assertEquals(getChunkPosFromALL(area), area.getChunkPosList());
+        }
+
+        static List<ChunkPos> getChunkPosFromALL(Area area) {
+            Set<ChunkPos> posSet = new HashSet<>();
+            for (int x = area.minX(); x <= area.maxX(); x++) {
+                for (int z = area.minZ(); z <= area.maxZ(); z++) {
+                    posSet.add(new ChunkPos(new BlockPos(x, 0, z)));
+                }
+            }
+            return posSet.stream().sorted(Comparator.comparingInt(ChunkPos::getMinBlockX).thenComparingInt(ChunkPos::getMinBlockZ)).toList();
+        }
+
+        static Stream<Area> areas() {
+            return Stream.of(
+                new Area(0, 0, 0, 31, 0, 0, Direction.NORTH),
+                new Area(0, 0, 0, 32, 0, 0, Direction.NORTH),
+                new Area(0, 0, 0, 32, 0, 20, Direction.NORTH),
+                new Area(-16, 0, 0, 15, 0, 0, Direction.NORTH),
+                new Area(-15, 0, 0, 15, 0, 0, Direction.NORTH),
+                null
+            ).filter(Objects::nonNull);
+        }
+    }
+
     @Test
     void dummy() {
         assertTrue(randomArea().findAny().isPresent());
+        assertTrue(GetChunkPosTest.areas().findAny().isPresent());
     }
 }

@@ -80,6 +80,23 @@ minecraft {
             }
         }
 
+        client2 {
+            parent(runs.client)
+            workingDirectory project.file('run-server-client')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property('mixin.env.remapRefMap', 'true')
+            property('mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg")
+            property "mixin.debug.export", "true"
+            property 'forge.logging.console.level', 'info'
+            property 'forge.enabledGameTestNamespaces', ''
+            property 'forge.enableGameTest', 'false'
+            mods {
+                quarryplus {
+                    source sourceSets.main
+                }
+            }
+        }
+
         server {
             workingDirectory project.file('run-server')
 
@@ -89,6 +106,7 @@ minecraft {
             property('mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg")
             property "mixin.debug.export", "true"
             property 'forge.logging.console.level', 'info'
+            args("--nogui")
             forceExit false
 
             mods {
