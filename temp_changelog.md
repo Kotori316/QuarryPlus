@@ -1,3 +1,8 @@
+## Version 19.13
+
+* Port changes for 1.19.2
+  * Including changes for 19.10.9, 19.10.8
+
 ## Version 19.10.9
 
 * Improved GUI of Chunk Destroyer.
