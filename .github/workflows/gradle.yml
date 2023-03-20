@@ -18,53 +18,6 @@ on:
       - "1.19"
 
 jobs:
-  assemble:
-    runs-on: ubuntu-latest
-    if: github.event_name != 'pull_request'
-    container:
-      image: ghcr.io/kotori316/fictional-meme/fictional-meme:1.19.3
-      credentials:
-        username: kotori316
-        password: ${{ secrets.GITHUB_TOKEN }}
-    steps:
-      - uses: actions/checkout@v3
-      - name: Check Warning
-        run: chmod +x ./gradlew && ./gradlew javaToolchains --no-daemon --warning-mode all
-      - name: Compile
-        run: chmod +x ./gradlew && ./gradlew assemble --no-daemon
-        env:
-          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
-      - name: Publish
-        uses: actions/upload-artifact@v3
-        with:
-          path: build/libs/*
-          name: ${{ github.event.repository.name }}-${{ github.run_number }}
-
-  cross-check-runData:
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/kotori316/fictional-meme/fictional-meme:1.19.3
-      credentials:
-        username: kotori316
-        password: ${{ secrets.GITHUB_TOKEN }}
-    strategy:
-      fail-fast: false
-      matrix:
-        forge: [ 1.19.3, default ]
-    steps:
-      - name: Checkout QuarryPlus repo
-        uses: actions/checkout@v3
-      - name: Set versions
-        if: ${{ matrix.forge != 'default' && github.event_name != 'pull_request' }}
-        run: |
-          version=$(java -jar $(find / -maxdepth 1 -name "fictional*.jar") ${{ matrix.forge }})
-          echo "CI_FORGE=${version}" >> $GITHUB_ENV
-          grep -q ${version} gradle.properties && echo "SAME_DEFAULT=true" >> $GITHUB_ENV || echo "SAME_DEFAULT=false" >> $GITHUB_ENV
-          echo ${version}
-      - name: Test with runData
-        if: ${{ env.SAME_DEFAULT != 'true' && (matrix.forge == 'default' || github.event_name != 'pull_request') }}
-        run: chmod +x ./gradlew && ./gradlew --no-daemon runData
-
   cross-check-JUnit:
     runs-on: ubuntu-latest
     container:
@@ -75,7 +28,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        forge: [ 1.19.3, default ]
+        forge: [ 1.19.4, default ]
     steps:
       - uses: actions/checkout@v3
       - name: Get latest version
@@ -85,34 +38,23 @@ jobs:
           echo "CI_FORGE=${version}" >> $GITHUB_ENV
           grep -q ${version} gradle.properties && echo "SAME_DEFAULT=true" >> $GITHUB_ENV || echo "SAME_DEFAULT=false" >> $GITHUB_ENV
           echo ${version}
+      - name: Compile
+        if: ${{ env.SAME_DEFAULT != 'true' }}
+        run: chmod +x ./gradlew && ./gradlew assemble --no-daemon
+        env:
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
       - name: Test with JUnit
         if: ${{ env.SAME_DEFAULT != 'true' && (matrix.forge == 'default' || github.event_name != 'pull_request') }}
-        run: chmod +x ./gradlew && ./gradlew --no-daemon test
+        run: chmod +x ./gradlew && ./gradlew --no-daemon test runGameTestServer runData
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TEST_UTILITY_LOG_ALL_TEST: true
+      - name: Check report
+        run: |
+          ! test -d "game-test/crash-reports"
       - name: Upload failed test report
         if: failure()
         uses: actions/upload-artifact@v3
         with:
           path: build/reports/tests/*
           name: Test-Report-${{ github.run_number }}-${{ matrix.forge }}
-
-  check-game-test:
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/kotori316/fictional-meme/fictional-meme:1.19.3
-      credentials:
-        username: kotori316
-        password: ${{ secrets.GITHUB_TOKEN }}
-    steps:
-      - name: Checkout QuarryPlus repo
-        uses: actions/checkout@v3
-      - name: Set forge version
-        run: echo "CI_FORGE=$(cat /forge.txt)" >> $GITHUB_ENV
-      - name: GameTest
-        run: chmod +x ./gradlew && ./gradlew --no-daemon runGameTestServer
-        env:
-          TEST_UTILITY_LOG_ALL_TEST: true
-      - name: Check report
-        run: |
-          ! test -d "game-test/crash-reports"
