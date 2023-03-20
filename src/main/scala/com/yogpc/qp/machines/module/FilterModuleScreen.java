@@ -24,8 +24,8 @@ public final class FilterModuleScreen extends AbstractContainerScreen<FilterModu
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, LOCATION);
-        this.blit(pPoseStack, getGuiLeft(), getGuiTop(), 0, 0, this.imageWidth, this.containerRows * 18 + 17);
-        this.blit(pPoseStack, getGuiLeft(), getGuiTop() + this.containerRows * 18 + 17, 0, 126, this.imageWidth, 96);
+        com.yogpc.qp.machines.ScreenHelper.blit(pPoseStack, getGuiLeft(), getGuiTop(), 0, 0, this.imageWidth, this.containerRows * 18 + 17);
+        com.yogpc.qp.machines.ScreenHelper.blit(pPoseStack, getGuiLeft(), getGuiTop() + this.containerRows * 18 + 17, 0, 126, this.imageWidth, 96);
     }
 
     @Override

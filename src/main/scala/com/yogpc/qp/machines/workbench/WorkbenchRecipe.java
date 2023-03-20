@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.yogpc.qp.QuarryPlus;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -22,11 +23,11 @@ public abstract class WorkbenchRecipe implements Recipe<TileWorkbench> {
     static RecipeFinder recipeFinder = new DefaultFinder();
     public static final Comparator<WorkbenchRecipe> COMPARATOR =
         Comparator.comparingLong(WorkbenchRecipe::getRequiredEnergy)
-            .thenComparingInt(r -> Item.getId(r.getResultItem().getItem()))
+            .thenComparingInt(r -> Item.getId(r.output.getItem()))
             .thenComparing(WorkbenchRecipe::getId);
 
     private final ResourceLocation location;
-    private final ItemStack output;
+    public final ItemStack output;
     private final long energy;
     private final boolean showInJEI;
 
@@ -70,8 +71,8 @@ public abstract class WorkbenchRecipe implements Recipe<TileWorkbench> {
     }
 
     @Override
-    public final ItemStack assemble(TileWorkbench workbench) {
-        return getOutput(workbench.ingredientInventory);
+    public final ItemStack assemble(TileWorkbench workbench, RegistryAccess access) {
+        return getOutput(workbench.ingredientInventory, access);
     }
 
     @Override
@@ -80,7 +81,7 @@ public abstract class WorkbenchRecipe implements Recipe<TileWorkbench> {
     }
 
     @Override
-    public final ItemStack getResultItem() {
+    public final ItemStack getResultItem(RegistryAccess access) {
         return output;
     }
 
@@ -121,7 +122,7 @@ public abstract class WorkbenchRecipe implements Recipe<TileWorkbench> {
 
     protected abstract String getSubTypeName();
 
-    protected abstract ItemStack getOutput(List<ItemStack> inventory);
+    protected abstract ItemStack getOutput(List<ItemStack> inventory, RegistryAccess access);
 
     protected boolean hasAllRequiredItems(List<ItemStack> inventory) {
         var copied = inventory.stream().map(ItemStack::copy).toList();

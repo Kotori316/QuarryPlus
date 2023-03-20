@@ -21,9 +21,9 @@ public class BookMoverScreen extends AbstractContainerScreen<BookMoverMenu> {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, LOCATION);
-        this.blit(matrices, getGuiLeft(), getGuiTop(), 0, 0, imageWidth, imageHeight);
+        com.yogpc.qp.machines.ScreenHelper.blit(matrices, getGuiLeft(), getGuiTop(), 0, 0, imageWidth, imageHeight);
         if (getMenu().moverIsWorking()) {
-            this.blit(matrices, getGuiLeft() + 79, getGuiTop() + 35, imageWidth, 14, getMenu().getProgress() * 3 / 125, 16);
+            com.yogpc.qp.machines.ScreenHelper.blit(matrices, getGuiLeft() + 79, getGuiTop() + 35, imageWidth, 14, getMenu().getProgress() * 3 / 125, 16);
         }
     }
 

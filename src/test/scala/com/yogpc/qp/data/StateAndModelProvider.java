@@ -8,10 +8,10 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPBlock;
 import com.yogpc.qp.machines.QPItem;
 import com.yogpc.qp.machines.placer.PlacerBlock;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.core.Direction;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
@@ -103,8 +103,8 @@ final class StateAndModelProvider extends BlockStateProvider {
         ;
         itemModels().withExistingParent("item/frame", "block/block")
             .transforms()
-            .transform(ItemTransforms.TransformType.GUI).translation(0, 0, 0).scale(0.8f).end()
-            .transform(ItemTransforms.TransformType.FIXED).translation(0, 0, 0).scale(0.8f).rotation(0, 90, 0).end()
+            .transform(ItemDisplayContext.GUI).translation(0, 0, 0).scale(0.8f).end()
+            .transform(ItemDisplayContext.FIXED).translation(0, 0, 0).scale(0.8f).rotation(0, 90, 0).end()
             .end()
             .texture("texture", blockTexture("frame"))
             .element().from(4, 0, 4).to(12, 12, 12)

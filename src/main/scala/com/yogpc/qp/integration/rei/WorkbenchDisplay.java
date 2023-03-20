@@ -16,13 +16,14 @@ import net.minecraft.resources.ResourceLocation;
 final class WorkbenchDisplay extends BasicDisplay {
     final long energy;
 
+    @SuppressWarnings("UnstableApiUsage")
     WorkbenchDisplay(WorkbenchRecipe recipe) {
         this(
             recipe.inputs().stream()
                 .map(IngredientList::stackList)
                 .map(EntryIngredients::ofItemStacks)
                 .toList(),
-            List.of(EntryIngredients.of(recipe.getResultItem())),
+            List.of(EntryIngredients.of(recipe.getResultItem(registryAccess()))),
             Optional.of(recipe.getId()),
             recipe.getRequiredEnergy()
         );

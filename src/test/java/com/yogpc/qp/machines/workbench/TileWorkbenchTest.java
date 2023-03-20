@@ -7,6 +7,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusTest;
 import com.yogpc.qp.machines.PowerTile;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -160,7 +161,7 @@ class TileWorkbenchTest {
     void setRecipe2() {
         var tile = tile();
         tile.setItem(0, new ItemStack(Items.DIRT, 16));
-        tile.updateRecipeList();
+        tile.updateRecipeList(RegistryAccess.EMPTY);
         assertEquals(5L, tile.getMaxEnergy() / PowerTile.ONE_FE); // Not updated yet.
         tile.setCurrentRecipe(new ResourceLocation(QuarryPlus.modID, "test_dirt1"));
         assertEquals(200L, tile.getMaxEnergy());
@@ -170,7 +171,7 @@ class TileWorkbenchTest {
     void setRecipe5_fail() {
         var tile = tile();
         tile.setItem(0, new ItemStack(Items.DIRT, 16));
-        tile.updateRecipeList();
+        tile.updateRecipeList(RegistryAccess.EMPTY);
         assertEquals(5L, tile.getMaxEnergy() / PowerTile.ONE_FE); // Not updated yet.
         tile.setCurrentRecipe(new ResourceLocation(QuarryPlus.modID, "test_dirt2"));
         assertEquals(5L, tile.getMaxEnergy(), "The default energy was changed to 0.");
@@ -181,7 +182,7 @@ class TileWorkbenchTest {
     void setRecipe5() {
         var tile = tile();
         tile.setItem(0, new ItemStack(Items.DIRT, 24));
-        tile.updateRecipeList();
+        tile.updateRecipeList(RegistryAccess.EMPTY);
         assertEquals(5L, tile.getMaxEnergy() / PowerTile.ONE_FE); // Not updated yet.
         tile.setCurrentRecipe(new ResourceLocation(QuarryPlus.modID, "test_dirt2"));
         assertEquals(500L, tile.getMaxEnergy());
@@ -194,7 +195,7 @@ class TileWorkbenchTest {
         tile.setItem(0, new ItemStack(Items.DIRT, 24));
         tile.setItem(1, new ItemStack(Items.STONE, 64));
         tile.setItem(5, new ItemStack(Items.IRON_INGOT, 64));
-        tile.updateRecipeList();
+        tile.updateRecipeList(RegistryAccess.EMPTY);
         assertEquals(5L, tile.getMaxEnergy() / PowerTile.ONE_FE); // Not updated yet.
         tile.setCurrentRecipe(new ResourceLocation(QuarryPlus.modID, "test_100"));
         assertEquals(100 * PowerTile.ONE_FE, tile.getMaxEnergy());

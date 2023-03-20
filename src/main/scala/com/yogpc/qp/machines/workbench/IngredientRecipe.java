@@ -7,6 +7,7 @@ import java.util.stream.StreamSupport;
 import com.google.gson.JsonObject;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.utils.MapMulti;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -34,13 +35,13 @@ public class IngredientRecipe extends WorkbenchRecipe {
     }
 
     @Override
-    protected ItemStack getOutput(List<ItemStack> inventory) {
-        return super.getResultItem().copy();
+    protected ItemStack getOutput(List<ItemStack> inventory, RegistryAccess access) {
+        return super.getResultItem(access).copy();
     }
 
     @Override
     public boolean hasContent() {
-        return !getResultItem().isEmpty() && !this.input.isEmpty() && this.input.stream().noneMatch(IngredientList::invalid);
+        return !this.output.isEmpty() && !this.input.isEmpty() && this.input.stream().noneMatch(IngredientList::invalid);
     }
 }
 
@@ -66,7 +67,7 @@ class IngredientRecipeSerialize implements WorkbenchRecipeSerializer.PacketSeria
 
     @Override
     public JsonObject toJson(JsonObject jsonObject, IngredientRecipe recipe) {
-        jsonObject.add("result", WorkbenchRecipeSerializer.PacketSerialize.toJson(recipe.getResultItem()));
+        jsonObject.add("result", WorkbenchRecipeSerializer.PacketSerialize.toJson(recipe.output));
         jsonObject.addProperty("energy", (double) recipe.getRequiredEnergy() / PowerTile.ONE_FE);
         jsonObject.addProperty("showInJEI", recipe.showInJEI());
         jsonObject.add("ingredients",
@@ -88,7 +89,7 @@ class IngredientRecipeSerialize implements WorkbenchRecipeSerializer.PacketSeria
 
     @Override
     public void toPacket(FriendlyByteBuf buffer, IngredientRecipe recipe) {
-        buffer.writeItemStack(recipe.getResultItem(), false);
+        buffer.writeItemStack(recipe.output, false);
         buffer.writeLong(recipe.getRequiredEnergy()).writeBoolean(recipe.showInJEI());
 
         buffer.writeVarInt(recipe.inputs().size());

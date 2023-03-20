@@ -58,7 +58,7 @@ public final class LoadRecipeTest {
         var recipe = assertDoesNotThrow(() -> RecipeManager.fromJson(new ResourceLocation(QuarryPlus.modID, "flex_marker_workbench"), jsonObject, context));
         assertAll(
             () -> assertTrue(recipe instanceof WorkbenchRecipe),
-            () -> assertTrue(ItemStack.isSame(recipe.getResultItem(), new ItemStack(Holder.BLOCK_FLEX_MARKER)))
+            () -> assertTrue(ItemStack.isSame(recipe.getResultItem(helper.getLevel().registryAccess()), new ItemStack(Holder.BLOCK_FLEX_MARKER)))
         );
         var inputs = ((WorkbenchRecipe) recipe).inputs().stream().flatMap(i -> i.stackList().stream()).toList();
         assertAll(
@@ -104,7 +104,7 @@ public final class LoadRecipeTest {
         assertAll(
             () -> match(inputs, Items.STONE, 130),
             () -> match(inputs, Items.COAL, 256),
-            () -> match(List.of(r2.getResultItem()), Items.DIAMOND, 1),
+            () -> match(List.of(r2.getResultItem(helper.getLevel().registryAccess())), Items.DIAMOND, 1),
             () -> assertEquals(2, inputs.size()),
             () -> assertEquals(100L * PowerTile.ONE_FE, r2.getRequiredEnergy())
         );

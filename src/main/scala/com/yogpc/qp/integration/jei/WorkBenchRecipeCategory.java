@@ -72,7 +72,7 @@ class WorkBenchRecipeCategory implements IRecipeCategory<WorkbenchRecipe> {
         var input = recipe.inputs().stream()
             .map(IngredientList::stackList)
             .toList();
-        var output = Collections.singletonList(recipe.getResultItem());
+        var output = Collections.singletonList(recipe.output);
 
         int x0 = 4;
         final int o = 18;

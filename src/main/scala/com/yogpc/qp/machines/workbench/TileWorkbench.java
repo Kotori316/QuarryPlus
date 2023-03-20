@@ -17,6 +17,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -64,7 +65,7 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
         if (currentRecipe.hasContent() && currentRecipe.getRequiredEnergy() <= getEnergy()) {
             // Enough energy is collected. Create the item.
             useEnergy(currentRecipe.getRequiredEnergy(), Reason.WORKBENCH, true);
-            ItemStack created = currentRecipe.getOutput(ingredientInventory);
+            ItemStack created = currentRecipe.getOutput(ingredientInventory, level.registryAccess());
             ItemStack toSpawnInWorld = InvUtils.injectToNearTile(level, getBlockPos(), created);
             if (!toSpawnInWorld.isEmpty()) {
                 Containers.dropItemStack(level, getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), toSpawnInWorld);
@@ -218,7 +219,7 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
     // Workbench Methods.
     private void updateRecipeOutputs() {
         if (level != null && !level.isClientSide) {
-            updateRecipeList();
+            updateRecipeList(level.registryAccess());
             if (!recipesList.contains(currentRecipe)) {
                 if (currentRecipe.hasContent()) {
                     setCurrentRecipe(WorkbenchRecipe.dummyRecipe().getId());
@@ -231,11 +232,11 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
     }
 
     @VisibleForTesting
-    void updateRecipeList() {
+    void updateRecipeList(RegistryAccess access) {
         recipesList = WorkbenchRecipe.getRecipeFinder().getRecipes(ingredientInventory);
         selectionInventory.clear();
         for (int i = 0; i < recipesList.size(); i++) {
-            setItem(ingredientInventory.size() + i, recipesList.get(i).getResultItem());
+            setItem(ingredientInventory.size() + i, recipesList.get(i).getResultItem(access));
         }
     }
 

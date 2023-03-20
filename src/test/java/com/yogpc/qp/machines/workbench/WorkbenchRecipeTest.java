@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 
 import com.yogpc.qp.QuarryPlusTest;
 import com.yogpc.qp.machines.PowerTile;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -120,8 +121,8 @@ class WorkbenchRecipeTest {
         }
 
         @Override
-        protected ItemStack getOutput(List<ItemStack> inventory) {
-            return getResultItem().copy();
+        protected ItemStack getOutput(List<ItemStack> inventory, RegistryAccess access) {
+            return getResultItem(access).copy();
         }
     }
 }

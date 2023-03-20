@@ -43,7 +43,7 @@ public final class SmallCheckBox extends Button {
     }
 
     @Override
-    public void renderButton(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+    public void renderWidget(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
         Minecraft minecraft = Minecraft.getInstance();
         RenderSystem.setShaderTexture(0, TEXTURE);
         RenderSystem.enableDepthTest();
@@ -56,7 +56,7 @@ public final class SmallCheckBox extends Button {
         float vOffset = this.isSelected() ? 20.0F : 0.0F;
         blit(pPoseStack, this.getX(), this.getY() + this.height / 2 - this.checkBoxHeight / 2,
             this.checkBoxWidth, this.checkBoxHeight, uOffset, vOffset, 20, 20, 64, 64);
-        this.renderBg(pPoseStack, minecraft, pMouseX, pMouseY);
+        // this.renderBg(pPoseStack, minecraft, pMouseX, pMouseY);
         int color = 0x404040;
         int labelOffset = this.checkBoxWidth / 5;
         font.draw(pPoseStack, this.getMessage(), this.getX() + this.checkBoxWidth + labelOffset, this.getY() + ((float) this.height - 7) / 2,

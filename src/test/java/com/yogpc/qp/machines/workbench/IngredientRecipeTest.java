@@ -66,7 +66,7 @@ class IngredientRecipeTest {
         assertNotNull(recipe);
         assertEquals(5000 * PowerTile.ONE_FE, recipe.getRequiredEnergy());
         assertTrue(recipe.showInJEI());
-        assertEquals(Items.EMERALD_BLOCK, recipe.getResultItem().getItem());
+        assertEquals(Items.EMERALD_BLOCK, recipe.output.getItem());
     }
 
     @GameTestGenerator
@@ -84,7 +84,7 @@ class IngredientRecipeTest {
             new IngredientList(new IngredientWithCount(Ingredient.of(Holder.BLOCK_MARKER), 3))
         ));
 
-        assertEquals(Holder.BLOCK_ADV_PUMP.blockItem, recipe.getResultItem().getItem(), "Recipe is created correctly.");
+        assertEquals(Holder.BLOCK_ADV_PUMP.blockItem, recipe.output.getItem(), "Recipe is created correctly.");
         assertTrue(recipe.hasAllRequiredItems(inventory), "Has All Items: " + inventory);
     }
 
@@ -119,7 +119,7 @@ class IngredientRecipeTest {
             new IngredientList(new IngredientWithCount(Ingredient.of(Holder.BLOCK_MINING_WELL), 2)),
             new IngredientList(new IngredientWithCount(Ingredient.of(Holder.BLOCK_MARKER), 3))
         ));
-        assertEquals(Holder.BLOCK_ADV_PUMP.blockItem, recipe.getResultItem().getItem(), "Recipe is created correctly.");
+        assertEquals(Holder.BLOCK_ADV_PUMP.blockItem, recipe.output.getItem(), "Recipe is created correctly.");
         assertFalse(recipe.hasAllRequiredItems(inventory), "Doesn't have All Items: " + inventory);
     }
 

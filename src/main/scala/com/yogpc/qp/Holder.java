@@ -168,7 +168,7 @@ public class Holder {
     public static void createTab(CreativeModeTab.Builder builder) {
         builder.icon(() -> new ItemStack(Holder.BLOCK_QUARRY));
         builder.title(Component.translatable("itemGroup.%s".formatted(QuarryPlus.modID)));
-        builder.displayItems((flag, output, permission) -> TAB_ITEM.stream().map(Supplier::get).forEach(output::acceptAll));
+        builder.displayItems((parameters, output) -> TAB_ITEM.stream().map(Supplier::get).forEach(output::acceptAll));
     }
 
     public static final QuarryBlock BLOCK_QUARRY = registerBlock(new QuarryBlock());

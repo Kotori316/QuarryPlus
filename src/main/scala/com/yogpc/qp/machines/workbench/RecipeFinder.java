@@ -34,7 +34,7 @@ public interface RecipeFinder {
     default List<WorkbenchRecipe> findRecipes(ItemStack output) {
         if (output.isEmpty()) return Collections.emptyList();
         return recipes().values().stream()
-            .filter(r -> ItemStack.isSameItemSameTags(r.getResultItem(), output))
+            .filter(r -> ItemStack.isSameItemSameTags(r.output, output))
             .toList();
     }
 

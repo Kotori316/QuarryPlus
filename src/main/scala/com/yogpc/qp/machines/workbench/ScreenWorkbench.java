@@ -38,7 +38,7 @@ public class ScreenWorkbench extends AbstractContainerScreen<ContainerWorkbench>
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, gui);
-        this.blit(matrices, getGuiLeft(), getGuiTop(), 0, 0, imageWidth, imageHeight);
+        com.yogpc.qp.machines.ScreenHelper.blit(matrices, getGuiLeft(), getGuiTop(), 0, 0, imageWidth, imageHeight);
         if (getMenu().isWorking.get() == 1) {
             blit(matrices, getGuiLeft() + 8, getGuiTop() + 78, 0, this.imageHeight, getMenu().progress.get(), 4);
             int cur_recipe = 27 + getMenu().recipeIndex.get();
