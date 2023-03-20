@@ -55,10 +55,10 @@ public class AdvQuarryScreen extends AbstractContainerScreen<AdvQuarryMenu> impl
             double south = range.maxZ() - chunkPos.getMaxBlockZ() - 1;
             double east = range.maxX() - chunkPos.getMaxBlockX() - 1;
             double west = chunkPos.getMinBlockX() - range.minX() - 1;
-            this.font.draw(matrices, String.valueOf(north / 16), 79, 17, 0x404040);
-            this.font.draw(matrices, String.valueOf(south / 16), 79, 63, 0x404040);
-            this.font.draw(matrices, String.valueOf(west / 16), 19, 40, 0x404040);
-            this.font.draw(matrices, String.valueOf(east / 16), 139, 40, 0x404040);
+            this.font.draw(matrices, String.valueOf(north / 16), 77, 18, 0x404040);
+            this.font.draw(matrices, String.valueOf(south / 16), 77, 62, 0x404040);
+            this.font.draw(matrices, String.valueOf(west / 16), 24,  40, 0x404040);
+            this.font.draw(matrices, String.valueOf(east / 16), 131, 40, 0x404040);
         }
     }
 
@@ -67,17 +67,17 @@ public class AdvQuarryScreen extends AbstractContainerScreen<AdvQuarryMenu> impl
         super.init();
         var plus = Component.literal("+");
         var minus = Component.literal("-");
-        this.addRenderableWidget(new IndexedButton(0, getGuiLeft() + 98, getGuiTop() + 16, 10, 8, plus, this));
-        this.addRenderableWidget(new IndexedButton(1, getGuiLeft() + 68, getGuiTop() + 16, 10, 8, minus, this));
-        this.addRenderableWidget(new IndexedButton(2, getGuiLeft() + 98, getGuiTop() + 62, 10, 8, plus, this));
-        this.addRenderableWidget(new IndexedButton(3, getGuiLeft() + 68, getGuiTop() + 62, 10, 8, minus, this));
-        this.addRenderableWidget(new IndexedButton(4, getGuiLeft() + 38, getGuiTop() + 39, 10, 8, plus, this));
-        this.addRenderableWidget(new IndexedButton(5, getGuiLeft() + 8, getGuiTop() + 39, 10, 8, minus, this));
-        this.addRenderableWidget(new IndexedButton(6, getGuiLeft() + 158, getGuiTop() + 39, 10, 8, plus, this));
-        this.addRenderableWidget(new IndexedButton(7, getGuiLeft() + 128, getGuiTop() + 39, 10, 8, minus, this));
+        this.addRenderableWidget(new IndexedButton(0, getGuiLeft() +  99, getGuiTop() + 17, 12, 8, plus, this));
+        this.addRenderableWidget(new IndexedButton(1, getGuiLeft() +  64, getGuiTop() + 17, 12, 8, minus, this));
+        this.addRenderableWidget(new IndexedButton(2, getGuiLeft() +  99, getGuiTop() + 61, 12, 8, plus, this));
+        this.addRenderableWidget(new IndexedButton(3, getGuiLeft() +  64, getGuiTop() + 61, 12, 8, minus, this));
+        this.addRenderableWidget(new IndexedButton(4, getGuiLeft() +  46, getGuiTop() + 39, 12, 8, plus, this));
+        this.addRenderableWidget(new IndexedButton(5, getGuiLeft() +  11, getGuiTop() + 39, 12, 8, minus, this));
+        this.addRenderableWidget(new IndexedButton(6, getGuiLeft() + 153, getGuiTop() + 39, 12, 8, plus, this));
+        this.addRenderableWidget(new IndexedButton(7, getGuiLeft() + 118, getGuiTop() + 39, 12, 8, minus, this));
 
-        this.addRenderableWidget(new IndexedButton(8, getGuiLeft() + 108, getGuiTop() + 58, 60, 12, Component.literal("Start"), this));
-        this.addRenderableWidget(new IndexedButton(9, getGuiLeft() + 8, getGuiTop() + 58, 60, 12, Component.literal("Modules"), this));
+        this.addRenderableWidget(new IndexedButton(8, getGuiLeft() + 118, getGuiTop() + 58, 50, 12, Component.literal("Start"), this));
+        this.addRenderableWidget(new IndexedButton(9, getGuiLeft() + 8, getGuiTop() + 58, 50, 12, Component.literal("Modules"), this));
 
         areaFrameCheckBox = new SmallCheckBox(getGuiLeft() + 8, getGuiTop() + 72, 60, 10, 10, 10,
             Component.literal("Area Frame"), getMenu().quarry.workConfig.placeAreaFrame(), this);
