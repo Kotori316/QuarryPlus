@@ -56,7 +56,12 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
                 return;
             }
             if (!quarry.getTargetWorld().getFluidState(targetPos).isEmpty()) {
-                quarry.setState(REMOVE_FLUID, state);
+                if (quarry.quarryConfig.removeFluid()) {
+                    quarry.setState(REMOVE_FLUID, state);
+                } else {
+                    // Ignore this pos
+                    quarry.target.get(true);
+                }
             } else if (quarry.breakBlock(targetPos).isSuccess()) {
                 quarry.target.get(true); // Set next pos.
             }
@@ -95,7 +100,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
             if (blockTarget == null) {
                 var fluidPoses = quarry.target.allPoses()
                     .filter(p -> !quarry.getTargetWorld().getFluidState(p).isEmpty()).map(BlockPos::immutable).toList();
-                if (fluidPoses.isEmpty()) {
+                if (!quarry.quarryConfig.removeFluid() || fluidPoses.isEmpty()) {
                     // Change Y
                     quarry.target = Target.nextY(quarry.target, quarry.getArea(), quarry.digMinY);
                     QuarryPlus.LOGGER.debug(MARKER, "Quarry({}) Target changed to {} in {}.", quarryPos, quarry.target, name());
@@ -137,7 +142,12 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
                 QuarryPlus.LOGGER.debug(MARKER, "Quarry({}) Target changed to {} in {}.", quarryPos, quarry.target, name());
             }
             if (!quarry.getTargetWorld().getFluidState(Objects.requireNonNull(quarry.target.get(false))).isEmpty()) {
-                quarry.setState(REMOVE_FLUID, state);
+                if (quarry.quarryConfig.removeFluid()) {
+                    quarry.setState(REMOVE_FLUID, state);
+                } else {
+                    // Ignore this pos
+                    quarry.target.get(true);
+                }
             } else if (quarry.breakBlock(Objects.requireNonNull(quarry.target.get(false))).isSuccess()) {
                 quarry.target.get(true); // Set next pos.
                 quarry.setState(MOVE_HEAD, state);
@@ -233,7 +243,7 @@ class StateConditions {
         return pos -> {
             var state = world.getBlockState(pos);
             return state.is(QuarryPlus.ModObjects.BLOCK_FRAME) // Frame
-                || !quarry.canBreak(world, pos, state) // Unbreakable
+                   || !quarry.canBreak(world, pos, state) // Unbreakable
                 ;
         };
     }
@@ -244,7 +254,7 @@ class StateConditions {
         return pos -> {
             var state = world.getBlockState(pos);
             return state.isAir() // Air
-                || !quarry.canBreak(world, pos, state) // Unbreakable
+                   || !quarry.canBreak(world, pos, state) // Unbreakable
                 ;
         };
     }
