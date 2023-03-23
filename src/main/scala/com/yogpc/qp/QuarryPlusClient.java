@@ -7,6 +7,7 @@ import com.yogpc.qp.machines.marker.ScreenFlexMarker;
 import com.yogpc.qp.machines.misc.YSetterScreen;
 import com.yogpc.qp.machines.placer.PlacerScreen;
 import com.yogpc.qp.machines.placer.RemotePlacerScreen;
+import com.yogpc.qp.machines.quarry.QuarryScreen;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.render.Render16Marker;
 import com.yogpc.qp.render.RenderAdvQuarry;
@@ -35,6 +36,7 @@ public class QuarryPlusClient implements ClientModInitializer {
         BlockEntityRendererRegistry.register(QuarryPlus.ModObjects.MARKER_16_TYPE, Render16Marker::new);
         BlockEntityRendererRegistry.register(QuarryPlus.ModObjects.ADV_QUARRY_TYPE, RenderAdvQuarry::new);
 
+        MenuScreens.register(QuarryPlus.ModObjects.QUARRY_MENU_TYPE, QuarryScreen::new);
         MenuScreens.register(QuarryPlus.ModObjects.Y_SETTER_HANDLER_TYPE, YSetterScreen::new);
         MenuScreens.register(QuarryPlus.ModObjects.FLEX_MARKER_HANDLER_TYPE, ScreenFlexMarker::new);
         MenuScreens.register(QuarryPlus.ModObjects.MARKER_16_HANDLER_TYPE, Screen16Marker::new);

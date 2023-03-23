@@ -36,6 +36,7 @@ import com.yogpc.qp.machines.placer.RemotePlacerTile;
 import com.yogpc.qp.machines.quarry.BlockFrame;
 import com.yogpc.qp.machines.quarry.BlockQuarry;
 import com.yogpc.qp.machines.quarry.QuarryLootFunction;
+import com.yogpc.qp.machines.quarry.QuarryMenu;
 import com.yogpc.qp.machines.quarry.TileQuarry;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.recipe.QuarryBedrockModuleRecipe;
@@ -92,6 +93,7 @@ public class QuarryPlus implements ModInitializer {
 
         Registry.register(Registry.RECIPE_SERIALIZER, QuarryBedrockModuleRecipe.NAME, QuarryBedrockModuleRecipe.SERIALIZER);
 
+        Registry.register(Registry.MENU, QuarryMenu.GUI_ID, ModObjects.QUARRY_MENU_TYPE);
         Registry.register(Registry.MENU, YSetterContainer.GUI_ID, ModObjects.Y_SETTER_HANDLER_TYPE);
         Registry.register(Registry.MENU, PlacerContainer.PLACER_GUI_ID, ModObjects.PLACER_MENU_TYPE);
         Registry.register(Registry.MENU, PlacerContainer.REMOTE_PLACER_GUI_ID, ModObjects.REMOTE_PLACER_MENU_TYPE);
@@ -128,6 +130,8 @@ public class QuarryPlus implements ModInitializer {
         );
         public static final BlockQuarry BLOCK_QUARRY = new BlockQuarry();
         public static final BlockEntityType<TileQuarry> QUARRY_TYPE = FabricBlockEntityTypeBuilder.create(TileQuarry::new, BLOCK_QUARRY).build(DSL.emptyPartType());
+        public static final ExtendedScreenHandlerType<QuarryMenu> QUARRY_MENU_TYPE = new ExtendedScreenHandlerType<>(
+            (syncId, inventory, buf) -> new QuarryMenu(syncId, inventory.player, buf.readBlockPos()));
 
         public static final BlockFrame BLOCK_FRAME = new BlockFrame();
         public static final ItemChecker ITEM_CHECKER = new ItemChecker();
