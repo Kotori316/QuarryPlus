@@ -19,18 +19,24 @@ import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QPBlock;
 import com.yogpc.qp.packet.ClientSync;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
@@ -46,7 +52,7 @@ import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.Nullable;
 
-public class TileQuarry extends PowerTile implements ClientSync, CheckerLog, MachineStorage.HasStorage, EnchantmentLevel.HasEnchantments {
+public class TileQuarry extends PowerTile implements ClientSync, CheckerLog, MachineStorage.HasStorage, EnchantmentLevel.HasEnchantments, ExtendedScreenHandlerFactory {
     private static final Marker MARKER = MarkerManager.getMarker("TileQuarry");
     private static final EnchantmentRestriction RESTRICTION = EnchantmentRestriction.builder()
         .add(Enchantments.BLOCK_EFFICIENCY)
@@ -66,6 +72,7 @@ public class TileQuarry extends PowerTile implements ClientSync, CheckerLog, Mac
     private boolean bedrockRemove = false;
     public int digMinY = 0;
     private final ItemConverter itemConverter = ItemConverter.defaultConverter();
+    QuarryConfig quarryConfig = new QuarryConfig(true);
 
     public TileQuarry(BlockPos pos, BlockState state) {
         super(QuarryPlus.ModObjects.QUARRY_TYPE, pos, state, (long) (PowerTile.ONE_FE * QuarryPlus.config.quarry.quarryEnergyCapacity));
@@ -91,6 +98,7 @@ public class TileQuarry extends PowerTile implements ClientSync, CheckerLog, Mac
         nbt.put("storage", storage.toNbt());
         nbt.putBoolean("bedrockRemove", bedrockRemove);
         nbt.putInt("digMinY", digMinY);
+        nbt.put("quarryConfig", quarryConfig.toTag());
         super.saveAdditional(nbt);
     }
 
@@ -115,6 +123,7 @@ public class TileQuarry extends PowerTile implements ClientSync, CheckerLog, Mac
         storage.readNbt(nbt.getCompound("storage"));
         bedrockRemove = nbt.getBoolean("bedrockRemove");
         digMinY = nbt.getInt("digMinY");
+        quarryConfig = QuarryConfig.fromTag(nbt.getCompound("quarryConfig"));
     }
 
     @Override
@@ -383,6 +392,7 @@ public class TileQuarry extends PowerTile implements ClientSync, CheckerLog, Mac
             "%sTarget:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, target),
             "%sState:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, state),
             "%sRemoveBedrock:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, bedrockRemove),
+            "%sConfig:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, quarryConfig),
             "%sEnchantment:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, enchantments),
             "%sDigMinY:%s %d".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, digMinY),
             "%sHead:%s (%f, %f, %f)".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, headX, headY, headZ),
@@ -403,5 +413,20 @@ public class TileQuarry extends PowerTile implements ClientSync, CheckerLog, Mac
     @Override
     public EnergyConfigAccessor getAccessor() {
         return QuarryEnergyConfigAccessor.INSTANCE;
+    }
+
+    @Override
+    public void writeScreenOpeningData(ServerPlayer player, FriendlyByteBuf buf) {
+        buf.writeBlockPos(getBlockPos());
+    }
+
+    @Override
+    public Component getDisplayName() {
+        return getBlockState().getBlock().getName();
+    }
+
+    @Override
+    public AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
+        return new QuarryMenu(i, player, getBlockPos());
     }
 }
