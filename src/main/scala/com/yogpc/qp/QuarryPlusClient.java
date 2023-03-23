@@ -16,9 +16,9 @@ import com.yogpc.qp.render.RenderQuarry;
 import com.yogpc.qp.render.Sprites;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
-import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 
 public class QuarryPlusClient implements ClientModInitializer {
     @Override
@@ -29,11 +29,11 @@ public class QuarryPlusClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(QuarryPlus.ModObjects.BLOCK_DUMMY, RenderType.translucent());
         Sprites.register();
 
-        BlockEntityRendererRegistry.register(QuarryPlus.ModObjects.MARKER_TYPE, RenderMarker::new);
-        BlockEntityRendererRegistry.register(QuarryPlus.ModObjects.QUARRY_TYPE, RenderQuarry::new);
-        BlockEntityRendererRegistry.register(QuarryPlus.ModObjects.FLEX_MARKER_TYPE, RenderFlexMarker::new);
-        BlockEntityRendererRegistry.register(QuarryPlus.ModObjects.MARKER_16_TYPE, Render16Marker::new);
-        BlockEntityRendererRegistry.register(QuarryPlus.ModObjects.ADV_QUARRY_TYPE, RenderAdvQuarry::new);
+        BlockEntityRenderers.register(QuarryPlus.ModObjects.MARKER_TYPE, RenderMarker::new);
+        BlockEntityRenderers.register(QuarryPlus.ModObjects.QUARRY_TYPE, RenderQuarry::new);
+        BlockEntityRenderers.register(QuarryPlus.ModObjects.FLEX_MARKER_TYPE, RenderFlexMarker::new);
+        BlockEntityRenderers.register(QuarryPlus.ModObjects.MARKER_16_TYPE, Render16Marker::new);
+        BlockEntityRenderers.register(QuarryPlus.ModObjects.ADV_QUARRY_TYPE, RenderAdvQuarry::new);
 
         MenuScreens.register(QuarryPlus.ModObjects.Y_SETTER_HANDLER_TYPE, YSetterScreen::new);
         MenuScreens.register(QuarryPlus.ModObjects.FLEX_MARKER_HANDLER_TYPE, ScreenFlexMarker::new);
