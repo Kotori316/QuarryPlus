@@ -110,6 +110,7 @@ repositories {
         content {
             it.includeVersion("mcp.mobius.waila", "wthit-api", "fabric-${project.wthit_version}")
             it.includeVersion("mcp.mobius.waila", "wthit", "fabric-${project.wthit_version}")
+            it.includeModule("lol.bai", "badpackets")
         }
     }
     maven {
