@@ -6,6 +6,7 @@ import com.yogpc.qp.machines.advquarry.AdvActionMessage;
 import com.yogpc.qp.machines.filler.FillerButtonMessage;
 import com.yogpc.qp.machines.misc.LevelMessage;
 import com.yogpc.qp.machines.placer.RemotePlacerMessage;
+import com.yogpc.qp.machines.quarry.QuarryConfigSyncMessage;
 import javax.annotation.Nonnull;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -22,6 +23,7 @@ public class PacketHandler {
     public static class Server {
         public static void initServer() {
             var list = List.of(
+                new ServerPacketInit(QuarryConfigSyncMessage.NAME, QuarryConfigSyncMessage.handler),
                 new ServerPacketInit(LevelMessage.NAME, LevelMessage.handler),
                 new ServerPacketInit(AdvActionMessage.NAME, AdvActionMessage.handler),
                 new ServerPacketInit(FlexMarkerMessage.NAME, FlexMarkerMessage.handler),
