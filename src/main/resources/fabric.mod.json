@@ -13,7 +13,7 @@
     "issues": "https://github.com/Kotori316/QuarryPlus/issues"
   },
   "license": "All rights reserved",
-  "icon": "assets/quarryplus/textures/blocks/mod_quarryplus.png",
+  "icon": "assets/quarryplus/textures/block/mod_quarryplus.png",
   "environment": "*",
   "entrypoints": {
     "main": [
@@ -37,19 +37,11 @@
   ],
   "depends": {
     "fabricloader": ">=0.14.0",
-    "fabric": ">=0.52.4+1.19",
+    "fabric": ">=0.76.0+1.19.4",
     "minecraft": "1.19.x",
     "cloth-config2": ">=5.0.0"
   },
   "conflicts": {
     "team_reborn_energy": "<2.0.0-beta0"
-  },
-  "custom": {
-    "waila:plugins": [
-      {
-        "id": "quarryplus:wthit_plugin",
-        "initializer": "com.yogpc.qp.integration.wthit.QuarryWthitPlugin"
-      }
-    ]
   }
 }

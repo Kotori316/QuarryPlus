@@ -1,0 +1,5 @@
+{
+  "quarryplus:wthit_plugin": {
+    "initializer": "com.yogpc.qp.integration.wthit.QuarryWthitPlugin"
+  }
+}

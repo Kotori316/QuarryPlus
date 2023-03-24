@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Direction8;
+import com.yogpc.qp.machines.QPBlock;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.core.BlockPos;
@@ -29,7 +29,7 @@ public class BlockDummy extends AbstractGlassBlock {
             .suffocates((state, world, pos) -> false)
             .blockVision((state, world, pos) -> false)
         );
-        blockItem = new BlockItem(this, new FabricItemSettings());
+        blockItem = new QPBlock.QPBlockItem(this, new FabricItemSettings());
     }
 
     private boolean breaking = false;

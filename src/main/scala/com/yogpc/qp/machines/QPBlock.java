@@ -83,7 +83,7 @@ public class QPBlock extends Block {
     public static class QPBlockItem extends BlockItem implements InCreativeTabs {
         private ResourceLocation internalName;
 
-        public QPBlockItem(QPBlock block, Item.Properties properties) {
+        public QPBlockItem(Block block, Item.Properties properties) {
             super(block, properties);
         }
 

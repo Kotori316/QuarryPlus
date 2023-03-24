@@ -129,7 +129,7 @@ public class QuarryPlus implements ModInitializer {
         if (item instanceof InCreativeTabs t) {
             ModObjects.ALL_ITEMS.add(t);
         } else {
-            LOGGER.warn("{} is not an instance of InCreativeTabs.", item.getClass().getName());
+            LOGGER.warn("{}({}) is not an instance of InCreativeTabs.", location, item.getClass().getName());
         }
         if (entityType != null && block != null) {
             if (entityType.isValid(block.defaultBlockState())) {
