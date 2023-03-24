@@ -250,7 +250,7 @@ java {
     }
 }
 
-static def BRANCH() { return "1.19-fabric" }
+static def BRANCH() { return "1.19.2-fabric" }
 
 jar {
     from "LICENSE"
