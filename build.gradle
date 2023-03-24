@@ -22,7 +22,14 @@ plugins {
 }
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
-version = project.modVersion
+String createVersion() {
+    String mcVersion = project.minecraftVersion.replace(".", "")
+    String major = project.modVersionMajor
+    String minor = System.getenv("GITHUB_RUN_NUMBER") ?: project.modVersionMinor ?: "0-SNAPSHOT"
+    return "$mcVersion.$major.$minor"
+}
+
+version = createVersion()
 group = 'com.kotori316' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'AdditionalEnchantedMiner-' + project.minecraftVersion
 
@@ -40,7 +47,8 @@ private static boolean isInCI() {
 
 println("Java: ${System.getProperty('java.version')} " +
         "JVM: ${System.getProperty('java.vm.version')}(${System.getProperty('java.vendor')}) " +
-        "Arch: ${System.getProperty('os.arch')}")
+        "Arch: ${System.getProperty('os.arch')} " +
+        "Project version: ${project.version}")
 minecraft {
     mappings channel: 'parchment', version: ((project.parchmentMapping + "-" + project.minecraftVersion) as String)
 //    mappings channel: 'official', version: (project.minecraftVersion as String)
