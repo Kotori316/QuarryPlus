@@ -3,6 +3,10 @@ package com.yogpc.qp.machines;
 import java.util.Arrays;
 
 import com.yogpc.qp.QuarryPlusTest;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+import net.fabricmc.fabric.api.transfer.v1.storage.base.ExtractionOnlyStorage;
+import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
@@ -15,6 +19,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -163,6 +168,70 @@ class MachineStorageTest extends QuarryPlusTest {
             storage.addFluid(Fluids.LAVA, -MachineStorage.ONE_BUCKET * 4);
 
             assertNull(storage.fluidMap.get(new FluidKey(Fluids.LAVA, null)));
+        }
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
+    @Nested
+    class FabricFluidTest {
+        @Test
+        void extractWater() {
+            var storage = new MachineStorage();
+            storage.addFluid(Fluids.WATER, MachineStorage.ONE_BUCKET);
+            ExtractionOnlyStorage<FluidVariant> fStorage = storage.fabricFluidStorageSnapshot;
+            try (Transaction transaction = Transaction.openOuter()) {
+                var extracted = fStorage.extract(FluidVariant.of(Fluids.WATER), Long.MAX_VALUE, transaction);
+                assertEquals(FluidConstants.BUCKET, extracted);
+                transaction.commit();
+            }
+            var map = storage.fluidMap;
+            assertFalse(map.containsKey(new FluidKey(Fluids.WATER, null)));
+        }
+
+        @Test
+        void extractWaterJust1000() {
+            var storage = new MachineStorage();
+            storage.addFluid(Fluids.WATER, MachineStorage.ONE_BUCKET);
+            ExtractionOnlyStorage<FluidVariant> fStorage = storage.fabricFluidStorageSnapshot;
+            try (Transaction transaction = Transaction.openOuter()) {
+                var extracted = fStorage.extract(FluidVariant.of(Fluids.WATER), 1000L, transaction);
+                assertEquals(1000L, extracted);
+                transaction.commit();
+            }
+            var map = storage.fluidMap;
+            assertTrue(map.containsKey(new FluidKey(Fluids.WATER, null)));
+        }
+
+        @Test
+        void extractLava() {
+            var storage = new MachineStorage();
+            storage.addFluid(Fluids.LAVA, MachineStorage.ONE_BUCKET);
+            ExtractionOnlyStorage<FluidVariant> fStorage = storage.fabricFluidStorageSnapshot;
+            try (Transaction transaction = Transaction.openOuter()) {
+                var extracted = fStorage.extract(FluidVariant.of(Fluids.LAVA), Long.MAX_VALUE, transaction);
+                assertEquals(FluidConstants.BUCKET, extracted);
+            }
+        }
+
+        @Test
+        void extractLavaFromWaterTank() {
+            var storage = new MachineStorage();
+            storage.addFluid(Fluids.WATER, MachineStorage.ONE_BUCKET);
+            ExtractionOnlyStorage<FluidVariant> fStorage = storage.fabricFluidStorageSnapshot;
+            try (Transaction transaction = Transaction.openOuter()) {
+                var extracted = fStorage.extract(FluidVariant.of(Fluids.LAVA), Long.MAX_VALUE, transaction);
+                assertEquals(0, extracted, "Amount of lava must be 0.");
+            }
+        }
+
+        @Test
+        void getAmount() {
+            var storage = new MachineStorage();
+            storage.addFluid(Fluids.WATER, MachineStorage.ONE_BUCKET);
+            ExtractionOnlyStorage<FluidVariant> fStorage = storage.fabricFluidStorageSnapshot;
+
+            long waterAmount = fStorage.iterator().next().getAmount();
+            assertEquals(FluidConstants.BUCKET, waterAmount);
         }
     }
 

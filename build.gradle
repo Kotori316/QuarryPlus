@@ -129,14 +129,12 @@ repositories {
             .filter { repo -> repo instanceof MavenArtifactRepository && !repo.getUrl().getScheme().contains("file") }
             .forEach { repo ->
                 repo.content {
-                    //noinspection SpellCheckingInspection
                     excludeVersionByRegex("net_fabricmc_yarn.*", ".*", ".*")
                     excludeVersionByRegex(".*", ".*", ".*mapped.*")
                 }
             }
 }
 
-//noinspection SpellCheckingInspection
 dependencies {
     //to change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
@@ -145,11 +143,8 @@ dependencies {
 
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-    //noinspection SpellCheckingInspection
     modRuntimeOnly("net.fabricmc:fabric-language-scala:${project.fabric_scala_version}") {
-        //noinspection SpellCheckingInspection
         exclude(group: "net.fabricmc.fabric-api")
-        //noinspection SpellCheckingInspection
         exclude(group: "net.fabricmc")
     }
 
@@ -157,9 +152,7 @@ dependencies {
     implementation "com.google.code.findbugs:jsr305:3.0.1"
 
     modCompileOnly("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}") {
-        //noinspection SpellCheckingInspection
         exclude(group: "net.fabricmc.fabric-api")
-        //noinspection SpellCheckingInspection
         exclude(group: "net.fabricmc")
     }
     modImplementation("teamreborn:energy:${project.tech_energy_version}")
@@ -187,9 +180,7 @@ dependencies {
     }
 
     modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_version}") {
-        //noinspection SpellCheckingInspection
         exclude(group: "net.fabricmc.fabric-api")
-        //noinspection SpellCheckingInspection
         exclude(group: "net.fabricmc")
     }
     modApi("com.terraformersmc:modmenu:${project.mod_menu_version}") {
@@ -200,10 +191,11 @@ dependencies {
     // if (!System.getenv("RUN_GAME_TEST")) modRuntimeOnly("alexiil.mc.mod:simplepipes-all:${project.simple_pipe_version}")
     // modRuntimeOnly("curse.maven:carpet-349239:3725895")
     // modRuntimeOnly("curse.maven:mining-dimensions-fabric-442921:3566587")
-    //noinspection SpellCheckingInspection
+    // noinspection SpellCheckingInspection
     // modRuntimeOnly("net.kyrptonaught:customportalapi:0.0.1-beta47-1.18")
 
     // Test Dependencies.
+    testImplementation(group: 'net.fabricmc', name: 'fabric-loader-junit', version: project.loader_version)
     testImplementation(group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.6.2')
     testImplementation(group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: '5.6.2')
     testRuntimeOnly(group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.6.2')
@@ -250,7 +242,7 @@ java {
     }
 }
 
-static def BRANCH() { return "1.19-fabric" }
+static def BRANCH() { return "1.19.2-fabric" }
 
 jar {
     from "LICENSE"

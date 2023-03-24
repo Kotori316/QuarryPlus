@@ -2,6 +2,7 @@ package com.yogpc.qp.machines.quarry;
 
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.yogpc.qp.QuarryPlusTest;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -44,7 +45,7 @@ class EnchantmentRestrictionTest extends QuarryPlusTest {
     }
 
     @ParameterizedTest
-    @MethodSource("com.yogpc.qp.machines.EnchantmentLevelTest#enchantments")
+    @MethodSource
     void limitOneEnchantment(Enchantment enchantment) {
         EnchantmentRestriction restriction = EnchantmentRestriction.builder().add(enchantment, 2).build();
         assertTrue(restriction.test(enchantment, 1));
@@ -56,6 +57,16 @@ class EnchantmentRestrictionTest extends QuarryPlusTest {
         assertEquals(map2, restriction.filterMap(map2));
         var map4 = Map.of(enchantment, 4);
         assertEquals(Map.of(), restriction.filterMap(map4));
+    }
+
+    static Stream<Enchantment> limitOneEnchantment() {
+        return Stream.of(
+            Enchantments.BLOCK_EFFICIENCY,
+            Enchantments.SHARPNESS,
+            Enchantments.UNBREAKING,
+            Enchantments.BLOCK_FORTUNE,
+            Enchantments.SILK_TOUCH
+        );
     }
 
     @Test
