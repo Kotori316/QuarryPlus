@@ -10,7 +10,7 @@ public class QuarryPlusTest {
     private static final AtomicBoolean INITIALIZED = new AtomicBoolean(false);
 
     @BeforeAll
-    public static void init() {
+    public static synchronized void init() {
         if (!INITIALIZED.getAndSet(true)) {
             SharedConstants.tryDetectVersion();
             Bootstrap.bootStrap();

@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.yogpc.qp.integration.QuarryFluidTransfer;
 import com.yogpc.qp.integration.QuarryItemTransfer;
 import com.yogpc.qp.utils.MapMulti;
@@ -35,6 +34,7 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.VisibleForTesting;
 
 public class MachineStorage {
     protected LinkedHashMap<ItemKey, Long> itemMap = new LinkedHashMap<>();
@@ -229,8 +229,10 @@ public class MachineStorage {
         }
     }
 
-    private final FabricItemStorageSnapshot fabricItemStorageSnapshot = new FabricItemStorageSnapshot();
-    private final FabricFluidStorageSnapshot fabricFluidStorageSnapshot = new FabricFluidStorageSnapshot();
+    @VisibleForTesting
+    final FabricItemStorageSnapshot fabricItemStorageSnapshot = new FabricItemStorageSnapshot();
+    @VisibleForTesting
+    final FabricFluidStorageSnapshot fabricFluidStorageSnapshot = new FabricFluidStorageSnapshot();
 
     @SuppressWarnings("UnstableApiUsage")
     private class FabricItemStorageSnapshot extends SnapshotParticipant<LinkedHashMap<ItemKey, Long>> implements ExtractionOnlyStorage<ItemVariant> {
