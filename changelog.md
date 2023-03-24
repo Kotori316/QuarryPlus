@@ -5,10 +5,12 @@
 * Removed - Marker Plus. Use Flexible Marker instead.
 * Added - Plugin for Jade. WTHIT is already supported.
 * Added - A tag of markers.
+* Added - GUI of QuarryPlus to change whether to remove fluids.
 
 ### Fixed
 
 * Fixed - Recipes of some machines were wrong. Close #194
+* Fixed - Fluid Unit was wrong.
 
 ### Misc
 

@@ -13,6 +13,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.yogpc.qp.integration.QuarryFluidTransfer;
 import com.yogpc.qp.integration.QuarryItemTransfer;
 import com.yogpc.qp.utils.MapMulti;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.StorageView;
@@ -52,6 +53,10 @@ public class MachineStorage {
         }
     }
 
+    /**
+     * @param fluid  the fluid
+     * @param amount the amount in mB, where 1 bucket = 1000 mB
+     */
     public void addFluid(Fluid fluid, long amount) {
         var key = new FluidKey(fluid, null);
         fluidMap.merge(key, amount, (l1, l2) -> {
@@ -92,6 +97,10 @@ public class MachineStorage {
         return Map.copyOf(fluidMap); // Return copy to avoid ConcurrentModificationException
     }
 
+    /**
+     * @param fluid  the fluid
+     * @param amount the amount in mB, where 1 bucket = 1000 mB
+     */
     private void putFluid(Fluid fluid, long amount) {
         var key = new FluidKey(fluid, null);
         if (amount <= 0) {
@@ -322,10 +331,12 @@ public class MachineStorage {
             var key = new FluidKey(resource.getFluid(), resource.getNbt());
             if (fluidMap.containsKey(key)) {
                 long amount = fluidMap.get(key);
+                long amountFabric = amount * FluidConstants.BUCKET / ONE_BUCKET;
                 updateSnapshots(transaction);
-                var extracted = Math.min(maxAmount, amount);
+                long extractedFabric = Math.min(maxAmount, amountFabric);
+                long extracted = extractedFabric * ONE_BUCKET / FluidConstants.BUCKET;
                 addFluid(key.fluid(), -extracted);
-                return extracted;
+                return extractedFabric;
             } else {
                 return 0;
             }
@@ -361,7 +372,7 @@ public class MachineStorage {
 
             @Override
             public long getAmount() {
-                return fluidMap.getOrDefault(fluidKey, 0L);
+                return fluidMap.getOrDefault(fluidKey, 0L) * FluidConstants.BUCKET / ONE_BUCKET;
             }
 
             @Override
