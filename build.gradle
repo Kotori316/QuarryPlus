@@ -146,12 +146,22 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     //noinspection SpellCheckingInspection
-    modRuntimeOnly "net.fabricmc:fabric-language-scala:${project.fabric_scala_version}"
+    modRuntimeOnly("net.fabricmc:fabric-language-scala:${project.fabric_scala_version}") {
+        //noinspection SpellCheckingInspection
+        exclude(group: "net.fabricmc.fabric-api")
+        //noinspection SpellCheckingInspection
+        exclude(group: "net.fabricmc")
+    }
 
     // library
     implementation "com.google.code.findbugs:jsr305:3.0.1"
 
-    modCompileOnly("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}")
+    modCompileOnly("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}") {
+        //noinspection SpellCheckingInspection
+        exclude(group: "net.fabricmc.fabric-api")
+        //noinspection SpellCheckingInspection
+        exclude(group: "net.fabricmc")
+    }
     modImplementation("teamreborn:energy:${project.tech_energy_version}")
     modCompileOnly("mcp.mobius.waila:wthit-api:fabric-${project.wthit_version}")
     if (System.getenv("CI")) {
@@ -179,6 +189,8 @@ dependencies {
     modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_version}") {
         //noinspection SpellCheckingInspection
         exclude(group: "net.fabricmc.fabric-api")
+        //noinspection SpellCheckingInspection
+        exclude(group: "net.fabricmc")
     }
     modApi("com.terraformersmc:modmenu:${project.mod_menu_version}") {
         transitive = false

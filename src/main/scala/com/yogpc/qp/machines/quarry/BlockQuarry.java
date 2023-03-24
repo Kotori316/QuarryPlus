@@ -121,6 +121,12 @@ public class BlockQuarry extends QPBlock implements EntityBlock {
             }
             return InteractionResult.SUCCESS;
         }
+        if (!player.isShiftKeyDown()) {
+            if (!world.isClientSide && world.getBlockEntity(pos) instanceof TileQuarry quarry) {
+                player.openMenu(quarry);
+            }
+            return InteractionResult.SUCCESS;
+        }
         return super.use(state, world, pos, player, hand, hit);
     }
 
