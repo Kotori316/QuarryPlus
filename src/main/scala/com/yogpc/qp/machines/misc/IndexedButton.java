@@ -19,4 +19,9 @@ public class IndexedButton extends Button {
     public int id() {
         return getIndex();
     }
+
+    @Override
+    public boolean isHoveredOrFocused() {
+        return isHovered();
+    }
 }

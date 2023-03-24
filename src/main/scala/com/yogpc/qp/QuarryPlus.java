@@ -149,7 +149,7 @@ public class QuarryPlus implements ModInitializer {
         public static final CreativeModeTab CREATIVE_TAB = FabricItemGroup.builder(new ResourceLocation(modID, modID))
             .icon(() -> new ItemStack(ModObjects.BLOCK_QUARRY))
             .title(Component.translatable("itemGroup.quarryplus"))
-            .displayItems((featureFlagSet, output, op) ->
+            .displayItems((parameters, output) ->
                 ALL_ITEMS.stream()
                     .map(InCreativeTabs::creativeTabItem)
                     .forEach(output::acceptAll))

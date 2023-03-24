@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPBlock;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -55,7 +56,7 @@ public class QuarryBedrockModuleRecipe extends ShapelessRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingContainer inventory) {
+    public ItemStack assemble(CraftingContainer inventory, RegistryAccess access) {
         var stacks = IntStream.range(0, inventory.getContainerSize())
             .mapToObj(inventory::getItem)
             .filter(Predicate.not(ItemStack::isEmpty))

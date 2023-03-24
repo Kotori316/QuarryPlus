@@ -6,7 +6,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -34,14 +34,14 @@ public final class QuarryConfigSyncMessage implements IMessage<QuarryConfigSyncM
     public QuarryConfigSyncMessage(FriendlyByteBuf buf) {
         this(
             buf.readBlockPos(),
-            ResourceKey.create(Registry.DIMENSION_REGISTRY, buf.readResourceLocation()),
+            ResourceKey.create(Registries.DIMENSION, buf.readResourceLocation()),
             QuarryConfig.fromPacket(buf)
         );
     }
 
     @Override
     public void writeToBuffer(FriendlyByteBuf buffer) {
-        buffer.writeBlockPos(this.pos).writeResourceLocation(this.dim.location());
+        buffer.writeBlockPos(this.pos).writeResourceKey(this.dim);
         this.quarryConfig.writePacket(buffer);
     }
 
