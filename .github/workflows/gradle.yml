@@ -64,6 +64,8 @@ jobs:
       - name: Test with runData
         if: ${{ env.SAME_DEFAULT != 'true' && (matrix.forge == 'default' || github.event_name != 'pull_request') }}
         run: chmod +x ./gradlew && ./gradlew --no-daemon runData
+        env:
+          IGNORE_OTHER_MODS_IN_RUNTIME: true
 
   cross-check-JUnit:
     runs-on: ubuntu-latest
@@ -90,6 +92,7 @@ jobs:
         run: chmod +x ./gradlew && ./gradlew --no-daemon test
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          IGNORE_OTHER_MODS_IN_RUNTIME: true
       - name: Upload failed test report
         if: failure()
         uses: actions/upload-artifact@v3
@@ -113,6 +116,7 @@ jobs:
         run: chmod +x ./gradlew && ./gradlew --no-daemon runGameTestServer
         env:
           TEST_UTILITY_LOG_ALL_TEST: true
+          IGNORE_OTHER_MODS_IN_RUNTIME: true
       - name: Check report
         run: |
           ! test -d "game-test/crash-reports"

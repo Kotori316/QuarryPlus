@@ -6,6 +6,7 @@ import java.util.function.LongSupplier;
 
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.integration.ic2.QuarryIC2Integration;
 import com.yogpc.qp.utils.QuarryChunkLoadUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -203,10 +204,19 @@ public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
     }
 
     @Override
+    public void onLoad() {
+        super.onLoad();
+        if (level != null && !level.isClientSide)
+            QuarryIC2Integration.registerIc2Tile(this);
+    }
+
+    @Override
     public void setRemoved() {
         super.setRemoved();
         if (level != null && !level.isClientSide && enabled && chunkPreLoaded != null)
             QuarryChunkLoadUtil.makeChunkUnloaded(level, getBlockPos(), chunkPreLoaded);
+        if (level != null && !level.isClientSide)
+            QuarryIC2Integration.unloadIc2Tile(this);
     }
 
     @Nullable
