@@ -44,8 +44,8 @@ class PowerTileEnergySinkTest {
 
         static void emit() {
             var sink = new PowerTileEnergySink(create());
-            var accepted = sink.acceptEnergy(Direction.NORTH, 512, 512);
-            assertEquals(512, accepted);
+            var rest = sink.acceptEnergy(Direction.NORTH, 512, 512);
+            assertEquals(0, rest);
             assertEquals(512 * QuarryPlus.config.powerMap.ic2ConversionRate.get(), sink.tile().getEnergy());
         }
 

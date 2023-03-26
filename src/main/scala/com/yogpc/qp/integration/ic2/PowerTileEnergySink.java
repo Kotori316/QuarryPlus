@@ -37,14 +37,15 @@ record PowerTileEnergySink(PowerTile tile) implements IEnergySink {
      * @param direction the direction
      * @param amount    the amount of energy in EU
      * @param voltage   ???
-     * @return accepted energy in EU
+     * @return not accepted energy in EU
      */
     @Override
     public int acceptEnergy(Direction direction, int amount, int voltage) {
+        if (tile.getMaxEnergy() - tile.getEnergy() == 0) return 0;
         var energyNanoFE = amount * QuarryPlus.config.powerMap.ic2ConversionRate.get();
         var acceptedNanoFE = tile.addEnergy(energyNanoFE, false);
         var acceptedEU = acceptedNanoFE / QuarryPlus.config.powerMap.ic2ConversionRate.get();
-        return (int) acceptedEU;
+        return amount - (int) acceptedEU;
     }
 
     /**
