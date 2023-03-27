@@ -1,3 +1,11 @@
+## Version 1192.0.0
+
+* Changed versioning.
+  * Include MC version into QuarryPlus version.
+* Added IC2 Classic integration.
+  * You can use EU to supply energy.
+  * The conversion rate can be changed in config. The default is 1 EU = 4 FE.
+
 ## Version 19.10.9
 
 * Improved GUI of Chunk Destroyer.
