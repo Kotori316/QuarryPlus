@@ -7,6 +7,7 @@ import com.yogpc.qp.machines.PowerTileTest;
 import com.yogpc.qp.machines.quarry.TileQuarry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 
@@ -14,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Disabled("Wait until IC2 classic is implemented for this version")
 @DisabledIfEnvironmentVariable(named = "IGNORE_OTHER_MODS_IN_RUNTIME", matches = ".*")
 class PowerTileEnergySinkTest {
     static PowerTile create() {
