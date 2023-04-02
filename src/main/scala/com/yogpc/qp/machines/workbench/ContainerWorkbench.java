@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.misc.SlotContainer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -32,12 +33,12 @@ public class ContainerWorkbench extends AbstractContainerMenu {
         //0-26
         for (row = 0; row < 3; ++row)
             for (col = 0; col < 9; ++col)
-                addSlot(new Slot(tile, col + row * 9, 8 + col * 18, 18 + row * 18));
+                addSlot(new SlotContainer(tile, col + row * 9, 8 + col * 18, 18 + row * 18));
 
         //27-44
         for (row = 0; row < 2; ++row)
             for (col = 0; col < 9; ++col)
-                addSlot(new Slot(tile, col + row * 9 + sourceSlot, 8 + col * 18, 90 + row * 18));
+                addSlot(new SlotContainer(tile, col + row * 9 + sourceSlot, 8 + col * 18, 90 + row * 18));
 
         //45-62
         for (row = 0; row < 3; ++row)
