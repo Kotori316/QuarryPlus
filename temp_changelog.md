@@ -1,3 +1,7 @@
+## Version 1194.1.0
+
+* Imported changes in 1.19.2
+
 ## Version 1192.1.0
 
 * Fixed a bug where swapping items in Workbench Plus could give over-stacked items. #253
