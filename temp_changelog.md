@@ -1,3 +1,7 @@
+## Version 18.17
+
+* Fixed a bug where swapping items in Workbench Plus could give over-stacked items. #253
+
 ## Version 1192.0.0
 
 * Changed versioning.
