@@ -278,7 +278,8 @@ dependencies {
 
     // IC2 Classic
     if (System.getenv("IGNORE_OTHER_MODS_IN_RUNTIME") == null) {
-        implementation(fg.deobf(group: "curse.maven", name: "ic2-classic-242942", version: project.ic2ClassicId))
+        compileOnly(fg.deobf(group: "curse.maven", name: "ic2-classic-242942", version: project.ic2ClassicId))
+        testImplementation(fg.deobf(group: "curse.maven", name: "ic2-classic-242942", version: project.ic2ClassicId))
     } else {
         compileOnly(fg.deobf(group: "curse.maven", name: "ic2-classic-242942", version: project.ic2ClassicId))
         testCompileOnly(fg.deobf(group: "curse.maven", name: "ic2-classic-242942", version: project.ic2ClassicId))
