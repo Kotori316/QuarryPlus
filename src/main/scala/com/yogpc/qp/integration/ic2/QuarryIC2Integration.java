@@ -51,10 +51,8 @@ public final class QuarryIC2Integration {
                 EnergyNet.INSTANCE.removeTile(sink);
                 LOGGER.trace("Unregistered {} as IC2 tile at {} in {}",
                     tile.getClass().getSimpleName(), sink.getPosition(), sink.getWorldObj().dimension().location());
-            } else {
-                LOGGER.warn("Unknown IC2 energy tile({}) was registered at {} in {}",
-                    energyTile, energyTile.getPosition(), energyTile.getWorldObj().dimension().location());
             }
+            // energyTile is often null, and it may be expected.
         }
     }
 }
