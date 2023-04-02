@@ -224,6 +224,12 @@ repositories {
             it.includeVersion("org.typelevel", "cats-kernel_2.13", project.catsVersion as String)
         }
     }
+    maven {
+        url = "https://www.cursemaven.com"
+        content {
+            it.includeGroup("curse.maven")
+        }
+    }
     mavenLocal()
 }
 
@@ -269,6 +275,15 @@ dependencies {
         compileOnly(fg.deobf(group: "dev.ftb.mods", name: "ftb-chunks-forge", version: project.ftbChunksVersion))
         compileOnly(fg.deobf(group: "dev.ftb.mods", name: "ftb-library-forge", version: project.ftbLibraryVersion))
     }
+
+    // IC2 Classic
+    if (System.getenv("IGNORE_OTHER_MODS_IN_RUNTIME") == null) {
+        implementation(fg.deobf(group: "curse.maven", name: "ic2-classic-242942", version: project.ic2ClassicId))
+    } else {
+        compileOnly(fg.deobf(group: "curse.maven", name: "ic2-classic-242942", version: project.ic2ClassicId))
+        testCompileOnly(fg.deobf(group: "curse.maven", name: "ic2-classic-242942", version: project.ic2ClassicId))
+    }
+
     // Test Dependencies.
     // Required these libraries to execute the tests.
     // The library will avoid errors of ForgeRegistry and Capability.

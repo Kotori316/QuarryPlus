@@ -138,7 +138,7 @@ public class PowerTileTest {
         @ValueSource(ints = {0, 1, 100, 500, 999, 1000})
         void useNormal(int energy) {
             var tile = new SFQuarryEntity(BlockPos.ZERO, Holder.BLOCK_SOLID_FUEL_QUARRY.defaultBlockState());
-            ((PowerTile) tile).setTimeProvider(() -> 1L);
+            setTime(tile);
             assertEquals(1000 * PowerTile.ONE_FE, tile.getMaxEnergy());
             Assumptions.assumeTrue(energy * PowerTile.ONE_FE <= tile.getMaxEnergy());
             tile.addEnergy(tile.getMaxEnergy(), false);
@@ -153,7 +153,7 @@ public class PowerTileTest {
         @ValueSource(ints = {1001, 1500, 10000})
         void useOverWithForce(int energy) {
             var tile = new SFQuarryEntity(BlockPos.ZERO, Holder.BLOCK_SOLID_FUEL_QUARRY.defaultBlockState());
-            ((PowerTile) tile).setTimeProvider(() -> 1L);
+            setTime(tile);
             assertEquals(1000 * PowerTile.ONE_FE, tile.getMaxEnergy());
             Assumptions.assumeTrue(energy * PowerTile.ONE_FE > tile.getMaxEnergy());
             tile.addEnergy(tile.getMaxEnergy(), false);
@@ -168,7 +168,7 @@ public class PowerTileTest {
         @ValueSource(ints = {1001, 1500, 10000})
         void useOverWithoutForce(int energy) {
             var tile = new SFQuarryEntity(BlockPos.ZERO, Holder.BLOCK_SOLID_FUEL_QUARRY.defaultBlockState());
-            ((PowerTile) tile).setTimeProvider(() -> 1L);
+            setTime(tile);
             assertEquals(1000 * PowerTile.ONE_FE, tile.getMaxEnergy());
             Assumptions.assumeTrue(energy * PowerTile.ONE_FE > tile.getMaxEnergy());
             tile.addEnergy(tile.getMaxEnergy(), false);
@@ -183,7 +183,7 @@ public class PowerTileTest {
         @ValueSource(ints = {0, 1, 100, 500, 999, 1000, 1001, 1500, 10000})
         void useNormal2(int energy) {
             var tile = new SFQuarryEntity(BlockPos.ZERO, Holder.BLOCK_SOLID_FUEL_QUARRY.defaultBlockState());
-            ((PowerTile) tile).setTimeProvider(() -> 1L);
+            setTime(tile);
             tile.addEnergy(tile.getMaxEnergy(), false);
             assertEquals(tile.getMaxEnergy(), tile.getEnergy());
 
@@ -192,5 +192,9 @@ public class PowerTileTest {
             assertTrue(result, "Machine must consume %d FE".formatted(energy));
             assertEquals(tile.getMaxEnergy() - energy * PowerTile.ONE_FE, tile.getEnergy());
         }
+    }
+
+    public static void setTime(PowerTile tile) {
+        tile.setTimeProvider(() -> 1L);
     }
 }

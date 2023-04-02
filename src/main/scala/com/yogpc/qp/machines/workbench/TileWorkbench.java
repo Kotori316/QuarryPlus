@@ -191,6 +191,11 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
     }
 
     @Override
+    public boolean canPlaceItem(int pIndex, ItemStack pStack) {
+        return pIndex < ingredientInventory.size();
+    }
+
+    @Override
     public List<? extends Component> getDebugLogs() {
         return Stream.of(
             "%sRecipe:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, currentRecipe),

@@ -49,6 +49,7 @@ jobs:
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TEST_UTILITY_LOG_ALL_TEST: true
+          IGNORE_OTHER_MODS_IN_RUNTIME: true
       - name: Check report
         run: |
           ! test -d "game-test/crash-reports"

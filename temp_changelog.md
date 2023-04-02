@@ -1,7 +1,23 @@
+## Version 1192.1.0
+
+* Fixed a bug where swapping items in Workbench Plus could give over-stacked items. #253
+
+## Version 18.17
+
+* Fixed a bug where swapping items in Workbench Plus could give over-stacked items. #253
+
 ## Version 1194.0.0
 
 * Update for 1.19.4
 * Changed versioning
+
+## Version 1192.0.0
+
+* Changed versioning.
+  * Include MC version into QuarryPlus version.
+* Added IC2 Classic integration.
+  * You can use EU to supply energy.
+  * The conversion rate can be changed in config. The default is 1 EU = 4 FE.
 
 ## Version 19.13
 

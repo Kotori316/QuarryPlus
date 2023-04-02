@@ -136,6 +136,7 @@ public class Config {
     public static class PowerMap {
         @VisibleForTesting
         final Map<String, Map<String, ForgeConfigSpec.DoubleValue>> map;
+        public final ForgeConfigSpec.LongValue ic2ConversionRate;
 
         private record Key(String machineName, String configName) {
         }
@@ -172,6 +173,11 @@ public class Config {
                     return Map.entry(key, m);
                 })
                 .forEach(e -> map.put(e.getKey(), e.getValue()));
+            builder.pop();
+            builder.comment("IC2 integration").push("ic2-integration");
+            // Default: 1 EU = 4 FE = 4,000,000,000 nano FE
+            ic2ConversionRate = builder.comment("The rate to convert EU to nano FE. Default(4,000,000,000) is the rate of 1 EU = 4 FE")
+                .defineInRange("conversionRate", 4 * PowerTile.ONE_FE, 1L, Long.MAX_VALUE);
             builder.pop();
         }
 
