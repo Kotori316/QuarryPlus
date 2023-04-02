@@ -202,8 +202,11 @@ public class ContainerWorkbench extends AbstractContainerMenu {
                 }
             }
             slot.setChanged();
-        } else
+        } else if (clickTypeIn != ClickType.SWAP) {
+            // Fix https://github.com/Kotori316/QuarryPlus/issues/253
+            // Do nothing when number key or F key is pressed to avoid over-stacked items
             super.clicked(slotId, dragType, clickTypeIn, player);
+        }
     }
 
     protected boolean n_moveItemStackTo(ItemStack stack) {
