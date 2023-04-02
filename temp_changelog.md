@@ -1,3 +1,7 @@
+## Version 18.17
+
+* Fixed a bug where swapping items in Workbench Plus could give over-stacked items. #253
+
 ## Version 18.16
 
 * Added config option to limit the width of area where Chunk Destroyer works.
