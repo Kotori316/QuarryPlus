@@ -7,23 +7,14 @@ import java.util.concurrent.TimeUnit
 import java.util.stream.Collectors
 import java.util.stream.Stream
 
-buildscript {
-    repositories {
-        maven { url = "https://maven.parchmentmc.org" }
-        mavenCentral()
-    }
-    dependencies {
-        classpath "org.parchmentmc:librarian:1.+"
-    }
-}
 plugins {
     id("maven-publish")
     id("scala")
     id("net.minecraftforge.gradle") version("5.+")
+    id("org.parchmentmc.librarian.forgegradle") version("1.+")
     id("com.github.breadmoirai.github-release") version("2.4.1")
     id("com.matthewprenger.cursegradle") version("1.4.0")
 }
-apply plugin: "org.parchmentmc.librarian.forgegradle"
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
 String createVersion() {
