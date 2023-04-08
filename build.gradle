@@ -9,21 +9,21 @@ import java.util.stream.Stream
 
 buildscript {
     repositories {
-        maven { url = 'https://maven.parchmentmc.org' }
+        maven { url = "https://maven.parchmentmc.org" }
         mavenCentral()
     }
     dependencies {
-        classpath 'org.parchmentmc:librarian:1.+'
+        classpath "org.parchmentmc:librarian:1.+"
     }
 }
 plugins {
     id("maven-publish")
     id("scala")
-    id 'net.minecraftforge.gradle' version '5.+'
+    id "net.minecraftforge.gradle" version "5.+"
     id "com.github.breadmoirai.github-release" version "2.4.1"
     id "com.matthewprenger.cursegradle" version "1.4.0"
 }
-apply plugin: 'org.parchmentmc.librarian.forgegradle'
+apply plugin: "org.parchmentmc.librarian.forgegradle"
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
 String createVersion() {
@@ -34,8 +34,8 @@ String createVersion() {
 }
 
 version = createVersion()
-group = 'com.kotori316' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'AdditionalEnchantedMiner-' + project.minecraftVersion
+group = "com.kotori316" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = "AdditionalEnchantedMiner-" + project.minecraftVersion
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
@@ -49,36 +49,36 @@ private static boolean isInCI() {
             (!System.getProperty("os.name").toLowerCase().startsWith("windows") && Files.exists(Paths.get("/", ".dockerenv")))
 }
 
-println("Java: ${System.getProperty('java.version')} " +
-        "JVM: ${System.getProperty('java.vm.version')}(${System.getProperty('java.vendor')}) " +
-        "Arch: ${System.getProperty('os.arch')} " +
+println("Java: ${System.getProperty("java.version")} " +
+        "JVM: ${System.getProperty("java.vm.version")}(${System.getProperty("java.vendor")}) " +
+        "Arch: ${System.getProperty("os.arch")} " +
         "Project version: ${project.version}")
 minecraft {
-    mappings channel: 'parchment', version: ((project.parchmentMapping + "-" + project.minecraftVersion) as String)
-//    mappings channel: 'official', version: (project.minecraftVersion as String)
+    mappings channel: "parchment", version: ((project.parchmentMapping + "-" + project.minecraftVersion) as String)
+//    mappings channel: "official", version: (project.minecraftVersion as String)
 
     runs {
         client {
-            workingDirectory project.file('Minecraft')
-            property 'forge.logging.markers', 'REGISTRIES'
-            property('mixin.env.remapRefMap', 'true')
-            property('mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg")
+            workingDirectory project.file("Minecraft")
+            property "forge.logging.markers", "REGISTRIES"
+            property("mixin.env.remapRefMap", "true")
+            property("mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg")
             property "mixin.debug.export", "true"
-            property 'forge.logging.console.level', 'debug'
-            property 'forge.enabledGameTestNamespaces', 'QuarryPlus'.toLowerCase()
+            property "forge.logging.console.level", "debug"
+            property "forge.enabledGameTestNamespaces", "QuarryPlus".toLowerCase()
             // From https://github.com/SlimeKnights/TinkersConstruct/blob/1.18/build.gradle
-            if (project.hasProperty('mc_uuid')) {
+            if (project.hasProperty("mc_uuid")) {
                 // Your uuid without any dashes in the middle
-                args '--uuid', project.getProperty('mc_uuid')
+                args "--uuid", project.getProperty("mc_uuid")
             }
-            if (project.hasProperty('mc_username')) {
+            if (project.hasProperty("mc_username")) {
                 // Your username/display name, this is the name that shows up in chat
                 // Note: This is not your email, even if you have a Mojang account
-                args '--username', project.getProperty('mc_username')
+                args "--username", project.getProperty("mc_username")
             }
-            // Your access token, you can find it in your '.minecraft/launcher_profiles.json' file
+            // Your access token, you can find it in your ".minecraft/launcher_profiles.json" file
             // If not set, use "0" to prevent authentication exception.
-            args '--accessToken', project.findProperty('mc_token') ?: "0"
+            args "--accessToken", project.findProperty("mc_token") ?: "0"
             jvmArgs("-EnableAssertions".toLowerCase())
 
             mods {
@@ -94,14 +94,14 @@ minecraft {
 
         client2 {
             parent(runs.client)
-            workingDirectory project.file('run-server-client')
-            property 'forge.logging.markers', 'REGISTRIES'
-            property('mixin.env.remapRefMap', 'true')
-            property('mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg")
+            workingDirectory project.file("run-server-client")
+            property "forge.logging.markers", "REGISTRIES"
+            property("mixin.env.remapRefMap", "true")
+            property("mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg")
             property "mixin.debug.export", "true"
-            property 'forge.logging.console.level', 'info'
-            property 'forge.enabledGameTestNamespaces', ''
-            property 'forge.enableGameTest', 'false'
+            property "forge.logging.console.level", "info"
+            property "forge.enabledGameTestNamespaces", ''
+            property "forge.enableGameTest", "false"
             mods {
                 quarryplus {
                     source sourceSets.main
@@ -110,14 +110,14 @@ minecraft {
         }
 
         server {
-            workingDirectory project.file('run-server')
+            workingDirectory project.file("run-server")
 
             // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-            property('mixin.env.remapRefMap', 'true')
-            property('mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg")
+            property "forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP"
+            property("mixin.env.remapRefMap", "true")
+            property("mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg")
             property "mixin.debug.export", "true"
-            property 'forge.logging.console.level', 'info'
+            property "forge.logging.console.level", "info"
             args("--nogui")
             forceExit false
 
@@ -129,14 +129,14 @@ minecraft {
         }
 
         data {
-            workingDirectory project.file('run-server')
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-            property('mixin.env.remapRefMap', 'true')
-            property('mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg")
+            workingDirectory project.file("run-server")
+            property "forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP"
+            property("mixin.env.remapRefMap", "true")
+            property("mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg")
             property "mixin.debug.export", "true"
-            property 'forge.logging.console.level', 'info'
+            property "forge.logging.console.level", "info"
             forceExit false
-            args '--mod', 'quarryplus', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            args "--mod", "quarryplus", "--all", "--output", file("src/generated/resources/"), "--existing", file("src/main/resources/")
 
             mods {
                 quarryplus {
@@ -148,12 +148,12 @@ minecraft {
 
         gameTestServer {
             workingDirectory project.file("game-test")
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-            property('mixin.env.remapRefMap', 'true')
-            property('mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg")
+            property "forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP"
+            property("mixin.env.remapRefMap", "true")
+            property("mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg")
             property "mixin.debug.export", "true"
-            property 'forge.logging.console.level', 'debug'
-            property 'forge.enabledGameTestNamespaces', 'QuarryPlus'.toLowerCase()
+            property "forge.logging.console.level", "debug"
+            property "forge.enabledGameTestNamespaces", "QuarryPlus".toLowerCase()
             setForceExit(false)
             jvmArgs("-EnableAssertions".toLowerCase())
 
@@ -191,7 +191,7 @@ repositories {
     }*/
     maven {
         name = "CraftTweaker"
-        url = 'https://maven.blamejared.com'
+        url = "https://maven.blamejared.com"
         content {
             //noinspection SpellCheckingInspection
             includeModule("com.blamejared.crafttweaker", "CraftTweaker-1.16.4")
@@ -245,10 +245,10 @@ dependencies {
     String forgeVersion = System.getenv("CI_FORGE") ?: project.forgeVersion
     minecraft("net.minecraftforge:forge:" + forgeVersion)
     System.out.println(("Selected version: " + "net.minecraftforge:forge:" + forgeVersion) as String)
-    compileOnly(group: 'org.scala-lang', name: 'scala-library', version: project.scalaVersion)
-    compileOnly(group: 'org.typelevel', name: "cats-core_2.13", version: project.catsVersion)
-    testImplementation(group: 'org.scala-lang', name: 'scala-library', version: project.scalaVersion)
-    testImplementation(group: 'org.typelevel', name: "cats-core_2.13", version: project.catsVersion)
+    compileOnly(group: "org.scala-lang", name: "scala-library", version: project.scalaVersion)
+    compileOnly(group: "org.typelevel", name: "cats-core_2.13", version: project.catsVersion)
+    testImplementation(group: "org.scala-lang", name: "scala-library", version: project.scalaVersion)
+    testImplementation(group: "org.typelevel", name: "cats-core_2.13", version: project.catsVersion)
 
     boolean useREI = Boolean.parseBoolean(System.getenv("USE_REI"))
     compileOnly(fg.deobf(group: "mezz.jei", name: "jei-1.19.2-common-api", version: project.jeiVersion))
@@ -291,11 +291,11 @@ dependencies {
     testImplementation(fg.deobf(group: "com.kotori316", name: "test_utility", version: project.testUtilVersion))
     testImplementation(group: "com.kotori316", name: "test_utility_dependency", version: "1.0-SNAPSHOT")
 
-    String JUPITER_VERSION = '5.8.2'
-    game_test(group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: JUPITER_VERSION)
-    game_test(group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: JUPITER_VERSION)
-    game_test(group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: JUPITER_VERSION)
-    game_test(group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.8.2')
+    String JUPITER_VERSION = "5.8.2"
+    game_test(group: "org.junit.jupiter", name: "junit-jupiter-api", version: JUPITER_VERSION)
+    game_test(group: "org.junit.jupiter", name: "junit-jupiter-params", version: JUPITER_VERSION)
+    game_test(group: "org.junit.jupiter", name: "junit-jupiter-engine", version: JUPITER_VERSION)
+    game_test(group: "org.junit.platform", name: "junit-platform-launcher", version: "1.8.2")
 }
 
 // Example for how to get properties into the manifest for reading at runtime.
@@ -308,7 +308,7 @@ def jarAttributeMap = [
         "Implementation-Vendor"   : "Kotori316",
         "Implementation-Timestamp": ZonedDateTime.now().format(DateTimeFormatter.ISO_INSTANT),
         "Commit"                  : getCommit(project.branch as String),
-        'Automatic-Module-Name'   : 'quarryplus',
+        "Automatic-Module-Name"   : "quarryplus",
 ]
 
 jar {
@@ -320,8 +320,8 @@ jar {
 sourceSets {
     main {
         resources {
-            srcDir 'src/main/resources'
-            srcDir 'src/generated/resources'
+            srcDir "src/main/resources"
+            srcDir "src/generated/resources"
         }
     }
 }
@@ -348,22 +348,22 @@ artifacts {
 
 // Example configuration to allow publishing using the maven-publish plugin
 // This is the preferred method to reobfuscate your jar file
-jar.finalizedBy('reobfJar')
+jar.finalizedBy("reobfJar")
 
-jar.finalizedBy('signJar')
+jar.finalizedBy("signJar")
 
-task signJar(dependsOn: 'reobfJar') {
-    boolean executeCondition = project.hasProperty('keyStoreAlias') &&
-            project.hasProperty('keyStore') &&
-            project.hasProperty('keyStorePass')
+task signJar(dependsOn: "reobfJar") {
+    boolean executeCondition = project.hasProperty("keyStoreAlias") &&
+            project.hasProperty("keyStore") &&
+            project.hasProperty("keyStorePass")
     onlyIf { executeCondition }
     doLast {
         //noinspection HttpUrlsUsage
         ant.signjar(
                 jar: jar.archiveFile.get(),
-                alias: project.hasProperty('keyStoreAlias') ? project.getProperty('keyStoreAlias') : "",
-                keystore: project.hasProperty('keyStore') ? project.getProperty("keyStore") : "",
-                storepass: project.hasProperty('keyStorePass') ? project.getProperty('keyStorePass') : "",
+                alias: project.hasProperty("keyStoreAlias") ? project.getProperty("keyStoreAlias") : "",
+                keystore: project.hasProperty("keyStore") ? project.getProperty("keyStore") : "",
+                storepass: project.hasProperty("keyStorePass") ? project.getProperty("keyStorePass") : "",
                 sigalg: "SHA1withRSA",
                 digestalg: "SHA-256",
                 tsaurl: "http://timestamp.digicert.com"
@@ -374,7 +374,7 @@ task signJar(dependsOn: 'reobfJar') {
 def changeLogHeader() {
     return ("""\
             For Minecraft ${project.minecraftVersion} and Minecraft Forge.
-            Released at ${ZonedDateTime.now(ZoneId.of('Asia/Tokyo')).withNano(0).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)}
+            Released at ${ZonedDateTime.now(ZoneId.of("Asia/Tokyo")).withNano(0).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)}
 
             This mod requires [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force)
             Build with ${project.forgeVersion}, Mapping: Official ${project.minecraftVersion}
@@ -423,18 +423,18 @@ String getChangeLog() {
 curseforge {
     apiKey = project.hasProperty("curseforge_additional-enchanted-miner_key") ? getProperty("curseforge_additional-enchanted-miner_key") : ""
     project {
-        id = '282837'
-        changelogType = 'markdown'
+        id = "282837"
+        changelogType = "markdown"
         changelog = combinedLog()
-        releaseType = 'release'
+        releaseType = "release"
         addGameVersion(project.minecraftVersion)
         mainArtifact(jar) {
-            displayName = 'v' + project.version + '-forge' + " [${project.minecraftVersion}]"
+            displayName = "v" + project.version + "-forge" + " [${project.minecraftVersion}]"
         }
         addArtifact deobfJar
         addArtifact srcJar
         relations {
-            requiredDependency 'scalable-cats-force'
+            requiredDependency "scalable-cats-force"
         }
     }
     options {
@@ -444,7 +444,7 @@ curseforge {
 }
 
 githubRelease {
-    repo.set('QuarryPlus')
+    repo.set("QuarryPlus")
     token = project.findProperty("githubToken") ?: System.getenv("REPO_TOKEN") ?: ""
     targetCommitish.set(project.branch as String)
     prerelease.set(project.version.toString().contains("SNAPSHOT"))
@@ -507,18 +507,18 @@ publishing {
         gpr(MavenPublication) {
             artifactId = "AdditionalEnchantedMiner".toLowerCase()
             artifact srcJar {
-                getArchiveClassifier().set('sources')
-                getArchiveExtension().set('jar')
+                getArchiveClassifier().set("sources")
+                getArchiveExtension().set("jar")
             }
             artifact deobfJar {
-                getArchiveClassifier().set('deobf')
-                getArchiveExtension().set('jar')
+                getArchiveClassifier().set("deobf")
+                getArchiveExtension().set("jar")
             }
             artifact jar
             pom {
                 name = archivesBaseName
                 description = "QuarryPlus for Minecraft ${project.minecraftVersion} and Forge ${project.forgeVersion}"
-                url = 'https://github.com/Kotori316/QuarryPlus'
+                url = "https://github.com/Kotori316/QuarryPlus"
                 packaging = "jar"
             }
         }
