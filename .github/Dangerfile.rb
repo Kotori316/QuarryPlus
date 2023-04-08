@@ -28,7 +28,7 @@ else
             fail("The base branch and target branch are not same.")
         end
         unless headBranch.include?(baseBranch)
-            fail("This branch isn't for ${baseBranch}")
+            fail("This branch isn't for #{baseBranch}")
         end
     end
 end

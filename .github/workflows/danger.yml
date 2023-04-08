@@ -23,19 +23,29 @@ jobs:
           sed "s,\x1B\[[0-9;]*[a-zA-Z],,g" |\
           while read remote; do git branch --track "${remote#origin/}" "$remote"; done
       - run: git fetch --all
+      - run: git show-branch | head -n 50
       - name: Get the base of checkout
         run: |
-          a="$(git show-branch | grep '*' | grep -v "$(git rev-parse --abbrev-ref HEAD)" | head -1 | awk -F'[]~^[]' '{print $2}')"
+          star_index=$(git show-branch --topo-order |\
+                       grep -m 1 "\[$(git rev-parse --abbrev-ref HEAD)\]" |\
+                       awk '{ print index($0, "*") }')
+          a="$(git show-branch --topo-order |\
+               sed -n '/^--\+/,$p' |\
+               tail -n +2 |\
+               grep -v "\[$(git rev-parse --abbrev-ref HEAD)\]" |\
+               awk -v "q=${star_index}" '{ if(substr($0, q, 1) != " ") { print($0) } }' |\
+               head -1 | \
+               awk -F'[]~^[]' '{print $2}')"
           echo "BASE_BRANCH=$a" >> $GITHUB_ENV
           echo "$a"
       - name: Install danger
         run: gem install danger
       - name: Check skip
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
           comment=$(gh pr view ${{ github.event.pull_request.html_url }} --json comments --jq ."comments".[]."body")
-          echo "$comment" | grep -q "disable danger" && echo "DISABLE_DANGER=true" >> $GITHUB_ENV || echo "DISABLE_DANGER=false" >> $GITHUB_ENV
+          echo "$comment" | grep -q -i "disable danger" && echo "DISABLE_DANGER=true" >> $GITHUB_ENV || :
+        env:
+          GH_TOKEN: ${{ github.token }}
       - name: Run danger
         run: danger --dangerfile=.github/Dangerfile.rb --fail-on-errors=true
         env:
