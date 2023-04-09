@@ -32,7 +32,7 @@ jobs:
           a="$(git show-branch --topo-order |\
                sed -n '/^--\+/,$p' |\
                tail -n +2 |\
-               grep -v "\[$(git rev-parse --abbrev-ref HEAD)\]" |\
+               grep -v "\[$(git rev-parse --abbrev-ref HEAD)[0-9\^\~]\]" |\
                awk -v "q=${star_index}" '{ if(substr($0, q, 1) != " ") { print($0) } }' |\
                head -1 | \
                awk -F'[]~^[]' '{print $2}')"
