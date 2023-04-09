@@ -37,6 +37,11 @@ class PowerTileEnergySinkTest {
         Internal.getRequired();
     }
 
+    @Test
+    void changeConfig() {
+        Internal.changeConfig();
+    }
+
     private static class Internal {
         static void createInstance() {
             assertDoesNotThrow(() -> new PowerTileEnergySink(create()));
@@ -52,6 +57,19 @@ class PowerTileEnergySinkTest {
         static void getRequired() {
             var sink = new PowerTileEnergySink(create());
             assertTrue(sink.getRequestedEnergy() > 0, "Machine should requests more than 0 EU.");
+        }
+
+        static void changeConfig() {
+            var defaultValue = QuarryPlus.config.powerMap.ic2ConversionRate.get();
+            try {
+                QuarryPlus.config.powerMap.ic2ConversionRate.set(10 * PowerTile.ONE_FE);
+                var sink = new PowerTileEnergySink(create());
+                var rest = sink.acceptEnergy(Direction.NORTH, 512, 512);
+                assertEquals(0, rest);
+                assertEquals(512 * 10 * PowerTile.ONE_FE, sink.tile().getEnergy());
+            } finally {
+                QuarryPlus.config.powerMap.ic2ConversionRate.set(defaultValue);
+            }
         }
     }
 }
