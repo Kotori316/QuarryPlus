@@ -1,16 +1,12 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "GDG",
-    "MRM",
-    "MIM"
-  ],
+  "category": "misc",
   "key": {
     "D": {
       "item": "minecraft:dispenser"
     },
-    "R": {
-      "item": "minecraft:redstone"
+    "G": {
+      "tag": "c:gold_ingots"
     },
     "I": {
       "tag": "c:iron_ingots"
@@ -18,11 +14,17 @@
     "M": {
       "item": "minecraft:mossy_cobblestone"
     },
-    "G": {
-      "tag": "c:gold_ingots"
+    "R": {
+      "item": "minecraft:redstone"
     }
   },
+  "pattern": [
+    "GDG",
+    "MRM",
+    "MIM"
+  ],
   "result": {
     "item": "quarryplus:placer_plus"
-  }
+  },
+  "show_notification": true
 }

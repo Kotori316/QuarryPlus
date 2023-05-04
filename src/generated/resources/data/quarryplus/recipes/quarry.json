@@ -1,28 +1,30 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "ioi",
-    "gDg",
-    "iRi"
-  ],
+  "category": "misc",
   "key": {
-    "R": {
-      "item": "minecraft:redstone_block"
-    },
     "D": {
       "item": "minecraft:dropper"
     },
-    "i": {
-      "tag": "c:iron_ingots"
+    "R": {
+      "item": "minecraft:redstone_block"
     },
     "g": {
       "item": "minecraft:golden_pickaxe"
+    },
+    "i": {
+      "tag": "c:iron_ingots"
     },
     "o": {
       "item": "minecraft:obsidian"
     }
   },
+  "pattern": [
+    "ioi",
+    "gDg",
+    "iRi"
+  ],
   "result": {
     "item": "quarryplus:quarry"
-  }
+  },
+  "show_notification": true
 }

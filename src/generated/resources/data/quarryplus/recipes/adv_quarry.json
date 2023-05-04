@@ -1,25 +1,27 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "e": {
+      "tag": "c:emeralds"
+    },
+    "g": {
+      "tag": "c:green_dyes"
+    },
+    "m": {
+      "item": "quarryplus:marker16"
+    },
+    "q": {
+      "item": "quarryplus:quarry"
+    }
+  },
   "pattern": [
     "mem",
     "gqg",
     "mem"
   ],
-  "key": {
-    "g": {
-      "tag": "c:green_dyes"
-    },
-    "e": {
-      "tag": "c:emeralds"
-    },
-    "q": {
-      "item": "quarryplus:quarry"
-    },
-    "m": {
-      "item": "quarryplus:marker16"
-    }
-  },
   "result": {
     "item": "quarryplus:adv_quarry"
-  }
+  },
+  "show_notification": true
 }

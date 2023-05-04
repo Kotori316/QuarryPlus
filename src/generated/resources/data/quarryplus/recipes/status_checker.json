@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "key": {
     "g": {
       "tag": "c:glass_blocks"
@@ -17,5 +18,6 @@
   ],
   "result": {
     "item": "quarryplus:status_checker"
-  }
+  },
+  "show_notification": true
 }

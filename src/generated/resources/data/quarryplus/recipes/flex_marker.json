@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "key": {
     "g": {
       "item": "minecraft:glowstone_dust"
@@ -18,5 +19,6 @@
   ],
   "result": {
     "item": "quarryplus:flex_marker"
-  }
+  },
+  "show_notification": true
 }

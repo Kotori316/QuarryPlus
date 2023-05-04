@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "key": {
     "m": {
       "item": "quarryplus:flex_marker"
@@ -11,5 +12,6 @@
   ],
   "result": {
     "item": "quarryplus:marker16"
-  }
+  },
+  "show_notification": true
 }
