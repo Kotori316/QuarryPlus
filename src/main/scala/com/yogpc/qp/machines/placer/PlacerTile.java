@@ -15,6 +15,7 @@ import com.yogpc.qp.integration.QuarryItemTransfer;
 import com.yogpc.qp.machines.CheckerLog;
 import com.yogpc.qp.machines.QuarryFakePlayer;
 import com.yogpc.qp.packet.ClientSync;
+import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -161,7 +162,7 @@ public class PlacerTile extends BlockEntity implements
         if (stack.isEmpty()) return false;
         Item item = stack.getItem();
         if (item instanceof BlockItem blockItem) {
-            var player = QuarryFakePlayer.get((ServerLevel) level);
+            var player = FakePlayer.get((ServerLevel) level, QuarryFakePlayer.PROFILE);
             QuarryFakePlayer.setDirection(player, tileDirection);
             var hitResult = new BlockHitResult(Vec3.atBottomCenterOf(pos), tileDirection.getOpposite(), pos, false);
             BlockPlaceContext context = new BlockPlaceContext(player, InteractionHand.MAIN_HAND, stack, hitResult);
