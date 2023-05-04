@@ -360,7 +360,7 @@ modrinth {
             .filter { s -> !s.contains("Fabric Language Scala") }
             .collect(Collectors.joining(System.lineSeparator()))
             .replace("https://www.curseforge.com/minecraft/mc-mods/", "https://modrinth.com/mod/")
-    debugMode = true
+    debugMode = false
     dependencies {
         required.project("fabric-api")
         required.project("cloth-config")
