@@ -16,6 +16,7 @@ plugins {
     id "com.github.breadmoirai.github-release" version "2.2.12"
     //noinspection SpellCheckingInspection
     id "com.matthewprenger.cursegradle" version "1.4.0"
+    id "com.modrinth.minotaur" version "2.+"
 }
 
 archivesBaseName = "AdditionalEnchantedMiner-1.19-fabric"
@@ -343,6 +344,27 @@ githubRelease {
 
     body.set(joinedLog())
     releaseAssets = fileTree("build/libs")
+}
+
+modrinth {
+    token = project.findProperty("modrinthToken") ?: System.getenv("MODRINTH_TOKEN") ?: ""
+    projectId = "additional-enchanted-miner"
+    versionType = isInCI() ? "alpha" : "release"
+    versionName = "${project.version}-fabric"
+    uploadFile = tasks.remapJar
+    additionalFiles = [
+    ]
+    gameVersions = [project.minecraft_version]
+    loaders = ["fabric"]
+    changelog = joinedLog().lines()
+            .filter { s -> !s.contains("Fabric Language Scala") }
+            .collect(Collectors.joining(System.lineSeparator()))
+            .replace("https://www.curseforge.com/minecraft/mc-mods/", "https://modrinth.com/mod/")
+    debugMode = true
+    dependencies {
+        required.project("fabric-api")
+        required.project("cloth-config")
+    }
 }
 
 test {
