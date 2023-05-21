@@ -14,6 +14,7 @@ plugins {
     id("org.parchmentmc.librarian.forgegradle") version("1.+")
     id("com.github.breadmoirai.github-release") version("2.4.1")
     id("com.matthewprenger.cursegradle") version("1.4.0")
+    id("com.modrinth.minotaur").version("2.+")
 }
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
@@ -431,6 +432,25 @@ curseforge {
     options {
         curseGradleOptions.debug = false // defaults to false
         curseGradleOptions.javaVersionAutoDetect = false
+    }
+}
+
+modrinth {
+    token.set((project.findProperty("modrinthToken") ?: System.getenv("MODRINTH_TOKEN") ?: "") as String)
+    projectId = "additional-enchanted-miner"
+    versionType = "release"
+    versionName = "${project.version}-forge"
+    uploadFile = tasks.jar
+    getAdditionalFiles().set([
+            tasks.deobfJar,
+            tasks.srcJar,
+    ])
+    getGameVersions().set([project.minecraftVersion])
+    getLoaders().set(["forge"])
+    changelog = combinedLog()
+    debugMode = false
+    dependencies {
+        required.project("scalable-cats-force")
     }
 }
 
