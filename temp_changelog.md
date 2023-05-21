@@ -1,3 +1,7 @@
+## Version 1192.1.1
+
+* May fix item duplication in Workbench
+
 ## Version 1192.1.0
 
 * Fixed a bug where swapping items in Workbench Plus could give over-stacked items. #253
