@@ -1,3 +1,7 @@
+## Version 1192.1.1
+
+* May fix item duplication in Workbench
+
 ## Version 1194.1.0
 
 * Imported changes in 1.19.2
