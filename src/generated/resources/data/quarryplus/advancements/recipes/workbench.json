@@ -72,5 +72,6 @@
     "recipes": [
       "quarryplus:workbench"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

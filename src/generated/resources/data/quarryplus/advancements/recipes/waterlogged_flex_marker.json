@@ -30,5 +30,6 @@
     "recipes": [
       "quarryplus:waterlogged_flex_marker"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

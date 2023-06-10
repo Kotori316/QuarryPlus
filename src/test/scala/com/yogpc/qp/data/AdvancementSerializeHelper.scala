@@ -48,7 +48,7 @@ object AdvancementSerializeHelper {
   def apply(location: ResourceLocation): AdvancementSerializeHelper = apply(location, recipeLocation = location)
 
   def apply(location: ResourceLocation, recipeLocation: ResourceLocation): AdvancementSerializeHelper = {
-    val base = Advancement.Builder.advancement()
+    val base = Advancement.Builder.recipeAdvancement()
       .parent(new ResourceLocation("recipes/root"))
       .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(recipeLocation))
       .rewards(AdvancementRewards.Builder.recipe(recipeLocation))

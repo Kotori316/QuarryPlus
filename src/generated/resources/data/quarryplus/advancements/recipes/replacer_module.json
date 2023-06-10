@@ -36,5 +36,6 @@
     "recipes": [
       "quarryplus:replacer_module"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }
