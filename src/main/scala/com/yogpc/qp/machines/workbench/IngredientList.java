@@ -1,15 +1,15 @@
 package com.yogpc.qp.machines.workbench;
 
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.yogpc.qp.utils.MapMulti;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public class IngredientList implements Predicate<ItemStack> {
     private final List<IngredientWithCount> ingredientList;
@@ -37,8 +37,8 @@ public class IngredientList implements Predicate<ItemStack> {
 
     public List<ItemStack> stackList() {
         return this.ingredientList.stream()
-            .flatMap(i -> i.stackList().stream())
-            .toList();
+                .flatMap(i -> i.stackList().stream())
+                .toList();
     }
 
     public JsonElement toJson() {
@@ -46,8 +46,8 @@ public class IngredientList implements Predicate<ItemStack> {
             return ingredientList.get(0).toJson();
         } else {
             return ingredientList.stream()
-                .map(IngredientWithCount::toJson)
-                .collect(MapMulti.jsonArrayCollector());
+                    .map(IngredientWithCount::toJson)
+                    .collect(MapMulti.jsonArrayCollector());
         }
     }
 

@@ -1,15 +1,5 @@
 package com.yogpc.qp.machines.quarry;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.Spliterators;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.filler.FillerAction;
@@ -21,6 +11,10 @@ import net.minecraft.nbt.LongArrayTag;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.*;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public abstract class Target {
     static boolean THROW_IF_INVALID_NBT = !FMLEnvironment.production;
@@ -126,7 +120,7 @@ final class DigTarget extends Target {
         this.y = y;
         var x = y % 2 == 0 ? area.minX() + 1 : area.maxX() - 1;
         currentTarget = new BlockPos.MutableBlockPos(
-            x, y, initZ(x, this.y, area.minZ() + 1, area.maxZ() - 1)
+                x, y, initZ(x, this.y, area.minZ() + 1, area.maxZ() - 1)
         );
     }
 
@@ -188,10 +182,10 @@ final class DigTarget extends Target {
     @Override
     public String toString() {
         return "DigTarget{" +
-            "area=" + area +
-            ", y=" + y +
-            ", currentTarget=" + currentTarget +
-            '}';
+                "area=" + area +
+                ", y=" + y +
+                ", currentTarget=" + currentTarget +
+                '}';
     }
 }
 
@@ -210,7 +204,7 @@ final class FrameTarget extends Target {
     FrameTarget(Area area, BlockPos pre) {
         this.area = area;
         this.iterator = Area.getFramePosStream(area)
-            .dropWhile(p -> !p.equals(pre)).iterator();
+                .dropWhile(p -> !p.equals(pre)).iterator();
         this.currentTarget = iterator.hasNext() ? iterator.next() : null;
     }
 
@@ -251,10 +245,10 @@ final class FrameTarget extends Target {
     @Override
     public String toString() {
         return "FrameTarget{" +
-            "area=" + area +
-            ", currentTarget=" + currentTarget +
-            ", hasNext=" + iterator.hasNext() +
-            '}';
+                "area=" + area +
+                ", currentTarget=" + currentTarget +
+                ", hasNext=" + iterator.hasNext() +
+                '}';
     }
 }
 
@@ -308,9 +302,9 @@ final class PosesTarget extends Target {
     @Override
     public String toString() {
         return "PosesTarget{" +
-            "currentTarget=" + currentTarget +
-            ", size=" + posList.size() +
-            '}';
+                "currentTarget=" + currentTarget +
+                ", size=" + posList.size() +
+                '}';
     }
 }
 
@@ -345,7 +339,7 @@ final class FrameInsideTarget extends Target {
     @NotNull
     public Stream<BlockPos> allPoses() {
         return BlockPos.betweenClosedStream(area.minX() + 1, minY, area.minZ() + 1,
-            area.maxX() - 1, maxY, area.maxZ() - 1);
+                area.maxX() - 1, maxY, area.maxZ() - 1);
     }
 
     @Override
@@ -372,11 +366,11 @@ final class FrameInsideTarget extends Target {
     @Override
     public String toString() {
         return "FrameInsideTarget{" +
-            "area=" + area +
-            ", minY=" + minY +
-            ", maxY=" + maxY +
-            ", index=" + index +
-            '}';
+                "area=" + area +
+                ", minY=" + minY +
+                ", maxY=" + maxY +
+                ", index=" + index +
+                '}';
     }
 }
 

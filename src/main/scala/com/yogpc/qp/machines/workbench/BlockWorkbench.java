@@ -19,7 +19,8 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
@@ -29,8 +30,10 @@ public class BlockWorkbench extends QPBlock implements EntityBlock {
     public static final String GUI_ID = QuarryPlus.modID + ":gui_" + NAME;
 
     public BlockWorkbench() {
-        super(BlockBehaviour.Properties.of(Material.METAL)
-            .strength(3.0f), NAME);
+        super(BlockBehaviour.Properties.of()
+                .mapColor(MapColor.METAL)
+                .pushReaction(PushReaction.BLOCK)
+                .strength(3.0f), NAME);
     }
 
     @Override
@@ -45,7 +48,7 @@ public class BlockWorkbench extends QPBlock implements EntityBlock {
         if (!player.isShiftKeyDown()) {
             if (!level.isClientSide) {
                 level.getBlockEntity(pos, Holder.WORKBENCH_TYPE)
-                    .ifPresent(w -> NetworkHooks.openScreen(((ServerPlayer) player), w, pos));
+                        .ifPresent(w -> NetworkHooks.openScreen(((ServerPlayer) player), w, pos));
             }
             return InteractionResult.SUCCESS;
         }
@@ -58,7 +61,7 @@ public class BlockWorkbench extends QPBlock implements EntityBlock {
         if (state.getBlock() != newState.getBlock()) {
             if (level.getBlockEntity(pos) instanceof TileWorkbench workbench) {
                 workbench.ingredientInventory.forEach(i ->
-                    Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), i));
+                        Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), i));
                 level.updateNeighbourForOutputSignal(pos, this);
             }
             super.onRemove(state, level, pos, newState, moved);
@@ -74,6 +77,6 @@ public class BlockWorkbench extends QPBlock implements EntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> entityType) {
         return level.isClientSide ? null : checkType(entityType, Holder.WORKBENCH_TYPE,
-            new CombinedBlockEntityTicker<>(PowerTile.logTicker(), (l, p, s, workbench) -> workbench.tick()));
+                new CombinedBlockEntityTicker<>(PowerTile.logTicker(), (l, p, s, workbench) -> workbench.tick()));
     }
 }

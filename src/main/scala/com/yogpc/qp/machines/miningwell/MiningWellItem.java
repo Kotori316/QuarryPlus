@@ -1,12 +1,12 @@
 package com.yogpc.qp.machines.miningwell;
 
-import java.util.Set;
-
 import com.yogpc.qp.machines.EnchantableItem;
 import com.yogpc.qp.machines.QPBlock;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
+
+import java.util.Set;
 
 final class MiningWellItem extends QPBlock.QPBlockItem implements EnchantableItem {
     MiningWellItem(QPBlock block) {

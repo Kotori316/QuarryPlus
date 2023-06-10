@@ -77,7 +77,7 @@ class MachineStorageTest {
             storage.addItem(new ItemStack(Items.APPLE, 10));
             var result = storage.itemHandler.map(i -> i.insertItem(0, new ItemStack(Items.APPLE, 15), false));
             assertAll(
-                () -> assertTrue(result.map(i -> ItemStack.isSame(i, new ItemStack(Items.APPLE, 15))).orElse(Boolean.FALSE)),
+                () -> assertTrue(result.map(i -> ItemStack.isSameItemSameTags(i, new ItemStack(Items.APPLE, 15))).orElse(Boolean.FALSE)),
                 () -> assertEquals(10, storage.itemMap.get(new ItemKey(Items.APPLE, null)))
             );
         }
@@ -138,7 +138,7 @@ class MachineStorageTest {
             assertNotEquals(EmptyHandler.INSTANCE, handler);
 
             var extractItem = handler.extractItem(0, 3, true);
-            assertTrue(ItemStack.isSame(extractItem, new ItemStack(Items.APPLE, 3)));
+            assertTrue(ItemStack.isSameItemSameTags(extractItem, new ItemStack(Items.APPLE, 3)));
             assertEquals(10, storage.itemMap.get(new ItemKey(Items.APPLE, null)));
         }
 
@@ -149,7 +149,7 @@ class MachineStorageTest {
             assertNotEquals(EmptyHandler.INSTANCE, handler);
 
             var extractItem = handler.extractItem(0, 3, false);
-            assertTrue(ItemStack.isSame(extractItem, new ItemStack(Items.APPLE, 3)));
+            assertTrue(ItemStack.isSameItemSameTags(extractItem, new ItemStack(Items.APPLE, 3)));
             assertEquals(7, storage.itemMap.get(new ItemKey(Items.APPLE, null)));
         }
 
@@ -160,7 +160,7 @@ class MachineStorageTest {
             assertNotEquals(EmptyHandler.INSTANCE, handler);
 
             var extractItem = handler.extractItem(0, 30, false);
-            assertTrue(ItemStack.isSame(extractItem, new ItemStack(Items.APPLE, 10)));
+            assertTrue(ItemStack.isSameItemSameTags(extractItem, new ItemStack(Items.APPLE, 10)));
             assertNull(storage.itemMap.get(new ItemKey(Items.APPLE, null)));
         }
 
@@ -171,7 +171,7 @@ class MachineStorageTest {
             assertNotEquals(EmptyHandler.INSTANCE, handler);
 
             var extractItem = handler.extractItem(0, 30, true);
-            assertTrue(ItemStack.isSame(extractItem, new ItemStack(Items.APPLE, 10)));
+            assertTrue(ItemStack.isSameItemSameTags(extractItem, new ItemStack(Items.APPLE, 10)));
             assertEquals(10, storage.itemMap.get(new ItemKey(Items.APPLE, null)));
         }
 
@@ -185,8 +185,8 @@ class MachineStorageTest {
             var extractItem2 = handler.extractItem(0, 3, false);
 
             assertAll(
-                () -> assertTrue(ItemStack.isSame(extractItem1, new ItemStack(Items.APPLE, 3))),
-                () -> assertTrue(ItemStack.isSame(extractItem2, new ItemStack(Items.APPLE, 3))),
+                () -> assertTrue(ItemStack.isSameItemSameTags(extractItem1, new ItemStack(Items.APPLE, 3))),
+                () -> assertTrue(ItemStack.isSameItemSameTags(extractItem2, new ItemStack(Items.APPLE, 3))),
                 () -> assertEquals(4, storage.itemMap.get(new ItemKey(Items.APPLE, null)))
             );
         }
@@ -200,8 +200,8 @@ class MachineStorageTest {
             var extractItem1 = handler.extractItem(0, 3, false);
             var extractItem2 = handler.extractItem(1, 3, false);
             assertAll(
-                () -> assertTrue(ItemStack.isSame(extractItem1, new ItemStack(Items.APPLE, 3))),
-                () -> assertTrue(ItemStack.isSame(extractItem2, new ItemStack(Items.GOLDEN_APPLE, 3))),
+                () -> assertTrue(ItemStack.isSameItemSameTags(extractItem1, new ItemStack(Items.APPLE, 3))),
+                () -> assertTrue(ItemStack.isSameItemSameTags(extractItem2, new ItemStack(Items.GOLDEN_APPLE, 3))),
                 () -> assertEquals(7, storage.itemMap.get(new ItemKey(Items.APPLE, null))),
                 () -> assertEquals(2, storage.itemMap.get(new ItemKey(Items.GOLDEN_APPLE, null))),
                 () -> assertEquals(1, storage.itemMap.get(new ItemKey(new ItemStack(Items.DIAMOND_PICKAXE))))
@@ -217,8 +217,8 @@ class MachineStorageTest {
             var extractItem1 = handler.extractItem(1, 3, false);
             var extractItem2 = handler.extractItem(1, 3, false);
 
-            assertTrue(ItemStack.isSame(extractItem1, new ItemStack(Items.GOLDEN_APPLE, 3)));
-            assertTrue(ItemStack.isSame(extractItem2, new ItemStack(Items.GOLDEN_APPLE, 2)));
+            assertTrue(ItemStack.isSameItemSameTags(extractItem1, new ItemStack(Items.GOLDEN_APPLE, 3)));
+            assertTrue(ItemStack.isSameItemSameTags(extractItem2, new ItemStack(Items.GOLDEN_APPLE, 2)));
             assertNull(storage.itemMap.get(new ItemKey(Items.GOLDEN_APPLE, null)));
 
             var extracted3 = handler.extractItem(1, 3, false);

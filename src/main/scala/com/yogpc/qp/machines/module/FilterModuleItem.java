@@ -1,8 +1,5 @@
 package com.yogpc.qp.machines.module;
 
-import java.util.List;
-import java.util.Optional;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.ItemKey;
 import com.yogpc.qp.machines.QPItem;
@@ -23,6 +20,9 @@ import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+import java.util.Optional;
+
 public final class FilterModuleItem extends QPItem implements QuarryModuleProvider.Item {
     public static final String NAME = "filter_module";
     public static final String KEY_ITEMS = "filter_items";
@@ -34,8 +34,8 @@ public final class FilterModuleItem extends QPItem implements QuarryModuleProvid
     @Override
     public QuarryModule getModule(@NotNull ItemStack stack) {
         var tagList = Optional.ofNullable(stack.getTag())
-            .map(t -> t.getList(KEY_ITEMS, Tag.TAG_COMPOUND))
-            .orElse(null);
+                .map(t -> t.getList(KEY_ITEMS, Tag.TAG_COMPOUND))
+                .orElse(null);
         return new FilterModule(tagList);
     }
 
@@ -57,13 +57,13 @@ public final class FilterModuleItem extends QPItem implements QuarryModuleProvid
         tooltips.add(Component.translatable("quarryplus.tooltip.filter_module_1"));
         tooltips.add(Component.translatable("quarryplus.tooltip.filter_module_2"));
         var keys = FilterModule.getFromTag(Optional.ofNullable(stack.getTag())
-                .map(t -> t.getList(KEY_ITEMS, Tag.TAG_COMPOUND)).orElse(null))
-            .stream()
-            .map(ItemKey::getId)
-            .map(ResourceLocation::toString);
+                        .map(t -> t.getList(KEY_ITEMS, Tag.TAG_COMPOUND)).orElse(null))
+                .stream()
+                .map(ItemKey::getId)
+                .map(ResourceLocation::toString);
         keys.map(s -> "  " + s)
-            .map(Component::literal)
-            .forEach(tooltips::add);
+                .map(Component::literal)
+                .forEach(tooltips::add);
     }
 
     private record InteractionObject(ItemStack stack) implements MenuProvider {

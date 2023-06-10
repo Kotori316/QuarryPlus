@@ -1,7 +1,5 @@
 package com.yogpc.qp.machines.module;
 
-import java.util.List;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPItem;
 import net.minecraft.network.chat.Component;
@@ -10,6 +8,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class BedrockModuleItem extends QPItem implements QuarryModuleProvider.Item {
     public static final String NAME = "remove_bedrock_module";

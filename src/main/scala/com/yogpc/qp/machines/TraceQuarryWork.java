@@ -1,11 +1,5 @@
 package com.yogpc.qp.machines;
 
-import java.net.URI;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
@@ -21,6 +15,12 @@ import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.jetbrains.annotations.Nullable;
 
+import java.net.URI;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 public final class TraceQuarryWork {
     public static final boolean enabled;
     private static final LoggerContext CONTEXT;
@@ -31,7 +31,7 @@ public final class TraceQuarryWork {
         enabled = QuarryPlus.config.common.logAllQuarryWork.get();
         if (enabled) {
             CONTEXT = Configurator.initialize("quarryplus-config", null,
-                URI.create(Objects.requireNonNull(TraceQuarryWork.class.getResource("/quarry-log4j2.xml")).toString())
+                    URI.create(Objects.requireNonNull(TraceQuarryWork.class.getResource("/quarry-log4j2.xml")).toString())
             );
             LOGGER = CONTEXT.getLogger("TQW");
             MARKER = MarkerManager.getMarker("QUARRY_TRACE");
@@ -71,14 +71,14 @@ public final class TraceQuarryWork {
     public static void blockRemoveSucceed(PowerTile tile, BlockPos pos, BlockPos targetPos, BlockState state, List<ItemStack> drops, int exp) {
         if (enabled) {
             LOGGER.debug(MARKER, "{} ({},{},{}) SUCCESS {} EXP={} ({})", header(tile, pos), targetPos.getX(), targetPos.getY(), targetPos.getZ(), state, exp,
-                drops.stream().map(s -> "%dx %s".formatted(s.getCount(), ForgeRegistries.ITEMS.getKey(s.getItem()))).collect(Collectors.joining(",")));
+                    drops.stream().map(s -> "%dx %s".formatted(s.getCount(), ForgeRegistries.ITEMS.getKey(s.getItem()))).collect(Collectors.joining(",")));
         }
     }
 
     public static void blockRemoveSucceed(PowerTile tile, BlockPos pos, BlockPos targetPos, BlockState state, Map<ItemKey, Long> drops, int exp) {
         if (enabled) {
             LOGGER.debug(MARKER, "{} ({},{},{}) SUCCESS {} EXP={} ({})", header(tile, pos), targetPos.getX(), targetPos.getY(), targetPos.getZ(), state, exp,
-                drops.entrySet().stream().map(s -> "%dx %s".formatted(s.getValue(), s.getKey().getId())).collect(Collectors.joining(",")));
+                    drops.entrySet().stream().map(s -> "%dx %s".formatted(s.getValue(), s.getKey().getId())).collect(Collectors.joining(",")));
         }
     }
 

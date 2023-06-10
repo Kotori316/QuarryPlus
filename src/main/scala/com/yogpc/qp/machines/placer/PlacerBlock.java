@@ -1,9 +1,5 @@
 package com.yogpc.qp.machines.placer;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Predicate;
-
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPBlock;
@@ -31,10 +27,15 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Predicate;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.TRIGGERED;
@@ -43,7 +44,9 @@ public class PlacerBlock extends QPBlock implements EntityBlock {
     public static final String NAME = "placer_plus";
 
     public PlacerBlock() {
-        super(Properties.of(Material.METAL).strength(1.2f), NAME);
+        super(Properties.of()
+                .mapColor(MapColor.METAL)
+                .pushReaction(PushReaction.BLOCK).strength(1.2f), NAME);
         registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.NORTH).setValue(TRIGGERED, Boolean.FALSE));
     }
 
@@ -65,7 +68,7 @@ public class PlacerBlock extends QPBlock implements EntityBlock {
                     });
                 } else {
                     world.getBlockEntity(pos, Holder.PLACER_TYPE).ifPresent(o ->
-                        NetworkHooks.openScreen(((ServerPlayer) player), o, pos));
+                            NetworkHooks.openScreen(((ServerPlayer) player), o, pos));
                 }
             }
             return InteractionResult.SUCCESS;
@@ -139,13 +142,13 @@ public class PlacerBlock extends QPBlock implements EntityBlock {
         boolean poweredOld = state.getValue(TRIGGERED);
         if (poweredNow && !poweredOld) {
             if (worldIn.getBlockEntity(pos, Holder.PLACER_TYPE)
-                .filter(p -> p.redstoneMode.isPulse()).isPresent()) {
+                    .filter(p -> p.redstoneMode.isPulse()).isPresent()) {
                 worldIn.scheduleTick(pos, this, 1);
             }
             worldIn.setBlock(pos, state.setValue(TRIGGERED, Boolean.TRUE), Block.UPDATE_INVISIBLE);
         } else if (!poweredNow && poweredOld) {
             if (worldIn.getBlockEntity(pos, Holder.PLACER_TYPE)
-                .filter(p -> p.redstoneMode.isPulse()).isPresent()) {
+                    .filter(p -> p.redstoneMode.isPulse()).isPresent()) {
                 worldIn.scheduleTick(pos, this, 1);
             }
             worldIn.setBlock(pos, state.setValue(TRIGGERED, Boolean.FALSE), Block.UPDATE_INVISIBLE);
@@ -156,7 +159,7 @@ public class PlacerBlock extends QPBlock implements EntityBlock {
 
     public static boolean isPoweredToWork(Level worldIn, BlockPos pos, @Nullable Direction currentFacing) {
         return Arrays.stream(DIRECTIONS).filter(Predicate.isEqual(currentFacing).negate())
-            .anyMatch(f -> worldIn.hasSignal(pos.relative(f), f)) || worldIn.hasNeighborSignal(pos.above());
+                .anyMatch(f -> worldIn.hasSignal(pos.relative(f), f)) || worldIn.hasNeighborSignal(pos.above());
     }
 
 }

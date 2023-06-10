@@ -1,7 +1,5 @@
 package com.yogpc.qp.packet;
 
-import java.util.function.Supplier;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -10,6 +8,8 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.network.NetworkEvent;
+
+import java.util.function.Supplier;
 
 import static com.yogpc.qp.utils.MapMulti.optCast;
 
@@ -45,8 +45,8 @@ public final class ClientSyncMessage implements IMessage {
     public static void onReceive(ClientSyncMessage message, Supplier<NetworkEvent.Context> supplier) {
         var world = PacketHandler.getWorld(supplier.get(), message.pos, message.dim);
         supplier.get().enqueueWork(() ->
-            world.map(l -> l.getBlockEntity(message.pos))
-                .flatMap(optCast(ClientSync.class))
-                .ifPresent(t -> t.fromClientTag(message.tag)));
+                world.map(l -> l.getBlockEntity(message.pos))
+                        .flatMap(optCast(ClientSync.class))
+                        .ifPresent(t -> t.fromClientTag(message.tag)));
     }
 }

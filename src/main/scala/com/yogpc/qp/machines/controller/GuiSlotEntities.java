@@ -1,7 +1,7 @@
 package com.yogpc.qp.machines.controller;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -32,14 +32,14 @@ final class GuiSlotEntities extends ObjectSelectionList<GuiSlotEntities.Entry> {
         }
 
         @Override
-        public void render(PoseStack matrix, int entryIdx, int top, int left, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isHovered, float partialTicks) {
+        public void render(GuiGraphics graphics, int entryIdx, int top, int left, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isHovered, float partialTicks) {
             String name = location.toString();
             Minecraft minecraft = Minecraft.getInstance();
 
             assert minecraft.screen != null;
-            minecraft.font.draw(matrix, name,
-                (minecraft.screen.width - minecraft.font.width(name)) >> 1,
-                top + 2, 0xFFFFFF);
+            graphics.drawString(minecraft.font, name,
+                    (minecraft.screen.width - minecraft.font.width(name)) >> 1,
+                    top + 2, 0xFFFFFF, false);
         }
 
         @Override

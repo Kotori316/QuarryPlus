@@ -1,7 +1,5 @@
 package com.yogpc.qp.machines.controller;
 
-import java.util.function.Supplier;
-
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.packet.PacketHandler;
 import net.minecraft.core.BlockPos;
@@ -11,6 +9,8 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkEvent;
+
+import java.util.function.Supplier;
 
 /**
  * To Server only.
@@ -40,8 +40,8 @@ public final class SetSpawnerEntityMessage implements IMessage {
 
     public static void onReceive(SetSpawnerEntityMessage message, Supplier<NetworkEvent.Context> supplier) {
         supplier.get().enqueueWork(() ->
-            PacketHandler.getWorld(supplier.get(), message.pos, message.dim)
-                .ifPresent(level -> BlockController.setSpawnerEntity(level, message.pos, message.entity))
+                PacketHandler.getWorld(supplier.get(), message.pos, message.dim)
+                        .ifPresent(level -> BlockController.setSpawnerEntity(level, message.pos, message.entity))
         );
     }
 }

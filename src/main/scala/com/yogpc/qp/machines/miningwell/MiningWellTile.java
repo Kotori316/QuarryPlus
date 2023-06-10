@@ -1,19 +1,8 @@
 package com.yogpc.qp.machines.miningwell;
 
-import java.util.List;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.machines.CheckerLog;
-import com.yogpc.qp.machines.EnchantmentLevel;
-import com.yogpc.qp.machines.InvUtils;
-import com.yogpc.qp.machines.ItemConverter;
-import com.yogpc.qp.machines.MachineStorage;
-import com.yogpc.qp.machines.PowerConfig;
-import com.yogpc.qp.machines.PowerManager;
-import com.yogpc.qp.machines.PowerTile;
-import com.yogpc.qp.machines.QuarryFakePlayer;
+import com.yogpc.qp.machines.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -32,6 +21,9 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.fluids.FluidType;
 import org.jetbrains.annotations.VisibleForTesting;
+
+import java.util.List;
+import java.util.stream.Stream;
 
 public class MiningWellTile extends PowerTile implements CheckerLog, MachineStorage.HasStorage, EnchantmentLevel.HasEnchantments {
     private final MachineStorage storage = new MachineStorage();
@@ -83,7 +75,7 @@ public class MiningWellTile extends PowerTile implements CheckerLog, MachineStor
                     } else {
                         // What ?
                         QuarryPlus.LOGGER.warn("Fluid is nether LiquidBlock nor BucketPickup, but {}({})",
-                            state.getBlock(), state.getBlock().getClass());
+                                state.getBlock(), state.getBlock().getClass());
                     }
                     level.setBlock(targetPos, Holder.BLOCK_DUMMY.defaultBlockState(), Block.UPDATE_ALL);
                 }
@@ -122,11 +114,11 @@ public class MiningWellTile extends PowerTile implements CheckerLog, MachineStor
     @Override
     public List<? extends Component> getDebugLogs() {
         return Stream.of(
-            "MinY: " + digMinY,
-            "Interval: " + interval,
-            "Finished: " + finished,
-            "Efficiency: " + efficiencyLevel,
-            energyString()
+                "MinY: " + digMinY,
+                "Interval: " + interval,
+                "Finished: " + finished,
+                "Efficiency: " + efficiencyLevel,
+                energyString()
         ).map(Component::literal).toList();
     }
 

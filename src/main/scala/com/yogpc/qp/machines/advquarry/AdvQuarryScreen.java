@@ -1,16 +1,14 @@
 package com.yogpc.qp.machines.advquarry;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.misc.IndexedButton;
 import com.yogpc.qp.machines.misc.SmallCheckBox;
 import com.yogpc.qp.packet.PacketHandler;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -31,23 +29,22 @@ public class AdvQuarryScreen extends AbstractContainerScreen<AdvQuarryMenu> impl
     }
 
     @Override
-    public void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
-        this.renderBackground(matrices);
-        super.render(matrices, mouseX, mouseY, delta);
-        this.renderTooltip(matrices, mouseX, mouseY);
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+        this.renderBackground(graphics);
+        super.render(graphics, mouseX, mouseY, delta);
+        this.renderTooltip(graphics, mouseX, mouseY);
     }
 
     @Override
-    protected void renderBg(PoseStack matrices, float delta, int mouseX, int mouseY) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, LOCATION);
-        com.yogpc.qp.machines.ScreenHelper.blit(matrices, getGuiLeft(), getGuiTop(), 0, 0, imageWidth, imageHeight);
+    protected void renderBg(GuiGraphics graphics, float delta, int mouseX, int mouseY) {
+        int pX = getGuiLeft();
+        int pY = getGuiTop();
+        graphics.blit(LOCATION, pX, pY, 0, 0, imageWidth, imageHeight);
     }
 
     @Override
-    protected void renderLabels(PoseStack matrices, int mouseX, int mouseY) {
-        super.renderLabels(matrices, mouseX, mouseY);
+    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+        super.renderLabels(graphics, mouseX, mouseY);
         var range = getMenu().quarry.getArea();
         if (range != null) {
             var chunkPos = new ChunkPos(getMenu().quarry.getBlockPos());
@@ -55,10 +52,10 @@ public class AdvQuarryScreen extends AbstractContainerScreen<AdvQuarryMenu> impl
             double south = range.maxZ() - chunkPos.getMaxBlockZ() - 1;
             double east = range.maxX() - chunkPos.getMaxBlockX() - 1;
             double west = chunkPos.getMinBlockX() - range.minX() - 1;
-            this.font.draw(matrices, String.valueOf(north / 16), 77, 18, 0x404040);
-            this.font.draw(matrices, String.valueOf(south / 16), 77, 62, 0x404040);
-            this.font.draw(matrices, String.valueOf(west / 16), 24,  40, 0x404040);
-            this.font.draw(matrices, String.valueOf(east / 16), 131, 40, 0x404040);
+            graphics.drawString(this.font, String.valueOf(north / 16), 77, 18, 0x404040, false);
+            graphics.drawString(this.font, String.valueOf(south / 16), 77, 62, 0x404040, false);
+            graphics.drawString(this.font, String.valueOf(west / 16), 24, 40, 0x404040, false);
+            graphics.drawString(this.font, String.valueOf(east / 16), 131, 40, 0x404040, false);
         }
     }
 
@@ -67,12 +64,12 @@ public class AdvQuarryScreen extends AbstractContainerScreen<AdvQuarryMenu> impl
         super.init();
         var plus = Component.literal("+");
         var minus = Component.literal("-");
-        this.addRenderableWidget(new IndexedButton(0, getGuiLeft() +  99, getGuiTop() + 17, 12, 8, plus, this));
-        this.addRenderableWidget(new IndexedButton(1, getGuiLeft() +  64, getGuiTop() + 17, 12, 8, minus, this));
-        this.addRenderableWidget(new IndexedButton(2, getGuiLeft() +  99, getGuiTop() + 61, 12, 8, plus, this));
-        this.addRenderableWidget(new IndexedButton(3, getGuiLeft() +  64, getGuiTop() + 61, 12, 8, minus, this));
-        this.addRenderableWidget(new IndexedButton(4, getGuiLeft() +  46, getGuiTop() + 39, 12, 8, plus, this));
-        this.addRenderableWidget(new IndexedButton(5, getGuiLeft() +  11, getGuiTop() + 39, 12, 8, minus, this));
+        this.addRenderableWidget(new IndexedButton(0, getGuiLeft() + 99, getGuiTop() + 17, 12, 8, plus, this));
+        this.addRenderableWidget(new IndexedButton(1, getGuiLeft() + 64, getGuiTop() + 17, 12, 8, minus, this));
+        this.addRenderableWidget(new IndexedButton(2, getGuiLeft() + 99, getGuiTop() + 61, 12, 8, plus, this));
+        this.addRenderableWidget(new IndexedButton(3, getGuiLeft() + 64, getGuiTop() + 61, 12, 8, minus, this));
+        this.addRenderableWidget(new IndexedButton(4, getGuiLeft() + 46, getGuiTop() + 39, 12, 8, plus, this));
+        this.addRenderableWidget(new IndexedButton(5, getGuiLeft() + 11, getGuiTop() + 39, 12, 8, minus, this));
         this.addRenderableWidget(new IndexedButton(6, getGuiLeft() + 153, getGuiTop() + 39, 12, 8, plus, this));
         this.addRenderableWidget(new IndexedButton(7, getGuiLeft() + 118, getGuiTop() + 39, 12, 8, minus, this));
 
@@ -80,13 +77,13 @@ public class AdvQuarryScreen extends AbstractContainerScreen<AdvQuarryMenu> impl
         this.addRenderableWidget(new IndexedButton(9, getGuiLeft() + 8, getGuiTop() + 58, 50, 12, Component.literal("Modules"), this));
 
         areaFrameCheckBox = new SmallCheckBox(getGuiLeft() + 8, getGuiTop() + 72, 60, 10, 10, 10,
-            Component.literal("Area Frame"), getMenu().quarry.workConfig.placeAreaFrame(), this);
+                Component.literal("Area Frame"), getMenu().quarry.workConfig.placeAreaFrame(), this);
         this.addRenderableWidget(areaFrameCheckBox);
         chunkByChunkCheckBox = new SmallCheckBox(getGuiLeft() + 8, getGuiTop() + 83, 60, 10, 10, 10,
-            Component.literal("Chunk by Chunk"), getMenu().quarry.workConfig.chunkByChunk(), this);
+                Component.literal("Chunk by Chunk"), getMenu().quarry.workConfig.chunkByChunk(), this);
         this.addRenderableWidget(chunkByChunkCheckBox);
         startCheckBox = new SmallCheckBox(getGuiLeft() + 8, getGuiTop() + 94, 60, 10, 10, 10,
-            Component.literal("Ready to Start"), getMenu().quarry.workConfig.startImmediately(), this);
+                Component.literal("Ready to Start"), getMenu().quarry.workConfig.startImmediately(), this);
         this.addRenderableWidget(startCheckBox);
     }
 

@@ -1,9 +1,5 @@
 package com.yogpc.qp.machines.filler;
 
-import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.PowerTile;
 import net.minecraft.core.BlockPos;
@@ -22,6 +18,10 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public final class FillerAction {
     private static final Logger LOGGER = QuarryPlus.getLogger(FillerAction.class);
@@ -136,7 +136,7 @@ public final class FillerAction {
     private static BlockState getStateFromItem(BlockItem blockItem, DirectionalPlaceContext context) {
         try {
             return (BlockState) ObfuscationReflectionHelper.findMethod(BlockItem.class, "m_5965_", BlockPlaceContext.class)
-                .invoke(blockItem, context);
+                    .invoke(blockItem, context);
         } catch (ReflectiveOperationException e) {
             LOGGER.error("Caught exception in Filler", e);
             return null;

@@ -1,9 +1,5 @@
 package com.yogpc.qp.render;
 
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.stream.Stream;
-
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
@@ -17,6 +13,10 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 @OnlyIn(Dist.CLIENT)
 public class RenderMarker implements BlockEntityRenderer<TileMarker> {
@@ -53,14 +53,14 @@ public class RenderMarker implements BlockEntityRenderer<TileMarker> {
             var zMin = Math.max(playerZ - visibleRange, markerPos.getZ() - TileMarker.MAX_SEARCH);
             var zMax = Math.min(playerZ + visibleRange, markerPos.getZ() + TileMarker.MAX_SEARCH);
             renderBoxes = Stream.of(
-                    !reduceLineIfPlayerIsFar || Math.abs(markerPos.getZ() - playerZ) < visibleRange ? Box.apply(xMin + b, markerPos.getY() + a, markerPos.getZ() + a,
-                        xMax + c, markerPos.getY() + a, markerPos.getZ() + a,
-                        xMax - xMin - 0.25d, 1d / 8d + 0.001d, 1d / 8d + 0.001d, false, false) : null,
-                    !reduceLineIfPlayerIsFar || Math.abs(markerPos.getX() - playerX) < visibleRange ? Box.apply(markerPos.getX() + a, markerPos.getY() + a, zMin + b,
-                        markerPos.getX() + a, markerPos.getY() + a, zMax + c,
-                        1d / 8d + 0.001d, 1d / 8d + 0.001d, zMax - zMin - 0.25d, false, false) : null
-                ).filter(Objects::nonNull)
-                .toArray(Box[]::new);
+                            !reduceLineIfPlayerIsFar || Math.abs(markerPos.getZ() - playerZ) < visibleRange ? Box.apply(xMin + b, markerPos.getY() + a, markerPos.getZ() + a,
+                                    xMax + c, markerPos.getY() + a, markerPos.getZ() + a,
+                                    xMax - xMin - 0.25d, 1d / 8d + 0.001d, 1d / 8d + 0.001d, false, false) : null,
+                            !reduceLineIfPlayerIsFar || Math.abs(markerPos.getX() - playerX) < visibleRange ? Box.apply(markerPos.getX() + a, markerPos.getY() + a, zMin + b,
+                                    markerPos.getX() + a, markerPos.getY() + a, zMax + c,
+                                    1d / 8d + 0.001d, 1d / 8d + 0.001d, zMax - zMin - 0.25d, false, false) : null
+                    ).filter(Objects::nonNull)
+                    .toArray(Box[]::new);
             sprite = Sprites.INSTANCE.getWhite();
             color = ColorBox.markerRedColor;
         } else {
@@ -123,12 +123,12 @@ public class RenderMarker implements BlockEntityRenderer<TileMarker> {
         }
 
         return Arrays.stream(lineBoxes).filter(Objects::nonNull)
-            .map(range -> Box.apply(range,
-                Math.max(range.getXsize(), 1d / 8d + 0.001d),
-                Math.max(range.getYsize(), 1d / 8d + 0.001d),
-                Math.max(range.getZsize(), 1d / 8d + 0.001d),
-                false, false))
-            .toArray(Box[]::new);
+                .map(range -> Box.apply(range,
+                        Math.max(range.getXsize(), 1d / 8d + 0.001d),
+                        Math.max(range.getYsize(), 1d / 8d + 0.001d),
+                        Math.max(range.getZsize(), 1d / 8d + 0.001d),
+                        false, false))
+                .toArray(Box[]::new);
     }
 
     @Override

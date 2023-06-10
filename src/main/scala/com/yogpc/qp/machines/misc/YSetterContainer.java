@@ -16,7 +16,7 @@ public class YSetterContainer extends AbstractContainerMenu {
 
     public YSetterContainer(int syncId, Player player, BlockPos pos) {
         super(Holder.Y_SETTER_MENU_TYPE, syncId);
-        yAccessor = YAccessor.get(player.level.getBlockEntity(pos));
+        yAccessor = YAccessor.get(player.level().getBlockEntity(pos));
 
         final int oneBox = 18;
         for (int h = 0; h < 3; h++) {

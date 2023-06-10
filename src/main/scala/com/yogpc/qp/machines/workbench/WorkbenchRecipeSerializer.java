@@ -1,8 +1,5 @@
 package com.yogpc.qp.machines.workbench;
 
-import java.util.Map;
-import java.util.Objects;
-
 import com.google.gson.JsonObject;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -12,12 +9,15 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.Map;
+import java.util.Objects;
+
 public class WorkbenchRecipeSerializer implements RecipeSerializer<WorkbenchRecipe> {
     private final Map<String, PacketSerialize<? extends WorkbenchRecipe>> serializeMap;
 
     WorkbenchRecipeSerializer() {
         serializeMap = Map.of(
-            "default", new IngredientRecipeSerialize()
+                "default", new IngredientRecipeSerialize()
         );
     }
 

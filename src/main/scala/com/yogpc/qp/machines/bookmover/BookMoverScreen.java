@@ -1,10 +1,8 @@
 package com.yogpc.qp.machines.bookmover;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.yogpc.qp.QuarryPlus;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -17,20 +15,22 @@ public class BookMoverScreen extends AbstractContainerScreen<BookMoverMenu> {
     }
 
     @Override
-    protected void renderBg(PoseStack matrices, float delta, int mouseX, int mouseY) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, LOCATION);
-        com.yogpc.qp.machines.ScreenHelper.blit(matrices, getGuiLeft(), getGuiTop(), 0, 0, imageWidth, imageHeight);
+    protected void renderBg(GuiGraphics graphics, float delta, int mouseX, int mouseY) {
+        int pX1 = getGuiLeft();
+        int pY1 = getGuiTop();
+        graphics.blit(LOCATION, pX1, pY1, 0, 0, imageWidth, imageHeight);
         if (getMenu().moverIsWorking()) {
-            com.yogpc.qp.machines.ScreenHelper.blit(matrices, getGuiLeft() + 79, getGuiTop() + 35, imageWidth, 14, getMenu().getProgress() * 3 / 125, 16);
+            int pX = getGuiLeft() + 79;
+            int pY = getGuiTop() + 35;
+            int pUWidth = getMenu().getProgress() * 3 / 125;
+            graphics.blit(LOCATION, pX, pY, imageWidth, 14, pUWidth, 16);
         }
     }
 
     @Override
-    public void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
-        this.renderBackground(matrices);
-        super.render(matrices, mouseX, mouseY, delta);
-        this.renderTooltip(matrices, mouseX, mouseY);
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+        this.renderBackground(graphics);
+        super.render(graphics, mouseX, mouseY, delta);
+        this.renderTooltip(graphics, mouseX, mouseY);
     }
 }

@@ -1,16 +1,16 @@
 package com.yogpc.qp.machines.filler;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Function;
-import java.util.function.Predicate;
-
 import com.yogpc.qp.machines.Area;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 public final class SkipIterator {
     FillerTargetPosIterator posIterator;
@@ -68,14 +68,14 @@ public final class SkipIterator {
 
     static SkipIterator fromNbt(CompoundTag tag) {
         var area = Area.fromNBT(tag.getCompound("area")).orElseThrow(() ->
-            new IllegalArgumentException("Invalid tag for SkipIterator. %s".formatted(tag)));
+                new IllegalArgumentException("Invalid tag for SkipIterator. %s".formatted(tag)));
         var action = FillerEntity.Action.valueOf(tag.getString("type"));
         var skipIterator = new SkipIterator(area, action.iteratorProvider);
         var current = BlockPos.of(tag.getLong("current"));
         skipIterator.posIterator.setCurrent(current);
         Arrays.stream(tag.getLongArray("skips"))
-            .mapToObj(BlockPos::of)
-            .forEach(skipIterator.skipped::add);
+                .mapToObj(BlockPos::of)
+                .forEach(skipIterator.skipped::add);
         return skipIterator;
     }
 

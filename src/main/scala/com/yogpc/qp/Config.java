@@ -1,19 +1,5 @@
 package com.yogpc.qp;
 
-import java.io.InputStreamReader;
-import java.lang.reflect.Method;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.Set;
-import java.util.function.BooleanSupplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.google.gson.JsonObject;
 import com.yogpc.qp.machines.PowerConfig;
 import com.yogpc.qp.machines.PowerTile;
@@ -32,6 +18,13 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
+
+import java.io.InputStreamReader;
+import java.lang.reflect.Method;
+import java.util.*;
+import java.util.function.BooleanSupplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.yogpc.qp.utils.MapStreamSyntax.toAny;
 import static com.yogpc.qp.utils.MapStreamSyntax.toEntry;
@@ -77,7 +70,7 @@ public class Config {
             noEnergy = builder.comment("no energy").define("noEnergy", false);
             convertDeepslateOres = builder.comment("Whether quarry converts deepslate ore to normal ore.").define("convertDeepslateOres", false);
             var disabledEntities = List.of("minecraft:ender_dragon", "minecraft:wither",
-                "minecraft:area_effect_cloud", "minecraft:item", "minecraft:player");
+                    "minecraft:area_effect_cloud", "minecraft:item", "minecraft:player");
             spawnerBlackList = builder.comment("Spawner Controller Blacklist").defineListAllowEmpty(List.of("spawnerBlacklist"), () -> disabledEntities, s -> s instanceof String);
             sfqEnergy = builder.comment("The amount of energy[FE] that Solid Fuel Quarry generates in a tick.").defineInRange("sfqEnergy", 2d, 0d, 100d);
             removeCommonMaterialsByCD = builder.comment("Remove common materials(Stone, Dirt, Grass, Sand, etc.) obtained by Chunk Destroyer").define("removeCommonMaterialsByCD", true);
@@ -85,10 +78,10 @@ public class Config {
             removeFrameAfterQuarryIsRemoved = builder.comment("Remove adjacent frames when quarry is removed.").define("removeFrameAfterQuarryIsRemoved", false);
             allowWorkInClaimedChunkByFBTChunks = builder.comment("Allow quarries to work in claimed chunk(FTB Chunks).").define("allowWorkInClaimedChunkByFBTChunks", false);
             chunkDestroyerLimit = builder.comment("The range limit(unit: blocks) of ChunkDestroyer. Set -1 or 0 to remove limitation.")
-                .defineInRange("chunkDestroyerLimit", -1, -1, Integer.MAX_VALUE);
+                    .defineInRange("chunkDestroyerLimit", -1, -1, Integer.MAX_VALUE);
             allowWorkbenchExtraction = builder.comment("True to allow pipes to extract items in WorkbenchPlus").define("allowWorkbenchExtraction", false);
             enableChunkLoader = builder.comment("Use simple chunk load function.", "If you have other chunk load system, please disable this and use other mods.")
-                .define("enableChunkLoader", true);
+                    .define("enableChunkLoader", true);
             logAllQuarryWork = builder.comment("Trace quarry work").define("logAllQuarryWork", inDev);
             builder.pop();
         }
@@ -100,27 +93,27 @@ public class Config {
         public EnableMap(ForgeConfigSpec.Builder builder) {
             builder.comment("QuarryPlus Machines. Set true to enable machine or item.").push("machines");
             var defaultConfig = GsonHelper.parse(new InputStreamReader(
-                Objects.requireNonNull(getClass().getResourceAsStream("/machine_default.json"), "Content in Jar must not be absent.")
+                    Objects.requireNonNull(getClass().getResourceAsStream("/machine_default.json"), "Content in Jar must not be absent.")
             ));
             machinesMap = defaultConfig.entrySet().stream()
-                .map(toEntry(e -> new ResourceLocation(QuarryPlus.modID, e.getKey()), e -> Holder.EnableOrNot.valueOf(e.getValue().getAsString())))
-                .map(toAny(Holder.EntryConditionHolder::new))
-                .filter(Holder.EntryConditionHolder::configurable)
-                .sorted(Comparator.comparing(Holder.EntryConditionHolder::path))
-                .map(toEntry(Holder.EntryConditionHolder::path, n -> builder.define(n.path(), !FMLEnvironment.production || n.condition().on())))
-                .collect(Collectors.toMap(Map.Entry::getKey, MapStreamSyntax.valueToAny(v -> v::get)));
+                    .map(toEntry(e -> new ResourceLocation(QuarryPlus.modID, e.getKey()), e -> Holder.EnableOrNot.valueOf(e.getValue().getAsString())))
+                    .map(toAny(Holder.EntryConditionHolder::new))
+                    .filter(Holder.EntryConditionHolder::configurable)
+                    .sorted(Comparator.comparing(Holder.EntryConditionHolder::path))
+                    .map(toEntry(Holder.EntryConditionHolder::path, n -> builder.define(n.path(), !FMLEnvironment.production || n.condition().on())))
+                    .collect(Collectors.toMap(Map.Entry::getKey, MapStreamSyntax.valueToAny(v -> v::get)));
             builder.pop();
         }
 
         public boolean enabled(String s) {
             return Optional.ofNullable(machinesMap.get(s))
-                .map(BooleanSupplier::getAsBoolean)
-                .or(() -> Holder.conditionHolders().stream()
-                    .filter(h -> h.path().equals(s))
-                    .findFirst()
-                    .map(Holder.EntryConditionHolder::condition)
-                    .map(Holder.EnableOrNot::on))
-                .orElse(Boolean.FALSE);
+                    .map(BooleanSupplier::getAsBoolean)
+                    .or(() -> Holder.conditionHolders().stream()
+                            .filter(h -> h.path().equals(s))
+                            .findFirst()
+                            .map(Holder.EntryConditionHolder::condition)
+                            .map(Holder.EnableOrNot::on))
+                    .orElse(Boolean.FALSE);
         }
 
         public boolean enabled(@Nullable ResourceLocation location) {
@@ -151,42 +144,42 @@ public class Config {
             map = new HashMap<>();
             builder.comment("Power settings of each machines").push("powers");
             var defaultConfig = GsonHelper.parse(new InputStreamReader(
-                Objects.requireNonNull(PowerMap.class.getResourceAsStream("/power_default.json"), "Content in Jar must not be absent.")
+                    Objects.requireNonNull(PowerMap.class.getResourceAsStream("/power_default.json"), "Content in Jar must not be absent.")
             ));
             var valuesFromJson = getKeys(defaultConfig);
             var keys = valuesFromJson.stream().map(KeyPair::key).collect(Collectors.toSet());
             var valuesNotInJson = PowerConfig.getAllMethods()
-                .flatMap(m -> Stream.of(QuarryBlock.NAME, SFQuarryBlock.NAME, BlockAdvQuarry.NAME)
-                    .filter(name -> !keys.contains(new Key(name, m.getName())))
-                    .map(name -> new KeyPair(new Key(name, m.getName()), getDefaultValue(m)))
-                );
+                    .flatMap(m -> Stream.of(QuarryBlock.NAME, SFQuarryBlock.NAME, BlockAdvQuarry.NAME)
+                            .filter(name -> !keys.contains(new Key(name, m.getName())))
+                            .map(name -> new KeyPair(new Key(name, m.getName()), getDefaultValue(m)))
+                    );
             Stream.concat(valuesFromJson.stream(), valuesNotInJson)
-                .collect(Collectors.groupingBy(KeyPair::machineName))
-                .entrySet()
-                .stream().map(e -> {
-                    var key = e.getKey();
-                    builder.push(key);
-                    var m = e.getValue().stream().map(keyPair ->
-                        Map.entry(keyPair.key().configName(), builder.defineInRange(keyPair.key().configName(), keyPair.value(), 0, 1e9))
-                    ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-                    builder.pop();
-                    return Map.entry(key, m);
-                })
-                .forEach(e -> map.put(e.getKey(), e.getValue()));
+                    .collect(Collectors.groupingBy(KeyPair::machineName))
+                    .entrySet()
+                    .stream().map(e -> {
+                        var key = e.getKey();
+                        builder.push(key);
+                        var m = e.getValue().stream().map(keyPair ->
+                                Map.entry(keyPair.key().configName(), builder.defineInRange(keyPair.key().configName(), keyPair.value(), 0, 1e9))
+                        ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                        builder.pop();
+                        return Map.entry(key, m);
+                    })
+                    .forEach(e -> map.put(e.getKey(), e.getValue()));
             builder.pop();
             builder.comment("IC2 integration").push("ic2-integration");
             // Default: 1 EU = 4 FE = 4,000,000,000 nano FE
             ic2ConversionRate = builder.comment("The rate to convert EU to nano FE. Default(4,000,000,000) is the rate of 1 EU = 4 FE")
-                .defineInRange("conversionRate", 4 * PowerTile.ONE_FE, 1L, Long.MAX_VALUE);
+                    .defineInRange("conversionRate", 4 * PowerTile.ONE_FE, 1L, Long.MAX_VALUE);
             builder.pop();
         }
 
         public OptionalDouble get(String machineName, String configName) {
             return Optional.ofNullable(this.map.get(machineName))
-                .flatMap(m -> Optional.ofNullable(m.get(configName)))
-                .map(ForgeConfigSpec.ConfigValue::get)
-                .map(OptionalDouble::of)
-                .orElse(OptionalDouble.empty());
+                    .flatMap(m -> Optional.ofNullable(m.get(configName)))
+                    .map(ForgeConfigSpec.ConfigValue::get)
+                    .map(OptionalDouble::of)
+                    .orElse(OptionalDouble.empty());
         }
 
         public boolean has(String machineName) {
@@ -210,11 +203,11 @@ public class Config {
 
         private static List<KeyPair> getKeys(JsonObject object) {
             return object.keySet().stream()
-                .flatMap(machineName ->
-                    object.getAsJsonObject(machineName).entrySet().stream()
-                        .map(toAny((configName, power) -> new KeyPair(new Key(machineName, configName), power.getAsDouble())))
-                )
-                .toList();
+                    .flatMap(machineName ->
+                            object.getAsJsonObject(machineName).entrySet().stream()
+                                    .map(toAny((configName, power) -> new KeyPair(new Key(machineName, configName), power.getAsDouble())))
+                    )
+                    .toList();
         }
     }
 
@@ -225,17 +218,17 @@ public class Config {
         public AcceptableEnchantmentsMap(ForgeConfigSpec.Builder builder) {
             builder.comment("Enchantments. Defines enchantments machines can accept.").push("enchantments");
             var targets = List.of(
-                Map.entry(new ResourceLocation(QuarryPlus.modID, QuarryBlock.NAME), vanillaAllEnchantments()),
-                Map.entry(new ResourceLocation(QuarryPlus.modID, BlockAdvQuarry.NAME), vanillaAllEnchantments()),
-                // Map.entry(new ResourceLocation(QuarryPlus.modID, MiningWellBlock.NAME), List.of("minecraft:efficiency")), // Not configurable
-                Map.entry(new ResourceLocation(QuarryPlus.modID, MiniQuarryBlock.NAME), miniQuarryEnchantments()),
-                Map.entry(new ResourceLocation(QuarryPlus.modID, BlockAdvPump.NAME), pumpEnchantments())
+                    Map.entry(new ResourceLocation(QuarryPlus.modID, QuarryBlock.NAME), vanillaAllEnchantments()),
+                    Map.entry(new ResourceLocation(QuarryPlus.modID, BlockAdvQuarry.NAME), vanillaAllEnchantments()),
+                    // Map.entry(new ResourceLocation(QuarryPlus.modID, MiningWellBlock.NAME), List.of("minecraft:efficiency")), // Not configurable
+                    Map.entry(new ResourceLocation(QuarryPlus.modID, MiniQuarryBlock.NAME), miniQuarryEnchantments()),
+                    Map.entry(new ResourceLocation(QuarryPlus.modID, BlockAdvPump.NAME), pumpEnchantments())
             );
 
             enchantmentsMap = targets.stream()
-                .map(e -> Map.entry(e.getKey().getPath(), builder.defineListAllowEmpty(List.of(e.getKey().getPath()), e::getValue,
-                    o -> o instanceof String s && ResourceLocation.isValidResourceLocation(s))))
-                .collect(MapStreamSyntax.entryToMap());
+                    .map(e -> Map.entry(e.getKey().getPath(), builder.defineListAllowEmpty(List.of(e.getKey().getPath()), e::getValue,
+                            o -> o instanceof String s && ResourceLocation.isValidResourceLocation(s))))
+                    .collect(MapStreamSyntax.entryToMap());
         }
 
         @NotNull
@@ -259,13 +252,13 @@ public class Config {
         public Set<Enchantment> getAllowedEnchantments(ResourceLocation machineName) {
             if (machineName == null) return Set.of();
             return Optional.ofNullable(this.enchantmentsMap.get(machineName.getPath()))
-                .map(ForgeConfigSpec.ConfigValue::get)
-                .orElseGet(List::of)
-                .stream()
-                .map(ResourceLocation::new)
-                .filter(ForgeRegistries.ENCHANTMENTS::containsKey)
-                .map(ForgeRegistries.ENCHANTMENTS::getValue)
-                .collect(Collectors.toSet());
+                    .map(ForgeConfigSpec.ConfigValue::get)
+                    .orElseGet(List::of)
+                    .stream()
+                    .map(ResourceLocation::new)
+                    .filter(ForgeRegistries.ENCHANTMENTS::containsKey)
+                    .map(ForgeRegistries.ENCHANTMENTS::getValue)
+                    .collect(Collectors.toSet());
         }
     }
 }

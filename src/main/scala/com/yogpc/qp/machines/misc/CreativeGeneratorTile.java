@@ -1,7 +1,5 @@
 package com.yogpc.qp.machines.misc;
 
-import java.util.Arrays;
-
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.utils.MapMulti;
@@ -15,6 +13,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.state.BlockState;
+
+import java.util.Arrays;
 
 public class CreativeGeneratorTile extends PowerTile implements MenuProvider {
     long sendEnergy = ONE_FE * 100000L;
@@ -36,11 +36,11 @@ public class CreativeGeneratorTile extends PowerTile implements MenuProvider {
     }
 
     static final BlockEntityTicker<CreativeGeneratorTile> TICKER = (world, pos, state, tile) ->
-        Arrays.stream(Direction.values())
-            .map(pos::relative)
-            .map(world::getBlockEntity)
-            .mapMulti(MapMulti.cast(PowerTile.class))
-            .forEach(t -> t.addEnergy(tile.sendEnergy, false));
+            Arrays.stream(Direction.values())
+                    .map(pos::relative)
+                    .map(world::getBlockEntity)
+                    .mapMulti(MapMulti.cast(PowerTile.class))
+                    .forEach(t -> t.addEnergy(tile.sendEnergy, false));
 
     @Override
     public Component getDisplayName() {

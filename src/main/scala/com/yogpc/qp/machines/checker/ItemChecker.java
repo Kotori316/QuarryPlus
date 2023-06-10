@@ -1,7 +1,5 @@
 package com.yogpc.qp.machines.checker;
 
-import java.util.List;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.CheckerLog;
 import com.yogpc.qp.machines.QPItem;
@@ -12,6 +10,8 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
+
+import java.util.List;
 
 public class ItemChecker extends QPItem {
     public static final String NAME = "status_checker";

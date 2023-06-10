@@ -1,12 +1,5 @@
 package com.yogpc.qp;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
-
 import com.mojang.datafixers.DSL;
 import com.yogpc.qp.machines.EnchantedLootFunction;
 import com.yogpc.qp.machines.QPBlock;
@@ -24,53 +17,18 @@ import com.yogpc.qp.machines.controller.BlockController;
 import com.yogpc.qp.machines.filler.FillerBlock;
 import com.yogpc.qp.machines.filler.FillerEntity;
 import com.yogpc.qp.machines.filler.FillerMenu;
-import com.yogpc.qp.machines.marker.BlockExMarker;
-import com.yogpc.qp.machines.marker.BlockMarker;
-import com.yogpc.qp.machines.marker.BlockWaterloggedMarker;
-import com.yogpc.qp.machines.marker.ContainerMarker;
-import com.yogpc.qp.machines.marker.Tile16Marker;
-import com.yogpc.qp.machines.marker.TileFlexMarker;
-import com.yogpc.qp.machines.marker.TileMarker;
+import com.yogpc.qp.machines.marker.*;
 import com.yogpc.qp.machines.mini_quarry.MiniQuarryBlock;
 import com.yogpc.qp.machines.mini_quarry.MiniQuarryMenu;
 import com.yogpc.qp.machines.mini_quarry.MiniQuarryTile;
 import com.yogpc.qp.machines.miningwell.MiningWellBlock;
 import com.yogpc.qp.machines.miningwell.MiningWellTile;
-import com.yogpc.qp.machines.misc.BlockDummy;
-import com.yogpc.qp.machines.misc.CreativeGeneratorBlock;
-import com.yogpc.qp.machines.misc.CreativeGeneratorMenu;
-import com.yogpc.qp.machines.misc.CreativeGeneratorTile;
-import com.yogpc.qp.machines.misc.YSetterContainer;
-import com.yogpc.qp.machines.misc.YSetterItem;
-import com.yogpc.qp.machines.module.BedrockModuleItem;
-import com.yogpc.qp.machines.module.ContainerQuarryModule;
-import com.yogpc.qp.machines.module.EnergyModuleItem;
-import com.yogpc.qp.machines.module.ExpModuleItem;
-import com.yogpc.qp.machines.module.ExpPumpBlock;
-import com.yogpc.qp.machines.module.ExpPumpTile;
-import com.yogpc.qp.machines.module.FillerModuleItem;
-import com.yogpc.qp.machines.module.FilterModuleItem;
-import com.yogpc.qp.machines.module.FilterModuleMenu;
-import com.yogpc.qp.machines.module.ModuleLootFunction;
-import com.yogpc.qp.machines.module.PumpModuleItem;
-import com.yogpc.qp.machines.module.PumpPlusBlock;
-import com.yogpc.qp.machines.module.ReplacerBlock;
-import com.yogpc.qp.machines.module.ReplacerDummyBlock;
-import com.yogpc.qp.machines.module.ReplacerModuleItem;
+import com.yogpc.qp.machines.misc.*;
+import com.yogpc.qp.machines.module.*;
 import com.yogpc.qp.machines.mover.BlockMover;
 import com.yogpc.qp.machines.mover.ContainerMover;
-import com.yogpc.qp.machines.placer.PlacerBlock;
-import com.yogpc.qp.machines.placer.PlacerContainer;
-import com.yogpc.qp.machines.placer.PlacerTile;
-import com.yogpc.qp.machines.placer.RemotePlacerBlock;
-import com.yogpc.qp.machines.placer.RemotePlacerTile;
-import com.yogpc.qp.machines.quarry.FrameBlock;
-import com.yogpc.qp.machines.quarry.QuarryBlock;
-import com.yogpc.qp.machines.quarry.QuarryLootFunction;
-import com.yogpc.qp.machines.quarry.SFQuarryBlock;
-import com.yogpc.qp.machines.quarry.SFQuarryEntity;
-import com.yogpc.qp.machines.quarry.SFQuarryMenu;
-import com.yogpc.qp.machines.quarry.TileQuarry;
+import com.yogpc.qp.machines.placer.*;
+import com.yogpc.qp.machines.quarry.*;
 import com.yogpc.qp.machines.workbench.BlockWorkbench;
 import com.yogpc.qp.machines.workbench.ContainerWorkbench;
 import com.yogpc.qp.machines.workbench.TileWorkbench;
@@ -93,6 +51,13 @@ import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.network.IContainerFactory;
 import net.minecraftforge.registries.RegisterEvent;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 public class Holder {
     private static final List<Supplier<List<ItemStack>>> TAB_ITEM = new ArrayList<>();
@@ -148,8 +113,8 @@ public class Holder {
 
     public static List<NamedEntry<? extends Item>> items() {
         return Stream.concat(
-            BLOCKS.stream().map(q -> new NamedEntry<>(q.getRegistryName(), q.blockItem)),
-            ITEMS.stream().map(i -> new NamedEntry<>(i.getRegistryName(), i))
+                BLOCKS.stream().map(q -> new NamedEntry<>(q.getRegistryName(), q.blockItem)),
+                ITEMS.stream().map(i -> new NamedEntry<>(i.getRegistryName(), i))
         ).toList();
     }
 
@@ -165,10 +130,11 @@ public class Holder {
         return Collections.unmodifiableList(MENU_TYPES);
     }
 
-    public static void createTab(CreativeModeTab.Builder builder) {
+    public static CreativeModeTab createTab(CreativeModeTab.Builder builder) {
         builder.icon(() -> new ItemStack(Holder.BLOCK_QUARRY));
         builder.title(Component.translatable("itemGroup.%s".formatted(QuarryPlus.modID)));
         builder.displayItems((parameters, output) -> TAB_ITEM.stream().map(Supplier::get).forEach(output::acceptAll));
+        return builder.build();
     }
 
     public static final QuarryBlock BLOCK_QUARRY = registerBlock(new QuarryBlock());
@@ -226,42 +192,42 @@ public class Holder {
     public static final BlockEntityType<FillerEntity> FILLER_TYPE = registerEntityType(FillerEntity::new, BLOCK_FILLER, EnableOrNot.CONFIG_ON);
 
     public static final MenuType<ContainerMarker> FLEX_MARKER_MENU_TYPE = registerMenuType((windowId, inv, data) ->
-        new ContainerMarker(windowId, inv.player, data.readBlockPos(), Holder.FLEX_MARKER_MENU_TYPE, 29, 139), BlockExMarker.GUI_FLEX_ID);
+            new ContainerMarker(windowId, inv.player, data.readBlockPos(), Holder.FLEX_MARKER_MENU_TYPE, 29, 139), BlockExMarker.GUI_FLEX_ID);
     public static final MenuType<ContainerMarker> MARKER_16_MENU_TYPE = registerMenuType((windowId, inv, data) ->
-        new ContainerMarker(windowId, inv.player, data.readBlockPos(), Holder.MARKER_16_MENU_TYPE, 29, 107), BlockExMarker.GUI_16_ID);
+            new ContainerMarker(windowId, inv.player, data.readBlockPos(), Holder.MARKER_16_MENU_TYPE, 29, 107), BlockExMarker.GUI_16_ID);
     public static final MenuType<YSetterContainer> Y_SETTER_MENU_TYPE = registerMenuType((windowId, inv, data) ->
-        new YSetterContainer(windowId, inv.player, data.readBlockPos()), YSetterContainer.GUI_ID);
+            new YSetterContainer(windowId, inv.player, data.readBlockPos()), YSetterContainer.GUI_ID);
     public static final MenuType<ContainerWorkbench> WORKBENCH_MENU_TYPE = registerMenuType((windowId, inv, data) ->
-        new ContainerWorkbench(windowId, inv.player, data.readBlockPos()), BlockWorkbench.GUI_ID);
+            new ContainerWorkbench(windowId, inv.player, data.readBlockPos()), BlockWorkbench.GUI_ID);
     public static final MenuType<ContainerMover> MOVER_MENU_TYPE = registerMenuType((windowId, inv, data) ->
-        new ContainerMover(windowId, inv.player, data.readBlockPos()), BlockMover.GUI_ID);
+            new ContainerMover(windowId, inv.player, data.readBlockPos()), BlockMover.GUI_ID);
     public static final MenuType<ContainerQuarryModule> MODULE_MENU_TYPE = registerMenuType((windowId, inv, data) ->
-        new ContainerQuarryModule(windowId, inv.player, data.readBlockPos()), ContainerQuarryModule.GUI_ID);
+            new ContainerQuarryModule(windowId, inv.player, data.readBlockPos()), ContainerQuarryModule.GUI_ID);
     public static final MenuType<PlacerContainer> PLACER_MENU_TYPE = registerMenuType((windowId, inv, data) ->
-        new PlacerContainer(windowId, inv.player, data.readBlockPos(), PlacerTile.class), PlacerContainer.PLACER_GUI_ID);
+            new PlacerContainer(windowId, inv.player, data.readBlockPos(), PlacerTile.class), PlacerContainer.PLACER_GUI_ID);
     public static final MenuType<PlacerContainer> REMOTE_PLACER_MENU_TYPE = registerMenuType((windowId, inv, data) ->
-        new PlacerContainer(windowId, inv.player, data.readBlockPos(), RemotePlacerTile.class), PlacerContainer.REMOTE_PLACER_GUI_ID);
+            new PlacerContainer(windowId, inv.player, data.readBlockPos(), RemotePlacerTile.class), PlacerContainer.REMOTE_PLACER_GUI_ID);
     public static final MenuType<BookMoverMenu> BOOK_MOVER_MENU_TYPE = registerMenuType((windowId, inv, data) ->
-        new BookMoverMenu(windowId, inv.player, data.readBlockPos()), BookMoverBlock.GUI_ID);
+            new BookMoverMenu(windowId, inv.player, data.readBlockPos()), BookMoverBlock.GUI_ID);
     public static final MenuType<CreativeGeneratorMenu> CREATIVE_GENERATOR_MENU_TYPE = registerMenuType((windowId, inv, data) ->
-        new CreativeGeneratorMenu(windowId, inv.player, data.readBlockPos()), CreativeGeneratorMenu.GUI_ID);
+            new CreativeGeneratorMenu(windowId, inv.player, data.readBlockPos()), CreativeGeneratorMenu.GUI_ID);
     public static final MenuType<AdvQuarryMenu> ADV_QUARRY_MENU_TYPE = registerMenuType((windowId, inv, data) ->
-        new AdvQuarryMenu(windowId, inv.player, data.readBlockPos()), AdvQuarryMenu.GUI_ID);
+            new AdvQuarryMenu(windowId, inv.player, data.readBlockPos()), AdvQuarryMenu.GUI_ID);
     public static final MenuType<MiniQuarryMenu> MINI_QUARRY_MENU_TYPE = registerMenuType((windowId, inv, data) ->
-        new MiniQuarryMenu(windowId, inv.player, data.readBlockPos()), MiniQuarryMenu.GUI_ID);
+            new MiniQuarryMenu(windowId, inv.player, data.readBlockPos()), MiniQuarryMenu.GUI_ID);
     public static final MenuType<SFQuarryMenu> SOLID_FUEL_QUARRY_MENU_TYPE = registerMenuType((windowId, inv, data) ->
-        new SFQuarryMenu(windowId, inv.player, data.readBlockPos()), SFQuarryMenu.GUI_ID);
+            new SFQuarryMenu(windowId, inv.player, data.readBlockPos()), SFQuarryMenu.GUI_ID);
     public static final MenuType<FillerMenu> FILLER_MENU_TYPE = registerMenuType((windowId, inv, data) ->
-        new FillerMenu(windowId, inv.player, data.readBlockPos()), FillerMenu.GUI_ID);
+            new FillerMenu(windowId, inv.player, data.readBlockPos()), FillerMenu.GUI_ID);
     public static final MenuType<FilterModuleMenu> FILTER_MODULE_MENU_TYPE = registerMenuType(((windowId, inv, data) ->
-        new FilterModuleMenu(windowId, inv.player, inv.getItem(inv.selected))), FilterModuleMenu.GUI_ID);
+            new FilterModuleMenu(windowId, inv.player, inv.getItem(inv.selected))), FilterModuleMenu.GUI_ID);
 
     public static final LootItemFunctionType ENCHANTED_LOOT_TYPE = Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE,
-        new ResourceLocation(QuarryPlus.modID, EnchantedLootFunction.NAME), new LootItemFunctionType(EnchantedLootFunction.SERIALIZER));
+            new ResourceLocation(QuarryPlus.modID, EnchantedLootFunction.NAME), new LootItemFunctionType(EnchantedLootFunction.SERIALIZER));
     public static final LootItemFunctionType QUARRY_LOOT_TYPE = Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE,
-        new ResourceLocation(QuarryPlus.modID, QuarryLootFunction.NAME), new LootItemFunctionType(QuarryLootFunction.SERIALIZER));
+            new ResourceLocation(QuarryPlus.modID, QuarryLootFunction.NAME), new LootItemFunctionType(QuarryLootFunction.SERIALIZER));
     public static final LootItemFunctionType MODULE_LOOT_TYPE = Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE,
-        new ResourceLocation(QuarryPlus.modID, ModuleLootFunction.NAME), new LootItemFunctionType(ModuleLootFunction.SERIALIZER));
+            new ResourceLocation(QuarryPlus.modID, ModuleLootFunction.NAME), new LootItemFunctionType(ModuleLootFunction.SERIALIZER));
 
     public static final TagKey<Item> TAG_MARKERS = TagKey.create(Registries.ITEM, new ResourceLocation(QuarryPlus.modID, "markers"));
 

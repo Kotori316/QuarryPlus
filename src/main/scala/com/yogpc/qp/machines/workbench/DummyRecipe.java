@@ -1,12 +1,12 @@
 package com.yogpc.qp.machines.workbench;
 
-import java.util.Collections;
-import java.util.List;
-
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.Collections;
+import java.util.List;
 
 class DummyRecipe extends WorkbenchRecipe {
     static final DummyRecipe INSTANCE = new DummyRecipe();

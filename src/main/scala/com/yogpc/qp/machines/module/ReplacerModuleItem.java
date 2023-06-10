@@ -1,9 +1,5 @@
 package com.yogpc.qp.machines.module;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Predicate;
-
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPItem;
@@ -20,6 +16,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
+
 public class ReplacerModuleItem extends QPItem implements QuarryModuleProvider.Item {
     public static final String NAME = "replacer_module";
     public static final String KEY_STATE = "state";
@@ -31,8 +31,8 @@ public class ReplacerModuleItem extends QPItem implements QuarryModuleProvider.I
     @Override
     public ReplacerModule getModule(@NotNull ItemStack stack) {
         BlockState state = Optional.ofNullable(stack.getTagElement(KEY_STATE))
-            .flatMap(this::getStateFromTag)
-            .orElse(Holder.BLOCK_DUMMY_REPLACER.defaultBlockState());
+                .flatMap(this::getStateFromTag)
+                .orElse(Holder.BLOCK_DUMMY_REPLACER.defaultBlockState());
         return new ReplacerModule(state);
     }
 
@@ -67,20 +67,20 @@ public class ReplacerModuleItem extends QPItem implements QuarryModuleProvider.I
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> list, TooltipFlag flag) {
         super.appendHoverText(stack, level, list, flag);
         Optional.ofNullable(stack.getTagElement(KEY_STATE))
-            .flatMap(tag -> BlockState.CODEC.parse(NbtOps.INSTANCE, tag).result())
-            .ifPresent(state -> {
-                list.add(state.getBlock().getName());
-                state.getValues().forEach((k, v) -> list.add(Component.literal(String.format("  %s: %s", k.getName(), v))));
-            });
+                .flatMap(tag -> BlockState.CODEC.parse(NbtOps.INSTANCE, tag).result())
+                .ifPresent(state -> {
+                    list.add(state.getBlock().getName());
+                    state.getValues().forEach((k, v) -> list.add(Component.literal(String.format("  %s: %s", k.getName(), v))));
+                });
     }
 
     Optional<BlockState> getStateFromTag(CompoundTag tag) {
         try {
             Predicate<BlockState> accept = ReplacerModule.rejects
-                .stream().reduce(s -> false, Predicate::or).negate();
+                    .stream().reduce(s -> false, Predicate::or).negate();
             var result = BlockState.CODEC.parse(NbtOps.INSTANCE, tag);
             return result.result()
-                .filter(accept);
+                    .filter(accept);
         } catch (Exception e) {
             QuarryPlus.LOGGER.debug("Error in getting replace block of ReplacerModule.", e);
             return Optional.empty();

@@ -30,7 +30,8 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import org.jetbrains.annotations.Nullable;
@@ -39,11 +40,13 @@ public class BlockAdvPump extends QPBlock implements EntityBlock {
     public static final String NAME = "adv_pump";
 
     public BlockAdvPump() {
-        super(QPBlock.Properties.of(Material.METAL)
-            .strength(1.5f, 10f)
-            .sound(SoundType.STONE), NAME, ItemAdvPump::new);
+        super(QPBlock.Properties.of()
+                .mapColor(MapColor.METAL)
+                .pushReaction(PushReaction.BLOCK)
+                .strength(1.5f, 10f)
+                .sound(SoundType.STONE), NAME, ItemAdvPump::new);
         registerDefaultState(getStateDefinition().any()
-            .setValue(WORKING, false));
+                .setValue(WORKING, false));
     }
 
     @Override
@@ -60,7 +63,7 @@ public class BlockAdvPump extends QPBlock implements EntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type) {
         return world.isClientSide ? null : checkType(type, Holder.ADV_PUMP_TYPE,
-            new CombinedBlockEntityTicker<>(PowerTile.getGenerator(), TileAdvPump::tick, PowerTile.logTicker(), MachineStorage.passFluid()));
+                new CombinedBlockEntityTicker<>(PowerTile.getGenerator(), TileAdvPump::tick, PowerTile.logTicker(), MachineStorage.passFluid()));
     }
 
     @Override

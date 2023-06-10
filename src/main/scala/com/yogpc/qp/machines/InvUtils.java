@@ -1,9 +1,5 @@
 package com.yogpc.qp.machines;
 
-import java.util.List;
-import java.util.Optional;
-
-import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -15,6 +11,10 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.ItemHandlerHelper;
+
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Optional;
 
 public class InvUtils {
     /**
@@ -30,17 +30,17 @@ public class InvUtils {
         var remain = stack.copy();
         for (Direction d : Direction.values()) {
             Optional.ofNullable(level.getBlockEntity(pos.relative(d)))
-                .flatMap(t -> t.getCapability(ForgeCapabilities.ITEM_HANDLER, d.getOpposite()).resolve())
-                .ifPresent(handler -> {
-                    var simulate = ItemHandlerHelper.insertItem(handler, remain.copy(), true);
-                    if (simulate.getCount() < remain.getCount()) {
-                        var notMoved = ItemHandlerHelper.insertItem(handler,
-                            ItemHandlerHelper.copyStackWithSize(remain, remain.getCount() - simulate.getCount()), false);
-                        // notMoved should be empty.
-                        int remainCount = simulate.getCount() + notMoved.getCount();
-                        remain.setCount(remainCount);
-                    }
-                });
+                    .flatMap(t -> t.getCapability(ForgeCapabilities.ITEM_HANDLER, d.getOpposite()).resolve())
+                    .ifPresent(handler -> {
+                        var simulate = ItemHandlerHelper.insertItem(handler, remain.copy(), true);
+                        if (simulate.getCount() < remain.getCount()) {
+                            var notMoved = ItemHandlerHelper.insertItem(handler,
+                                    ItemHandlerHelper.copyStackWithSize(remain, remain.getCount() - simulate.getCount()), false);
+                            // notMoved should be empty.
+                            int remainCount = simulate.getCount() + notMoved.getCount();
+                            remain.setCount(remainCount);
+                        }
+                    });
             if (remain.isEmpty()) return ItemStack.EMPTY;
         }
         return remain;

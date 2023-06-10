@@ -1,8 +1,5 @@
 package com.yogpc.qp.machines.module;
 
-import java.util.List;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.machines.CheckerLog;
 import com.yogpc.qp.machines.QPBlock;
@@ -12,6 +9,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+
+import java.util.List;
+import java.util.stream.Stream;
 
 public class ExpPumpTile extends BlockEntity implements CheckerLog {
     private final ExpBlockModule module = new ExpBlockModule(this);
@@ -39,7 +39,7 @@ public class ExpPumpTile extends BlockEntity implements CheckerLog {
     @Override
     public List<? extends Component> getDebugLogs() {
         return Stream.of(
-            "Exp: " + module.getExp()
+                "Exp: " + module.getExp()
         ).map(Component::literal).toList();
     }
 

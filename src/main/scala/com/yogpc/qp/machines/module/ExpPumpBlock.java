@@ -14,7 +14,8 @@ import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,9 +23,11 @@ public class ExpPumpBlock extends QPBlock implements EntityBlock, QuarryModulePr
     public static final String NAME = "exp_pump";
 
     public ExpPumpBlock() {
-        super(Properties.of(Material.METAL).strength(3.0f), NAME);
+        super(Properties.of()
+                .mapColor(MapColor.METAL)
+                .pushReaction(PushReaction.BLOCK).strength(3.0f), NAME);
         registerDefaultState(getStateDefinition().any()
-            .setValue(WORKING, false));
+                .setValue(WORKING, false));
     }
 
     @Override

@@ -1,12 +1,5 @@
 package com.yogpc.qp.machines.mover;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.stream.IntStream;
-
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.machines.EnchantableItem;
 import com.yogpc.qp.machines.EnchantmentLevel;
@@ -17,12 +10,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.ArmorMaterials;
-import net.minecraft.world.item.BowItem;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TieredItem;
-import net.minecraft.world.item.Tiers;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
@@ -32,6 +20,13 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.IntStream;
 
 public class ContainerMover extends AbstractContainerMenu {
     final Container craftMatrix = new SimpleContainer(2) {
@@ -50,7 +45,7 @@ public class ContainerMover extends AbstractContainerMenu {
     public ContainerMover(int id, Player player, BlockPos pos) {
         super(Holder.MOVER_MENU_TYPE, id);
         Inventory inv = player.getInventory();
-        this.worldObj = player.level;
+        this.worldObj = player.level();
         this.pos = pos;
         int row;
         int col;
@@ -70,9 +65,9 @@ public class ContainerMover extends AbstractContainerMenu {
         super.removed(playerIn);
         if (!worldObj.isClientSide) {
             IntStream.range(0, craftMatrix.getContainerSize())
-                .mapToObj(craftMatrix::removeItemNoUpdate)
-                .filter(Predicate.not(ItemStack::isEmpty))
-                .forEach(playerIn.getInventory()::placeItemBackInInventory);
+                    .mapToObj(craftMatrix::removeItemNoUpdate)
+                    .filter(Predicate.not(ItemStack::isEmpty))
+                    .forEach(playerIn.getInventory()::placeItemBackInInventory);
         }
     }
 
@@ -85,9 +80,9 @@ public class ContainerMover extends AbstractContainerMenu {
         var from = craftMatrix.getItem(0);
         var to = craftMatrix.getItem(1);
         if (from.isEmpty() ||
-            to.isEmpty() ||
-            from.getEnchantmentTags().isEmpty() ||
-            !(to.getItem() instanceof EnchantableItem)) {
+                to.isEmpty() ||
+                from.getEnchantmentTags().isEmpty() ||
+                !(to.getItem() instanceof EnchantableItem)) {
             movable = Collections.emptyList();
             selected = null;
         } else {
@@ -106,17 +101,17 @@ public class ContainerMover extends AbstractContainerMenu {
     static List<Enchantment> getMovable(ItemStack from, ItemStack to, Predicate<Enchantment> predicate) {
         var given = EnchantmentHelper.getEnchantments(to);
         return EnchantmentLevel.fromItem(from).stream()
-            .map(EnchantmentLevel::enchantment)
-            .filter(e -> canMoveEnchantment(predicate, given, e))
-            .toList();
+                .map(EnchantmentLevel::enchantment)
+                .filter(e -> canMoveEnchantment(predicate, given, e))
+                .toList();
     }
 
     @VisibleForTesting
     static boolean canMoveEnchantment(@Nullable Predicate<Enchantment> predicate, Map<Enchantment, Integer> given, Enchantment toMove) {
         return
-            (predicate == null || predicate.test(toMove)) &&
-            given.getOrDefault(toMove, 0) < toMove.getMaxLevel() &&
-            given.keySet().stream().filter(Predicate.isEqual(toMove).negate()).allMatch(toMove::isCompatibleWith);
+                (predicate == null || predicate.test(toMove)) &&
+                        given.getOrDefault(toMove, 0) < toMove.getMaxLevel() &&
+                        given.keySet().stream().filter(Predicate.isEqual(toMove).negate()).allMatch(toMove::isCompatibleWith);
     }
 
     public Optional<Enchantment> getEnchantment() {

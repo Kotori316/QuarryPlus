@@ -23,7 +23,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
@@ -32,9 +33,11 @@ public final class FillerBlock extends QPBlock implements EntityBlock {
     public static final String NAME = "filler";
 
     public FillerBlock() {
-        super(Properties.of(Material.METAL)
-            .strength(1.5f, 10f)
-            .sound(SoundType.STONE), NAME);
+        super(Properties.of()
+                .mapColor(MapColor.METAL)
+                .pushReaction(PushReaction.BLOCK)
+                .strength(1.5f, 10f)
+                .sound(SoundType.STONE), NAME);
     }
 
     @Override
@@ -48,7 +51,7 @@ public final class FillerBlock extends QPBlock implements EntityBlock {
         super.neighborChanged(state, level, pos, blockIn, fromPos, isMoving);
         if (!level.isClientSide && level.hasNeighborSignal(pos)) {
             level.getBlockEntity(pos, Holder.FILLER_TYPE)
-                .ifPresent(f -> f.start(FillerEntity.Action.BOX));
+                    .ifPresent(f -> f.start(FillerEntity.Action.BOX));
         }
     }
 
@@ -75,10 +78,10 @@ public final class FillerBlock extends QPBlock implements EntityBlock {
         super.setPlacedBy(level, pos, state, entity, stack);
         if (!level.isClientSide) {
             level.getBlockEntity(pos, Holder.FILLER_TYPE)
-                .ifPresent(t -> {
-                    var preForced = QuarryChunkLoadUtil.makeChunkLoaded(level, pos, t.enabled);
-                    t.setChunkPreLoaded(preForced);
-                });
+                    .ifPresent(t -> {
+                        var preForced = QuarryChunkLoadUtil.makeChunkLoaded(level, pos, t.enabled);
+                        t.setChunkPreLoaded(preForced);
+                    });
         }
     }
 
@@ -98,9 +101,9 @@ public final class FillerBlock extends QPBlock implements EntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> entityType) {
         return pLevel.isClientSide ? null : checkType(entityType, Holder.FILLER_TYPE, new CombinedBlockEntityTicker<>(
-            PowerTile.getGenerator(),
-            (l, p, s, t) -> t.tick(),
-            PowerTile.logTicker()
+                PowerTile.getGenerator(),
+                (l, p, s, t) -> t.tick(),
+                PowerTile.logTicker()
         ));
     }
 }

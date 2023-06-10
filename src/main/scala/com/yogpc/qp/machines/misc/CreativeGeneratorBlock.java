@@ -1,7 +1,5 @@
 package com.yogpc.qp.machines.misc;
 
-import java.util.List;
-
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.machines.QPBlock;
 import net.minecraft.core.BlockPos;
@@ -20,18 +18,23 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class CreativeGeneratorBlock extends QPBlock implements EntityBlock {
     public static final String NAME = "creative_generator";
 
     public CreativeGeneratorBlock() {
-        super(QPBlock.Properties.of(Material.METAL)
-            .strength(1f, 1f)
-            .sound(SoundType.STONE), NAME);
+        super(QPBlock.Properties.of()
+                .mapColor(MapColor.METAL)
+                .pushReaction(PushReaction.BLOCK)
+                .strength(1f, 1f)
+                .sound(SoundType.STONE), NAME);
     }
 
     @Override
@@ -45,7 +48,7 @@ public class CreativeGeneratorBlock extends QPBlock implements EntityBlock {
         if (!player.isShiftKeyDown()) {
             if (!world.isClientSide) {
                 world.getBlockEntity(pos, Holder.CREATIVE_GENERATOR_TYPE).ifPresent(o ->
-                    NetworkHooks.openScreen(((ServerPlayer) player), o, pos));
+                        NetworkHooks.openScreen(((ServerPlayer) player), o, pos));
             }
             return InteractionResult.SUCCESS;
         }

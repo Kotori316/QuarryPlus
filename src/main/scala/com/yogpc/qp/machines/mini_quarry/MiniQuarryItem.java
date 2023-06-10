@@ -1,15 +1,15 @@
 package com.yogpc.qp.machines.mini_quarry;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.EnchantableItem;
 import com.yogpc.qp.machines.QPBlock;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public final class MiniQuarryItem extends QPBlock.QPBlockItem implements EnchantableItem {
     public MiniQuarryItem(QPBlock block) {

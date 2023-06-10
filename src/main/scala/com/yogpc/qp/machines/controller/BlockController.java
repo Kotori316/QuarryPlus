@@ -1,10 +1,5 @@
 package com.yogpc.qp.machines.controller;
 
-import java.lang.reflect.Field;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPBlock;
@@ -29,7 +24,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
@@ -38,6 +34,11 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Logger;
 
+import java.lang.reflect.Field;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 public class BlockController extends QPBlock {
     public static final String NAME = "spawner_controller";
     private static final Logger LOGGER = QuarryPlus.getLogger(BlockController.class);
@@ -45,8 +46,8 @@ public class BlockController extends QPBlock {
     private static final Field logic_nextSpawnData = getNextSpawnDataField(); // (Level, BlockPos) -> ResourceLocation
 
     public BlockController() {
-        super(Properties.of(Material.DECORATION)
-            .strength(1.0f), NAME);
+        super(Properties.of().mapColor(MapColor.NONE).pushReaction(PushReaction.DESTROY).instabreak()
+                .strength(1.0f), NAME);
         registerDefaultState(getStateDefinition().any().setValue(WORKING, false));
     }
 
@@ -58,8 +59,8 @@ public class BlockController extends QPBlock {
 
     private static Optional<Pair<BaseSpawner, BlockPos>> getSpawner(Level level, BlockPos pos) {
         return Stream.of(Direction.values()).map(pos::relative).map(level::getBlockEntity)
-            .mapMulti(MapMulti.cast(SpawnerBlockEntity.class))
-            .map(s -> Pair.of(s.getSpawner(), s.getBlockPos())).findFirst();
+                .mapMulti(MapMulti.cast(SpawnerBlockEntity.class))
+                .map(s -> Pair.of(s.getSpawner(), s.getBlockPos())).findFirst();
     }
 
     @Override
@@ -76,18 +77,18 @@ public class BlockController extends QPBlock {
                 if (player.getItemInHand(hand).is(Holder.ITEM_CHECKER)) {
                     // Tell spawner info
                     getSpawner(level, pos)
-                        .map(Pair::getLeft)
-                        .flatMap(BlockController::getEntityId)
-                        .map(ResourceLocation::toString)
-                        .map(s -> "Spawner Mob: " + s)
-                        .map(Component::literal)
-                        .ifPresent(s -> player.displayClientMessage(s, false));
+                            .map(Pair::getLeft)
+                            .flatMap(BlockController::getEntityId)
+                            .map(ResourceLocation::toString)
+                            .map(s -> "Spawner Mob: " + s)
+                            .map(Component::literal)
+                            .ifPresent(s -> player.displayClientMessage(s, false));
                 } else {
                     // Open GUI
                     var entries = ForgeRegistries.ENTITY_TYPES.getValues().stream()
-                        .filter(BlockController::canSpawnFromSpawner)
-                        .map(ForgeRegistries.ENTITY_TYPES::getKey)
-                        .collect(Collectors.toList());
+                            .filter(BlockController::canSpawnFromSpawner)
+                            .map(ForgeRegistries.ENTITY_TYPES::getKey)
+                            .collect(Collectors.toList());
                     PacketHandler.sendToClientPlayer(new ControllerOpenMessage(pos, level.dimension(), entries), (ServerPlayer) player);
                 }
             }
@@ -99,10 +100,10 @@ public class BlockController extends QPBlock {
     private static Optional<ResourceLocation> getEntityId(BaseSpawner spawner) {
         try {
             return Optional.ofNullable(logic_nextSpawnData.get(spawner))
-                .flatMap(MapMulti.optCast(SpawnData.class))
-                .map(SpawnData::getEntityToSpawn)
-                .flatMap(EntityType::by)
-                .map(ForgeRegistries.ENTITY_TYPES::getKey);
+                    .flatMap(MapMulti.optCast(SpawnData.class))
+                    .map(SpawnData::getEntityToSpawn)
+                    .flatMap(EntityType::by)
+                    .map(ForgeRegistries.ENTITY_TYPES::getKey);
         } catch (ReflectiveOperationException e) {
             LOGGER.error("Exception occurred in getting entity id.", e);
             return Optional.empty();
@@ -118,9 +119,9 @@ public class BlockController extends QPBlock {
     public static void setSpawnerEntity(Level world, BlockPos pos, ResourceLocation name) {
         getSpawner(world, pos).ifPresent(logic -> {
             Optional.of(name)
-                .map(ForgeRegistries.ENTITY_TYPES::getValue)
-                .filter(BlockController::canSpawnFromSpawner)
-                .ifPresent(entityType -> logic.getLeft().setEntityId(entityType, world, world.getRandom(), pos));
+                    .map(ForgeRegistries.ENTITY_TYPES::getValue)
+                    .filter(BlockController::canSpawnFromSpawner)
+                    .ifPresent(entityType -> logic.getLeft().setEntityId(entityType, world, world.getRandom(), pos));
             Optional.ofNullable(logic.getLeft().getSpawnerBlockEntity()).ifPresent(BlockEntity::setChanged);
             BlockState state = world.getBlockState(logic.getRight());
             world.sendBlockUpdated(logic.getRight(), state, state, Block.UPDATE_INVISIBLE);
@@ -142,7 +143,6 @@ public class BlockController extends QPBlock {
                         return;
                     }
                     FakePlayer fakePlayer = FakePlayerFactory.getMinecraft((ServerLevel) level);
-                    fakePlayer.setLevel((ServerLevel) level);
                     fakePlayer.setPos(logic.getRight().getX(), logic.getRight().getY(), logic.getRight().getZ());
 //                    logic.getWorld().players.add(fakePlayer);
                     logic.getLeft().serverTick((ServerLevel) level, logic.getRight());

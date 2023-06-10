@@ -1,7 +1,5 @@
 package com.yogpc.qp.machines.filler;
 
-import java.util.Objects;
-
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.misc.SlotContainer;
@@ -12,6 +10,8 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 public final class FillerMenu extends AbstractContainerMenu {
     public static final String GUI_ID = QuarryPlus.modID + ":gui_" + FillerBlock.NAME;
     @NotNull
@@ -19,7 +19,7 @@ public final class FillerMenu extends AbstractContainerMenu {
 
     public FillerMenu(int id, Player player, BlockPos pos) {
         super(Holder.FILLER_MENU_TYPE, id);
-        this.filler = (FillerEntity) Objects.requireNonNull(player.level.getBlockEntity(pos));
+        this.filler = (FillerEntity) Objects.requireNonNull(player.level().getBlockEntity(pos));
         int oneBox = 18;
 
         // Filler inventory

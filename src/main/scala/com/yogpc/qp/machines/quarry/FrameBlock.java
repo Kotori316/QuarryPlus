@@ -1,12 +1,5 @@
 package com.yogpc.qp.machines.quarry;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.function.BiPredicate;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.machines.Direction8;
 import com.yogpc.qp.machines.QPBlock;
 import net.minecraft.core.BlockPos;
@@ -20,32 +13,34 @@ import net.minecraft.world.level.block.PipeBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.DOWN;
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.EAST;
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.NORTH;
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.SOUTH;
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.UP;
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WEST;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.function.BiPredicate;
+import java.util.stream.Stream;
+
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.*;
 
 public class FrameBlock extends QPBlock {
     public static final String NAME = "frame";
     public static final BooleanProperty DAMMING = BooleanProperty.create("damming");
     public static final VoxelShape BOX_AABB = Shapes.box(0.125, 0.125, 0.125, 0.875, 0.875, 0.875);
     private static final BiPredicate<Level, BlockPos> HAS_NEIGHBOUR_LIQUID = (world, pos) ->
-        Stream.of(Direction.values()).map(pos::relative)
-            .anyMatch(p -> !world.getFluidState(p).isEmpty());
+            Stream.of(Direction.values()).map(pos::relative)
+                    .anyMatch(p -> !world.getFluidState(p).isEmpty());
 
     public FrameBlock() {
-        super(Properties.of(Material.GLASS).strength(0.5f).noLootTable(), NAME);
+        super(Properties.of().mapColor(MapColor.NONE).strength(0.5f).noLootTable(), NAME);
         this.registerDefaultState(getStateDefinition().any()
-            .setValue(NORTH, false).setValue(EAST, false).setValue(SOUTH, false)
-            .setValue(WEST, false).setValue(UP, false).setValue(DOWN, false)
-            .setValue(DAMMING, false));
+                .setValue(NORTH, false).setValue(EAST, false).setValue(SOUTH, false)
+                .setValue(WEST, false).setValue(UP, false).setValue(DOWN, false)
+                .setValue(DAMMING, false));
     }
 
     @Override
@@ -59,12 +54,12 @@ public class FrameBlock extends QPBlock {
         var worldIn = context.getLevel();
         var pos = context.getClickedPos();
         return this.defaultBlockState()
-            .setValue(NORTH, canConnectTo(worldIn, pos.north()))
-            .setValue(EAST, canConnectTo(worldIn, pos.east()))
-            .setValue(SOUTH, canConnectTo(worldIn, pos.south()))
-            .setValue(WEST, canConnectTo(worldIn, pos.west()))
-            .setValue(DOWN, canConnectTo(worldIn, pos.below()))
-            .setValue(UP, canConnectTo(worldIn, pos.above()));
+                .setValue(NORTH, canConnectTo(worldIn, pos.north()))
+                .setValue(EAST, canConnectTo(worldIn, pos.east()))
+                .setValue(SOUTH, canConnectTo(worldIn, pos.south()))
+                .setValue(WEST, canConnectTo(worldIn, pos.west()))
+                .setValue(DOWN, canConnectTo(worldIn, pos.below()))
+                .setValue(UP, canConnectTo(worldIn, pos.above()));
     }
 
     @Override

@@ -1,12 +1,5 @@
 package com.yogpc.qp.machines;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import com.google.common.collect.Iterators;
 import com.yogpc.qp.utils.MapMulti;
 import net.minecraft.core.Direction;
@@ -26,6 +19,9 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.VisibleForTesting;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.yogpc.qp.utils.MapStreamSyntax.toAny;
 import static com.yogpc.qp.utils.MapStreamSyntax.values;
@@ -65,10 +61,10 @@ public class MachineStorage {
     public void addFluid(Fluid fluid, long amount) {
         var key = new FluidKey(fluid, null);
         fluidMap.merge(key, amount, (l1, l2) -> {
-                long a = l1 + l2;
-                if (a > 0) return a;
-                else return null;
-            }
+                    long a = l1 + l2;
+                    if (a > 0) return a;
+                    else return null;
+                }
         );
     }
 
@@ -84,12 +80,12 @@ public class MachineStorage {
     public void readNbt(CompoundTag tag) {
         var itemTag = tag.getList("items", Tag.TAG_COMPOUND);
         itemMap = itemTag.stream()
-            .mapMulti(MapMulti.cast(CompoundTag.class))
-            .collect(Collectors.toMap(ItemKey::fromNbt, n -> n.getLong("count")));
+                .mapMulti(MapMulti.cast(CompoundTag.class))
+                .collect(Collectors.toMap(ItemKey::fromNbt, n -> n.getLong("count")));
         var fluidTag = tag.getList("fluids", Tag.TAG_COMPOUND);
         fluidMap = fluidTag.stream()
-            .mapMulti(MapMulti.cast(CompoundTag.class))
-            .collect(Collectors.toMap(FluidKey::fromNbt, n -> n.getLong("amount")));
+                .mapMulti(MapMulti.cast(CompoundTag.class))
+                .collect(Collectors.toMap(FluidKey::fromNbt, n -> n.getLong("amount")));
     }
 
     public Map<FluidKey, Long> getFluidMap() {
@@ -159,8 +155,8 @@ public class MachineStorage {
             for (Direction direction : INSERT_ORDER) {
                 var destPos = pos.relative(direction);
                 var handler = Optional.ofNullable(world.getBlockEntity(destPos))
-                    .flatMap(d -> d.getCapability(ForgeCapabilities.FLUID_HANDLER, direction.getOpposite()).resolve())
-                    .orElse(null);
+                        .flatMap(d -> d.getCapability(ForgeCapabilities.FLUID_HANDLER, direction.getOpposite()).resolve())
+                        .orElse(null);
                 if (handler == null) continue;
                 var fluidMap = new ArrayList<>(storage.getFluidMap().entrySet());
                 for (Map.Entry<FluidKey, Long> entry : fluidMap) {
@@ -194,9 +190,9 @@ public class MachineStorage {
         @Override
         public ItemStack getStackInSlot(int slot) {
             return getByIndex(slot)
-                .map(values(count -> (int) Math.min(count, Integer.MAX_VALUE)))
-                .map(toAny(ItemKey::toStack))
-                .orElse(ItemStack.EMPTY);
+                    .map(values(count -> (int) Math.min(count, Integer.MAX_VALUE)))
+                    .map(toAny(ItemKey::toStack))
+                    .orElse(ItemStack.EMPTY);
         }
 
         @NotNull
@@ -258,9 +254,9 @@ public class MachineStorage {
         @Override
         public FluidStack getFluidInTank(int tank) {
             return getByIndex(tank)
-                .map(values(count -> (int) Math.min(count, Integer.MAX_VALUE)))
-                .map(toAny(FluidKey::toStack))
-                .orElse(FluidStack.EMPTY);
+                    .map(values(count -> (int) Math.min(count, Integer.MAX_VALUE)))
+                    .map(toAny(FluidKey::toStack))
+                    .orElse(FluidStack.EMPTY);
         }
 
         @Override
@@ -285,8 +281,8 @@ public class MachineStorage {
         public FluidStack drain(FluidStack resource, FluidAction action) {
             var key = new FluidKey(resource);
             return Optional.ofNullable(fluidMap.get(key))
-                .map(l -> drainInternal(Map.entry(key, l), resource.getAmount(), action))
-                .orElse(FluidStack.EMPTY);
+                    .map(l -> drainInternal(Map.entry(key, l), resource.getAmount(), action))
+                    .orElse(FluidStack.EMPTY);
         }
 
         @NotNull

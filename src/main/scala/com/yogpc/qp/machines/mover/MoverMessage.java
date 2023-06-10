@@ -1,7 +1,5 @@
 package com.yogpc.qp.machines.mover;
 
-import java.util.function.Supplier;
-
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.MapMulti;
@@ -11,6 +9,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.registries.ForgeRegistries;
+
+import java.util.function.Supplier;
 
 /**
  * To Server only.
@@ -41,10 +41,10 @@ public final class MoverMessage implements IMessage {
 
     public static void onReceive(MoverMessage message, Supplier<NetworkEvent.Context> supplier) {
         supplier.get().enqueueWork(() ->
-            PacketHandler.getPlayer(supplier.get())
-                .map(p -> p.containerMenu)
-                .filter(m -> m.containerId == message.windowId)
-                .flatMap(MapMulti.optCast(ContainerMover.class))
-                .ifPresent(c -> c.moveEnchant(ForgeRegistries.ENCHANTMENTS.getValue(message.enchantment))));
+                PacketHandler.getPlayer(supplier.get())
+                        .map(p -> p.containerMenu)
+                        .filter(m -> m.containerId == message.windowId)
+                        .flatMap(MapMulti.optCast(ContainerMover.class))
+                        .ifPresent(c -> c.moveEnchant(ForgeRegistries.ENCHANTMENTS.getValue(message.enchantment))));
     }
 }

@@ -1,17 +1,8 @@
 package com.yogpc.qp.machines.filler;
 
-import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.machines.Area;
-import com.yogpc.qp.machines.CheckerLog;
-import com.yogpc.qp.machines.PowerConfig;
-import com.yogpc.qp.machines.PowerManager;
-import com.yogpc.qp.machines.PowerTile;
-import com.yogpc.qp.machines.QuarryMarker;
+import com.yogpc.qp.machines.*;
 import com.yogpc.qp.utils.MapMulti;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -31,6 +22,10 @@ import net.minecraftforge.items.IItemHandler;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 public final class FillerEntity extends PowerTile implements CheckerLog, PowerConfig.Provider, MenuProvider {
     private static final Logger LOGGER = QuarryPlus.getLogger(FillerEntity.class);
@@ -65,8 +60,8 @@ public final class FillerEntity extends PowerTile implements CheckerLog, PowerCo
     @Override
     public List<? extends Component> getDebugLogs() {
         return Stream.of(
-            "Iterator: %s".formatted(this.fillerAction.iterator),
-            energyString()
+                "Iterator: %s".formatted(this.fillerAction.iterator),
+                energyString()
         ).map(Component::literal).toList();
     }
 
@@ -93,14 +88,14 @@ public final class FillerEntity extends PowerTile implements CheckerLog, PowerCo
         if (!this.fillerAction.isFinished()) return;
         assert level != null;
         Stream.of(Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST)
-            .map(getBlockPos()::relative)
-            .map(level::getBlockEntity)
-            .mapMulti(MapMulti.cast(QuarryMarker.class))
-            .findFirst()
-            .ifPresent(m -> {
-                this.fillerAction.setIterator(m.getArea().map(a -> new SkipIterator(a, fillerAction.iteratorProvider)).orElse(null));
-                m.removeAndGetItems().forEach(stack -> Block.popResource(level, getBlockPos().above(), stack));
-            });
+                .map(getBlockPos()::relative)
+                .map(level::getBlockEntity)
+                .mapMulti(MapMulti.cast(QuarryMarker.class))
+                .findFirst()
+                .ifPresent(m -> {
+                    this.fillerAction.setIterator(m.getArea().map(a -> new SkipIterator(a, fillerAction.iteratorProvider)).orElse(null));
+                    m.removeAndGetItems().forEach(stack -> Block.popResource(level, getBlockPos().above(), stack));
+                });
     }
 
     @Override

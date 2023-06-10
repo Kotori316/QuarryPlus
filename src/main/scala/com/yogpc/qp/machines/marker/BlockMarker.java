@@ -20,7 +20,8 @@ import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -39,7 +40,7 @@ public class BlockMarker extends QPBlock implements EntityBlock {
     public static final String NAME = "marker";
 
     public BlockMarker() {
-        super(Properties.of(Material.DECORATION).lightLevel(value -> 7).noCollission(), NAME);
+        super(Properties.of().mapColor(MapColor.NONE).pushReaction(PushReaction.DESTROY).instabreak().lightLevel(value -> 7).noCollission(), NAME);
         this.registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.UP));
     }
 
@@ -66,7 +67,7 @@ public class BlockMarker extends QPBlock implements EntityBlock {
             if (world.getBlockEntity(pos) instanceof TileMarker marker) {
                 marker.tryConnect(true);
                 marker.getArea().ifPresent(area ->
-                    player.displayClientMessage(Component.literal("%sMarker Area%s: %s".formatted(ChatFormatting.AQUA, ChatFormatting.RESET, area)), false));
+                        player.displayClientMessage(Component.literal("%sMarker Area%s: %s".formatted(ChatFormatting.AQUA, ChatFormatting.RESET, area)), false));
             }
         }
         return InteractionResult.SUCCESS;

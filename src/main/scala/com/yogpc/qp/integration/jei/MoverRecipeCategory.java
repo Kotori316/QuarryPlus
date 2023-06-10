@@ -1,7 +1,5 @@
 package com.yogpc.qp.integration.jei;
 
-import java.util.List;
-
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
@@ -16,7 +14,6 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -24,6 +21,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.List;
 
 class MoverRecipeCategory implements IRecipeCategory<MoverRecipeCategory.MoverRecipe> {
     public static final RecipeType<MoverRecipe> RECIPE_TYPE = RecipeType.create(QuarryPlus.modID, "quarryplus.enchantmover", MoverRecipe.class);
@@ -64,27 +63,28 @@ class MoverRecipeCategory implements IRecipeCategory<MoverRecipeCategory.MoverRe
         var output = input.stream().map(Pair::getKey).map(recipe::makeOutput).toList();
 
         builder.addSlot(RecipeIngredientRole.INPUT, 4, 31)
-            .addItemStacks(input.stream().map(Pair::getValue).toList());
+                .addItemStacks(input.stream().map(Pair::getValue).toList());
         builder.addSlot(RecipeIngredientRole.OUTPUT, 4 + 144, 31)
-            .addItemStacks(output);
+                .addItemStacks(output);
     }
 
     @Override
     public void draw(MoverRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack stack, double mouseX, double mouseY) {
         var enchantments = recipe.item.acceptEnchantments().stream().map(e -> new EnchantmentLevel(e, 1))
-            .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR).map(EnchantmentLevel::enchantment).toList();
+                .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR).map(EnchantmentLevel::enchantment).toList();
         for (int i = 0; i < enchantments.size(); i++) {
             var text = Component.translatable(enchantments.get(i).getDescriptionId());
-            Minecraft.getInstance().font.draw(stack, text, 36 - xOff, 6 - yOff + 10 * i, 0x404040);
+            // TODO draw enchantments text
+            // Minecraft.getInstance().font.draw(stack, text, 36 - xOff, 6 - yOff + 10 * i, 0x404040);
         }
     }
 
     record MoverRecipe(EnchantableItem item, ItemStack stack) {
         List<Pair<Enchantment, ItemStack>> makeInput(List<ItemStack> pickaxes) {
             return item.acceptEnchantments().stream()
-                .flatMap(e -> pickaxes.stream().map(ItemStack::copy).peek(i -> i.enchant(e, e.getMaxLevel()))
-                    .map(i -> Pair.of(e, i)))
-                .toList();
+                    .flatMap(e -> pickaxes.stream().map(ItemStack::copy).peek(i -> i.enchant(e, e.getMaxLevel()))
+                            .map(i -> Pair.of(e, i)))
+                    .toList();
         }
 
         ItemStack makeOutput(Enchantment enchantment) {
@@ -96,8 +96,8 @@ class MoverRecipeCategory implements IRecipeCategory<MoverRecipeCategory.MoverRe
 
     static List<MoverRecipe> recipes() {
         return ForgeRegistries.ITEMS.getValues().stream()
-            .filter(i -> i instanceof EnchantableItem)
-            .map(i -> new MoverRecipe((EnchantableItem) i, new ItemStack(i)))
-            .toList();
+                .filter(i -> i instanceof EnchantableItem)
+                .map(i -> new MoverRecipe((EnchantableItem) i, new ItemStack(i)))
+                .toList();
     }
 }

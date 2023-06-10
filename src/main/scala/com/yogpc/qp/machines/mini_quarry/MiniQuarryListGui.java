@@ -1,17 +1,10 @@
 package com.yogpc.qp.machines.mini_quarry;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.yogpc.qp.machines.misc.IndexedButton;
 import com.yogpc.qp.packet.PacketHandler;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
@@ -19,6 +12,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
+
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class MiniQuarryListGui extends Screen implements Button.OnPress {
     final List<BlockStatePredicate> whiteList;
@@ -52,12 +52,12 @@ public class MiniQuarryListGui extends Screen implements Button.OnPress {
     }
 
     @Override
-    public void render(PoseStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
-        list.render(matrixStack, mouseX, mouseY, partialTicks);
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
+    public void render(GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTicks) {
+        list.render(graphics, mouseX, mouseY, partialTicks);
+        super.render(graphics, mouseX, mouseY, partialTicks);
         var listName = Component.translatable(whiteListFlag ? "quarryplus.gui.whitelist" : "quarryplus.gui.blacklist");
         var title = Component.translatable("quarryplus.gui.of", listName, super.getTitle().getString());
-        drawCenteredString(matrixStack, this.font, title, this.width / 2, 8, 0xFFFFFF);
+        graphics.drawCenteredString(this.font, title, this.width / 2, 8, 0xFFFFFF);
     }
 
     public List<BlockStatePredicate> getEntries() {
@@ -92,13 +92,13 @@ public class MiniQuarryListGui extends Screen implements Button.OnPress {
                 }
                 case 1 -> onClose();
                 case 2 -> getMinecraft().pushGuiLayer(new MiniQuarryAddEntryGui(this, // New Entry
-                    e -> {
-                        if (MiniQuarryTile.canAddInList(whiteListFlag, e)) {
-                            getEntries().add(e);
-                            list.updateList();
-                            PacketHandler.sendToServer(new MiniListSyncMessage(pos, dim, blackList, whiteList));
-                        }
-                    }));
+                        e -> {
+                            if (MiniQuarryTile.canAddInList(whiteListFlag, e)) {
+                                getEntries().add(e);
+                                list.updateList();
+                                PacketHandler.sendToServer(new MiniListSyncMessage(pos, dim, blackList, whiteList));
+                            }
+                        }));
                 case 3 -> { // Delete
                     MiniQuarryListEntry selected = list.getSelected(); // getSelected
                     if (selected != null) {
@@ -150,12 +150,11 @@ public class MiniQuarryListGui extends Screen implements Button.OnPress {
         }
 
         @Override
-        @SuppressWarnings("IntegerDivisionInFloatingPointContext")
-        public void render(PoseStack m, int entryIdx, int top, int left, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean p_render_8_, float partialTicks) {
+        public void render(GuiGraphics graphics, int entryIdx, int top, int left, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean p_render_8_, float partialTicks) {
             //render
             String name = data.toString();
-            Minecraft.getInstance().font.draw(m, name,
-                (parent.width - Minecraft.getInstance().font.width(name)) / 2, top + 2, 0xFFFFFF);
+            graphics.drawString(Minecraft.getInstance().font, name,
+                    (parent.width - Minecraft.getInstance().font.width(name)) / 2, top + 2, 0xFFFFFF, false);
         }
 
         @Override

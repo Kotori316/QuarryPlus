@@ -1,37 +1,10 @@
 package com.yogpc.qp.machines.advquarry;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.integration.ftbchunks.FTBChunksProtectionCheck;
-import com.yogpc.qp.machines.Area;
-import com.yogpc.qp.machines.BreakResult;
-import com.yogpc.qp.machines.CheckerLog;
-import com.yogpc.qp.machines.EnchantmentHolder;
-import com.yogpc.qp.machines.EnchantmentLevel;
-import com.yogpc.qp.machines.InvUtils;
-import com.yogpc.qp.machines.ItemConverter;
-import com.yogpc.qp.machines.MachineStorage;
-import com.yogpc.qp.machines.PowerConfig;
-import com.yogpc.qp.machines.PowerManager;
-import com.yogpc.qp.machines.PowerTile;
-import com.yogpc.qp.machines.QuarryFakePlayer;
-import com.yogpc.qp.machines.TraceQuarryWork;
-import com.yogpc.qp.machines.module.ContainerQuarryModule;
-import com.yogpc.qp.machines.module.FilterModule;
-import com.yogpc.qp.machines.module.ModuleInventory;
-import com.yogpc.qp.machines.module.QuarryModule;
-import com.yogpc.qp.machines.module.QuarryModuleProvider;
-import com.yogpc.qp.machines.module.ReplacerModule;
+import com.yogpc.qp.machines.*;
+import com.yogpc.qp.machines.module.*;
 import com.yogpc.qp.packet.ClientSync;
 import com.yogpc.qp.packet.ClientSyncMessage;
 import com.yogpc.qp.packet.PacketHandler;
@@ -52,11 +25,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.BucketPickup;
-import net.minecraft.world.level.block.LiquidBlock;
-import net.minecraft.world.level.block.LiquidBlockContainer;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.MinecraftForge;
@@ -65,9 +34,15 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 public class TileAdvQuarry extends PowerTile implements
-    CheckerLog, ModuleInventory.HasModuleInventory, MachineStorage.HasStorage,
-    EnchantmentLevel.HasEnchantments, ClientSync, MenuProvider, PowerConfig.Provider {
+        CheckerLog, ModuleInventory.HasModuleInventory, MachineStorage.HasStorage,
+        EnchantmentLevel.HasEnchantments, ClientSync, MenuProvider, PowerConfig.Provider {
 
     // Inventory
     private final ModuleInventory moduleInventory = new ModuleInventory(5, this::updateModule, TileAdvQuarry::moduleFilter, this);
@@ -93,13 +68,13 @@ public class TileAdvQuarry extends PowerTile implements
     @Override
     public List<? extends Component> getDebugLogs() {
         return Stream.of(
-            "%sArea:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, area),
-            "%sAction:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, action),
-            "%sRemoveBedrock:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, hasBedrockModule()),
-            "%sDigMinY:%s %d".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, digMinY),
-            workConfig.toString().replace("WorkConfig", ChatFormatting.GREEN + "WorkConfig: " + ChatFormatting.RESET),
-            "%sModules:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, modules),
-            energyString()
+                "%sArea:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, area),
+                "%sAction:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, action),
+                "%sRemoveBedrock:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, hasBedrockModule()),
+                "%sDigMinY:%s %d".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, digMinY),
+                workConfig.toString().replace("WorkConfig", ChatFormatting.GREEN + "WorkConfig: " + ChatFormatting.RESET),
+                "%sModules:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, modules),
+                energyString()
         ).map(Component::literal).toList();
     }
 
@@ -161,10 +136,10 @@ public class TileAdvQuarry extends PowerTile implements
         area = Area.fromNBT(nbt.getCompound("area")).orElse(null);
         var enchantments = nbt.getCompound("enchantments");
         setEnchantments(enchantments.getAllKeys().stream()
-            .mapMulti(MapMulti.getEntry(ForgeRegistries.ENCHANTMENTS, enchantments::getInt))
-            .map(EnchantmentLevel::new)
-            .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR)
-            .toList());
+                .mapMulti(MapMulti.getEntry(ForgeRegistries.ENCHANTMENTS, enchantments::getInt))
+                .map(EnchantmentLevel::new)
+                .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR)
+                .toList());
         digMinY = nbt.getInt("digMinY");
         action = AdvQuarryAction.fromNbt(nbt.getCompound("action"), this);
         workConfig = new WorkConfig(nbt.getCompound("workConfig"));
@@ -204,7 +179,7 @@ public class TileAdvQuarry extends PowerTile implements
             PacketHandler.sendToClient(new ClientSyncMessage(this), Objects.requireNonNull(this.getLevel()));
         } else {
             AdvQuarry.LOGGER.info(AdvQuarry.TILE, "Area is too bigger than limit value in config. Area={}, Limit={}",
-                newArea, QuarryPlus.config.common.chunkDestroyerLimit.get());
+                    newArea, QuarryPlus.config.common.chunkDestroyerLimit.get());
             return false;
         }
         this.cache.isProtectedByFTB.expire();
@@ -275,8 +250,8 @@ public class TileAdvQuarry extends PowerTile implements
     void updateModule() {
         // Blocks
         Set<QuarryModule> blockModules = level != null
-            ? QuarryModuleProvider.Block.getModulesInWorld(level, getBlockPos())
-            : Collections.emptySet();
+                ? QuarryModuleProvider.Block.getModulesInWorld(level, getBlockPos())
+                : Collections.emptySet();
 
         // Module Inventory
         var itemModules = moduleInventory.getModules();
@@ -295,7 +270,7 @@ public class TileAdvQuarry extends PowerTile implements
 
     ItemConverter createConverter() {
         var defaultConverter = ItemConverter.defaultConverter()
-            .combined(ItemConverter.advQuarryConverter());
+                .combined(ItemConverter.advQuarryConverter());
         return this.getFilterModules().map(FilterModule::createConverter).reduce(defaultConverter, ItemConverter::combined);
     }
 
@@ -362,16 +337,16 @@ public class TileAdvQuarry extends PowerTile implements
         fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, pickaxe);
         var aabb = new AABB(x - 5, digMinY - 5, z - 5, x + 5, getBlockPos().getY() - 1, z + 5);
         targetWorld.getEntitiesOfClass(ItemEntity.class, aabb, Predicate.not(i -> i.getItem().isEmpty()))
-            .forEach(i -> {
-                storage.addItem(i.getItem());
-                i.kill();
-            });
+                .forEach(i -> {
+                    storage.addItem(i.getItem());
+                    i.kill();
+                });
         getExpModule().ifPresent(e ->
-            targetWorld.getEntitiesOfClass(ExperienceOrb.class, aabb, EntitySelector.ENTITY_STILL_ALIVE)
-                .forEach(orb -> {
-                    e.addExp(orb.getValue());
-                    orb.kill();
-                }));
+                targetWorld.getEntitiesOfClass(ExperienceOrb.class, aabb, EntitySelector.ENTITY_STILL_ALIVE)
+                        .forEach(orb -> {
+                            e.addExp(orb.getValue());
+                            orb.kill();
+                        }));
         removeEdgeFluid(x, z, targetWorld);
         long requiredEnergy = 0;
         var exp = new AtomicInteger(0);
@@ -429,10 +404,10 @@ public class TileAdvQuarry extends PowerTile implements
         }
         // Get drops
         var drops = toBreak.stream().flatMap(p ->
-                InvUtils.getBlockDrops(p.getRight(), targetWorld, p.getLeft(), targetWorld.getBlockEntity(p.getLeft()), fakePlayer, pickaxe).stream())
-            .map(itemConverter::mapToKey)
-            .map(MapStreamSyntax.values(Long::valueOf))
-            .collect(MapStreamSyntax.entryToMap(Long::sum));
+                        InvUtils.getBlockDrops(p.getRight(), targetWorld, p.getLeft(), targetWorld.getBlockEntity(p.getLeft()), fakePlayer, pickaxe).stream())
+                .map(itemConverter::mapToKey)
+                .map(MapStreamSyntax.values(Long::valueOf))
+                .collect(MapStreamSyntax.entryToMap(Long::sum));
         {
             var headPos = toBreak.stream().map(Pair::getKey).findFirst().orElse(BlockPos.ZERO);
             var headState = toBreak.stream().map(Pair::getValue).findFirst().orElse(null);
@@ -441,7 +416,7 @@ public class TileAdvQuarry extends PowerTile implements
         this.storage.addAllItems(drops);
         // Remove blocks
         toBreak.stream().map(Pair::getLeft)
-            .forEach(p -> targetWorld.setBlock(p, getReplacementState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE));
+                .forEach(p -> targetWorld.setBlock(p, getReplacementState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE));
         if (exp.get() > 0) {
             getExpModule().ifPresent(e -> {
                 useEnergy(PowerManager.getExpCollectEnergy(exp.get(), this), Reason.EXP_COLLECT, true);
@@ -546,11 +521,11 @@ public class TileAdvQuarry extends PowerTile implements
 
         public QuarryCache() {
             replaceState = CacheEntry.supplierCache(5,
-                () -> TileAdvQuarry.this.getReplacerModule().map(ReplacerModule::getState).orElse(Blocks.AIR.defaultBlockState()));
+                    () -> TileAdvQuarry.this.getReplacerModule().map(ReplacerModule::getState).orElse(Blocks.AIR.defaultBlockState()));
             netherTop = CacheEntry.supplierCache(100, QuarryPlus.config.common.netherTop);
             enchantments = CacheEntry.supplierCache(1000, () -> EnchantmentHolder.makeHolder(TileAdvQuarry.this));
             isProtectedByFTB = CacheEntry.supplierCache(300 * 20, () ->
-                area != null && FTBChunksProtectionCheck.isAreaProtected(area.shrink(1, 0, 1), getTargetWorld().dimension()));
+                    area != null && FTBChunksProtectionCheck.isAreaProtected(area.shrink(1, 0, 1), getTargetWorld().dimension()));
         }
     }
 

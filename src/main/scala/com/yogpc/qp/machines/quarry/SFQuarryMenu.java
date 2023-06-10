@@ -1,7 +1,5 @@
 package com.yogpc.qp.machines.quarry;
 
-import java.util.Objects;
-
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.misc.SlotContainer;
@@ -13,6 +11,8 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 public final class SFQuarryMenu extends AbstractContainerMenu {
     public static final String GUI_ID = QuarryPlus.modID + ":gui_" + SFQuarryBlock.NAME;
     final DataSlot fuelCountData = this.addDataSlot(DataSlot.standalone());
@@ -23,7 +23,7 @@ public final class SFQuarryMenu extends AbstractContainerMenu {
 
     public SFQuarryMenu(int id, Player player, BlockPos pos) {
         super(Holder.SOLID_FUEL_QUARRY_MENU_TYPE, id);
-        quarry = Objects.requireNonNull((SFQuarryEntity) player.level.getBlockEntity(pos));
+        quarry = Objects.requireNonNull((SFQuarryEntity) player.level().getBlockEntity(pos));
         allSlots = quarry.fuelContainer.getContainerSize();
         addSlot(new SlotContainer(quarry.fuelContainer, 0, 44, 27));
 

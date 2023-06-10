@@ -1,7 +1,5 @@
 package com.yogpc.qp.machines.placer;
 
-import java.util.Objects;
-
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.misc.SlotContainer;
@@ -13,6 +11,8 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 public class PlacerContainer extends AbstractContainerMenu {
     public static final String PLACER_GUI_ID = QuarryPlus.modID + ":gui_" + PlacerBlock.NAME;
     public static final String REMOTE_PLACER_GUI_ID = QuarryPlus.modID + ":gui_" + RemotePlacerBlock.NAME;
@@ -23,7 +23,7 @@ public class PlacerContainer extends AbstractContainerMenu {
 
     public <T extends PlacerTile> PlacerContainer(int id, Player player, BlockPos pos, Class<T> tileClass) {
         super(getTypeFromClass(tileClass), id);
-        this.tile = tileClass.cast(Objects.requireNonNull(player.level.getBlockEntity(pos)));
+        this.tile = tileClass.cast(Objects.requireNonNull(player.level().getBlockEntity(pos)));
         this.allSlots = this.tile.getContainerSize();
 
         startX = tileClass == PlacerTile.class ? 62 : tileClass == RemotePlacerTile.class ? 26 : 0;
@@ -43,7 +43,7 @@ public class PlacerContainer extends AbstractContainerMenu {
             this.addSlot(new Slot(player.getInventory(), l, 8 + l * 18, 142));
         }
 
-        if (!player.level.isClientSide) {
+        if (!player.level().isClientSide) {
             tile.sendPacket();
         }
     }

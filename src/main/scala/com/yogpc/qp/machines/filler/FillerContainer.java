@@ -1,8 +1,5 @@
 package com.yogpc.qp.machines.filler;
 
-import java.util.Optional;
-import java.util.stream.IntStream;
-
 import com.yogpc.qp.machines.module.ReplacerModule;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.BlockItem;
@@ -12,6 +9,9 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.VisibleForTesting;
+
+import java.util.Optional;
+import java.util.stream.IntStream;
 
 public final class FillerContainer extends SimpleContainer {
     public FillerContainer(int size) {
@@ -26,14 +26,14 @@ public final class FillerContainer extends SimpleContainer {
     @VisibleForTesting
     static boolean canAccept(@NotNull ItemStack pStack) {
         return pStack.getItem() instanceof BlockItem blockItem // Empty is also checked.
-            && ReplacerModule.rejects.stream().noneMatch(p -> p.test(blockItem.getBlock().defaultBlockState()));
+                && ReplacerModule.rejects.stream().noneMatch(p -> p.test(blockItem.getBlock().defaultBlockState()));
     }
 
     Optional<ItemStack> getFirstItem() {
         return IntStream.range(0, getContainerSize())
-            .mapToObj(this::getItem)
-            .filter(FillerContainer::canAccept)
-            .findFirst();
+                .mapToObj(this::getItem)
+                .filter(FillerContainer::canAccept)
+                .findFirst();
     }
 
     LazyOptional<IItemHandler> createHandler() {

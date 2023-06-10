@@ -1,8 +1,5 @@
 package com.yogpc.qp.integration.rei;
 
-import java.util.List;
-import java.util.Optional;
-
 import com.yogpc.qp.machines.workbench.IngredientList;
 import com.yogpc.qp.machines.workbench.WorkbenchRecipe;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
@@ -12,6 +9,9 @@ import me.shedaniel.rei.api.common.util.EntryIngredients;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.List;
+import java.util.Optional;
+
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType") // Required by API
 final class WorkbenchDisplay extends BasicDisplay {
     final long energy;
@@ -19,13 +19,13 @@ final class WorkbenchDisplay extends BasicDisplay {
     @SuppressWarnings("UnstableApiUsage")
     WorkbenchDisplay(WorkbenchRecipe recipe) {
         this(
-            recipe.inputs().stream()
-                .map(IngredientList::stackList)
-                .map(EntryIngredients::ofItemStacks)
-                .toList(),
-            List.of(EntryIngredients.of(recipe.getResultItem(registryAccess()))),
-            Optional.of(recipe.getId()),
-            recipe.getRequiredEnergy()
+                recipe.inputs().stream()
+                        .map(IngredientList::stackList)
+                        .map(EntryIngredients::ofItemStacks)
+                        .toList(),
+                List.of(EntryIngredients.of(recipe.getResultItem(registryAccess()))),
+                Optional.of(recipe.getId()),
+                recipe.getRequiredEnergy()
         );
     }
 

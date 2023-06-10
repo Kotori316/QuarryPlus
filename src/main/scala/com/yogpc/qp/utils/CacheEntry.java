@@ -1,8 +1,8 @@
 package com.yogpc.qp.utils;
 
-import java.util.function.Supplier;
-
 import net.minecraft.world.level.Level;
+
+import java.util.function.Supplier;
 
 /**
  * Cache for data.
@@ -46,8 +46,8 @@ public abstract class CacheEntry<T> {
     @Override
     public String toString() {
         return "CacheEntry{" +
-            "cached=" + cached +
-            '}';
+                "cached=" + cached +
+                '}';
     }
 
     public static <T> CacheEntry<T> supplierCache(long cacheInterval, Supplier<T> supplier) {

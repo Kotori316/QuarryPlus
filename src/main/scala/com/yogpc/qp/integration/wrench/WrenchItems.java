@@ -8,8 +8,8 @@ public final class WrenchItems {
     public static boolean isWrenchItem(ItemStack stack) {
         var item = stack.getItem();
         return item == Holder.STICK ||
-               item == Holder.PIPEZ_WRENCH
-            ;
+                item == Holder.PIPEZ_WRENCH
+                ;
     }
 
     @SuppressWarnings("SpellCheckingInspection")

@@ -1,7 +1,5 @@
 package com.yogpc.qp.machines.module;
 
-import java.util.Objects;
-
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.misc.SlotContainer;
@@ -17,6 +15,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.network.NetworkHooks;
 
+import java.util.Objects;
+
 public class ContainerQuarryModule extends AbstractContainerMenu {
     public static final String GUI_ID = QuarryPlus.modID + ":gui_quarry_module";
     private final ModuleInventory moduleInventory;
@@ -25,7 +25,7 @@ public class ContainerQuarryModule extends AbstractContainerMenu {
 
     public ContainerQuarryModule(int id, Player player, BlockPos pos) {
         super(Holder.MODULE_MENU_TYPE, id);
-        blockEntity = player.level.getBlockEntity(pos);
+        blockEntity = player.level().getBlockEntity(pos);
         Objects.requireNonNull(blockEntity);
         this.moduleInventory = ((ModuleInventory.HasModuleInventory) blockEntity).getModuleInventory();
         this.allSlots = moduleInventory.getContainerSize();

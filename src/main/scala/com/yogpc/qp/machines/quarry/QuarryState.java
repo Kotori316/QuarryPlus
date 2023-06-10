@@ -1,18 +1,8 @@
 package com.yogpc.qp.machines.quarry;
 
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.Predicate;
-
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.machines.Area;
-import com.yogpc.qp.machines.BreakResult;
-import com.yogpc.qp.machines.PowerManager;
-import com.yogpc.qp.machines.PowerTile;
-import com.yogpc.qp.machines.TraceQuarryWork;
+import com.yogpc.qp.machines.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
@@ -28,6 +18,12 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Predicate;
 
 public enum QuarryState implements BlockEntityTicker<TileQuarry> {
     FINISHED(false) {
@@ -113,7 +109,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
             var blockTarget = QuarryState.dropUntilPos(quarry.target, StateConditions.skipNoBreak(quarry));
             if (blockTarget == null) {
                 var fluidPoses = quarry.target.allPoses()
-                    .filter(p -> TileQuarry.isFullFluidBlock(quarry.getTargetWorld().getBlockState(p))).map(BlockPos::immutable).toList();
+                        .filter(p -> TileQuarry.isFullFluidBlock(quarry.getTargetWorld().getBlockState(p))).map(BlockPos::immutable).toList();
                 if (!quarry.hasPumpModule() || fluidPoses.isEmpty()) {
                     // Change Y
                     quarry.target = Target.nextY(quarry.target, quarry.getArea(), quarry.digMinY);
@@ -131,7 +127,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
                 }
             } else {
                 var difference = new Vec3(blockTarget.getX() - quarry.headX,
-                    blockTarget.getY() - quarry.headY, blockTarget.getZ() - quarry.headZ);
+                        blockTarget.getY() - quarry.headY, blockTarget.getZ() - quarry.headZ);
                 var distance = difference.length();
                 if (distance > 1e-4) {
                     var moveDistance = Math.min(distance, quarry.headSpeed());
@@ -200,7 +196,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
                         // What ?
                         targetWorld.setBlock(fluidPos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
                         TraceQuarryWork.unexpected(quarry, quarryPos, "Invalid fluid(%s, %s) at (%d,%d,%d)"
-                            .formatted(blockState, targetWorld.getFluidState(fluidPos), fluidPos.getX(), fluidPos.getY(), fluidPos.getZ()));
+                                .formatted(blockState, targetWorld.getFluidState(fluidPos), fluidPos.getX(), fluidPos.getY(), fluidPos.getZ()));
                     }
                     TileQuarry.removeEdgeFluid(fluidPos, targetWorld, quarry);
                 }
@@ -216,8 +212,8 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
             if (!(quarry.target instanceof FillerTarget)) {
                 var area = quarry.getArea();
                 quarry.target = Target.newFillerTarget(new Area(
-                    area.minX() + 1, quarry.digMinY + 1, area.minZ() + 1,
-                    area.maxX() - 1, area.minY() - 1, area.maxZ() - 1, area.direction()));
+                        area.minX() + 1, quarry.digMinY + 1, area.minZ() + 1,
+                        area.maxX() - 1, area.minY() - 1, area.maxZ() - 1, area.direction()));
                 logTargetChange(quarryPos, quarry);
             }
             var action = ((FillerTarget) quarry.target).fillerAction;
@@ -263,10 +259,10 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
                 if (!world.getFluidState(pos).isEmpty()) {
                     if (counted.add(pos)) {
                         directions.stream()
-                            .map(pos::relative)
-                            .filter(area::isInAreaIgnoreY)
-                            .filter(Predicate.not(checked::contains))
-                            .forEach(nextSearch::add);
+                                .map(pos::relative)
+                                .filter(area::isInAreaIgnoreY)
+                                .filter(Predicate.not(checked::contains))
+                                .forEach(nextSearch::add);
                     }
                 }
             }
@@ -294,8 +290,8 @@ class StateConditions {
         return pos -> {
             var state = world.getBlockState(pos);
             return state.is(Holder.BLOCK_FRAME) // Frame
-                   || !quarry.canBreak(world, pos, state) // Unbreakable
-                ;
+                    || !quarry.canBreak(world, pos, state) // Unbreakable
+                    ;
         };
     }
 
@@ -305,8 +301,8 @@ class StateConditions {
         return pos -> {
             var state = world.getBlockState(pos);
             return state.isAir() // Air
-                   || !quarry.canBreak(world, pos, state) // Unbreakable
-                ;
+                    || !quarry.canBreak(world, pos, state) // Unbreakable
+                    ;
         };
     }
 }

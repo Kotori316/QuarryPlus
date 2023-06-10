@@ -1,8 +1,5 @@
 package com.yogpc.qp.machines.module;
 
-import java.util.List;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPItem;
 import net.minecraft.network.chat.Component;
@@ -15,6 +12,9 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+import java.util.stream.Stream;
 
 public class ExpModuleItem extends QPItem implements QuarryModuleProvider.Item {
     public static final String NAME = "exp_module";
@@ -33,11 +33,11 @@ public class ExpModuleItem extends QPItem implements QuarryModuleProvider.Item {
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> list, TooltipFlag flag) {
         super.appendHoverText(stack, level, list, flag);
         Stream.ofNullable(stack.getTag())
-            .mapToInt(t -> t.getInt(KEY_AMOUNT))
-            .filter(i -> i >= 0)
-            .mapToObj(i -> "Exp: " + i)
-            .map(Component::literal)
-            .forEach(list::add);
+                .mapToInt(t -> t.getInt(KEY_AMOUNT))
+                .filter(i -> i >= 0)
+                .mapToObj(i -> "Exp: " + i)
+                .map(Component::literal)
+                .forEach(list::add);
     }
 
     @Override

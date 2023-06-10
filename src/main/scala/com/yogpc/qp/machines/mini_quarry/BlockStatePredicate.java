@@ -1,8 +1,5 @@
 package com.yogpc.qp.machines.mini_quarry;
 
-import java.util.Locale;
-import java.util.Optional;
-
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.yogpc.qp.QuarryPlus;
@@ -23,6 +20,9 @@ import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraftforge.gametest.ForgeGameTestHooks;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.Logger;
+
+import java.util.Locale;
+import java.util.Optional;
 
 interface BlockStatePredicate {
     boolean test(BlockState state, BlockGetter level, BlockPos pos);
@@ -182,8 +182,8 @@ interface BlockStatePredicate {
         @Override
         public String toString() {
             return "Name{" +
-                   "location=" + location +
-                   '}';
+                    "location=" + location +
+                    '}';
         }
     }
 
@@ -248,10 +248,10 @@ interface BlockStatePredicate {
             if (blockGetter instanceof Level level) {
                 try {
                     BlockPredicateArgument.Result argument = BlockPredicateArgument.blockPredicate(CommandBuildContext.simple(
-                            Optional.ofNullable(level.getServer()).map(MinecraftServer::registryAccess).orElseThrow(),
-                            FeatureFlags.DEFAULT_FLAGS
-                        ))
-                        .parse(new StringReader(blockPredicate));
+                                    Optional.ofNullable(level.getServer()).map(MinecraftServer::registryAccess).orElseThrow(),
+                                    FeatureFlags.DEFAULT_FLAGS
+                            ))
+                            .parse(new StringReader(blockPredicate));
                     return argument.test(new BlockInWorld(level, pos, true));
                 } catch (CommandSyntaxException e) {
                     if (!ForgeGameTestHooks.isGametestServer()) // Suppress warning in game test.
@@ -275,19 +275,19 @@ interface BlockStatePredicate {
         public String gameTestName() {
             // Same as BlockStatePredicateTagsTest#convertKey(String)
             return this.blockPredicate
-                .replace("#", "tag_")
-                .replace(":", "_")
-                .replace("[", "_")
-                .replace("]", "_")
-                .replace("=", "_")
-                ;
+                    .replace("#", "tag_")
+                    .replace(":", "_")
+                    .replace("[", "_")
+                    .replace("]", "_")
+                    .replace("=", "_")
+                    ;
         }
 
         @Override
         public String toString() {
             return "VanillaBlockPredicate{" +
-                   "blockPredicate='" + blockPredicate + '\'' +
-                   '}';
+                    "blockPredicate='" + blockPredicate + '\'' +
+                    '}';
         }
 
         @Override

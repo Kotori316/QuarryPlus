@@ -1,8 +1,5 @@
 package com.yogpc.qp.machines.marker;
 
-import java.util.Objects;
-import java.util.function.Supplier;
-
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.TileMessage;
@@ -13,6 +10,9 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkEvent;
+
+import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * To server only.
@@ -52,12 +52,12 @@ public final class Marker16Message implements IMessage {
     public static void onReceive(Marker16Message message, Supplier<NetworkEvent.Context> supplier) {
         var world = PacketHandler.getWorld(supplier.get(), message.pos, message.dim);
         supplier.get().enqueueWork(() ->
-            world.map(w -> w.getBlockEntity(message.pos))
-                .flatMap(MapMulti.optCast(Tile16Marker.class))
-                .ifPresent(m -> {
-                    m.changeSize(message.amount, message.yMax, message.yMin);
-                    PacketHandler.sendToClient(new TileMessage(m), Objects.requireNonNull(m.getLevel()));
-                }));
+                world.map(w -> w.getBlockEntity(message.pos))
+                        .flatMap(MapMulti.optCast(Tile16Marker.class))
+                        .ifPresent(m -> {
+                            m.changeSize(message.amount, message.yMax, message.yMin);
+                            PacketHandler.sendToClient(new TileMessage(m), Objects.requireNonNull(m.getLevel()));
+                        }));
     }
 
 }

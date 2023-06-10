@@ -1,10 +1,5 @@
 package com.yogpc.qp.machines.workbench;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.CheckerLog;
@@ -41,6 +36,11 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Stream;
 
 public class TileWorkbench extends PowerTile implements Container, MenuProvider, CheckerLog {
     final List<ItemStack> ingredientInventory = NonNullList.withSize(27, ItemStack.EMPTY);
@@ -198,10 +198,10 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
     @Override
     public List<? extends Component> getDebugLogs() {
         return Stream.of(
-            "%sRecipe:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, currentRecipe),
-            "%sWorkContinue:%s %b".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, workContinue),
-            "%sRecipe List:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, recipesList),
-            energyString()
+                "%sRecipe:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, currentRecipe),
+                "%sWorkContinue:%s %b".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, workContinue),
+                "%sRecipe List:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, recipesList),
+                energyString()
         ).map(Component::literal).toList();
     }
 
@@ -255,7 +255,7 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
      */
     public void setCurrentRecipe(ResourceLocation recipeName) {
         this.currentRecipe = recipesList.stream().filter(r -> recipeName.equals(r.getId()))
-            .findFirst().orElse(WorkbenchRecipe.dummyRecipe());
+                .findFirst().orElse(WorkbenchRecipe.dummyRecipe());
         setMaxEnergy(Math.max(this.currentRecipe.getRequiredEnergy(), 5));
         if (QuarryPlus.config.common.noEnergy.get()) {
             setEnergy(0, true);

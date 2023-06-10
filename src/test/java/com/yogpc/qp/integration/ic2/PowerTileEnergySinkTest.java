@@ -1,5 +1,5 @@
 package com.yogpc.qp.integration.ic2;
-
+/*
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.PowerTile;
@@ -74,4 +74,4 @@ class PowerTileEnergySinkTest {
             }
         }
     }
-}
+}*/

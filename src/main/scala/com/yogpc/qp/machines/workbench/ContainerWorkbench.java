@@ -1,7 +1,5 @@
 package com.yogpc.qp.machines.workbench;
 
-import java.util.Objects;
-
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.misc.SlotContainer;
@@ -12,6 +10,8 @@ import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.Objects;
 
 public class ContainerWorkbench extends AbstractContainerMenu {
 
@@ -26,7 +26,7 @@ public class ContainerWorkbench extends AbstractContainerMenu {
 
     public ContainerWorkbench(int id, Player player, BlockPos pos) {
         super(Holder.WORKBENCH_MENU_TYPE, id);
-        this.tile = Objects.requireNonNull(((TileWorkbench) player.level.getBlockEntity(pos)));
+        this.tile = Objects.requireNonNull(((TileWorkbench) player.level().getBlockEntity(pos)));
         int row;
         int col;
 
@@ -49,7 +49,7 @@ public class ContainerWorkbench extends AbstractContainerMenu {
         for (col = 0; col < 9; ++col)
             addSlot(new Slot(player.getInventory(), col, 8 + col * 18, 198));
 
-        if (!player.level.isClientSide) {
+        if (!player.level().isClientSide) {
             setTrackValues();
             tile.startOpen(player);
         }

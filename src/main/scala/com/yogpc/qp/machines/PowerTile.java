@@ -1,9 +1,5 @@
 package com.yogpc.qp.machines;
 
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.LongSupplier;
-
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.integration.ic2.QuarryIC2Integration;
@@ -27,6 +23,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.LongSupplier;
+
 public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
     public static final long ONE_FE = 1_000_000_000L;
     private final EnergyCounter energyCounter;
@@ -42,17 +42,17 @@ public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
     public PowerTile(BlockEntityType<?> type, @NotNull BlockPos pos, BlockState state) {
         super(type, pos, state);
         ResourceLocation typeName = Optional.ofNullable(ForgeRegistries.BLOCK_ENTITY_TYPES.getKey(type)).or(
-            () -> Holder.entityTypes().stream().filter(e -> e.t() == type).map(Holder.NamedEntry::name).findFirst()
+                () -> Holder.entityTypes().stream().filter(e -> e.t() == type).map(Holder.NamedEntry::name).findFirst()
         ).orElseThrow(() -> new IllegalArgumentException("No location name found for " + type));
         this.enabled = QuarryPlus.config.enableMap.enabled(typeName);
         this.energyCounter = EnergyCounter.createInstance(QuarryPlus.config.debug() && enabled,
-            "%s(%d, %d, %d)".formatted(getClass().getSimpleName(), pos.getX(), pos.getY(), pos.getZ()));
+                "%s(%d, %d, %d)".formatted(getClass().getSimpleName(), pos.getX(), pos.getY(), pos.getZ()));
         this.powerConfig = PowerConfig.getMachineConfig(typeName.getPath());
         this.maxEnergy = this.powerConfig.maxEnergy();
         setTimeProvider(() -> Objects.requireNonNull(this.level,
-            """
-                Level in block entity is null. Are you in test?
-                Make sure to run `setTimeProvider` to replace the default time provider."""
+                """
+                        Level in block entity is null. Are you in test?
+                        Make sure to run `setTimeProvider` to replace the default time provider."""
         ).getGameTime());
     }
 
@@ -152,7 +152,7 @@ public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
         int acceptedInFE = (int) (accepted / ONE_FE);
         if (acceptedInFE > maxReceive || acceptedInFE < 0) {
             QuarryPlus.LOGGER.warn("{} got unexpected energy({} FE, {} micro MJ), MaxReceive={}",
-                energyCounter.name, acceptedInFE, acceptedInFE, maxReceive);
+                    energyCounter.name, acceptedInFE, acceptedInFE, maxReceive);
             return maxReceive;
         }
         return acceptedInFE;
@@ -272,8 +272,9 @@ public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
         return tile.level != null && tile.getBlockPos().distToCenterSqr(player.position()) < 64;
     }
 
+    @SuppressWarnings("deprecation")
     public static boolean isFullFluidBlock(BlockState state) {
-        return state.getMaterial().isLiquid();
+        return state.liquid();
     }
 
     @VisibleForTesting

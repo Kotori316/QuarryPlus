@@ -15,7 +15,7 @@ buildscript {
 plugins {
     id("maven-publish")
     id("scala")
-    id("net.minecraftforge.gradle") version("5.+")
+    id("net.minecraftforge.gradle") version("[6.0,6.2)")
     id("org.parchmentmc.librarian.forgegradle") version("1.+")
     id("com.github.breadmoirai.github-release") version("2.4.1")
     id("com.matthewprenger.cursegradle") version("1.4.0")
@@ -24,7 +24,7 @@ plugins {
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
 String createVersion() {
-    String mcVersion = project.minecraftVersion.replace(".", "")
+    String mcVersion = "%-4s".formatted(project.minecraftVersion.replace(".", "")).replace(' ', '0')
     String major = project.modVersionMajor
     String minor = System.getenv("GITHUB_RUN_NUMBER") ?: project.modVersionMinor ?: "0-SNAPSHOT"
     return "$mcVersion.$major.$minor"
@@ -116,7 +116,6 @@ minecraft {
             property("mixin.debug.export", "true")
             property("forge.logging.console.level", "info")
             args("--nogui")
-            setForceExit(false)
 
             mods {
                 quarryplus {
@@ -132,7 +131,6 @@ minecraft {
             property("mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg")
             property("mixin.debug.export", "true")
             property("forge.logging.console.level", "info")
-            setForceExit(false)
             args("--mod", "quarryplus", "--all", "--output", file("src/generated/resources/"), "--existing", file("src/main/resources/"))
 
             mods {
@@ -145,13 +143,12 @@ minecraft {
 
         gameTestServer {
             workingDirectory project.file("game-test")
-            property("forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP")
+            property("forge.logging.markers", "REGISTRIES")
             property("mixin.env.remapRefMap", "true")
             property("mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg")
             property("mixin.debug.export", "true")
             property("forge.logging.console.level", "debug")
             property("forge.enabledGameTestNamespaces", "QuarryPlus".toLowerCase())
-            setForceExit(false)
             jvmArgs("-EnableAssertions".toLowerCase())
 
             mods {
@@ -212,9 +209,9 @@ repositories {
         content {
             it.includeVersion("com.kotori316", "ScalableCatsForce".toLowerCase(), project.slpVersion as String)
             it.includeVersion("com.kotori316", "test_utility", project.testUtilVersion as String)
-            it.includeVersion("com.kotori316", "test_utility_dependency", "1.0-SNAPSHOT")
-            it.includeVersion("org.typelevel", "cats-core_2.13", project.catsVersion as String)
-            it.includeVersion("org.typelevel", "cats-kernel_2.13", project.catsVersion as String)
+            it.includeVersion("com.kotori316", "test_utility_dependency", "2.0-SNAPSHOT")
+            it.includeVersion("org.typelevel", "cats-core_3", project.catsVersion as String)
+            it.includeVersion("org.typelevel", "cats-kernel_3", project.catsVersion as String)
         }
     }
     maven {
@@ -235,15 +232,19 @@ dependencies {
     minecraft("net.minecraftforge:forge:" + forgeVersion)
     System.out.println(("Selected version: " + "net.minecraftforge:forge:" + forgeVersion) as String)
     compileOnly(group: "org.scala-lang", name: "scala-library", version: project.scalaVersion)
-    compileOnly(group: "org.typelevel", name: "cats-core_2.13", version: project.catsVersion)
+    compileOnly(group: "org.typelevel", name: "cats-core_3", version: project.catsVersion) {
+        exclude(group: 'org.scala-lang', module: 'scala3-library_3')
+    }
     testImplementation(group: "org.scala-lang", name: "scala-library", version: project.scalaVersion)
-    testImplementation(group: "org.typelevel", name: "cats-core_2.13", version: project.catsVersion)
+    testImplementation(group: "org.typelevel", name: "cats-core_3", version: project.catsVersion) {
+        exclude(group: 'org.scala-lang', module: 'scala3-library_3')
+    }
 
     boolean useREI = true // Boolean.parseBoolean(System.getenv("USE_REI"))
     compileOnly(fg.deobf(group: "mezz.jei", name: "jei-1.19.2-common-api", version: project.jeiVersion))
     compileOnly(fg.deobf(group: "mezz.jei", name: "jei-1.19.2-forge-api", version: project.jeiVersion))
     if (useREI) {
-        implementation(fg.deobf(group: "me.shedaniel", name: "RoughlyEnoughItems-forge", version: project.reiVersion))
+        compileOnly(fg.deobf(group: "me.shedaniel", name: "RoughlyEnoughItems-forge", version: project.reiVersion))
         implementation(fg.deobf(group: "me.shedaniel.cloth", name: "cloth-config-forge", version: project.clothVersion))
         implementation(fg.deobf(group: "dev.architectury", name: "architectury-forge", version: project.architecturyVersion))
     } else {
@@ -276,14 +277,16 @@ dependencies {
         testImplementation(fg.deobf(group: "curse.maven", name: "ic2-classic-242942", version: project.ic2ClassicId))
     } else {
         compileOnly(fg.deobf(group: "curse.maven", name: "ic2-classic-242942", version: project.ic2ClassicId))
-        testCompileOnly(fg.deobf(group: "curse.maven", name: "ic2-classic-242942", version: project.ic2ClassicId))
+        // testCompileOnly(fg.deobf(group: "curse.maven", name: "ic2-classic-242942", version: project.ic2ClassicId))
     }
 
     // Test Dependencies.
     // Required these libraries to execute the tests.
     // The library will avoid errors of ForgeRegistry and Capability.
     implementation(fg.deobf(group: "com.kotori316", name: "test_utility", version: project.testUtilVersion))
-    implementation(group: "com.kotori316", name: "test_utility_dependency", version: "1.0-SNAPSHOT")
+    implementation(group: "com.kotori316", name: "test_utility_dependency", version: "2.0-SNAPSHOT"){
+        exclude(group: 'org.scala-lang', module: 'scala3-library_3')
+    }
 
     game_test(group: "org.junit.jupiter", name: "junit-jupiter-api", version: project.jupiterVersion)
     game_test(group: "org.junit.jupiter", name: "junit-jupiter-params", version: project.jupiterVersion)

@@ -1,10 +1,5 @@
 package com.yogpc.qp.machines.marker;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.CheckerLog;
@@ -22,6 +17,11 @@ import net.minecraft.world.phys.AABB;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 public class Tile16Marker extends BlockEntity implements QuarryMarker, CheckerLog {
     private BlockPos min = BlockPos.ZERO;
@@ -107,9 +107,9 @@ public class Tile16Marker extends BlockEntity implements QuarryMarker, CheckerLo
     @Override
     public List<? extends Component> getDebugLogs() {
         return Stream.of(
-            "Size: " + size,
-            "Min: " + min(),
-            "Max: " + max()
+                "Size: " + size,
+                "Min: " + min(),
+                "Max: " + max()
         ).map(Component::literal).toList();
     }
 

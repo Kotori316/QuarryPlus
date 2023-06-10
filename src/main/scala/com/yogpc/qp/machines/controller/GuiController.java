@@ -1,18 +1,10 @@
 package com.yogpc.qp.machines.controller;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-import java.util.stream.Collectors;
-
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.machines.misc.IndexedButton;
 import com.yogpc.qp.packet.PacketHandler;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
@@ -25,10 +17,18 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
+
 @OnlyIn(Dist.CLIENT)
 public class GuiController extends Screen implements Button.OnPress {
     private static final Comparator<ResourceLocation> RESOURCE_LOCATION_COMPARATOR =
-        Comparator.comparing(ResourceLocation::getNamespace).thenComparing(ResourceLocation::getPath);
+            Comparator.comparing(ResourceLocation::getNamespace).thenComparing(ResourceLocation::getPath);
     private GuiSlotEntities slot;
     private EditBox search;
     List<ResourceLocation> names;
@@ -61,13 +61,13 @@ public class GuiController extends Screen implements Button.OnPress {
     }
 
     @Override
-    public void render(PoseStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
+    public void render(GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTicks) {
         if (slot != null) {
-            this.slot.render(matrixStack, mouseX, mouseY, partialTicks);
-            this.search.render(matrixStack, mouseX, mouseY, partialTicks);
+            this.slot.render(graphics, mouseX, mouseY, partialTicks);
+            this.search.render(graphics, mouseX, mouseY, partialTicks);
         }
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
-        drawCenteredString(matrixStack, this.font, Component.translatable("yog.spawner.setting"), this.width / 2, 8, 0xFFFFFF);
+        super.render(graphics, mouseX, mouseY, partialTicks);
+        graphics.drawCenteredString(this.font, Component.translatable("yog.spawner.setting"), this.width / 2, 8, 0xFFFFFF);
     }
 
     @Override
@@ -110,10 +110,10 @@ public class GuiController extends Screen implements Button.OnPress {
             try {
                 Pattern pattern = Pattern.compile(text);
                 collect = allEntities.stream().filter(l -> pattern.matcher(l.toString()).find())
-                    .sorted(RESOURCE_LOCATION_COMPARATOR).collect(Collectors.toList());
+                        .sorted(RESOURCE_LOCATION_COMPARATOR).collect(Collectors.toList());
             } catch (PatternSyntaxException e) {
                 collect = allEntities.stream().filter(l -> l.toString().contains(text))
-                    .sorted(RESOURCE_LOCATION_COMPARATOR).collect(Collectors.toList());
+                        .sorted(RESOURCE_LOCATION_COMPARATOR).collect(Collectors.toList());
             }
         } else {
             collect = allEntities.stream().sorted(RESOURCE_LOCATION_COMPARATOR).collect(Collectors.toList());

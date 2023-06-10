@@ -22,8 +22,8 @@ public abstract class FillerTargetPosIterator extends PickIterator<BlockPos> {
     @Override
     public boolean hasNext() {
         return area.minX() <= current.getX() && current.getX() <= area.maxX() &&
-            area.minZ() <= current.getZ() && current.getZ() <= area.maxZ() &&
-            this.minY <= current.getY() && current.getY() <= this.maxY;
+                area.minZ() <= current.getZ() && current.getZ() <= area.maxZ() &&
+                this.minY <= current.getY() && current.getY() <= this.maxY;
     }
 
     abstract FillerEntity.Action type();
@@ -164,8 +164,8 @@ public abstract class FillerTargetPosIterator extends PickIterator<BlockPos> {
 
         private Seq<TargetIterator.XZPair> getCircle() {
             return CircleGenerator.makeCircle(
-                new TargetIterator.XZPair((area.minX() + area.maxX() + 1) / 2, (area.minZ() + area.maxZ() + 1) / 2),
-                Math.min(area.maxX() - area.minX() + 1, area.maxZ() - area.minZ() + 1)
+                    new TargetIterator.XZPair((area.minX() + area.maxX() + 1) / 2, (area.minZ() + area.maxZ() + 1) / 2),
+                    Math.min(area.maxX() - area.minX() + 1, area.maxZ() - area.minZ() + 1)
             );
         }
 

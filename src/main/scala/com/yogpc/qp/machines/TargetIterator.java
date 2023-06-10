@@ -25,7 +25,7 @@ public abstract class TargetIterator extends PickIterator<TargetIterator.XZPair>
     @Override
     public final boolean hasNext() {
         return area.minX() < current.x() && current.x() < area.maxX() &&
-               area.minZ() < current.z() && current.z() < area.maxZ();
+                area.minZ() < current.z() && current.z() < area.maxZ();
     }
 
     public record XZPair(int x, int z) {
@@ -188,15 +188,15 @@ public abstract class TargetIterator extends PickIterator<TargetIterator.XZPair>
                 // Move chunk x
                 // Reset z
                 return new XZPair(
-                    Math.max(chunkToBlock(currentChunkX + 1, 0), minX),
-                    Math.max(chunkToBlock(currentChunkZ, 0), minZ));
+                        Math.max(chunkToBlock(currentChunkX + 1, 0), minX),
+                        Math.max(chunkToBlock(currentChunkZ, 0), minZ));
             }
             if (currentChunkZ + 1 <= blockToSectionCoord(maxZ)) {
                 // Move chunk z
                 // Reset chunk x
                 return new XZPair(
-                    Math.max(chunkToBlock(blockToSectionCoord(minX), 0), minX),
-                    Math.max(chunkToBlock(currentChunkZ + 1, 0), minZ));
+                        Math.max(chunkToBlock(blockToSectionCoord(minX), 0), minX),
+                        Math.max(chunkToBlock(currentChunkZ + 1, 0), minZ));
             }
             // End, returns dummy.
             return new XZPair(current.x() + 1, current.z());

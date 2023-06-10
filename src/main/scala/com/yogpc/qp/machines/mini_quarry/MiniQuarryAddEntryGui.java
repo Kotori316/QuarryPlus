@@ -1,18 +1,12 @@
 package com.yogpc.qp.machines.mini_quarry;
 
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.misc.IndexedButton;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ObjectSelectionList;
@@ -25,6 +19,12 @@ import net.minecraft.tags.TagKey;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.glfw.GLFW;
+
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class MiniQuarryAddEntryGui extends Screen implements Button.OnPress {
     private final Consumer<BlockStatePredicate> callback;
@@ -60,11 +60,11 @@ public class MiniQuarryAddEntryGui extends Screen implements Button.OnPress {
     }
 
     @Override
-    public void render(PoseStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
-        list.render(matrixStack, mouseX, mouseY, partialTicks);
-        //textField.renderButton(matrixStack, mouseX, mouseY, partialTicks);
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
-        drawCenteredString(matrixStack, this.font, Component.translatable("quarryplus.gui.new_entry"), this.width / 2, 8, 0xFFFFFF);
+    public void render(GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTicks) {
+        list.render(graphics, mouseX, mouseY, partialTicks);
+        //textField.renderButton(graphics,  mouseX, mouseY, partialTicks);
+        super.render(graphics, mouseX, mouseY, partialTicks);
+        graphics.drawCenteredString(this.font, Component.translatable("quarryplus.gui.new_entry"), this.width / 2, 8, 0xFFFFFF);
     }
 
     @SuppressWarnings("deprecation")
@@ -73,12 +73,12 @@ public class MiniQuarryAddEntryGui extends Screen implements Button.OnPress {
         if (filterText.startsWith("#")) {
             String f = filterText.substring(1); // Remove first #
             return List.of(Pair.of(Kind.TAG, BuiltInRegistries.BLOCK.getTagNames()
-                .map(TagKey::location).map(ResourceLocation::toString).filter(r -> r.contains(f)).sorted().collect(Collectors.toList())));
+                    .map(TagKey::location).map(ResourceLocation::toString).filter(r -> r.contains(f)).sorted().collect(Collectors.toList())));
         } else {
             return List.of(
-                Pair.of(Kind.ALL, Stream.of("ALL").filter(r -> r.contains(filterText)).toList()),
-                Pair.of(Kind.BLOCK, ForgeRegistries.BLOCKS.getKeys().stream()
-                    .map(ResourceLocation::toString).filter(r -> r.contains(filterText)).sorted().collect(Collectors.toList()))
+                    Pair.of(Kind.ALL, Stream.of("ALL").filter(r -> r.contains(filterText)).toList()),
+                    Pair.of(Kind.BLOCK, ForgeRegistries.BLOCKS.getKeys().stream()
+                            .map(ResourceLocation::toString).filter(r -> r.contains(filterText)).sorted().collect(Collectors.toList()))
             );
         }
     }
@@ -140,9 +140,9 @@ public class MiniQuarryAddEntryGui extends Screen implements Button.OnPress {
             this.clearEntries();
             List<Pair<Kind, List<String>>> kindListPairs = entriesSupplier.get();
             kindListPairs.forEach(kindListPair ->
-                kindListPair.getValue().stream()
-                    .map(e -> new LocationEntry(e, this.parent, this::setSelected, kindListPair.getKey()))
-                    .forEach(this::addEntry)
+                    kindListPair.getValue().stream()
+                            .map(e -> new LocationEntry(e, this.parent, this::setSelected, kindListPair.getKey()))
+                            .forEach(this::addEntry)
             );
         }
 
@@ -171,12 +171,11 @@ public class MiniQuarryAddEntryGui extends Screen implements Button.OnPress {
         }
 
         @Override
-        @SuppressWarnings("IntegerDivisionInFloatingPointContext")
-        public void render(PoseStack m, int entryIdx, int top, int left, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean p_render_8_, float partialTicks) {
+        public void render(GuiGraphics graphics, int entryIdx, int top, int left, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean p_render_8_, float partialTicks) {
             String name = (kind == Kind.TAG ? "#" : "") + data;
             // drawCenteredString(m, Minecraft.getInstance().font, name, parent.width, top + 1, 0xFFFFFF);
-            Minecraft.getInstance().font.draw(m, name,
-                (parent.width - Minecraft.getInstance().font.width(name)) / 2, top + 2, 0xFFFFFF);
+            graphics.drawString(Minecraft.getInstance().font, name,
+                    (parent.width - Minecraft.getInstance().font.width(name)) / 2, top + 2, 0xFFFFFF, false);
         }
 
         @Override

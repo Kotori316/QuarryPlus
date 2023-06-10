@@ -1,7 +1,5 @@
 package com.yogpc.qp.machines.advquarry;
 
-import java.util.function.Supplier;
-
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.packet.PacketHandler;
@@ -13,6 +11,8 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkEvent;
+
+import java.util.function.Supplier;
 
 /**
  * To Server only
@@ -68,23 +68,23 @@ public final class AdvActionMessage implements IMessage {
     public static void onReceive(AdvActionMessage message, Supplier<NetworkEvent.Context> supplier) {
         var world = PacketHandler.getWorld(supplier.get(), message.pos, message.dim);
         supplier.get().enqueueWork(() ->
-            world.map(w -> w.getBlockEntity(message.pos))
-                .flatMap(MapMulti.optCast(TileAdvQuarry.class))
-                .ifPresent(quarry -> {
-                    AdvQuarry.LOGGER.debug(AdvQuarry.MESSAGE, "onReceive. {}, {}", message.pos, message.action);
-                    switch (message.action) {
-                        case CHANGE_RANGE -> quarry.setArea(message.area);
-                        case MODULE_INV -> PacketHandler.getPlayer(supplier.get())
-                            .flatMap(MapMulti.optCast(ServerPlayer.class))
-                            .ifPresent(quarry::openModuleGui);
-                        case QUICK_START -> {
-                            quarry.workConfig = quarry.workConfig.startSoonConfig();
-                            if (quarry.canStartWork()) {
-                                AdvQuarryAction.startQuarry(quarry);
+                world.map(w -> w.getBlockEntity(message.pos))
+                        .flatMap(MapMulti.optCast(TileAdvQuarry.class))
+                        .ifPresent(quarry -> {
+                            AdvQuarry.LOGGER.debug(AdvQuarry.MESSAGE, "onReceive. {}, {}", message.pos, message.action);
+                            switch (message.action) {
+                                case CHANGE_RANGE -> quarry.setArea(message.area);
+                                case MODULE_INV -> PacketHandler.getPlayer(supplier.get())
+                                        .flatMap(MapMulti.optCast(ServerPlayer.class))
+                                        .ifPresent(quarry::openModuleGui);
+                                case QUICK_START -> {
+                                    quarry.workConfig = quarry.workConfig.startSoonConfig();
+                                    if (quarry.canStartWork()) {
+                                        AdvQuarryAction.startQuarry(quarry);
+                                    }
+                                }
+                                case SYNC -> quarry.workConfig = message.workConfig;
                             }
-                        }
-                        case SYNC -> quarry.workConfig = message.workConfig;
-                    }
-                }));
+                        }));
     }
 }

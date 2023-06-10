@@ -19,13 +19,13 @@ public class BookMoverMenu extends AbstractContainerMenu {
 
     public BookMoverMenu(int id, Player player, BlockPos pos) {
         super(Holder.BOOK_MOVER_MENU_TYPE, id);
-        this.mover = (BookMoverEntity) player.level.getBlockEntity(pos);
+        this.mover = (BookMoverEntity) player.level().getBlockEntity(pos);
 
         if (mover != null) {
             addSlot(new SlotContainer(mover, 0, 13, 35));
             addSlot(new SlotContainer(mover, 1, 55, 35));
             addSlot(new SlotContainer(mover, 2, 116, 35));
-            if (!player.level.isClientSide) {
+            if (!player.level().isClientSide) {
                 this.setTrackValues();
             }
         }

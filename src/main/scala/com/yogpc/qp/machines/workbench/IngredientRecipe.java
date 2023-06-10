@@ -1,9 +1,5 @@
 package com.yogpc.qp.machines.workbench;
 
-import java.util.List;
-import java.util.stream.IntStream;
-import java.util.stream.StreamSupport;
-
 import com.google.gson.JsonObject;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.utils.MapMulti;
@@ -14,6 +10,10 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.conditions.ICondition;
+
+import java.util.List;
+import java.util.stream.IntStream;
+import java.util.stream.StreamSupport;
 
 public class IngredientRecipe extends WorkbenchRecipe {
     private final List<IngredientList> input;
@@ -57,8 +57,8 @@ class IngredientRecipeSerialize implements WorkbenchRecipeSerializer.PacketSeria
             input = List.of(IngredientList.fromJson(jsonObject.get("ingredients")));
         } else if (jsonObject.get("ingredients").isJsonArray()) {
             input = StreamSupport.stream(jsonObject.get("ingredients").getAsJsonArray().spliterator(), false)
-                .map(IngredientList::fromJson)
-                .toList();
+                    .map(IngredientList::fromJson)
+                    .toList();
         } else {
             throw new IllegalArgumentException("Bad Json type of ingredients. " + jsonObject.get("ingredients"));
         }
@@ -71,7 +71,7 @@ class IngredientRecipeSerialize implements WorkbenchRecipeSerializer.PacketSeria
         jsonObject.addProperty("energy", (double) recipe.getRequiredEnergy() / PowerTile.ONE_FE);
         jsonObject.addProperty("showInJEI", recipe.showInJEI());
         jsonObject.add("ingredients",
-            recipe.inputs().stream().map(IngredientList::toJson).collect(MapMulti.jsonArrayCollector()));
+                recipe.inputs().stream().map(IngredientList::toJson).collect(MapMulti.jsonArrayCollector()));
         return jsonObject;
     }
 
@@ -82,8 +82,8 @@ class IngredientRecipeSerialize implements WorkbenchRecipeSerializer.PacketSeria
         var showInJei = buffer.readBoolean();
         var inputSize = buffer.readVarInt();
         var input = IntStream.range(0, inputSize)
-            .mapToObj(i -> IngredientList.fromPacket(buffer))
-            .toList();
+                .mapToObj(i -> IngredientList.fromPacket(buffer))
+                .toList();
         return new IngredientRecipe(id, output, energy, showInJei, input);
     }
 

@@ -1,7 +1,5 @@
 package com.yogpc.qp.machines.mini_quarry;
 
-import java.util.Objects;
-
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.misc.SlotContainer;
@@ -11,6 +9,8 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.Objects;
+
 public final class MiniQuarryMenu extends AbstractContainerMenu {
     public static final String GUI_ID = QuarryPlus.modID + ":gui_" + MiniQuarryBlock.NAME;
     final MiniQuarryTile miniQuarry;
@@ -18,7 +18,7 @@ public final class MiniQuarryMenu extends AbstractContainerMenu {
 
     public MiniQuarryMenu(int id, Player player, BlockPos pos) {
         super(Holder.MINI_QUARRY_MENU_TYPE, id);
-        miniQuarry = Objects.requireNonNull((MiniQuarryTile) player.level.getBlockEntity(pos));
+        miniQuarry = Objects.requireNonNull((MiniQuarryTile) player.level().getBlockEntity(pos));
         this.allSlots = miniQuarry.getInv().getContainerSize();
         final int oneBox = 18;
 

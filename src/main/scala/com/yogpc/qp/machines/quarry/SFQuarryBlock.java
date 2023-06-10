@@ -31,7 +31,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
@@ -42,12 +43,14 @@ public final class SFQuarryBlock extends QPBlock implements EntityBlock {
     public static final String NAME = "solid_fuel_quarry";
 
     public SFQuarryBlock() {
-        super(Properties.of(Material.METAL)
-            .strength(1.5f, 10f)
-            .sound(SoundType.STONE), NAME);
+        super(Properties.of()
+                .mapColor(MapColor.METAL)
+                .pushReaction(PushReaction.BLOCK)
+                .strength(1.5f, 10f)
+                .sound(SoundType.STONE), NAME);
         registerDefaultState(getStateDefinition().any()
-            .setValue(WORKING, false)
-            .setValue(BlockStateProperties.FACING, Direction.NORTH));
+                .setValue(WORKING, false)
+                .setValue(BlockStateProperties.FACING, Direction.NORTH));
     }
 
     @Override
@@ -123,12 +126,12 @@ public final class SFQuarryBlock extends QPBlock implements EntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
         return level.isClientSide ? null : checkType(blockEntityType, Holder.SOLID_FUEL_QUARRY_TYPE,
-            new CombinedBlockEntityTicker<>(
-                SFQuarryEntity::tickFuel,
-                TileQuarry::tick,
-                PowerTile.logTicker(),
-                MachineStorage.passItems(),
-                MachineStorage.passFluid())
+                new CombinedBlockEntityTicker<>(
+                        SFQuarryEntity::tickFuel,
+                        TileQuarry::tick,
+                        PowerTile.logTicker(),
+                        MachineStorage.passItems(),
+                        MachineStorage.passFluid())
         );
     }
 

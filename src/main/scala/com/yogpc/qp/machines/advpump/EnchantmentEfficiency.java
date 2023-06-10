@@ -1,10 +1,5 @@
 package com.yogpc.qp.machines.advpump;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Predicate;
-
 import com.yogpc.qp.machines.EnchantmentLevel;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.utils.MapMulti;
@@ -14,6 +9,11 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraftforge.registries.ForgeRegistries;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Predicate;
 
 class EnchantmentEfficiency {
     private final List<EnchantmentLevel> enchantments;
@@ -36,8 +36,8 @@ class EnchantmentEfficiency {
 
     static int getLevel(List<EnchantmentLevel> enchantments, Enchantment enchantment) {
         return enchantments.stream()
-            .filter(e -> enchantment.equals(e.enchantment()))
-            .mapToInt(EnchantmentLevel::level).max().orElse(0);
+                .filter(e -> enchantment.equals(e.enchantment()))
+                .mapToInt(EnchantmentLevel::level).max().orElse(0);
     }
 
     CompoundTag toNbt() {
@@ -66,10 +66,10 @@ class EnchantmentEfficiency {
 
     static EnchantmentEfficiency fromNbt(CompoundTag tag) {
         var enchantmentLevels = tag.getAllKeys().stream()
-            .mapMulti(MapMulti.getEntry(ForgeRegistries.ENCHANTMENTS, tag::getInt))
-            .map(EnchantmentLevel::new)
-            .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR)
-            .toList();
+                .mapMulti(MapMulti.getEntry(ForgeRegistries.ENCHANTMENTS, tag::getInt))
+                .map(EnchantmentLevel::new)
+                .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR)
+                .toList();
         return new EnchantmentEfficiency(enchantmentLevels);
     }
 

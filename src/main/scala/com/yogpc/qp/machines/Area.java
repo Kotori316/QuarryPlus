@@ -1,5 +1,13 @@
 package com.yogpc.qp.machines;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.ChunkPos;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -8,14 +16,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.Vec3i;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.ChunkPos;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public record Area(int minX, int minY, int minZ, int maxX, int maxY, int maxZ,
                    Direction direction) implements Serializable {
@@ -33,7 +33,7 @@ public record Area(int minX, int minY, int minZ, int maxX, int maxY, int maxZ,
 
     public Area(Vec3i pos1, Vec3i pos2, Direction direction) {
         this(Math.min(pos1.getX(), pos2.getX()), Math.min(pos1.getY(), pos2.getY()), Math.min(pos1.getZ(), pos2.getZ()),
-            Math.max(pos1.getX(), pos2.getX()), Math.max(pos1.getY(), pos2.getY()), Math.max(pos1.getZ(), pos2.getZ()), direction);
+                Math.max(pos1.getX(), pos2.getX()), Math.max(pos1.getY(), pos2.getY()), Math.max(pos1.getZ(), pos2.getZ()), direction);
     }
 
     public Area assureY(int minSpaceY) {
@@ -60,9 +60,9 @@ public record Area(int minX, int minY, int minZ, int maxX, int maxY, int maxZ,
         int z1 = minZ + z;
         int z2 = maxZ - z;
         return new Area(
-            Math.min(x1, x2), Math.min(y1, y2), Math.min(z1, z2),
-            Math.max(x1, x2), Math.max(y1, y2), Math.max(z1, z2),
-            direction);
+                Math.min(x1, x2), Math.min(y1, y2), Math.min(z1, z2),
+                Math.max(x1, x2), Math.max(y1, y2), Math.max(z1, z2),
+                direction);
     }
 
     public boolean isInAreaIgnoreY(Vec3i vec3i) {
@@ -96,9 +96,9 @@ public record Area(int minX, int minY, int minZ, int maxX, int maxY, int maxZ,
             return Optional.empty();
         } else {
             return Optional.of(new Area(
-                tag.getInt("minX"), tag.getInt("minY"), tag.getInt("minZ"),
-                tag.getInt("maxX"), tag.getInt("maxY"), tag.getInt("maxZ"),
-                Direction.byName(tag.getString("direction"))
+                    tag.getInt("minX"), tag.getInt("minY"), tag.getInt("minZ"),
+                    tag.getInt("maxX"), tag.getInt("maxY"), tag.getInt("maxZ"),
+                    Direction.byName(tag.getString("direction"))
             ));
         }
     }
@@ -106,9 +106,9 @@ public record Area(int minX, int minY, int minZ, int maxX, int maxY, int maxZ,
     @NotNull
     public static Stream<BlockPos> getFramePosStream(@NotNull Area area) {
         return Stream.of(
-            makeSquare(area, area.minY()),
-            makePole(area, area.minY() + 1, area.maxY()),
-            makeSquare(area, area.maxY())
+                makeSquare(area, area.minY()),
+                makePole(area, area.minY() + 1, area.maxY()),
+                makeSquare(area, area.maxY())
         ).flatMap(Function.identity());
     }
 
@@ -124,20 +124,20 @@ public record Area(int minX, int minY, int minZ, int maxX, int maxY, int maxZ,
 
     static Stream<BlockPos> makeSquare(Area area, int y) {
         return Stream.of(
-            to(area.minX(), area.maxX()).mapToObj(x -> new BlockPos(x, y, area.minZ())), // minX -> maxX, minZ
-            to(area.minZ(), area.maxZ()).mapToObj(z -> new BlockPos(area.maxX(), y, z)), // maxX, minZ -> maxZ
-            to(area.maxX(), area.minX()).mapToObj(x -> new BlockPos(x, y, area.maxZ())), // maxX -> minX, maxZ
-            to(area.maxZ(), area.minZ()).mapToObj(z -> new BlockPos(area.minX(), y, z)) // minX, maxZ -> minZ
+                to(area.minX(), area.maxX()).mapToObj(x -> new BlockPos(x, y, area.minZ())), // minX -> maxX, minZ
+                to(area.minZ(), area.maxZ()).mapToObj(z -> new BlockPos(area.maxX(), y, z)), // maxX, minZ -> maxZ
+                to(area.maxX(), area.minX()).mapToObj(x -> new BlockPos(x, y, area.maxZ())), // maxX -> minX, maxZ
+                to(area.maxZ(), area.minZ()).mapToObj(z -> new BlockPos(area.minX(), y, z)) // minX, maxZ -> minZ
         ).flatMap(Function.identity());
     }
 
     static Stream<BlockPos> makePole(Area area, int yMin, int yMax) {
         return to(yMin, yMax).boxed().flatMap(y ->
-            Stream.of(
-                new BlockPos(area.minX(), y, area.minZ()),
-                new BlockPos(area.maxX(), y, area.minZ()),
-                new BlockPos(area.maxX(), y, area.maxZ()),
-                new BlockPos(area.minX(), y, area.maxZ())));
+                Stream.of(
+                        new BlockPos(area.minX(), y, area.minZ()),
+                        new BlockPos(area.maxX(), y, area.minZ()),
+                        new BlockPos(area.maxX(), y, area.maxZ()),
+                        new BlockPos(area.minX(), y, area.maxZ())));
     }
 
     public List<ChunkPos> getChunkPosList() {

@@ -1,20 +1,7 @@
 package com.yogpc.qp.machines.advquarry;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.Holder;
-import com.yogpc.qp.machines.Area;
-import com.yogpc.qp.machines.BreakResult;
-import com.yogpc.qp.machines.PowerManager;
-import com.yogpc.qp.machines.PowerTile;
-import com.yogpc.qp.machines.TargetIterator;
-import com.yogpc.qp.machines.TraceQuarryWork;
+import com.yogpc.qp.machines.*;
 import com.yogpc.qp.machines.filler.FillerAction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -25,6 +12,14 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import static com.yogpc.qp.machines.advquarry.AdvQuarry.ACTION;
 import static com.yogpc.qp.machines.advquarry.AdvQuarry.LOGGER;
 
@@ -33,12 +28,12 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
 
     static {
         SERIALIZER_MAP = Stream.of(
-            new WaitingSerializer(),
-            new MakeFrameSerializer(),
-            new BreakBlockSerializer(),
-            new CheckFluidSerializer(),
-            new FillerWorkSerializer(),
-            new FinishedSerializer()
+                new WaitingSerializer(),
+                new MakeFrameSerializer(),
+                new BreakBlockSerializer(),
+                new CheckFluidSerializer(),
+                new FillerWorkSerializer(),
+                new FinishedSerializer()
         ).collect(Collectors.toMap(Serializer::key, Function.identity()));
     }
 
@@ -51,12 +46,12 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
     static AdvQuarryAction fromNbt(CompoundTag tag, TileAdvQuarry quarry) {
         var key = tag.getString("type");
         return Optional.ofNullable(SERIALIZER_MAP.get(key))
-            .map(s -> s.fromTag(tag, quarry))
-            .orElseGet(() -> {
-                if (!tag.isEmpty())
-                    LOGGER.error(ACTION, "Unknown type '{}' found in tag: {}", key, tag);
-                return Waiting.WAITING;
-            });
+                .map(s -> s.fromTag(tag, quarry))
+                .orElseGet(() -> {
+                    if (!tag.isEmpty())
+                        LOGGER.error(ACTION, "Unknown type '{}' found in tag: {}", key, tag);
+                    return Waiting.WAITING;
+                });
     }
 
     abstract CompoundTag writeDetail(CompoundTag tag);
@@ -204,9 +199,9 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
             return pos -> {
                 var state = world.getBlockState(pos);
                 return state.is(Holder.BLOCK_FRAME) // Frame
-                       || !quarry.canBreak(world, pos, state) // Unbreakable
-                       || pos.equals(quarry.getBlockPos()) // This machine
-                    ;
+                        || !quarry.canBreak(world, pos, state) // Unbreakable
+                        || pos.equals(quarry.getBlockPos()) // This machine
+                        ;
             };
         }
     }
@@ -434,7 +429,7 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
             for (int y = quarry.digMinY + 1; y < pos.getY(); y++) {
                 mutablePos.setY(y);
                 var targetState = quarry.getTargetWorld().getBlockState(mutablePos);
-                if (targetState.getMaterial().isReplaceable()) {
+                if (targetState.canBeReplaced()) {
                     var energy = PowerManager.getFillerEnergy(quarry) * 10;
                     if (quarry.useEnergy(energy, PowerTile.Reason.FILLER, false)) {
                         var toReplace = FillerAction.getToReplace(quarry.getTargetWorld().dimension(), mutablePos);

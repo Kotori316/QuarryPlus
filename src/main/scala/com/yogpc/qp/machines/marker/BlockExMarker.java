@@ -21,17 +21,14 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.EntityBlock;
-import net.minecraft.world.level.block.SimpleWaterloggedBlock;
-import net.minecraft.world.level.block.WallTorchBlock;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -165,7 +162,7 @@ public abstract class BlockExMarker extends QPBlock implements EntityBlock {
         public static final String NAME = "flex_marker";
 
         public BlockFlexMarker() {
-            super(Properties.of(Material.DECORATION).lightLevel(value -> 7).noCollission(), NAME);
+            super(Properties.of().mapColor(MapColor.NONE).pushReaction(PushReaction.DESTROY).instabreak().lightLevel(value -> 7).noCollission(), NAME);
         }
 
         @Override
@@ -182,7 +179,7 @@ public abstract class BlockExMarker extends QPBlock implements EntityBlock {
         public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
             float rotationYawHead = placer != null ? placer.getYHeadRot() : 0f;
             level.getBlockEntity(pos, Holder.FLEX_MARKER_TYPE)
-                .ifPresent(t -> t.init(Direction.fromYRot(rotationYawHead)));
+                    .ifPresent(t -> t.init(Direction.fromYRot(rotationYawHead)));
         }
 
     }
@@ -191,7 +188,7 @@ public abstract class BlockExMarker extends QPBlock implements EntityBlock {
         public static final String NAME = "waterlogged_flex_marker";
 
         public BlockWaterloggedFlexMarker() {
-            super(Properties.of(Material.DECORATION), NAME);
+            super(Properties.of().mapColor(MapColor.NONE).pushReaction(PushReaction.DESTROY).instabreak(), NAME);
         }
 
         @Override
@@ -205,7 +202,7 @@ public abstract class BlockExMarker extends QPBlock implements EntityBlock {
         public static final String NAME = "marker16";
 
         public Block16Marker() {
-            super(Properties.of(Material.DECORATION).lightLevel(value -> 7).noCollission(), NAME);
+            super(Properties.of().mapColor(MapColor.NONE).pushReaction(PushReaction.DESTROY).instabreak().lightLevel(value -> 7).noCollission(), NAME);
         }
 
         @Override
@@ -232,7 +229,7 @@ public abstract class BlockExMarker extends QPBlock implements EntityBlock {
         public static final String NAME = "waterlogged_marker16";
 
         public BlockWaterlogged16Marker() {
-            super(Properties.of(Material.DECORATION), NAME);
+            super(Properties.of().mapColor(MapColor.NONE).pushReaction(PushReaction.DESTROY).instabreak(), NAME);
         }
 
         @Override

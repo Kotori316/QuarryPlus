@@ -1,9 +1,5 @@
 package com.yogpc.qp.render;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -14,6 +10,10 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 // @Mod.EventBusSubscriber(modid = QuarryPlus.modID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 @OnlyIn(Dist.CLIENT)
@@ -41,7 +41,7 @@ public class Sprites {
 
     private TextureAtlasSprite getSprite(String name) {
         return spriteMap.computeIfAbsent(name, s ->
-            Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(getSpriteLocation(s)));
+                Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(getSpriteLocation(s)));
     }
 
     @NotNull

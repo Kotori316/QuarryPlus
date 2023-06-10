@@ -1,20 +1,13 @@
 package com.yogpc.qp.machines.advpump;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Set;
-import java.util.function.Predicate;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+
+import java.util.*;
+import java.util.function.Predicate;
 
 class Target implements Iterator<BlockPos> {
     private final List<BlockPos> posList;
@@ -43,15 +36,15 @@ class Target implements Iterator<BlockPos> {
 
     boolean checkAllFluidsRemoved(Level world, BlockPos center) {
         var stillFluid = posList.stream().<BlockPos>mapMulti((pos, consumer) -> {
-                consumer.accept(pos);
-                consumer.accept(pos.above());
-            })
-            .filter(p -> !world.getFluidState(p).isEmpty())
-            .filter(inRange)
-            .distinct()
-            .sorted(Comparator.comparingInt(Vec3i::getY).reversed()
-                .thenComparing(Comparator.comparingInt(center::distManhattan).reversed()))
-            .toList();
+                    consumer.accept(pos);
+                    consumer.accept(pos.above());
+                })
+                .filter(p -> !world.getFluidState(p).isEmpty())
+                .filter(inRange)
+                .distinct()
+                .sorted(Comparator.comparingInt(Vec3i::getY).reversed()
+                        .thenComparing(Comparator.comparingInt(center::distManhattan).reversed()))
+                .toList();
         if (stillFluid.isEmpty()) {
             return false;
         } else {
@@ -63,7 +56,7 @@ class Target implements Iterator<BlockPos> {
     static Target getTarget(Level world, BlockPos initPos, Predicate<BlockPos> inRange, Predicate<BlockState> isReplaceBlock, int sizeHint) {
         var result = search(world, Set.of(initPos), inRange, isReplaceBlock, sizeHint);
         result.sort(Comparator.comparingInt(Vec3i::getY).reversed()
-            .thenComparing(Comparator.comparingInt(initPos::distManhattan).reversed()));
+                .thenComparing(Comparator.comparingInt(initPos::distManhattan).reversed()));
         return new Target(result, inRange);
     }
 
@@ -82,10 +75,10 @@ class Target implements Iterator<BlockPos> {
                     if (counted.add(pos)) {
                         if (isFluid) result.add(pos);
                         directions.stream()
-                            .map(pos::relative)
-                            .filter(inRange)
-                            .filter(Predicate.not(checked::contains))
-                            .forEach(nextSearch::add);
+                                .map(pos::relative)
+                                .filter(inRange)
+                                .filter(Predicate.not(checked::contains))
+                                .forEach(nextSearch::add);
                     }
                 }
             }

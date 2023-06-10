@@ -1,10 +1,10 @@
 package com.yogpc.qp.machines.mini_quarry;
 
-import java.util.Iterator;
-
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.TargetIterator;
 import net.minecraft.core.BlockPos;
+
+import java.util.Iterator;
 
 abstract class MiniTarget implements Iterator<BlockPos> {
     protected final Area area;

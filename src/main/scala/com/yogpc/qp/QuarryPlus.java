@@ -10,6 +10,7 @@ import com.yogpc.qp.utils.ConfigCommand;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -19,7 +20,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -82,6 +82,7 @@ public class QuarryPlus {
             event.register(Registries.MENU, Register::registerContainers);
             event.register(Registries.RECIPE_SERIALIZER, Register::registerRecipe);
             event.register(Registries.RECIPE_TYPE, Register::registerRecipeType);
+            event.register(Registries.CREATIVE_MODE_TAB, Register::registerCreativeTab);
         }
 
         public static void registerBlocks(RegisterEvent.RegisterHelper<Block> blockRegisterHelper) {
@@ -120,9 +121,8 @@ public class QuarryPlus {
             PacketHandler.init();
         }
 
-        @SubscribeEvent
-        public static void registerCreativeTab(CreativeModeTabEvent.Register event) {
-            event.registerCreativeModeTab(new ResourceLocation(QuarryPlus.modID, "tab"), Holder::createTab);
+        public static void registerCreativeTab(RegisterEvent.RegisterHelper<CreativeModeTab> helper) {
+            helper.register(new ResourceLocation(QuarryPlus.modID, "tab"), Holder.createTab(CreativeModeTab.builder()));
         }
     }
 

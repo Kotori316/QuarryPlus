@@ -1,7 +1,5 @@
 package com.yogpc.qp.packet;
 
-import java.util.function.Supplier;
-
 import com.yogpc.qp.machines.misc.YAccessor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -9,6 +7,8 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkEvent;
+
+import java.util.function.Supplier;
 
 /**
  * To Server only.
@@ -40,10 +40,10 @@ public final class LevelMessage implements IMessage {
     public static void onReceive(LevelMessage message, Supplier<NetworkEvent.Context> supplier) {
         var world = PacketHandler.getWorld(supplier.get(), message.pos, message.dim);
         supplier.get().enqueueWork(() ->
-            world
-                .map(l -> l.getBlockEntity(message.pos))
-                .map(YAccessor::get)
-                .ifPresent(yAccessor -> yAccessor.setDigMinY(message.digMinY))
+                world
+                        .map(l -> l.getBlockEntity(message.pos))
+                        .map(YAccessor::get)
+                        .ifPresent(yAccessor -> yAccessor.setDigMinY(message.digMinY))
         );
     }
 

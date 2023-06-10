@@ -18,7 +18,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
@@ -28,7 +29,9 @@ public class BookMoverBlock extends QPBlock implements EntityBlock {
     public static final String GUI_ID = QuarryPlus.modID + ":gui_" + NAME;
 
     public BookMoverBlock() {
-        super(Properties.of(Material.METAL).strength(1.2f), NAME);
+        super(Properties.of()
+                .mapColor(MapColor.METAL)
+                .pushReaction(PushReaction.BLOCK).strength(1.2f), NAME);
     }
 
     @Override
@@ -68,6 +71,6 @@ public class BookMoverBlock extends QPBlock implements EntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         return level.isClientSide ? null : checkType(type, Holder.BOOK_MOVER_TYPE,
-            new CombinedBlockEntityTicker<>(PowerTile.getGenerator(), (l, p, s, t) -> t.workInTick(), PowerTile.logTicker()));
+                new CombinedBlockEntityTicker<>(PowerTile.getGenerator(), (l, p, s, t) -> t.workInTick(), PowerTile.logTicker()));
     }
 }

@@ -1,9 +1,5 @@
 package com.yogpc.qp.integration.jei;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.workbench.RecipeFinder;
@@ -20,6 +16,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 @JeiPlugin
 public class QuarryJeiPlugin implements IModPlugin {
     static IJeiRuntime jeiRuntime;
@@ -29,11 +29,11 @@ public class QuarryJeiPlugin implements IModPlugin {
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
         List<WorkbenchRecipe> recipes =
-            RecipeFinder.find(Objects.requireNonNull(Minecraft.getInstance().level).getRecipeManager(), WorkbenchRecipe.RECIPE_TYPE).values().stream() // Synced by server.
-                .filter(WorkbenchRecipe::showInJEI)
-                .filter(WorkbenchRecipe::hasContent)
-                .sorted(WorkbenchRecipe.COMPARATOR)
-                .collect(Collectors.toList());
+                RecipeFinder.find(Objects.requireNonNull(Minecraft.getInstance().level).getRecipeManager(), WorkbenchRecipe.RECIPE_TYPE).values().stream() // Synced by server.
+                        .filter(WorkbenchRecipe::showInJEI)
+                        .filter(WorkbenchRecipe::hasContent)
+                        .sorted(WorkbenchRecipe.COMPARATOR)
+                        .collect(Collectors.toList());
         registration.addRecipes(WorkBenchRecipeCategory.RECIPE_TYPE, recipes);
         registration.addRecipes(MoverRecipeCategory.RECIPE_TYPE, MoverRecipeCategory.recipes());
     }

@@ -1,15 +1,15 @@
 package com.yogpc.qp.machines.quarry;
 
+import com.yogpc.qp.utils.MapStreamSyntax;
+import net.minecraft.world.item.enchantment.Enchantment;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiPredicate;
 
-import com.yogpc.qp.utils.MapStreamSyntax;
-import net.minecraft.world.item.enchantment.Enchantment;
-
 
 record EnchantmentRestriction(Map<Enchantment, Integer> restrictionMap)
-    implements BiPredicate<Enchantment, Integer> {
+        implements BiPredicate<Enchantment, Integer> {
 
     EnchantmentRestriction(Map<Enchantment, Integer> restrictionMap) {
         this.restrictionMap = Map.copyOf(restrictionMap);
@@ -22,8 +22,8 @@ record EnchantmentRestriction(Map<Enchantment, Integer> restrictionMap)
 
     Map<Enchantment, Integer> filterMap(Map<Enchantment, Integer> stackEnchantments) {
         return stackEnchantments.entrySet().stream()
-            .filter(MapStreamSyntax.byEntry(this))
-            .collect(MapStreamSyntax.entryToMap());
+                .filter(MapStreamSyntax.byEntry(this))
+                .collect(MapStreamSyntax.entryToMap());
     }
 
     static Builder builder() {

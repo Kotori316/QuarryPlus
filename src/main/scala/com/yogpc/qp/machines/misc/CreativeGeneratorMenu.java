@@ -17,7 +17,7 @@ public class CreativeGeneratorMenu extends AbstractContainerMenu {
 
     public CreativeGeneratorMenu(int id, Player player, BlockPos pos) {
         super(Holder.CREATIVE_GENERATOR_MENU_TYPE, id);
-        tile = (CreativeGeneratorTile) player.level.getBlockEntity(pos);
+        tile = (CreativeGeneratorTile) player.level().getBlockEntity(pos);
         for (int k = 0; k < 3; ++k) {
             for (int i1 = 0; i1 < 9; ++i1) {
                 this.addSlot(new Slot(player.getInventory(), i1 + k * 9 + 9, 8 + i1 * 18, 84 + k * 18));
@@ -27,7 +27,7 @@ public class CreativeGeneratorMenu extends AbstractContainerMenu {
         for (int l = 0; l < 9; ++l) {
             this.addSlot(new Slot(player.getInventory(), l, 8 + l * 18, 142));
         }
-        if (!player.level.isClientSide && tile != null) {
+        if (!player.level().isClientSide && tile != null) {
             PacketHandler.sendToClientPlayer(new TileMessage(tile), (ServerPlayer) player);
         }
     }

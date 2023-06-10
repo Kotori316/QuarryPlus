@@ -19,7 +19,7 @@ public final class ClientConfig {
             this.placeAreaFrame = builder.comment("Whether the machine places initial frame blocks to show working area.").define("placeAreaFrame", true);
             this.chunkByChunk = builder.comment("If true, quarry works for a chunk and go next chunk when finished.").define("chunkByChunk", false);
             this.startImmediately = builder.comment("If true, quarry starts when it has enough power. If false it starts when you click start button in GUI.")
-                .define("startImmediately", true);
+                    .define("startImmediately", true);
         }
     }
 }

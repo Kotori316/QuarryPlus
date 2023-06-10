@@ -1,10 +1,5 @@
 package com.yogpc.qp.integration.ftbchunks;
 
-import java.util.Locale;
-import java.util.function.Predicate;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
 import dev.ftb.mods.ftbchunks.data.FTBChunksAPI;
@@ -13,6 +8,11 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.fml.ModList;
+
+import java.util.Locale;
+import java.util.function.Predicate;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public final class FTBChunksProtectionCheck {
     public static boolean isAreaProtected(Area area, ResourceKey<Level> dimension) {
@@ -32,8 +32,8 @@ public final class FTBChunksProtectionCheck {
 
     static Stream<ChunkPos> getChunkPosStream(Area area) {
         return IntStream.rangeClosed(Math.floorDiv(area.minX(), 16), Math.floorDiv(area.maxX(), 16)).boxed()
-            .flatMap(x -> IntStream.rangeClosed(Math.floorDiv(area.minZ(), 16), Math.floorDiv(area.maxZ(), 16)).boxed()
-                .map(z -> new ChunkPos(x, z)));
+                .flatMap(x -> IntStream.rangeClosed(Math.floorDiv(area.minZ(), 16), Math.floorDiv(area.maxZ(), 16)).boxed()
+                        .map(z -> new ChunkPos(x, z)));
     }
 
     private static final class Accessor {

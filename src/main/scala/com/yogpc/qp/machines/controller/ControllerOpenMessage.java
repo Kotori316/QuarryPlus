@@ -1,9 +1,5 @@
 package com.yogpc.qp.machines.controller;
 
-import java.util.List;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.packet.IMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -15,6 +11,10 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.NetworkEvent;
+
+import java.util.List;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 /**
  * To Client only.

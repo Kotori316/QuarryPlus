@@ -20,7 +20,8 @@ import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 
@@ -30,7 +31,9 @@ public final class RemotePlacerBlock extends QPBlock implements EntityBlock {
     public static final String NAME = "remote_placer";
 
     public RemotePlacerBlock() {
-        super(Properties.of(Material.METAL).strength(1.2f), NAME);
+        super(Properties.of()
+                .mapColor(MapColor.METAL)
+                .pushReaction(PushReaction.BLOCK).strength(1.2f), NAME);
         registerDefaultState(getStateDefinition().any().setValue(TRIGGERED, Boolean.FALSE));
     }
 
@@ -57,7 +60,7 @@ public final class RemotePlacerBlock extends QPBlock implements EntityBlock {
                     });
                 } else {
                     world.getBlockEntity(pos, Holder.REMOTE_PLACER_TYPE).ifPresent(o ->
-                        NetworkHooks.openScreen(((ServerPlayer) player), o, pos));
+                            NetworkHooks.openScreen(((ServerPlayer) player), o, pos));
                 }
             }
             return InteractionResult.SUCCESS;
@@ -90,13 +93,13 @@ public final class RemotePlacerBlock extends QPBlock implements EntityBlock {
         boolean poweredOld = state.getValue(TRIGGERED);
         if (poweredNow && !poweredOld) {
             if (worldIn.getBlockEntity(pos, Holder.REMOTE_PLACER_TYPE)
-                .filter(p -> p.redstoneMode.isPulse()).isPresent()) {
+                    .filter(p -> p.redstoneMode.isPulse()).isPresent()) {
                 worldIn.scheduleTick(pos, this, 1);
             }
             worldIn.setBlock(pos, state.setValue(TRIGGERED, Boolean.TRUE), Block.UPDATE_INVISIBLE);
         } else if (!poweredNow && poweredOld) {
             if (worldIn.getBlockEntity(pos, Holder.REMOTE_PLACER_TYPE)
-                .filter(p -> p.redstoneMode.isPulse()).isPresent()) {
+                    .filter(p -> p.redstoneMode.isPulse()).isPresent()) {
                 worldIn.scheduleTick(pos, this, 1);
             }
             worldIn.setBlock(pos, state.setValue(TRIGGERED, Boolean.FALSE), Block.UPDATE_INVISIBLE);

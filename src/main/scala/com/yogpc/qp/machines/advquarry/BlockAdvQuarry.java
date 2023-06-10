@@ -1,18 +1,9 @@
 package com.yogpc.qp.machines.advquarry;
 
-import java.util.function.Consumer;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.integration.wrench.WrenchItems;
-import com.yogpc.qp.machines.Area;
-import com.yogpc.qp.machines.EnchantedLootFunction;
-import com.yogpc.qp.machines.EnchantmentLevel;
-import com.yogpc.qp.machines.MachineStorage;
-import com.yogpc.qp.machines.PowerTile;
-import com.yogpc.qp.machines.QPBlock;
-import com.yogpc.qp.machines.QuarryMarker;
+import com.yogpc.qp.machines.*;
 import com.yogpc.qp.machines.module.EnergyModuleItem;
 import com.yogpc.qp.machines.module.ModuleLootFunction;
 import com.yogpc.qp.machines.module.QuarryModuleProvider;
@@ -41,7 +32,8 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.common.util.FakePlayer;
@@ -50,18 +42,23 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
+import java.util.function.Consumer;
+import java.util.stream.Stream;
+
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING;
 
 public class BlockAdvQuarry extends QPBlock implements EntityBlock {
     public static final String NAME = "adv_quarry";
 
     public BlockAdvQuarry() {
-        super(Properties.of(Material.METAL)
-            .strength(1.5f, 10f)
-            .sound(SoundType.STONE), NAME, ItemAdvQuarry::new);
+        super(Properties.of()
+                .mapColor(MapColor.METAL)
+                .pushReaction(PushReaction.BLOCK)
+                .strength(1.5f, 10f)
+                .sound(SoundType.STONE), NAME, ItemAdvQuarry::new);
         registerDefaultState(getStateDefinition().any()
-            .setValue(WORKING, false)
-            .setValue(FACING, Direction.NORTH));
+                .setValue(WORKING, false)
+                .setValue(FACING, Direction.NORTH));
     }
 
     @Override
@@ -133,7 +130,7 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
                 if (!quarry.setArea(defaultArea)) {
                     // Unreachable
                     AdvQuarry.LOGGER.warn(AdvQuarry.BLOCK, "The default area is invalid. Area={}, Limit={}, Pos={}",
-                        defaultArea, QuarryPlus.config.common.chunkDestroyerLimit.get(), pos);
+                            defaultArea, QuarryPlus.config.common.chunkDestroyerLimit.get(), pos);
                 }
             }
             var preForced = QuarryChunkLoadUtil.makeChunkLoaded(level, pos, quarry.enabled);
@@ -161,13 +158,13 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         return level.isClientSide ? null : checkType(type, Holder.ADV_QUARRY_TYPE,
-            new CombinedBlockEntityTicker<>(
-                PowerTile.getGenerator(),
-                EnergyModuleItem.energyModuleTicker(),
-                TileAdvQuarry::tick,
-                PowerTile.logTicker(),
-                MachineStorage.passItems(),
-                MachineStorage.passFluid())
+                new CombinedBlockEntityTicker<>(
+                        PowerTile.getGenerator(),
+                        EnergyModuleItem.energyModuleTicker(),
+                        TileAdvQuarry::tick,
+                        PowerTile.logTicker(),
+                        MachineStorage.passItems(),
+                        MachineStorage.passFluid())
         );
     }
 
@@ -183,13 +180,13 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
 
     static Area findArea(Level world, BlockPos pos, Direction quarryBehind, Consumer<ItemStack> itemCollector) {
         return Stream.of(quarryBehind, quarryBehind.getCounterClockWise(), quarryBehind.getClockWise())
-            .map(pos::relative)
-            .map(world::getBlockEntity)
-            .mapMulti(MapMulti.cast(QuarryMarker.class))
-            .flatMap(m -> m.getArea().stream().peek(a -> m.removeAndGetItems().forEach(itemCollector)))
-            .map(a -> a.assureY(4))
-            .findFirst()
-            .orElseGet(() -> createDefaultArea(pos, quarryBehind, QuarryPlus.config.common.chunkDestroyerLimit.get()));
+                .map(pos::relative)
+                .map(world::getBlockEntity)
+                .mapMulti(MapMulti.cast(QuarryMarker.class))
+                .flatMap(m -> m.getArea().stream().peek(a -> m.removeAndGetItems().forEach(itemCollector)))
+                .map(a -> a.assureY(4))
+                .findFirst()
+                .orElseGet(() -> createDefaultArea(pos, quarryBehind, QuarryPlus.config.common.chunkDestroyerLimit.get()));
     }
 
     @NotNull
@@ -225,8 +222,8 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
             maxZ = chunkPos.getMaxBlockZ();
         }
         return new Area(
-            minX - 1, pos.getY(), minZ - 1,
-            maxX + 1, pos.getY() + 4, maxZ + 1, quarryBehind
+                minX - 1, pos.getY(), minZ - 1,
+                maxX + 1, pos.getY() + 4, maxZ + 1, quarryBehind
         );
     }
 }

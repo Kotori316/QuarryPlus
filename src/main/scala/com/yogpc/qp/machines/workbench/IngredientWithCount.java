@@ -1,10 +1,5 @@
 package com.yogpc.qp.machines.workbench;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.StreamSupport;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -15,9 +10,14 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.items.ItemHandlerHelper;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.StreamSupport;
+
 public record IngredientWithCount(Ingredient ingredient, int count) implements Predicate<ItemStack> {
     public IngredientWithCount(JsonObject jsonObject) {
-        this(CraftingHelper.getIngredient(modifyCount(jsonObject)), GsonHelper.getAsInt(jsonObject, "count"));
+        this(CraftingHelper.getIngredient(modifyCount(jsonObject), false), GsonHelper.getAsInt(jsonObject, "count"));
     }
 
     public IngredientWithCount(ItemStack stack) {
@@ -40,9 +40,9 @@ public record IngredientWithCount(Ingredient ingredient, int count) implements P
 
     public List<ItemStack> stackList() {
         return Arrays.stream(ingredient.getItems())
-            .filter(Predicate.not(ItemStack::isEmpty))
-            .map(stack -> ItemHandlerHelper.copyStackWithSize(stack, count))
-            .toList();
+                .filter(Predicate.not(ItemStack::isEmpty))
+                .map(stack -> ItemHandlerHelper.copyStackWithSize(stack, count))
+                .toList();
     }
 
     public JsonElement toJson() {
@@ -63,9 +63,9 @@ public record IngredientWithCount(Ingredient ingredient, int count) implements P
     public static List<IngredientWithCount> getSeq(JsonElement jsonElement) {
         if (jsonElement instanceof JsonArray jsonArray) {
             return StreamSupport.stream(jsonArray.spliterator(), false)
-                .map(JsonElement::getAsJsonObject)
-                .map(IngredientWithCount::new)
-                .toList();
+                    .map(JsonElement::getAsJsonObject)
+                    .map(IngredientWithCount::new)
+                    .toList();
         } else {
             return List.of(new IngredientWithCount(jsonElement.getAsJsonObject()));
         }

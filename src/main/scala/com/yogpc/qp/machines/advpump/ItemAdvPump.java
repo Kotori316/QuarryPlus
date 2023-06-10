@@ -1,9 +1,5 @@
 package com.yogpc.qp.machines.advpump;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.EnchantableItem;
 import com.yogpc.qp.machines.QPBlock;
@@ -11,6 +7,10 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 class ItemAdvPump extends QPBlock.QPBlockItem implements EnchantableItem {
     ItemAdvPump(QPBlock block) {

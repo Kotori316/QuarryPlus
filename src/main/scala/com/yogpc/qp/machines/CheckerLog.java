@@ -1,12 +1,12 @@
 package com.yogpc.qp.machines;
 
-import java.util.List;
-
 import com.yogpc.qp.machines.checker.ItemChecker;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.entity.BlockEntity;
+
+import java.util.List;
 
 /**
  * Called in {@link ItemChecker#onItemUseFirst(ItemStack, UseOnContext)}.

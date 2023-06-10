@@ -58,7 +58,7 @@ public final class LoadRecipeTest {
         var recipe = assertDoesNotThrow(() -> RecipeManager.fromJson(new ResourceLocation(QuarryPlus.modID, "flex_marker_workbench"), jsonObject, context));
         assertAll(
             () -> assertTrue(recipe instanceof WorkbenchRecipe),
-            () -> assertTrue(ItemStack.isSame(recipe.getResultItem(helper.getLevel().registryAccess()), new ItemStack(Holder.BLOCK_FLEX_MARKER)))
+            () -> assertTrue(ItemStack.isSameItemSameTags(recipe.getResultItem(helper.getLevel().registryAccess()), new ItemStack(Holder.BLOCK_FLEX_MARKER)))
         );
         var inputs = ((WorkbenchRecipe) recipe).inputs().stream().flatMap(i -> i.stackList().stream()).toList();
         assertAll(

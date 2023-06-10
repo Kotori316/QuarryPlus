@@ -1,7 +1,5 @@
 package com.yogpc.qp.machines.filler;
 
-import java.util.function.Supplier;
-
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.MapMulti;
@@ -12,6 +10,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkEvent;
+
+import java.util.function.Supplier;
 
 /**
  * To Server only
@@ -42,15 +42,15 @@ public final class FillerButtonMessage implements IMessage {
     public static void onReceive(FillerButtonMessage message, Supplier<NetworkEvent.Context> supplier) {
         var world = PacketHandler.getWorld(supplier.get(), message.pos, message.dim);
         supplier.get().enqueueWork(() ->
-            world.map(w -> w.getBlockEntity(message.pos))
-                .flatMap(MapMulti.optCast(FillerEntity.class))
-                .ifPresent(f -> {
-                    f.start(message.action);
-                    if (f.fillerAction.isFinished()) {
-                        // Filler work is not started.
-                        PacketHandler.getPlayer(supplier.get()).ifPresent(p ->
-                            p.displayClientMessage(Component.literal("Filler work isn't started. You must place a marker near Filler."), false));
-                    }
-                }));
+                world.map(w -> w.getBlockEntity(message.pos))
+                        .flatMap(MapMulti.optCast(FillerEntity.class))
+                        .ifPresent(f -> {
+                            f.start(message.action);
+                            if (f.fillerAction.isFinished()) {
+                                // Filler work is not started.
+                                PacketHandler.getPlayer(supplier.get()).ifPresent(p ->
+                                        p.displayClientMessage(Component.literal("Filler work isn't started. You must place a marker near Filler."), false));
+                            }
+                        }));
     }
 }

@@ -1,9 +1,5 @@
 package com.yogpc.qp.machines.quarry;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.EnchantmentLevel;
@@ -29,6 +25,10 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.wrapper.InvWrapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public final class SFQuarryEntity extends TileQuarry implements MenuProvider {
     final SimpleContainer fuelContainer;

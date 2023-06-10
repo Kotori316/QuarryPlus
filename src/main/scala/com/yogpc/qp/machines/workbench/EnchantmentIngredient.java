@@ -1,16 +1,5 @@
 package com.yogpc.qp.machines.workbench;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -32,6 +21,13 @@ import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.IIngredientSerializer;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class EnchantmentIngredient extends AbstractIngredient {
     public static final String NAME = "enchantment_ingredient";
@@ -116,11 +112,11 @@ public class EnchantmentIngredient extends AbstractIngredient {
             ItemStack stack = buffer.readItem();
             int size = buffer.readVarInt();
             List<EnchantmentInstance> data = IntStream.range(0, size)
-                .mapToObj(operand -> {
-                    Enchantment enchantment = ForgeRegistries.ENCHANTMENTS.getValue(buffer.readResourceLocation());
-                    int level = buffer.readInt();
-                    return new EnchantmentInstance(Objects.requireNonNull(enchantment), level);
-                }).collect(Collectors.toList());
+                    .mapToObj(operand -> {
+                        Enchantment enchantment = ForgeRegistries.ENCHANTMENTS.getValue(buffer.readResourceLocation());
+                        int level = buffer.readInt();
+                        return new EnchantmentInstance(Objects.requireNonNull(enchantment), level);
+                    }).collect(Collectors.toList());
             boolean checkDamage = buffer.readBoolean();
             boolean checkOtherTags = buffer.readBoolean();
             return new EnchantmentIngredient(stack, data, checkDamage, checkOtherTags);
@@ -135,12 +131,12 @@ public class EnchantmentIngredient extends AbstractIngredient {
             if (json.has("enchantments")) {
                 JsonArray enchantmentArray = json.getAsJsonArray("enchantments");
                 data = StreamSupport.stream(enchantmentArray.spliterator(), false)
-                    .map(JsonElement::getAsJsonObject)
-                    .map(o -> {
-                        Enchantment enchantment = ForgeRegistries.ENCHANTMENTS.getValue(new ResourceLocation(GsonHelper.getAsString(o, "id")));
-                        int level = GsonHelper.getAsInt(o, "level", 1);
-                        return new EnchantmentInstance(Objects.requireNonNull(enchantment), level);
-                    }).collect(Collectors.toList());
+                        .map(JsonElement::getAsJsonObject)
+                        .map(o -> {
+                            Enchantment enchantment = ForgeRegistries.ENCHANTMENTS.getValue(new ResourceLocation(GsonHelper.getAsString(o, "id")));
+                            int level = GsonHelper.getAsInt(o, "level", 1);
+                            return new EnchantmentInstance(Objects.requireNonNull(enchantment), level);
+                        }).collect(Collectors.toList());
             } else {
                 data = Collections.emptyList();
             }

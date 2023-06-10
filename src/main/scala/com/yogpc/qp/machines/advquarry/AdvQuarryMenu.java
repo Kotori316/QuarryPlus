@@ -19,7 +19,7 @@ public class AdvQuarryMenu extends AbstractContainerMenu {
 
     public AdvQuarryMenu(int id, Player player, BlockPos pos) {
         super(Holder.ADV_QUARRY_MENU_TYPE, id);
-        quarry = (TileAdvQuarry) player.level.getBlockEntity(pos);
+        quarry = (TileAdvQuarry) player.level().getBlockEntity(pos);
         assert quarry != null;
         this.imageWidth = 176;
         this.imageHeight = 200;
@@ -33,7 +33,7 @@ public class AdvQuarryMenu extends AbstractContainerMenu {
         for (int l = 0; l < 9; ++l) {
             this.addSlot(new Slot(player.getInventory(), l, 8 + l * 18, this.imageHeight - 24));
         }
-        if (!player.level.isClientSide) {
+        if (!player.level().isClientSide) {
             PacketHandler.sendToClientPlayer(new ClientSyncMessage(quarry), (ServerPlayer) player);
         }
     }

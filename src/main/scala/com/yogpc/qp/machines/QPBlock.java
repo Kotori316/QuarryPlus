@@ -1,8 +1,5 @@
 package com.yogpc.qp.machines;
 
-import java.util.List;
-import java.util.function.Function;
-
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -17,6 +14,9 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+import java.util.function.Function;
 
 public class QPBlock extends Block {
     public static final BooleanProperty WORKING = BooleanProperty.create("working");

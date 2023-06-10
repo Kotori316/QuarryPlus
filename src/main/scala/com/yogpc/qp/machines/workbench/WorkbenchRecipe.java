@@ -1,9 +1,5 @@
 package com.yogpc.qp.machines.workbench;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
@@ -15,6 +11,10 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.VisibleForTesting;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+
 public abstract class WorkbenchRecipe implements Recipe<TileWorkbench> {
     public static final ResourceLocation recipeLocation = new ResourceLocation(QuarryPlus.modID, "workbench_recipe");
     public static final WorkbenchRecipeSerializer SERIALIZER = new WorkbenchRecipeSerializer();
@@ -22,9 +22,9 @@ public abstract class WorkbenchRecipe implements Recipe<TileWorkbench> {
     @VisibleForTesting
     static RecipeFinder recipeFinder = new DefaultFinder();
     public static final Comparator<WorkbenchRecipe> COMPARATOR =
-        Comparator.comparingLong(WorkbenchRecipe::getRequiredEnergy)
-            .thenComparingInt(r -> Item.getId(r.output.getItem()))
-            .thenComparing(WorkbenchRecipe::getId);
+            Comparator.comparingLong(WorkbenchRecipe::getRequiredEnergy)
+                    .thenComparingInt(r -> Item.getId(r.output.getItem()))
+                    .thenComparing(WorkbenchRecipe::getId);
 
     private final ResourceLocation location;
     public final ItemStack output;
@@ -48,7 +48,7 @@ public abstract class WorkbenchRecipe implements Recipe<TileWorkbench> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         WorkbenchRecipe that = (WorkbenchRecipe) o;
-        return energy == that.energy && location.equals(that.location) && ItemStack.isSame(this.output, that.output);
+        return energy == that.energy && location.equals(that.location) && ItemStack.matches(this.output, that.output);
     }
 
     @Override

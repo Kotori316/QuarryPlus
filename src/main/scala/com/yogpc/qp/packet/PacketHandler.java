@@ -1,10 +1,5 @@
 package com.yogpc.qp.packet;
 
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiConsumer;
-import java.util.function.Supplier;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.advquarry.AdvActionMessage;
 import com.yogpc.qp.machines.advquarry.AdvQuarryInitialMessage;
@@ -35,13 +30,18 @@ import net.minecraftforge.network.simple.SimpleChannel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
+
 public class PacketHandler {
     private static final String PROTOCOL_VERSION = "1";
     public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
-        new ResourceLocation(QuarryPlus.modID, "main"),
-        () -> PROTOCOL_VERSION,
-        PROTOCOL_VERSION::equals,
-        PROTOCOL_VERSION::equals
+            new ResourceLocation(QuarryPlus.modID, "main"),
+            () -> PROTOCOL_VERSION,
+            PROTOCOL_VERSION::equals,
+            PROTOCOL_VERSION::equals
     );
     private static final Proxy PROXY = ProxyProvider.getInstance();
 
@@ -79,16 +79,16 @@ public class PacketHandler {
     @NotNull
     public static ResourceKey<Level> getDimension(@Nullable BlockEntity entity) {
         return Optional.ofNullable(entity)
-            .map(BlockEntity::getLevel)
-            .map(Level::dimension)
-            .orElse(Level.OVERWORLD);
+                .map(BlockEntity::getLevel)
+                .map(Level::dimension)
+                .orElse(Level.OVERWORLD);
     }
 
     @NotNull
     public static Optional<Level> getWorld(@NotNull NetworkEvent.Context context, @NotNull BlockPos pos, @NotNull ResourceKey<Level> expectedDim) {
         return PROXY.getPacketWorld(context)
-            .filter(l -> l.dimension().equals(expectedDim))
-            .filter(l -> l.isLoaded(pos));
+                .filter(l -> l.dimension().equals(expectedDim))
+                .filter(l -> l.isLoaded(pos));
     }
 
     @NotNull
@@ -138,7 +138,7 @@ public class PacketHandler {
 
         @Override
         Optional<Level> getPacketWorld(NetworkEvent.Context context) {
-            return Optional.ofNullable(context.getSender()).map(ServerPlayer::getLevel);
+            return Optional.ofNullable(context.getSender()).map(ServerPlayer::serverLevel);
         }
 
         @Override
@@ -156,7 +156,7 @@ public class PacketHandler {
             if (sender == null) {
                 return Optional.ofNullable(Minecraft.getInstance().level);
             } else {
-                return Optional.of(sender).map(ServerPlayer::getLevel);
+                return Optional.of(sender).map(ServerPlayer::serverLevel);
             }
         }
 

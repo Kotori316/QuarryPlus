@@ -13,9 +13,6 @@
 
 package com.yogpc.qp.machines.mover;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPBlock;
 import net.minecraft.core.BlockPos;
@@ -33,16 +30,22 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class BlockMover extends QPBlock {
     public static final String NAME = "mover";
     public static final String GUI_ID = QuarryPlus.modID + ":gui_" + NAME;
 
     public BlockMover() {
-        super(Properties.of(Material.METAL).strength(1.2f), NAME, BlockMoverItem::new);
+        super(Properties.of()
+                .mapColor(MapColor.METAL)
+                .pushReaction(PushReaction.BLOCK).strength(1.2f), NAME, BlockMoverItem::new);
     }
 
     @Override
