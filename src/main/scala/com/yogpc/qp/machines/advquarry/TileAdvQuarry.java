@@ -309,8 +309,10 @@ public class TileAdvQuarry extends PowerTile implements
 
         // Break block
         var hardness = state.getDestroySpeed(targetWorld, targetPos);
-        if (requireEnergy && !useEnergy(PowerManager.getBreakEnergy(hardness, this), Reason.BREAK_BLOCK, false)) {
-            TraceQuarryWork.blockRemoveFailed(this, getBlockPos(), targetPos, state, BreakResult.NOT_ENOUGH_ENERGY);
+        var requiredEnergy = PowerManager.getBreakEnergy(hardness, this);
+        if (requireEnergy && !useEnergy(requiredEnergy, Reason.BREAK_BLOCK, false)) {
+            TraceQuarryWork.blockRemoveFailed(this, getBlockPos(), targetPos, state, BreakResult.NOT_ENOUGH_ENERGY,
+                    Map.of("required", EnergyCounter.formatEnergyInFE(requiredEnergy), "has", EnergyCounter.formatEnergyInFE(getEnergy())));
             return BreakResult.NOT_ENOUGH_ENERGY;
         }
         // Get drops

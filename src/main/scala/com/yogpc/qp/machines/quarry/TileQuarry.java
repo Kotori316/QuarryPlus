@@ -244,7 +244,8 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         var hardness = state.getDestroySpeed(targetWorld, targetPos);
         var requiredEnergy = PowerManager.getBreakEnergy(hardness, this);
         if (requireEnergy && !useEnergy(requiredEnergy, Reason.BREAK_BLOCK, requiredEnergy > this.getMaxEnergy())) {
-            TraceQuarryWork.blockRemoveFailed(this, getBlockPos(), targetPos, state, BreakResult.NOT_ENOUGH_ENERGY);
+            TraceQuarryWork.blockRemoveFailed(this, getBlockPos(), targetPos, state, BreakResult.NOT_ENOUGH_ENERGY,
+                    Map.of("required", EnergyCounter.formatEnergyInFE(requiredEnergy), "has", EnergyCounter.formatEnergyInFE(getEnergy())));
             return BreakResult.NOT_ENOUGH_ENERGY;
         }
         // Get drops

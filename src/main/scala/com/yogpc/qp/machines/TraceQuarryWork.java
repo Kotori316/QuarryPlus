@@ -66,9 +66,9 @@ public final class TraceQuarryWork {
         }
     }
 
-    public static void blockRemoveFailed(PowerTile tile, BlockPos pos, BlockPos targetPos, BlockState state, BreakResult breakResult) {
+    public static void blockRemoveFailed(PowerTile tile, BlockPos pos, BlockPos targetPos, BlockState state, BreakResult breakResult, Object... additional) {
         if (enabled)
-            LOGGER.info(MARKER, "{} ({},{},{}) {} {}", header(tile, pos), targetPos.getX(), targetPos.getY(), targetPos.getZ(), breakResult, state);
+            LOGGER.info(MARKER, "{} ({},{},{}) {} {} {}", header(tile, pos), targetPos.getX(), targetPos.getY(), targetPos.getZ(), breakResult, state, additional);
     }
 
     public static void blockRemoveSucceed(PowerTile tile, BlockPos pos, BlockPos targetPos, BlockState state, List<ItemStack> drops, int exp) {

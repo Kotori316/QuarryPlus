@@ -62,8 +62,8 @@ public abstract class EnergyCounter {
                 var get = getCounter.values().stream().collect(Collectors.summarizingLong(Long::longValue));
                 if (use.getSum() != 0 && get.getSum() != 0)
                     LOGGER.info(MARKER_TICK, "{}: Used {} FE in {} ticks({} FE/t). Got {} FE in {} ticks({} FE/t).", name,
-                            use.getSum() / PowerTile.ONE_FE, use.getCount(), use.getAverage() / PowerTile.ONE_FE,
-                            get.getSum() / PowerTile.ONE_FE, get.getCount(), get.getAverage() / PowerTile.ONE_FE);
+                            formatEnergyInFE(use.getSum()), use.getCount(), formatEnergyInFE(use.getAverage() / PowerTile.ONE_FE),
+                            formatEnergyInFE(get.getSum()), get.getCount(), formatEnergyInFE(get.getAverage() / PowerTile.ONE_FE));
                 useCounter.clear();
                 getCounter.clear();
             }
@@ -72,7 +72,7 @@ public abstract class EnergyCounter {
         @Override
         public void logUsageMap() {
             usageMap.entrySet().stream()
-                    .map(e -> "%s -> %f".formatted(e.getKey(), (double) e.getValue() / PowerTile.ONE_FE))
+                    .map(e -> "%s -> %s".formatted(e.getKey(), formatEnergyInFE(e.getValue())))
                     .forEach(s -> LOGGER.info(MARKER_FINAL, s));
             usageMap.clear();
         }
@@ -122,5 +122,13 @@ public abstract class EnergyCounter {
         @Override
         public void getEnergy(LongSupplier timeGetter, long amount) {
         }
+    }
+
+    public static String formatEnergyInFE(long energy) {
+        return formatEnergyInFE((double) energy / PowerTile.ONE_FE);
+    }
+
+    public static String formatEnergyInFE(double energy) {
+        return String.format("%.3f", energy);
     }
 }
