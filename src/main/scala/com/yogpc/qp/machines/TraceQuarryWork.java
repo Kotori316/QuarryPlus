@@ -16,6 +16,7 @@ import org.apache.logging.log4j.core.config.Configurator;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URI;
+import java.security.SecureClassLoader;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -30,7 +31,9 @@ public final class TraceQuarryWork {
     static {
         enabled = QuarryPlus.config.common.logAllQuarryWork.get();
         if (enabled) {
-            CONTEXT = Configurator.initialize("quarryplus-config", null,
+            class DummyClassLoader extends SecureClassLoader {
+            }
+            CONTEXT = Configurator.initialize("quarryplus-config", new DummyClassLoader(),
                     URI.create(Objects.requireNonNull(TraceQuarryWork.class.getResource("/quarry-log4j2.xml")).toString())
             );
             LOGGER = CONTEXT.getLogger("TQW");
