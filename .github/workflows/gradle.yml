@@ -35,21 +35,17 @@ jobs:
         with:
           cache-read-only: false
           gradle-home-cache-cleanup: true
+      - name: Enable daemon
+        run: sed -i -e 's/org.gradle.daemon=false/org.gradle.daemon=true/' gradle.properties
       - name: Compile
         run: ./gradlew assemble
       - name: Test with JUnit
         run: ./gradlew test
       - name: Download assets
         run: |
-          echo "::group::Assets1"
-          ./gradlew downloadMCMeta downloadAssets || sleep 5
-          echo "::endgroup::"
-          echo "::group::Assets2"
-          ./gradlew downloadMCMeta downloadAssets || sleep 5
-          echo "::endgroup::"
-          echo "::group::Assets3"
-          ./gradlew downloadMCMeta downloadAssets || true
-          echo "::endgroup::"
+          (./gradlew downloadMCMeta downloadAssets) || \
+          (sleep 5 && ./gradlew downloadMCMeta downloadAssets) || \
+          (sleep 5 && ./gradlew downloadMCMeta downloadAssets) || true
       - name: GameTest
         run: ./gradlew runGameTestServer
       - name: RunData
