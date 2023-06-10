@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - "1.19"
+      - "1.20"
     tags:
       - "!*"
     paths:
@@ -15,41 +15,30 @@ on:
       - ".github/workflows/gradle.yml"
   pull_request:
     branches:
-      - "1.19"
+      - "1.20"
 
 jobs:
-  cross-check-JUnit:
+  test:
     runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/kotori316/fictional-meme/fictional-meme:1.19.4
-      credentials:
-        username: kotori316
-        password: ${{ secrets.GITHUB_TOKEN }}
-    strategy:
-      fail-fast: false
-      matrix:
-        forge: [ 1.19.4, default ]
+    env:
+      TEST_UTILITY_LOG_ALL_TEST: true
+      IGNORE_OTHER_MODS_IN_RUNTIME: true
     steps:
       - uses: actions/checkout@v3
-      - name: Get latest version
-        if: ${{ matrix.forge != 'default' && github.event_name != 'pull_request' }}
-        run: |
-          version=$(java -jar $(find / -maxdepth 1 -name "fictional*.jar") ${{ matrix.forge }})
-          echo "CI_FORGE=${version}" >> $GITHUB_ENV
-          grep -q ${version} gradle.properties && echo "SAME_DEFAULT=true" >> $GITHUB_ENV || echo "SAME_DEFAULT=false" >> $GITHUB_ENV
-          echo ${version}
+      - uses: gradle/wrapper-validation-action@v1
+      - run: chmod +x ./gradlew
+      - uses: gradle/gradle-build-action@v2
+        with:
+          cache-read-only: false
+          gradle-home-cache-cleanup: true
       - name: Compile
-        if: ${{ env.SAME_DEFAULT != 'true' }}
-        run: chmod +x ./gradlew && ./gradlew assemble --no-daemon
-        env:
-          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
+        run: ./gradlew assemble
       - name: Test with JUnit
-        if: ${{ env.SAME_DEFAULT != 'true' && (matrix.forge == 'default' || github.event_name != 'pull_request') }}
-        run: chmod +x ./gradlew && ./gradlew --no-daemon test runGameTestServer runData
-        env:
-          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TEST_UTILITY_LOG_ALL_TEST: true
-          IGNORE_OTHER_MODS_IN_RUNTIME: true
+        run: ./gradlew test
+      - name: GameTest
+        run: ./gradlew runGameTestServer
+      - name: RunData
+        run: ./gradlew runData
       - name: Check report
         run: |
           ! test -d "game-test/crash-reports"
