@@ -39,6 +39,17 @@ jobs:
         run: ./gradlew assemble
       - name: Test with JUnit
         run: ./gradlew test
+      - name: Download assets
+        run: |
+          echo "::group::Assets1"
+          ./gradlew downloadMCMeta downloadAssets || sleep 5
+          echo "::endgroup::"
+          echo "::group::Assets2"
+          ./gradlew downloadMCMeta downloadAssets || sleep 5
+          echo "::endgroup::"
+          echo "::group::Assets3"
+          ./gradlew downloadMCMeta downloadAssets || true
+          echo "::endgroup::"
       - name: GameTest
         run: ./gradlew runGameTestServer
       - name: RunData
