@@ -1,4 +1,4 @@
-# QuarryPlus for 1.19
+# QuarryPlus for 1.20
 
 This program is licensed under GNU LESSER GENERAL PUBLIC LICENSE.
 
