@@ -14,6 +14,7 @@ buildscript {
 }
 plugins {
     id("maven-publish")
+    id("signing")
     id("scala")
     id("net.minecraftforge.gradle") version("[6.0,6.2)")
     id("org.parchmentmc.librarian.forgegradle") version("1.+")
@@ -346,9 +347,9 @@ artifacts {
 // This is the preferred method to reobfuscate your jar file
 jar.finalizedBy("reobfJar")
 
-jar.finalizedBy("signJar")
+jar.finalizedBy("jksSignJar")
 
-tasks.register("signJar") {
+tasks.register("jksSignJar") {
     dependsOn("reobfJar")
     boolean executeCondition = project.hasProperty("keyStoreAlias") &&
             project.hasProperty("keyStore") &&
@@ -358,12 +359,12 @@ tasks.register("signJar") {
         //noinspection HttpUrlsUsage
         ant.signjar(
                 jar: jar.archiveFile.get(),
-                alias: project.hasProperty("keyStoreAlias") ? project.getProperty("keyStoreAlias") : "",
-                keystore: project.hasProperty("keyStore") ? project.getProperty("keyStore") : "",
-                storepass: project.hasProperty("keyStorePass") ? project.getProperty("keyStorePass") : "",
+                alias: project.findProperty("keyStoreAlias") ?: "",
+                keystore: project.findProperty("keyStore") ?: "",
+                storepass: project.findProperty("keyStorePass") ?: "",
                 sigalg: "SHA1withRSA",
                 digestalg: "SHA-256",
-                tsaurl: "http://timestamp.digicert.com"
+                tsaurl: "http://timestamp.digicert.com",
         )
     }
 }
@@ -445,6 +446,7 @@ modrinth {
     projectId = "additional-enchanted-miner"
     versionType = "release"
     versionName = "${project.version}-forge"
+    versionNumber.set(project.version.toString())
     uploadFile = tasks.jar
     getAdditionalFiles().set([
             tasks.deobfJar,
@@ -540,4 +542,9 @@ publishing {
             }
         }
     }
+}
+
+signing {
+    sign(publishing.publications)
+    sign(tasks.jar, tasks.deobfJar, tasks.srcJar)
 }
