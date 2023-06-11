@@ -31,6 +31,8 @@ jobs:
           service_account: ${{secrets.GCP_SERVICE_ACCOUNT}}
       - name: Download Private Key
         run: gcloud storage cp gs://kotori316-resources/secring.gpg "${HOME}/secring.gpg"
+      - name: Download JKS
+        run: gcloud storage cp gs://kotori316-resources/kotori316_keystore.jks "${HOME}/kotori316_keystore.jks"
       - name: Download Public Key
         run: |
           gcloud storage cp gs://kotori316-resources/pgp_public.pub "${HOME}/pgp_public.pub"
@@ -40,29 +42,38 @@ jobs:
         run: |
           key_id=$(gcloud secrets versions access latest --secret=signing-key-id)
           key_password=$(gcloud secrets versions access latest --secret=signing-password)
+          jar_password=$(gcloud secrets versions access latest --secret=jar-sign-key-password)
           echo "::add-mask::${key_id}"
           echo "::add-mask::${key_password}"
+          echo "::add-mask::${jar_password}"
           echo "key_id=${key_id}" >> $GITHUB_OUTPUT
           echo "key_password=${key_password}" >> $GITHUB_OUTPUT
+          echo "jar_password=${jar_password}" >> $GITHUB_OUTPUT
       - name: Release
         run: >-
           ./gradlew
           -Psigning.secretKeyRingFile="${HOME}/secring.gpg"
           -Psigning.password="${KEY_PASSWORD}"
           -Psigning.keyId="${KEY_ID}"
+          -PjarSign.keyLocation="${HOME}/kotori316_keystore.jks"
+          -PjarSign.keyAlias="ko316"
+          -PjarSign.storePass="${JAR_PASSWORD}"
           build publishToMavenLocal
         env:
           REPO_TOKEN: ${{secrets.GITHUB_TOKEN}}
           AZURE_TOKEN: ${{secrets.AZURE_TOKEN}}
           KEY_PASSWORD: ${{steps.get-secrets.outputs.key_password}}
           KEY_ID: ${{steps.get-secrets.outputs.key_id}}
-      - name: Verify
+          JAR_PASSWORD: ${{steps.get-secrets.outputs.jar_password}}
+      - name: Verify Build Files
         run: |
           for f in $(find ./ -name "*.asc") ; do
             echo "${f:0:-4}"
             gpg --verify "$f" "${f:0:-4}"
           done
-      - name: Verify Local
+      - name: Verify Main Jar
+        run: jarsigner -verify -keystore "${HOME}/kotori316_keystore.jks" "$(ls build/libs/*.jar | grep -v "deobf" | grep -v "sources")" -strict
+      - name: Verify Maven Local
         run: |
           for f in $(find ~/.m2 -name "*.asc") ; do
             echo "${f:0:-4}"

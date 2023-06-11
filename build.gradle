@@ -353,18 +353,18 @@ jar.finalizedBy("jksSignJar")
 
 tasks.register("jksSignJar") {
     dependsOn("reobfJar")
-    boolean executeCondition = project.hasProperty("keyStoreAlias") &&
-            project.hasProperty("keyStore") &&
-            project.hasProperty("keyStorePass")
+    boolean executeCondition = project.hasProperty("jarSign.keyAlias") &&
+            project.hasProperty("jarSign.keyLocation") &&
+            project.hasProperty("jarSign.storePass")
     onlyIf { executeCondition }
     doLast {
         //noinspection HttpUrlsUsage
         ant.signjar(
                 jar: jar.archiveFile.get(),
-                alias: project.findProperty("keyStoreAlias") ?: "",
-                keystore: project.findProperty("keyStore") ?: "",
-                storepass: project.findProperty("keyStorePass") ?: "",
-                sigalg: "SHA1withRSA",
+                alias: project.findProperty("jarSign.keyAlias") ?: "",
+                keystore: project.findProperty("jarSign.keyLocation") ?: "",
+                storepass: project.findProperty("jarSign.storePass") ?: "",
+                sigalg: "Ed25519",
                 digestalg: "SHA-256",
                 tsaurl: "http://timestamp.digicert.com",
         )
