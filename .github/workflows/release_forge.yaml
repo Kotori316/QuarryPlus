@@ -29,8 +29,13 @@ jobs:
         with:
           workload_identity_provider: ${{secrets.GCP_IDENTITY_PROVIDER}}
           service_account: ${{secrets.GCP_SERVICE_ACCOUNT}}
-      - name: Download Key
-        run: gcloud storage cp gs://kotori316-resources/secring.gpg ./secring.gpg
+      - name: Download Private Key
+        run: gcloud storage cp gs://kotori316-resources/secring.gpg "${HOME}/secring.gpg"
+      - name: Download Public Key
+        run: |
+          gcloud storage cp gs://kotori316-resources/pgp_public.pub "${HOME}/pgp_public.pub"
+          gpg --import "${HOME}/pgp_public.pub"
+          echo -e "trust\n5\ny\n" | gpg --command-fd 0 --edit-key Kotori316@gmail.com
       - name: Get credentials
         id: get-secrets
         run: |
@@ -43,7 +48,7 @@ jobs:
       - name: Release
         run: >-
           ./gradlew
-          -Psigning.secretKeyRingFile="./secring.gpg"
+          -Psigning.secretKeyRingFile="${HOME}/secring.gpg"
           -Psigning.password="${KEY_PASSWORD}"
           -Psigning.keyId="${KEY_ID}"
           build publishToMavenLocal

@@ -35,8 +35,6 @@ version = createVersion()
 group = "com.kotori316" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "AdditionalEnchantedMiner-" + project.minecraftVersion
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-
 compileScala {
     scalaCompileOptions.additionalParameters = ["-Wconf:cat=deprecation:w,any:e"]
 }
@@ -338,6 +336,10 @@ tasks.register("deobfJar", Jar) {
     }
 }
 
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(17)
+}
+
 // Tell the artifact system about our extra jars
 artifacts {
     archives(srcJar, deobfJar)
@@ -525,15 +527,9 @@ publishing {
     publications {
         gpr(MavenPublication) {
             artifactId = "AdditionalEnchantedMiner".toLowerCase()
-            artifact srcJar {
-                getArchiveClassifier().set("sources")
-                getArchiveExtension().set("jar")
-            }
-            artifact deobfJar {
-                getArchiveClassifier().set("deobf")
-                getArchiveExtension().set("jar")
-            }
-            artifact jar
+            from components.java
+            artifact(tasks.deobfJar)
+            artifact(tasks.srcJar)
             pom {
                 name = archivesBaseName
                 description = "QuarryPlus for Minecraft ${project.minecraftVersion} and Forge ${project.forgeVersion}"
@@ -549,10 +545,20 @@ signing {
     sign(tasks.jar, tasks.deobfJar, tasks.srcJar)
 }
 
+boolean hasGpgSignature = project.hasProperty("signing.keyId") &&
+        project.hasProperty("signing.password") &&
+        project.hasProperty("signing.secretKeyRingFile")
+
 tasks.withType(Sign).configureEach {
     it.onlyIf {
-        project.hasProperty("signing.keyId") &&
-                project.hasProperty("signing.password") &&
-                project.hasProperty("signing.secretKeyRingFile")
+        hasGpgSignature
+    }
+}
+
+tasks.withType(AbstractPublishToMaven).configureEach {
+    if (hasGpgSignature) {
+        it.dependsOn(":signJar")
+        it.dependsOn(":signSrcJar")
+        it.dependsOn(":signDeobfJar")
     }
 }
