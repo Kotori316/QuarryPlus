@@ -1,8 +1,8 @@
 package com.yogpc.qp.integration.jei;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.EnergyCounter;
 import com.yogpc.qp.machines.workbench.IngredientList;
 import com.yogpc.qp.machines.workbench.WorkbenchRecipe;
 import mezz.jei.api.constants.VanillaTypes;
@@ -16,6 +16,8 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -57,10 +59,10 @@ class WorkBenchRecipeCategory implements IRecipeCategory<WorkbenchRecipe> {
     }
 
     @Override
-    public void draw(WorkbenchRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack stack, double mouseX, double mouseY) {
-        animateBar.draw(stack, 4, 60);
-        // TODO draw energy
-        // Minecraft.getInstance().font.draw(stack, (recipe.getRequiredEnergy() / PowerTile.ONE_FE) + "MJ", 36 - xOff, 70 - yOff, 0x404040);
+    public void draw(WorkbenchRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
+        animateBar.draw(guiGraphics, 4, 60);
+        var font = Minecraft.getInstance().font;
+        guiGraphics.drawString(font, EnergyCounter.formatEnergyInFE(recipe.getRequiredEnergy()) + "FE", 36 - xOff, 70 - yOff, 0x404040, false);
         // Enchantment copy
         // Minecraft.getInstance().font.drawString(graphics,  (recipe.energy.toDouble / APowerTile.MJToMicroMJ).toString + "MJ", 36 - xOff, 67 - yOff, 0x404040)
         // Minecraft.getInstance().font.drawString(graphics,  "Keeps enchantments", 36 - xOff, 77 - yOff, 0x404040)

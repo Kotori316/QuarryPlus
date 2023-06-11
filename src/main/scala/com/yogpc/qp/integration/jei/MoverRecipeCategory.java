@@ -14,6 +14,8 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -69,13 +71,12 @@ class MoverRecipeCategory implements IRecipeCategory<MoverRecipeCategory.MoverRe
     }
 
     @Override
-    public void draw(MoverRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack stack, double mouseX, double mouseY) {
+    public void draw(MoverRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
         var enchantments = recipe.item.acceptEnchantments().stream().map(e -> new EnchantmentLevel(e, 1))
                 .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR).map(EnchantmentLevel::enchantment).toList();
         for (int i = 0; i < enchantments.size(); i++) {
             var text = Component.translatable(enchantments.get(i).getDescriptionId());
-            // TODO draw enchantments text
-            // Minecraft.getInstance().font.draw(stack, text, 36 - xOff, 6 - yOff + 10 * i, 0x404040);
+            guiGraphics.drawString(Minecraft.getInstance().font, text, 36 - xOff, 6 - yOff + 10 * i, 0x404040, false);
         }
     }
 
