@@ -27,8 +27,12 @@ plugins {
 String createVersion() {
     String mcVersion = "%-4s".formatted(project.minecraftVersion.replace(".", "")).replace(' ', '0')
     String major = project.modVersionMajor
-    String minor = System.getenv("GITHUB_RUN_NUMBER") ?: project.modVersionMinor ?: "0-SNAPSHOT"
-    return "$mcVersion.$major.$minor"
+    String minor = System.getenv("GITHUB_RUN_NUMBER") ?: project.modVersionMinor ?: "0"
+    if (Boolean.parseBoolean(project.isSnapshotVersion)) {
+        return "$mcVersion.$major.$minor-SNAPSHOT"
+    } else {
+        return "$mcVersion.$major.$minor"
+    }
 }
 
 version = createVersion()
@@ -421,7 +425,7 @@ String getChangeLog() {
 }
 
 curseforge {
-    apiKey = project.hasProperty("curseforge_additional-enchanted-miner_key") ? getProperty("curseforge_additional-enchanted-miner_key") : ""
+    apiKey = project.findProperty("curseforge_additional-enchanted-miner_key") ?: System.getenv("CURSE_TOKEN") ?: ""
     project {
         id = "282837"
         changelogType = "markdown"

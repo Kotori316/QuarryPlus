@@ -43,12 +43,15 @@ jobs:
           key_id=$(gcloud secrets versions access latest --secret=signing-key-id)
           key_password=$(gcloud secrets versions access latest --secret=signing-password)
           jar_password=$(gcloud secrets versions access latest --secret=jar-sign-key-password)
+          modrinth_token=$(gcloud secrets versions access latest --secret=modrinth_token)
           echo "::add-mask::${key_id}"
           echo "::add-mask::${key_password}"
           echo "::add-mask::${jar_password}"
+          echo "::add-mask::${modrinth_token}"
           echo "key_id=${key_id}" >> $GITHUB_OUTPUT
           echo "key_password=${key_password}" >> $GITHUB_OUTPUT
           echo "jar_password=${jar_password}" >> $GITHUB_OUTPUT
+          echo "modrinth_token=${modrinth_token}" >> $GITHUB_OUTPUT
       - name: Release
         run: >-
           ./gradlew
@@ -58,13 +61,15 @@ jobs:
           -PjarSign.keyLocation="${HOME}/kotori316_keystore.jks"
           -PjarSign.keyAlias="ko316"
           -PjarSign.storePass="${JAR_PASSWORD}"
-          build publishToMavenLocal
+          build publishToMavenLocal curseforge modrinth githubRelease publish
         env:
           REPO_TOKEN: ${{secrets.GITHUB_TOKEN}}
           AZURE_TOKEN: ${{secrets.AZURE_TOKEN}}
           KEY_PASSWORD: ${{steps.get-secrets.outputs.key_password}}
           KEY_ID: ${{steps.get-secrets.outputs.key_id}}
           JAR_PASSWORD: ${{steps.get-secrets.outputs.jar_password}}
+          CURSE_TOKEN: ${{secrets.CURSEFORGE_KEY}}
+          MODRINTH_TOKEN: ${{steps.get-secrets.outputs.modrinth_token}}
       - name: Verify Build Files
         run: |
           for f in $(find ./ -name "*.asc") ; do
@@ -79,3 +84,9 @@ jobs:
             echo "${f:0:-4}"
             gpg --verify "$f" "${f:0:-4}"
           done
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Release-${{ github.run_number }}
+          path: |
+            build/libs/
