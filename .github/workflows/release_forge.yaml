@@ -1,0 +1,62 @@
+name: Release Forge
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v3
+      - uses: gradle/wrapper-validation-action@v1
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - run: chmod +x ./gradlew  
+      - uses: gradle/gradle-build-action@v2
+        with:
+          cache-read-only: false
+          gradle-home-cache-cleanup: true
+      - name: Enable daemon
+        run: sed -i -e 's/org.gradle.daemon=false/org.gradle.daemon=true/' gradle.properties
+      - uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: ${{secrets.GCP_IDENTITY_PROVIDER}}
+          service_account: ${{secrets.GCP_SERVICE_ACCOUNT}}
+      - name: Download Key
+        run: gcloud storage cp gs://kotori316-resources/secring.gpg ./secring.gpg
+      - name: Get credentials
+        id: get-secrets
+        run: |
+          key_id=$(gcloud secrets versions access latest --secret=signing-key-id)
+          key_password=$(gcloud secrets versions access latest --secret=signing-password)
+          echo "::add-mask::${key_id}"
+          echo "::add-mask::${key_password}"
+          echo "key_id=${key_id}" >> $GITHUB_OUTPUT
+          echo "key_password=${key_password}" >> $GITHUB_OUTPUT
+      - name: Release
+        run: >-
+          ./gradlew
+          -Psigning.secretKeyRingFile="./secring.gpg"
+          -Psigning.password="${KEY_PASSWORD}"
+          -Psigning.keyId="${KEY_ID}"
+          build publishToMavenLocal
+        env:
+          REPO_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          AZURE_TOKEN: ${{secrets.AZURE_TOKEN}}
+          KEY_PASSWORD: ${{steps.get-secrets.outputs.key_password}}
+          KEY_ID: ${{steps.get-secrets.outputs.key_id}}
+      - name: Verify
+        run: |
+          for f in $(find ./ -name "*.asc") ; do
+            echo "${f:0:-4}"
+            gpg --verify "$f" "${f:0:-4}"
+          done
+      - name: Verify Local
+        run: |
+          for f in $(find ~/.m2 -name "*.asc") ; do
+            echo "${f:0:-4}"
+            gpg --verify "$f" "${f:0:-4}"
+          done
