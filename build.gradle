@@ -251,9 +251,9 @@ dependencies {
         implementation(fg.deobf(group: "me.shedaniel.cloth", name: "cloth-config-forge", version: project.clothVersion))
         implementation(fg.deobf(group: "dev.architectury", name: "architectury-forge", version: project.architecturyVersion))
     } else {
-        runtimeOnly(fg.deobf(group: "mezz.jei", name: "jei-1.20-forge", version: project.jeiVersion) {
-            transitive(false)
-        })
+        // runtimeOnly(fg.deobf(group: "mezz.jei", name: "jei-1.20-forge", version: project.jeiVersion) {
+        //     transitive(false)
+        // })
         compileOnly(fg.deobf(group: "me.shedaniel", name: "RoughlyEnoughItems-forge", version: project.reiVersion))
         compileOnly(fg.deobf(group: "me.shedaniel.cloth", name: "cloth-config-forge", version: project.clothVersion))
         compileOnly(fg.deobf(group: "dev.architectury", name: "architectury-forge", version: project.architecturyVersion))
