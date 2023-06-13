@@ -52,6 +52,8 @@ jobs:
           echo "key_password=${key_password}" >> $GITHUB_OUTPUT
           echo "jar_password=${jar_password}" >> $GITHUB_OUTPUT
           echo "modrinth_token=${modrinth_token}" >> $GITHUB_OUTPUT
+      - name: Compile
+        run: ./gradlew classes
       - name: Release
         run: >-
           ./gradlew
@@ -85,8 +87,9 @@ jobs:
             gpg --verify "$f" "${f:0:-4}"
           done
       - name: Upload Artifacts
+        if: always()
         uses: actions/upload-artifact@v3
         with:
-          name: Release-${{ github.run_number }}
+          name: QuarryPlus-Release-${{ github.run_number }}
           path: |
             build/libs/
