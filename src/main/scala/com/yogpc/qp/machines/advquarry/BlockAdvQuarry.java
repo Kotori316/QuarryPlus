@@ -16,6 +16,7 @@ import com.yogpc.qp.utils.CombinedBlockEntityTicker;
 import com.yogpc.qp.utils.MapMulti;
 import com.yogpc.qp.utils.QuarryChunkLoadUtil;
 import javax.annotation.Nullable;
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -36,7 +37,8 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING;
@@ -45,7 +47,9 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
     public static final String NAME = "adv_quarry";
 
     public BlockAdvQuarry() {
-        super(Properties.of(Material.METAL)
+        super(FabricBlockSettings.create()
+            .mapColor(MapColor.METAL)
+            .pushReaction(PushReaction.BLOCK)
             .strength(1.5f, 10f)
             .sound(SoundType.STONE)
             .requiresCorrectToolForDrops(), NAME, ItemAdvQuarry::new);

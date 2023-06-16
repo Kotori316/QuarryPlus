@@ -3,17 +3,15 @@ package com.yogpc.qp.machines.marker;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.misc.IndexedButton;
 import com.yogpc.qp.packet.FlexMarkerMessage;
 import com.yogpc.qp.packet.PacketHandler;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -36,7 +34,7 @@ public class ScreenFlexMarker extends AbstractContainerScreen<ContainerMarker> i
         this.imageWidth = 217;
         this.imageHeight = 220;
         this.inventoryLabelY = this.imageHeight - 96 + 2; // y position of text, inventory
-        marker = (TileFlexMarker) containerMarker.player.getLevel().getBlockEntity(containerMarker.pos);
+        marker = (TileFlexMarker) containerMarker.player.level().getBlockEntity(containerMarker.pos);
     }
 
     @Override
@@ -69,40 +67,37 @@ public class ScreenFlexMarker extends AbstractContainerScreen<ContainerMarker> i
     }
 
     @Override
-    public void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
-        this.renderBackground(matrices);
-        super.render(matrices, mouseX, mouseY, delta);
-        this.renderTooltip(matrices, mouseX, mouseY);
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+        this.renderBackground(graphics);
+        super.render(graphics, mouseX, mouseY, delta);
+        this.renderTooltip(graphics, mouseX, mouseY);
     }
 
     @Override
-    protected void renderBg(PoseStack matrices, float delta, int mouseX, int mouseY) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, LOCATION);
-        this.blit(matrices, leftPos, topPos, 0, 0, this.imageWidth, this.imageHeight);
+    protected void renderBg(GuiGraphics graphics, float delta, int mouseX, int mouseY) {
+        graphics.blit(LOCATION, leftPos, topPos, 0, 0, this.imageWidth, this.imageHeight);
     }
 
     @Override
-    protected void renderLabels(PoseStack matrices, int mouseX, int mouseY) {
-        super.renderLabels(matrices, mouseX, mouseY);
+    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+        super.renderLabels(graphics, mouseX, mouseY);
         Component s = Component.translatable(TileFlexMarker.Movable.UP.transName);
-        this.font.draw(matrices, s, ((float) this.imageWidth - font.width(s)) / 2, 6, 0x404040);
+        graphics.drawString(this.font, s, (this.imageWidth - font.width(s)) / 2, 6, 0x404040, false);
         s = Component.translatable(TileFlexMarker.Movable.FORWARD.transName);
-        this.font.draw(matrices, s, ((float) this.imageWidth - font.width(s)) / 2, 6 + yOffsetCenter, 0x404040);
+        graphics.drawString(this.font, s, (this.imageWidth - font.width(s)) / 2, 6 + yOffsetCenter, 0x404040, false);
         s = Component.translatable(TileFlexMarker.Movable.LEFT.transName);
-        this.font.draw(matrices, s, ((float) this.imageWidth - font.width(s)) / 2 - 40, 6 + yOffsetCenter, 0x404040);
+        graphics.drawString(this.font, s, (this.imageWidth - font.width(s)) / 2 - 40, 6 + yOffsetCenter, 0x404040, false);
         s = Component.translatable(TileFlexMarker.Movable.RIGHT.transName);
-        this.font.draw(matrices, s, ((float) this.imageWidth - font.width(s)) / 2 + 40, 6 + yOffsetCenter, 0x404040);
+        graphics.drawString(this.font, s, (this.imageWidth - font.width(s)) / 2 + 40, 6 + yOffsetCenter, 0x404040, false);
         s = Component.translatable(TileFlexMarker.Movable.DOWN.transName);
-        this.font.draw(matrices, s, ((float) this.imageWidth - font.width(s)) / 2, 6 + yOffsetBottom, 0x404040);
+        graphics.drawString(this.font, s, (this.imageWidth - font.width(s)) / 2, 6 + yOffsetBottom, 0x404040, false);
 
         marker.getArea().ifPresent(area -> {
             var start = "(%d, %d, %d)".formatted(area.minX(), area.minY(), area.minZ());
             var end = "(%d, %d, %d)".formatted(area.maxX(), area.maxY(), area.maxZ());
-            var x = (float) this.imageWidth - Math.max(font.width(start), font.width(end)) - 10;
-            font.draw(matrices, start, x, 6 + yOffsetBottom + 5, 0x404040);
-            font.draw(matrices, end, x, 6 + yOffsetBottom + 15, 0x404040);
+            var x = this.imageWidth - Math.max(font.width(start), font.width(end)) - 10;
+            graphics.drawString(this.font, start, x, 6 + yOffsetBottom + 5, 0x404040, false);
+            graphics.drawString(this.font, end, x, 6 + yOffsetBottom + 15, 0x404040, false);
 
             var minPos = new BlockPos(area.minX(), area.minY(), area.minZ());
             var maxPos = new BlockPos(area.maxX(), area.maxY(), area.maxZ());
@@ -111,11 +106,11 @@ public class ScreenFlexMarker extends AbstractContainerScreen<ContainerMarker> i
             String distanceForward = String.valueOf(TileFlexMarker.Movable.FORWARD.distanceFromOrigin(marker.getBlockPos(), minPos, maxPos, marker.direction));
             String distanceRight = String.valueOf(TileFlexMarker.Movable.RIGHT.distanceFromOrigin(marker.getBlockPos(), minPos, maxPos, marker.direction));
             String distanceDown = String.valueOf(TileFlexMarker.Movable.DOWN.distanceFromOrigin(marker.getBlockPos(), minPos, maxPos, marker.direction));
-            font.draw(matrices, distanceUp, ((float) this.imageWidth - font.width(distanceUp)) / 2, 6 + 32, 0x404040);
-            font.draw(matrices, distanceLeft, ((float) this.imageWidth - font.width(distanceLeft)) / 2 - 40, 6 + 32 + yOffsetCenter, 0x404040);
-            font.draw(matrices, distanceForward, ((float) this.imageWidth - font.width(distanceForward)) / 2, 6 + 32 + yOffsetCenter, 0x404040);
-            font.draw(matrices, distanceRight, ((float) this.imageWidth - font.width(distanceRight)) / 2 + 40, 6 + 32 + yOffsetCenter, 0x404040);
-            font.draw(matrices, distanceDown, ((float) this.imageWidth - font.width(distanceDown)) / 2, 6 + 32 + yOffsetBottom, 0x404040);
+            graphics.drawString(this.font, distanceUp, (this.imageWidth - font.width(distanceUp)) / 2, 6 + 32, 0x404040, false);
+            graphics.drawString(this.font, distanceLeft, (this.imageWidth - font.width(distanceLeft)) / 2 - 40, 6 + 32 + yOffsetCenter, 0x404040, false);
+            graphics.drawString(this.font, distanceForward, (this.imageWidth - font.width(distanceForward)) / 2, 6 + 32 + yOffsetCenter, 0x404040, false);
+            graphics.drawString(this.font, distanceRight, (this.imageWidth - font.width(distanceRight)) / 2 + 40, 6 + 32 + yOffsetCenter, 0x404040, false);
+            graphics.drawString(this.font, distanceDown, (this.imageWidth - font.width(distanceDown)) / 2, 6 + 32 + yOffsetBottom, 0x404040, false);
         });
     }
 
@@ -125,7 +120,7 @@ public class ScreenFlexMarker extends AbstractContainerScreen<ContainerMarker> i
         int id = ib.id();
         if (id >= 0) {
             TileFlexMarker.Movable movable = TileFlexMarker.Movable.valueOf(id / 4);
-            FlexMarkerMessage message = new FlexMarkerMessage(getMenu().player.level, getMenu().pos, movable, amounts[id % 4]);
+            FlexMarkerMessage message = new FlexMarkerMessage(getMenu().player.level(), getMenu().pos, movable, amounts[id % 4]);
             PacketHandler.sendToServer(message);
         }
     }

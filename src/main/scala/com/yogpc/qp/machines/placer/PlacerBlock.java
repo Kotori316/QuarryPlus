@@ -2,12 +2,12 @@ package com.yogpc.qp.machines.placer;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 import java.util.function.Predicate;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPBlock;
 import javax.annotation.Nullable;
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -31,7 +31,8 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING;
@@ -41,7 +42,9 @@ public class PlacerBlock extends QPBlock implements EntityBlock {
     public static final String NAME = "placer_plus";
 
     public PlacerBlock() {
-        super(Properties.of(Material.METAL).strength(1.2f).requiresCorrectToolForDrops(), NAME);
+        super(FabricBlockSettings.create()
+            .mapColor(MapColor.METAL)
+            .pushReaction(PushReaction.BLOCK).strength(1.2f).requiresCorrectToolForDrops(), NAME);
         registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.NORTH).setValue(TRIGGERED, Boolean.FALSE));
     }
 

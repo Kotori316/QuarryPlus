@@ -1,10 +1,9 @@
 package com.yogpc.qp.machines.misc;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -43,23 +42,20 @@ public final class SmallCheckBox extends Button {
     }
 
     @Override
-    public void renderWidget(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+    public void renderWidget(GuiGraphics graphics, int pMouseX, int pMouseY, float pPartialTick) {
         Minecraft minecraft = Minecraft.getInstance();
-        RenderSystem.setShaderTexture(0, TEXTURE);
         RenderSystem.enableDepthTest();
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
+        graphics.setColor(1.0F, 1.0F, 1.0F, this.alpha);
         RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         Font font = minecraft.font;
         float uOffset = this.isHoveredOrFocused() ? 20.0F : 0.0F;
         float vOffset = this.isSelected() ? 20.0F : 0.0F;
-        blit(pPoseStack, this.getX(), this.getY() + this.height / 2 - this.checkBoxHeight / 2,
+        graphics.blit(TEXTURE, this.getX(), this.getY() + this.height / 2 - this.checkBoxHeight / 2,
             this.checkBoxWidth, this.checkBoxHeight, uOffset, vOffset, 20, 20, 64, 64);
         // this.renderBg(pPoseStack, minecraft, pMouseX, pMouseY);
         int color = 0x404040;
         int labelOffset = this.checkBoxWidth / 5;
-        font.draw(pPoseStack, this.getMessage(), this.getX() + this.checkBoxWidth + labelOffset, this.getY() + ((float) this.height - 7) / 2,
-            color | Mth.ceil(this.alpha * 255.0F) << 24);
+        graphics.drawString(font, this.getMessage(), this.getX() + this.checkBoxWidth + labelOffset, this.getY() + (this.height - 7) / 2,
+            color | Mth.ceil(this.alpha * 255.0F) << 24, true);
     }
 }

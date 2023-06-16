@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPBlock;
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -24,7 +25,7 @@ import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -44,7 +45,7 @@ public class BlockMarker extends QPBlock implements EntityBlock {
     public static final String NAME = "marker";
 
     public BlockMarker() {
-        super(Properties.of(Material.DECORATION).lightLevel(value -> 7).noCollission(), NAME);
+        super(FabricBlockSettings.create().pistonBehavior(PushReaction.DESTROY).luminance(value -> 7).noCollission(), NAME);
         registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.UP));
     }
 

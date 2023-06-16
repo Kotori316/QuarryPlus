@@ -2,6 +2,7 @@ package com.yogpc.qp.machines.marker;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPBlock;
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -32,7 +33,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -177,7 +178,7 @@ public abstract class BlockExMarker extends QPBlock implements EntityBlock {
         public static final String NAME = "flex_marker";
 
         public BlockFlexMarker() {
-            super(Properties.of(Material.DECORATION).lightLevel(value -> 7).noCollission(), NAME);
+            super(FabricBlockSettings.create().pistonBehavior(PushReaction.DESTROY).luminance(value -> 7).noCollission(), NAME);
         }
 
         @Override
@@ -203,7 +204,7 @@ public abstract class BlockExMarker extends QPBlock implements EntityBlock {
         public static final String NAME = "waterlogged_flex_marker";
 
         public BlockWaterloggedFlexMarker() {
-            super(Properties.of(Material.DECORATION), NAME);
+            super(FabricBlockSettings.create(), NAME);
         }
 
         @Override
@@ -217,7 +218,7 @@ public abstract class BlockExMarker extends QPBlock implements EntityBlock {
         public static final String NAME = "marker16";
 
         public Block16Marker() {
-            super(Properties.of(Material.DECORATION).lightLevel(value -> 7).noCollission(), NAME);
+            super(FabricBlockSettings.create().pistonBehavior(PushReaction.DESTROY).luminance(value -> 7).noCollission(), NAME);
         }
 
         @Override
@@ -244,7 +245,7 @@ public abstract class BlockExMarker extends QPBlock implements EntityBlock {
         public static final String NAME = "waterlogged_marker16";
 
         public BlockWaterlogged16Marker() {
-            super(Properties.of(Material.DECORATION), NAME);
+            super(FabricBlockSettings.create(), NAME);
         }
 
         @Override

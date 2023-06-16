@@ -18,7 +18,7 @@ public final class FillerMenu extends AbstractContainerMenu {
 
     public FillerMenu(int id, Player player, BlockPos pos) {
         super(QuarryPlus.ModObjects.FILLER_MENU_TYPE, id);
-        this.filler = (FillerEntity) Objects.requireNonNull(player.level.getBlockEntity(pos));
+        this.filler = (FillerEntity) Objects.requireNonNull(player.level().getBlockEntity(pos));
         int oneBox = 18;
 
         // Filler inventory

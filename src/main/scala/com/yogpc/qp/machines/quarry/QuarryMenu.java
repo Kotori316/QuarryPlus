@@ -17,7 +17,7 @@ public final class QuarryMenu extends AbstractContainerMenu {
 
     public QuarryMenu(int id, Player player, BlockPos pos) {
         super(QuarryPlus.ModObjects.QUARRY_MENU_TYPE, id);
-        this.quarry = Objects.requireNonNull((TileQuarry) player.level.getBlockEntity(pos));
+        this.quarry = Objects.requireNonNull((TileQuarry) player.level().getBlockEntity(pos));
         final int oneBox = 18;
         for (int h = 0; h < 3; h++) {
             for (int v = 0; v < 9; v++) {
@@ -27,7 +27,7 @@ public final class QuarryMenu extends AbstractContainerMenu {
         for (int vertical = 0; vertical < 9; vertical++) {
             addSlot(new Slot(player.getInventory(), vertical, 8 + vertical * oneBox, 142));
         }
-        if (!player.level.isClientSide) {
+        if (!player.level().isClientSide) {
             quarry.sync();
         }
     }

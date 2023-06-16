@@ -1,9 +1,8 @@
 package com.yogpc.qp.machines.placer;
 
-import java.util.Random;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPBlock;
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -20,7 +19,8 @@ import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.TRIGGERED;
@@ -29,7 +29,9 @@ public final class RemotePlacerBlock extends QPBlock implements EntityBlock {
     public static final String NAME = "remote_placer";
 
     public RemotePlacerBlock() {
-        super(Properties.of(Material.METAL).strength(1.2f), NAME);
+        super(FabricBlockSettings.create()
+            .mapColor(MapColor.METAL)
+            .pushReaction(PushReaction.BLOCK).strength(1.2f), NAME);
         registerDefaultState(getStateDefinition().any().setValue(TRIGGERED, Boolean.FALSE));
     }
 

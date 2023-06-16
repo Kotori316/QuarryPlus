@@ -2,12 +2,12 @@ package com.yogpc.qp.machines.placer;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.misc.IndexedButton;
 import com.yogpc.qp.packet.PacketHandler;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
@@ -41,19 +41,19 @@ public final class RemotePlacerScreen extends PlacerScreen implements Button.OnP
     }
 
     @Override
-    protected void renderLabels(PoseStack matrices, int mouseX, int mouseY) {
-        super.renderLabels(matrices, mouseX, mouseY);
+    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+        super.renderLabels(graphics, mouseX, mouseY);
         var targetPos = getMenu().tile.getTargetPos();
         var color = targetPos.equals(getMenu().tile.getBlockPos()) ? 0xFF4040 : 0x404040;
         var x = 116;
         // 118, 22
-        this.font.draw(matrices, "X: " + targetPos.getX(), x, 22, color);
-        this.font.draw(matrices, "Y: " + targetPos.getY(), x, 40, color);
-        this.font.draw(matrices, "Z: " + targetPos.getZ(), x, 58, color);
+        graphics.drawString(this.font, "X: " + targetPos.getX(), x, 22, color, false);
+        graphics.drawString(this.font, "Y: " + targetPos.getY(), x, 40, color, false);
+        graphics.drawString(this.font, "Z: " + targetPos.getZ(), x, 58, color, false);
     }
 
     @Override
-    protected void renderModeLabel(PoseStack matrices) {
+    protected void renderModeLabel(GuiGraphics graphics) {
         // Mode
         PlacerTile.RedstoneMode mode = this.getMenu().tile.redstoneMode;
         String pA = mode.isAlways() ? "Always" : "Pulse";
@@ -66,9 +66,9 @@ public final class RemotePlacerScreen extends PlacerScreen implements Button.OnP
         else if (mode.canPlace() && !mode.canBreak()) only = "Place";
         else only = "";
 
-        this.font.draw(matrices, pA, 90, 6, 0x404040);
-        this.font.draw(matrices, only, 130, 6, 0x404040);
-        this.font.draw(matrices, rs, 100, this.inventoryLabelY, 0x404040);
+        graphics.drawString(this.font, pA, 90, 6, 0x404040, false);
+        graphics.drawString(this.font, only, 130, 6, 0x404040, false);
+        graphics.drawString(this.font, rs, 100, this.inventoryLabelY, 0x404040, false);
     }
 
     @Override

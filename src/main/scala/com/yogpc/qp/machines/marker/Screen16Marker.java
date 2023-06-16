@@ -2,16 +2,14 @@ package com.yogpc.qp.machines.marker;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.misc.IndexedButton;
 import com.yogpc.qp.packet.Marker16Message;
 import com.yogpc.qp.packet.PacketHandler;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -32,30 +30,27 @@ public class Screen16Marker extends AbstractContainerScreen<ContainerMarker> imp
     }
 
     @Override
-    public void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
-        this.renderBackground(matrices);
-        super.render(matrices, mouseX, mouseY, delta);
-        this.renderTooltip(matrices, mouseX, mouseY);
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+        this.renderBackground(graphics);
+        super.render(graphics, mouseX, mouseY, delta);
+        this.renderTooltip(graphics, mouseX, mouseY);
     }
 
     @Override
-    protected void renderBg(PoseStack matrices, float delta, int mouseX, int mouseY) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, LOCATION);
-        this.blit(matrices, leftPos, topPos, 0, 0, this.imageWidth, this.imageHeight);
+    protected void renderBg(GuiGraphics graphics, float delta, int mouseX, int mouseY) {
+        graphics.blit(LOCATION, leftPos, topPos, 0, 0, this.imageWidth, this.imageHeight);
     }
 
     @Override
-    protected void renderLabels(PoseStack matrices, int mouseX, int mouseY) {
-        super.renderLabels(matrices, mouseX, mouseY);
-        font.draw(matrices, "Size", (this.imageWidth - font.width("Size")) / 2f, 6, 0x404040);
+    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+        super.renderLabels(graphics, mouseX, mouseY);
+        graphics.drawString(this.font, "Size", (this.imageWidth - font.width("Size")) / 2, 6, 0x404040, false);
         String sizeText = Integer.toString(marker.getSize() / CHUNK);
-        font.draw(matrices, sizeText, (this.imageWidth - font.width(sizeText)) / 2f, 15 + 23, 0x404040);
+        graphics.drawString(this.font, sizeText, (this.imageWidth - font.width(sizeText)) / 2, 15 + 23, 0x404040, false);
         String yMaxText = Integer.toString(marker.max().getY());
         String yMinText = Integer.toString(marker.min().getY());
-        font.draw(matrices, yMaxText, (this.imageWidth - font.width(yMaxText)) / 2f + 10 + BUTTON_WIDTH, 15 + 23, 0x404040);
-        font.draw(matrices, yMinText, (this.imageWidth - font.width(yMinText)) / 2f - 10 - BUTTON_WIDTH, 15 + 23, 0x404040);
+        graphics.drawString(this.font, yMaxText, (this.imageWidth - font.width(yMaxText)) / 2 + 10 + BUTTON_WIDTH, 15 + 23, 0x404040, false);
+        graphics.drawString(this.font, yMinText, (this.imageWidth - font.width(yMinText)) / 2 - 10 - BUTTON_WIDTH, 15 + 23, 0x404040, false);
     }
 
     @Override

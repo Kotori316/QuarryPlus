@@ -21,7 +21,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,7 +30,9 @@ public class CreativeGeneratorBlock extends QPBlock implements EntityBlock {
     public static final String NAME = "creative_generator";
 
     public CreativeGeneratorBlock() {
-        super(FabricBlockSettings.of(Material.METAL)
+        super(FabricBlockSettings.create()
+            .mapColor(MapColor.METAL)
+            .pushReaction(PushReaction.BLOCK)
             .strength(1f, 1f)
             .sound(SoundType.STONE), NAME);
     }

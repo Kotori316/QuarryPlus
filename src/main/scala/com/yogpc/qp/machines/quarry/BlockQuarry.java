@@ -37,17 +37,20 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 
 public class BlockQuarry extends QPBlock implements EntityBlock {
     public static final String NAME = "quarry";
 
     public BlockQuarry() {
-        super(FabricBlockSettings.of(Material.METAL)
+        super(FabricBlockSettings.create()
+            .mapColor(MapColor.METAL)
+            .pushReaction(PushReaction.BLOCK)
             .strength(1.5f, 10f)
-            .sounds(SoundType.STONE)
-            .requiresTool(), NAME, ItemQuarry::new);
+            .sound(SoundType.STONE)
+            .requiresCorrectToolForDrops(), NAME, ItemQuarry::new);
         registerDefaultState(getStateDefinition().any()
             .setValue(BlockStateProperties.FACING, Direction.NORTH)
             .setValue(WORKING, false));

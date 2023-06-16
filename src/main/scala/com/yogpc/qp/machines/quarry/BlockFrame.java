@@ -21,7 +21,6 @@ import net.minecraft.world.level.block.PipeBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -44,7 +43,7 @@ public class BlockFrame extends QPBlock {
             .anyMatch(p -> !world.getFluidState(p).isEmpty());
 
     public BlockFrame() {
-        super(FabricBlockSettings.of(Material.GLASS).strength(0.5f).drops(BuiltInLootTables.EMPTY), NAME);
+        super(FabricBlockSettings.create().strength(0.5f).drops(BuiltInLootTables.EMPTY), NAME);
         this.registerDefaultState(this.getStateDefinition().any()
             .setValue(NORTH, false).setValue(EAST, false).setValue(SOUTH, false)
             .setValue(WEST, false).setValue(UP, false).setValue(DOWN, false)

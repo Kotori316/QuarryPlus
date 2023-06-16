@@ -26,7 +26,8 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,10 +35,12 @@ public class BlockAdvPump extends QPBlock implements EntityBlock {
     public static final String NAME = "adv_pump";
 
     public BlockAdvPump() {
-        super(FabricBlockSettings.of(Material.METAL)
+        super(FabricBlockSettings.create()
+            .mapColor(MapColor.METAL)
+            .pushReaction(PushReaction.BLOCK)
             .strength(1.5f, 10f)
-            .sounds(SoundType.STONE)
-            .requiresTool(), NAME, ItemAdvPump::new);
+            .sound(SoundType.STONE)
+            .requiresCorrectToolForDrops(), NAME, ItemAdvPump::new);
         registerDefaultState(getStateDefinition().any()
             .setValue(WORKING, false));
     }

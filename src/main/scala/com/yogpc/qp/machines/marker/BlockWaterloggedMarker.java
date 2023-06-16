@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPBlock;
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -24,7 +25,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -38,7 +38,7 @@ public final class BlockWaterloggedMarker extends QPBlock implements EntityBlock
     public static final VoxelShape SHAPE = Shapes.box(3d / 16, 3d / 16, 3d / 16, 13d / 16, 13d / 16, 13d / 16);
 
     public BlockWaterloggedMarker() {
-        super(Properties.of(Material.DECORATION), NAME);
+        super(FabricBlockSettings.create(), NAME);
         this.registerDefaultState(defaultBlockState().setValue(WATERLOGGED, false));
     }
 

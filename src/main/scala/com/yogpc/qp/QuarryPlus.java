@@ -111,6 +111,8 @@ public class QuarryPlus implements ModInitializer {
         Registry.register(BuiltInRegistries.MENU, BlockExMarker.GUI_FLEX_ID, ModObjects.FLEX_MARKER_HANDLER_TYPE);
         Registry.register(BuiltInRegistries.MENU, BlockExMarker.GUI_16_ID, ModObjects.MARKER_16_HANDLER_TYPE);
 
+        Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, new ResourceLocation(modID, modID), ModObjects.CREATIVE_TAB);
+
         PacketHandler.Server.initServer();
         EnergyIntegration.register();
         QuarryFluidTransfer.register();
@@ -146,7 +148,7 @@ public class QuarryPlus implements ModInitializer {
 
     public static class ModObjects {
         static final List<InCreativeTabs> ALL_ITEMS = new ArrayList<>();
-        public static final CreativeModeTab CREATIVE_TAB = FabricItemGroup.builder(new ResourceLocation(modID, modID))
+        public static final CreativeModeTab CREATIVE_TAB = FabricItemGroup.builder()
             .icon(() -> new ItemStack(ModObjects.BLOCK_QUARRY))
             .title(Component.translatable("itemGroup.quarryplus"))
             .displayItems((parameters, output) ->
