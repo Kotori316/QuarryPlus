@@ -56,6 +56,6 @@ public final class SmallCheckBox extends Button {
         int color = 0x404040;
         int labelOffset = this.checkBoxWidth / 5;
         graphics.drawString(font, this.getMessage(), this.getX() + this.checkBoxWidth + labelOffset, this.getY() + (this.height - 7) / 2,
-            color | Mth.ceil(this.alpha * 255.0F) << 24, true);
+            color | Mth.ceil(this.alpha * 255.0F) << 24, false);
     }
 }
