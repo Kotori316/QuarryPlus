@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - "1.19-fabric"
+      - "1.20-fabric"
     tags:
       - "!*"
     paths:
@@ -14,7 +14,7 @@ on:
       - "gradle.properties"
   pull_request:
     branches:
-      - "1.19-fabric"
+      - "1.20-fabric"
 
 jobs:
   commit-info:
