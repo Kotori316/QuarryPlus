@@ -19,7 +19,7 @@ plugins {
     id "com.modrinth.minotaur" version "2.+"
 }
 
-archivesBaseName = "AdditionalEnchantedMiner-1.19-fabric"
+archivesBaseName = "AdditionalEnchantedMiner-${project.minecraft_version}-fabric"
 version = project.mod_version
 if (isInCI()) {
     String postFix = System.getenv("GITHUB_RUN_NUMBER") ?: "SNAPSHOT"
@@ -126,6 +126,13 @@ repositories {
             it.includeGroup("curse.maven")
         }
     }
+    maven {
+        name = "Kotori316 Maven"
+        url = 'https://pkgs.dev.azure.com/Kotori316/minecraft/_packaging/mods/maven/v1'
+        content {
+            includeVersion("com.kotori316", "scalable-cats-force-fabric", project.kotori_scala_version)
+        }
+    }
     repositories.stream()
             .filter { repo -> repo instanceof MavenArtifactRepository && !repo.getUrl().getScheme().contains("file") }
             .forEach { repo ->
@@ -144,9 +151,10 @@ dependencies {
 
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-    modRuntimeOnly("net.fabricmc:fabric-language-scala:${project.fabric_scala_version}") {
+    modRuntimeOnly(group: "com.kotori316", name: "scalable-cats-force-fabric", version: project.kotori_scala_version){
         exclude(group: "net.fabricmc.fabric-api")
         exclude(group: "net.fabricmc")
+        exclude(group: "org.typelevel")
     }
 
     // library

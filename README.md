@@ -1,4 +1,4 @@
-# QuarryPlus for 1.19-fabric
+# QuarryPlus for 1.20-fabric
 ===========
 
 [![](https://github.com/Kotori316/QuarryPlus/workflows/Build%20Check%20and%20Publish/badge.svg)](https://github.com/Kotori316/QuarryPlus/actions)
@@ -7,6 +7,7 @@
 [![](http://cf.way2muchnoise.eu/full_282837_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner)
 
 CurseForge - https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner
+Modrinth - https://modrinth.com/mod/additional-enchanted-miner
 
 ## Caution
 
