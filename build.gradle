@@ -534,6 +534,6 @@ tasks.withType(Sign).configureEach {
 
 tasks.withType(AbstractPublishToMaven).configureEach {
     if (hasGpgSignature) {
-        it.dependsOn(":fabric:signRemapJar")
+        it.dependsOn(":signRemapJar")
     }
 }
