@@ -10,6 +10,7 @@ plugins {
     // id("scala")
     id("idea")
     id("maven-publish")
+    id("signing")
     // https://maven.fabricmc.net/net/fabricmc/fabric-loom/
     id 'fabric-loom' version "1.2-SNAPSHOT"
     //noinspection SpellCheckingInspection
@@ -151,7 +152,7 @@ dependencies {
 
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-    modRuntimeOnly(group: "com.kotori316", name: "scalable-cats-force-fabric", version: project.kotori_scala_version){
+    modRuntimeOnly(group: "com.kotori316", name: "scalable-cats-force-fabric", version: project.kotori_scala_version) {
         exclude(group: "net.fabricmc.fabric-api")
         exclude(group: "net.fabricmc")
         exclude(group: "org.typelevel")
@@ -279,7 +280,7 @@ sourcesJar {
 String joinedLog() {
     def commit = getCommit(BRANCH())
     return String.join("\n",
-            "# Additional Enchanted Miner for ${project.minecraft_version} and Fabric.",
+            "# Additional Enchanted Miner for ${project.minecraft_version} with Fabric.",
             "",
             isInCI() ? "RELEASED VIA Ci/CD. It may contain bugs." : "Manually built.",
             "",
@@ -290,7 +291,7 @@ String joinedLog() {
             "## Requires",
             "",
             "* [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api)",
-            "* [Fabric Language Scala](https://www.curseforge.com/minecraft/mc-mods/fabric-language-scala)",
+            "* [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force)",
             "* [Cloth Config API (Fabric)](https://www.curseforge.com/minecraft/mc-mods/cloth-config)",
             "",
             "## Built with",
@@ -318,7 +319,7 @@ String curseChangelog() {
 }
 
 curseforge {
-    apiKey = project.hasProperty("curseforge_additional-enchanted-miner_key") ? getProperty("curseforge_additional-enchanted-miner_key") : (System.getenv("CURSEFORGE_KEY") ?: "")
+    apiKey = project.findProperty("curseforge_additional-enchanted-miner_key") ?: (System.getenv("CURSE_TOKEN") ?: "")
     project {
         id = '282837'
         changelogType = 'markdown'
@@ -330,7 +331,7 @@ curseforge {
             displayName = "v" + project.version + "-fabric" + " [${project.minecraft_version}]"
         }
         relations {
-            requiredDependency 'fabric-language-scala'
+            requiredDependency 'scalable-cats-force'
             requiredDependency 'fabric-api'
             requiredDependency 'cloth-config'
             //noinspection SpellCheckingInspection
@@ -372,6 +373,7 @@ modrinth {
     dependencies {
         required.project("fabric-api")
         required.project("cloth-config")
+        required.project("scalable-cats-force")
     }
 }
 
@@ -406,7 +408,7 @@ static String getCommit(String branch) {
     }
 }
 
-task CheckCompileOption() {
+tasks.register('checkCompileOption') {
     doLast {
         List<String> strings = new ArrayList<>()
         strings.add("archivesBaseName: $archivesBaseName")
@@ -441,7 +443,8 @@ task CheckCompileOption() {
     }
 }
 
-task copyToDrive(type: Copy, dependsOn: "build") {
+tasks.register('copyToDrive', Copy) {
+    dependsOn("build")
     def PATH_NAME = "drive_path"
     from(remapJar.getArchiveFile())
     into(file(java.util.Optional.ofNullable(System.getenv(PATH_NAME)).orElse(".")))
@@ -489,5 +492,48 @@ publishing {
                 }
             }
         }
+    }
+}
+
+remapJar.finalizedBy("jksSignJar")
+
+tasks.register("jksSignJar") {
+    dependsOn("remapJar")
+    boolean executeCondition = project.hasProperty("jarSign.keyAlias") &&
+            project.hasProperty("jarSign.keyLocation") &&
+            project.hasProperty("jarSign.storePass")
+    onlyIf { executeCondition }
+    doLast {
+        //noinspection HttpUrlsUsage
+        ant.signjar(
+                jar: remapJar.archiveFile.get(),
+                alias: project.findProperty("jarSign.keyAlias") ?: "",
+                keystore: project.findProperty("jarSign.keyLocation") ?: "",
+                storepass: project.findProperty("jarSign.storePass") ?: "",
+                sigalg: "Ed25519",
+                digestalg: "SHA-256",
+                tsaurl: "http://timestamp.digicert.com",
+        )
+    }
+}
+
+signing {
+    sign(publishing.publications)
+    sign(tasks.jar, tasks.remapJar, tasks.sourcesJar)
+}
+
+boolean hasGpgSignature = project.hasProperty("signing.keyId") &&
+        project.hasProperty("signing.password") &&
+        project.hasProperty("signing.secretKeyRingFile")
+
+tasks.withType(Sign).configureEach {
+    it.onlyIf {
+        hasGpgSignature
+    }
+}
+
+tasks.withType(AbstractPublishToMaven).configureEach {
+    if (hasGpgSignature) {
+        it.dependsOn(":fabric:signRemapJar")
     }
 }
