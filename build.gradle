@@ -28,7 +28,7 @@ if (isInCI()) {
     version = (version + "." + postFix)
 
     println("Set version to $version because I'm in CI.")
-    println("CURSEFORGE_KEY: ${System.getenv().containsKey('CURSEFORGE_KEY')}")
+    println("CURSE_TOKEN: ${System.getenv().containsKey('CURSE_TOKEN')}")
 } else {
     version = (version + ".0")
 }
@@ -51,11 +51,11 @@ loom {
             configName = "Data"
             runDir = "run-server"
             //noinspection SpellCheckingInspection
-            vmArg "-Dfabric-api.datagen"
+            property("fabric-api.datagen")
             //noinspection SpellCheckingInspection
-            vmArg "-Dfabric-api.datagen.output-dir=${file("src/generated/resources")}"
+            property("fabric-api.datagen.output-dir", "${file("src/generated/resources")}")
             //noinspection SpellCheckingInspection
-            vmArg "-Dfabric-api.datagen.strict-validation"
+            property("fabric-api.datagen.strict-validation")
 
             ideConfigGenerated = true
             source sourceSets.test
@@ -65,9 +65,9 @@ loom {
             server()
             vmArg "-ea"
             //noinspection SpellCheckingInspection
-            vmArg "-Dfabric-api.gametest"
+            property("fabric-api.gametest")
             //noinspection SpellCheckingInspection
-            vmArg "-Dfabric-api.gametest.report-file=${project.buildDir}/test-results/test/game_test.xml"
+            property("fabric-api.gametest.report-file", "${project.buildDir}/test-results/test/game_test.xml")
             runDir = "build/game_test"
             source sourceSets.test
         }
