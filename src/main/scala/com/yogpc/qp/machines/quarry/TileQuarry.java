@@ -1,30 +1,9 @@
 package com.yogpc.qp.machines.quarry;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
-
 import com.google.common.collect.Sets;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.machines.Area;
-import com.yogpc.qp.machines.BreakResult;
-import com.yogpc.qp.machines.CheckerLog;
-import com.yogpc.qp.machines.EnchantmentHolder;
-import com.yogpc.qp.machines.EnchantmentLevel;
-import com.yogpc.qp.machines.ItemConverter;
-import com.yogpc.qp.machines.MachineStorage;
-import com.yogpc.qp.machines.PowerConfig;
-import com.yogpc.qp.machines.PowerManager;
-import com.yogpc.qp.machines.PowerTile;
-import com.yogpc.qp.machines.QPBlock;
-import com.yogpc.qp.machines.QuarryFakePlayer;
+import com.yogpc.qp.machines.*;
 import com.yogpc.qp.machines.module.ModuleInventory;
 import com.yogpc.qp.machines.module.QuarryModule;
 import com.yogpc.qp.machines.module.QuarryModuleProvider;
@@ -47,11 +26,7 @@ import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.BucketPickup;
-import net.minecraft.world.level.block.LiquidBlock;
-import net.minecraft.world.level.block.LiquidBlockContainer;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -63,8 +38,12 @@ import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+
 public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.HasStorage,
-    EnchantmentLevel.HasEnchantments, ClientSync, ModuleInventory.HasModuleInventory, PowerConfig.Provider {
+        EnchantmentLevel.HasEnchantments, ClientSync, ModuleInventory.HasModuleInventory, PowerConfig.Provider {
     private static final Marker MARKER = MarkerManager.getMarker("TileQuarry");
     @Nullable
     public Target target;
@@ -105,7 +84,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         {
             var enchantments = new CompoundTag();
             this.enchantments.forEach(e ->
-                enchantments.putInt(Objects.requireNonNull(e.enchantmentID(), "Invalid enchantment. " + e.enchantment()).toString(), e.level()));
+                    enchantments.putInt(Objects.requireNonNull(e.enchantmentID(), "Invalid enchantment. " + e.enchantment()).toString(), e.level()));
             nbt.put("enchantments", enchantments);
         }
         nbt.putDouble("headX", headX);
@@ -125,10 +104,10 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         {
             var enchantments = nbt.getCompound("enchantments");
             setEnchantments(enchantments.getAllKeys().stream()
-                .mapMulti(MapMulti.getEntry(ForgeRegistries.ENCHANTMENTS, enchantments::getInt))
-                .map(EnchantmentLevel::new)
-                .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR)
-                .toList());
+                    .mapMulti(MapMulti.getEntry(ForgeRegistries.ENCHANTMENTS, enchantments::getInt))
+                    .map(EnchantmentLevel::new)
+                    .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR)
+                    .toList());
         }
         headX = nbt.getDouble("headX");
         headY = nbt.getDouble("headY");
@@ -229,16 +208,16 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         // Gather Drops
         if (targetPos.getX() % 3 == 0 && targetPos.getZ() % 3 == 0) {
             targetWorld.getEntitiesOfClass(ItemEntity.class, new AABB(targetPos).inflate(5), Predicate.not(i -> i.getItem().isEmpty()))
-                .forEach(i -> {
-                    storage.addItem(i.getItem());
-                    i.kill();
-                });
+                    .forEach(i -> {
+                        storage.addItem(i.getItem());
+                        i.kill();
+                    });
             getExpModule().ifPresent(e ->
-                targetWorld.getEntitiesOfClass(ExperienceOrb.class, new AABB(targetPos).inflate(5), EntitySelector.ENTITY_STILL_ALIVE)
-                    .forEach(orb -> {
-                        e.addExp(orb.getValue());
-                        orb.kill();
-                    }));
+                    targetWorld.getEntitiesOfClass(ExperienceOrb.class, new AABB(targetPos).inflate(5), EntitySelector.ENTITY_STILL_ALIVE)
+                            .forEach(orb -> {
+                                e.addExp(orb.getValue());
+                                orb.kill();
+                            }));
         }
         var pickaxe = getPickaxe();
         var fakePlayer = QuarryFakePlayer.get(targetWorld);
@@ -338,9 +317,9 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
 
     public void setEnchantments(Map<Enchantment, Integer> enchantments) {
         setEnchantments(enchantments.entrySet().stream()
-            .map(EnchantmentLevel::new)
-            .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR)
-            .toList());
+                .map(EnchantmentLevel::new)
+                .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR)
+                .toList());
     }
 
     public void setEnchantments(List<EnchantmentLevel> enchantments) {
@@ -388,8 +367,8 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
     void updateModules() {
         // Blocks
         Set<QuarryModule> blockModules = level != null
-            ? QuarryModuleProvider.Block.getModulesInWorld(level, getBlockPos())
-            : Collections.emptySet();
+                ? QuarryModuleProvider.Block.getModulesInWorld(level, getBlockPos())
+                : Collections.emptySet();
 
         // Module Inventory
         Set<QuarryModule> itemModules = Set.copyOf(moduleInventory.getModules());
@@ -426,15 +405,31 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
     @Override
     public List<? extends Component> getDebugLogs() {
         return Stream.of(
-            "%sArea:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, area),
-            "%sTarget:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, target),
-            "%sState:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, state),
-            "%sRemoveBedrock:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, hasBedrockModule()),
-            "%sDigMinY:%s %d".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, digMinY),
-            "%sHead:%s (%f, %f, %f)".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, headX, headY, headZ),
-            "%sModules:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, modules),
-            energyString()
+                "%sArea:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, area),
+                "%sTarget:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, target),
+                "%sState:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, state),
+                "%sRemoveBedrock:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, hasBedrockModule()),
+                "%sDigMinY:%s %d".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, digMinY),
+                "%sHead:%s (%f, %f, %f)".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, headX, headY, headZ),
+                "%sModules:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, modules),
+                "%sProgressY:%s %.2f".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, yProgress()),
+                "%sCurrentWorkProgress:%s %.2f".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, xzProgress()),
+                energyString()
         ).map(TextComponent::new).toList();
+    }
+
+    private double yProgress() {
+        int totalY = getBlockPos().getY() - this.digMinY;
+        int currentY = Optional.ofNullable(this.target).map(t -> t.get(false)).map(BlockPos::getY).orElse(getBlockPos().getY());
+        return (double) (getBlockPos().getY() - currentY) / totalY;
+    }
+
+    private double xzProgress() {
+        if (this.target != null) {
+            return target.progress();
+        } else {
+            return 0;
+        }
     }
 
     @Override
@@ -499,9 +494,9 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
 
         public QuarryCache() {
             replaceState = CacheEntry.supplierCache(5,
-                () -> TileQuarry.this.getReplacerModule().map(ReplacerModule::getState).orElse(Blocks.AIR.defaultBlockState()));
+                    () -> TileQuarry.this.getReplacerModule().map(ReplacerModule::getState).orElse(Blocks.AIR.defaultBlockState()));
             netherTop = CacheEntry.supplierCache(100,
-                QuarryPlus.config.common.netherTop::get);
+                    QuarryPlus.config.common.netherTop::get);
             enchantments = CacheEntry.supplierCache(1000, () -> EnchantmentHolder.makeHolder(TileQuarry.this));
         }
     }
