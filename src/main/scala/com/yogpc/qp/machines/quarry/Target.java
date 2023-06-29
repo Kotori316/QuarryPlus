@@ -169,7 +169,7 @@ final class DigTarget extends Target {
     @Override
     public double progress() {
         if (currentTarget == null) return 1d;
-        double xUnit = 1d / (area.maxX() - area.minX());
+        double xUnit = 1d / (area.maxX() - area.minX() - 1);
         double xProgress;
         if (y % 2 == 0) {
             // move to plus
