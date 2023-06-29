@@ -439,7 +439,7 @@ modrinth {
     ])
     getGameVersions().set([project.minecraftVersion])
     getLoaders().set(["forge"])
-    changelog = combinedLog()
+    changelog = project.getChangeLog()
     debugMode = false
     dependencies {
         required.project("scalable-cats-force")
