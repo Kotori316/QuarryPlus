@@ -305,7 +305,7 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
         @Override
         double getProgress(TileAdvQuarry quarry) {
             if (quarry.getArea() == null) return 1;
-            var iterator = TargetIterator.of(quarry.getArea());
+            var iterator = this.createTargetIterator(quarry.getArea(), quarry.workConfig.chunkByChunk());
             return AdvQuarryAction.getProgressOfIterator(iterator, this.iterator.peek());
         }
     }
@@ -385,7 +385,7 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
         @Override
         double getProgress(TileAdvQuarry quarry) {
             if (quarry.getArea() == null) return 1;
-            var iterator = TargetIterator.of(quarry.getArea());
+            var iterator = this.createTargetIterator(quarry.getArea(), quarry.workConfig.chunkByChunk());
             return AdvQuarryAction.getProgressOfIterator(iterator, this.iterator.peek());
         }
     }
@@ -496,7 +496,7 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
         @Override
         double getProgress(TileAdvQuarry quarry) {
             if (quarry.getArea() == null) return 1;
-            var iterator = TargetIterator.of(quarry.getArea());
+            var iterator = this.createTargetIterator(quarry.getArea(), quarry.workConfig.chunkByChunk());
             return AdvQuarryAction.getProgressOfIterator(iterator, this.iterator.peek());
         }
     }
