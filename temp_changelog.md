@@ -1,3 +1,7 @@
+## Version 18.18
+
+* Show progress of QuarryPlus and Chunk Destroyer in Status Checker log
+
 ## Version 18.17
 
 * Fixed a bug where swapping items in Workbench Plus could give over-stacked items. #253
