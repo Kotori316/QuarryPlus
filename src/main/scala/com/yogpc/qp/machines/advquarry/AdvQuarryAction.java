@@ -125,11 +125,11 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
                 startQuarry(quarry);
             }
         }
-    }
 
-    @Override
-    double getProgress(TileAdvQuarry quarry) {
-        return 1;
+        @Override
+        double getProgress(TileAdvQuarry quarry) {
+            return 1;
+        }
     }
 
     static void startQuarry(TileAdvQuarry quarry) {
