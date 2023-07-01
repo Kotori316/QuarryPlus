@@ -66,6 +66,22 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
     @Override
     public abstract void tick(Level level, BlockPos pos, BlockState state, TileAdvQuarry quarry);
 
+    abstract double getProgress(TileAdvQuarry quarry);
+
+    private static double getProgressOfIterator(TargetIterator newIterator, TargetIterator.XZPair current) {
+        int count = 1;
+        int index = 0;
+
+        while (newIterator.hasNext()) {
+            var t = newIterator.next();
+            if (t.equals(current)) {
+                index = count;
+            }
+            count += 1;
+        }
+        return (double) index / count;
+    }
+
     @Nullable
     static <T> T skipIterator(Iterator<T> iterator, Predicate<T> skipCondition) {
         while (iterator.hasNext()) {
@@ -108,6 +124,11 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
             if (quarry.getEnergy() > quarry.getMaxEnergy() / 4 && quarry.canStartWork()) {
                 startQuarry(quarry);
             }
+        }
+
+        @Override
+        double getProgress(TileAdvQuarry quarry) {
+            return 1;
         }
     }
 
@@ -193,6 +214,14 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
             }
         }
 
+        @Override
+        double getProgress(TileAdvQuarry quarry) {
+            if (current == null || quarry.getArea() == null) return 1;
+            var poses = Area.getFramePosStream(quarry.getArea()).toList();
+            var index = poses.indexOf(current) + 1;
+            return (double) index / poses.size();
+        }
+
         static Predicate<BlockPos> skipFramePlace(TileAdvQuarry quarry) {
             var world = quarry.getTargetWorld();
             assert world != null; // This must be called in tick update.
@@ -272,6 +301,13 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
                 }
             }
         }
+
+        @Override
+        double getProgress(TileAdvQuarry quarry) {
+            if (quarry.getArea() == null) return 1;
+            var iterator = this.createTargetIterator(quarry.getArea(), quarry.workConfig.chunkByChunk());
+            return AdvQuarryAction.getProgressOfIterator(iterator, this.iterator.peek());
+        }
     }
 
     private static final class BreakBlockSerializer extends Serializer {
@@ -345,6 +381,13 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
                     quarry.setAction(Finished.FINISHED);
             }
         }
+
+        @Override
+        double getProgress(TileAdvQuarry quarry) {
+            if (quarry.getArea() == null) return 1;
+            var iterator = this.createTargetIterator(quarry.getArea(), quarry.workConfig.chunkByChunk());
+            return AdvQuarryAction.getProgressOfIterator(iterator, this.iterator.peek());
+        }
     }
 
     private static final class CheckFluidSerializer extends Serializer {
@@ -379,6 +422,11 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
 
         @Override
         public void tick(Level level, BlockPos pos, BlockState state, TileAdvQuarry quarry) {
+        }
+
+        @Override
+        double getProgress(TileAdvQuarry quarry) {
+            return 1;
         }
     }
 
@@ -443,6 +491,13 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
             if (!iterator.hasNext()) {
                 quarry.setAction(Finished.FINISHED);
             }
+        }
+
+        @Override
+        double getProgress(TileAdvQuarry quarry) {
+            if (quarry.getArea() == null) return 1;
+            var iterator = this.createTargetIterator(quarry.getArea(), quarry.workConfig.chunkByChunk());
+            return AdvQuarryAction.getProgressOfIterator(iterator, this.iterator.peek());
         }
     }
 

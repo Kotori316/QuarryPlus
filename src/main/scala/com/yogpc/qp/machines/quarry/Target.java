@@ -48,6 +48,8 @@ public abstract class Target {
         return skippedPoses.contains(pos);
     }
 
+    public abstract double progress();
+
     public static Target fromNbt(CompoundTag tag) {
         return switch (tag.getString("target")) {
             case "DigTarget" -> DigTarget.from(tag);
@@ -164,6 +166,20 @@ final class DigTarget extends Target {
         return tag;
     }
 
+    @Override
+    public double progress() {
+        if (currentTarget == null) return 1d;
+        double xUnit = 1d / (area.maxX() - area.minX() - 1);
+        double xProgress;
+        if (y % 2 == 0) {
+            // move to plus
+            xProgress = xUnit * (currentTarget.getX() - area.minX() - 1);
+        } else {
+            xProgress = xUnit * (area.maxX() - currentTarget.getX() - 1);
+        }
+        return xProgress;
+    }
+
     static DigTarget from(CompoundTag tag) {
         var target = new DigTarget(Area.fromNBT(tag.getCompound("area")).orElseThrow(), tag.getInt("y"));
         if (tag.contains("currentTarget")) {
@@ -238,6 +254,14 @@ final class FrameTarget extends Target {
         return tag;
     }
 
+    @Override
+    public double progress() {
+        if (currentTarget == null) return 1d;
+        var list = Area.getFramePosStream(area).toList();
+        var index = list.indexOf(currentTarget);
+        return (double) index / list.size();
+    }
+
     static FrameTarget from(CompoundTag tag) {
         return new FrameTarget(Area.fromNBT(tag.getCompound("area")).orElseThrow(), BlockPos.of(tag.getLong("currentTarget")));
     }
@@ -300,6 +324,12 @@ final class PosesTarget extends Target {
     }
 
     @Override
+    public double progress() {
+        if (currentTarget == null) return 1d;
+        return (double) posList.indexOf(currentTarget) / posList.size();
+    }
+
+    @Override
     public String toString() {
         return "PosesTarget{" +
                 "currentTarget=" + currentTarget +
@@ -351,6 +381,15 @@ final class FrameInsideTarget extends Target {
         tag.putInt("maxY", maxY);
         tag.putInt("index", index);
         return tag;
+    }
+
+    @Override
+    public double progress() {
+        int xSize = area.maxX() - area.minX() - 1;
+        int zSize = area.maxZ() - area.minZ() - 1;
+        var areaSize = xSize * zSize;
+        int xz = index % areaSize;
+        return (double) xz / areaSize;
     }
 
     public static FrameInsideTarget from(CompoundTag tag) {
@@ -414,5 +453,10 @@ final class FillerTarget extends Target {
         tag.put("area", area.toNBT());
         tag.put("fillerAction", fillerAction.toNbt());
         return tag;
+    }
+
+    @Override
+    public double progress() {
+        return 0;
     }
 }

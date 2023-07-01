@@ -74,8 +74,13 @@ public class TileAdvQuarry extends PowerTile implements
                 "%sDigMinY:%s %d".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, digMinY),
                 workConfig.toString().replace("WorkConfig", ChatFormatting.GREEN + "WorkConfig: " + ChatFormatting.RESET),
                 "%sModules:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, modules),
+                "%sCurrentWorkProgress:%s %.2f".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, xzProgress()),
                 energyString()
         ).map(Component::literal).toList();
+    }
+
+    private double xzProgress() {
+        return this.action.getProgress(this);
     }
 
     public static void tick(Level world, BlockPos pos, BlockState state, TileAdvQuarry quarry) {

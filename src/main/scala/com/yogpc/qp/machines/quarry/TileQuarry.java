@@ -429,8 +429,24 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
                 "%sDigMinY:%s %d".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, digMinY),
                 "%sHead:%s (%f, %f, %f)".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, headX, headY, headZ),
                 "%sModules:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, modules),
+                "%sProgressY:%s %.2f".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, yProgress()),
+                "%sCurrentWorkProgress:%s %.2f".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, xzProgress()),
                 energyString()
         ).map(Component::literal).toList();
+    }
+
+    private double yProgress() {
+        int totalY = getBlockPos().getY() - this.digMinY;
+        int currentY = Optional.ofNullable(this.target).map(t -> t.get(false)).map(BlockPos::getY).orElse(getBlockPos().getY());
+        return (double) (getBlockPos().getY() - currentY) / totalY;
+    }
+
+    private double xzProgress() {
+        if (this.target != null) {
+            return target.progress();
+        } else {
+            return 0;
+        }
     }
 
     @Override
