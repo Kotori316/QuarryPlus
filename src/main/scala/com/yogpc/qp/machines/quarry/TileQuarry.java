@@ -427,7 +427,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
                 "%sState:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, state),
                 "%sRemoveBedrock:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, hasBedrockModule()),
                 "%sDigMinY:%s %d".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, digMinY),
-                "%sHead:%s (%f, %f, %f)".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, headX, headY, headZ),
+                "%sHead:%s (%.1f, %.1f, %.1f)".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, headX, headY, headZ),
                 "%sModules:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, modules),
                 "%sProgressY:%s %.2f".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, yProgress()),
                 "%sCurrentWorkProgress:%s %.2f".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, xzProgress()),

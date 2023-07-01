@@ -184,7 +184,7 @@ public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
     }
 
     protected final String energyString() {
-        return "%sEnergy:%s %f/%d FE (%d)".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, getEnergy() / (double) PowerTile.ONE_FE, getMaxEnergyStored(), getEnergy());
+        return "%sEnergy:%s %.1f/%d FE (%d)".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, getEnergy() / (double) PowerTile.ONE_FE, getMaxEnergyStored(), getEnergy());
     }
 
     /**
