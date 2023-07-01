@@ -1,6 +1,8 @@
 ## Version 1201.0.x
 
 * Update for 1.20/1.20.1
+* Add progress of QuarryPlus and ChunkDestroyer in Status Checker
+* Change format of poses in Status Checker
 
 ## Version 1194.1.1
 

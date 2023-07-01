@@ -39,19 +39,15 @@ jobs:
           gpg --import "${HOME}/pgp_public.pub"
       - name: Get credentials
         id: get-secrets
-        run: |
-          key_id=$(gcloud secrets versions access latest --secret=signing-key-id)
-          key_password=$(gcloud secrets versions access latest --secret=signing-password)
-          jar_password=$(gcloud secrets versions access latest --secret=jar-sign-key-password)
-          modrinth_token=$(gcloud secrets versions access latest --secret=modrinth_token)
-          echo "::add-mask::${key_id}"
-          echo "::add-mask::${key_password}"
-          echo "::add-mask::${jar_password}"
-          echo "::add-mask::${modrinth_token}"
-          echo "key_id=${key_id}" >> $GITHUB_OUTPUT
-          echo "key_password=${key_password}" >> $GITHUB_OUTPUT
-          echo "jar_password=${jar_password}" >> $GITHUB_OUTPUT
-          echo "modrinth_token=${modrinth_token}" >> $GITHUB_OUTPUT
+        uses: google-github-actions/get-secretmanager-secrets@v1
+        with:
+          secrets: |-
+            key_id:kotori316-mods-resources/signing-key-id
+            key_password:kotori316-mods-resources/signing-password
+            jar_password:kotori316-mods-resources/jar-sign-key-password
+            modrinth_token:kotori316-mods-resources/modrinth_token
+            curseforge_token:kotori316-mods-resources/curseforge_token
+            azure_token:kotori316-mods-resources/azure_token
       - name: Compile
         run: ./gradlew classes
       - name: Release
@@ -66,11 +62,11 @@ jobs:
           build publishToMavenLocal curseforge modrinth githubRelease publish
         env:
           REPO_TOKEN: ${{secrets.GITHUB_TOKEN}}
-          AZURE_TOKEN: ${{secrets.AZURE_TOKEN}}
+          AZURE_TOKEN: ${{steps.get-secrets.outputs.azure_token}}
           KEY_PASSWORD: ${{steps.get-secrets.outputs.key_password}}
           KEY_ID: ${{steps.get-secrets.outputs.key_id}}
           JAR_PASSWORD: ${{steps.get-secrets.outputs.jar_password}}
-          CURSE_TOKEN: ${{secrets.CURSEFORGE_KEY}}
+          CURSE_TOKEN: ${{steps.get-secrets.outputs.curseforge_token}}
           MODRINTH_TOKEN: ${{steps.get-secrets.outputs.modrinth_token}}
       - name: Verify Build Files
         run: |
