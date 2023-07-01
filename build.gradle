@@ -58,13 +58,16 @@ minecraft {
 //    mappings channel: "official", version: (project.minecraftVersion as String)
 
     runs {
-        client {
-            workingDirectory project.file("Minecraft")
-            property("forge.logging.markers", "REGISTRIES")
+        configureEach {
+            property("forge.logging.markers", "")
             property("mixin.env.remapRefMap", "true")
             property("mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg")
             property("mixin.debug.export", "true")
             property("forge.logging.console.level", "debug")
+        }
+
+        client {
+            workingDirectory project.file("Minecraft")
             property("forge.enabledGameTestNamespaces", "QuarryPlus".toLowerCase())
             // From https://github.com/SlimeKnights/TinkersConstruct/blob/1.18/build.gradle
             if (project.hasProperty("mc_uuid")) {
@@ -95,11 +98,6 @@ minecraft {
         client2 {
             parent(runs.client)
             workingDirectory project.file("run-server-client")
-            property("forge.logging.markers", "REGISTRIES")
-            property("mixin.env.remapRefMap", "true")
-            property("mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg")
-            property("mixin.debug.export", "true")
-            property("forge.logging.console.level", "info")
             property("forge.enabledGameTestNamespaces", "")
             property("forge.enableGameTest", "false")
             mods {
@@ -113,11 +111,6 @@ minecraft {
             workingDirectory project.file("run-server")
 
             // Recommended logging data for a userdev environment
-            property("forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP")
-            property("mixin.env.remapRefMap", "true")
-            property("mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg")
-            property("mixin.debug.export", "true")
-            property("forge.logging.console.level", "info")
             args("--nogui")
 
             mods {
@@ -129,11 +122,6 @@ minecraft {
 
         data {
             workingDirectory project.file("run-server")
-            property("forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP")
-            property("mixin.env.remapRefMap", "true")
-            property("mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg")
-            property("mixin.debug.export", "true")
-            property("forge.logging.console.level", "info")
             args("--mod", "quarryplus", "--all", "--output", file("src/generated/resources/"), "--existing", file("src/main/resources/"))
 
             mods {
@@ -146,11 +134,6 @@ minecraft {
 
         gameTestServer {
             workingDirectory project.file("game-test")
-            property("forge.logging.markers", "REGISTRIES")
-            property("mixin.env.remapRefMap", "true")
-            property("mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg")
-            property("mixin.debug.export", "true")
-            property("forge.logging.console.level", "debug")
             property("forge.enabledGameTestNamespaces", "QuarryPlus".toLowerCase())
             jvmArgs("-EnableAssertions".toLowerCase())
 
@@ -167,7 +150,7 @@ minecraft {
     }
 }
 
-processResources {
+tasks.named("processResources", ProcessResources).configure {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
@@ -244,8 +227,8 @@ dependencies {
     }
 
     boolean useREI = false // Boolean.parseBoolean(System.getenv("USE_REI"))
-    compileOnly(fg.deobf(group: "mezz.jei", name: "jei-1.20-common-api", version: project.jeiVersion))
-    compileOnly(fg.deobf(group: "mezz.jei", name: "jei-1.20-forge-api", version: project.jeiVersion))
+    compileOnly(fg.deobf(group: "mezz.jei", name: "jei-1.20.1-common-api", version: project.jeiVersion))
+    compileOnly(fg.deobf(group: "mezz.jei", name: "jei-1.20.1-forge-api", version: project.jeiVersion))
     if (useREI) {
         implementation(fg.deobf(group: "me.shedaniel", name: "RoughlyEnoughItems-forge", version: project.reiVersion))
         implementation(fg.deobf(group: "me.shedaniel.cloth", name: "cloth-config-forge", version: project.clothVersion))
@@ -310,10 +293,12 @@ def jarAttributeMap = [
         "Automatic-Module-Name"   : "quarryplus",
 ]
 
-jar {
+tasks.named("jar", org.gradle.jvm.tasks.Jar).configure {
     manifest {
         attributes(jarAttributeMap)
     }
+
+    finalizedBy("reobfJar", "jksSignJar")
 }
 
 sourceSets {
@@ -348,12 +333,6 @@ java {
 artifacts {
     archives(srcJar, deobfJar)
 }
-
-// Example configuration to allow publishing using the maven-publish plugin
-// This is the preferred method to reobfuscate your jar file
-jar.finalizedBy("reobfJar")
-
-jar.finalizedBy("jksSignJar")
 
 tasks.register("jksSignJar") {
     dependsOn("reobfJar")
@@ -529,7 +508,7 @@ publishing {
         }
     }
     publications {
-        gpr(MavenPublication) {
+        register("mavenJava", MavenPublication) {
             artifactId = "AdditionalEnchantedMiner".toLowerCase()
             from components.java
             artifact(tasks.deobfJar)
