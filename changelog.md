@@ -1,5 +1,9 @@
 ## 1.20
 
+### Fixed
+
+* Fixed - Filler can't get energy from other mods.
+
 ### Misc
 
 * Update for 1.20.1
