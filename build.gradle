@@ -229,7 +229,7 @@ private static boolean isInCI() {
 // ensure that the encoding is set to UTF-8, no matter what the system default is
 // this fixes some edge cases with special characters not displaying correctly
 // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
     options.encoding = "UTF-8"
     options.release.set(17)
 }
@@ -318,6 +318,23 @@ String curseChangelog() {
             last
 }
 
+String modrinthChangelog() {
+    String base = joinedLog().lines()
+            .filter { s -> !s.contains("Fabric Language Scala") }
+            .collect(Collectors.joining(System.lineSeparator()))
+            .replace("https://www.curseforge.com/minecraft/mc-mods/", "https://modrinth.com/mod/")
+    String fromFile = (file("changelog.md").exists() ? file("changelog.md").getText() : "")
+            .lines()
+            .dropWhile { String s -> s.startsWith("## ") }
+            .takeWhile { String s -> !s.startsWith("## ") }
+            .collect(Collectors.joining(System.lineSeparator()))
+    String last = "See https://github.com/Kotori316/QuarryPlus/commits/${BRANCH()} to get all change log."
+
+    return base + System.lineSeparator() * 2 +
+            "# Changelog" + System.lineSeparator() + fromFile + System.lineSeparator() +
+            last
+}
+
 curseforge {
     apiKey = project.findProperty("curseforge_additional-enchanted-miner_key") ?: (System.getenv("CURSE_TOKEN") ?: "")
     project {
@@ -356,21 +373,17 @@ githubRelease {
 }
 
 modrinth {
-    token = project.findProperty("modrinthToken") ?: System.getenv("MODRINTH_TOKEN") ?: ""
-    projectId = "additional-enchanted-miner"
-    versionType = isInCI() ? "alpha" : "release"
-    versionName = "${project.version}-fabric"
-    uploadFile = tasks.remapJar
-    additionalFiles = [
-    ]
-    gameVersions = [project.minecraft_version]
-    loaders = ["fabric"]
-    changelog = joinedLog().lines()
-            .filter { s -> !s.contains("Fabric Language Scala") }
-            .collect(Collectors.joining(System.lineSeparator()))
-            .replace("https://www.curseforge.com/minecraft/mc-mods/", "https://modrinth.com/mod/")
-    debugMode = false
-    dependencies {
+    token.set((project.findProperty("modrinthToken") ?: System.getenv("MODRINTH_TOKEN") ?: "") as String)
+    projectId.set("additional-enchanted-miner")
+    versionType.set(isInCI() ? "alpha" : "release")
+    versionName.set("${project.version}-fabric")
+    uploadFile.set(tasks.remapJar)
+    additionalFiles.set([])
+    gameVersions.set([project.minecraft_version])
+    loaders.set(["fabric"])
+    changelog.set(modrinthChangelog())
+    debugMode.set(false)
+    dependencies.set {
         required.project("fabric-api")
         required.project("cloth-config")
         required.project("scalable-cats-force")
@@ -381,7 +394,7 @@ test {
     useJUnitPlatform()
 }
 
-task removeTestWorld(type: Delete) {
+tasks.register('removeTestWorld', Delete) {
     delete("${project.buildDir}/game_test/world")
     onlyIf {
         file("${project.buildDir}/game_test/world").exists() || !file("${project.buildDir}/test-results/test").exists()
@@ -438,8 +451,11 @@ tasks.register('checkCompileOption') {
 
         println(strings.stream().collect(Collectors.joining(System.lineSeparator())))
         println("*" * 20)
-        println("ChangeLog")
+        println("Curse ChangeLog")
         println(curseChangelog())
+        println("*" * 20)
+        println("Modrinth ChangeLog")
+        println(modrinthChangelog())
     }
 }
 
@@ -466,7 +482,7 @@ publishing {
         }
     }
     publications {
-        mavenJava(MavenPublication) {
+        create("mavenJava", MavenPublication) {
             artifactId = "AdditionalEnchantedMiner-Fabric".toLowerCase(Locale.ROOT)
             if (isInCI()) {
                 // Set as SNAPSHOT
@@ -476,9 +492,9 @@ publishing {
             }
             from components.java
             pom {
-                name = archivesBaseName
-                description = "QuarryPlus for Minecraft ${project.minecraft_version}, build with Fabric ${project.fabric_version}"
-                url = 'https://github.com/Kotori316/QuarryPlus/commits/' + BRANCH()
+                name.set("archivesBaseName")
+                description.set("QuarryPlus for Minecraft ${project.minecraft_version}, build with Fabric ${project.fabric_version}")
+                url.set('https://github.com/Kotori316/QuarryPlus/commits/' + BRANCH())
                 packaging = "jar"
                 withXml {
                     List<String> requiredArtifacts = ["cloth", "fabric-language-scala"]
