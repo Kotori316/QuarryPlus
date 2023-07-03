@@ -335,6 +335,8 @@ String modrinthChangelog() {
             last
 }
 
+boolean inReleaseDebug = Boolean.parseBoolean(System.getenv("RELEASE_DEBUG"))
+
 curseforge {
     apiKey = project.findProperty("curseforge_additional-enchanted-miner_key") ?: (System.getenv("CURSE_TOKEN") ?: "")
     project {
@@ -356,7 +358,7 @@ curseforge {
         }
     }
     options {
-        curseGradleOptions.debug = false // defaults to false
+        curseGradleOptions.debug = inReleaseDebug // defaults to false
         forgeGradleIntegration = false
         javaVersionAutoDetect = false
     }
@@ -382,7 +384,7 @@ modrinth {
     gameVersions.set([project.minecraft_version])
     loaders.set(["fabric"])
     changelog.set(modrinthChangelog())
-    debugMode.set(false)
+    debugMode.set(inReleaseDebug)
     dependencies.set {
         required.project("fabric-api")
         required.project("cloth-config")
@@ -472,12 +474,14 @@ tasks.register('copyToDrive', Copy) {
 
 publishing {
     repositories {
-        maven {
-            name = "AzureRepository"
-            url = uri("https://pkgs.dev.azure.com/Kotori316/minecraft/_packaging/mods/maven/v1")
-            credentials {
-                username = project.findProperty("azureUserName") ?: System.getenv("AZURE_USER_NAME") ?: ""
-                password = project.findProperty("azureToken") ?: System.getenv("AZURE_TOKEN") ?: "TOKEN"
+        if (!inReleaseDebug) {
+            maven {
+                name = "AzureRepository"
+                url = uri("https://pkgs.dev.azure.com/Kotori316/minecraft/_packaging/mods/maven/v1")
+                credentials {
+                    username = project.findProperty("azureUserName") ?: System.getenv("AZURE_USER_NAME") ?: ""
+                    password = project.findProperty("azureToken") ?: System.getenv("AZURE_TOKEN") ?: "TOKEN"
+                }
             }
         }
     }

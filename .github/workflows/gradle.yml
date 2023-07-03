@@ -68,7 +68,6 @@ jobs:
         env:
           RUN_GAME_TEST: true
       - uses: google-github-actions/auth@v1
-        if: ${{fromJson(env.DO_RELEASE)}}
         with:
           workload_identity_provider: ${{secrets.GCP_IDENTITY_PROVIDER}}
           service_account: ${{secrets.GCP_SERVICE_ACCOUNT}}
@@ -84,7 +83,6 @@ jobs:
           gcloud storage cp gs://kotori316-resources/pgp_public.pub "${HOME}/pgp_public.pub"
           gpg --import "${HOME}/pgp_public.pub"
       - name: Get credentials
-        if: ${{fromJson(env.DO_RELEASE)}}
         id: get-secrets
         uses: google-github-actions/get-secretmanager-secrets@v1
         with:
@@ -95,6 +93,12 @@ jobs:
             modrinth_token:kotori316-mods-resources/modrinth_token
             curseforge_token:kotori316-mods-resources/curseforge_token
             azure_token:kotori316-mods-resources/azure_token
+      - name: Publish Check
+        run: ./gradlew curseforge modrinth
+        env:
+          RELEASE_DEBUG: true
+          CURSE_TOKEN: ${{steps.get-secrets.outputs.curseforge_token}}
+          MODRINTH_TOKEN: ${{steps.get-secrets.outputs.modrinth_token}}
       - name: Test and Publish
         if: ${{fromJson(env.DO_RELEASE)}}
         run: >-
