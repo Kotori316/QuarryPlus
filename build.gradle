@@ -385,7 +385,7 @@ modrinth {
     loaders.set(["fabric"])
     changelog.set(modrinthChangelog())
     debugMode.set(inReleaseDebug)
-    dependencies.set {
+    dependencies {
         required.project("fabric-api")
         required.project("cloth-config")
         required.project("scalable-cats-force")
