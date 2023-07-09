@@ -2,7 +2,7 @@ package com.yogpc.qp.integration.ftbchunks;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
-import dev.ftb.mods.ftbchunks.data.FTBChunksAPI;
+import dev.ftb.mods.ftbchunks.api.FTBChunksAPI;
 import dev.ftb.mods.ftblibrary.math.ChunkDimPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.ChunkPos;
@@ -38,7 +38,7 @@ public final class FTBChunksProtectionCheck {
 
     private static final class Accessor {
         private static boolean isProtected(ResourceKey<Level> dimension, ChunkPos chunkPos) {
-            return FTBChunksAPI.getManager().getChunk(new ChunkDimPos(dimension, chunkPos)) != null;
+            return FTBChunksAPI.api().getManager().getChunk(new ChunkDimPos(dimension, chunkPos)) != null;
         }
 
         private static boolean doesAreaHasProtectedChunk(Area area, ResourceKey<Level> dimension) {
