@@ -3,6 +3,7 @@
 * Update for 1.20/1.20.1
 * Add progress of QuarryPlus and ChunkDestroyer in Status Checker
 * Change format of poses in Status Checker
+* Fix crash related to FTB Chunks
 
 ## Version 1194.1.1
 
