@@ -25,6 +25,16 @@ jobs:
           gradle-home-cache-cleanup: true
       - name: Enable daemon
         run: sed -i -e 's/org.gradle.daemon=false/org.gradle.daemon=true/' gradle.properties
+      - name: Compile
+        run: ./gradlew testClasses
+      - name: JUnit
+        run: ./gradlew test
+      - name: GameTest
+        run: |
+          (./gradlew downloadMCMeta downloadAssets) || \
+          (sleep 5 && ./gradlew downloadMCMeta downloadAssets) || \
+          (sleep 5 && ./gradlew downloadMCMeta downloadAssets) || true
+          ./gradlew runGameTestServer
       - uses: google-github-actions/auth@v1
         with:
           workload_identity_provider: ${{secrets.GCP_IDENTITY_PROVIDER}}
@@ -48,8 +58,6 @@ jobs:
             modrinth_token:kotori316-mods-resources/modrinth_token
             curseforge_token:kotori316-mods-resources/curseforge_token
             azure_token:kotori316-mods-resources/azure_token
-      - name: Compile
-        run: ./gradlew classes
       - name: Release
         run: >-
           ./gradlew
@@ -59,7 +67,7 @@ jobs:
           -PjarSign.keyLocation="${HOME}/kotori316_keystore.jks"
           -PjarSign.keyAlias="ko316"
           -PjarSign.storePass="${JAR_PASSWORD}"
-          build publishToMavenLocal curseforge modrinth githubRelease publish
+          build publishToMavenLocal curseforge modrinth githubRelease publish -x test
         env:
           REPO_TOKEN: ${{secrets.GITHUB_TOKEN}}
           AZURE_TOKEN: ${{steps.get-secrets.outputs.azure_token}}
