@@ -97,6 +97,19 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
         return TargetIterator.of(area, chunkByChunk);
     }
 
+    /**
+     * @return {@code true} if chunk is not available at the pos, {@code false} if you can access the chunk at the pos.
+     */
+    @SuppressWarnings("deprecation")
+    boolean isChunkUnavailableAtPos(Level level, BlockPos pos) {
+        if (!level.hasChunkAt(pos)) {
+            LOGGER.fatal(ACTION, "[{}] Chunk doesn't exist in {}", key(), pos);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     abstract static class Serializer {
         abstract String key();
 
@@ -361,6 +374,10 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
                 boolean flagRemoved = false;
                 var target = iterator.peek();
                 BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos(target.x(), 0, target.z());
+                if (isChunkUnavailableAtPos(targetWorld, pos)) {
+                    quarry.setAction(Finished.FINISHED);
+                    return;
+                }
                 for (int y = quarry.digMinY + 1; y < pos.getY() - 1; y++) {
                     mutableBlockPos.setY(y);
                     var blockState = targetWorld.getBlockState(mutableBlockPos);
