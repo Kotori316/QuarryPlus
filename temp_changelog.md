@@ -1,3 +1,7 @@
+## Version 1194.2.1
+
+* Imported changes in 1.19.2
+
 ## Version 1192.2.1
 
 * The range of Flexible Marker is now configurable
