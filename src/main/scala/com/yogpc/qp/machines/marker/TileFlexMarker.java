@@ -67,6 +67,9 @@ public class TileFlexMarker extends BlockEntity implements QuarryMarker, Checker
             } else if (d < 0) {
                 max = getLimited(max, offset, facing, 0);
             }
+            if (facing == Direction.UP && max.getY() >= level.getMaxBuildHeight()) {
+                max = new BlockPos(max.getX(), level.getMaxBuildHeight() - 1, max.getZ());
+            }
         } else {
             min = min.relative(facing, amount);
             int d = getDistance(offset, min, facing.getAxis());
