@@ -38,6 +38,8 @@ jobs:
       - name: Enable daemon
         run: sed -i -e 's/org.gradle.daemon=false/org.gradle.daemon=true/' gradle.properties
       - name: Compile
+        run: ./gradlew testClasses
+      - name: Assemble
         run: ./gradlew assemble
       - name: Test with JUnit
         run: ./gradlew test
