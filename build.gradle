@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 import java.util.stream.Collectors
 import java.util.stream.Stream
+import com.kotori316.plugin.cf.CallVersionFunctionTask
 
 buildscript {
     repositories {
@@ -21,6 +22,7 @@ plugins {
     id("com.github.breadmoirai.github-release") version("2.4.1")
     id("com.matthewprenger.cursegradle") version("1.4.0")
     id("com.modrinth.minotaur").version("2.+")
+    id("com.kotori316.plugin.cf").version("1.+")
 }
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
@@ -544,4 +546,11 @@ tasks.withType(AbstractPublishToMaven).configureEach {
         it.dependsOn(":signSrcJar")
         it.dependsOn(":signDeobfJar")
     }
+}
+
+tasks.register("registerVersion", CallVersionFunctionTask.class){
+    functionEndpoint = readVersionFunctionEndpoint(project)
+    gameVersion = project.findProperty("minecraftVersion")
+    platform = "forge"
+    modName = project.findProperty("quarryplus")
 }
