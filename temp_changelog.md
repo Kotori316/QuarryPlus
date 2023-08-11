@@ -1,3 +1,11 @@
+## Version 1192.2.1
+
+* The range of Flexible Marker is now configurable
+
+## Version 1192.2.0
+
+* Show progress in QuarryPlus and ChunkDestroyer in Status Checker log
+
 ## Version 1194.1.1
 
 * May fix item duplication in Workbench

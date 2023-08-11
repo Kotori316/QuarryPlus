@@ -1,15 +1,5 @@
 package com.yogpc.qp.machines.quarry;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.Spliterators;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.filler.FillerAction;
@@ -21,6 +11,10 @@ import net.minecraft.nbt.LongArrayTag;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.*;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public abstract class Target {
     static boolean THROW_IF_INVALID_NBT = !FMLEnvironment.production;
@@ -53,6 +47,8 @@ public abstract class Target {
     public boolean alreadySkipped(BlockPos pos) {
         return skippedPoses.contains(pos);
     }
+
+    public abstract double progress();
 
     public static Target fromNbt(CompoundTag tag) {
         return switch (tag.getString("target")) {
@@ -126,7 +122,7 @@ final class DigTarget extends Target {
         this.y = y;
         var x = y % 2 == 0 ? area.minX() + 1 : area.maxX() - 1;
         currentTarget = new BlockPos.MutableBlockPos(
-            x, y, initZ(x, this.y, area.minZ() + 1, area.maxZ() - 1)
+                x, y, initZ(x, this.y, area.minZ() + 1, area.maxZ() - 1)
         );
     }
 
@@ -170,6 +166,20 @@ final class DigTarget extends Target {
         return tag;
     }
 
+    @Override
+    public double progress() {
+        if (currentTarget == null) return 1d;
+        double xUnit = 1d / (area.maxX() - area.minX() - 1);
+        double xProgress;
+        if (y % 2 == 0) {
+            // move to plus
+            xProgress = xUnit * (currentTarget.getX() - area.minX() - 1);
+        } else {
+            xProgress = xUnit * (area.maxX() - currentTarget.getX() - 1);
+        }
+        return xProgress;
+    }
+
     static DigTarget from(CompoundTag tag) {
         var target = new DigTarget(Area.fromNBT(tag.getCompound("area")).orElseThrow(), tag.getInt("y"));
         if (tag.contains("currentTarget")) {
@@ -188,10 +198,10 @@ final class DigTarget extends Target {
     @Override
     public String toString() {
         return "DigTarget{" +
-            "area=" + area +
-            ", y=" + y +
-            ", currentTarget=" + currentTarget +
-            '}';
+                "area=" + area +
+                ", y=" + y +
+                ", currentTarget=" + currentTarget +
+                '}';
     }
 }
 
@@ -210,7 +220,7 @@ final class FrameTarget extends Target {
     FrameTarget(Area area, BlockPos pre) {
         this.area = area;
         this.iterator = Area.getFramePosStream(area)
-            .dropWhile(p -> !p.equals(pre)).iterator();
+                .dropWhile(p -> !p.equals(pre)).iterator();
         this.currentTarget = iterator.hasNext() ? iterator.next() : null;
     }
 
@@ -244,6 +254,14 @@ final class FrameTarget extends Target {
         return tag;
     }
 
+    @Override
+    public double progress() {
+        if (currentTarget == null) return 1d;
+        var list = Area.getFramePosStream(area).toList();
+        var index = list.indexOf(currentTarget);
+        return (double) index / list.size();
+    }
+
     static FrameTarget from(CompoundTag tag) {
         return new FrameTarget(Area.fromNBT(tag.getCompound("area")).orElseThrow(), BlockPos.of(tag.getLong("currentTarget")));
     }
@@ -251,10 +269,10 @@ final class FrameTarget extends Target {
     @Override
     public String toString() {
         return "FrameTarget{" +
-            "area=" + area +
-            ", currentTarget=" + currentTarget +
-            ", hasNext=" + iterator.hasNext() +
-            '}';
+                "area=" + area +
+                ", currentTarget=" + currentTarget +
+                ", hasNext=" + iterator.hasNext() +
+                '}';
     }
 }
 
@@ -306,11 +324,17 @@ final class PosesTarget extends Target {
     }
 
     @Override
+    public double progress() {
+        if (currentTarget == null) return 1d;
+        return (double) posList.indexOf(currentTarget) / posList.size();
+    }
+
+    @Override
     public String toString() {
         return "PosesTarget{" +
-            "currentTarget=" + currentTarget +
-            ", size=" + posList.size() +
-            '}';
+                "currentTarget=" + currentTarget +
+                ", size=" + posList.size() +
+                '}';
     }
 }
 
@@ -345,7 +369,7 @@ final class FrameInsideTarget extends Target {
     @NotNull
     public Stream<BlockPos> allPoses() {
         return BlockPos.betweenClosedStream(area.minX() + 1, minY, area.minZ() + 1,
-            area.maxX() - 1, maxY, area.maxZ() - 1);
+                area.maxX() - 1, maxY, area.maxZ() - 1);
     }
 
     @Override
@@ -357,6 +381,15 @@ final class FrameInsideTarget extends Target {
         tag.putInt("maxY", maxY);
         tag.putInt("index", index);
         return tag;
+    }
+
+    @Override
+    public double progress() {
+        int xSize = area.maxX() - area.minX() - 1;
+        int zSize = area.maxZ() - area.minZ() - 1;
+        var areaSize = xSize * zSize;
+        int xz = index % areaSize;
+        return (double) xz / areaSize;
     }
 
     public static FrameInsideTarget from(CompoundTag tag) {
@@ -372,11 +405,11 @@ final class FrameInsideTarget extends Target {
     @Override
     public String toString() {
         return "FrameInsideTarget{" +
-            "area=" + area +
-            ", minY=" + minY +
-            ", maxY=" + maxY +
-            ", index=" + index +
-            '}';
+                "area=" + area +
+                ", minY=" + minY +
+                ", maxY=" + maxY +
+                ", index=" + index +
+                '}';
     }
 }
 
@@ -420,5 +453,10 @@ final class FillerTarget extends Target {
         tag.put("area", area.toNBT());
         tag.put("fillerAction", fillerAction.toNbt());
         return tag;
+    }
+
+    @Override
+    public double progress() {
+        return 0;
     }
 }
