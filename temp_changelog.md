@@ -4,6 +4,7 @@
 * Add progress of QuarryPlus and ChunkDestroyer in Status Checker
 * Change format of poses in Status Checker
 * Fix crash related to FTB Chunks
+* Check chunk existence in Chunk Destroyer
 
 ## Version 1194.1.1
 
