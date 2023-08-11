@@ -1,6 +1,7 @@
 package com.yogpc.qp.machines.marker;
 
 import com.yogpc.qp.Holder;
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.CheckerLog;
 import com.yogpc.qp.machines.QuarryMarker;
@@ -24,7 +25,6 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
 public class TileFlexMarker extends BlockEntity implements QuarryMarker, CheckerLog {
-    private static final int maxRange = TileMarker.MAX_SEARCH;
 
     private BlockPos min;
     private BlockPos max;
@@ -50,6 +50,10 @@ public class TileFlexMarker extends BlockEntity implements QuarryMarker, Checker
         if (level != null && level.isClientSide) setRender();
     }
 
+    private int getMaxRange() {
+        return QuarryPlus.config.common.flexMarkerMaxDistance.get();
+    }
+
     @SuppressWarnings("Duplicates")
     void move(Movable movable, int amount) {
         assert level != null;
@@ -58,16 +62,19 @@ public class TileFlexMarker extends BlockEntity implements QuarryMarker, Checker
         if (facing.getAxisDirection() == Direction.AxisDirection.POSITIVE) {
             max = max.relative(facing, amount);
             int d = getDistance(max, offset, facing.getAxis());
-            if (d > maxRange) {
-                max = getLimited(max, offset, facing, maxRange);
+            if (d > getMaxRange()) {
+                max = getLimited(max, offset, facing, getMaxRange());
             } else if (d < 0) {
                 max = getLimited(max, offset, facing, 0);
+            }
+            if (facing == Direction.UP && max.getY() >= level.getMaxBuildHeight()) {
+                max = new BlockPos(max.getX(), level.getMaxBuildHeight() - 1, max.getZ());
             }
         } else {
             min = min.relative(facing, amount);
             int d = getDistance(offset, min, facing.getAxis());
-            if (d > maxRange) {
-                min = getLimited(min, offset, facing, maxRange);
+            if (d > getMaxRange()) {
+                min = getLimited(min, offset, facing, getMaxRange());
             } else if (d < 0) {
                 min = getLimited(min, offset, facing, 0);
             }
