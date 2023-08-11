@@ -60,4 +60,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           path: build/reports/tests/*
-          name: Test-Report-${{ github.run_number }}-${{ matrix.forge }}
+          name: Test-Report-${{ github.run_number }}-QuarryPlus
