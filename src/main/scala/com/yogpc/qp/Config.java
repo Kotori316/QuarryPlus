@@ -1,24 +1,11 @@
 package com.yogpc.qp;
 
-import java.io.InputStreamReader;
-import java.lang.reflect.Method;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.Set;
-import java.util.function.BooleanSupplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.google.gson.JsonObject;
 import com.yogpc.qp.machines.PowerConfig;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.advpump.BlockAdvPump;
 import com.yogpc.qp.machines.advquarry.BlockAdvQuarry;
+import com.yogpc.qp.machines.marker.TileMarker;
 import com.yogpc.qp.machines.mini_quarry.MiniQuarryBlock;
 import com.yogpc.qp.machines.quarry.QuarryBlock;
 import com.yogpc.qp.machines.quarry.SFQuarryBlock;
@@ -32,6 +19,13 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
+
+import java.io.InputStreamReader;
+import java.lang.reflect.Method;
+import java.util.*;
+import java.util.function.BooleanSupplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.yogpc.qp.utils.MapStreamSyntax.toAny;
 import static com.yogpc.qp.utils.MapStreamSyntax.toEntry;
@@ -65,6 +59,7 @@ public class Config {
         public final ForgeConfigSpec.BooleanValue allowWorkInClaimedChunkByFBTChunks;
         public final ForgeConfigSpec.ConfigValue<List<? extends String>> spawnerBlackList;
         public final ForgeConfigSpec.IntValue chunkDestroyerLimit;
+        public final ForgeConfigSpec.IntValue flexMarkerMaxDistance;
         public final ForgeConfigSpec.BooleanValue allowWorkbenchExtraction;
         public final ForgeConfigSpec.BooleanValue enableChunkLoader;
         public final ForgeConfigSpec.BooleanValue logAllQuarryWork;
@@ -86,6 +81,8 @@ public class Config {
             allowWorkInClaimedChunkByFBTChunks = builder.comment("Allow quarries to work in claimed chunk(FTB Chunks).").define("allowWorkInClaimedChunkByFBTChunks", false);
             chunkDestroyerLimit = builder.comment("The range limit(unit: blocks) of ChunkDestroyer. Set -1 or 0 to remove limitation.")
                 .defineInRange("chunkDestroyerLimit", -1, -1, Integer.MAX_VALUE);
+            flexMarkerMaxDistance = builder.comment("The max distance(unit: blocks) Flexible Marker can reach")
+                .defineInRange("flexMarkerMaxDistance", TileMarker.MAX_SEARCH, 16, 1 << 12);
             allowWorkbenchExtraction = builder.comment("True to allow pipes to extract items in WorkbenchPlus").define("allowWorkbenchExtraction", false);
             enableChunkLoader = builder.comment("Use simple chunk load function.", "If you have other chunk load system, please disable this and use other mods.")
                 .define("enableChunkLoader", true);

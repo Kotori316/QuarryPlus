@@ -43,7 +43,7 @@ public class QuarryChunkLoadUtil {
 
     public static void makeChunkUnloaded(Level world, BlockPos pos, boolean preLoaded) {
         if (QuarryPlus.config != null && !QuarryPlus.config.common.enableChunkLoader.get()) return;
-        LOGGER.debug("Asked to unload chunk. preLoaded={}", preLoaded);
+        LOGGER.debug("Asked to unload chunk at {}. preLoaded={}", pos, preLoaded);
         if (!preLoaded && world instanceof ServerLevel serverWorld) {
             serverWorld.setChunkForced(SectionPos.blockToSectionCoord(pos.getX()), SectionPos.blockToSectionCoord(pos.getZ()), false);
         }
