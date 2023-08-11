@@ -1,3 +1,5 @@
+import com.kotori316.plugin.cf.CallVersionFunctionTask
+
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.time.ZoneId
@@ -24,6 +26,7 @@ plugins {
     id("scala")
     id "com.github.breadmoirai.github-release" version "2.2.12"
     id "com.matthewprenger.cursegradle" version "1.4.0"
+    id("com.kotori316.plugin.cf").version("1.+")
 }
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
@@ -489,4 +492,11 @@ publishing {
             }
         }
     }
+}
+
+tasks.register("registerVersion", CallVersionFunctionTask.class) {
+    functionEndpoint = readVersionFunctionEndpoint(project)
+    gameVersion = project.findProperty("minecraftVersion")
+    platform = "forge"
+    modName = "quarryplus"
 }
