@@ -26,10 +26,11 @@ public class QuarryChunkLoadUtil {
     public static boolean makeChunkLoaded(Level world, BlockPos pos, boolean machineEnabled) {
         if (!machineEnabled) return false;
         if (world instanceof ServerLevel serverWorld) {
-            LOGGER.debug("Asked to force loading chunk at {}", pos);
             if (isChunkLoaded(world, pos)) {
+                LOGGER.debug("Asked to force loading chunk at {}, but already marked.", pos);
                 return true;
             } else {
+                LOGGER.debug("Asked to force loading chunk at {}, and set chunk loading.", pos);
                 serverWorld.setChunkForced(SectionPos.blockToSectionCoord(pos.getX()), SectionPos.blockToSectionCoord(pos.getZ()), true);
                 return false;
             }
@@ -39,7 +40,7 @@ public class QuarryChunkLoadUtil {
     }
 
     public static void makeChunkUnloaded(Level world, BlockPos pos, boolean preLoaded) {
-        LOGGER.debug("Asked to unload chunk. preLoaded={}", preLoaded);
+        LOGGER.debug("Asked to unload chunk at {}. preLoaded={}", pos, preLoaded);
         if (!preLoaded && world instanceof ServerLevel serverWorld) {
             serverWorld.setChunkForced(SectionPos.blockToSectionCoord(pos.getX()), SectionPos.blockToSectionCoord(pos.getZ()), false);
         }
