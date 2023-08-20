@@ -1,12 +1,5 @@
 package com.yogpc.qp.machines;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import com.google.common.collect.Iterators;
 import com.yogpc.qp.utils.MapMulti;
 import net.minecraft.core.Direction;
@@ -14,9 +7,11 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
@@ -27,8 +22,11 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.VisibleForTesting;
 
-import static com.yogpc.qp.utils.MapStreamSyntax.toAny;
-import static com.yogpc.qp.utils.MapStreamSyntax.values;
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import static com.yogpc.qp.utils.MapStreamSyntax.*;
 
 public class MachineStorage {
     protected Map<ItemKey, Long> itemMap = new LinkedHashMap<>();
@@ -52,17 +50,24 @@ public class MachineStorage {
     }
 
     public void addAllItems(Map<ItemKey, Long> drops) {
-        drops.forEach((itemKey, count) -> this.itemMap.merge(itemKey, count, Long::sum));
-    }
-
-    public void addFluid(ItemStack bucketItem) {
-        FluidUtil.getFluidContained(bucketItem).ifPresent(f -> {
-            var key = new FluidKey(f);
-            fluidMap.merge(key, (long) f.getAmount(), Long::sum);
+        drops.forEach((itemKey, count) -> {
+            if (itemKey.item() != null && itemKey.item() != Items.AIR) {
+                this.itemMap.merge(itemKey, count, Long::sum);
+            }
         });
     }
 
+    public void addFluid(ItemStack bucketItem) {
+        FluidUtil.getFluidContained(bucketItem)
+            .filter(Predicate.not(FluidStack::isEmpty))
+            .ifPresent(f -> {
+                var key = new FluidKey(f);
+                fluidMap.merge(key, (long) f.getAmount(), Long::sum);
+            });
+    }
+
     public void addFluid(Fluid fluid, long amount) {
+        if (fluid.isSame(Fluids.EMPTY)) return;
         var key = new FluidKey(fluid, null);
         fluidMap.merge(key, amount, (l1, l2) -> {
                 long a = l1 + l2;
@@ -85,11 +90,15 @@ public class MachineStorage {
         var itemTag = tag.getList("items", Tag.TAG_COMPOUND);
         itemMap = itemTag.stream()
             .mapMulti(MapMulti.cast(CompoundTag.class))
-            .collect(Collectors.toMap(ItemKey::fromNbt, n -> n.getLong("count")));
+            .map(toEntry(ItemKey::fromNbt, n -> n.getLong("count")))
+            .filter(byKey(k -> k.item() != Items.AIR))
+            .collect(entryToMap());
         var fluidTag = tag.getList("fluids", Tag.TAG_COMPOUND);
         fluidMap = fluidTag.stream()
             .mapMulti(MapMulti.cast(CompoundTag.class))
-            .collect(Collectors.toMap(FluidKey::fromNbt, n -> n.getLong("amount")));
+            .map(toEntry(FluidKey::fromNbt, n -> n.getLong("amount")))
+            .filter(byKey(k -> k.fluid() != Fluids.EMPTY))
+            .collect(entryToMap());
     }
 
     public Map<FluidKey, Long> getFluidMap() {
@@ -196,6 +205,7 @@ public class MachineStorage {
             return getByIndex(slot)
                 .map(values(count -> (int) Math.min(count, Integer.MAX_VALUE)))
                 .map(toAny(ItemKey::toStack))
+                .filter(Predicate.not(ItemStack::isEmpty))
                 .orElse(ItemStack.EMPTY);
         }
 
@@ -222,7 +232,9 @@ public class MachineStorage {
                         itemMap.remove(key);
                     }
                 }
-                return key.toStack(size);
+                var stack = key.toStack(size);
+                if (stack.isEmpty()) return ItemStack.EMPTY;
+                return stack;
             } else {
                 return ItemStack.EMPTY;
             }
