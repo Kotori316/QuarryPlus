@@ -1,3 +1,7 @@
+## Version 1192.2.2
+
+* Fix deadlock with some item transfer mod
+
 ## Version 1192.2.1
 
 * The range of Flexible Marker is now configurable
