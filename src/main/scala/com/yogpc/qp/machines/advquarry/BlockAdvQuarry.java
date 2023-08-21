@@ -124,7 +124,10 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
     @SuppressWarnings("deprecation")
     public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {
         super.onPlace(state, level, pos, oldState, isMoving);
-        if (state.getBlock() != oldState.getBlock() && !level.isClientSide && level.getBlockEntity(pos) instanceof TileAdvQuarry quarry) {
+        if (state.getBlock() != oldState.getBlock() &&
+            !level.isClientSide &&
+            !this.disallowedDim().contains(level.dimension().location()) &&
+            level.getBlockEntity(pos) instanceof TileAdvQuarry quarry) {
             quarry.initialSetting();
             Direction facing = state.getValue(FACING);
             if (!quarry.setArea(findArea(level, pos, facing.getOpposite(), quarry.getStorage()::addItem))) {
