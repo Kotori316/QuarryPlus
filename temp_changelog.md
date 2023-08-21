@@ -1,3 +1,8 @@
+## Version 1192.2.3
+
+* Fix a bug of save/load of Chunk Destroyer
+* Add server config to disable machine in specific dimension
+
 ## Version 1192.2.2
 
 * Fix deadlock with some item transfer mod
