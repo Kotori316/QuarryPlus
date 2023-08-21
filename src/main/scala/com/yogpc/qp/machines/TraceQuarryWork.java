@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.yogpc.qp.QuarryPlus;
@@ -75,9 +76,10 @@ public final class TraceQuarryWork {
         }
     }
 
-    public static void blockRemoveSucceed(PowerTile tile, BlockPos pos, BlockPos targetPos, BlockState state, Map<ItemKey, Long> drops, int exp) {
+    public static void blockRemoveSucceed(PowerTile tile, BlockPos pos, BlockPos targetPos, List<BlockState> state, Map<ItemKey, Long> drops, int exp) {
         if (enabled) {
-            LOGGER.debug(MARKER, "{} ({},{},{}) SUCCESS {} EXP={} ({})", header(tile, pos), targetPos.getX(), targetPos.getY(), targetPos.getZ(), state, exp,
+            var stateCount = state.stream().collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+            LOGGER.debug(MARKER, "{} ({},{},{}) SUCCESS {} EXP={} ({})", header(tile, pos), targetPos.getX(), targetPos.getY(), targetPos.getZ(), stateCount, exp,
                 drops.entrySet().stream().map(s -> "%dx %s".formatted(s.getValue(), s.getKey().getId())).collect(Collectors.joining(",")));
         }
     }
