@@ -393,18 +393,29 @@ static String getCommit(String branch) {
 }
 
 String getChangeLog() {
-    def header = changeLogHeader()
+    return changeLogHeader() + System.lineSeparator() + getShortChangelog(true)
+}
+
+String getShortChangelog(boolean includeVersion) {
     def f = file("temp_changelog.md")
     if (f.exists()) {
         String version = f.readLines().find { s -> s.startsWith("#") }
-        return header + System.lineSeparator() + Stream.concat(
-                Stream.of(version, ""),
-                f.readLines()
-                        .drop(4 - 2)
-                        .takeWhile { s -> !s.isEmpty() }
-                        .stream() as Stream<String>
-        ).collect(Collectors.joining(System.lineSeparator()))
-    } else return header
+        def content = f.readLines()
+                .drop(4 - 2)
+                .takeWhile { s -> !s.isEmpty() }
+                .stream() as Stream<String>
+        if (includeVersion) {
+            return Stream.concat(
+                    Stream.of(version, ""),
+                    content
+            ).collect(Collectors.joining(System.lineSeparator()))
+        }else{
+            content.collect(Collectors.joining(System.lineSeparator()))
+        }
+
+    } else {
+        return version.toString()
+    }
 }
 
 curseforge {
@@ -476,6 +487,7 @@ task CheckCompileOption() {
         System.out.println("Git commit")
         System.out.println(getCommit(project.branch as String))
         System.out.println("-" * 30 as String)
+        System.out.println(getShortChangelog(false))
     }
 }
 
@@ -536,4 +548,5 @@ tasks.register("registerVersion", CallVersionFunctionTask.class) {
     gameVersion = project.findProperty("minecraftVersion")
     platform = "forge"
     modName = "quarryplus"
+    changelog = getShortChangelog(false)
 }
