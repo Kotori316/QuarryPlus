@@ -60,7 +60,9 @@ public class BlockAdvPump extends QPBlock implements EntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type) {
         return world.isClientSide ? null : checkType(type, Holder.ADV_PUMP_TYPE,
-            new CombinedBlockEntityTicker<>(PowerTile.getGenerator(), TileAdvPump::tick, PowerTile.logTicker(), MachineStorage.passFluid()));
+            CombinedBlockEntityTicker.of(
+                this, world,
+                PowerTile.getGenerator(), TileAdvPump::tick, PowerTile.logTicker(), MachineStorage.passFluid()));
     }
 
     @Override
@@ -96,7 +98,7 @@ public class BlockAdvPump extends QPBlock implements EntityBlock {
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
         super.setPlacedBy(level, pos, state, entity, stack);
-        if (!level.isClientSide) {
+        if (!level.isClientSide && !this.disallowedDim().contains(level.dimension().location())) {
             if (level.getBlockEntity(pos) instanceof TileAdvPump pump) {
                 var preForced = QuarryChunkLoadUtil.makeChunkLoaded(level, pos, pump.enabled);
                 pump.setEnchantment(EnchantmentEfficiency.fromMap(EnchantmentHelper.getEnchantments(stack)));

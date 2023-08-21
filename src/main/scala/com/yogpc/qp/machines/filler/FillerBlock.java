@@ -73,7 +73,7 @@ public final class FillerBlock extends QPBlock implements EntityBlock {
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
         super.setPlacedBy(level, pos, state, entity, stack);
-        if (!level.isClientSide) {
+        if (!level.isClientSide && !this.disallowedDim().contains(level.dimension().location())) {
             level.getBlockEntity(pos, Holder.FILLER_TYPE)
                 .ifPresent(t -> {
                     var preForced = QuarryChunkLoadUtil.makeChunkLoaded(level, pos, t.enabled);
@@ -96,8 +96,9 @@ public final class FillerBlock extends QPBlock implements EntityBlock {
 
     @Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> entityType) {
-        return pLevel.isClientSide ? null : checkType(entityType, Holder.FILLER_TYPE, new CombinedBlockEntityTicker<>(
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState pState, BlockEntityType<T> entityType) {
+        return level.isClientSide ? null : checkType(entityType, Holder.FILLER_TYPE, CombinedBlockEntityTicker.of(
+            this, level,
             PowerTile.getGenerator(),
             (l, p, s, t) -> t.tick(),
             PowerTile.logTicker()

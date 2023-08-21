@@ -1,11 +1,11 @@
 package com.yogpc.qp.machines.misc;
 
-import java.util.List;
-
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.machines.QPBlock;
+import com.yogpc.qp.utils.CombinedBlockEntityTicker;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -24,6 +24,9 @@ import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+import java.util.Set;
 
 public class CreativeGeneratorBlock extends QPBlock implements EntityBlock {
     public static final String NAME = "creative_generator";
@@ -52,10 +55,19 @@ public class CreativeGeneratorBlock extends QPBlock implements EntityBlock {
         return super.use(state, world, pos, player, hand, hit);
     }
 
+    @Override
+    public Set<ResourceLocation> disallowedDim() {
+        // This machine should work in any dimensions.
+        return Set.of();
+    }
+
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type) {
-        return world.isClientSide ? null : checkType(type, Holder.CREATIVE_GENERATOR_TYPE, CreativeGeneratorTile.TICKER);
+        return world.isClientSide ? null : checkType(type, Holder.CREATIVE_GENERATOR_TYPE,
+            CombinedBlockEntityTicker.of(
+                this, world,
+                CreativeGeneratorTile.TICKER));
     }
 
     @Override

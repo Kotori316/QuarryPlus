@@ -66,7 +66,7 @@ public final class SFQuarryBlock extends QPBlock implements EntityBlock {
     @SuppressWarnings("DuplicatedCode")
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
         super.setPlacedBy(level, pos, state, entity, stack);
-        if (!level.isClientSide) {
+        if (!level.isClientSide && !this.disallowedDim().contains(level.dimension().location())) {
             Direction facing = entity == null ? Direction.NORTH : entity.getDirection().getOpposite();
             if (level.getBlockEntity(pos) instanceof SFQuarryEntity quarry) {
                 quarry.setTileDataFromItem(null);
@@ -123,7 +123,8 @@ public final class SFQuarryBlock extends QPBlock implements EntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
         return level.isClientSide ? null : checkType(blockEntityType, Holder.SOLID_FUEL_QUARRY_TYPE,
-            new CombinedBlockEntityTicker<>(
+            CombinedBlockEntityTicker.of(
+                this, level,
                 SFQuarryEntity::tickFuel,
                 TileQuarry::tick,
                 PowerTile.logTicker(),

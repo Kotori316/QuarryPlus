@@ -7,6 +7,7 @@ import com.yogpc.qp.machines.QPBlock;
 import com.yogpc.qp.utils.CombinedBlockEntityTicker;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
@@ -23,6 +24,8 @@ import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Set;
 
 public class BlockWorkbench extends QPBlock implements EntityBlock {
     public static final String NAME = "workbench";
@@ -70,10 +73,19 @@ public class BlockWorkbench extends QPBlock implements EntityBlock {
         return Holder.WORKBENCH_TYPE.create(pos, state);
     }
 
+    @Override
+    public Set<ResourceLocation> disallowedDim() {
+        // This machine should work in any dimensions.
+        return Set.of();
+    }
+
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> entityType) {
         return level.isClientSide ? null : checkType(entityType, Holder.WORKBENCH_TYPE,
-            new CombinedBlockEntityTicker<>(PowerTile.logTicker(), (l, p, s, workbench) -> workbench.tick()));
+            CombinedBlockEntityTicker.of(
+                this, level,
+                PowerTile.logTicker(), (l, p, s, workbench) -> workbench.tick()
+            ));
     }
 }

@@ -124,7 +124,9 @@ public class MiningWellBlock extends QPBlock implements EntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
         return level.isClientSide ? null : checkType(blockEntityType, Holder.MINING_WELL_TYPE,
-            new CombinedBlockEntityTicker<>(PowerTile.getGenerator(), (l, p, s, t) -> t.tick(), PowerTile.logTicker(),
+            CombinedBlockEntityTicker.of(
+                this, level,
+                PowerTile.getGenerator(), (l, p, s, t) -> t.tick(), PowerTile.logTicker(),
                 MachineStorage.passItems(), MachineStorage.passFluid()));
     }
 }
