@@ -5,6 +5,10 @@
 * Change format of poses in Status Checker
 * Fix crash related to FTB Chunks
 * Check chunk existence in Chunk Destroyer
+* Fix a bug of save/load of Chunk Destroyer
+* Add server config to disable machine in specific dimension
+* The range of Flexible Marker is now configurable
+* Fix deadlock with some item transfer mod
 
 ## Version 1192.2.3
 
