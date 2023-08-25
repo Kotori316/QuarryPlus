@@ -39,6 +39,7 @@ public class QuarryPlus {
     public static final Logger LOGGER = getLogger(Mod_Name);
     public static Config config;
     public static ClientConfig clientConfig;
+    public static ServerConfig serverConfig;
 
     public QuarryPlus() {
         registerConfig(false);
@@ -51,10 +52,13 @@ public class QuarryPlus {
     static void registerConfig(boolean inJUnitTest) {
         ForgeConfigSpec.Builder common = new ForgeConfigSpec.Builder();
         ForgeConfigSpec.Builder client = new ForgeConfigSpec.Builder();
+        ForgeConfigSpec.Builder server = new ForgeConfigSpec.Builder();
         config = new Config(common);
         clientConfig = new ClientConfig(client);
+        serverConfig = new ServerConfig(server);
         ForgeConfigSpec build = common.build();
         ForgeConfigSpec clientBuild = client.build();
+        ForgeConfigSpec serverBuild = server.build();
         if (inJUnitTest || ForgeGameTestHooks.isGametestServer()) {
             // In game test. Use in-memory config.
             final CommentedConfig commentedConfig = CommentedConfig.inMemory();
@@ -65,9 +69,13 @@ public class QuarryPlus {
             final CommentedConfig clientConfig = CommentedConfig.inMemory();
             clientBuild.correct(clientConfig);
             clientBuild.acceptConfig(clientConfig);
+            final CommentedConfig serverConfig = CommentedConfig.inMemory();
+            serverBuild.correct(serverConfig);
+            serverBuild.acceptConfig(serverConfig);
         } else {
             ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, build);
             ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, clientBuild);
+            ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, serverBuild);
         }
     }
 

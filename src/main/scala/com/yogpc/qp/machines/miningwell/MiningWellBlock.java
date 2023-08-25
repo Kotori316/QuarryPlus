@@ -41,11 +41,11 @@ public class MiningWellBlock extends QPBlock implements EntityBlock {
 
     public MiningWellBlock() {
         super(Properties.of()
-                .mapColor(MapColor.METAL)
-                .pushReaction(PushReaction.BLOCK).strength(1.5f), NAME, MiningWellItem::new);
+            .mapColor(MapColor.METAL)
+            .pushReaction(PushReaction.BLOCK).strength(1.5f), NAME, MiningWellItem::new);
         registerDefaultState(getStateDefinition().any()
-                .setValue(WORKING, false)
-                .setValue(BlockStateProperties.FACING, Direction.NORTH));
+            .setValue(WORKING, false)
+            .setValue(BlockStateProperties.FACING, Direction.NORTH));
     }
 
     @Override
@@ -107,7 +107,7 @@ public class MiningWellBlock extends QPBlock implements EntityBlock {
         if (WrenchItems.isWrenchItem(stack)) {
             if (!world.isClientSide) {
                 world.getBlockEntity(pos, Holder.MINING_WELL_TYPE)
-                        .ifPresent(MiningWellTile::reset);
+                    .ifPresent(MiningWellTile::reset);
             }
             return InteractionResult.SUCCESS;
         }
@@ -127,7 +127,8 @@ public class MiningWellBlock extends QPBlock implements EntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
         return level.isClientSide ? null : checkType(blockEntityType, Holder.MINING_WELL_TYPE,
-                new CombinedBlockEntityTicker<>(PowerTile.getGenerator(), (l, p, s, t) -> t.tick(), PowerTile.logTicker(),
-                        MachineStorage.passItems(), MachineStorage.passFluid()));
+            CombinedBlockEntityTicker.of(
+                this, level, PowerTile.getGenerator(), (l, p, s, t) -> t.tick(), PowerTile.logTicker(),
+                MachineStorage.passItems(), MachineStorage.passFluid()));
     }
 }

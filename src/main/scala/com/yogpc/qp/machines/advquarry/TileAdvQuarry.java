@@ -127,18 +127,19 @@ public class TileAdvQuarry extends PowerTile implements
     @Override
     public CompoundTag toClientTag(CompoundTag nbt) {
         if (area != null) nbt.put("area", area.toNBT());
+        nbt.put("workConfig", workConfig.toNbt());
         var enchantments = new CompoundTag();
         this.enchantments.forEach(e -> enchantments.putInt(Objects.requireNonNull(e.enchantmentID()).toString(), e.level()));
         nbt.put("enchantments", enchantments);
         nbt.putInt("digMinY", digMinY);
         nbt.put("action", action.toNbt());
-        nbt.put("workConfig", workConfig.toNbt());
         return nbt;
     }
 
     @Override
     public void fromClientTag(CompoundTag nbt) {
         area = Area.fromNBT(nbt.getCompound("area")).orElse(null);
+        workConfig = new WorkConfig(nbt.getCompound("workConfig"));
         var enchantments = nbt.getCompound("enchantments");
         setEnchantments(enchantments.getAllKeys().stream()
                 .mapMulti(MapMulti.getEntry(ForgeRegistries.ENCHANTMENTS, enchantments::getInt))
@@ -147,7 +148,6 @@ public class TileAdvQuarry extends PowerTile implements
                 .toList());
         digMinY = nbt.getInt("digMinY");
         action = AdvQuarryAction.fromNbt(nbt.getCompound("action"), this);
-        workConfig = new WorkConfig(nbt.getCompound("workConfig"));
     }
 
     /**
@@ -205,6 +205,7 @@ public class TileAdvQuarry extends PowerTile implements
                 level.setBlock(getBlockPos(), getBlockState().setValue(BlockAdvQuarry.WORKING, true), Block.UPDATE_ALL);
             }
         this.action = action;
+        TraceQuarryWork.changeTarget(this, getBlockPos(), "From %s to %s".formatted(pre, action));
         if (action == AdvQuarryAction.Finished.FINISHED)
             if (level != null) {
                 level.setBlock(getBlockPos(), getBlockState().setValue(BlockAdvQuarry.WORKING, false), Block.UPDATE_ALL);
@@ -416,9 +417,9 @@ public class TileAdvQuarry extends PowerTile implements
                 .map(MapStreamSyntax.values(Long::valueOf))
                 .collect(MapStreamSyntax.entryToMap(Long::sum));
         {
-            var headPos = toBreak.stream().map(Pair::getKey).findFirst().orElse(BlockPos.ZERO);
-            var headState = toBreak.stream().map(Pair::getValue).findFirst().orElse(null);
-            TraceQuarryWork.blockRemoveSucceed(this, getBlockPos(), headPos, headState, drops, exp.get());
+            var headPos = toBreak.stream().map(Pair::getKey).findFirst().orElse(mutableBlockPos);
+            var states = toBreak.stream().map(Pair::getValue).toList();
+            TraceQuarryWork.blockRemoveSucceed(this, getBlockPos(), headPos, states, drops, exp.get());
         }
         this.storage.addAllItems(drops);
         // Remove blocks

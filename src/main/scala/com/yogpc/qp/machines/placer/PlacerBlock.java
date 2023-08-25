@@ -3,6 +3,7 @@ package com.yogpc.qp.machines.placer;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPBlock;
+import com.yogpc.qp.utils.CombinedBlockEntityTicker;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -129,7 +130,10 @@ public class PlacerBlock extends QPBlock implements EntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return level.isClientSide ? null : checkType(type, Holder.PLACER_TYPE, (l, p, s, placer) -> placer.tick());
+        return level.isClientSide ? null : checkType(type, Holder.PLACER_TYPE, CombinedBlockEntityTicker.of(
+            this, level,
+            (l, p, s, placer) -> placer.tick()
+        ));
     }
 
     @Override

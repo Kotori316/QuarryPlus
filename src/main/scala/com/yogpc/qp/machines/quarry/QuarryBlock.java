@@ -52,13 +52,13 @@ public class QuarryBlock extends QPBlock implements EntityBlock {
 
     public QuarryBlock() {
         super(Properties.of()
-                .mapColor(MapColor.METAL)
-                .pushReaction(PushReaction.BLOCK)
-                .strength(1.5f, 10f)
-                .sound(SoundType.STONE), NAME, QuarryItem::new);
+            .mapColor(MapColor.METAL)
+            .pushReaction(PushReaction.BLOCK)
+            .strength(1.5f, 10f)
+            .sound(SoundType.STONE), NAME, QuarryItem::new);
         registerDefaultState(getStateDefinition().any()
-                .setValue(WORKING, false)
-                .setValue(BlockStateProperties.FACING, Direction.NORTH));
+            .setValue(WORKING, false)
+            .setValue(BlockStateProperties.FACING, Direction.NORTH));
     }
 
     @Override
@@ -77,7 +77,7 @@ public class QuarryBlock extends QPBlock implements EntityBlock {
     @SuppressWarnings("DuplicatedCode")
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
         super.setPlacedBy(level, pos, state, entity, stack);
-        if (!level.isClientSide) {
+        if (!level.isClientSide && !this.disallowedDim().contains(level.dimension().location())) {
             Direction facing = entity == null ? Direction.NORTH : entity.getDirection().getOpposite();
             if (level.getBlockEntity(pos) instanceof TileQuarry quarry) {
                 quarry.setEnchantments(EnchantmentHelper.getEnchantments(stack));
@@ -154,13 +154,14 @@ public class QuarryBlock extends QPBlock implements EntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
         return level.isClientSide ? null : checkType(blockEntityType, Holder.QUARRY_TYPE,
-                new CombinedBlockEntityTicker<>(
-                        PowerTile.getGenerator(),
-                        EnergyModuleItem.energyModuleTicker(),
-                        TileQuarry::tick,
-                        PowerTile.logTicker(),
-                        MachineStorage.passItems(),
-                        MachineStorage.passFluid())
+            CombinedBlockEntityTicker.of(
+                this, level,
+                PowerTile.getGenerator(),
+                EnergyModuleItem.energyModuleTicker(),
+                TileQuarry::tick,
+                PowerTile.logTicker(),
+                MachineStorage.passItems(),
+                MachineStorage.passFluid())
         );
     }
 
@@ -186,13 +187,13 @@ public class QuarryBlock extends QPBlock implements EntityBlock {
 
     static Area findArea(Level world, BlockPos pos, Direction quarryBehind, Consumer<ItemStack> itemCollector) {
         return Stream.of(quarryBehind, quarryBehind.getCounterClockWise(), quarryBehind.getClockWise())
-                .map(pos::relative)
-                .map(world::getBlockEntity)
-                .mapMulti(MapMulti.cast(QuarryMarker.class))
-                .flatMap(m -> m.getArea().stream().peek(a -> m.removeAndGetItems().forEach(itemCollector)))
-                .findFirst()
-                .map(a -> a.assureY(4))
-                .orElse(new Area(pos.relative(quarryBehind).relative(quarryBehind.getCounterClockWise(), 5),
-                        pos.relative(quarryBehind, 11).relative(quarryBehind.getClockWise(), 5).relative(Direction.UP, 4), quarryBehind));
+            .map(pos::relative)
+            .map(world::getBlockEntity)
+            .mapMulti(MapMulti.cast(QuarryMarker.class))
+            .flatMap(m -> m.getArea().stream().peek(a -> m.removeAndGetItems().forEach(itemCollector)))
+            .findFirst()
+            .map(a -> a.assureY(4))
+            .orElse(new Area(pos.relative(quarryBehind).relative(quarryBehind.getCounterClockWise(), 5),
+                pos.relative(quarryBehind, 11).relative(quarryBehind.getClockWise(), 5).relative(Direction.UP, 4), quarryBehind));
     }
 }

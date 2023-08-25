@@ -41,13 +41,13 @@ public class MiniQuarryBlock extends QPBlock implements EntityBlock {
 
     public MiniQuarryBlock() {
         super(Properties.of()
-                        .mapColor(MapColor.METAL)
-                        .pushReaction(PushReaction.BLOCK).strength(1.5f, 10f).sound(SoundType.STONE),
-                NAME, MiniQuarryItem::new);
+                .mapColor(MapColor.METAL)
+                .pushReaction(PushReaction.BLOCK).strength(1.5f, 10f).sound(SoundType.STONE),
+            NAME, MiniQuarryItem::new);
 
         registerDefaultState(getStateDefinition().any()
-                .setValue(WORKING, false)
-                .setValue(BlockStateProperties.FACING, Direction.NORTH));
+            .setValue(WORKING, false)
+            .setValue(BlockStateProperties.FACING, Direction.NORTH));
     }
 
     @Override
@@ -72,7 +72,7 @@ public class MiniQuarryBlock extends QPBlock implements EntityBlock {
         if (!player.isShiftKeyDown()) {
             if (!level.isClientSide) {
                 level.getBlockEntity(pos, Holder.MINI_QUARRY_TYPE)
-                        .ifPresent(t -> NetworkHooks.openScreen((ServerPlayer) player, t, pos));
+                    .ifPresent(t -> NetworkHooks.openScreen((ServerPlayer) player, t, pos));
             }
             return InteractionResult.SUCCESS;
         } else {
@@ -89,13 +89,13 @@ public class MiniQuarryBlock extends QPBlock implements EntityBlock {
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
         super.setPlacedBy(level, pos, state, entity, stack);
-        if (!level.isClientSide) {
+        if (!level.isClientSide && !this.disallowedDim().contains(level.dimension().location())) {
             level.getBlockEntity(pos, Holder.MINI_QUARRY_TYPE)
-                    .ifPresent(t -> {
-                        t.setEnchantments(EnchantmentLevel.fromItem(stack));
-                        var preForced = QuarryChunkLoadUtil.makeChunkLoaded(level, pos, t.enabled);
-                        t.setChunkPreLoaded(preForced);
-                    });
+                .ifPresent(t -> {
+                    t.setEnchantments(EnchantmentLevel.fromItem(stack));
+                    var preForced = QuarryChunkLoadUtil.makeChunkLoaded(level, pos, t.enabled);
+                    t.setChunkPreLoaded(preForced);
+                });
         }
     }
 
@@ -106,14 +106,14 @@ public class MiniQuarryBlock extends QPBlock implements EntityBlock {
         if (!level.isClientSide) {
             boolean powered = level.hasNeighborSignal(pos);
             level.getBlockEntity(pos, Holder.MINI_QUARRY_TYPE)
-                    .ifPresent(t -> {
-                        if (powered) {
-                            if (!t.rs) {
-                                t.gotRSPulse();
-                            }
+                .ifPresent(t -> {
+                    if (powered) {
+                        if (!t.rs) {
+                            t.gotRSPulse();
                         }
-                        t.rs = powered;
-                    });
+                    }
+                    t.rs = powered;
+                });
         }
     }
 
@@ -133,10 +133,11 @@ public class MiniQuarryBlock extends QPBlock implements EntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
         return level.isClientSide ? null : checkType(blockEntityType, Holder.MINI_QUARRY_TYPE,
-                new CombinedBlockEntityTicker<>(
-                        PowerTile.getGenerator(),
-                        (w, p, s, t) -> t.work(),
-                        PowerTile.logTicker())
+            CombinedBlockEntityTicker.of(
+                this, level,
+                PowerTile.getGenerator(),
+                (w, p, s, t) -> t.work(),
+                PowerTile.logTicker())
         );
     }
 }

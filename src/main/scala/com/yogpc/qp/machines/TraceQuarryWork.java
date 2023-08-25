@@ -1,5 +1,12 @@
 package com.yogpc.qp.machines;
 
+import java.net.URI;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
@@ -34,7 +41,7 @@ public final class TraceQuarryWork {
             class DummyClassLoader extends SecureClassLoader {
             }
             CONTEXT = Configurator.initialize("quarryplus-config", new DummyClassLoader(),
-                    URI.create(Objects.requireNonNull(TraceQuarryWork.class.getResource("/quarry-log4j2.xml")).toString())
+                URI.create(Objects.requireNonNull(TraceQuarryWork.class.getResource("/quarry-log4j2.xml")).toString())
             );
             LOGGER = CONTEXT.getLogger("TQW");
             MARKER = MarkerManager.getMarker("QUARRY_TRACE");
@@ -74,14 +81,15 @@ public final class TraceQuarryWork {
     public static void blockRemoveSucceed(PowerTile tile, BlockPos pos, BlockPos targetPos, BlockState state, List<ItemStack> drops, int exp) {
         if (enabled) {
             LOGGER.debug(MARKER, "{} ({},{},{}) SUCCESS {} EXP={} ({})", header(tile, pos), targetPos.getX(), targetPos.getY(), targetPos.getZ(), state, exp,
-                    drops.stream().map(s -> "%dx %s".formatted(s.getCount(), ForgeRegistries.ITEMS.getKey(s.getItem()))).collect(Collectors.joining(",")));
+                drops.stream().map(s -> "%dx %s".formatted(s.getCount(), ForgeRegistries.ITEMS.getKey(s.getItem()))).collect(Collectors.joining(",")));
         }
     }
 
-    public static void blockRemoveSucceed(PowerTile tile, BlockPos pos, BlockPos targetPos, BlockState state, Map<ItemKey, Long> drops, int exp) {
+    public static void blockRemoveSucceed(PowerTile tile, BlockPos pos, BlockPos targetPos, List<BlockState> state, Map<ItemKey, Long> drops, int exp) {
         if (enabled) {
-            LOGGER.debug(MARKER, "{} ({},{},{}) SUCCESS {} EXP={} ({})", header(tile, pos), targetPos.getX(), targetPos.getY(), targetPos.getZ(), state, exp,
-                    drops.entrySet().stream().map(s -> "%dx %s".formatted(s.getValue(), s.getKey().getId())).collect(Collectors.joining(",")));
+            var stateCount = state.stream().collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+            LOGGER.debug(MARKER, "{} ({},{},{}) SUCCESS {} EXP={} ({})", header(tile, pos), targetPos.getX(), targetPos.getY(), targetPos.getZ(), stateCount, exp,
+                drops.entrySet().stream().map(s -> "%dx %s".formatted(s.getValue(), s.getKey().getId())).collect(Collectors.joining(",")));
         }
     }
 

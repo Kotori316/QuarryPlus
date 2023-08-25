@@ -6,9 +6,14 @@
 * Fix crash related to FTB Chunks
 * Check chunk existence in Chunk Destroyer
 
-## Version 1194.2.1
+## Version 1192.2.3
 
-* Imported changes in 1.19.2
+* Fix a bug of save/load of Chunk Destroyer
+* Add server config to disable machine in specific dimension
+
+## Version 1192.2.2
+
+* Fix deadlock with some item transfer mod
 
 ## Version 1192.2.1
 
